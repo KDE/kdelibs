@@ -26,10 +26,10 @@
 #define KURIFILTER_H
 
 #include <kio/kio_export.h>
+#include <kurl.h>
+
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-
-#include <kurl.h>
 
 #ifdef Q_OS_WIN
 #undef ERROR
@@ -40,15 +40,13 @@ class KUriFilterDataPrivate;
 class KCModule;
 
 /**
-* A basic message object used for exchanging filtering
-* information between the filter plugins and the application
-* requesting the filtering service.
+* A basic message object used for exchanging filtering information between the
+* filter plugins and the application requesting the filtering service.
 *
-* Use this object if you require a more detailed information
-* about the URI you want to filter. Any application can create
-* an instance of this class and send it to KUriFilter to
-* have the plugins fill out all possible information about the
-* URI.
+* Use this object if you require a more detailed information about the URI you
+* want to filter. Any application can create an instance of this class and send
+* it to KUriFilter to have the plugins fill out all possible information about
+* the URI.
 *
 * \b Example
 *
@@ -76,8 +74,6 @@ class KCModule;
 
 class KIO_EXPORT KUriFilterData
 {
-friend class KUriFilterPlugin;
-
 public:
     /**
      * Describes the type of the URI that was filtered.
@@ -105,14 +101,14 @@ public:
     KUriFilterData();
 
     /**
-     * Creates a UriFilterData object from the given URL.
+     * Creates a KUriFilterData object from the given URL.
      *
      * @param url is the URL to be filtered.
      */
     explicit KUriFilterData( const KUrl& url );
 
     /**
-     * Creates a UriFilterData object from the given string.
+     * Creates a KUriFilterData object from the given string.
      *
      * @param url is the string to be filtered.
      */
@@ -121,26 +117,22 @@ public:
     /**
      * Copy constructor.
      *
-     * Creates a UriFilterData object from another
-     * URI filter data object.
+     * Creates a KUriFilterData object from another KURIFilterData object.
      *
-     * @param data the uri filter data to be copied.
+     * @param other the uri filter data to be copied.
      */
-    KUriFilterData( const KUriFilterData& data );
+    KUriFilterData( const KUriFilterData& other );
 
     /**
      * Destructor.
      */
     ~KUriFilterData();
 
-
     /**
      * Returns the filtered or the original URL.
      *
-     * This function returns the filtered url if one
-     * of the plugins successfully filtered the original
-     * URL.  Otherwise, it returns the original URL.
-     * See hasBeenFiltered() and
+     * If one of the plugins successfully filtered the original input, this
+     * function returns it. Otherwise, it will return the input itself.
      *
      * @return the filtered or original url.
      */
@@ -149,10 +141,9 @@ public:
     /**
      * Returns an error message.
      *
-     * This functions returns the error message set
-     * by the plugin whenever the uri type is set to
-     * KUriFilterData::ERROR.  Otherwise, it returns
-     * a QString().
+     * This functions returns the error message set by the plugin whenever the
+     * uri type is set to KUriFilterData::ERROR. Otherwise, it returns a NULL
+     * string.
      *
      * @return the error message or a NULL when there is none.
      */
@@ -161,18 +152,80 @@ public:
     /**
      * Returns the URI type.
      *
-     * This method always returns KUriFilterData::UNKNOWN
-     * if the given URL was not filtered.
+     * This method always returns KUriFilterData::UNKNOWN if the given URL was
+     * not filtered.
+     *
      * @return the type of the URI
      */
     UriTypes uriType() const;
 
     /**
+     * Returns the absolute path if one has already been set.
+     *
+     * @return the absolute path, or QString()
+     *
+     * @see hasAbsolutePath()
+     */
+    QString absolutePath() const;
+
+    /**
+     * Checks whether the supplied data had an absolute path.
+     *
+     * @return true if the supplied data has an absolute path
+     *
+     * @see absolutePath()
+     */
+    bool hasAbsolutePath() const;
+
+    /**
+     * Returns the command line options and arguments for a local resource
+     * when present.
+     *
+     * @return options and arguments when present, otherwise QString()
+     */
+    QString argsAndOptions() const;
+
+    /**
+     * Checks whether the current data is a local resource with command line
+     * options and arguments.
+     *
+     * @return true if the current data has command line options and arguments
+     */
+    bool hasArgsAndOptions() const;
+
+    /**
+     * @return true if the filters should attempt to check whether the
+     * supplied uri is an executable. False otherwise.
+     */
+    bool checkForExecutables() const;
+
+    /**
+     * @return the string as typed by the user, before any URL processing is done
+     */
+    QString typedString() const;
+
+    /**
+     * The name of the icon that matches the current filtered URL.
+     *
+     * This function returns a null string by default and when no icon is found
+     * for the filtered URL.
+     */
+    QString iconName();
+
+    /**
+     * Check whether the provided uri is executable or not.
+     *
+     * Setting this to false ensures that typing the name of an executable does
+     * not start that application. This is useful in the location bar of a
+     * browser. The default value is true.
+     */
+    void setCheckForExecutables (bool check);
+
+    /**
      * Same as above except the argument is a URL.
      *
-     * Use this function to set the string to be
-     * filtered when you construct an empty filter
-     * object.
+     * Use this function to set the string to be filtered when you construct an
+     * empty filter object.
      *
      * @param url the URL to be filtered.
      */
@@ -190,83 +243,20 @@ public:
     void setData( const QString& url );
 
     /**
-     * Sets the absolute path to be used whenever the supplied
-     * data is a relative local URL.
+     * Sets the absolute path to be used whenever the supplied data is a
+     * relative local URL.
      *
-     * NOTE: This function should only be used for local resources,
-     * i.e. the "file:/" protocol. It is useful for specifying the
-     * absolute path in cases where the actual URL might be relative.
-     * meta object.  If deriving the path from a KUrl, make sure you
-     * set the argument for this function to the result of calling
-     * path () instead of url ().
+     * NOTE: This function should only be used for local resources, i.e. the
+     * "file:/" protocol. It is useful for specifying the absolute path in
+     * cases where the actual URL might be relative. If deriving the path from
+     * a KUrl, make sure you set the argument for this function to the result
+     * of calling path () instead of url ().
      *
      * @param abs_path  the abolute path to the local resource.
+     *
      * @return true if absolute path is successfully set. Otherwise, false.
      */
     bool setAbsolutePath( const QString& abs_path );
-
-    /**
-     * Returns the absolute path if one has already been set.
-     * @return the absolute path, or QString()
-     * @see hasAbsolutePath()
-     */
-    QString absolutePath() const;
-
-    /**
-     * Checks whether the supplied data had an absolute path.
-     * @return true if the supplied data has an absolute path
-     * @see absolutePath()
-     */
-    bool hasAbsolutePath() const;
-
-    /**
-     * Returns the command line options and arguments for a
-     * local resource when present.
-     *
-     * @return options and arguments when present, otherwise QString()
-     */
-    QString argsAndOptions() const;
-
-    /**
-     * Checks whether the current data is a local resource with
-     * command line options and arguments.
-     * @return true if the current data has command line options and arguments
-     */
-    bool hasArgsAndOptions() const;
-
-    /**
-     * Returns the name of the icon that matches
-     * the current filtered URL.
-     *
-     * NOTE that this function will return a NULL
-     * string by default and when no associated icon
-     * is found.
-     *
-     * @return the name of the icon associated with the resource,
-     *         or QString() if not found
-     */
-    QString iconName();
-
-    /**
-     * Check whether the provided uri is executable or not.
-     *
-     * Setting this to false ensures that typing the name of
-     * an executable does not start that application. This is
-     * useful in the location bar of a browser. The default
-     * value is true.
-     */
-    void setCheckForExecutables (bool check);
-
-    /**
-     * @return true if the filters should attempt to check whether the
-     * supplied uri is an executable. False otherwise.
-     */
-    bool checkForExecutables() const;
-
-    /**
-     * @return the string as typed by the user, before any URL processing is done
-     */
-    QString typedString() const;
 
     /**
      * Overloaded assigenment operator.
@@ -281,14 +271,15 @@ public:
     /**
      * Overloaded assigenment operator.
      *
-     * This function allows you to easily assign a QString
-     * to a KUriFilterData object.
+     * This function allows you to easily assign a QString to a KUriFilterData
+     * object.
      *
      * @return an instance of a KUriFilterData object.
      */
     KUriFilterData& operator=( const QString& url );
 
 private:
+    friend class KUriFilterPlugin;
     KUriFilterDataPrivate * const d;
 };
 
@@ -296,12 +287,12 @@ private:
 /**
  * Base class for URI filter plugins.
  *
- * This class applies a single filter to a URI.  All plugins designed
- * to provide URI filtering service should inherit from this abstract
- * class and provide a concrete implementation.
+ * This class applies a single filter to a URI. All plugins designed to provide
+ * URI filtering service should inherit from this abstract class and provide a
+ * concrete implementation.
  *
  * All inheriting classes need to implement the pure virtual function
- * filterUri.
+ * @ref filterUri.
  *
  * @short Abstract class for URI filter plugins.
  */
@@ -330,8 +321,8 @@ public:
     /**
      * Creates a configuration module for the filter.
      *
-     * It is the responsibility of the caller to delete the module
-     * once it is not needed anymore.
+     * It is the responsibility of the caller to delete the module once it is
+     * not needed anymore.
      *
      * @return A configuration module, 0 if the filter isn't configurable.
      */
@@ -362,8 +353,8 @@ protected:
     void setUriType ( KUriFilterData& data, KUriFilterData::UriTypes type) const;
 
     /**
-     * Sets the arguments and options string in @p data
-     * to @p args if any were found during filterting.
+     * Sets the arguments and options string in @p data to @p args if any were
+     * found during filterting.
      */
     void setArguments( KUriFilterData& data, const QString& args ) const;
 
@@ -378,15 +369,14 @@ class KUriFilterPrivate;
  *
  * The intention of this plugin class is to allow people to extend the
  * functionality of KUrl without modifying it directly. This way KUrl will
- * remain a generic parser capable of parsing any generic URL that adheres
- * to specifications.
+ * remain a generic parser capable of parsing any generic URL that adheres to
+ * specifications.
  *
  * The KUriFilter class applies a number of filters to a URI and returns the
  * filtered version whenever possible. The filters are implemented using
  * plugins to provide easy extensibility of the filtering mechanism. New
- * filters can be added in the future by simply inheriting from
- * KUriFilterPlugin and implementing the KUriFilterPlugin::filterUri
- * method.
+ * filters can be added in the future by simply inheriting from the
+ * @ref KUriFilterPlugin class.
  *
  * Use of this plugin-manager class is straight forward.  Since it is a
  * singleton object, all you have to do is obtain an instance by doing
@@ -532,19 +522,17 @@ public:
 protected:
 
     /**
-     * A protected constructor.
+     * Constructor.
      *
-     * This constructor creates a KUriFilter and
-     * initializes all plugins it can find by invoking
-     * loadPlugins.
+     * Creates a KUriFilter object and calls @ref loadPlugins to load all
+     * available URI filter plugins.
      */
     KUriFilter();
 
     /**
      * Loads all allowed plugins.
      *
-     * This function loads all filters that have not
-     * been disbled.
+     * This function only loads URI filter plugins that have not been disabled.
      */
     void loadPlugins();
 

@@ -17,62 +17,63 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
+#include <config.h>
 
 #include "kurifilter.h"
-
-#include <config.h>
-#include <QPixmap>
 
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
 
+#include <QtGui/QPixmap>
+#include <QtCore/QHash>
+#include <QtCore/QHashIterator>
+
 typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 
 class KUriFilterDataPrivate
 {
 public:
-    explicit KUriFilterDataPrivate( const KUrl& url, const QString& typedUrl ) :
-        bCheckForExecutables(true),
-        bChanged(true),
-        pURI(url),
-        iType(KUriFilterData::Unknown),
-        typedString(typedUrl)
+    explicit KUriFilterDataPrivate( const KUrl& u, const QString& typedUrl )
+      : checkForExecs(true), wasModified(true), url(u),
+        uriType(KUriFilterData::Unknown), typedString(typedUrl)
     {
     }
-    void setData( const KUrl& url, const QString& typedUrl )
+
+    void setData( const KUrl& u, const QString& typedUrl )
     {
-        bCheckForExecutables = true;
-        bChanged = true;
-        strErrMsg.clear();
-        strIconName.clear();
-        pURI = url;
-        iType = KUriFilterData::Unknown;
+        checkForExecs = true;
+        wasModified = true;
+        errMsg.clear();
+        iconName.clear();
+        url = u;
+        uriType = KUriFilterData::Unknown;
         typedString = typedUrl;
     }
+
     KUriFilterDataPrivate( KUriFilterDataPrivate * data )
     {
-        iType = data->iType;
-        pURI = data->pURI;
-        strErrMsg = data->strErrMsg;
-        strIconName = data->strIconName;
-        bChanged = data->bChanged;
-        bCheckForExecutables = data->bCheckForExecutables;
-        abs_path = data->abs_path;
+        uriType = data->uriType;
+        url = data->url;
+        errMsg = data->errMsg;
+        iconName = data->iconName;
+        wasModified = data->wasModified;
+        checkForExecs = data->checkForExecs;
+        absPath = data->absPath;
         typedString = data->typedString;
         args = data->args;
     }
-    bool bCheckForExecutables;
-    bool bChanged;
 
-    QString strErrMsg;
-    QString strIconName;
+    bool checkForExecs;
+    bool wasModified;
 
-    KUrl pURI;
-    KUriFilterData::UriTypes iType;
+    KUrl url;
+    KUriFilterData::UriTypes uriType;
 
-    QString abs_path;
+    QString errMsg;
+    QString iconName;
+    QString absPath;
     QString args;
     QString typedString;
 };
@@ -94,8 +95,8 @@ KUriFilterData::KUriFilterData( const QString& url )
 }
 
 
-KUriFilterData::KUriFilterData( const KUriFilterData& data )
-    : d( new KUriFilterDataPrivate( data.d ) )
+KUriFilterData::KUriFilterData( const KUriFilterData& other )
+    : d( new KUriFilterDataPrivate( other.d ) )
 {
 }
 
@@ -106,17 +107,100 @@ KUriFilterData::~KUriFilterData()
 
 KUrl KUriFilterData::uri() const
 {
-    return d->pURI;
+    return d->url;
 }
 
 QString KUriFilterData::errorMsg() const
 {
-    return d->strErrMsg;
+    return d->errMsg;
 }
 
 KUriFilterData::UriTypes KUriFilterData::uriType() const
 {
-    return d->iType;
+    return d->uriType;
+}
+
+QString KUriFilterData::absolutePath() const
+{
+    return d->absPath;
+}
+
+bool KUriFilterData::hasAbsolutePath() const
+{
+    return !d->absPath.isEmpty();
+}
+
+QString KUriFilterData::argsAndOptions() const
+{
+    return d->args;
+}
+
+bool KUriFilterData::hasArgsAndOptions() const
+{
+    return !d->args.isEmpty();
+}
+
+bool KUriFilterData::checkForExecutables() const
+{
+    return d->checkForExecs;
+}
+
+QString KUriFilterData::typedString() const
+{
+    return d->typedString;
+}
+
+QString KUriFilterData::iconName()
+{
+    if( d->wasModified )
+    {
+        switch ( d->uriType )
+        {
+            case KUriFilterData::LocalFile:
+            case KUriFilterData::LocalDir:
+            case KUriFilterData::NetProtocol:
+            {
+                d->iconName = KMimeType::iconNameForUrl( d->url );
+                break;
+            }
+            case KUriFilterData::Executable:
+            {
+                QString exeName = d->url.url();
+                exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
+                KService::Ptr service = KService::serviceByDesktopName( exeName );
+                if (service && service->icon() != QLatin1String( "unknown" ))
+                    d->iconName = service->icon();
+                // Try to find an icon with the same name as the binary (useful for non-kde apps)
+                else if ( !KIconLoader::global()->loadIcon( exeName, KIconLoader::NoGroup, 16, KIconLoader::DefaultState, QStringList(), 0, true ).isNull() )
+                    d->iconName = exeName;
+                else
+                    // not found, use default
+                    d->iconName = QLatin1String("system-run");
+                break;
+            }
+            case KUriFilterData::Help:
+            {
+                d->iconName = QLatin1String("khelpcenter");
+                break;
+            }
+            case KUriFilterData::Shell:
+            {
+                d->iconName = QLatin1String("konsole");
+                break;
+            }
+            case KUriFilterData::Error:
+            case KUriFilterData::Blocked:
+            {
+                d->iconName = QLatin1String("error");
+                break;
+            }
+            default:
+                d->iconName.clear();
+                break;
+        }
+        d->wasModified = false;
+    }
+    return d->iconName;
 }
 
 void KUriFilterData::setData( const KUrl& url )
@@ -133,100 +217,17 @@ bool KUriFilterData::setAbsolutePath( const QString& absPath )
 {
     // Since a malformed URL could possibly be a relative
     // URL we tag it as a possible local resource...
-    if( (d->pURI.protocol().isEmpty() || d->pURI.isLocalFile()) )
+    if( (d->url.protocol().isEmpty() || d->url.isLocalFile()) )
     {
-        d->abs_path = absPath;
+        d->absPath = absPath;
         return true;
     }
     return false;
 }
 
-QString KUriFilterData::absolutePath() const
-{
-    return d->abs_path;
-}
-
-bool KUriFilterData::hasAbsolutePath() const
-{
-    return !d->abs_path.isEmpty();
-}
-
-QString KUriFilterData::argsAndOptions() const
-{
-    return d->args;
-}
-
-bool KUriFilterData::hasArgsAndOptions() const
-{
-    return !d->args.isEmpty();
-}
-
-QString KUriFilterData::iconName()
-{
-    if( d->bChanged )
-    {
-        switch ( d->iType )
-        {
-            case KUriFilterData::LocalFile:
-            case KUriFilterData::LocalDir:
-            case KUriFilterData::NetProtocol:
-            {
-                d->strIconName = KMimeType::iconNameForUrl( d->pURI );
-                break;
-            }
-            case KUriFilterData::Executable:
-            {
-                QString exeName = d->pURI.url();
-                exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
-                KService::Ptr service = KService::serviceByDesktopName( exeName );
-                if (service && service->icon() != QLatin1String( "unknown" ))
-                    d->strIconName = service->icon();
-                // Try to find an icon with the same name as the binary (useful for non-kde apps)
-                else if ( !KIconLoader::global()->loadIcon( exeName, KIconLoader::NoGroup, 16, KIconLoader::DefaultState, QStringList(), 0, true ).isNull() )
-                    d->strIconName = exeName;
-                else
-                    // not found, use default
-                    d->strIconName = QLatin1String("system-run");
-                break;
-            }
-            case KUriFilterData::Help:
-            {
-                d->strIconName = QLatin1String("khelpcenter");
-                break;
-            }
-            case KUriFilterData::Shell:
-            {
-                d->strIconName = QLatin1String("konsole");
-                break;
-            }
-            case KUriFilterData::Error:
-            case KUriFilterData::Blocked:
-            {
-                d->strIconName = QLatin1String("error");
-                break;
-            }
-            default:
-                d->strIconName.clear();
-                break;
-        }
-        d->bChanged = false;
-    }
-    return d->strIconName;
-}
-
 void KUriFilterData::setCheckForExecutables( bool check )
 {
-    d->bCheckForExecutables = check;
-}
-
-bool KUriFilterData::checkForExecutables() const
-{
-    return d->bCheckForExecutables;
-}
-
-QString KUriFilterData::typedString() const
-{
-    return d->typedString;
+    d->checkForExecs = check;
 }
 
 KUriFilterData& KUriFilterData::operator=( const KUrl& url )
@@ -244,7 +245,7 @@ KUriFilterData& KUriFilterData::operator=( const QString& url )
 /*************************  KUriFilterPlugin ******************************/
 
 KUriFilterPlugin::KUriFilterPlugin( const QString & name, QObject *parent )
-    : QObject( parent ), d( 0 )
+                 :QObject( parent ), d( 0 )
 {
     setObjectName( name );
 }
@@ -263,22 +264,22 @@ void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) c
 {
     if ( data.uri() != uri )
     {
-        data.d->pURI = uri;
-        data.d->bChanged = true;
+        data.d->url = uri;
+        data.d->wasModified = true;
     }
 }
 
 void KUriFilterPlugin::setErrorMsg ( KUriFilterData& data,
                                      const QString& errmsg ) const
 {
-    data.d->strErrMsg = errmsg;
+    data.d->errMsg = errmsg;
 }
 
 void KUriFilterPlugin::setUriType ( KUriFilterData& data,
                                     KUriFilterData::UriTypes type) const
 {
-    data.d->iType = type;
-    data.d->bChanged = true;
+    data.d->uriType = type;
+    data.d->wasModified = true;
 }
 
 void KUriFilterPlugin::setArguments( KUriFilterData& data,
@@ -286,6 +287,7 @@ void KUriFilterPlugin::setArguments( KUriFilterData& data,
 {
     data.d->args = args;
 }
+
 
 /*******************************  KUriFilter ******************************/
 
@@ -295,9 +297,10 @@ public:
     KUriFilterPrivate() {}
     ~KUriFilterPrivate()
     {
-        qDeleteAll(lstPlugins);
+        qDeleteAll(plugins.values());
+        plugins.clear();
     }
-    QList<KUriFilterPlugin *> lstPlugins;
+    QHash<QString, KUriFilterPlugin *> plugins;
 };
 
 KUriFilter *KUriFilter::self()
@@ -317,44 +320,27 @@ KUriFilter::~KUriFilter()
     delete d;
 }
 
-static KUriFilterPlugin* findPluginByName( const KUriFilterPluginList& lst, const QString& name )
-{
-    for ( KUriFilterPluginList::const_iterator it = lst.begin(), end = lst.end();
-          it != end ; ++it ) {
-        if ( (*it)->objectName() == name )
-            return *it;
-    }
-    return 0;
-}
-
 bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
 {
-    KUriFilterPluginList use_plugins;
+    bool filtered = false;
 
-    // If we have a filter list, only include the once
-    // explicitly specified by it. Otherwise, use all available filters...
-    if( filters.isEmpty() )
-        use_plugins = d->lstPlugins;  // Use everything that is loaded...
-    else {
-        //kDebug() << "Named plugins requested...";
-        for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst ) {
-            KUriFilterPlugin* plugin = findPluginByName( d->lstPlugins, *lst );
-            if (plugin) {
-                //kDebug() << "Will use filter plugin named: " << plugin->objectName();
-                use_plugins.append(plugin);
-            }
+    // If no specific filters were requested, iterate through all the plugins.
+    // Otherwise, only use available filters.
+    if( filters.isEmpty() ) {
+        QHashIterator<QString, KUriFilterPlugin *> it (d->plugins);
+        while (it.hasNext()) {
+            it.next();
+            filtered |= it.value()->filterUri( data );
+        }
+    } else {
+        QListIterator<QString> it (filters);
+        while (it.hasNext()) {
+            KUriFilterPlugin* plugin = d->plugins.value(it.next());
+            if (plugin)
+                filtered |= plugin->filterUri( data );
         }
     }
 
-    //kDebug() << "Using" << use_plugins.count() << "out of the"
-    //          << d->lstPlugins.count() << "available plugins";
-    bool filtered = false;
-    for ( KUriFilterPluginList::const_iterator it = use_plugins.constBegin(), end = use_plugins.constEnd();
-          it != end; ++it ) {
-        //kDebug() << "Using a filter plugin named: " << (*it)->objectName();
-        if( (*it)->filterUri( data ))
-            filtered = true;
-    }
     return filtered;
 }
 
@@ -390,22 +376,19 @@ QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters 
 
 QStringList KUriFilter::pluginNames() const
 {
-    QStringList list;
-    Q_FOREACH( KUriFilterPlugin* plugin, d->lstPlugins )
-        list.append(plugin->objectName());
-    return list;
+    return d->plugins.keys();
 }
 
 void KUriFilter::loadPlugins()
 {
     const KService::List offers = KServiceTypeTrader::self()->query( "KUriFilter/Plugin" );
 
-    foreach (const KService::Ptr &ptr, offers) {
+    Q_FOREACH (const KService::Ptr &ptr, offers) {
         KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
-        if (!plugin)
-            continue;
-        Q_ASSERT( !plugin->objectName().isEmpty() );
-        d->lstPlugins.append( plugin );
+        if (plugin) {
+            Q_ASSERT( !plugin->objectName().isEmpty() );
+            d->plugins.insert(plugin->objectName(), plugin );
+        }
     }
 
     // NOTE: Plugin priority is determined by
@@ -414,7 +397,7 @@ void KUriFilter::loadPlugins()
 
     // TODO: Config dialog to differentiate "system"
     // plugins from "user-defined" ones...
-    // d->lstPlugins.sort();
+    // d->plugins.sort();
 }
 
 #include "kurifilter.moc"
