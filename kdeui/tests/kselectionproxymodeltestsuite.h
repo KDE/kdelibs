@@ -155,15 +155,11 @@ typedef ImmediateSelectionStrategy<0, 0, 0, 0, 0> NoSelectionStrategy;
 #define SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, LazyPersistence) \
   PROXYMODELTEST_CUSTOM(SELECTIONPROXYTESTDATA(SelectionStrategy, num1, num2, num3, num4, num5, Type), IntermediateProxy, LazyPersistence, SELECTIONPROXYTESTCONFIG(SelectionStrategy, num1, num2, num3, num4, num5, Type))
 
-// #define SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
-//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, ImmediatePersistence) \
-//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, ImmediatePersistence) \
-//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, LazyPersistence) \
-//   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, LazyPersistence) \
-
 #define SELECTIONCOMPLETETEST(SelectionStrategy, num1, num2, num3, num4, num5, Type) \
   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, ImmediatePersistence) \
+  SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, ImmediatePersistence) \
   SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, DynamicTree, LazyPersistence) \
+  SELECTIONPROXYMODELTEST(SelectionStrategy, num1, num2, num3, num4, num5, Type, IntermediateProxy, LazyPersistence) \
 
 #define SIMPLETESTDATA(SelectionStrategy, Type) \
   new TestData<SelectionStrategy, Type>(proxyModelTestClass)
