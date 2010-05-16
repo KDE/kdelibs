@@ -34,7 +34,7 @@
 #include <kglobal.h>
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
-#include <ktranslit_p.h>
+#include <klocale.h>
 #include <kconfiggroup.h>
 
 // Truncates string, for output of long messages.
@@ -419,12 +419,10 @@ class KuitSemanticsPrivate
 
     // For fetching metatranslations.
     KCatalog *m_metaCat;
-    KTranslit *m_metaTranslit;
-    QString m_metaScript;
 };
 
 KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
-: m_metaCat(NULL), m_metaTranslit(NULL)
+: m_metaCat(NULL)
 {
     m_lang = lang;
 
@@ -434,27 +432,7 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
     // Also, pattern/transformation strings are "metastrings", not
     // fully proper i18n strings on their own.
 
-    // If this language may be made by transliteration from another,
-    // look for the catalog in transliteration fallbacks too.
-    QStringList possibleLangs = KTranslit::fallbackList(lang);
-    possibleLangs.prepend(lang);
-    QString realLang = lang;
-    foreach (const QString& clang, possibleLangs) {
-        if (!KCatalog::catalogLocaleDir("kdelibs4", clang).isEmpty()) {
-            realLang = clang;
-            break;
-        }
-    }
-    m_metaCat = new KCatalog("kdelibs4", realLang);
-
-    // Create transliterator and script to transliterate into.
-    m_metaTranslit = KTranslit::create(realLang); // may be NULL
-    int pos = lang.indexOf('@');
-    if (pos >= 0) {
-        m_metaScript = lang.mid(pos + 1);
-    }
-
-    // Fetching of metatranslations prepared, assemble all metadata.
+    m_metaCat = new KCatalog("kdelibs4", lang);
 
     // Get formatting patterns for all tag/att/fmt combinations.
     setFormattingPatterns();
@@ -462,11 +440,9 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
     // Get data for tag text transformations.
     setTextTransformData();
 
-    // Catalog and transliterator not needed any more.
+    // Catalog not needed any more.
     delete m_metaCat;
     m_metaCat = NULL;
-    delete m_metaTranslit;
-    m_metaTranslit = NULL;
 }
 
 QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
@@ -474,11 +450,7 @@ QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
     if (m_metaCat == NULL) {
         return QString(id);
     }
-    QString meta = m_metaCat->translate(ctxt, id);
-    if (m_metaTranslit != NULL) {
-        meta = m_metaTranslit->transliterate(meta, m_metaScript);
-    }
-    return meta;
+    return m_metaCat->translate(ctxt, id);
 }
 
 void KuitSemanticsPrivate::setFormattingPatterns ()

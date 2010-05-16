@@ -29,7 +29,6 @@
 #include <klibrary.h>
 #include <kstandarddirs.h>
 #include <ktranscript_p.h>
-#include <ktranslit_p.h>
 #include <kuitsemantics_p.h>
 #include "kcatalogname_p.h"
 
@@ -79,18 +78,15 @@ class KLocalizedStringPrivate
                               bool partial = false) const;
     QString postFormat (const QString &text,
                         const QString &lang,
-                        const QString &lscr,
                         const QString &ctxt) const;
     QString substituteTranscript (const QString &trans,
                                   const QString &lang,
                                   const QString &ctry,
-                                  const QString &lscr,
                                   const QString &final,
                                   bool &fallback) const;
     int resolveInterpolation (const QString &trans, int pos,
                               const QString &lang,
                               const QString &ctry,
-                              const QString &lscr,
                               const QString &final,
                               QString &result,
                               bool &fallback) const;
@@ -98,7 +94,6 @@ class KLocalizedStringPrivate
     QString postTranscript (const QString &pcall,
                             const QString &lang,
                             const QString &ctry,
-                            const QString &lscr,
                             const QString &final) const;
 
     static void notifyCatalogsUpdated (const QStringList &languages,
@@ -123,8 +118,6 @@ class KLocalizedStringPrivateStatics
     bool loadTranscriptCalled;
     KTranscript *ktrs;
 
-    QHash<QString, KTranslit*> translits;
-
     QHash<QString, KuitSemantics*> formatters;
 
     KLocalizedStringPrivateStatics () :
@@ -141,8 +134,6 @@ class KLocalizedStringPrivateStatics
         loadTranscriptCalled(false),
         ktrs(NULL),
 
-        translits(),
-
         formatters()
     {}
 
@@ -150,7 +141,6 @@ class KLocalizedStringPrivateStatics
     {
         // ktrs is handled by KLibLoader.
         //delete ktrs;
-        qDeleteAll(translits);
         qDeleteAll(formatters);
     }
 };
@@ -232,21 +222,18 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
                               .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
-    QString rawlang, rawtrans, lang, lscr, ctry;
+    QString rawtrans, lang, ctry;
     if (locale != NULL) {
         if (!ctxt.isEmpty() && !plural.isEmpty()) {
-            locale->translateRaw(ctxt, msg, plural, number, &rawlang, &rawtrans);
+            locale->translateRaw(ctxt, msg, plural, number, &lang, &rawtrans);
         } else if (!plural.isEmpty()) {
-            locale->translateRaw(msg, plural, number, &rawlang, &rawtrans);
+            locale->translateRaw(msg, plural, number, &lang, &rawtrans);
         } else if (!ctxt.isEmpty()) {
-            locale->translateRaw(ctxt, msg, &rawlang, &rawtrans);
+            locale->translateRaw(ctxt, msg, &lang, &rawtrans);
         } else {
-            locale->translateRaw(msg, &rawlang, &rawtrans);
+            locale->translateRaw(msg, &lang, &rawtrans);
         }
         ctry = locale->country();
-        // Split language into base language and script,
-        // if such split is defined for this language.
-        KTranslit::splitToBaseAndScript(rawlang, locale, lang, lscr);
     } else {
         lang = KLocale::defaultLanguage();
         ctry = 'C';
@@ -293,17 +280,17 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Substitute placeholders in ordinary translation.
     QString final = substituteSimple(trans);
     // Post-format ordinary translation.
-    final = postFormat(final, lang, lscr, ctxt);
+    final = postFormat(final, lang, ctxt);
 
     // If there is also a scripted translation.
     if (!strans.isEmpty()) {
         // Evaluate scripted translation.
         bool fallback;
-        QString sfinal = substituteTranscript(strans, lang, ctry, lscr, final, fallback);
+        QString sfinal = substituteTranscript(strans, lang, ctry, final, fallback);
 
         // If any translation produced and no fallback requested.
         if (!sfinal.isEmpty() && !fallback) {
-            final = postFormat(sfinal, lang, lscr, ctxt);
+            final = postFormat(sfinal, lang, ctxt);
         }
     }
 
@@ -313,7 +300,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     {
         QStringList pcalls = s->ktrs->postCalls(lang);
         foreach(const QString &pcall, pcalls)
-            postTranscript(pcall, lang, ctry, lscr, final);
+            postTranscript(pcall, lang, ctry, final);
     }
 
     return final;
@@ -464,7 +451,6 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
 
 QString KLocalizedStringPrivate::postFormat (const QString &text,
                                              const QString &lang,
-                                             const QString &lscr,
                                              const QString &ctxt) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
@@ -477,18 +463,12 @@ QString KLocalizedStringPrivate::postFormat (const QString &text,
         final = s->formatters[lang]->format(final, ctxt);
     }
 
-    // Transliterate to alternative script.
-    if (s->translits.contains(lang)) {
-        final = s->translits[lang]->transliterate(final, lscr);
-    }
-
     return final;
 }
 
 QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &lang,
                                                        const QString &ctry,
-                                                       const QString &lscr,
                                                        const QString &final,
                                                        bool &fallback) const
 {
@@ -514,7 +494,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         // Resolve interpolation.
         QString result;
         bool fallbackLocal;
-        tpos = resolveInterpolation(strans, tpos, lang, ctry, lscr, final,
+        tpos = resolveInterpolation(strans, tpos, lang, ctry, final,
                                     result, fallbackLocal);
 
         // If there was a problem in parsing the interpolation, cannot proceed
@@ -546,7 +526,6 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                                                    int pos,
                                                    const QString &lang,
                                                    const QString &ctry,
-                                                   const QString &lscr,
                                                    const QString &final,
                                                    QString &result,
                                                    bool &fallback) const
@@ -620,7 +599,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             else if (strans.mid(tpos, islen) == s->startInterp) { // sub-interpolation
                 QString resultLocal;
                 bool fallbackLocal;
-                tpos = resolveInterpolation(strans, tpos, lang, ctry, lscr, final,
+                tpos = resolveInterpolation(strans, tpos, lang, ctry, final,
                                             resultLocal, fallbackLocal);
                 if (tpos < 0) { // unrecoverable problem in sub-interpolation
                     // Error reported in the subcall.
@@ -687,7 +666,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallbackLocal;
-    result = s->ktrs->eval(iargs, lang, ctry, lscr,
+    result = s->ktrs->eval(iargs, lang, ctry,
                            msgctxt, dynctxt, msgid,
                            args, vals, final, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
@@ -741,7 +720,6 @@ QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &lang,
                                                  const QString &ctry,
-                                                 const QString &lscr,
                                                  const QString &final) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
@@ -759,7 +737,7 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallback;
-    QString dummy = s->ktrs->eval(iargs, lang, ctry, lscr,
+    QString dummy = s->ktrs->eval(iargs, lang, ctry,
                                   msgctxt, dynctxt, msgid,
                                   args, vals, final, s->scriptModulesToLoad,
                                   scriptError, fallback);
@@ -1018,16 +996,6 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
                 mod.append(modapath);
                 mod.append(lang);
                 s->scriptModulesToLoad.append(mod);
-            }
-        }
-    }
-
-    // Create writing script transliterators for each new language.
-    foreach (const QString &lang, languages) {
-        if (!s->translits.contains(lang)) {
-            KTranslit *t = KTranslit::create(lang);
-            if (t != NULL) {
-                s->translits.insert(lang, t);
             }
         }
     }

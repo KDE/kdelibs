@@ -57,7 +57,6 @@
 #include "kcalendarsystem.h"
 #include "kcurrencycode.h"
 #include "klocalizedstring.h"
-#include "ktranslit_p.h"
 #include "kconfiggroup.h"
 #include "kcatalogname_p.h"
 #include "common_helpers_p.h"
@@ -685,14 +684,8 @@ bool KLocalePrivate::isApplicationTranslatedInto(const QString & lang)
         return false;
     }
 
-    // Check for this language and possible transliteration fallbacks.
-    QStringList possibles;
-    possibles += lang;
-    possibles += KTranslit::fallbackList(lang);
-    foreach(const QString &lang, possibles) {
-        if (! KCatalog::catalogLocaleDir(catalogName, lang).isEmpty()) {
-            return true;
-        }
+    if (!KCatalog::catalogLocaleDir(catalogName, lang).isEmpty()) {
+        return true;
     }
     return false;
 }
@@ -781,19 +774,12 @@ void KLocalePrivate::updateCatalogs()
 
     QList<KCatalog> newCatalogs;
 
-    // Insert possible transliteration fallbacks after each set language.
-    QStringList languageListFB;
-    foreach(const QString &lang, languageList) {
-        languageListFB += lang;
-        languageListFB += KTranslit::fallbackList(lang);
-    }
-
     // now iterate over all languages and all wanted catalog names and append or create them in the
     // right order the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs
     // de/kio etc. and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be
     // in trouble with a language sequende nds,<default>,de. In this case <default> must hide
     // everything after itself in the language list.
-    foreach(const QString &lang, languageListFB) {
+    foreach(const QString &lang, languageList) {
         foreach(const KCatalogName &name, catalogNames) {
             // create and add catalog for this name and language if it exists
             if (! KCatalog::catalogLocaleDir(name.name, lang).isEmpty()) {
@@ -805,7 +791,7 @@ void KLocalePrivate::updateCatalogs()
 
     // notify KLocalizedString of catalog update.
     catalogs = newCatalogs;
-    KLocalizedString::notifyCatalogsUpdated(languageListFB, catalogNames);
+    KLocalizedString::notifyCatalogsUpdated(languageList, catalogNames);
 }
 
 void KLocale::removeCatalog(const QString &catalog)

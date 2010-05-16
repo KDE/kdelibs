@@ -65,7 +65,6 @@ class KTranscriptImp : public KTranscript
     QString eval (const QList<QVariant> &argv,
                   const QString &lang,
                   const QString &ctry,
-                  const QString &modf,
                   const QString &msgctxt,
                   const QHash<QString, QString> &dynctxt,
                   const QString &msgid,
@@ -116,7 +115,6 @@ class Scriptface : public JSObject
     JSValue *msgkeyf (ExecState *exec);
     JSValue *msgstrff (ExecState *exec);
     JSValue *dbgputsf (ExecState *exec, JSValue *str);
-    JSValue *localeModifierf (ExecState *exec);
     JSValue *localeCountryf (ExecState *exec);
     JSValue *normKeyf (ExecState *exec, JSValue *phrase);
     JSValue *loadPropsf (ExecState *exec, const List &fnames);
@@ -144,7 +142,6 @@ class Scriptface : public JSObject
         Msgkey,
         Msgstrf,
         Dbgputs,
-        LocaleModifier,
         LocaleCountry,
         NormKey,
         LoadProps,
@@ -184,7 +181,6 @@ class Scriptface : public JSObject
     const QList<QVariant> *vals;
     const QString *final;
     const QString *ctry;
-    const QString *modf;
 
     // Fallback request handle.
     bool *fallback;
@@ -471,7 +467,6 @@ KTranscriptImp::~KTranscriptImp ()
 QString KTranscriptImp::eval (const QList<QVariant> &argv,
                               const QString &lang,
                               const QString &ctry,
-                              const QString &modf,
                               const QString &msgctxt,
                               const QHash<QString, QString> &dynctxt,
                               const QString &msgid,
@@ -532,7 +527,6 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
     sface->final = &final;
     sface->fallback = &fallback;
     sface->ctry = &ctry;
-    sface->modf = &modf;
 
     // Find corresponding JS function.
     int argc = argv.size();
@@ -711,7 +705,6 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgkey          Scriptface::Msgkey          DontDelete|ReadOnly|Function 0
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
     dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
-    localeModifier  Scriptface::LocaleModifier  DontDelete|ReadOnly|Function 0
     localeCountry   Scriptface::LocaleCountry   DontDelete|ReadOnly|Function 0
     normKey         Scriptface::NormKey         DontDelete|ReadOnly|Function 1
     loadProps       Scriptface::LoadProps       DontDelete|ReadOnly|Function 0
@@ -809,8 +802,6 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->msgstrff(exec);
         case Scriptface::Dbgputs:
             return obj->dbgputsf(exec, CALLARG(0));
-        case Scriptface::LocaleModifier:
-            return obj->localeModifierf(exec);
         case Scriptface::LocaleCountry:
             return obj->localeCountryf(exec);
         case Scriptface::NormKey:
@@ -1094,12 +1085,6 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
     dbgout("(JS) " + qstr);
 
     return jsUndefined();
-}
-
-JSValue *Scriptface::localeModifierf (ExecState *exec)
-{
-    Q_UNUSED(exec);
-    return jsString(*modf);
 }
 
 JSValue *Scriptface::localeCountryf (ExecState *exec)
