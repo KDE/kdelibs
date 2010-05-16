@@ -301,7 +301,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    localization/probers/nsUniversalDetector.cpp
    localization/klocale.cpp
    localization/klocalizedstring.cpp
-   localization/ktranslit.cpp
    localization/kuitsemantics.cpp
    localization/kuitformats.cpp
    localization/common_helpers.cpp
