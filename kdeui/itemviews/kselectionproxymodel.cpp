@@ -255,6 +255,45 @@ static int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &inde
     return _getRootListRow(rootAncestors, index);
 }
 
+/**
+  Returns a selection in which no descendants of selected indexes are also themselves selected.
+  For example,
+  @code
+    A
+    - B
+    C
+    D
+  @endcode
+  If A, B and D are selected in @p selection, the returned selection contains only A and D.
+*/
+static QItemSelection getRootRanges(const QItemSelection &_selection)
+{
+    QItemSelection rootSelection;
+    QItemSelection selection = _selection;
+    QList<QItemSelectionRange>::iterator it = selection.begin();
+    while (it != selection.end()) {
+        if (!it->topLeft().parent().isValid())
+        {
+            rootSelection.append(*it);
+            it = selection.erase(it);
+        } else
+            ++it;
+    }
+
+    it = selection.begin();
+    const QList<QItemSelectionRange>::iterator end = selection.end();
+    while ( it != end ) {
+        const QItemSelectionRange range = *it;
+        it = selection.erase(it);
+
+        if (isDescendantOf(rootSelection, range.topLeft()) || isDescendantOf(selection, range.topLeft()))
+            continue;
+
+        rootSelection << range;
+    }
+    return rootSelection;
+}
+
 class KSelectionProxyModelPrivate
 {
 public:
@@ -390,19 +429,6 @@ public:
       this method helps find the startRow for use emitting the signals from the proxy.
     */
     int getProxyInitialRow(const QModelIndex &parent) const;
-
-    /**
-      Returns a selection in which no descendants of selected indexes are also themselves selected.
-      For example,
-      @code
-        A
-        - B
-        C
-        D
-      @endcode
-      If A, B and D are selected in @p selection, the returned selection contains only A and D.
-    */
-    QItemSelection getRootRanges(const QItemSelection &selection) const;
 
     /**
       Returns the indexes in @p selection which are not already part of the proxy model.
@@ -1612,34 +1638,6 @@ void KSelectionProxyModelPrivate::updateRootIndexes(int start, int offset, const
     for ( ; parentsIt != end; ++parentsIt) {
         m_parentIds.insert(parentsIt.key(), *parentsIt);
     }
-}
-
-QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &_selection) const
-{
-    QItemSelection rootSelection;
-    QItemSelection selection = _selection;
-    QList<QItemSelectionRange>::iterator it = selection.begin();
-    while (it != selection.end()) {
-        if (!it->topLeft().parent().isValid())
-        {
-            rootSelection.append(*it);
-            it = selection.erase(it);
-        } else
-            ++it;
-    }
-
-    it = selection.begin();
-    const QList<QItemSelectionRange>::iterator end = selection.end();
-    while ( it != end ) {
-        const QItemSelectionRange range = *it;
-        it = selection.erase(it);
-
-        if (isDescendantOf(rootSelection, range.topLeft()) || isDescendantOf(selection, range.topLeft()))
-            continue;
-
-        rootSelection << range;
-    }
-    return rootSelection;
 }
 
 bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) const
