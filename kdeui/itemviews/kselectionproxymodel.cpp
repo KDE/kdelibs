@@ -435,11 +435,6 @@ public:
     */
     bool isInModel(const QModelIndex &sourceIndex) const;
 
-    /**
-      Converts an index in the selection model to an index in the source model.
-    */
-    QModelIndex selectionIndexToSourceIndex(const QModelIndex &index) const;
-
     bool m_startWithChildTrees;
     bool m_omitChildren;
     bool m_omitDescendants;
@@ -1280,16 +1275,12 @@ QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection 
             static const int column = 0;
             newIndex = newIndex.sibling(row, column);
 
-            const QModelIndex sourceNewIndex = selectionIndexToSourceIndex(newIndex);
-
-            Q_ASSERT(sourceNewIndex.isValid());
-
-            const int startRow = m_rootIndexList.indexOf(sourceNewIndex);
+            const int startRow = m_rootIndexList.indexOf(newIndex);
             if (startRow > 0) {
                 continue;
             }
 
-            indexes << sourceNewIndex;
+            indexes << newIndex;
         }
     }
     return indexes;
@@ -1395,11 +1386,11 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
     }
 }
 
-void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_selected, const QItemSelection &_deselected)
 {
     Q_Q(KSelectionProxyModel);
 
-    if (!q->sourceModel() || (selected.isEmpty() && deselected.isEmpty()))
+    if (!q->sourceModel() || (_selected.isEmpty() && _deselected.isEmpty()))
         return;
 
     // Any deselected indexes in the m_rootIndexList are removed. Then, any
@@ -1414,6 +1405,9 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     // indexes in deselected, they are added to the ranges to be inserted into the model.
     //
     // The new indexes are inserted in sorted order.
+
+    const QItemSelection selected = m_indexMapper->mapSelectionRightToLeft(_selected);
+    const QItemSelection deselected = m_indexMapper->mapSelectionRightToLeft(_deselected);
 
     QItemSelection newRootRanges;
     if (!m_includeAllSelected) {
@@ -1654,11 +1648,6 @@ QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &
         rootSelection << range;
     }
     return rootSelection;
-}
-
-QModelIndex KSelectionProxyModelPrivate::selectionIndexToSourceIndex(const QModelIndex &index) const
-{
-    return m_indexMapper->mapRightToLeft(index);
 }
 
 bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) const
