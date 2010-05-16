@@ -50,14 +50,6 @@ static QString walletKey(KWebWallet::WebForm form)
     return key;
 }
 
-static QString escapeValue (const QString& _value)
-{
-    QString value (_value);
-    value.replace(QL1C('\\'), QL1S("\\\\"));
-    value.replace(QL1C('\"'), QL1S("\\\""));
-    return value;
-}
-
 static int getWebFields(const QWebElement &formElement,
                         const QString& selector, QList<KWebWallet::WebForm::WebField> &fields)
 {
@@ -66,12 +58,19 @@ static int getWebFields(const QWebElement &formElement,
 
     for(int i = 0; i < count; ++i) {
         QWebElement element = collection.at(i);
-        const QString value = element.evaluateJavaScript(QL1S("this.value")).toString();
+        const QString value = element.attribute(QL1S("value"));
         if (!value.isEmpty())
             fields << qMakePair(element.attribute(QL1S("name")), value);
     }
 
     return fields.count();
+}
+
+static bool isValidInputElement(const QWebElement& element)
+{
+    return (!element.isNull() &&
+            !element.hasAttribute(QL1S("readonly")) &&
+            !element.hasAttribute(QL1S("disabled")));
 }
 
 class KWebWallet::KWebWalletPrivate
@@ -416,11 +415,8 @@ void KWebWallet::rejectSaveFormDataRequest(const QString & key)
 void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &forms)
 {
     QWebFrame *frame = d->pendingFillRequests.value(url).frame;
-    QWebElement formElement;
-    QString script (QL1S("var e = this.elements[\"%1\"];\n"
-                         "if(e && !e.disabled  && !e.readonly)\n"
-                         "  e.value=\"%2\";"));
     if (frame) {
+        QWebElement formElement;
         QListIterator<WebForm> formIt (forms);
         while (formIt.hasNext()) {
             const WebForm form = formIt.next();
@@ -431,12 +427,16 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                 if (form.name.isEmpty())
                     formElement = frame->findAllElements(QL1S("form[method=post]")).at(form.index.toInt());
                 else
-                  formElement = frame->findFirstElement(QString::fromLatin1("form[method=post][name=%1]")
-                                                        .arg(form.name));
-                //kDebug(800) << script.arg(field.first).arg(escapeValue(field.second));
-                formElement.evaluateJavaScript(script
-                                               .arg(field.first)
-                                               .arg(escapeValue(field.second)));
+                    formElement = frame->findFirstElement(QString::fromLatin1("form[method=post][name=%1]")
+                                                          .arg(form.name));
+
+                if (!formElement.isNull()) {
+                    formElement = formElement.findFirst(QString::fromLatin1("input[name=%1]").arg(field.first));
+                    if (isValidInputElement(formElement)) {
+                        formElement.setAttribute(QL1S("value"), field.second);
+                        //kDebug(800) << "Filled out input name=" << field.first;
+                    }
+                }
             }
         }
     }
