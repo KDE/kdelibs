@@ -344,6 +344,12 @@ protected:
     QTest::addColumn<SignalList>("signalList");
     QTest::addColumn<PersistentChangeList>("changeList");
 
+//     noopLayoutChangeTest("move01");
+//     noopLayoutChangeTest("move02");
+//     noopLayoutChangeTest("move03");
+//     noopLayoutChangeTest("move04");
+//     noopLayoutChangeTest("move05");
+
     newMoveTest("move01", srcFinder, 0, 0, 10, destFinder, 5);
     newMoveTest("move02", srcFinder, 4, 4, 10, destFinder, 0);
     newMoveTest("move03", srcFinder, 4, 4, 10, destFinder, 10);
@@ -408,9 +414,12 @@ protected:
     SignalList signalList;
     PersistentChangeList persistentList;
 
-    signalList << m_proxyModelTest->getSignal(RowsAboutToBeMoved, srcFinder, start, end, destFinder, destStart);
+//     signalList << m_proxyModelTest->getSignal(RowsAboutToBeMoved, srcFinder, start, end, destFinder, destStart);
+//     signalList << ( QVariantList() << LayoutAboutToBeChanged );
+//     signalList << m_proxyModelTest->getSignal(RowsMoved, srcFinder, start, end, destFinder, destStart);
+//     signalList << ( QVariantList() << LayoutChanged );
+
     signalList << ( QVariantList() << LayoutAboutToBeChanged );
-    signalList << m_proxyModelTest->getSignal(RowsMoved, srcFinder, start, end, destFinder, destStart);
     signalList << ( QVariantList() << LayoutChanged );
 
     const bool sameParent = (srcFinder == destFinder);
@@ -531,11 +540,16 @@ protected:
 
     // These commands have no effect because this model shows children of selection.
 
-    noopTest("move01");
-    noopTest("move02");
-    noopTest("move03");
-    noopTest("move04");
-    noopTest("move05");
+    noopLayoutChangeTest("move01");
+    noopLayoutChangeTest("move02");
+    noopLayoutChangeTest("move03");
+    noopLayoutChangeTest("move04");
+    noopLayoutChangeTest("move05");
+//     noopTest("move01");
+//     noopTest("move02");
+//     noopTest("move03");
+//     noopTest("move04");
+//     noopTest("move05");
   }
 
   void noop_testMoveFromTopLevelData()
