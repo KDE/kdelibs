@@ -1410,12 +1410,11 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
     const QItemSelection selected = m_indexMapper->mapSelectionRightToLeft(_selected);
     const QItemSelection deselected = m_indexMapper->mapSelectionRightToLeft(_deselected);
+    QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel->selection());
 
     QItemSelection newRootRanges;
     if (!m_includeAllSelected) {
         newRootRanges = getRootRanges(selected);
-
-        QItemSelection fullSelection = m_selectionModel->selection();
 
         QItemSelection exposedSelection;
         {
@@ -1459,8 +1458,6 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
             }
         }
     } else {
-        QItemSelection fullSelection = m_selectionModel->selection();
-
         QItemSelection exposedSelection;
         {
             QItemSelection removedRootRanges = getRootRanges(deselected);
@@ -1986,7 +1983,7 @@ void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent
         if (!proxyIdx.isValid())
             continue;
         clearMapping(idx);
-        if (!m_omitDescendants && !m_selectionModel->selection().contains(parent))
+        if (!m_omitDescendants && !m_selectionModel->selection().contains(m_indexMapper->mapLeftToRight(parent)))
             removeParentMappings(idx, 0, q->sourceModel()->rowCount(idx) - 1);
     }
 }
