@@ -58,7 +58,7 @@ static int getWebFields(const QWebElement &formElement,
 
     for(int i = 0; i < count; ++i) {
         QWebElement element = collection.at(i);
-        const QString value = element.attribute(QL1S("value"));
+        const QString value = element.evaluateJavaScript(QL1S("this.value")).toString();
         if (!value.isEmpty())
             fields << qMakePair(element.attribute(QL1S("name")), value);
     }
