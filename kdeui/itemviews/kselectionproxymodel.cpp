@@ -1173,21 +1173,39 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
     }
 }
 
-QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &selection) const
+QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &_selection) const
 {
     QModelIndexList parents;
     QItemSelection rootSelection;
-    QListIterator<QItemSelectionRange> i(selection);
-    while (i.hasNext()) {
-        parents << i.next().topLeft();
+    QItemSelection selection = _selection;
+    QList<QItemSelectionRange>::iterator it = selection.begin();
+    while (it != selection.end()) {
+        const QModelIndex parent = it->topLeft().parent();
+        if (parent.isValid())
+        {
+            parents << parent;
+            ++it;
+        }
+        else
+        {
+            rootSelection.append(*it);
+            it = selection.erase(it);
+        }
     }
 
-    i.toFront();
-
-    while (i.hasNext()) {
-        QItemSelectionRange range = i.next();
-        if (isDescendantOf(parents, range.topLeft()))
-            continue;
+    it = selection.begin();
+    const QList<QItemSelectionRange>::iterator end = selection.end();
+    for ( ; it != end; ++it) {
+        const QItemSelectionRange range = *it;
+        QModelIndexList _parents = parents;
+        const QModelIndex parent = range.topLeft().parent();
+        if (parent.isValid()) {
+          const bool b = _parents.removeOne(parent);
+          Q_UNUSED(b)
+          Q_ASSERT(b);
+          if (isDescendantOf(_parents, range.topLeft()) || rootSelection.contains(parent))
+              continue;
+        }
         rootSelection << range;
     }
     return rootSelection;
