@@ -169,7 +169,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
     if (!(*it).contains(QLatin1Char(':')) ||
         (*it).startsWith(QLatin1String("host"), Qt::CaseInsensitive) ||
         (*it).startsWith(QLatin1String("proxy-authorization"), Qt::CaseInsensitive) ||
-        (*it).startsWith(QLatin1String("via"), Qt::CaseInsensitive)) 
+        (*it).startsWith(QLatin1String("via"), Qt::CaseInsensitive))
       continue;
 
     sanitizedHeaders += (*it);
@@ -2687,6 +2687,7 @@ try_again:
                                     // the server accepts, since we are now
                                     // committed to doing so
     bool canUpgrade = false;        // The server offered an upgrade //### currently not queried
+    bool noHeadersFound = false;
 
     m_request.cacheTag.charset.clear();
     m_responseHeaders.clear();
@@ -2756,6 +2757,10 @@ try_again:
         kDebug(7103) << "No valid HTTP header found! Document starts with XML/HTML tag";
         // document starts with a tag, assume HTML instead of text/plain
         m_mimeType = QLatin1String("text/html");
+        m_request.responseCode = 200; // Fake it
+        httpRev = HTTP_Unknown;
+        m_request.isKeepAlive = false;
+        noHeadersFound = true;
         // put string back
         unread(buffer, bufPos);
         goto endParsing;
@@ -2785,7 +2790,8 @@ try_again:
         m_request.responseCode = 200; // Fake it
         httpRev = HTTP_Unknown;
         m_request.isKeepAlive = false;
-        goto endParsing; //### ### correct?
+        noHeadersFound = true;
+        goto endParsing;
     }
 
     // response code //### maybe wrong if we need several iterations for this response...
@@ -2889,568 +2895,578 @@ try_again:
         cont = true;
     }
 
+endParsing:
+    bool authRequiresAnotherRoundtrip = false;
 
-    {
-        const bool wasAuthError = m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407;
-        const bool isAuthError = m_request.responseCode == 401 || m_request.responseCode == 407;
-        const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
-        kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
-                     << "sameAuthError=" << sameAuthError;
-        // Not the same authorization error as before and no generic error?
-        // -> save the successful credentials.
-        if (wasAuthError && (m_request.responseCode < 400 || (isAuthError && !sameAuthError))) {
-            KIO::AuthInfo authinfo;
-            bool alreadyCached = false;
-            KAbstractHttpAuthentication *auth = 0;
-            switch (m_request.prevResponseCode) {
-            case 401:
-                auth = m_wwwAuth;
-                alreadyCached = config()->readEntry("cached-www-auth", false);
-                break;
-            case 407:
-                auth = m_proxyAuth;
-                alreadyCached = config()->readEntry("cached-proxy-auth", false);
-                break;
-            default:
-                Q_ASSERT(false); // should never happen!
-            }
+    // Skip the whole header parsing if we got no HTTP headers at all
+    if (!noHeadersFound) {
 
-            kDebug(7113) << "authentication object:" << auth;
-
-            // Prevent recaching of the same credentials over and over again.
-            if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
-                auth->fillKioAuthInfo(&authinfo);
-                if (auth == m_wwwAuth) {
-                    setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
-                    if (auth->realm().isEmpty() && !auth->supportsPathMatching())
-                        setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
-                } else {
-                    setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
-                    if (auth->realm().isEmpty() && !auth->supportsPathMatching())
-                        setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
+        // Auth handling
+        {
+            const bool wasAuthError = m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407;
+            const bool isAuthError = m_request.responseCode == 401 || m_request.responseCode == 407;
+            const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
+            kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
+                         << "sameAuthError=" << sameAuthError;
+            // Not the same authorization error as before and no generic error?
+            // -> save the successful credentials.
+            if (wasAuthError && (m_request.responseCode < 400 || (isAuthError && !sameAuthError))) {
+                KIO::AuthInfo authinfo;
+                bool alreadyCached = false;
+                KAbstractHttpAuthentication *auth = 0;
+                switch (m_request.prevResponseCode) {
+                case 401:
+                    auth = m_wwwAuth;
+                    alreadyCached = config()->readEntry("cached-www-auth", false);
+                    break;
+                case 407:
+                    auth = m_proxyAuth;
+                    alreadyCached = config()->readEntry("cached-proxy-auth", false);
+                    break;
+                default:
+                    Q_ASSERT(false); // should never happen!
                 }
-                cacheAuthentication(authinfo);
-                kDebug(7113) << "Caching authentication for" << m_request.url;
-            }
-            // Update our server connection state which includes www and proxy username and password.
-            m_server.updateCredentials(m_request);
-        }
-    }
 
-    // done with the first line; now tokenize the other lines
+                kDebug(7113) << "authentication object:" << auth;
 
-  endParsing: //### if we goto here nothing good comes out of it. rethink.
-
-    // TODO review use of STRTOLL vs. QByteArray::toInt()
-
-    foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 2);
-    kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).trimmed();
-    Q_ASSERT(foundDelimiter);
-
-    //NOTE because tokenizer will overwrite newlines in case of line continuations in the header
-    //     unread(buffer, bufSize) will not generally work anymore. we don't need it either.
-    //     either we have a http response line -> try to parse the header, fail if it doesn't work
-    //     or we have garbage -> fail.
-    HeaderTokenizer tokenizer(buffer);
-    headerSize = tokenizer.tokenize(idx, sizeof(buffer));
-
-    // Note that not receiving "accept-ranges" means that all bets are off
-    // wrt the server supporting ranges.
-    TokenIterator tIt = tokenizer.iterator("accept-ranges");
-    if (tIt.hasNext() && tIt.next().toLower().startsWith("none")) { // krazy:exclude=strings
-        bCanResume = false;
-    }
-
-    tIt = tokenizer.iterator("keep-alive");
-    while (tIt.hasNext()) {
-        if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
-            m_request.keepAliveTimeout = tIt.current().mid(strlen("timeout=")).trimmed().toInt();
-        }
-    }
-
-    // get the size of our data
-    tIt = tokenizer.iterator("content-length");
-    if (tIt.hasNext()) {
-        m_iSize = STRTOLL(tIt.next().constData(), 0, 10);
-    }
-
-    tIt = tokenizer.iterator("content-location");
-    if (tIt.hasNext()) {
-        setMetaData(QLatin1String("content-location"), QString::fromLatin1(tIt.next().trimmed()));
-    }
-
-    // which type of data do we have?
-    QString mediaValue;
-    QString mediaAttribute;
-    tIt = tokenizer.iterator("content-type");
-    if (tIt.hasNext()) {
-        QList<QByteArray> l = tIt.next().split(';');
-        if (!l.isEmpty()) {
-            // Assign the mime-type.
-            m_mimeType = QString::fromLatin1(l.first().trimmed().toLower());
-            kDebug(7113) << "Content-type: " << m_mimeType;
-            l.removeFirst();
-        }
-
-        // If we still have text, then it means we have a mime-type with a
-        // parameter (eg: charset=iso-8851) ; so let's get that...
-        Q_FOREACH (const QByteArray &statement, l) {
-            QList<QByteArray> parts = statement.split('=');
-            if (parts.count() != 2) {
-                continue;
-            }
-            mediaAttribute = QString::fromLatin1(parts[0].trimmed().toLower());
-            mediaValue = QString::fromLatin1(parts[1].trimmed());
-            if (mediaValue.length() && (mediaValue[0] == QLatin1Char('"')) &&
-                (mediaValue[mediaValue.length() - 1] == QLatin1Char('"'))) {
-                mediaValue = mediaValue.mid(1, mediaValue.length() - 2);
-            }
-            kDebug (7113) << "Encoding-type: " << mediaAttribute
-                          << "=" << mediaValue;
-
-            if (mediaAttribute == QLatin1String("charset")) {
-                mediaValue = mediaValue.toLower();
-                m_request.cacheTag.charset = mediaValue;
-                setMetaData(QLatin1String("charset"), mediaValue);
-            } else {
-                setMetaData(QLatin1String("media-") + mediaAttribute, mediaValue);
-            }
-        }
-    }
-
-    // content?
-    tIt = tokenizer.iterator("content-encoding");
-    while (tIt.hasNext()) {
-        // This is so wrong !!  No wonder kio_http is stripping the
-        // gzip encoding from downloaded files.  This solves multiple
-        // bug reports and caitoo's problem with downloads when such a
-        // header is encountered...
-
-        // A quote from RFC 2616:
-        // " When present, its (Content-Encoding) value indicates what additional
-        // content have been applied to the entity body, and thus what decoding
-        // mechanism must be applied to obtain the media-type referenced by the
-        // Content-Type header field.  Content-Encoding is primarily used to allow
-        // a document to be compressed without loosing the identity of its underlying
-        // media type.  Simply put if it is specified, this is the actual mime-type
-        // we should use when we pull the resource !!!
-        addEncoding(QString::fromLatin1(tIt.next()), m_contentEncodings);
-    }
-    // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
-    tIt = tokenizer.iterator("content-disposition");
-    if (tIt.hasNext()) {
-        parseContentDisposition(QString::fromLatin1(tIt.next()));
-    }
-    tIt = tokenizer.iterator("content-language");
-    if (tIt.hasNext()) {
-        QString language = QString::fromLatin1(tIt.next().trimmed());
-        if (!language.isEmpty()) {
-            setMetaData(QLatin1String("content-language"), language);
-        }
-    }
-
-    tIt = tokenizer.iterator("proxy-connection");
-    if (tIt.hasNext() && isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
-        QByteArray pc = tIt.next().toLower();
-        if (pc.startsWith("close")) { // krazy:exclude=strings
-            m_request.isKeepAlive = false;
-        } else if (pc.startsWith("keep-alive")) { // krazy:exclude=strings
-            m_request.isKeepAlive = true;
-        }
-    }
-
-    tIt = tokenizer.iterator("link");
-    if (tIt.hasNext()) {
-        // We only support Link: <url>; rel="type"   so far
-        QStringList link = QString::fromLatin1(tIt.next()).split(QLatin1Char(';'), QString::SkipEmptyParts);
-        if (link.count() == 2) {
-            QString rel = link[1].trimmed();
-            if (rel.startsWith(QLatin1String("rel=\""))) {
-                rel = rel.mid(5, rel.length() - 6);
-                if (rel.toLower() == QLatin1String("pageservices")) {
-                    //### the remove() part looks fishy!
-                    QString url = link[0].remove(QRegExp(QLatin1String("[<>]"))).trimmed();
-                    setMetaData(QLatin1String("PageServices"), url);
+                // Prevent recaching of the same credentials over and over again.
+                if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
+                    auth->fillKioAuthInfo(&authinfo);
+                    if (auth == m_wwwAuth) {
+                        setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
+                        if (auth->realm().isEmpty() && !auth->supportsPathMatching())
+                            setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
+                    } else {
+                        setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
+                        if (auth->realm().isEmpty() && !auth->supportsPathMatching())
+                            setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
+                    }
+                    cacheAuthentication(authinfo);
+                    kDebug(7113) << "Caching authentication for" << m_request.url;
                 }
+                // Update our server connection state which includes www and proxy username and password.
+                m_server.updateCredentials(m_request);
             }
         }
-    }
 
-    tIt = tokenizer.iterator("p3p");
-    if (tIt.hasNext()) {
-        // P3P privacy policy information
-        QStringList policyrefs, compact;
+        // done with the first line; now tokenize the other lines
+
+        // TODO review use of STRTOLL vs. QByteArray::toInt()
+
+        foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 2);
+        kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).trimmed();
+        Q_ASSERT(foundDelimiter);
+
+        //NOTE because tokenizer will overwrite newlines in case of line continuations in the header
+        //     unread(buffer, bufSize) will not generally work anymore. we don't need it either.
+        //     either we have a http response line -> try to parse the header, fail if it doesn't work
+        //     or we have garbage -> fail.
+        HeaderTokenizer tokenizer(buffer);
+        headerSize = tokenizer.tokenize(idx, sizeof(buffer));
+
+        // Note that not receiving "accept-ranges" means that all bets are off
+        // wrt the server supporting ranges.
+        TokenIterator tIt = tokenizer.iterator("accept-ranges");
+        if (tIt.hasNext() && tIt.next().toLower().startsWith("none")) { // krazy:exclude=strings
+            bCanResume = false;
+        }
+
+        tIt = tokenizer.iterator("keep-alive");
         while (tIt.hasNext()) {
-            QStringList policy = QString::fromLatin1(tIt.next().simplified())
-                                 .split(QLatin1Char('='), QString::SkipEmptyParts);
-            if (policy.count() == 2) {
-                if (policy[0].toLower() == QLatin1String("policyref")) {
-                    policyrefs << policy[1].remove(QRegExp(QLatin1String("[\")\']"))).trimmed();
-                } else if (policy[0].toLower() == QLatin1String("cp")) {
-                    // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
-                    // other metadata sent in strings.  This could be a bit more
-                    // efficient but I'm going for correctness right now.
-                    const QString s = policy[1].remove(QRegExp(QLatin1String("[\")\']")));
-                    const QStringList cps = s.split(QLatin1Char(' '), QString::SkipEmptyParts);
-                    compact << cps;
-                }
+            if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
+                m_request.keepAliveTimeout = tIt.current().mid(strlen("timeout=")).trimmed().toInt();
             }
-        }
-        if (!policyrefs.isEmpty()) {
-            setMetaData(QLatin1String("PrivacyPolicy"), policyrefs.join(QLatin1String("\n")));
-        }
-        if (!compact.isEmpty()) {
-            setMetaData(QLatin1String("PrivacyCompactPolicy"), compact.join(QLatin1String("\n")));
-        }
-    }
-
-    // continue only if we know that we're at least HTTP/1.0
-    if (httpRev == HTTP_11 || httpRev == HTTP_10) {
-        // let them tell us if we should stay alive or not
-        tIt = tokenizer.iterator("connection");
-        while (tIt.hasNext()) {
-            QByteArray connection = tIt.next().toLower();
-            if (!(isHttpProxy(m_request.proxyUrl) && !isAutoSsl())) {
-                if (connection.startsWith("close")) { // krazy:exclude=strings
-                    m_request.isKeepAlive = false;
-                } else if (connection.startsWith("keep-alive")) { // krazy:exclude=strings
-                    m_request.isKeepAlive = true;
-                }
-            }
-            if (connection.startsWith("upgrade")) { // krazy:exclude=strings
-                if (m_request.responseCode == 101) {
-                    // Ok, an upgrade was accepted, now we must do it
-                    upgradeRequired = true;
-                } else if (upgradeRequired) {  // 426
-                    // Nothing to do since we did it above already
-                } else {
-                    // Just an offer to upgrade - no need to take it
-                    canUpgrade = true;
-                }
-            }
-        }
-        // what kind of encoding do we have?  transfer?
-        tIt = tokenizer.iterator("transfer-encoding");
-        while (tIt.hasNext()) {
-            // If multiple encodings have been applied to an entity, the
-            // transfer-codings MUST be listed in the order in which they
-            // were applied.
-            addEncoding(QString::fromLatin1(tIt.next().trimmed()), m_transferEncodings);
         }
 
-        // md5 signature
-        tIt = tokenizer.iterator("content-md5");
+        // get the size of our data
+        tIt = tokenizer.iterator("content-length");
         if (tIt.hasNext()) {
-            m_contentMD5 = QString::fromLatin1(tIt.next().trimmed());
+            m_iSize = STRTOLL(tIt.next().constData(), 0, 10);
         }
 
-        // *** Responses to the HTTP OPTIONS method follow
-        // WebDAV capabilities
-        tIt = tokenizer.iterator("dav");
+        tIt = tokenizer.iterator("content-location");
+        if (tIt.hasNext()) {
+            setMetaData(QLatin1String("content-location"), QString::fromLatin1(tIt.next().trimmed()));
+        }
+
+        // which type of data do we have?
+        QString mediaValue;
+        QString mediaAttribute;
+        tIt = tokenizer.iterator("content-type");
+        if (tIt.hasNext()) {
+            QList<QByteArray> l = tIt.next().split(';');
+            if (!l.isEmpty()) {
+                // Assign the mime-type.
+                m_mimeType = QString::fromLatin1(l.first().trimmed().toLower());
+                kDebug(7113) << "Content-type: " << m_mimeType;
+                l.removeFirst();
+            }
+
+            // If we still have text, then it means we have a mime-type with a
+            // parameter (eg: charset=iso-8851) ; so let's get that...
+            Q_FOREACH (const QByteArray &statement, l) {
+                QList<QByteArray> parts = statement.split('=');
+                if (parts.count() != 2) {
+                    continue;
+                }
+                mediaAttribute = QString::fromLatin1(parts[0].trimmed().toLower());
+                mediaValue = QString::fromLatin1(parts[1].trimmed());
+                if (mediaValue.length() && (mediaValue[0] == QLatin1Char('"')) &&
+                    (mediaValue[mediaValue.length() - 1] == QLatin1Char('"'))) {
+                    mediaValue = mediaValue.mid(1, mediaValue.length() - 2);
+                }
+                kDebug (7113) << "Encoding-type: " << mediaAttribute
+                              << "=" << mediaValue;
+
+                if (mediaAttribute == QLatin1String("charset")) {
+                    mediaValue = mediaValue.toLower();
+                    m_request.cacheTag.charset = mediaValue;
+                    setMetaData(QLatin1String("charset"), mediaValue);
+                } else {
+                    setMetaData(QLatin1String("media-") + mediaAttribute, mediaValue);
+                }
+            }
+        }
+
+        // content?
+        tIt = tokenizer.iterator("content-encoding");
         while (tIt.hasNext()) {
-            m_davCapabilities << QString::fromLatin1(tIt.next());
+            // This is so wrong !!  No wonder kio_http is stripping the
+            // gzip encoding from downloaded files.  This solves multiple
+            // bug reports and caitoo's problem with downloads when such a
+            // header is encountered...
+
+            // A quote from RFC 2616:
+            // " When present, its (Content-Encoding) value indicates what additional
+            // content have been applied to the entity body, and thus what decoding
+            // mechanism must be applied to obtain the media-type referenced by the
+            // Content-Type header field.  Content-Encoding is primarily used to allow
+            // a document to be compressed without loosing the identity of its underlying
+            // media type.  Simply put if it is specified, this is the actual mime-type
+            // we should use when we pull the resource !!!
+            addEncoding(QString::fromLatin1(tIt.next()), m_contentEncodings);
         }
-        // *** Responses to the HTTP OPTIONS method finished
-    }
+        // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
+        tIt = tokenizer.iterator("content-disposition");
+        if (tIt.hasNext()) {
+            parseContentDisposition(QString::fromLatin1(tIt.next()));
+        }
+        tIt = tokenizer.iterator("content-language");
+        if (tIt.hasNext()) {
+            QString language = QString::fromLatin1(tIt.next().trimmed());
+            if (!language.isEmpty()) {
+                setMetaData(QLatin1String("content-language"), language);
+            }
+        }
+
+        tIt = tokenizer.iterator("proxy-connection");
+        if (tIt.hasNext() && isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
+            QByteArray pc = tIt.next().toLower();
+            if (pc.startsWith("close")) { // krazy:exclude=strings
+                m_request.isKeepAlive = false;
+            } else if (pc.startsWith("keep-alive")) { // krazy:exclude=strings
+                m_request.isKeepAlive = true;
+            }
+        }
+
+        tIt = tokenizer.iterator("link");
+        if (tIt.hasNext()) {
+            // We only support Link: <url>; rel="type"   so far
+            QStringList link = QString::fromLatin1(tIt.next()).split(QLatin1Char(';'), QString::SkipEmptyParts);
+            if (link.count() == 2) {
+                QString rel = link[1].trimmed();
+                if (rel.startsWith(QLatin1String("rel=\""))) {
+                    rel = rel.mid(5, rel.length() - 6);
+                    if (rel.toLower() == QLatin1String("pageservices")) {
+                        //### the remove() part looks fishy!
+                        QString url = link[0].remove(QRegExp(QLatin1String("[<>]"))).trimmed();
+                        setMetaData(QLatin1String("PageServices"), url);
+                    }
+                }
+            }
+        }
+
+        tIt = tokenizer.iterator("p3p");
+        if (tIt.hasNext()) {
+            // P3P privacy policy information
+            QStringList policyrefs, compact;
+            while (tIt.hasNext()) {
+                QStringList policy = QString::fromLatin1(tIt.next().simplified())
+                                     .split(QLatin1Char('='), QString::SkipEmptyParts);
+                if (policy.count() == 2) {
+                    if (policy[0].toLower() == QLatin1String("policyref")) {
+                        policyrefs << policy[1].remove(QRegExp(QLatin1String("[\")\']"))).trimmed();
+                    } else if (policy[0].toLower() == QLatin1String("cp")) {
+                        // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
+                        // other metadata sent in strings.  This could be a bit more
+                        // efficient but I'm going for correctness right now.
+                        const QString s = policy[1].remove(QRegExp(QLatin1String("[\")\']")));
+                        const QStringList cps = s.split(QLatin1Char(' '), QString::SkipEmptyParts);
+                        compact << cps;
+                    }
+                }
+            }
+            if (!policyrefs.isEmpty()) {
+                setMetaData(QLatin1String("PrivacyPolicy"), policyrefs.join(QLatin1String("\n")));
+            }
+            if (!compact.isEmpty()) {
+                setMetaData(QLatin1String("PrivacyCompactPolicy"), compact.join(QLatin1String("\n")));
+            }
+        }
+
+        // continue only if we know that we're at least HTTP/1.0
+        if (httpRev == HTTP_11 || httpRev == HTTP_10) {
+            // let them tell us if we should stay alive or not
+            tIt = tokenizer.iterator("connection");
+            while (tIt.hasNext()) {
+                QByteArray connection = tIt.next().toLower();
+                if (!(isHttpProxy(m_request.proxyUrl) && !isAutoSsl())) {
+                    if (connection.startsWith("close")) { // krazy:exclude=strings
+                        m_request.isKeepAlive = false;
+                    } else if (connection.startsWith("keep-alive")) { // krazy:exclude=strings
+                        m_request.isKeepAlive = true;
+                    }
+                }
+                if (connection.startsWith("upgrade")) { // krazy:exclude=strings
+                    if (m_request.responseCode == 101) {
+                        // Ok, an upgrade was accepted, now we must do it
+                        upgradeRequired = true;
+                    } else if (upgradeRequired) {  // 426
+                        // Nothing to do since we did it above already
+                    } else {
+                        // Just an offer to upgrade - no need to take it
+                        canUpgrade = true;
+                    }
+                }
+            }
+            // what kind of encoding do we have?  transfer?
+            tIt = tokenizer.iterator("transfer-encoding");
+            while (tIt.hasNext()) {
+                // If multiple encodings have been applied to an entity, the
+                // transfer-codings MUST be listed in the order in which they
+                // were applied.
+                addEncoding(QString::fromLatin1(tIt.next().trimmed()), m_transferEncodings);
+            }
+
+            // md5 signature
+            tIt = tokenizer.iterator("content-md5");
+            if (tIt.hasNext()) {
+                m_contentMD5 = QString::fromLatin1(tIt.next().trimmed());
+            }
+
+            // *** Responses to the HTTP OPTIONS method follow
+            // WebDAV capabilities
+            tIt = tokenizer.iterator("dav");
+            while (tIt.hasNext()) {
+                m_davCapabilities << QString::fromLatin1(tIt.next());
+            }
+            // *** Responses to the HTTP OPTIONS method finished
+        }
 
 
-    // Now process the HTTP/1.1 upgrade
-    QStringList upgradeOffers;
-    tIt = tokenizer.iterator("upgrade");
-    if (tIt.hasNext()) {
-        // Now we have to check to see what is offered for the upgrade
-        QString offered = QString::fromLatin1(tIt.next());
-        upgradeOffers = offered.split(QRegExp(QLatin1String("[ \n,\r\t]")), QString::SkipEmptyParts);
-    }
-    Q_FOREACH (const QString &opt, upgradeOffers) {
-        if (opt == QLatin1String("TLS/1.0")) {
-            if (!startSsl() && upgradeRequired) {
+        // Now process the HTTP/1.1 upgrade
+        QStringList upgradeOffers;
+        tIt = tokenizer.iterator("upgrade");
+        if (tIt.hasNext()) {
+            // Now we have to check to see what is offered for the upgrade
+            QString offered = QString::fromLatin1(tIt.next());
+            upgradeOffers = offered.split(QRegExp(QLatin1String("[ \n,\r\t]")), QString::SkipEmptyParts);
+        }
+        Q_FOREACH (const QString &opt, upgradeOffers) {
+            if (opt == QLatin1String("TLS/1.0")) {
+                if (!startSsl() && upgradeRequired) {
+                    error(ERR_UPGRADE_REQUIRED, opt);
+                    return false;
+                }
+            } else if (opt == QLatin1String("HTTP/1.1")) {
+                httpRev = HTTP_11;
+            } else if (upgradeRequired) {
+                // we are told to do an upgrade we don't understand
                 error(ERR_UPGRADE_REQUIRED, opt);
                 return false;
             }
-        } else if (opt == QLatin1String("HTTP/1.1")) {
-            httpRev = HTTP_11;
-        } else if (upgradeRequired) {
-            // we are told to do an upgrade we don't understand
-            error(ERR_UPGRADE_REQUIRED, opt);
-            return false;
-        }
-    }
-
-    // Harvest cookies (mmm, cookie fields!)
-    QByteArray cookieStr; // In case we get a cookie.
-    tIt = tokenizer.iterator("set-cookie");
-    while (tIt.hasNext()) {
-        cookieStr += "Set-Cookie: ";
-        cookieStr += tIt.next();
-        cookieStr += '\n';
-    }
-    if (!cookieStr.isEmpty()) {
-        if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.useCookieJar) {
-            // Give cookies to the cookiejar.
-            QString domain = config()->readEntry("cross-domain");
-            if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain)) {
-                cookieStr = "Cross-Domain\n" + cookieStr;
-            }
-            addCookies( m_request.url.url(), cookieStr );
-        } else if (m_request.cookieMode == HTTPRequest::CookiesManual) {
-            // Pass cookie to application
-            setMetaData(QLatin1String("setcookies"), QString::fromUtf8(cookieStr)); // ## is encoding ok?
-        }
-    }
-
-    // We need to reread the header if we got a '100 Continue' or '102 Processing'
-    // This may be a non keepalive connection so we handle this kind of loop internally
-    if ( cont )
-    {
-      kDebug(7113) << "cont; returning to mark try_again";
-      goto try_again;
-    }
-
-    if (!m_isChunked && (m_iSize == NO_SIZE) && m_request.isKeepAlive &&
-        canHaveResponseBody(m_request.responseCode, m_request.method)) {
-        kDebug(7113) << "Ignoring keep-alive: otherwise unable to determine response body length.";
-        m_request.isKeepAlive = false;
-    }
-
-    // TODO cache the proxy auth data (not doing this means a small performance regression for now)
-
-    // we may need to send (Proxy or WWW) authorization data
-    bool authRequiresAnotherRoundtrip = false;
-    if (!m_request.doNotAuthenticate &&
-        (m_request.responseCode == 401 || m_request.responseCode == 407)) {      
-        KIO::AuthInfo authinfo;
-        KAbstractHttpAuthentication **auth;
-
-        if (m_request.responseCode == 401) {
-            auth = &m_wwwAuth;
-            tIt = tokenizer.iterator("www-authenticate");
-            authinfo.url = m_request.url;
-            authinfo.username = m_server.url.user();
-            authinfo.prompt = i18n("You need to supply a username and a "
-                                   "password to access this site.");
-            authinfo.commentLabel = i18n("Site:");
-        } else {
-            // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
-            // this may break proxy chains which were never tested anyway, and AFAIK they are
-            // rare to nonexistent in the wild.
-            Q_ASSERT(QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy);
-            auth = &m_proxyAuth;
-            tIt = tokenizer.iterator("proxy-authenticate");
-            authinfo.url = m_request.proxyUrl;
-            authinfo.username = m_request.proxyUrl.user();
-            authinfo.prompt = i18n("You need to supply a username and a password for "
-                                   "the proxy server listed below before you are allowed "
-                                   "to access any sites." );
-            authinfo.commentLabel = i18n("Proxy:");
         }
 
-        QList<QByteArray> authTokens = tIt.all();
-        if (authTokens.isEmpty()) {
-            // Workaround brain dead server responses that violate the spec and
-            // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
-            // header fields. See BR #215736
-            kWarning(7113) << "No WWW-Authenticate header found! Ignoring invalid 401 Authorization request...";
-            m_request.responseCode = 200; // Change back the response code...
-            //m_request.cacheTag.writeToCache = true;
-            //mayCache = true;
-        } else {
-            authRequiresAnotherRoundtrip = true;
-            kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
-
-try_next_auth_scheme:
-            QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
-            if (*auth) {
-                if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
-                    // huh, the strongest authentication scheme offered has changed.
-                    kDebug(7113) << "deleting old auth class...";
-                    delete *auth;
-                    *auth = 0;
+        // Harvest cookies (mmm, cookie fields!)
+        QByteArray cookieStr; // In case we get a cookie.
+        tIt = tokenizer.iterator("set-cookie");
+        while (tIt.hasNext()) {
+            cookieStr += "Set-Cookie: ";
+            cookieStr += tIt.next();
+            cookieStr += '\n';
+        }
+        if (!cookieStr.isEmpty()) {
+            if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.useCookieJar) {
+                // Give cookies to the cookiejar.
+                QString domain = config()->readEntry("cross-domain");
+                if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain)) {
+                    cookieStr = "Cross-Domain\n" + cookieStr;
                 }
+                addCookies( m_request.url.url(), cookieStr );
+            } else if (m_request.cookieMode == HTTPRequest::CookiesManual) {
+                // Pass cookie to application
+                setMetaData(QLatin1String("setcookies"), QString::fromUtf8(cookieStr)); // ## is encoding ok?
             }
+        }
 
-            if (!(*auth)) {
-                *auth = KAbstractHttpAuthentication::newAuth(bestOffer, config());
-            }
+        // We need to reread the header if we got a '100 Continue' or '102 Processing'
+        // This may be a non keepalive connection so we handle this kind of loop internally
+        if ( cont )
+        {
+            kDebug(7113) << "cont; returning to mark try_again";
+            goto try_again;
+        }
 
-            kDebug(7113) << "pointer to auth class is now" << *auth;
+        if (!m_isChunked && (m_iSize == NO_SIZE) && m_request.isKeepAlive &&
+            canHaveResponseBody(m_request.responseCode, m_request.method)) {
+            kDebug(7113) << "Ignoring keep-alive: otherwise unable to determine response body length.";
+            m_request.isKeepAlive = false;
+        }
 
-            if (*auth) {
-                kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
+        // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
-                // remove trailing space from the method string, or digest auth will fail
-                (*auth)->setChallenge(bestOffer, authinfo.url, methodString(m_request.method));
+        // we may need to send (Proxy or WWW) authorization data
+        authRequiresAnotherRoundtrip = false;
+        if (!m_request.doNotAuthenticate &&
+            (m_request.responseCode == 401 || m_request.responseCode == 407)) {
+            KIO::AuthInfo authinfo;
+            KAbstractHttpAuthentication **auth;
 
-                QString username;
-                QString password;
-                bool generateAuthorization = true;
-                if ((*auth)->needCredentials()) {
-                    // use credentials supplied by the application if available
-                    if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
-                        username = m_request.url.user();
-                        password = m_request.url.pass();
-                        // don't try this password any more
-                        m_request.url.setPass(QString());
-                    } else {
-                        // try to get credentials from kpasswdserver's cache, then try asking the user.
-                        authinfo.verifyPath = false; // we have realm, no path based checking please!
-                        authinfo.realmValue = (*auth)->realm();
-                        if (authinfo.realmValue.isEmpty() && !(*auth)->supportsPathMatching())
-                            authinfo.realmValue = QLatin1String((*auth)->scheme());
-
-                        // Save the current authinfo url because it can be modified by the call to
-                        // checkCachedAuthentication. That way we can restore it if the call
-                        // modified it.
-                        const KUrl reqUrl = authinfo.url;
-                        if (!checkCachedAuthentication(authinfo) ||
-                            ((*auth)->wasFinalStage() && m_request.responseCode == m_request.prevResponseCode)) {
-                            QString errorMsg;
-                            if ((*auth)->wasFinalStage()) {
-                                switch (m_request.prevResponseCode) {
-                                case 401:
-                                    errorMsg = i18n("Authentication Failed.");
-                                    break;
-                                case 407:
-                                    errorMsg = i18n("Proxy Authentication Failed.");
-                                    break;
-                                default:
-                                    break;
-                                }
-                            }
-
-                            // Reset url to the saved url...
-                            authinfo.url = reqUrl;
-                            authinfo.keepPassword = true;
-                            authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
-                                                    authinfo.realmValue, authinfo.url.host());
-
-                            if (!openPasswordDialog(authinfo, errorMsg)) {
-                                if (sendErrorPageNotification()) {
-                                    generateAuthorization = false;
-                                    authRequiresAnotherRoundtrip = false;
-                                } else {
-                                    error(ERR_ACCESS_DENIED, reqUrl.host());
-                                    return false;
-                                }
-                            }
-                        }
-                        username = authinfo.username;
-                        password = authinfo.password;
-                    }
-                }
-
-                if (generateAuthorization) {
-                    (*auth)->generateResponse(username, password);
-
-                    kDebug(7113) << "Auth State: isError=" << (*auth)->isError()
-                                 << "needCredentials=" << (*auth)->needCredentials()
-                                 << "forceKeepAlive=" << (*auth)->forceKeepAlive()
-                                 << "forceDisconnect=" << (*auth)->forceDisconnect()
-                                 << "headerFragment=" << (*auth)->headerFragment();
-
-                    if ((*auth)->isError()) {
-                        authTokens.removeOne(bestOffer);
-                        if (!authTokens.isEmpty())
-                            goto try_next_auth_scheme;
-                        else {
-                            error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
-                            return false;
-                        }
-                        //### return false; ?
-                    } else if ((*auth)->forceKeepAlive()) {
-                        //### think this through for proxied / not proxied
-                        m_request.isKeepAlive = true;
-                    } else if ((*auth)->forceDisconnect()) {
-                        //### think this through for proxied / not proxied
-                        m_request.isKeepAlive = false;
-                        httpCloseConnection();
-                    }
-                }
+            if (m_request.responseCode == 401) {
+                auth = &m_wwwAuth;
+                tIt = tokenizer.iterator("www-authenticate");
+                authinfo.url = m_request.url;
+                authinfo.username = m_server.url.user();
+                authinfo.prompt = i18n("You need to supply a username and a "
+                                       "password to access this site.");
+                authinfo.commentLabel = i18n("Site:");
             } else {
-                if (sendErrorPageNotification())
-                    authRequiresAnotherRoundtrip = false;
-                else {
-                    error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
-                    return false;
+                // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
+                // this may break proxy chains which were never tested anyway, and AFAIK they are
+                // rare to nonexistent in the wild.
+                Q_ASSERT(QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy);
+                auth = &m_proxyAuth;
+                tIt = tokenizer.iterator("proxy-authenticate");
+                authinfo.url = m_request.proxyUrl;
+                authinfo.username = m_request.proxyUrl.user();
+                authinfo.prompt = i18n("You need to supply a username and a password for "
+                                       "the proxy server listed below before you are allowed "
+                                       "to access any sites." );
+                authinfo.commentLabel = i18n("Proxy:");
+            }
+
+            QList<QByteArray> authTokens = tIt.all();
+            if (authTokens.isEmpty()) {
+                // Workaround brain dead server responses that violate the spec and
+                // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
+                // header fields. See BR #215736
+                kWarning(7113) << "No WWW-Authenticate header found! Ignoring invalid 401 Authorization request...";
+                m_request.responseCode = 200; // Change back the response code...
+                //m_request.cacheTag.writeToCache = true;
+                //mayCache = true;
+            } else {
+                authRequiresAnotherRoundtrip = true;
+                kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
+
+            try_next_auth_scheme:
+                QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
+                if (*auth) {
+                    if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
+                        // huh, the strongest authentication scheme offered has changed.
+                        kDebug(7113) << "deleting old auth class...";
+                        delete *auth;
+                        *auth = 0;
+                    }
                 }
-            }            
+
+                if (!(*auth)) {
+                    *auth = KAbstractHttpAuthentication::newAuth(bestOffer, config());
+                }
+
+                kDebug(7113) << "pointer to auth class is now" << *auth;
+
+                if (*auth) {
+                    kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
+
+                    // remove trailing space from the method string, or digest auth will fail
+                    (*auth)->setChallenge(bestOffer, authinfo.url, methodString(m_request.method));
+
+                    QString username;
+                    QString password;
+                    bool generateAuthorization = true;
+                    if ((*auth)->needCredentials()) {
+                        // use credentials supplied by the application if available
+                        if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
+                            username = m_request.url.user();
+                            password = m_request.url.pass();
+                            // don't try this password any more
+                            m_request.url.setPass(QString());
+                        } else {
+                            // try to get credentials from kpasswdserver's cache, then try asking the user.
+                            authinfo.verifyPath = false; // we have realm, no path based checking please!
+                            authinfo.realmValue = (*auth)->realm();
+                            if (authinfo.realmValue.isEmpty() && !(*auth)->supportsPathMatching())
+                                authinfo.realmValue = QLatin1String((*auth)->scheme());
+
+                            // Save the current authinfo url because it can be modified by the call to
+                            // checkCachedAuthentication. That way we can restore it if the call
+                            // modified it.
+                            const KUrl reqUrl = authinfo.url;
+                            if (!checkCachedAuthentication(authinfo) ||
+                                ((*auth)->wasFinalStage() && m_request.responseCode == m_request.prevResponseCode)) {
+                                QString errorMsg;
+                                if ((*auth)->wasFinalStage()) {
+                                    switch (m_request.prevResponseCode) {
+                                    case 401:
+                                        errorMsg = i18n("Authentication Failed.");
+                                        break;
+                                    case 407:
+                                        errorMsg = i18n("Proxy Authentication Failed.");
+                                        break;
+                                    default:
+                                        break;
+                                    }
+                                }
+
+                                // Reset url to the saved url...
+                                authinfo.url = reqUrl;
+                                authinfo.keepPassword = true;
+                                authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
+                                                        authinfo.realmValue, authinfo.url.host());
+
+                                if (!openPasswordDialog(authinfo, errorMsg)) {
+                                    if (sendErrorPageNotification()) {
+                                        generateAuthorization = false;
+                                        authRequiresAnotherRoundtrip = false;
+                                    } else {
+                                        error(ERR_ACCESS_DENIED, reqUrl.host());
+                                        return false;
+                                    }
+                                }
+                            }
+                            username = authinfo.username;
+                            password = authinfo.password;
+                        }
+                    }
+
+                    if (generateAuthorization) {
+                        (*auth)->generateResponse(username, password);
+
+                        kDebug(7113) << "Auth State: isError=" << (*auth)->isError()
+                                     << "needCredentials=" << (*auth)->needCredentials()
+                                     << "forceKeepAlive=" << (*auth)->forceKeepAlive()
+                                     << "forceDisconnect=" << (*auth)->forceDisconnect()
+                                     << "headerFragment=" << (*auth)->headerFragment();
+
+                        if ((*auth)->isError()) {
+                            authTokens.removeOne(bestOffer);
+                            if (!authTokens.isEmpty())
+                                goto try_next_auth_scheme;
+                            else {
+                                error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
+                                return false;
+                            }
+                            //### return false; ?
+                        } else if ((*auth)->forceKeepAlive()) {
+                            //### think this through for proxied / not proxied
+                            m_request.isKeepAlive = true;
+                        } else if ((*auth)->forceDisconnect()) {
+                            //### think this through for proxied / not proxied
+                            m_request.isKeepAlive = false;
+                            httpCloseConnection();
+                        }
+                    }
+                } else {
+                    if (sendErrorPageNotification())
+                        authRequiresAnotherRoundtrip = false;
+                    else {
+                        error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
+                        return false;
+                    }
+                }
+            }
         }
+
+        QString locationStr;
+        // In fact we should do redirection only if we have a redirection response code (300 range)
+        tIt = tokenizer.iterator("location");
+        if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
+            locationStr = QString::fromUtf8(tIt.next().trimmed());
+        }
+        // We need to do a redirect
+        if (!locationStr.isEmpty())
+        {
+            KUrl u(m_request.url, locationStr);
+            if(!u.isValid())
+            {
+                error(ERR_MALFORMED_URL, u.url());
+                return false;
+            }
+            if ((u.protocol() != QLatin1String("http")) && (u.protocol() != QLatin1String("https")) &&
+                (u.protocol() != QLatin1String("webdav")) && (u.protocol() != QLatin1String("webdavs")))
+            {
+                redirection(u);
+                error(ERR_ACCESS_DENIED, u.url());
+                return false;
+            }
+
+            // preserve #ref: (bug 124654)
+            // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
+            // if we got redirected to http://host/resource2, then we have to re-add
+            // the fragment:
+            if (m_request.url.hasRef() && !u.hasRef() &&
+                (m_request.url.host() == u.host()) &&
+                (m_request.url.protocol() == u.protocol()))
+                u.setRef(m_request.url.ref());
+
+            m_isRedirection = true;
+
+            if (!m_request.id.isEmpty())
+            {
+                sendMetaData();
+            }
+
+            // If we're redirected to a http:// url, remember that we're doing webdav...
+            if (m_protocol == "webdav" || m_protocol == "webdavs"){
+                if(u.protocol() == QLatin1String("http")){
+                    u.setProtocol(QString::fromLatin1("webdav"));
+                }else if(u.protocol() == QLatin1String("https")){
+                    u.setProtocol(QString::fromLatin1("webdavs"));
+                }
+
+                m_request.redirectUrl = u;
+            }
+
+            kDebug(7113) << "Re-directing from" << m_request.url.url()
+                         << "to" << u.url();
+
+            redirection(u);
+
+            // It would be hard to cache the redirection response correctly. The possible benefit
+            // is small (if at all, assuming fast disk and slow network), so don't do it.
+            cacheFileClose();
+            setCacheabilityMetadata(false);
+        }
+
+        // Inform the job that we can indeed resume...
+        if (bCanResume && m_request.offset) {
+            //TODO turn off caching???
+            canResume();
+        } else {
+            m_request.offset = 0;
+        }
+
+        // Correct a few common wrong content encodings
+        fixupResponseContentEncoding();
+
+        // Correct some common incorrect pseudo-mimetypes
+        fixupResponseMimetype();
+
+        // parse everything related to expire and other dates, and cache directives; also switch
+        // between cache reading and writing depending on cache validation result.
+        cacheParseResponseHeader(tokenizer);
+
     }
-
-    QString locationStr;
-    // In fact we should do redirection only if we have a redirection response code (300 range)
-    tIt = tokenizer.iterator("location");
-    if (tIt.hasNext() && m_request.responseCode > 299 && m_request.responseCode < 400) {
-        locationStr = QString::fromUtf8(tIt.next().trimmed());
-    }
-    // We need to do a redirect
-    if (!locationStr.isEmpty())
-    {
-      KUrl u(m_request.url, locationStr);
-      if(!u.isValid())
-      {
-        error(ERR_MALFORMED_URL, u.url());
-        return false;
-      }
-      if ((u.protocol() != QLatin1String("http")) && (u.protocol() != QLatin1String("https")) &&
-          (u.protocol() != QLatin1String("webdav")) && (u.protocol() != QLatin1String("webdavs")))
-      {
-        redirection(u);
-        error(ERR_ACCESS_DENIED, u.url());
-        return false;
-      }
-
-      // preserve #ref: (bug 124654)
-      // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
-      // if we got redirected to http://host/resource2, then we have to re-add
-      // the fragment:
-      if (m_request.url.hasRef() && !u.hasRef() &&
-          (m_request.url.host() == u.host()) &&
-          (m_request.url.protocol() == u.protocol()))
-        u.setRef(m_request.url.ref());
-
-      m_isRedirection = true;
-
-      if (!m_request.id.isEmpty())
-      {
-         sendMetaData();
-      }
-
-      // If we're redirected to a http:// url, remember that we're doing webdav...
-      if (m_protocol == "webdav" || m_protocol == "webdavs"){
-          if(u.protocol() == QLatin1String("http")){
-              u.setProtocol(QString::fromLatin1("webdav"));
-          }else if(u.protocol() == QLatin1String("https")){
-              u.setProtocol(QString::fromLatin1("webdavs"));
-          }
-
-          m_request.redirectUrl = u;
-      }
-
-      kDebug(7113) << "Re-directing from" << m_request.url.url()
-                   << "to" << u.url();
-
-      redirection(u);
-
-      // It would be hard to cache the redirection response correctly. The possible benefit
-      // is small (if at all, assuming fast disk and slow network), so don't do it.
-      cacheFileClose();
-      setCacheabilityMetadata(false);
-    }
-
-    // Inform the job that we can indeed resume...
-    if (bCanResume && m_request.offset) {
-        //TODO turn off caching???
-        canResume();
-    } else {
-        m_request.offset = 0;
-    }
-
-    // Correct a few common wrong content encodings
-    fixupResponseContentEncoding();
-
-    // Correct some common incorrect pseudo-mimetypes
-    fixupResponseMimetype();
 
     // Let the app know about the mime-type iff this is not
     // a redirection and the mime-type string is not empty.
@@ -3460,10 +3476,6 @@ try_next_auth_scheme:
         kDebug(7113) << "Emitting mimetype " << m_mimeType;
         mimeType( m_mimeType );
     }
-
-    // parse everything related to expire and other dates, and cache directives; also switch
-    // between cache reading and writing depending on cache validation result.
-    cacheParseResponseHeader(tokenizer);
 
     if (m_request.cacheTag.ioMode == ReadFromCache) {
         if (m_request.cacheTag.policy == CC_Verify &&
