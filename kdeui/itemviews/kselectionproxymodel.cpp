@@ -65,6 +65,24 @@ static bool isDescendantOf(const QModelIndex &ancestor, const QModelIndex &desce
     return false;
 }
 
+static bool isDescendantOf(const QItemSelection &selection, const QModelIndex &descendant)
+{
+    if (!descendant.isValid())
+        return false;
+
+    if (selection.contains(descendant))
+        return false;
+
+    QModelIndex parent = descendant.parent();
+    while (parent.isValid()) {
+        if (selection.contains(parent))
+            return true;
+
+        parent = parent.parent();
+    }
+    return false;
+}
+
 static int _getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index)
 {
     QModelIndex commonParent = index;
@@ -1575,7 +1593,7 @@ QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &
           const bool b = _parents.removeOne(parent);
           Q_UNUSED(b)
           Q_ASSERT(b);
-          if (isDescendantOf(_parents, range.topLeft()) || rootSelection.contains(parent))
+          if (rootSelection.contains(parent) || isDescendantOf(rootSelection, parent))
               continue;
         }
         rootSelection << range;
