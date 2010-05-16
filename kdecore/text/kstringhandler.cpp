@@ -383,7 +383,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
             if (currA->isNull() || currB->isNull())
                 break;
         }
-        if (!currA->isDigit() && currB->isDigit())
+        if (!currA->isDigit() && !currB->isDigit())
             continue;
 
         // now some digits follow...
