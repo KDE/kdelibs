@@ -1998,11 +1998,14 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
     Q_ASSERT(proxyIndex.internalId() >= 0);
 
     if (proxyIndex.internalId() == 0) {
+        const int column = proxyIndex.column();
         if (!d->m_startWithChildTrees)
-            return d->m_rootIndexList.at(proxyIndex.row());
+        {
+            const QModelIndex idx = d->m_rootIndexList.at(proxyIndex.row());
+            return idx.sibling(idx.row(), column);
+        }
 
         int _row = proxyIndex.row();
-        const int column = proxyIndex.column();
 
         foreach(const QModelIndex &idx, d->m_rootIndexList) {
             const int idxRowCount = sourceModel()->rowCount(idx);
