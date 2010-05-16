@@ -227,7 +227,7 @@ static int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &inde
 class KSelectionProxyModelPrivate
 {
 public:
-    KSelectionProxyModelPrivate(KSelectionProxyModel *model)
+    KSelectionProxyModelPrivate(KSelectionProxyModel *model, QItemSelectionModel *selectionModel)
             : q_ptr(model),
             m_startWithChildTrees(false),
             m_omitChildren(false),
@@ -236,14 +236,15 @@ public:
             m_rowsRemoved(false),
             m_resetting(false),
             m_ignoreNextLayoutAboutToBeChanged(false),
-            m_ignoreNextLayoutChanged(false) {
+            m_ignoreNextLayoutChanged(false),
+            m_selectionModel(selectionModel)
+    {
 
     }
 
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
     KSelectionProxyModel *q_ptr;
 
-    QItemSelectionModel *m_selectionModel;
     QList<QPersistentModelIndex> m_rootIndexList;
 
     KModelIndexProxyMapper *m_indexMapper;
@@ -357,6 +358,7 @@ public:
     bool m_resetting;
     bool m_ignoreNextLayoutAboutToBeChanged;
     bool m_ignoreNextLayoutChanged;
+    QItemSelectionModel * const m_selectionModel;
 
     struct PendingMove {
         PendingMove() : doMove(false), doInsert(false), doRemove(false) {}
@@ -1216,11 +1218,8 @@ bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) cons
 }
 
 KSelectionProxyModel::KSelectionProxyModel(QItemSelectionModel *selectionModel, QObject *parent)
-        : QAbstractProxyModel(parent), d_ptr(new KSelectionProxyModelPrivate(this))
+        : QAbstractProxyModel(parent), d_ptr(new KSelectionProxyModelPrivate(this, selectionModel))
 {
-    Q_D(KSelectionProxyModel);
-
-    d->m_selectionModel = selectionModel;
 }
 
 KSelectionProxyModel::~KSelectionProxyModel()
