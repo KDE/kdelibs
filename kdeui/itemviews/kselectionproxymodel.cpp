@@ -228,7 +228,7 @@ class KSelectionProxyModelPrivate
 {
 public:
     KSelectionProxyModelPrivate(KSelectionProxyModel *model, QItemSelectionModel *selectionModel)
-            : q_ptr(model),
+          : q_ptr(model),
             m_startWithChildTrees(false),
             m_omitChildren(false),
             m_omitDescendants(false),
@@ -243,7 +243,7 @@ public:
     }
 
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
-    KSelectionProxyModel *q_ptr;
+    KSelectionProxyModel * const q_ptr;
 
     QList<QPersistentModelIndex> m_rootIndexList;
 
