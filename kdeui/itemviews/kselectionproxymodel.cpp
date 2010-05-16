@@ -1472,15 +1472,24 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
                 }
             }
         }
+
+        QItemSelection obscuredRanges;
         {
             QMutableListIterator<QItemSelectionRange> i(fullSelection);
             while (i.hasNext()) {
                 const QItemSelectionRange range = i.next();
                 const QModelIndex topLeft = range.topLeft();
                 if (isDescendantOf(newRootRanges, topLeft) && (!fullSelection.contains(topLeft.parent()) || selected.contains(topLeft.parent())) ) {
-                    removeRangeFromProxy(range);
+                    obscuredRanges << range;
                     i.remove();
                 }
+            }
+        }
+        QItemSelection obscuredRootRanges = getRootRanges(obscuredRanges);
+        {
+            QListIterator<QItemSelectionRange> i(obscuredRootRanges);
+            while (i.hasNext()) {
+                removeRangeFromProxy(i.next());
             }
         }
     } else {
