@@ -95,14 +95,14 @@ void RenderMedia::updateFromElement()
 {
     RenderWidget::updateFromElement();
 
-    QUrl url = mediaElement()->src().string();
-    if (player()->mediaObject()->currentSource().url() != url) {
+    KUrl kurl(mediaElement()->src().string());
+    if (player()->mediaObject()->currentSource().url() != kurl) {
         if (!document()->docLoader()->willLoadMediaElement(mediaElement()->src()))
             return;
         if (mediaElement()->autoplay()) 
-            player()->play(url);
+            player()->play(kurl);
         else
-            player()->load(url);            
+            player()->load(kurl);            
     }
 }
 
