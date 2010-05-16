@@ -1480,7 +1480,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
             }
         }
 
-        newRootRanges = selected;
+        newRootRanges << selected << exposedSelection;
     }
     QModelIndexList newIndexes = getNewIndexes(newRootRanges);
     if (newIndexes.size() > 0)
