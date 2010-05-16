@@ -2036,6 +2036,13 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
         return maybeMapped;
     }
 
+    QModelIndex ancestor = sourceIndex;
+    while (ancestor.isValid())
+    {
+      d->createParentMappings(ancestor.parent(), ancestor.row(), ancestor.row());
+      ancestor = ancestor.parent();
+    }
+
     const int row = d->m_rootIndexList.indexOf(sourceIndex);
     const QModelIndex sourceParent = sourceIndex.parent();
     if (row != -1) {
