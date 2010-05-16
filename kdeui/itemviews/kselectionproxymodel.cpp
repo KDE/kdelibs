@@ -83,6 +83,24 @@ static bool isDescendantOf(const QItemSelection &selection, const QModelIndex &d
     return false;
 }
 
+static bool isDescendantOf(const QItemSelectionRange &range, const QModelIndex &descendant)
+{
+    if (!descendant.isValid())
+        return false;
+
+    if (range.contains(descendant))
+        return false;
+
+    QModelIndex parent = descendant.parent();
+    while (parent.isValid()) {
+        if (range.contains(parent))
+            return true;
+
+        parent = parent.parent();
+    }
+    return false;
+}
+
 static int _getRootListRow(const QList<QModelIndexList> &rootAncestors, const QModelIndex &index)
 {
     QModelIndex commonParent = index;
@@ -354,6 +372,8 @@ public:
     void refreshParentMappings(QList<QPersistentModelIndex> &mappings);
     void refreshFirstChildMappings(QList<QPersistentModelIndex> &mappings);
 
+    void removeRangeFromProxy(const QItemSelectionRange &range);
+
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void sourceModelDestroyed();
 
@@ -569,10 +589,10 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
         return;
     }
 
-    emit q->layoutAboutToBeChanged();
-
     if (!m_selectionModel->hasSelection())
         return;
+
+    emit q->layoutAboutToBeChanged();
 
     QPersistentModelIndex srcPersistentIndex;
     foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
@@ -675,9 +695,10 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
     }
 
     if (!m_selectionModel->hasSelection()) {
-        emit q->layoutChanged();
         return;
     }
+
+    emit q->layoutChanged();
 
     QList<QPersistentModelIndex> parentMappingsToUpdate;
     for (int i = 0; i < m_sourcePersistentParents.size(); ++i) {
@@ -1274,6 +1295,106 @@ QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection 
     return indexes;
 }
 
+void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange &range)
+{
+    Q_Q(KSelectionProxyModel);
+
+    const QModelIndex sourceTopLeft = range.topLeft();
+    const QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
+    const QModelIndex sourceBottomLeft = range.bottomRight().sibling(range.bottom(), 0);
+    const QModelIndex proxyBottomLeft = q->mapFromSource(sourceBottomLeft);
+    const QModelIndex proxyParent = proxyTopLeft.parent();
+    const QModelIndex sourceParent = sourceTopLeft.parent();
+    if (m_startWithChildTrees) {
+
+        if (proxyTopLeft.isValid()) {
+            const int proxyStart = proxyTopLeft.row();
+            int proxyEnd = proxyBottomLeft.row();
+
+            int rootIdx = m_rootIndexList.indexOf(proxyParent);
+            Q_ASSERT(rootIdx != -1);
+            ++rootIdx;
+            while (rootIdx < m_rootIndexList.size()) {
+                const QModelIndex idx = m_rootIndexList.at(rootIdx);
+                if (isDescendantOf(sourceBottomLeft, idx))
+                    proxyEnd += q->sourceModel()->rowCount(idx);
+            }
+
+            q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
+            if (range.top() == 0)
+                removeFirstChildMappings(range.top(), range.height());
+            removeParentMappings(sourceParent, range.top(), range.bottom());
+            updateInternalTopIndexes(range.bottom(), -1 * range.height());
+
+            m_rootIndexList.removeOne(sourceTopLeft);
+            for (int i = 1; i < range.height(); ++i)
+            {
+                m_rootIndexList.removeOne(sourceTopLeft.sibling(i, sourceTopLeft.column()));
+            }
+
+            q->endRemoveRows();
+        } else {
+            const int startRootIdx = m_rootIndexList.indexOf(sourceTopLeft);
+            int endRootIdx = m_rootIndexList.indexOf(sourceBottomLeft);
+            Q_ASSERT(endRootIdx != -1);
+            int childrenCount = q->sourceModel()->rowCount(sourceTopLeft);
+            for (int rootIdx = startRootIdx + 1; rootIdx <= endRootIdx; ++rootIdx)
+            {
+              childrenCount += q->sourceModel()->rowCount(m_rootIndexList.at(rootIdx));
+            }
+            ++endRootIdx;
+            while (endRootIdx < m_rootIndexList.size())
+            {
+                const QModelIndex idx = m_rootIndexList.at(endRootIdx);
+                if (isDescendantOf(sourceBottomLeft, idx))
+                    childrenCount += q->sourceModel()->rowCount(idx);
+            }
+            const int proxyStart = getTargetRow(startRootIdx);
+            const int proxyEnd = proxyStart + childrenCount - 1;
+            q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
+
+
+            for (int rootIdx = startRootIdx; rootIdx < endRootIdx; ++rootIdx)
+            {
+              const QModelIndex idx = m_rootIndexList.at(startRootIdx);
+              const int childCount = q->sourceModel()->rowCount(idx);
+              removeParentMappings(idx, 0, childCount - 1);
+              updateInternalTopIndexes(proxyEnd + 1, -1 * childCount);
+              m_rootIndexList.removeAt(startRootIdx);
+            }
+            q->endRemoveRows();
+        }
+    } else {
+        if (!proxyTopLeft.isValid())
+            return;
+        const int height = range.height();
+        q->beginRemoveRows(proxyParent, proxyTopLeft.row(), proxyTopLeft.row() + height - 1);
+
+        // TODO: Do this conditionally if the signal is connected to anything.
+        for (int i = 0; i < height; ++i)
+        {
+            q->rootIndexAboutToBeRemoved(sourceTopLeft.sibling(i, sourceTopLeft.column()));
+        }
+        removeParentMappings(sourceParent, range.top(), range.bottom());
+        updateInternalIndexes(sourceParent, range.bottom() + 1, -1 * height);
+//         if (m_rootIndexList.contains(sourceParent))
+//             updateRootIndexes(m_rootIndexList.indexOf(sourceParent), -1 * height, sourceParent);
+
+        for (int i = 0; i < height; ++i)
+        {
+            const QModelIndex idx = sourceTopLeft.sibling(range.top() + i, sourceTopLeft.column());
+            Q_ASSERT(idx.isValid());
+            const bool b = m_rootIndexList.removeOne(idx);
+            Q_UNUSED(b)
+            if (!b)
+              kDebug() << idx;
+            Q_ASSERT(b);
+        }
+
+        q->endRemoveRows();
+    }
+}
+
 void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     Q_Q(KSelectionProxyModel);
@@ -1294,142 +1415,78 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &selecte
     //
     // The new indexes are inserted in sorted order.
 
-    QModelIndexList removeIndexes;
-
-    static const int column = 0;
-    foreach(const QItemSelectionRange &range, deselected) {
-        QModelIndex removeIndex = range.topLeft();
-
-        if (removeIndex.column() != 0)
-            continue;
-
-        for (int row = removeIndex.row(); row <= range.bottom(); ++row) {
-            removeIndex = removeIndex.sibling(row, column);
-
-            removeIndexes << removeIndex;
-
-            const QModelIndex sourceRemoveIndex = selectionIndexToSourceIndex(removeIndex);
-
-            const int startRow = m_rootIndexList.indexOf(sourceRemoveIndex);
-
-            if (startRow < 0)
-                continue;
-            // TODO: ? And proxyparent == QModelIndex() ? Has this already filtered out the deselections that have a parent selected?
-            if (m_startWithChildTrees) {
-                int _start = 0;
-                for (int i = 0 ; i < startRow; ++i) {
-                    _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
-                }
-                const int rowCount = q->sourceModel()->rowCount(sourceRemoveIndex);
-                if (rowCount <= 0) {
-                    // It doesn't have any children in the model, but we need to remove it from storage anyway.
-                    emit q->rootIndexAboutToBeRemoved(sourceRemoveIndex);
-                    m_rootIndexList.removeAt(startRow);
-                    continue;
-                }
-
-                q->beginRemoveRows(QModelIndex(), _start, _start + rowCount - 1);
-                emit q->rootIndexAboutToBeRemoved(sourceRemoveIndex);
-                removeFirstChildMappings(_start, _start + rowCount - 1);
-                removeParentMappings(removeIndex, 0, rowCount - 1);
-                updateInternalTopIndexes(_start + rowCount, -1 * rowCount);
-            } else {
-                q->beginRemoveRows(QModelIndex(), startRow, startRow);
-                emit q->rootIndexAboutToBeRemoved(sourceRemoveIndex);
-                const QModelIndex removeIndexParent = removeIndex.parent();
-                removeParentMappings(removeIndexParent, removeIndex.row(), removeIndex.row());
-                updateInternalIndexes(removeIndexParent, removeIndex.row() + 1, -1);
-                updateRootIndexes(startRow, -1, removeIndexParent);
-            }
-            m_rootIndexList.removeAt(startRow);
-            q->endRemoveRows();
-        }
-    }
-
-    QItemSelection newRanges;
+    QItemSelection newRootRanges;
     if (!m_includeAllSelected) {
-        newRanges = getRootRanges(selected);
-        QMutableListIterator<QItemSelectionRange> i(newRanges);
-        while (i.hasNext()) {
-            const QItemSelectionRange range = i.next();
-            const QModelIndex topLeft = range.topLeft();
-            if (isDescendantOf(m_rootIndexList, topLeft)) {
-                i.remove();
+        newRootRanges = getRootRanges(selected);
+
+        QItemSelection fullSelection = m_selectionModel->selection();
+
+        QItemSelection exposedSelection;
+        {
+            QItemSelection removedRootRanges = getRootRanges(deselected);
+            QListIterator<QItemSelectionRange> i(removedRootRanges);
+            while (i.hasNext()) {
+                // Need to sort first.
+                const QItemSelectionRange range = i.next();
+                const QModelIndex topLeft = range.topLeft();
+                if (!isDescendantOf(fullSelection, topLeft) || isDescendantOf(selected, topLeft)) {
+                    foreach (const QItemSelectionRange &selectedRange, fullSelection)
+                    {
+                      if (isDescendantOf(range, selectedRange.topLeft()) && !(newRootRanges.contains(selectedRange.topLeft())))
+                          exposedSelection.append(selectedRange);
+                    }
+                    removeRangeFromProxy(range);
+                }
+            }
+        }
+        newRootRanges << getRootRanges(exposedSelection);
+
+        {
+            QMutableListIterator<QItemSelectionRange> i(newRootRanges);
+            while (i.hasNext()) {
+                const QItemSelectionRange range = i.next();
+                const QModelIndex topLeft = range.topLeft();
+                if (isDescendantOf(m_rootIndexList, topLeft) || isDescendantOf(fullSelection, topLeft)) {
+                    i.remove();
+                }
+            }
+        }
+        {
+            QMutableListIterator<QItemSelectionRange> i(fullSelection);
+            while (i.hasNext()) {
+                const QItemSelectionRange range = i.next();
+                const QModelIndex topLeft = range.topLeft();
+                if (isDescendantOf(newRootRanges, topLeft) && (!fullSelection.contains(topLeft.parent()) || selected.contains(topLeft.parent())) ) {
+                    removeRangeFromProxy(range);
+                    i.remove();
+                }
             }
         }
     } else {
-        newRanges = selected;
-    }
+        QItemSelection fullSelection = m_selectionModel->selection();
 
-    QModelIndexList newIndexes;
-
-    newIndexes << getNewIndexes(newRanges);
-
-    QItemSelection additionalRanges;
-    if (!m_includeAllSelected) {
-        foreach(const QItemSelectionRange &range, m_selectionModel->selection()) {
-            const QModelIndex topLeft = range.topLeft();
-            if (isDescendantOf(removeIndexes, topLeft)) {
-                if (!isDescendantOf(m_rootIndexList, topLeft) && !isDescendantOf(newIndexes, topLeft))
-                    additionalRanges << range;
-            }
-
-            const int row = m_rootIndexList.indexOf(topLeft);
-            if (row >= 0) {
-                if (isDescendantOf(newIndexes, topLeft)) {
-                    if (m_startWithChildTrees) {
-                        int _start = 0;
-                        for (int i = 0 ; i < row; ++i) {
-                            _start += q->sourceModel()->rowCount(m_rootIndexList.at(i));
-                        }
-                        int rowCount = q->sourceModel()->rowCount(topLeft);
-                        if (rowCount <= 0) {
-                            // It doesn't have any children in the model, but we need to remove it from storage anyway.
-                            emit q->rootIndexAboutToBeRemoved(topLeft);
-                            m_rootIndexList.removeAt(row);
-                            continue;
-                        }
-
-                        q->beginRemoveRows(QModelIndex(), _start, _start + rowCount - 1);
-                        emit q->rootIndexAboutToBeRemoved(topLeft);
-                        removeFirstChildMappings(_start, _start + rowCount - 1);
-                        removeParentMappings(topLeft, 0, rowCount - 1);
-                        updateInternalTopIndexes(_start + rowCount, -1 * rowCount);
-                        m_rootIndexList.removeAt(row);
-                    } else {
-                        const int height = range.height();
-                        q->beginRemoveRows(QModelIndex(), row, row + height - 1);
-                        emit q->rootIndexAboutToBeRemoved(topLeft);
-                        const QModelIndex topLeftParent = topLeft.parent();
-                        removeParentMappings(topLeftParent, topLeft.row(), topLeft.row() + height - 1);
-                        updateInternalIndexes(topLeftParent, topLeft.row() + height, -1);
-                        updateRootIndexes(row, -1, topLeftParent);
-                        for (int _r = 0; _r < height; ++_r)
-                          m_rootIndexList.removeAt(row);
+        QItemSelection exposedSelection;
+        {
+            QItemSelection removedRootRanges = getRootRanges(deselected);
+            QListIterator<QItemSelectionRange> i(removedRootRanges);
+            while (i.hasNext()) {
+                // Need to sort first.
+                const QItemSelectionRange range = i.next();
+                const QModelIndex topLeft = range.topLeft();
+                if (!isDescendantOf(fullSelection, topLeft) || isDescendantOf(selected, topLeft)) {
+                    foreach (const QItemSelectionRange &selectedRange, fullSelection)
+                    {
+                      if (isDescendantOf(range, selectedRange.topLeft()) && !(newRootRanges.contains(selectedRange.topLeft())))
+                          exposedSelection.append(selectedRange);
                     }
-                    q->endRemoveRows();
+                    removeRangeFromProxy(range);
                 }
             }
         }
-        // A
-        // - B
-        // - - C
-        // - - D
-        // - E
-        // If A, B, C and E are selected, and A is deselected, B and E need to be inserted into the model, but not C.
-        // Currently B, C and E are in additionalRanges. Ranges which are descendant of other ranges in the list need
-        // to be removed.
 
-        additionalRanges = getRootRanges(additionalRanges);
-
+        newRootRanges = selected;
     }
-
-    // TODO: Use QSet<QModelIndex> instead to simplify this stuff.
-    foreach(const QModelIndex &idx, getNewIndexes(additionalRanges)) {
-        Q_ASSERT(idx.isValid());
-        if (!newIndexes.contains(idx))
-            newIndexes << idx;
-    }
+    QModelIndexList newIndexes = getNewIndexes(newRootRanges);
     if (newIndexes.size() > 0)
         insertionSort(newIndexes);
 }
@@ -1542,9 +1599,10 @@ void KSelectionProxyModelPrivate::updateRootIndexes(int start, int offset, const
     QHash<qint64, QModelIndex> updatedParentIds;
 
     for ( ; mappedParentIt != m_mappedParents.leftEnd(); ++mappedParentIt) {
-        const QModelIndex proxyIndex = mappedParentIt.value();
-        Q_ASSERT(proxyIndex.isValid());
         if (m_rootIndexList.indexOf(mappedParentIt.key()) > start && mappedParentIt.key().parent() != srcParent) {
+
+            const QModelIndex proxyIndex = mappedParentIt.value();
+            Q_ASSERT(proxyIndex.isValid());
             const qint64 key = m_parentIds.rightToLeft(proxyIndex);
 
             const QModelIndex newProxyIndex = q->createIndex(proxyIndex.row() + offset, proxyIndex.column(), proxyIndex.internalPointer());
@@ -1589,13 +1647,10 @@ QItemSelection KSelectionProxyModelPrivate::getRootRanges(const QItemSelection &
         const QItemSelectionRange range = *it;
         QModelIndexList _parents = parents;
         const QModelIndex parent = range.topLeft().parent();
-        if (parent.isValid()) {
-          const bool b = _parents.removeOne(parent);
-          Q_UNUSED(b)
-          Q_ASSERT(b);
-          if (rootSelection.contains(parent) || isDescendantOf(rootSelection, parent))
-              continue;
-        }
+
+        if (rootSelection.contains(parent) || isDescendantOf(rootSelection, parent) || isDescendantOf(parents, parent))
+            continue;
+
         rootSelection << range;
     }
     return rootSelection;
