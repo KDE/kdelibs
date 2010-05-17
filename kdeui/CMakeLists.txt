@@ -188,7 +188,6 @@ set(kdeui_LIB_SRCS
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
  util/kwallet.cpp
- util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp

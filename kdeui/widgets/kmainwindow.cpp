@@ -28,7 +28,6 @@
 #include "kmainwindow_p.h"
 #include "kmainwindowiface_p.h"
 #include "ktoolbarhandler.h"
-#include "kwhatsthismanager_p.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
 #include "ksessionmanager.h"
@@ -250,8 +249,6 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     // or dialog box would still quit the app...
     if (qApp)
         qApp->setQuitOnLastWindowClosed(false);
-
-    KWhatsThisManager::init ();
 
     helpMenu = 0;
 

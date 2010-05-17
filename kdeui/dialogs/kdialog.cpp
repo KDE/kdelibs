@@ -44,7 +44,6 @@
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
-#include <kwhatsthismanager_p.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -162,7 +161,6 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
 void KDialogPrivate::init(KDialog *q)
 {
     q_ptr = q;
-    KWhatsThisManager::init();
 
     dirty = false;
 
