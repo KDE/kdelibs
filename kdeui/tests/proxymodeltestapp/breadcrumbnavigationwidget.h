@@ -28,7 +28,7 @@
 #include <QListView>
 #include <kselectionproxymodel.h>
 
-#include "kproxyitemselectionmodel.h"
+#include "klinkitemselectionmodel.h"
 
 class CurrentItemLabel : public QLabel
 {

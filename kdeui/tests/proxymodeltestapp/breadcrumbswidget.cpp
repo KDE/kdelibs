@@ -105,7 +105,7 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
   QItemSelectionModel *breadcrumbOnlySelectionModel = new QItemSelectionModel(rootModel, this);
 
   KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector = new KBreadcrumbSelectionModel(breadcrumbOnlySelectionModel, this);
-  breadcrumbOnlyProxySelector->setIncludeActualSelection(false);
+  breadcrumbOnlyProxySelector->setActualSelectionIncluded(false);
   selectionModelList << breadcrumbOnlyProxySelector;
 
   KSelectionProxyModel *breadcrumbOnlySelectionProxyModel = new KSelectionProxyModel( breadcrumbOnlySelectionModel, this);
@@ -120,7 +120,7 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
   QItemSelectionModel *thisAndAscendantsSelectionModel = new QItemSelectionModel(rootModel, this);
 
   KBreadcrumbSelectionModel *thisAndAscendantsProxySelector = new KBreadcrumbSelectionModel(thisAndAscendantsSelectionModel, this);
-  thisAndAscendantsProxySelector->setSelectionDepth(selectionDepth);
+  thisAndAscendantsProxySelector->setBreadcrumbLength(selectionDepth);
   selectionModelList << thisAndAscendantsProxySelector;
 
   KSelectionProxyModel *thisAndAscendantsSelectionProxyModel = new KSelectionProxyModel( thisAndAscendantsSelectionModel, this);
@@ -133,8 +133,8 @@ BreadcrumbsWidget::BreadcrumbsWidget(QWidget* parent, Qt::WindowFlags f)
   QItemSelectionModel *ascendantsOnlySelectionModel = new QItemSelectionModel(rootModel, this);
 
   KBreadcrumbSelectionModel *ascendantsOnlyProxySelector = new KBreadcrumbSelectionModel(ascendantsOnlySelectionModel, this);
-  ascendantsOnlyProxySelector->setIncludeActualSelection(false);
-  ascendantsOnlyProxySelector->setSelectionDepth(selectionDepth);
+  ascendantsOnlyProxySelector->setActualSelectionIncluded(false);
+  ascendantsOnlyProxySelector->setBreadcrumbLength(selectionDepth);
   selectionModelList << ascendantsOnlyProxySelector;
 
   KSelectionProxyModel *ascendantsOnlySelectionProxyModel = new KSelectionProxyModel( ascendantsOnlySelectionModel, this);

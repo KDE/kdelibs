@@ -77,7 +77,7 @@ StateSaverWidget::StateSaverWidget(QWidget* parent, Qt::WindowFlags f)
 void StateSaverWidget::saveState()
 {
   DynamicTreeStateSaver saver;
-  saver.setTreeView(m_view);
+  saver.setView(m_view);
 
   KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
   saver.saveState( cfg );
@@ -87,7 +87,7 @@ void StateSaverWidget::saveState()
 void StateSaverWidget::restoreState()
 {
   DynamicTreeStateSaver *saver = new DynamicTreeStateSaver;
-  saver->setTreeView(m_view);
+  saver->setView(m_view);
   KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
   saver->restoreState( cfg );
 }

@@ -28,7 +28,7 @@
 
 #include "dynamictreemodel.h"
 #include "dynamictreewidget.h"
-#include "kproxyitemselectionmodel.h"
+#include "klinkitemselectionmodel.h"
 
 #define SON(object) object->setObjectName(#object)
 

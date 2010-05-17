@@ -250,7 +250,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
 
   KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector2 = new KBreadcrumbSelectionModel(rootSelectionModel, KBreadcrumbSelectionModel::Forward, this);
   SON(breadcrumbOnlyProxySelector2);
-  breadcrumbOnlyProxySelector2->setIncludeActualSelection(false);
+  breadcrumbOnlyProxySelector2->setActualSelectionIncluded(false);
 
   KBreadcrumbNavigationProxyModel *breadcrumbNavigationModel = new KBreadcrumbNavigationProxyModel( breadcrumbOnlyProxySelector2, this);
   SON(breadcrumbNavigationModel);
