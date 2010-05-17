@@ -40,6 +40,8 @@ public:
     Q_DECLARE_PUBLIC(KLinkItemSelectionModel)
     KLinkItemSelectionModel * const q_ptr;
 
+    void sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
     QList<const QAbstractProxyModel *> m_proxyChainUp;
     QList<const QAbstractProxyModel *> m_proxyChainDown;
 
@@ -86,14 +88,14 @@ void KLinkItemSelectionModel::select(const QItemSelection &selection, QItemSelec
     d->m_ignoreCurrentChanged = false;
 }
 
-void KLinkItemSelectionModel::sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void KLinkItemSelectionModelPrivate::sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    Q_D(KLinkItemSelectionModel);
-    const QItemSelection mappedDeselection = d->m_indexMapper->mapSelectionRightToLeft(deselected);
-    const QItemSelection mappedSelection = d->m_indexMapper->mapSelectionRightToLeft(selected);
+    Q_Q(KLinkItemSelectionModel);
+    const QItemSelection mappedDeselection = m_indexMapper->mapSelectionRightToLeft(deselected);
+    const QItemSelection mappedSelection = m_indexMapper->mapSelectionRightToLeft(selected);
 
-    QItemSelectionModel::select(mappedDeselection, Deselect);
-    QItemSelectionModel::select(mappedSelection, Select);
+    q->QItemSelectionModel::select(mappedDeselection, QItemSelectionModel::Deselect);
+    q->QItemSelectionModel::select(mappedSelection, QItemSelectionModel::Select);
 }
 
 #include "klinkitemselectionmodel.moc"

@@ -104,14 +104,12 @@ public:
     /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
     /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);
 
-private slots:
-    void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-
 protected:
     KLinkItemSelectionModelPrivate * const d_ptr;
 
 private:
     Q_DECLARE_PRIVATE(KLinkItemSelectionModel)
+    Q_PRIVATE_SLOT( d_func(), void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected))
 };
 
 #endif
