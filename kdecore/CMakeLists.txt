@@ -10,6 +10,7 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
 # Generate io/config-kdirwatch.h
+include(io/ConfigureChecks.cmake)
 configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kdirwatch.h )
 
 # Configure checks for network/ but also for netsupp.*
