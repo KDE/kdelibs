@@ -69,10 +69,10 @@ ProxyItemSelectionWidget::ProxyItemSelectionWidget(QWidget* parent, Qt::WindowFl
 
   QItemSelectionModel *rootSelectionModel = dynamicTreeWidget->treeView()->selectionModel();
 
-  KProxyItemSelectionModel *view1SelectionModel = new KProxyItemSelectionModel(view1->model(), rootSelectionModel, this );
+  KLinkItemSelectionModel *view1SelectionModel = new KLinkItemSelectionModel(view1->model(), rootSelectionModel, this );
   view1->setSelectionModel( view1SelectionModel );
 
-  KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel(view2->model(), view1->selectionModel(), this );
+  KLinkItemSelectionModel *view2SelectionModel = new KLinkItemSelectionModel(view2->model(), view1->selectionModel(), this );
   view2->setSelectionModel( view2SelectionModel );
 
   view1->expandAll();
