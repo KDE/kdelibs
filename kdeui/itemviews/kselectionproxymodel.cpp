@@ -419,12 +419,6 @@ public:
     void resetInternalData();
 
     /**
-      Returns the range in the proxy model corresponding to the range in the source model
-      covered by @sourceParent, @p start and @p end.
-    */
-    QPair<int, int> getRootRange(const QModelIndex &sourceParent, int start, int end) const;
-
-    /**
       When items are inserted or removed in the m_startWithChildTrees configuration,
       this method helps find the startRow for use emitting the signals from the proxy.
     */
@@ -830,28 +824,6 @@ void KSelectionProxyModelPrivate::sourceModelReset()
     m_selectionModel->clearSelection();
     m_resetting = false;
     q->endResetModel();
-}
-
-QPair<int, int> KSelectionProxyModelPrivate::getRootRange(const QModelIndex &sourceParent, int start, int end) const
-{
-    int listStart = -1;
-    int listEnd = -1;
-
-    int tracker = 0;
-    foreach(const QModelIndex &idx, m_rootIndexList) {
-        if (listStart == -1) {
-            if (idx.row() > start && idx.parent() == sourceParent) {
-                listStart = tracker;
-            }
-        }
-        if (idx.row() < end && m_rootIndexList.value(tracker - 1).parent() == sourceParent) {
-            listEnd = tracker - 1;
-            break;
-        }
-        tracker++;
-
-    }
-    return qMakePair(listStart, listEnd);
 }
 
 int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) const
