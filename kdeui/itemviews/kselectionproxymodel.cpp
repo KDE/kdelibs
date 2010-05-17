@@ -1484,7 +1484,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
             while (i.hasNext()) {
                 const QItemSelectionRange range = i.next();
                 const QModelIndex topLeft = range.topLeft();
-                if (isDescendantOf(newRootRanges, topLeft) && (!fullSelection.contains(topLeft.parent()) || selected.contains(topLeft.parent())) ) {
+                if (isDescendantOf(newRootRanges, topLeft) && !selected.contains(topLeft)) {
                     obscuredRanges << range;
                     i.remove();
                 }
