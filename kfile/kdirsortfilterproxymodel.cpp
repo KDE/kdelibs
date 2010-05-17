@@ -50,12 +50,23 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyMo
             q, SLOT(slotNaturalSortingChanged()));
 }
 
-inline int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QString& a,
-                                                                              const QString& b,
-                                                                              Qt::CaseSensitivity caseSensitivity) const
+int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QString& a,
+                                                                       const QString& b,
+                                                                       Qt::CaseSensitivity caseSensitivity) const
 {
-    return m_naturalSorting ? KStringHandler::naturalCompare(a, b, caseSensitivity)
-                            : QString::compare(a, b, caseSensitivity);
+    if (caseSensitivity == Qt::CaseInsensitive) {
+        const int result = m_naturalSorting ? KStringHandler::naturalCompare(a, b, Qt::CaseInsensitive)
+                                            : QString::compare(a, b, Qt::CaseInsensitive);
+        if (result != 0) {
+            // Only return the result, if the strings are not equal. If they are equal by a case insensitive
+            // comparison, still a deterministic sort order is required. A case sensitive
+            // comparison is done as fallback.
+            return result;
+        }
+    }
+    
+    return m_naturalSorting ? KStringHandler::naturalCompare(a, b, Qt::CaseSensitive)
+                            : QString::compare(a, b, Qt::CaseSensitive);
 }
 
 
