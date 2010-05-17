@@ -88,26 +88,28 @@ public:
   /**
    * Maps the @p index from the left model to the right model.
    */
-  QModelIndex mapLeftToRight(const QModelIndex &index);
+  QModelIndex mapLeftToRight(const QModelIndex &index) const;
 
   /**
    * Maps the @p index from the right model to the left model.
    */
-  QModelIndex mapRightToLeft(const QModelIndex &index);
+  QModelIndex mapRightToLeft(const QModelIndex &index) const;
 
   /**
    * Maps the @p selection from the left model to the right model.
    */
-  QItemSelection mapSelectionLeftToRight(const QItemSelection &selection);
+  QItemSelection mapSelectionLeftToRight(const QItemSelection &selection) const;
 
   /**
    * Maps the @p selection from the right model to the left model.
    */
-  QItemSelection mapSelectionRightToLeft(const QItemSelection &selection);
+  QItemSelection mapSelectionRightToLeft(const QItemSelection &selection) const;
 
 private:
+  //@cond PRIVATE
   Q_DECLARE_PRIVATE(KModelIndexProxyMapper)
   KModelIndexProxyMapperPrivate * const d_ptr;
+  //@endcond
 };
 
 #endif

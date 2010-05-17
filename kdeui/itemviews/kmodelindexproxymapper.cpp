@@ -155,7 +155,7 @@ KModelIndexProxyMapper::KModelIndexProxyMapper(const QAbstractItemModel* leftMod
 
 }
 
-QModelIndex KModelIndexProxyMapper::mapLeftToRight(const QModelIndex& index)
+QModelIndex KModelIndexProxyMapper::mapLeftToRight(const QModelIndex& index) const
 {
   const QItemSelection selection = mapSelectionLeftToRight(QItemSelection(index, index));
   if (selection.isEmpty())
@@ -164,7 +164,7 @@ QModelIndex KModelIndexProxyMapper::mapLeftToRight(const QModelIndex& index)
   return selection.indexes().first();
 }
 
-QModelIndex KModelIndexProxyMapper::mapRightToLeft(const QModelIndex& index)
+QModelIndex KModelIndexProxyMapper::mapRightToLeft(const QModelIndex& index) const
 {
   const QItemSelection selection = mapSelectionRightToLeft(QItemSelection(index, index));
   if (selection.isEmpty())
@@ -173,7 +173,7 @@ QModelIndex KModelIndexProxyMapper::mapRightToLeft(const QModelIndex& index)
   return selection.indexes().first();
 }
 
-QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelection& selection)
+QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelection& selection) const
 {
   Q_D(const KModelIndexProxyMapper);
 
@@ -207,7 +207,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
   return seekSelection;
 }
 
-QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelection& selection)
+QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelection& selection) const
 {
   Q_D(const KModelIndexProxyMapper);
 
