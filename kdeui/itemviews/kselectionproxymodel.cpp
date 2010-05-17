@@ -1356,7 +1356,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
 
 
-            for (int rootIdx = startRootIdx; rootIdx < endRootIdx; ++rootIdx)
+            for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
             {
               const QModelIndex idx = m_rootIndexList.at(startRootIdx);
               const int childCount = q->sourceModel()->rowCount(idx);
