@@ -31,6 +31,9 @@
 typedef KBiHash<QPersistentModelIndex, QModelIndex> SourceProxyIndexMapping;
 typedef KBiHash<qint64, QModelIndex> ParentMapping;
 
+#define KDO(object) kDebug() << #object << object
+#define SON(object) object->setObjectName(#object)
+
 /**
   Return true if @p idx is a descendant of one of the indexes in @p list.
   Note that this returns false if @p list contains @p idx.
