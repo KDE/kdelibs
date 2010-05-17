@@ -59,16 +59,16 @@ class KBreadcrumbSelectionModelPrivate;
     - E
   @endverbatim
 
-  if includeActualSelection is true.
+  if isActualSelectionIncluded is true.
 
-  The depth of the selection may also be set. For example if the selectionDepth is 1:
+  The depth of the selection may also be set. For example if the breadcrumbLength is 1:
 
   @verbatim
     - D
     - E
   @endverbatim
 
-  And if selectionDepth is 2:
+  And if breadcrumbLength is 2:
 
   @verbatim
     - B
@@ -76,7 +76,7 @@ class KBreadcrumbSelectionModelPrivate;
     - E
   @endverbatim
 
-  A KBreadcrumbsProxyModel with a selectionDepth of 0 and including the actual selection is
+  A KBreadcrumbsProxyModel with a breadcrumbLength of 0 and including the actual selection is
   the same as a KSelectionProxyModel in the KSelectionProxyModel::ExactSelection configuration.
 
   @code
@@ -125,25 +125,25 @@ public:
 
     The default is true.
   */
-  bool includeActualSelection() const;
+  bool isActualSelectionIncluded() const;
 
   /**
-    Set whether the actual selection in included in the proxy to @p includeActualSelection.
+    Set whether the actual selection in included in the proxy to @p isActualSelectionIncluded.
   */
-  void setIncludeActualSelection(bool includeActualSelection);
+  void setActualSelectionIncluded(bool isActualSelectionIncluded);
 
   /**
     Returns the depth that the breadcrumb selection should go to.
   */
-  int selectionDepth() const;
+  int breadcrumbLength() const;
 
   /**
     Sets the depth that the breadcrumb selection should go to.
 
-    If the @p selectionDepth is -1, all breadcrumbs are selected.
+    If the @p breadcrumbLength is -1, all breadcrumbs are selected.
     The default is -1
   */
-  void setSelectionDepth(int selectionDepth);
+  void setBreadcrumbLength(int breadcrumbLength);
 
   /* reimp */ void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
 

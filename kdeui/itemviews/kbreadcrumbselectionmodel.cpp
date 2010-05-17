@@ -71,28 +71,28 @@ KBreadcrumbSelectionModel::~KBreadcrumbSelectionModel()
   delete d_ptr;
 }
 
-bool KBreadcrumbSelectionModel::includeActualSelection() const
+bool KBreadcrumbSelectionModel::isActualSelectionIncluded() const
 {
   Q_D(const KBreadcrumbSelectionModel);
   return d->m_includeActualSelection;
 }
 
-void KBreadcrumbSelectionModel::setIncludeActualSelection(bool includeActualSelection)
+void KBreadcrumbSelectionModel::setActualSelectionIncluded(bool includeActualSelection)
 {
   Q_D(KBreadcrumbSelectionModel);
   d->m_includeActualSelection = includeActualSelection;
 }
 
-int KBreadcrumbSelectionModel::selectionDepth() const
+int KBreadcrumbSelectionModel::breadcrumbLength() const
 {
   Q_D(const KBreadcrumbSelectionModel);
   return d->m_selectionDepth;
 }
 
-void KBreadcrumbSelectionModel::setSelectionDepth(int selectionDepth)
+void KBreadcrumbSelectionModel::setBreadcrumbLength(int breadcrumbLength)
 {
   Q_D(KBreadcrumbSelectionModel);
-  d->m_selectionDepth = selectionDepth;
+  d->m_selectionDepth = breadcrumbLength;
 }
 
 QItemSelection KBreadcrumbSelectionModel::getBreadcrumbSelection(const QModelIndex& index)
