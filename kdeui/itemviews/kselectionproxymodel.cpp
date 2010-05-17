@@ -1468,22 +1468,23 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
                     if (range.intersects(_r) && range != _r)
                     {
                         foundIntersection = true;
-                        QItemSelection::split( range, _r, &result);
+                        QItemSelection::split(range, _r, &result);
                         break;
                     }
                 }
                 if (foundIntersection) {
                     if (result.isEmpty())
                         continue;
-                    else {
-                        Q_ASSERT(result.size() == 1);
-                        range = result.first();
-                    }
+                } else {
+                    result << range;
                 }
-                const QModelIndex topLeft = range.topLeft();
-                if (isDescendantOf(newRootRanges, topLeft) && !selected.contains(topLeft)) {
-                    obscuredRanges << range;
-                    i.remove();
+                foreach (const QItemSelectionRange &_range, result)
+                {
+                    const QModelIndex topLeft = _range.topLeft();
+                    if (isDescendantOf(newRootRanges, topLeft) && !selected.contains(topLeft)) {
+                        obscuredRanges << _range;
+                        i.remove();
+                    }
                 }
             }
         }
