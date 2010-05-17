@@ -150,23 +150,12 @@ public:
   /* reimp */ void select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command);
 
 protected:
-  /**
-    Returns a selection containing the breadcrumbs for @p index
-  */
-  QItemSelection getBreadcrumbSelection(const QModelIndex &index);
-
-  /**
-    Returns a selection containing the breadcrumbs for @p selection
-  */
-  QItemSelection getBreadcrumbSelection(const QItemSelection &selection);
-
-private slots:
-  void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-
-protected:
   KBreadcrumbSelectionModelPrivate * const d_ptr;
 private:
+  //@cond PRIVATE
   Q_DECLARE_PRIVATE(KBreadcrumbSelectionModel)
+  Q_PRIVATE_SLOT( d_func(),void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected))
+  //@cond PRIVATE
 };
 
 
