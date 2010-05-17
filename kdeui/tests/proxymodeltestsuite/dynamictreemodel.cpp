@@ -563,7 +563,8 @@ void ModelInsertCommand::doInsertTree(const QModelIndex &fragmentParent)
         }
         m_model->m_items.insert(id, QString::number(id));
         m_model->m_childItems[fragmentParentIdentifier][column].insert(rows[depth], id);
-        id = m_model->newId();
+        if (column != m_numCols - 1)
+            id = m_model->newId();
     }
     rows[depth]++;
   }
