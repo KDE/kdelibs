@@ -230,17 +230,6 @@ public:
    */
   QPair<int, int> scrollState() const;
 
-protected:
-  /**
-    Reimplement to return an index in the @p model described by the unique key @p key
-  */
-  virtual QModelIndex indexFromConfigString(const QAbstractItemModel *model, const QString &key) const = 0;
-
-  /**
-    Reimplement to return a unique string for the @p index.
-  */
-  virtual QString indexToConfigString(const QModelIndex &index) const = 0;
-
   /**
    * Select the indexes described by @p indexStrings
    */
@@ -261,6 +250,17 @@ protected:
    * and @p horizontalScroll
    */
   void restoreScrollState( int verticalScoll, int horizontalScroll );
+
+protected:
+  /**
+    Reimplement to return an index in the @p model described by the unique key @p key
+  */
+  virtual QModelIndex indexFromConfigString(const QAbstractItemModel *model, const QString &key) const = 0;
+
+  /**
+    Reimplement to return a unique string for the @p index.
+  */
+  virtual QString indexToConfigString(const QModelIndex &index) const = 0;
 
 private:
   //@cond PRIVATE
