@@ -146,22 +146,10 @@ QItemSelectionModel* KViewStateSaver::selectionModel() const
   return d->m_selectionModel;
 }
 
-QAbstractScrollArea* KViewStateSaver::scrollArea() const
-{
-  Q_D(const KViewStateSaver);
-  return d->m_scrollArea;
-}
-
 void KViewStateSaver::setSelectionModel(QItemSelectionModel* selectionModel)
 {
   Q_D(KViewStateSaver);
   d->m_selectionModel = selectionModel;
-}
-
-void KViewStateSaver::setScrollArea(QAbstractScrollArea* scrollArea)
-{
-  Q_D(KViewStateSaver);
-  d->m_scrollArea = scrollArea;
 }
 
 void KViewStateSaverPrivate::listenToPendingChanges()

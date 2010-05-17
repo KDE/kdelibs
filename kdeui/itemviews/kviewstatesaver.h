@@ -201,16 +201,6 @@ public:
   void setSelectionModel( QItemSelectionModel *selectionModel );
 
   /**
-    The QAbstractScrollArea whose state is persisted.
-  */
-  QAbstractScrollArea* scrollArea() const;
-
-  /**
-    Sets the QAbstractScrollArea whose state is persisted.
-  */
-  void setScrollArea( QAbstractScrollArea *scrollArea );
-
-  /**
     Saves the state to the @p configGroup
   */
   void saveState(KConfigGroup &configGroup);
