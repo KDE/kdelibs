@@ -38,6 +38,12 @@ typedef KBiHash<qint64, QModelIndex> ParentMapping;
 template<typename ModelIndex>
 bool isDescendantOf(const QList<ModelIndex> &list, const QModelIndex &idx)
 {
+    if (!idx.isValid())
+        return false;
+
+    if (list.contains(idx))
+        return false;
+
     QModelIndex parent = idx.parent();
     while (parent.isValid()) {
         if (list.contains(parent))
