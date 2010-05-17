@@ -25,7 +25,6 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QTreeView>
-#include <QListView>
 
 #include "kdebug.h"
 
@@ -41,7 +40,13 @@ class KViewStateSaverPrivate
 {
 public:
   KViewStateSaverPrivate(KViewStateSaver *qq)
-    : q_ptr(qq), m_treeView(0), m_selectionModel(0), m_scrollArea(0), m_horizontalScrollBarValue(-1), m_verticalScrollBarValue(-1)
+    : q_ptr(qq),
+      m_treeView(0),
+      m_view(0),
+      m_selectionModel(0),
+      m_scrollArea(0),
+      m_horizontalScrollBarValue(-1),
+      m_verticalScrollBarValue(-1)
   {
 
   }
@@ -79,8 +84,8 @@ public:
   {
     if ( m_selectionModel && m_selectionModel->model() )
       return m_selectionModel->model();
-    else if ( m_treeView && m_treeView->model() )
-      return m_treeView->model();
+    else if ( m_view && m_view->model() )
+      return m_view->model();
     return 0;
   }
 
@@ -98,7 +103,7 @@ public:
   }
 
   QTreeView *m_treeView;
-  QListView *m_listView;
+  QAbstractItemView *m_view;
   QItemSelectionModel *m_selectionModel;
   QAbstractScrollArea *m_scrollArea;
 
@@ -120,32 +125,19 @@ KViewStateSaver::~KViewStateSaver()
   delete d_ptr;
 }
 
-void KViewStateSaver::setTreeView(QTreeView* treeView)
+void KViewStateSaver::setView(QAbstractItemView* view)
 {
   Q_D(KViewStateSaver);
-  d->m_treeView = treeView;
-  d->m_scrollArea = treeView;
-  d->m_selectionModel = treeView->selectionModel();
+  d->m_scrollArea = view;
+  d->m_selectionModel = view->selectionModel();
+  d->m_view = view;
+  d->m_treeView = qobject_cast<QTreeView*>(view);
 }
 
-QTreeView* KViewStateSaver::treeView() const
+QAbstractItemView* KViewStateSaver::view() const
 {
   Q_D(const KViewStateSaver);
-  return d->m_treeView;
-}
-
-void KViewStateSaver::setListView(QListView* listView)
-{
-  Q_D(KViewStateSaver);
-  d->m_listView = listView;
-  d->m_scrollArea = listView;
-  d->m_selectionModel = listView->selectionModel();
-}
-
-QListView* KViewStateSaver::listView() const
-{
-  Q_D(const KViewStateSaver);
-  return d->m_listView;
+  return d->m_view;
 }
 
 QItemSelectionModel* KViewStateSaver::selectionModel() const

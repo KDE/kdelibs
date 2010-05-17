@@ -27,8 +27,7 @@
 
 #include "kdeui_export.h"
 
-class QTreeView;
-class QListView;
+class QAbstractItemView;
 class QItemSelectionModel;
 class QAbstractItemModel;
 class QAbstractScrollArea;
@@ -182,24 +181,14 @@ public:
   ~KViewStateSaver();
 
   /**
-    The QTreeView whose state is persisted.
-  */
-  QTreeView* treeView() const;
+   * The view whose state is persisted.
+   */
+  QAbstractItemView* view() const;
 
   /**
-    Sets the QTreeView whose state is persisted.
-  */
-  void setTreeView( QTreeView *treeView );
-
-  /**
-    The QListView whose state is persisted.
-  */
-  QListView* listView() const;
-
-  /**
-    Sets the QListView whose state is persisted.
-  */
-  void setListView( QListView *listView );
+   * Sets the view whose state is persisted.
+   */
+  void setView(QAbstractItemView *view);
 
   /**
     The QItemSelectionModel whose state is persisted.
