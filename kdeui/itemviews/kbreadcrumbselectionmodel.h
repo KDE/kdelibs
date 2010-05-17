@@ -27,8 +27,6 @@
 
 #include "kdeui_export.h"
 
-#include "kdebug.h"
-
 class KBreadcrumbSelectionModelPrivate;
 
 /**
