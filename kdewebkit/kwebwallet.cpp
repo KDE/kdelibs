@@ -433,6 +433,10 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                 if (!formElement.isNull()) {
                     formElement = formElement.findFirst(QString::fromLatin1("input[name=%1]").arg(field.first));
                     if (isValidInputElement(formElement)) {
+                        // WORKAROUND: Autofill does not work on Facebook without this hack!
+                        // TODO: Find a generic solution that might work everywhere instead...
+                        if (formElement.hasAttribute(QL1S("placeholder")))
+                            formElement.setAttribute(QL1S("placeholder"), QL1S(""));
                         formElement.setAttribute(QL1S("value"), field.second);
                         //kDebug(800) << "Filled out input name=" << field.first;
                     }
