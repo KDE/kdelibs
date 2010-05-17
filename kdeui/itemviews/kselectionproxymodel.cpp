@@ -1460,7 +1460,26 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
         {
             QMutableListIterator<QItemSelectionRange> i(fullSelection);
             while (i.hasNext()) {
-                const QItemSelectionRange range = i.next();
+                QItemSelectionRange range = i.next();
+                QItemSelection result;
+                bool foundIntersection = false;
+                foreach (const QItemSelectionRange &_r, selected)
+                {
+                    if (range.intersects(_r) && range != _r)
+                    {
+                        foundIntersection = true;
+                        QItemSelection::split( range, _r, &result);
+                        break;
+                    }
+                }
+                if (foundIntersection) {
+                    if (result.isEmpty())
+                        continue;
+                    else {
+                        Q_ASSERT(result.size() == 1);
+                        range = result.first();
+                    }
+                }
                 const QModelIndex topLeft = range.topLeft();
                 if (isDescendantOf(newRootRanges, topLeft) && !selected.contains(topLeft)) {
                     obscuredRanges << range;
