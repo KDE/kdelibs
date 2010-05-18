@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "ktoolbarhandler.h"
+#include "ktoolbarhandler_p.h"
 
 #include <QtXml/QDomDocument>
 
@@ -253,4 +253,4 @@ void ToolBarHandler::setupActions()
   d->connectToActionContainers();
 }
 
-#include "ktoolbarhandler.moc"
+#include "ktoolbarhandler_p.moc"

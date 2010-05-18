@@ -27,7 +27,7 @@
 #include "kmainwindow_p.h"
 #include "kactioncollection.h"
 #include "kmainwindowiface_p.h"
-#include "ktoolbarhandler.h"
+#include "ktoolbarhandler_p.h"
 #include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
