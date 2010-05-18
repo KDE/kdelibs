@@ -1525,6 +1525,12 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
         newRootRanges << selected << exposedSelection;
     }
+    if (!m_selectionModel->hasSelection())
+    {
+      Q_ASSERT(m_rootIndexList.isEmpty());
+      Q_ASSERT(m_mappedFirstChildren.isEmpty());
+      Q_ASSERT(m_mappedParents.isEmpty());
+    }
     QModelIndexList newIndexes = getNewIndexes(newRootRanges);
     if (newIndexes.size() > 0)
         insertionSort(newIndexes);
