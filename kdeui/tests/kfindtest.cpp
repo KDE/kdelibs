@@ -200,6 +200,10 @@ void TestKFind::testStaticFindRegexp_data()
     QTest::newRow("dot") << "abc" << "b." << 0 << 0 << 1 << 2;
     QTest::newRow("^simple") << "text" << "^tex" << 0 << 0 << 0 << 3;
     // TODO QTest::newRow("^multiline") << "foo\nbar" << "^bar" << 0 << 0 << 4 << 3;
+    QTest::newRow("simple$") << "text" << "xt$" << 0 << 0 << 2 << 2;
+    QTest::newRow("$ backwards") << "text" << "xt$" << 4 << int(KFind::FindBackwards) << 2 << 2;
+    // TODO QTest::newRow("multiline$") << "foo\nbar" << "oo$" << 0 << 0 << 1 << 2;
+    // TODO QTest::newRow("multiline$ backwards") << "foo\nbar" << "oo$" << 7 << int(KFind::FindBackwards) << 1 << 2;
     QTest::newRow("multiline with \\n") << "foo\nbar" << "o\nb" << 0 << 0 << 2 << 3;
     QTest::newRow("whole words ok") << "abc bcbc bc bmore be" << "b." << 0 << int(KFind::WholeWordsOnly) << 9 << 2;
     QTest::newRow("whole words not found") << "abab abx" << "ab" << 0 << int(KFind::WholeWordsOnly) << -1 << 0;
