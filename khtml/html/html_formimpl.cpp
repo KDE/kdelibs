@@ -2248,7 +2248,7 @@ void HTMLSelectElementImpl::remove( long index )
         setRecalcListItems();
 }
 
-DOMString HTMLSelectElementImpl::value( ) const
+HTMLOptionElementImpl* HTMLSelectElementImpl::firstSelectedItem() const
 {
     uint i;
     const QVector<HTMLGenericFormElementImpl*> items = listItems();
@@ -2256,8 +2256,16 @@ DOMString HTMLSelectElementImpl::value( ) const
     for (i = 0; i < itemsSize; ++i) {
         if ( items[i]->id() == ID_OPTION
             && static_cast<HTMLOptionElementImpl*>(items[i])->selectedBit())
-            return static_cast<HTMLOptionElementImpl*>(items[i])->value();
+            return static_cast<HTMLOptionElementImpl*>(items[i]);
     }
+    return 0;
+}
+
+DOMString HTMLSelectElementImpl::value( ) const
+{
+    HTMLOptionElementImpl* o = firstSelectedItem();
+    if (o)
+        return o->value();
     return DOMString("");
 }
 
@@ -2280,6 +2288,15 @@ QString HTMLSelectElementImpl::state( )
 
     const int l = items.count();
 
+    // We have two encoding schemes: for single-select ones, if the selected
+    // element has an ID, we encoded it as iFoo.
+    if (!multiple()) {
+        HTMLOptionElementImpl* item = firstSelectedItem();
+        if (item->hasID())
+            return QString::fromLatin1("i") + item->getAttribute(ATTR_ID).string();
+    }
+
+    // Otherwise we merely go positional..
     state.fill('.', l);
     for(int i = 0; i < l; ++i)
         if(items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->selectedBit())
@@ -2293,14 +2310,39 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
     recalcListItems();
 
     QString state = _state;
+    const QVector<HTMLGenericFormElementImpl*> items = listItems();
+    const int l = items.count();
+
+    // First see if we have an id-tagged one, and if it's correct.
+    if (state.startsWith(QLatin1Char('i'))) {
+        DOM::DOMString id = state.mid(1);
+        DOM::ElementImpl* cand = document()->getElementById(id);
+
+        // No such ID or not an option -> wrong
+        if (!cand || cand->id() != ID_OPTION)
+            return;
+
+        // See if it's one of ours, and select if so.
+        for (int i = 0; i < l; ++i) {
+            if (items[i] == cand)
+                static_cast<HTMLOptionElementImpl*>(cand)->setSelected(true);
+        }
+
+        // If we succeeded, our state is updated --- if not, we better
+        // leave this be.
+        return;
+    }
+    
     if(!state.isEmpty() && !state.contains('X') && !m_multiple && m_size <= 1) {
         qWarning("should not happen in restoreState!");
         state[0] = 'X';
     }
 
-    const QVector<HTMLGenericFormElementImpl*> items = listItems();
+    // Now we have positional encoding. Make sure the length matches.
+    if (m_length != state.length()) // m_length == number of <option>, while
+                                    // l == items.length() includes optgroups, too.
+        return;
 
-    const int l = items.count();
     for(int i = 0; i < l; ++i) {
         if(items[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl* const oe = static_cast<HTMLOptionElementImpl*>(items[i]);

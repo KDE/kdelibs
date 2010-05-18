@@ -457,6 +457,7 @@ public:
 
 private:
     void recalcListItems() const;
+    HTMLOptionElementImpl* firstSelectedItem() const;
 
 protected:
     mutable QVector<HTMLGenericFormElementImpl*> m_listItems;
