@@ -1340,11 +1340,16 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             int childrenCount = q->sourceModel()->rowCount(sourceTopLeft);
             for (int rootIdx = startRootIdx + 1; rootIdx <= endRootIdx; ++rootIdx)
             {
-              childrenCount += q->sourceModel()->rowCount(m_rootIndexList.at(rootIdx));
+                childrenCount += q->sourceModel()->rowCount(m_rootIndexList.at(rootIdx));
             }
             if (childrenCount == 0)
-              return;
-
+            {
+                for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
+                {
+                    m_rootIndexList.removeOne(m_rootIndexList.at(rootIdx));
+                }
+                return;
+            }
             ++endRootIdx;
             for ( ; endRootIdx < m_rootIndexList.size(); ++endRootIdx) {
                 const QModelIndex idx = m_rootIndexList.at(endRootIdx);
