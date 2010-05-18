@@ -28,7 +28,7 @@
 #include <QtCore/QDebug>
 
 template<typename T, typename U> class KBiHash;
-template<typename T, typename U> QDebug &operator<<(QDebug &out, const KBiHash<T, U> &biHash);
+template<typename T, typename U> QDebug operator<<(QDebug out, const KBiHash<T, U> &biHash);
 template<typename T, typename U> QDataStream &operator<<(QDataStream &out, const KBiHash<T, U> &bihash);
 template<typename T, typename U> QDataStream &operator>>(QDataStream &in, KBiHash<T, U> &biHash);
 
@@ -357,7 +357,7 @@ public:
 
     friend QDataStream &operator<< <T, U>(QDataStream &out, const KBiHash<T, U> &bihash);
     friend QDataStream &operator>> <T, U>(QDataStream &in, KBiHash<T, U> &biHash);
-    friend QDebug &operator<< <T, U>(QDebug &out, const KBiHash<T, U> &biHash);
+    friend QDebug operator<< <T, U>(QDebug out, const KBiHash<T, U> &biHash);
 private:
     QHash<T, U> _leftToRight;
     QHash<U, T> _rightToLeft;
