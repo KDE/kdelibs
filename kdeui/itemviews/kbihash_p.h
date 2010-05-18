@@ -225,7 +225,7 @@ public:
 
         if (_leftToRight.contains(t))
             _rightToLeft.remove(_leftToRight.take(t));
-        else if (_rightToLeft.contains(u))
+        if (_rightToLeft.contains(u))
             _leftToRight.remove(_rightToLeft.take(u));
 
         _rightToLeft.insert(u, t);
