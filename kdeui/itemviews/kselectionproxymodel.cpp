@@ -1362,16 +1362,17 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             const int proxyEnd = proxyStart + childrenCount - 1;
             q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
 
-
+            removeFirstChildMappings(proxyStart, proxyEnd);
+            int numRemovedChildren = 0;
             for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
             {
               const QModelIndex idx = m_rootIndexList.at(startRootIdx);
               const int childCount = q->sourceModel()->rowCount(idx);
-              removeFirstChildMappings(proxyStart, proxyEnd);
               removeParentMappings(idx, 0, childCount - 1);
-              updateInternalTopIndexes(proxyEnd + 1, -1 * childCount);
               m_rootIndexList.removeAt(startRootIdx);
+              numRemovedChildren += childCount;
             }
+            updateInternalTopIndexes(proxyEnd + 1, -1 * numRemovedChildren);
             q->endRemoveRows();
         }
     } else {
