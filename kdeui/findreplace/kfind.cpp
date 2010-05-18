@@ -484,8 +484,8 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
     return index;
 }
 
-// static
-int KFind::find(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
+// Core method for the regexp-based find
+static int doFind(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
 {
     if (options & KFind::FindBackwards) {
         // Backward search, until the beginning of the line...
@@ -495,7 +495,6 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
             if (index == -1)
                 break;
 
-            //pattern.match(text, index, matchedLength, false);
             /*int pos =*/ pattern.indexIn( text.mid(index) );
             *matchedLength = pattern.matchedLength();
             if (matchOk(text, index, *matchedLength, options))
@@ -510,7 +509,6 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
             if (index == -1)
                 break;
 
-            //pattern.match(text, index, matchedLength, false);
             /*int pos =*/ pattern.indexIn( text.mid(index) );
             *matchedLength = pattern.matchedLength();
             if (matchOk(text, index, *matchedLength, options))
@@ -524,6 +522,61 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
     if (index == -1)
         *matchedLength = 0;
     return index;
+}
+
+// Since QRegExp doesn't support multiline searches (the equivalent of perl's /m)
+// we have to cut the text into lines if the pattern starts with ^ or ends with $.
+static int lineBasedFind(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
+{
+    const QStringList lines = text.split('\n');
+    int offset = 0;
+    // Use "index" to find the first line we should start from
+    int startLineNumber = 0;
+    for (; startLineNumber < lines.count(); ++startLineNumber) {
+        const QString line = lines.at(startLineNumber);
+        if (index < offset + line.length()) {
+            break;
+        }
+        offset += line.length() + 1 /*newline*/;
+    }
+
+    if (options & KFind::FindBackwards) {
+
+        if (startLineNumber == lines.count()) {
+            // We went too far, go back to the last line
+            --startLineNumber;
+            offset -= lines.at(startLineNumber).length() + 1;
+        }
+
+        for (int lineNumber = startLineNumber; lineNumber >= 0; --lineNumber) {
+            const QString line = lines.at(lineNumber);
+            const int ret = doFind(line, pattern, lineNumber == startLineNumber ? index - offset : line.length(), options, matchedLength);
+            if (ret > -1)
+                return ret + offset;
+            offset -= line.length() + 1 /*newline*/;
+        }
+
+    } else {
+        for (int lineNumber = startLineNumber; lineNumber < lines.count(); ++lineNumber) {
+            const QString line = lines.at(lineNumber);
+            const int ret = doFind(line, pattern, lineNumber == startLineNumber ? (index - offset) : 0, options, matchedLength);
+            if (ret > -1) {
+                return ret + offset;
+            }
+            offset += line.length() + 1 /*newline*/;
+        }
+    }
+    return -1;
+}
+
+// static
+int KFind::find(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
+{
+    if (pattern.pattern().startsWith('^') || pattern.pattern().endsWith('$')) {
+        return lineBasedFind(text, pattern, index, options, matchedLength);
+    }
+
+    return doFind(text, pattern, index, options, matchedLength);
 }
 
 void KFind::Private::_k_slotFindNext()
