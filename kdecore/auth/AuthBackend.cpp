@@ -1,5 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +23,36 @@
 namespace KAuth
 {
 
-AuthBackend::~AuthBackend() {}
+class AuthBackend::Private
+{
+public:
+    Private() {}
+    virtual ~Private() {}
+
+    Capabilities capabilities;
+};
+
+AuthBackend::AuthBackend()
+    : QObject(0)
+    , d(new Private)
+{
+
+}
+
+AuthBackend::~AuthBackend()
+{
+}
+
+AuthBackend::Capabilities AuthBackend::capabilities() const
+{
+    return d->capabilities;
+}
+
+void AuthBackend::setCapabilities(AuthBackend::Capabilities capabilities)
+{
+    d->capabilities = capabilities;
+}
 
 } //namespace KAuth
+
+#include "AuthBackend.moc"

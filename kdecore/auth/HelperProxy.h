@@ -25,6 +25,7 @@
 #include <QString>
 #include <QVariant>
 
+#include "kauthaction.h"
 #include "kauthactionreply.h"
 #include "kauthactionwatcher.h"
 
@@ -41,6 +42,7 @@ public:
     // Application-side methods
     virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID) = 0;
     virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments) = 0;
+    virtual Action::AuthStatus authorizeAction(const QString &action, const QString &helperID) = 0;
     virtual void stopAction(const QString &action, const QString &helperID) = 0;
 
     // Helper-side methods

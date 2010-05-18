@@ -85,4 +85,13 @@ bool FakeHelperProxy::executeActions(const QList< QPair< QString, QVariantMap > 
     return false;
 }
 
+Action::AuthStatus FakeHelperProxy::authorizeAction(const QString& action, const QString& helperID)
+{
+    Q_UNUSED(action)
+    Q_UNUSED(helperID)
+    return Action::Denied;
 }
+
+}
+
+#include "FakeHelperProxy.moc"

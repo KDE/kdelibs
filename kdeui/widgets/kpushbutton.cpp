@@ -93,7 +93,7 @@ void KPushButton::KPushButtonPrivate::slotClickedInternal()
         delayedMenuTimer->stop();
 
     if (authAction) {
-        KAuth::Action::AuthStatus s = authAction->authorize();
+        KAuth::Action::AuthStatus s = authAction->earlyAuthorize();
         switch(s) {
         case KAuth::Action::Denied:
             parent->setEnabled(false);

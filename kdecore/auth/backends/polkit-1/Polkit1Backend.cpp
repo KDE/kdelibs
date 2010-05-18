@@ -53,8 +53,9 @@ PolkitQt1::Authority::Result PolkitResultEventLoop::result() const
 }
 
 Polkit1Backend::Polkit1Backend()
+    : AuthBackend()
 {
-    // Nothing to do here...
+    setCapabilities(AuthorizeFromHelperCapability);
 }
 
 Polkit1Backend::~Polkit1Backend()

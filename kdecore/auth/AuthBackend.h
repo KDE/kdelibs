@@ -1,6 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -31,8 +31,17 @@ namespace KAuth
 class AuthBackend : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AuthBackend)
 
 public:
+    enum Capability {
+        NoCapability = 0,
+        AuthorizeFromClientCapability = 1,
+        AuthorizeFromHelperCapability = 2
+    };
+    Q_DECLARE_FLAGS(Capabilities, Capability)
+
+    AuthBackend();
     virtual ~AuthBackend();
     virtual void setupAction(const QString &action) = 0;
     virtual Action::AuthStatus authorizeAction(const QString &action) = 0;
@@ -40,8 +49,17 @@ public:
     virtual QByteArray callerID() const = 0;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
 
+    Capabilities capabilities() const;
+
+protected:
+    void setCapabilities(Capabilities capabilities);
+
 Q_SIGNALS:
     void actionStatusChanged(const QString &action, Action::AuthStatus status);
+
+private:
+    class Private;
+    Private * const d;
 };
 
 } // namespace Auth

@@ -52,6 +52,7 @@ public:
 
     virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
     virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
+    virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
     virtual void stopAction(const QString &action, const QString &helperID);
 
     virtual bool initHelper(const QString &name);
@@ -65,6 +66,7 @@ public slots:
     void stopAction(const QString &action);
     void performActions(QByteArray blob, const QByteArray &callerID);
     QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
+    uint authorizeAction(const QString &action, const QByteArray &callerID);
 
 signals:
     void remoteSignal(int type, const QString &action, const QByteArray &blob); // This signal is sent from the helper to the app

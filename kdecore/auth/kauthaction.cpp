@@ -1,6 +1,6 @@
 /*
 *   Copyright (C) 2009 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -157,16 +157,62 @@ void Action::setHelperID(const QString &id)
 // Authorizaton methods
 Action::AuthStatus Action::authorize() const
 {
-    if (!isValid())
+    if (!isValid()) {
         return Action::Invalid;
+    }
 
-    return BackendsManager::authBackend()->authorizeAction(d->name);
+    // Let's check capabilities
+    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+        // That's easy then
+        return BackendsManager::authBackend()->authorizeAction(d->name);
+    } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
+        // We need to check if we have an helper in this case
+        if (hasHelper()) {
+            // Ok, we need to use "helper authorization".
+            return BackendsManager::helperProxy()->authorizeAction(d->name, d->helperId);
+        } else {
+            // Ok, in this case we have to fake and just pretend we are an helper
+            if (BackendsManager::authBackend()->isCallerAuthorized(d->name, BackendsManager::authBackend()->callerID())) {
+                return Authorized;
+            } else {
+                return Denied;
+            }
+        }
+    } else {
+        // This should never, never happen
+        return Invalid;
+    }
 }
+
+
+Action::AuthStatus Action::earlyAuthorize() const
+{
+    // Check the status first
+    AuthStatus s = status();
+    if (s == AuthRequired) {
+        // Let's check what to do
+        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+            // In this case we can actually try an authorization
+            return BackendsManager::authBackend()->authorizeAction(d->name);
+        } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
+            // In this case, just throw out Authorized, as the auth will take place later
+            return Authorized;
+        } else {
+            // This should never, never happen
+            return Invalid;
+        }
+    } else {
+        // It's fine, return the status
+        return s;
+    }
+}
+
 
 Action::AuthStatus Action::status() const
 {
-    if (!isValid())
+    if (!isValid()) {
         return Action::Invalid;
+    }
 
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
@@ -177,11 +223,20 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
     QList<QPair<QString, QVariantMap> > list;
 
     foreach(const Action &a, actions) {
-        AuthStatus s = a.authorize();
-        if (s == Authorized) {
+        // Save us an additional step
+        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+            AuthStatus s = BackendsManager::authBackend()->authorizeAction(a.name());
+
+            if (s == Authorized) {
+                list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
+            } else if ((s == Denied || s == Invalid) && deniedActions) {
+                *deniedActions << a;
+            }
+        } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
             list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-        } else if ((s == Denied || s == Invalid) && deniedActions) {
-            *deniedActions << a;
+        } else {
+            // There's something totally wrong here
+            return false;
         }
     }
 
@@ -212,29 +267,60 @@ ActionReply Action::execute() const
 
 ActionReply Action::execute(const QString &helperID) const
 {
-    AuthStatus s = authorize();
+    // Is the action valid?
+    if (!isValid()) {
+        return Invalid;
+    }
 
-    switch (s) {
-    case Denied:
-        return ActionReply::AuthorizationDeniedReply;
-    case Invalid:
-        return ActionReply::InvalidActionReply;
-    case UserCancelled:
-        return ActionReply::UserCancelledReply;
-    default:
-        if (d->async) {
-            if (helperID.isEmpty()) {
-                return Invalid;
+    // What to do?
+    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+        // Authorize from here
+        AuthStatus s = BackendsManager::authBackend()->authorizeAction(d->name);
+
+        // Abort if authorization fails
+        switch (s) {
+        case Denied:
+            return ActionReply::AuthorizationDeniedReply;
+        case Invalid:
+            return ActionReply::InvalidActionReply;
+        case UserCancelled:
+            return ActionReply::UserCancelledReply;
+        default:
+            break;
+        }
+    } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
+        // In this case we care only if the action is not async and does not have an helper
+        if (!d->async && !hasHelper()) {
+            // Authorize!
+            switch (authorize()) {
+            case Denied:
+                return ActionReply::AuthorizationDeniedReply;
+            case Invalid:
+                return ActionReply::InvalidActionReply;
+            case UserCancelled:
+                return ActionReply::UserCancelledReply;
+            default:
+                break;
             }
+        }
+    } else {
+        // What?
+        return Invalid;
+    }
 
-            return executeActions(QList<Action>() << *this, NULL, helperID) ?
-                   ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
+    if (d->async) {
+        if (hasHelper()) {
+            // It makes no sense
+            return Invalid;
+        }
+
+        return executeActions(QList<Action>() << *this, NULL, helperID) ?
+            ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
+    } else {
+        if (hasHelper()) {
+            return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
         } else {
-            if (!helperID.isEmpty()) {
-                return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
-            } else {
-                return ActionReply::SuccessReply;
-            }
+            return ActionReply::SuccessReply;
         }
     }
 }
@@ -247,6 +333,11 @@ void Action::stop()
 void Action::stop(const QString &helperID)
 {
     BackendsManager::helperProxy()->stopAction(d->name, helperID);
+}
+
+bool Action::hasHelper() const
+{
+    return !d->helperId.isEmpty();
 }
 
 } // namespace Auth

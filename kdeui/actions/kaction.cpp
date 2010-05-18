@@ -72,7 +72,7 @@ void KActionPrivate::slotTriggered()
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 
   if (authAction) {
-      KAuth::Action::AuthStatus s = authAction->authorize();
+      KAuth::Action::AuthStatus s = authAction->earlyAuthorize();
       switch(s) {
       case KAuth::Action::Denied:
           q->setEnabled(false);

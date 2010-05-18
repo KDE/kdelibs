@@ -38,7 +38,11 @@ AuthorizationRef authRef()
     return s_authRef;
 }
 
-AuthServicesBackend::AuthServicesBackend() : AuthBackend() {}
+AuthServicesBackend::AuthServicesBackend()
+    : AuthBackend()
+{
+    setCapabilities(AuthorizeFromHelperCapability);
+}
 
 void AuthServicesBackend::setupAction(const QString&)
 {

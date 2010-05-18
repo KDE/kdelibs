@@ -42,6 +42,7 @@ class FakeHelperProxy : public HelperProxy
         virtual void stopAction(const QString& action, const QString& helperID);
         virtual ActionReply executeAction(const QString& action, const QString& helperID, const QVariantMap& arguments);
         virtual bool executeActions(const QList< QPair< QString, QVariantMap > >& list, const QString& helperID);
+        virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
 };
 
 }

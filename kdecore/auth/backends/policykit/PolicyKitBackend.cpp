@@ -29,8 +29,9 @@ namespace KAuth
 {
 
 PolicyKitBackend::PolicyKitBackend()
+    : AuthBackend()
 {
-    // Nothing to do here...
+    setCapabilities(AuthorizeFromClientCapability);
 }
 
 Action::AuthStatus PolicyKitBackend::authorizeAction(const QString &action)

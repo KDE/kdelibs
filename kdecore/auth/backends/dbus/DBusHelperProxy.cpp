@@ -141,6 +141,40 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }
 
+Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const QString& helperID)
+{
+    if (!m_actionsInProgress.isEmpty()) {
+        return Action::Error;
+    }
+
+    QDBusConnection::systemBus().interface()->startService(helperID);
+
+    QDBusMessage message;
+    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "authorizeAction");
+
+    QList<QVariant> args;
+    args << action << BackendsManager::authBackend()->callerID();
+    message.setArguments(args);
+
+    m_actionsInProgress.push_back(action);
+
+    QEventLoop e;
+    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+    QDBusPendingCallWatcher watcher(pendingCall, this);
+    connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
+    e.exec();
+
+    m_actionsInProgress.removeOne(action);
+
+    QDBusMessage reply = pendingCall.reply();
+
+    if (reply.type() == QDBusMessage::ErrorMessage || reply.arguments().size() != 1) {
+        return Action::Error;
+    }
+
+    return static_cast<Action::AuthStatus>(reply.arguments().first().toUInt());
+}
+
 bool DBusHelperProxy::initHelper(const QString &name)
 {
     new AuthAdaptor(this);
@@ -279,11 +313,38 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
     emit remoteSignal(ActionPerformed, action, retVal.serialized());
     e.processEvents(QEventLoop::AllEvents);
-    m_currentAction = "";
+    m_currentAction.clear();
     m_stopRequest = false;
 
     return retVal.serialized();
 }
+
+
+uint DBusHelperProxy::authorizeAction(const QString& action, const QByteArray& callerID)
+{
+    if (!m_currentAction.isEmpty()) {
+        return static_cast<uint>(Action::Error);
+    }
+
+    m_currentAction = action;
+
+    uint retVal;
+
+    QTimer *timer = responder->property("__KAuth_Helper_Shutdown_Timer").value<QTimer*>();
+    timer->stop();
+
+    if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
+        retVal = static_cast<uint>(Action::Authorized);
+    } else {
+        retVal = static_cast<uint>(Action::Denied);
+    }
+
+    timer->start();
+    m_currentAction.clear();
+
+    return retVal;
+}
+
 
 void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
 {

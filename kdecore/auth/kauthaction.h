@@ -219,9 +219,34 @@ public:
     /**
      * @brief Sets the default helper ID used for actions execution
      *
+     * This method sets the helper ID which contains the body of this action.
+     * If the string is non-empty, the corresponding helper will be fired and
+     * the action executed inside the helper. Otherwise, the action will be just
+     * authorized.
+     *
+     * @note To unset a previously set helper, just pass an empty string
+     *
      * @param id The default helper ID.
+     *
+     * @see hasHelper
+     * @see helperID
      */
     void setHelperID(const QString &id);
+
+    /**
+     * @brief Checks if the action has an helper
+     *
+     * This function can be used to check if an helper will be called upon the
+     * execution of an action. Such an helper can be set through setHelperID. If
+     * this function returns false, upon execution the action will be just authorized.
+     *
+     * @since 4.5
+     *
+     * @return Whether the action has an helper or not
+     *
+     * @see setHelperID
+     */
+    bool hasHelper() const;
 
     /**
      * @brief Gets the ActionWatcher object for this action
@@ -273,26 +298,49 @@ public:
     /**
      * @brief Acquires authorization for an action without excuting it.
      *
+     * @note Please use this method if you really know what you are doing. If you are
+     *       implementing a GUI, you probably should look into earlyAuthorize instead.
+     *
+     * @note Please remember that calling this method is not required for a successful action
+     *       execution: it is safe and advised to call execute() only, without a previous call
+     *       to authorize or earlyAuthorize.
+     *
      * This method acquires the authorization rights for the action, asking
-     * the user to authenticate if needed.
-     *
-     * The result of this method is strictly related to the result of status().
-     * If it returns Action::Denied or Action::Authorized, this method
-     * will always return the same. Instead, if the status()
-     * result was Action::AuthRequired, the method would ask the user to authenticate.
-     * The Action::UserCancelled value is intended to be returned when the authentication
-     * fails because the user purposely cancelled it. Unfortunately, this isn't currently
-     * supported by policykit, so instead you'll get a Denied result in this case.
-     * The Mac OS X backend will return UserCancelled when appropriate.
-     *
-     * It's not so common to use this method directly, because it's already
-     * called by any of the execute methods. Use it only if you need to acquire the
-     * authorization long time before the execution, for example if you want to
-     * enable some GUI elements after user authentication.
+     * the user to authenticate if needed. It tries very hard to resolve a possible
+     * challenge (AuthRequired); for this reason, it is meant only for advanced usages.
+     * If you are unsure, always use earlyAuthorize or execute the action directly.
      *
      * @return The result of the authorization process
+     *
+     * @see earlyAuthorize
      */
     AuthStatus authorize() const;
+
+    /**
+     * @brief Tries to resolve authorization status in the best possible way without executing the action
+     *
+     * This method checks for the status of the action, and tries to acquire authorization
+     * (if needed) if the backend being used supports client-side authorization.
+     *
+     * This means this method is not reliable - its purpose it's to provide user interfaces
+     * an efficient mean to acquire authorization as early as possible, without interrupting
+     * the user's workflow. If the backend's authentication phase happens in the helper and the
+     * action requires authentication, \c Authorized will be returned.
+     *
+     * The main difference with authorize is that this method does not try to acquire authorization
+     * if the backend's authentication phase happens in the helper: using authorize in such a case
+     * might lead to ask the user its password twice, as the helper might time out, or in the case
+     * of a one shot authorization, the scope of the authorization would end with the authorization
+     * check itself. For this reason, you should @b always use this method instead of authorize, which
+     * is meant only for very advanced usages.
+     *
+     * This method is always safe to be called and used before an execution, even if not needed.
+     *
+     * @since 4.5
+     *
+     * @return The result of the early authorization process, with the caveats described above.
+     */
+    AuthStatus earlyAuthorize() const;
 
     /**
      * @brief Gets information about the authorization status of an action

@@ -23,8 +23,9 @@ namespace KAuth
 {
 
 FakeBackend::FakeBackend()
+    : AuthBackend()
 {
-    // Nothing to do here...
+    setCapabilities(NoCapability);
 }
 
 Action::AuthStatus FakeBackend::authorizeAction(const QString &action)
