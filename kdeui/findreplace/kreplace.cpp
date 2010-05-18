@@ -76,7 +76,6 @@ public:
 
     KReplaceNextDialog* dialog();
     void doReplace();
-    static int replace( QString &text, const QString &replacement, int index, long options, int length );
 
     void _k_slotSkip();
     void _k_slotReplace();
@@ -140,6 +139,27 @@ void KReplace::displayFinalDialog() const
         KMessageBox::information(parentWidget(), i18np("1 replacement done.", "%1 replacements done.", d->m_replacements ) );
 }
 
+static int replaceHelper(QString &text, const QString &replacement, int index, long options, int length, const QRegExp* regExp)
+{
+    QString rep(replacement);
+    if (options & KReplaceDialog::BackReference) {
+        // Backreferences: replace \0 with the right portion of 'text'
+        rep.replace( "\\0", text.mid( index, length ) );
+
+        // Other backrefs
+        if (regExp) {
+            const QStringList caps = regExp->capturedTexts();
+            for (int i = 0; i < caps.count(); ++i) {
+                rep.replace( "\\" + QString::number(i), caps.at(i) );
+            }
+        }
+    }
+
+    // Then replace rep into the text
+    text.replace(index, length, rep);
+    return rep.length();
+}
+
 KFind::Result KReplace::replace()
 {
     KFind::Private* df = KFind::d;
@@ -179,7 +199,7 @@ KFind::Result KReplace::replace()
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText (df->text.mid( df->index, df->matchedLength ));
                     QString rep (matchedText);
-                    d->KReplacePrivate::replace(rep, d->m_replacement, 0, df->options, df->matchedLength);
+                    replaceHelper(rep, d->m_replacement, 0, df->options, df->matchedLength, df->regExp);
                     d->dialog()->setLabel( matchedText, rep );
                     d->dialog()->show(); // TODO kde5: virtual void showReplaceNextDialog(QString,QString), so that kreplacetest can skip the show()
 
@@ -219,7 +239,7 @@ int KReplace::replace(QString &text, const QString &pattern, const QString &repl
     index = KFind::find(text, pattern, index, options, &matchedLength);
     if (index != -1)
     {
-        *replacedLength = KReplacePrivate::replace(text, replacement, index, options, matchedLength);
+        *replacedLength = replaceHelper(text, replacement, index, options, matchedLength, NULL);
         if (options & KFind::FindBackwards)
             index--;
         else
@@ -235,24 +255,13 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
     index = KFind::find(text, pattern, index, options, &matchedLength);
     if (index != -1)
     {
-        *replacedLength = KReplacePrivate::replace(text, replacement, index, options, matchedLength);
+        *replacedLength = replaceHelper(text, replacement, index, options, matchedLength, &pattern);
         if (options & KFind::FindBackwards)
             index--;
         else
             index += *replacedLength;
     }
     return index;
-}
-
-int KReplacePrivate::replace(QString &text, const QString &replacement, int index, long options, int length)
-{
-    QString rep (replacement);
-    // Backreferences: replace \0 with the right portion of 'text'
-    if ( options & KReplaceDialog::BackReference )
-        rep.replace( "\\0", text.mid( index, length ) );
-    // Then replace rep into the text
-    text.replace(index, length, rep);
-    return rep.length();
 }
 
 void KReplacePrivate::_k_slotReplaceAll()
@@ -288,7 +297,7 @@ void KReplacePrivate::doReplace()
 {
     KFind::Private* df = q->KFind::d;
     Q_ASSERT(df->index >= 0);
-    const int replacedLength = replace(df->text, m_replacement, df->index, df->options, df->matchedLength);
+    const int replacedLength = replaceHelper(df->text, m_replacement, df->index, df->options, df->matchedLength, df->regExp);
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.

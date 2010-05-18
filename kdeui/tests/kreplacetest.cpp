@@ -100,7 +100,7 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
 
 void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
-    kDebug() << "index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 );
+    //kDebug() << "index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 );
     *m_currentPos = text; // KReplace hacked the replacement into 'text' in already.
 }
 
@@ -240,12 +240,25 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
 // Test for the \0 backref
 static void testReplaceBackRef( int options, int button = 0 )
 {
-    kDebug() << "testReplaceBackRef: " << options;
     KReplaceTest test( QStringList() << QString( "abc def" ), button );
     test.replace( "abc", "(\\0)", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     QString expected = options & KReplaceDialog::BackReference ? "(abc) def" : "(\\0) def";
+    if ( textLines[ 0 ] != expected ) {
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of '"<< expected << "'" << endl;
+        exit(1);
+    }
+}
+
+// Test for other backrefs
+static void testReplaceBackRef1( int options, int button = 0 )
+{
+    KReplaceTest test( QStringList() << QString( "a1 b2 a3" ), button );
+    test.replace( "([ab])([\\d])", "\\1 and \\2 in (\\0)", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    QString expected = "a and 1 in (a1) b and 2 in (b2) a and 3 in (a3)";
     if ( textLines[ 0 ] != expected ) {
         kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of '"<< expected << "'" << endl;
         exit(1);
@@ -281,7 +294,6 @@ int main( int argc, char **argv )
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
 
-    #if 0
     testReplacementHistory(); // #130831
 
     testReplaceBlank( 0 );
@@ -329,7 +341,7 @@ int main( int argc, char **argv )
     testReplaceBackRef( 0 );
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
     testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-#endif
+
     testReplaceBackRef( KFind::FindBackwards, 0 );
     testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
     testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
@@ -338,6 +350,9 @@ int main( int argc, char **argv )
     testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards, 0 );
     testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
     testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+
+    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, KDialog::User3 ); // replace
+    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, KDialog::User1 ); // replace all
 
     QString text = "This file is part of the KDE project.\n"
                    "This library is free software; you can redistribute it and/or\n"
