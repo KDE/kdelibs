@@ -274,6 +274,20 @@ private: // Don't allow subclasses to emit these signals.
     */
     void rootIndexAdded(const QModelIndex &newIndex);
 
+    /**
+      @internal
+      Emitted before @p selection, a selection in the sourceModel, is removed from
+      the root selection.
+    */
+    void rootSelectionAboutToBeRemoved(const QItemSelection &selection);
+
+    /**
+      @internal
+      Emitted after @p selection, a selection in the sourceModel, is added to
+      the root selection.
+    */
+    void rootSelectionAdded(const QItemSelection &selection);
+
 protected:
     QList<QPersistentModelIndex> sourceRootIndexes() const;
 

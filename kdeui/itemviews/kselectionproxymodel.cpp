@@ -1405,13 +1405,15 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel->selection());
 
     QItemSelection newRootRanges;
+    QItemSelection removedRootRanges;
     if (!m_includeAllSelected) {
         newRootRanges = getRootRanges(selected);
 
+        QItemSelection futureSelection = fullSelection;
         QItemSelection exposedSelection;
         {
-            QItemSelection removedRootRanges = getRootRanges(deselected);
-            QListIterator<QItemSelectionRange> i(removedRootRanges);
+            QItemSelection deselectedRootRanges = getRootRanges(deselected);
+            QListIterator<QItemSelectionRange> i(deselectedRootRanges);
             while (i.hasNext()) {
                 // Need to sort first.
                 const QItemSelectionRange range = i.next();
@@ -1422,18 +1424,22 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
                       if (isDescendantOf(range, selectedRange.topLeft()) && !(newRootRanges.contains(selectedRange.topLeft())))
                           exposedSelection.append(selectedRange);
                     }
-                    removeRangeFromProxy(range);
+                    removedRootRanges << range;
                 }
             }
+            futureSelection.merge(QItemSelection(removedRootRanges), QItemSelectionModel::Deselect);
         }
         newRootRanges << getRootRanges(exposedSelection);
 
         {
             QMutableListIterator<QItemSelectionRange> i(newRootRanges);
+            // TODO: This is what m_rootIndexList should be maintained as.
+            QItemSelection existingSelection = fullSelection;
+            existingSelection.merge(selected, QItemSelectionModel::Deselect);
             while (i.hasNext()) {
                 const QItemSelectionRange range = i.next();
                 const QModelIndex topLeft = range.topLeft();
-                if (isDescendantOf(m_rootIndexList, topLeft) || isDescendantOf(fullSelection, topLeft)) {
+                if (isDescendantOf(existingSelection, topLeft) || isDescendantOf(futureSelection, topLeft)) {
                     i.remove();
                 }
             }
@@ -1441,7 +1447,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
         QItemSelection obscuredRanges;
         {
-            QMutableListIterator<QItemSelectionRange> i(fullSelection);
+            QMutableListIterator<QItemSelectionRange> i(futureSelection);
             while (i.hasNext()) {
                 QItemSelectionRange range = i.next();
                 QItemSelection result;
@@ -1471,30 +1477,32 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
                 }
             }
         }
-        QItemSelection obscuredRootRanges = getRootRanges(obscuredRanges);
-        {
-            QListIterator<QItemSelectionRange> i(obscuredRootRanges);
-            while (i.hasNext()) {
-                removeRangeFromProxy(i.next());
-            }
-        }
+        removedRootRanges << getRootRanges(obscuredRanges);
     } else {
-        QListIterator<QItemSelectionRange> i(deselected);
+        removedRootRanges << deselected;
+        newRootRanges << selected;
+    }
+
+    q->rootSelectionAboutToBeRemoved(removedRootRanges);
+    {
+        QListIterator<QItemSelectionRange> i(removedRootRanges);
         while (i.hasNext()) {
             const QItemSelectionRange range = i.next();
             removeRangeFromProxy(range);
         }
-        newRootRanges << selected;
     }
+
     if (!m_selectionModel->hasSelection())
     {
       Q_ASSERT(m_rootIndexList.isEmpty());
       Q_ASSERT(m_mappedFirstChildren.isEmpty());
       Q_ASSERT(m_mappedParents.isEmpty());
     }
+    // TODO: Make insertion range based too.
     QModelIndexList newIndexes = getNewIndexes(newRootRanges);
     if (newIndexes.size() > 0)
         insertionSort(newIndexes);
+    q->rootSelectionAdded(newRootRanges);
 }
 
 SourceProxyIndexMapping KSelectionProxyModelPrivate::regroup(const QModelIndexList &list) const
