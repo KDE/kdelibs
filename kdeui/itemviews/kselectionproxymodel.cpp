@@ -1345,7 +1345,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             {
                 for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
                 {
-                    m_rootIndexList.removeOne(m_rootIndexList.at(rootIdx));
+                    m_rootIndexList.removeOne(m_rootIndexList.at(startRootIdx));
                 }
                 return;
             }
