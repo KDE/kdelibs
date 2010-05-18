@@ -417,6 +417,7 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
     QWebFrame *frame = d->pendingFillRequests.value(url).frame;
     if (frame) {
         QWebElement formElement;
+        bool filledForm = false;
         QListIterator<WebForm> formIt (forms);
         while (formIt.hasNext()) {
             const WebForm form = formIt.next();
@@ -438,11 +439,13 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                         if (formElement.hasAttribute(QL1S("placeholder")))
                             formElement.setAttribute(QL1S("placeholder"), QL1S(""));
                         formElement.setAttribute(QL1S("value"), field.second);
+                        filledForm = true;
                         //kDebug(800) << "Filled out input name=" << field.first;
                     }
                 }
             }
         }
+        emit fillFormRequestCompleted(filledForm);
     }
 }
 
