@@ -228,14 +228,13 @@ void KTextEdit::Private::slotFindHighlight(const QString& text, int matchingInde
 }
 
 
-void KTextEdit::Private::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
-    Q_UNUSED(text)
+void KTextEdit::Private::slotReplaceText(const QString &text, int replacementIndex, int replacedLength, int matchedLength) {
     //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
     QTextCursor tc = parent->textCursor();
     tc.setPosition(replacementIndex);
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
     tc.removeSelectedText();
-    tc.insertText(repDlg->replacement());
+    tc.insertText(text.mid(replacementIndex, replacedLength));
     parent->setTextCursor(tc);
     if (replace->options() & KReplaceDialog::PromptOnReplace) {
         parent->ensureCursorVisible();
