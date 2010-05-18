@@ -33,6 +33,7 @@
  * @author Michael Howell <mhowell123@gmail.com>
  * @author Dawit Alemayehu <adawit@kde.org>
  *
+ * @see QWebPluginFactory
  * @since 4.4
  */
 class KDEWEBKIT_EXPORT KWebPluginFactory : public QWebPluginFactory
@@ -71,6 +72,8 @@ public:
 private:
     class KWebPluginFactoryPrivate;
     KWebPluginFactoryPrivate* const d;
+
+    Q_PRIVATE_SLOT(d, void _k_slotMimeType(KIO::Job *, const QString &));
 };
 
 #endif // KWEBPLUGINFACTORY_H
