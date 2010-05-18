@@ -297,7 +297,7 @@ public:
     KUriFilterPrivate() {}
     ~KUriFilterPrivate()
     {
-        qDeleteAll(plugins.values());
+        qDeleteAll(plugins);
         plugins.clear();
     }
     QHash<QString, KUriFilterPlugin *> plugins;
@@ -330,14 +330,15 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
         QHashIterator<QString, KUriFilterPlugin *> it (d->plugins);
         while (it.hasNext()) {
             it.next();
-            filtered |= it.value()->filterUri( data );
+            if ( it.value()->filterUri( data ) )
+                filtered = true;
         }
     } else {
         QListIterator<QString> it (filters);
         while (it.hasNext()) {
             KUriFilterPlugin* plugin = d->plugins.value(it.next());
-            if (plugin)
-                filtered |= plugin->filterUri( data );
+            if (plugin &&  plugin->filterUri( data ))
+                filtered = true;
         }
     }
 
