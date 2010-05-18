@@ -634,6 +634,9 @@ QString KGlobalSettings::downloadPath()
         KConfig xdgUserConf( xdgUserDirs, KConfig::SimpleConfig );
         KConfigGroup g( &xdgUserConf, "" );
         downloadPath  = g.readPathEntry( "XDG_DOWNLOAD_DIR", downloadPath ).remove(  '"' );
+        if ( downloadPath.isEmpty() ) {
+            downloadPath = QDir::homePath();
+        }
     }
 #endif
     downloadPath = QDir::cleanPath( downloadPath );
