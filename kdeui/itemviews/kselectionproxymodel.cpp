@@ -1481,26 +1481,12 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
             }
         }
     } else {
-        QItemSelection exposedSelection;
-        {
-            QItemSelection removedRootRanges = getRootRanges(deselected);
-            QListIterator<QItemSelectionRange> i(removedRootRanges);
-            while (i.hasNext()) {
-                // Need to sort first.
-                const QItemSelectionRange range = i.next();
-                const QModelIndex topLeft = range.topLeft();
-                if (!isDescendantOf(fullSelection, topLeft) || isDescendantOf(selected, topLeft)) {
-                    foreach (const QItemSelectionRange &selectedRange, fullSelection)
-                    {
-                      if (isDescendantOf(range, selectedRange.topLeft()) && !(newRootRanges.contains(selectedRange.topLeft())))
-                          exposedSelection.append(selectedRange);
-                    }
-                    removeRangeFromProxy(range);
-                }
-            }
+        QListIterator<QItemSelectionRange> i(deselected);
+        while (i.hasNext()) {
+            const QItemSelectionRange range = i.next();
+            removeRangeFromProxy(range);
         }
-
-        newRootRanges << selected << exposedSelection;
+        newRootRanges << selected;
     }
     if (!m_selectionModel->hasSelection())
     {
