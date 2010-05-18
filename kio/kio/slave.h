@@ -35,70 +35,70 @@
 
 namespace KIO {
 
-    class SlavePrivate;
-    class SimpleJob;
-    // Attention developers: If you change the implementation of KIO::Slave,
-    // do *not* use connection() or slaveconn but the respective KIO::Slave
-    // accessor methods. Otherwise classes derived from Slave might break. (LS)
-    //
-    // Do not use this class directly, outside of KIO. Only use the Slave pointer
-    // that is returned by the scheduler for passing it around.
-    //
-    // TODO: KDE5: Separate public API and private stuff for this better
-    class KIO_SLAVE_EXPORT Slave : public KIO::SlaveInterface
-    {
+class SlavePrivate;
+class SimpleJob;
+// Attention developers: If you change the implementation of KIO::Slave,
+// do *not* use connection() or slaveconn but the respective KIO::Slave
+// accessor methods. Otherwise classes derived from Slave might break. (LS)
+//
+// Do not use this class directly, outside of KIO. Only use the Slave pointer
+// that is returned by the scheduler for passing it around.
+//
+// TODO: KDE5: Separate public API and private stuff for this better
+class KIO_SLAVE_EXPORT Slave : public KIO::SlaveInterface
+{
 	Q_OBJECT
-    public:
+public:
 	explicit Slave(const QString &protocol, QObject *parent = 0);
 
-        virtual ~Slave();
+  virtual ~Slave();
 
 	void setPID(pid_t);
 
-        int slave_pid();
+  int slave_pid();
 
-    void setJob(KIO::SimpleJob *job);
-    KIO::SimpleJob *job() const;
+  void setJob(KIO::SimpleJob *job);
+  KIO::SimpleJob *job() const;
 
-    /**
-    * Force termination
-    */
-    void kill();
+  /**
+   * Force termination
+   */
+  void kill();
 
-        /**
-         * @return true if the slave survived the last mission.
-         */
-        bool isAlive();
+  /**
+   * @return true if the slave survived the last mission.
+   */
+  bool isAlive();
 
-        /**
-         * Set host for url
-         * @param host to connect to.
-         * @param port to connect to.
-         * @param user to login as
-         * @param passwd to login with
-         */
-        virtual void setHost( const QString &host, quint16 port,
-                      const QString &user, const QString &passwd);
+  /**
+   * Set host for url
+   * @param host to connect to.
+   * @param port to connect to.
+   * @param user to login as
+   * @param passwd to login with
+   */
+  virtual void setHost( const QString &host, quint16 port,
+                const QString &user, const QString &passwd);
 
-        /**
-         * Clear host info.
-         */
-        void resetHost();
+  /**
+   * Clear host info.
+   */
+  void resetHost();
 
-        /**
-         * Configure slave
-         */
-        virtual void setConfig(const MetaData &config);
+  /**
+   * Configure slave
+   */
+  virtual void setConfig(const MetaData &config);
 
-        /**
+  /**
 	 * The protocol this slave handles.
 	 *
-         * @return name of protocol handled by this slave, as seen by the user
-         */
-        QString protocol();
+   * @return name of protocol handled by this slave, as seen by the user
+   */
+  QString protocol();
 
-        void setProtocol(const QString & protocol);
-        /**
+  void setProtocol(const QString & protocol);
+  /**
 	 * The actual protocol used to handle the request.
 	 *
 	 * This method will return a different protocol than
@@ -108,29 +108,29 @@ namespace KIO {
 	 * when the actuall request was to retrieve a resource
 	 * from an "ftp" server by going through a proxy server.
 	 *
-         * @return the actual protocol (io-slave) that handled the request
-         */
-        QString slaveProtocol();
+   * @return the actual protocol (io-slave) that handled the request
+   */
+  QString slaveProtocol();
 
-        /**
-         * @return Host this slave is (was?) connected to
-         */
-        QString host();
+  /**
+   * @return Host this slave is (was?) connected to
+   */
+  QString host();
 
-        /**
-         * @return port this slave is (was?) connected to
-         */
-        quint16 port();
+  /**
+   * @return port this slave is (was?) connected to
+   */
+  quint16 port();
 
-        /**
-         * @return User this slave is (was?) logged in as
-         */
-        QString user();
+  /**
+   * @return User this slave is (was?) logged in as
+   */
+  QString user();
 
-        /**
-         * @return Passwd used to log in
-         */
-        QString passwd();
+  /**
+   * @return Passwd used to log in
+   */
+  QString passwd();
 
 	/**
 	 * Creates a new slave.
@@ -194,26 +194,28 @@ namespace KIO {
 	 */
 	void setIdle();
 
-        /*
-         * @returns Whether the slave is connected
-         * (Connection oriented slaves only)
-         */
-        bool isConnected();
-        void setConnected(bool c);
+  /*
+   * @returns Whether the slave is connected
+   * (Connection oriented slaves only)
+   */
+  bool isConnected();
+  void setConnected(bool c);
 
-        void ref();
-        void deref();
+  void ref();
+  void deref();
 
-    public Q_SLOTS:
-        void accept();
+public Q_SLOTS:
+  void accept();
 	void gotInput();
 	void timeout();
-    Q_SIGNALS:
-        void slaveDied(KIO::Slave *slave);
 
-    private:
-        Q_DECLARE_PRIVATE(Slave)
-    };
+Q_SIGNALS:
+  void slaveDied(KIO::Slave *slave);
+
+private:
+  Q_DECLARE_PRIVATE(Slave)
+};
+
 }
 
 #undef KIO_SLAVE_EXPORT
