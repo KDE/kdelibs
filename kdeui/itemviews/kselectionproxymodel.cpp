@@ -1319,8 +1319,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             }
 
             q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
-            if (range.top() == 0)
-                removeFirstChildMappings(range.top(), range.height());
+            removeFirstChildMappings(proxyStart, proxyEnd);
             removeParentMappings(sourceParent, range.top(), range.bottom());
             updateInternalTopIndexes(range.bottom(), -1 * range.height());
 
@@ -1368,6 +1367,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             {
               const QModelIndex idx = m_rootIndexList.at(startRootIdx);
               const int childCount = q->sourceModel()->rowCount(idx);
+              removeFirstChildMappings(proxyStart, proxyEnd);
               removeParentMappings(idx, 0, childCount - 1);
               updateInternalTopIndexes(proxyEnd + 1, -1 * childCount);
               m_rootIndexList.removeAt(startRootIdx);
