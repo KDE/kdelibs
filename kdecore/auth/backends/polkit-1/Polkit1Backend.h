@@ -24,8 +24,9 @@
 
 #include "AuthBackend.h"
 
-#include <QHash>
-#include <QEventLoop>
+#include <QtCore/QHash>
+#include <QtCore/QEventLoop>
+#include <QtCore/QStringList>
 
 #include <PolkitQt1/Authority>
 
@@ -47,12 +48,16 @@ public:
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
+    virtual bool actionExists(const QString& action);
 
 private Q_SLOTS:
     void checkForResultChanged();
+    void updateCachedActions(const PolkitQt1::ActionDescription::List &actions);
 
 private:
     QHash<QString, Action::AuthStatus> m_cachedResults;
+    QStringList m_knownActions;
+    bool m_flyingActions;
 };
 
 class PolkitResultEventLoop : public QEventLoop

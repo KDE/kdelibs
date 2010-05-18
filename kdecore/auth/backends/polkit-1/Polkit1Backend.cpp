@@ -22,10 +22,11 @@
 #include "Polkit1Backend.h"
 
 #include <QtCore/qplugin.h>
-#include <syslog.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTimer>
+
 #include <PolkitQt1/Authority>
 #include <PolkitQt1/Subject>
-#include <QtCore/QCoreApplication>
 
 namespace KAuth
 {
@@ -33,12 +34,10 @@ namespace KAuth
 PolkitResultEventLoop::PolkitResultEventLoop(QObject* parent)
     : QEventLoop(parent)
 {
-
 }
 
 PolkitResultEventLoop::~PolkitResultEventLoop()
 {
-
 }
 
 void PolkitResultEventLoop::requestQuit(const PolkitQt1::Authority::Result& result)
@@ -54,13 +53,35 @@ PolkitQt1::Authority::Result PolkitResultEventLoop::result() const
 
 Polkit1Backend::Polkit1Backend()
     : AuthBackend()
+    , m_flyingActions(false)
 {
-    setCapabilities(AuthorizeFromHelperCapability);
+    setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability);
+
+    // Setup useful signals
+    connect(PolkitQt1::Authority::instance(), SIGNAL(configChanged()),
+            this, SLOT(checkForResultChanged()));
+    connect(PolkitQt1::Authority::instance(), SIGNAL(consoleKitDBChanged()),
+            this, SLOT(checkForResultChanged()));
+    connect(PolkitQt1::Authority::instance(), SIGNAL(enumerateActionsFinished(PolkitQt1::ActionDescription::List)),
+            this, SLOT(updateCachedActions(PolkitQt1::ActionDescription::List)));
+
+    // Cache existing action IDs as soon as possible
+    PolkitQt1::Authority::instance()->enumerateActions();
+    m_flyingActions = true;
 }
 
 Polkit1Backend::~Polkit1Backend()
 {
 
+}
+
+void Polkit1Backend::updateCachedActions(const PolkitQt1::ActionDescription::List& actions)
+{
+    m_knownActions.clear();
+    foreach (PolkitQt1::ActionDescription *action, actions) {
+        m_knownActions << action->actionId();
+    }
+    m_flyingActions = false;
 }
 
 Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
@@ -72,11 +93,6 @@ Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
 
 void Polkit1Backend::setupAction(const QString &action)
 {
-    connect(PolkitQt1::Authority::instance(), SIGNAL(configChanged()),
-            this, SLOT(checkForResultChanged()));
-    connect(PolkitQt1::Authority::instance(), SIGNAL(consoleKitDBChanged()),
-            this, SLOT(checkForResultChanged()));
-
     m_cachedResults[action] = actionStatus(action);
 }
 
@@ -139,6 +155,27 @@ void Polkit1Backend::checkForResultChanged()
             emit actionStatusChanged(action, m_cachedResults[action]);
         }
     }
+
+    // Force updating known actions
+    PolkitQt1::Authority::instance()->enumerateActions();
+    m_flyingActions = true;
+}
+
+bool Polkit1Backend::actionExists(const QString& action)
+{
+    // Any flying actions?
+    if (m_flyingActions) {
+        int tries = 0;
+        while (m_flyingActions && tries < 10) {
+            // Wait max 2 seconds
+            QEventLoop e;
+            QTimer::singleShot(200, &e, SLOT(quit()));
+            e.exec();
+            ++tries;
+        }
+    }
+
+    return m_knownActions.contains(action);
 }
 
 } // namespace Auth

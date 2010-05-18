@@ -102,10 +102,17 @@ QString Action::name() const
 
 void Action::setName(const QString &name)
 {
-    QRegExp exp("[0-z]+(\\.[0-z]+)*");
-
     d->name = name;
-    d->valid = exp.exactMatch(name);
+
+    // Does the backend support checking for known actions?
+    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::CheckActionExistenceCapability) {
+        // In this case, just ask the backend
+        d->valid = BackendsManager::authBackend()->actionExists(name);
+    } else {
+        // Otherwise, check through a regexp
+        QRegExp exp("[0-z]+(\\.[0-z]+)*");
+        d->valid = exp.exactMatch(name);
+    }
 }
 
 QString Action::details() const

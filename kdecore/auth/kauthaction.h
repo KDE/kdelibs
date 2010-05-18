@@ -196,6 +196,9 @@ public:
      * This method returns false if the action name doesn't match the
      * valid syntax.
      *
+     * If the backend supports it, this method also checks if the action is
+     * valid and recognized by the backend itself.
+     *
      * Invalid actions cannot be authorized nor executed.
      * The empty string is not a valid action name, so the default
      * constructor returns an invalid action.

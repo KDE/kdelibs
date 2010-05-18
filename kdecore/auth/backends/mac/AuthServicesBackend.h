@@ -37,6 +37,7 @@ public:
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
+    virtual bool actionExists(const QString& action);
 };
 
 } // namespace KAuth

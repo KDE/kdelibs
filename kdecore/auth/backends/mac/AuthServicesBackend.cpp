@@ -41,7 +41,7 @@ AuthorizationRef authRef()
 AuthServicesBackend::AuthServicesBackend()
     : AuthBackend()
 {
-    setCapabilities(AuthorizeFromHelperCapability);
+    setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability);
 }
 
 void AuthServicesBackend::setupAction(const QString&)
@@ -123,6 +123,13 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
     AuthorizationFree(auth, kAuthorizationFlagDefaults);
 
     return result == errAuthorizationSuccess;
+}
+
+bool AuthServicesBackend::actionExists(const QString& action)
+{
+    OSStatus exists = AuthorizationRightGet(action.toUtf8(), NULL);
+
+    return exists == errAuthorizationSuccess;
 }
 
 }; // namespace KAuth

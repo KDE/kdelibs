@@ -53,6 +53,11 @@ void AuthBackend::setCapabilities(AuthBackend::Capabilities capabilities)
     d->capabilities = capabilities;
 }
 
+bool AuthBackend::actionExists(const QString& action)
+{
+    return false;
+}
+
 } //namespace KAuth
 
 #include "AuthBackend.moc"
