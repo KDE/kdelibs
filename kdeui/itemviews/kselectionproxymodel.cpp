@@ -1992,7 +1992,6 @@ void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent
 
     Q_Q(KSelectionProxyModel);
 
-
     for (int row = start; row <= end; ++row) {
         static const int column = 0;
         const QModelIndex idx = q->sourceModel()->index(row, column, parent);
@@ -2001,8 +2000,7 @@ void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent
         if (!proxyIdx.isValid())
             continue;
         clearMapping(idx);
-        if (!m_omitDescendants && !isDescendantOf(m_selectionModel->selection(), m_indexMapper->mapLeftToRight(idx)))
-            removeParentMappings(idx, 0, q->sourceModel()->rowCount(idx) - 1);
+        removeParentMappings(idx, 0, q->sourceModel()->rowCount(idx) - 1);
     }
 }
 
