@@ -128,6 +128,9 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
                                    reply.errorMessage()));
         qDebug() << reply.errorMessage();
 
+        // The remote signal will never arrive: so let's erase the action from the list ourselves
+        m_actionsInProgress.removeOne(action);
+
         return r;
     }
 
@@ -135,6 +138,10 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         ActionReply errorReply = ActionReply::DBusErrorReply;
         errorReply.setErrorDescription(i18n("DBus Backend error: received corrupt data from helper %1 %2",
                                             reply.arguments().size(), QDBusConnection::systemBus().lastError().message()));
+
+        // The remote signal may never arrive: so let's erase the action from the list ourselves
+        m_actionsInProgress.removeOne(action);
+
         return errorReply;
     }
 
