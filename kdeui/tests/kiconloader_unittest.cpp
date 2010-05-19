@@ -126,11 +126,19 @@ private Q_SLOTS:
         KIconLoader appIconLoader(appName);
         // Now using KIcon. Separate test so that KIconLoader isn't fully inited.
         KIcon icon("kdialog", &appIconLoader);
-        QPixmap pix = icon.pixmap(QSize(22, 22));
-        QVERIFY(!pix.isNull());
+        {
+            QPixmap pix = icon.pixmap(QSize(22, 22));
+            QVERIFY(!pix.isNull());
+        }
         QCOMPARE(icon.actualSize(QSize(96, 22)), QSize(22, 22));
         QCOMPARE(icon.actualSize(QSize(22, 96)), QSize(22, 22));
         QCOMPARE(icon.actualSize(QSize(22, 16)), QSize(16, 16));
+
+        // Can we ask for a really small size?
+        {
+            QPixmap pix8 = icon.pixmap(QSize(8, 8));
+            QCOMPARE(pix8.size(), QSize(8, 8));
+        }
     }
 
     void testLoadMimeTypeIcon_data()
