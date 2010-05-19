@@ -88,16 +88,6 @@ static const qint32 r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2
 
 // ----------------------------------------------------------------------------
 
-
-// For item view selections
-struct SelectionTiles
-{
-    QPixmap left, center, right;
-};
-
-
-// ----------------------------------------------------------------------------
-
 static const QStyle::StyleHint SH_KCustomStyleElement = (QStyle::StyleHint)0xff000001;
 static const int X_KdeBase = 0xff000000;
 
