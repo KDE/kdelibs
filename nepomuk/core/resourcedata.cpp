@@ -66,12 +66,6 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_groundingOccurence(0),
       m_rm(rm)
 {
-    if( uri.isValid() )
-        m_rm->m_uriKickoffData.insert( uri, this );
-    else if( !uriOrId.isEmpty() )
-        m_rm->m_idKickoffData.insert( uriOrId, this );
-
-
     if( m_mainType.isEmpty() ) {
         m_mainType = Soprano::Vocabulary::RDFS::Resource();
     }
@@ -82,6 +76,11 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
         m_rm->cleanupCache();
 
     m_rm->dataCnt.ref();
+
+    if( uri.isValid() )
+        m_rm->m_uriKickoffData.insert( uri, this );
+    else if( !uriOrId.isEmpty() )
+        m_rm->m_idKickoffData.insert( uriOrId, this );
 }
 
 
