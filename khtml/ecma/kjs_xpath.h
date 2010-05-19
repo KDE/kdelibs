@@ -21,7 +21,7 @@
 
 namespace KJS {
 
-DEFINE_PSEUDO_CONSTRUCTOR(XPathResultPseudoCtor);
+DEFINE_PSEUDO_CONSTRUCTOR(XPathResultPseudoCtor)
 
 class XPathResult: public DOMWrapperObject<khtml::XPathResultImpl>
 {
@@ -44,7 +44,7 @@ public:
     };
 };
 
-DEFINE_PSEUDO_CONSTRUCTOR(XPathExpressionPseudoCtor);
+DEFINE_PSEUDO_CONSTRUCTOR(XPathExpressionPseudoCtor)
 
 class XPathExpression: public DOMWrapperObject<khtml::XPathExpressionImpl>
 {
@@ -79,7 +79,7 @@ private:
 // The class JSXPathNSResolver does (2).
 //
 // Further, the method ... to avoid having wrappers-inside-wrappers
-DEFINE_PSEUDO_CONSTRUCTOR(XPathNSResolverPseudoCtor);
+DEFINE_PSEUDO_CONSTRUCTOR(XPathNSResolverPseudoCtor)
 class XPathNSResolver: public DOMWrapperObject<khtml::XPathNSResolverImpl>
 {
 public:

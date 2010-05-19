@@ -55,7 +55,7 @@ IMPLEMENT_CONSTANT_TABLE(XPathResultConstants,"XPathResultConstants")
 */
 KJS_DEFINE_PROTOTYPE   (XPathResultProto)
 KJS_IMPLEMENT_PROTOFUNC(XPathResultProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("XPathResult", XPathResultProto, XPathResultProtoFunc, XPathResultConstants);
+KJS_IMPLEMENT_PROTOTYPE("XPathResult", XPathResultProto, XPathResultProtoFunc, XPathResultConstants)
 IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(XPathResultPseudoCtor, "XPathResult", XPathResultProto, XPathResultConstants)
 
 /*
@@ -130,7 +130,7 @@ JSValue* XPathResult::getValueProperty(ExecState* exec, int token) const
 */
 KJS_DEFINE_PROTOTYPE   (XPathExpressionProto)
 KJS_IMPLEMENT_PROTOFUNC(XPathExpressionProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("XPathExpression", XPathExpressionProto, XPathExpressionProtoFunc, ObjectPrototype);
+KJS_IMPLEMENT_PROTOTYPE("XPathExpression", XPathExpressionProto, XPathExpressionProtoFunc, ObjectPrototype)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(XPathExpressionPseudoCtor, "XPathExpression", XPathExpressionProto)
 
 const ClassInfo XPathExpression::info = { "XPathExpression", 0, 0, 0 };
@@ -173,7 +173,7 @@ JSValue* XPathExpressionProtoFunc::callAsFunction(ExecState* exec, JSObject* thi
 */
 KJS_DEFINE_PROTOTYPE   (XPathNSResolverProto)
 KJS_IMPLEMENT_PROTOFUNC(XPathNSResolverProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("XPathNSResolver", XPathNSResolverProto, XPathNSResolverProtoFunc, ObjectPrototype);
+KJS_IMPLEMENT_PROTOTYPE("XPathNSResolver", XPathNSResolverProto, XPathNSResolverProtoFunc, ObjectPrototype)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(XPathNSResolverPseudoCtor, "XPathNSResolver", XPathNSResolverProto)
 
 const ClassInfo XPathNSResolver::info = { "XPathNSResolver", 0, 0, 0 };
