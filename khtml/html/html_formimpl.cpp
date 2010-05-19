@@ -2292,7 +2292,7 @@ QString HTMLSelectElementImpl::state( )
     // element has an ID, we encoded it as iFoo.
     if (!multiple()) {
         HTMLOptionElementImpl* item = firstSelectedItem();
-        if (item->hasID())
+        if (item && item->hasID())
             return QString::fromLatin1("i") + item->getAttribute(ATTR_ID).string();
     }
 
