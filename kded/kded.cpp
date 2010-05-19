@@ -754,37 +754,6 @@ void KHostnameD::checkHostname()
 }
 
 
-#if 0
-// Thiago: I have no idea what the following class is here for
-// David: the commit log was:
-//       Disable DCOP-Qt bridge but make sure that "dcopquit kded" continues to work.
-//       (see the setQtBridgeEnabled below)
-class KDEDQtDCOPObject : public DCOPObject
-{
-public:
-  KDEDQtDCOPObject() : DCOPObject("qt/kded") { }
-
-  virtual bool process(const DCOPCString &fun, const QByteArray &data,
-                       DCOPCString& replyType, QByteArray &replyData)
-    {
-      if (qApp && (fun == "quit()"))
-      {
-        qApp->quit();
-        replyType = "void";
-        return true;
-      }
-      return DCOPObject::process(fun, data, replyType, replyData);
-    }
-
-  DCOPCStringList functions()
-    {
-       DCOPCStringList res = DCOPObject::functions();
-       res += "void quit()";
-       return res;
-    }
-};
-#endif
-
 KBuildsycocaAdaptor::KBuildsycocaAdaptor(QObject *parent)
    : QDBusAbstractAdaptor(parent)
 {
