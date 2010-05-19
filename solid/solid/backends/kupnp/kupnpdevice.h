@@ -24,7 +24,7 @@
 #define SOLID_BACKENDS_KUPnP_KUPNPDEVICE_H
 
 // KUPnP
-#include "lib/device.h"
+#include "cagibidevice.h"
 // Solid
 #include <solid/ifaces/device.h>
 
@@ -43,9 +43,10 @@ public:
 
 public:
     virtual void addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const;
-    virtual bool hasDeviceInterface( const UPnP::Device& device,
-                                     Solid::DeviceInterface::Type type ) const;
-    virtual QObject* tryCreateDevice( const UPnP::Device& device ) const = 0;
+//     virtual bool hasDeviceInterface( const Cagibi::Device& device,
+//                                      Solid::DeviceInterface::Type type ) const;
+    virtual QStringList typeNames( Solid::DeviceInterface::Type type ) const;
+    virtual QObject* tryCreateDevice( const Cagibi::Device& device ) const = 0;
 };
 
 
@@ -55,7 +56,7 @@ public:
     DeviceFactory();
 
 public: // AbstractDeviceFactory API
-    virtual QObject* tryCreateDevice( const UPnP::Device& device ) const;
+    virtual QObject* tryCreateDevice( const Cagibi::Device& device ) const;
 };
 
 
@@ -64,7 +65,7 @@ class KUPnPDevice : public Solid::Ifaces::Device
     Q_OBJECT
 
 public:
-    explicit KUPnPDevice(const UPnP::Device& device);
+    explicit KUPnPDevice(const Cagibi::Device& device);
     virtual ~KUPnPDevice();
 
 public: // Solid::Ifaces::Device API
@@ -81,16 +82,16 @@ public: // Solid::Ifaces::Device API
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
 
 public:
-    const UPnP::Device& device() const;
+    const Cagibi::Device& device() const;
 
 protected:
-    UPnP::Device mDevice;
+    Cagibi::Device mDevice;
 
     KUPnPDevice* mParentDevice;
 };
 
 
-inline const UPnP::Device& KUPnPDevice::device() const { return mDevice; }
+inline const Cagibi::Device& KUPnPDevice::device() const { return mDevice; }
 
 }
 }

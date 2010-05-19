@@ -25,6 +25,7 @@
 // Solid
 #include "kupnpstorageaccess.h"
 // Qt
+#include <QtCore/QStringList>
 #include <QtCore/QSet>
 
 namespace Solid
@@ -34,6 +35,8 @@ namespace Backends
 namespace KUPnP
 {
 
+static const char MediaServer2Udn[] = "urn:schemas-upnp-org:device:MediaServer:2";
+
 MediaServer2Factory::MediaServer2Factory() {}
 
 void MediaServer2Factory::addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const
@@ -41,21 +44,25 @@ void MediaServer2Factory::addSupportedInterfaces( QSet<Solid::DeviceInterface::T
     interfaces << Solid::DeviceInterface::StorageAccess;
 }
 
-bool MediaServer2Factory:: hasDeviceInterface( const UPnP::Device& device,
-                                               Solid::DeviceInterface::Type type ) const
+QStringList MediaServer2Factory::typeNames( Solid::DeviceInterface::Type type ) const
 {
-    return type==Solid::DeviceInterface::StorageAccess
-           && device.type() == QLatin1String("MediaServer2");
+    QStringList result;
+
+    if (type==Solid::DeviceInterface::StorageAccess)
+        result << QLatin1String(MediaServer2Udn);
+
+    return result;
 }
 
-QObject* MediaServer2Factory::tryCreateDevice( const UPnP::Device& device ) const
+
+QObject* MediaServer2Factory::tryCreateDevice( const Cagibi::Device& device ) const
 {
-    return ( device.type() == QLatin1String("MediaServer2") ) ?
+    return ( device.type() == QLatin1String(MediaServer2Udn) ) ?
         new MediaServer2( device ) : 0;
 }
 
 
-MediaServer2::MediaServer2(const UPnP::Device& device)
+MediaServer2::MediaServer2(const Cagibi::Device& device)
   : KUPnPDevice(device)
 {
 }

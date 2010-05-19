@@ -33,18 +33,22 @@ namespace Backends
 {
 namespace KUPnP
 {
+
+static const char InternetGatewayDevice1Udn[] =
+    "urn:schemas-upnp-org:device:InternetGatewayDevice:1";
+
 InternetGatewayDevice1Factory::InternetGatewayDevice1Factory() {}
 
 
-QObject* InternetGatewayDevice1Factory::tryCreateDevice( const UPnP::Device& device ) const
+QObject* InternetGatewayDevice1Factory::tryCreateDevice( const Cagibi::Device& device ) const
 {
-    return ( device.type() == QLatin1String("InternetGatewayDevice1") ) ?
+    return ( device.type() == QLatin1String(InternetGatewayDevice1Udn) ) ?
         new InternetGatewayDevice1( device ) : 0;
 }
 
 
 
-InternetGatewayDevice1::InternetGatewayDevice1(const UPnP::Device& device)
+InternetGatewayDevice1::InternetGatewayDevice1(const Cagibi::Device& device)
   : KUPnPDevice(device)
 {
 }

@@ -82,23 +82,30 @@ void AbstractDeviceFactory::addSupportedInterfaces( QSet<Solid::DeviceInterface:
 {
     Q_UNUSED( interfaces );
 }
-
-bool AbstractDeviceFactory:: hasDeviceInterface( const UPnP::Device& device,
-                                         Solid::DeviceInterface::Type type ) const
+#if 0
+bool AbstractDeviceFactory::hasDeviceInterface( const Cagibi::Device& device,
+                                                Solid::DeviceInterface::Type type ) const
 {
     Q_UNUSED( device );
     Q_UNUSED( type );
 
     return false;
 }
+#endif
+QStringList AbstractDeviceFactory::typeNames( Solid::DeviceInterface::Type type ) const
+{
+    Q_UNUSED( type );
 
-QObject* DeviceFactory::tryCreateDevice( const UPnP::Device& device ) const
+    return QStringList();
+}
+
+QObject* DeviceFactory::tryCreateDevice( const Cagibi::Device& device ) const
 {
     return new KUPnPDevice( device );
 }
 
 
-KUPnPDevice::KUPnPDevice(const UPnP::Device& device)
+KUPnPDevice::KUPnPDevice(const Cagibi::Device& device)
   : Device(),
     mDevice(device),
     mParentDevice(0)
@@ -119,7 +126,7 @@ QString KUPnPDevice::parentUdi() const
 {
     const QString result =
         mDevice.hasParentDevice() ?
-            QString::fromLatin1("/org/kde/KUPnP/%1").arg( mDevice.parentUdn() ) :
+            QString::fromLatin1("/org/kde/KUPnP/%1").arg( mDevice.parentDeviceUdn() ) :
             QString::fromLatin1("/org/kde/KUPnP");
 
     return result;
@@ -127,12 +134,12 @@ QString KUPnPDevice::parentUdi() const
 
 QString KUPnPDevice::vendor() const
 {
-    return QString("UPnP vendor"); // TODO: expose vendor in UPnP::Device
+    return mDevice.manufacturerName();
 }
 
 QString KUPnPDevice::product() const
 {
-    return mDevice.displayName(); // TODO: expose product in UPnP::Device
+    return mDevice.friendlyName();
 }
 
 QString KUPnPDevice::icon() const
@@ -183,7 +190,7 @@ QStringList KUPnPDevice::emblems() const
 
 QString KUPnPDevice::description() const
 {
-    return mDevice.displayName();
+    return mDevice.modelDescription();
 }
 
 

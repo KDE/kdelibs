@@ -31,12 +31,12 @@
 #include <QtCore/QStringList>
 #include <QtCore/QSet>
 #include <QtCore/QVector>
+#include <QtCore/QHash>
 
+class QDBusInterface;
 
-namespace UPnP {
-class DeviceBrowser;
-class Device;
-}
+typedef QHash<QString,QString> DeviceTypeMap;
+Q_DECLARE_METATYPE( DeviceTypeMap )
 
 namespace Solid
 {
@@ -64,8 +64,8 @@ public: // Solid::Ifaces::DeviceManager API
     virtual QObject* createDevice(const QString& udi);
 
 private Q_SLOTS:
-    void onDeviceAdded( const UPnP::Device& device );
-    void onDeviceRemoved( const UPnP::Device& device );
+    void onDevicesAdded( const DeviceTypeMap& deviceTypeMap );
+    void onDevicesRemoved( const DeviceTypeMap& deviceTypeMap );
 
 private:
     QStringList findDeviceByParent(const QString& parentUdi, Solid::DeviceInterface::Type type);
@@ -77,8 +77,9 @@ private:
     QSet<Solid::DeviceInterface::Type> mSupportedInterfaces;
 
     QVector<AbstractDeviceFactory*> mDeviceFactories;
-    UPnP::DeviceBrowser* mDeviceBrowser;
     QString mUdiPrefix;
+
+    QDBusInterface* mDBusCagibiProxy;
 };
 
 }

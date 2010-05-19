@@ -23,8 +23,6 @@
 #ifndef SOLID_BACKENDS_KUPnP_KUPNPROOTDEVICE_H
 #define SOLID_BACKENDS_KUPnP_KUPNPROOTDEVICE_H
 
-// KUPnP
-#include "lib/device.h"
 // Solid
 #include <solid/ifaces/device.h>
 

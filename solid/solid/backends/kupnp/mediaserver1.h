@@ -41,16 +41,15 @@ public:
 
 public: // AbstractDeviceFactory API
     virtual void addSupportedInterfaces( QSet<Solid::DeviceInterface::Type>& interfaces ) const;
-    virtual bool hasDeviceInterface( const UPnP::Device& device,
-                                     Solid::DeviceInterface::Type type ) const;
-    virtual QObject* tryCreateDevice( const UPnP::Device& device ) const;
+    virtual QStringList typeNames( Solid::DeviceInterface::Type type ) const;
+    virtual QObject* tryCreateDevice( const Cagibi::Device& device ) const;
 };
 
 
 class MediaServer1 : public KUPnPDevice
 {
 public:
-    explicit MediaServer1(const UPnP::Device& device);
+    explicit MediaServer1(const Cagibi::Device& device);
     virtual ~MediaServer1();
 
 public: // Solid::Ifaces::Device API

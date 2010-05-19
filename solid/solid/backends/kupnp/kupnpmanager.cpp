@@ -29,9 +29,12 @@
 #include "mediaserver3.h"
 #include "internetgatewaydevice1.h"
 #include "kupnpdevice.h"
-#include "lib/devicebrowser.h"
-#include "lib/device.h"
+#include "cagibidbuscodec.h"
 // Qt
+#include <QtDBus/QDBusMetaType>
+#include <QtDBus/QDBusReply>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusInterface>
 #include <QtCore/QDebug>
 
 
@@ -46,15 +49,30 @@ const char KUPnPUdiPrefix[] = "/org/kde/KUPnP";
 static const int KUPnPUdiPrefixLength = sizeof( KUPnPUdiPrefix ); // count final \0 for / separator
 
 
-KUPnPManager::KUPnPManager(QObject *parent)
+KUPnPManager::KUPnPManager(QObject* parent)
   : Solid::Ifaces::DeviceManager(parent),
-    mDeviceBrowser( new UPnP::DeviceBrowser(QStringList(),this) ),
     mUdiPrefix( QString::fromLatin1(KUPnPUdiPrefix) )
 {
-    connect( mDeviceBrowser, SIGNAL(deviceAdded( const UPnP::Device& )),
-             SLOT(onDeviceAdded( const UPnP::Device& )) );
-    connect( mDeviceBrowser, SIGNAL(deviceRemoved( const UPnP::Device& )),
-             SLOT(onDeviceRemoved( const UPnP::Device& )) );
+    qDBusRegisterMetaType<DeviceTypeMap>();
+    qDBusRegisterMetaType<Cagibi::Device>();
+
+    QDBusConnection dbusConnection = QDBusConnection::sessionBus();
+
+    mDBusCagibiProxy =
+        new QDBusInterface("org.kde.Cagibi",
+                           "/org/kde/Cagibi",
+                           "org.kde.Cagibi",
+                           dbusConnection, this);
+    dbusConnection.connect("org.kde.Cagibi",
+                           "/org/kde/Cagibi",
+                           "org.kde.Cagibi",
+                           "devicesAdded",
+                           this, SLOT(onDevicesAdded( const DeviceTypeMap& )) );
+    dbusConnection.connect("org.kde.Cagibi",
+                           "/org/kde/Cagibi",
+                           "org.kde.Cagibi",
+                           "devicesRemoved",
+                           this, SLOT(onDevicesRemoved( const DeviceTypeMap& )) );
 
     mDeviceFactories
         << new MediaServer1Factory()
@@ -85,16 +103,26 @@ QStringList KUPnPManager::allDevices()
 
     result << mUdiPrefix; // group parent
 
-    const QList<UPnP::Device> devices = mDeviceBrowser->devices();
-    foreach( const UPnP::Device& device, devices )
-        result << udiFromUdn( device.udn() );
+    QDBusReply<DeviceTypeMap> reply =
+        mDBusCagibiProxy->asyncCall("allDevices");
+
+    if( reply.isValid() )
+    {
+        const DeviceTypeMap deviceTypeMap = reply;
+        DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
+        DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
+        for( ; it != end; ++it )
+            result << udiFromUdn( it.key() );
+    }
+    else
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
 
     return result;
 }
 
 
 QStringList KUPnPManager::devicesFromQuery( const QString& parentUdi,
-                                            Solid::DeviceInterface::Type type)
+                                             Solid::DeviceInterface::Type type)
 {
     return
         (!parentUdi.isEmpty()) ?
@@ -105,7 +133,7 @@ QStringList KUPnPManager::devicesFromQuery( const QString& parentUdi,
             allDevices();
 }
 
-QObject* KUPnPManager::createDevice(const QString &udi)
+QObject* KUPnPManager::createDevice(const QString& udi)
 {
     QObject* result = 0;
 
@@ -113,24 +141,28 @@ QObject* KUPnPManager::createDevice(const QString &udi)
     if( udn.isEmpty() ) {
         result = new KUPnPRootDevice();
     } else {
-        QList<UPnP::Device> devices = mDeviceBrowser->devices();
-        foreach( const UPnP::Device& device, devices ) {
-            if( device.udn() == udn ) {
-                foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
-                    result = factory->tryCreateDevice( device );
-                    if( result != 0 )
-                        break;
-                }
-                break;
+        QDBusReply<Cagibi::Device> reply =
+            mDBusCagibiProxy->asyncCall("deviceDetails",udn);
+
+        if( reply.isValid() )
+        {
+            Cagibi::Device device = reply;
+qDebug() << "device of type: "<<device.type();
+            foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+                result = factory->tryCreateDevice( device );
+                if( result != 0 )
+                    break;
             }
         }
+        else
+            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
     }
 
-    return result;
+return result;
 }
 
 QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
-                                             Solid::DeviceInterface::Type type)
+                                              Solid::DeviceInterface::Type type)
 {
     QStringList result;
 
@@ -140,20 +172,31 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
         }
     } else {
         const QString parentUdn = udnFromUdi( parentUdi );
-        const QList<UPnP::Device> devices = mDeviceBrowser->devices();
 
-        foreach( const UPnP::Device& device, devices ) {
-            if ((parentUdn.isEmpty() && device.hasParentDevice())
-                ||(! parentUdn.isEmpty() && device.parentDevice().udn() == parentUdn )) {
-                continue;
-            }
+        QDBusReply<DeviceTypeMap> reply =
+            mDBusCagibiProxy->asyncCall("devicesByParent",parentUdn); // TODO: optional recursive?
+
+        if( reply.isValid() )
+        {
+            DeviceTypeMap deviceTypeMap = reply;
+
             foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
-                if( factory->hasDeviceInterface(device,type) ) {
-                    result << udiFromUdn( device.udn() );
-                    break;
+                const QStringList typeNames = factory->typeNames( type );
+                foreach( const QString& typeName, typeNames ) {
+                    DeviceTypeMap::Iterator it = deviceTypeMap.begin();
+                    while( it != deviceTypeMap.end() ) {
+                        if( it.value() == typeName ) {
+                            result << udiFromUdn( it.key() );
+                            // to prevent double inclusion remove the device
+                            it = deviceTypeMap.erase( it );
+                        } else
+                            ++it;
+                    }
                 }
             }
         }
+        else
+            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
     }
 
     return result;
@@ -163,14 +206,23 @@ QStringList KUPnPManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Ty
 {
     QStringList result;
 
-    const QList<UPnP::Device> devices = mDeviceBrowser->devices();
+    foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+        const QStringList typeNames = factory->typeNames( type );
+        foreach( const QString& typeName, typeNames ) {
+            QDBusReply<DeviceTypeMap> reply =
+                mDBusCagibiProxy->asyncCall("devicesByType",typeName);
 
-    foreach( const UPnP::Device& device, devices ) {
-        foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
-            if( factory->hasDeviceInterface(device,type) ) {
-                result << udiFromUdn( device.udn() );
-                break;
+            if( reply.isValid() )
+            {
+                const DeviceTypeMap deviceTypeMap = reply;
+
+                DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
+                DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
+                for( ; it != end; ++it )
+                    result << udiFromUdn( it.key() );
             }
+            else
+                qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
         }
     }
 
@@ -180,14 +232,20 @@ QStringList KUPnPManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Ty
 QString KUPnPManager::udiFromUdn( const QString& udn ) const { return mUdiPrefix + '/' + udn; }
 QString KUPnPManager::udnFromUdi( const QString& udi ) const { return udi.mid( KUPnPUdiPrefixLength ); }
 
-void KUPnPManager::onDeviceAdded( const UPnP::Device& device )
+void KUPnPManager::onDevicesAdded( const DeviceTypeMap& deviceTypeMap )
 {
-    emit deviceAdded( udiFromUdn(device.udn()) );
+    DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
+    DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
+    for( ; it != end; ++it )
+        emit deviceAdded( udiFromUdn(it.key()) );
 }
 
-void KUPnPManager::onDeviceRemoved( const UPnP::Device& device )
+void KUPnPManager::onDevicesRemoved( const DeviceTypeMap& deviceTypeMap )
 {
-    emit deviceRemoved( udiFromUdn(device.udn()) );
+    DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
+    DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
+    for( ; it != end; ++it )
+        emit deviceRemoved( udiFromUdn(it.key()) );
 }
 
 
