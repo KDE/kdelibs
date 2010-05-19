@@ -1329,7 +1329,7 @@ void KCategorizedView::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void KCategorizedView::updateGeometries()
 {
-    const int verticalOff = verticalOffset();
+    const int oldVerticalOffset = verticalOffset();
 
     QListView::updateGeometries();
 
@@ -1371,7 +1371,7 @@ void KCategorizedView::updateGeometries()
         verticalScrollBar()->setRange(0, bottomRange);
     } else {
         verticalScrollBar()->setRange(0, bottomRange);
-        verticalScrollBar()->setValue(verticalOff);
+        verticalScrollBar()->setValue(oldVerticalOffset);
     }
 
     //TODO: also consider working with the horizontal scroll bar. since at this level I am not still
@@ -1391,6 +1391,9 @@ void KCategorizedView::dataChanged(const QModelIndex &topLeft,
                                    const QModelIndex &bottomRight)
 {
     QListView::dataChanged(topLeft, bottomRight);
+    if (!d->isCategorized()) {
+        return;
+    }
 
     *d->hoveredBlock = Private::Block();
     d->hoveredCategory = QString();
@@ -1421,6 +1424,10 @@ void KCategorizedView::rowsInserted(const QModelIndex &parent,
                                     int end)
 {
     QListView::rowsInserted(parent, start, end);
+    if (!d->isCategorized()) {
+        return;
+    }
+
     *d->hoveredBlock = Private::Block();
     d->hoveredCategory = QString();
     d->rowsInserted(parent, start, end);
@@ -1446,6 +1453,10 @@ void KCategorizedView::rowsRemoved(const QModelIndex &parent,
 
 void KCategorizedView::slotLayoutChanged()
 {
+    if (!d->isCategorized()) {
+        return;
+    }
+
     d->blocks.clear();
     *d->hoveredBlock = Private::Block();
     d->hoveredCategory = QString();
