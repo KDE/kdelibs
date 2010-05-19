@@ -376,7 +376,7 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
              && size() == item.size()
-             && time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime)
+             && time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime) // TODO only if already known!
              && m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME )
         );
 
@@ -807,6 +807,31 @@ QString KFileItem::iconName() const
     return d->m_iconName;
 }
 
+/**
+ * Returns true if this is a desktop file.
+ * Mimetype determination is optional.
+ */
+static bool checkDesktopFile(const KFileItem& item, bool _determineMimeType)
+{
+    // only local files
+    bool isLocal;
+    const KUrl url = item.mostLocalUrl(isLocal);
+    if (!isLocal)
+        return false;
+
+    // only regular files
+    if (!item.isRegularFile())
+        return false;
+
+    // only if readable
+    if (!item.isReadable())
+        return false;
+
+    // return true if desktop file
+    KMimeType::Ptr mime = _determineMimeType ? item.determineMimeType() : item.mimeTypePtr();
+    return mime->is("application/x-desktop");
+}
+
 QStringList KFileItem::overlays() const
 {
     QStringList names = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_OVERLAY_NAMES ).split(',');
@@ -819,7 +844,7 @@ QStringList KFileItem::overlays() const
         names.append("object-locked");
     }
 
-    if ( isDesktopFile() ) {
+    if ( checkDesktopFile(*this, false) ) {
         KDesktopFile cfg( localPath() );
         const KConfigGroup group = cfg.desktopGroup();
 
@@ -1447,24 +1472,10 @@ KUrl::List KFileItemList::targetUrlList() const {
     return lst;
 }
 
+
 bool KFileItem::isDesktopFile() const
 {
-    // only local files
-    bool isLocal;
-    const KUrl url = mostLocalUrl(isLocal);
-    if (!isLocal)
-        return false;
-
-    // only regular files
-    if (!S_ISREG(d->m_fileMode))
-        return false;
-
-    // only if readable
-    if (!isReadable())
-        return false;
-
-    // return true if desktop file
-    return determineMimeType()->is("application/x-desktop");
+    return checkDesktopFile(*this, true);
 }
 
 bool KFileItem::isRegularFile() const

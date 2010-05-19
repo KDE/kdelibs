@@ -189,6 +189,14 @@ void KFileItemTest::testMimeTypeOnDemand()
     }
 
     {
+        // Calling overlays should NOT do mimetype determination (#237668)
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        QVERIFY(!fileItem.isMimeTypeKnown());
+        fileItem.overlays();
+        QVERIFY(!fileItem.isMimeTypeKnown());
+    }
+
+    {
         KTemporaryFile file;
         QVERIFY(file.open());
         // Check whether mime-magic is used.
