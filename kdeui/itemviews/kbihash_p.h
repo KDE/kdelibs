@@ -68,7 +68,9 @@ public:
     private:
         using QHash<V, W>::iterator::operator*;
         using QHash<V, W>::iterator::operator->;
+#ifndef Q_CC_MSVC
         using QHash<V, W>::iterator::value;
+#endif
     };
 
     typedef _iterator<T, U>                      left_iterator;
