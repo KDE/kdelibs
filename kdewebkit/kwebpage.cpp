@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Dirk Mueller <mueller@kde.org>
  * Copyright (C) 2008 Urs Wolfer <uwolfer @ kde.org>
  * Copyright (C) 2008 Michael Howell <mhowell123@gmail.com>
- * Copyright (C) 2009 Dawit Alemayehu <adawit@kde.org>
+ * Copyright (C) 2009,2010 Dawit Alemayehu <adawit@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,17 +49,62 @@
 #include <QtCore/QPointer>
 #include <QtCore/QFileInfo>
 #include <QtWebKit/QWebFrame>
+#include <QtNetwork/QNetworkReply>
 
 
-#define QL1(x)  QLatin1String(x)
+#define QL1S(x)  QLatin1String(x)
+#define QL1C(x)  QLatin1Char(x)
 
+static KUrl promptUser (QWidget *parent, const KUrl& url, const QString& suggestedName)
+{
+    KUrl destUrl;
+    int result = KIO::R_OVERWRITE;
+    const QUrl fileName ((suggestedName.isEmpty() ? url.fileName() : suggestedName));
+
+    do {
+        destUrl = KFileDialog::getSaveFileName(fileName, QString(), parent);
+
+        if (destUrl.isLocalFile()) {
+            QFileInfo finfo (destUrl.toLocalFile());
+            if (finfo.exists()) {
+                QDateTime now = QDateTime::currentDateTime();
+                KIO::RenameDialog dlg (parent, i18n("Overwrite File?"), url, destUrl,
+                                       KIO::RenameDialog_Mode(KIO::M_OVERWRITE | KIO::M_SKIP),
+                                       -1, finfo.size(),
+                                       now.toTime_t(), finfo.created().toTime_t(),
+                                       now.toTime_t(), finfo.lastModified().toTime_t());
+                result = dlg.exec();
+            }
+        }
+    } while (result == KIO::R_CANCEL && destUrl.isValid());
+
+    return destUrl;
+}
+
+static bool downloadResource (const KUrl& srcUrl, const KIO::MetaData& metaData = KIO::MetaData(),
+                              QWidget* parent = 0, const QString& suggestedName = QString())
+{
+    const KUrl& destUrl = promptUser(parent, srcUrl, suggestedName);
+
+    if (destUrl.isValid()) {
+        KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
+
+        if (!metaData.isEmpty())
+            job->setMetaData(metaData);
+
+        job->addMetaData(QL1S("MaxCacheSize"), QL1S("0")); // Don't store in http cache.
+        job->addMetaData(QL1S("cache"), QL1S("cache")); // Use entry from cache if available.
+        job->uiDelegate()->setAutoErrorHandlingEnabled(true);
+        return true;
+    }
+    return false;
+}
 
 class KWebPage::KWebPagePrivate
 {
 public:
     QPointer<KWebWallet> wallet;
 };
-
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
@@ -162,43 +207,51 @@ void KWebPage::setWallet(KWebWallet* wallet)
 
 void KWebPage::downloadRequest(const QNetworkRequest &request)
 {
-    KUrl destUrl;
-    KUrl srcUrl (request.url());
-    int result = KIO::R_OVERWRITE;
-
-    do {
-        destUrl = KFileDialog::getSaveFileName(srcUrl.fileName(), QString(), view());
-
-        if (destUrl.isLocalFile()) {
-            QFileInfo finfo (destUrl.toLocalFile());
-            if (finfo.exists()) {
-                QDateTime now = QDateTime::currentDateTime();
-                KIO::RenameDialog dlg (view(), i18n("Overwrite File?"), srcUrl, destUrl,
-                                       KIO::RenameDialog_Mode(KIO::M_OVERWRITE | KIO::M_SKIP),
-                                       -1, finfo.size(),
-                                       now.toTime_t(), finfo.created().toTime_t(),
-                                       now.toTime_t(), finfo.lastModified().toTime_t());
-                result = dlg.exec();
-            }
-        }
-    } while (result == KIO::R_CANCEL && destUrl.isValid());
-
-    if (result == KIO::R_OVERWRITE && destUrl.isValid()) {
-        KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
-        QVariant attr = request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData));
-        if (attr.isValid() && attr.type() == QVariant::Map)
-            job->setMetaData(KIO::MetaData(attr.toMap()));
-
-        job->addMetaData(QL1("MaxCacheSize"), QL1("0")); // Don't store in http cache.
-        job->addMetaData(QL1("cache"), QL1("cache")); // Use entry from cache if available.
-        job->uiDelegate()->setAutoErrorHandlingEnabled(true);
-    }
+    downloadResource(request.url(),
+                     request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap(),
+                     view());
 }
 
 void KWebPage::downloadUrl(const KUrl &url)
 {
-    QNetworkRequest request (url);
-    downloadRequest(request);
+    downloadResource(url, KIO::MetaData(), view());
+}
+
+void KWebPage::downloadResponse(QNetworkReply *reply)
+{
+    // FIXME: Remove the next line of code once support for putting an ioslave is
+    // implemented in KIO::AccessManager which is waiting for an upstream fix.
+    // See https://bugs.webkit.org/show_bug.cgi?id=37880.
+    reply->abort();
+
+    QString suggestedFileName;
+    if (reply && reply->hasRawHeader("Content-Disposition")) {
+        KIO::MetaData metaData = reply->attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap();
+        if (metaData.value(QL1S("content-disposition-type")).compare(QL1S("attachment"), Qt::CaseInsensitive) == 0) {
+            suggestedFileName = metaData.value(QL1S("content-disposition-filename"));
+        } else {
+            const QString value = QL1S(reply->rawHeader("Content-Disposition").simplified());
+            if (value.startsWith(QL1S("attachment"), Qt::CaseInsensitive)) {
+                const int length = value.size();
+                int pos = value.indexOf(QL1S("filename"), 0, Qt::CaseInsensitive);
+                if (pos > -1) {
+                    pos += 9;
+                    while (pos < length && (value.at(pos) == QL1C(' ') || value.at(pos) == QL1C('=') || value.at(pos) == QL1C('"')))
+                        pos++;
+
+                    int endPos = pos;
+                    while (endPos < length && value.at(endPos) != QL1C('"') && value.at(endPos) != QL1C(';'))
+                        endPos++;
+
+                    if (endPos > pos) {
+                        suggestedFileName = value.mid(pos, (endPos-pos)).trimmed();
+                    }
+                }
+            }
+        }
+    }
+
+    downloadResource(reply->url(), KIO::MetaData(), this->view(), suggestedFileName);
 }
 
 QString KWebPage::sessionMetaData(const QString &key) const
@@ -254,7 +307,7 @@ void KWebPage::removeRequestMetaData(const QString &key)
 QString KWebPage::userAgentForUrl(const QUrl& _url) const
 {
     const KUrl url(_url);
-    QString userAgent = KProtocolManager::userAgentForHost((url.isLocalFile() ? "localhost" : url.host()));
+    const QString userAgent = KProtocolManager::userAgentForHost((url.isLocalFile() ? QL1S("localhost") : url.host()));
 
     if (userAgent == KProtocolManager::defaultUserAgent())
         return QWebPage::userAgentForUrl(_url);
@@ -275,7 +328,7 @@ bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &
         meta-data value to the current url for proper integration with KCookieJar...
       */
     if (frame == mainFrame() && type != QWebPage::NavigationTypeReload) {
-        setSessionMetaData(QL1("cross-domain"), request.url().toString());
+        setSessionMetaData(QL1S("cross-domain"), request.url().toString());
     }
 
     return QWebPage::acceptNavigationRequest(frame, request, type);

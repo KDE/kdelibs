@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Dirk Mueller <mueller@kde.org>
  * Copyright (C) 2008 Urs Wolfer <uwolfer @ kde.org>
  * Copyright (C) 2008 Michael Howell <mhowell123@gmail.com>
- * Copyright (C) 2009 Dawit Alemayehu <adawit @ kde.org>
+ * Copyright (C) 2009,2010 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -126,7 +126,7 @@ public Q_SLOTS:
      * Downloads @p request using KIO.
      *
      * This slot first prompts the user where to put/save the requested
-     * resource and then downloads using KIO::file_copy.
+     * resource and then downloads it using KIO.
      */
     virtual void downloadRequest(const QNetworkRequest &request);
 
@@ -134,9 +134,19 @@ public Q_SLOTS:
      * Downloads @p url using KIO.
      *
      * This slot first prompts the user where to put/save the requested
-     * resource and then downloads using KIO::file_copy.
+     * resource and then downloads it using KIO.     
      */
     virtual void downloadUrl(const KUrl &url);
+
+    /**
+     * Downloads the resource specified by @p reply using KIO.
+     *
+     * This slot first prompts the user where to save the requested resource
+     * and then downloads it using KIO.
+     *
+     * @since 4.5
+     */
+    void downloadResponse(QNetworkReply *reply);
 
 protected:
     /**
@@ -184,10 +194,11 @@ protected:
     void removeRequestMetaData(const QString &key);
 
     /**
-     * Reimplemented for internal reasons, the API is not affected.
+     * This function is re-implemented to provide KDE user-agent management
+     * integration through KProtocolManager.
      *
+     * @see KProtocolManager::userAgentForUrl.
      * @see QWebPage::userAgentForUrl.
-     * @internal
      */
     virtual QString userAgentForUrl(const QUrl& url) const;
 
