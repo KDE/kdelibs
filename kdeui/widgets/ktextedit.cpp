@@ -54,6 +54,7 @@
 #include <kmenu.h>
 #include <kwindowsystem.h>
 #include <QDebug>
+
 class KTextEdit::Private
 {
   public:
@@ -62,7 +63,8 @@ class KTextEdit::Private
         customPalette( false ),
         checkSpellingEnabled( false ),
         findReplaceEnabled(true),
-        highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0)
+        highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
+        lastReplacedPosition(-1)
     {
         //Check the default sonnet settings to see if spellchecking should be enabled.
         sonnetKConfig = new KConfig("sonnetrc");
@@ -142,6 +144,7 @@ class KTextEdit::Private
     KReplaceDialog *repDlg;
     KReplace *replace;
     int findIndex, repIndex;
+    int lastReplacedPosition;
     KConfig *sonnetKConfig;
 };
 
@@ -235,10 +238,11 @@ void KTextEdit::Private::slotReplaceText(const QString &text, int replacementInd
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
     tc.removeSelectedText();
     tc.insertText(text.mid(replacementIndex, replacedLength));
-    parent->setTextCursor(tc);
     if (replace->options() & KReplaceDialog::PromptOnReplace) {
+        parent->setTextCursor(tc);
         parent->ensureCursorVisible();
     }
+    lastReplacedPosition = replacementIndex;
 }
 
 void KTextEdit::Private::updateClickMessageRect()
@@ -872,8 +876,11 @@ void KTextEdit::slotReplaceNext()
     if (!d->replace)
         return;
 
-    if (!(d->replace->options() & KReplaceDialog::PromptOnReplace))
+    d->lastReplacedPosition = -1;
+    if (!(d->replace->options() & KReplaceDialog::PromptOnReplace)) {
+        textCursor().beginEditBlock(); // #48541
         viewport()->setUpdatesEnabled(false);
+    }
 
     KFind::Result res = KFind::NoMatch;
 
@@ -881,6 +888,14 @@ void KTextEdit::slotReplaceNext()
         d->replace->setData(toPlainText(), d->repIndex);
     res = d->replace->replace();
     if (!(d->replace->options() & KReplaceDialog::PromptOnReplace)) {
+        textCursor().endEditBlock(); // #48541
+        if (d->lastReplacedPosition >= 0) {
+            QTextCursor tc = textCursor();
+            tc.setPosition(d->lastReplacedPosition);
+            setTextCursor(tc);
+            ensureCursorVisible();
+        }
+
         viewport()->setUpdatesEnabled(true);
         viewport()->update();
     }
