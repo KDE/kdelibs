@@ -200,6 +200,17 @@ Q_SIGNALS:
     void saveFormDataCompleted(const QUrl &url, bool ok);
 
     /**
+     * This signal is emitted whenever a fill form data request is completed.
+     *
+     * @p ok will be set to true if any forms were successfully filled with
+     * cached data from the persistent storage.
+     *
+     * @see fillFormData
+     * @since 4.5
+     */
+    void fillFormRequestCompleted(bool ok);
+
+    /**
      * This signal is emitted whenever the current wallet is closed.
      */
     void walletClosed();
