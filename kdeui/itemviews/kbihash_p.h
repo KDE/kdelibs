@@ -66,9 +66,9 @@ public:
         }
 
     private:
+#ifndef Q_CC_MSVC
         using QHash<V, W>::iterator::operator*;
         using QHash<V, W>::iterator::operator->;
-#ifndef Q_CC_MSVC
         using QHash<V, W>::iterator::value;
 #endif
     };
