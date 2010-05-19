@@ -128,6 +128,9 @@ private Q_SLOTS:
         KIcon icon("kdialog", &appIconLoader);
         QPixmap pix = icon.pixmap(QSize(22, 22));
         QVERIFY(!pix.isNull());
+        QCOMPARE(icon.actualSize(QSize(96, 22)), QSize(22, 22));
+        QCOMPARE(icon.actualSize(QSize(22, 96)), QSize(22, 22));
+        QCOMPARE(icon.actualSize(QSize(22, 16)), QSize(16, 16));
     }
 
     void testLoadMimeTypeIcon_data()
