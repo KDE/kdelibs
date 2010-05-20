@@ -181,7 +181,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( !urlStr.isEmpty() )
                 url = urlStr;
             else {
-                url = ((SimpleJob *)job)->url(); // assumed to be a dir
+                url = static_cast<SimpleJob *>(job)->url(); // assumed to be a dir
                 url.addPath( displayName );
             }
 
@@ -260,7 +260,7 @@ void DeleteJobPrivate::finishedStatPhase()
     slotReport();
     // Now we know which dirs hold the files we're going to delete.
     // To speed things up and prevent double-notification, we disable KDirWatch
-    // on those dirs temporarily (using KDirWatch::self, that's the instanced
+    // on those dirs temporarily (using KDirWatch::self, that's the instance
     // used by e.g. kdirlister).
     for ( QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
         KDirWatch::self()->stopDirScan( *it );
@@ -354,8 +354,9 @@ void DeleteJobPrivate::deleteNextDir()
     }
 
     // Re-enable watching on the dirs that held the deleted files
-    for (QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it)
+    for (QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it) {
         KDirWatch::self()->restartDirScan( *it );
+    }
 
     // Finished - tell the world
     if ( !m_srcList.isEmpty() )
@@ -376,8 +377,10 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
         // Add toplevel dir in list of dirs
         dirs.append( url );
         if (url.isLocalFile()) {
-            const QString parentDir = url.toLocalFile(KUrl::RemoveTrailingSlash);
-            m_parentDirs.insert(parentDir);
+            // We are about to delete this dir, no need to watch it
+            // Maybe we should ask kdirwatch to remove all watches recursively?
+            // But then there would be no feedback (things disappearing progressively) during huge deletions
+            KDirWatch::self()->stopDirScan(url.toLocalFile(KUrl::RemoveTrailingSlash));
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
             //kDebug(7007) << url << "is a directory, let's list it";
@@ -398,10 +401,10 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             //kDebug(7007) << "Target is a file";
             files.append(url);
         }
-        if (url.isLocalFile()) {
-            const QString parentDir = url.directory(KUrl::ObeyTrailingSlash);
-            m_parentDirs.insert(parentDir);
-        }
+    }
+    if (url.isLocalFile()) {
+        const QString parentDir = url.directory(KUrl::IgnoreTrailingSlash);
+        m_parentDirs.insert(parentDir);
     }
 }
 
