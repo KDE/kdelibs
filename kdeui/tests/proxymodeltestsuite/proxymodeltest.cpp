@@ -61,6 +61,8 @@ void ProxyModelTest::initRootModel(DynamicTreeModel *rootModel, const QString &c
 
 void ProxyModelTest::verifyExecutedTests()
 {
+  if (m_dataTags.contains(ProxyModelTestData::failTag()))
+    return;
   QSet<QString> unimplemented = m_modelCommanderTags.toSet().subtract(m_dataTags.toSet());
   QString unimplementedTestsString("(");
   foreach(const QString &test, unimplemented)
@@ -516,6 +518,9 @@ void ProxyModelTest::doTest()
 
   QString testName = QTest::currentTestFunction();
   QString testDataTag = QTest::currentDataTag();
+
+  if (testDataTag == ProxyModelTestData::failTag())
+    return;
 
   m_modelSpy->preTestPersistIndexes(changeList);
 

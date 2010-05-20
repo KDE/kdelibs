@@ -256,13 +256,15 @@ public:
   {
   }
 
+  static const char* failTag() { return "fail01"; }
+
 protected:
   void dummyTestData()
   {
     QTest::addColumn<SignalList>("signalList");
     QTest::addColumn<PersistentChangeList>("changeList");
 
-    QTest::newRow("fail01") << SignalList() << PersistentChangeList();
+    QTest::newRow(failTag()) << SignalList() << PersistentChangeList();
     QSKIP("Test not implemented", SkipSingle);
   }
 
