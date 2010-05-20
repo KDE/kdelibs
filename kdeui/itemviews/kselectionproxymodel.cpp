@@ -303,6 +303,23 @@ static QItemSelection getRootRanges(const QItemSelection &_selection)
     return rootSelection;
 }
 
+/**
+ * QItemSelectionModel doesn't clear its selection when its model is reset so we do it manually here.
+ *
+* Fixed in Qt 4.7: http://qt.gitorious.org/qt/qt/merge_requests/639
+ */
+class SelectionModelModelObserver : public QObject
+{
+  Q_OBJECT
+  QItemSelectionModel * const m_selectionModel;
+public:
+  SelectionModelModelObserver(QItemSelectionModel *selectionModel, QObject *parent)
+    : QObject(parent), m_selectionModel(selectionModel)
+  {
+    connect(selectionModel->model(), SIGNAL(modelAboutToBeReset()), selectionModel, SLOT(clear()));
+  }
+};
+
 class KSelectionProxyModelPrivate
 {
 public:
@@ -321,7 +338,7 @@ public:
             m_selectionModel(selectionModel),
             m_nextId(1)
     {
-
+      new SelectionModelModelObserver(selectionModel, model);
     }
 
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
@@ -829,7 +846,6 @@ void KSelectionProxyModelPrivate::sourceModelReset()
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
     resetInternalData();
-    m_selectionModel->clearSelection();
     m_resetting = false;
     q->endResetModel();
 }
@@ -2307,4 +2323,6 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
     return list;
 }
 
+
+#include "kselectionproxymodel.moc"
 #include "moc_kselectionproxymodel.cpp"
