@@ -1316,7 +1316,9 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         {
             for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
             {
-                m_rootIndexList.removeOne(m_rootIndexList.at(startRootIdx));
+                const QModelIndex idx = m_rootIndexList.at(startRootIdx);
+                q->rootIndexAboutToBeRemoved(idx);
+                m_rootIndexList.removeOne(idx);
             }
             return;
         }
@@ -1343,6 +1345,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
           const QModelIndex idx = m_rootIndexList.at(startRootIdx);
           const int childCount = q->sourceModel()->rowCount(idx);
           removeParentMappings(idx, 0, childCount - 1);
+          q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRootIdx));
           m_rootIndexList.removeAt(startRootIdx);
           numRemovedChildren += childCount;
         }
@@ -1356,10 +1359,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         q->beginRemoveRows(proxyParent, proxyTopLeft.row(), proxyTopLeft.row() + height - 1);
 
         // TODO: Do this conditionally if the signal is connected to anything.
-        for (int i = 0; i < height; ++i)
-        {
-            q->rootIndexAboutToBeRemoved(sourceTopLeft.sibling(i, sourceTopLeft.column()));
-        }
+
         removeParentMappings(sourceParent, range.top(), range.bottom());
         KDO(range);
         updateInternalIndexes(sourceParent, range.bottom() + 1, -1 * height);
@@ -1368,6 +1368,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         {
             const QModelIndex idx = sourceTopLeft.sibling(range.top() + i, sourceTopLeft.column());
             Q_ASSERT(idx.isValid());
+            q->rootIndexAboutToBeRemoved(idx);
             const bool b = m_rootIndexList.removeOne(idx);
             Q_UNUSED(b)
             if (!b)
