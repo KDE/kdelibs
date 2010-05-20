@@ -86,7 +86,7 @@ KDECORE_EXECUTABLE_TESTS(
 
 ########### kdirwatchtest_gui ###############
 
-kde4_add_unit_test(kdirwatchtest_gui kdirwatchtest_gui.cpp)
+kde4_add_executable(kdirwatchtest_gui kdirwatchtest_gui.cpp)
 target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY})
 
 ########### klimitediodevicetest ###############
