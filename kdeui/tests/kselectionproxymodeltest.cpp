@@ -159,24 +159,8 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
 template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testMoveFromTopLevelData()
 {
-  QTest::addColumn<SignalList>("signalList");
-  QTest::addColumn<PersistentChangeList>("changeList");
-
   IndexFinder indexFinder;
-
   testForwardingMoveData(indexFinder, indexFinder);
-
-//   noopLayoutChangeTest("move01");
-//   noopLayoutChangeTest("move02");
-//   noopLayoutChangeTest("move03");
-//   noopLayoutChangeTest("move04");
-//   noopLayoutChangeTest("move05");
-
-//   newMoveTest("move01", indexFinder, 0, 0, 10, indexFinder, 5);
-//   newMoveTest("move02", indexFinder, 4, 4, 10, indexFinder, 0);
-//   newMoveTest("move03", indexFinder, 4, 4, 10, indexFinder, 10);
-//   newMoveTest("move04", indexFinder, 9, 9, 10, indexFinder, 4);
-//   newMoveTest("move05", indexFinder, 9, 9, 10, indexFinder, 0);
 }
 
 template<>
@@ -275,35 +259,13 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelectio
 template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testMoveFromTopLevelData()
 {
-  QTest::addColumn<SignalList>("signalList");
-  QTest::addColumn<PersistentChangeList>("changeList");
-  noopLayoutChangeTest("move01");
-  noopLayoutChangeTest("move02");
-  noopLayoutChangeTest("move03");
-  noopLayoutChangeTest("move04");
-  noopLayoutChangeTest("move05");
-//   noopTest("move01");
-//   noopTest("move02");
-//   noopTest("move03");
-//   noopTest("move04");
-//   noopTest("move05");
+  noop_testMoveFromTopLevelData();
 }
 
 template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ExactSelection>::testMoveFromSecondLevelData()
 {
-  QTest::addColumn<SignalList>("signalList");
-  QTest::addColumn<PersistentChangeList>("changeList");
-  noopLayoutChangeTest("move01");
-  noopLayoutChangeTest("move02");
-  noopLayoutChangeTest("move03");
-  noopLayoutChangeTest("move04");
-  noopLayoutChangeTest("move05");
-//   noopTest("move01");
-//   noopTest("move02");
-//   noopTest("move03");
-//   noopTest("move04");
-//   noopTest("move05");
+  noop_testMoveFromSecondLevelData();
 }
 
 template<>
