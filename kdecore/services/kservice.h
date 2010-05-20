@@ -148,7 +148,7 @@ public:
      * different user id.
      * @return the username under which the service has to be run,
      *         or QString() if not set
-     * @see substututeUid()a
+     * @see substituteUid()
      */
     QString username() const;
 
