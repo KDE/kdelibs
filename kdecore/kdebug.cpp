@@ -249,13 +249,21 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   const int BUFSIZE = 4096;
   char buf[BUFSIZE];
+  buf[0] = '\0';
+
+  static bool printTimeStamp = !(QCString(getenv("KDE_DEBUG_TIMESTAMP")).isEmpty());
+  if ( printTimeStamp ) {
+      const QString ts = QDateTime::currentDateTime().time().toString() + ' ';
+      strlcat( buf, ts.latin1(), BUFSIZE );
+  }
+
   if ( !kDebug_data->aAreaName.isEmpty() ) {
-      strlcpy( buf, kDebug_data->aAreaName.data(), BUFSIZE );
+      strlcat( buf, kDebug_data->aAreaName.data(), BUFSIZE );
       strlcat( buf, ": ", BUFSIZE );
       strlcat( buf, data, BUFSIZE );
   }
   else
-      strlcpy( buf, data, BUFSIZE );
+      strlcat( buf, data, BUFSIZE );
 
 
   // Output
