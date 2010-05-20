@@ -723,8 +723,6 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
         return;
     }
 
-    emit q->layoutChanged();
-
     QList<QPersistentModelIndex> parentMappingsToUpdate;
     for (int i = 0; i < m_sourcePersistentParents.size(); ++i) {
         const QPersistentModelIndex persistentIndex = m_sourcePersistentParents.at(i);
