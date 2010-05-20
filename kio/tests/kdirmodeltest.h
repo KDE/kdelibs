@@ -24,6 +24,10 @@
 #include <QtCore/QDate>
 #include <kdirmodel.h>
 #include <QtCore/QEventLoop>
+#include <QtTest/QtTest>
+
+// If you disable this, you need to change all exitLoop into quit in connect() statements...
+#define USE_QTESTEVENTLOOP
 
 class KDirModelTest : public QObject
 {
@@ -59,6 +63,7 @@ private Q_SLOTS:
 
     // These tests must be done last
     void testDeleteFile();
+    void testDeleteFileWhileListing();
     void testOverwriteFileWithDir();
     void testDeleteFiles();
     void testRenameFileToHidden();
@@ -81,7 +86,11 @@ private:
     void testMoveDirectory(const QString& srcdir);
 
 private:
+#ifdef USE_QTESTEVENTLOOP
+    QTestEventLoop m_eventLoop;
+#else
     QEventLoop m_eventLoop;
+#endif
     KTempDir* m_tempDir;
     KDirModel* m_dirModel;
     QModelIndex m_fileIndex;

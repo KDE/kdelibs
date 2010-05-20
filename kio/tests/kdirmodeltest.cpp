@@ -40,6 +40,12 @@
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
+#ifndef USE_QTESTEVENTLOOP
+#define exitLoop quit
+#endif
+
+#define connect(a,b,c,d) QVERIFY(QObject::connect(a,b,c,d))
+
 #ifndef Q_WS_WIN
 #define SPECIALCHARS "specialchars%:.pdf"
 #else
@@ -70,8 +76,11 @@ void KDirModelTest::initTestCase()
 
 void KDirModelTest::recreateTestData()
 {
+    if (m_tempDir)
+        kDebug() << "Deleting old tempdir" << m_tempDir->name();
     delete m_tempDir;
     m_tempDir = new KTempDir;
+    kDebug() << "new tmp dir:" << m_tempDir->name();
     // Create test data:
     /*
      * PATH/toplevelfile_1
@@ -114,8 +123,10 @@ void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
     m_dirModel->dirLister()->setAutoErrorHandlingEnabled(false, 0);
     const QString path = m_tempDir->name();
     KDirLister* dirLister = m_dirModel->dirLister();
+    kDebug() << "Calling openUrl";
     dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    kDebug() << "enterLoop, waiting for completed()";
     enterLoop();
 
     if (expectAllIndexes)
@@ -164,6 +175,7 @@ void KDirModelTest::collectKnownIndexes()
     // Now list subdir/
     QVERIFY(m_dirModel->canFetchMore(m_dirIndex));
     m_dirModel->fetchMore(m_dirIndex);
+    kDebug() << "Listing subdir/";
     enterLoop();
 
     // Index of a file inside a directory (subdir/testfile)
@@ -179,6 +191,7 @@ void KDirModelTest::collectKnownIndexes()
 
     // List subdir/subsubdir
     QVERIFY(m_dirModel->canFetchMore(subdirIndex));
+    kDebug() << "Listing subdir/subsubdir";
     m_dirModel->fetchMore(subdirIndex);
     enterLoop();
 
@@ -188,13 +201,22 @@ void KDirModelTest::collectKnownIndexes()
 
 void KDirModelTest::enterLoop()
 {
-    m_eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+#ifdef USE_QTESTEVENTLOOP
+    m_eventLoop.enterLoop(10 /*seconds max*/);
+    QVERIFY(!m_eventLoop.timeout());
+#else
+    m_eventLoop.exec();
+#endif
 }
 
 void KDirModelTest::slotListingCompleted()
 {
     kDebug();
+#ifdef USE_QTESTEVENTLOOP
+    m_eventLoop.exitLoop();
+#else
     m_eventLoop.quit();
+#endif
 }
 
 void KDirModelTest::testRowCount()
@@ -369,7 +391,7 @@ void KDirModelTest::testModifyFile()
 
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
     // "Touch" the file
     setTimeStamp(file, s_referenceTimeStamp.addSecs(20) );
@@ -390,7 +412,7 @@ void KDirModelTest::testModifyFile()
     QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 }
 
 void KDirModelTest::testRenameFile()
@@ -400,11 +422,10 @@ void KDirModelTest::testRenameFile()
 
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
@@ -420,20 +441,19 @@ void KDirModelTest::testRenameFile()
 
     // check that KDirLister::cachedItemForUrl won't give a bad name if copying that item (#195385)
     KFileItem cachedItem = KDirLister::cachedItemForUrl(newUrl);
-    Q_ASSERT(!cachedItem.isNull());
+    QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.name(), QString("toplevelfile_2_renamed"));
     QCOMPARE(cachedItem.entry().stringValue(KIO::UDSEntry::UDS_NAME), QString("toplevelfile_2_renamed"));
 
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
-    ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
     QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), url.url() );
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 }
 
 void KDirModelTest::testMoveDirectory()
@@ -451,7 +471,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     QVERIFY(QDir(dest).exists());
 
     connect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-            &m_eventLoop, SLOT(quit()));
+            &m_eventLoop, SLOT(exitLoop()));
 
     // Move
     kDebug() << "Moving" << srcdir << "to" << dest;
@@ -463,13 +483,13 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     enterLoop();
 
     disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-               &m_eventLoop, SLOT(quit()));
+               &m_eventLoop, SLOT(exitLoop()));
 
     QVERIFY(!m_dirModel->indexForUrl(path + "subdir").isValid());
     QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
 
     connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            &m_eventLoop, SLOT(quit()));
+            &m_eventLoop, SLOT(exitLoop()));
 
     // Move back
     kDebug() << "Moving" << dest+dir << "back to" << srcdir;
@@ -481,7 +501,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
 
     QVERIFY(QDir(srcdir).exists());
     disconnect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            &m_eventLoop, SLOT(quit()));
+            &m_eventLoop, SLOT(exitLoop()));
 
     // m_dirIndex is invalid after the above...
     fillModel(true);
@@ -505,10 +525,9 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     // Now do the renaming
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
@@ -538,14 +557,13 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
-    ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
     QCOMPARE(m_dirModel->indexForUrl(url), m_dirIndex);
@@ -583,13 +601,11 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     newUrl.setPath(newUrl.path() + "_renamed");
     kDebug() << newUrl;
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
-    ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // KDirNotify emits FileRenamed for each rename() above, which in turn
     // re-lists the directory. We need to wait for both signals to be emitted
@@ -607,7 +623,7 @@ void KDirModelTest::testChmodDirectory() // #53397
 {
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
     const QString path = m_tempDir->name();
     KFileItem rootItem = m_dirModel->itemForIndex(QModelIndex());
     const mode_t origPerm = rootItem.permissions();
@@ -616,8 +632,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     KFileItemList items; items << rootItem;
     KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP, QString(), QString(), false, KIO::HideProgressInfo);
     job->setUiDelegate(0);
-    bool ok = KIO::NetAccess::synchronousRun(job, 0);
-    QVERIFY(ok);
+    QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
     // ChmodJob doesn't talk to KDirNotify, kpropertiesdialog does.
     // [this allows to group notifications after all the changes one can make in the dialog]
     org::kde::KDirNotify::emitFilesChanged( QStringList() << path );
@@ -633,7 +648,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     QCOMPARE(m_dirModel->itemForIndex(QModelIndex()).permissions(), newPerm);
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 }
 
 void KDirModelTest::testExpandToUrl_data()
@@ -747,7 +762,7 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     }
 
     if (m_nextExpectedExpandSignals == m_expectedExpandSignals.count())
-        m_eventLoop.quit(); // done
+        m_eventLoop.exitLoop(); // done
 }
 
 void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
@@ -979,11 +994,10 @@ void KDirModelTest::testDeleteFile()
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
     enterLoop();
@@ -995,7 +1009,7 @@ void KDirModelTest::testDeleteFile()
     QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
     QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 
     QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
     QVERIFY(!fileIndex.isValid());
@@ -1012,6 +1026,45 @@ void KDirModelTest::testDeleteFile()
     fillModel(false);
 }
 
+void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet, the kdirwatch deleted signal comes too late
+{
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
+    const QString path = m_tempDir->name();
+    const QString file = path + "toplevelfile_1";
+    const KUrl url(file);
+
+    KDirLister* dirLister = m_dirModel->dirLister();
+    QSignalSpy spyCompleted(dirLister, SIGNAL(completed()));
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
+    if (!spyCompleted.isEmpty())
+        QSKIP("listing completed too early", SkipAll);
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
+    QVERIFY(job->exec());
+
+    if (spyCompleted.isEmpty())
+        enterLoop();
+    // TODO QTest::kWaitForSignalSpy(spyRowsRemoved)?
+    QTest::kWaitForSignal(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+
+    const int topLevelRowCount = m_dirModel->rowCount();
+    QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
+    QCOMPARE(spyRowsRemoved.count(), 1);
+    QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
+    QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
+
+    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
+    QVERIFY(!fileIndex.isValid());
+
+    kDebug() << "Test done, recreating file";
+
+    // Recreate the file, for consistency in the next tests
+    // So the second part of this test is a "testCreateFile"
+    createTestFile(file);
+    fillModel(true, false); // see testDeleteFile
+    fillModel(false);
+}
 
 void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
 {
@@ -1023,9 +1076,9 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
-    KIO::Job* job = KIO::move(dir, file, KIO::Overwrite | KIO::HideProgressInfo);
+    KIO::Job* job = KIO::move(dir, file, KIO::HideProgressInfo);
     PredefinedAnswerJobUiDelegate* delegate = new PredefinedAnswerJobUiDelegate;
     delegate->m_renameResult = KIO::R_OVERWRITE;
     job->setUiDelegate(delegate);
@@ -1033,8 +1086,11 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
 
     QCOMPARE(delegate->m_askFileRenameCalled, 1);
 
-    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
-    enterLoop();
+    if (spyRowsRemoved.isEmpty()) {
+        // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+        enterLoop();
+        QVERIFY(!spyRowsRemoved.isEmpty());
+    }
 
     // If we come here, then rowsRemoved() was emitted - all good.
     const int topLevelRowCount = m_dirModel->rowCount();
@@ -1045,6 +1101,8 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     QVERIFY(newIndex.isValid());
     KFileItem newItem = m_dirModel->itemForIndex(newIndex);
     QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
+
+    kDebug() << "========= Test done, recreating test data =========";
 
     recreateTestData();
     fillModel(false);
@@ -1060,8 +1118,7 @@ void KDirModelTest::testDeleteFiles()
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
     KIO::DeleteJob* job = KIO::del(urls, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     int numRowsRemoved = 0;
     while (numRowsRemoved < 3) {
@@ -1077,7 +1134,9 @@ void KDirModelTest::testDeleteFiles()
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 3); // three less than before
 
+    kDebug() << "Recreating test data";
     recreateTestData();
+    kDebug() << "Re-filling model";
     fillModel(false);
 }
 
@@ -1091,11 +1150,10 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     QSignalSpy spyRowsInserted(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers KDirLister
     enterLoop();
@@ -1109,15 +1167,14 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     QCOMPARE(row, m_secondFileIndex.row()); // only compare row
 
     disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-               &m_eventLoop, SLOT(quit()));
+               &m_eventLoop, SLOT(exitLoop()));
     spyRowsRemoved.clear();
 
     // Put things back to normal, should make the file reappear
     connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            &m_eventLoop, SLOT(quit()));
+            &m_eventLoop, SLOT(exitLoop()));
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
-    ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers KDirLister
     enterLoop();
     QCOMPARE(spyDataChanged.count(), 0);
@@ -1136,13 +1193,12 @@ void KDirModelTest::testDeleteDirectory()
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
 
     QSignalSpy spyDirWatchDeleted(KDirWatch::self(), SIGNAL(deleted(QString)));
 
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
     enterLoop();
@@ -1150,14 +1206,14 @@ void KDirModelTest::testDeleteDirectory()
     // If we come here, then rowsRemoved() was emitted - all good.
     QCOMPARE(spyRowsRemoved.count(), 1);
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 
     QModelIndex deletedDirIndex = m_dirModel->indexForUrl(path + "subdir/subsubdir");
     QVERIFY(!deletedDirIndex.isValid());
     QModelIndex dirIndex = m_dirModel->indexForUrl(path + "subdir");
     QVERIFY(dirIndex.isValid());
 
-    // TODO!!! Bug in KDirWatch?
+    // TODO!!! Bug in KDirWatch? ###
     // QCOMPARE(spyDirWatchDeleted.count(), 1);
 }
 
@@ -1169,11 +1225,13 @@ void KDirModelTest::testDeleteCurrentDirectory()
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
+             &m_eventLoop, SLOT(exitLoop()) );
+
+
+    KDirWatch::self()->statistics();
 
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
     enterLoop();
@@ -1181,11 +1239,25 @@ void KDirModelTest::testDeleteCurrentDirectory()
     // If we come here, then rowsRemoved() was emitted - all good.
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, 0); // empty
-    QCOMPARE(spyRowsRemoved.count(), 1);
-    QCOMPARE(spyRowsRemoved[0][1].toInt(), 0);
-    QCOMPARE(spyRowsRemoved[0][2].toInt(), oldTopLevelRowCount - 1);
+
+    // We can get rowsRemoved for subdirs first, since kdirwatch notices that.
+    QVERIFY(spyRowsRemoved.count() >= 1);
+
+    // Look for the signal(s) that had QModelIndex() as parent.
+    int i;
+    int numDeleted = 0;
+    for (i = 0; i < spyRowsRemoved.count(); ++i) {
+        const int from = spyRowsRemoved[i][1].toInt();
+        const int to = spyRowsRemoved[i][2].toInt();
+        kDebug() << spyRowsRemoved[i][0].value<QModelIndex>() << from << to;
+        if (!spyRowsRemoved[i][0].value<QModelIndex>().isValid()) {
+            numDeleted += (to - from) + 1;
+        }
+    }
+
+    QCOMPARE(numDeleted, oldTopLevelRowCount);
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                &m_eventLoop, SLOT(quit()) );
+                &m_eventLoop, SLOT(exitLoop()) );
 
     QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
     QVERIFY(!fileIndex.isValid());
