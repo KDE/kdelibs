@@ -1,5 +1,4 @@
 project(kio)
-macro_optional_find_package(FAM)
 
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
@@ -27,16 +26,6 @@ include_directories(
    ${STRIGI_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
 )
-
-macro_bool_to_01(FAM_FOUND HAVE_FAM)
-
-check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
-macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
-if(WIN32)
- # currently for win32 only --> enable it for all in 4.1?
- option(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
- macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
-endif(WIN32)
 
 configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
 
@@ -268,18 +257,6 @@ if(HAVE_NEPOMUK)
 endif(HAVE_NEPOMUK)
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
-
-set(SYS_INOTIFY_H_FOUND 0)
-if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
-else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
-endif(SYS_INOTIFY_H_FOUND)
-
-if(FAM_FOUND)
-   include_directories(${FAM_INCLUDE_DIR})
-   target_link_libraries(kio ${FAM_LIBRARIES})
-endif(FAM_FOUND)
 
 if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})

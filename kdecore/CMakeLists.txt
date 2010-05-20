@@ -9,6 +9,18 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
+# Configure checks for kdirwatch
+macro_optional_find_package(FAM)
+macro_bool_to_01(FAM_FOUND HAVE_FAM)
+
+check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
+macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
+if(WIN32)
+ # currently for win32 only, since it doesn't support watching files that don't exist yet
+ option(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
+ macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
+endif(WIN32)
+
 # Generate io/config-kdirwatch.h
 include(io/ConfigureChecks.cmake)
 configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kdirwatch.h )
@@ -346,6 +358,18 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+
+set(SYS_INOTIFY_H_FOUND 0)
+if(SYS_INOTIFY_H_FOUND)
+   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
+else(SYS_INOTIFY_H_FOUND)
+   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
+endif(SYS_INOTIFY_H_FOUND)
+
+if(FAM_FOUND)
+   include_directories(${FAM_INCLUDE_DIR})
+   target_link_libraries(kdecore ${FAM_LIBRARIES})
+endif(FAM_FOUND)
 
 if(WIN32)
   set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDEWIN_LIBRARIES})
