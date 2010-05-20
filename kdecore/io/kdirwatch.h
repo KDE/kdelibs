@@ -145,7 +145,7 @@ class KDECORE_EXPORT KDirWatch : public QObject
    /**
     * Stops scanning the specified path.
     *
-    * The @p path is not deleted from the interal just, it is just skipped.
+    * The @p path is not deleted from the internal list, it is just skipped.
     * Call this function when you perform an huge operation
     * on this directory (copy/move big files or many files). When finished,
     * call restartDirScan(path).
@@ -159,8 +159,8 @@ class KDECORE_EXPORT KDirWatch : public QObject
    /**
     * Restarts scanning for specified path.
     *
-    * Resets ctime. It doesn't notify
-    * the change (by emitted a signal), since the ctime value is reset.
+    * It doesn't notify about the changes (by emitting a signal).
+    * The ctime value is reset.
     *
     * Call it when you are finished with big operations on that path,
     * @em and when @em you have refreshed that path.
@@ -211,10 +211,10 @@ class KDECORE_EXPORT KDirWatch : public QObject
    bool contains( const QString& path ) const;
 
    /**
-    * Dump statistic information about all KDirWatch instances.
+    * Dump statistic information about the KDirWatch::self() instance.
     * This checks for consistency, too.
     */
-   static void statistics();
+   static void statistics(); // TODO implement a QDebug operator for KDirWatch instead.
 
    enum Method { FAM, INotify, DNotify, Stat };
    /**
@@ -243,14 +243,14 @@ class KDECORE_EXPORT KDirWatch : public QObject
     */
    static bool exists();
 
-public Q_SLOTS: 
+public Q_SLOTS:
 
    /**
     * Emits created().
     * @param path the path of the file or directory
     */
    void setCreated( const QString &path );
-    
+
    /**
     * Emits dirty().
     * @param path the path of the file or directory
