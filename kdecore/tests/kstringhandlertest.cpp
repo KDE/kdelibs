@@ -120,6 +120,14 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("a", "v01 1", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("v01 1", "v01 a", Qt::CaseSensitive), -1);
 
+    // test for punctuation/space weal equivalence
+    QCOMPARE(KStringHandler::naturalCompare("Episode_24", "Episode 25", Qt::CaseInsensitive),-1);
+    QCOMPARE(KStringHandler::naturalCompare("Episode 24", "Episode_25", Qt::CaseInsensitive),-1);
+    QCOMPARE(KStringHandler::naturalCompare("Episode 24", "Episode_24", Qt::CaseInsensitive),-1);
+    QCOMPARE(KStringHandler::naturalCompare("Episode.25", "Episode 24", Qt::CaseInsensitive),1);
+    QCOMPARE(KStringHandler::naturalCompare("Episode 25", "Episode.24", Qt::CaseInsensitive),1);
+    QCOMPARE(KStringHandler::naturalCompare("Episode.25", "Episode 25", Qt::CaseInsensitive),1);
+
     // bug 237551
     QCOMPARE(KStringHandler::naturalCompare("sysvinit-2.86-i486-6.txt", "sysvinit-2.86-i486-6.txz", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("sysvinit-2.86-i486-6.txz", "sysvinit-2.86-i486-6.txz.asc", Qt::CaseSensitive), -1);
