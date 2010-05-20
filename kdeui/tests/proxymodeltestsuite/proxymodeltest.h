@@ -547,11 +547,6 @@ protected:
     noopLayoutChangeTest("move03");
     noopLayoutChangeTest("move04");
     noopLayoutChangeTest("move05");
-//     noopTest("move01");
-//     noopTest("move02");
-//     noopTest("move03");
-//     noopTest("move04");
-//     noopTest("move05");
   }
 
   void noop_testMoveFromTopLevelData()

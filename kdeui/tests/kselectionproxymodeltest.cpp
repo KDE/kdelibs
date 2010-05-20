@@ -39,6 +39,18 @@ public:
     : NoSelectionStrategy(proxyModelTest), m_proxyModelTest(proxyModelTest)
   { }
 
+  // If there is no selection, changes in the source model have no effect.
+  void noselection_testMoveData()
+  {
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+    noopTest("move01");
+    noopTest("move02");
+    noopTest("move03");
+    noopTest("move04");
+    noopTest("move05");
+  }
+
   KSelectionProxyModel::FilterBehavior filterBehaviour() { return _filterBehaviour; }
 
   void testInsertWhenEmptyData() { noop_testInsertWhenEmptyData(); }
@@ -50,9 +62,9 @@ public:
   void testRemoveFromTopLevelData() { noop_testRemoveFromTopLevelData(); }
   void testRemoveFromSecondLevelData() { noop_testRemoveFromSecondLevelData(); }
 
-  void testMoveFromRootData() { noop_testMoveFromRootData(); }
-  void testMoveFromTopLevelData() { noop_testMoveFromTopLevelData(); }
-  void testMoveFromSecondLevelData() { noop_testMoveFromSecondLevelData(); }
+  void testMoveFromRootData() { noselection_testMoveData(); }
+  void testMoveFromTopLevelData() { noselection_testMoveData(); }
+  void testMoveFromSecondLevelData() { noselection_testMoveData(); }
 
   void testModifyInRootData() { noop_testModifyInRootData(); }
   void testModifyInTopLevelData() { noop_testModifyInTopLevelData(); }
