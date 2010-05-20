@@ -367,7 +367,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         const QStringRef& subB(b.midRef(begSeqB - b.unicode(), currB - begSeqB));
         const int cmp = QStringRef::localeAwareCompare(subA, subB);
         if (cmp != 0) {
-            return cmp;
+            return cmp < 0 ? -1 : +1;
         }
 
         if (currA->isNull() || currB->isNull()) {
@@ -384,8 +384,6 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
             ++currA;
             ++currB;
         }
-        if (!currA->isDigit() && !currB->isDigit())
-            continue;
 
         // now some digits follow...
         if ((*currA == '0') || (*currB == '0')) {
@@ -401,7 +399,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                 } else if (*currA < *currB) {
                     return -1;
                 } else if (*currA > *currB) {
-                    return +1;
+                    return + 1;
                 }
                 ++currA;
                 ++currB;
@@ -437,7 +435,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                 } else if ((*currA < *currB) && (weight == 0)) {
                     weight = -1;
                 } else if ((*currA > *currB) && (weight == 0)) {
-                    weight = +1;
+                    weight = + 1;
                 }
                 ++currA;
                 ++currB;
@@ -452,7 +450,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         return lean;
     }
 
-    return currA->isNull() ? -1 : +1;
+    return currA->isNull() ? -1 : + 1;
 }
 
 QString KStringHandler::preProcessWrap(const QString &text)
