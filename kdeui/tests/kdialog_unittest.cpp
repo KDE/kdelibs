@@ -25,9 +25,17 @@
 #include <kpushbutton.h>
 #include <QWeakPointer>
 
+Q_DECLARE_METATYPE(KDialog::ButtonCode)
+
 class KDialog_UnitTest : public QObject
 {
     Q_OBJECT
+public:
+    KDialog_UnitTest()
+    {
+        qRegisterMetaType<KDialog::ButtonCode>("KDialog::ButtonCode");
+    }
+
 private: // helper methods
     void checkOtherButtonsAreNotDefault(KDialog & dialog, KDialog::ButtonCode id)
     {
@@ -158,37 +166,68 @@ private Q_SLOTS:
         QCOMPARE(dialog.button(id)->whatsThis(), whatsthis);
     }
 
+    void testDeleteOnClose_data()
+    {
+        QTest::addColumn<KDialog::ButtonCode>("button");
+        QTest::addColumn<int>("emitAccepted");
+        QTest::addColumn<int>("emitRejected");
+
+        QTest::newRow("Ok") << KDialog::Ok << 1 << 0;
+        QTest::newRow("Cancel") << KDialog::Cancel << 0 << 1;
+        QTest::newRow("Close") << KDialog::Close << 0 << 0;
+    }
+
     void testDeleteOnClose()
     {
+        QFETCH(KDialog::ButtonCode, button);
+        QFETCH(int, emitAccepted);
+        QFETCH(int, emitRejected);
+
         KDialog* dialog = new KDialog;
         QWeakPointer<KDialog> dialogPointer(dialog);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        dialog->setButtons(KDialog::Ok | KDialog::Cancel);
-        QSignalSpy qOkClickedSpy(dialog, SIGNAL(okClicked()));
+        dialog->setButtons(KDialog::Ok | button);
         QSignalSpy qAcceptedSpy(dialog, SIGNAL(accepted()));
+        QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
         dialog->show(); // KDialog::closeEvent tests for isHidden
-        dialog->button(KDialog::Ok)->click();
-        QCOMPARE(qOkClickedSpy.count(), 1);
-        QCOMPARE(qAcceptedSpy.count(), 1); // and then accepted is emitted as well
-        qApp->sendPostedEvents(); // DeferredDelete
+        dialog->button(button)->click();
+        QCOMPARE(qAcceptedSpy.count(), emitAccepted);
+        QCOMPARE(qRejectedSpy.count(), emitRejected);
         QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
         QVERIFY(dialogPointer.isNull()); // deletion happened
     }
 
+    // Closing the dialog using the window manager button
+    void testCloseDialogWithDeleteOnClose_data()
+    {
+        QTest::addColumn<KDialog::ButtonCode>("button");
+        QTest::addColumn<int>("emitRejected");
+        QTest::addColumn<QString>("signal");
+
+        QTest::newRow("Cancel") << KDialog::Cancel << 1 << SIGNAL(cancelClicked());
+        QTest::newRow("Close") << KDialog::Close << 0 << SIGNAL(closeClicked());
+    }
+
     void testCloseDialogWithDeleteOnClose()
     {
+        QFETCH(KDialog::ButtonCode, button);
+        QFETCH(int, emitRejected);
+        QFETCH(QString, signal);
+
         KDialog* dialog = new KDialog;
         QWeakPointer<KDialog> dialogPointer(dialog);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        dialog->setButtons(KDialog::Ok | KDialog::Cancel);
-        QSignalSpy qCancelClickedSpy(dialog, SIGNAL(cancelClicked()));
+        dialog->setButtons(KDialog::Ok | button);
+        QSignalSpy qCancelOrCloseClickedSpy(dialog, signal.toLatin1().constData());
         QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
         dialog->show(); // KDialog::closeEvent tests for isHidden
         dialog->close();
-        if (qRejectedSpy.isEmpty())
+        if (qRejectedSpy.isEmpty() && emitRejected)
             QVERIFY(QTest::kWaitForSignal(dialog, SIGNAL(rejected()), 5000));
-        QCOMPARE(qCancelClickedSpy.count(), 1); // KDialog emulated cancel being clicked
-        QCOMPARE(qRejectedSpy.count(), 1); // and then rejected is emitted as well
+        if (qCancelOrCloseClickedSpy.isEmpty())
+            QVERIFY(QTest::kWaitForSignal(dialog, signal.toLatin1().constData(), 5000));
+        QCOMPARE(qRejectedSpy.count(), emitRejected); // and then rejected is emitted as well
+        QCOMPARE(qCancelOrCloseClickedSpy.count(), 1); // KDialog emulated cancel or close being clicked
         qApp->sendPostedEvents(); // DeferredDelete
         QVERIFY(dialogPointer.isNull()); // deletion happened
     }

@@ -897,16 +897,10 @@ void KDialog::slotButtonClicked( int button )
     case Cancel:
       emit cancelClicked();
       reject();
-
-      // If we're here from the closeEvent, and auto-delete is on, well, auto-delete now.
-      if (d->mDeferredDelete) {
-          d->mDeferredDelete = false;
-          delayedDestruct();
-      }
       break;
     case Close:
       emit closeClicked();
-      close();
+      done(Close); // KDE5: call reject() instead; more QDialog-like.
       break;
     case Help:
       emit helpClicked();
@@ -923,6 +917,12 @@ void KDialog::slotButtonClicked( int button )
       setDetailsWidgetVisible( !d->mDetailsVisible );
       break;
   }
+
+    // If we're here from the closeEvent, and auto-delete is on, well, auto-delete now.
+    if (d->mDeferredDelete) {
+        d->mDeferredDelete = false;
+        delayedDestruct();
+    }
 }
 
 void KDialog::enableLinkedHelp( bool state )
@@ -988,18 +988,18 @@ void KDialog::hideEvent( QHideEvent *event )
 void KDialog::closeEvent( QCloseEvent *event )
 {
     Q_D(KDialog);
-  KPushButton *button = this->button( d->mEscapeButton );
-  if ( button && !isHidden() ) {
-    button->animateClick();
+    KPushButton *button = this->button(d->mEscapeButton);
+    if (button && !isHidden()) {
+        button->animateClick();
 
-    if (testAttribute(Qt::WA_DeleteOnClose)) {
-        // Don't let QWidget::close do a deferred delete just yet, wait for the click first
-        d->mDeferredDelete = true;
-        setAttribute(Qt::WA_DeleteOnClose, false);
+        if (testAttribute(Qt::WA_DeleteOnClose)) {
+            // Don't let QWidget::close do a deferred delete just yet, wait for the click first
+            d->mDeferredDelete = true;
+            setAttribute(Qt::WA_DeleteOnClose, false);
+        }
+    } else {
+        QDialog::closeEvent(event);
     }
-  }
-  else
-    QDialog::closeEvent( event );
 }
 
 void KDialog::restoreDialogSize( const KConfigGroup& cfg )
