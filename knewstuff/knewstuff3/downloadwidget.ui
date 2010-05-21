@@ -232,7 +232,7 @@
           </spacer>
          </item>
          <item row="16" column="1" colspan="3">
-          <widget class="QPushButton" name="m_uploadButton">
+          <widget class="KPushButton" name="m_uploadButton">
            <property name="text">
             <string>Upload Your Own Files...</string>
            </property>
@@ -332,7 +332,6 @@
                     <height>20</height>
                    </size>
                   </property>
-                  <zorder>previewBig</zorder>
                  </widget>
                 </item>
                 <item row="0" column="1" rowspan="3">
@@ -382,14 +381,14 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="voteGoodButton">
+                 <widget class="KPushButton" name="voteGoodButton">
                   <property name="text">
                    <string>I like this</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="voteBadButton">
+                 <widget class="KPushButton" name="voteBadButton">
                   <property name="text">
                    <string>I do not like this</string>
                   </property>
@@ -486,44 +485,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="updateButton">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Update</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="uninstallButton">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Uninstall</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="becomeFanButton">
-       <property name="text">
-        <string>Become a Fan</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="installButton">
-       <property name="text">
-        <string>Install</string>
-       </property>
-       <property name="popupMode">
-        <enum>QToolButton::InstantPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonFollowStyle</enum>
-       </property>
-      </widget>
+      <widget class="KPushButton" name="backButton"/>
      </item>
      <item>
       <widget class="KNS3::ProgressIndicator" name="progressIndicator">
@@ -557,10 +519,41 @@
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="closeButton"/>
+      <widget class="KPushButton" name="updateButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Update</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="backButton"/>
+      <widget class="KPushButton" name="uninstallButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Uninstall</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KPushButton" name="becomeFanButton">
+       <property name="text">
+        <string>Become a Fan</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KPushButton" name="installButton">
+       <property name="text">
+        <string>Install</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KPushButton" name="closeButton"/>
      </item>
     </layout>
    </item>
