@@ -2,9 +2,10 @@
  *
  * kiconloader.cpp: An icon loader for KDE with theming functionality.
  *
- * This file is part of the KDE project, module kdecore.
+ * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *                    Antonio Larrosa <larrosa@kde.org>
+ *               2010 Michael Pyne <mpyne@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,8 +28,6 @@
 #include "kiconcache.h"
 #include "k3icon_p.h"
 
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
 #include <QtCore/QCache>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
@@ -39,9 +38,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QByteArray>
 #include <QtGui/QIcon>
-#include <QtGui/QBitmap>
-#include <QHash>
-#include <QPainter>
+#include <QtGui/QPainter>
 #include <QMovie>
 
 #include <kapplication.h>
@@ -71,6 +68,17 @@
 
 //#define NO_LAZYLOAD_ICONTHEME
 
+/**
+ * Checks for relative paths quickly on UNIX-alikes, slowly on everything else.
+ */
+static bool pathIsRelative(const QString &path)
+{
+#ifdef Q_OS_UNIX
+    return (!path.isEmpty() && path[0] != QChar('/'));
+#else
+    return QDir::isRelativePath(path);
+#endif
+}
 
 /**
  * Holds a QPixmap for this process, along with its associated path on disk.
@@ -147,7 +155,6 @@ struct KIconGroup
 };
 
 
-static const int MAX_SVG_RENDERERS = 100;
 /*** d pointer for KIconLoader. ***/
 class KIconLoaderPrivate
 {
@@ -164,9 +171,7 @@ public:
     {
         /* antlarr: There's no need to delete d->mpThemeRoot as it's already
         deleted when the elements of d->links are deleted */
-        qDeleteAll(imgDict);
         qDeleteAll(links);
-        qDeleteAll(svgRenderers);
         delete[] mpGroups;
         delete mIconThemeCache;
         delete mIconCache;
@@ -239,6 +244,30 @@ public:
 
     /**
      * @internal
+     * Used with KIconLoader::loadIcon to convert the given name, size, group,
+     * and icon state information to valid states. All parameters except the
+     * name can be modified as well to be valid.
+     */
+    void normalizeIconMetadata(KIconLoader::Group &group, int &size, int &state) const;
+
+    /**
+     * @internal
+     * Used with KIconLoader::loadIcon to get a base key name from the given
+     * icon metadata. Ensure the metadata is normalized first.
+     */
+    QString makeCacheKey(const QString &name, KIconLoader::Group group, const QStringList &overlays,
+                         int size, int state) const;
+
+    /**
+     * @internal
+     * Creates the QImage for @p path, using SVG rendering as appropriate.
+     * @p size is only used for scalable images, but if non-zero non-scalable
+     * images will be resized anyways.
+     */
+    QImage createIconImage(const QString &path, int size = 0);
+
+    /**
+     * @internal
      * Adds an QPixmap with its associated path to the shared icon cache.
      */
     void insertCachedPixmapWithPath(const QString &key, const QPixmap &data, const QString &path);
@@ -250,20 +279,14 @@ public:
      */
     bool findCachedPixmapWithPath(const QString &key, QPixmap &data, QString &path);
 
-    KIconLoader *q;
+    KIconLoader *const q;
 
     QStringList mThemesInTree;
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
     KStandardDirs *mpDirs;
     KIconEffect mpEffect;
-    QHash<QString, QImage*> imgDict;
-    QImage lastImage; // last loaded image without effect applied
-    QString lastImageKey; // key for icon without effect
-    int lastIconType; // see KIconLoader::type
-    int lastIconThreshold; // see KIconLoader::threshold
     QList<KIconThemeNode *> links;
-    QHash<QString, KSvgRenderer*> svgRenderers;
     KIconCache* mIconThemeCache;
 
     // This shares the icons across all processes
@@ -276,7 +299,6 @@ public:
     // lazy loading: initIconThemes() is only needed when the "links" list is needed
     // mIconThemeInited is used inside initIconThemes() to init only once
     bool mIconThemeInited :1;
-    bool lastWasUnknown :1; // last loaded image was the unknown image
     QString appname;
 
     void drawOverlays(const KIconLoader *loader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays);
@@ -700,6 +722,93 @@ QString KIconLoaderPrivate::removeIconExtension(const QString &name) const
     return name;
 }
 
+void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &size, int &state) const
+{
+    if ((state < 0) || (state >= KIconLoader::LastState))
+    {
+        kWarning(264) << "Illegal icon state: " << state;
+        state = KIconLoader::DefaultState;
+    }
+
+    if (size < 0) {
+        size = 0;
+    }
+
+    // For "User" icons, bail early since the size should be based on the size on disk,
+    // which we've already checked.
+    if (group == KIconLoader::User) {
+        return;
+    }
+
+    if ((group < -1) || (group >= KIconLoader::LastGroup))
+    {
+        kWarning(264) << "Illegal icon group: " << group;
+        group = KIconLoader::Desktop;
+    }
+
+    // If size == 0, use default size for the specified group.
+    if (size == 0 && group != KIconLoader::User)
+    {
+        size = mpGroups[group].size;
+    }
+}
+
+QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group group,
+                                         const QStringList &overlays, int size, int state) const
+{
+    // The KSharedDataCache is shared so add some namespacing.
+    QString key;
+
+    if (group == KIconLoader::User) {
+        key = QLatin1String("$kicou_");
+    }
+    else {
+        key = QLatin1String("$kico_");
+    }
+
+    key.append(QString("%1_%2_%3").arg(name).arg(size).arg(overlays.join("_")));
+
+    if (group >= 0) {
+        key.append(mpEffect.fingerprint(group, state));
+    }
+    else {
+        key.append(QLatin1String("noeffect"));
+    }
+
+    return key;
+}
+
+QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
+{
+    // Use the extension as the format. Works for XPM and PNG, but not for SVG. The
+    // "VGZ" is the last 3 characters of "SVGZ"
+    QString ext = path.right(3).toUpper();
+    QImage img;
+
+    if (ext != "SVG" && ext != "VGZ")
+    {
+        // Not a SVG or SVGZ
+        img = QImage(path, ext.toLatin1());
+
+        if (size != 0) {
+            img = img.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
+    }
+    else
+    {
+        KSvgRenderer renderer(path, q);
+
+        if (renderer.isValid()) {
+            img = QImage(size, size, QImage::Format_ARGB32_Premultiplied);
+            img.fill(0);
+            QPainter p(&img);
+            renderer.render(&p);
+        }
+    }
+
+    return img;
+}
+
 void KIconLoaderPrivate::insertCachedPixmapWithPath(
     const QString &key,
     const QPixmap &data,
@@ -981,12 +1090,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
         return QString();
     }
 
-    if (_name.isEmpty()
-#ifdef Q_OS_WIN
-        || !QDir::isRelativePath(_name))
-#else
-        || _name.at(0) == '/')
-#endif
+    if (_name.isEmpty() || !pathIsRelative(_name))
     {
         // we have either an absolute path or nothing to work with
         return _name;
@@ -1070,11 +1174,24 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 {
     QString name = _name;
     bool unknownIcon = false;
-    bool absolutePath = false;
     bool favIconOverlay = false;
 
-    if (size < 0)
+    if (size < 0 || _name.isEmpty())
         return QPixmap();
+
+    if(_name == QLatin1String("playing")) {
+        kDebug(264) << "This pixmap is damaged.";
+    }
+
+    /*
+     * This method works in a kind of pipeline, with the following steps:
+     * 1. Sanity checks.
+     * 2. Convert _name, group, size, etc. to a key name.
+     * 3. Check if the key is already cached.
+     * 4. If not, initialize the theme and find/load the icon.
+     * 4a Apply overlays
+     * 4b Re-add to cache.
+     */
 
     // Special case for absolute path icons.
     if (name.startsWith(QLatin1String("favicons/")))
@@ -1083,292 +1200,73 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
        name = KStandardDirs::locateLocal("cache", name+".png");
     }
 
-    if (!name.isEmpty()
-#ifdef Q_OS_WIN
-        && !QDir::isRelativePath(name))
-#else
-        && name.at(0) == '/')
-#endif
-    {
-        absolutePath = true;
+    bool absolutePath = !pathIsRelative(name);
+    if (!absolutePath) {
+        name = d->removeIconExtension(name);
     }
 
-    static const QString &str_unknown = KGlobal::staticQString("unknown");
+    // Don't bother looking for an icon with no name.
+    if (name.isEmpty()) {
+        return QPixmap();
+    }
+
+    // May modify group, size, or state. This function puts them into sane
+    // states.
+    d->normalizeIconMetadata(group, size, state);
+
+    // See if the image is already cached.
+    QString key = d->makeCacheKey(name, group, overlays, size, state);
     QPixmap pix;
+    K3Icon icon;
 
-    // Special case for "User" icons.
-    if (group == KIconLoader::User)
-    {
-        QString key;
-        QString path;
-        QImage imageResult;
-
-        key.reserve(200);
-        key.append(QLatin1String("$kicou_"));
-        key.append(name).append('_').append(QString::number(size));
-        key.append(overlays.join("_")); // krazy:exclude=doublequote_chars
-
-        if (d->findCachedPixmapWithPath(key, pix, path)) {
-            //kDebug(264) << "KIL: " << "found the icon from KIC";
-            if (!pix.isNull() || canReturnNull) {
-                if (path_store) {
-                    *path_store = path;
-                }
-                return pix;
-            } else if (_name != str_unknown) {
-                return loadIcon(str_unknown, group, size, state,
-                            overlays, path_store, canReturnNull);
-            }
+    if (d->findCachedPixmapWithPath(key, pix, icon.path)) {
+        if (path_store) {
+            *path_store = icon.path;
         }
-        if (!d->initIconThemes()) {
-            return QPixmap();
-        }
-
-        path = (absolutePath) ? name :
-                        iconPath(name, KIconLoader::User, canReturnNull);
-        if (path.isEmpty())
-        {
-            // insert the null icon so we know it's null
-            d->insertCachedPixmapWithPath(key, QPixmap());
-
-            if (!canReturnNull) {
-#ifndef NDEBUG
-                kWarning(264) << "No such icon" << _name;
-#endif
-                unknownIcon = true;
-            } else {
-                return QPixmap();
-            }
-
-            // We don't know the desired size: use small
-            path = iconPath(str_unknown, KIconLoader::Small, true);
-            if (path.isEmpty())
-            {
-                kWarning(264) << "Warning: Cannot find \"unknown\" icon.";
-                return QPixmap();
-            }
-        }
-
-        if (path_store != 0L)
-            *path_store = path;
-        //if (inCache)
-        //    return pix;
-        QImage img(path);
-        if (size != 0)
-            img=img.scaled(size,size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-        pix = QPixmap::fromImage(img);
-        d->drawOverlays(this, KIconLoader::Desktop, state, pix, overlays);
-        if (!unknownIcon)
-            d->insertCachedPixmapWithPath(key, pix, path);
         return pix;
     }
 
-    // Regular case: Check parameters
-
-    if ((group < -1) || (group >= KIconLoader::LastGroup))
-    {
-        kDebug(264) << "Illegal icon group: " << group;
-        group = KIconLoader::Desktop;
-    }
-
-    if ((state < 0) || (state >= KIconLoader::LastState))
-    {
-        kDebug(264) << "Illegal icon state: " << state;
-        state = KIconLoader::DefaultState;
-    }
-
-    if (size == 0 && group < 0)
-    {
-        kDebug(264) << "Neither size nor group specified!";
-        group = KIconLoader::Desktop;
-    }
-
-    if (!absolutePath)
-    {
-        if (!canReturnNull && name.isEmpty())
-            name = str_unknown;
-        else
-            name = d->removeIconExtension(name);
-    }
-
-    // If size == 0, use default size for the specified group.
-    if (size == 0)
-    {
-        size = d->mpGroups[group].size;
-    }
-    favIconOverlay = favIconOverlay && size > 22;
-
-    // Generate a unique cache key for the icon.
-
-    QString key;
-    key.reserve(100);
-    key.append(QLatin1String("$kico_"));
-    key.append(name).append('_').append(QString::number(size));
-
-    QString overlayKey = overlays.join("_"); // krazy:exclude=doublequote_chars
-    QString noEffectKey = key + overlayKey;
-
-    if (group >= 0)
-    {
-        key.append(d->mpEffect.fingerprint(group, state));
-    } else {
-        key.append(QLatin1String("noeffect"));
-    }
-    key.append(overlayKey);
-
-    // Is the icon in the cache?
-    QString pathResult;
-
-    if (d->findCachedPixmapWithPath(key, pix, pathResult)) {
-        //kDebug() << "KIL: " << "found icon from KIC";
-        if (!pix.isNull() || canReturnNull) {
-            if (path_store) {
-                *path_store = pathResult;
-            }
-
-            return pix;
-        } else if (_name != str_unknown) {
-            return loadIcon(str_unknown, group, size, state,
-                            overlays, path_store, canReturnNull);
-        }
-    }
+    // Image is not cached... go find it and apply effects.
     if (!d->initIconThemes()) {
         return QPixmap();
     }
 
-    QImage *img = 0;
-    int iconType;
-    int iconThreshold;
+    favIconOverlay = favIconOverlay && size > 22;
 
-    if ( ( path_store != 0 ) ||
-         ( noEffectKey != d->lastImageKey ) ||
-         ( d->lastWasUnknown && canReturnNull ) )
-    {
-        // Not in cache and not the same as the last requested icon -> load it.
-        K3Icon icon;
+    // First we look for non-User icons. If we don't find one we'd search in
+    // the User space anyways...
+    if (group != KIconLoader::User) {
+        // K3Icon seems to hold some needed information.
+
         if (absolutePath && !favIconOverlay)
         {
-            icon.context=KIconLoader::Any;
-            icon.type=KIconLoader::Scalable;
-            icon.path=name;
+            icon.context = KIconLoader::Any;
+            icon.type = KIconLoader::Scalable;
+            icon.path = name;
         }
         else
         {
-            if (!name.isEmpty())
-                icon = d->findMatchingIconWithGenericFallbacks(favIconOverlay ? QString("text-html") : name, size);
-
-            if (!icon.isValid())
-            {
-                // Try "User" icon too. Some apps expect this.
-                if (!name.isEmpty()) {
-                    pix = loadIcon(name, KIconLoader::User, size, state, overlays, path_store, true);
-                }
-                if (!pix.isNull() || canReturnNull) {
-                    d->insertCachedPixmapWithPath(key, pix);
-                    return pix;
-                }
-#ifndef NDEBUG
-                kWarning(264) << "No such icon" << _name;
-#endif
-                unknownIcon = true;
-                icon = d->findMatchingIcon(str_unknown, size);
-
-                if (!icon.isValid())
-                {
-                    kWarning(264)
-                        << "Warning: could not find \"Unknown\" icon for size = "
-                        << size << endl;
-                    return QPixmap();
-                }
-
-                pix = QPixmap(icon.path); // pix is the Unknown icon
-            }
+            icon = d->findMatchingIconWithGenericFallbacks(favIconOverlay ? QString("text-html") : name, size);
         }
-
-        if (path_store != 0)
-            *path_store = icon.path;
-
-        // Use the extension as the format. Works for XPM and PNG, but not for SVG
-        QString ext = icon.path.right(3).toUpper();
-        if (ext != "SVG" && ext != "VGZ")
-        {
-            img = new QImage(icon.path, ext.toLatin1());
-            if (img->isNull()) {
-                if (!unknownIcon)
-                    d->insertCachedPixmapWithPath(key, QPixmap());
-                delete img;
-                return QPixmap();
-            }
-        }
-        else
-        {
-            KSvgRenderer *renderer = d->svgRenderers[icon.path];
-            if (!renderer) {
-                renderer = new KSvgRenderer(icon.path);
-                if (renderer->isValid()) {
-                    if (d->svgRenderers.count() >= MAX_SVG_RENDERERS) {
-                        QList<QString> keys = d->svgRenderers.keys();
-                        for (int i = 0; i < MAX_SVG_RENDERERS/2; ++i) {
-                            KSvgRenderer *oldRenderer = d->svgRenderers.take(keys[i]);
-                            delete oldRenderer;
-                        }
-                    }
-                    d->svgRenderers.insert(icon.path, renderer);
-                }
-            }
-            // Special stuff for SVG icons
-
-            if (renderer && renderer->isValid()) {
-                img = new QImage(size, size, QImage::Format_ARGB32_Premultiplied);
-                img->fill(0);
-                QPainter p(img);
-                renderer->render(&p);
-            } else {
-                delete renderer;
-                if (!unknownIcon)
-                    d->insertCachedPixmapWithPath(key, pix);
-                return pix;
-            }
-        }
-
-        iconType = icon.type;
-        iconThreshold = icon.threshold;
-        pathResult = icon.path;
-
-        d->lastImage = img->copy();
-        d->lastImageKey = noEffectKey;
-        d->lastIconType = iconType;
-        d->lastIconThreshold = iconThreshold;
-        d->lastWasUnknown = unknownIcon;
-    }
-    else
-    {
-        img = new QImage( d->lastImage.copy() );
-        iconType = d->lastIconType;
-        iconThreshold = d->lastIconThreshold;
-        unknownIcon = d->lastWasUnknown;
     }
 
-    // Scale the icon and apply effects if necessary
-#ifndef KDE_QT_SVG_RENDERER_FIXED
-    // The following code needs to be removed after the SVG rendering has been
-    // fixed (please take a look at the comment above). Please do not remove the
-    // #if condition as it marks what needs to be removed (ereslibre)
-    if (iconType == KIconLoader::Scalable && size != img->width())
-    {
-        *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    if (icon.path.isEmpty()) {
+        // We do have a "User" icon, or we couldn't find the non-User one.
+        icon.path = (absolutePath) ? name :
+                        iconPath(name, KIconLoader::User, canReturnNull);
     }
-#endif
-    if (iconType == KIconLoader::Threshold && size != img->width())
-    {
-        const int sizeDiff = size - img->width();
-        if (sizeDiff < 0 || sizeDiff > iconThreshold)
-            *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    // Still can't find it? Use "unknown" if we can't return null.
+    // We keep going in the function so we can ensure this result gets cached.
+    if (icon.path.isEmpty() && !canReturnNull) {
+        icon.path = d->unknownIconPath(size);
     }
+
+    QImage img = d->createIconImage(icon.path, size);
+
     if (group >= 0)
     {
-        *img = d->mpEffect.apply(*img, group, state);
+        img = d->mpEffect.apply(img, group, state);
     }
 
     if (favIconOverlay)
@@ -1376,40 +1274,27 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         QImage favIcon(name, "PNG");
         if (!favIcon.isNull()) // if favIcon not there yet, don't try to blend it
         {
+            QPainter p(&img);
+
+            // Align the favicon overlay
+            QRect r(favIcon.rect());
+            r.moveBottomRight(img.rect().bottomRight());
+            r.adjust(-1, -1, -1, -1); // Move off edge
+
             // Blend favIcon over img.
-            // FIXME: This code should be updated to use modern QPainter
-            // features.
-            int x = img->width() - favIcon.width() - 1,
-                y = img->height() - favIcon.height() - 1;
-            favIcon = favIcon.convertToFormat(QImage::Format_ARGB32);
-            *img = img->convertToFormat(QImage::Format_ARGB32);
-            for( int line = 0;
-                 line < favIcon.height();
-                 ++line )
-            {
-                QRgb* fpos = reinterpret_cast< QRgb* >( favIcon.scanLine( line ));
-                QRgb* ipos = reinterpret_cast< QRgb* >( img->scanLine( line + y )) + x;
-                for( int i = 0;
-                     i < favIcon.width();
-                     ++i, ++fpos, ++ipos )
-                    *ipos = qRgba( ( qRed( *ipos ) * ( 255 - qAlpha( *fpos )) + qRed( *fpos ) * qAlpha( *fpos )) / 255,
-                                   ( qGreen( *ipos ) * ( 255 - qAlpha( *fpos )) + qGreen( *fpos ) * qAlpha( *fpos )) / 255,
-                                   ( qBlue( *ipos ) * ( 255 - qAlpha( *fpos )) + qBlue( *fpos ) * qAlpha( *fpos )) / 255,
-                                   ( qAlpha( *ipos ) * ( 255 - qAlpha( *fpos )) + qAlpha( *fpos ) * qAlpha( *fpos )) / 255 );
-            }
+            p.drawImage(r, favIcon);
         }
     }
 
-    pix = QPixmap::fromImage(*img);
+    pix = QPixmap::fromImage(img);
 
+    // TODO: If we make a loadIcon that returns the image we can convert
+    // drawOverlays to use the image instead of pixmaps as well so we don't
+    // have to transfer so much to the graphics card.
     d->drawOverlays(this, group, state, pix, overlays);
 
-    if (!unknownIcon)
-    {
-        d->insertCachedPixmapWithPath(key, pix, pathResult);
-    }
+    d->insertCachedPixmapWithPath(key, pix, icon.path);
 
-    delete img;
     return pix;
 }
 

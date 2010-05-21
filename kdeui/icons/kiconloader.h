@@ -131,7 +131,7 @@ public:
         MainToolbar,
         /// Small icons, e.g. for buttons
         Small,
-        /// Panel (Kicker) icons
+        /// Panel (Plasma Taskbar) icons
         Panel,
         /// Icons for use in dialog titles, page lists, etc
         Dialog,
@@ -230,9 +230,14 @@ public:
      * @param overlays a list of emblem icons to overlay, by name. the emblem
      *                 prefix is applied automatically to each name, e.g.
      *                 "zip" becomes "emblem-zip"
-     * @param path_store If not null, the path of the icon is stored here.
+     * @param path_store If not null, the path of the icon is stored here,
+     *        if the icon was found. If the icon was not found @p path_store
+     *        is unaltered even if the "unknown" pixmap was returned.
      * @param canReturnNull Can return a null pixmap? If false, the
-     * "unknown" pixmap is returned when no appropriate icon has been found.
+     *        "unknown" pixmap is returned when no appropriate icon has been
+     *        found. <em>Note:</em> a null pixmap can still be returned in the
+     *        event of invalid parameters, such as empty names, negative sizes,
+     *        and etc.
      * @return the QPixmap. Can be null when not found, depending on
      *         @p canReturnNull.
      */
