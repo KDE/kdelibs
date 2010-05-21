@@ -158,7 +158,24 @@ private Q_SLOTS:
         QCOMPARE(dialog.button(id)->whatsThis(), whatsthis);
     }
 
-    void testCloseDialog()
+    void testDeleteOnClose()
+    {
+        KDialog* dialog = new KDialog;
+        QWeakPointer<KDialog> dialogPointer(dialog);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->setButtons(KDialog::Ok | KDialog::Cancel);
+        QSignalSpy qOkClickedSpy(dialog, SIGNAL(okClicked()));
+        QSignalSpy qAcceptedSpy(dialog, SIGNAL(accepted()));
+        dialog->show(); // KDialog::closeEvent tests for isHidden
+        dialog->button(KDialog::Ok)->click();
+        QCOMPARE(qOkClickedSpy.count(), 1);
+        QCOMPARE(qAcceptedSpy.count(), 1); // and then accepted is emitted as well
+        qApp->sendPostedEvents(); // DeferredDelete
+        QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
+        QVERIFY(dialogPointer.isNull()); // deletion happened
+    }
+
+    void testCloseDialogWithDeleteOnClose()
     {
         KDialog* dialog = new KDialog;
         QWeakPointer<KDialog> dialogPointer(dialog);
