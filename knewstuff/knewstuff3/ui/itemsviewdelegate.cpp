@@ -64,7 +64,7 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     list << infoLabel;
 
     QToolButton * installButton = new QToolButton();
-    installButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    installButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     installButton->setPopupMode(QToolButton::InstantPopup);
     list << installButton;
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
@@ -73,7 +73,7 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
 
     QToolButton* detailsButton = new QToolButton();
-    detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    detailsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     list << detailsButton;
     setBlockedEventTypes(detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
