@@ -690,13 +690,22 @@ void KUrlTest::testDirectory()
 
 void KUrlTest::testPrettyURL()
 {
-  KUrl notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
-  QCOMPARE( notPretty.prettyUrl(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/") );
-  KUrl notPretty2("file:/home/test/directory%20with%20spaces");
-  QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory with spaces") );
+  KUrl tildeInPath("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
+  QCOMPARE(tildeInPath.prettyUrl(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/"));
+  // Tilde should not be re-encoded, see end of 2.3 in rfc3986
+  QCOMPARE(KUrl(tildeInPath.prettyUrl()).url(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/"));
+
+  KUrl spaceInPath("file:/home/test/directory%20with%20spaces");
+  QCOMPARE(spaceInPath.prettyUrl(), QString("file:///home/test/directory with spaces"));
+  QCOMPARE(KUrl(spaceInPath.prettyUrl()).url(), QString("file:///home/test/directory%20with%20spaces"));
+
+  KUrl plusInPath("http://slashdot.org/~RAMMS%2BEIN/"); // #232008
+  QCOMPARE(plusInPath.prettyUrl(), QString::fromLatin1("http://slashdot.org/~RAMMS+EIN/"));
+  QCOMPARE(KUrl(plusInPath.prettyUrl()).url(), QString::fromLatin1("http://slashdot.org/~RAMMS+EIN/"));
 
   KUrl notPretty3("fish://foo/%23README%23");
   QCOMPARE( notPretty3.prettyUrl(), QString("fish://foo/%23README%23") );
+
   KUrl url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
   QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
   QCOMPARE( url15581.url(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
@@ -743,7 +752,6 @@ void KUrlTest::testPrettyURL()
 
   KUrl ipv6Address( "http://[::ffff:129.144.52.38]:81/index.html" );
   QCOMPARE( ipv6Address.prettyUrl(), QString::fromLatin1( "http://[::ffff:129.144.52.38]:81/index.html" ) );
-
 }
 
 void KUrlTest::testIsRelative()
