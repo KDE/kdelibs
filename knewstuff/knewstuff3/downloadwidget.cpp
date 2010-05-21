@@ -212,7 +212,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     m_configFile = configFile;
     ui.setupUi(q);
     ui.m_titleWidget->setVisible(false);
-    ui.closeButton->setVisible(false);
+    ui.closeButton->setVisible(dialogMode);
     ui.backButton->setVisible(false);
     ui.backButton->setGuiItem(KStandardGuiItem::Back);
     q->connect(ui.backButton, SIGNAL(clicked()), q, SLOT(slotShowOverview()));
@@ -368,7 +368,6 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
     titleText = ui.m_titleWidget->text();
     
     details->setEntry(entry);
-    ui.closeButton->setVisible(false);
     ui.backButton->setVisible(true);
     ui.detailsStack->setCurrentIndex(1);
 }
@@ -376,7 +375,6 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
 void DownloadWidgetPrivate::slotShowOverview()
 {
     ui.backButton->setVisible(false);
-    ui.closeButton->setVisible(dialogMode);
     
     ui.updateButton->setVisible(false);
     ui.installButton->setVisible(false);
