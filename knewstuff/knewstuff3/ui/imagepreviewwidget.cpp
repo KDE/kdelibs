@@ -39,6 +39,7 @@ void ImagePreviewWidget::setImage(const QImage &preview)
 {
     m_image = preview;
     m_scaledImage = QImage();
+    updateGeometry();
     repaint();
 }
 
@@ -80,4 +81,14 @@ void ImagePreviewWidget::paintEvent(QPaintEvent *event)
     QPoint framePoint(point.x() - 5, point.y() - 5);
     painter.drawPixmap(framePoint, m_frameImage.scaled(m_scaledImage.width() + 10, m_scaledImage.height() + 10));
     painter.drawImage(point, m_scaledImage);
+}
+
+QSize ImagePreviewWidget::sizeHint() const
+{
+    if (m_image.isNull()) {
+        return QSize();
+    }
+    QSize sh = m_image.size();
+    sh.scale(maximumSize(), Qt::KeepAspectRatio);
+    return sh;
 }

@@ -30,6 +30,8 @@ public:
     explicit ImagePreviewWidget(QWidget *parent = 0);
 
     void setImage(const QImage& preview);
+
+    virtual QSize sizeHint() const;
     
 signals:
     void clicked();
