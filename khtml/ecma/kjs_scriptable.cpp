@@ -738,7 +738,7 @@ void ScriptableOperations::mark()
 
     for (QHash<JSObject*, int>::iterator i = exp->begin(); i != exp->end(); ++i) {
         JSObject* o = i.key();
-        if (!o->marked())
+        if (i.value() && !o->marked())
             o->mark();
     }
 }
