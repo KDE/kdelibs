@@ -269,6 +269,9 @@ void DownloadWidgetPrivate::init(const QString& configFile)
         }
     }
 
+    ui.detailsStack->widget(0)->layout()->setMargin(0);
+    ui.detailsStack->widget(1)->layout()->setMargin(0);
+
     q->connect(ui.m_categoryCombo, SIGNAL(activated(int)), q, SLOT(slotCategoryChanged(int)));
 
     // let the search line edit trap the enter key, otherwise it closes the dialog
