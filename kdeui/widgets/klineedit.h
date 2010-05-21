@@ -271,7 +271,7 @@ public:
      * @param create Set this to false if you don't want the box to be created
      *               i.e. to test if it is available.
      */
-    KCompletionBox * completionBox( bool create = true );
+    KCompletionBox * completionBox( bool create = true ); // KDE5 TODO: make virtual, so konq can reimplement i
 
     /**
      * Reimplemented for internal reasons, the API is not affected.
