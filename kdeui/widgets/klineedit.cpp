@@ -1719,18 +1719,42 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         color.setAlphaF(0.5);
         p.setPen(color);
 
-        //FIXME: fugly alert!
-        // qlineedit uses an internal qstyleoption set to figure this out
-        // and then adds a hardcoded 2 pixel interior to that.
-        // probably requires fixes to Qt itself to do this cleanly
-        // see define horizontalMargin 2 in qlineedit.cpp
         QStyleOptionFrame opt;
         initStyleOption(&opt);
         QRect cr = style()->subElementRect(QStyle::SE_LineEditContents, &opt, this);
-        cr.setLeft(cr.left() + 2);
-        cr.setRight(cr.right() - 2);
 
-        p.drawText(cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage);
+        // this is copied/adapted from QLineEdit::paintEvent
+        const int verticalMargin(1);
+        const int horizontalMargin(2);
+
+        int left, top, right, bottom;
+        getTextMargins( &left, &top, &right, &bottom );
+        cr.adjust( left, top, -right, -bottom );
+
+        p.setClipRect(cr);
+
+        QFontMetrics fm = fontMetrics();
+        Qt::Alignment va = alignment() & Qt::AlignVertical_Mask;
+        int vscroll;
+        switch (va & Qt::AlignVertical_Mask)
+        {
+            case Qt::AlignBottom:
+            vscroll = cr.y() + cr.height() - fm.height() - verticalMargin;
+            break;
+
+            case Qt::AlignTop:
+            vscroll = cr.y() + verticalMargin;
+            break;
+
+            default:
+            vscroll = cr.y() + (cr.height() - fm.height() + 1) / 2;
+            break;
+
+        }
+
+        QRect lineRect(cr.x() + horizontalMargin, vscroll, cr.width() - 2*horizontalMargin, fm.height());
+        p.drawText(lineRect, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage);
+
     }
 }
 
