@@ -244,6 +244,7 @@
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kitchensync        "<application>KitchenSync</application>">
 <!ENTITY kiten	"<application>Kiten</application>">
+<!ENTITY kitty  "<application>Kitty</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
