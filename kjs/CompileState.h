@@ -337,6 +337,7 @@ inline OpValue OpValue::immNumber(double in) {
 }
 
 inline OpValue OpValue::immValue(JSValue* in) {
+    assert(in);
     OpValue res;
     initImm(&res, OpType_value);
     res.value.wide.valueVal = in;

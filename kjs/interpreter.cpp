@@ -948,15 +948,19 @@ void Interpreter::initInternedStringsTable()
 
 StringImp* Interpreter::internString(const UString& literal)
 {
-    std::pair<InternedStringsTable::iterator, bool> p = 
-        s_internedStrings->add(literal.rep(), std::make_pair((StringImp*)(0), 1));
-        
-    if (p.second) // actually added..
-        p.first.values()->first = static_cast<StringImp*>(jsOwnedString(literal));
-    else
-        ++p.first.values()->second; // just bump the ref count
+    InternedStringsTable::iterator i = s_internedStrings->find(literal.rep());
 
-    return p.first.values()->first;
+    if (i == s_internedStrings->end()) {
+        // Need to add. Note: we can't use ->add() above to avoid a double-hash
+        // as creation of a StringImp may cause a GC, which in turn may
+        // rearrange the hashtable, invalidating the iterator.
+        StringImp* si = static_cast<StringImp*>(jsOwnedString(literal));
+        s_internedStrings->add(literal.rep(), std::make_pair(si, 1));
+        return si;
+    } else {
+        ++i.values()->second; // just bump the ref count
+        return i.values()->first;
+    }
 }
 
 void Interpreter::releaseInternedString(const UString& literal)
