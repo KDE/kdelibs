@@ -387,6 +387,12 @@ namespace KIO {
     KIO_EXPORT FileCopyJob *file_copy( const KUrl& src, const KUrl& dest, int permissions=-1,
                                        JobFlags flags = DefaultFlags );
 
+    /**
+     * Overload for catching code mistakes. Do NOT call this method (it is not implemented),
+     * insert a value for permissions (-1 by default) before the JobFlags.
+     * @since 4.5
+     */
+    FileCopyJob *file_copy( const KUrl& src, const KUrl& dest, JobFlags flags ); // not implemented - on purpose.
 
     /**
      * Move a single file.
