@@ -790,7 +790,7 @@ QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
         // Not a SVG or SVGZ
         img = QImage(path, ext.toLatin1());
 
-        if (size != 0) {
+        if (size != 0 && !img.isNull()) {
             img = img.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
     }
@@ -1217,12 +1217,21 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     // See if the image is already cached.
     QString key = d->makeCacheKey(name, group, overlays, size, state);
     QPixmap pix;
+    bool iconWasUnknown = false;
     K3Icon icon;
 
     if (d->findCachedPixmapWithPath(key, pix, icon.path)) {
+        // We cache the pixmap for the event of trying to find an unknown icon
+        // with canReturnNull set to false, but if we *can* return null then
+        // we should do so when necessary.
+        if (canReturnNull && icon.path.isEmpty()) {
+            return QPixmap();
+        }
+
         if (path_store) {
             *path_store = icon.path;
         }
+
         return pix;
     }
 
@@ -1260,6 +1269,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     // We keep going in the function so we can ensure this result gets cached.
     if (icon.path.isEmpty() && !canReturnNull) {
         icon.path = d->unknownIconPath(size);
+        iconWasUnknown = true;
     }
 
     QImage img = d->createIconImage(icon.path, size);
@@ -1293,7 +1303,17 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     // have to transfer so much to the graphics card.
     d->drawOverlays(this, group, state, pix, overlays);
 
+    // Don't add the path to our unknown icon to the cache, only cache the
+    // actual image.
+    if (iconWasUnknown) {
+        icon.path = QString();
+    }
+
     d->insertCachedPixmapWithPath(key, pix, icon.path);
+
+    if (path_store) {
+        *path_store = icon.path;
+    }
 
     return pix;
 }
