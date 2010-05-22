@@ -37,10 +37,8 @@ private Q_SLOTS:
     void initTestCase()
     {
         // Remove icon cache (from ~/.kde-unit-test)
-        const QString indexFile = KGlobal::dirs()->locateLocal("cache", "kpc/kde-icon-cache.index");
-        const QString dataFile = KGlobal::dirs()->locateLocal("cache", "kpc/kde-icon-cache.data");
-        QFile::remove(indexFile);
-        QFile::remove(dataFile);
+        const QString cacheFile = KGlobal::dirs()->locateLocal("cache", "icon-cache.kcache");
+        QFile::remove(cacheFile);
         sharedMimeInfoVersion = KMimeType::sharedMimeInfoVersion();
         QVERIFY(sharedMimeInfoVersion > 0);
     }
