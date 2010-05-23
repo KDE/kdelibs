@@ -159,6 +159,7 @@
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
 <!ENTITY Java	"<trademark>Java</trademark>">
 <!ENTITY Jini	"<trademark>Jini</trademark>">
+<!ENTITY jovie  "<application>Jovie</application>">
 <!ENTITY juk	"<application>JuK</application>">
 <!ENTITY kaboodle	"<application>Kaboodle</application>">
 <!ENTITY kaddressbook	"<application>KAddressBook</application>">
@@ -244,7 +245,6 @@
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kitchensync        "<application>KitchenSync</application>">
 <!ENTITY kiten	"<application>Kiten</application>">
-<!ENTITY kitty  "<application>Kitty</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
