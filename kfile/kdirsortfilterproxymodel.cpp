@@ -147,18 +147,22 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
     // Folders go before files if the corresponding setting is set.
     if (d->m_sortFoldersFirst) {
-        if (leftFileItem.isDir() && !rightFileItem.isDir()) {
+        const bool leftItemIsDir  = leftFileItem.isDir();
+        const bool rightItemIsDir = rightFileItem.isDir();
+        if (leftItemIsDir && !rightItemIsDir) {
             return isLessThan;
-        } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
+        } else if (!leftItemIsDir && rightItemIsDir) {
             return !isLessThan;
         }
     }
 
 
     // Hidden elements go before visible ones.
-    if (leftFileItem.isHidden() && !rightFileItem.isHidden()) {
+    const bool leftItemIsHidden  = leftFileItem.isHidden();
+    const bool rightItemIsHidden = rightFileItem.isHidden();
+    if (leftItemIsHidden && !rightItemIsHidden) {
         return isLessThan;
-    } else if (!leftFileItem.isHidden() && rightFileItem.isHidden()) {
+    } else if (!leftItemIsHidden && rightItemIsHidden) {
         return !isLessThan;
     }
 
