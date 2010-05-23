@@ -50,7 +50,7 @@
 static bool excludedMimeType(const QString &type)
 {
     // Let QtWebKit handle flash and java applets...
-    return (type.startsWith(QL1S("inode/"), Qt::CaseInsensitive)||
+    return (type.startsWith(QL1S("inode/"), Qt::CaseInsensitive) ||
             type.startsWith(QL1S("application/x-java"), Qt::CaseInsensitive) ||
             type == QL1S("application/x-shockwave-flash") ||
             type == QL1S("application/futuresplash"));
@@ -96,21 +96,8 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
         arguments << argumentNames.at(i) + "=\"" + argumentValues.at(i) + '\"';
     }
 
-    /*
-       HACK: This is a big time hack to determine the mime-type from the url
-       when no mime-type is provided. Since we do not want to make async calls
-       through KIO::mimeType here, we resort to the hack below to determine
-       mime-type from the request's filename.
-
-       This hack is not full proof and might not always work. See the
-       KMimeType::findByPath docs for details. It is however the best option
-       to properly handle documents, images, and other resources embedded
-       into html content with the <embed> tag when they lack the "type"
-       attribute that specifies their mime-type.
-
-       See the sample file "embed_tag_test.html" in the tests folder.
-    */
     QString mimeType (_mimeType.trimmed());
+    // If no mimetype is provided, we do our best to correctly determine it here...
     if (mimeType.isEmpty()) {
         kDebug(800) << "Looking up missing mimetype for plugin resource:" << url;
         const KUrl reqUrl (url);
