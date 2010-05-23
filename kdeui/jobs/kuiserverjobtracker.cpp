@@ -290,12 +290,12 @@ KSharedUiServerProxy::KSharedUiServerProxy()
                                                              QStringList(), &error);
         if (ret > 0)
         {
-            kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error << endl;
+            kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error;
         }
     }
 
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.JobViewServer"))
-        kDebug() << "The application kuiserver is STILL NOT REGISTERED";
+        kDebug() << "The dbus name org.kde.JobViewServer is STILL NOT REGISTERED, even after starting kuiserver. Should not happen.";
     else
         kDebug() << "kuiserver registered";
 }
