@@ -110,14 +110,14 @@ class KDEUI_EXPORT KBreadcrumbSelectionModel : public QItemSelectionModel
 {
   Q_OBJECT
 public:
-  enum Direction
+  enum BreadcrumbTarget
   {
-    Forward,
-    Reverse
+    MakeBreadcrumbSelectionInOther,
+    MakeBreadcrumbSelectionInSelf
   };
 
   explicit KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent = 0);
-  KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, Direction direction, QObject* parent = 0);
+  KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, BreadcrumbTarget target, QObject* parent = 0);
   virtual ~KBreadcrumbSelectionModel();
 
   /**

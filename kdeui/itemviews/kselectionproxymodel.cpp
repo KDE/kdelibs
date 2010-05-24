@@ -785,6 +785,15 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
     m_layoutChangePersistentIndexes.clear();
     m_proxyIndexes.clear();
 
+    m_weakSourceParents.clear();
+    m_weakSourceFirstChilds.clear();
+    m_weakRootIndexes.clear();
+    m_weakRootParents.clear();
+    m_sourceFirstChildParents.clear();
+    m_sourceGrandParents.clear();
+    m_sourcePersistentParents.clear();
+    m_sourcePersistentFirstChilds.clear();
+
     emit q->layoutChanged();
 }
 
