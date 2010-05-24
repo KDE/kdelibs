@@ -63,7 +63,7 @@ public:
 
 KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, QObject* parent)
   : QItemSelectionModel(const_cast<QAbstractItemModel *>(selectionModel->model()), parent),
-    d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, MakeBreadcrumbSelectionInSelf))
+    d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, Reverse))
 {
 }
 
@@ -71,7 +71,7 @@ KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *select
   : QItemSelectionModel(const_cast<QAbstractItemModel *>(selectionModel->model()), parent),
     d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, direction))
 {
-  if ( direction != MakeBreadcrumbSelectionInSelf)
+  if ( direction != Reverse)
     connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
             this, SLOT(sourceSelectionChanged(const QItemSelection&,const QItemSelection&)));
 }
@@ -185,7 +185,7 @@ void KBreadcrumbSelectionModel::select(const QModelIndex &index, QItemSelectionM
     d->m_ignoreCurrentChanged = false;
     return;
   }
-  if ( d->m_direction == MakeBreadcrumbSelectionInOther )
+  if ( d->m_direction == Forward )
   {
     d->m_selectionModel->select(d->getBreadcrumbSelection(index), command);
     QItemSelectionModel::select(index, command);
@@ -199,7 +199,7 @@ void KBreadcrumbSelectionModel::select(const QItemSelection &selection, QItemSel
 {
   Q_D(KBreadcrumbSelectionModel);
   QItemSelection bcc = d->getBreadcrumbSelection(selection);
-  if ( d->m_direction == MakeBreadcrumbSelectionInOther )
+  if ( d->m_direction == Forward )
   {
     d->m_selectionModel->select(selection, command);
     QItemSelectionModel::select(bcc, command);
