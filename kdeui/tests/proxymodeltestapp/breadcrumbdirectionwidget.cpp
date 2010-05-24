@@ -93,7 +93,7 @@ BreadcrumbDirectionWidget::BreadcrumbDirectionWidget(QWidget* parent, Qt::Window
   view1->setSelectionModel(breadcrumbSelection1);
 
   KBreadcrumbSelectionModel *breadcrumbSelection2 = new KBreadcrumbSelectionModel(view3->selectionModel(),
-                                                                                  KBreadcrumbSelectionModel::Forward, this);
+                                                                                  KBreadcrumbSelectionModel::MakeBreadcrumbSelectionInOther, this);
   view4->setSelectionModel(breadcrumbSelection2);
 }
 

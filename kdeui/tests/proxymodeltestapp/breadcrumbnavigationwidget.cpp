@@ -248,7 +248,7 @@ BreadcrumbNavigationWidget::BreadcrumbNavigationWidget(QWidget* parent, Qt::Wind
 
   dynamicTree->treeView()->setSelectionModel(rootSelectionModel);
 
-  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector2 = new KBreadcrumbSelectionModel(rootSelectionModel, KBreadcrumbSelectionModel::Forward, this);
+  KBreadcrumbSelectionModel *breadcrumbOnlyProxySelector2 = new KBreadcrumbSelectionModel(rootSelectionModel, KBreadcrumbSelectionModel::MakeBreadcrumbSelectionInOther, this);
   SON(breadcrumbOnlyProxySelector2);
   breadcrumbOnlyProxySelector2->setActualSelectionIncluded(false);
 
