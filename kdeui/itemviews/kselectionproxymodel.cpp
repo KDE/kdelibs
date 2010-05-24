@@ -945,6 +945,9 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
             }
         } else
             updateInternalIndexes(parent, start, end - start + 1);
+        // @p parent was not a parent before, but it is now.
+        if (q->sourceModel()->rowCount(parent) == (end - start + 1))
+          createParentMappings(parent.parent(), parent.row(), parent.row());
     } else {
         const int proxyStartRow = getProxyInitialRow(parent) + start;
         updateInternalTopIndexes(proxyStartRow, end - start + 1);
