@@ -103,13 +103,6 @@ namespace KIO {
         KUrl m_url;
         KUrl m_subUrl;
         int m_command;
-        /*
-          In high-level jobs such as FileCopyJob, this variable represents the
-          source (GET) url and is used by KIO::Scheduler to avoid deadlock conditions
-          when scheduling jobs with two remote ends, e.g. copying file from one ftp
-          server to another.
-         */
-        KUrl m_pairedUrl;
 
         // for use in KIO::Scheduler
         //
