@@ -16,10 +16,14 @@ configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoct
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 find_package(DocBookXML)
-macro_log_feature(DOCBOOKXML_FOUND "DocBook XML 4.x" "XML DTDs for DocBook 4.x" "http://docbook.org/schemas/4x.html" TRUE "" "Needed for building the KDE help system.")
+set (DOCBOOKXML_MSG "XML DTDs for DocBook ${DOCBOOKXML_CURRENTDTD_VERSION}")
+if (DOCBOOKXML_OLDDTD_VERSION)
+  set (DOCBOOKXML_MSG "${DOCBOOKXML_MSG} and ${DOCBOOKXML_OLDDTD_VERSION}")
+endif (DOCBOOKXML_OLDDTD_VERSION)
+macro_log_feature(DOCBOOKXML_FOUND "DocBook XML" "${DOCBOOKXML_MSG}" "http://www.oasis-open.org/docbook/xml/" TRUE "" "Needed for building the KDE help system.")
 
 find_package(DocBookXSL)
-macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Stylesheets for processing DocBook XML" TRUE "" "Needed for building the KDE help system.")
+macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Stylesheets for processing DocBook XML" "http://docbook.sourceforge.net/release/xsl/current/" TRUE "" "Needed for building the KDE help system.")
 
 ########### next target ###############
 
