@@ -73,7 +73,7 @@ private:
     class KWebPluginFactoryPrivate;
     KWebPluginFactoryPrivate* const d;
 
-    Q_PRIVATE_SLOT(d, void _k_slotMimeType(KIO::Job *, const QString &));
+    Q_PRIVATE_SLOT(d, void _k_slotMimeType(KIO::Job *, const QString &))
 };
 
 #endif // KWEBPLUGINFACTORY_H
