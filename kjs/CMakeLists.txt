@@ -79,11 +79,13 @@ else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    endif (NOT HAVE_REGEX_H)
 endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 
-if (CMAKE_CROSSCOMPILING)
-   SET(IMPORT_ICEMAKER_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportIcemakerExecutable.cmake" CACHE FILEPATH "Point it to the export file of icemaker from a native build")
-   INCLUDE(${IMPORT_ICEMAKER_EXECUTABLE})
-   SET(ICEMAKER_EXECUTABLE icemaker)
-else (CMAKE_CROSSCOMPILING)
+# The crosscompiling parts are commented out on purpose. Alex
+# if (CMAKE_CROSSCOMPILING)
+#    set(IMPORT_ICEMAKER_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportIcemakerExecutable.cmake" CACHE FILEPATH "Point it to the export file of icemaker from a native build")
+#    include(${IMPORT_ICEMAKER_EXECUTABLE})
+#    set(ICEMAKER_EXECUTABLE icemaker)
+# else (CMAKE_CROSSCOMPILING)
+
    ########### icemaker, generates some tables for kjs/frostbyte ###############
    set(icemaker_SRCS
        bytecode/generator/tablebuilder.cpp
@@ -93,17 +95,16 @@ else (CMAKE_CROSSCOMPILING)
        bytecode/generator/lexer.cpp
        bytecode/generator/parser.cpp
       )
-   KDE4_ADD_EXECUTABLE(icemaker NOGUI ${icemaker_SRCS})
-   #TARGET_LINK_LIBRARIES(icemaker ${QT_QTCORE_LIBRARY})
+   kde4_add_executable(icemaker NOGUI ${icemaker_SRCS})
 
    # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-   GET_TARGET_PROPERTY(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
+   get_target_property(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
 
-   EXPORT(TARGETS icemaker FILE ${CMAKE_BINARY_DIR}/ImportIcemakerExecutable.cmake)
-endif (CMAKE_CROSSCOMPILING)
+#    export(TARGETS icemaker FILE ${CMAKE_BINARY_DIR}/ImportIcemakerExecutable.cmake)
+# endif (CMAKE_CROSSCOMPILING)
 
 # and the custom command
-ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
   COMMAND ${ICEMAKER_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bytecode
   DEPENDS icemaker ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/codes.def

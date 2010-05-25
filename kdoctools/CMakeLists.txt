@@ -59,11 +59,12 @@ else(KDE4_ENABLE_FINAL)
    set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 endif(KDE4_ENABLE_FINAL)
 
-if (CMAKE_CROSSCOMPILING)
-   set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
-   include(${IMPORT_MEINPROC4_EXECUTABLE})
-
-else (CMAKE_CROSSCOMPILING)
+# The cross compiling parts are commented out on purpose. Alex
+# if (CMAKE_CROSSCOMPILING)
+#    set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
+#    include(${IMPORT_MEINPROC4_EXECUTABLE})
+#
+# else (CMAKE_CROSSCOMPILING)
 
    set(meinproc_SRCS meinproc.cpp meinproc_common.cpp xslt.cpp xslt_kde.cpp )
 
@@ -75,10 +76,10 @@ else (CMAKE_CROSSCOMPILING)
    # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
    install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-   # export this binary for cross-compilation
-   EXPORT(TARGETS meinproc4 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
-
-endif (CMAKE_CROSSCOMPILING)
+#    # export this binary for cross-compilation
+#    export(TARGETS meinproc4 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
+# 
+# endif (CMAKE_CROSSCOMPILING)
 
 ########### next target ###############
 
