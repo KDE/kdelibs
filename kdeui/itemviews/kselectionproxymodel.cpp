@@ -478,15 +478,6 @@ public:
     QItemSelectionModel * const m_selectionModel;
     mutable qint64 m_nextId;
 
-    struct PendingMove {
-        PendingMove() : doMove(false), doInsert(false), doRemove(false) {}
-        bool doMove;
-        bool doInsert;
-        bool doRemove;
-    };
-
-    QStack<PendingMove> m_pendingMoves;
-
     KSelectionProxyModel::FilterBehavior m_filterBehavior;
 
     QList<QPersistentModelIndex> m_layoutChangePersistentIndexes;
