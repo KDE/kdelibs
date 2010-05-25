@@ -2231,7 +2231,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 {
     Q_D(const KSelectionProxyModel);
 
-    if (d->m_rootIndexList.isEmpty())
+    if (d->m_rootIndexList.isEmpty() || !sourceModel())
         return false;
 
     if (parent.isValid()) {
