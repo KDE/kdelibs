@@ -146,7 +146,6 @@ public:
     KIO::Slave *createSlave(const QString &protocol, KIO::SimpleJob *job, const KUrl &url);
     bool removeSlave (KIO::Slave *slave);
     QList<KIO::Slave *> allSlaves() const;
-    void updateSlaveConfigFor(const QString&);
     ConnectedSlaveQueue m_connectedSlaveQueue;    
 
 private slots:

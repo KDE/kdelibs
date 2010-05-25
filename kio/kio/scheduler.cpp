@@ -68,7 +68,7 @@ static void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protoc
                        const QString &proxy , bool newSlave, const KIO::MetaData *config = 0);
 // same reason as above
 static Scheduler *scheduler();
-Slave *heldSlaveForJob(SimpleJob *job);
+static Slave *heldSlaveForJob(SimpleJob *job);
 
 
 int SerialPicker::changedPrioritySerial(int oldSerial, int newPriority) const
@@ -569,18 +569,6 @@ QList<Slave *> ProtoQueue::allSlaves() const
     return ret;
 }
 
-void ProtoQueue::updateSlaveConfigFor(const QString& host)
-{
-    Q_FOREACH(Slave *slave, allSlaves()) {
-        if (slave->host() == host) {
-            slave->setConfig(SlaveConfig::self()->configData(slave->protocol(), host));
-            kDebug(7006) << "Updating configuration of" << slave->protocol()
-                         << "ioslave, pid=" << slave->slave_pid();
-        }
-    }
-}
-
-
 //private slot
 void ProtoQueue::startAJob()
 {
@@ -709,6 +697,7 @@ public:
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
     void registerWindow(QWidget *wid);
 
+    MetaData metaDataFor(const QString &protocol, const QString &proxy, const KUrl &url);
     void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
                     const QString &proxy, bool newSlave, const KIO::MetaData *config = 0);
 
@@ -983,8 +972,17 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
         if (jobPriv->m_internalMetaData.count()) {
             kDebug(7006) << "Updating ioslaves with new internal metadata information";
             ProtoQueue * queue = m_protocols.value(slave->protocol());
-            if (queue)
-                queue->updateSlaveConfigFor(slave->host());
+            if (queue) {
+                QListIterator<Slave*> it (queue->allSlaves());
+                while (it.hasNext()) {
+                    Slave* runningSlave = it.next();
+                    if (slave->host() == runningSlave->host()) {                        
+                        slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxy, jobUrl));
+                        kDebug(7006) << "Updated configuration of" << slave->protocol()
+                                     << "ioslave, pid=" << slave->slave_pid();
+                    }
+                }
+            }
         }
         slave->setJob(0);
         slave->disconnect(job);
@@ -1003,47 +1001,54 @@ void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
     schedulerPrivate->setupSlave(slave, url, protocol, proxy, newSlave, config);
 }
 
+MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QString &proxy, const KUrl &url)
+{
+    const QString host = url.host();
+    MetaData configData = SlaveConfig::self()->configData(protocol, host);
+    sessionData.configDataFor( configData, protocol, host );
+    configData["UseProxy"] = proxy;
+
+    if ( configData.contains("EnableAutoLogin") &&
+         configData.value("EnableAutoLogin").compare("true", Qt::CaseInsensitive) == 0 )
+    {
+        NetRC::AutoLogin l;
+        l.login = url.user();
+        bool usern = (protocol == "ftp");
+        if ( NetRC::self()->lookup( url, l, usern) )
+        {
+            configData["autoLoginUser"] = l.login;
+            configData["autoLoginPass"] = l.password;
+            if ( usern )
+            {
+                QString macdef;
+                QMap<QString, QStringList>::ConstIterator it = l.macdef.constBegin();
+                for ( ; it != l.macdef.constEnd(); ++it )
+                    macdef += it.key() + '\\' + it.value().join( "\\" ) + '\n';
+                configData["autoLoginMacro"] = macdef;
+            }
+        }
+    }
+
+    return configData;
+}
 
 void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
                                   const QString &proxy , bool newSlave, const KIO::MetaData *config)
 {
-    QString host = url.host();
     int port = url.port();
     if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
         port = 0;
-    QString user = url.user();
-    QString passwd = url.pass();
+    const QString host = url.host();
+    const QString user = url.user();
+    const QString passwd = url.pass();
 
     if (newSlave || slave->host() != host || slave->port() != port ||
         slave->user() != user || slave->passwd() != passwd) {
 
-        MetaData configData = SlaveConfig::self()->configData(protocol, host);
-        sessionData.configDataFor( configData, protocol, host );
-
-        configData["UseProxy"] = proxy;
-
-        QString autoLogin = configData["EnableAutoLogin"].toLower();
-        if ( autoLogin == "true" )
-        {
-            NetRC::AutoLogin l;
-            l.login = user;
-            bool usern = (protocol == "ftp");
-            if ( NetRC::self()->lookup( url, l, usern) )
-            {
-                configData["autoLoginUser"] = l.login;
-                configData["autoLoginPass"] = l.password;
-                if ( usern )
-                {
-                    QString macdef;
-                    QMap<QString, QStringList>::ConstIterator it = l.macdef.constBegin();
-                    for ( ; it != l.macdef.constEnd(); ++it )
-                        macdef += it.key() + '\\' + it.value().join( "\\" ) + '\n';
-                    configData["autoLoginMacro"] = macdef;
-                }
-            }
-        }
+        MetaData configData = metaDataFor(protocol, proxy, url);
         if (config)
            configData += *config;
+
         slave->setConfig(configData);
         slave->setProtocol(url.protocol());
         slave->setHost(host, port, user, passwd);
