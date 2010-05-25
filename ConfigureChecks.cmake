@@ -110,7 +110,7 @@ check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
 # on previous versions so don't do the check on APPLE.
 if(NOT APPLE)
-check_function_exists(fdatasync        HAVE_FDATASYNC)                # kdecore
+   check_function_exists(fdatasync     HAVE_FDATASYNC)                # kdecore
 endif(NOT APPLE)
 check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
 
@@ -201,7 +201,7 @@ if (UNIX)
   else (openpty_in_libc OR openpty_in_libutil)
     set(HAVE_OPENPTY)
 
-    EXECUTE_PROCESS(
+    execute_process(
       COMMAND sh -c "
         for ptm in ptc ptmx ptm ptym/clone; do
           if test -c /dev/$ptm; then
