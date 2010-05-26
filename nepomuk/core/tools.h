@@ -33,6 +33,52 @@
 
 namespace Nepomuk {
     /**
+     * Used internally by Resource.
+     * Converts a Variant into a literal value to be used in the RDF store.
+     */
+    NEPOMUK_EXPORT QList<Soprano::Node> valuesToRDFNodes( const Variant& );
+
+    /**
+     * Used internally by Resource.
+     * Converts a non-list Variant into a Soprano::Node.
+     */
+    NEPOMUK_EXPORT Soprano::Node valueToRDFNode( const Variant& );
+
+    /**
+     * Used internally by Resource.
+     * Convert a list of resources to a list of Ts where T needs to be a subclass
+     * of Resource.
+     *
+     * \return A list containing all resources in \p l represented as a T.
+     */
+    template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
+        QList<T> rl;
+        for( QList<Resource>::const_iterator it = l.constBegin();
+             it != l.constEnd(); ++it )
+            rl.append( T( *it ) );
+        return rl;
+    }
+
+    /**
+     * Used internally by Resource.
+     * Convert a list of Ts to a list of Resources where T needs to be a subclass
+     * of Resource.
+     *
+     * \return A list containing all resources in \p l.
+     */
+    template<typename T> QList<Resource> convertResourceList( const QList<T>& l ) {
+        QList<Resource> rl;
+        Q_FOREACH( const T& r, l )
+            rl.append( Resource( r ) );
+        return rl;
+    }
+
+    /**
+     * \deprecated Use Variant::fromNode() instead.
+     */
+    KDE_DEPRECATED NEPOMUK_EXPORT Variant RDFLiteralToValue( const Soprano::Node& node );
+
+    /**
      * \deprecated Has no effect anymore.
      */
     KDE_DEPRECATED NEPOMUK_EXPORT void setDefaultRepository( const QString& s );
@@ -48,36 +94,6 @@ namespace Nepomuk {
      * \deprecated Use Soprano::Vocabulary::RDF::type()
      */
     KDE_DEPRECATED NEPOMUK_EXPORT QString typePredicate();
-
-    /**
-     * Used internally by Resource.
-     * Converts a Variant into a literal value to be used in the RDF store.
-     * Uses the language set in the current KDE session.
-     */
-    NEPOMUK_EXPORT QList<Soprano::Node> valuesToRDFNodes( const Variant& );
-    NEPOMUK_EXPORT Soprano::Node valueToRDFNode( const Variant& );
-
-    /**
-     * \deprecated Use Variant::fromNode() instead.
-     */
-    KDE_DEPRECATED NEPOMUK_EXPORT Variant RDFLiteralToValue( const Soprano::Node& node );
-
-    template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
-        QList<T> rl;
-        for( QList<Resource>::const_iterator it = l.constBegin();
-             it != l.constEnd(); ++it )
-            rl.append( T( *it ) );
-        return rl;
-    }
-
-    template<typename T> QList<Resource> convertResourceList( const QList<T>& l ) {
-        QList<Resource> rl;
-        Q_FOREACH( T r, l )
-/*       for( QList<T>::const_iterator it = l.constBegin(); */
-/* 	   it != l.constEnd(); ++it ) */
-            rl.append( Resource( r/*it*/ ) );
-        return rl;
-    }
 
     /**
      * \deprecated Use Soprano::Vocabulary::RDF::rdfNamepace()
