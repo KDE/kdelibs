@@ -1,4 +1,4 @@
-/* 
+/*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
  *
@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -62,10 +62,9 @@ namespace Nepomuk {
     NEPOMUK_EXPORT Soprano::Node valueToRDFNode( const Variant& );
 
     /**
-     * Used internally by Resource.
-     * Converts a literal value from the RDF store into a Variant.
+     * \deprecated Use Variant::fromNode() instead.
      */
-    NEPOMUK_EXPORT Variant RDFLiteralToValue( const Soprano::Node& node );
+    KDE_DEPRECATED NEPOMUK_EXPORT Variant RDFLiteralToValue( const Soprano::Node& node );
 
     template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
         QList<T> rl;

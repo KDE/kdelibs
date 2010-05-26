@@ -87,7 +87,7 @@ QList<Soprano::Node> Nepomuk::valuesToRDFNodes( const Nepomuk::Variant& v )
 
 Nepomuk::Variant Nepomuk::RDFLiteralToValue( const Soprano::Node& node )
 {
-    return Variant( node.literal().variant() );
+    return Variant::fromNode( node );
 }
 
 
