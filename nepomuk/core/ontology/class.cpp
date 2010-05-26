@@ -106,6 +106,11 @@ bool Nepomuk::Types::ClassPrivate::loadAncestors()
 
 bool Nepomuk::Types::ClassPrivate::addProperty( const QUrl& property, const Soprano::Node& value )
 {
+    // we avoid subclassing loops (as created for crappy inferencing) by checking for our own uri
+    if( value.isResource() && value.uri() == uri ) {
+        return false;
+    }
+
     if( property == Soprano::Vocabulary::RDFS::subClassOf() ) {
         parents.append( Class( value.uri() ) );
         return true;
@@ -117,7 +122,9 @@ bool Nepomuk::Types::ClassPrivate::addProperty( const QUrl& property, const Sopr
 
 bool Nepomuk::Types::ClassPrivate::addAncestorProperty( const QUrl& ancestorResource, const QUrl& property )
 {
-    if ( property == Soprano::Vocabulary::RDFS::subClassOf() ) {
+    // we avoid subclassing loops (as created for crappy inferencing) by checking for our own uri
+    if ( property == Soprano::Vocabulary::RDFS::subClassOf() &&
+        ancestorResource != uri ) {
         children.append( Class( ancestorResource ) );
         return true;
     }
