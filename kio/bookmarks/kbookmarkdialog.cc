@@ -312,8 +312,6 @@ void KBookmarkDialog::initLayoutPrivate()
     QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);    
     fillGroup( root, m_mgr->root() );
 
-    showButtonSeparator(true);
-
     initLayout();
     m_layout = true;
 }

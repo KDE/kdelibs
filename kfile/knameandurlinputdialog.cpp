@@ -55,7 +55,6 @@ KNameAndUrlInputDialog::KNameAndUrlInputDialog(const QString& nameLabel, const Q
 {
     setButtons(Ok | Cancel | User1);
     setButtonGuiItem(User1, KStandardGuiItem::clear());
-    showButtonSeparator(true);
 
     QFrame* plainPage = new QFrame(this);
     setMainWidget(plainPage);

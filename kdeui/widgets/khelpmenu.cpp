@@ -264,7 +264,6 @@ void KHelpMenu::aboutApplication()
       d->mAboutApp->setCaption( i18n("About %1", KGlobal::caption() ) );
       d->mAboutApp->setButtons( KDialog::Yes );
       d->mAboutApp->setObjectName( "about" );
-      d->mAboutApp->showButtonSeparator( true );
       d->mAboutApp->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
       d->mAboutApp->setDefaultButton( KDialog::Yes );
       d->mAboutApp->setEscapeButton( KDialog::Yes );

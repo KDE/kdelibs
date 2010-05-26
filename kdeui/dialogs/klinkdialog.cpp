@@ -50,7 +50,6 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     setButtons(Ok | Cancel);
     setDefaultButton(Ok);
     setModal(true);
-    showButtonSeparator(true);
 
     QWidget *entries = new QWidget(this);
 

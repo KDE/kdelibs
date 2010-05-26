@@ -59,7 +59,6 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
     setButtons(Ok | Cancel);
     setDefaultButton(Cancel);
     setModal(false);
-    showButtonSeparator(true);
 
     mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",

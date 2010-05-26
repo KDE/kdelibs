@@ -368,7 +368,6 @@ bool UploadDialog::init(const QString &configfile)
     setButtonText(FinishButton, i18n("Finish"));
     setButtonIcon( FinishButton, KIcon("dialog-ok-apply") );
     setDefaultButton(NextButton);
-    showButtonSeparator(true);
     d->_k_updatePage();
 
     connect(d->ui.username, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));

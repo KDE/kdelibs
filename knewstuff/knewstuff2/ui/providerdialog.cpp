@@ -55,7 +55,6 @@ ProviderDialog::ProviderDialog(/*Engine *engine,*/ QWidget *parent) :
     setButtons(Ok | Cancel);
     setDefaultButton(Cancel);
     setModal(false);
-    showButtonSeparator(true);
 
     QFrame *topPage = new QFrame(this);
     setMainWidget(topPage);

@@ -287,7 +287,6 @@ IconTextEditDialog::IconTextEditDialog(QWidget *parent)
     setCaption(i18n("Change Text"));
     setButtons(Ok | Cancel);
     setDefaultButton(Ok);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *mainWidget = new QWidget(this);

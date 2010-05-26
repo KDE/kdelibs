@@ -106,8 +106,6 @@ public:
         dontAskAgainCheckBox = new QCheckBox(mainWidget());
         dontAskAgainCheckBox->setText(i18nc("@label:checkbox", "Remember action for files of this type"));
         mainLayout->addWidget(dontAskAgainCheckBox);
-
-        showButtonSeparator(true);
     }
 
     bool autoEmbedMimeType(int flags);

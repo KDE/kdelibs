@@ -165,7 +165,6 @@ void KCMultiDialogPrivate::init()
     q->setButtonGuiItem(KDialog::User1, KStandardGuiItem::reset());
     q->setDefaultButton(KDialog::Ok);
     q->setModal(false);
-    q->showButtonSeparator(true);
 
     q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
 

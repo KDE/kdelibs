@@ -76,7 +76,6 @@ KUrlRequesterDialog::~KUrlRequesterDialog()
 void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &urlName)
 {
     q->setDefaultButton(KDialog::Ok);
-    q->showButtonSeparator(true);
     QWidget *plainPage = q->mainWidget();
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
    topLayout->setMargin( 0 );

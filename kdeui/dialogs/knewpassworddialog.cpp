@@ -66,7 +66,6 @@ public:
 void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 {
     q->setButtons( Ok | Cancel );
-    q->showButtonSeparator( true );
     q->setDefaultButton( Ok );
 
     ui.setupUi( q->mainWidget() );

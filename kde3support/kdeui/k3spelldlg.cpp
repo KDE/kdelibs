@@ -50,7 +50,6 @@ K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   setButtons( Help|Cancel|User1 );
   setModal( _modal );
   setDefaultButton( Cancel );
-  showButtonSeparator( true );
   setButtonText( Cancel, i18n("&Finished") );
 
   KConfigGroup cg( KGlobal::config(),"K3Spell" );

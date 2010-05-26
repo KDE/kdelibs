@@ -91,7 +91,6 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 {
   setCaption( i18n("Submit Bug Report") );
   setButtons( Ok | Cancel );
-  showButtonSeparator(true);
   setModal(modal);
 
   // Use supplied aboutdata, otherwise the one from the active componentData

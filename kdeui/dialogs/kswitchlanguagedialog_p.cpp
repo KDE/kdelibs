@@ -98,7 +98,6 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     setCaption(i18n("Switch Application Language"));
     setButtons(Ok | Cancel);
     setDefaultButton(Ok);
-    showButtonSeparator(true);
     connect(this, SIGNAL(okClicked()), SLOT(slotOk()));
 
     d->page = new QWidget( this );

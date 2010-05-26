@@ -562,7 +562,6 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     curService = 0;
 
     q->setButtons(KDialog::Ok | KDialog::Cancel);
-    q->showButtonSeparator(true);
 
     QWidget *mainWidget = q->mainWidget();
 

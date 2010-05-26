@@ -86,7 +86,6 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     setButtons( Ok | Cancel );
     setModal(true);
     setDefaultButton(Ok);
-    showButtonSeparator(true);
 
     QWidget *wdg = new QWidget( this );
     QVBoxLayout *box = new QVBoxLayout( wdg );

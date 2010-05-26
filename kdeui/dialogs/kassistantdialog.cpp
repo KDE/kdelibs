@@ -96,7 +96,6 @@ void KAssistantDialog::Private::init()
     q->setButtonIcon( KDialog::User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
     q->setButtonIcon( KDialog::User1, KIcon("dialog-ok-apply") );
     q->setDefaultButton(KDialog::User2);
-    q->showButtonSeparator(true);
     q->setFaceType(KPageDialog::Plain);
 
     q->connect(q, SIGNAL(user3Clicked()), q, SLOT(back()));

@@ -63,7 +63,6 @@ KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
 {
   setCaption( i18n("Select Region of Image") );
   setButtons( Help|Ok|Cancel );
-  showButtonSeparator( true );
 
   KVBox *vbox=new KVBox(this);
   new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);

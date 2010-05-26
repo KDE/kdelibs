@@ -51,7 +51,6 @@ ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
     setCaption( i18n( "Sonnet Configuration" ) );
     setButtons( Ok | Apply | Cancel );
     setDefaultButton( Ok );
-    showButtonSeparator( true );
 
     init(config);
 }

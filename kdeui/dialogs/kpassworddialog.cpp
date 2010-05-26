@@ -70,7 +70,6 @@ KPasswordDialog::KPasswordDialog( QWidget* parent ,
     setCaption( i18n("Password") );
     setWindowIcon(KIcon("dialog-password"));
     setButtons( Ok | Cancel | otherButtons );
-    showButtonSeparator( true );
     setDefaultButton( Ok );
     d->m_flags = flags;
     d->init ();

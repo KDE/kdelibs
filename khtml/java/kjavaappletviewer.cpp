@@ -128,7 +128,6 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     setCaption( i18n ("Applet Parameters") );
     setButtons( KDialog::Close );
     setDefaultButton( KDialog::Close );
-    showButtonSeparator( true );
     setModal( true );
 
     KJavaApplet* const applet = parent->applet ();

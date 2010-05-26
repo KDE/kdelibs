@@ -297,7 +297,6 @@ K3PasswordDialog::K3PasswordDialog(Types type, bool enableKeep, ButtonCodes extr
 {
     setButtons( Ok|Cancel|extraBttn );
     setModal( true );
-    showButtonSeparator( true );
     setDefaultButton( Ok );
     d->iconName = "password";
     init();
@@ -310,7 +309,6 @@ K3PasswordDialog::K3PasswordDialog(Types type, bool enableKeep, ButtonCodes extr
 {
     setButtons( Ok|Cancel|extraBttn );
     setModal( true );
-    showButtonSeparator( true );
     setDefaultButton( Ok );
     if ( icon.trimmed().isEmpty() )
 	d->iconName = "password";

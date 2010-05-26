@@ -43,7 +43,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     setCaption(caption);
     setButtons(Ok | Cancel);
     setDefaultButton(Ok);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *frame = new QWidget(this);
@@ -119,7 +118,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 {
     setCaption(caption);
     setButtons(Ok | Cancel);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *frame = new QWidget(this);
@@ -149,7 +147,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 {
     setCaption(caption);
     setButtons(Ok | Cancel);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *frame = new QWidget(this);
@@ -184,7 +181,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     setCaption(caption);
     setButtons(Ok | Cancel);
     setDefaultButton(Ok);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *frame = new QWidget(this);
@@ -232,7 +228,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 {
     setCaption(caption);
     setButtons(Ok | Cancel);
-    showButtonSeparator(true);
     setModal(true);
 
     QWidget *frame = new QWidget(this);

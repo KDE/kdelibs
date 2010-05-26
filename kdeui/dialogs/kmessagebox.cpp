@@ -286,7 +286,6 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
 
     dialog->setMainWidget(mainWidget);
-    dialog->showButtonSeparator(true);
     if (!usingListWidget && !usingScrollArea && !usingSqueezedTextLabel && details.isEmpty())
         dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
     else if (!details.isEmpty() && dialog->minimumHeight()<iconLabel->sizeHint().height()*2)//strange bug...
