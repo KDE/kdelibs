@@ -350,7 +350,8 @@ bool Nepomuk::ResourceData::store()
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
         if( m_groundingOccurence ) {
-            m_groundingOccurence->store();
+            if( m_groundingOccurence != this )
+                m_groundingOccurence->store();
             statements.append( Statement( m_uri, Vocabulary::PIMO::groundingOccurrence(), m_groundingOccurence->uri() ) );
         }
     }
