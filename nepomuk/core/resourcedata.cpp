@@ -678,7 +678,7 @@ bool Nepomuk::ResourceData::determineUri()
                     }
                     else {
                         m_uri = uri;
-                        m_fileUrl = uri;
+                        m_fileUrl = m_kickoffUri;
                     }
                     it.close();
                 }
