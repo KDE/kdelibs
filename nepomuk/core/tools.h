@@ -38,17 +38,13 @@ namespace Nepomuk {
     KDE_DEPRECATED NEPOMUK_EXPORT void setDefaultRepository( const QString& s );
 
     /**
-     * Used internally by Resource.
-     * \return The URI of the RDF graph meta data is stored in.
+     * \return The name of the default Nepomuk repository ("main").
      *
      * \deprecated Use Nepomuk::ResourceManager::mainModel()
      */
     KDE_DEPRECATED NEPOMUK_EXPORT QString defaultGraph();
 
     /**
-     * Used internally by Resource.
-     * \return The URI of the predicate used to state the type of a resource.
-     *
      * \deprecated Use Soprano::Vocabulary::RDF::type()
      */
     KDE_DEPRECATED NEPOMUK_EXPORT QString typePredicate();
