@@ -383,23 +383,27 @@ QString Nepomuk::Resource::genericLabel() const
                         label = property( Soprano::Vocabulary::Xesam::name() ).toString();
 
                         if ( label.isEmpty() ) {
-                            label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
+                            label = m_data->pimoThing().label();
 
                             if ( label.isEmpty() ) {
-                                label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
+                                label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
 
                                 if ( label.isEmpty() ) {
-                                    QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
-                                    if( !go.isEmpty() ) {
-                                        label = go.first().genericLabel();
-                                        if( label == go.first().resourceUri().toString() ) {
-                                            label.clear();
-                                        }
-                                    }
+                                    label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
 
                                     if ( label.isEmpty() ) {
-                                        // ugly fallback
-                                        label = resourceUri().toString();
+                                        QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
+                                        if( !go.isEmpty() ) {
+                                            label = go.first().genericLabel();
+                                            if( label == go.first().resourceUri().toString() ) {
+                                                label.clear();
+                                            }
+                                        }
+
+                                        if ( label.isEmpty() ) {
+                                            // ugly fallback
+                                            label = resourceUri().toString();
+                                        }
                                     }
                                 }
                             }
