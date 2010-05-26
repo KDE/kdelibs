@@ -49,7 +49,7 @@ class KPluginLoaderPrivate;
  * You can delete this object easily, a new one will be created if factory() or instance() is called
  * afterwards. factory() uses instance() internally.
  *
- * KPluginLoader inherits QPluginLoader::unload(). It safe to call this method if you loaded a plugin
+ * KPluginLoader inherits QPluginLoader::unload(). It is safe to call this method if you loaded a plugin
  * and decide not to use it for some reason. But as soon as you start to use the factory from the plugin,
  * you should stay away from it. It's nearly impossible to keep track of all objects created directly or
  * indirectly from the plugin and all other pointers into plugin code. Using unload() in this case is asking
