@@ -501,7 +501,7 @@ void KNewFileMenu::createDirectory()
        return;
 
     KUrl baseUrl = d->m_popupFiles.first();
-    QString name = i18n("New Folder");
+    QString name = i18nc("Default name for a new folder", "New Folder");
     if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
         name = KIO::RenameDialog::suggestName(baseUrl, name);
 
@@ -510,7 +510,7 @@ void KNewFileMenu::createDirectory()
     do {
         askAgain = false;
         bool ok;
-        name = KInputDialog::getText(i18n("New Folder"),
+        name = KInputDialog::getText(i18nc("@title:window", "New Folder"),
                                      i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()),
                                      name, &ok, d->m_parentWidget);
         if (ok && !name.isEmpty()) {
