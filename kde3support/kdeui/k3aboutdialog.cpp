@@ -1041,7 +1041,6 @@ K3AboutDialog::K3AboutDialog(int layoutType, const QString &_caption, QWidget *_
     mAbout(0), d(0)
 {
   setModal(true);
-  showButtonSeparator(false);
   setPlainCaption(i18n("About %1", _caption));
 
   mContainerBase = new K3AboutContainerBase(layoutType, this);

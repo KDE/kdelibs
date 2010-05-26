@@ -278,7 +278,6 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     setCaption( i18nc("@title:window","Select Folder") );
     setButtons( Ok | Cancel | User1 );
     setButtonGuiItem( User1, KGuiItem( i18nc("@action:button","New Folder..."), "folder-new" ) );
-    showButtonSeparator(false);
     setDefaultButton(Ok);
     button(Ok)->setFocus();
 

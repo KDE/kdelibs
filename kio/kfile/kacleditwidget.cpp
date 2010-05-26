@@ -431,7 +431,6 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     setCaption( i18n( "Edit ACL Entry" ) );
     setButtons( KDialog::Ok | KDialog::Cancel );
     setDefaultButton( KDialog::Ok );
-    showButtonSeparator( false );
 
     QWidget *page = new QWidget(  this );
     setMainWidget( page );

@@ -52,7 +52,6 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
     setButtonGuiItem( User2, KGuiItem(i18n("&Skip")) );
     setButtonGuiItem( User3, KGuiItem(i18n("Replace")) );
     setDefaultButton( User3 );
-    showButtonSeparator( false );
 
     m_mainLabel = new QLabel( this );
     setMainWidget( m_mainLabel );

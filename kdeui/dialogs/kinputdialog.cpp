@@ -86,7 +86,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     setButtons(Ok | Cancel | User1);
     setButtonGuiItem(User1, KStandardGuiItem::clear());
     setDefaultButton(Ok);
-    showButtonSeparator(false);
     setModal(true);
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
