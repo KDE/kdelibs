@@ -674,7 +674,7 @@ bool Nepomuk::ResourceData::determineUri()
                 // nie:url
                 //
                 QString query = QString::fromLatin1("select distinct ?r ?o where { "
-                                                    "{ ?r %1 %2 . } "
+                                                    "{ ?r %1 %2 . FILTER(?r!=%2) . } "
                                                     "UNION "
                                                     "{ %2 ?p ?o . } "
                                                     "} LIMIT 1")
@@ -688,7 +688,7 @@ bool Nepomuk::ResourceData::determineUri()
                     }
                     else {
                         m_uri = uri;
-                        m_nieUrl = uri;
+                        m_nieUrl = m_kickoffUri;
                     }
                     it.close();
                 }
