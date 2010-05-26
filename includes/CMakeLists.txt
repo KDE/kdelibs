@@ -1009,6 +1009,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
 install(FILES
+  Plasma/AbstractDialogManager
   Plasma/AbstractRunner
   Plasma/AbstractToolBox
   Plasma/AccessAppletJob
