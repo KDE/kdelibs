@@ -234,6 +234,7 @@ void Nepomuk::ResourceManagerPrivate::_k_storageServiceInitialized( bool success
 {
     if( success ) {
         kDebug() << "Nepomuk Storage service up and initialized.";
+        m_manager->init();
         emit m_manager->nepomukSystemStarted();
     }
 }
