@@ -211,7 +211,7 @@ QString KStatusNotifierItemDBus::Status() const
 
 int KStatusNotifierItemDBus::WindowId() const
 {
-    if (m_statusNotifierItem->d->associatedWidget) {
+    if (m_statusNotifierItem->d->associatedWidget && m_statusNotifierItem->d->associatedWidget != m_statusNotifierItem->d->menu) {
         return toInt(m_statusNotifierItem->d->associatedWidget->winId());
     } else {
         return 0;
