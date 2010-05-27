@@ -70,7 +70,9 @@ void CharacterDataImpl::setData( const DOMString &_data, int &exceptioncode )
     if(str == _data.impl) return; // ### fire DOMCharacterDataModified if modified?
     DOMStringImpl *oldStr = str;
     str = _data.impl;
-    if(str) str->ref();
+    if (!str)
+        str = new DOMStringImpl((QChar*)0, 0);
+    str->ref();
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
