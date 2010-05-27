@@ -38,8 +38,6 @@ class CharacterDataImpl : public NodeImpl
 {
 public:
     CharacterDataImpl(DocumentImpl *doc, DOMStringImpl* _text);
-    CharacterDataImpl(DocumentImpl *doc)
-        : NodeImpl(doc), str(0) {}
 
     virtual ~CharacterDataImpl();
 
@@ -93,7 +91,7 @@ public:
     CommentImpl(DocumentImpl *doc, DOMStringImpl* _text)
         : CharacterDataImpl(doc, _text) {}
     CommentImpl(DocumentImpl *doc)
-        : CharacterDataImpl(doc) {}
+        : CharacterDataImpl(doc, 0) {}
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
@@ -115,7 +113,7 @@ public:
     TextImpl(DocumentImpl *impl, DOMStringImpl* _text)
         : CharacterDataImpl(impl, _text) {}
     TextImpl(DocumentImpl *impl)
-        : CharacterDataImpl(impl) {}
+        : CharacterDataImpl(impl, 0) {}
 
     // DOM methods & attributes for CharacterData
 
