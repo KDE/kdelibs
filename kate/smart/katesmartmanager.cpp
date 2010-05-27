@@ -355,7 +355,9 @@ void KateSmartManager::slotTextChanged(KateEditInfo* edit)
       currentGroup->merge();
 
     // Reduce the size of the current group
-    currentGroup->setNewEndLine(currentGroup->endLine() + edit->translate().line());
+    // this leads to broken groups where end line is smaller than the line of
+    // some contained cursors, bug 226409
+    // currentGroup->setNewEndLine(currentGroup->endLine() + edit->translate().line());
   }
 
   // Shift the groups so they have their new start and end lines
