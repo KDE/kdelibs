@@ -323,16 +323,13 @@ void KUrlNavigator::Private::slotReturnPressed()
 
 void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 {
+    Q_ASSERT(m_editable);
+    
     KUrl url;
-    if (m_editable) {
-        url.setScheme(protocol);
-        url.setPath("/");
-        m_pathBox->setEditUrl(url);
-    } else {
-        url = q->locationUrl();
-        url.setScheme(protocol);
-        q->setLocationUrl(url);
-    }
+    url.setProtocol(protocol);  
+    url.setPath((protocol == QLatin1String("file")) ? QLatin1String("/") : QLatin1String("//"));
+    
+    m_pathBox->setEditUrl(url);
 }
 
 void KUrlNavigator::Private::openPathSelectorMenu()
@@ -477,7 +474,7 @@ void KUrlNavigator::Private::openContextMenu()
 void KUrlNavigator::Private::slotPathBoxChanged(const QString& text)
 {
     if (text.isEmpty()) {
-        const QString protocol = q->locationUrl().scheme();
+        const QString protocol = q->locationUrl().protocol();
         m_protocols->setProtocol(protocol);
         m_protocols->show();
     } else {
