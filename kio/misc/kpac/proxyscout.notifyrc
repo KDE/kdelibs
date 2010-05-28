@@ -3,6 +3,7 @@ IconName=preferences-system-network-proxy
 Comment=Network Proxy Configuration
 Comment[bg]=Настройки на мрежови посредник
 Comment[ca]=Configuració del servidor intermediari de la xarxa
+Comment[ca@valencia]=Configuració del servidor intermediari de la xarxa
 Comment[cs]=Nastavení proxy sítě
 Comment[da]=Indstilling af netværksproxy
 Comment[de]=Netzwerk-Proxy-Einrichtung
