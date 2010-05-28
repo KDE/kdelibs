@@ -158,17 +158,7 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
         openUrlArgs.setMimeType(mimeType);
         part->setArguments(openUrlArgs);
         part->openUrl(url);
-
         return part->widget();
-    } else {
-        // HACK: QtWebKit does not do the right thing when attempting to load
-        // a plugin with unknown mimetype, i.e. it does not try to query and
-        // find out first. This workaround addressed this deficiency...
-        if (_mimeType.isEmpty()) {
-            KWebView *view = new KWebView;
-            view->load(url);
-            return view;
-        }
     }
 
     return 0;
