@@ -60,11 +60,9 @@ static inline int qIconModeToKIconState( QIcon::Mode mode )
 QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::State state )
 {
     Q_UNUSED(state)
-    const int kstate = qIconModeToKIconState(mode);
-    const QPixmap pix = mIconLoader->loadIcon(mIconName, KIconLoader::Desktop,
-                                         qMin(size.width(), size.height()),
-                                         kstate, mOverlays);
-    return pix.size();
+    Q_UNUSED(mode)
+    const int iconSize = qMin(size.width(), size.height());
+    return QSize(iconSize, iconSize);
 }
 
 void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state )
