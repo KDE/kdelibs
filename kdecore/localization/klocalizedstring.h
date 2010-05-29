@@ -217,7 +217,18 @@ class KLocalizedStringPrivate;
  * \code
  *   KLocale *myLocale;
  *   ...
- *   ki18n("Welcome").toString(myLocale);
+ *   QString msg = ki18n("Welcome").toString(myLocale);
+ * \endcode
+ *
+ * Normally all loaded catalogs are searched for translation,
+ * and the first found translation is returned.
+ * Sometimes this may lead to clashes, especially when dealing with
+ * specialized collection catalogs (country names, language names, etc.)
+ * in which messages are not equipped with contexts.
+ * In such situations, toString method can take the name of
+ * the specific catalog in which to look for translation:
+ * \code
+ *   QString trName = ki18n("Georgia").toString("countries");
  * \endcode
  *
  * Translators have a capability to script translations at runtime, which is
