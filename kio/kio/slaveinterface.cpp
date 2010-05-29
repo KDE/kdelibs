@@ -403,25 +403,42 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     KConfig *config = new KConfig("kioslaverc");
     KMessageBox::setDontShowAskAgainConfig(config);
 
+    // SMELL: the braindead way to support button icons
+    KGuiItem buttonYesGui, buttonNoGui;
+    
+    if (buttonYes == i18n("&Details"))
+        buttonYesGui = KGuiItem(buttonYes, "help-about");
+    else if (buttonYes == i18n("&Forever"))
+        buttonYesGui = KGuiItem(buttonYes, "flag-green");
+    else
+        buttonYesGui = KGuiItem(buttonYes);
+
+    if (buttonNo == i18n("Co&ntinue"))
+        buttonNoGui = KGuiItem(buttonNo, "arrow-right");
+    else if (buttonNo == i18n("&Current Session only"))
+        buttonNoGui = KGuiItem(buttonNo, "chronometer");
+    else
+        buttonNoGui = KGuiItem(buttonNo);
+
     switch (type) {
     case KIO::SlaveBase::QuestionYesNo:
         result = KMessageBox::questionYesNo(
-                     0, text, caption, KGuiItem(buttonYes),
-                     KGuiItem(buttonNo), dontAskAgainName);
+                     0, text, caption, buttonYesGui,
+                     buttonNoGui, dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningYesNo:
         result = KMessageBox::warningYesNo(
-                     0, text, caption, KGuiItem(buttonYes),
-                     KGuiItem(buttonNo), dontAskAgainName);
+                     0, text, caption, buttonYesGui,
+                     buttonNoGui, dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningContinueCancel:
         result = KMessageBox::warningContinueCancel(
-                     0, text, caption, KGuiItem(buttonYes),
+                     0, text, caption, buttonYesGui,
                      KStandardGuiItem::cancel(), dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningYesNoCancel:
         result = KMessageBox::warningYesNoCancel(
-                     0, text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo),
+                     0, text, caption, buttonYesGui, buttonNoGui,
                      KStandardGuiItem::cancel(), dontAskAgainName);
         break;
     case KIO::SlaveBase::Information:

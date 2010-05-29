@@ -78,8 +78,8 @@ bool KIO::SslUi::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage 
     int msgResult;
     do {
         msgResult = KMessageBox::warningYesNoCancel(0, message, i18n("Server Authentication"),
-                                                    KGuiItem(i18n("&Details")),
-                                                    KGuiItem(i18n("Co&ntinue")));
+                                                    KGuiItem(i18n("&Details"), "help-about"),
+                                                    KGuiItem(i18n("Co&ntinue"), "arrow-right"));
         if (msgResult == KMessageBox::Yes) {
             //Details was chosen - show the certificate and error details
 
@@ -117,8 +117,8 @@ bool KIO::SslUi::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage 
                                     "certificate forever without "
                                     "being prompted?"),
                                 i18n("Server Authentication"),
-                                KGuiItem(i18n("&Forever")),
-                                KGuiItem(i18n("&Current Session only")));
+                                KGuiItem(i18n("&Forever"), "flag-green"),
+                                KGuiItem(i18n("&Current Session only"), "chronometer"));
         QDateTime ruleExpiry = QDateTime::currentDateTime();
         if (msgResult == KMessageBox::Yes) {
             //accept forever ("for a very long time")
