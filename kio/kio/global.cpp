@@ -119,7 +119,7 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     if ( files == 0 && dirs == 0 && items == 0 ) {
         return i18np( "%1 Item", "%1 Items", 0 );
     }
-    
+
     QString summary;
     const QString foldersText = i18np( "1 Folder", "%1 Folders", dirs );
     const QString filesText = i18np( "1 File", "%1 Files", files );
@@ -132,12 +132,12 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     } else if ( dirs > 0 ) {
         summary = foldersText;
     }
-    
+
     if ( items > dirs + files ) {
         const QString itemsText = i18np( "%1 Item", "%1 Items", items );
         summary = summary.isEmpty() ? itemsText : i18nc( "items: folders, files (size)", "%1: %2", itemsText, summary );
     }
-    
+
     return summary;
 }
 
@@ -617,7 +617,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
         "<strong>L</strong>ocator (URL) that you entered did not refer to a "
         "specific resource." );
-      causes << i18n( "KDE is able to communicate through a protocol within a "
+      causes << i18n( "KDE programs are able to communicate through a protocol within a "
         "protocol; the protocol specified is only for use in such situations, "
         "however this is not one of these situations. This is a rare event, and "
         "is likely to indicate a programming error." );
@@ -734,8 +734,8 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_CYCLIC_LINK:
       errorName = i18n( "Cyclic Link Detected" );
       description = i18n( "UNIX environments are commonly able to link a file or "
-        "folder to a separate name and/or location. KDE detected a link or "
-        "series of links that results in an infinite loop - i.e. the file was "
+        "folder to a separate name and/or location. KDE Workspace detected a link or "
+        "series of links that results in an infinite loop – i.e. the file was "
         "(perhaps in a roundabout way) linked to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
         "cause an infinite loop, and try again." ) << sSysadmin;
@@ -756,8 +756,8 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       errorName = i18n( "Cyclic Link Detected During Copy" );
       description = i18n( "UNIX environments are commonly able to link a file or "
         "folder to a separate name and/or location. During the requested copy "
-        "operation, KDE detected a link or series of links that results in an "
-        "infinite loop - i.e. the file was (perhaps in a roundabout way) linked "
+        "operation, KDE Workspace detected a link or series of links that results in an "
+        "infinite loop – i.e. the file was (perhaps in a roundabout way) linked "
         "to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
         "cause an infinite loop, and try again." ) << sSysadmin;
@@ -805,7 +805,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
         "a valid mechanism of accessing the specific resource, "
         "<strong>%1%2</strong>." ,
           !host.isNull() ? host + '/' : QString() , path );
-      causes << i18n( "KDE is able to communicate through a protocol within a "
+      causes << i18n( "KDE programs are able to communicate through a protocol within a "
         "protocol. This request specified a protocol be used as such, however "
         "this protocol is not capable of such an action. This is a rare event, "
         "and is likely to indicate a programming error." );
@@ -1257,7 +1257,7 @@ KIO::MetaData::MetaData(const QMap<QString,QVariant>& map)
 KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaData )
 {
   QMapIterator<QString,QVariant> it (metaData);
-  
+
   while(it.hasNext()) {
      it.next();
      insert(it.key(), it.value().toString());
@@ -1276,7 +1276,7 @@ QVariant KIO::MetaData::toVariant() const
 {
   QMap<QString, QVariant> map;
   QMapIterator <QString,QString> it (*this);
- 
+
  while (it.hasNext()) {
    it.next();
    map.insert(it.key(), it.value());
