@@ -1529,7 +1529,7 @@ QList<QString> KLocalePrivate::dialectUnitsList(KLocale::BinaryUnitDialect diale
 
     // Adds a given translation to the binaryUnits list.
 #define CACHE_BYTE_FMT(ctxt_text) \
-        translate_priv(ctxt_text, 0, 0, 0, &s); \
+        translate_priv(0, ctxt_text, 0, 0, 0, &s); \
         binaryUnits.append(s);
 
     // Do not remove i18n: comments below, they are used by the
