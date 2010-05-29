@@ -71,7 +71,7 @@ class KLocalizedStringPrivate
     QByteArray msg;
     QByteArray plural;
 
-    QString toString (const KLocale *locale) const;
+    QString toString (const KLocale *locale, const QString &catalogName) const;
     QString selectForEnglish () const;
     QString substituteSimple (const QString &trans,
                               const QChar &plchar = '%',
@@ -192,15 +192,27 @@ bool KLocalizedString::isEmpty () const
 
 QString KLocalizedString::toString () const
 {
-    return d->toString(KGlobal::locale());
+    return d->toString(KGlobal::locale(), QString());
+}
+
+QString KLocalizedString::toString (const QString &catalogName) const
+{
+    return d->toString(KGlobal::locale(), catalogName);
 }
 
 QString KLocalizedString::toString (const KLocale *locale) const
 {
-    return d->toString(locale);
+    return d->toString(locale, QString());
 }
 
-QString KLocalizedStringPrivate::toString (const KLocale *locale) const
+QString KLocalizedString::toString (const KLocale *locale,
+                                    const QString &catalogName) const
+{
+    return d->toString(locale, catalogName);
+}
+
+QString KLocalizedStringPrivate::toString (const KLocale *locale,
+                                           const QString &catalogName) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
     QMutexLocker lock(kLocaleMutex());
@@ -223,15 +235,20 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
 
     // Get raw translation.
     QString rawtrans, lang, ctry;
+    const char *catname = catalogName.toUtf8();
     if (locale != NULL) {
         if (!ctxt.isEmpty() && !plural.isEmpty()) {
-            locale->translateRaw(ctxt, msg, plural, number, &lang, &rawtrans);
+            locale->translateRawFrom(catname, ctxt, msg, plural, number,
+                                     &lang, &rawtrans);
         } else if (!plural.isEmpty()) {
-            locale->translateRaw(msg, plural, number, &lang, &rawtrans);
+            locale->translateRawFrom(catname, msg, plural, number,
+                                     &lang, &rawtrans);
         } else if (!ctxt.isEmpty()) {
-            locale->translateRaw(ctxt, msg, &lang, &rawtrans);
+            locale->translateRawFrom(catname, ctxt, msg,
+                                     &lang, &rawtrans);
         } else {
-            locale->translateRaw(msg, &lang, &rawtrans);
+            locale->translateRawFrom(catname, msg,
+                                     &lang, &rawtrans);
         }
         ctry = locale->country();
     } else {

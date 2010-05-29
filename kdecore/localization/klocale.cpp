@@ -178,7 +178,7 @@ public:
     /**
      * @internal function used by the translate versions
      */
-    void translate_priv(const char *msgctxt, const char *msgid, const char *msgid_plural = 0,
+    void translate_priv(const char *catname, const char *msgctxt, const char *msgid, const char *msgid_plural = 0,
                         unsigned long n = 0, QString *language = 0, QString *translation = 0) const;
 
     /**
@@ -832,7 +832,7 @@ KLocale::~KLocale()
     delete d;
 }
 
-void KLocalePrivate::translate_priv(const char *msgctxt, const char *msgid,
+void KLocalePrivate::translate_priv(const char *catname, const char *msgctxt, const char *msgid,
                                     const char *msgid_plural, unsigned long n, QString *language,
                                     QString *translation) const
 {
@@ -877,6 +877,10 @@ void KLocalePrivate::translate_priv(const char *msgctxt, const char *msgid,
     }
 
     QList<KCatalog> catalogList = catalogs;
+    QString catNameDecoded;
+    if (catname != NULL) {
+        catNameDecoded = QString::fromUtf8(catname);
+    }
     for (QList<KCatalog>::ConstIterator it = catalogList.constBegin(); it != catalogList.constEnd();
          ++it) {
         // shortcut evaluation: once we have arrived at default language, we cannot consult
@@ -886,50 +890,74 @@ void KLocalePrivate::translate_priv(const char *msgctxt, const char *msgid,
             return;
         }
 
-        QString text;
-        if (msgctxt != NULL && msgid_plural != NULL) {
-            text = (*it).translateStrict(msgctxt, msgid, msgid_plural, n);
-        } else if (msgid_plural != NULL) {
-            text = (*it).translateStrict(msgid, msgid_plural, n);
-        } else if (msgctxt != NULL) {
-            text = (*it).translateStrict(msgctxt, msgid);
-        } else {
-            text = (*it).translateStrict(msgid);
-        }
+        if (catNameDecoded.isEmpty() || catNameDecoded == (*it).name()) {
+            QString text;
+            if (msgctxt != NULL && msgid_plural != NULL) {
+                text = (*it).translateStrict(msgctxt, msgid, msgid_plural, n);
+            } else if (msgid_plural != NULL) {
+                text = (*it).translateStrict(msgid, msgid_plural, n);
+            } else if (msgctxt != NULL) {
+                text = (*it).translateStrict(msgctxt, msgid);
+            } else {
+                text = (*it).translateStrict(msgid);
+            }
 
-        if (!text.isEmpty()) {
-            // we found it
-            if (language) {
-                *language = (*it).language();
+            if (!text.isEmpty()) {
+                // we found it
+                if (language) {
+                    *language = (*it).language();
+                }
+                if (translation) {
+                    *translation = text;
+                }
+                return;
             }
-            if (translation) {
-                *translation = text;
-            }
-            return;
         }
     }
 }
 
+void KLocale::translateRawFrom(const char* catname, const char* msg, QString *lang, QString *trans) const
+{
+    d->translate_priv(catname, 0, msg, 0, 0, lang, trans);
+}
+
 void KLocale::translateRaw(const char* msg, QString *lang, QString *trans) const
 {
-    d->translate_priv(0, msg, 0, 0, lang, trans);
+    d->translate_priv(0, 0, msg, 0, 0, lang, trans);
+}
+
+void KLocale::translateRawFrom(const char* catname, const char *ctxt, const char *msg, QString *lang, QString *trans) const
+{
+    d->translate_priv(catname, ctxt, msg, 0, 0, lang, trans);
 }
 
 void KLocale::translateRaw(const char *ctxt, const char *msg, QString *lang, QString *trans) const
 {
-    d->translate_priv(ctxt, msg, 0, 0, lang, trans);
+    d->translate_priv(0, ctxt, msg, 0, 0, lang, trans);
+}
+
+void KLocale::translateRawFrom(const char* catname, const char *singular, const char *plural, unsigned long n, QString *lang,
+                               QString *trans) const
+{
+    d->translate_priv(catname, 0, singular, plural, n, lang, trans);
 }
 
 void KLocale::translateRaw(const char *singular, const char *plural, unsigned long n, QString *lang,
                            QString *trans) const
 {
-    d->translate_priv(0, singular, plural, n, lang, trans);
+    d->translate_priv(0, 0, singular, plural, n, lang, trans);
+}
+
+void KLocale::translateRawFrom(const char* catname, const char *ctxt, const char *singular, const char *plural,
+                               unsigned long n, QString *lang, QString *trans) const
+{
+    d->translate_priv(catname, ctxt, singular, plural, n, lang, trans);
 }
 
 void KLocale::translateRaw(const char *ctxt, const char *singular, const char *plural,
                            unsigned long n, QString *lang, QString *trans) const
 {
-    d->translate_priv(ctxt, singular, plural, n, lang, trans);
+    d->translate_priv(0, ctxt, singular, plural, n, lang, trans);
 }
 
 QString KLocale::translateQt(const char *context, const char *sourceText, const char *comment) const
@@ -974,14 +1002,14 @@ QString KLocale::translateQt(const char *context, const char *sourceText, const 
 
     if (comment && comment[0]) {
         // Comment given, go for context call.
-        d->translate_priv(comment, sourceText, 0, 0, &language, &translation);
+        d->translate_priv(0, comment, sourceText, 0, 0, &language, &translation);
     } else {
         // Comment not given, go for try-fallback with context.
         if (context && context[0]) {
-            d->translate_priv(context, sourceText, 0, 0, &language, &translation);
+            d->translate_priv(0, context, sourceText, 0, 0, &language, &translation);
         }
         if (language.isEmpty() || language == defaultLanguage()) {
-            d->translate_priv(0, sourceText, 0, 0, &language, &translation);
+            d->translate_priv(0, 0, sourceText, 0, 0, &language, &translation);
         }
     }
 
