@@ -808,7 +808,7 @@ QList<KAboutPerson>
 KAboutData::translators() const
 {
     QList<KAboutPerson> personList;
-
+    
     KLocale *tmpLocale = NULL;
     if (KGlobal::locale()) {
         // There could be many catalogs loaded into the global locale,
@@ -870,7 +870,7 @@ QString
 KAboutData::aboutTranslationTeam()
 {
     return i18nc("replace this with information about your translation team",
-            "<p>KDE software is translated into many languages thanks to the work "
+            "<p>KDE is translated into many languages thanks to the work "
             "of the translation teams all over the world.</p>"
             "<p>For more information on KDE internationalization "
             "visit <a href=\"http://l10n.kde.org\">http://l10n.kde.org</a></p>"
