@@ -29,6 +29,7 @@ ALFE,birthday,,QDateTime,birthday,Personal,.toString()
 
 #Address address
 LF,home address street,,QString,homeAddressStreet,Address|Personal
+LF,home address post office box,,QString,homeAddressPostOfficeBox,Address|Personal
 LF,home address city,,QString,homeAddressLocality,Address|Personal
 LF,home address state,,QString,homeAddressRegion,Address|Personal
 LF,home address zip code,,QString,homeAddressPostalCode,Address|Personal
@@ -36,6 +37,7 @@ LF,home address country,,QString,homeAddressCountry,Address|Personal
 LF,home address label,,QString,homeAddressLabel,Address|Personal
 
 LF,business address street,,QString,businessAddressStreet,Address|Organization
+LF,business address post office box,,QString,businessAddressPostOfficeBox,Address|Organization
 LF,business address city,,QString,businessAddressLocality,Address|Organization
 LF,business address state,,QString,businessAddressRegion,Address|Organization
 LF,business address zip code,,QString,businessAddressPostalCode,Address|Organization
