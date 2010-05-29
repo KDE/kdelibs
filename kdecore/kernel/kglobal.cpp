@@ -104,7 +104,7 @@ class KGlobalPrivate
         static KComponentData initFakeComponent()
         {
             QString name = QCoreApplication::applicationName();
-            if(name.isEmpty())
+            if(name.isEmpty() && QCoreApplication::instance())
                 name = qAppName();
             if(name.isEmpty())
                 name = QString::fromLatin1("kde");
