@@ -21,7 +21,7 @@
 
 #ifndef KABC_ADDRESSLINEEDIT_H
 #define KABC_ADDRESSLINEEDIT_H
-// $Id$
+// $Id: addresslineedit.h 465272 2005-09-29 09:47:40Z mueller $
 
 #include <qobject.h>
 #include <qptrlist.h>

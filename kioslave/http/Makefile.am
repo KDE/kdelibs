@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile.am 459757 2005-09-11 19:27:51Z deller $
 # Makefile.am of kdebase/kioslave/http
 
 SUBDIRS = kcookiejar

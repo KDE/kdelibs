@@ -20,7 +20,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: file.cc 516747 2006-03-08 13:41:58Z coolo $
 
 #include <config.h>
 

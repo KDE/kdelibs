@@ -5,7 +5,7 @@
  *  Copyright (c) 2000 David Faure <faure@kde.org>
  *  Copyright (c) 2000 Stephan Kulow <coolo@kde.org>
  *
- *  $Id$
+ *  $Id: slavebase.cpp 714066 2007-09-18 17:05:12Z lunakl $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

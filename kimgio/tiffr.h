@@ -4,7 +4,7 @@
 *
 * This library is distributed under the conditions of the GNU LGPL.
 *
-* $Id$
+* $Id: tiffr.h 48057 2000-05-01 23:45:11Z waba $
 */
 
 #ifndef KIMG_TIFFR_H

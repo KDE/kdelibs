@@ -8,7 +8,7 @@
      Organization for the Advancement of Structured Information
      Standards (OASIS).
 
-     $Id$
+     $Id: dbnotnx.mod 190636 2002-11-27 16:43:18Z fouvry $
 
      Permission to use, copy, modify and distribute the DocBook DTD
      and its accompanying documentation for any purpose and without fee

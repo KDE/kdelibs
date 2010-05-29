@@ -20,7 +20,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-//$Id$
+//$Id: kmenubar.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
@@ -36,7 +36,7 @@
  * QStyle.
  *
  * @author Daniel "Mosfet" Duley.
- * @version $Id$
+ * @version $Id: kmenubar.h 465272 2005-09-29 09:47:40Z mueller $
 */
 
 class KDEUI_EXPORT KMenuBar : public QMenuBar

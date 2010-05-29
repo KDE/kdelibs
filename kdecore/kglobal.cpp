@@ -18,7 +18,7 @@
 /*
 * kglobal.cpp -- Implementation of class KGlobal.
 * Author:	Sirtaj Singh Kang
-* Version:	$Id$
+* Version:	$Id: kglobal.cpp 700792 2007-08-16 12:57:23Z mueller $
 * Generated:	Sat May  1 02:08:43 EST 1999
 */
 

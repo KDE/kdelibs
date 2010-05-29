@@ -1,5 +1,5 @@
 /****************************************************************************
-** $Id$
+** $Id: helpwindow.cpp 249858 2003-09-10 00:12:18Z wheeler $
 **
 ** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
 **

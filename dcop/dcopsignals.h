@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #ifndef DCOPSIGNALS_H
-#define DCOPSIGNALS_H "$Id$"
+#define DCOPSIGNALS_H "$Id: dcopsignals.h 345236 2004-09-09 15:23:55Z dfaure $"
 
 #include <qdict.h>
 #include <qasciidict.h>

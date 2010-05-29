@@ -7,7 +7,7 @@
 *
 * This library is distributed under the conditions of the GNU LGPL.
 *
-* $Id$
+* $Id: exr.cpp 405168 2005-04-12 21:45:20Z mueller $
 */
 
 #include "config.h"

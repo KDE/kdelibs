@@ -1,5 +1,5 @@
 /*
-    $Id$
+    $Id: kfontdialogtest.cpp 465272 2005-09-29 09:47:40Z mueller $
 
     Requires the Qt widget libraries, available at no cost at 
     http://www.troll.no

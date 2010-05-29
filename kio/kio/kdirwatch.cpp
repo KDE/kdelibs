@@ -64,13 +64,11 @@
 // debug
 #include <sys/ioctl.h>
 
-#ifdef HAVE_SYS_INOTIFY
-#include <sys/inotify.h>
-#include <fcntl.h>
-#elif HAVE_INOTIFY
+#ifdef HAVE_INOTIFY
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
+#include <linux/types.h>
 // Linux kernel headers are documented to not compile
 #define _S390_BITOPS_H
 #include <linux/inotify.h>
@@ -89,9 +87,7 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 {
   return syscall (__NR_inotify_rm_watch, fd, wd);
 }
-#endif
 
-#ifdef HAVE_INOTIFY
 #ifndef  IN_ONLYDIR
 #define  IN_ONLYDIR 0x01000000 
 #endif
@@ -103,6 +99,7 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 #ifndef IN_MOVE_SELF
 #define IN_MOVE_SELF 0x00000800
 #endif
+
 #endif
 
 #include <sys/utsname.h>

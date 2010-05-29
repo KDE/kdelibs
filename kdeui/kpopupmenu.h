@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 #ifndef _KPOPUP_H
-#define _KPOPUP_H "$Id$"
+#define _KPOPUP_H "$Id: kpopupmenu.h 465272 2005-09-29 09:47:40Z mueller $"
 
 #define INCLUDE_MENUITEM_DEF
 

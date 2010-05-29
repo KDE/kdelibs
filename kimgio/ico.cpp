@@ -1,6 +1,6 @@
 
 /*
- * $Id$
+ * $Id: ico.cpp 392281 2005-02-22 16:29:46Z orlovich $
  * kimgio import filter for MS Windows .ico files
  *
  * Distributed under the terms of the LGPL

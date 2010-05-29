@@ -1,4 +1,4 @@
-/*  $Id$
+/*  $Id: netaccess.cpp 580558 2006-09-03 21:46:23Z osterfeld $
 
     This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)

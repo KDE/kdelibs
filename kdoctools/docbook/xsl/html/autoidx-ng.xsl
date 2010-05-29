@@ -21,7 +21,7 @@
                 xmlns:i="urn:cz-kosek:functions:index">
 
 <!-- ********************************************************************
-     $Id$
+     $Id: autoidx-ng.xsl 476268 2005-11-01 01:12:54Z thiago $
      ********************************************************************
 
      This file is part of the DocBook XSL Stylesheet distribution.

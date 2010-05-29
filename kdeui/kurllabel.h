@@ -65,7 +65,7 @@ class QPixmap;
  *
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
- * @version $Id$
+ * @version $Id: kurllabel.h 504601 2006-02-01 14:15:28Z staniek $
  *
  */
 class KDEUI_EXPORT KURLLabel : public QLabel

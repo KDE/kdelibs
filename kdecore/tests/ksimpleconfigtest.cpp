@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ksimpleconfigtest.cpp 237592 2003-07-17 13:00:10Z binner $
 
 //
 // configtest.cpp: libKDEcore example

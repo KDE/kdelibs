@@ -21,7 +21,7 @@
 */
 
 #ifndef DCOPGLOBAL_H
-#define DCOPGLOBAL_H "$Id$"
+#define DCOPGLOBAL_H "$Id: dcopglobal.h 423060 2005-06-07 10:49:14Z staniek $"
 
 
 #define DCOPVendorString "KDE"

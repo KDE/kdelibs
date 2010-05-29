@@ -5,7 +5,7 @@
 
 */
 
-// $Id$
+// $Id: kpixmapeffect.cpp 224328 2003-05-06 17:37:56Z fredrik $
 
 #include <qimage.h>
 #include <qpainter.h>

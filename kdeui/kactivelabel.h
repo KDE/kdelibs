@@ -32,7 +32,7 @@ class KActiveLabelPrivate;
   * clicks on a link.
   *
   * @author Waldo Bastian (bastian@kde.org)
-  * @version $Id$
+  * @version $Id: kactivelabel.h 465272 2005-09-29 09:47:40Z mueller $
   */
 class KDEUI_EXPORT KActiveLabel : public QTextBrowser
 {

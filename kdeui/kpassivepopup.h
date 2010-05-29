@@ -60,7 +60,7 @@ class QVBox;
  *    pop->show();
  * \endcode
  *
- * @version $Id$
+ * @version $Id: kpassivepopup.h 428049 2005-06-22 21:24:17Z aacid $
  * @since 3.1
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de

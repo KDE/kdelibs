@@ -1,4 +1,4 @@
-## $Id$
+## $Id: Makefile.am 196817 2003-01-01 15:56:17Z porten $
 ## Makefile.am of kdebase/kioslave/metainfo
 
 INCLUDES = $(all_includes)

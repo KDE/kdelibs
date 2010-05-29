@@ -1,6 +1,6 @@
 /****************************************************************************
 
- $Id$
+ $Id: kmanagerselection.cpp 282061 2004-01-23 16:22:46Z lunakl $
 
  Copyright (C) 2003 Lubos Lunak        <l.lunak@kde.org>
 

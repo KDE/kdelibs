@@ -487,7 +487,7 @@ extern double rnd_prod(double, double), rnd_quot(double, double);
 #define FREE_DTOA_LOCK(n)	/*nothing*/
 #endif
 
-#define Kmax (sizeof(size_t) << 3)
+#define Kmax 15
 
  struct
 Bigint {

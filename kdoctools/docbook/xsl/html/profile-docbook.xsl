@@ -6,7 +6,7 @@
 <xsl:output method="html" encoding="ISO-8859-1" indent="no"/>
 
 <!-- ********************************************************************
-     $Id$
+     $Id: profile-docbook.xsl 384406 2005-01-31 00:11:27Z raabe $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.

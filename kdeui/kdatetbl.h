@@ -34,7 +34,7 @@ class KPopupMenu;
 
 /** Week selection widget.
 * @internal
-* @version $Id$
+* @version $Id: kdatetbl.h 565029 2006-07-22 07:30:24Z kling $
 * @author Stephan Binner
 */
 class KDEUI_EXPORT KDateInternalWeekSelector : public QLineEdit
@@ -61,7 +61,7 @@ private:
 /**
 * A table containing month names. It is used to pick a month directly.
 * @internal
-* @version $Id$
+* @version $Id: kdatetbl.h 565029 2006-07-22 07:30:24Z kling $
 * @author Tim Gilman, Mirko Boehm
 */
 class KDEUI_EXPORT KDateInternalMonthPicker : public QGridView
@@ -134,7 +134,7 @@ private:
 
 /** Year selection widget.
 * @internal
-* @version $Id$
+* @version $Id: kdatetbl.h 565029 2006-07-22 07:30:24Z kling $
 * @author Tim Gilman, Mirko Boehm
 */
 class KDEUI_EXPORT KDateInternalYearSelector : public QLineEdit
@@ -161,7 +161,7 @@ private:
 /**
  * Frame with popup menu behavior.
  * @author Tim Gilman, Mirko Boehm
- * @version $Id$
+ * @version $Id: kdatetbl.h 565029 2006-07-22 07:30:24Z kling $
  */
 class KDEUI_EXPORT KPopupFrame : public QFrame
 {
@@ -257,7 +257,7 @@ public:
  * dateSelected(QDate)
  *
  * @internal
- * @version $Id$
+ * @version $Id: kdatetbl.h 565029 2006-07-22 07:30:24Z kling $
  * @author Tim Gilman, Mirko Boehm
  */
 class KDEUI_EXPORT KDateTable : public QGridView

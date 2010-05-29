@@ -1,4 +1,4 @@
-// $Id$
+// $Id: main.cpp 258677 2003-10-13 21:36:02Z goossens $
 
 #include <sys/types.h>
 #include "main.h"

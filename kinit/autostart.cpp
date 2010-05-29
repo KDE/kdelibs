@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
  *
- * $Id$
+ * $Id: autostart.cpp 534738 2006-04-27 18:04:45Z lunakl $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

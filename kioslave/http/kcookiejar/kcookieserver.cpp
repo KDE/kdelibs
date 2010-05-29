@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------
 //
 // KDE Cookie Server
-// $Id$
+// $Id: kcookieserver.cpp 707375 2007-09-01 17:19:13Z adawit $
 
 #define SAVE_DELAY 3 // Save after 3 minutes
 

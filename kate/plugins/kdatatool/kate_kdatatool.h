@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: kate_kdatatool.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef _KATE_KDATATOOL_
 #define _KATE_KDATATOOL_

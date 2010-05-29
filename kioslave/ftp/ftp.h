@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: ftp.h 591636 2006-10-02 21:47:38Z adridg $
 
 #ifndef __ftp_h__
 #define __ftp_h__

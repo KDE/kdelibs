@@ -25,7 +25,7 @@
    pattern is non-optimal it might waste some memory while running.  E.g.
    allocating many small things at once, and then deallocating only every
    second one, there is a high chance, that actually no memory is freed.  */
-// $Id$
+// $Id: kallocator.cpp 477382 2005-11-03 23:41:16Z adridg $
 
 #include "kallocator.h"
 #include <kdebug.h>

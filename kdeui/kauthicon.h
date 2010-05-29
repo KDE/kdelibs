@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 #ifndef _KAUTHICON_H
-#define _KAUTHICON_H "$Id$"
+#define _KAUTHICON_H "$Id: kauthicon.h 465272 2005-09-29 09:47:40Z mueller $"
 
 #include <qfileinfo.h>
 #include <qpixmap.h>

@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: kprocio.cpp 465272 2005-09-29 09:47:40Z mueller $
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

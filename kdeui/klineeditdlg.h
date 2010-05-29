@@ -31,7 +31,7 @@ class QValidator;
  *
  * Dialog for user to enter a single line of text.
  *
- * @version $Id$
+ * @version $Id: klineeditdlg.h 465272 2005-09-29 09:47:40Z mueller $
  * @author David Faure <faure@kde.org>, layout management by Preston Brown <pbrown@kde.org>
  */
 

@@ -24,7 +24,7 @@
 *****************************************************************************/
 
 #ifndef _KPROGRESS_H
-#define _KPROGRESS_H "$Id$"
+#define _KPROGRESS_H "$Id: kprogress.h 589356 2006-09-28 00:58:09Z jbaptiste $"
 
 #include <qprogressbar.h>
 #include <kdialogbase.h>

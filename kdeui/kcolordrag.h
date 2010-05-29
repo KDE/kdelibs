@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 /*
- * $Id$
+ * $Id: kcolordrag.h 669008 2007-05-28 10:32:33Z mueller $
  */
 #ifndef _KCOLORDRAG_H
 #define _KCOLORDRAG_H

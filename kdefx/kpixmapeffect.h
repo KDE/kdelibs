@@ -5,7 +5,7 @@
 
 */
 
-// $Id$
+// $Id: kpixmapeffect.h 399215 2005-03-20 14:33:45Z mueller $
 
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H

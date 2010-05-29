@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
         */
 
-// $Id$
+// $Id: kcheckaccelerators.cpp 589161 2006-09-27 17:34:20Z kling $
 
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>

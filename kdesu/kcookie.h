@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
+ * $Id: kcookie.h 427785 2005-06-21 20:25:37Z adridg $
  *
  * This file is part of the KDE project, module kdesu
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: klocaletest.h 36482 1999-12-14 10:19:54Z coolo $
 
 #ifndef KLOCALETEST_H
 #define KLOCALETEST_H

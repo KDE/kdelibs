@@ -23,7 +23,7 @@
 /*
  * kipc.cpp: Send a message to one/all KDE apps.
  *
- * $Id$
+ * $Id: kipc.cpp 482239 2005-11-22 08:32:28Z coolo $
  */
 #include "config.h"
 

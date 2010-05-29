@@ -34,7 +34,7 @@
  * \image html kdatetimewidget.png "KDE Date Time Widget"
  *
  * @author Hans Petter Bieker <bieker@kde.org>
- * @version $Id$
+ * @version $Id: kdatetimewidget.h 465272 2005-09-29 09:47:40Z mueller $
  * @since 3.2
  */
 class KDEUI_EXPORT KDateTimeWidget : public QWidget

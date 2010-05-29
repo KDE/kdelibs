@@ -1,4 +1,4 @@
-#$Id$
+#$Id: Makefile.am 285549 2004-02-06 13:39:51Z dfaure $
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile $(all_includes)
 

@@ -191,7 +191,10 @@ protected:
     /// Closes the archive
     virtual bool closeArchive();
 
-    virtual bool writeDir(const QString& name, const QString& user, const QString& group);
+    /**
+     * @internal Not needed for zip
+     */
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group) { Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); return true; }
     // TODO(BIC) uncomment and make virtual for KDE 4.
 //    bool writeDir( const QString& name, const QString& user, const QString& group,
 //                        mode_t perm, time_t atime, time_t mtime, time_t ctime );

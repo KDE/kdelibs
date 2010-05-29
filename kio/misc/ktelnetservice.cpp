@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: ktelnetservice.cpp 539297 2006-05-10 09:55:22Z hasso $
 
 #include <kapplication.h>
 #include <kmessagebox.h>

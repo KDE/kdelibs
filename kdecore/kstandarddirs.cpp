@@ -20,7 +20,7 @@
 
 /*
  * Author: Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
- * Version:	$Id$
+ * Version:	$Id: kstandarddirs.cpp 759452 2008-01-10 16:01:57Z mueller $
  * Generated:	Thu Mar  5 16:05:28 EST 1998
  */
 

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: tcpslavebase.cpp 662342 2007-05-07 22:26:49Z dfaure $
  *
  * Copyright (C) 2000 Alex Zepeda <zipzippy@sonic.net
  * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>

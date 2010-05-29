@@ -16,7 +16,7 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
    
-   $Id$
+   $Id: selectioninterfaceext.cpp 669011 2007-05-28 10:35:26Z mueller $
 */
 
 #include "selectioninterfaceext.h"

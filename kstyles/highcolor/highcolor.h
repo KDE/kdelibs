@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: highcolor.h 465272 2005-09-29 09:47:40Z mueller $
  *
  * KDE3 HighColor Style (version 1.0)
  * Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>

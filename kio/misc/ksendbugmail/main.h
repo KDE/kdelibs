@@ -1,5 +1,5 @@
 #ifndef BUG_MAILER_H
-#define BUG_MAILER_H "$Id$"
+#define BUG_MAILER_H "$Id: main.h 78339 2001-01-16 02:33:21Z garbanzo $"
 
 #include <qobject.h>
 

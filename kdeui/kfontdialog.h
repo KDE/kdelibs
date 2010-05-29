@@ -1,5 +1,5 @@
 /*
-    $Id$
+    $Id: kfontdialog.h 465272 2005-09-29 09:47:40Z mueller $
 
     Requires the Qt widget libraries, available at no cost at
     http://www.troll.no
@@ -49,7 +49,7 @@ class KIntNumInput;
  * \image html kfontchooser.png "KDE Font Chooser"
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
- * @version $Id$
+ * @version $Id: kfontdialog.h 465272 2005-09-29 09:47:40Z mueller $
  */
 class KDEUI_EXPORT KFontChooser : public QWidget
 {
@@ -334,7 +334,7 @@ private:
  * \image html kfontdialog.png "KDE Font Dialog"
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
- * @version $Id$
+ * @version $Id: kfontdialog.h 465272 2005-09-29 09:47:40Z mueller $
  */
 class KDEUI_EXPORT KFontDialog : public KDialogBase  {
     Q_OBJECT

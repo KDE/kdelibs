@@ -56,7 +56,7 @@
     "gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -Nkde_findEntity -D -s 2 khtmlentities.gperf > entities.c"
     from kentities.gperf
 
-    $Id$     
+    $Id: kentities.c 465272 2005-09-29 09:47:40Z mueller $     
 */  
 #line 31 "kentities.gperf"
 struct entity {

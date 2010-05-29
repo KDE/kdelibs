@@ -14,7 +14,7 @@
  * All modifications are placed under the license of libmcrypt.
  */
 
-/* $Id$ */
+/* $Id: des.cpp 404806 2005-04-11 14:34:42Z raabe $ */
 
 #include <string.h>
 #include <kswap.h>

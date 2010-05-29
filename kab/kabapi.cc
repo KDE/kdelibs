@@ -13,7 +13,7 @@
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
 
-   $Id$
+   $Id: kabapi.cc 112655 2001-08-31 07:35:04Z mueller $
 */
 
 #include "kabapi.h"

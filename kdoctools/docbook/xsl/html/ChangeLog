@@ -435,7 +435,7 @@
 2003-11-30  Robert Stayton <bobstayton@users.sourceforge.net>
 
 	* autoidx.xsl, changebars.xsl, chunk-code.xsl, chunk-common.xsl, chunk.xsl, chunker.xsl, chunkfast.xsl, chunktoc.xsl, html-rtf.xsl, htmltbl.xsl, maketoc.xsl, manifest.xsl, oldchunker.xsl, onechunk.xsl, profile-chunk.xsl, profile-onechunk.xsl, task.xsl: 
-	Added CVS $Id$ comments.
+	Added CVS $Id: ChangeLog 384406 2005-01-31 00:11:27Z raabe $ comments.
 
 2003-11-29  Jirka Kosek <kosek@users.sourceforge.net>
 

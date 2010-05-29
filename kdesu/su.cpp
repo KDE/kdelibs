@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
 *
-* $Id$
+* $Id: su.cpp 592751 2006-10-05 16:22:44Z coolo $
 *
 * This file is part of the KDE project, module kdesu.
 * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>

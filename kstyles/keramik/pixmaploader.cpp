@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: pixmaploader.cpp 559665 2006-07-07 23:56:40Z orlovich $
 
 #include <qapplication.h>
 #include <qbitmap.h>

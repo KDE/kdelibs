@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ktabctltest.h 237592 2003-07-17 13:00:10Z binner $
  */
 
 #ifndef _KTABCTLTEST_H

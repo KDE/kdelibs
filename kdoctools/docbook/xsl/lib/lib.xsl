@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- ********************************************************************
-     $Id$
+     $Id: lib.xsl 384406 2005-01-31 00:11:27Z raabe $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.

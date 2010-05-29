@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: smtp.cpp 532141 2006-04-21 10:38:02Z cartman $ */
 
 #include <sys/utsname.h>
 #include <unistd.h>

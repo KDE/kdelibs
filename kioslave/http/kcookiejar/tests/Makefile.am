@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile.am 362284 2004-11-11 18:14:09Z waba $
 # Makefile.am of kdebase/kioslave/http
 
 INCLUDES=	$(all_includes) 

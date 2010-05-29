@@ -161,12 +161,12 @@ VCard::List VCardParser::parseVCards( const QString& text )
           if ( codec ) {
             vCardLine.setValue( codec->toUnicode( output ) );
           } else {
-            vCardLine.setValue( QString::fromLatin1( output ) );
+            vCardLine.setValue( QString::fromUtf8( output ) );
           }
         } else if ( wasBase64Encoded ) {
             vCardLine.setValue( output );
-        } else {
-            vCardLine.setValue( QString::fromLatin1( output ) );
+        } else {  // if charset not given, assume it's in UTF-8 (as used in previous KDE versions)
+            vCardLine.setValue( QString::fromUtf8( output ) );
         }
 
         currentVCard.addLine( vCardLine );

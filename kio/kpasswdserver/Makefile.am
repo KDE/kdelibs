@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile.am 433401 2005-07-10 18:42:04Z adridg $
 # Makefile.am of kdebase/kioslave/http
 
 INCLUDES= -I$(top_srcdir)/kwallet/client $(all_includes)

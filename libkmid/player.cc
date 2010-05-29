@@ -20,7 +20,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 
-    $Id$
+    $Id: player.cc 539843 2006-05-11 20:08:40Z mueller $
 
     Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 

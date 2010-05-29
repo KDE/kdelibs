@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2003 Joseph Wenninger <jowenn@kde.org>
  *
- * $Id$
+ * $Id: ktempdir.cpp 532292 2006-04-21 15:19:53Z savernik $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

@@ -1,5 +1,5 @@
 /*
-    $Id$
+    $Id: kwinmodule.cpp 629176 2007-02-01 18:55:16Z dfaure $
 
     This file is part of the KDE libraries
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)

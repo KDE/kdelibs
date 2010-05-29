@@ -588,9 +588,7 @@ const KArchiveEntry* KArchiveDirectory::entry( QString name ) const
 
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
-  if( entry->name().isEmpty() )
-    return;
-
+  Q_ASSERT( !entry->name().isEmpty() );
   if( m_entries[ entry->name() ] ) {
       kdWarning() << "KArchiveDirectory::addEntry: directory " << name()
                   << " has entry " << entry->name() << " already" << endl;

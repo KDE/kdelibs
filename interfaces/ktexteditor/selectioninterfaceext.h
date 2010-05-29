@@ -16,7 +16,7 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
    
-   $Id$
+   $Id: selectioninterfaceext.h 465272 2005-09-29 09:47:40Z mueller $
 */
 
 #ifndef __ktexteditor_selectioninterface_ext_h__

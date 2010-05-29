@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: kfontcombo.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef _KFONTCOMBO_H_
 #define _KFONTCOMBO_H_

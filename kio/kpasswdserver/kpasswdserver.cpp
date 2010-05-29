@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE Password Server
-// $Id$
+// $Id: kpasswdserver.cpp 849216 2008-08-19 09:08:55Z duffeck $
 
 #include "kpasswdserver.h"
 

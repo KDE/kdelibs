@@ -318,7 +318,7 @@ private:
 /**
 * List of KToolBarButton objects.
 * @internal
-* @version $Id$
+* @version $Id: ktoolbarbutton.h 465272 2005-09-29 09:47:40Z mueller $
 */
 class KDEUI_EXPORT KToolBarButtonList : public QIntDict<KToolBarButton>
 {

@@ -1,6 +1,6 @@
 /**********************************************************************
 **
-** $Id$
+** $Id: knumvalidator.h 469215 2005-10-10 13:47:50Z lukas $
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 ** Copyright (C) 2002 Marc Mutz <mutz@kde.org>

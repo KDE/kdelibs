@@ -12,7 +12,7 @@
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
 
-   $Id$	 
+   $Id: addressbook.h 591629 2006-10-02 21:29:03Z adridg $	 
 */
 
 #ifndef ADDRESSBOOK_H

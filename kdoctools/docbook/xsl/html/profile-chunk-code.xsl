@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns:exslt="http://exslt.org/common" exslt:dummy="dummy" extension-element-prefixes="exslt" version="1.0" exclude-result-prefixes="exsl exslt">
 
 <!-- ********************************************************************
-     $Id$
+     $Id: profile-chunk-code.xsl 384406 2005-01-31 00:11:27Z raabe $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.

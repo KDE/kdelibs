@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 /*
- * $Id$
+ * $Id: kcursor.h 465272 2005-09-29 09:47:40Z mueller $
  *
  */
 #ifndef _KCURSOR_H

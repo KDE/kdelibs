@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
+// $Id: undointerface.cpp 465272 2005-09-29 09:47:40Z mueller $
 
 #include "undointerface.h"
 #include "undodcopinterface.h"

@@ -20,7 +20,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE File Manager -- HTTP Cookies
-// $Id$
+// $Id: kcookiejar.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef KCOOKIEJAR_H
 #define KCOOKIEJAR_H

@@ -4,7 +4,7 @@
 *
 * This library is distributed under the conditions of the GNU LGPL.
 *
-* $Id$
+* $Id: g3r.h 49984 2000-05-19 14:32:40Z hoelzer $
 */
 
 #ifndef KIMG_G3R_H

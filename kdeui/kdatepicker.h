@@ -44,7 +44,7 @@ class KDateTable;
  *
  * \image html kdatepicker.png "KDE Date Widget"
  *
- *     @version $Id$
+ *     @version $Id: kdatepicker.h 669008 2007-05-28 10:32:33Z mueller $
  *     @author Tim Gilman, Mirko Boehm
  *
  **/

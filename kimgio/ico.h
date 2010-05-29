@@ -1,6 +1,6 @@
 
 /*
- * $Id$
+ * $Id: ico.h 200652 2003-01-17 21:32:56Z malte $
  * ico.h - kimgio import filter for MS Windows .ico files
  *
  * Distributed under the terms of the LGPL

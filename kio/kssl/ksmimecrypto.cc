@@ -19,6 +19,8 @@
  */
 
 
+#include "ksmimecrypto.h"
+
 #include <qptrlist.h>
 #include <qcstring.h>
 #include <qstring.h>
@@ -27,7 +29,6 @@
 #include "kopenssl.h"
 #include "ksslcertificate.h"
 #include "ksslpkcs12.h"
-#include "ksmimecrypto.h"
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
@@ -71,11 +72,11 @@ public:
     KSMIMECrypto::rc checkSignature(BIO *clearText,
 				    BIO *signature, bool detached,
 				    QPtrList<KSSLCertificate> &recip);
-    
+
     KSMIMECrypto::rc decryptMessage(BIO *cipherText,
 				    BIO *clearText,
 				    KSSLPKCS12 &privKey);
-    
+
     void MemBIOToQByteArray(BIO *src, QByteArray &dest);
 
     KSMIMECrypto::rc sslErrToRc(void);
@@ -87,7 +88,7 @@ KSMIMECryptoPrivate::KSMIMECryptoPrivate(KOpenSSLProxy *kossl): kossl(kossl) {
 
 
 STACK_OF(X509) *KSMIMECryptoPrivate::certsToX509(QPtrList<KSSLCertificate> &certs) {
-    STACK_OF(X509) *x509 = sk_new(NULL);
+    STACK_OF(X509) *x509 = (STACK_OF(X509) *) sk_new(NULL);
     KSSLCertificate *cert = certs.first();
     while(cert) {
 	sk_X509_push(x509, cert->getCert());
@@ -173,7 +174,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::encryptMessage(BIO *clearText,
 KSMIMECrypto::rc KSMIMECryptoPrivate::checkSignature(BIO *clearText,
 						     BIO *signature, bool detached,
 						     QPtrList<KSSLCertificate> &recip) {
-    
+
     PKCS7 *p7 = kossl->d2i_PKCS7_bio(signature, NULL);
     KSMIMECrypto::rc rc = KSMIMECrypto::KSC_R_OTHER;
 
@@ -215,13 +216,13 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::checkSignature(BIO *clearText,
 KSMIMECrypto::rc KSMIMECryptoPrivate::decryptMessage(BIO *cipherText,
 						     BIO *clearText,
 						     KSSLPKCS12 &privKey) {
-    
+
     PKCS7 *p7 = kossl->d2i_PKCS7_bio(cipherText, NULL);
     KSMIMECrypto::rc rc;
 
     if (!p7) return sslErrToRc();
 
-    if (kossl->PKCS7_decrypt(p7, privKey.getPrivateKey(), privKey.getCertificate()->getCert(), 
+    if (kossl->PKCS7_decrypt(p7, privKey.getPrivateKey(), privKey.getCertificate()->getCert(),
 			     clearText, 0)) {
 	rc = KSMIMECrypto::KSC_R_OK;
     } else {
@@ -245,7 +246,7 @@ void KSMIMECryptoPrivate::MemBIOToQByteArray(BIO *src, QByteArray &dest) {
     reinterpret_cast<BUF_MEM *>(src->ptr)->data = NULL;
 }
 
-    
+
 KSMIMECrypto::rc KSMIMECryptoPrivate::sslErrToRc(void) {
     unsigned long cerr = kossl->ERR_get_error();
 
@@ -258,7 +259,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::sslErrToRc(void) {
 
     switch(ERR_GET_LIB(cerr)) {
 	case ERR_LIB_PKCS7:
-	    switch(ERR_GET_REASON(cerr)) {	
+	    switch(ERR_GET_REASON(cerr)) {
 		case PKCS7_R_WRONG_CONTENT_TYPE:
 		case PKCS7_R_NO_CONTENT:
 		case PKCS7_R_NO_SIGNATURES_ON_DATA:
@@ -281,7 +282,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::sslErrToRc(void) {
     kdDebug(7029) <<"KSMIMECrypto: uncaught error " <<ERR_GET_LIB(cerr)
 		  <<" " <<ERR_GET_REASON(cerr) <<endl;
     return KSMIMECrypto::KSC_R_OTHER;
-}    
+}
 #endif
 
 
@@ -358,7 +359,7 @@ KSMIMECrypto::rc KSMIMECrypto::checkOpaqueSignature(const QByteArray &signedText
 
     BIO *in = kossl->BIO_new_mem_buf((char *)signedText.data(), signedText.size());
     BIO *out = kossl->BIO_new(kossl->BIO_s_mem());
-   
+
     rc rc = priv->checkSignature(out, in, false, foundCerts);
 
     kossl->BIO_write(out, &eot, 1);

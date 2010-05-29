@@ -17,7 +17,7 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-// $Id$
+// $Id: kfileitem.cpp 717004 2007-09-25 20:52:46Z dfaure $
 
 #include <sys/time.h>
 #include <pwd.h>

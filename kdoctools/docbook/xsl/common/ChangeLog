@@ -192,7 +192,7 @@
 2003-11-30  Robert Stayton <bobstayton@users.sourceforge.net>
 
 	* gentext.xsl, labels.xsl, subtitles.xsl, table.xsl, targets.xsl, titles.xsl: 
-	Added CVS $Id$ comment.
+	Added CVS $Id: ChangeLog 384406 2005-01-31 00:11:27Z raabe $ comment.
 
 2003-11-17  Robert Stayton <bobstayton@users.sourceforge.net>
 

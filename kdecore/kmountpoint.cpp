@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
  *
- * $Id$
+ * $Id: kmountpoint.cpp 526329 2006-04-04 13:44:00Z hasso $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

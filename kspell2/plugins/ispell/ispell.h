@@ -34,7 +34,7 @@
 #include <sys/types.h>
 
 /*
- * $Id$
+ * $Id: ispell.h 465272 2005-09-29 09:47:40Z mueller $
  */
 
 /*

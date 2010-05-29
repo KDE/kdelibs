@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     // xsltSetGenericDebugFunc(stderr, NULL);
 
     KAboutData aboutData( "meinproc", I18N_NOOP("XML-Translator" ),
-	"$Revision$",
+	"$Revision: 649205 $",
 	I18N_NOOP("KDE Translator for XML"));
 
     KCmdLineArgs::init(argc, argv, &aboutData);

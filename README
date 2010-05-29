@@ -1,3 +1,31 @@
+Common patches across KDE Debian packages
+=========================================
+
+  These directory should contain patches to the admin/ subdir of KDE
+  modules that are meant to be applied to all packaged modules. As the
+  admin/ subdir is shared across modules (and so, it's identical for all
+  modules at a certain version), I think it makes sense to have these
+  patches in a central location, and update them here.
+
+  The script update.sh takes care of automatically updating the patches
+  that update autotools and libtool. You need to pass the location of an
+  admin/ directory as the first argument.
+
+  -- Adeodato Simó, 2005-02-26
+Common patches across KDE Debian packages
+=========================================
+
+  These directory should contain patches to the admin/ subdir of KDE
+  modules that are meant to be applied to all packaged modules. As the
+  admin/ subdir is shared across modules (and so, it's identical for all
+  modules at a certain version), I think it makes sense to have these
+  patches in a central location, and update them here.
+
+  The script update.sh takes care of automatically updating the patches
+  that update autotools and libtool. You need to pass the location of an
+  admin/ directory as the first argument.
+
+  -- Adeodato Simó, 2005-02-26
 In this file:
 
 * About kdelibs

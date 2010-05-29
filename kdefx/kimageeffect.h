@@ -26,7 +26,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-// $Id$
+// $Id: kimageeffect.h 399215 2005-03-20 14:33:45Z mueller $
 
 #ifndef __KIMAGE_EFFECT_H
 #define __KIMAGE_EFFECT_H

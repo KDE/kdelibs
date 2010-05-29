@@ -20,7 +20,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE Password Server
-// $Id$
+// $Id: kpasswdserver.h 614636 2006-12-18 14:31:59Z lunakl $
 
 #ifndef KPASSWDSERVER_H
 #define KPASSWDSERVER_H

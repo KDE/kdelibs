@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
+ * $Id: kicontheme.cpp 601485 2006-11-03 12:50:30Z lunakl $
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>

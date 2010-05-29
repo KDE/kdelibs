@@ -858,7 +858,7 @@ public:
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
-        "$Id$",
+        "$Id: kded.cpp 711061 2007-09-11 09:42:51Z tpatzig $",
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed"));
 
      KApplication::installSigpipeHandler();

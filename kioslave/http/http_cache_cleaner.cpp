@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------
 //
 // KDE Http Cache cleanup tool
-// $Id$
+// $Id: http_cache_cleaner.cpp 362866 2004-11-14 10:54:13Z mueller $
 
 #include <time.h>
 #include <stdlib.h>

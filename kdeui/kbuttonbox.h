@@ -36,7 +36,7 @@ class KButtonBoxPrivate;
  * between buttons is now more Motif compliant.
  *
  * @author Mario Weilguni <mweilguni@sime.com>
- * @version $Id$
+ * @version $Id: kbuttonbox.h 465272 2005-09-29 09:47:40Z mueller $
  **/
 
 class KDEUI_EXPORT KButtonBox : public QWidget

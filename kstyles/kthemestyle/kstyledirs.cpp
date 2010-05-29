@@ -1,5 +1,5 @@
 /*
- $Id$
+ $Id: kstyledirs.cpp 465272 2005-09-29 09:47:40Z mueller $
 
  Simple helper routines for style's use of KStandardDirs with QSettings, etc.
 

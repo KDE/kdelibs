@@ -1,5 +1,5 @@
 /*
-$Id$
+$Id: kthemestyle.h 465272 2005-09-29 09:47:40Z mueller $
 
 This file is part of the KDE libraries
 Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>

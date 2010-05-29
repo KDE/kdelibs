@@ -1,5 +1,5 @@
 README for the DocBook Stylesheets
-$Id$
+$Id: README 384406 2005-01-31 00:11:27Z raabe $
 
 These are XSL stylesheets for transforming DocBook XML document
 instances into various output formats. (They would also work for

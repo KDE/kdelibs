@@ -21,7 +21,7 @@
 */
 
 #ifndef __file_h__
-#define __file_h__ "$Id$"
+#define __file_h__ "$Id: file.h 591636 2006-10-02 21:47:38Z adridg $"
 
 #include <sys/types.h>
 #include <sys/stat.h>

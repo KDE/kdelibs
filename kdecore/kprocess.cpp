@@ -1,6 +1,6 @@
 /*
 
-   $Id$
+   $Id: kprocess.cpp 549079 2006-06-07 11:18:16Z mueller $
 
    This file is part of the KDE libraries
    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)

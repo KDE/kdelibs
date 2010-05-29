@@ -1,5 +1,5 @@
 /* vi: ts=8 sts=4 sw=4
- * $Id$
+ * $Id: kiconeffect.cpp 389958 2005-02-16 15:51:35Z gunnar $
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>

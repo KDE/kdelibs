@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id$
+ *	$Id: kemailsettings.cpp 267028 2003-11-14 12:34:09Z waba $
  */
 
 #include "kemailsettings.h"

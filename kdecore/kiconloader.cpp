@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
+ * $Id: kiconloader.cpp 693955 2007-07-29 16:28:09Z tyrerj $
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>

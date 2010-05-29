@@ -17,7 +17,7 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
- *  $Id$
+ *  $Id: kfilemetainfo.cpp 585308 2006-09-16 23:00:15Z kling $
  */
 
 #include <assert.h>

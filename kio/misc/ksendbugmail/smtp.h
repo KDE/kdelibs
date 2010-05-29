@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: smtp.h 242555 2003-08-13 19:47:47Z mueller $ */
 
 #ifndef SMTP_H
 #define SMTP_H

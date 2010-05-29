@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
+ * $Id: krootpixmap.h 345292 2004-09-09 20:07:27Z staniek $
  * This file is part of the KDE project, module kdesktop.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -41,7 +41,7 @@ class KRootPixmapData;
  * you can take complete control of the behavior.
  *
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id$
+ * @version $Id: krootpixmap.h 345292 2004-09-09 20:07:27Z staniek $
  */
 class KDEUI_EXPORT KRootPixmap: public QObject
 {

@@ -3,7 +3,7 @@
  *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
  *                2000 Stephan Kulow <coolo@kde.org>
  *
- * $Id$
+ * $Id: slave.cpp 467686 2005-10-05 23:00:10Z dfaure $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

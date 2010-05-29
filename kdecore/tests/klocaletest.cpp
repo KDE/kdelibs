@@ -1,6 +1,6 @@
 // klocaletest.cpp     -*- C++ -*-
 //
-// $Id$
+// $Id: klocaletest.cpp 465215 2005-09-29 07:58:06Z braxton $
 //
 // Author: Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
 //

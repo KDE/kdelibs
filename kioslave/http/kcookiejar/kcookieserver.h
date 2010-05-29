@@ -20,7 +20,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE Cookie Server
-// $Id$
+// $Id: kcookieserver.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef KCOOKIESERVER_H
 #define KCOOKIESERVER_H

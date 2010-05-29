@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
-    $Id$
+    $Id: kuniqueapplication.cpp 474468 2005-10-26 13:51:39Z lunakl $
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

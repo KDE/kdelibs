@@ -14,7 +14,7 @@
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
 
-   $Id$	 
+   $Id: qconfigDB.h 591629 2006-10-02 21:29:03Z adridg $	 
 */
 
 namespace std { }
@@ -654,7 +654,7 @@ public:
   /**
    * Return a string describing the version.
    */
-  static const char* version() { return "2.0 $Revision$"; }
+  static const char* version() { return "2.0 $Revision: 591629 $"; }
   /**
    * Check wether the given file is locked.
    * The method returns zero if not, a number > zero is the pid of the process

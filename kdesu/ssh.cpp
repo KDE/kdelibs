@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
 *
-* $Id$
+* $Id: ssh.cpp 397696 2005-03-15 01:33:05Z dmacvicar $
 *
 * This file is part of the KDE project, module kdesu.
 * Copyright (C) 2000 Geert Jansen <jansen@kde.org>

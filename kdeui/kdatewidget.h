@@ -31,7 +31,7 @@
 *
 * @see KDatePicker
 *
-* @version $Id$
+* @version $Id: kdatewidget.h 465272 2005-09-29 09:47:40Z mueller $
 */
 class KDEUI_EXPORT KDateWidget : public QWidget
 {

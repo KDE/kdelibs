@@ -4,7 +4,7 @@
  *  Copyright (c) 2000-2002 Waldo Bastian <bastian@kde.org>
  *                2002 Rik Hemsley <rik@kde.org>
  *
- * $Id$
+ * $Id: krfcdate.cpp 514036 2006-02-27 09:36:44Z osterfeld $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

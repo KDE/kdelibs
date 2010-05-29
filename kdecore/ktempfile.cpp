@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
  *
- * $Id$
+ * $Id: ktempfile.cpp 800078 2008-04-23 09:01:56Z lunakl $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

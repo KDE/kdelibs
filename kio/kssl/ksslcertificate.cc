@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 
+#include "ksslcertificate.h"
 
 
 #include <unistd.h>
@@ -181,11 +182,11 @@ QString KSSLCertificate::getSerialNumber() const {
 QString rc = "";
 
 #ifdef KSSL_HAVE_SSL
-	ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
-	if (aint) {
-		rc = ASN1_INTEGER_QString(aint);
-		// d->kossl->ASN1_INTEGER_free(aint);   this makes the sig test fail
-	}
+     ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
+     if (aint) {
+         rc = ASN1_INTEGER_QString(aint);
+         // d->kossl->ASN1_INTEGER_free(aint);   this makes the sig test fail
+     }
 #endif
 return rc;
 }
@@ -224,7 +225,7 @@ void KSSLCertificate::getEmails(QStringList &to) const {
 #ifdef KSSL_HAVE_SSL
 	if (!d->m_cert)
 		return;
-	
+
 	STACK *s = d->kossl->X509_get1_email(d->m_cert);
 	if (s) {
 		for(int n=0; n < s->num; n++) {
@@ -232,8 +233,8 @@ void KSSLCertificate::getEmails(QStringList &to) const {
 		}
 		d->kossl->X509_email_free(s);
 	}
-#endif	
-}	
+#endif
+}
 
 
 QString KSSLCertificate::getKDEKey() const {
@@ -387,7 +388,7 @@ char *x = NULL;
 				}
 				rc += "\n";
 				d->kossl->OPENSSL_free(x);
-	
+
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
 				rc += QString("g: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
@@ -399,7 +400,7 @@ char *x = NULL;
 				}
 				rc += "\n";
 				d->kossl->OPENSSL_free(x);
-	
+
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
 				rc += i18n("Public key: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
@@ -454,7 +455,7 @@ if (c) {
 	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
 #if 0
-	kdDebug(7029) << "---------------- Certificate ------------------" 
+	kdDebug(7029) << "---------------- Certificate ------------------"
 		      << endl;
 	kdDebug(7029) << getSubject() << endl;
 #endif
@@ -535,7 +536,7 @@ if (c) {
                 kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
         else kdDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
 
-	kdDebug(7029) << "-----------------------------------------------" 
+	kdDebug(7029) << "-----------------------------------------------"
 		      << endl;
 #endif
 }
@@ -582,7 +583,7 @@ int rc = 0;
 		rc = X509_PURPOSE_ANY;
 	}
 #endif
-return rc;	
+return rc;
 }
 
 
@@ -598,14 +599,14 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLP
 		return KSSLCertificate::Ok;
 	else
 		return result.first();
-} 
+}
 
 //
 // See apps/verify.c in OpenSSL for the source of most of this logic.
 //
 
 // CRL files?  we don't do that yet
-KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose) 
+KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose)
 {
 	return validateVerbose(purpose, 0);
 }
@@ -670,7 +671,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
 		if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
 			// error accessing directory and loading pems
-			kdDebug(7029) << "KSSL couldn't read CA root: " 
+			kdDebug(7029) << "KSSL couldn't read CA root: "
 					<< _j << endl;
 			ksslv = KSSLCertificate::ErrorReadingRoot;
 			d->kossl->X509_STORE_free(certStore);
@@ -726,7 +727,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		// end of checking code
 		//
 
-		//kdDebug(7029) << "KSSL Validation procedure RC: " 
+		//kdDebug(7029) << "KSSL Validation procedure RC: "
 		//		<< rc << endl;
 		//kdDebug(7029) << "KSSL Validation procedure errcode: "
 		//		<< errcode << endl;
@@ -739,7 +740,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		}
 		break;
 	}
-	
+
 	if (ksslv != KSSLCertificate::Ok)
 		errors << ksslv;
 #else
@@ -999,21 +1000,29 @@ return qba;
 
 #define NETSCAPE_CERT_HDR     "certificate"
 
+#ifdef KSSL_HAVE_SSL
+#if OPENSSL_VERSION_NUMBER < 0x00909000L
+
+typedef struct NETSCAPE_X509_st
+{
+    ASN1_OCTET_STRING *header;
+    X509 *cert;
+} NETSCAPE_X509;
+#endif
+#endif
+
 // what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
-QByteArray qba;
+        QByteArray qba;
 #ifdef KSSL_HAVE_SSL
-ASN1_HEADER ah;
-ASN1_OCTET_STRING os;
-KTempFile ktf;
+        NETSCAPE_X509 nx;
+        ASN1_OCTET_STRING hdr;
+        KTempFile ktf;
 
-	os.data = (unsigned char *)NETSCAPE_CERT_HDR;
-	os.length = strlen(NETSCAPE_CERT_HDR);
-	ah.header = &os;
-	ah.data = (char *)getCert();
-	ah.meth = d->kossl->X509_asn1_meth();
+	hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
+	hdr.length = strlen(NETSCAPE_CERT_HDR);
 
-	d->kossl->ASN1_i2d_fp(ktf.fstream(),(unsigned char *)&ah);
+	d->kossl->ASN1_item_i2d_fp(ktf.fstream(),(unsigned char *)&nx);
 
 	ktf.close();
 
@@ -1083,29 +1092,29 @@ return d->_extensions.certTypeCA();
 QStringList KSSLCertificate::subjAltNames() const {
 	QStringList rc;
 #ifdef KSSL_HAVE_SSL
-	STACK_OF(GENERAL_NAME) *names;
-	names = (STACK_OF(GENERAL_NAME)*)d->kossl->X509_get_ext_d2i(d->m_cert, NID_subject_alt_name, 0, 0);
+    STACK_OF(GENERAL_NAME) *names;
+    names = (STACK_OF(GENERAL_NAME)*)d->kossl->X509_get_ext_d2i(d->m_cert, NID_subject_alt_name, 0, 0);
 
-	if (!names) {
-		return rc;
-	}
+    if (!names) {
+        return rc;
+    }
 
-	int cnt = d->kossl->sk_GENERAL_NAME_num(names);
+    int cnt = d->kossl->sk_GENERAL_NAME_num(names);
 
-	for (int i = 0; i < cnt; i++) {
-		const GENERAL_NAME *val = (const GENERAL_NAME *)d->kossl->sk_value(names, i);
-		if (val->type != GEN_DNS) {
-			continue;
-		}
+    for (int i = 0; i < cnt; i++) {
+        const GENERAL_NAME *val = (const GENERAL_NAME *)d->kossl->sk_value(names, i);
+        if (val->type != GEN_DNS) {
+            continue;
+        }
 
-		QString s = (const char *)d->kossl->ASN1_STRING_data(val->d.ia5);
-		if (!s.isEmpty()) {
-			rc += s;
-		}
-	}
-	d->kossl->sk_free(names);
+        QString s = (const char *)d->kossl->ASN1_STRING_data(val->d.ia5);
+        if (!s.isEmpty()) {
+            rc += s;
+        }
+    }
+    d->kossl->sk_free(names);
 #endif
-	return rc;
+    return rc;
 }
 
 

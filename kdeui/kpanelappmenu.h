@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #ifndef __PANELAPPMENU_H
-#define __PANELAPPMENU_H "$Id$"
+#define __PANELAPPMENU_H "$Id: kpanelappmenu.h 591622 2006-10-02 21:16:23Z adridg $"
 
 #include <dcopobject.h>
 

@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE File Manager -- HTTP Cookie Dialogs
-// $Id$
+// $Id: kcookiewin.h 465272 2005-09-29 09:47:40Z mueller $
 
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_

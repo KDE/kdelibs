@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 /*
- * $Id$
+ * $Id: ktabctl.h 465272 2005-09-29 09:47:40Z mueller $
 */
 
 #ifndef KTABCTL_H
@@ -43,7 +43,7 @@
  * on page A depend on the contents of some other widgets on page B.
  *
  * @author Alexander Sanda (alex@darkstar.ping.at)
- * @version $Id$
+ * @version $Id: ktabctl.h 465272 2005-09-29 09:47:40Z mueller $
 */
 class KDEUI_EXPORT KTabCtl : public QWidget
 {

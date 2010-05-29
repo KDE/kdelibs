@@ -105,7 +105,7 @@ namespace
  * \endcode
  *
  * @author Kurt Granroth <granroth@kde.org>
- * @version $Id$
+ * @version $Id: kedittoolbar.h 465272 2005-09-29 09:47:40Z mueller $
  */
 class KDEUI_EXPORT KEditToolbar : public KDialogBase
 {
@@ -265,7 +265,7 @@ private:
  * to determine which buttons are active.
  *
  * @author Kurt Granroth <granroth@kde.org>
- * @version $Id$
+ * @version $Id: kedittoolbar.h 465272 2005-09-29 09:47:40Z mueller $
  */
 class KDEUI_EXPORT KEditToolbarWidget : public QWidget, virtual public KXMLGUIClient
 {

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: kstyle.h 465272 2005-09-29 09:47:40Z mueller $
  * 
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
@@ -52,7 +52,7 @@ struct KStylePrivate;
  * @see QStyle::QStyle
  * @see QCommonStyle::QCommonStyle
  * @author Karol Szwed (gallium@kde.org)
- * @version $Id$
+ * @version $Id: kstyle.h 465272 2005-09-29 09:47:40Z mueller $
  */
 class KDEFX_EXPORT KStyle: public QCommonStyle
 {

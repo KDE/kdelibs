@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1997 Torben Weis (weis@kde.org)
  *
- *  $Id$
+ *  $Id: ksock.cpp 482738 2005-11-24 00:21:15Z mueller $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
