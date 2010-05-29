@@ -353,6 +353,7 @@
 <!ENTITY dpi            	'<acronym>dpi</acronym>'>
 <!ENTITY Echap          	'<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
 <!ENTITY Enter			'<keycap>Entrée</keycap>'>
+<!ENTITY Entree			'<keycap>Entrée</keycap>'>
 <!ENTITY etc            	"<abbrev>etc.</abbrev>">
 <!ENTITY FAQ            	'<acronym>FAQ</acronym>'>
 <!ENTITY mi			"messagerie instantanée">
