@@ -133,6 +133,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList::ConstIterator it, itDir;
     QStringList themeDirs;
     QString cDir;
+    QMap<QString, bool> addedDirs; // Used for avoiding duplicates.
 
     // Applications can have local additions to the global "locolor" and
     // "hicolor" icon themes. For these, the _global_ theme description
@@ -204,7 +205,9 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=dirs.begin(); it!=dirs.end(); ++it) {
         KConfigGroup cg(d->sharedConfig, *it);
         for (itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir) {
-            if (KStandardDirs::exists(*itDir + *it + '/')) {
+            const QString currentDir(*itDir + *it + '/');
+            if (KStandardDirs::exists(currentDir) && !addedDirs.contains(currentDir)) {
+                addedDirs.insert(currentDir, true);
                 KIconThemeDir *dir = new KIconThemeDir(*itDir, *it, cg);
                 if (!dir->isValid()) {
                     delete dir;
