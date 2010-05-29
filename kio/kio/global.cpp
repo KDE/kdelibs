@@ -734,7 +734,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_CYCLIC_LINK:
       errorName = i18n( "Cyclic Link Detected" );
       description = i18n( "UNIX environments are commonly able to link a file or "
-        "folder to a separate name and/or location. KDE Workspace detected a link or "
+        "folder to a separate name and/or location. KDE detected a link or "
         "series of links that results in an infinite loop – i.e. the file was "
         "(perhaps in a roundabout way) linked to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
@@ -756,7 +756,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       errorName = i18n( "Cyclic Link Detected During Copy" );
       description = i18n( "UNIX environments are commonly able to link a file or "
         "folder to a separate name and/or location. During the requested copy "
-        "operation, KDE Workspace detected a link or series of links that results in an "
+        "operation, KDE detected a link or series of links that results in an "
         "infinite loop – i.e. the file was (perhaps in a roundabout way) linked "
         "to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
