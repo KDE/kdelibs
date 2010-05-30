@@ -2,6 +2,7 @@
 Type=Service
 Name=Network Proxy Configuration
 Name[bg]=Настройки на мрежови посредник
+Name[bn]=নেটওয়ার্ক প্রক্সি কনফিগারেশন
 Name[ca]=Configuració del servidor intermediari de xarxa
 Name[ca@valencia]=Configuració del servidor intermediari de xarxa
 Name[cs]=Nastavení proxy sítě
