@@ -636,7 +636,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
             selectorsForCheck.append(j);
 
     // build per-element cache summaries.
-    prepareToMatchElement(element);
+    prepareToMatchElement(element, true);
 
     propsToApply.clear();
     pseudoProps.clear();
@@ -779,8 +779,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     return style;
 }
 
-void CSSStyleSelector::prepareToMatchElement(DOM::ElementImpl* element)
+void CSSStyleSelector::prepareToMatchElement(DOM::ElementImpl* e, bool withDeps)
 {
+    rememberDependencies = withDeps;
+    element              = e;
+
     // build caches for element so it could be used in heuristic for descendant selectors
     // go up the tree and cache possible tags, classes and ids
     tagCache.clear();
@@ -1312,7 +1315,7 @@ bool CSSStyleSelector::isMatchedByAnySelector(DOM::ElementImpl* e, const QList<D
         quint16 tag = sel->tagLocalName.id();
         if (elementTagId == tag || tag == anyLocalName) {
             if (!inited) {
-                prepareToMatchElement(e);
+                prepareToMatchElement(e, false);
                 inited = true;
             }
     
@@ -1329,6 +1332,7 @@ bool CSSStyleSelector::isMatchedByAnySelector(DOM::ElementImpl* e, const QList<D
 
 void CSSStyleSelector::addDependency(int dependencyType, ElementImpl* dependency)
 {
+    if (!rememberDependencies) return;
     element->document()->dynamicDomRestyler().addDependency(element, dependency, (StructuralDependencyType)dependencyType);
 }
 

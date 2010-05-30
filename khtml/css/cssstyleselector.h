@@ -218,7 +218,7 @@ namespace khtml
 
         // computes various summaries of the documents' properties, which are used in
         // the various checkSelector methods for optimizations
-        void prepareToMatchElement(DOM::ElementImpl* e);
+        void prepareToMatchElement(DOM::ElementImpl* e, bool withDeps);
 
         void addDependency(int dependencyType, DOM::ElementImpl* dependency);
         void setupDefaultRootStyle(DOM::DocumentImpl *d=0);
@@ -324,6 +324,7 @@ public:
 	KHTMLView *view;
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
+	bool rememberDependencies;
 	int logicalDpiY;
   	RenderStyle*     m_rootDefaultStyle;
         QVector<int>     m_fontSizes;
