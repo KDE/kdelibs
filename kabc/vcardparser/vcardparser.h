@@ -31,8 +31,11 @@ class VCardParser
     VCardParser();
     ~VCardParser();
 
-    static VCard::List parseVCards( const QString& text );
-    static QString createVCards( const VCard::List& list );
+    static KDE_DEPRECATED VCard::List parseVCards( const QString& text );
+    static KDE_DEPRECATED QString createVCards( const VCard::List& list );
+
+    static VCard::List parseVCardsRaw( const QCString& text );
+    static QCString createVCardsRaw( const VCard::List& list );
 
   private:
     class VCardParserPrivate;

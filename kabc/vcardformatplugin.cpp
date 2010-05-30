@@ -38,14 +38,11 @@ VCardFormatPlugin::~VCardFormatPlugin()
 
 bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
 {
-  QString data;
-
-  QTextStream t( file );
-  t.setEncoding( QTextStream::Latin1 );
-  data = t.read();
+  const QByteArray rawData = file->readAll();
+  const QCString data( rawData.data(), rawData.size() );
 
   VCardConverter converter;
-  Addressee::List l = converter.parseVCards( data );
+  Addressee::List l = converter.parseVCardsRaw( data );
 
   if ( ! l.first().isEmpty() ) {
     addressee = l.first();
@@ -57,15 +54,11 @@ bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
 
 bool VCardFormatPlugin::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
-  QString data;
-
-  QTextStream t( file );
-  t.setEncoding( QTextStream::Latin1 );
-  data = t.read();
+  const QByteArray rawData = file->readAll();
+  const QCString data( rawData.data(), rawData.size() );
 
   VCardConverter converter;
-
-  Addressee::List l = converter.parseVCards( data );
+  Addressee::List l = converter.parseVCardsRaw( data );
 
   Addressee::List::iterator itr;
   for ( itr = l.begin(); itr != l.end(); ++itr) {
@@ -86,9 +79,8 @@ void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
 
   vcardlist.append( addressee );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << converter.createVCards( vcardlist );
+  const QCString data = converter.createVCardsRaw( vcardlist );
+  file->writeBlock( data, data.length() );
 }
 
 void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
@@ -102,9 +94,8 @@ void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
     vcardlist.append( *it );
   }
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << converter.createVCards( vcardlist );
+  const QCString data = converter.createVCardsRaw( vcardlist );
+  file->writeBlock( data, data.length() );
 }
 
 bool VCardFormatPlugin::checkFormat( QFile *file ) const

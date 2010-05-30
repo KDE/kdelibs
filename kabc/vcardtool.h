@@ -44,20 +44,27 @@ class KABC_EXPORT VCardTool
       Creates a string that contains the addressees from the list in
       the vCard format.
      */
-    QString createVCards( Addressee::List list, VCard::Version version = VCard::v3_0 );
+    KDE_DEPRECATED QString createVCards( Addressee::List list, VCard::Version version = VCard::v3_0 );
+
+    QCString createVCardsRaw( Addressee::List list, VCard::Version version = VCard::v3_0 );
 
     /**
       Parses the string and returns a list of addressee objects.
      */
-    Addressee::List parseVCards( const QString& vcard );
+    KDE_DEPRECATED Addressee::List parseVCards( const QString& vcard );
+
+    Addressee::List parseVCardsRaw( const QCString& vcard );
 
   private:
+    VCard::List createVCardsInternal( Addressee::List list, VCard::Version version );
+    Addressee::List parseVCardsInternal( const VCard::List &vCardList );
+
     /**
       Split a string and replaces escaped separators on the fly with
       unescaped ones.
      */
     QStringList splitString( const QChar &sep, const QString &value );
-    
+
     QDateTime parseDateTime( const QString &str );
     QString createDateTime( const QDateTime &dateTime );
 

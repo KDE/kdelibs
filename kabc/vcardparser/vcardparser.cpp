@@ -18,10 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <qcstring.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
+#include <qvaluelist.h>
 
 #include <kmdcodec.h>
+#include <kdebug.h>
 
 #include "vcardparser.h"
 
@@ -29,25 +32,60 @@
 
 using namespace KABC;
 
-static QString backslash( "\\\\" );
-static QString comma( "\\," );
-static QString newline( "\\n" );
-static QString cr( "\\r" );
+typedef QValueList<QCString> QCStringList;
 
-static void addEscapes( QString &str )
+QValueList<QCString> splitCString( const QCString &str, char sep )
 {
-  str.replace( '\\', backslash );
-  str.replace( ',', comma );
-  str.replace( '\r', cr );
-  str.replace( '\n', newline );
+    QValueList<QCString> list;
+    int start = 0;
+    int end;
+    while ((end = str.find(sep, start)) != -1) {
+        list.append(str.mid(start, end - start));
+        start = end + 1;
+    }
+    list.append(str.mid(start));
+
+    return list;
 }
 
-static void removeEscapes( QString &str )
+QValueList<QCString> splitCString( const QCString &str, const QRegExp &exp )
 {
-  str.replace( cr, "\\r" );
-  str.replace( newline, "\n" );
-  str.replace( comma, "," );
-  str.replace( backslash, "\\" );
+    QValueList<QCString> list;
+    int start = 0;
+    int end;
+    while ((end = str.find(exp, start)) != -1) {
+        list.append(str.mid(start, end - start));
+        start = end + 1;
+    }
+    list.append(str.mid(start));
+
+    return list;
+}
+
+bool cStringStartsWith( const QCString &str, const QCString &pattern )
+{
+  const int length = pattern.length();
+  if ( length == 0 )
+    return true;
+
+  const QCString part = str.left( length );
+  return (pattern == part);
+}
+
+static void addEscapes( QCString &str )
+{
+  str.replace( '\\', "\\\\" );
+  str.replace( ',', "\\," );
+  str.replace( '\r', "\\r" );
+  str.replace( '\n', "\\n" );
+}
+
+static void removeEscapes( QCString &str )
+{
+  str.replace( "\\r", "\r" );
+  str.replace( "\\n", "\n" );
+  str.replace( "\\,", "," );
+  str.replace( "\\\\", "\\" );
 }
 
 VCardParser::VCardParser()
@@ -60,24 +98,30 @@ VCardParser::~VCardParser()
 
 VCard::List VCardParser::parseVCards( const QString& text )
 {
+  return parseVCardsRaw( text.utf8() );
+}
+
+VCard::List VCardParser::parseVCardsRaw( const QCString& text )
+{
+
   static QRegExp sep( "[\x0d\x0a]" );
 
   VCard currentVCard;
   VCard::List vCardList;
-  QString currentLine;
+  QCString currentLine;
 
-  const QStringList lines = QStringList::split( sep, text );
-  QStringList::ConstIterator it;
+  const QCStringList lines = splitCString( text, sep );
+  QCStringList::ConstIterator it;
 
   bool inVCard = false;
-  QStringList::ConstIterator linesEnd( lines.end() );
+  QCStringList::ConstIterator linesEnd( lines.end() );
   for ( it = lines.begin(); it != linesEnd; ++it ) {
 
     if ( (*it).isEmpty() ) // empty line
       continue;
 
     if ( (*it)[ 0 ] == ' ' || (*it)[ 0 ] == '\t' ) { // folded line => append to previous
-      currentLine += QString( *it ).remove( 0, 1 );
+      currentLine.append( (*it).mid( 1 ) );
       continue;
     } else {
       if ( inVCard && !currentLine.isEmpty() ) { // now parse the line
@@ -88,23 +132,23 @@ VCard::List VCardParser::parseVCards( const QString& text )
         }
 
         VCardLine vCardLine;
-        const QString key = currentLine.left( colon ).stripWhiteSpace();
-        QString value = currentLine.mid( colon + 1 );
+        const QCString key = currentLine.left( colon ).stripWhiteSpace();
+        QCString value = currentLine.mid( colon + 1 );
 
-        QStringList params = QStringList::split( ';', key );
+        QCStringList params = splitCString( key, ';' );
 
         // check for group
         if ( params[0].find( '.' ) != -1 ) {
-          const QStringList groupList = QStringList::split( '.', params[0] );
-          vCardLine.setGroup( groupList[0] );
-          vCardLine.setIdentifier( groupList[1] );
+          const QCStringList groupList = splitCString( params[0], '.' );
+          vCardLine.setGroup( QString::fromLatin1( groupList[0] ) );
+          vCardLine.setIdentifier( QString::fromLatin1( groupList[1] ) );
         } else
-          vCardLine.setIdentifier( params[0] );
+          vCardLine.setIdentifier( QString::fromLatin1( params[0] ) );
 
         if ( params.count() > 1 ) { // find all parameters
-          QStringList::ConstIterator paramIt = params.begin();
+          QCStringList::ConstIterator paramIt = params.begin();
           for ( ++paramIt; paramIt != params.end(); ++paramIt ) {
-            QStringList pair = QStringList::split( '=', *paramIt );
+            QCStringList pair = splitCString( *paramIt, '=' );
             if ( pair.size() == 1 ) {
               // correct the fucking 2.1 'standard'
               if ( pair[0].lower() == "quoted-printable" ) {
@@ -119,12 +163,12 @@ VCard::List VCardParser::parseVCards( const QString& text )
             }
             // This is pretty much a faster pair[1].contains( ',' )...
             if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
-              const QStringList args = QStringList::split( ',', pair[ 1 ] );
-              QStringList::ConstIterator argIt;
+              const QCStringList args = splitCString( pair[ 1 ], ',' );
+              QCStringList::ConstIterator argIt;
               for ( argIt = args.begin(); argIt != args.end(); ++argIt )
-                vCardLine.addParameter( pair[0].lower(), *argIt );
+                vCardLine.addParameter( QString::fromLatin1( pair[0].lower() ), QString::fromLatin1( *argIt ) );
             } else
-              vCardLine.addParameter( pair[0].lower(), pair[1] );
+              vCardLine.addParameter( QString::fromLatin1( pair[0].lower() ), QString::fromLatin1( pair[1] ) );
           }
         }
 
@@ -133,10 +177,8 @@ VCard::List VCardParser::parseVCards( const QString& text )
         QByteArray output;
         bool wasBase64Encoded = false;
 
-        params = vCardLine.parameterList();
-        if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
-          QByteArray input;
-          input = QCString(value.latin1());
+        if ( vCardLine.parameterList().findIndex( "encoding" ) != -1 ) { // have to decode the data
+          QByteArray input = value;
           if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
                vCardLine.parameter( "encoding" ).lower() == "base64" ) {
             KCodecs::base64Decode( input, output );
@@ -148,14 +190,14 @@ VCard::List VCardParser::parseVCards( const QString& text )
               value = value.remove( value.length() - 1, 1 ) + (*it);
               ++it;
             }
-            input = QCString(value.latin1());
+            input = value;
             KCodecs::quotedPrintableDecode( input, output );
           }
         } else {
-          output = QCString(value.latin1());
+          output = value;
         }
 
-        if ( params.findIndex( "charset" ) != -1 ) { // have to convert the data
+        if ( vCardLine.parameterList().findIndex( "charset" ) != -1 ) { // have to convert the data
           QTextCodec *codec =
             QTextCodec::codecForName( vCardLine.parameter( "charset" ).latin1() );
           if ( codec ) {
@@ -173,17 +215,17 @@ VCard::List VCardParser::parseVCards( const QString& text )
       }
 
       // we do not save the start and end tag as vcardline
-      if ( (*it).lower().startsWith( "begin:vcard" ) ) {
+      if ( cStringStartsWith( (*it).lower(), QCString( "begin:vcard" ) ) ) {
         inVCard = true;
-        currentLine.setLength( 0 );
+        currentLine = QCString();
         currentVCard.clear(); // flush vcard
         continue;
       }
 
-      if ( (*it).lower().startsWith( "end:vcard" ) ) {
+      if ( cStringStartsWith( (*it).lower(), QCString( "end:vcard" ) ) ) {
         inVCard = false;
         vCardList.append( currentVCard );
-        currentLine.setLength( 0 );
+        currentLine = QCString();
         currentVCard.clear(); // flush vcard
         continue;
       }
@@ -197,8 +239,13 @@ VCard::List VCardParser::parseVCards( const QString& text )
 
 QString VCardParser::createVCards( const VCard::List& list )
 {
-  QString text;
-  QString textLine;
+  return QString::fromUtf8( createVCardsRaw( list ) );
+}
+
+QCString VCardParser::createVCardsRaw( const VCard::List& list )
+{
+  QCString text;
+  QCString textLine;
   QString encodingType;
   QStringList idents;
   QStringList params;
@@ -213,7 +260,7 @@ QString VCardParser::createVCards( const VCard::List& list )
 
   bool hasEncoding;
 
-  text.reserve( list.size() * 300 ); // reserve memory to be more efficient
+//  text.reserve( list.size() * 300 ); // reserve memory to be more efficient
 
   // iterate over the cards
   VCard::List::ConstIterator listEnd( list.end() );
@@ -228,9 +275,9 @@ QString VCardParser::createVCards( const VCard::List& list )
       for ( lineIt = lines.constBegin(); lineIt != lines.constEnd(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
           if ( (*lineIt).hasGroup() )
-            textLine = (*lineIt).group() + "." + (*lineIt).identifier();
+            textLine = (*lineIt).group().latin1() + QCString( "." ) + (*lineIt).identifier().latin1();
           else
-            textLine = (*lineIt).identifier();
+            textLine = (*lineIt).identifier().latin1();
 
           params = (*lineIt).parameterList();
           hasEncoding = false;
@@ -243,9 +290,9 @@ QString VCardParser::createVCards( const VCard::List& list )
 
               values = (*lineIt).parameters( *paramIt );
               for ( valueIt = values.constBegin(); valueIt != values.constEnd(); ++valueIt ) {
-                textLine.append( ";" + (*paramIt).upper() );
+                textLine.append( QCString( ";" ) + (*paramIt).upper().latin1() );
                 if ( !(*valueIt).isEmpty() )
-                  textLine.append( "=" + (*valueIt) );
+                  textLine.append( QCString( "=" ) + (*valueIt).latin1() );
               }
             }
           }
@@ -261,11 +308,11 @@ QString VCardParser::createVCards( const VCard::List& list )
               KCodecs::quotedPrintableEncode( input, output, false );
             }
 
-            QString value( output );
+            QCString value( output );
             addEscapes( value );
             textLine.append( ":" + value );
           } else {
-            QString value( (*lineIt).value().asString() );
+            QCString value( (*lineIt).value().toString().utf8() );
             addEscapes( value );
             textLine.append( ":" + value );
           }

@@ -74,8 +74,21 @@ VCardTool::~VCardTool()
 {
 }
 
-// TODO: make list a const&
+QCString VCardTool::createVCardsRaw( Addressee::List list, VCard::Version version )
+{
+  const VCard::List vCardList = createVCardsInternal( list, version );
+
+  return VCardParser::createVCardsRaw( vCardList );
+}
+
 QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
+{
+  const VCard::List vCardList = createVCardsInternal( list, version );
+
+  return VCardParser::createVCards( vCardList );
+}
+
+VCard::List VCardTool::createVCardsInternal( Addressee::List list, VCard::Version version )
 {
   VCard::List vCardList;
 
@@ -348,17 +361,30 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     vCardList.append( card );
   }
 
-  return VCardParser::createVCards( vCardList );
+  return vCardList;
+}
+
+Addressee::List VCardTool::parseVCardsRaw( const QCString& vcard )
+{
+  const VCard::List vCardList = VCardParser::parseVCardsRaw( vcard );
+ 
+  return parseVCardsInternal( vCardList ); 
 }
 
 Addressee::List VCardTool::parseVCards( const QString& vcard )
+{
+  const VCard::List vCardList = VCardParser::parseVCards( vcard );
+ 
+  return parseVCardsInternal( vCardList ); 
+}
+
+Addressee::List VCardTool::parseVCardsInternal( const VCard::List &vCardList )
 {
   static const QChar semicolonSep( ';' );
   static const QChar commaSep( ',' );
   QString identifier;
 
   Addressee::List addrList;
-  const VCard::List vCardList = VCardParser::parseVCards( vcard );
 
   VCard::List::ConstIterator cardIt;
   VCard::List::ConstIterator listEnd( vCardList.end() );

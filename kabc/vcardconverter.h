@@ -29,7 +29,7 @@ namespace KABC {
 
 /**
   @short Class to converting contact objects into vCard format and vice versa.
-  
+
   This class implements reading and writing of contact using from/to the
   vCard format. Currently vCard version 2.1 and 3.0 is supported.
 
@@ -39,7 +39,7 @@ namespace KABC {
 
   QFile file( "myfile.vcf" );
   file.open( IO_ReadOnly );
-  
+
   QString data = file.readAll();
 
   VCardConverter converter;
@@ -73,7 +73,7 @@ class KABC_EXPORT VCardConverter
       Destructor.
      */
     ~VCardConverter();
-  
+
     /**
       Creates a string in vCard format which contains the given
       contact.
@@ -81,7 +81,8 @@ class KABC_EXPORT VCardConverter
       @param addr The contact object
       @param version The version of the generated vCard format
      */
-    QString createVCard( const Addressee &addr, Version version = v3_0 );
+    KDE_DEPRECATED QString createVCard( const Addressee &addr, Version version = v3_0 );
+    QCString createVCardRaw( const Addressee &addr, Version version = v3_0 );
 
     /**
       Creates a string in vCard format which contains the given
@@ -91,20 +92,23 @@ class KABC_EXPORT VCardConverter
       @param version The version of the generated vCard format
      */
     // FIXME: Add error handling
-    QString createVCards( Addressee::List list, Version version = v3_0 );
+    KDE_DEPRECATED QString createVCards( Addressee::List list, Version version = v3_0 );
+    QCString createVCardsRaw( Addressee::List list, Version version = v3_0 );
 
     // FIXME: Add "createVCards( AddressBook * )"
 
     /**
       Parses a string in vCard format and returns the first contact.
      */
-    Addressee parseVCard( const QString& vcard );
+    KDE_DEPRECATED Addressee parseVCard( const QString& vcard );
+    Addressee parseVCardRaw( const QCString& vcard );
 
     /**
       Parses a string in vCard format and returns a list of contact objects.
      */
     // FIXME: Add error handling
-    Addressee::List parseVCards( const QString& vcard );
+    KDE_DEPRECATED Addressee::List parseVCards( const QString& vcard );
+    Addressee::List parseVCardsRaw( const QCString& vcard );
 
     // FIXME: Add "bool parseVCards( AddressBook *, const QString &vcard )"
 
@@ -137,7 +141,7 @@ class KABC_EXPORT VCardConverter
 /**
   * Converts a QDateTime to a date string as it is used in VCard and LDIF files.
   * The return value is in the form "yyyyMMddThhmmssZ" (e.g. "20031201T120000Z")
-  * @param dateTime date and time to be converted 
+  * @param dateTime date and time to be converted
   * @since 3.2
   */
 KABC_EXPORT QString dateToVCardString( const QDateTime &dateTime );
@@ -145,7 +149,7 @@ KABC_EXPORT QString dateToVCardString( const QDateTime &dateTime );
 /**
   * Converts a QDate to a short date string as it is used in VCard and LDIF files.
   * The return value is in the form "yyyyMMdd" (e.g. "20031201")
-  * @param date date to be converted 
+  * @param date date to be converted
   * @since 3.2
   */
 KABC_EXPORT QString dateToVCardString( const QDate &date );
