@@ -75,7 +75,7 @@ void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
 {
 	// ### probably beter to use traverseNext and the like
 	
-	NodeImpl *n = root->firstChild();
+	NodeImpl *n = xpathFirstChild( root );
 	while ( n ) {
 		out->append( n );
 		collectChildrenRecursively( out, n );
@@ -88,7 +88,7 @@ void collectChildrenReverse( SharedPtr<DOM::StaticNodeListImpl> out,
 {
 	// ### probably beter to use traverseNext and the like
 
-	NodeImpl *n = root->lastChild();
+	NodeImpl *n = xpathLastChild( root );
 	while ( n ) {
 		collectChildrenReverse( out, n );
 		out->append( n );
@@ -115,6 +115,30 @@ DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node )
 		return static_cast<DOM::AttrImpl*>(node)->ownerElement();
 	else
 		return node->parentNode();
+}
+
+DOM::NodeImpl *xpathFirstChild( DOM::NodeImpl *node )
+{
+	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
+		return 0;
+	else
+		return node->firstChild();
+}
+
+DOM::NodeImpl *xpathLastChild( DOM::NodeImpl *node )
+{
+	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
+		return 0;
+	else
+		return node->lastChild();
+}
+
+DOM::NodeImpl *nextSiblingForFollowing( DOM::NodeImpl *node )
+{
+	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
+		return static_cast<DOM::AttrImpl*>(node)->ownerElement()->firstChild();
+	else
+		return node->nextSibling();
 }
 
 } // namespace khtml

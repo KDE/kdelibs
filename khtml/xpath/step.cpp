@@ -190,7 +190,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 	DomNodeList nodes = new StaticNodeListImpl;
 	switch ( m_axis ) {
 		case ChildAxis: {
-			NodeImpl *n = context->firstChild();
+			NodeImpl *n = xpathFirstChild( context );
 			while ( n ) {
 				nodes->append( n );
 				n = n->nextSibling();
@@ -245,7 +245,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 		case FollowingAxis: {
 			NodeImpl *p = context;
 			while ( !isRootDomNode( p ) ) {
-				NodeImpl *n = p->nextSibling();
+				NodeImpl *n = nextSiblingForFollowing( p );
 				while ( n ) {
 					nodes->append( n );
 					collectChildrenRecursively( nodes, n );

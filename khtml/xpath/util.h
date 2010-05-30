@@ -69,6 +69,20 @@ bool isValidContextNode( DOM::NodeImpl *node );
 */
 DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node );
 
+/* @returns the first/last kid of the given node under the XPath model,
+   which doesn't have text nodes or the likes under attributes
+*/
+DOM::NodeImpl *xpathFirstChild( DOM::NodeImpl *node );
+DOM::NodeImpl *xpathLastChild( DOM::NodeImpl *node );
+
+/* @returns a slightly generalized notion of a sibling needed to implement
+   the following axis. Essentially, for that axis, and only that axis,
+   if we have something like this:
+     <node attr1 attr2><kid></node>
+   the <kid> is considered to be the next thing following attr1
+*/
+DOM::NodeImpl *nextSiblingForFollowing( DOM::NodeImpl *node );
+
 // Enable for some low debug output.
 #define XPATH_VERBOSE
 

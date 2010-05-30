@@ -164,6 +164,7 @@ DOMString Value::toString() const
 			if ( m_nodeset && m_nodeset->length() == 0 ) {
 				return DOMString( "" );
 			}
+			m_nodeset->normalizeUpto( StaticNodeListImpl::AxisOrder );
 			return stringValue( m_nodeset->item(0) );
 		case String:
 			return m_string;
