@@ -525,7 +525,7 @@ Value FunCount::doEvaluate() const
 		kWarning() << "count() expects <nodeset>";
 		return Value( );
 	}
-	a.toNodeset()->normalize();
+	a.toNodeset()->normalizeUpto(StaticNodeListImpl::AxisOrder);
 
 	return Value( double( a.toNodeset()->length() ) );
 }

@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
- *           (C) 2005, 2009 Maksim Orlovich (maksim@kde.org)
+ *           (C) 2005, 2009, 2010 Maksim Orlovich (maksim@kde.org)
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2007 David Smith (catfish.man@gmail.com)
  *
@@ -333,7 +333,9 @@ bool ClassNodeListImpl::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
 
 // ---------------------------------------------------------------------------
 
-StaticNodeListImpl::StaticNodeListImpl() {}
+StaticNodeListImpl::StaticNodeListImpl():
+    m_knownNormalization(DocumentOrder) // true vacuously 
+{}
 
 StaticNodeListImpl::~StaticNodeListImpl() {}
 
@@ -341,6 +343,7 @@ void StaticNodeListImpl::append(NodeImpl* n)
 {
     assert(n);
     m_kids.append(n);
+    m_knownNormalization = Unnormalized;
 }
 
 NodeImpl* StaticNodeListImpl::item ( unsigned long index ) const
@@ -358,8 +361,14 @@ static bool nodeLess(const SharedPtr<NodeImpl>& n1, const SharedPtr<DOM::NodeImp
     return n1->compareDocumentPosition(n2.get()) & Node::DOCUMENT_POSITION_FOLLOWING;
 }
 
-void StaticNodeListImpl::normalize()
+void StaticNodeListImpl::normalizeUpto(NormalizationKind kind)
 {
+    if (m_knownNormalization == kind || m_knownNormalization == DocumentOrder)
+        return;
+
+    if (kind == Unnormalized)
+        return;
+
     // First sort.
     qSort(m_kids.begin(), m_kids.end(), nodeLess);
 
@@ -376,6 +385,18 @@ void StaticNodeListImpl::normalize()
         last = cur;
     }
     m_kids.resize(out);
+
+    m_knownNormalization = DocumentOrder;
+}
+
+void  StaticNodeListImpl::setKnownNormalization(NormalizationKind kind)
+{
+    m_knownNormalization = kind;
+}
+
+StaticNodeListImpl::NormalizationKind StaticNodeListImpl::knownNormalization() const
+{
+    return m_knownNormalization;
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

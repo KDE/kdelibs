@@ -83,6 +83,19 @@ void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
 	}
 }
 
+void collectChildrenReverse( SharedPtr<DOM::StaticNodeListImpl> out,
+                             DOM::NodeImpl *root )
+{
+	// ### probably beter to use traverseNext and the like
+
+	NodeImpl *n = root->lastChild();
+	while ( n ) {
+		collectChildrenReverse( out, n );
+		out->append( n );
+		n = n->previousSibling();
+	}
+}
+
 bool isValidContextNode( NodeImpl *node )
 {
 	return node && ( 

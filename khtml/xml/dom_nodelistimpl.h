@@ -236,10 +236,27 @@ public:
     NodeImpl* first() { return item(0); }
     bool      isEmpty() const { return length() == 0; }
 
-    // puts in document order and removes duplicates.
-    void normalize();
+    // For XPath, we may have collection nodes that are either ordered
+    // by the axis, are in random order, or strongly normalized. We represent
+    // this knowledge by this enum
+    enum NormalizationKind {
+       Unnormalized,
+       AxisOrder,
+       DocumentOrder
+    };
+
+    // If the list isn't up to the given level of normalization, put it into
+    // document order. Note that if we're asked for AxisOrder but have
+    // DocumentOrder already, it's left to be.
+    void normalizeUpto(NormalizationKind kind);
+
+    // Reports to list outside knowledge of how normalized the data currently is.
+    void setKnownNormalization(NormalizationKind kind);
+
+    NormalizationKind knownNormalization() const;
 private:
     WTF::Vector<SharedPtr<NodeImpl> > m_kids;
+    NormalizationKind                 m_knownNormalization;
 };
 
 } //namespace

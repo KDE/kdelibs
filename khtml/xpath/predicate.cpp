@@ -421,11 +421,7 @@ bool Predicate::evaluate() const
 
 	// foo[3] really means foo[position()=3]
 	if ( result.isNumber() ) {
-		Expression *realExpr = new RelationOp(RelationOp::OP_EQ,
-		                FunctionLibrary::self().getFunction( "position" ),
-		                new Number( result.toNumber() ) );
-		result = realExpr->evaluate();
-		delete realExpr;
+		return double( Expression::evaluationContext().position ) == result.toNumber();
 	}
 
 	return result.toBoolean();

@@ -138,11 +138,16 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
 
+	// ### optimization opportunity: can say DocumentOrder for most
+	StaticNodeListImpl::NormalizationKind known = StaticNodeListImpl::AxisOrder;
+	inNodes->setKnownNormalization(known);
+
 #ifdef XPATH_VERBOSE
 	kDebug(6011) << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
 #endif
 	
 	inNodes = nodeTestMatches( context, inNodes );
+	inNodes->setKnownNormalization(known); // nodeTest doesn't change order
 
 #ifdef XPATH_VERBOSE
 	kDebug(6011) << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
@@ -160,6 +165,9 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			NodeImpl* node = inNodes->item( n );
 			Expression::evaluationContext().node = node;
 			EvaluationContext backupCtx = Expression::evaluationContext();
+#ifdef XPATH_VERBOSE			
+			kDebug() << Expression::evaluationContext().position << "/" << node;
+#endif
 			if ( predicate->evaluate() ) {
 				outNodes->append( node );
 			}
@@ -170,6 +178,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 		kDebug(6011) << "\tPredicate trims this number to " << outNodes->length();
 #endif
 		inNodes = outNodes;
+		inNodes->setKnownNormalization(known); // predicates don't change order
 	}
 
 	return outNodes;
@@ -251,8 +260,8 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			while ( !isRootDomNode( p ) ) {
 				NodeImpl *n = p->previousSibling();
 				while ( n ) {
+					collectChildrenReverse( nodes, n );				
 					nodes->append( n );
-					collectChildrenRecursively( nodes, n );
 					n = n->previousSibling();
 				}
 				p = xpathParentNode( p );

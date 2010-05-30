@@ -56,6 +56,10 @@ DOM::DOMString stringValue( DOM::NodeImpl *node );
 void collectChildrenRecursively( SharedPtr<DOM::StaticNodeListImpl> out,
                                  DOM::NodeImpl *root );
 
+/* this one is in reverse order */
+void collectChildrenReverse( SharedPtr<DOM::StaticNodeListImpl> out,
+                             DOM::NodeImpl *root );
+
 /* @return whether the given node is a valid context node
  */
 bool isValidContextNode( DOM::NodeImpl *node );

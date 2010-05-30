@@ -76,7 +76,7 @@ Value ParsedStatement::evaluate(NodeImpl* context, int& ec) const
 	// If the result is a nodeset, we need to put it in document order
 	// and remove duplicates.
 	if ( res.isNodeset() )
-        res.toNodeset()->normalize();
+        res.toNodeset()->normalizeUpto(StaticNodeListImpl::DocumentOrder);
     return res;
 }
 

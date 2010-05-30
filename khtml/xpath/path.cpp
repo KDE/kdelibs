@@ -66,6 +66,9 @@ Value Filter::doEvaluate() const
 
 	DomNodeList inNodes = v.toNodeset(), outNodes;
 
+	// Filter seems to work in document order, not axis order
+	inNodes->normalizeUpto(StaticNodeListImpl::DocumentOrder);
+
 	foreach( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl();
 		Expression::evaluationContext().size = int(inNodes->length());
@@ -73,13 +76,19 @@ Value Filter::doEvaluate() const
 		for ( unsigned long n = 0; n < inNodes->length(); ++n ) {
 			NodeImpl *node = inNodes->item(n);
 			Expression::evaluationContext().node = node;
-			++Expression::evaluationContext().position = n;
+			Expression::evaluationContext().position = n + 1;
 
 			if ( predicate->evaluate() ) {
 				outNodes->append( node );
 			}
 		}
+
 		inNodes = outNodes;
+		outNodes->setKnownNormalization(StaticNodeListImpl::DocumentOrder);
+
+#ifdef XPATH_VERBOSE
+		kDebug(6011) << "Predicate within filter trims to:" << outNodes->length();
+#endif
 	}
 
 	return Value( outNodes );
@@ -104,11 +113,13 @@ void LocationPath::optimize()
 
 Value LocationPath::doEvaluate() const
 {
+#ifdef XPATH_VERBOSE
 	if ( m_absolute ) {
 		kDebug(6011) << "Evaluating absolute path expression, steps:" << m_steps.count();
 	} else {
 		kDebug(6011) << "Evaluating relative path expression, steps:" << m_steps.count();
 	}
+#endif
 
 	DomNodeList inDomNodes  = new StaticNodeListImpl,
 	            outDomNodes;
