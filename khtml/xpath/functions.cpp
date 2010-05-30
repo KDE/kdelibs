@@ -511,6 +511,10 @@ Value FunName::evaluateOnNode( DOM::NodeImpl* node ) const
 	case Node::DOCUMENT_NODE:
 		// All of these have an empty XPath name
 		break;
+	case Node::ELEMENT_NODE: {
+		n = static_cast<DOM::ElementImpl*>( node )->nonCaseFoldedTagName();
+		break;
+	}
 	default:
 		n = node->nodeName();
 	}
