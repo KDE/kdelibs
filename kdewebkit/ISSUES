@@ -1,22 +1,21 @@
-Known Issues [OUTSTANDING]:
+Known Issues [PENDING]:
 ===========================
-* [kdewebkit] Unsupported content handling always requires more than one
-  connection to the same server to download a single request. The fix for this
-  requires an upstream patch that allows us to determine the content types by
-  the rendering engine, i.e. webkit. See https://bugs.webkit.org/show_bug.cgi?id=37880
+* [kdewebkit] Handling unsupported content always requires more than one
+  connection to the same server to download a single request. The fix for
+  this requires an upstream patch that allows us to determine the content
+  types by the rendering engine, i.e. webkit.
+  See https://bugs.webkit.org/show_bug.cgi?id=37880
 
-* [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most depending
-  on how their distro created the Qt library package. Due to differences in the Phonon 
-  library used by Qt and KDE, most distros disable support for Phonon when compiling 
-  Qt and simply use the Phonon libraries from kdesupport. Unfortunately, disabling phonon
-  support in Qt means no HTML 5 multimedia feature (<video> tag) support in the QtWebKit
-  module. See https://bugs.webkit.org/show_bug.cgi?id=34631
+* [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most users
+  depending on how their distro created their Qt library package. As a result of
+  differences between the Phonon library needed by KDE and bundled with Qt, most
+  distros opt for disabling Phonon support (-no-phonon) when compiling Qt and simply
+  use the Phonon libraries from kdesupport to ensure multimedia in KDE is funational.
+  Unfortunately, compiling Qt without phonon support means no HTML 5 <video> support
+  in the QtWebKit module. This is going to change in the upcoming Qt 4.7 release. For
+  details, see https://bugs.webkit.org/show_bug.cgi?id=34631.
 
-* [QtWebKit] No Java applet support. See https://bugs.webkit.org/show_bug.cgi?id=36902.
-
-* [QtWebKit] No way to stop redirection/refresh requests set using the <meta>
-  tag, e.g. <META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.some.org/some.html">
-  See https://bugs.webkit.org/show_bug.cgi?id=29899
+* [QtWebKit] Missing Java applet support. See https://bugs.webkit.org/show_bug.cgi?id=33044.
 
 * [QtWebKit] No access to the input/control widgets making it very difficult to
   add very useful features such as:
@@ -24,12 +23,15 @@ Known Issues [OUTSTANDING]:
        QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
     ** Spell checking specially for <textarea> widgets.
 
-Known Issues [ADDRESSED]:
+Known Issues [FIXED]:
 =========================
-* [QtWebKit] Crash while browsing facebook.
+* [QtWebKit] Crash while browsing facebook. [QtWebKit 2.0/Qt 4.7]
   See https://bugs.webkit.org/show_bug.cgi?id=35204.
 
-* [QtWebKit] Does not have support "Content-Disposition". Specifically
-  when it contains the keyword "attachement" the content returned is not
-  supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
+* [QtWebKit] Does not have support "Content-Disposition". [QtWebKit 2.0/Qt 4.7]
+  Specifically when it contains the keyword "attachement" the content returned
+  is not supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
   See https://bugs.webkit.org/show_bug.cgi?id=36395.
+
+* [QtWebKit] No way to stop <meta> tag based page refresh. [QtWebKit 2.0/Qt 4.7]
+  See https://bugs.webkit.org/show_bug.cgi?id=29899
