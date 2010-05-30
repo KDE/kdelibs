@@ -141,44 +141,43 @@ if (isInherit) { \
         currChild->clear##Prop(); \
         currChild = currChild->next(); \
     } \
-    return; \
-} \
-if (isInitial) { \
+} else if (isInitial) { \
     BackgroundLayer* currChild = style->accessBackgroundLayers(); \
     currChild->set##Prop(RenderStyle::initial##Prop()); \
     for (currChild = currChild->next(); currChild; currChild = currChild->next()) \
         currChild->clear##Prop(); \
-    return; \
 }
 
 #define HANDLE_BACKGROUND_VALUE(prop, Prop, value) { \
 HANDLE_BACKGROUND_INHERIT_AND_INITIAL(prop, Prop) \
-if (!value->isPrimitiveValue() && !value->isValueList()) \
-    return; \
-BackgroundLayer* currChild = style->accessBackgroundLayers(); \
-BackgroundLayer* prevChild = 0; \
-if (value->isPrimitiveValue()) { \
-    map##Prop(currChild, value); \
-    currChild = currChild->next(); \
-} \
 else { \
-    /* Walk each value and put it into a layer, creating new layers as needed. */ \
-    CSSValueListImpl* valueList = static_cast<CSSValueListImpl*>(value); \
-    for (unsigned int i = 0; i < valueList->length(); i++) { \
-        if (!currChild) { \
-            /* Need to make a new layer to hold this value */ \
-            currChild = new BackgroundLayer(); \
-            prevChild->setNext(currChild); \
-        } \
-        map##Prop(currChild, valueList->item(i)); \
-        prevChild = currChild; \
+    if (!value->isPrimitiveValue() && !value->isValueList()) \
+        return; \
+    BackgroundLayer* currChild = style->accessBackgroundLayers(); \
+    BackgroundLayer* prevChild = 0; \
+    if (value->isPrimitiveValue()) { \
+        map##Prop(currChild, value); \
         currChild = currChild->next(); \
     } \
-} \
-while (currChild) { \
-    /* Reset all remaining layers to not have the property set. */ \
-    currChild->clear##Prop(); \
-    currChild = currChild->next(); \
+    else { \
+        /* Walk each value and put it into a layer, creating new layers as needed. */ \
+        CSSValueListImpl* valueList = static_cast<CSSValueListImpl*>(value); \
+        for (unsigned int i = 0; i < valueList->length(); i++) { \
+            if (!currChild) { \
+                /* Need to make a new layer to hold this value */ \
+                currChild = new BackgroundLayer(); \
+                prevChild->setNext(currChild); \
+            } \
+            map##Prop(currChild, valueList->item(i)); \
+            prevChild = currChild; \
+            currChild = currChild->next(); \
+        } \
+    } \
+    while (currChild) { \
+        /* Reset all remaining layers to not have the property set. */ \
+        currChild->clear##Prop(); \
+        currChild = currChild->next(); \
+    } \
 } }
 
 #define HANDLE_INHERIT_COND(propID, prop, Prop) \
