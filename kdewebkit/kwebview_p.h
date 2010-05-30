@@ -104,8 +104,8 @@ public:
         if ((pressedButtons & Qt::MidButton) && page) {
 
             // WORKAROUND: Let the page handle the event first so that middle clicking
-            // on scroll bars does not result in navigation to url from the selection
-            // clipboard.
+            // on scroll bars does not cause navigation to a url that might have been
+            // copied into the selection clipboard.
             page->event(event);
             if (event->isAccepted())
                 return true;
