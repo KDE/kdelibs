@@ -34,7 +34,8 @@
 
 
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
-    : uri( uri_ ),
+    : mutex(QMutex::Recursive),
+      uri( uri_ ),
       available( uri_.isValid() ? -1 : 0 ),
       ancestorsAvailable( uri_.isValid() ? -1 : 0 )
 {
@@ -71,9 +72,7 @@ bool Nepomuk::Types::EntityPrivate::load()
                                                                   .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
                                                                   .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
-    bool success = false;
     while ( it.next() ) {
-        success = true;
         QUrl property = it.binding( "p" ).uri();
         Soprano::Node value = it.binding( "o" );
 
@@ -104,7 +103,7 @@ bool Nepomuk::Types::EntityPrivate::load()
         }
     }
 
-    return success;
+    return !it.lastError();
 }
 
 
@@ -118,13 +117,11 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
                                                                   .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
                                                                   .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
-    bool success = false;
     while ( it.next() ) {
-        success = true;
         addAncestorProperty( it.binding( "s" ).uri(), it.binding( "p" ).uri() );
     }
 
-    return success;
+    return !it.lastError();
 }
 
 

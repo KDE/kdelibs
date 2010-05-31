@@ -62,9 +62,7 @@ bool Nepomuk::Types::OntologyPrivate::loadEntities()
                                                                   .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
                                                                   .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
-    bool success = false;
     while ( it.next() ) {
-        success = true;
         classes.append( Class( it.binding( "c" ).uri() ) );
     }
 
@@ -79,11 +77,10 @@ bool Nepomuk::Types::OntologyPrivate::loadEntities()
                                                                  .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                  Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
-        success = true;
         properties.append( Property( it.binding( "p" ).uri() ) );
     }
 
-    return success;
+    return !it.lastError();
 }
 
 
@@ -101,7 +98,7 @@ bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const QU
 
 void Nepomuk::Types::OntologyPrivate::reset( bool recursive )
 {
-    EntityPrivate::reset( recursive );
+    QMutexLocker lock( &mutex );
 
     if ( entitiesAvailable != -1 ) {
         if ( recursive ) {
@@ -117,6 +114,8 @@ void Nepomuk::Types::OntologyPrivate::reset( bool recursive )
 
         entitiesAvailable = -1;
     }
+
+    EntityPrivate::reset( recursive );
 }
 
 

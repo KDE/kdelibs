@@ -90,9 +90,7 @@ bool Nepomuk::Types::ClassPrivate::loadAncestors()
                                                                       .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
                                                                       .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                       Soprano::Query::QueryLanguageSparql );
-        bool success = false;
         while ( it.next() ) {
-            success = true;
             QUrl resUri = it.binding( "s" ).uri();
             if ( resUri != Soprano::Vocabulary::RDFS::Resource() ) {
                 children.append( resUri );
@@ -176,9 +174,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
                                                                      Soprano::Query::QueryLanguageSparql );
     }
 
-    bool success = false;
     while ( it.next() ) {
-        success = true;
         domainOf.append( Property( it.binding( "p" ).uri() ) );
     }
 
@@ -190,17 +186,16 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
                                                                  .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
-        success = true;
         rangeOf.append( Property( it.binding( "p" ).uri() ) );
     }
 
-    return success;
+    return !it.lastError();
 }
 
 
 void Nepomuk::Types::ClassPrivate::reset( bool recursive )
 {
-    EntityPrivate::reset( recursive );
+    kDebug();
 
     QMutexLocker lock( &mutex );
 
@@ -238,6 +233,8 @@ void Nepomuk::Types::ClassPrivate::reset( bool recursive )
         children.clear();
         ancestorsAvailable = -1;
     }
+
+    EntityPrivate::reset( recursive );
 }
 
 
