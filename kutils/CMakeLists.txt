@@ -147,6 +147,7 @@ install(TARGETS kprintutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAU
 
 ########### kutils ###############
 # This is only for backwards compatibility, don't use in new projects
+if(NOT KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 set(kutils_LIB_SRCS
     dummy.cpp
 )
@@ -160,4 +161,5 @@ set_target_properties(kutils PROPERTIES
                       SOVERSION ${GENERIC_LIB_SOVERSION})
 
 install(TARGETS kutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+endif(NOT KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
