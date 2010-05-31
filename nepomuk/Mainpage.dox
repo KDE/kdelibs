@@ -518,7 +518,7 @@ Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::
 // DOXYGEN_SET_INPUT = @topdir@/nepomuk/Mainpage.dox
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/core
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ui
-// DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ontology
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/types
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/query
 // DOXYGEN_SET_EXCLUDE = @topdir@/nepomuk/core/resourcedata.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nepomukmainmodel.h
