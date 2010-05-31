@@ -34,7 +34,8 @@
 
 
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
-    : uri( uri_ ),
+    : mutex(QMutex::Recursive),
+      uri( uri_ ),
       available( uri_.isValid() ? -1 : 0 ),
       ancestorsAvailable( uri_.isValid() ? -1 : 0 )
 {

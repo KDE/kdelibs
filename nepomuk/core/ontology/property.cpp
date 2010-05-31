@@ -111,8 +111,6 @@ bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& ancestorR
 
 void Nepomuk::Types::PropertyPrivate::reset( bool recursive )
 {
-    EntityPrivate::reset( recursive );
-
     QMutexLocker lock( &mutex );
 
     if ( available != -1 ) {
@@ -139,6 +137,8 @@ void Nepomuk::Types::PropertyPrivate::reset( bool recursive )
         children.clear();
         ancestorsAvailable = -1;
     }
+
+    EntityPrivate::reset( recursive );
 }
 
 

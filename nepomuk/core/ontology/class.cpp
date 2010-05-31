@@ -200,8 +200,6 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
 
 void Nepomuk::Types::ClassPrivate::reset( bool recursive )
 {
-    EntityPrivate::reset( recursive );
-
     QMutexLocker lock( &mutex );
 
     if ( propertiesAvailable != -1 ) {
@@ -238,6 +236,8 @@ void Nepomuk::Types::ClassPrivate::reset( bool recursive )
         children.clear();
         ancestorsAvailable = -1;
     }
+
+    EntityPrivate::reset( recursive );
 }
 
 

@@ -101,7 +101,7 @@ bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const QU
 
 void Nepomuk::Types::OntologyPrivate::reset( bool recursive )
 {
-    EntityPrivate::reset( recursive );
+    QMutexLocker lock( &mutex );
 
     if ( entitiesAvailable != -1 ) {
         if ( recursive ) {
@@ -117,6 +117,8 @@ void Nepomuk::Types::OntologyPrivate::reset( bool recursive )
 
         entitiesAvailable = -1;
     }
+
+    EntityPrivate::reset( recursive );
 }
 
 
