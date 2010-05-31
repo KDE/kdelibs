@@ -58,7 +58,7 @@ void Solid::NetworkingPrivate::initialize()
 
 uint Solid::NetworkingPrivate::status() const
 {
-    return iface->status();
+    return netStatus;
 }
 
 /*=========================================================================*/
