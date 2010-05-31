@@ -283,7 +283,7 @@ public:
   void httpError(); // Generate error message based on response code
   bool sendErrorPageNotification(); // Call SlaveBase::errorPage() and remember that we've called it
 
-  bool isOffline(const KUrl &url); // Check network status
+  bool isOffline(); // Check network status
 
 protected Q_SLOTS:
   void slotData(const QByteArray &);

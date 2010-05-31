@@ -70,6 +70,8 @@
 
 #include <httpfilter.h>
 
+#include <solid/networking.h>
+
 #ifdef HAVE_LIBGSSAPI
 #ifdef GSSAPI_MIT
 #include <gssapi/gssapi.h>
@@ -1828,23 +1830,14 @@ bool HTTPProtocol::sendErrorPageNotification()
     return true;
 }
 
-bool HTTPProtocol::isOffline(const KUrl &url)
+bool HTTPProtocol::isOffline()
 {
-  const int NetWorkStatusUnknown = 1;
-  const int NetWorkStatusOnline = 8;
+  Solid::Networking::Status status = Solid::Networking::status();
 
-  QDBusReply<int> reply =
-    QDBusInterface( QLatin1String("org.kde.kded"), QLatin1String("/modules/networkstatus"), QLatin1String("org.kde.NetworkStatusModule") ).
-    call( QLatin1String("status"), url.url() );
+  kDebug(7113) << "networkstatus:" << status;  
 
-  if ( reply.isValid() )
-  {
-     int result = reply;
-     kDebug(7113) << "networkstatus status = " << result;
-     return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
-  }
-  kDebug(7113) << "networkstatus <unreachable>";
-  return false; // On error, assume we are online
+  // on error or unknown, we assume online
+  return status == Solid::Networking::Unconnected;
 }
 
 void HTTPProtocol::multiGet(const QByteArray &data)
@@ -2123,8 +2116,7 @@ bool HTTPProtocol::satisfyRequestFromCache(bool *cacheHasPage)
     kDebug(7113);
 
     if (m_request.cacheTag.useCache) {
-        const bool offline = isOffline(isValidProxy(m_request.proxyUrl) ?
-                                       m_request.proxyUrl : m_request.url);
+        const bool offline = isOffline();
 
         if (offline && m_request.cacheTag.policy != KIO::CC_Reload) {
             m_request.cacheTag.policy= KIO::CC_CacheOnly;
