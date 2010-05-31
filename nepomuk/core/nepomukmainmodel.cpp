@@ -46,8 +46,6 @@
 #include <QtDBus/QDBusConnectionInterface>
 
 
-// FIXME: connect to some NepomukServer signal which emit enabled/disabled information
-//        when the server shuts down and is started again
 // FIXME: disconnect localSocketClient after n seconds of idling (but take care of not
 //        disconnecting when iterators are open)
 
@@ -85,6 +83,8 @@ public:
 
         if( forced ) {
             m_socketConnectFailed = false;
+            delete dbusModel;
+            dbusModel = 0;
         }
 
         // TODO: check if the service is also initialized
@@ -155,20 +155,7 @@ Nepomuk::MainModel::MainModel( QObject* parent )
       d( new Private(this) )
 {
     setParent( parent );
-
     init();
-
-    if ( s_modelContainer->dbusModel ) {
-        // we have to use the dbus model for signals in any case
-        connect( s_modelContainer->dbusModel, SIGNAL( statementsAdded() ),
-                 this, SIGNAL( statementsAdded() ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementsRemoved() ),
-                 this, SIGNAL( statementsRemoved() ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
-                 this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
-                 this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
-    }
 }
 
 
@@ -187,6 +174,17 @@ bool Nepomuk::MainModel::isValid() const
 bool Nepomuk::MainModel::init()
 {
     s_modelContainer->init( true );
+    if ( s_modelContainer->dbusModel ) {
+        // we have to use the dbus model for signals in any case
+        connect( s_modelContainer->dbusModel, SIGNAL( statementsAdded() ),
+                 this, SIGNAL( statementsAdded() ) );
+        connect( s_modelContainer->dbusModel, SIGNAL( statementsRemoved() ),
+                 this, SIGNAL( statementsRemoved() ) );
+        connect( s_modelContainer->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
+                 this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
+        connect( s_modelContainer->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
+                 this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
+    }
     return isValid();
 }
 
