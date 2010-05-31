@@ -55,10 +55,11 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     QString v2 = qbd->uniqueVarName();
     QString v3 = qbd->uniqueVarName();
     QString v4 = qbd->uniqueVarName();
+    QString v2Score = qbd->scoringVariable( v2 );
     // { ?r ?v1 ?v2 . ?v2 bif:contains XXX . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 rdfs:subPropertyOf rdfs:label . ?v2 bif:contains XXX . } .
-    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" . } "
+    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" OPTION (score %9) . } "
                                 "UNION "
-                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"%4\" . } . " )
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"%4\" OPTION (score %9) . } . " )
         .arg( resourceVarName,
               v1,
               v2,
@@ -66,7 +67,8 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
               v3,
               v4,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()),
+              v2Score );
 }
 
 
@@ -82,7 +84,7 @@ QString Nepomuk::Query::LiteralTermPrivate::queryText() const
     // we try to be a little smart about creating the query text
     // by following a few simple rules:
     //
-    // 1. multiple terms need to be enclosed in quotes
+    // 1. enclose everything in quotes to be safe
     // 2. quotes in search terms are not handled. replace them with spaces
     // 3. replace double quotes with single quotes
     // [4. wildcards can only be used if they are preceeded by at least 4 chars]
@@ -92,16 +94,12 @@ QString Nepomuk::Query::LiteralTermPrivate::queryText() const
     if( s.isEmpty() )
         return s;
 
-    bool haveQuotes = false;
-
     // strip quotes
     if( s[0] == '"' || s[0] == '\'' ) {
-        haveQuotes = true;
         s = s.mid(1);
     }
     if( !s.isEmpty() &&
         ( s[s.length()-1] == '"' || s[s.length()-1] == '\'' ) ) {
-        haveQuotes = true;
         s.truncate(s.length()-1);
     }
 
@@ -109,10 +107,8 @@ QString Nepomuk::Query::LiteralTermPrivate::queryText() const
     s.replace( '"', ' ' );
     s.replace( '\'', ' ' );
 
-    bool needQuotes = s.contains( ' ' ) || s.contains( '*' ) || s.contains( '?' );
-
-    if( needQuotes || haveQuotes )
-        s = '\'' + s + '\'';
+    // add quotes
+    s = '\'' + s + '\'';
 
     return s;
 }

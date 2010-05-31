@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -35,11 +35,24 @@ namespace Nepomuk {
         public:
             inline QueryBuilderData( Query::SparqlFlags flags )
                 : m_varNameCnt( 0 ),
-                  m_flags( flags ) {
+                  m_flags( flags ),
+                  m_depth( 0 ) {
             }
 
             inline Query::SparqlFlags flags() const {
                 return m_flags;
+            }
+
+            inline int depth() const {
+                return m_depth;
+            }
+
+            inline void increaseDepth() {
+                ++m_depth;
+            }
+
+            inline void decreaseDepth() {
+                --m_depth;
             }
 
             /// used by different implementations of TermPrivate::toSparqlGraphPattern and Query::toSparqlQuery
@@ -54,7 +67,7 @@ namespace Nepomuk {
 
             /// used by Query::toSparqlQuery
             inline QStringList customVariables() const {
-                return m_customVariables.toList();
+                return m_customVariables.toList() + m_scoreVariables;
             }
 
             struct OrderVariable {
@@ -93,6 +106,15 @@ namespace Nepomuk {
                 return s;
             }
 
+            /// create and remember a scoring variable for full text matching variable \p vName
+            inline QString scoringVariable( const QString& vName ) {
+                QString scoreVar(vName);
+                scoreVar += QLatin1String("_score_");
+                scoreVar += QString::number(m_depth);
+                m_scoreVariables << scoreVar;
+                return scoreVar;
+            }
+
         private:
             /// a running counter for unique variable names
             int m_varNameCnt;
@@ -105,6 +127,12 @@ namespace Nepomuk {
 
             /// variables that are used for sorting set via ComparisonTerm::setSortWeight
             QList<OrderVariable> m_orderVariables;
+
+            /// all full-text matching scoring variables
+            QStringList m_scoreVariables;
+
+            /// The depth of a term in the query. This is only changed by ComparisonTerm
+            int m_depth;
         };
     }
 }

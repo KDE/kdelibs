@@ -129,11 +129,13 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = getMainVariableName(qbd);
-            return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" . " )
+            QString vScore = qbd->scoringVariable( v );
+            return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" OPTION (score %5) . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
-                      static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
+                      static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText(),
+                      vScore );
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             QString v = getMainVariableName(qbd);
@@ -210,10 +212,12 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                return QString::fromLatin1( "%1%2 bif:contains \"%3\" . " )
+                QString v3Score = qbd->scoringVariable( v3 );
+                return QString::fromLatin1( "%1%2 bif:contains \"%3\"  OPTION (score %4) . " )
                     .arg( pattern.arg(v3),
                           v3,
-                          static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText() );
+                          static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText(),
+                          v3Score );
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
                 QString v3 = qbd->uniqueVarName();
@@ -234,7 +238,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         else {
             // ?r <prop> ?v1 . ?v1 ...
             QString v = getMainVariableName(qbd);
-            return corePattern.arg(v) + m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
+            qbd->increaseDepth();
+            QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
+            qbd->decreaseDepth();
+            return corePattern.arg(v) + subTermSparql;
         }
     }
 }
@@ -273,12 +280,47 @@ QString Nepomuk::Query::ComparisonTermPrivate::toString() const
 }
 
 
+//
+// Determines the main variable name, i.e. the variable representing the compared value, i.e. the one
+// that can be set vie setVariableName.
+//
+// Thus, the basic scheme is: if a variable name has been set via setVariableName, return that name,
+// otherwise create a random new one.
+//
+// But this method also handles AggregateFunction and sorting. The latter is a bit hacky.
+//
+// There a quite a few cases that are handled:
+//
+// 1. No variable name set
+// 1.1 no aggregate function set
+// 1.1.1 no sorting weight set
+//       -> return a new random variable
+// 1.1.2 sorting weight set
+//       -> determine a new random variable, use it as sorting var (via QueryBuilderData::addOrderVariable),
+//          and return it
+// 1.2 an aggregate function has been set
+// 1.2.1 sorting weight set (no sorting weight is useless and behaves exactly as if no aggregate function was set)
+//       -> embed a new random variable in the aggregate expression, add that as sort variable, and
+//          return the new variable
+// 2. A variable name has been set
+// 2.1 no aggregate function set
+// 2.1.1 no sorting weight set
+//       -> add the variable name as custom variable via QueryBuilderData::addCustomVariable and return the variable name
+// 2.1.2 sorting weight set
+//       -> add the variable name as sort car via QueryBuilderData::addOrderVariable and return it
+// 2.2 an aggregate function has been set
+// 2.2.1 no sorting weight set
+//       -> Create a new random variable, embed it in the aggregate expression with the set variable name,
+//          use that expression as custom variable (this is the hacky part), and return the random one
+// 2.2.2 sorting weight set
+//       -> Do the same as above only also add the set variable name as sort variable via QueryBuilderData::addOrderVariable
+//
 QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilderData* qbd ) const
 {
     QString v;
     QString sortVar;
     if( !m_variableName.isEmpty() ) {
-        sortVar = QLatin1String( "?") + m_variableName;
+        sortVar = QLatin1String("?") + m_variableName;
         if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction ) {
             v = sortVar;
             qbd->addCustomVariable( v );
