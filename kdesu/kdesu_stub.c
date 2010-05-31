@@ -182,7 +182,6 @@ int main()
 #ifndef QWS
     char xauthority[200];
 #endif
-    char iceauthority[200];
     int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
@@ -376,7 +375,6 @@ int main()
 #ifndef QWS
 	unlink(xauthority);
 #endif
-	unlink(iceauthority);
 	exit(xit);
     } else 
     {
