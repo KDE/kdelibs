@@ -129,7 +129,7 @@ KNfoTranslator::KNfoTranslator() :
 {
     const TranslationTuple* tuple = &g_translations[0];
     while (tuple->key != 0) {
-        m_hash.insert(tuple->key, i18n(tuple->value));
+        m_hash.insert(tuple->key, i18nc("@label", tuple->value));
         ++tuple;
     }
 }
