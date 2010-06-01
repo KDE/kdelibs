@@ -319,10 +319,11 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         termGraphPattern = QString::fromLatin1("graph ?g { ?r a ?t . } . ?g a ?gt . ?gt rdfs:subClassOf nrl:InstanceBase . ");
     }
 
-    QString query = QString::fromLatin1( "select %1 %2 %3 where { %4 %5 %6 }" )
+    QString query = QString::fromLatin1( "select %1 %2 %3 %4 where { %5 %6 %7 }" )
                     .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
                           d->buildRequestPropertyVariableList(),
                           qbd.customVariables().join( QLatin1String(" ") ),
+                          qbd.buildScoringExpression(),
                           termGraphPattern,
                           d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                           d->buildRequestPropertyPatterns() );

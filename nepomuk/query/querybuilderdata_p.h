@@ -67,7 +67,7 @@ namespace Nepomuk {
 
             /// used by Query::toSparqlQuery
             inline QStringList customVariables() const {
-                return m_customVariables.toList() + m_scoreVariables;
+                return m_customVariables.toList();
             }
 
             struct OrderVariable {
@@ -106,13 +106,28 @@ namespace Nepomuk {
                 return s;
             }
 
-            /// create and remember a scoring variable for full text matching variable \p vName
-            inline QString scoringVariable( const QString& vName ) {
-                QString scoreVar(vName);
-                scoreVar += QLatin1String("_score_");
-                scoreVar += QString::number(m_depth);
-                m_scoreVariables << scoreVar;
-                return scoreVar;
+            /// create and remember a scoring variable for full text matching
+            inline QString createScoringVariable() {
+                QString v = uniqueVarName();
+                m_scoreVariables.insert(v, m_depth);
+                return v;
+            }
+
+            inline QString buildScoringExpression() const {
+                QStringList scores;
+                for( QHash<QString, int>::const_iterator it = m_scoreVariables.constBegin();
+                     it != m_scoreVariables.constEnd(); ++it ) {
+                    const QString var = it.key();
+                    int depth = it.value();
+                    if( depth > 0 )
+                        scores += QString::fromLatin1("(%1/%2)").arg(var).arg(depth+1);
+                    else
+                        scores += var;
+                }
+                if( !scores.isEmpty() )
+                    return '(' + scores.join(QLatin1String("+")) + QLatin1String(") as ?_n_f_t_m_s_");
+                else
+                    return QString();
             }
 
         private:
@@ -129,7 +144,7 @@ namespace Nepomuk {
             QList<OrderVariable> m_orderVariables;
 
             /// all full-text matching scoring variables
-            QStringList m_scoreVariables;
+            QHash<QString, int> m_scoreVariables;
 
             /// The depth of a term in the query. This is only changed by ComparisonTerm
             int m_depth;

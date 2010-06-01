@@ -55,7 +55,7 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     QString v2 = qbd->uniqueVarName();
     QString v3 = qbd->uniqueVarName();
     QString v4 = qbd->uniqueVarName();
-    QString v2Score = qbd->scoringVariable( v2 );
+    QString v2Score = qbd->createScoringVariable();
     // { ?r ?v1 ?v2 . ?v2 bif:contains XXX . } UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 rdfs:subPropertyOf rdfs:label . ?v2 bif:contains XXX . } .
     return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" OPTION (score %9) . } "
                                 "UNION "

@@ -129,7 +129,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = getMainVariableName(qbd);
-            QString vScore = qbd->scoringVariable( v );
+            QString vScore = qbd->createScoringVariable();
             return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" OPTION (score %5) . " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
@@ -212,7 +212,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                QString v3Score = qbd->scoringVariable( v3 );
+                QString v3Score = qbd->createScoringVariable();
                 return QString::fromLatin1( "%1%2 bif:contains \"%3\"  OPTION (score %4) . " )
                     .arg( pattern.arg(v3),
                           v3,
