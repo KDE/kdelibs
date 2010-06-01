@@ -410,6 +410,44 @@ void KCalendarTest::testFormatDate()
     delete locale;
 }
 
+void KCalendarTest::testFormatUnicode()
+{
+    KLocale *locale = new KLocale( *KGlobal::locale() );
+    locale->setDateFormatShort( "%y-%m-%d" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+
+    QDate testDate( 2005, 10, 20 );
+    compareFormatUnicode( calendar, testDate, "yyyy" );
+    compareFormatUnicode( calendar, testDate, "yy" );
+    compareFormatUnicode( calendar, testDate, "MMMM" );
+    compareFormatUnicode( calendar, testDate, "MMM" );
+    compareFormatUnicode( calendar, testDate, "MM" );
+    compareFormatUnicode( calendar, testDate, "M" );
+    compareFormatUnicode( calendar, testDate, "dddd" );
+    compareFormatUnicode( calendar, testDate, "ddd" );
+    compareFormatUnicode( calendar, testDate, "dd" );
+    compareFormatUnicode( calendar, testDate, "d" );
+    compareFormatUnicode( calendar, testDate, "yyyy-MM-dd" );
+
+    testDate.setDate( -2005, 10, 20 );
+    compareFormatUnicode( calendar, testDate, "yyyy" );
+    compareFormatUnicode( calendar, testDate, "yy" );
+    compareFormatUnicode( calendar, testDate, "MMMM" );
+    compareFormatUnicode( calendar, testDate, "MMM" );
+    compareFormatUnicode( calendar, testDate, "MM" );
+    compareFormatUnicode( calendar, testDate, "M" );
+    compareFormatUnicode( calendar, testDate, "dddd" );
+    compareFormatUnicode( calendar, testDate, "ddd" );
+    compareFormatUnicode( calendar, testDate, "dd" );
+    compareFormatUnicode( calendar, testDate, "d" );
+    compareFormatUnicode( calendar, testDate, "yyyy-MM-dd" );
+}
+
+void KCalendarTest::compareFormatUnicode( const KCalendarSystem *calendar, const QDate &testDate, const QString &testFormat )
+{
+    QCOMPARE( calendar->formatDate( testDate, testFormat, KLocale::UnicodeFormat ), testDate.toString( testFormat ) );
+}
+
 void KCalendarTest::testReadDate()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );

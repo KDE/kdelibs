@@ -52,11 +52,13 @@ protected:
     QDate setIsoWeekDate( const KCalendarSystem *calendar, int year, int isoWeek, int dayOfWeek );
     QDate setEraDate( const KCalendarSystem *calendar, const QString &era, int yearInEra, int month, int day );
     void testRoundTrip( const KCalendarSystem *calendar );
+    void compareFormatUnicode( const KCalendarSystem *calendar, const QDate &testDate, const QString &testFormat );
 
 private Q_SLOTS:
     void testTypes();
     void testLocale();
     void testFormatDate();
+    void testFormatUnicode();
     void testReadDate();
     void testStringForms();
     void testHebrewStrings();
