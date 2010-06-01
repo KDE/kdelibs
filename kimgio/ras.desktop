@@ -29,6 +29,7 @@ Name[tg]=RAS
 Name[th]=RAS
 Name[uk]=RAS
 Name[x-test]=xxRASxx
+Name[zh_CN]=RAS
 Name[zh_TW]=RAS
 Type=Service
 X-KDE-ServiceTypes=QImageIOPlugins

@@ -29,6 +29,7 @@ Comment[tg]=Танзимоти шабкаи Proxy
 Comment[th]=การปรับแต่งพร็อกของเครือข่าย
 Comment[uk]=Налаштування проксі-сервера мережі
 Comment[x-test]=xxNetwork Proxy Configurationxx
+Comment[zh_CN]=网络代理服务器配置
 Comment[zh_TW]=網路代理組態
 
 [Event/script-error]
