@@ -389,7 +389,7 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
         d->setLegacySystemTrayEnabled(true);
     }
 
-    if (d->associatedWidget) {
+    if (d->associatedWidget && d->associatedWidget != d->menu) {
         QAction *action = d->actionCollection->action("minimizeRestore");
 
         if (!action) {
@@ -486,6 +486,7 @@ void KStatusNotifierItem::activate(const QPoint &pos)
         d->statusNotifierItemDBus->ContextMenu(pos.x(), pos.y());
         return;
     }
+
     if (d->menu->isVisible()) {
         d->menu->hide();
     }
@@ -808,7 +809,7 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
         // we need to add the actions to the menu afterwards so that these items
         // appear at the _END_ of the menu
         menu->addSeparator();
-        if (associatedWidget) {
+        if (associatedWidget && associatedWidget != menu) {
             QAction *action = actionCollection->action("minimizeRestore");
 
             if (action) {
@@ -825,7 +826,7 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
         hasQuit = true;
     }
 
-    if (associatedWidget) {
+    if (associatedWidget && associatedWidget != menu) {
         QAction* action = actionCollection->action("minimizeRestore");
         if (checkVisibility(QPoint(0, 0), false)) {
             action->setText(i18n("&Restore"));
