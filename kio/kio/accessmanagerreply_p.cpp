@@ -132,10 +132,14 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             QStringListIterator it (headers.split('\n'));
             while (it.hasNext()) {
                 const QStringList headerPair = it.next().split(QLatin1String(":"));
-                if (headerPair.size() == 2 &&
-                    !headerPair.at(0).contains("set-cookie", Qt::CaseInsensitive)) {
-                    setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
-                }
+                if (headerPair.size() < 2)
+                    continue;
+                if (headerPair.first().contains("set-cookie", Qt::CaseInsensitive))
+                    continue;
+                if (headerPair.first().contains("content-type", Qt::CaseInsensitive))
+                    continue;
+                kDebug(7044) << "Adding header:" << headerPair.at(0) << ":" << headerPair.at(1);
+                setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
             }
         }
 
