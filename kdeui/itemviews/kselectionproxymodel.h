@@ -47,6 +47,7 @@ class KSelectionProxyModelPrivate;
   leftView->setModel(sourceModel);
 
   KSelectionProxyModel *selectionProxy = new KSelectionProxyModel(leftView->selectionModel(), this);
+  selectionProxy->setSourceModel(sourceModel);
 
   QTreeView *rightView = new QTreeView(this);
   rightView->setModel(selectionProxy);
