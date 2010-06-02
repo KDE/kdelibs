@@ -28,54 +28,55 @@
 #include "property.h"
 #endif
 
-struct TranslationTuple {
+struct TranslationItem {
     const char* const key;
+    const char* const context;
     const char* const value;
 };
 
-// TODO: a lot of NFO's are missing yet
-static const TranslationTuple g_translations[] = {
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#comment", I18N_NOOP2("@label", "Comment") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentCreated", I18N_NOOP2("@label creation date", "Created") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize", I18N_NOOP2("@label file content size", "Size") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#depends", I18N_NOOP2("@label file depends from", "Depends") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf", I18N_NOOP2("@label parent directory", "Part of") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#lastModified", I18N_NOOP2("@label modified date of file", "Modified") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#mimeType", I18N_NOOP2("@label", "MIME Type") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent", I18N_NOOP2("@label", "Content") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#title", I18N_NOOP2("@label music title", "Title") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", I18N_NOOP2("@label file URL", "Location") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nco#creator", I18N_NOOP2("@label", "Creator") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#averageBitrate", I18N_NOOP2("@label", "Average Bitrate") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#channels", I18N_NOOP2("@label", "Channels") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#characterCount", I18N_NOOP2("@label number of characters", "Characters") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#codec",  I18N_NOOP2("@label", "Codec") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#colorDepth", I18N_NOOP2("@label", "Color Depth") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName", I18N_NOOP2("@label", "Filename") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#height", I18N_NOOP2("@label", "Height") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#interlaceMode", I18N_NOOP2("@label", "Interlace Mode") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#lineCount", I18N_NOOP2("@label number of lines", "Lines") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#programmingLanguage", I18N_NOOP2("@label", "Programming Language") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#sampleRate", I18N_NOOP2("@label", "Sample Rate") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#width", I18N_NOOP2("@label", "Width") },
-    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#wordCount", I18N_NOOP2("@label number of words", "Words") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#apertureValue", I18N_NOOP2("@label EXIF aperture value", "Aperture") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#exposureBiasValue", I18N_NOOP2("@label EXIF", "Exposure Bias Value") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#exposureTime", I18N_NOOP2("@label EXIF", "Exposure Time") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#flash", I18N_NOOP2("@label EXIF", "Flash") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#focalLength", I18N_NOOP2("@label EXIF", "Focal Length") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#focalLengthIn35mmFilm", I18N_NOOP2("@label EXIF", "Focal Length 35 mm") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#isoSpeedRatings", I18N_NOOP2("@label EXIF", "ISO Speed Ratings") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#make", I18N_NOOP2("@label EXIF", "Make") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#meteringMode", I18N_NOOP2("@label EXIF", "Metering Mode") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#model", I18N_NOOP2("@label EXIF", "Model") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#orientation", I18N_NOOP2("@label EXIF", "Orientation") },
-    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#whiteBalance", I18N_NOOP2("@label EXIF", "White Balance") },
-    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#genre",  I18N_NOOP2("@label music genre", "Genre") },
-    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#musicAlbum", I18N_NOOP2("@label music album", "Album") },
-    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#trackNumber", I18N_NOOP2("@label music track number", "Track") },
-    { "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", I18N_NOOP2("@label file type", "Type") },
-    { 0, 0 } // mandatory last entry
+// TODO: a lot of NFOs are missing yet
+static const TranslationItem g_translations[] = {
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#comment", I18N_NOOP2_NOSTRIP("@label", "Comment") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentCreated", I18N_NOOP2_NOSTRIP("@label creation date", "Created") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize", I18N_NOOP2_NOSTRIP("@label file content size", "Size") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#depends", I18N_NOOP2_NOSTRIP("@label file depends from", "Depends") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf", I18N_NOOP2_NOSTRIP("@label parent directory", "Part of") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#lastModified", I18N_NOOP2_NOSTRIP("@label modified date of file", "Modified") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#mimeType", I18N_NOOP2_NOSTRIP("@label", "MIME Type") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent", I18N_NOOP2_NOSTRIP("@label", "Content") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#title", I18N_NOOP2_NOSTRIP("@label music title", "Title") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", I18N_NOOP2_NOSTRIP("@label file URL", "Location") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nco#creator", I18N_NOOP2_NOSTRIP("@label", "Creator") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#averageBitrate", I18N_NOOP2_NOSTRIP("@label", "Average Bitrate") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#channels", I18N_NOOP2_NOSTRIP("@label", "Channels") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#characterCount", I18N_NOOP2_NOSTRIP("@label number of characters", "Characters") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#codec",  I18N_NOOP2_NOSTRIP("@label", "Codec") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#colorDepth", I18N_NOOP2_NOSTRIP("@label", "Color Depth") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName", I18N_NOOP2_NOSTRIP("@label", "Filename") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#height", I18N_NOOP2_NOSTRIP("@label", "Height") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#interlaceMode", I18N_NOOP2_NOSTRIP("@label", "Interlace Mode") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#lineCount", I18N_NOOP2_NOSTRIP("@label number of lines", "Lines") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#programmingLanguage", I18N_NOOP2_NOSTRIP("@label", "Programming Language") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#sampleRate", I18N_NOOP2_NOSTRIP("@label", "Sample Rate") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#width", I18N_NOOP2_NOSTRIP("@label", "Width") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#wordCount", I18N_NOOP2_NOSTRIP("@label number of words", "Words") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#apertureValue", I18N_NOOP2_NOSTRIP("@label EXIF aperture value", "Aperture") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#exposureBiasValue", I18N_NOOP2_NOSTRIP("@label EXIF", "Exposure Bias Value") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#exposureTime", I18N_NOOP2_NOSTRIP("@label EXIF", "Exposure Time") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#flash", I18N_NOOP2_NOSTRIP("@label EXIF", "Flash") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#focalLength", I18N_NOOP2_NOSTRIP("@label EXIF", "Focal Length") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#focalLengthIn35mmFilm", I18N_NOOP2_NOSTRIP("@label EXIF", "Focal Length 35 mm") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#isoSpeedRatings", I18N_NOOP2_NOSTRIP("@label EXIF", "ISO Speed Ratings") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#make", I18N_NOOP2_NOSTRIP("@label EXIF", "Make") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#meteringMode", I18N_NOOP2_NOSTRIP("@label EXIF", "Metering Mode") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#model", I18N_NOOP2_NOSTRIP("@label EXIF", "Model") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#orientation", I18N_NOOP2_NOSTRIP("@label EXIF", "Orientation") },
+    { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#whiteBalance", I18N_NOOP2_NOSTRIP("@label EXIF", "White Balance") },
+    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#genre",  I18N_NOOP2_NOSTRIP("@label music genre", "Genre") },
+    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#musicAlbum", I18N_NOOP2_NOSTRIP("@label music album", "Album") },
+    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#trackNumber", I18N_NOOP2_NOSTRIP("@label music track number", "Track") },
+    { "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", I18N_NOOP2_NOSTRIP("@label file type", "Type") },
+    { 0, 0, 0 } // mandatory last entry
 };
 
 class KNfoTranslatorSingleton
@@ -127,10 +128,10 @@ QString KNfoTranslator::translation(const KUrl& uri) const
 KNfoTranslator::KNfoTranslator() :
     m_hash()
 {
-    const TranslationTuple* tuple = &g_translations[0];
-    while (tuple->key != 0) {
-        m_hash.insert(tuple->key, i18nc("@label", tuple->value));
-        ++tuple;
+    const TranslationItem* item = &g_translations[0];
+    while (item->key != 0) {
+        m_hash.insert(item->key, i18nc(item->context, item->value));
+        ++item;
     }
 }
 
