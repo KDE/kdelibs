@@ -43,9 +43,9 @@ typedef QList<Herqq::Upnp::HDevice*> HDeviceList;
 UPnPDeviceManager::UPnPDeviceManager(QObject* parent)
   : Solid::Ifaces::DeviceManager(parent),
     mUdiPrefix( QString::fromLatin1(uPnPUdiPrefix) ),    
-    mSupportedInterfaces()
-{ 
-  mControlPoint = new Herqq::Upnp::HControlPoint(this);    
+    mSupportedInterfaces(),
+    mControlPoint(new Herqq::Upnp::HControlPoint(this))
+{       
   connect(
        mControlPoint,
        SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
@@ -57,6 +57,12 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent)
         SIGNAL(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)),
         this,
         SLOT(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)));
+
+   if (!mControlPoint->init())
+   {
+      qDebug() << "control point init error:" << mControlPoint->errorDescription();
+      return;
+   }
    
    //mSupportedInterfaces << Solid::DeviceInterface::StorageAccess;
 }
@@ -92,13 +98,13 @@ QStringList UPnPDeviceManager::allDevices()
       Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
       
       result << ( udiPrefix() + '/' + info.udn().toString() );
-      
-      //TODO listing only root devices for now
+      qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
+      //TODO listing only root devices
     }
   } 
   else
-  {
-    qDebug() << "UPnPDeviceManager::allDevices()" << "scan error!"; //what should I do here?
+  {    
+    qDebug() << "scan error:" << mControlPoint->errorDescription();
   }
   
   return result;
