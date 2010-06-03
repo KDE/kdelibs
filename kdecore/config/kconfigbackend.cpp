@@ -70,7 +70,7 @@ BackendPtr KConfigBackend::create(const KComponentData& componentData, const QSt
     KConfigBackend* backend = 0;
 
     if (system.compare("INI", Qt::CaseInsensitive) != 0) {
-        QString constraint = QString("'%1' ~~ Name").arg(system);
+        QString constraint = QString("[X-KDE-PluginInfo-Name] ~~ '%1'").arg(system);
         KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend", constraint);
 
         //qDebug() << "found" << offers.count() << "offers for KConfigBackend plugins with name" << system;
