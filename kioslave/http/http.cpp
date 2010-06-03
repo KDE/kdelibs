@@ -292,8 +292,12 @@ static QString formatHttpDate(qint64 date)
     KDateTime dt;
     dt.setTime_t(date);
     QString ret = dt.toString(KDateTime::RFCDateDay);
-    ret.chop(5);    // remove "+0000"
-    ret.append(QString::fromLatin1("GMT"));
+    ret.chop(6);    // remove " +0000"
+    // RFCDate[Day] omits the second if zero, but HTTP requires it; see bug 240585.
+    if (!dt.time().second()) {
+        ret.append(QString::fromLatin1(":00"));
+    }
+    ret.append(QString::fromLatin1(" GMT"));
     return ret;
 }
 
@@ -1834,7 +1838,7 @@ bool HTTPProtocol::isOffline()
 {
   Solid::Networking::Status status = Solid::Networking::status();
 
-  kDebug(7113) << "networkstatus:" << status;  
+  kDebug(7113) << "networkstatus:" << status;
 
   // on error or unknown, we assume online
   return status == Solid::Networking::Unconnected;
