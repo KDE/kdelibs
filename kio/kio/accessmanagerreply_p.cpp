@@ -131,14 +131,23 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         if (!headers.isEmpty()) {
             QStringListIterator it (headers.split('\n'));
             while (it.hasNext()) {
-                const QStringList headerPair = it.next().split(QLatin1String(":"));
+                QStringList headerPair = it.next().split(QLatin1String(":"));
                 if (headerPair.size() < 2)
                     continue;
-                if (headerPair.first().contains("set-cookie", Qt::CaseInsensitive))
+                // Skip setting cookies since they are automatically handled by kio_http...
+                if (headerPair.first().startsWith("set-cookie", Qt::CaseInsensitive))
                     continue;
-                if (headerPair.first().contains("content-type", Qt::CaseInsensitive))
-                    continue;
-                kDebug(7044) << "Adding header:" << headerPair.at(0) << ":" << headerPair.at(1);
+                if (headerPair.first().startsWith("content-type", Qt::CaseInsensitive)) {
+                    const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();                    ;
+                    if (!headerPair.at(1).contains(mimeType, Qt::CaseInsensitive)) {
+                        const int index = headerPair.at(1).indexOf(QLatin1Char(';'));
+                        if (index == -1)
+                            headerPair[1] = mimeType;
+                        else
+                            headerPair[1].replace(0, index, mimeType);
+                    }
+                }
+                //kDebug(7044) << "Adding header:" << headerPair.at(0) << ":" << headerPair.at(1);
                 setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
             }
         }
