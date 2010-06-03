@@ -91,7 +91,8 @@ QStringList UPnPDeviceManager::allDevices()
   Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
   if (mControlPoint->scan(discoveryType))
   {
-    Herqq::Upnp::HDeviceProxies list = mControlPoint->rootDevices();    
+    Herqq::Upnp::HDeviceProxies list = mControlPoint->rootDevices(); 
+    qDebug() << "empty list:" << list.isEmpty();    
     for (int i = 0; i < list.size(); ++i)
     {
       Herqq::Upnp::HDeviceProxy* device = list[i];

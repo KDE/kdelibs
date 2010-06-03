@@ -20,6 +20,8 @@
 
 #include "upnpdevice.h"
 
+#include <QtCore/QUrl>
+
 #include <HResourceType>
 #include <HDeviceInfo>
 #include <HUdn>
@@ -167,6 +169,23 @@ QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& t
   Q_UNUSED(type)
   
   return 0;
+}
+
+bool UPnPDevice::isValid() const
+{
+  return mDevice->deviceInfo().isValid();
+}
+
+QString UPnPDevice::location() const
+{
+  if (this->isValid())
+  {
+    return mDevice->locations()[0].toString(QUrl::RemovePath); //TODO returning with 'http://' prefix. Is it right?
+  } 
+  else
+  {
+    return QString();
+  }    
 }
   
 }

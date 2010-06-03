@@ -60,6 +60,10 @@ namespace UPnP
 	virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
 	
 	const Herqq::Upnp::HDeviceProxy* device() const;
+	
+	bool isValid() const;
+	
+	QString location() const;
 
       protected:
 	const Herqq::Upnp::HDeviceProxy* mDevice;
