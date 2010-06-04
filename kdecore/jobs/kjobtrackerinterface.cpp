@@ -78,35 +78,7 @@ void KJobTrackerInterface::registerJob(KJob *job)
 
 void KJobTrackerInterface::unregisterJob(KJob *job)
 {
-    QObject::disconnect(job, SIGNAL(finished(KJob*)),
-                        this, SLOT(unregisterJob(KJob*)));
-    QObject::disconnect(job, SIGNAL(finished(KJob*)),
-                        this, SLOT(finished(KJob*)));
-
-    QObject::disconnect(job, SIGNAL(suspended(KJob*)),
-                        this, SLOT(suspended(KJob*)));
-    QObject::disconnect(job, SIGNAL(resumed(KJob*)),
-                        this, SLOT(resumed(KJob*)));
-
-    QObject::disconnect(job, SIGNAL(description(KJob*, const QString&,
-                                                const QPair<QString, QString>&,
-                                                const QPair<QString, QString>&)),
-                        this, SLOT(description(KJob*, const QString&,
-                                               const QPair<QString, QString>&,
-                                               const QPair<QString, QString>&)));
-    QObject::disconnect(job, SIGNAL(infoMessage(KJob*, const QString&, const QString&)),
-                        this, SLOT(infoMessage(KJob*, const QString&, const QString&)));
-    QObject::disconnect(job, SIGNAL(warning(KJob*, const QString&, const QString&)),
-                        this, SLOT(warning(KJob*, const QString&, const QString&)));
-
-    QObject::disconnect(job, SIGNAL(totalAmount(KJob*, KJob::Unit, qulonglong)),
-                        this, SLOT(totalAmount(KJob*, KJob::Unit, qulonglong)));
-    QObject::disconnect(job, SIGNAL(processedAmount(KJob*, KJob::Unit, qulonglong)),
-                        this, SLOT(processedAmount(KJob*, KJob::Unit, qulonglong)));
-    QObject::disconnect(job, SIGNAL(percent(KJob*, unsigned long)),
-                        this, SLOT(percent(KJob*, unsigned long)));
-    QObject::disconnect(job, SIGNAL(speed(KJob*, unsigned long)),
-                        this, SLOT(speed(KJob*, unsigned long)));
+    job->disconnect(this);
 }
 
 void KJobTrackerInterface::finished(KJob *job)
