@@ -61,7 +61,16 @@ QStringList KRecentDocument::recentDocuments()
     QStringList fullList;
 
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-       QString pathDesktop = d.absoluteFilePath( *it );
+       QString fileName = *it ;	
+       QString pathDesktop;
+       if (fileName.startsWith(":")) {
+	// FIXME: Remove when Qt will be fixed
+	// http://bugreports.qt.nokia.com/browse/QTBUG-11223
+           pathDesktop = KRecentDocument::recentDocumentDirectory() + *it ;
+       }
+       else {
+           pathDesktop = d.absoluteFilePath( *it );
+       }
        KDesktopFile tmpDesktopFile( pathDesktop );
        KUrl urlDesktopFile(tmpDesktopFile.desktopGroup().readPathEntry("URL", QString()));
        if (urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.toLocalFile()).exists()) {
