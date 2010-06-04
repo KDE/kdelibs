@@ -84,16 +84,21 @@ void KUiServerJobTracker::registerJob(KJob *job)
     }
 
     KComponentData componentData = KGlobal::mainComponent();
-
     QString programIconName = componentData.aboutData()->programIconName();
 
     if (programIconName.isEmpty()) {
         programIconName = componentData.aboutData()->appName();
     }
 
+    QWeakPointer<KJob *> jobWatch;
     QDBusReply<QDBusObjectPath> reply = serverProxy->uiserver().requestView(componentData.aboutData()->programName(),
                                                                             programIconName,
                                                                             job->capabilities());
+
+    if (!jobWatch) {
+        //kDebug() << "deleted out from under us when asking the server proxy for the view";
+        return;
+    }
 
     // If we got a valid reply, register the interface for later usage.
     if (reply.isValid()) {
@@ -112,6 +117,13 @@ void KUiServerJobTracker::registerJob(KJob *job)
         if (destUrl.isValid()) {
             jobView->setDestUrl(QDBusVariant(destUrl));
         }
+
+        if (!jobWatch) {
+            //kDebug() << "deleted out from under us when creating the dbus interface";
+            delete jobView;
+            return;
+        }
+
         d->progressJobView.insert(job, jobView);
     }
 
