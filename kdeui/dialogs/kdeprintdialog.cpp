@@ -49,8 +49,8 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
         dialog->setOption( QAbstractPrintDialog::PrintPageRange, false);
     }
 #ifdef Q_WS_X11
-// Hopefully Qt 4.7 will have native support for all Cups options, Odd/Even, and page ranges
-#if QT_VERSION < KDE_MAKE_VERSION(4,7,0)
+// Hopefully Qt 4.9 will have native support for all Cups options, Odd/Even, and page ranges
+#if QT_VERSION < KDE_MAKE_VERSION(4,9,0)
     if ( KCupsOptionsWidget::cupsAvailable() ) {
         KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
         KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
@@ -63,9 +63,9 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     } else {
         dialog->setOptionTabs( customTabs );
     }
-#else // Qt >= 4.7
+#else // Qt >= 4.9
     dialog->setOptionTabs( customTabs );
-#endif  // Qt < 4.7
+#endif  // Qt < 4.9
 #else //Not X11
     foreach( QWidget* w, customTabs ) // reparent to avoid leaks
         w->setParent( dialog );
