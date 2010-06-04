@@ -23,6 +23,7 @@
 
 #include <QtCore/QtDebug>
 #include <QtCore/QList>
+#include <QtCore/QMap>
 
 #include <HDiscoveryType>
 #include <HDeviceInfo>
@@ -35,119 +36,113 @@ namespace Backends
 {
 namespace UPnP
 {
- 
-const char* uPnPUdiPrefix = "/org/kde/upnp";
 
-typedef QList<Herqq::Upnp::HDevice*> HDeviceList;
+UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
+    Solid::Ifaces::DeviceManager(parent),
+    m_supportedInterfaces(),
+    m_controlPoint(new Herqq::Upnp::HControlPoint(this))
+{
+    connect(
+        m_controlPoint,
+        SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
+        this,
+        SLOT(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)));
 
-UPnPDeviceManager::UPnPDeviceManager(QObject* parent)
-  : Solid::Ifaces::DeviceManager(parent),
-    mUdiPrefix( QString::fromLatin1(uPnPUdiPrefix) ),    
-    mSupportedInterfaces(),
-    mControlPoint(new Herqq::Upnp::HControlPoint(this))
-{       
-  connect(
-       mControlPoint,
-       SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
-       this,
-       SLOT(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)));
-
-   connect(
-        mControlPoint,
+    connect(
+        m_controlPoint,
         SIGNAL(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)),
         this,
         SLOT(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)));
 
-   if (!mControlPoint->init())
-   {
-      qDebug() << "control point init error:" << mControlPoint->errorDescription();
-      return;
-   }
-   
-   //mSupportedInterfaces << Solid::DeviceInterface::StorageAccess;
+    if (!m_controlPoint->init())
+    {
+        qDebug() << "control point init error:" << m_controlPoint->errorDescription();
+        return;
+    }
+
+    m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;
 }
 
 UPnPDeviceManager::~UPnPDeviceManager()
 {
-  //TODO what should I do here? erase all devices? qDeleteAll()?
+    delete m_controlPoint;
 }
 
 QString UPnPDeviceManager::udiPrefix() const
 {
-  return mUdiPrefix;
+    return QString::fromLatin1("/org/kde/upnp");
 }
 
 QSet< DeviceInterface::Type > UPnPDeviceManager::supportedInterfaces() const
 {
-  return mSupportedInterfaces;
+    return m_supportedInterfaces;
 }
 
 QStringList UPnPDeviceManager::allDevices()
 {
-  QStringList result;
-  
-  result << mUdiPrefix;
-  
-  Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
-  if (mControlPoint->scan(discoveryType))
-  {
-    Herqq::Upnp::HDeviceProxies list = mControlPoint->rootDevices(); 
-    qDebug() << "empty list:" << list.isEmpty();    
-    for (int i = 0; i < list.size(); ++i)
+    QStringList result;
+
+    result << udiPrefix();
+
+    Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
+    if (m_controlPoint->scan(discoveryType))
     {
-      Herqq::Upnp::HDeviceProxy* device = list[i];
-      Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
-      
-      result << ( udiPrefix() + '/' + info.udn().toString() );
-      qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
-      //TODO listing only root devices
+        Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
+        for (int i = 0; i < list.size(); ++i)
+        {
+            Herqq::Upnp::HDeviceProxy* device = list[i];
+            Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
+
+            result << ( udiPrefix() + '/' + info.udn().toString() );
+            qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
+            //TODO listing only root devices
+        }
     }
-  } 
-  else
-  {    
-    qDebug() << "scan error:" << mControlPoint->errorDescription();
-  }
-  
-  return result;
+    else
+    {
+        qDebug() << "scan error:" << m_controlPoint->errorDescription();
+    }
+
+    return result;
 }
 
 QStringList UPnPDeviceManager::devicesFromQuery(const QString& parentUdi, DeviceInterface::Type type)
 {
-  Q_UNUSED(parentUdi)
-  Q_UNUSED(type)
-  return QStringList(); //FIXME implement it!
+    Q_UNUSED(parentUdi)
+    Q_UNUSED(type)
+    return QStringList(); //FIXME implement it!
 }
 
 QObject* UPnPDeviceManager::createDevice(const QString& udi)
 {
-  QString udnFromUdi = udi.mid(udiPrefix().length());
-  Herqq::Upnp::HUdn udn(udnFromUdi);
-  if (udn.isValid())
-  {
-    Herqq::Upnp::HDeviceProxy* device = mControlPoint->device(udn);
-    if (device)
+    QString udnFromUdi = udi.mid(udiPrefix().length());
+    Herqq::Upnp::HUdn udn(udnFromUdi);
+    if (udn.isValid())
     {
-      return new Solid::Backends::UPnP::UPnPDevice(device);
+        Herqq::Upnp::HDeviceProxy* device = m_controlPoint->device(udn);
+        if (device)
+        {
+            return new Solid::Backends::UPnP::UPnPDevice(device);
+        }
     }
-  }
-  
-  return 0;
+
+    return 0;
 }
 
 void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HDeviceProxy* device)
 {
-  QString udn = device->deviceInfo().udn().toString();
-  
-  emit deviceAdded(udiPrefix() + '/' + udn);
+    QString udn = device->deviceInfo().udn().toString();
+
+    emit deviceAdded(udiPrefix() + '/' + udn);
 }
 
 void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
 {
-  QString udn = device->deviceInfo().udn().toString();
-  
-  emit deviceRemoved(udiPrefix() + '/' + udn);
-  
-  mControlPoint->removeRootDevice(device);
+    QString udn = device->deviceInfo().udn().toString();
+
+    emit deviceRemoved(udiPrefix() + '/' + udn);
+
+    m_controlPoint->removeRootDevice(device);
 }
 
 }

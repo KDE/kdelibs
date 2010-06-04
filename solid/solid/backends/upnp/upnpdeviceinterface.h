@@ -32,21 +32,24 @@ namespace Backends
 {
 namespace UPnP
 {
-  
-  class UPnPDeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
-  {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::DeviceInterface)
-    
-    public:
-      explicit UPnPDeviceInterface(Solid::Backends::UPnP::UPnPDevice* device);
-      
-      virtual ~UPnPDeviceInterface();
-      
-    protected:
-      Solid::Backends::UPnP::UPnPDevice* mDevice;
-    
-  };
+
+    class UPnPDeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
+    {
+        Q_OBJECT
+        Q_INTERFACES(Solid::Ifaces::DeviceInterface)
+
+        public:
+            explicit UPnPDeviceInterface(Solid::Backends::UPnP::UPnPDevice* device);
+
+            virtual ~UPnPDeviceInterface();
+
+        protected:
+            const Solid::Backends::UPnP::UPnPDevice* upnpDevice() const;
+
+        private:
+            const Solid::Backends::UPnP::UPnPDevice* m_upnpDevice;
+
+    };
 
 }
 }

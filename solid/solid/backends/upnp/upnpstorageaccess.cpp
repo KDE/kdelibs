@@ -20,15 +20,17 @@
 
 #include "upnpstorageaccess.h"
 
+#include <QtCore/QUrl>
+
 namespace Solid
 {
 namespace Backends
 {
 namespace UPnP
 {
-  
-UPnPStorageAccess::UPnPStorageAccess(UPnPDevice* device) : 
-   UPnPDeviceInterface(device)
+
+UPnPStorageAccess::UPnPStorageAccess(UPnPDevice* device) :
+    UPnPDeviceInterface(device)
 {
 }
 
@@ -38,25 +40,34 @@ UPnPStorageAccess::~UPnPStorageAccess()
 
 bool UPnPStorageAccess::isAccessible() const
 {
-  return mDevice->isValid();
+    return upnpDevice()->isValid();
 }
 
 QString UPnPStorageAccess::filePath() const
 {
-  return mDevice->location();
-}
+    if (isAccessible())
+    {
+        QString scheme = "upnp-ms:";
+        QString url = upnpDevice()->device()->locations()[0].toString(QUrl::RemoveScheme);
 
-//TODO: since the device is on the network, we cannot mount/unmount it from here.
-// could these two methods (and the signals) remain pure virtual?
+        return (scheme + url);
+    }
+
+    return QString();
+}
 
 bool UPnPStorageAccess::setup()
 {
-  return this->isAccessible(); 
+    emit setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+
+    return true;
 }
 
 bool UPnPStorageAccess::teardown()
 {
-  return true;
+    emit teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+
+    return true;
 }
 
 }

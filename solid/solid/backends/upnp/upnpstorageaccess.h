@@ -30,32 +30,32 @@ namespace Backends
 {
 namespace UPnP
 {
-  
-  class UPnPStorageAccess : public Solid::Backends::UPnP::UPnPDeviceInterface, virtual public Solid::Ifaces::StorageAccess
-  {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::StorageAccess)
-    
-    public:
-      explicit UPnPStorageAccess(UPnPDevice* device);
-      
-      virtual ~UPnPStorageAccess();
-      
-      virtual bool isAccessible() const;
-      
-      virtual QString filePath() const;
-      
-      virtual bool setup();
-      
-      virtual bool teardown();
-      
-    Q_SIGNALS:
-      void accessibilityChanged(bool accessible, const QString &udi);
-      
-      void setupDone(Solid::ErrorType error, QVariant data, const QString &udi);
-      
-      void teardownDone(Solid::ErrorType error, QVariant data, const QString &udi);   
-  };
+
+    class UPnPStorageAccess : public Solid::Backends::UPnP::UPnPDeviceInterface, virtual public Solid::Ifaces::StorageAccess
+    {
+        Q_OBJECT
+        Q_INTERFACES(Solid::Ifaces::StorageAccess)
+
+        public:
+            explicit UPnPStorageAccess(UPnPDevice* device);
+
+            virtual ~UPnPStorageAccess();
+
+            virtual bool isAccessible() const;
+
+            virtual QString filePath() const;
+
+            virtual bool setup();
+
+            virtual bool teardown();
+
+        Q_SIGNALS:
+            void accessibilityChanged(bool accessible, const QString &udi);
+
+            void setupDone(Solid::ErrorType error, QVariant data, const QString &udi);
+
+            void teardownDone(Solid::ErrorType error, QVariant data, const QString &udi);
+    };
 
 }
 }

@@ -20,8 +20,6 @@
 
 #include "upnpdevice.h"
 
-#include <QtCore/QUrl>
-
 #include <HResourceType>
 #include <HDeviceInfo>
 #include <HUdn>
@@ -33,161 +31,135 @@ namespace Backends
 namespace UPnP
 {
 
-// based on the KUPnP::KUPnPDevice::DeviceData by Friedrich Kossebau :)
-struct TypeIconMapping
+static QMap<QString, QString> makeTypeIconMap()
 {
-    const char* type;
-    const char* iconName;
-};
+    QMap<QString, QString> ret;
+    ret.insert("BasicDevice:1", "network-server");
+    ret.insert("WLANAccessPointDevice:1", "network-wireless");
+    ret.insert("PrinterBasic:1", "printer");
+    ret.insert("PrinterEnhanced:1", "printer");
+    ret.insert("Scanner:1", "scanner");
+    ret.insert("MediaServer:1", "folder-remote");
+    ret.insert("MediaServer:2", "folder-remote");
+    ret.insert("MediaServer:3", "folder-remote");
+    ret.insert("MediaRenderer:1", "video-television");
+    ret.insert("MediaRenderer:2", "video-television");
+    ret.insert("SolarProtectionBlind:1", "device");
+    ret.insert("DigitalSecurityCamera:1", "camera");
+    ret.insert("HVAC:1", "device");
+    ret.insert("LightingControls:1", "light");
+    ret.insert("RemoteUIClientDevice:1", "device");
+    ret.insert("RemoteUIServerDevice:1", "device");
+    ret.insert("RAClient:1", "device");
+    ret.insert("RAServer:1", "device");
+    ret.insert("RADiscoveryAgent:1", "device");
+    ret.insert("Unknown", "device");
+    ret.insert("InternetGatewayDevice:1", "network-server");
+    ret.insert("LANDevice:1", "network-wired");
+    ret.insert("WANDevice:1", "network-wired");
+    ret.insert("WANConnectionDevice:1", "network-wired");
+    ret.insert("WFADevice:1", "network-wireless");
 
-static const TypeIconMapping typeIconMap[] =
-{
-    {"BasicDevice:1", "network-server"},
-    {"WLANAccessPointDevice:1", "network-wireless"},
-    {"PrinterBasic:1", "printer"},
-    {"PrinterEnhanced:1", "printer"},
-    {"Scanner:1", "scanner"},
-    {"MediaServer:1", "folder-remote"},
-    {"MediaServer:2", "folder-remote"},
-    {"MediaServer:3", "folder-remote"},
-    {"MediaRenderer:1", "video-television"},
-    {"MediaRenderer:2", "video-television"},
-    {"SolarProtectionBlind:1", "device"},
-    {"DigitalSecurityCamera:1", "camera"},
-    {"HVAC:1", "device"},
-    {"LightingControls:1", "light"},
-    {"RemoteUIClientDevice:1", "device"},
-    {"RemoteUIServerDevice:1", "device"},
-    {"RAClient:1", "device"},
-    {"RAServer:1", "device"},
-    {"RADiscoveryAgent:1", "device"},
-    {"Unknown", "device"},
-    {"InternetGatewayDevice:1", "network-server"},
-    {"LANDevice:1", "network-wired"},
-    {"WANDevice:1", "network-wired"},
-    {"WANConnectionDevice:1", "network-wired"},
-    {"WFADevice:1", "network-wireless"}
-};
+    return ret;
+}
 
-static const int typeIconMapCount = sizeof(typeIconMap) / sizeof(typeIconMap[0]);
-  
-UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device)
-  : Solid::Ifaces::Device()   
+static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
+
+UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
+    Solid::Ifaces::Device()
 {
-  mDevice = device;
-  if (device->parentDevice())
-  {
-    parentDevice = new UPnPDevice(device->parentProxyDevice());
-  }
-  else
-  {
-    parentDevice = 0;
-  }
+    m_device = device;
 }
 
 UPnPDevice::~UPnPDevice()
 {
-  delete parentDevice; //should I do this?
+    delete m_device;
 }
 
 const Herqq::Upnp::HDeviceProxy* UPnPDevice::device() const
 {
-  return mDevice;
+    return m_device;
 }
 
 QString UPnPDevice::udi() const
 {
-  const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-  QString udi = deviceInfo.udn().toString();
-  
-  return QString::fromLatin1("/org/kde/upnp/%1").arg(udi);
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    QString udi = deviceInfo.udn().toString();
+
+    return QString::fromLatin1("/org/kde/upnp/%1").arg(udi);
 }
 
 QString UPnPDevice::parentUdi() const
 {
-  if (parentDevice)
-  {
-    Herqq::Upnp::HDeviceInfo parentInfo = parentDevice->device()->deviceInfo();
-    return QString::fromLatin1("/org/kde/upnp/%1").arg(parentInfo.udn().toString());
-  }
-  
-  return QString::fromLatin1("/org/kde/upnp");
+    const Herqq::Upnp::HDeviceProxy* parent = device()->parentProxyDevice();
+    if (parent)
+    {
+        Herqq::Upnp::HDeviceInfo parentInfo = parent->deviceInfo();
+
+        return QString::fromLatin1("/org/kde/upnp/%1").arg(parentInfo.udn().toString());
+    }
+
+    return QString::fromLatin1("/org/kde/upnp");
 }
 
 QString UPnPDevice::vendor() const
 {
-  const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-  QString vendor = deviceInfo.manufacturer();
-  
-  return vendor;
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    QString vendor = deviceInfo.manufacturer();
+
+    return vendor;
 }
 
 QString UPnPDevice::product() const
 {
-  const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-  QString model = deviceInfo.modelName();
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    QString model = deviceInfo.modelName();
 
-  return model;
+    return model;
 }
 
 QString UPnPDevice::icon() const
 {
-  const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-  const QString deviceType = deviceInfo.deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version);
-  
-  for (int i = 0; i < typeIconMapCount; ++i)
-  {
-    const TypeIconMapping& mapping = typeIconMap[i];
-    if (deviceType == QLatin1String(mapping.type))
-    {
-      return QString::fromLatin1(mapping.iconName);
-    }
-  }
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    const QString deviceType = deviceInfo.deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version);
 
-  return QString::fromLatin1("network-server");
+    if (typeIconMap.contains(deviceType))
+    {
+        return typeIconMap[deviceType];
+    }
+
+    return QString::fromLatin1("network-server");
 }
 
 QStringList UPnPDevice::emblems() const
 {
-  return QStringList(); //does this apply here?
+    return QStringList(); //does this apply here?
 }
 
 QString UPnPDevice::description() const
 {
-  return this->device()->deviceDescription();
+    return device()->deviceDescription();
 }
 
 bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-  Q_UNUSED(type)
-  
-  return false;
+    Q_UNUSED(type)
+
+    return false;
 }
 
 QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
-  Q_UNUSED(type)
-  
-  return 0;
+    Q_UNUSED(type)
+
+    return 0;
 }
 
 bool UPnPDevice::isValid() const
 {
-  return mDevice->deviceInfo().isValid();
+    return m_device->deviceInfo().isValid();
 }
 
-QString UPnPDevice::location() const
-{
-  if (this->isValid())
-  {
-    return mDevice->locations()[0].toString(QUrl::RemovePath); //TODO returning with 'http://' prefix. Is it right?
-  } 
-  else
-  {
-    return QString();
-  }    
-}
-  
 }
 }
 }

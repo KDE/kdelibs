@@ -30,45 +30,41 @@ namespace Solid
 namespace Backends
 {
 namespace UPnP
-{  
+{
 
     class UPnPDevice : public Solid::Ifaces::Device
     {
-      Q_OBJECT
-      
-      public:
-	explicit UPnPDevice(const Herqq::Upnp::HDeviceProxy* device);
-	
-	virtual ~UPnPDevice();
-	
-	virtual QString udi() const;
-	
-	virtual QString parentUdi() const;
-	
-	virtual QString vendor() const;
-	
-	virtual QString product() const;
-	
-	virtual QString icon() const;
-	
-	virtual QStringList emblems() const;
-	
-	virtual QString description() const;
-	
-	virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
-	
-	virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
-	
-	const Herqq::Upnp::HDeviceProxy* device() const;
-	
-	bool isValid() const;
-	
-	QString location() const;
+        Q_OBJECT
 
-      protected:
-	const Herqq::Upnp::HDeviceProxy* mDevice;
-	
-	UPnPDevice* parentDevice;
+        public:
+            explicit UPnPDevice(const Herqq::Upnp::HDeviceProxy* device);
+
+            virtual ~UPnPDevice();
+
+            virtual QString udi() const;
+
+            virtual QString parentUdi() const;
+
+            virtual QString vendor() const;
+
+            virtual QString product() const;
+
+            virtual QString icon() const;
+
+            virtual QStringList emblems() const;
+
+            virtual QString description() const;
+
+            virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
+
+            virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
+
+            bool isValid() const;
+
+            const Herqq::Upnp::HDeviceProxy* device() const;
+
+        protected:
+            const Herqq::Upnp::HDeviceProxy* m_device;
     };
 
 }

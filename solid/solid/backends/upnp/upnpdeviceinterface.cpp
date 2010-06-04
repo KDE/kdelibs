@@ -28,17 +28,22 @@ namespace Backends
 {
 namespace UPnP
 {
- 
-UPnPDeviceInterface::UPnPDeviceInterface(Solid::Backends::UPnP::UPnPDevice* device) : 
-   QObject(device),
-   mDevice(device)
+
+UPnPDeviceInterface::UPnPDeviceInterface(Solid::Backends::UPnP::UPnPDevice* device) :
+    QObject(device),
+    m_upnpDevice(device)
 {
 }
 
 UPnPDeviceInterface::~UPnPDeviceInterface()
 {
 }
-  
+
+const Solid::Backends::UPnP::UPnPDevice* UPnPDeviceInterface::upnpDevice() const
+{
+    return m_upnpDevice;
+}
+
 }
 }
 }
