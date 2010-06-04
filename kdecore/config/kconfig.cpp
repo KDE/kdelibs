@@ -285,7 +285,10 @@ void KConfig::sync()
 {
     Q_D(KConfig);
 
-    Q_ASSERT(!isImmutable() && !name().isEmpty()); // can't write to an immutable or anonymous file.
+    if (isImmutable() || name().isEmpty()) {
+        // can't write to an immutable or anonymous file.
+        return;
+    }
 
     if (d->bDirty && d->mBackend) {
         const QByteArray utf8Locale(locale().toUtf8());
@@ -438,6 +441,10 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
 void KConfig::reparseConfiguration()
 {
     Q_D(KConfig);
+    if (d->fileName.isEmpty()) {
+        return;
+    }
+
     // Don't lose pending changes
     if (!d->isReadOnly() && d->bDirty)
         sync();
