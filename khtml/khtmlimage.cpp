@@ -78,6 +78,11 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     m_khtml = new KHTMLPart( box, this, prof );
     m_khtml->setAutoloadImages( true );
 
+    // We do not want our subpart to be destroyed when its widget is,
+    // since that may cause all KHTMLParts to die when we're dealing
+    // with 
+    m_khtml->setAutoDeletePart( false );
+
     connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );
 
     setWidget( box );
