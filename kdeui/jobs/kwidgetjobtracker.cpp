@@ -78,13 +78,13 @@ QWidget *KWidgetJobTracker::widget(KJob *job)
 
 void KWidgetJobTracker::registerJob(KJob *job)
 {
-    KAbstractWidgetJobTracker::registerJob(job);
-
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
     vi->jobRegistered = true;
     vi->setAttribute(Qt::WA_DeleteOnClose);
     d->progressWidget.insert(job, vi);
     d->progressWidgetsToBeShown.enqueue(job);
+
+    KAbstractWidgetJobTracker::registerJob(job);
 
     QTimer::singleShot(500, this, SLOT(_k_showProgressWidget()));
 }
@@ -499,8 +499,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     hBox->addWidget(resumeLabel);
 
     pauseButton = new KPushButton(i18n("&Pause"), this);
-    QObject::connect(pauseButton, SIGNAL(clicked()),
-                     this, SLOT(_k_pauseResumeClicked()));
+    connect(pauseButton, SIGNAL(clicked()), this, SLOT(_k_pauseResumeClicked()));
     hBox->addWidget(pauseButton);
 
     hBox = new QHBoxLayout();
@@ -519,8 +518,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     progressLabel->hide();
 
     keepOpenCheck = new QCheckBox(i18n("&Keep this window open after transfer is complete"), this);
-    QObject::connect(keepOpenCheck, SIGNAL(toggled(bool)),
-                     this, SLOT(_k_keepOpenToggled(bool)));
+    connect(keepOpenCheck, SIGNAL(toggled(bool)), this, SLOT(_k_keepOpenToggled(bool)));
     topLayout->addWidget(keepOpenCheck);
     keepOpenCheck->hide();
 
@@ -528,23 +526,20 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     topLayout->addLayout(hBox);
 
     openFile = new KPushButton(i18n("Open &File"), this);
-    QObject::connect(openFile, SIGNAL(clicked()),
-                     this, SLOT(_k_openFile()));
+    connect(openFile, SIGNAL(clicked()), this, SLOT(_k_openFile()));
     hBox->addWidget(openFile);
     openFile->setEnabled(false);
     openFile->hide();
 
     openLocation = new KPushButton(i18n("Open &Destination"), this);
-    QObject::connect(openLocation, SIGNAL(clicked()),
-                     this, SLOT(_k_openLocation()));
+    connect(openLocation, SIGNAL(clicked()), this, SLOT(_k_openLocation()));
     hBox->addWidget(openLocation);
     openLocation->hide();
 
     hBox->addStretch(1);
 
     cancelClose = new KPushButton(KStandardGuiItem::cancel(), this);
-    QObject::connect(cancelClose, SIGNAL(clicked()),
-                     this, SLOT(_k_stop()));
+    connect(cancelClose, SIGNAL(clicked()), this, SLOT(_k_stop()));
     hBox->addWidget(cancelClose);
 
     resize(sizeHint());
