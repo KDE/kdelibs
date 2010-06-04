@@ -115,7 +115,10 @@ public:
      *
      * @note You probably want to use KSharedConfig::openConfig instead.
      *
-     * @param file         the name of the file
+     * @param file         the name of the file. If an empty string is passed in 
+     *                     and SimpleConfig is passed in for the OpenFlags, then an in-memory
+     *                     KConfig object is created which will not write out to file nor which
+     *                     requires any file in the filesystem at all.
      * @param mode         how global settings should affect the configuration
      *                     options exposed by this KConfig object
      * @param resourceType The standard directory to look for the configuration
@@ -144,7 +147,10 @@ public:
      *
      * @param componentData the component that you wish to load a configuration
      *                      file for
-     * @param file          overrides the configuration file name if not empty
+     * @param file          overrides the configuration file name if not empty; if it is empty
+     *                      and SimpleConfig is passed in for the OpenFlags, then an in-memory
+     *                      KConfig object is created which will not write out to file nor which
+     *                      requires any file in the filesystem at all.
      * @param mode          how global settings should affect the configuration
      *                      options exposed by this KConfig object.
      *                      See OpenFlags
