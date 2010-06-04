@@ -203,12 +203,20 @@ VCard::List VCardParser::parseVCardsRaw( const QCString& text )
           if ( codec ) {
             vCardLine.setValue( codec->toUnicode( output ) );
           } else {
+#if defined(KABC_VCARD_ENCODING_FIX)
             vCardLine.setValue( QString::fromUtf8( output ) );
+#else
+            vCardLine.setValue( QString::fromLatin1( output ) );
+#endif
           }
         } else if ( wasBase64Encoded ) {
             vCardLine.setValue( output );
         } else {
+#if defined(KABC_VCARD_ENCODING_FIX)
             vCardLine.setValue( QString::fromUtf8( output ) );
+#else
+            vCardLine.setValue( QString::fromLatin1( output ) );
+#endif
         }
 
         currentVCard.addLine( vCardLine );

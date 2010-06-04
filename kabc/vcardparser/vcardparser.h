@@ -21,6 +21,11 @@
 #ifndef VCARDPARSER_H
 #define VCARDPARSER_H
 
+// This is defined so apps know to use the VCardRaw variants
+#ifndef KABC_VCARD_ENCODING_FIX
+#define KABC_VCARD_ENCODING_FIX 1
+#endif
+
 #include "vcard.h"
 
 namespace KABC {

@@ -24,6 +24,7 @@
 #include <qstring.h>
 
 #include "addressee.h"
+#include "vcardparser.h"  //for KABC_VCARD_ENCODING_FIX define
 
 namespace KABC {
 
