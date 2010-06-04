@@ -50,7 +50,6 @@ int main(int argc, char **argv) {
     const QString xmllintPath = arguments[2];
     const QString checkFilename = arguments[3];
     const QString customizationCatalog = srcDir + "/customization/catalog.xml";
-    const QString docbookCatalog = srcDir + "/docbook/xml-dtd-4.2/catalog.xml";
     
     if ( checkFile( checkFilename ) != CheckFileSuccess )
     {
@@ -62,16 +61,9 @@ int main(int argc, char **argv) {
         qCritical() << "checkFile failed in " << customizationCatalog;
         return ( 2 );
     }
-    if ( checkFile( docbookCatalog ) != CheckFileSuccess )
-    {
-        qCritical() << "checkFile failed in " << docbookCatalog;
-        return ( 2 );
-    }
 
     QByteArray catalogs;
     catalogs += customizationCatalog.toUtf8();
-    catalogs += ' ';
-    catalogs += docbookCatalog.toUtf8();
     
     setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
     xmlInitializeCatalog();

@@ -135,8 +135,6 @@ int main(int argc, char **argv) {
 
         QByteArray catalogs;
         catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
-        catalogs += ' ';
-        catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.2/catalog.xml" ) ).toEncoded();
 
         QString exe;
 #if defined( XMLLINT )

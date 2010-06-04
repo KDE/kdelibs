@@ -12,7 +12,6 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
 configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
-configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 find_package(DocBookXML)
@@ -24,6 +23,13 @@ macro_log_feature(DOCBOOKXML_FOUND "DocBook XML" "${DOCBOOKXML_MSG}" "http://www
 
 find_package(DocBookXSL)
 macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Stylesheets for processing DocBook XML" "http://docbook.sourceforge.net/release/xsl/current/" TRUE "" "Needed for building the KDE help system.")
+
+set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
+configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}
+        DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd )
+
+configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
 
 ########### next target ###############
 
@@ -133,8 +139,22 @@ macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
     endforeach(_curentfile ${_file_CUST})
 endmacro(INSTALL_CUSTOMIZE_DIR _expr _directory)
 
-set(docbookdir xml-dtd-4.2  xsl )
+macro(INSTALL_CUSTOMIZE_L_DIR _expr _directory)
+    FILE(GLOB _file_CUST "${_expr}" )
+    foreach(_curentfile ${_file_CUST})
+        # copy the file also under CMAKE_CURRENT_BINARY_DIR - those
+        # files are needed to generate the documentation without installing
+        # kdelibs (i.e. when kdelibs itself compiled).
+        get_filename_component(_currentfile_name ${_curentfile} NAME)
+        set(_currentfile_binary_path ${CMAKE_CURRENT_BINARY_DIR}/${_directory}/${_currentfile_name})
+        configure_file(${_curentfile} ${_currentfile_binary_path} COPYONLY)
 
+        install(FILES ${_currentfile_binary_path}
+                DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/${_directory} )
+    endforeach(_curentfile ${_file_CUST})
+endmacro(INSTALL_CUSTOMIZE_L_DIR _expr _directory)
+
+set(docbookdir xsl )
 
 set(expr "docbook/README.kde")
 INSTALL_CUSTOMIZE_DIR( ${expr} docbook/)
@@ -155,7 +175,7 @@ foreach (_currentdocbookdir ${docbookdir})
 	set(expr "docbook/${_currentdocbookdir}/*.xml")
 	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
 	set(expr "docbook/${_currentdocbookdir}/VERSION*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/)
 	set(expr "docbook/${_currentdocbookdir}/What*")
 	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
 	
@@ -163,90 +183,90 @@ foreach (_currentdocbookdir ${docbookdir})
 	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/ent/)
 
 	set(expr "docbook/${_currentdocbookdir}/common/*.xsl")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/common/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
 	set(expr "docbook/${_currentdocbookdir}/common/*.xml")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/common/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
 	set(expr "docbook/${_currentdocbookdir}/common/*.dtd")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/common/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
 	set(expr "docbook/${_currentdocbookdir}/common/Changelog")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/common/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
 
     set(expr "docbook/${_currentdocbookdir}/html/*.xsl")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
     set(expr "docbook/${_currentdocbookdir}/html/*.xml")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
     set(expr "docbook/${_currentdocbookdir}/html/*.dtd")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
 	set(expr "docbook/${_currentdocbookdir}/html/Changelog")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
 	set(expr "docbook/${_currentdocbookdir}/html/*.ent")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
 	set(expr "docbook/${_currentdocbookdir}/html/*.xweb")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/html/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
 
     set(expr "docbook/${_currentdocbookdir}/images/*.png")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/)
+    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
 	set(expr "docbook/${_currentdocbookdir}/images/*.gif")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
 	set(expr "docbook/${_currentdocbookdir}/images/*.tif")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
 	set(expr "docbook/${_currentdocbookdir}/images/Changelog")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
 
 	set(expr "docbook/${_currentdocbookdir}/images/callouts/*.png")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
     set(expr "docbook/${_currentdocbookdir}/images/callouts/*.gif")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
+    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
 	set(expr "docbook/${_currentdocbookdir}/images/callouts/Changelog")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
 
 	set(expr "docbook/${_currentdocbookdir}/lib/lib.*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
 	set(expr "docbook/${_currentdocbookdir}/lib/Changel*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
 	set(expr "docbook/${_currentdocbookdir}/lib/README*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
 
 	set(expr "docbook/${_currentdocbookdir}/manpages/*.xsl")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/manpages/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/manpages/)
 
 	set(expr "docbook/${_currentdocbookdir}/params/*.xml")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/params/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/params/)
 	set(expr "docbook/${_currentdocbookdir}/params/Changelog")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/params/)
+	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/params/)
 	
 
 endforeach(_currentdocbookdir ${docbookdir})
 
 
 set(expr "customization/*.xsl")
-install_customize_dir( ${expr} customization/)
+install_customize_l_dir( ${expr} customization/)
 
 set(expr "customization/README")
-install_customize_dir( ${expr} customization/)
+install_customize_l_dir( ${expr} customization/)
 
 set(expr "customization/catalog.xml")
-install_customize_dir( ${expr} customization/)
+install_customize_l_dir( ${expr} customization/)
 
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr gl he hu id it ja ko lt nds nl nn no pl pt-BR pt ro ru sk sl sr sr@latin sr@ijekavian sr@ijekavianlatin sv th tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
 	set(expr "customization/${_currentcustomizedir}/README")
-	install_customize_dir( ${expr} customization/${_currentcustomizedir})
+	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
 	set(expr "customization/${_currentcustomizedir}/*.entities")
-	install_customize_dir( ${expr} customization/${_currentcustomizedir})
+	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
 	set(expr "customization/${_currentcustomizedir}/*.xsl")
-	install_customize_dir( ${expr} customization/${_currentcustomizedir})
+	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
     set(expr "customization/${_currentcustomizedir}/entities/*.docbook")
-	install_customize_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
+	install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
 	set(expr "customization/${_currentcustomizedir}/entities/*.entities")
-	install_customize_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
+	install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
     set(expr "customization/${_currentcustomizedir}/*.xml")
-    install_customize_dir(${expr} customization/${_currentcustomizedir} )
+    install_customize_l_dir(${expr} customization/${_currentcustomizedir} )
 	set(expr "customization/${_currentcustomizedir}/*.dtd")
-	install_customize_dir(${expr} customization/${_currentcustomizedir}/)
+	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
 	set(expr "customization/${_currentcustomizedir}/*.elements")
-	install_customize_dir(${expr} customization/${_currentcustomizedir}/)
+	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
 	
 endforeach(_currentcustomizedir ${customizedir}) 
 	  
