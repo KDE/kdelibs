@@ -32,6 +32,7 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QMap>
+#include <QtCore/QSet>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
 #include <QtGui/QImage>
@@ -133,6 +134,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList::ConstIterator it, itDir;
     QStringList themeDirs;
     QString cDir;
+    QSet<QString> addedDirs; // Used for avoiding duplicates.
 
     // Applications can have local additions to the global "locolor" and
     // "hicolor" icon themes. For these, the _global_ theme description
@@ -204,7 +206,9 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=dirs.begin(); it!=dirs.end(); ++it) {
         KConfigGroup cg(d->sharedConfig, *it);
         for (itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir) {
-            if (KStandardDirs::exists(*itDir + *it + '/')) {
+            const QString currentDir(*itDir + *it + '/');
+            if (KStandardDirs::exists(currentDir) && !addedDirs.contains(currentDir)) {
+                addedDirs.insert(currentDir);
                 KIconThemeDir *dir = new KIconThemeDir(*itDir, *it, cg);
                 if (!dir->isValid()) {
                     delete dir;
