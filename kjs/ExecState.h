@@ -69,36 +69,6 @@ namespace KJS {
      */
     Interpreter* lexicalInterpreter() const;
 
-
-    /**
-     These methods are used to keep track of PropertyNameArrays for ... in loops are going through
-    */
-    void pushPropertyNameArray() {
-        pushExceptionHandler(RemovePNA);
-
-        PropertyNameArrayInfo inf;
-        inf.array = new PropertyNameArray;
-        inf.pos   = 0;
-        m_activePropertyNameArrays.append(inf);
-    }
-
-    void popPropertyNameArray() {
-        ASSERT(m_exceptionHandlers.last().type == RemovePNA);
-        popExceptionHandler();
-
-        delete m_activePropertyNameArrays.last().array;
-        m_activePropertyNameArrays.removeLast();
-    }
-
-    PropertyNameArray& activePropertyNameArray() {
-        return *m_activePropertyNameArrays.last().array;
-    }
-
-    int& activePropertyNameIter() {
-        return m_activePropertyNameArrays.last().pos;
-    }
-
-
     /**
      * This describes how an exception should be handled
      */
@@ -106,7 +76,6 @@ namespace KJS {
         JumpToCatch,     ///< jump to the specified address
         PopScope,        ///< remove a scope chain entry, and run the next handler
         RemoveDeferred,  ///< remove any deferred exception object, and run the next entry
-        RemovePNA,       ///< remove + delete top PropertyNameArray
         Silent           ///< just update the exception object. For debugger-type use only
     };
 
@@ -303,12 +272,6 @@ namespace KJS {
     LocalStorageEntry** m_machineLocalStore; // Machine's copy of m_localStore
     WTF::Vector<ExceptionHandler, 4> m_exceptionHandlers;
     WTF::Vector<Completion, 4>       m_deferredCompletions;
-
-    struct PropertyNameArrayInfo {
-        PropertyNameArray* array;
-        int                pos;
-    };
-    WTF::Vector<PropertyNameArrayInfo, 2> m_activePropertyNameArrays;
 
     CodeType m_codeType;
   };

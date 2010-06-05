@@ -116,8 +116,6 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
 
 ExecState::~ExecState()
 {
-    for (size_t c = 0; c < m_activePropertyNameArrays.size(); ++c)
-        delete m_activePropertyNameArrays[c].array;
     m_interpreter->setExecState(m_savedExec);
 }
 
@@ -208,11 +206,6 @@ void ExecState::setAbruptCompletion(Completion comp)
             m_deferredCompletions.removeLast();
             m_exceptionHandlers.removeLast();
             continue; // get the next handler
-        case RemovePNA:
-            delete m_activePropertyNameArrays.last().array;
-            m_activePropertyNameArrays.removeLast();
-            m_exceptionHandlers.removeLast();
-            continue; // get the next handler
         case Silent:
             // Exception blocked by tracing code. nothing to do.
             return;
@@ -235,10 +228,6 @@ void ExecState::quietUnwind(int depth)
             break;
         case RemoveDeferred:
             m_deferredCompletions.removeLast();
-            break;
-        case RemovePNA:
-            delete m_activePropertyNameArrays.last().array;
-            m_activePropertyNameArrays.removeLast();
             break;
         case Silent:
             ASSERT(0); // Should not happen in the middle of the code.

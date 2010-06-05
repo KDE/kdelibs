@@ -203,6 +203,21 @@ NEVER_INLINE void changeDebugContext(Dir d, ExecState* exec, Node* n) {
         dbg->exitContext(exec, body->sourceId(), body->lastLine(), fn);
 }
 
+class ForInState: public JSObject {
+public:
+    PropertyNameArray* array;
+    int                pos;
+
+    ForInState() {
+        array = new PropertyNameArray;
+        pos   = 0;
+    }
+    
+    ~ForInState() {
+        delete array;
+    }
+};
+
 struct DepthCleanup
 {
     ~DepthCleanup() { --depth; }

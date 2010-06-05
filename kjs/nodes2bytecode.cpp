@@ -1267,18 +1267,19 @@ void ForInNode::generateExecCode(CompileState* comp)
 
     OpValue val = expr->generateEvalCode(comp);
     OpValue obj; // version of val after toObject, returned by BeginForIn.
+    
+    OpValue stateVal, stateReg;
+    comp->requestTemporary(OpType_value, &stateVal, &stateReg);
 
     // Fetch the property name array..
-    CodeGen::emitOp(comp, Op_BeginForIn, &obj, &val);
+    CodeGen::emitOp(comp, Op_BeginForIn, &obj, &val, &stateReg);
 
-    // ... as the array is store on an iterator stack, this introduces a cleanup entry.
-    comp->pushNest(CompileState::OtherCleanup, this);
-    
-    comp->enterLoop(this); // must do this here, since continue shouldn't pop our iterator!
+    comp->enterLoop(this); 
 
     // We put the test first here, since the test and the fetch are combined.
     OpValue sym;
-    Addr fetchNext = CodeGen::emitOp(comp, Op_NextForInEntry, &sym, &obj, OpValue::dummyAddr());
+    Addr fetchNext = CodeGen::emitOp(comp, Op_NextForInEntry, &sym, &obj,
+                                     &stateVal, OpValue::dummyAddr());
 
     // Write to the variable
     assert (lexpr->isLocation());
@@ -1298,16 +1299,10 @@ void ForInNode::generateExecCode(CompileState* comp)
     OpValue backVal = OpValue::immAddr(fetchNext);
     CodeGen::emitOp(comp, Op_Jump, 0, &backVal);
 
-    // The end address is here (#2 since return val..)
-    CodeGen::patchJumpToNext(comp, fetchNext, 2);
+    // The end address is here (3 argument + return val)
+    CodeGen::patchJumpToNext(comp, fetchNext, 3);
 
-    // The looping action ends here.. We need to do it before the EndForIn instruction so we always cleanup
-    // right on breaks.
     comp->exitLoop(this);
-    comp->popNest(); // Remove the cleanup entry.. Note that the breaks go to before here..    
-
-    // Cleanup
-    CodeGen::emitOp(comp, Op_EndForIn);
 }
 
 // Helper for continue/break -- emits stack cleanup call if needed,

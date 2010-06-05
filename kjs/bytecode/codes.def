@@ -264,39 +264,34 @@ operation IfNotJump[endsBB] {
     tile (value, addr) as executeIfNotJump;
 }
 
-// Fetches the propertly list, if any, and sets up the iterator stack in execState appropriately
-// Returns the object to operate on
+// Fetches the propertly list, if any, and sets up the iterator state in given
+// register. Returns the value to iterator
 operation BeginForIn[endsBB] {
-    impl value (value e) [[
-        exec->pushPropertyNameArray();
-
+    impl value (value e, reg stateReg) [[
+        ForInState* st = new ForInState();
+        localStore[stateReg].val.valueVal = st;
+    
         if (!e->isUndefinedOrNull()) {
             JSObject* v = e->toObject(exec);
-            // The above might raise an exception, which would cleanup the array!
+            // The above might raise an exception..
             if (pc != localPC) continue;
 
-            v->getPropertyNames(exec, exec->activePropertyNameArray());
+            v->getPropertyNames(exec, *st->array);
             $$ = v;
         } else {
-            // The array is empty here, so this will never be accessed
+            // empty array, so this doesn't matter.
             $$ = jsUndefined();
         }
     ]]
 }
 
-// Cleans up the property list
-operation EndForIn {
-    impl void() [[
-        exec->popPropertyNameArray();
-    ]]
-}
-
 operation NextForInEntry {
-    impl value(value e, addr jumpToIfDone) [[
-        PropertyNameArray& pa  = exec->activePropertyNameArray();
+    impl value(value[noimm] e, value[noimm] ctx, addr jumpToIfDone) [[
+        ForInState* st = static_cast<ForInState*>(ctx);
+        PropertyNameArray& pa  = *st->array;
 
         // Invariant: pos = next entry to consider.
-        int& pos = exec->activePropertyNameIter();
+        int& pos = st->pos;
 
         $$ = jsUndefined();
         while (pos < pa.size()) {
