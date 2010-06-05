@@ -189,6 +189,7 @@ KCalendarSystemPrivate::KCalendarSystemPrivate( KCalendarSystem *q_ptr ): q( q_p
 
 KCalendarSystemPrivate::~KCalendarSystemPrivate()
 {
+    delete m_eraList;
 }
 
 // Dummy version as an example, remember to translate (see Gregorian for example)
