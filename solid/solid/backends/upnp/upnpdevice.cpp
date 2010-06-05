@@ -138,7 +138,7 @@ QStringList UPnPDevice::emblems() const
 
 QString UPnPDevice::description() const
 {
-    return device()->deviceDescription();
+    return device()->deviceInfo().modelDescription();
 }
 
 bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
