@@ -73,6 +73,16 @@ static bool isValidInputElement(const QWebElement& element)
             !element.hasAttribute(QL1S("disabled")));
 }
 
+static void collectAllChildFrames(QWebFrame* frame, QList<QWebFrame*>& list)
+{
+    list << frame->childFrames();
+    QListIterator<QWebFrame*> it(frame->childFrames());
+    while (it.hasNext()) {
+        collectAllChildFrames(it.next(), list);
+    }
+}
+
+
 class KWebWallet::KWebWalletPrivate
 {  
 public:
@@ -88,7 +98,7 @@ public:
     void saveDataToCache(const QString &key);
     void removeDataFromCache(const WebFormList &formList);
 
-    // Private Q_SLOT...
+    // Private slots...
     void _k_openWalletDone(bool);
     void _k_walletClosed();
 
@@ -307,7 +317,9 @@ KWebWallet::WebFormList KWebWallet::formsWithCachedData(QWebFrame* frame, bool r
         list << d->parseFormData(frame);
 
         if (recursive) {
-            QListIterator <QWebFrame *> framesIt (frame->childFrames());
+            QList<QWebFrame*> childFrameList;
+            collectAllChildFrames(frame, childFrameList);
+            QListIterator <QWebFrame *> framesIt (childFrameList);
             while (framesIt.hasNext()) {
                 list << d->parseFormData(framesIt.next());
             }
@@ -336,21 +348,23 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
         }
 
         if (recursive) {
-            QListIterator<QWebFrame*> frameIt (frame->childFrames());
+            QList<QWebFrame*> childFrameList;
+            collectAllChildFrames(frame, childFrameList);
+            QListIterator<QWebFrame*> frameIt (childFrameList);
             while (frameIt.hasNext()) {
                 QWebFrame *childFrame = frameIt.next();
                 formsList = d->parseFormData(childFrame);
-                if (!formsList.isEmpty()) {
-                    const QUrl url (childFrame->url());
-                    if (d->pendingFillRequests.contains(url)) {
-                        kWarning(800) << "Duplicate request rejected!!!";
-                    } else {
-                        KWebWalletPrivate::FormsData data;
-                        data.frame = frame;
-                        data.forms << formsList;
-                        d->pendingFillRequests.insert(url, data);
-                        urlList << url;
-                    }
+                if (formsList.isEmpty())
+                    continue;
+                const QUrl url (childFrame->url());
+                if (d->pendingFillRequests.contains(url)) {
+                    kWarning(800) << "Duplicate request rejected!!!";
+                } else {
+                    KWebWalletPrivate::FormsData data;
+                    data.frame = childFrame;
+                    data.forms << formsList;
+                    d->pendingFillRequests.insert(url, data);
+                    urlList << url;
                 }
             }
         }
@@ -365,7 +379,9 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     if (frame) {
         WebFormList list = d->parseFormData(frame, false, ignorePasswordFields);
         if (recursive) {
-            QListIterator<QWebFrame*> frameIt (frame->childFrames());
+            QList<QWebFrame*> childFrameList;
+            collectAllChildFrames(frame, childFrameList);
+            QListIterator<QWebFrame*> frameIt (childFrameList);
             while (frameIt.hasNext()) {
                 list << d->parseFormData(frameIt.next(), false, ignorePasswordFields);
             }
@@ -434,7 +450,7 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                 if (!formElement.isNull()) {
                     formElement = formElement.findFirst(QString::fromLatin1("input[name=%1]").arg(field.first));
                     if (isValidInputElement(formElement)) {
-                        // WORKAROUND: Autofill does not work on Facebook without this hack!
+                        // HACK: Autofill does not work on Facebook without this hack!
                         // TODO: Find a generic solution that might work everywhere instead...
                         if (formElement.hasAttribute(QL1S("placeholder")))
                             formElement.setAttribute(QL1S("placeholder"), QL1S(""));
