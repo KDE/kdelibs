@@ -261,7 +261,7 @@ bool RegExp::didIncreaseMaxStackSize = false;
 int RegExp::availableStackSize = 8*1024*1024;
 
 RegExp::RegExp(const UString &p, char flags)
-  : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
+  : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0)
 {
 #ifdef HAVE_PCREPOSIX
   // Determine whether libpcre has unicode support if need be..
@@ -297,11 +297,10 @@ RegExp::RegExp(const UString &p, char flags)
   bool secondTry = false;
 
   while (1) {
-    // Fill our buffer with an encoded version, whether utf-8, or,
-    // if PCRE is incapable, truncated.
-    prepareMatch(intern);
-    _regex = pcre_compile(_buffer, options, &errorMessage, &errorOffset, NULL);
-    doneMatch(); //Cleanup buffers
+    RegExpStringContext converted(intern);
+    
+    _regex = pcre_compile(converted.buffer(), options, &errorMessage, &errorOffset, NULL);
+
     if (!_regex) {
 #ifdef PCRE_JAVASCRIPT_COMPAT
       // The compilation failed. It is likely the pattern contains non-standard extensions.
@@ -359,7 +358,6 @@ RegExp::RegExp(const UString &p, char flags)
 
 RegExp::~RegExp()
 {
-  doneMatch(); // Be 100% sure buffers are freed
 #ifdef HAVE_PCREPOSIX
   pcre_free(_regex);
 #else
@@ -368,7 +366,7 @@ RegExp::~RegExp()
 #endif
 }
 
-void RegExp::prepareUtf8(const UString& s)
+void RegExpStringContext::prepareUtf8(const UString& s)
 {
   // Allocate a buffer big enough to hold all the characters plus \0
   const int length = s.size();
@@ -418,7 +416,7 @@ void RegExp::prepareUtf8(const UString& s)
   *(posOut+1) = length+1;
 }
 
-void RegExp::prepareASCII (const UString& s)
+void RegExpStringContext::prepareASCII (const UString& s)
 {
   _originalPos = 0;
 
@@ -432,30 +430,28 @@ void RegExp::prepareASCII (const UString& s)
   _bufferSize = truncated.size();
 }
 
-void RegExp::prepareMatch(const UString &s)
+RegExpStringContext::RegExpStringContext(const UString &s)
 {
-  delete[] _originalPos; // Just to be sure..
-  delete[] _buffer;
-  if (utf8Support == Supported)
-    prepareUtf8(s);
-  else
-    prepareASCII(s);
-
 #ifndef NDEBUG
   _originalS = s;
 #endif
+
+  if (RegExp::utf8Support == RegExp::Supported)
+    prepareUtf8(s);
+  else
+    prepareASCII(s);
 }
 
-void RegExp::doneMatch()
+RegExpStringContext::~RegExpStringContext()
 {
   delete[] _originalPos; _originalPos = 0;
   delete[] _buffer;      _buffer      = 0;
 }
 
-UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovector)
+UString RegExp::match(const RegExpStringContext& ctx, const UString &s, bool *error, int i, int *pos, int **ovector)
 {
 #ifndef NDEBUG
-  assert(s.data() == _originalS.data()); // Make sure prepareMatch got called right..
+  assert(s.data() == ctx._originalS.data()); // Make sure the context is right..
 #endif
 
   if (i < 0)
@@ -491,7 +487,7 @@ UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovec
   int startPos;
   if (utf8Support == Supported) {
     startPos = i;
-    while (_originalPos[startPos] < i)
+    while (ctx.originalPos(startPos) < i)
       ++startPos;
   } else {
     startPos = i;
@@ -530,13 +526,14 @@ UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovec
     limits.match_limit_recursion = (availableStackSize/1300)*3/4;
   }
   
-  const int numMatches = pcre_exec(_regex, stackGlutton ? &limits : 0, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
+  const int numMatches = pcre_exec(_regex, stackGlutton ? &limits : 0, ctx.buffer(),
+                                   ctx.bufferSize(), startPos, baseFlags, offsetVector, offsetVectorSize);
 
   //Now go through and patch up the offsetVector
   if (utf8Support == Supported)
     for (int c = 0; c < 2 * numMatches; ++c)
       if (offsetVector[c] != -1)
-        offsetVector[c] = _originalPos[offsetVector[c]];
+        offsetVector[c] = ctx.originalPos(offsetVector[c]);
 
   if (numMatches < 0) {
 #ifndef NDEBUG

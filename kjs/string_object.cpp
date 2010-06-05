@@ -363,10 +363,10 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
     int replacementCapacity = 0;
 
     // This is either a loop (if global is set) or a one-way (if not).
-    reg->prepareMatch(source);
+    RegExpStringContext ctx(source);
     do {
       int *ovector;
-      UString matchString = regExpObj->performMatch(reg, exec, source, startPosition, &matchIndex, &ovector);
+      UString matchString = regExpObj->performMatch(reg, exec, ctx, source, startPosition, &matchIndex, &ovector);
       if (matchIndex == -1)
         break;
       int matchLen = matchString.size();
@@ -407,7 +407,6 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
       }
     } while (global);
 
-    reg->doneMatch();
 
     if (lastIndex < source.size())
       pushSourceRange(sourceRanges, sourceRangeCount, sourceRangeCapacity, UString::Range(lastIndex, source.size() - lastIndex));
@@ -563,8 +562,9 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
       return throwError(exec, SyntaxError, "Invalid regular expression");
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
-    reg->prepareMatch(u);
-    UString mstr = regExpObj->performMatch(reg, exec, u, 0, &pos);
+
+    RegExpStringContext ctx(u);
+    UString mstr = regExpObj->performMatch(reg, exec, ctx, u, 0, &pos);
 
     if (id == Search) {
       result = jsNumber(pos);
@@ -588,7 +588,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
             list.append(jsString(mstr));
           lastIndex = pos;
           pos += mstr.isEmpty() ? 1 : mstr.size();
-          mstr = regExpObj->performMatch(reg, exec, u, pos, &pos);
+          mstr = regExpObj->performMatch(reg, exec, ctx, u, pos, &pos);
         }
         if (imp)
           imp->put(exec, "lastIndex", jsNumber(lastIndex), DontDelete|DontEnum);
@@ -602,7 +602,6 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
         }
       }
     }
-    reg->doneMatch();
 
     delete tmpReg;
     break;
@@ -637,10 +636,10 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     uint32_t limit = a1->isUndefined() ? 0xFFFFFFFFU : a1->toUInt32(exec);
     if (a0->isObject() && static_cast<JSObject *>(a0)->inherits(&RegExpImp::info)) {
       RegExp *reg = static_cast<RegExpImp *>(a0)->regExp();
-      reg->prepareMatch(u);
+
+      RegExpStringContext ctx(u);
       bool error = false;
-      if (u.isEmpty() && !reg->match(u, &error, 0).isNull()) {
-        reg->doneMatch();
+      if (u.isEmpty() && !reg->match(ctx, u, &error, 0).isNull()) {
 
         // empty string matched by regexp -> empty array
         res->put(exec, exec->propertyNames().length, jsNumber(0));
@@ -651,7 +650,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
         // TODO: back references
         int mpos;
         int *ovector = 0L;
-        UString mstr = reg->match(u, &error, pos, &mpos, &ovector);
+        UString mstr = reg->match(ctx, u, &error, pos, &mpos, &ovector);
         delete [] ovector; ovector = 0L;
         if (mpos < 0)
           break;
@@ -662,7 +661,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
           i++;
         }
       }
-      reg->doneMatch();
+
       if (error)
         RegExpObjectImp::throwRegExpError(exec);
 

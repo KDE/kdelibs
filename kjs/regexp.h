@@ -40,6 +40,31 @@ extern "C" { // bug with some libc5 distributions
 
 namespace KJS {
 
+
+  // Represents a strign re-encoded to whatever PCRE can handle
+  class RegExpStringContext {
+  public:
+    explicit RegExpStringContext(const UString& pattern);
+    ~RegExpStringContext();
+
+    char* buffer() const { return _buffer; }
+    int   bufferSize() const { return _bufferSize; }
+    int   originalPos(int c) const { return _originalPos[c]; }
+
+  private:
+    // Cached encoding info...
+    char* _buffer;
+    int*  _originalPos;
+    int   _bufferSize;
+
+    void prepareUtf8  (const UString& s);
+    void prepareASCII (const UString& s);
+#ifndef NDEBUG
+  public:
+    UString _originalS; // the original string, used for sanity-checking
+#endif
+  };
+
   class RegExp {
   public:
     enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
@@ -50,13 +75,9 @@ namespace KJS {
     char flags() const { return _flags; }
     bool isValid() const { return _valid; }
 
-    UString match(const UString &s, bool *error, int i, int *pos = 0, int **ovector = 0);
+    UString match(const RegExpStringContext& c, const UString& s, bool *error, int i, int *pos = 0, int **ovector = 0);
     unsigned subPatterns() const { return _numSubPatterns; }
     UString  pattern() const { return _pat; }
-
-    //These methods should be called around the match of the same string..
-    void prepareMatch(const UString &s);
-    void doneMatch();
 
     static bool tryGrowingMaxStackSize;
     static bool didIncreaseMaxStackSize;
@@ -72,26 +93,16 @@ namespace KJS {
     bool _valid;
     unsigned _numSubPatterns;
     
-    // Cached encoding info...
-    char* _buffer;
-    int*  _originalPos;
-    int   _bufferSize;
-
-    void prepareUtf8  (const UString& s);
-    void prepareASCII (const UString& s);
-#ifndef NDEBUG
-    UString _originalS; // the original string, used for sanity-checking
-#endif
-
     RegExp(const RegExp &);
     RegExp &operator=(const RegExp &);
-    
+
+  public:
     enum UTF8SupportState {
       Unknown,
       Supported,
       Unsupported
     };
-    
+
     static UTF8SupportState utf8Support;
   };
 

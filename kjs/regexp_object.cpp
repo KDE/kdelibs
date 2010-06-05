@@ -105,9 +105,10 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     }
 
     int foundIndex;
-    regExp->prepareMatch(input);
-    UString match = regExpObj->performMatch(regExp, exec, input, static_cast<int>(lastIndex), &foundIndex);
-    regExp->doneMatch();
+
+    RegExpStringContext ctx(input);
+    UString match = regExpObj->performMatch(regExp, exec, ctx, input, static_cast<int>(lastIndex), &foundIndex);
+
     if (exec->hadException())
       return jsUndefined();
 
@@ -248,13 +249,14 @@ void RegExpObjectImp::throwRegExpError(ExecState* exec)
   expression matching through the performMatch function. We use cached results to calculate,
   e.g., RegExp.lastMatch and RegExp.leftParen.
 */
-UString RegExpObjectImp::performMatch(RegExp* r, ExecState* exec, const UString& s,
+UString RegExpObjectImp::performMatch(RegExp* r, ExecState* exec, const RegExpStringContext& c,
+                                      const UString& s,
                                       int startOffset, int *endOffset, int **ovector)
 {
   int tmpOffset;
   int *tmpOvector;
   bool error = false;
-  UString match = r->match(s, &error, startOffset, &tmpOffset, &tmpOvector);
+  UString match = r->match(c, s, &error, startOffset, &tmpOffset, &tmpOvector);
   if (error) {
     if (endOffset)
       *endOffset = -1;
