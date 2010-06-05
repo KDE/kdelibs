@@ -182,12 +182,16 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
   if (checkRO) {
     // Check for static properties that are ReadOnly; the property map will check the dynamic properties.
     // We don't have to worry about setters being read-only as they can't be added with such an attribute.
+    // We also need to inherit any attributes we have from the entry
     const HashEntry* entry = findPropertyHashEntry(propertyName);
-    if (entry && entry->attr & ReadOnly) {
+    if (entry) {
+      if (entry->attr & ReadOnly) {
 #ifdef KJS_VERBOSE
-      fprintf( stderr, "WARNING: static property %s is ReadOnly\n", propertyName.ascii() );
+        fprintf( stderr, "WARNING: static property %s is ReadOnly\n", propertyName.ascii() );
 #endif
-      return;
+        return;
+      }
+      attr = entry->attr;
     }
   }
 
