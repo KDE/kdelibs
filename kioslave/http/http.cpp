@@ -1836,6 +1836,10 @@ bool HTTPProtocol::sendErrorPageNotification()
 
 bool HTTPProtocol::isOffline()
 {
+  // ### TEMPORARY WORKAROUND (While investigating why solid may
+  // produce false positives)
+  return false;
+    
   Solid::Networking::Status status = Solid::Networking::status();
 
   kDebug(7113) << "networkstatus:" << status;
