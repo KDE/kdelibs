@@ -214,7 +214,8 @@ QString KLocalizedString::toString (const KLocale *locale,
 QString KLocalizedStringPrivate::toString (const KLocale *locale,
                                            const QString &catalogName) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    const KLocalizedStringPrivateStatics *s = staticsKLSP;
+
     QMutexLocker lock(kLocaleMutex());
 
     // Assure the message has been supplied.
@@ -470,7 +471,7 @@ QString KLocalizedStringPrivate::postFormat (const QString &text,
                                              const QString &lang,
                                              const QString &ctxt) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    const KLocalizedStringPrivateStatics *s = staticsKLSP;
     QMutexLocker lock(kLocaleMutex());
 
     QString final = text;
@@ -489,7 +490,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &final,
                                                        bool &fallback) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    const KLocalizedStringPrivateStatics *s = staticsKLSP;
     QMutexLocker lock(kLocaleMutex());
 
     if (s->ktrs == NULL)
@@ -705,7 +706,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
 
 QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    const KLocalizedStringPrivateStatics *s = staticsKLSP;
     QMutexLocker lock(kLocaleMutex());
 
     // Return invalid variant if segment is either not a proper
