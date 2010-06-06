@@ -63,8 +63,12 @@ namespace UPnP
 
             const Herqq::Upnp::HDeviceProxy* device() const;
 
+            const QString specVersion() const;
+
         protected:
             const Herqq::Upnp::HDeviceProxy* m_device;
+
+            const QString m_specVersion;
     };
 
 }

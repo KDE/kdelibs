@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "upnpmediaserver.h"
-#include "upnpstorageaccess.h"
+#ifndef SOLID_BACKENDS_UPNP_UPNPINTERNETGATEWAYDEVICE_H
+#define SOLID_BACKENDS_UPNP_UPNPINTERNETGATEWAYDEVICE_H
 
-#include <HDeviceInfo>
+#include <backends/upnp/upnpdevice.h>
 
 namespace Solid
 {
@@ -30,35 +30,22 @@ namespace Backends
 namespace UPnP
 {
 
-UPnPMediaServer::UPnPMediaServer(Herqq::Upnp::HDeviceProxy* device) :
-    Solid::Backends::UPnP::UPnPDevice(device)
-{
-}
-
-UPnPMediaServer::~UPnPMediaServer()
-{
-}
-
-QString UPnPMediaServer::icon() const
-{
-    return QString::fromLatin1("folder-remote");
-}
-
-bool UPnPMediaServer::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
-{
-    return type == Solid::DeviceInterface::StorageAccess;
-}
-
-QObject* UPnPMediaServer::createDeviceInterface(const Solid::DeviceInterface::Type& type)
-{
-    if (type == Solid::DeviceInterface::StorageAccess)
+    class UPnPInternetGatewayDevice : public Solid::Backends::UPnP::UPnPDevice
     {
-      return new Solid::Backends::UPnP::UPnPStorageAccess(this);
-    }
+        public:
+            explicit UPnPInternetGatewayDevice(Herqq::Upnp::HDeviceProxy* device);
 
-    return 0;
-}
+            virtual ~UPnPInternetGatewayDevice();
+
+            virtual QString icon() const;
+
+            virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
+
+            virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
+    };
 
 }
 }
 }
+
+#endif // SOLID_BACKENDS_UPNP_UPNPINTERNETGATEWAYDEVICE_H

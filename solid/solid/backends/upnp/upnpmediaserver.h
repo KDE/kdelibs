@@ -42,11 +42,6 @@ namespace UPnP
             virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
 
             virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
-
-            QString version() const;
-
-        private:
-            QString m_version;
     };
 
 }

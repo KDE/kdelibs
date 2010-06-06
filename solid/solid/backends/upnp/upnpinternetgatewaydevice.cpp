@@ -18,10 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "upnpmediaserver.h"
-#include "upnpstorageaccess.h"
-
-#include <HDeviceInfo>
+#include "upnpinternetgatewaydevice.h"
 
 namespace Solid
 {
@@ -30,32 +27,27 @@ namespace Backends
 namespace UPnP
 {
 
-UPnPMediaServer::UPnPMediaServer(Herqq::Upnp::HDeviceProxy* device) :
+UPnPInternetGatewayDevice::UPnPInternetGatewayDevice(Herqq::Upnp::HDeviceProxy* device) :
     Solid::Backends::UPnP::UPnPDevice(device)
 {
 }
 
-UPnPMediaServer::~UPnPMediaServer()
+UPnPInternetGatewayDevice::~UPnPInternetGatewayDevice()
 {
 }
 
-QString UPnPMediaServer::icon() const
+QString UPnPInternetGatewayDevice::icon() const
 {
-    return QString::fromLatin1("folder-remote");
+    return QString::fromLatin1("network-server");
 }
 
-bool UPnPMediaServer::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
+bool UPnPInternetGatewayDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    return type == Solid::DeviceInterface::StorageAccess;
+    return false;
 }
 
-QObject* UPnPMediaServer::createDeviceInterface(const Solid::DeviceInterface::Type& type)
+QObject* UPnPInternetGatewayDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
-    if (type == Solid::DeviceInterface::StorageAccess)
-    {
-      return new Solid::Backends::UPnP::UPnPStorageAccess(this);
-    }
-
     return 0;
 }
 

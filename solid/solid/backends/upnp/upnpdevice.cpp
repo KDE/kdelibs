@@ -66,7 +66,8 @@ static QMap<QString, QString> makeTypeIconMap()
 static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
 
 UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
-    Solid::Ifaces::Device()
+    Solid::Ifaces::Device(),
+    m_specVersion(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::Version))
 {
     m_device = device;
 }
@@ -84,9 +85,15 @@ const Herqq::Upnp::HDeviceProxy* UPnPDevice::device() const
 QString UPnPDevice::udi() const
 {
     const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-    QString udi = deviceInfo.udn().toString();
 
-    return QString::fromLatin1("/org/kde/upnp/%1").arg(udi);
+    if (!deviceInfo.udn().isValid())
+    {
+        qWarning("This device UDN is not valid one!");
+    }
+
+    QString udn = deviceInfo.udn().toString();
+
+    return QString::fromLatin1("/org/kde/upnp/%1").arg(udn);
 }
 
 QString UPnPDevice::parentUdi() const
@@ -95,6 +102,11 @@ QString UPnPDevice::parentUdi() const
     if (parent)
     {
         Herqq::Upnp::HDeviceInfo parentInfo = parent->deviceInfo();
+
+        if (!parentInfo.udn().isValid())
+        {
+            qWarning("This device UDN is not valid one!");
+        }
 
         return QString::fromLatin1("/org/kde/upnp/%1").arg(parentInfo.udn().toString());
     }
@@ -158,6 +170,11 @@ QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& t
 bool UPnPDevice::isValid() const
 {
     return m_device->deviceInfo().isValid();
+}
+
+const QString UPnPDevice::specVersion() const
+{
+    return m_specVersion;
 }
 
 }
