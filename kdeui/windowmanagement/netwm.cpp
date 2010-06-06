@@ -231,6 +231,8 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 	delete [] p->icon_name;
 	delete [] p->visible_icon_name;
 	delete [] p->startup_id;
+	delete [] p->class_class;
+	delete [] p->class_name;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
@@ -4445,8 +4447,8 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         p->class_name = NULL;
         XClassHint hint;
         if( XGetClassHint( p->display, p->window, &hint )) {
-            p->class_class = strdup( hint.res_class );
-            p->class_name = strdup( hint.res_name );
+            p->class_class = nstrdup( hint.res_class );
+            p->class_name = nstrdup( hint.res_name );
             XFree( hint.res_class );
             XFree( hint.res_name );
         }
