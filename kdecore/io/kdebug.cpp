@@ -277,7 +277,7 @@ struct KDebugPrivate
         uint lineNumber=0;
 
         while (!file.atEnd()) {
-            QByteArray line = file.readLine().trimmed();
+            const QByteArray line = file.readLine().trimmed();
             ++lineNumber;
             if (line.isEmpty())
                 continue;
