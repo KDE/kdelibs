@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #ifdef Q_OS_WIN
+#include <config-kdoctools.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QHash>
