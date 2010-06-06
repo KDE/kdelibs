@@ -243,22 +243,26 @@ void KPixmapSequenceOverlayPainter::stop()
 bool KPixmapSequenceOverlayPainter::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == d->m_widget ) {
-        if(event->type() == QEvent::Paint) {
+        switch (event->type()) {
+        case QEvent::Paint:
             // make sure we paint after everyone else including other event filters
             obj->removeEventFilter(this); // don't recurse...
             QCoreApplication::sendEvent(obj, event);
             d->paintFrame();
             obj->installEventFilter(this); // catch on...
             return true;
-        }
-        else if(event->type() == QEvent::Hide) {
+        break;
+        case QEvent::Hide:
             d->m_timer.stop();
-        }
-        else if(event->type() == QEvent::Show) {
+        break;
+        case QEvent::Show:
             if(d->m_started) {
                 d->m_timer.start();
                 d->m_widget->update(d->pixmapRect());
             }
+        break;
+        default:
+        break;
         }
     }
 
