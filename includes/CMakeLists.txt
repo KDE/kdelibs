@@ -141,7 +141,6 @@ install( FILES
   KDBusServiceStarter
   KDebug
   KDEDModule
-  KDEsuClient
   KDataTool
   KDataToolAction
   KDataToolInfo
@@ -443,10 +442,6 @@ install( FILES
   NETWinInfo
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
-  PtyProcess
-  SshProcess
-  StubProcess
-  SuProcess
   ThumbCreator
   kdbgstream
   kndbgstream
@@ -479,9 +474,14 @@ if (UNIX)
    endif (QT_QT3SUPPORT_FOUND)
 
    install( FILES
+     KDEsuClient
      KPty
      KPtyDevice
      KPtyProcess
+     PtyProcess
+     SshProcess
+     StubProcess
+     SuProcess
    DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 endif (UNIX)
 
