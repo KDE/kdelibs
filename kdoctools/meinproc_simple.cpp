@@ -1,8 +1,6 @@
 
 #include "meinproc_common.h"
 
-#include <config-kdoctools.h>
-#include <config.h>
 #include "xslt.h"
 
 #include <QCoreApplication>

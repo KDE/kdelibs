@@ -5,8 +5,6 @@
 #include <QtCore/QString>
 #include <QtCore/QVector>
 
-#include <config-kdoctools.h>
-
 class QByteArray;
 class QIODevice;
 class KComponentData;
