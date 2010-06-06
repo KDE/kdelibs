@@ -270,6 +270,8 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
     QByteArray enc_string = ""; // used for non-multipart data
 
+    bool useMultipart = m_multipart && m_post; // as multipart is ignored for GET
+
     // find out the QTextcodec to use
     QString str = m_acceptcharset.string();
     const QChar space(' ');
@@ -333,14 +335,14 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
         HTMLGenericFormElementImpl* const current = ordered[i];
         khtml::encodingList lst;
 
-        if (!current->disabled() && current->encoding(codec, lst, m_multipart))
+        if (!current->disabled() && current->encoding(codec, lst, useMultipart))
         {
             //kDebug(6030) << "adding name '" << current->name().string() << "'";
             khtml::encodingList::ConstIterator it = lst.constBegin();
             const khtml::encodingList::ConstIterator itEnd = lst.constEnd();
             for( ; it != itEnd; ++it )
             {
-                if (!m_multipart)
+                if (!useMultipart)
                 {
                     // handle ISINDEX / <input name=isindex> special
                     // but only if its the first entry
@@ -446,7 +448,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
         }
     }
 
-    if (m_multipart)
+    if (useMultipart)
         enc_string = QString("--" + m_boundary + "--\r\n").toAscii().constData();
 
     const int old_size = form_data.size();
@@ -463,7 +465,6 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
     {
         m_enctype = "multipart/form-data";
         m_multipart = true;
-        m_post = true;
     } else if (type.string().indexOf("text", 0, Qt::CaseInsensitive) != -1 || type.string().indexOf("plain", 0, Qt::CaseInsensitive) != -1)
     {
         m_enctype = "text/plain";
