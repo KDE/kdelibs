@@ -365,13 +365,21 @@ void KDateTable::paintEvent( QPaintEvent *e )
     int bottomRow = ( int )std::ceil( rectToUpdate.bottom() / cellHeight );
     bottomRow = qMin( bottomRow, d->numWeekRows - 1 );
     rightCol = qMin( rightCol, d->numDayColumns - 1 );
-    p.translate( leftCol * cellWidth, topRow * cellHeight );
+    if ( layoutDirection() == Qt::RightToLeft ) {
+        p.translate( ( d->numDayColumns - leftCol - 1 ) * cellWidth, topRow * cellHeight );
+    } else {
+        p.translate( leftCol * cellWidth, topRow * cellHeight );
+    }
     for ( int i = leftCol; i <= rightCol; ++i ) {
         for ( int j = topRow; j <= bottomRow; ++j ) {
             paintCell( &p, j, i, colorScheme );
             p.translate( 0, cellHeight );
         }
-        p.translate( cellWidth, 0 );
+        if ( layoutDirection() == Qt::RightToLeft ) {
+            p.translate( -cellWidth, 0 );
+        } else {
+            p.translate( cellWidth, 0 );
+        }
         p.translate( 0, -cellHeight * ( bottomRow - topRow + 1 ) );
     }
 }
@@ -675,7 +683,12 @@ bool KDateTable::event(QEvent *ev)
         {
             QHoverEvent *e = static_cast<QHoverEvent *>(ev);
             const int row = e->pos().y() * d->numWeekRows / height();
-            const int col = e->pos().x() * d->numDayColumns / width();
+            int col;
+            if ( layoutDirection() == Qt::RightToLeft ) {
+                col = d->numDayColumns - ( e->pos().x() * d->numDayColumns / width() ) - 1;
+            } else {
+                col = e->pos().x() * d->numDayColumns / width();
+            }
 
             const int pos = row < 1 ? -1 : (d->numDayColumns * (row - 1)) + col;
 
@@ -712,7 +725,11 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
 
     QPoint mouseCoord = e->pos();
     row = mouseCoord.y() * d->numWeekRows / height();
-    col = mouseCoord.x() * d->numDayColumns / width();
+    if ( layoutDirection() == Qt::RightToLeft ) {
+        col = d->numDayColumns - ( mouseCoord.x() * d->numDayColumns / width() ) - 1;
+    } else {
+        col = mouseCoord.x() * d->numDayColumns / width();
+    }
 
     if( row < 1 || col < 0 ) { // the user clicked on the frame of the table
         return;
