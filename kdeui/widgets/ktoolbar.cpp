@@ -1189,11 +1189,11 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
     QToolButton* tb;
     if ((tb = qobject_cast<QToolButton*>(watched)) && !tb->actions().isEmpty()) {
         // Handle MMB on toolbar buttons
-        QAction* act = tb->actions().first();
         if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent* me = static_cast<QMouseEvent*>(event);
             if (me->button() == Qt::MidButton /*&&
                                                  act->receivers(SIGNAL(triggered(Qt::MouseButtons,Qt::KeyboardModifiers)))*/) {
+                QAction* act = tb->actions().first();
                 if (me->type() == QEvent::MouseButtonPress)
                     tb->setDown(act->isEnabled());
                 else {
@@ -1212,7 +1212,7 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
         // removal of ampersand only may not be enough there, instead the whole
         // parenthesis construct should be removed. Use KLocale's method to do this.
         if (event->type() == QEvent::Show || event->type() == QEvent::Paint || event->type() == QEvent::EnabledChange) {
-            act = tb->defaultAction();
+            QAction *act = tb->defaultAction();
             if (act) {
                 const QString text = KGlobal::locale()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
                 const QString toolTip = KGlobal::locale()->removeAcceleratorMarker(act->toolTip());
