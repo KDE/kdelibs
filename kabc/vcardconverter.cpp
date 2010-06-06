@@ -51,11 +51,26 @@ QString VCardConverter::createVCard( const Addressee &addr, Version version )
   return createVCards( list, version );
 }
 
+QCString VCardConverter::createVCardRaw( const Addressee &addr, Version version )
+{
+  Addressee::List list;
+  list.append( addr );
+
+  return createVCardsRaw( list, version );
+}
+
 QString VCardConverter::createVCards( Addressee::List list, Version version )
 {
   VCardTool tool;
 
   return tool.createVCards( list, ( version == v3_0 ? VCard::v3_0 : VCard::v2_1 ) );
+}
+
+QCString VCardConverter::createVCardsRaw( Addressee::List list, Version version )
+{
+  VCardTool tool;
+
+  return tool.createVCardsRaw( list, ( version == v3_0 ? VCard::v3_0 : VCard::v2_1 ) );
 }
 
 Addressee VCardConverter::parseVCard( const QString& vcard )
@@ -65,11 +80,25 @@ Addressee VCardConverter::parseVCard( const QString& vcard )
   return list[ 0 ];
 }
 
+Addressee VCardConverter::parseVCardRaw( const QCString& vcard )
+{
+  Addressee::List list = parseVCardsRaw( vcard );
+
+  return list[ 0 ];
+}
+
 Addressee::List VCardConverter::parseVCards( const QString& vcard )
 {
   VCardTool tool;
 
   return tool.parseVCards( vcard );
+}
+
+Addressee::List VCardConverter::parseVCardsRaw( const QCString& vcard )
+{
+  VCardTool tool;
+
+  return tool.parseVCardsRaw( vcard );
 }
 
 // ---------------------------- deprecated stuff ---------------------------- //
