@@ -13,7 +13,6 @@
 #include <assert.h>
 #include <QtCore/QTextCodec>
 #include <stdlib.h>
-#include <config.h>
 #include <stdarg.h>
 
 #ifdef Q_OS_WIN
