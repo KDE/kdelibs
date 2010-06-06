@@ -2400,7 +2400,8 @@ bool HTTPProtocol::sendQuery()
       header += QLatin1String("Accept-Language: ") + m_request.languages + QLatin1String("\r\n");
 
     QString cookieStr;
-    QString cookieMode = metaData(QLatin1String("cookies")).toLower();
+    const QString cookieMode = metaData(QLatin1String("cookies")).toLower();
+
     if (cookieMode == QLatin1String("none"))
     {
       m_request.cookieMode = HTTPRequest::CookiesNone;
@@ -3796,8 +3797,8 @@ bool HTTPProtocol::sendBody()
 
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
-  QString cLength = QString::fromLatin1("Content-Length: %1\r\n\r\n").arg(m_POSTbuf.size());
-  kDebug( 7113 ) << cLength;
+  const QString cLength = QString::fromLatin1("Content-Length: %1\r\n\r\n").arg(m_POSTbuf.size());
+  kDebug( 7113 ) << cLength.trimmed();
 
   // Send the content length...
   bool sendOk = (write(cLength.toLatin1(), cLength.length()) == (ssize_t) cLength.length());
