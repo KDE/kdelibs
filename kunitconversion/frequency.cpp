@@ -129,7 +129,7 @@ Frequency::Frequency() : UnitCategory(FrequencyCategory)
     U(Microhertz, 1e-06,
       i18nc("frequency unit symbol", "µHz"),
       i18nc("unit description in lists", "microhertzs"),
-      i18nc("unit synonyms for matching user input", "microhertz;microhertzs;µm;uHz"),
+      i18nc("unit synonyms for matching user input", "microhertz;microhertzs;µHz;uHz"),
       ki18nc("amount in units (real)", "%1 microhertzs"),
       ki18ncp("amount in units (integer)", "%1 microhertz", "%1 microhertzs")
     );
