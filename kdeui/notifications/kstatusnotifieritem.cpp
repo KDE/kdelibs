@@ -71,6 +71,28 @@ protected:
         // of Qt 4.7.
         return icon.isNull() ? QString() : icon.name();
 #else
+        // Qt 4.6: If the icon was created by us, via our engine, serializing it
+        // will let us get to the name.
+        if (!icon.isNull()) {
+            QBuffer encBuf;
+            encBuf.open(QIODevice::WriteOnly);
+            QDataStream encode(&encBuf);
+            encode.setVersion(QDataStream::Qt_4_6);
+            encode << icon;
+            encBuf.close();
+
+            if (!encBuf.data().isEmpty()) {
+                QDataStream decode(encBuf.data());
+                QString key;
+                decode >> key;
+                if (key == QLatin1String("KIconEngine")) {
+                    QString name;
+                    decode >> name;
+                    return name;
+                }
+            }
+        }
+        
         return QString();
 #endif
     }
