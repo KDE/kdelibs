@@ -2431,7 +2431,7 @@ void KLocalePrivate::initEncoding()
     systemLocale = "UTF-8";
 #endif //Q_OS_MAC
 
-    if (systemLocale == "ANSI_X3.4-1968") {
+    if ((systemLocale == "ANSI_X3.4-1968") || (systemLocale == "US-ASCII")) {
         // means ascii, "C"; QTextCodec doesn't know, so avoid warning
         systemLocale = "ISO-8859-1";
     }
