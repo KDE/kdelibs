@@ -85,7 +85,7 @@ void CachedRendering::modelReset()
 
 AnimationState::AnimationState(const QModelIndex &index)
         : index(index), direction(QTimeLine::Forward),
-          animating(false), progress(0.0), m_fadeProgress(1.0),
+          animating(false), jobAnimation(false), progress(0.0), m_fadeProgress(1.0),
           m_jobAnimationAngle(0.0), renderCache(NULL), fadeFromRenderCache(NULL)
 {
     creationTime.start();
