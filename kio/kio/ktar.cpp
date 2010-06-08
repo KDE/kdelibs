@@ -107,14 +107,12 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
         forced = false;
     }
     d->mimetype = mimetype;
-
-    prepareDevice( filename, mimetype, forced );
 }
 
 void KTar::prepareDevice( const QString & filename,
-                            const QString & mimetype, bool /*forced*/ )
+                          const QString & mimetype, int ioMode )
 {
-  if( "application/x-tar" == mimetype )
+  if( "application/x-tar" == mimetype || ioMode == IO_WriteOnly )
       setDevice( new QFile( filename ) );
   else
   {
@@ -329,7 +327,16 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
 
 bool KTar::openArchive( int mode )
 {
-    kdDebug( 7041 ) << "KTar::openArchive" << endl;
+    kdDebug( 7041 ) << "KTar::openArchive filename=" << m_filename << " mode=" << (mode&IO_ReadOnly?"ReadOnly":"Write") << endl;
+    
+    if (!m_filename.isEmpty()) {
+        // Finish what the constructor used to do
+        prepareDevice( m_filename, d->mimetype, mode );
+        // Then do what KArchive::open wasn't able to do yet
+        if ( device() && !device()->open( mode ) )
+            return false;
+    }
+
     if ( !(mode & IO_ReadOnly) )
         return true;
 

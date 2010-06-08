@@ -112,7 +112,7 @@ private:
     /**
      * @internal
      */
-    void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
+    void prepareDevice( const QString & filename, const QString & mimetype, int ioMode );
 
     /**
      * @internal
