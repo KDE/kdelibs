@@ -1179,10 +1179,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (size < 0 || _name.isEmpty())
         return QPixmap();
 
-    if(_name == QLatin1String("playing")) {
-        kDebug(264) << "This pixmap is damaged.";
-    }
-
     /*
      * This method works in a kind of pipeline, with the following steps:
      * 1. Sanity checks.
