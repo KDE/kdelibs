@@ -86,12 +86,19 @@ namespace Nepomuk {
          * created at all times. This method searches for an existing data object to reuse or creates
          * a new one if none exists.
          *
-         * \param uri The URI of the resource is question.
+         * \param uri The URI of the resource is question or it's nie:url or even its identified stored in
+         * a QUrl object.
          * \type The type of the resource.
          *
          * The Resource constructors use this method in combination with ref()
          */
         ResourceData* data( const QUrl& uri, const QUrl& type );
+
+        /**
+         * In contrast to data(QUrl,QUrl) this method avoids the overhead of determining the resource URI
+         * via ResourceData::determineUri() and simply uses \p uri as the resource URI.
+         */
+        ResourceData* dataForResourceUri( const QUrl& uri, const QUrl& type );
 
         bool dataCacheFull() const;
 
@@ -116,6 +123,8 @@ namespace Nepomuk {
         void _k_dbusServiceUnregistered( const QString& serviceName );
 
     private:
+        ResourceData* findData( const QUrl& uri );
+
         QUrl m_mainContext;
     };
 }

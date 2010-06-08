@@ -44,7 +44,7 @@ namespace Nepomuk {
     class ResourceData
     {
     public:
-        explicit ResourceData( const QUrl& uri, const QUrl& type_, ResourceManagerPrivate* rm );
+        explicit ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
 
         inline bool ref(Nepomuk::Resource* res) {

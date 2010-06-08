@@ -88,7 +88,7 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Resul
     Soprano::BindingSet additionalBindings;
 
     arg >> uri >> score;
-    result = Nepomuk::Query::Result( QUrl::fromEncoded( uri.toAscii() ), score );
+    result = Nepomuk::Query::Result( Nepomuk::Resource::fromResourceUri( QUrl::fromEncoded( uri.toAscii() ) ), score );
 
     arg.beginMap();
     while ( !arg.atEnd() ) {

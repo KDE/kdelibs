@@ -23,7 +23,10 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
-#include <QtCore/QUrl>
+
+#include <kurl.h>
+
+#include "class.h"
 
 #include "nepomuk_export.h"
 
@@ -735,6 +738,16 @@ namespace Nepomuk {
          * \since 4.5
          */
         void increaseUsageCount();
+
+        /**
+         * Allows to quickly load a resource from its resource URI without any
+         * additional checks. This is mostly used for optimized code within Nepomuk.
+         *
+         * In most situations the construtor Resource( QUrl, QUrl ) is better suited.
+         *
+         * \since 4.5
+         */
+        static Resource fromResourceUri( const KUrl& uri, const Nepomuk::Types::Class& type = Nepomuk::Types::Class(), ResourceManager* manager = 0 );
 
     private:
         /**

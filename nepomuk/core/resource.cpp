@@ -864,6 +864,15 @@ void Nepomuk::Resource::increaseUsageCount()
 }
 
 
+// static
+Nepomuk::Resource Nepomuk::Resource::fromResourceUri( const KUrl& uri, const Nepomuk::Types::Class& type, ResourceManager* manager )
+{
+    if( !manager )
+        manager = ResourceManager::instance();
+    return Resource( manager->d->dataForResourceUri( uri, type.uri() ) );
+}
+
+
 void Nepomuk::Resource::determineFinalResourceData() const
 {
     m_data->m_determineUriMutex.lock();

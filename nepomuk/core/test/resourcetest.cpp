@@ -298,6 +298,11 @@ void ResourceTest::testLocalFileUrls()
         Resource fileRes4( KUrl(tmpFile1ResUri).url() );
         fileRes4.setRating(4);
         QCOMPARE( fileRes4.resourceUri(), tmpFile1ResUri );
+
+        // make sure the resource is reused with the local file path
+        Resource fileRes5( tmpFile1.fileName() );
+        fileRes4.setRating(5);
+        QCOMPARE( fileRes5.resourceUri(), tmpFile1ResUri );
     }
 
     // clear cache to be sure we call ResourceData::determineUri

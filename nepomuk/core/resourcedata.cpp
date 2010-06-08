@@ -55,8 +55,9 @@ using namespace Soprano;
 #define MAINMODEL m_rm->resourceFilterModel
 
 
-Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& type, ResourceManagerPrivate* rm )
-    : m_mainType( type ),
+Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type, ResourceManagerPrivate* rm )
+    : m_uri(uri),
+      m_mainType( type ),
       m_modificationMutex(QMutex::Recursive),
       m_cacheDirty(true),
       m_pimoThing(0),
@@ -76,6 +77,9 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& type, Resource
 
     if( !uri.isEmpty() ) {
         m_kickoffUris.insert( uri );
+    }
+    if( !kickOffUri.isEmpty() ) {
+        m_kickoffUris.insert( kickOffUri );
     }
     m_rm->addToKickOffList( this, m_kickoffUris );
 }
@@ -484,9 +488,8 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 
 void Nepomuk::ResourceData::remove( bool recursive )
 {
-    Q_ASSERT( m_uri.isValid() );
-
     QMutexLocker lock(&m_modificationMutex);
+
     if( !m_uri.isEmpty() ) {
         MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
         if ( recursive ) {
@@ -540,91 +543,85 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
     //        -> use r as m_uri
     //
 
-    if( !m_uri.isEmpty() ) {
-        return this;
-    }
+    if( m_uri.isEmpty() ) {
+        Soprano::Model* model = MAINMODEL;
 
-    Soprano::Model* model = MAINMODEL;
+        if( !m_kickoffUris.isEmpty() ) {
+            KUrl kickOffUri = *m_kickoffUris.begin();
+            if( kickOffUri.scheme().isEmpty() ) {
+                //
+                // Not valid. Checking for nao:identifier
+                //
+                QString query = QString::fromLatin1("select distinct ?r where { ?r %1 %2. } LIMIT 1")
+                                .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::identifier()) )
+                                .arg( Soprano::Node::literalToN3( kickOffUri.url() ) );
 
-    if( !m_kickoffUris.isEmpty() ) {
-        KUrl kickOffUri = *m_kickoffUris.begin();
-        if( kickOffUri.scheme().isEmpty() ) {
-            //
-            // Not valid. Checking for nao:identifier
-            //
-            QString query = QString::fromLatin1("select distinct ?r where { ?r %1 %2. } LIMIT 1")
-                            .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::identifier()) )
-                            .arg( Soprano::Node::literalToN3( kickOffUri.url() ) );
-
-            Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
-            if( it.next() ) {
-                m_uri = it["r"].uri();
-                it.close();
+                Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
+                if( it.next() ) {
+                    m_uri = it["r"].uri();
+                    it.close();
+                }
             }
-        }
-        else {
-            //
-            // In one query determine if the URI is already used as resource URI or as
-            // nie:url
-            //
-            QString query = QString::fromLatin1("select distinct ?r ?o where { "
-                                                "{ ?r %1 %2 . FILTER(?r!=%2) . } "
-                                                "UNION "
-                                                "{ %2 ?p ?o . } "
-                                                "} LIMIT 1")
-                            .arg( Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) )
-                            .arg( Soprano::Node::resourceToN3( kickOffUri ) );
-            Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
-            if( it.next() ) {
-                QUrl uri = it["r"].uri();
-                if( uri.isEmpty() ) {
+            else {
+                //
+                // In one query determine if the URI is already used as resource URI or as
+                // nie:url
+                //
+                QString query = QString::fromLatin1("select distinct ?r ?o where { "
+                                                    "{ ?r %1 %2 . FILTER(?r!=%2) . } "
+                                                    "UNION "
+                                                    "{ %2 ?p ?o . } "
+                                                    "} LIMIT 1")
+                                .arg( Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) )
+                                .arg( Soprano::Node::resourceToN3( kickOffUri ) );
+                Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
+                if( it.next() ) {
+                    QUrl uri = it["r"].uri();
+                    if( uri.isEmpty() ) {
+                        m_uri = kickOffUri;
+                    }
+                    else {
+                        m_uri = uri;
+                        m_nieUrl = kickOffUri;
+                    }
+                    it.close();
+                }
+                else if( kickOffUri.scheme() == QLatin1String("file") ) {
+                    //
+                    // This is the hard part: The file may still be saved using a filex:/ URL
+                    // We have to determine if that is the case. For that we need to look if the URL
+                    // starts with any of the mounted filesystems' mount paths and then reconstruct
+                    // the filex:/ URL. Since that is quite some work which involved Solid and, thus,
+                    // DBus calls we simply call the removable storage service directly.
+                    //
+                    // If there is no resource yet we create a new uri in store()
+                    //
+
+                    //
+                    // We create a new dbus connection to protect us from multi-thread related crashes.
+                    //
+                    KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
+                                                                           QLatin1String("/nepomukremovablestorageservice"),
+                                                                           QLatin1String("org.kde.nepomuk.RemovableStorage"),
+                                                                           DBusConnectionPool::threadConnection())
+                                                            .call( QLatin1String("resourceUriFromLocalFileUrl"),
+                                                                   kickOffUri.url() ) ).value();
+                    if( !resourceUri.isEmpty() ) {
+                        m_uri = resourceUri;
+                    }
+
+                    m_nieUrl = kickOffUri;
+                }
+                else if( kickOffUri.scheme() == QLatin1String("nepomuk") ) {
+                    // for nepomuk URIs we simply use the kickoff URI as resource URI
                     m_uri = kickOffUri;
                 }
                 else {
-                    m_uri = uri;
+                    // for everything else we use m_kickoffUri as nie:url with a new random m_uri
                     m_nieUrl = kickOffUri;
                 }
-                it.close();
-            }
-            else if( kickOffUri.scheme() == QLatin1String("file") ) {
-                //
-                // This is the hard part: The file may still be saved using a filex:/ URL
-                // We have to determine if that is the case. For that we need to look if the URL
-                // starts with any of the mounted filesystems' mount paths and then reconstruct
-                // the filex:/ URL. Since that is quite some work which involved Solid and, thus,
-                // DBus calls we simply call the removable storage service directly.
-                //
-                // If there is no resource yet we create a new uri in store()
-                //
-
-                //
-                // We create a new dbus connection to protect us from multi-thread related crashes.
-                //
-                KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
-                                                                       QLatin1String("/nepomukremovablestorageservice"),
-                                                                       QLatin1String("org.kde.nepomuk.RemovableStorage"),
-                                                                       DBusConnectionPool::threadConnection())
-                                                        .call( QLatin1String("resourceUriFromLocalFileUrl"),
-                                                               kickOffUri.url() ) ).value();
-                if( !resourceUri.isEmpty() ) {
-                    m_uri = resourceUri;
-                }
-
-                m_nieUrl = kickOffUri;
-            }
-            else if( kickOffUri.scheme() == QLatin1String("nepomuk") ) {
-                // for nepomuk URIs we simply use the kickoff URI as resource URI
-                m_uri = kickOffUri;
-            }
-            else {
-                // for everything else we use m_kickoffUri as nie:url with a new random m_uri
-                m_nieUrl = kickOffUri;
             }
         }
-    }
-    else {
-        // no kickoff values. We will only create a new random URI in store()
-        return this;
     }
 
     //
@@ -657,7 +654,7 @@ Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
     load();
     if( !m_pimoThing ) {
         if( hasType( Vocabulary::PIMO::Thing() ) ) {
-            kDebug() << "we are already a thing. Creating link to ourself" << m_uri << this;
+//            kDebug() << "we are already a thing. Creating link to ourself" << m_uri << this;
             // we are out own thing
             m_pimoThing = new Thing(this);
         }
@@ -668,11 +665,11 @@ Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
             m_pimoThing = new Thing(this);
         }
         else {
-            kDebug() << "creating new thing for" << m_uri << m_types << this;
+//            kDebug() << "creating new thing for" << m_uri << m_types << this;
             m_pimoThing = new Thing();
         }
         m_pimoThing->m_data->m_groundingOccurence = this;
-        kDebug() << "created thing" << m_pimoThing->m_data << "with grounding occurence" << m_pimoThing->m_data->m_groundingOccurence;
+//        kDebug() << "created thing" << m_pimoThing->m_data << "with grounding occurence" << m_pimoThing->m_data->m_groundingOccurence;
     }
     return *m_pimoThing;
 }

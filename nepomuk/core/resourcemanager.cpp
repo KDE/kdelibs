@@ -64,27 +64,15 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
 {
     if ( uri.isEmpty() ) {
         // return an invalid resource which may be activated by calling setProperty
-        return new ResourceData( QUrl(), type, this );
+        return new ResourceData( QUrl(), QUrl(), type, this );
     }
 
-    QMutexLocker lock( &mutex );
-
-    // look for the URI in the initialized and in the URI kickoff data
-    ResourceDataHash::iterator end = m_initializedData.end();
-    ResourceDataHash::iterator it = m_initializedData.find( uri );
-    if( it == end ) {
-        end = m_uriKickoffData.end();
-        it = m_uriKickoffData.find( uri );
-    }
-
-    if( it == end ) {
-        ResourceData* d = new ResourceData( uri, type, this );
-//         kDebug() << "--------------------------- Created new ResourceData:" << *d;
-        return d;
+    if( ResourceData* data = findData( uri ) ) {
+        return data;
     }
     else {
-//         kDebug() << "---------------------------- Reusing" << *it.value() << "for" << uri;
-        return it.value();
+        QMutexLocker lock( &mutex );
+        return new ResourceData( QUrl(), uri, type, this );
     }
 }
 
@@ -96,7 +84,24 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
         return data( url, type );
     }
 
-    return new ResourceData( QUrl(), type, this );
+    return new ResourceData( QUrl(), QUrl(), type, this );
+}
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::dataForResourceUri( const QUrl& uri, const QUrl& type )
+{
+    if ( uri.isEmpty() ) {
+        // return an invalid resource which may be activated by calling setProperty
+        return new ResourceData( QUrl(), QUrl(), type, this );
+    }
+
+    if( ResourceData* data = findData( uri ) ) {
+        return data;
+    }
+    else {
+        QMutexLocker lock( &mutex );
+        return new ResourceData( uri, QUrl(), type, this );
+    }
 }
 
 
@@ -221,6 +226,29 @@ void Nepomuk::ResourceManagerPrivate::_k_dbusServiceUnregistered( const QString&
         kDebug() << "Nepomuk Storage service went down.";
         emit m_manager->nepomukSystemStopped();
     }
+}
+
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::findData( const QUrl& uri )
+{
+    if ( !uri.isEmpty() ) {
+        QMutexLocker lock( &mutex );
+
+        // look for the URI in the initialized and in the URI kickoff data
+        ResourceDataHash::iterator end = m_initializedData.end();
+        ResourceDataHash::iterator it = m_initializedData.find( uri );
+        if( it == end ) {
+            end = m_uriKickoffData.end();
+            it = m_uriKickoffData.find( uri );
+        }
+
+        if( it != end ) {
+            return it.value();
+        }
+    }
+
+    return 0;
 }
 
 
