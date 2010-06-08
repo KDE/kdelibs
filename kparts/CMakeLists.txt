@@ -2,7 +2,7 @@ project(kparts)
 
 add_subdirectory( tests )
 
-include_directories( ${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR} ${nepomuk_SOURCE_DIR} ${nepomukcore_SOURCE_DIR} ${nepomukcore_SOURCE_DIR}/types)
+include_directories( ${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR} ${nepomuk_SOURCE_DIR} ${nepomukcore_SOURCE_DIR} ${nepomukcore_SOURCE_DIR}/types ${SOPRANO_INCLUDE_DIR})
 
 
 ########### next target ###############
