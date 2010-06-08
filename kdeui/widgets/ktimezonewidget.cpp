@@ -109,7 +109,12 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
     QTreeWidgetItem *listItem = new QTreeWidgetItem( this );
     listItem->setText( Private::CityColumn, continentCity[ continentCity.count() - 1 ] );
-    continentCity[ continentCity.count() - 1 ] = zone.countryCode();
+    QString countryName = KGlobal::locale()->countryCodeToName( zone.countryCode() );
+    if ( countryName.isEmpty() ) {
+      continentCity[ continentCity.count() - 1 ] = zone.countryCode();
+    } else {
+      continentCity[ continentCity.count() - 1 ] = countryName;
+    }
 
     listItem->setText( Private::RegionColumn, continentCity.join( QChar('/') ) );
     listItem->setText( Private::CommentColumn, comment );
