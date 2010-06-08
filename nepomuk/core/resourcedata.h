@@ -26,6 +26,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutex>
 #include <QtCore/QAtomicInt>
+#include <QtCore/QSet>
 
 #include "variant.h"
 #include "thing.h"
@@ -37,19 +38,25 @@
 
 namespace Nepomuk {
 
+    class Resource;
     class ResourceManagerPrivate;
 
     class ResourceData
     {
     public:
-        explicit ResourceData( const QUrl& uri, const QString& kickoffId_, const QUrl& type_, ResourceManagerPrivate* rm );
+        explicit ResourceData( const QUrl& uri, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
 
-        inline bool ref() {
+        inline bool ref(Nepomuk::Resource* res) {
+            QMutexLocker lock(&m_resourcesMutex);
+            m_resources.push_back( res );
             return m_ref.ref();
         }
 
-        inline bool deref() {
+
+        inline bool deref(Nepomuk::Resource* res) {
+            QMutexLocker lock(&m_resourcesMutex);
+            m_resources.removeAll( res );
             return m_ref.deref();
         }
 
@@ -64,7 +71,6 @@ namespace Nepomuk {
 
         /**
          * The URI of the resource. This might be empty if the resource was not synced yet.
-         * \sa kickoffUriOrId
          */
         QUrl uri() const;
 
@@ -138,9 +144,17 @@ namespace Nepomuk {
         /**
          * Searches for the resource in the Nepomuk store using m_kickoffId and m_kickoffUri.
          *
-         * \returns true if the resource was found and m_uri is set, false otherwise.
+         * This will either get the actual resource URI from the database
+         * and add m_data into ResourceManagerPrivate::m_initializedData
+         * or it will find another ResourceData instance in m_initializedData
+         * which represents the same resource. The ResourceData that should be
+         * used is returned.
+         *
+         * \returns The initialized ResourceData object representing the actual resource.
+         *
+         * m_determineUriMutex needs to be locked before calling this method
          */
-        bool determineUri();
+        ResourceData* determineUri();
 
         void invalidateCache();
 
@@ -155,7 +169,17 @@ namespace Nepomuk {
 
         ResourceManagerPrivate* rm() const { return m_rm; }
 
-        ResourceData* proxy() const { return m_proxyData; }
+        /// Contains a list of resources which use this ResourceData
+        QList<Resource*> m_resources;
+
+        /// the URI that was used to construct the resource. Will be used by determineUri
+        /// to find the actual resource URI which is either m_kickoffUri itself or
+        /// a resource URI which relates to m_kickoffUri by nie:url
+        /// This is a set since Resource::determineFinalResourceData may add additional uris
+        QSet<KUrl> m_kickoffUris;
+
+        /// Needs to be locked before calling determineUri()
+        QMutex m_determineUriMutex;
 
     private:
         void loadType( const QUrl& type );
@@ -164,14 +188,8 @@ namespace Nepomuk {
         /// Used by remove() and deleteData()
         void resetAll( bool isDelete = false );
 
-        /// identifier that was used to construct the resource. Will be used by determineUri
-        /// to check for nao:identifiers or even nie:urls.
-        QString m_kickoffId;
-
-        /// the URI that was used to construct the resource. Will be used by determineUri
-        /// to find the actual resource URI which is either m_kickoffUri itself or
-        /// a resource URI which relates to m_kickoffUri by nie:url
-        KUrl m_kickoffUri;
+        /// Updates both m_kickoffUris and ResourceMangerPrivate's list
+        void updateKickOffLists( const QUrl & prop, const QUrl & newUri );
 
         /// final resource URI created by determineUri
         KUrl m_uri;
@@ -184,16 +202,9 @@ namespace Nepomuk {
 
         QAtomicInt m_ref;
 
-        QMutex m_determineUriMutex;
         mutable QMutex m_modificationMutex;
 
-        /**
-         * Used to virtually merge two data objects representing the same
-         * resource. This happens if the resource was once created using its
-         * actual URI and once via its ID. To prevent early loading we allow
-         * this scenario.
-         */
-        ResourceData* m_proxyData;
+        QMutex m_resourcesMutex;
 
         QHash<QUrl, Variant> m_cache;
         bool m_cacheDirty;

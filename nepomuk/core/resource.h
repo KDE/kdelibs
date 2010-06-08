@@ -737,6 +737,14 @@ namespace Nepomuk {
         void increaseUsageCount();
 
     private:
+        /**
+         * Determines the final ResourceData and updates m_data if
+         * necessary. This will call ResourceData::determineUri()
+         * and optionally merge with already loaded ResourceData
+         * instances representing the same resource.
+         */
+        void determineFinalResourceData() const;
+
         ResourceData* m_data;
 
         class Private;

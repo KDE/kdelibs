@@ -47,14 +47,16 @@
 Nepomuk::Resource::Resource()
 {
     m_data = ResourceManager::instance()->d->data( QUrl(), QUrl() );
-    m_data->ref();
+    if ( m_data )
+        m_data->ref( this );
 }
 
 
 Nepomuk::Resource::Resource( ResourceManager* manager )
 {
     m_data = manager->d->data( QUrl(), QUrl() );
-    m_data->ref();
+    if ( m_data )
+        m_data->ref( this );
 }
 
 
@@ -62,7 +64,7 @@ Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 {
     m_data = res.m_data;
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -70,7 +72,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 {
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -78,7 +80,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManag
 {
     m_data = manager->d->data( uri, type );
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -86,7 +88,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -94,7 +96,7 @@ Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 {
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -102,7 +104,7 @@ Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type, ResourceManager*
 {
     m_data = manager->d->data( uri, type );
     if ( m_data )
-        m_data->ref();
+        m_data->ref( this );
 }
 
 
@@ -110,26 +112,16 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
     m_data = data;
     if ( m_data )
-        data->ref();
+        m_data->ref( this );
 }
 
 
 Nepomuk::Resource::~Resource()
 {
     if ( m_data ) {
-        if ( !m_data->deref() ) {
-            //
-            // We delete data objects in one of three cases:
-            // 1. They are not valid and as such not in one of the ResourceManagerPrivate kickoff lists
-            // 2. They have a proxy which is the actual thing to reuse later on
-            // 3. The cache is already full and we need to clean up
-            //
-            if ( !m_data->isValid() ||
-                 m_data->proxy() ||
-                 m_data->rm()->dataCacheFull() ) {
-                delete m_data;
-            }
-        }
+        m_data->deref( this );
+        if ( m_data->rm()->shouldBeDeleted( m_data ) )
+            delete m_data;
     }
 }
 
@@ -137,12 +129,12 @@ Nepomuk::Resource::~Resource()
 Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        if ( m_data && !m_data->deref() && !m_data->isValid() ) {
+        if ( m_data && !m_data->deref( this ) && m_data->rm()->shouldBeDeleted( m_data ) ) {
             delete m_data;
         }
         m_data = res.m_data;
         if ( m_data )
-            m_data->ref();
+            m_data->ref( this );
     }
 
     return *this;
@@ -170,7 +162,7 @@ QString Nepomuk::Resource::uri() const
 QUrl Nepomuk::Resource::resourceUri() const
 {
     if ( m_data ) {
-        m_data->determineUri();
+        determineFinalResourceData();
         return m_data->uri();
     }
     else {
@@ -187,46 +179,37 @@ QString Nepomuk::Resource::type() const
 
 QUrl Nepomuk::Resource::resourceType() const
 {
-    if ( m_data ) {
-        return m_data->type();
-    }
-    else {
-        return QUrl();
-    }
+    determineFinalResourceData();
+    return m_data->type();
 }
 
 
 QList<QUrl> Nepomuk::Resource::types() const
 {
-    if ( m_data ) {
-        return m_data->allTypes();
-    }
-    else {
-        return QList<QUrl>();
-    }
+    determineFinalResourceData();
+    return m_data->allTypes();
 }
 
 
 void Nepomuk::Resource::setTypes( const QList<QUrl>& types )
 {
-    if ( m_data )
-        m_data->setTypes( types );
+    determineFinalResourceData();
+    m_data->setTypes( types );
 }
 
 
 void Nepomuk::Resource::addType( const QUrl& type )
 {
-    if ( m_data ) {
-        QList<QUrl> tl = types();
-        if( !tl.contains( type ) )
-            setTypes( tl << type );
-    }
+    QList<QUrl> tl = types();
+    if( !tl.contains( type ) )
+        setTypes( tl << type );
 }
 
 
 bool Nepomuk::Resource::hasType( const QUrl& typeUri ) const
 {
-    return m_data ? m_data->hasType( typeUri ) : false;
+    determineFinalResourceData();
+    return m_data->hasType( typeUri );
 }
 
 
@@ -238,12 +221,8 @@ QString Nepomuk::Resource::className() const
 
 QHash<QUrl, Nepomuk::Variant> Nepomuk::Resource::properties() const
 {
-    if ( m_data ) {
-        return m_data->allProperties();
-    }
-    else {
-        return QHash<QUrl, Nepomuk::Variant>();
-    }
+    determineFinalResourceData();
+    return m_data->allProperties();
 }
 
 
@@ -262,13 +241,15 @@ QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 
 bool Nepomuk::Resource::hasProperty( const QUrl& uri ) const
 {
-    return m_data ? m_data->hasProperty( uri ) : false;
+    determineFinalResourceData();
+    return m_data->hasProperty( uri );
 }
 
 
 bool Nepomuk::Resource::hasProperty( const Types::Property& p, const Variant& v ) const
 {
-    return m_data ? m_data->hasProperty( p.uri(), v ) : false;
+    determineFinalResourceData();
+    return m_data->hasProperty( p.uri(), v );
 }
 
 
@@ -286,12 +267,8 @@ Nepomuk::Variant Nepomuk::Resource::property( const QString& uri ) const
 
 Nepomuk::Variant Nepomuk::Resource::property( const QUrl& uri ) const
 {
-    if ( m_data ) {
-        return m_data->property( uri );
-    }
-    else {
-        return Variant();
-    }
+    determineFinalResourceData();
+    return m_data->property( uri );
 }
 
 
@@ -311,9 +288,8 @@ void Nepomuk::Resource::addProperty( const QUrl& uri, const Variant& value )
 
 void Nepomuk::Resource::setProperty( const QUrl& uri, const Nepomuk::Variant& value )
 {
-    if ( m_data ) {
-        m_data->setProperty( uri, value );
-    }
+    determineFinalResourceData();
+    m_data->setProperty( uri, value );
 }
 
 
@@ -325,35 +301,37 @@ void Nepomuk::Resource::removeProperty( const QString& uri )
 
 void Nepomuk::Resource::removeProperty( const QUrl& uri )
 {
-    if ( m_data ) {
-        m_data->removeProperty( uri );
-    }
+    determineFinalResourceData();
+    m_data->removeProperty( uri );
 }
 
 
 void Nepomuk::Resource::removeProperty( const QUrl& uri, const Variant& value )
 {
-    if ( m_data ) {
-        QList<Variant> vl = property( uri ).toVariantList();
-        foreach( const Variant& v, value.toVariantList() ) {
-            vl.removeAll( v );
-        }
-        setProperty( uri, Variant( vl ) );
+    QList<Variant> vl = property( uri ).toVariantList();
+    foreach( const Variant& v, value.toVariantList() ) {
+        vl.removeAll( v );
     }
+    setProperty( uri, Variant( vl ) );
 }
 
 
 void Nepomuk::Resource::remove()
 {
-    if ( m_data ) {
-        m_data->remove();
-    }
+    determineFinalResourceData();
+    m_data->remove();
 }
 
 
 bool Nepomuk::Resource::exists() const
 {
-    return m_data ? m_data->exists() : false;
+    determineFinalResourceData();
+    if ( m_data ) {
+        return m_data->exists();
+    }
+    else {
+        return false;
+    }
 }
 
 
@@ -478,12 +456,8 @@ QString Nepomuk::Resource::genericIcon() const
 
 Nepomuk::Thing Nepomuk::Resource::pimoThing()
 {
-    if( m_data ) {
-        return m_data->pimoThing();
-    }
-    else {
-        return Thing();
-    }
+    determineFinalResourceData();
+    return m_data->pimoThing();
 }
 
 
@@ -501,8 +475,8 @@ bool Nepomuk::Resource::operator==( const Resource& other ) const
 
     // get the resource URIs since two different ResourceData instances
     // can still represent the same Resource
-    m_data->determineUri();
-    other.m_data->determineUri();
+    determineFinalResourceData();
+    other.determineFinalResourceData();
 
     if( m_data->uri().isEmpty() )
         return *m_data == *other.m_data;
@@ -887,6 +861,37 @@ void Nepomuk::Resource::increaseUsageCount()
     ++cnt;
     setProperty( Vocabulary::NUAO::usageCount(), cnt );
     setProperty( Vocabulary::NUAO::lastUsage(), QDateTime::currentDateTime() );
+}
+
+
+void Nepomuk::Resource::determineFinalResourceData() const
+{
+    m_data->m_determineUriMutex.lock();
+
+    // Get an initialized ResourceData instance
+    ResourceData* oldData = m_data;
+    ResourceData* newData = m_data->determineUri();
+
+    Q_ASSERT(oldData);
+    Q_ASSERT(newData);
+
+    // in case we get an already existing one we update all instances
+    // using the old ResourceData to avoid the overhead of calling
+    // determineUri over and over
+    if( newData != oldData ) {
+        Q_FOREACH( Resource* res, m_data->m_resources) {
+            res->m_data = newData;
+            oldData->deref( res );
+            newData->ref( res );
+        }
+    }
+
+    // we need to unlock before assigning ourselves to make sure we do not
+    // delete m_data before unlocking
+    oldData->m_determineUriMutex.unlock();
+
+    if ( !oldData->cnt() )
+        delete oldData;
 }
 
 

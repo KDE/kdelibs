@@ -40,7 +40,11 @@ namespace Nepomuk {
     /**
      * \class ResourceManager resourcemanager.h Nepomuk/ResourceManager
      *
-     * \brief The ResourceManager is the central \a %KMetaData configuration point.
+     * \brief The ResourceManager is the central \a %Nepomuk configuration point.
+     *
+     * Use the initialized() method to check the availabity of the %Nepomuk system.
+     * Signals nepomukSystemStarted() and nepomukSystemStopped() can be used to
+     * enable or disable Nepomuk-specific GUI elements.
      *
      * \author Sebastian Trueg <trueg@kde.org>
      */
@@ -64,14 +68,14 @@ namespace Nepomuk {
 
         /**
          * Initialize the Nepomuk framework. This method will initialize the communication with
-         * the local Nepomuk-KDE services, ie. the data repository.
+         * the local Nepomuk-KDE services, ie. the data repository. It will trigger a reconnect
+         * to the %Nepomuk database.
          *
-         * When using multiple threads make sure to call this method in the main thread
+         * There is normally no reason to call this method manually except when using multiple
+         * threads. In that case it is highly recommended to call this method in the main thread
          * before doing anything else.
          *
          * \return 0 if all necessary components could be found and -1 otherwise.
-         *
-         * FIXME: introduce error codes and human readable translated error messages.
          */
         int init();
 

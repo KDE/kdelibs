@@ -42,7 +42,6 @@ namespace Nepomuk {
     class ResourceFilterModel;
 
     typedef QHash<KUrl, Nepomuk::ResourceData*> ResourceDataHash;
-    typedef QHash<QString, Nepomuk::ResourceData*> KickoffDataHash;
 
     class ResourceManagerPrivate
     {
@@ -65,9 +64,6 @@ namespace Nepomuk {
 
         /// contains all non-initialized ResourceData objects created in data(QUrl)
         ResourceDataHash m_uriKickoffData;
-
-        /// contains all non-initialized ResourceData objects created in data(QString)
-        KickoffDataHash m_idKickoffData;
 
         QAtomicInt dataCnt;
 
@@ -97,7 +93,7 @@ namespace Nepomuk {
          */
         ResourceData* data( const QUrl& uri, const QUrl& type );
 
-        bool dataCacheFull();
+        bool dataCacheFull() const;
 
         /**
          * Delete unused ResourceData objects from the cache.
@@ -108,12 +104,9 @@ namespace Nepomuk {
          */
         void cleanupCache( int num = 1 );
 
-        /**
-         * Will call determineUri on all ResourceData instances.
-         *
-         * Does lock the mutex.
-         */
-        void determineAllUris();
+        bool shouldBeDeleted( ResourceData* rd ) const;
+
+        void addToKickOffList( ResourceData* rd, const QSet<KUrl>& uris );
 
         QList<ResourceData*> allResourceData();
         QList<ResourceData*> allResourceDataOfType( const QUrl& type );

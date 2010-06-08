@@ -42,6 +42,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QUuid>
+#include <QtCore/QMutableHashIterator>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusServiceWatcher>
@@ -63,28 +64,21 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
 {
     if ( uri.isEmpty() ) {
         // return an invalid resource which may be activated by calling setProperty
-        return new ResourceData( QUrl(), QString(), type, this );
-    }
-
-    QUrl url( uri );
-
-    // default to "file" scheme, i.e. we do not allow an empty scheme
-    if ( url.scheme().isEmpty() ) {
-        url.setScheme( "file" );
+        return new ResourceData( QUrl(), type, this );
     }
 
     QMutexLocker lock( &mutex );
 
     // look for the URI in the initialized and in the URI kickoff data
     ResourceDataHash::iterator end = m_initializedData.end();
-    ResourceDataHash::iterator it = m_initializedData.find( url );
+    ResourceDataHash::iterator it = m_initializedData.find( uri );
     if( it == end ) {
         end = m_uriKickoffData.end();
-        it = m_uriKickoffData.find( url );
+        it = m_uriKickoffData.find( uri );
     }
 
     if( it == end ) {
-        ResourceData* d = new ResourceData( url, QString(), type, this );
+        ResourceData* d = new ResourceData( uri, type, this );
 //         kDebug() << "--------------------------- Created new ResourceData:" << *d;
         return d;
     }
@@ -97,26 +91,12 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
 
 Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uriOrId, const QUrl& type )
 {
-    if ( uriOrId.isEmpty() ) {
-        return new ResourceData( QUrl(), QString(), type, this );
-    }
-    else {
+    if ( !uriOrId.isEmpty() ) {
         KUrl url(uriOrId);
-        if( QFile::exists( url.toLocalFile() ) ) {
-            return data( url, type );
-        }
+        return data( url, type );
     }
 
-    QMutexLocker lock( &mutex );
-
-    KickoffDataHash::iterator it = m_idKickoffData.find( uriOrId );
-    if( it == m_idKickoffData.end() ) {
-        ResourceData* d = new ResourceData( QUrl(), uriOrId, type, this );
-        return d;
-    }
-    else {
-        return it.value();
-    }
+    return new ResourceData( QUrl(), type, this );
 }
 
 
@@ -127,8 +107,8 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
-        for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+        QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
+        for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
              rdIt != rdl.end(); ++rdIt ) {
             ResourceData* rd = *rdIt;
             //
@@ -153,10 +133,10 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
     QList<ResourceData*> l;
 
     //
-    // We need to cache both m_uriKickoffData and m_idKickoffData since they might be changed
+    // We need to cache m_uriKickoffData since it might be changed
     // in the loop by ResourceData::load()
     //
-    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
+    QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
 
     //
     // make sure none of the ResourceData objects are deleted by ResourceData::load below
@@ -167,7 +147,7 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
         tmp << Resource( rd );
     }
 
-    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+    for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
          rdIt != rdl.end(); ++rdIt ) {
         ResourceData* rd = *rdIt;
         if( rd->hasProperty( uri ) &&
@@ -182,22 +162,11 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWi
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceData()
 {
-    QList<ResourceData*> l;
-
-    for( ResourceDataHash::iterator rdIt = m_uriKickoffData.begin();
-         rdIt != m_uriKickoffData.end(); ++rdIt ) {
-        l.append( rdIt.value() );
-    }
-    for( KickoffDataHash::iterator rdIt = m_idKickoffData.begin();
-         rdIt != m_idKickoffData.end(); ++rdIt ) {
-        l.append( rdIt.value() );
-    }
-
-    return l;
+    return m_uriKickoffData.values().toSet().toList();
 }
 
 
-bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
+bool Nepomuk::ResourceManagerPrivate::dataCacheFull() const
 {
     return dataCnt >= 1000;
 }
@@ -205,8 +174,8 @@ bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
 
 void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 {
-    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
-    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
+    QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
+    for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
          rdIt != rdl.end(); ++rdIt ) {
         ResourceData* data = *rdIt;
         if ( !data->cnt() ) {
@@ -218,15 +187,21 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 }
 
 
-void Nepomuk::ResourceManagerPrivate::determineAllUris()
+bool Nepomuk::ResourceManagerPrivate::shouldBeDeleted( ResourceData * rd ) const
 {
-    QMutexLocker lock( &mutex );
-    QList<ResourceData*> rdl = m_uriKickoffData.values() + m_idKickoffData.values();
-    for( QList<ResourceData*>::iterator rdIt = rdl.begin();
-         rdIt != rdl.end(); ++rdIt ) {
-        ResourceData* data = *rdIt;
-        data->determineUri();
-    }
+    //
+    // We delete data objects in one of two cases:
+    // 1. They are not valid and as such not in one of the ResourceManagerPrivate kickoff lists
+    // 2. The cache is already full and we need to clean up
+    //
+    return( !rd->cnt() && ( !rd->isValid() || dataCacheFull() ));
+}
+
+
+void Nepomuk::ResourceManagerPrivate::addToKickOffList( ResourceData* rd, const QSet<KUrl> & uris )
+{
+    Q_FOREACH( const KUrl& uri, uris )
+        m_uriKickoffData.insert( uri, rd );
 }
 
 
