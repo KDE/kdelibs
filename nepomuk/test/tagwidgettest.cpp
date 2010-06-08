@@ -1,5 +1,5 @@
 #include "tagwidgettest.h"
-#include "../tagwidget.h"
+#include "tagwidget.h"
 
 #include <QVBoxLayout>
 #include <QCheckBox>

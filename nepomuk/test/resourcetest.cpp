@@ -15,9 +15,9 @@
 #include "resourcetest.h"
 #include "nie.h"
 
-#include "../resource.h"
-#include "../variant.h"
-#include "../resourcemanager.h"
+#include "resource.h"
+#include "variant.h"
+#include "resourcemanager.h"
 
 #include <kdebug.h>
 #include <ktemporaryfile.h>

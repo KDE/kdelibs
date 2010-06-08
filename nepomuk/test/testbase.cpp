@@ -14,8 +14,8 @@
 
 #include "testbase.h"
 
-#include "../resource.h"
-#include "../resourcemanager.h"
+#include "resource.h"
+#include "resourcemanager.h"
 
 #include <Soprano/Soprano>
 

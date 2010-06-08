@@ -1,5 +1,5 @@
 #include "ratingpaintertestwidget.h"
-#include "../kratingwidget.h"
+#include "kratingwidget.h"
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QVBoxLayout>

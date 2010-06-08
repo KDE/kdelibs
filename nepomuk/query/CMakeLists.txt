@@ -86,5 +86,3 @@ install(FILES
   nepomukquery_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
-
-add_subdirectory(test)

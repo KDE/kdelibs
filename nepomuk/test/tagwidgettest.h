@@ -2,8 +2,8 @@
 #define TAGWIDGETTEST_H
 
 #include <QWidget>
-#include "../../tag.h"
-#include "../tagwidget.h"
+#include "tag.h"
+#include "tagwidget.h"
 
 class TagWidgetTest : public QWidget
 {
