@@ -69,10 +69,10 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
         QString uriVarName = qbd->uniqueVarName();
         QString filter = resourceVarName + ' ' + Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) + ' ' + uriVarName + QLatin1String( " . " );
         if ( !m_includeFolders.isEmpty() ) {
-            filter += QString( " FILTER(REGEX(STR(%1), \"^%2/\")) ." ).arg( uriVarName ).arg( m_includeFolders.toStringList().join( "|" ) );
+            filter += QString( " FILTER(REGEX(STR(%1), \"^(%2/)\")) ." ).arg( uriVarName ).arg( m_includeFolders.toStringList().join( "|" ) );
         }
         if ( !m_excludeFolders.isEmpty() ) {
-            filter += QString( " FILTER(!REGEX(STR(%1), \"^%2/\")) ." ).arg( uriVarName ).arg( m_excludeFolders.toStringList().join( "|" ) );
+            filter += QString( " FILTER(!REGEX(STR(%1), \"^(%2/)\")) ." ).arg( uriVarName ).arg( m_excludeFolders.toStringList().join( "|" ) );
         }
         return filter;
     }
