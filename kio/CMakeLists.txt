@@ -18,8 +18,8 @@ include_directories(
    ${KDE4_KDEUI_INCLUDES}
    ${CMAKE_SOURCE_DIR}/nepomuk/
    ${CMAKE_SOURCE_DIR}/nepomuk/core/
-   ${CMAKE_SOURCE_DIR}/nepomuk/core/types/    
-   ${CMAKE_SOURCE_DIR}/nepomuk/core/ui/
+   ${CMAKE_SOURCE_DIR}/nepomuk/types/    
+   ${CMAKE_SOURCE_DIR}/nepomuk/ui/
    ${CMAKE_SOURCE_DIR}/solid
    ${CMAKE_BINARY_DIR}/solid
    ${KDE4_KDECORE_INCLUDES}/

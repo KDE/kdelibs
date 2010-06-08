@@ -25,7 +25,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QFont>
 
-#include "../tag.h"
+#include "tag.h"
 #include "tagwidget_p.h"
 
 class QMouseEvent;

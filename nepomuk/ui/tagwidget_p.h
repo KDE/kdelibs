@@ -22,7 +22,7 @@
 #define _NEPOMUK_TAG_WIDGET_P_H_
 
 #include "tagwidget.h"
-#include "../tag.h"
+#include "tag.h"
 
 #include <QtCore/QList>
 #include <QtCore/QMap>

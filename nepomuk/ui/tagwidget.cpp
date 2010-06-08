@@ -25,9 +25,9 @@
 #include "kedittagsdialog_p.h"
 #include "tagcheckbox.h"
 
-#include "../tools.h"
-#include "../tag.h"
-#include "../resourcemanager.h"
+#include "tools.h"
+#include "tag.h"
+#include "resourcemanager.h"
 
 #include <karrowbutton.h>
 #include <kinputdialog.h>

@@ -22,7 +22,7 @@
 #include "property_p.h"
 #include "ontology_p.h"
 
-#include "../resourcemanager.h"
+#include "resourcemanager.h"
 
 #include <QtCore/QMutexLocker>
 

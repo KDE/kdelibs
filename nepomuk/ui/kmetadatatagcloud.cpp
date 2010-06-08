@@ -21,7 +21,7 @@
 #include "kmetadatatagcloud.h"
 #include "resourcemanager.h"
 
-#include "../tag.h"
+#include "tag.h"
 
 #include <QtCore/QTimer>
 
