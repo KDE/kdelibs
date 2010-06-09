@@ -489,6 +489,8 @@ void KWebWallet::fillFormDataFromCache(const KUrl::List &urlList)
                                                 d->wid, KWallet::Wallet::Asynchronous);
         connect(d->wallet, SIGNAL(walletOpened(bool)),
                 this, SLOT(_k_openWalletDone(bool)));
+        connect(d->wallet, SIGNAL(walletClosed()),
+                this, SLOT(_k_walletClosed()));
         return;
     }
 
@@ -510,6 +512,8 @@ void KWebWallet::saveFormDataToCache(const QString &key)
                                                 d->wid, KWallet::Wallet::Asynchronous);
         connect(d->wallet, SIGNAL(walletOpened(bool)),
                 this, SLOT(_k_openWalletDone(bool)));
+        connect(d->wallet, SIGNAL(walletClosed()),
+                this, SLOT(_k_walletClosed()));
         return;
     }
 
@@ -524,6 +528,8 @@ void KWebWallet::removeFormDataFromCache(const WebFormList &forms)
                                                 d->wid, KWallet::Wallet::Asynchronous);
         connect(d->wallet, SIGNAL(walletOpened(bool)),
                 this, SLOT(_k_openWalletDone(bool)));
+        connect(d->wallet, SIGNAL(walletClosed()),
+                this, SLOT(_k_walletClosed()));
         return;
     }
 
