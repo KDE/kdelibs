@@ -340,7 +340,9 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 
 KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 {
-    QString sparql = toSparqlQuery( flags & ~CreateCountQuery );
+    Query q(*this);
+    q.setRequestProperties( QList<RequestProperty>() << RequestProperty(Nepomuk::Vocabulary::NIE::url()) );
+    QString sparql = q.toSparqlQuery( flags & ~CreateCountQuery );
     if( sparql.isEmpty() ) {
         return KUrl();
     }
