@@ -77,6 +77,7 @@ private:
     int m_firstLine;
     int m_sourceId;
     QStringList m_sourceLines;
+    QString     m_md5; // empty if invalid/not computed.
 
     void rebuildViewerDocument();
     void setupViewerDocument();
@@ -84,10 +85,10 @@ private:
     // We store breakpoints differently for scopes with URL
     // and without it. Those that have it are stored globally,
     // so that breakpoints persist across multiple visits of the
-    // document. Those for eval, etc., are only associated with the
-    // sid (and are likely useless :( )
+    // document. For eval scopes, we store them based on the MD5
+    // of the source code.
     static QHash<QString, QVector<int> >* s_perUrlBreakPoints;
-    QVector<int> m_localBreakpoints;
+    static QHash<QString, QVector<int> >* s_perHashBreakPoints;
 
     QVector<int>& breakpoints();
 

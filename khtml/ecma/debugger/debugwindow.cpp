@@ -500,12 +500,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 {
     Q_UNUSED(exec);
 
-    kDebug() << "***************************** sourceParsed **************************************************" << endl
-             << "      sourceId: " << sourceId << endl
-             << "     sourceURL: " << jsSourceURL.qstring() << endl
-             << "startingLineNumber: " << startingLineNumber << endl
-             << "     errorLine: " << errorLine << endl
-             << "*********************************************************************************************" << endl;
+    kDebug() << "sourceId: " << sourceId
+             << "sourceURL: " << jsSourceURL.qstring() 
+             << "startingLineNumber: " << startingLineNumber
+             << "errorLine: " << errorLine;
 
     QString sourceURL = jsSourceURL.qstring();
     // Tell it about this portion..

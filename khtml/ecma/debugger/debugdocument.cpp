@@ -16,6 +16,7 @@
 #include <ktexteditor/markinterface.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
+#include <kcodecs.h>
 
 using namespace KJS;
 using namespace KJSDebugger;
@@ -108,6 +109,7 @@ void DebugDocument::reloaded(int sourceId, const QString &source)
 
     m_sourceLines = source.split('\n');
     m_sourceId    = sourceId;
+    m_md5.clear();
     
     if (m_kteDoc) // Update docu if needed
         rebuildViewerDocument();
@@ -154,11 +156,23 @@ bool DebugDocument::hasBreakpoint(int lineNumber)
 }
 
 QHash<QString, QVector<int> >* DebugDocument::s_perUrlBreakPoints = 0;
+QHash<QString, QVector<int> >* DebugDocument::s_perHashBreakPoints = 0;
 
 QVector<int>& DebugDocument::breakpoints()
 {
     if (m_url.isEmpty())
-        return m_localBreakpoints;
+    {
+        if (!s_perHashBreakPoints)
+            s_perHashBreakPoints = new QHash<QString, QVector<int> >;
+
+        if (m_md5.isEmpty())
+        {
+            KMD5 hash(m_sourceLines.join("\n").toUtf8());
+            m_md5 = QString::fromLatin1(hash.hexDigest());
+        }
+
+        return (*s_perHashBreakPoints)[m_md5];
+    }
     else
     {
         if (!s_perUrlBreakPoints)
