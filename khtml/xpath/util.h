@@ -84,7 +84,7 @@ DOM::NodeImpl *xpathLastChild( DOM::NodeImpl *node );
 DOM::NodeImpl *nextSiblingForFollowing( DOM::NodeImpl *node );
 
 // Enable for some low debug output.
-#define XPATH_VERBOSE
+// #define XPATH_VERBOSE
 
 
 } // namespace XPath
