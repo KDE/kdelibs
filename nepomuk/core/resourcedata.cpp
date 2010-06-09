@@ -474,15 +474,15 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 {
     Q_ASSERT( uri.isValid() );
-    Q_ASSERT( m_uri.isValid() );
+    if( !m_uri.isEmpty() ) {
+        QMutexLocker lock(&m_modificationMutex);
 
-    QMutexLocker lock(&m_modificationMutex);
+        m_cache.remove( uri );
+        MAINMODEL->removeProperty( m_uri, uri );
 
-    m_cache.remove( uri );
-    MAINMODEL->removeProperty( m_uri, uri );
-
-    // update the kickofflists
-    updateKickOffLists( uri, QUrl() );
+        // update the kickofflists
+        updateKickOffLists( uri, QUrl() );
+    }
 }
 
 
