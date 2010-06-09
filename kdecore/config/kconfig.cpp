@@ -365,7 +365,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
     const KConfigGroup cg(this, "$Version");
     const QString cfg_id = updateFile+':'+id;
-    QStringList ids = cg.readEntry("update_info", QStringList());
+    const QStringList ids = cg.readEntry("update_info", QStringList());
     if (!ids.contains(cfg_id)) {
         KToolInvocation::kdeinitExecWait("kconf_update", QStringList() << "--check" << updateFile);
         reparseConfiguration();
@@ -476,7 +476,7 @@ QStringList KConfigPrivate::getGlobalFiles() const
 
 void KConfigPrivate::parseGlobalFiles()
 {
-    QStringList globalFiles = getGlobalFiles();
+    const QStringList globalFiles = getGlobalFiles();
 //    qDebug() << "parsing global files" << globalFiles;
 
     // TODO: can we cache the values in etc_kderc / other global files

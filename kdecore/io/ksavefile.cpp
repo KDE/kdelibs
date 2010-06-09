@@ -370,7 +370,7 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
     // Remove all with number 'maxBackups' and greater.
     QDir d = backupDir.isEmpty() ? fileInfo.dir() : backupDir;
     d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
-    QStringList nameFilters = QStringList( fileInfo.fileName() + ".*" + backupExtension );
+    const QStringList nameFilters = QStringList( fileInfo.fileName() + ".*" + backupExtension );
     d.setNameFilters( nameFilters );
     d.setSorting( QDir::Name );
 

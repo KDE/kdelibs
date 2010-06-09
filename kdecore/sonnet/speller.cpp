@@ -270,7 +270,7 @@ void Speller::setLanguage(const QString &lang)
 QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
 {
     Loader *l = Loader::openLoader();
-    QStringList lst = l->languages();
+    const QStringList lst = l->languages();
     QMap<QString, QString> langs;
 
     foreach(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)

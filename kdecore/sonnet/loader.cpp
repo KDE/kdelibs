@@ -93,7 +93,7 @@ SpellerPlugin *Loader::createSpeller(const QString& language,
         ddefault = true;
     }
 
-    QList<Client*> lClients = d->languageClients[plang];
+    const QList<Client*> lClients = d->languageClients[plang];
 
     if (lClients.isEmpty()) {
         kError()<<"No language dictionaries for the language : "

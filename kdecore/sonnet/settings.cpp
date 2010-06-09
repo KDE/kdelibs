@@ -70,7 +70,7 @@ Settings::~Settings()
 
 void Settings::setDefaultLanguage(const QString &lang)
 {
-    QStringList cs = d->loader->languages();
+    const QStringList cs = d->loader->languages();
     if (cs.indexOf(lang) != -1 &&
         d->defaultLanguage != lang) {
         d->defaultLanguage = lang;
@@ -189,9 +189,9 @@ bool Settings::ignore( const QString& word )
 
 void Settings::readIgnoreList(KConfig *config)
 {
-    KConfigGroup conf(config, "Spelling");
-    QString ignoreEntry = QString( "ignore_%1" ).arg(d->defaultLanguage);
-    QStringList ignores = conf.readEntry(ignoreEntry, QStringList());
+    const KConfigGroup conf(config, "Spelling");
+    const QString ignoreEntry = QString( "ignore_%1" ).arg(d->defaultLanguage);
+    const QStringList ignores = conf.readEntry(ignoreEntry, QStringList());
     setQuietIgnoreList(ignores);
 }
 

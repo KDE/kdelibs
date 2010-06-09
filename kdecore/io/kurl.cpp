@@ -1239,7 +1239,7 @@ QString KUrl::fileName( const DirectoryOptions& options ) const
   Q_ASSERT( options != 0 ); //Disallow options == false
   QString fname;
   if (hasSubUrl()) { // If we have a suburl, then return the filename from there
-    KUrl::List list = KUrl::split(*this);
+    const KUrl::List list = KUrl::split(*this);
     return list.last().fileName(options);
   }
   const QString path = this->path();
@@ -1474,7 +1474,7 @@ QString KUrl::htmlRef() const
       return QUrl::fromPercentEncoding( ref().toLatin1() );
   }
 
-  List lst = split( *this );
+  const List lst = split( *this );
   return QUrl::fromPercentEncoding( (*lst.begin()).ref().toLatin1() );
 }
 
@@ -1485,7 +1485,7 @@ QString KUrl::encodedHtmlRef() const
     return ref();
   }
 
-  List lst = split( *this );
+  const List lst = split( *this );
   return (*lst.begin()).ref();
 }
 
@@ -1511,7 +1511,7 @@ bool KUrl::hasHTMLRef() const
     return hasRef();
   }
 
-  List lst = split( *this );
+  const List lst = split( *this );
   return (*lst.begin()).hasRef();
 }
 

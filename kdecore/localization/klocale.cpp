@@ -876,7 +876,7 @@ void KLocalePrivate::translate_priv(const char *catname, const char *msgctxt, co
         return;
     }
 
-    QList<KCatalog> catalogList = catalogs;
+    const QList<KCatalog> catalogList = catalogs;
     QString catNameDecoded;
     if (catname != NULL) {
         catNameDecoded = QString::fromUtf8(catname);

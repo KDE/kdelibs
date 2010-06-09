@@ -505,7 +505,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       cpp << "  QList<int> default" << name << ";" << endl;
       if (!defaultValue.isEmpty())
       {
-        QStringList defaults = defaultValue.split( ',' );
+        const QStringList defaults = defaultValue.split( ',' );
         QStringList::ConstIterator it;
         for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
           cpp << "  default" << name << ".append( " << *it << " );"
@@ -1278,15 +1278,15 @@ int main( int argc, char **argv )
   //bool useDPointer = codegenConfig.readEntry("DPointer", false);
   bool customAddons = codegenConfig.value("CustomAdditions", false).toBool();
   QString memberVariables = codegenConfig.value("MemberVariables").toString();
-  QStringList headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
-  QStringList sourceIncludes = codegenConfig.value("SourceIncludeFiles", QStringList()).toStringList();
-  QStringList mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
+  const QStringList headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
+  const QStringList sourceIncludes = codegenConfig.value("SourceIncludeFiles", QStringList()).toStringList();
+  const QStringList mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
   bool allMutators = false;
   if ((mutators.count() == 1) && (mutators.at(0).toLower() == "true"))
      allMutators = true;
   itemAccessors = codegenConfig.value("ItemAccessors", false).toBool();
   bool setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
-  QStringList defaultGetters = codegenConfig.value("DefaultValueGetters", QStringList()).toStringList();
+  const QStringList defaultGetters = codegenConfig.value("DefaultValueGetters", QStringList()).toStringList();
   bool allDefaultGetters = (defaultGetters.count() == 1) && (defaultGetters.at(0).toLower() == "true");
   globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
   useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
@@ -1482,7 +1482,7 @@ int main( int argc, char **argv )
   QList<CfgEntry*>::ConstIterator itEntry;
   for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
     const CfgEntry::Choices &choices = (*itEntry)->choices();
-    QList<CfgEntry::Choice> chlist = choices.choices;
+    const QList<CfgEntry::Choice> chlist = choices.choices;
     if ( !chlist.isEmpty() ) {
       QStringList values;
       QList<CfgEntry::Choice>::ConstIterator itChoice;
@@ -1505,7 +1505,7 @@ int main( int argc, char **argv )
         h << "    enum " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << " { " << values.join( ", " ) << " };" << endl;
       }
     }
-    QStringList values = (*itEntry)->paramValues();
+    const QStringList values = (*itEntry)->paramValues();
     if ( !values.isEmpty() ) {
       if ( globalEnums ) {
         // ### FIXME!!
@@ -2018,7 +2018,7 @@ int main( int argc, char **argv )
     if ( (*itEntry)->type() == "Enum" ) {
       cpp << "  QList<KConfigSkeleton::ItemEnum::Choice2> values"
           << (*itEntry)->name() << ";" << endl;
-      QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
+      const QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.constBegin(); it != choices.constEnd(); ++it ) {
         cpp << "  {" << endl;

@@ -173,7 +173,7 @@ QList<KUserGroup> KUser::groups() const {
   const QList<KUserGroup> allGroups = KUserGroup::allGroups();
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
-    QList<KUser> users = (*it).users();
+    const QList<KUser> users = (*it).users();
     if ( users.contains(*this) ) {
        result.append(*it);
     }
@@ -186,7 +186,7 @@ QStringList KUser::groupNames() const {
   const QList<KUserGroup> allGroups = KUserGroup::allGroups();
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
-    QList<KUser> users = (*it).users();
+    const QList<KUser> users = (*it).users();
     if ( users.contains(*this) ) {
        result.append((*it).name());
     }
