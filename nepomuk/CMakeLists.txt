@@ -154,11 +154,6 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 
-install(FILES
-  ui/pics/rating.png
-  DESTINATION ${DATA_INSTALL_DIR}/nepomuk/pics
-)
-
 add_subdirectory(rcgen)
 add_subdirectory(query)
 add_subdirectory(test)
