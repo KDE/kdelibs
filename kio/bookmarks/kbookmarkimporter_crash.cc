@@ -87,7 +87,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 {
     QSet<QString> activeLogs;
 
-    QStringList apps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
+    const QStringList apps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
     foreach ( const QString &clientId, apps )
     {
         if ( !clientId.startsWith( QLatin1String("org.kde.konqueror") ) )
@@ -107,7 +107,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     d.setFilter( QDir::Files );
     d.setNameFilters( QStringList( "konqueror-crash-*.log" ) );
 
-    QFileInfoList list = d.entryInfoList();
+    const QFileInfoList list = d.entryInfoList();
     QListIterator<QFileInfo> it( list );
 
     QStringList crashFiles;

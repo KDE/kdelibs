@@ -178,7 +178,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
     }
     else { // url to device
         Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
-        QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
+        const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
         if (devList.empty()) {
             kDebug(7000) << "Device" << _url.toLocalFile() << "not found";
             return result;
@@ -327,7 +327,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
         }
         else { // path to device
             Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", path);
-            QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
+            const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
             if (!devList.empty()) {
                 Solid::Device device = devList[0];
                 if ( actionData == ST_MOUNT ) {

@@ -265,7 +265,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
   QByteArray ba;
   QTextStream txtStream( ba, QIODevice::WriteOnly );
 
-  QStringList data = QApplication::clipboard()->text().split('\n', QString::SkipEmptyParts);
+  const QStringList data = QApplication::clipboard()->text().split('\n', QString::SkipEmptyParts);
 
   KUrl::List urls;
   KURLDrag::decode(data, urls);
@@ -318,7 +318,7 @@ KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _
 KIO_EXPORT QString KIO::pasteActionText()
 {
     const QMimeData *mimeData = QApplication::clipboard()->mimeData();
-    KUrl::List urls = KUrl::List::fromMimeData( mimeData );
+    const KUrl::List urls = KUrl::List::fromMimeData( mimeData );
     if ( !urls.isEmpty() ) {
         if ( urls.first().isLocalFile() )
             return i18np( "&Paste File", "&Paste %1 Files", urls.count() );

@@ -717,7 +717,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDo
     if ( !payload.isEmpty() ) {
         doc.setContent( payload );
         QDomElement elem = doc.documentElement();
-        QDomNodeList children = elem.childNodes();
+        const QDomNodeList children = elem.childNodes();
         for ( int childno = 0; childno < children.count(); childno++)
         {
             bookmarks.append( KBookmark( children.item(childno).toElement() ));

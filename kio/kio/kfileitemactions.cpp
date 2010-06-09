@@ -273,7 +273,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
         }
         if (cfg.hasKey("X-KDE-ShowIfDBusCall")) {
             QString calldata = cfg.readEntry("X-KDE-ShowIfDBusCall");
-            QStringList parts = calldata.split(' ');
+            const QStringList parts = calldata.split(' ');
             const QString &app = parts.at(0);
             const QString &obj = parts.at(1);
             QString interface = parts.at(2);

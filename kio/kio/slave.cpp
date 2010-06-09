@@ -443,7 +443,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           return 0;
        }
 
-       QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress;
+       const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress;
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
 
        QProcess::startDetached( KStandardDirs::locate("exe", "kioslave"), args );

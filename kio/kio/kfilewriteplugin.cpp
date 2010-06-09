@@ -48,7 +48,7 @@ KFileWriterProvider::loadPlugin(const QString& key) {
     //kDebug() << "loading writer for key " << key;
     const QString constraint = QString::fromLatin1("'%1' in MetaDataKeys")
         .arg(key);
-    KService::List offers = KServiceTypeTrader::self()->query(
+    const KService::List offers = KServiceTypeTrader::self()->query(
         "KFileWrite", constraint);
     if (offers.isEmpty()) {
         return 0;

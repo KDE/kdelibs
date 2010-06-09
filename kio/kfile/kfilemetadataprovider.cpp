@@ -398,7 +398,7 @@ bool KFileMetaDataProvider::setValue(const KUrl& metaDataUri, const Nepomuk::Var
         if (widget == d->m_ratingWidget) {
             d->m_ratingWidget->setRating(value.toInt());
         } else if (widget == d->m_tagWidget) {
-            QList<Nepomuk::Variant> variants = value.toVariantList();
+            const QList<Nepomuk::Variant> variants = value.toVariantList();
             QList<Nepomuk::Tag> tags;
             foreach (const Nepomuk::Variant& variant, variants) {
                 const Nepomuk::Resource resource = variant.toResource();

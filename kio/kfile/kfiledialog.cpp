@@ -80,7 +80,7 @@ static QStringList mime2KdeFilter( const QStringList &mimeTypes, QString *allExt
 static QString qtFilter(const QStringList& _filters)
 {
     QString converted;
-    QStringList filters = _filters;
+    const QStringList filters = _filters;
 
     foreach (const QString& current, filters) {
         QString new_f; //filter part
@@ -652,7 +652,7 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
         const QStringList mimetypes( KImageIO::mimeTypes( KImageIO::Reading ) );
         return KFileDialog::getOpenUrl(startDir, mimetypes.join(" "), parent, caption);
     }
-    QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
+    const QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, mimetypes.join(" "), parent);
 

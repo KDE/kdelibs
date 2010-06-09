@@ -549,7 +549,7 @@ QString KProtocolManager::acceptLanguagesHeader()
   QStringList languageListFinal;
   foreach (const QString &lang, languageList)
   {
-    QStringList langs = replacementCodes.readEntry(lang, QStringList());
+    const QStringList langs = replacementCodes.readEntry(lang, QStringList());
     if (langs.isEmpty())
       languageListFinal += lang;
     else

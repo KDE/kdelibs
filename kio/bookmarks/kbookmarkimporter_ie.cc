@@ -97,7 +97,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( const QString &dirname, const QS
    dir.setSorting( QFlags<QDir::SortFlag>(QDir::Name | QDir::DirsFirst) );
    dir.setNameFilters(QStringList("*.url")); // AK - possibly add ";index.ini" ?
 
-   QFileInfoList list = dir.entryInfoList();
+   const QFileInfoList list = dir.entryInfoList();
    if (list.isEmpty()) return;
 
    if (dirname != m_fileName)

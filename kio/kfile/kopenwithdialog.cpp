@@ -404,7 +404,7 @@ void KApplicationView::slotSelectionChanged(const QItemSelection &selected, cons
 {
     Q_UNUSED(deselected)
 
-    QModelIndexList indexes = selected.indexes();
+    const QModelIndexList indexes = selected.indexes();
     if (indexes.count() == 1 && !d->appModel->isDirectory(indexes.at(0))) {
         QString exec = d->appModel->execFor(indexes.at(0));
         if (!exec.isEmpty()) {
@@ -584,7 +584,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     combo->setMaxCount( max );
     int mode = cg.readEntry( "CompletionMode", int(KGlobalSettings::completionMode()));
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
-    QStringList list = cg.readEntry( "History", QStringList() );
+    const QStringList list = cg.readEntry( "History", QStringList() );
     combo->setHistoryItems( list, true );
     edit = new KUrlRequester( combo, mainWidget );
   }

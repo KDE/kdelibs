@@ -53,7 +53,7 @@ QStringList KImageIO::typeForMime(const QString& mimeType)
     if ( mimeType.isEmpty() )
         return QStringList();
 
-    KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
+    const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     foreach(const KService::Ptr &service, services) {
         if ( mimeType == service->property("X-KDE-MimeType").toString() )
             return ( service->property("X-KDE-ImageFormat").toStringList() );
@@ -65,7 +65,7 @@ QStringList KImageIO::mimeTypes( Mode mode )
 {
     QStringList mimeList, allFormats;
 
-    KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
+    const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     foreach(const KService::Ptr &service, services) {
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
@@ -82,7 +82,7 @@ QStringList KImageIO::mimeTypes( Mode mode )
 QStringList KImageIO::types( Mode mode )
 {
     QStringList imagetypes;
-    KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
+    const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     foreach(const KService::Ptr &service, services) {
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
@@ -98,7 +98,7 @@ bool KImageIO::isSupported( const QString& mimeType, Mode mode )
     if (mimeType.isEmpty() )
         return false;
 
-    KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
+    const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     foreach(const KService::Ptr &service, services) {
         if ( mimeType == service->property("X-KDE-MimeType").toString() ) {
 
