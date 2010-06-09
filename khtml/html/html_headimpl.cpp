@@ -129,6 +129,8 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_TITLE:
         // ### when title changes we have to reconsider our alternative
         // stylesheet choice
+        if (m_sheet)
+            m_sheet->setTitle(attr->value());
         break;
     case ATTR_MEDIA:
         m_media = attr->value().string().toLower();
@@ -257,6 +259,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     m_sheet->ref();
     m_sheet->setCharset(charset);
     m_sheet->parseString( sheet, strict );
+    m_sheet->setTitle(getAttribute(ATTR_TITLE));
 
     MediaListImpl *media = new MediaListImpl( (CSSStyleSheetImpl*)0, m_media );
     m_sheet->setMedia( media );
@@ -660,6 +663,10 @@ void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_MEDIA:
         m_media = attr->value().string().toLower();
         break;
+    case ATTR_TITLE:
+        if (m_sheet)
+            m_sheet->setTitle(attr->value());
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -722,6 +729,7 @@ void HTMLStyleElementImpl::parseText()
             m_sheet->ref();
             m_sheet->parseString( text, !document()->inCompatMode() );
             m_sheet->setMedia( media );
+            m_sheet->setTitle( getAttribute(ATTR_TITLE) );
             m_loading = false;
         }
         media->deref();
