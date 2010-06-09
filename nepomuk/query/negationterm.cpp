@@ -25,11 +25,8 @@
 
 QString Nepomuk::Query::NegationTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
-    QString varName = qbd->uniqueVarName();
-    return QString( "OPTIONAL { %1 FILTER(%2=%3) . } . FILTER(!BOUND(%2)) . " )
-        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( varName, qbd ),
-              varName,
-              resourceVarName );
+    return QString( "FILTER(!bif:exists((select (1) where { %1 }))) . " )
+        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
 }
 
 
