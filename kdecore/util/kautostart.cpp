@@ -141,7 +141,7 @@ bool KAutostart::checkStartCondition() const
     if (condition.isEmpty())
         return true;
 
-    QStringList list = condition.split(':');
+    const QStringList list = condition.split(':');
     if (list.count() < 4) {
         return true;
     }
@@ -159,12 +159,12 @@ bool KAutostart::checkStartCondition() const
 
 bool KAutostart::checkAllowedEnvironment(const QString& environment) const
 {
-    QStringList allowed = allowedEnvironments();
+    const QStringList allowed = allowedEnvironments();
     if (!allowed.isEmpty()) {
         return allowed.contains(environment);
     }
 
-    QStringList excluded = excludedEnvironments();
+    const QStringList excluded = excludedEnvironments();
     if (!excluded.isEmpty()) {
         return !excluded.contains( environment );
     }
