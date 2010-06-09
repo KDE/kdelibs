@@ -34,11 +34,7 @@ include(CreateKDEPlatformProfile.cmake)
 
 ################# now find all used packages #################
 
-if(WIN32)
 set (QT_MIN_VERSION "4.6.0")
-else(WIN32)
-set (QT_MIN_VERSION "4.6.3")
-endif(WIN32)
 
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
