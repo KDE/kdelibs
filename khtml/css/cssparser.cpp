@@ -326,11 +326,14 @@ QList<DOM::CSSSelector*> CSSParser::parseSelectorList(DOM::DocumentImpl* doc, co
     // Make sure to detect problems with pseudos, too
     bool ok = true;
     for (int i = 0; i < selectors.size(); ++i) {
-        DOM::CSSSelector* sel = selectors[i];
-        if(sel->match == CSSSelector::PseudoClass || sel->match == CSSSelector::PseudoElement) {
-            if (sel->pseudoType() == CSSSelector::PseudoOther) {
-                ok = false;
-                break;
+        // we need to check not only us, but also other things we're connected to via
+        // combinators
+        for (DOM::CSSSelector* sel = selectors[i]; sel; sel = sel->tagHistory) {
+            if(sel->match == CSSSelector::PseudoClass || sel->match == CSSSelector::PseudoElement) {
+                if (sel->pseudoType() == CSSSelector::PseudoOther) {
+                    ok = false;
+                    break;
+                }
             }
         }
     }
