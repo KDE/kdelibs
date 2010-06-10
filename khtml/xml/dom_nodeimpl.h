@@ -34,6 +34,7 @@
 #include "wtf/PassRefPtr.h"
 #include "misc/htmlnames.h"
 #include "dom/QualifiedName.h"
+#include "xml/dom2_eventsimpl.h"
 
 template <class type> class QList;
 class KHTMLView;
@@ -57,40 +58,6 @@ class ElementImpl;
 class RegisteredEventListener;
 class EventImpl;
 class Selection;
-
-struct RegisteredListenerList {
-    RegisteredListenerList() : listeners(0)
-    {}
-
-    ~RegisteredListenerList();
-
-    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
-    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
-
-    void setHTMLEventListener(EventName id, EventListener *listener);
-    EventListener *getHTMLEventListener(EventName id);
-
-    bool hasEventListener(EventName id);
-    void clear();
-
-    //### KDE4: should disappear
-    bool stillContainsListener(const RegisteredEventListener& listener);
-
-    QList<RegisteredEventListener>* listeners;//The actual listener list - may be 0
-private:
-    bool isHTMLEventListener(EventListener* listener);
-};
-
-class EventTargetImpl : public khtml::TreeShared<EventTargetImpl>
-{
-public:
-    enum Type {
-        DOM_NODE,
-        XML_HTTP_REQUEST
-    };
-
-    virtual Type eventTargetType() const = 0;
-};
 
 class NodeImpl : public EventTargetImpl
 {
@@ -321,12 +288,7 @@ public:
     DocumentImpl* document() const { return m_document.get(); }
     void setDocument(DocumentImpl* doc);
 
-    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
-    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
-    void setHTMLEventListener(EventName id, EventListener *listener);
-    void setHTMLEventListener(unsigned id, EventListener *listener);
-    EventListener *getHTMLEventListener(EventName id);
-    EventListener *getHTMLEventListener(unsigned id);
+    virtual DocumentImpl* eventTargetDocument();
 
     void dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
     void dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
@@ -339,13 +301,6 @@ public:
     // return true if defaultPrevented (i.e. event should be swallowed)
     // this matches the logic in KHTMLView.
     bool dispatchKeyEvent(QKeyEvent *key, bool keypress);
-
-    void handleLocalEvents(EventImpl *evt, bool useCapture);
-
-    /**
-     * Perform the default action for an event e.g. submitting a form
-     */
-    virtual void defaultEventHandler(EventImpl *evt);
 
     virtual bool isReadOnly();
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
@@ -527,7 +482,6 @@ private: // members
     NodeImpl* findNextElementAncestor( NodeImpl* node );
 protected:
     khtml::RenderObject *m_render;
-    RegisteredListenerList m_regdListeners;
 
     bool m_hasId : 1;
     bool m_attached : 1;

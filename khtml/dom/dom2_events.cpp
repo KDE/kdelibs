@@ -23,6 +23,7 @@
 #include "dom/dom2_views.h"
 #include "dom/dom_exception.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom_nodeimpl.h"
 
 using namespace DOM;
 

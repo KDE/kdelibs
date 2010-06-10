@@ -4,7 +4,7 @@
  * Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
  *           (C) 2003 Apple Computer, Inc.
- *           (C) 2006 Maksim Orlovich (maksim@kde.org)
+ *           (C) 2006, 2010 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,6 +39,230 @@
 
 using namespace DOM;
 using namespace khtml;
+
+void EventTargetImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
+{
+    if (!m_regdListeners.listeners)
+        return;
+
+    Event ev = evt;
+    // removeEventListener (e.g. called from a JS event listener) might
+    // invalidate the item after the current iterator (which "it" is pointing to).
+    // So we make a copy of the list.
+    QList<RegisteredEventListener> listeners = *m_regdListeners.listeners;
+    QList<RegisteredEventListener>::iterator it;
+    for (it = listeners.begin(); it != listeners.end(); ++it) {
+        //Check whether this got removed...KDE4: use Java-style iterators
+        if (!m_regdListeners.stillContainsListener(*it))
+            continue;
+
+        RegisteredEventListener& current = (*it);
+        if (current.eventName == evt->name() && current.useCapture == useCapture)
+            current.listener->handleEvent(ev);
+
+        // ECMA legacy hack
+        if (current.useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
+            MouseEventImpl* me = static_cast<MouseEventImpl*>(evt);
+            if (me->button() == 0) {
+                // To find whether to call onclick or ondblclick, we can't
+                // * use me->detail(), it's 2 when clicking twice w/o moving, even very slowly
+                // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
+                // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
+                // dblclicks from the DOM API, we'll need a timer here (well in the doc).
+                if ( ( !me->isDoubleClick() && current.eventName.id() == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+                  ( me->isDoubleClick() && current.eventName.id() == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
+                    current.listener->handleEvent(ev);
+            }
+        }
+    }
+}
+
+void EventTargetImpl::defaultEventHandler(EventImpl*)
+{}
+
+DocumentImpl* EventTargetImpl::eventTargetDocument()
+{
+    return 0;
+}
+
+void EventTargetImpl::setDocListenerFlag(unsigned flag)
+{
+    DocumentImpl* doc = eventTargetDocument();
+    if (doc)
+        doc->addListenerType(DocumentImpl::ListenerType(flag));
+}
+
+void EventTargetImpl::addEventListener(EventName id, EventListener *listener, const bool useCapture)
+{
+    switch (id.id()) {
+    case EventImpl::DOMSUBTREEMODIFIED_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER);
+        break;
+    case EventImpl::DOMNODEINSERTED_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMNODEINSERTED_LISTENER);
+        break;
+    case EventImpl::DOMNODEREMOVED_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMNODEREMOVED_LISTENER);
+        break;
+    case EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
+        break;
+    case EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
+        break;
+    case EventImpl::DOMATTRMODIFIED_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMATTRMODIFIED_LISTENER);
+        break;
+    case EventImpl::DOMCHARACTERDATAMODIFIED_EVENT:
+        setDocListenerFlag(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER);
+        break;
+    default:
+        break;
+    }
+
+    m_regdListeners.addEventListener(id, listener, useCapture);
+}
+
+void EventTargetImpl::removeEventListener(EventName id, EventListener *listener, bool useCapture)
+{
+    m_regdListeners.removeEventListener(id, listener, useCapture);
+}
+
+void EventTargetImpl::setHTMLEventListener(EventName id, EventListener *listener)
+{
+    m_regdListeners.setHTMLEventListener(id, listener);
+}
+
+void EventTargetImpl::setHTMLEventListener(unsigned id, EventListener *listener)
+{
+    m_regdListeners.setHTMLEventListener(EventName::fromId(id), listener);
+}
+
+EventListener* EventTargetImpl::getHTMLEventListener(EventName id)
+{
+    return m_regdListeners.getHTMLEventListener(id);
+}
+
+EventListener* EventTargetImpl::getHTMLEventListener(unsigned id)
+{
+    return m_regdListeners.getHTMLEventListener(EventName::fromId(id));
+}
+// -----------------------------------------------------------------------------
+
+void RegisteredListenerList::addEventListener(EventName id, EventListener *listener, const bool useCapture)
+{
+    if (!listener)
+    return;
+    RegisteredEventListener rl(id,listener,useCapture);
+    if (!listeners)
+        listeners = new QList<RegisteredEventListener>;
+
+    // if this id/listener/useCapture combination is already registered, do nothing.
+    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
+    // the listener order intact.
+    QList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if (*it == rl)
+            return;
+
+    listeners->append(rl);
+}
+
+void RegisteredListenerList::removeEventListener(EventName id, EventListener *listener, bool useCapture)
+{
+    if (!listeners) // nothing to remove
+        return;
+
+    RegisteredEventListener rl(id,listener,useCapture);
+
+    QList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if (*it == rl) {
+            listeners->erase(it);
+            return;
+        }
+}
+
+bool RegisteredListenerList::isHTMLEventListener(EventListener* listener)
+{
+    return (listener->eventListenerType() == "_khtml_HTMLEventListener");
+}
+
+void RegisteredListenerList::setHTMLEventListener(EventName name, EventListener *listener)
+{
+    if (!listeners)
+        listeners = new QList<RegisteredEventListener>;
+
+    QList<RegisteredEventListener>::iterator it;
+    if (!listener) {
+        for (it = listeners->begin(); it != listeners->end(); ++it) {
+            if ((*it).eventName == name && isHTMLEventListener((*it).listener)) {
+                listeners->erase(it);
+                break;
+            }
+        }
+        return;
+    }
+
+    // if this event already has a registered handler, insert the new one in
+    // place of the old one, to preserve the order.
+    RegisteredEventListener rl(name,listener,false);
+
+    for (int i = 0; i < listeners->size(); ++i) {
+        const RegisteredEventListener& listener = listeners->at(i);
+        if (listener.eventName == name && isHTMLEventListener(listener.listener)) {
+            listeners->replace(i, rl);
+            return;
+        }
+    }
+
+    listeners->append(rl);
+}
+
+EventListener *RegisteredListenerList::getHTMLEventListener(EventName name)
+{
+    if (!listeners)
+        return 0;
+
+    QList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if ((*it).eventName == name && isHTMLEventListener((*it).listener)) {
+            return (*it).listener;
+        }
+    return 0;
+}
+
+bool RegisteredListenerList::hasEventListener(EventName name)
+{
+    if (!listeners)
+        return false;
+
+    QList<RegisteredEventListener>::iterator it;
+    for (it = listeners->begin(); it != listeners->end(); ++it)
+        if ((*it).eventName == name)
+            return true;
+
+    return false;
+}
+
+void RegisteredListenerList::clear()
+{
+    delete listeners;
+    listeners = 0;
+}
+
+bool RegisteredListenerList::stillContainsListener(const RegisteredEventListener& listener)
+{
+    if (!listeners)
+        return false;
+    return listeners->contains(listener);
+}
+
+RegisteredListenerList::~RegisteredListenerList() {
+    delete listeners; listeners = 0;
+}
+
+// -----------------------------------------------------------------------------
 
 EventImpl::EventImpl()
 {

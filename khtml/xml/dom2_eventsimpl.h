@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
  *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2010 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,16 +29,115 @@
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
 #include "misc/idstring.h"
+#include <QDateTime>
 
 #undef FOCUS_EVENT //for win32
 
 class QMouseEvent;
+class QKeyEvent;
 
 namespace DOM {
 
 class AbstractViewImpl;
 class DOMStringImpl;
 class NodeImpl;
+class DocumentImpl;
+
+class RegisteredEventListener {
+public:
+    RegisteredEventListener() : useCapture(false), listener(0) {}
+
+    RegisteredEventListener(EventName _id, EventListener *_listener, bool _useCapture)
+        : eventName(_id), useCapture(_useCapture), listener(_listener) { if (listener) listener->ref(); }
+
+    ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
+
+    bool operator==(const RegisteredEventListener &other) const
+    { return eventName == other.eventName && listener == other.listener
+             && useCapture == other.useCapture; }
+
+
+    EventName eventName;
+    bool useCapture;
+    EventListener *listener;
+
+    RegisteredEventListener( const RegisteredEventListener &other ) :
+                eventName(other.eventName), useCapture(other.useCapture), listener(other.listener)
+    { if (listener) listener->ref(); }
+
+    RegisteredEventListener & operator=( const RegisteredEventListener &other ) {
+        eventName  = other.eventName;
+        useCapture = other.useCapture;
+        if (other.listener)
+            other.listener->ref();
+        if (listener)
+            listener->deref();
+        listener = other.listener;
+        return *this;
+    }
+};
+
+
+struct RegisteredListenerList {
+    RegisteredListenerList() : listeners(0)
+    {}
+
+    ~RegisteredListenerList();
+
+    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
+    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
+
+    void setHTMLEventListener(EventName id, EventListener *listener);
+    EventListener *getHTMLEventListener(EventName id);
+
+    bool hasEventListener(EventName id);
+    void clear();
+
+    //### KDE4: should disappear
+    bool stillContainsListener(const RegisteredEventListener& listener);
+
+    QList<RegisteredEventListener>* listeners;//The actual listener list - may be 0
+private:
+    bool isHTMLEventListener(EventListener* listener);
+};
+
+class EventTargetImpl : public khtml::TreeShared<EventTargetImpl>
+{
+public:
+    enum Type {
+        DOM_NODE,
+        WINDOW,
+        XML_HTTP_REQUEST
+    };
+
+    virtual Type eventTargetType() const = 0;
+
+    /* Override this to provide access to associated document in order to
+     * set appropriate 'has listerner' flags
+     */
+    virtual DocumentImpl* eventTargetDocument();
+
+    /**
+     * Perform the default action for an event e.g. submitting a form
+     */
+    virtual void defaultEventHandler(EventImpl *evt);    
+
+    /*
+     * This method fires all the registered handlers for this event
+     * (checking the capture flag as well(
+     */
+    void handleLocalEvents(EventImpl *evt, bool useCapture);
+
+    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
+    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
+    void setHTMLEventListener(EventName id, EventListener *listener);
+    void setHTMLEventListener(unsigned id, EventListener *listener);
+    EventListener *getHTMLEventListener(EventName id);
+    EventListener *getHTMLEventListener(unsigned id);    
+protected:
+    void setDocListenerFlag(unsigned flag);
+    RegisteredListenerList m_regdListeners;
+};
 
 class EventImpl : public khtml::Shared<EventImpl>
 {
@@ -472,43 +572,6 @@ protected:
     DOMStringImpl *m_attrName;
     unsigned short m_attrChange;
 };
-
-
-class RegisteredEventListener {
-public:
-    RegisteredEventListener() : useCapture(false), listener(0) {}
-
-    RegisteredEventListener(EventName _id, EventListener *_listener, bool _useCapture)
-        : eventName(_id), useCapture(_useCapture), listener(_listener) { if (listener) listener->ref(); }
-
-    ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
-
-    bool operator==(const RegisteredEventListener &other) const
-    { return eventName == other.eventName && listener == other.listener
-             && useCapture == other.useCapture; }
-
-
-    EventName eventName;
-    bool useCapture;
-    EventListener *listener;
-
-    RegisteredEventListener( const RegisteredEventListener &other ) :
-                eventName(other.eventName), useCapture(other.useCapture), listener(other.listener)
-    { if (listener) listener->ref(); }
-
-    RegisteredEventListener & operator=( const RegisteredEventListener &other ) {
-        eventName  = other.eventName;
-        useCapture = other.useCapture;
-        if (other.listener)
-            other.listener->ref();
-        if (listener)
-            listener->deref();
-        listener = other.listener;
-        return *this;
-    }
-};
-
-
 
 } //namespace
 #endif
