@@ -461,10 +461,24 @@ QHash<ScriptableExtension::FunctionRef, WrapScriptableObject*>* ScriptableOperat
     return s_importedFunctions;
 }
 
+// A little helper for marking exportedObjects. We need this since we have
+// an unclear runtime with respect to interpreter.
+class ScriptableOperationsMarker: public JSObject
+{
+public:
+    virtual void mark() {
+        JSObject::mark();
+        ScriptableOperations::self()->mark();
+    }
+};
+
 QHash<JSObject*, int>* ScriptableOperations::exportedObjects()
 {
-    if (!s_exportedObjects)
+    if (!s_exportedObjects) {
         s_exportedObjects = new QHash<JSObject*, int>;
+
+        gcProtect(new ScriptableOperationsMarker());
+    }
     return s_exportedObjects;
 }
 

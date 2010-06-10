@@ -113,8 +113,6 @@ void ScriptInterpreter::mark(bool isMain)
         obj->mark();
     ++it;
   }
-
-  ScriptableOperations::self()->mark();
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {
