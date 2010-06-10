@@ -384,6 +384,7 @@ input { color: windowtext;
         font-size: small;
         border: 2px -khtml-native;
         background-color: window;
+        cursor: text;
 }
 
 input[type="hidden"] {
@@ -396,6 +397,7 @@ input[type="radio"], input[type="checkbox"] {
         color: windowtext;
         -khtml-background-clip: padding;
         box-sizing: border-box;
+        cursor: default;
 }
 
 input[type="text"], input[type="password"] {
@@ -410,16 +412,19 @@ input[type="submit"], input[type="reset"], input[type="button"] {
         -khtml-background-clip: padding;
         color: buttontext;
         box-sizing: border-box;
+        cursor: default;
 }
 
 input[type="file"] {
         background-color: window;
         color: windowtext;
         box-sizing: border-box;
+        cursor: default;
 }
 
 input[type="image"] {
        background-color: transparent;
+       cursor: default;
 }
 
 isindex { color: windowtext; font-size: small; border: 2px -khtml-native; }
