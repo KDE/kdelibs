@@ -899,7 +899,7 @@ void KStatusNotifierItemPrivate::minimizeRestore(bool show)
         associatedWidget->show();
         associatedWidget->raise();
         KWindowSystem::raiseWindow(associatedWidget->winId());
-        KWindowSystem::activateWindow(associatedWidget->winId());
+        KWindowSystem::forceActiveWindow(associatedWidget->winId());
     } else {
         onAllDesktops = info.onAllDesktops();
         associatedWidget->hide();
