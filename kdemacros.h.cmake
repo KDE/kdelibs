@@ -410,18 +410,18 @@
  *
  * @sa KDE_CAST_BF_ENUM
  */
- 
+
 /**
  * @def KDE_CAST_BF_ENUM
  * @ingroup KDEMacros
  *
- * The KDE_CAST_BF_ENUM is used when retrieving an 
- * enumfrom  a bitfield, to ensure correct conversion
+ * The KDE_CAST_BF_ENUM is used when retrieving an
+ * enum from a bitfield, to ensure correct conversion
  * by all compilers.
  *
  * @sa KDE_BF_ENUM
  */
- 
+
 #ifdef Q_CC_MSVC
 # define KDE_BF_ENUM(a) unsigned int
 # define KDE_CAST_BF_ENUM(a,b) static_cast<a>(b)
