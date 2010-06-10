@@ -133,8 +133,10 @@ public:
     void setHTMLEventListener(EventName id, EventListener *listener);
     void setHTMLEventListener(unsigned id, EventListener *listener);
     EventListener *getHTMLEventListener(EventName id);
-    EventListener *getHTMLEventListener(unsigned id);    
-protected:
+    EventListener *getHTMLEventListener(unsigned id);
+
+    RegisteredListenerList& listenerList() { return m_regdListeners; }
+private:
     void setDocListenerFlag(unsigned flag);
     RegisteredListenerList m_regdListeners;
 };

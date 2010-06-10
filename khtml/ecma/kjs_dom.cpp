@@ -1782,10 +1782,14 @@ JSValue* KJS::getEventTarget(ExecState* exec, DOM::EventTargetImpl* t)
 {
     if (!t)
         return jsNull();
-    if (t->eventTargetType() == EventTargetImpl::DOM_NODE)
+    if (t->eventTargetType() == EventTargetImpl::DOM_NODE) {
         return getDOMNode(exec, static_cast<DOM::NodeImpl*>(t));
-    else
-        return static_cast<XMLHttpRequest*>(t); //static
+    } else if (t->eventTargetType() == EventTargetImpl::WINDOW) {
+        Window* w = static_cast<WindowEventTargetImpl*>(t)->window();
+        return w ? w : jsNull();
+    } else {
+        return static_cast<XMLHttpRequest*>(t);
+    }
 }
 
 JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)

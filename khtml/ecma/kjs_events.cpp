@@ -90,9 +90,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     } else {
       thisObj = compareListenerImp;
     }
+
     if ( !thisObj ) {
-      // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
-      // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
+      // ### can this still happen? eventTarget should be window on Window events now.
       thisObj = win;
     }
 

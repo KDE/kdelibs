@@ -291,10 +291,19 @@ public:
     virtual DocumentImpl* eventTargetDocument();
 
     void dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
+
+    // takes care of bubbling and the like. The target is generally 'this',
+    // unless the event specifies something special like Window as the target,
+    // in which case that's used for dispatch.
     void dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
+    
     // return true if event not prevented
     bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
+
+    // Window events are special in that they're only dispatched on Window, and not
+    // the current node.
     void dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    
     void dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
     void dispatchUIEvent(int _id, int detail = 0);
     void dispatchSubtreeModifiedEvent();
@@ -468,9 +477,8 @@ public:
 
     // FOR SVG Events support (WebCore API compatibility)
     QList<RegisteredEventListener>* localEventListeners() {
-        return m_regdListeners.listeners;
+        return listenerList().listeners;
     }
-
 
     DOMString lookupNamespaceURI( const DOMString& prefix );
 

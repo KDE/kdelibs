@@ -2134,7 +2134,7 @@ void KHTMLPart::resetFromScript()
 void KHTMLPart::slotFinishedParsing()
 {
   d->m_doc->setParsing(false);
-  d->m_doc->dispatchWindowEvent(EventImpl::KHTML_CONTENTLOADED_EVENT, false, false);
+  d->m_doc->dispatchHTMLEvent(EventImpl::KHTML_CONTENTLOADED_EVENT, true, false);
   checkEmitLoadEvent();
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
@@ -7274,3 +7274,5 @@ using namespace KParts;
 #ifndef KHTML_NO_WALLET
 #include "khtml_wallet_p.moc"
 #endif
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

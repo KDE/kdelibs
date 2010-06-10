@@ -88,6 +88,8 @@
 #include <html/HTMLSourceElement.h>
 #include <editing/jsediting.h>
 
+#include <ecma/kjs_window.h>
+
 // SVG (WebCore)
 #include <svg/SVGElement.h>
 #include <svg/SVGSVGElement.h>
@@ -435,6 +437,8 @@ DocumentImpl::DocumentImpl(KHTMLView *v)
     m_jsEditor = 0;
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
     m_stateRestorePos = 0;
+    m_windowEventTarget = new WindowEventTargetImpl(this);
+    m_windowEventTarget->ref();
     
     for (int c = 0; c < NumTreeVersions; ++c)
         m_domTreeVersions[c] = 0;
@@ -534,6 +538,7 @@ DocumentImpl::~DocumentImpl()
         m_activeNode->deref();
     if (m_documentElement)
         m_documentElement->deref();
+    m_windowEventTarget->deref();
     qDeleteAll(m_counterDict);
 
     m_renderArena.reset();
@@ -1619,7 +1624,7 @@ void DocumentImpl::open( bool clearEventListeners )
         attach();
 
     if (clearEventListeners)
-        m_windowEventListeners.clear();
+        windowEventTarget()->listenerList().clear();
 
     m_tokenizer = createTokenizer();
     //m_decoderMibEnum = 0;
@@ -2734,65 +2739,43 @@ void DocumentImpl::error(int err, const QString &text)
 
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
-    // if any html event listeners are registered on the window, then dispatch them here
-    if (m_windowEventListeners.listeners && !evt->propagationStopped()) {
-
-        QList<RegisteredEventListener>::iterator it;
-
-        //Grab a copy in case of clear
-        QList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
-        Event ev(evt);
-        for (it = listeners.begin(); it != listeners.end(); ++it) {
-            //Check to make sure it didn't get removed. KDE4: use Java-style iterators
-            if (!m_windowEventListeners.stillContainsListener(*it))
-                continue;
-
-            if ((*it).eventName == evt->name()) {
-                // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
-                // (this is how we identify events dispatched to the window, like window.onmousedown)
-                // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
-                evt->setCurrentTarget(0);
-                (*it).listener->handleEvent(ev);
-	    }
-        }
-    }
     if ( evt->id() == EventImpl::KHTML_CONTENTLOADED_EVENT && !evt->propagationStopped() && !evt->defaultPrevented() )
         contentLoaded();
 }
 
 void DocumentImpl::setHTMLWindowEventListener(EventName id, EventListener *listener)
 {
-    m_windowEventListeners.setHTMLEventListener(id, listener);
+    windowEventTarget()->listenerList().setHTMLEventListener(id, listener);
 }
 
 void DocumentImpl::setHTMLWindowEventListener(unsigned id, EventListener *listener)
 {
-    m_windowEventListeners.setHTMLEventListener(EventName::fromId(id), listener);
+    windowEventTarget()->listenerList().setHTMLEventListener(EventName::fromId(id), listener);
 }
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(EventName id)
 {
-    return m_windowEventListeners.getHTMLEventListener(id);
+    return windowEventTarget()->listenerList().getHTMLEventListener(id);
 }
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(unsigned id)
 {
-    return m_windowEventListeners.getHTMLEventListener(EventName::fromId(id));
+    return windowEventTarget()->listenerList().getHTMLEventListener(EventName::fromId(id));
 }
 
 void DocumentImpl::addWindowEventListener(EventName id, EventListener *listener, const bool useCapture)
 {
-    m_windowEventListeners.addEventListener(id, listener, useCapture);
+    windowEventTarget()->listenerList().addEventListener(id, listener, useCapture);
 }
 
 void DocumentImpl::removeWindowEventListener(EventName id, EventListener *listener, bool useCapture)
 {
-    m_windowEventListeners.removeEventListener(id, listener, useCapture);
+    windowEventTarget()->listenerList().removeEventListener(id, listener, useCapture);
 }
 
 bool DocumentImpl::hasWindowEventListener(EventName id)
 {
-    return m_windowEventListeners.hasEventListener(id);
+    return windowEventTarget()->listenerList().hasEventListener(id);
 }
 
 EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node)
@@ -3064,7 +3047,29 @@ khtml::XPathResultImpl * DocumentImpl::evaluate( DOMString &expression,
 
     return res;
 }
+// ----------------------------------------------------------------------------
 
+WindowEventTargetImpl::WindowEventTargetImpl(DOM::DocumentImpl* owner):
+    m_owner(owner)
+{}
+
+EventTargetImpl::Type WindowEventTargetImpl::eventTargetType() const
+{
+    return WINDOW;
+}
+
+DocumentImpl* WindowEventTargetImpl::eventTargetDocument()
+{
+    return m_owner;
+}
+
+KJS::Window* WindowEventTargetImpl::window()
+{
+    if (m_owner->part())
+        return KJS::Window::retrieveWindow(m_owner->part());
+    else
+        return 0;
+}
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)

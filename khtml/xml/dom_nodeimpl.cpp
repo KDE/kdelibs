@@ -414,13 +414,33 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // ### check that type specified
 
     // work out what nodes to send event to
-    QList<NodeImpl*> nodeChain;
+    QList<EventTargetImpl*> nodeChain;
     NodeImpl *n;
 
-    if (inDocument()) {
+    if (evt->target()->eventTargetType() != DOM_NODE) {
+        // The target is the only thing that goes into the chain.
+        nodeChain.prepend(evt->target());
+        evt->target()->ref();
+
+        // ... except, well, load events lie and say their target is the document,
+        // so we patch that up now (since we want it as Window before we got here
+        if (evt->id() == EventImpl::LOAD_EVENT && evt->target()->eventTargetType() == WINDOW)
+            evt->setTarget(document());
+    } if (inDocument()) {
         for (n = this; n; n = n->parentNode()) {
             n->ref();
             nodeChain.prepend(n);
+        }
+
+        // If the event isn't a load event, we propagate it up to window as well.
+        // The exclusion is so that things like image load events don't make it
+        // all the way upto window.onload. Meanwhile, the main load event
+        // is dispatched specially, via dispatchWindowEvent, with the case
+        // above doing the neccessary fiddling for it.
+        if (evt->id() != EventImpl::LOAD_EVENT) {
+            EventTargetImpl* t = document()->windowEventTarget();
+            t->ref();
+            nodeChain.prepend(t);
         }
     } else {
         // if node is not in the document just send event to itself
@@ -430,9 +450,9 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // trigger any capturing event handlers on our way down
     evt->setEventPhase(Event::CAPTURING_PHASE);
-    QListIterator<NodeImpl*> it(nodeChain);
+    QListIterator<EventTargetImpl*> it(nodeChain);
     while (it.hasNext()) {
-        NodeImpl* cur = it.next();
+        EventTargetImpl* cur = it.next();
         if (cur == this || evt->propagationStopped())
             break;
         evt->setCurrentTarget(cur);
@@ -441,8 +461,8 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // dispatch to the actual target node
     it.toBack();
-    NodeImpl* curn = it.hasPrevious() ? it.previous() : 0;
-    NodeImpl* propagationSentinel = 0;
+    EventTargetImpl* curn = it.hasPrevious() ? it.previous() : 0;
+    EventTargetImpl* propagationSentinel = 0;
     if (curn && !evt->propagationStopped()) {
         evt->setEventPhase(Event::AT_TARGET);
         evt->setCurrentTarget(curn);
@@ -507,15 +527,14 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 
 void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
-    int exceptioncode = 0;
-    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
-    evt->setTarget( 0 );
-    evt->ref();
     DocumentImpl *doc = document();
     doc->ref();
+    
+    int exceptioncode = 0;
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    evt->setTarget( doc->windowEventTarget() );
+    evt->ref();
     dispatchGenericEvent( evt, exceptioncode );
-    if (!evt->defaultPrevented())
-	doc->defaultEventHandler(evt);
 
     if (_id == EventImpl::LOAD_EVENT) {
         // Trigger Load Event on the enclosing frame if there is one

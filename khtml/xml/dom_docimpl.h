@@ -69,6 +69,10 @@ namespace khtml {
     class XPathNSResolverImpl;
 }
 
+namespace KJS {
+    class Window;
+}
+
 namespace WebCore
 {
     class SVGDocumentExtensions;
@@ -107,6 +111,7 @@ namespace DOM {
     class StyleSheetListImpl;
     class TextImpl;
     class TreeWalkerImpl;
+    class WindowEventTargetImpl;    
 
 class DOMImplementationImpl : public khtml::Shared<DOMImplementationImpl>
 {
@@ -185,7 +190,6 @@ public:
 private:
     QHash<DOMString,ItemInfo*> m_dict;
 };
-
 
 /**
  * @internal
@@ -295,7 +299,9 @@ public:
     void ensureStyleSheetListUpToDate() { if (m_styleSheetListDirty) rebuildStyleSheetList(true); }
 
     bool readyForLayout() const;
-    
+
+    // DOM representation of the JS Window object, for event handling
+    WindowEventTargetImpl* windowEventTarget() const { return m_windowEventTarget; }
 private:    
     void rebuildStyleSheetList(bool force = false);
     void rebuildStyleSelector ();
@@ -670,6 +676,7 @@ protected:
     StyleSheetListImpl* m_styleSheets;
     StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
+    WindowEventTargetImpl* m_windowEventTarget;
     RegisteredListenerList m_windowEventListeners;
     QList<NodeImpl*> m_maintainsState;
 
@@ -732,6 +739,23 @@ public:
 
     // This is called when our last outside reference dies
     virtual void removedLastRef();
+};
+
+/*
+ * This represent the Window object at the DOM level --- for now it only plays
+ * the role of an event dispatch target, and isn't accessible directly
+ * (it turns into Window in JS land)
+ */
+class WindowEventTargetImpl : public EventTargetImpl
+{
+public:
+    WindowEventTargetImpl(DOM::DocumentImpl* owner);
+    
+    virtual Type eventTargetType() const;
+    virtual DocumentImpl* eventTargetDocument();    
+    KJS::Window* window();
+private:
+    DOM::DocumentImpl* m_owner;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
