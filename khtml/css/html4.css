@@ -94,7 +94,7 @@ blockquote {
 :lang(ca) > q, :lang(es) > q { quotes: "\00AB" "\00BB" "\0022" "\0022"; }
 :lang(el) > q, :lang(pt) > q, :lang(tr) > q, :lang(vi) > q { quotes: "\00AB" "\00BB" "\2039" "\203A"; }
 :lang(hy) > q { quotes: "\00AB" "\00BB" "\201C" "\201D"; }
-:lang(ru) > q, :lang(uk) > q { quotes: "\00AB" "\00BB" "\201E" "\201C; }
+:lang(ru) > q, :lang(uk) > q { quotes: "\00AB" "\00BB" "\201E" "\201C"; }
 :lang(eo) > q { quotes: "\201C" "\201D"; }
 :lang(id) > q, :lang(it) > q, :lang(zh-cn) > q, :lang(ko) > q, :lang(nb) > q, :lang(no) > q { quotes: "\201C"  "\201D"  "\2018" "\2019"; }
 :lang(bg) > q { quotes: "\201E" "\201C"; }
