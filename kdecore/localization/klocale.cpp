@@ -1086,7 +1086,7 @@ QString KLocale::digitSetToName(DigitSet digitSet, bool withDigits) const
         name = i18nc("digit set", "Bengali");
         break;
     case KLocale::DevenagariDigits:
-        name = i18nc("digit set", "Devenagari");
+        name = i18nc("digit set", "Devanagari");
         break;
     case KLocale::EasternArabicIndicDigits:
         name = i18nc("digit set", "Eastern Arabic-Indic");
