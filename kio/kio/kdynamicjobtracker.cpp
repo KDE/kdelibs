@@ -1,5 +1,6 @@
 /*
  * Copyright 2008 by Rob Scheepmaker <r.scheepmaker@student.utwente.nl>
+ * Copyright 2010 Shaun Reich <shaun.reich@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,29 +70,28 @@ void KDynamicJobTracker::registerJob(KJob *job)
 {
     bool needWidgetTracker = false;
 
-    if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.JobViewServer")) {
 
-        if (!d->kuiserverTracker) {
-            d->kuiserverTracker = new KUiServerJobTracker();
-        }
+    if (!d->kuiserverTracker) {
+        d->kuiserverTracker = new KUiServerJobTracker();
+    }
 
-        d->trackers[job].kuiserverTracker = d->kuiserverTracker;
-        d->trackers[job].kuiserverTracker->registerJob(job);
+    d->trackers[job].kuiserverTracker = d->kuiserverTracker;
+    d->trackers[job].kuiserverTracker->registerJob(job);
 
-        QDBusInterface interface("org.kde.kuiserver", "/JobViewServer", "",
-        QDBusConnection::sessionBus(), this);
-        QDBusReply<bool> reply = interface.call("requiresJobTracker");
+    QDBusInterface interface("org.kde.kuiserver", "/JobViewServer", "",
+    QDBusConnection::sessionBus(), this);
+    QDBusReply<bool> reply = interface.call("requiresJobTracker");
 
-        if (reply.isValid() && reply.value()) {
-            //create a widget tracker in addition to kuiservertracker.
-            needWidgetTracker = true;
-        }
-    } else {
+    if (reply.isValid() && reply.value()) {
+        //create a widget tracker in addition to kuiservertracker.
         needWidgetTracker = true;
     }
 
+
     if (needWidgetTracker) {
-        d->widgetTracker = new KWidgetJobTracker();
+        if (!d->widgetTracker) {
+            d->widgetTracker = new KWidgetJobTracker();
+        }
         d->trackers[job].widgetTracker = d->widgetTracker;
         d->trackers[job].widgetTracker->registerJob(job);
     }
