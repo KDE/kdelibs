@@ -179,6 +179,8 @@ bool Nepomuk::ResourceManagerPrivate::dataCacheFull() const
 
 void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 {
+    QMutexLocker lock( &mutex );
+
     QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
     for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
          rdIt != rdl.end(); ++rdIt ) {
