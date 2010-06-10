@@ -762,8 +762,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   link		KJS::HTMLElement::BodyLink	DontDelete
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
-# IE extension
+# HTML5 specifies these as shadowing normal ones and forwarding to window
   onload        KJS::HTMLElement::BodyOnLoad     DontDelete
+  onerror       KJS::HTMLElement::BodyOnError    DontDelete
+  onfocus       KJS::HTMLElement::BodyOnFocus    DontDelete
+  onblur        KJS::HTMLElement::BodyOnBlur     DontDelete
 @end
 @begin HTMLBodyElementProtoTable 2
 # Even though we do blur/focus everywhere, we still handle body.focus()
@@ -1636,6 +1639,31 @@ JSValue* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
   return 0;
 }
 
+KJS::Window* KJS::HTMLElement::ourWindow() const
+{
+    KHTMLPart* part = impl()->document()->part();
+    if (part)
+        return Window::retrieveWindow(part);
+    else
+        return 0;
+}
+
+JSValue* KJS::HTMLElement::getWindowListener(ExecState* exec, int ev) const
+{
+    if (KJS::Window* win = ourWindow()) {
+        return win->getListener(exec, ev);
+    } else {
+        return jsNull();
+    }
+}
+
+void KJS::HTMLElement::setWindowListener(ExecState* exec, int ev, JSValue* val) const
+{
+    if (KJS::Window* win = ourWindow()) {
+        win->setListener(exec, ev, val);
+    }
+}
+
 JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 {
   JSValue* cand = handleBoundRead(exec, token);
@@ -1674,15 +1702,14 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   break;
   case ID_BODY: {
     switch (token) {
-    case BodyOnLoad: {
-        DOM::DocumentImpl *doc = impl()->document();
-        if (!doc || !checkNodeSecurity(exec, impl()))
-          return jsUndefined();
-        DOMNode* kjsDocNode = new DOMNode(exec, doc);
-        // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
-        //Value nodeValue(kjsDocNode);
-        return kjsDocNode->getListener( DOM::EventImpl::LOAD_EVENT );
-    }
+    case BodyOnLoad:
+        return getWindowListener(exec, DOM::EventImpl::LOAD_EVENT);
+    case BodyOnError:
+        return getWindowListener(exec, DOM::EventImpl::ERROR_EVENT);
+    case BodyOnBlur:
+        return getWindowListener(exec, DOM::EventImpl::BLUR_EVENT);
+    case BodyOnFocus:
+        return getWindowListener(exec, DOM::EventImpl::FOCUS_EVENT);
     }
   }
   break;
@@ -2436,16 +2463,18 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
     case ID_BODY: {
       //DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
       switch (token) {
-      case BodyOnLoad:
-        DOM::DocumentImpl *doc = element.document();
-        if (doc && checkNodeSecurity(exec, impl()))
-        {
-          DOMNode* kjsDocNode = new DOMNode(exec, doc);
-          // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
-          //Value nodeValue(kjsDocNode);
-          kjsDocNode->setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
-        }
-        return;
+        case BodyOnLoad:
+            setWindowListener(exec, DOM::EventImpl::LOAD_EVENT, value);
+            break;
+        case BodyOnError:
+            setWindowListener(exec, DOM::EventImpl::ERROR_EVENT, value);
+            break;
+        case BodyOnBlur:
+            setWindowListener(exec, DOM::EventImpl::BLUR_EVENT, value);
+            break;
+        case BodyOnFocus:
+            setWindowListener(exec, DOM::EventImpl::FOCUS_EVENT, value);
+            break;
       }
     }
     break;

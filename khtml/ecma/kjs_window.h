@@ -183,11 +183,13 @@ namespace KJS {
     void showSuppressedWindows();
 
     JSValue* indexGetter(ExecState *exec, unsigned index);
+
+    // updates window listeners.
+    JSValue* getListener(ExecState *exec, int eventId) const;
+    void setListener(ExecState *exec, int eventId, JSValue* func);    
   protected:
     enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
 
-    JSValue* getListener(ExecState *exec, int eventId) const;
-    void setListener(ExecState *exec, int eventId, JSValue* func);
   private:
     KParts::ReadOnlyPart* frameByIndex(unsigned index);
     static JSValue *framePartGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);

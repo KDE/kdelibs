@@ -35,6 +35,7 @@
 
 namespace KJS {
   class HTMLElement;
+  class Window;
 
   class HTMLDocument : public DOMDocument {
   public:
@@ -93,7 +94,8 @@ namespace KJS {
            LinkSheet, TitleText, MetaName, MetaHttpEquiv, MetaContent, MetaScheme,
            BaseHref, BaseTarget, IsIndexForm, IsIndexPrompt, StyleDisabled,
            StyleSheet, StyleType, StyleMedia, BodyBackground, BodyVLink, BodyText,
-           BodyLink, BodyALink, BodyBgColor,  BodyOnLoad, BodyFocus, 
+           BodyLink, BodyALink, BodyBgColor, BodyOnLoad, BodyOnBlur, BodyOnFocus,
+           BodyOnError, BodyFocus,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
@@ -210,6 +212,11 @@ namespace KJS {
 
     static QHash<int, const BoundPropInfo*>* s_boundPropInfo;
     static QHash<int, const BoundPropInfo*>* boundPropInfo();
+
+    // returns our window object --- may return 0.
+    KJS::Window* ourWindow() const;
+    JSValue*     getWindowListener(ExecState *exec, int eventId) const;
+    void         setWindowListener(ExecState *exec, int eventId, JSValue* val) const;
   };
 
   class HTMLCollection : public DOMObject {
