@@ -134,12 +134,12 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     switch (op) {
         case HeadOperation: {
-            kDebug( 7044 ) << "HeadOperation:" << reqUrl;
+            //kDebug( 7044 ) << "HeadOperation:" << reqUrl;
             kioJob = KIO::mimetype(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case GetOperation: {
-            kDebug( 7044 ) << "GetOperation:" << reqUrl;
+            //kDebug( 7044 ) << "GetOperation:" << reqUrl;
             if (!reqUrl.path().isEmpty() || reqUrl.host().isEmpty())
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             else
@@ -147,17 +147,17 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case PutOperation: {
-            kDebug( 7044 ) << "PutOperation:" << reqUrl;
+            //kDebug( 7044 ) << "PutOperation:" << reqUrl;
             kioJob = KIO::put(reqUrl, -1, KIO::HideProgressInfo);
             break;
         }
         case PostOperation: {
-            kDebug( 7044 ) << "PostOperation:" << reqUrl;
+            //kDebug( 7044 ) << "PostOperation:" << reqUrl;
             kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
             break;
         }
         default:
-            kDebug( 7044 ) << "Unknown operation";
+            //kDebug( 7044 ) << "Unknown operation";
             return 0;
     }
 
