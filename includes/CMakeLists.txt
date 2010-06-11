@@ -226,6 +226,7 @@ install( FILES
   KIconEffect
   KIconLoader
   KIconTheme
+  KImageCache
   KImageFilePreview
   KImageIO
   KInputDialog
@@ -342,6 +343,7 @@ install( FILES
   KServiceTypeTrader
   KSessionManager
   KSharedConfig
+  KSharedDataCache
   KSharedPtr
   KShell
   KShellCompletion
