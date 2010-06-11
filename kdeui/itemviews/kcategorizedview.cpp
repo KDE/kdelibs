@@ -523,9 +523,6 @@ void KCategorizedView::setModel(QAbstractItemModel *model)
 
     QListView::setModel(model);
 
-    // check bugs 213068 and 233163 before you enable horizontal scroll bar
-    setHorizontalScrollBarPolicy(d->isCategorized() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAsNeeded);
-
     // if the model already had information inserted, update our data structures to it
     if (model->rowCount()) {
         slotLayoutChanged();
@@ -639,9 +636,6 @@ void KCategorizedView::setCategoryDrawer(KCategoryDrawer *categoryDrawer)
     d->categoryDrawer = categoryDrawer;
     d->categoryDrawerV2 = dynamic_cast<KCategoryDrawerV2*>(categoryDrawer);
     d->categoryDrawerV3 = dynamic_cast<KCategoryDrawerV3*>(categoryDrawer);
-
-    // check bugs 213068 and 233163 before you enable horizontal scroll bar
-    setHorizontalScrollBarPolicy(d->isCategorized() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAsNeeded);
 
     if (d->categoryDrawerV2) {
         connect(d->categoryDrawerV2, SIGNAL(collapseOrExpandClicked(QModelIndex)),
