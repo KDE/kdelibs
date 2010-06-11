@@ -8,8 +8,7 @@ of two strings: a "key" and a "value".
 Any meta data whose "key" starts with the keywords {internal~currenthost} and
 "{internal~allhosts}" will be treated as internal metadata and will not be made
 available to client applications. Instead all such meta-data will be stored and
-will appropriately be sent back to all ioslaves along with the other regular
-metadata values.
+sent back to the appropriate ioslaves along with the other regular metadata values.
 
 Use "{internal~currenthost}" to make the internal metadata available to all
 ioslaves of the same protocol and host as the ioslave that generated it. If
@@ -101,6 +100,10 @@ ssl_demand_certificate	bool	Flag to tell TCPSlaveBase to demand that a client ce
 ssl_no_ui	bool		Flag to tell TCPSlave that no user interaction should take place. Instead of asking security questions the connection will silently fail. This is of particular use to favicon code. (default: false)
 
 ssl_cipher	string		Set in TCPSlaveBase to tell the caller which cipher is currently being used.
+                                This string is composed of the encryption, authentication, key-exchange and digest
+                                methods separated by an LF (\n).
+
+ssl_cipher_name string          Set in TCPSlaveBase to tell the caller the name of the cipher used.
 
 ssl_cipher_desc	string		Set in TCPSlaveBase to describe the details of the current cipher being used.
 

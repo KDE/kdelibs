@@ -173,6 +173,14 @@ namespace Integration {
 typedef KIO::AccessManager AccessManager;
 
 /**
+ * Maps KIO SSL meta data into the given QSslConfiguration object.
+ *
+ * @since 4.5
+ * @return true if @p metadata contains ssl information and the mapping succeeded.
+ */
+bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig);
+
+/**
  * @short A KDE implementation of QNetworkCookieJar.
  *
  * Use this class in place of QNetworkCookieJar if you want to integrate with

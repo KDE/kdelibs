@@ -114,6 +114,7 @@ public:
         sslCipher += cipher.keyExchangeMethod() + '\n';
         sslCipher += cipher.digestMethod();
         q->setMetaData("ssl_cipher", sslCipher);
+        q->setMetaData("ssl_cipher_name", cipher.name());
         q->setMetaData("ssl_cipher_used_bits", QString::number(cipher.usedBits()));
         q->setMetaData("ssl_cipher_bits", QString::number(cipher.supportedBits()));
         q->setMetaData("ssl_peer_ip", ip);

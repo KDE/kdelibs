@@ -63,7 +63,6 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
 
     if (!request.sslConfiguration().isNull()) {
         setSslConfiguration(request.sslConfiguration());
-        kDebug( 7044 ) << "QSslConfiguration not supported (currently).";
     }
 
     if (!kioJob) { // a blocked request
@@ -122,9 +121,12 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         if (!responseCode.isEmpty())
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, responseCode.toInt());
 
-        // Set the encrypted attribute...
-        setAttribute(QNetworkRequest::ConnectionEncryptedAttribute,
-                     (QString::compare(job->queryMetaData("ssl_in_use"), QLatin1String("true"), Qt::CaseInsensitive) == 0));
+        // Set the encryption attribute and values...
+        QSslConfiguration sslConfig;
+        const bool isEncrypted = KIO::Integration::sslConfigFromMetaData(job->metaData(), sslConfig);
+        setAttribute(QNetworkRequest::ConnectionEncryptedAttribute, isEncrypted);
+        if (isEncrypted)
+            setSslConfiguration(sslConfig);
 
         // Set the raw header information...
         const QString headers = job->queryMetaData("HTTP-Headers");

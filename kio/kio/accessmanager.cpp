@@ -31,11 +31,14 @@
 #include <ksharedconfig.h>
 
 #include <QtCore/QUrl>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QSslCipher>
+#include <QtNetwork/QSslCertificate>
+#include <QtNetwork/QSslConfiguration>
 
 #define QL1S(x)     QLatin1String(x)
 
@@ -250,6 +253,37 @@ bool AccessManager::AccessManagerPrivate::isRequestAllowed(const QUrl& url) cons
 
 
 using namespace KIO::Integration;
+
+static QSsl::SslProtocol qSslProtocolFromString(const QString& str)
+{
+    if (str.compare(QLatin1String("SSLv3"), Qt::CaseInsensitive) == 0)
+        return QSsl::SslV3;
+
+    if (str.compare(QLatin1String("SSLv2"), Qt::CaseInsensitive) == 0)
+        return QSsl::SslV2;
+
+    if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0)
+        return QSsl::TlsV1;
+
+    return QSsl::AnyProtocol;
+}
+
+bool KIO::Integration::sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig)
+{
+    bool success = false;
+
+    if (metadata.contains(QL1S("ssl_in_use"))) {
+        const QSsl::SslProtocol sslProto = qSslProtocolFromString(metadata.value("ssl_protocol_version"));
+        QList<QSslCipher> cipherList;
+        cipherList << QSslCipher(metadata.value("ssl_cipher_name"), sslProto);
+        sslconfig.setCaCertificates(QSslCertificate::fromData(metadata.value("ssl_peer_chain").toUtf8()));
+        sslconfig.setCiphers(cipherList);
+        sslconfig.setProtocol(sslProto);
+        success = sslconfig.isNull();
+    }
+
+    return success;
+}
 
 CookieJar::CookieJar(QObject* parent)
           :QNetworkCookieJar(parent), d(new CookieJar::CookieJarPrivate) {
