@@ -177,9 +177,15 @@ QSize KBlockLayout::minimumSize() const
 {
     QSize size;
     QLayoutItem *item;
-    foreach (item, d->itemList)
-        size = size.expandedTo(item->minimumSize());
-
+    foreach (item, d->itemList) {
+        const QSize itemSize = item->minimumSize();
+        size.rwidth() += itemSize.width();
+        if (itemSize.height() > size.height()) {
+            size.setHeight(itemSize.height());
+        }
+    }
+    
+    size.rwidth() += horizontalSpacing() * d->itemList.count();
     size += QSize(2*margin(), 2*margin());
     return size;
 }
