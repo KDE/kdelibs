@@ -83,7 +83,7 @@ namespace Kuit {
         typedef enum {
             None,
             Button, Inmenu, Intoolbar,
-            Window, Menu, Tab, Group, Column,
+            Window, Menu, Tab, Group, Column, Row,
             Slider, Spinbox, Listbox, Textbox, Chooser,
             Check, Radio,
             Inlistbox, Intable, Inrange, Intext,
@@ -228,7 +228,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_ROL(Action, "action", Plain,
               Button << Inmenu << Intoolbar);
     SETUP_ROL(Title, "title", Plain,
-              Window << Menu << Tab << Group << Column);
+              Window << Menu << Tab << Group << Column << Row);
     SETUP_ROL(Label, "label", Plain,
               Slider << Spinbox << Listbox << Textbox << Chooser);
     SETUP_ROL(Option, "option", Plain,
@@ -262,6 +262,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_CUE(Tab, "tab");
     SETUP_CUE(Group, "group");
     SETUP_CUE(Column, "column");
+    SETUP_CUE(Row, "row");
     SETUP_CUE(Slider, "slider");
     SETUP_CUE(Spinbox, "spinbox");
     SETUP_CUE(Listbox, "listbox");
