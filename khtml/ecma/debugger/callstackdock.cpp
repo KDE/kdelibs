@@ -70,24 +70,43 @@ void CallStackDock::clearDisplay()
 void CallStackDock::displayStack(InterpreterContext* ic)
 {
     m_activeCtx = ic;
-    m_view->clearContents();
-    m_view->setRowCount(ic->callStack.count());
 
-    int row = 0;
-    foreach (const CallStackEntry &entry, ic->callStack)
-    {
+    // Try to save our position accross updates if nothing changed.
+    // this is needed for console eval.
+    bool dirty     = false;
+    int  activeRow = m_view->currentRow();
+
+    if (ic->callStack.count() != m_view->rowCount()) {
+        m_view->setRowCount(ic->callStack.count());
+        dirty = true;
+    }
+
+    for (int row = 0; row < ic->callStack.size(); ++row) {
+        const CallStackEntry &entry =  ic->callStack[row];
+        
         int displayRow = ic->callStack.count() - row - 1; //Want newest entry on top
-        QTableWidgetItem *function = new QTableWidgetItem(entry.name);
+        QString fnLabel = entry.name;
+        QString lnLabel = QString::number(entry.lineNumber + 1);
+
+        dirty = dirty /* avoids latter stuff if may be null */
+            || m_view->item(displayRow, 0)->text() != fnLabel
+            || m_view->item(displayRow, 1)->text() != lnLabel;
+
+        QTableWidgetItem *function = new QTableWidgetItem(fnLabel);
         function->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 0, function);
-        QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber + 1));
+        QTableWidgetItem *lineNumber = new QTableWidgetItem(lnLabel);
         lineNumber->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 1, lineNumber);
-        row++;
     }
+    
     m_view->resizeColumnsToContents();
     m_view->resizeRowsToContents();
-//    m_view->setColumnWidth(1, 20);
+
+    if (!dirty && activeRow != -1) {
+        m_view->setCurrentCell(activeRow, 0);
+        slotViewItem(m_view->item(activeRow, 0));
+    }
 }
 
 void CallStackDock::slotViewItem(QTableWidgetItem* item)

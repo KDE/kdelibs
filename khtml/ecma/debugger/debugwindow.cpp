@@ -299,6 +299,10 @@ void DebugWindow::updateStoppedMark(RunMode mode)
 
 void DebugWindow::setUIMode(RunMode mode)
 {
+    // update editor stuff. We want to do it first, since the callstack
+    // may try to restore our position in some cases
+    updateStoppedMark(mode);
+
     if (mode == Running)
     {
         // Toggle buttons..
@@ -321,8 +325,6 @@ void DebugWindow::setUIMode(RunMode mode)
         m_stepOverAct->setEnabled(true);
         m_runningSessionCtx = 0;
     }
-
-    updateStoppedMark(mode);
 }
 
 
