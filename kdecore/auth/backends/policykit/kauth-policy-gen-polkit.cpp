@@ -1,6 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2009-2010 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -46,8 +46,17 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
 
     out << header;
 
+    // Blacklisted characters + replacements
+    QHash< QChar, QString > blacklist;
+    blacklist.insert(QChar('&'), "&amp;");
+
     if (domain.contains("vendor")) {
-        out << "<vendor>" << domain["vendor"] << "</vendor>\n";
+        QHash< QChar, QString >::const_iterator blI;
+        QString vendor = domain["vendor"];
+        for (blI = blacklist.constBegin(); blI != blacklist.constEnd(); ++blI) {
+            vendor.replace(blI.key(), blI.value());
+        }
+        out << "<vendor>" << vendor << "</vendor>\n";
     }
     if (domain.contains("vendorurl")) {
         out << "<vendor_url>" << domain["vendorurl"] << "</vendor_url>\n";
@@ -59,20 +68,36 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
     foreach (const Action &action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
 
-        QHash<QString,QString>::const_iterator i;
-        for (i = action.descriptions.constBegin(); i != action.descriptions.constEnd(); ++i) {
+        for (QHash< QString, QString >::const_iterator i = action.messages.constBegin(); i != action.messages.constEnd(); ++i) {
             out << dent << dent << "<description";
-            if (i.key() != "en")
+            if (i.key() != "en") {
                 out << " xml:lang=\"" << i.key() << '"';
-            out << '>' << action.messages.value(i.key()) << "</description>\n";
+            }
+
+            QHash< QChar, QString >::const_iterator blI;
+            QString description = i.value();
+            for (blI = blacklist.constBegin(); blI != blacklist.constEnd(); ++blI) {
+                description.replace(blI.key(), blI.value());
+            }
+
+            out << '>' << description << "</description>\n";
         }
 
-        for (i = action.messages.constBegin(); i != action.messages.constEnd(); ++i) {
+        for (QHash< QString, QString>::const_iterator i = action.descriptions.constBegin();
+             i != action.descriptions.constEnd();
+             ++i) {
             out << dent << dent << "<message";
             if (i.key() != "en") {
                 out << " xml:lang=\"" << i.key() << '"';
             }
-            out << '>' << action.descriptions.value(i.key()) << "</message>\n";
+
+            QHash< QChar, QString >::const_iterator blI;
+            QString message = i.value();
+            for (blI = blacklist.constBegin(); blI != blacklist.constEnd(); ++blI) {
+                message.replace(blI.key(), blI.value());
+            }
+
+            out << '>' << message << "</message>\n";
         }
 
         QString policy = action.policy;
