@@ -23,7 +23,6 @@
 
 #include "downloadwidget.h"
 #include "downloadwidget_p.h"
-#include "uploaddialog.h"
 
 #include <QtCore/QTimer>
 #include <QtGui/QScrollBar>
@@ -278,13 +277,11 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.m_searchEdit->setTrapReturnKey(true);
 
     q->connect(ui.m_listView->verticalScrollBar(), SIGNAL(valueChanged(int)), q, SLOT(scrollbarValueChanged(int)));
-    q->connect(ui.m_uploadButton, SIGNAL(clicked()), q, SLOT(slotUpload()));
-
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
-    
+
     details = new EntryDetails(engine, &ui);
     q->connect(delegate, SIGNAL(signalShowDetails(KNS3::EntryInternal)), q, SLOT(slotShowDetails(KNS3::EntryInternal)));
-    
+
     slotShowOverview();
 }
 
@@ -393,11 +390,5 @@ void DownloadWidgetPrivate::slotShowOverview()
     ui.m_titleWidget->setText(titleText);
 }
 
-void DownloadWidgetPrivate::slotUpload()
-{
-    kDebug() << "do upload";
-    UploadDialog dialog(m_configFile, ui.m_uploadButton);
-    dialog.exec();
-}
 
 #include "downloadwidget.moc"

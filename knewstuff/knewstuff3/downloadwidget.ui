@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>724</width>
-    <height>461</height>
+    <height>471</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="detailsStack">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="overviewPage">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -231,13 +231,6 @@
            </property>
           </spacer>
          </item>
-         <item row="16" column="1" colspan="3">
-          <widget class="KPushButton" name="m_uploadButton">
-           <property name="text">
-            <string>Upload Your Own Files...</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="3">
           <widget class="KPushButton" name="iconViewButton">
            <property name="checkable">
@@ -277,7 +270,7 @@
             <x>0</x>
             <y>0</y>
             <width>702</width>
-            <height>385</height>
+            <height>394</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">
@@ -520,7 +513,6 @@
                <height>300</height>
               </size>
              </property>
-             <zorder>spacer</zorder>
             </widget>
            </item>
            <item row="2" column="1">
