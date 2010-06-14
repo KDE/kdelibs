@@ -1994,17 +1994,26 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
             return idx.sibling(idx.row(), column);
         }
 
-        int _row = proxyIndex.row();
+        if (d->m_mappedFirstChildren.isEmpty())
+          return QModelIndex();
 
-        foreach(const QModelIndex &idx, d->m_rootIndexList) {
-            const int idxRowCount = sourceModel()->rowCount(idx);
-            if (_row < idxRowCount) {
-                return sourceModel()->index(_row, column, idx);
+        SourceProxyIndexMapping::left_const_iterator it = d->m_mappedFirstChildren.leftConstBegin();
+        const SourceProxyIndexMapping::left_const_iterator end = d->m_mappedFirstChildren.leftConstEnd();
+
+        SourceProxyIndexMapping::left_const_iterator result = end;
+        for ( ; it != end; ++it) {
+            if (it.value().row() <= proxyIndex.row()) {
+                if (result == end || it.value().row() > result.value().row())
+                    result = it;
             }
-            _row -= idxRowCount;
         }
-        Q_ASSERT(false);
-        return QModelIndex();
+
+        const QModelIndex proxyFirstChild = result.value();
+        const QModelIndex sourceFirstChild = result.key();
+        Q_ASSERT(proxyFirstChild.isValid());
+        Q_ASSERT(proxyFirstChild.internalPointer() == 0);
+        Q_ASSERT(sourceFirstChild.isValid());
+        return sourceFirstChild.sibling(proxyIndex.row() - proxyFirstChild.row(), column);
     }
 
     const QModelIndex proxyParent = d->m_parentIds.leftToRight(proxyIndex.internalId());
