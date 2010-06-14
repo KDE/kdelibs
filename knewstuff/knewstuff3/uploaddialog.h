@@ -122,6 +122,13 @@ public:
     // void setPreviewImageFile(const KUrl& version);
 
     /**
+     Enable the UI to let the user to set a price for the uploaded item.
+     @param enabled enable the price option - it is enabled by default
+     @since 4.5
+     */
+    void setPriceEnabled(bool enabled);
+
+    /**
       Set the suggested price displayed in the upload dialog.
       The user can still change this.
       @param version version

@@ -98,6 +98,7 @@ void UploadDialog::Private::_k_showPage(int page)
     switch (ui.stackedWidget->currentIndex()) {
     case UserPasswordPage:
         ui.username->setFocus();
+        // TODO 4.6 enable new string: setBusy(i18n("Fetching provider information..."));
         break;
 
     case FileNewUpdatePage:
@@ -185,9 +186,12 @@ void UploadDialog::Private::_k_updatePage()
 void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
 {
     if (providers.size() == 0) {
+        // TODO 4.6 enable new string: setIdle(i18n("Could not fetch provider information."));
+        ui.stackedWidget->setEnabled(false);
         kWarning() << "Could not load providers.";
         return;
     }
+    setIdle(QString());
     ui.providerComboBox->addItems(providers);
     ui.providerComboBox->setCurrentIndex(0);
     atticaHelper->setCurrentProvider(providers.at(0));
@@ -460,6 +464,12 @@ void UploadDialog::setChangelog(const QString& changelog)
 void UploadDialog::setDescription(const QString& description)
 {
     d->ui.mSummaryEdit->setText(description);
+}
+
+void UploadDialog::setPriceEnabled(bool enabled)
+{
+    d->ui.priceCheckBox->setVisible(enabled);
+    d->ui.priceGroupBox->setVisible(enabled);
 }
 
 void UploadDialog::setPrice(double price)
