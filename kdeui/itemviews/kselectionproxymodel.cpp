@@ -2167,6 +2167,37 @@ QModelIndex KSelectionProxyModelPrivate::mapRootFirstChildFromSource(const QMode
     return m_mappedFirstChildren.leftToRight(sourceChild);
 }
 
+static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersistentModelIndex> &rootIndexList, const SourceProxyIndexMapping &mappedFirstChildren)
+{
+    if (!startWithChildTrees) {
+        Q_ASSERT(rootIndexList.size() > row);
+    } else {
+
+        Q_ASSERT(!mappedFirstChildren.isEmpty());
+        SourceProxyIndexMapping::left_const_iterator it = mappedFirstChildren.leftConstBegin();
+        const SourceProxyIndexMapping::left_const_iterator end = mappedFirstChildren.leftConstEnd();
+
+        SourceProxyIndexMapping::left_const_iterator result = end;
+        for ( ; it != end; ++it)
+        {
+            if (it->row() <= row)
+            {
+                if (result == end || result.value().row() < it.value().row())
+                    result = it;
+            }
+        }
+        Q_ASSERT(result != end);
+        const QModelIndex proxyFirstChild = result.value();
+        const QModelIndex sourceFirstChild = result.key();
+        Q_ASSERT(proxyFirstChild.isValid());
+        Q_ASSERT(proxyFirstChild.internalPointer() == 0);
+        Q_ASSERT(sourceFirstChild.isValid());
+        Q_ASSERT(sourceFirstChild.parent().isValid());
+        Q_ASSERT(row <= proxyFirstChild.row() + sourceFirstChild.model()->rowCount(sourceFirstChild.parent()));
+    }
+    return true;
+}
+
 QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
     Q_D(const KSelectionProxyModel);
@@ -2175,23 +2206,8 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
         return QModelIndex();
 
     if (!parent.isValid()) {
-        if (!d->m_startWithChildTrees) {
-            Q_ASSERT(d->m_rootIndexList.size() > row);
-            return createIndex(row, column);
-        }
-        int _row = row;
-        foreach(const QModelIndex &idx, d->m_rootIndexList) {
-            const int idxRowCount = sourceModel()->rowCount(idx);
-            if (_row < idxRowCount) {
-                const QModelIndex proxyFirstChild = d->mapRootFirstChildFromSource(sourceModel()->index(0, 0, idx));
-                Q_ASSERT(proxyFirstChild.isValid());
-                Q_ASSERT(proxyFirstChild.internalPointer() == 0);
-                return createIndex(row, column, proxyFirstChild.internalPointer());
-            }
-            _row -= idxRowCount;
-        }
-
-        return QModelIndex();
+        Q_ASSERT(indexIsValid(d->m_startWithChildTrees, row, d->m_rootIndexList, d->m_mappedFirstChildren));
+        return createIndex(row, column);
     } else {
         Q_ASSERT(d->m_startWithChildTrees ? true : d->m_parentIds.rightContains(parent));
 
