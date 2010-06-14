@@ -934,10 +934,10 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
 {
     Q_Q(const KSelectionProxyModel);
     const QModelIndex proxyParent = q->mapFromSource(parent);
+    const int proxyStartRow = getProxyInitialRow(parent) + start;
 
     if (proxyParent.isValid()) {
         if (m_omitChildren || (m_startWithChildTrees && m_omitDescendants)) {
-            const int proxyStartRow = getProxyInitialRow(parent) + start;
             updateInternalTopIndexes(proxyStartRow, end - start + 1);
             if (start == 0) {
                 updateFirstChildMapping(parent, end + 1);
@@ -948,7 +948,6 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
         if (q->sourceModel()->rowCount(parent) == (end - start + 1))
           createParentMappings(parent.parent(), parent.row(), parent.row());
     } else {
-        const int proxyStartRow = getProxyInitialRow(parent) + start;
         updateInternalTopIndexes(proxyStartRow, end - start + 1);
         if (start == 0) {
             updateFirstChildMapping(parent, end + 1);
