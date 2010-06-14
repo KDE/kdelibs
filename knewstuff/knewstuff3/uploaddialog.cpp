@@ -165,9 +165,7 @@ void UploadDialog::Private::_k_updatePage()
         break;
 
     case Details2Page:
-        if (ui.copyrightCheckBox->isChecked()) {
-            nextEnabled = true;
-        }
+        nextEnabled = true;
         break;
 
     case UploadFinalPage:
@@ -374,7 +372,6 @@ bool UploadDialog::init(const QString &configfile)
 
     connect(d->ui.password, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
     connect(d->ui.mNameEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
-    connect(d->ui.copyrightCheckBox, SIGNAL(stateChanged(int)), this, SLOT(_k_updatePage()));
     connect(d->ui.uploadFileRequester, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
     connect(d->ui.priceCheckBox, SIGNAL(toggled(bool)), this, SLOT(_k_priceToggled(bool)));
 

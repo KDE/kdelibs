@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>330</width>
-    <height>385</height>
+    <width>538</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,7 +53,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -483,23 +483,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>I ensure that this content does not violate any existing copyright, law or trademark. I agree for my IP address to be logged. (Distributing content without the permission of the copyright holder is illegal.)</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="copyrightCheckBox">
-         <property name="text">
-          <string>I agree</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -518,7 +501,7 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="createContentImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -537,7 +520,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="uploadContentImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -556,7 +539,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="uploadPreview1ImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -575,7 +558,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="fetchContentLinkImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -600,14 +583,14 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="7" column="1">
           <widget class="QLabel" name="contentWebsiteLinkLabel">
            <property name="text">
             <string>Fetch content link from server</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="2" column="1">
           <widget class="QLabel" name="creatingContentLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -620,7 +603,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="3" column="1">
           <widget class="QLabel" name="creatingContentLabel_2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -633,7 +616,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="4" column="1">
           <widget class="QLabel" name="uploadPreview1Label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -646,7 +629,7 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="9" column="1">
           <widget class="QLabel" name="contentWebsiteLink">
            <property name="text">
             <string/>
@@ -656,7 +639,7 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
+         <item row="11" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -669,7 +652,7 @@
            </property>
           </spacer>
          </item>
-         <item row="7" column="1">
+         <item row="10" column="1">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Note: You can edit, update and delete your content on the website.</string>
@@ -679,7 +662,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="5" column="1">
           <widget class="QLabel" name="uploadPreview2Label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -692,7 +675,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="6" column="1">
           <widget class="QLabel" name="uploadPreview3Label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -705,7 +688,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="uploadPreview2ImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -724,7 +707,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="uploadPreview3ImageLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -743,37 +726,47 @@
            </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="uploadProgressBar">
-         <property name="maximum">
-          <number>1</number>
-         </property>
-         <property name="value">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="uploadButton">
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>Start Upload</string>
+            <string>I ensure that this content does not violate any existing copyright, law or trademark. I agree for my IP address to be logged. (Distributing content without the permission of the copyright holder is illegal.)</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="uploadButton">
+             <property name="text">
+              <string>Start Upload</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="8" column="1">
+          <widget class="QProgressBar" name="uploadProgressBar">
+           <property name="maximum">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>-1</number>
            </property>
           </widget>
          </item>
@@ -829,7 +822,6 @@
   <tabstop>priceCheckBox</tabstop>
   <tabstop>priceSpinBox</tabstop>
   <tabstop>priceReasonLineEdit</tabstop>
-  <tabstop>copyrightCheckBox</tabstop>
   <tabstop>uploadButton</tabstop>
  </tabstops>
  <resources/>
