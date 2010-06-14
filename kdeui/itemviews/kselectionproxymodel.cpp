@@ -2066,7 +2066,6 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
         return maybeMapped;
     }
 
-
     const int row = d->m_rootIndexList.indexOf(sourceIndex);
     const QModelIndex sourceParent = sourceIndex.parent();
     if (row != -1) {
@@ -2074,17 +2073,13 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
             Q_ASSERT(d->m_rootIndexList.size() > row);
             return createIndex(row, sourceIndex.column());
         }
-        int parentRow = d->m_rootIndexList.indexOf(sourceParent);
-        if (parentRow == -1)
+        if (!d->m_rootIndexList.contains(sourceParent))
             return QModelIndex();
 
-        int proxyRow = sourceIndex.row();
-        while (parentRow > 0) {
-            --parentRow;
-            QModelIndex selectedIndexAbove = d->m_rootIndexList.at(parentRow);
-            proxyRow += sourceModel()->rowCount(selectedIndexAbove);
-        }
-        return createIndex(proxyRow, sourceIndex.column());
+        const QModelIndex firstChild = sourceModel()->index(0, 0, sourceParent);
+        const QModelIndex firstProxyChild = d->mapRootFirstChildFromSource(firstChild);
+
+        return createIndex(firstProxyChild.row() + sourceIndex.row(), sourceIndex.column());
     }
 
     const QModelIndex proxyParent = d->mapParentFromSource(sourceParent);
