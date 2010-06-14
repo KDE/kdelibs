@@ -932,6 +932,10 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
         // ExactSelection and SubTreeRoots
         return;
 
+    // topLevel insertions can be ignored because topLevel items would need to be selected to affect the proxy.
+    if (!parent.isValid())
+        return;
+
     QPair<int, int> pair = beginInsertRows(parent, start, end);
     if (pair.first == -1)
         return;
@@ -946,25 +950,25 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
 {
     Q_Q(const KSelectionProxyModel);
     const QModelIndex proxyParent = q->mapFromSource(parent);
-    const int proxyStartRow = getProxyInitialRow(parent) + start;
+    const int proxyInitialRow = getProxyInitialRow(parent);
+    const int proxyStartRow = proxyInitialRow + start;
+    const int offset = end - start + 1;
 
-    if (proxyParent.isValid()) {
-        if (m_omitChildren || (m_startWithChildTrees && m_omitDescendants)) {
-            updateInternalTopIndexes(proxyStartRow, end - start + 1);
-            if (start == 0) {
-                updateFirstChildMapping(parent, end + 1);
-            }
-        } else
-            updateInternalIndexes(parent, start, end - start + 1);
-        // @p parent was not a parent before, but it is now.
-        if (q->sourceModel()->rowCount(parent) == (end - start + 1))
-          createParentMappings(parent.parent(), parent.row(), parent.row());
+    if (!proxyParent.isValid()) {
+        Q_ASSERT(m_startWithChildTrees);
+        updateInternalTopIndexes(proxyStartRow, offset);
     } else {
-        updateInternalTopIndexes(proxyStartRow, end - start + 1);
-        if (start == 0) {
-            updateFirstChildMapping(parent, end + 1);
-        }
+        updateInternalIndexes(proxyParent, proxyStartRow, offset);
     }
+
+    const bool isNewParent = (q->sourceModel()->rowCount(parent) == offset);
+
+    if (isNewParent) {
+        if (m_startWithChildTrees)
+            createFirstChildMapping(parent, proxyInitialRow);
+        createParentMappings(parent.parent(), parent.row(), parent.row());
+    }
+
     createParentMappings(parent, start, end);
 }
 
