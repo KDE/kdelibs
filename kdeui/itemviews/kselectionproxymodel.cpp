@@ -1118,7 +1118,9 @@ void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &parent, int s
             ++rootIt;
     }
 
-    updateInternalIndexes(parent, start, -1*(end - start + 1));
+    const QModelIndex proxyParent = q->mapFromSource(parent);
+
+    updateInternalIndexes(proxyParent, getProxyInitialRow(parent) + start - 1, -1*(end - start + 1));
 }
 
 void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, int start, int end)
@@ -1387,7 +1389,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         // TODO: Do this conditionally if the signal is connected to anything.
 
         removeParentMappings(sourceParent, range.top(), range.bottom());
-        updateInternalIndexes(sourceParent, range.bottom() + 1, -1 * height);
+        updateInternalIndexes(proxyParent, proxyTopLeft.row() + height - 1, -1 * height);
 
         for (int i = 0; i < height; ++i)
         {
@@ -1626,7 +1628,7 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
             emit q->rootIndexAdded(newIndex);
             Q_ASSERT(m_rootIndexList.size() > row);
             const QModelIndex newIndexParent = newIndex.parent();
-            updateInternalIndexes(newIndexParent, newIndex.row(), 1);
+            updateInternalIndexes(QModelIndex(), row, 1);
 
             createParentMappings(newIndex.parent(), newIndex.row(), newIndex.row());
 
@@ -1856,15 +1858,24 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
     SourceProxyIndexMapping::left_iterator mappedParentIt = m_mappedParents.leftBegin();
 
     QHash<qint64, QModelIndex> updatedParentIds;
+    QHash<QPersistentModelIndex, QModelIndex> updatedParents;
 
     for ( ; mappedParentIt != m_mappedParents.leftEnd(); ++mappedParentIt) {
         const QModelIndex proxyIndex = mappedParentIt.value();
         Q_ASSERT(proxyIndex.isValid());
 
-        if (mappedParentIt.key().parent() != parent || mappedParentIt.key().row() < start) {
+        if (proxyIndex.row() < start)
             continue;
-        }
 
+        const QModelIndex proxyParent = proxyIndex.parent();
+
+        if (parent.isValid()) {
+            if (proxyParent != parent)
+                continue;
+        } else {
+            if (proxyParent.isValid())
+                continue;
+        }
         Q_ASSERT(m_parentIds.rightContains(proxyIndex));
         const qint64 key = m_parentIds.rightToLeft(proxyIndex);
 
@@ -1873,14 +1884,21 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
         Q_ASSERT(newIndex.isValid());
 
         updatedParentIds.insert(key, newIndex);
-
-        m_mappedParents.updateRight(mappedParentIt, newIndex);
+        updatedParents.insert(mappedParentIt.key(), newIndex);
     }
 
-    QHash<qint64, QModelIndex>::const_iterator parentsIt = updatedParentIds.constBegin();
-    const QHash<qint64, QModelIndex>::const_iterator end = updatedParentIds.constEnd();
-    for ( ; parentsIt != end; ++parentsIt) {
-        m_parentIds.insert(parentsIt.key(), *parentsIt);
+    {
+        QHash<QPersistentModelIndex, QModelIndex>::const_iterator it = updatedParents.constBegin();
+        const QHash<QPersistentModelIndex, QModelIndex>::const_iterator end = updatedParents.constEnd();
+        for ( ; it != end; ++it)
+            m_mappedParents.insert(it.key(), it.value());
+    }
+
+    {
+        QHash<qint64, QModelIndex>::const_iterator it = updatedParentIds.constBegin();
+        const QHash<qint64, QModelIndex>::const_iterator end = updatedParentIds.constEnd();
+        for ( ; it != end; ++it)
+            m_parentIds.insert(it.key(), it.value());
     }
 }
 
