@@ -14,6 +14,7 @@ set(proxymodeltestsuite_SRCS
     modelcommander.cpp
     modelspy.cpp
     modelselector.cpp
+    modeltest.cpp
     proxymodeltest.cpp
 )
 
