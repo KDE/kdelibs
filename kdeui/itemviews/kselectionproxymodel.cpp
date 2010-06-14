@@ -792,9 +792,17 @@ void KSelectionProxyModelPrivate::resetInternalData()
 {
     m_rootIndexList.clear();
     m_layoutChangePersistentIndexes.clear();
+    m_proxyIndexes.clear();
+    m_weakSourceParents.clear();
+    m_weakSourceFirstChilds.clear();
+    m_weakRootIndexes.clear();
+    m_weakRootParents.clear();
+    m_sourceFirstChildParents.clear();
+    m_sourceGrandParents.clear();
+    m_sourcePersistentParents.clear();
+    m_sourcePersistentFirstChilds.clear();
     m_mappedParents.clear();
     m_parentIds.clear();
-    m_proxyIndexes.clear();
     m_mappedFirstChildren.clear();
     m_nextId = 1;
 }
