@@ -55,7 +55,8 @@ public:
     static KBookmark createBookmark(KBookmarkManager *manager,
                                     const QString &label,
                                     const KUrl &url,
-                                    const QString &iconName);
+                                    const QString &iconName,
+                                    KFilePlacesItem *after = 0);
     static KBookmark createSystemBookmark(KBookmarkManager *manager,
                                           const QString &untranslatedLabel,
                                           const QString &translatedLabel,

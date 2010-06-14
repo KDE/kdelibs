@@ -68,6 +68,7 @@ public:
     void requestSetup(const QModelIndex &index);
 
     void addPlace(const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
+    void addPlace(const QString &text, const KUrl &url, const QString &iconName, const QString &appName, const QModelIndex &after);
     void editPlace(const QModelIndex &index, const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
     void removePlace(const QModelIndex &index) const;
     void setPlaceHidden(const QModelIndex &index, bool hidden);

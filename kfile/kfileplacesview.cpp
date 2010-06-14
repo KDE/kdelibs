@@ -680,7 +680,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();
 
-            placesModel->addPlace(label, url, iconName, appName);
+            placesModel->addPlace(label, url, iconName, appName, index);
         }
     }
 

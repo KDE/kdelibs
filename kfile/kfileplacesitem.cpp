@@ -222,7 +222,8 @@ QVariant KFilePlacesItem::deviceData(int role) const
 KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
                                           const QString &label,
                                           const KUrl &url,
-                                          const QString &iconName)
+                                          const QString &iconName,
+                                          KFilePlacesItem *after)
 {
     KBookmarkGroup root = manager->root();
     if (root.isNull())
@@ -237,6 +238,10 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
     }
     KBookmark bookmark = root.addBookmark(label, url, empty_icon);
     bookmark.setMetaDataItem("ID", generateNewId());
+
+    if (after) {
+        root.moveBookmark(bookmark, after->bookmark());
+    }
 
     return bookmark;
 }

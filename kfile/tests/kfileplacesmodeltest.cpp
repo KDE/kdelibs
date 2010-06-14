@@ -531,6 +531,22 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
     QCOMPARE(args.at(1).toInt(), 3);
     QCOMPARE(args.at(2).toInt(), 3);
+
+    m_places->addPlace("Foo", KUrl("/home/foo"), QString(), QString(), m_places->index(1, 0));
+
+    urls.clear();
+    urls << KUser().homeDir() << "remote:/" << "/home/foo" << KDE_ROOT_PATH
+         << "trash:/" << "/media/floppy0" << "/foreign" << "/media/XO-Y4";
+
+    CHECK_PLACES_URLS(urls);
+    QCOMPARE(spy_inserted.count(), 1);
+    args = spy_inserted.takeFirst();
+    QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
+    QCOMPARE(args.at(1).toInt(), 2);
+    QCOMPARE(args.at(2).toInt(), 2);
+    QCOMPARE(spy_removed.count(), 0);
+
+    m_places->removePlace(m_places->index(2, 0));
 }
 
 void KFilePlacesModelTest::testDevicePlugging()

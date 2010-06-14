@@ -636,11 +636,23 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
                                 const QString &iconName, const QString &appName)
 {
+    addPlace(text, url, iconName, appName, QModelIndex());
+}
+
+void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
+                                const QString &iconName, const QString &appName,
+                                const QModelIndex &after)
+{
     KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
                                                          text, url, iconName);
 
     if (!appName.isEmpty()) {
         bookmark.setMetaDataItem("OnlyInApp", appName);
+    }
+
+    if (after.isValid()) {
+        KFilePlacesItem *item = static_cast<KFilePlacesItem*>(after.internalPointer());
+        d->bookmarkManager->root().moveBookmark(bookmark, item->bookmark());
     }
 
     d->reloadAndSignal();
