@@ -1364,7 +1364,6 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         // TODO: Do this conditionally if the signal is connected to anything.
 
         removeParentMappings(sourceParent, range.top(), range.bottom());
-        KDO(range);
         updateInternalIndexes(sourceParent, range.bottom() + 1, -1 * height);
 
         for (int i = 0; i < height; ++i)
