@@ -2258,12 +2258,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
     if (!d->m_startWithChildTrees)
         return true;
 
-    foreach(const QPersistentModelIndex &idx, d->m_rootIndexList) {
-        if (sourceModel()->hasChildren(idx))
-            return true;
-    }
-
-    return false;
+    return !d->m_mappedFirstChildren.isEmpty();
 }
 
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
