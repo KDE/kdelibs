@@ -303,6 +303,18 @@ static QItemSelection getRootRanges(const QItemSelection &_selection)
     return rootSelection;
 }
 
+template <typename ForwardIterator>
+ForwardIterator kMaxElement(ForwardIterator it, ForwardIterator end)
+{
+    ForwardIterator result = it;
+    for ( ; it != end; ++it)
+    {
+        if (*result < *it)
+            result = it;
+    }
+    return result;
+}
+
 class KSelectionProxyModelPrivate
 {
 public:
@@ -2093,17 +2105,20 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
     if (!index.isValid()) {
         if (!d->m_startWithChildTrees)
             return d->m_rootIndexList.size();
-        int count = 0;
-        foreach(const QModelIndex &idx, d->m_rootIndexList) {
-            const int rowCount = sourceModel()->rowCount(idx);
-            if (rowCount == 0)
-                continue;
 
-            d->createFirstChildMapping(idx, count);
-            d->createParentMappings(idx, 0, rowCount - 1);
-            count += rowCount;
-        }
-        return count;
+        SourceProxyIndexMapping::left_const_iterator begin = d->m_mappedFirstChildren.leftConstBegin();
+        const SourceProxyIndexMapping::left_const_iterator end = d->m_mappedFirstChildren.leftConstEnd();
+        if (begin == end)
+          return 0;
+        const SourceProxyIndexMapping::left_const_iterator result = kMaxElement(begin, end);
+        Q_ASSERT(result != end);
+        const QModelIndex proxyFirstChild = *result;
+        Q_ASSERT(proxyFirstChild.isValid());
+        const QModelIndex sourceFirstChild = result.key();
+        Q_ASSERT(sourceFirstChild.isValid());
+        const QModelIndex sourceParent = sourceFirstChild.parent();
+        Q_ASSERT(sourceParent.isValid());
+        return sourceModel()->rowCount(sourceParent) + proxyFirstChild.row();
     }
 
     // index is valid
@@ -2112,11 +2127,11 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 
     QModelIndex sourceParent = d->mapParentToSource(index);
 
-    if (!sourceParent.isValid() && sourceModel()->rowCount(sourceParent) > 0) {
+    if (!sourceParent.isValid() && sourceModel()->hasChildren(sourceParent)) {
         sourceParent = mapToSource(index.parent());
         d->createParentMappings(sourceParent, 0, sourceModel()->rowCount(sourceParent) - 1);
+        sourceParent = d->mapParentToSource(index);
     }
-    sourceParent = d->mapParentToSource(index);
 
     if (!sourceParent.isValid())
         return 0;
