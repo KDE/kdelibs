@@ -117,7 +117,7 @@ QString StorageAccess::filePath() const
 
 bool StorageAccess::setup()
 {
-    if (m_teardownInProgress || m_setupInProgress) {
+    if (m_teardownInProgress || m_setupInProgress || isAccessible()) {
         return false;
     }
     m_setupInProgress = true;
@@ -134,7 +134,7 @@ bool StorageAccess::setup()
 
 bool StorageAccess::teardown()
 {
-    if (m_teardownInProgress || m_setupInProgress) {
+    if (m_teardownInProgress || m_setupInProgress || !isAccessible()) {
         return false;
     }
     m_teardownInProgress = true;

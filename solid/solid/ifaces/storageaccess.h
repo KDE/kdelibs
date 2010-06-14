@@ -99,6 +99,24 @@ namespace Ifaces
          * @param udi the UDI of the volume
          */
         virtual void teardownDone(Solid::ErrorType error, QVariant resultData, const QString &udi) = 0;
+
+        /**
+         * This signal is emitted when a setup of this device is requested. 
+         * The signal might be spontaneous i.e. it can be triggered by 
+         * another process.
+         *
+         * @param udi the UDI of the volume
+         */
+        virtual void setupRequested(const QString &udi) = 0;
+
+        /**
+         * This signal is emitted when a teardown of this device is requested.
+         * The signal might be spontaneous i.e. it can be triggered by
+         * another process
+         *
+         * @param udi the UDI of the volume
+         */
+        virtual void teardownRequested(const QString &udi) = 0;
     };
 }
 }
