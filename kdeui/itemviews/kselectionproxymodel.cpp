@@ -954,7 +954,7 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
     const int proxyStartRow = proxyInitialRow + start;
     const int offset = end - start + 1;
 
-    if (!proxyParent.isValid()) {
+    if (!proxyParent.isValid() || (m_startWithChildTrees && m_rootIndexList.contains(parent))) {
         Q_ASSERT(m_startWithChildTrees);
         updateInternalTopIndexes(proxyStartRow, offset);
     } else {
