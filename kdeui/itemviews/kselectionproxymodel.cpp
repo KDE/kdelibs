@@ -1405,7 +1405,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     const QItemSelection selected = m_indexMapper->mapSelectionRightToLeft(_selected);
     const QItemSelection deselected = m_indexMapper->mapSelectionRightToLeft(_deselected);
 
-#if QT_VERSION <= 0x040800
+#if QT_VERSION < 0x040800
     // The QItemSelectionModel sometimes doesn't remove deselected items from its selection
     // Fixed in Qt 4.8 : http://qt.gitorious.org/qt/qt/merge_requests/2403
     QItemSelection reportedSelection = m_selectionModel->selection();
