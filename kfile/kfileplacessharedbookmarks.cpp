@@ -264,14 +264,14 @@ bool KFilePlacesSharedBookmarks::exportSharedBookmarks()
 
 void KFilePlacesSharedBookmarks::slotSharedBookmarksChanged()
 {
-    kDebug() << "shared bookmarks changed";
+    //kDebug() << "shared bookmarks changed";
     bool dirty = integrateSharedBookmarks();
     if (dirty) m_placesBookmarkManager->emitChanged();
 }
 
 void KFilePlacesSharedBookmarks::slotBookmarksChanged()
 {
-    kDebug() << "places bookmarks changed";
+    //kDebug() << "places bookmarks changed";
     bool dirty = exportSharedBookmarks();
     if (dirty) m_sharedBookmarkManager->emitChanged();
 }
