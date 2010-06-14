@@ -1965,7 +1965,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!proxyIndex.isValid() || !sourceModel())
+    if (!proxyIndex.isValid() || !sourceModel() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
     Q_ASSERT(proxyIndex.internalId() >= 0);
@@ -2002,7 +2002,7 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!sourceModel() || !sourceIndex.isValid())
+    if (!sourceModel() || !sourceIndex.isValid() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
     QModelIndex ancestor = sourceIndex.parent();
@@ -2087,7 +2087,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!sourceModel() || index.column() > 0)
+    if (!sourceModel() || index.column() > 0 || d->m_rootIndexList.isEmpty())
         return 0;
 
     if (!index.isValid()) {
@@ -2148,7 +2148,7 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!hasIndex(row, column, parent) || !sourceModel())
+    if (!sourceModel() || d->m_rootIndexList.isEmpty() || !hasIndex(row, column, parent))
         return QModelIndex();
 
     if (!parent.isValid()) {
@@ -2181,7 +2181,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
 
-    if (!sourceModel() || !index.isValid())
+    if (!sourceModel() || !index.isValid() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
     const qint64 parentId = index.internalId();
@@ -2268,7 +2268,8 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
-    if (!sourceModel() || index.column() > 0)
+    Q_D(const KSelectionProxyModel);
+    if (!sourceModel() || index.column() > 0 || d->m_rootIndexList.isEmpty())
         return 0;
     return sourceModel()->columnCount(mapToSource(index));
 }
@@ -2281,7 +2282,8 @@ QItemSelectionModel* KSelectionProxyModel::selectionModel() const
 
 bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
-    if (!sourceModel())
+    Q_D(const KSelectionProxyModel);
+    if (!sourceModel() || d->m_rootIndexList.isEmpty())
         return false;
 
     if ((row == -1) && (column == -1))
