@@ -293,10 +293,10 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     if (!m_ifaces.isEmpty()) {
         foreach (DeviceInterface *iface, m_ifaces) {
             delete iface;
-            if (!ref.deref()) deleteLater();
         }
 
         m_ifaces.clear();
+        if (!ref.deref()) deleteLater();
     }
 }
 
@@ -307,7 +307,7 @@ Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::T
 
 void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface)
 {
-    if(m_ifaces.empty())
+    if(m_ifaces.isEmpty())
         ref.ref();
     m_ifaces[type] = interface;
 }
