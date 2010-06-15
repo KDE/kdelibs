@@ -138,7 +138,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
     updateFields();
     
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
-    q->setMinimumWidth(qMin(1000, qMax(400, desktop.width() / 4)));
+    q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
     q->setPixmap(KIcon("dialog-password").pixmap(KIconLoader::SizeHuge));
 }
 
@@ -244,14 +244,19 @@ void KPasswordDialog::addCommentLine( const QString& label,
         QLayoutItem *li = d->ui.formLayout->itemAt(i, QFormLayout::LabelRole);
         if (li) {
             QWidget *w = li->widget();
-            if (w) firstColumnWidth = qMax(firstColumnWidth, w->sizeHint().width());
+            if (w && !w->isHidden()) {
+                firstColumnWidth = qMax(firstColumnWidth, w->sizeHint().width());
+            }
         }
     }
     for (int i = 0; i < d->ui.formLayout->rowCount(); ++i) {
         QLayoutItem *li = d->ui.formLayout->itemAt(i, QFormLayout::FieldRole);
         if (li) {
             QLabel *l = qobject_cast<QLabel*>(li->widget());
-            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth - ( 2 * marginHint() ) - gridMarginLeft - gridMarginRight - spacing ) );
+            if (l && l->wordWrap()) {
+                int w = sizeHint().width() - firstColumnWidth - ( 2 * marginHint() ) - gridMarginLeft - gridMarginRight - spacing;
+                l->setMinimumSize( w, l->heightForWidth(w) );
+            }
         }
     }
 }
