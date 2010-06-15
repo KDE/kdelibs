@@ -1311,11 +1311,38 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
     const QModelIndex proxyBottomLeft = q->mapFromSource(sourceBottomLeft);
     const QModelIndex proxyParent = proxyTopLeft.parent();
     const QModelIndex sourceParent = sourceTopLeft.parent();
+
     if (m_startWithChildTrees) {
         Q_ASSERT(sourceTopLeft.isValid());
         Q_ASSERT(sourceBottomLeft.isValid());
         const int startRootIdx = m_rootIndexList.indexOf(sourceTopLeft);
         int endRootIdx = m_rootIndexList.indexOf(sourceBottomLeft);
+        QItemSelection extraRanges;
+        if (m_includeAllSelected) {
+            // It can happen that indexes of descendants get in between indexes which make up a range.
+            // We handle only the first contiguous block here and handle the rest later.
+            int idx = startRootIdx;
+            const int bottomIdx = endRootIdx;
+            const int rootListSize = m_rootIndexList.size();
+            int next = idx + 1;
+            while (next <= bottomIdx)
+            {
+                if (next < rootListSize && m_rootIndexList.at(next).parent() == sourceParent) {
+                    idx = next;
+                    ++next;
+                } else
+                    break;
+            }
+            endRootIdx = idx;
+            ++idx;
+            while (idx <= bottomIdx)
+            {
+                const QModelIndex index= m_rootIndexList.at(idx);
+                if (m_rootIndexList.at(idx).parent() == sourceParent)
+                    extraRanges << QItemSelectionRange(index, index);
+                ++idx;
+            }
+        }
         Q_ASSERT(endRootIdx != -1);
         int childrenCount = q->sourceModel()->rowCount(sourceTopLeft);
         for (int rootIdx = startRootIdx + 1; rootIdx <= endRootIdx; ++rootIdx)
@@ -1361,7 +1388,9 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         }
         updateInternalTopIndexes(proxyEnd + 1, -1 * numRemovedChildren);
         q->endRemoveRows();
-
+        if (m_includeAllSelected) {
+            removeSelectionFromProxy(extraRanges);
+        }
     } else {
         if (!proxyTopLeft.isValid())
             return;
