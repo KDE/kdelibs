@@ -447,11 +447,6 @@ public:
     int getProxyInitialRow(const QModelIndex &parent) const;
 
     /**
-      Returns the indexes in @p selection which are not already part of the proxy model.
-    */
-    QModelIndexList getNewIndexes(const QItemSelection &selection) const;
-
-    /**
       If m_startWithChildTrees is true, this method returns the row in the proxy model to insert newIndex
       items.
 
@@ -461,11 +456,6 @@ public:
       If m_startWithChildTrees is false, this method returns @p rootListRow.
     */
     int getTargetRow(int rootListRow);
-
-    /**
-      Regroups @p list into contiguous groups with the same parent.
-    */
-    SourceProxyIndexMapping regroup(const QModelIndexList &list) const;
 
     /**
       Inserts the indexes in @p list into the proxy model.
@@ -1298,31 +1288,6 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
         q->endInsertRows();
 }
 
-QModelIndexList KSelectionProxyModelPrivate::getNewIndexes(const QItemSelection &selection) const
-{
-    QModelIndexList indexes;
-
-    foreach(const QItemSelectionRange &range, selection) {
-        QModelIndex newIndex = range.topLeft();
-
-        if (newIndex.column() != 0)
-            continue;
-
-        for (int row = newIndex.row(); row <= range.bottom(); ++row) {
-            static const int column = 0;
-            newIndex = newIndex.sibling(row, column);
-
-            const int startRow = m_rootIndexList.indexOf(newIndex);
-            if (startRow > 0) {
-                continue;
-            }
-
-            indexes << newIndex;
-        }
-    }
-    return indexes;
-}
-
 void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange &range)
 {
     Q_Q(KSelectionProxyModel);
@@ -1449,114 +1414,96 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     if (!m_includeAllSelected) {
         newRootRanges = getRootRanges(selected);
 
-        QItemSelection futureSelection = fullSelection;
+        QItemSelection existingSelection = fullSelection;
+        // What was selected before the selection was made.
+        existingSelection.merge(selected, QItemSelectionModel::Deselect);
+
+        // This is similar to m_rootRanges, but that m_rootRanges at this point still contains the roots
+        // of deselected and existingRootRanges does not.
+
+        const QItemSelection existingRootRanges = getRootRanges(existingSelection);
+        {
+            QMutableListIterator<QItemSelectionRange> i(newRootRanges);
+            while (i.hasNext()) {
+                const QItemSelectionRange range = i.next();
+                const QModelIndex topLeft = range.topLeft();
+                if (isDescendantOf(existingRootRanges, topLeft)) {
+                    i.remove();
+                }
+            }
+        }
+
         QItemSelection exposedSelection;
         {
             QItemSelection deselectedRootRanges = getRootRanges(deselected);
             QListIterator<QItemSelectionRange> i(deselectedRootRanges);
             while (i.hasNext()) {
-                // Need to sort first.
                 const QItemSelectionRange range = i.next();
                 const QModelIndex topLeft = range.topLeft();
-                if (!isDescendantOf(fullSelection, topLeft) || isDescendantOf(selected, topLeft)) {
-                    foreach (const QItemSelectionRange &selectedRange, fullSelection)
-                    {
-                      if (isDescendantOf(range, selectedRange.topLeft()) && !(newRootRanges.contains(selectedRange.topLeft())))
-                          exposedSelection.append(selectedRange);
+                // Consider this:
+                //
+                // - A
+                // - - B
+                // - - - C
+                // - - - - D
+                //
+                // B and D were selected, then B was deselected and C was selected in one go.
+                if (!isDescendantOf(existingRootRanges, topLeft)) {
+                    // B is topLeft and fullSelection contains D.
+                    // B is not a descendant of D.
+
+                    // range is not a descendant of the selection, but maybe the selection is a descendant of range.
+                    // no need to check selected here. That's already in newRootRanges.
+                    // existingRootRanges and newRootRanges do not overlap.
+                    foreach (const QItemSelectionRange &selectedRange, existingRootRanges) {
+                        const QModelIndex selectedRangeTopLeft = selectedRange.topLeft();
+                        // existingSelection (and selectedRangeTopLeft) is D.
+                        // D is a descendant of B, so when B was removed, D might have been exposed as a root.
+                        if (isDescendantOf(range, selectedRangeTopLeft)
+                                // But D is also a descendant of part of the new selection C, which is already set to be a new root
+                                // so D would not be added to exposedSelection because C is in newRootRanges.
+                                && !isDescendantOf(newRootRanges, selectedRangeTopLeft))
+                            exposedSelection.append(selectedRange);
                     }
                     removedRootRanges << range;
-                }
-            }
-            futureSelection.merge(QItemSelection(removedRootRanges), QItemSelectionModel::Deselect);
-        }
-        newRootRanges << getRootRanges(exposedSelection);
-
-        {
-            QMutableListIterator<QItemSelectionRange> i(newRootRanges);
-            // TODO: This is what m_rootIndexList should be maintained as.
-            QItemSelection existingSelection = fullSelection;
-            existingSelection.merge(selected, QItemSelectionModel::Deselect);
-            while (i.hasNext()) {
-                const QItemSelectionRange range = i.next();
-                const QModelIndex topLeft = range.topLeft();
-                if (isDescendantOf(existingSelection, topLeft) || isDescendantOf(futureSelection, topLeft)) {
-                    i.remove();
                 }
             }
         }
 
         QItemSelection obscuredRanges;
         {
-            QMutableListIterator<QItemSelectionRange> i(futureSelection);
+            QListIterator<QItemSelectionRange> i(existingRootRanges);
             while (i.hasNext()) {
-                QItemSelectionRange range = i.next();
-                QItemSelection result;
-                bool foundIntersection = false;
-                foreach (const QItemSelectionRange &_r, selected)
-                {
-                    if (range.intersects(_r) && range != _r)
-                    {
-                        foundIntersection = true;
-                        QItemSelection::split(range, _r, &result);
-                        break;
-                    }
-                }
-                if (foundIntersection) {
-                    if (result.isEmpty())
-                        continue;
-                } else {
-                    result << range;
-                }
-                foreach (const QItemSelectionRange &_range, result)
-                {
-                    const QModelIndex topLeft = _range.topLeft();
-                    if (isDescendantOf(newRootRanges, topLeft) && !selected.contains(topLeft) && !isDescendantOf(deselected, topLeft)) {
-                        obscuredRanges << _range;
-                        i.remove();
-                    }
-                }
+                const QItemSelectionRange range = i.next();
+                if (isDescendantOf(newRootRanges, range.topLeft()))
+                    obscuredRanges << range;
             }
         }
         removedRootRanges << getRootRanges(obscuredRanges);
+        newRootRanges << getRootRanges(exposedSelection);
     } else {
-        removedRootRanges << deselected;
-        newRootRanges << selected;
+        removedRootRanges = deselected;
+        newRootRanges = selected;
     }
 
-    q->rootSelectionAboutToBeRemoved(removedRootRanges);
+    if (!removedRootRanges.isEmpty())
     {
-        QListIterator<QItemSelectionRange> i(removedRootRanges);
-        while (i.hasNext()) {
-            const QItemSelectionRange range = i.next();
-            removeRangeFromProxy(range);
-        }
+        foreach (const QItemSelectionRange &r, removedRootRanges)
+            removeRangeFromProxy(r);
     }
 
     if (!m_selectionModel->hasSelection())
     {
-      Q_ASSERT(m_rootIndexList.isEmpty());
-      Q_ASSERT(m_mappedFirstChildren.isEmpty());
-      Q_ASSERT(m_mappedParents.isEmpty());
+        Q_ASSERT(m_rootIndexList.isEmpty());
+        Q_ASSERT(m_mappedFirstChildren.isEmpty());
+        Q_ASSERT(m_mappedParents.isEmpty());
+        Q_ASSERT(m_parentIds.isEmpty());
     }
-    // TODO: Make insertion range based too.
-    QModelIndexList newIndexes = getNewIndexes(newRootRanges);
-    if (newIndexes.size() > 0)
-        insertionSort(newIndexes);
-    q->rootSelectionAdded(newRootRanges);
-}
 
-SourceProxyIndexMapping KSelectionProxyModelPrivate::regroup(const QModelIndexList &list) const
-{
-    SourceProxyIndexMapping groups;
-
-    // TODO: implement me.
-    Q_UNUSED(list);
-//   foreach (const QModelIndex idx, list)
-//   {
-//
-//   }
-
-    return groups;
+    if (!newRootRanges.isEmpty())
+    {
+        insertionSort(newRootRanges.indexes());
+    }
 }
 
 int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
@@ -1585,12 +1532,9 @@ void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
 {
     Q_Q(KSelectionProxyModel);
 
-    // TODO: regroup indexes in list into contiguous ranges with the same parent.
-//   QList<QPair<QModelIndex, QModelIndexList> > regroup(list);
-    // where pair.first is a parent, and pair.second is a list of contiguous indexes of that parent.
-    // That will allow emitting new rows in ranges rather than one at a time.
-
     foreach(const QModelIndex &newIndex, list) {
+        if (newIndex.column() > 0)
+            continue;
         if (m_startWithChildTrees) {
             const int rootListRow = getRootListRow(m_rootIndexList, newIndex);
             Q_ASSERT(q->sourceModel() == newIndex.model());
