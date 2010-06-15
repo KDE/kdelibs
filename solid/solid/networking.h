@@ -70,31 +70,31 @@ namespace Solid
          * Set a policy to manage the application's connect behaviour
          * @param policy the new connection policy
          */
-        void setConnectPolicy( ManagementPolicy policy );
+        SOLID_EXPORT void setConnectPolicy( ManagementPolicy policy );
 
         /**
          * Retrieve a policy managing the application's connect behaviour
          * @return the connection policy in use
          */
-        ManagementPolicy connectPolicy();
+        SOLID_EXPORT ManagementPolicy connectPolicy();
 
         /**
          * Set a policy to manage the application's disconnect behaviour
          * @param policy the new disconnection policy
          */
-        void setDisconnectPolicy( ManagementPolicy policy );
+        SOLID_EXPORT void setDisconnectPolicy( ManagementPolicy policy );
 
         /**
          * Retrieve a policy managing the application's disconnect behaviour
          * @return the disconnection policy in use
          */
-        ManagementPolicy disconnectPolicy();
+        SOLID_EXPORT ManagementPolicy disconnectPolicy();
 
         /**
          * This object emits signals, for use if your application requires notification
          * of changes to networking.
          */
-        class Notifier : public QObject
+        class SOLID_EXPORT Notifier : public QObject
         {
         Q_OBJECT
         Q_SIGNALS:
@@ -118,6 +118,8 @@ namespace Solid
          */
         void shouldDisconnect();
 
+        protected:
+        Notifier();
         };
 
         SOLID_EXPORT Notifier *notifier();

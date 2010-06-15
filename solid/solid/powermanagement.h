@@ -97,7 +97,7 @@ namespace Solid
          */
         SOLID_EXPORT bool stopSuppressingSleep(int cookie);
 
-        class Notifier : public QObject
+        class SOLID_EXPORT Notifier : public QObject
         {
             Q_OBJECT
         Q_SIGNALS:
@@ -108,6 +108,9 @@ namespace Solid
              * type @see Solid::PowerManager::AcAdapterState
              */
             void appShouldConserveResourcesChanged(bool newState);
+
+        protected:
+            Notifier();
         };
 
         SOLID_EXPORT Notifier *notifier();

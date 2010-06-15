@@ -53,6 +53,10 @@ Solid::PowerManagementPrivate::~PowerManagementPrivate()
 {
 }
 
+Solid::PowerManagement::Notifier::Notifier()
+{
+}
+
 bool Solid::PowerManagement::appShouldConserveResources()
 {
     return globalPowerManager->powerSaveStatus;

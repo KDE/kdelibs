@@ -51,6 +51,10 @@ Solid::NetworkingPrivate::~NetworkingPrivate()
 {
 }
 
+Solid::Networking::Notifier::Notifier()
+{
+}
+
 void Solid::NetworkingPrivate::initialize()
 {
     netStatus = ( Solid::Networking::Status )iface->status().value();
