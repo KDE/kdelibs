@@ -433,6 +433,7 @@ public:
     void refreshParentMappings(QList<QPersistentModelIndex> &mappings);
     void refreshFirstChildMappings(QList<QPersistentModelIndex> &mappings);
 
+    void removeSelectionFromProxy(const QItemSelection &selection);
     void removeRangeFromProxy(const QItemSelectionRange &range);
 
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
@@ -1288,6 +1289,18 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
         q->endInsertRows();
 }
 
+void KSelectionProxyModelPrivate::removeSelectionFromProxy(const QItemSelection &selection)
+{
+    Q_Q(KSelectionProxyModel);
+    if (selection.isEmpty())
+        return;
+
+    q->rootSelectionAboutToBeRemoved(selection);
+
+    foreach(const QItemSelectionRange range, selection)
+        removeRangeFromProxy(range);
+}
+
 void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange &range)
 {
     Q_Q(KSelectionProxyModel);
@@ -1486,11 +1499,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
         newRootRanges = selected;
     }
 
-    if (!removedRootRanges.isEmpty())
-    {
-        foreach (const QItemSelectionRange &r, removedRootRanges)
-            removeRangeFromProxy(r);
-    }
+    removeSelectionFromProxy(removedRootRanges);
 
     if (!m_selectionModel->hasSelection())
     {
@@ -1500,10 +1509,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
         Q_ASSERT(m_parentIds.isEmpty());
     }
 
-    if (!newRootRanges.isEmpty())
-    {
-        insertSelectionIntoProxy(newRootRanges);
-    }
+    insertSelectionIntoProxy(newRootRanges);
 }
 
 int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
@@ -1531,6 +1537,9 @@ int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
 void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection &selection)
 {
     Q_Q(KSelectionProxyModel);
+
+    if (selection.isEmpty())
+        return;
 
     foreach(const QModelIndex &newIndex, selection.indexes()) {
         if (newIndex.column() > 0)
@@ -1585,6 +1594,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
             }
         }
     }
+    q->rootSelectionAdded(selection);
 }
 
 bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) const
