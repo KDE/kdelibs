@@ -445,8 +445,6 @@ public:
     void removeFirstChildMappings(int start, int end);
     void removeParentMappings(const QModelIndex &parent, int start, int end);
 
-    void clearMapping(const QModelIndex& sourceIndex);
-
     /**
       Given a QModelIndex in the proxy, return the corresponding QModelIndex in the source.
 
@@ -1442,14 +1440,18 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         int proxyEnd = proxyStart + childrenCount - 1;
         q->beginRemoveRows(QModelIndex(), proxyStart, proxyEnd);
 
+        for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
+        {
+            q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRootIdx));
+        }
+
+        removeParentMappings(QModelIndex(), proxyStart, proxyEnd);
         removeFirstChildMappings(proxyStart, proxyEnd);
         int numRemovedChildren = 0;
         for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
         {
           const QModelIndex idx = m_rootIndexList.at(startRootIdx);
           const int childCount = q->sourceModel()->rowCount(idx);
-          removeParentMappings(idx, 0, childCount - 1);
-          q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRootIdx));
           m_rootIndexList.removeAt(startRootIdx);
           numRemovedChildren += childCount;
         }
@@ -1465,15 +1467,19 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         q->beginRemoveRows(proxyParent, proxyTopLeft.row(), proxyTopLeft.row() + height - 1);
 
         // TODO: Do this conditionally if the signal is connected to anything.
+        for (int i = 0; i < height; ++i)
+        {
+            const QModelIndex idx = sourceTopLeft.sibling(range.top() + i, sourceTopLeft.column());
+            q->rootIndexAboutToBeRemoved(idx);
+        }
 
-        removeParentMappings(sourceParent, range.top(), range.bottom());
+        removeParentMappings(proxyParent, proxyTopLeft.row(), proxyTopLeft.row() + height - 1);
         updateInternalIndexes(proxyParent, proxyTopLeft.row() + height - 1, -1 * height);
 
         for (int i = 0; i < height; ++i)
         {
             const QModelIndex idx = sourceTopLeft.sibling(range.top() + i, sourceTopLeft.column());
             Q_ASSERT(idx.isValid());
-            q->rootIndexAboutToBeRemoved(idx);
             const bool b = m_rootIndexList.removeOne(idx);
             Q_UNUSED(b)
             if (!b)
@@ -2008,15 +2014,6 @@ void KSelectionProxyModelPrivate::createParentMappings(const QModelIndex &parent
     }
 }
 
-void KSelectionProxyModelPrivate::clearMapping(const QModelIndex& sourceParent)
-{
-    const QModelIndex proxyIndex = m_mappedParents.takeLeft(sourceParent);
-    if (!proxyIndex.isValid())
-        return;
-
-    m_parentIds.removeRight(proxyIndex);
-}
-
 void KSelectionProxyModelPrivate::removeFirstChildMappings(int start, int end)
 {
     SourceProxyIndexMapping::left_iterator it = m_mappedFirstChildren.leftBegin();
@@ -2032,20 +2029,39 @@ void KSelectionProxyModelPrivate::removeFirstChildMappings(int start, int end)
 
 void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent, int start, int end)
 {
-    if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
-        return;
-
     Q_Q(KSelectionProxyModel);
 
-    for (int row = start; row <= end; ++row) {
-        static const int column = 0;
-        const QModelIndex idx = q->sourceModel()->index(row, column, parent);
-        Q_ASSERT(idx.isValid());
-        const QModelIndex proxyIdx = mapParentFromSource(idx);
-        if (!proxyIdx.isValid())
-            continue;
-        clearMapping(idx);
-        removeParentMappings(idx, 0, q->sourceModel()->rowCount(idx) - 1);
+    Q_ASSERT(parent.isValid() ? parent.model() == q : true);
+
+    SourceProxyIndexMapping::right_iterator it = m_mappedParents.rightBegin();
+    SourceProxyIndexMapping::right_iterator endIt = m_mappedParents.rightEnd();
+
+    typedef QPair<QModelIndex, QPersistentModelIndex> Pair;
+
+    QList<Pair> pairs;
+
+    QModelIndexList list;
+
+    const bool flatList = m_omitChildren || (m_startWithChildTrees && m_omitDescendants);
+
+    while (it != endIt) {
+        if (it.key().row() >= start && it.key().row() <= end)
+        {
+            const QModelIndex sourceParent = it.value();
+            const QModelIndex proxyGrandParent = mapParentFromSource(sourceParent.parent());
+            if (proxyGrandParent == parent)
+            {
+                if (!flatList)
+                    // Due to recursive calls, we could have several iterators on the container
+                    // when erase is called. That's safe accoring to the QHash::iterator docs though.
+                    removeParentMappings(it.key(), 0, q->sourceModel()->rowCount(it.value()) - 1);
+
+                m_parentIds.removeRight(it.key());
+                it = m_mappedParents.eraseRight(it);
+            } else
+               ++it;
+        } else
+           ++it;
     }
 }
 
