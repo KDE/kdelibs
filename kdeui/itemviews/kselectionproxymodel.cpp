@@ -314,6 +314,73 @@ ForwardIterator kMaxElement(ForwardIterator it, ForwardIterator end)
     }
     return result;
 }
+/**
+ */
+struct RangeLessThan
+{
+    bool operator()(const QItemSelectionRange &left, const QItemSelectionRange &right)
+    {
+        if (right.model() == left.model()) {
+            // parent has to be calculated, so we only do so once.
+            const QModelIndex topLeftParent = left.parent();
+            const QModelIndex otherTopLeftParent = right.parent();
+            if (topLeftParent == otherTopLeftParent) {
+                if (right.top() == left.top()) {
+                    if (right.left() == left.left()) {
+                        if (right.bottom() == left.bottom()) {
+                            return left.right() < right.right();
+                        }
+                        return left.bottom() < right.bottom();
+                    }
+                    return left.left() < right.left();
+                }
+                return left.top() < right.top();
+            }
+            return topLeftParent < otherTopLeftParent;
+        }
+        return left.model() < right.model();
+    }
+};
+
+static QItemSelection stableNormalizeSelection(QItemSelection selection)
+{
+    if (selection.size() <= 1)
+        return selection;
+
+    QList<QItemSelectionRange>::iterator it = selection.begin();
+
+    Q_ASSERT(it != selection.end());
+    QList<QItemSelectionRange>::iterator scout = it + 1;
+    while (scout != selection.end()) {
+        Q_ASSERT(it != selection.end());
+        int bottom = it->bottom();
+        while (scout != selection.end() && it->parent() == scout->parent() && bottom + 1 == scout->top()) {
+            bottom = scout->bottom();
+            scout = selection.erase(scout);
+        }
+        if (bottom != it->bottom()) {
+            const QModelIndex topLeft = it->topLeft();
+            *it = QItemSelectionRange(topLeft, topLeft.sibling(bottom, it->right()));
+        }
+        Q_ASSERT(it != scout);
+        if (scout == selection.end())
+            break;
+        it = scout;
+        ++scout;
+    }
+    return selection;
+}
+
+static QItemSelection normalizeSelection(QItemSelection selection)
+{
+    if (selection.size() <= 1)
+        return selection;
+
+    RangeLessThan lt;
+    qSort(selection.begin(), selection.end(), lt);
+    return stableNormalizeSelection(selection);
+}
+
 
 class KSelectionProxyModelPrivate
 {
@@ -1389,7 +1456,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         updateInternalTopIndexes(proxyEnd + 1, -1 * numRemovedChildren);
         q->endRemoveRows();
         if (m_includeAllSelected) {
-            removeSelectionFromProxy(extraRanges);
+            removeSelectionFromProxy(normalizeSelection(extraRanges));
         }
     } else {
         if (!proxyTopLeft.isValid())
