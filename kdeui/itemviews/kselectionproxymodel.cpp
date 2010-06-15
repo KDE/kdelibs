@@ -460,7 +460,7 @@ public:
     /**
       Inserts the indexes in @p list into the proxy model.
     */
-    void insertionSort(const QModelIndexList &list);
+    void insertSelectionIntoProxy(const QItemSelection& selection);
 
     /**
       Returns true if @p sourceIndex or one of its ascendants is already part of the proxy model.
@@ -1502,7 +1502,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
     if (!newRootRanges.isEmpty())
     {
-        insertionSort(newRootRanges.indexes());
+        insertSelectionIntoProxy(newRootRanges);
     }
 }
 
@@ -1528,11 +1528,11 @@ int KSelectionProxyModelPrivate::getTargetRow(int rootListRow)
     return 0;
 }
 
-void KSelectionProxyModelPrivate::insertionSort(const QModelIndexList &list)
+void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection &selection)
 {
     Q_Q(KSelectionProxyModel);
 
-    foreach(const QModelIndex &newIndex, list) {
+    foreach(const QModelIndex &newIndex, selection.indexes()) {
         if (newIndex.column() > 0)
             continue;
         if (m_startWithChildTrees) {
