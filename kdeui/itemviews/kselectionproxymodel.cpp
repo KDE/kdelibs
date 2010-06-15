@@ -967,6 +967,10 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
         if (m_startWithChildTrees)
             createFirstChildMapping(parent, proxyInitialRow);
         createParentMappings(parent.parent(), parent.row(), parent.row());
+    } else if (m_startWithChildTrees && start == 0 && m_rootIndexList.contains(parent)) {
+        // We already have a first child mapping, but what we have mapped is not this first child anymore
+        // so we need to update it.
+        updateFirstChildMapping(parent, end + 1);
     }
 
     createParentMappings(parent, start, end);
