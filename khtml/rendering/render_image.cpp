@@ -36,9 +36,7 @@
 
 #include "css/csshelper.h"
 #include "misc/helper.h"
-#include "misc/htmlattrs.h"
 #include "misc/loader.h"
-#include "misc/htmltags.h"
 #include "html/html_formimpl.h"
 #include "html/html_imageimpl.h"
 #include "html/dtd.h"

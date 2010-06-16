@@ -31,7 +31,6 @@
 #include "html/html_listimpl.h"
 #include "imload/imagepainter.h"
 #include "misc/helper.h"
-#include "misc/htmltags.h"
 #include "misc/loader.h"
 #include "xml/dom_docimpl.h"
 

@@ -41,7 +41,6 @@
 #include "rendering/render_block.h"
 #include "rendering/render_line.h"
 #include "rendering/render_layer.h"
-#include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"

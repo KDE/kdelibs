@@ -67,7 +67,6 @@
 #include <xml/dom2_eventsimpl.h>
 #include <html/html_formimpl.h>
 #include <html/html_miscimpl.h>
-#include <misc/htmlhashes.h>
 
 #include <assert.h>
 

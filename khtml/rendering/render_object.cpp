@@ -43,7 +43,6 @@
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 #include "dom/dom_doc.h"
-#include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "misc/borderarcstroker.h"
 

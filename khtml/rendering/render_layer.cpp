@@ -55,7 +55,6 @@
 #include "render_form.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
-#include "misc/htmltags.h"
 #include "misc/paintbuffer.h"
 #include "html/html_blockimpl.h"
 #include "xml/dom_restyler.h"

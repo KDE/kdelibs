@@ -46,7 +46,6 @@
 #include <xml/dom_docimpl.h>
 #include <xml/dom_selection.h>
 #include <html/html_formimpl.h>
-#include <misc/htmltags.h>
 
 #include <khtmlview.h>
 #include <khtml_part.h>

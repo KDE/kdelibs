@@ -53,7 +53,6 @@
 #include "misc/helper.h"
 #include "misc/paintbuffer.h"
 #include "css/cssvalues.h"
-#include "misc/htmltags.h"
 #include <kdebug.h>
 
 //#define IN_PLACE_WIDGET_PAINTING

@@ -37,7 +37,6 @@
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
 #include <html/html_formimpl.h>
-#include <misc/htmltags.h>
 #include <khtmlview.h>
 
 using namespace DOM;

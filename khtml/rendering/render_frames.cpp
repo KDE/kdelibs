@@ -30,10 +30,8 @@
 #include "html/html_baseimpl.h"
 #include "html/html_objectimpl.h"
 #include "html/htmltokenizer.h"
-#include "misc/htmlattrs.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
-#include "misc/htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 

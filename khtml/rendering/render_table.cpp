@@ -37,8 +37,6 @@
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
 #include "html/html_formimpl.h"
-#include "misc/htmltags.h"
-#include "misc/htmlattrs.h"
 #include "rendering/render_line.h"
 #include "xml/dom_docimpl.h"
 

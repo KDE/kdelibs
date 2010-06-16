@@ -40,7 +40,6 @@
 #include "render_line.h"
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
-#include <misc/htmltags.h>
 #include <html/html_formimpl.h>
 
 #include <khtmlview.h>
