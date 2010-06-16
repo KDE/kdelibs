@@ -949,7 +949,16 @@ void KSelectionProxyModelPrivate::updateFirstChildMapping(const QModelIndex& par
         return;
 
     Q_ASSERT(srcIndex.isValid());
-    m_mappedFirstChildren.updateRight(it, srcIndex);
+    const QModelIndex proxyIndex = it.value();
+    Q_ASSERT(proxyIndex.isValid());
+    Q_ASSERT(proxyIndex.model() == q);
+
+    m_mappedFirstChildren.eraseLeft(it);
+
+    // The proxy index in the mapping has already been updated by the offset in updateInternalTopIndexes
+    // so we restore it by applying the reverse.
+    const QModelIndex newProxyIndex = q->createIndex(proxyIndex.row() - offset, proxyIndex.column());
+    m_mappedFirstChildren.insert(srcIndex, newProxyIndex);
 }
 
 QPair< int, int > KSelectionProxyModelPrivate::beginInsertRows(const QModelIndex& parent, int start, int end) const
