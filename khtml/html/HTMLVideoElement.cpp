@@ -26,7 +26,6 @@
 #include "HTMLVideoElement.h"
 
 #include "HTMLDocument.h"
-#include <misc/htmlhashes.h>
 #include <rendering/render_media.h>
 
 namespace khtml {

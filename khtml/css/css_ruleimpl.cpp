@@ -31,9 +31,6 @@
 #include <dom/dom_exception.h>
 #include <dom/dom_string.h>
 
-#include <misc/loader.h>
-#include <misc/htmltags.h>
-#include <misc/htmlattrs.h>
 #include <xml/dom_docimpl.h>
 
 using namespace DOM;

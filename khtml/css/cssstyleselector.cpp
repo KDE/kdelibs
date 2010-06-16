@@ -49,7 +49,6 @@ using namespace DOM;
 
 #include "misc/khtmllayout.h"
 #include "khtml_settings.h"
-#include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "misc/loader.h"
 

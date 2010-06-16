@@ -31,7 +31,6 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "misc/helper.h"
 

@@ -29,7 +29,6 @@
 #include <xml/dom2_eventsimpl.h>
 #include <xml/dom_docimpl.h>
 #include <dom/html_document.h>
-#include <misc/htmltags.h>
 #include <html/html_documentimpl.h>
 #include <rendering/render_frames.h>
 

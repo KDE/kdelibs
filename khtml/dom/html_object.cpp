@@ -24,7 +24,6 @@
 #include "dom_doc.h"
 
 #include <html/html_objectimpl.h>
-#include <misc/htmlhashes.h>
 
 using namespace DOM;
 

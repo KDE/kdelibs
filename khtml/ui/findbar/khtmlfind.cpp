@@ -29,7 +29,6 @@
 #include "html/html_documentimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_replaced.h"
-#include "misc/htmlhashes.h"
 #include "xml/dom_selection.h"
 
 #include "khtmlview.h"

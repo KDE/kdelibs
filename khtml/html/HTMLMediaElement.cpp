@@ -31,7 +31,6 @@
 #include "html_element.h"
 #include "HTMLSourceElement.h"
 #include "HTMLDocument.h"
-#include <misc/htmlhashes.h>
 #include "MediaError.h"
 #include "TimeRanges.h"
 #include "css/cssstyleselector.h"

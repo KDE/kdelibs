@@ -30,7 +30,6 @@
 
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
-#include "misc/htmlhashes.h"
 
 #include <kdebug.h>
 

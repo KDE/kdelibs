@@ -27,7 +27,6 @@
 
 #include <html/html_imageimpl.h>
 #include <html/html_miscimpl.h>
-#include <misc/htmlhashes.h>
 #include <xml/dom_docimpl.h>
 
 using namespace DOM;

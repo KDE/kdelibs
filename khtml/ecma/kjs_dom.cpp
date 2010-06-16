@@ -30,8 +30,6 @@
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
 #include <xml/dom3_xpathimpl.h>
-#include <misc/htmltags.h> // ID_*
-#include <misc/htmlattrs.h> // ATTR_*
 #include <html/html_baseimpl.h>
 #include <html/html_documentimpl.h>
 #include <html/html_miscimpl.h>

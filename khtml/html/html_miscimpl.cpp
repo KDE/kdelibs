@@ -27,7 +27,6 @@
 #include "html_formimpl.h"
 #include "html_documentimpl.h"
 
-#include <misc/htmlhashes.h>
 #include <dom/dom_node.h>
 
 using namespace DOM;

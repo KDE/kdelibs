@@ -35,8 +35,6 @@
 #include "html_documentimpl.h"
 #include "htmltokenizer.h"
 
-#include <misc/htmlhashes.h>
-
 #include <khtmlview.h>
 #include <khtml_part.h>
 

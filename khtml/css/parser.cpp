@@ -110,7 +110,6 @@
 #include <css/css_stylesheetimpl.h>
 #include <css/css_valueimpl.h>
 #include <css/css_mediaquery.h>
-#include <misc/htmlhashes.h>
 #include "cssparser.h"
 
 

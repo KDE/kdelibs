@@ -25,7 +25,6 @@
 
 #include "css/css_renderstyledeclarationimpl.h"
 #include "css/css_valueimpl.h"
-#include "misc/htmlattrs.h"
 #include "xml/dom_selection.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"

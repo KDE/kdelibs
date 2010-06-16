@@ -28,8 +28,6 @@
 #include "html/html_tableimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
-#include "misc/htmltags.h"
-#include "misc/htmlattrs.h"
 #include "misc/loader.h"
 
 #include "khtmlview.h"

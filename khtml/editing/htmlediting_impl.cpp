@@ -31,8 +31,6 @@
 #include "dom/css_value.h"
 #include "html/html_elementimpl.h"
 #include "html/html_imageimpl.h"
-#include "misc/htmlattrs.h"
-#include "misc/htmltags.h"
 #include "rendering/render_object.h"
 #include "rendering/render_style.h"
 #include "rendering/render_text.h"

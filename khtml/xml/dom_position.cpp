@@ -26,7 +26,6 @@
 #include "dom_position.h"
 
 #include "misc/helper.h"
-#include "misc/htmltags.h"
 #include "rendering/render_block.h"
 #include "rendering/render_line.h"
 #include "rendering/render_object.h"

@@ -56,7 +56,6 @@
 #include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
 #include "css/csshelper.h"
-#include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "misc/loader.h"
 #include "khtml_settings.h"

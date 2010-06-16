@@ -24,7 +24,6 @@
 #include "html/html_formimpl.h"
 #include "html/html_documentimpl.h"
 
-#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 

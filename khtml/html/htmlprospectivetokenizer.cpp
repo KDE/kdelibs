@@ -36,7 +36,6 @@
 #include "dtd.h"
 
 #include <misc/loader.h>
-#include <misc/htmlhashes.h>
 #include <khtmlview.h>
 #include <khtml_part.h>
 #include <xml/dom_docimpl.h>

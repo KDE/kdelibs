@@ -28,7 +28,6 @@
 #include "html/html_imageimpl.h"
 #include "html/html_documentimpl.h"
 
-#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "css/csshelper.h"

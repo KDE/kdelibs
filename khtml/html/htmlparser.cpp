@@ -49,7 +49,6 @@
 #include <html/HTMLSourceElement.h>
 #include <xml/dom_textimpl.h>
 #include <xml/dom_nodeimpl.h>
-#include <misc/htmlhashes.h>
 #include <html/htmltokenizer.h>
 #include <khtmlview.h>
 #include <khtml_part.h>

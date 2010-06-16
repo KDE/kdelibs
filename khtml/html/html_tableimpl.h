@@ -27,7 +27,6 @@
 #ifndef HTML_TABLEIMPL_H
 #define HTML_TABLEIMPL_H
 
-#include "misc/htmltags.h"
 #include "html/html_elementimpl.h"
 
 namespace DOM {

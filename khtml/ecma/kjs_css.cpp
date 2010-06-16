@@ -36,8 +36,6 @@
 #include "css/css_valueimpl.h"
 #include "css/cssproperties.h"
 
-#include "misc/htmltags.h"
-
 #include "kjs_dom.h"
 
 using DOM::CSSCharsetRuleImpl;

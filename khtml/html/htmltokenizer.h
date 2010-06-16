@@ -34,7 +34,6 @@
 #include <QtCore/QTime>
 
 #include "misc/loader_client.h"
-#include "misc/htmltags.h"
 #include "misc/stringit.h"
 #include "xml/dom_stringimpl.h"
 #include "xml/xml_tokenizer.h"

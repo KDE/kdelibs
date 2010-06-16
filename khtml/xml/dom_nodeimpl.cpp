@@ -27,8 +27,6 @@
 #include "dom_nodeimpl.h"
 
 #include <dom/dom_exception.h>
-#include <misc/htmlattrs.h>
-#include <misc/htmltags.h>
 #include "dom_elementimpl.h"
 #include "dom_textimpl.h"
 #include "dom2_eventsimpl.h"

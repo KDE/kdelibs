@@ -25,7 +25,6 @@
 
 #include "khtml_part.h"
 #include "dom/dom_string.h"
-#include "misc/htmlhashes.h"
 #include "imload/imagemanager.h"
 #include "khtmlview.h"
 #include <QtCore/QCharRef>

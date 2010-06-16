@@ -32,7 +32,6 @@
 #include "khtml_part.h"
 #include "html/html_documentimpl.h"
 #include "khtml_settings.h"
-#include "misc/htmlhashes.h"
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"

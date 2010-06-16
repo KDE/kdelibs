@@ -64,8 +64,6 @@
 #include <xml/dom2_eventsimpl.h>
 #include <html/html_imageimpl.h>
 #include <misc/helper.h> // for colorFromCSSValue
-#include <misc/htmltags.h>
-#include <misc/htmlattrs.h>
 #include <misc/translator.h>
 #include <misc/imagefilter.h>
 #include <imload/canvasimage.h>

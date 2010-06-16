@@ -27,7 +27,6 @@ using namespace DOM;
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
 #include "rendering/render_list.h"
-#include "misc/htmlhashes.h"
 #include "xml/dom_docimpl.h"
 
 using namespace khtml;

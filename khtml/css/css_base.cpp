@@ -37,7 +37,6 @@
 
 #include "css_stylesheetimpl.h"
 #include <xml/dom_docimpl.h>
-#include <misc/htmlhashes.h>
 #include "css_valueimpl.h"
 using namespace DOM;
 

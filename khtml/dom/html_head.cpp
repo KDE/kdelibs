@@ -23,7 +23,6 @@
 
 #include "dom/html_head.h"
 #include "html/html_headimpl.h"
-#include "misc/htmlhashes.h"
 #include "xml/dom_docimpl.h"
 
 using namespace DOM;

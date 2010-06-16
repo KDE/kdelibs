@@ -40,7 +40,6 @@
 #include <css/csshelper.h>
 #include <css/cssstyleselector.h>
 #include <css/css_stylesheetimpl.h>
-#include <misc/htmlhashes.h>
 #include <misc/helper.h>
 #include <misc/seed.h>
 #include <misc/loader.h>

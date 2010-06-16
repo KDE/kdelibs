@@ -28,7 +28,6 @@
 #include "khtml_part.h"
 #include "khtmlpart_p.h"
 #include "khtmlview.h"
-#include "misc/htmltags.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_node.h"
 #include "dom/dom_string.h"

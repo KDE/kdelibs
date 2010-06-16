@@ -25,7 +25,6 @@
 
 #include "HTMLSourceElement.h"
 #include "HTMLDocument.h"
-#include <misc/htmlhashes.h>
 
 namespace khtml {
 

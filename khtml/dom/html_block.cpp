@@ -30,8 +30,6 @@
 
 using namespace DOM;
 
-#include "misc/htmlhashes.h"
-
 HTMLBlockquoteElement::HTMLBlockquoteElement()
     : HTMLElement()
 {

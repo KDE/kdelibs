@@ -54,8 +54,6 @@
 #include "kjs_context2d.h"
 #include <kjs/PropertyNameArray.h>
 
-#include <misc/htmltags.h>
-#include <misc/htmlattrs.h>
 #include <rendering/render_object.h>
 #include <rendering/render_canvas.h>
 #include <rendering/render_frames.h>

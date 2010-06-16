@@ -24,7 +24,6 @@
  */
 
 #include "HTMLAudioElement.h"
-#include <misc/htmltags.h>
 
 namespace khtml {
 

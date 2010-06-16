@@ -43,7 +43,6 @@
 #include <html/html_imageimpl.h>
 
 #include <rendering/render_canvas.h>
-#include <misc/htmlhashes.h>
 #include <css/css_valueimpl.h>
 #include <css/css_stylesheetimpl.h>
 #include <css/cssstyleselector.h>

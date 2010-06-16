@@ -32,7 +32,6 @@
 #include <dom/dom_exception.h>
 #include <dom/dom_node.h>
 
-#include <misc/htmlhashes.h>
 #include <khtmlview.h>
 #include <khtml_part.h>
 
