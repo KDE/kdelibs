@@ -25,6 +25,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include <QtCore/QEvent>
 #include <QtCore/QMimeData>
@@ -221,7 +222,7 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
     ActionCollection* par = index.isValid() ? collection( index ) : d->collection;
     Q_ASSERT_X( par, "ActionCollectionModel::rowCount", "index is not an action nor a collection" );
     if (!par) {
-        qWarning()<<"index is not an action nor a collection"<<index;
+        kDebug()<<"index is not an action nor a collection"<<index;
         return 0;
     }
     int rows = par->actions().count() + par->collections().count();
