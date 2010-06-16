@@ -65,7 +65,6 @@
 #include <kactionmenu.h>
 
 #include "dom/dom_element.h"
-#include "misc/htmltags.h"
 
 #include "khtmlpart_p.h"
 

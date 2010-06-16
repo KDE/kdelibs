@@ -49,7 +49,6 @@
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
 #include "rendering/render_position.h"
-#include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "misc/khtml_partaccessor.h"
 #include "xml/dom2_eventsimpl.h"
