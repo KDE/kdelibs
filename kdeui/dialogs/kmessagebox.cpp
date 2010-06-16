@@ -184,6 +184,13 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     hLayout->addSpacing(KDialog::spacingHint());
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
+    messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
+    Qt::TextInteractionFlags flags = Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard;
+    if (options & KMessageBox::AllowLink) {
+        flags |= Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard;
+    }
+    messageLabel->setTextInteractionFlags(flags);
+
     QRect desktop = KGlobalSettings::desktopGeometry(dialog);
     bool usingSqueezedTextLabel = false;
     if (messageLabel->sizeHint().width() > desktop.width() * 0.5) {
@@ -195,14 +202,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         {
             delete messageLabel;
             messageLabel = new KSqueezedTextLabel(text, mainWidget);
+            messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
+            messageLabel->setTextInteractionFlags(flags);
         }
     }
 
-    messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink );
-    Qt::TextInteractionFlags flags = Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard;
-    if ( options & KMessageBox::AllowLink )
-        flags |= Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard;;
-    messageLabel->setTextInteractionFlags(flags);
     QPalette messagePal(messageLabel->palette());
     messagePal.setColor(QPalette::Window, Qt::transparent);
     messageLabel->setPalette(messagePal);
