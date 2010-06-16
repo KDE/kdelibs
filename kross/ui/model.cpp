@@ -222,7 +222,7 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
     ActionCollection* par = index.isValid() ? collection( index ) : d->collection;
     Q_ASSERT_X( par, "ActionCollectionModel::rowCount", "index is not an action nor a collection" );
     if (!par) {
-        kDebug()<<"index is not an action nor a collection"<<index;
+        kWarning()<<"index is not an action nor a collection"<<index;
         return 0;
     }
     int rows = par->actions().count() + par->collections().count();
