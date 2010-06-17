@@ -1873,33 +1873,7 @@ void KSelectionProxyModelPrivate::updateInternalTopIndexes(int start, int offset
 {
     Q_Q(KSelectionProxyModel);
 
-    SourceProxyIndexMapping::left_iterator mappedParentIt = m_mappedParents.leftBegin();
-
-    QHash<qint64, QModelIndex> updatedParentIds;
-
-    for ( ; mappedParentIt != m_mappedParents.leftEnd(); ++mappedParentIt) {
-        const QModelIndex proxyIndex = mappedParentIt.value();
-        Q_ASSERT(proxyIndex.isValid());
-        if (proxyIndex.parent().isValid())
-            continue;
-        if (proxyIndex.row() < start)
-            continue;
-
-        qint64 key = m_parentIds.rightToLeft(proxyIndex);
-
-        const QModelIndex newProxyIndex = q->createIndex(proxyIndex.row() + offset, proxyIndex.column(), proxyIndex.internalPointer());
-
-        updatedParentIds.insert(key, newProxyIndex);
-
-        Q_ASSERT(newProxyIndex.isValid());
-        m_mappedParents.updateRight(mappedParentIt, newProxyIndex);
-    }
-
-    QHash<qint64, QModelIndex>::const_iterator parentsIt = updatedParentIds.constBegin();
-    const QHash<qint64, QModelIndex>::const_iterator end = updatedParentIds.constEnd();
-    for ( ; parentsIt != end; ++parentsIt) {
-        m_parentIds.insert(parentsIt.key(), *parentsIt);
-    }
+    updateInternalIndexes(QModelIndex(), start, offset);
 
     SourceProxyIndexMapping::left_iterator firstChildIt = m_mappedFirstChildren.leftBegin();
 
