@@ -425,10 +425,20 @@ public:
 
       Instead of using persistentindexes for proxy indexes in m_mappedParents, we maintain them ourselves with this method.
 
-      @p parent and @p start refer to the source model. @p offset is the amount that affected indexes need to change.
+      m_mappedParents and m_parentIds are affected.
+
+      @p parent and @p start refer to the proxy model. Any rows >= @p start will be updated.
+      @p offset is the amount that affected indexes will be changed.
     */
     void updateInternalIndexes(const QModelIndex &parent, int start, int offset);
 
+    /**
+     * Updates stored indexes in the proxy. Any proxy row >= @p start is changed by @p offset.
+     *
+     * This is only called to update indexes in the top level of the proxy. Most commonly that is
+     *
+     * m_mappedParents, m_parentIds and m_mappedFirstChildren are affected.
+     */
     void updateInternalTopIndexes(int start, int offset);
 
     void updateFirstChildMapping(const QModelIndex& parent, int offset);
@@ -478,7 +488,7 @@ public:
 
     QPair<int, int> beginRemoveRows(const QModelIndex &parent, int start, int end) const;
     QPair<int, int> beginInsertRows(const QModelIndex &parent, int start, int end) const;
-    void endRemoveRows(const QModelIndex &parent, int start, int end);
+    void endRemoveRows(const QModelIndex &sourceParent, int proxyStart, int proxyEnd);
     void endInsertRows(const QModelIndex &parent, int start, int end);
 
     void sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
@@ -539,6 +549,7 @@ public:
     bool m_includeAllSelected;
     bool m_rowsInserted;
     bool m_rowsRemoved;
+    QPair<int, int> m_proxyRemoveRows;
     bool m_rowsMoved;
     bool m_resetting;
     bool m_ignoreNextLayoutAboutToBeChanged;
@@ -911,10 +922,33 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 
 int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) const
 {
+    Q_ASSERT(m_rootIndexList.contains(parent));
+
+    // The difficulty here is that parent and parent.parent() might both be in the m_rootIndexList.
+
+    // - A
+    // - B
+    // - - C
+    // - - D
+    // - - - E
+
+    // Consider that B and D are selected. The proxy model is:
+
+    // - C
+    // - D
+    // - E
+
+    // Then D gets a new child at 0. In that case we require adding F between D and E.
+
+    // Consider instead that D gets removed. Then @p parent will be B.
+
+
     Q_Q(const KSelectionProxyModel);
     int parentPosition = m_rootIndexList.indexOf(parent);
 
     QModelIndex parentAbove;
+
+    // If parentPosition == 0, then parent.parent() is not also in the model. (ordering is preserved)
     while (parentPosition > 0) {
         parentPosition--;
 
@@ -1015,29 +1049,29 @@ void KSelectionProxyModelPrivate::endInsertRows(const QModelIndex& parent, int s
 {
     Q_Q(const KSelectionProxyModel);
     const QModelIndex proxyParent = q->mapFromSource(parent);
-    const int proxyInitialRow = getProxyInitialRow(parent);
-    const int proxyStartRow = proxyInitialRow + start;
     const int offset = end - start + 1;
-
-    if (!proxyParent.isValid() || (m_startWithChildTrees && m_rootIndexList.contains(parent))) {
-        Q_ASSERT(m_startWithChildTrees);
-        updateInternalTopIndexes(proxyStartRow, offset);
-    } else {
-        updateInternalIndexes(proxyParent, proxyStartRow, offset);
-    }
 
     const bool isNewParent = (q->sourceModel()->rowCount(parent) == offset);
 
-    if (isNewParent) {
-        if (m_startWithChildTrees)
-            createFirstChildMapping(parent, proxyInitialRow);
-        createParentMappings(parent.parent(), parent.row(), parent.row());
-    } else if (m_startWithChildTrees && start == 0 && m_rootIndexList.contains(parent)) {
-        // We already have a first child mapping, but what we have mapped is not this first child anymore
-        // so we need to update it.
-        updateFirstChildMapping(parent, end + 1);
-    }
+    if (m_startWithChildTrees && m_rootIndexList.contains(parent)) {
+        const int proxyInitialRow = getProxyInitialRow(parent);
+        Q_ASSERT(proxyInitialRow >= 0);
+        const int proxyStartRow = proxyInitialRow + start;
 
+        updateInternalTopIndexes(proxyStartRow, offset);
+        if (isNewParent)
+            createFirstChildMapping(parent, proxyStartRow);
+        else if (start == 0)
+            // We already have a first child mapping, but what we have mapped is not the first child anymore
+            // so we need to update it.
+            updateFirstChildMapping(parent, end + 1);
+    } else {
+        Q_ASSERT(proxyParent.isValid());
+        if (!isNewParent)
+            updateInternalIndexes(proxyParent, start, offset);
+        else
+            createParentMappings(parent.parent(), parent.row(), parent.row());
+    }
     createParentMappings(parent, start, end);
 }
 
@@ -1148,12 +1182,18 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
     const QModelIndex proxyParent = mapParentFromSource(parent);
 
     m_rowsRemoved = true;
+    m_proxyRemoveRows = pair;
     q->beginRemoveRows(proxyParent, pair.first, pair.second);
 }
 
-void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &parent, int start, int end)
+void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &sourceParent, int proxyStart, int proxyEnd)
 {
-    Q_Q(KSelectionProxyModel);
+    const QModelIndex proxyParent = mapParentFromSource(sourceParent);
+
+    if (proxyParent.isValid())
+        updateInternalIndexes(proxyParent, proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
+    else
+        updateInternalTopIndexes(proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
 
     {
         SourceProxyIndexMapping::right_iterator it = m_mappedParents.rightBegin();
@@ -1166,16 +1206,30 @@ void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &parent, int s
                 ++it;
         }
     }
-    if (start == 0 && q->sourceModel()->hasChildren(parent)) {
+
+    {
+        // Depending on what is selected at the time, a single removal in the source could invalidate
+        // many mapped first child items at once.
+
+        // - A
+        // - B
+        // - - C
+        // - - D
+        // - - - E
+        // - - - F
+        // - - - - G
+        // - - - - H
+
+        // If D and F are selected, the proxy contains E, F, G, H. If B is then deleted E to H will
+        // be removed, including both first child mappings at E and G.
+
         SourceProxyIndexMapping::right_iterator it = m_mappedFirstChildren.rightBegin();
 
-        for ( ; it != m_mappedFirstChildren.rightEnd(); ++it) {
-            if (!it.value().isValid()) {
-                QPersistentModelIndex srcIndex = q->sourceModel()->index(0, 0, parent);
-                Q_ASSERT(srcIndex.isValid());
-                m_mappedFirstChildren.updateLeft(it, srcIndex);
-                break;
-            }
+        while (it != m_mappedFirstChildren.rightEnd()) {
+            if (!it.value().isValid())
+                it = m_mappedFirstChildren.eraseRight(it);
+            else
+                ++it;
         }
     }
 
@@ -1186,15 +1240,12 @@ void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &parent, int s
         else
             ++rootIt;
     }
-
-    const QModelIndex proxyParent = q->mapFromSource(parent);
-
-    updateInternalIndexes(proxyParent, getProxyInitialRow(parent) + start - 1, -1*(end - start + 1));
 }
 
 void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KSelectionProxyModel);
+    Q_UNUSED(end)
 
     if (!m_selectionModel->hasSelection())
         return;
@@ -1203,7 +1254,15 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
         return;
     m_rowsRemoved = false;
 
-    endRemoveRows(parent, start, end);
+    Q_ASSERT(m_proxyRemoveRows.first >= 0);
+    Q_ASSERT(m_proxyRemoveRows.second >= 0);
+    endRemoveRows(parent, m_proxyRemoveRows.first, m_proxyRemoveRows.second);
+    if (m_startWithChildTrees && start == 0 && q->sourceModel()->hasChildren(parent))
+        // The private endRemoveRows call might remove the first child mapping for parent, so
+        // we create it again in that case.
+        createFirstChildMapping(parent, m_proxyRemoveRows.first);
+
+    m_proxyRemoveRows = qMakePair(-1, -1);
     q->endRemoveRows();
 }
 
@@ -1483,7 +1542,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         }
 
         removeParentMappings(proxyParent, proxyTopLeft.row(), proxyTopLeft.row() + height - 1);
-        updateInternalIndexes(proxyParent, proxyTopLeft.row() + height - 1, -1 * height);
+        updateInternalIndexes(proxyParent, proxyTopLeft.row() + height, -1 * height);
 
         for (int i = 0; i < height; ++i)
         {
@@ -1691,13 +1750,12 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
             const int row = getRootListRow(m_rootIndexList, newIndex);
             if (!m_resetting)
                 q->beginInsertRows(QModelIndex(), row, row);
+
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(row, newIndex);
             emit q->rootIndexAdded(newIndex);
             Q_ASSERT(m_rootIndexList.size() > row);
-            const QModelIndex newIndexParent = newIndex.parent();
             updateInternalIndexes(QModelIndex(), row, 1);
-
             createParentMappings(newIndex.parent(), newIndex.row(), newIndex.row());
 
             if (!m_resetting) {
@@ -1894,6 +1952,8 @@ void KSelectionProxyModelPrivate::updateInternalTopIndexes(int start, int offset
 void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &parent, int start, int offset)
 {
     Q_Q(KSelectionProxyModel);
+
+    Q_ASSERT(start + offset >= 0);
 
     if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
         return;
