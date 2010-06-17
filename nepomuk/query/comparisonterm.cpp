@@ -271,15 +271,6 @@ bool Nepomuk::Query::ComparisonTermPrivate::isValid() const
 }
 
 
-QString Nepomuk::Query::ComparisonTermPrivate::toString() const
-{
-    return QString( "[%1 %2 %3]" )
-        .arg( m_property.isValid() ? Soprano::Node::resourceToN3( m_property.uri() ) : QString::fromLatin1("?p"),
-              comparatorToString( m_comparator ),
-              m_subTerm.d_ptr->toString() );
-}
-
-
 //
 // Determines the main variable name, i.e. the variable representing the compared value, i.e. the one
 // that can be set vie setVariableName.

@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,6 +22,13 @@
 
 Nepomuk::Query::FileQuery::FileQuery()
     : Query()
+{
+    d->m_isFileQuery = true;
+}
+
+
+Nepomuk::Query::FileQuery::FileQuery( const Term& term )
+    : Query( term )
 {
     d->m_isFileQuery = true;
 }
@@ -80,4 +87,16 @@ void Nepomuk::Query::FileQuery::setExcludeFolders( const KUrl::List& folders )
 KUrl::List Nepomuk::Query::FileQuery::excludeFolders() const
 {
     return d->m_excludeFolders;
+}
+
+
+void Nepomuk::Query::FileQuery::setFileMode( FileMode mode )
+{
+    d->m_fileMode = mode;
+}
+
+
+Nepomuk::Query::FileQuery::FileMode Nepomuk::Query::FileQuery::fileMode() const
+{
+    return d->m_fileMode;
 }

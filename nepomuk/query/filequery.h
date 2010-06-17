@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,6 +48,13 @@ namespace Nepomuk {
              * Create an empty invalid file query object.
              */
             FileQuery();
+
+            /**
+             * Create a file query with root term \a term.
+             *
+             * \since 4.6
+             */
+            explicit FileQuery( const Term& term );
 
             /**
              * Copy constructor.
@@ -123,8 +130,41 @@ namespace Nepomuk {
              * \sa addExcludeFolder, setExcludeFolders, includeFolders
              */
             KUrl::List excludeFolders() const;
+
+            /**
+             * An enumeration used in setFileMode() to state wether the query
+             * should return files and folders or only files or only folders.
+             *
+             * \since 4.6
+             */
+            enum FileModeFlags {
+                QueryFiles = 0x1,
+                QueryFolders = 0x2,
+                QueryFilesAndFolders = QueryFiles|QueryFolders
+            };
+            Q_DECLARE_FLAGS( FileMode, FileModeFlags )
+
+            /**
+             * Set the file mode, i.e. wether the query should return
+             * files and folders or only files or only folders.
+             * By default both files and folders are returned.
+             *
+             * \sa fileMode()
+             *
+             * \since 4.6
+             */
+            void setFileMode( FileMode mode );
+
+            /**
+             * \return The file mode set in setFileMode()
+             *
+             * \since 4.6
+             */
+            FileMode fileMode() const;
         };
     }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Nepomuk::Query::FileQuery::FileMode )
 
 #endif

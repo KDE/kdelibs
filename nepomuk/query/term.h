@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -343,6 +343,28 @@ namespace Nepomuk {
             ResourceTypeTerm& toResourceTypeTerm();
 
             /**
+             * Encode the Term in a string. Be aware that this does NOT create a SPARQL
+             * query. The returned string can be used to serialize terms that can later
+             * be read via fromString().
+             *
+             * \sa fromString()
+             *
+             * \since 4.6
+             */
+            QString toString() const;
+
+            /**
+             * Parse a Term that has been encoded as a string via toString().
+             *
+             * \warning This method can NOT parse SPARQL syntax.
+             *
+             * \sa toString()
+             *
+             * \since 4.6
+             */
+            static Term fromString( const QString& s );
+
+            /**
              * Comparison operator.
              *
              * \return \p true if this term is equal to \p term.
@@ -352,7 +374,7 @@ namespace Nepomuk {
             // FIXME: the compiler does not find this operator!
             QDebug operator<<( QDebug ) const;
 
-            /** \cond protected_error_members */
+            /** \cond protected_term_members */
         protected:
             Term( TermPrivate* );
 

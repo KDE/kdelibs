@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,6 +30,8 @@
 #include "property.h"
 
 #include "nepomukquery_export.h"
+
+class QTextStream;
 
 namespace Nepomuk {
     namespace Query {
@@ -64,7 +66,7 @@ namespace Nepomuk {
          * directly in Soprano::Model::executeQuery() via \p ResourceManager::instance()->mainModel()
          * or in a custom Model.
          *
-         * \sa QueryParser
+         * \sa QueryParser, FileQuery
          *
          * \author Sebastian Trueg <trueg@kde.org>
          *
@@ -79,8 +81,7 @@ namespace Nepomuk {
             Query();
 
             /**
-             * Create a query of type PlainQuery based on
-             * \a term.
+             * Create a query with root term \a term.
              */
             explicit Query( const Term& term );
 
@@ -113,6 +114,16 @@ namespace Nepomuk {
              * it has a valid term().
              */
             bool isValid() const;
+
+            /**
+             * \return \p true if this is a file query that will
+             * only return files and folders.
+             *
+             * \sa FileQuery
+             *
+             * \since 4.6
+             */
+            bool isFileQuery() const;
 
             /**
              * The root term of the query.
@@ -286,6 +297,9 @@ namespace Nepomuk {
              * The resulting query will bind the results to variable \p 'r'. Request
              * properties will be bound to variables \p 'reqProp1' through \p 'reqPropN'.
              *
+             * If you are looking for a serialization of a Query which can be parsed again
+             * use toString() instead.
+             *
              * \warning The SPARQL queries created by this method contain SPARQL extensions
              * from Virtuoso and will not work with other RDF storage solutions!
              *
@@ -294,7 +308,7 @@ namespace Nepomuk {
              * \return The SPARQL representation of this query or an empty string
              * if the query could not be converted (invalid query.)
              *
-             * \sa toSearchUrl(), SparqlFlag
+             * \sa toString(), toSearchUrl(), SparqlFlag
              */
             QString toSparqlQuery( SparqlFlags flags = NoFlags ) const;
 
@@ -302,9 +316,6 @@ namespace Nepomuk {
              * Convert the query into a URL which can be listed using KIO::DirLister.
              * The URL will use the \p nepomuksearch:/ KIO protocol to handle the listing
              * of search results.
-             *
-             * This is the perfect method for listing results in file managers or file
-             * dialogs.
              *
              * \param flags Optional flags to change the query.  Query::CreateCountQuery is not
              * supported and will silently be dropped from \p flags.
@@ -315,6 +326,29 @@ namespace Nepomuk {
              * \sa toSparqlQuery(), SparqlFlag
              */
             KUrl toSearchUrl( SparqlFlags flags = NoFlags ) const;
+
+            /**
+             * Convert the query into a URL which can be listed using KIO::DirLister.
+             * The URL will use the \p nepomuksearch:/ KIO protocol to handle the listing
+             * of search results.
+             *
+             * This is the perfect method for listing results in file managers or file
+             * dialogs.
+             *
+             * \param customTitle An optional custom title that will be used for the listing
+             * of the results. This is achieved by setting the KIO::UDSEntry::UDS_DISPLAY_NAME to
+             * the customTitle value.
+             * \param flags Optional flags to change the query.  Query::CreateCountQuery is not
+             * supported and will silently be dropped from \p flags.
+             *
+             * \return A URL which will list a virtual folder containing all search results
+             * from this query or an invalid URL in case this query is invalid.
+             *
+             * \sa toSparqlQuery(), SparqlFlag
+             *
+             * \since 4.6
+             */
+            KUrl toSearchUrl( const QString& customTitle, SparqlFlags flags = NoFlags ) const;
 
             /**
              * Build a request property map as used in QueryServiceClient::sparqlQuery()
@@ -331,8 +365,71 @@ namespace Nepomuk {
              */
             bool operator==( const Query& query ) const;
 
+            /**
+             * Encode the Query in a string. Be aware that this does NOT create a SPARQL
+             * query. The returned string can be used to serialize queries that can later
+             * be read via fromString().
+             *
+             * \sa fromString(), toSparqlQuery()
+             *
+             * \since 4.6
+             */
+            QString toString() const;
+
+            /**
+             * Parse a Query that has been encoded as a string via toString().
+             *
+             * \warning This method can NOT parse SPARQL syntax.
+             *
+             * \sa toString()
+             *
+             * \since 4.6
+             */
+            static Query fromString( const QString& queryString );
+
+            /**
+             * Extract a query from a nepomuksearch:/ query URL.
+             *
+             * \return The query that was encoded in \p url or an invalid query if
+             * either \p url is not a nepomuksearch:/ URL or if it contains a pure SPARQL
+             * query. In the latter case sparqlFromQueryUrl() can be used to extract that
+             * query.
+             *
+             * \sa sparqlFromQueryUrl()
+             *
+             * \since 4.6
+             */
+            static Query fromQueryUrl( const KUrl& url );
+
+            /**
+             * Extract the SPARQL query from a nepomuksearch:/ query URL. All kinds of
+             * nepomuksearch:/ URLs are supported.
+             *
+             * \return The SPARQL query string representing the query encoded
+             * in \p url.
+             *
+             * \sa fromQueryUrl()
+             *
+             * \since 4.6
+             */
+            static QString sparqlFromQueryUrl( const KUrl& url );
+
+            /**
+             * Extact the title from a nepomuksearch:/ query URL. The title
+             * is either a custom title which has been specified in
+             * toSearchUrl(const QString&, SparqlFlags) or the user query string
+             * in case of nepomuksearch:/myquery URLs.
+             *
+             * \return A title for the query \p url or an empty string
+             * in case \p url is not a nepomuksearch:/ URL or a useful title
+             * cannot be extracted.
+             *
+             * \since 4.6
+             */
+            static QString titleFromQueryUrl( const KUrl& url );
+
         protected:
-            /** \cond protected_error_members */
+            /** \cond protected_query_members */
             QSharedDataPointer<QueryPrivate> d;
 
             friend class QueryParser;

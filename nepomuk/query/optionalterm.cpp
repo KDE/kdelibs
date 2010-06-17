@@ -30,12 +30,6 @@ QString Nepomuk::Query::OptionalTermPrivate::toSparqlGraphPattern( const QString
 }
 
 
-QString Nepomuk::Query::OptionalTermPrivate::toString() const
-{
-    return QString( "[OPTIONAL %1]" ).arg( m_subTerm.d_ptr->toString() );
-}
-
-
 Nepomuk::Query::OptionalTerm::OptionalTerm()
     : SimpleTerm( new OptionalTermPrivate() )
 {

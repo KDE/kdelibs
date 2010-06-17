@@ -38,7 +38,6 @@ namespace Nepomuk {
             bool equals( const TermPrivate* other ) const;
             bool isValid() const { return m_value.isValid(); }
             QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
-            QString toString() const;
 
             /// The text that is to be used in the bif:contains pattern.
             QString queryText() const;

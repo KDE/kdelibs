@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -48,12 +48,6 @@ QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QSt
               qbd->uniqueVarName(),
               Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subClassOf() ),
               Soprano::Node::resourceToN3( m_class.uri() ) );
-}
-
-
-QString Nepomuk::Query::ResourceTypeTermPrivate::toString() const
-{
-    return QString( "[Has type %1]" ).arg( Soprano::Node::resourceToN3( m_class.uri() ) );
 }
 
 

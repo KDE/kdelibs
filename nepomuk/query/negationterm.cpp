@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -27,12 +27,6 @@ QString Nepomuk::Query::NegationTermPrivate::toSparqlGraphPattern( const QString
 {
     return QString( "FILTER(!bif:exists((select (1) where { %1 }))) . " )
         .arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
-}
-
-
-QString Nepomuk::Query::NegationTermPrivate::toString() const
-{
-    return QString( "[NOT %1]" ).arg( m_subTerm.d_ptr->toString() );
 }
 
 

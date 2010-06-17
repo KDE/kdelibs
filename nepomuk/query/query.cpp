@@ -31,11 +31,14 @@
 #include "negationterm.h"
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
+#include "queryserializer.h"
+#include "queryparser.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
 #include <QtCore/QRegExp>
 #include <QtCore/QVariant>
+#include <QtCore/QTextStream>
 
 #include <Soprano/Node>
 #include <Soprano/Model>
@@ -205,6 +208,12 @@ bool Nepomuk::Query::Query::isValid() const
 }
 
 
+bool Nepomuk::Query::Query::isFileQuery() const
+{
+    return d->m_isFileQuery;
+}
+
+
 Nepomuk::Query::Term Nepomuk::Query::Query::term() const
 {
     return d->m_term;
@@ -284,7 +293,9 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
             d->m_term == other.d->m_term &&
             compareQList( d->m_requestProperties, other.d->m_requestProperties ) &&
             compareQList( d->m_includeFolders, other.d->m_includeFolders ) &&
-            compareQList( d->m_excludeFolders, other.d->m_excludeFolders ) );
+            compareQList( d->m_excludeFolders, other.d->m_excludeFolders ) &&
+            d->m_isFileQuery == other.d->m_isFileQuery &&
+            d->m_fileMode == other.d->m_fileMode );
 }
 
 
@@ -297,8 +308,16 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         //
         // we do not use ResourceTypeTerm since we do not want to use crappy inference every time. All files have nfo:FileDataObject type anyway
         //
-        term = AndTerm( term, OrTerm( ComparisonTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::FileDataObject()), ComparisonTerm::Equal ),
-                                      ComparisonTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::Folder()), ComparisonTerm::Equal ) ) );
+        Term fileModeTerm;
+        ComparisonTerm fileTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::FileDataObject()), ComparisonTerm::Equal );
+        ComparisonTerm folderTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::Folder()), ComparisonTerm::Equal );
+        if( d->m_fileMode == FileQuery::QueryFiles )
+            fileModeTerm = AndTerm( fileTerm, NegationTerm::negateTerm( folderTerm ) );
+        else if( d->m_fileMode == FileQuery::QueryFolders )
+            fileModeTerm = AndTerm( folderTerm, NegationTerm::negateTerm( fileTerm ) );
+        else
+            fileModeTerm = OrTerm( fileTerm, folderTerm );
+        term = AndTerm( term, fileModeTerm );
     }
 
     // optimize whatever we can
@@ -340,17 +359,25 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 
 KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 {
-    Query q(*this);
-    q.setRequestProperties( QList<RequestProperty>() << RequestProperty(Nepomuk::Vocabulary::NIE::url()) );
-    QString sparql = q.toSparqlQuery( flags & ~CreateCountQuery );
-    if( sparql.isEmpty() ) {
-        return KUrl();
-    }
-    else {
-        KUrl url( QLatin1String("nepomuksearch:/") );
-        url.addQueryItem( QLatin1String("sparql"), sparql );
-        return url;
-    }
+    return toSearchUrl( QString(), flags );
+}
+
+
+// This is a bit dodgy: if there are sparql flags we encode the SPARQL query into the url
+// otherwise the serialized query (which allows for more power in the kio slave). It would
+// probably be nicer to somehow put the flags in the URL. But new query items in the URL
+// would make the URL handling in the kio slave more complicated.... oh, well.
+KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags ) const
+{
+    flags &= ~CreateCountQuery;
+    KUrl url( QLatin1String("nepomuksearch:/") );
+    if( flags == NoFlags )
+        url.addQueryItem( QLatin1String("encodedquery"), toString() );
+    else
+        url.addQueryItem( QLatin1String("sparql"), toSparqlQuery( flags ) );
+    if( !customTitle.isEmpty() )
+        url.addQueryItem( QLatin1String("title"), customTitle );
+    return url;
 }
 
 
@@ -363,13 +390,117 @@ Nepomuk::Query::RequestPropertyMap Nepomuk::Query::Query::requestPropertyMap() c
     return rpm;
 }
 
+QString Nepomuk::Query::Query::toString() const
+{
+    return Nepomuk::Query::serializeQuery( *this );
+}
+
+
+// static
+Nepomuk::Query::Query Nepomuk::Query::Query::fromString( const QString& queryString )
+{
+    return Nepomuk::Query::parseQuery( queryString );
+}
+
+
+namespace {
+    /**
+     * Returns an empty string for sparql query URLs.
+     */
+    inline QString extractPlainQuery( const KUrl& url ) {
+        if( url.queryItems().contains( "query" ) ) {
+            return url.queryItem( "query" );
+        }
+        else if ( !url.queryItems().contains( "sparql" ) &&
+                  !url.queryItems().contains( "encodedquery" ) ) {
+            return url.path().section( '/', 0, 0, QString::SectionSkipEmpty );
+        }
+        else {
+            return QString();
+        }
+    }
+}
+
+// static
+Nepomuk::Query::Query Nepomuk::Query::Query::fromQueryUrl( const KUrl& url )
+{
+    if( url.protocol() != QLatin1String("nepomuksearch") ) {
+        kDebug() << "No nepomuksearch:/ URL:" << url;
+        return Query();
+    }
+
+    if ( url.queryItems().contains( "sparql" ) ) {
+        kDebug() << "Cannot parse SPARQL query from:" << url;
+        return Query();
+    }
+    else if( url.queryItems().contains( "encodedquery" ) ) {
+        return fromString( url.queryItem( "encodedquery") );
+    }
+    else {
+        Query query = QueryParser::parseQuery( extractPlainQuery(url) );
+        query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+        return query;
+    }
+}
+
+
+// static
+QString Nepomuk::Query::Query::sparqlFromQueryUrl( const KUrl& url )
+{
+    if( url.protocol() != QLatin1String("nepomuksearch") ) {
+        kDebug() << "No nepomuksearch:/ URL:" << url;
+        return QString();
+    }
+
+    if( url.queryItems().contains( "sparql" ) ) {
+        return url.queryItem( "sparql" );
+    }
+    else {
+        Query query = fromQueryUrl( url );
+        if( query.isValid() ) {
+            query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+            return query.toSparqlQuery();
+        }
+        else {
+            return QString();
+        }
+    }
+}
+
+
+// static
+QString Nepomuk::Query::Query::titleFromQueryUrl( const KUrl& url )
+{
+    if( url.protocol() != QLatin1String("nepomuksearch") ) {
+        kDebug() << "No nepomuksearch:/ URL:" << url;
+        return QString();
+    }
+
+    if ( url.hasQueryItem( QLatin1String( "title" ) ) ) {
+        return url.queryItem(QLatin1String( "title" ) );
+    }
+
+    QString userQuery( url.queryItem(QLatin1String( "userquery" ) ) );
+
+    if ( userQuery.isEmpty() ) {
+        userQuery = extractPlainQuery( url );
+    }
+
+    if ( !userQuery.isEmpty() ) {
+        return i18nc( "@title UDS_DISPLAY_NAME for a KIO directory listing. %1 is the query the user entered.",
+                      "Query Results from '%1'",
+                      userQuery );
+    }
+
+    // fallback
+    return i18nc( "@title UDS_DISPLAY_NAME for a KIO directory listing.",
+                  "Query Results");
+}
+
 
 QDebug operator<<( QDebug dbg, const Nepomuk::Query::Query& query )
 {
-    dbg << "(Query:           " << query.term() << endl
-        << " Offset:           " << query.offset()
-        << " Limit:           " << query.limit() << ")";
-    return dbg;
+    return dbg << query.toString();
 }
 
 

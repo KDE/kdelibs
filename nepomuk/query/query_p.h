@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 
 #include "term.h"
 #include "query.h"
+#include "filequery.h"
 
 #include "nepomukquery_export.h"
 
@@ -41,7 +42,8 @@ namespace Nepomuk {
             QueryPrivate()
                 : m_limit( 0 ),
                   m_offset( 0 ),
-                  m_isFileQuery( false ) {
+                  m_isFileQuery( false ),
+                  m_fileMode( FileQuery::QueryFilesAndFolders ) {
             }
 
             QString createFolderFilter( const QString& resourceVarName, QueryBuilderData* ) const;
@@ -62,6 +64,7 @@ namespace Nepomuk {
             bool m_isFileQuery;
             KUrl::List m_includeFolders;
             KUrl::List m_excludeFolders;
+            FileQuery::FileMode m_fileMode;
         };
     }
 }

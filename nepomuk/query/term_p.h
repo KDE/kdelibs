@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,7 +45,6 @@ namespace Nepomuk {
             virtual bool equals( const TermPrivate* other ) const {
                 return m_type == other->m_type;
             }
-            virtual QString toString() const { return QString(); }
 
             Term::Type m_type;
         };

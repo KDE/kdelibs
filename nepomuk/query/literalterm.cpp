@@ -72,12 +72,6 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
 }
 
 
-QString Nepomuk::Query::LiteralTermPrivate::toString() const
-{
-    return QString( "[Literal %1]" ).arg( Soprano::Node::literalToN3( m_value ) );
-}
-
-
 QString Nepomuk::Query::LiteralTermPrivate::queryText() const
 {
     //

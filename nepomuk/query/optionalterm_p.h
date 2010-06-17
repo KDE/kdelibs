@@ -36,7 +36,6 @@ namespace Nepomuk {
             TermPrivate* clone() const { return new OptionalTermPrivate( *this ); }
 
             QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
-            QString toString() const;
         };
     }
 }

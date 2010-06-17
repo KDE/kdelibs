@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -35,6 +35,7 @@
 #include "optionalterm_p.h"
 #include "comparisonterm_p.h"
 #include "resourcetypeterm_p.h"
+#include "queryserializer.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QList>
@@ -259,6 +260,19 @@ Nepomuk::Query::ResourceTypeTerm& Nepomuk::Query::Term::toResourceTypeTerm()
 }
 
 
+QString Nepomuk::Query::Term::toString() const
+{
+    return Nepomuk::Query::serializeTerm( *this );
+}
+
+
+// static
+Nepomuk::Query::Term Nepomuk::Query::Term::fromString( const QString& s )
+{
+    return Nepomuk::Query::parseTerm( s );
+}
+
+
 bool Nepomuk::Query::Term::operator==( const Term& other ) const
 {
     return d_ptr->equals( other.d_ptr );
@@ -267,7 +281,7 @@ bool Nepomuk::Query::Term::operator==( const Term& other ) const
 
 QDebug Nepomuk::Query::Term::operator<<( QDebug dbg ) const
 {
-    return dbg << d_ptr->toString();
+    return dbg << toString();
 }
 
 
@@ -289,7 +303,10 @@ uint Nepomuk::Query::qHash( const Nepomuk::Query::Term& term )
                 ( uint )term.toComparisonTerm().comparator()<<8 );
 
     case Nepomuk::Query::Term::Negation:
-        return 1;
+        return qHash(term.toNegationTerm().subTerm());
+
+    case Nepomuk::Query::Term::Optional:
+        return qHash(term.toOptionalTerm().subTerm());
 
     case Nepomuk::Query::Term::Resource:
         return qHash( term.toResourceTerm().resource().resourceUri() );

@@ -22,6 +22,7 @@
 #include "querytest.h"
 
 #include "query.h"
+#include "filequery.h"
 #include "query_p.h"
 #include "literalterm.h"
 #include "resourceterm.h"
@@ -43,6 +44,7 @@
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/XMLSchema>
 
 #include <kdebug.h>
@@ -271,6 +273,33 @@ void QueryTest::testToSparql_data()
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()) );
 
 
+    FileQuery fileQuery( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm(QUrl("nepomuk:/res/foobar")) ) );
+    QTest::newRow( "file query" )
+        << Query(fileQuery)
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . { ?r %2 %3 . } UNION { ?r %2 %4 . } . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+
+    fileQuery.setFileMode(FileQuery::QueryFiles);
+    QTest::newRow( "file query (only files)" )
+        << Query(fileQuery)
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+
+    fileQuery.setFileMode(FileQuery::QueryFolders);
+    QTest::newRow( "file query (only folders)" )
+        << Query(fileQuery)
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
+
     //
     // A more complex example
     //
@@ -366,7 +395,7 @@ void QueryTest::testToSparql()
     QFETCH( Nepomuk::Query::Query, query );
     QFETCH( QString, queryString );
 
-//    kDebug() << query.toSparqlQuery();
+//    kDebug() << query;
     QCOMPARE( query.toSparqlQuery().simplified(), queryString );
 }
 
