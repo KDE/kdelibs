@@ -135,7 +135,7 @@ namespace Nepomuk {
              * An enumeration used in setFileMode() to state wether the query
              * should return files and folders or only files or only folders.
              *
-             * \since 4.6
+             * \since 4.5
              */
             enum FileModeFlags {
                 QueryFiles = 0x1,
@@ -151,14 +151,14 @@ namespace Nepomuk {
              *
              * \sa fileMode()
              *
-             * \since 4.6
+             * \since 4.5
              */
             void setFileMode( FileMode mode );
 
             /**
              * \return The file mode set in setFileMode()
              *
-             * \since 4.6
+             * \since 4.5
              */
             FileMode fileMode() const;
         };
