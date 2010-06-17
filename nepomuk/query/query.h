@@ -121,7 +121,7 @@ namespace Nepomuk {
              *
              * \sa FileQuery
              *
-             * \since 4.6
+             * \since 4.5
              */
             bool isFileQuery() const;
 
@@ -346,7 +346,7 @@ namespace Nepomuk {
              *
              * \sa toSparqlQuery(), SparqlFlag
              *
-             * \since 4.6
+             * \since 4.5
              */
             KUrl toSearchUrl( const QString& customTitle, SparqlFlags flags = NoFlags ) const;
 
@@ -372,7 +372,7 @@ namespace Nepomuk {
              *
              * \sa fromString(), toSparqlQuery()
              *
-             * \since 4.6
+             * \since 4.5
              */
             QString toString() const;
 
@@ -383,7 +383,7 @@ namespace Nepomuk {
              *
              * \sa toString()
              *
-             * \since 4.6
+             * \since 4.5
              */
             static Query fromString( const QString& queryString );
 
@@ -397,7 +397,7 @@ namespace Nepomuk {
              *
              * \sa sparqlFromQueryUrl()
              *
-             * \since 4.6
+             * \since 4.5
              */
             static Query fromQueryUrl( const KUrl& url );
 
@@ -410,7 +410,7 @@ namespace Nepomuk {
              *
              * \sa fromQueryUrl()
              *
-             * \since 4.6
+             * \since 4.5
              */
             static QString sparqlFromQueryUrl( const KUrl& url );
 
@@ -424,7 +424,7 @@ namespace Nepomuk {
              * in case \p url is not a nepomuksearch:/ URL or a useful title
              * cannot be extracted.
              *
-             * \since 4.6
+             * \since 4.5
              */
             static QString titleFromQueryUrl( const KUrl& url );
 

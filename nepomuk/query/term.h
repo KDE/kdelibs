@@ -349,7 +349,7 @@ namespace Nepomuk {
              *
              * \sa fromString()
              *
-             * \since 4.6
+             * \since 4.5
              */
             QString toString() const;
 
@@ -360,7 +360,7 @@ namespace Nepomuk {
              *
              * \sa toString()
              *
-             * \since 4.6
+             * \since 4.5
              */
             static Term fromString( const QString& s );
 
