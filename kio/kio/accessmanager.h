@@ -83,7 +83,7 @@ public:
 
     virtual ~AccessManager();
 
-    /** 
+    /**
      * Set @p allowed to false if you don't want any external content to be fetched.
      * By default external content is fetched.
      */
@@ -178,7 +178,7 @@ typedef KIO::AccessManager AccessManager;
  * @since 4.5
  * @return true if @p metadata contains ssl information and the mapping succeeded.
  */
-bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig);
+KIO_EXPORT bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig);
 
 /**
  * @short A KDE implementation of QNetworkCookieJar.
