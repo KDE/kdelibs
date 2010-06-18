@@ -112,8 +112,24 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
 void KTar::prepareDevice( const QString & filename,
                           const QString & mimetype, int ioMode )
 {
-  if( "application/x-tar" == mimetype || ioMode == IO_WriteOnly )
+  if( "application/x-tar" == mimetype )
+  {
       setDevice( new QFile( filename ) );
+  }
+  else if ( ioMode == IO_WriteOnly )
+  {
+    const bool forced = ( "application/x-gzip" == mimetype
+                          || "application/x-bzip2" == mimetype );
+    QIODevice *filterDev = KFilterDev::deviceForFile( filename, mimetype, forced );
+    if ( filterDev )
+    {
+        setDevice( filterDev );
+    }
+    else
+    {
+        kdDebug( 7041 ) << "KTar::prepareDevice: no filterdevice found!" << endl;
+    }
+  }
   else
   {
     // The compression filters are very slow with random access.
@@ -328,7 +344,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
 bool KTar::openArchive( int mode )
 {
     kdDebug( 7041 ) << "KTar::openArchive filename=" << m_filename << " mode=" << (mode&IO_ReadOnly?"ReadOnly":"Write") << endl;
-    
+
     if (!m_filename.isEmpty()) {
         // Finish what the constructor used to do
         prepareDevice( m_filename, d->mimetype, mode );
