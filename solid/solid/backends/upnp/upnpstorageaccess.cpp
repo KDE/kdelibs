@@ -59,14 +59,14 @@ QString UPnPStorageAccess::filePath() const
 
 bool UPnPStorageAccess::setup()
 {
-    QTimer::singleShot(500, this, SLOT(onSetupTimeout()));
+    QTimer::singleShot(0, this, SLOT(onSetupTimeout()));
 
     return true;
 }
 
 bool UPnPStorageAccess::teardown()
 {
-    QTimer::singleShot(500, this, SLOT(onTeardownTimeout()));
+    QTimer::singleShot(0, this, SLOT(onTeardownTimeout()));
 
     return true;
 }
