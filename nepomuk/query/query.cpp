@@ -118,14 +118,14 @@ QString Nepomuk::Query::QueryPrivate::buildRequestPropertyPatterns() const
 
 
 
-class Nepomuk::Query::RequestProperty::Private : public QSharedData
+class Nepomuk::Query::Query::RequestProperty::Private : public QSharedData
 {
 public:
     Nepomuk::Types::Property m_property;
     bool m_optional;
 };
 
-Nepomuk::Query::RequestProperty::RequestProperty( const Nepomuk::Types::Property& property,
+Nepomuk::Query::Query::RequestProperty::RequestProperty( const Nepomuk::Types::Property& property,
                                                          bool optional )
     : d(new Private())
 {
@@ -133,136 +133,136 @@ Nepomuk::Query::RequestProperty::RequestProperty( const Nepomuk::Types::Property
     d->m_optional = optional;
 }
 
-Nepomuk::Query::RequestProperty::RequestProperty( const RequestProperty& other )
+Nepomuk::Query::Query::RequestProperty::RequestProperty( const RequestProperty& other )
 {
     d = other.d;
 }
 
-Nepomuk::Query::RequestProperty::~RequestProperty()
+Nepomuk::Query::Query::RequestProperty::~RequestProperty()
 {
 }
 
-Nepomuk::Query::RequestProperty& Nepomuk::Query::RequestProperty::operator=( const RequestProperty& other )
+Nepomuk::Query::Query::RequestProperty& Nepomuk::Query::Query::RequestProperty::operator=( const RequestProperty& other )
 {
     d = other.d;
     return *this;
 }
 
-Nepomuk::Types::Property Nepomuk::Query::RequestProperty::property() const
+Nepomuk::Types::Property Nepomuk::Query::Query::RequestProperty::property() const
 {
     return d->m_property;
 }
 
-bool Nepomuk::Query::RequestProperty::optional() const
+bool Nepomuk::Query::Query::RequestProperty::optional() const
 {
     return d->m_optional;
 }
 
-bool Nepomuk::Query::RequestProperty::operator==( const RequestProperty& other ) const
+bool Nepomuk::Query::Query::RequestProperty::operator==( const RequestProperty& other ) const
 {
     return d->m_property == other.d->m_property && d->m_optional == other.d->m_optional;
 }
 
 
-Nepomuk::Query::Query()
+Nepomuk::Query::Query::Query()
     : d( new QueryPrivate() )
 {
 }
 
 
-Nepomuk::Query::Query( const Query& other )
+Nepomuk::Query::Query::Query( const Query& other )
 {
     d = other.d;
 }
 
 
-Nepomuk::Query::Query( const Term& term )
+Nepomuk::Query::Query::Query( const Term& term )
     : d ( new QueryPrivate() )
 {
     d->m_term = term;
 }
 
 
-Nepomuk::Query::~Query()
+Nepomuk::Query::Query::~Query()
 {
 }
 
 
-Nepomuk::Query::Query& Nepomuk::Query::operator=( const Query& other )
+Nepomuk::Query::Query& Nepomuk::Query::Query::operator=( const Query& other )
 {
     d = other.d;
     return *this;
 }
 
 
-Nepomuk::Query::Query& Nepomuk::Query::operator=( const Term& term )
+Nepomuk::Query::Query& Nepomuk::Query::Query::operator=( const Term& term )
 {
     d->m_term = term;
     return *this;
 }
 
 
-bool Nepomuk::Query::isValid() const
+bool Nepomuk::Query::Query::isValid() const
 {
     return d->m_term.isValid();
 }
 
 
-bool Nepomuk::Query::isFileQuery() const
+bool Nepomuk::Query::Query::isFileQuery() const
 {
     return d->m_isFileQuery;
 }
 
 
-Nepomuk::Query::Term Nepomuk::Query::term() const
+Nepomuk::Query::Term Nepomuk::Query::Query::term() const
 {
     return d->m_term;
 }
 
 
-int Nepomuk::Query::limit() const
+int Nepomuk::Query::Query::limit() const
 {
     return d->m_limit;
 }
 
 
-int Nepomuk::Query::offset() const
+int Nepomuk::Query::Query::offset() const
 {
     return d->m_offset;
 }
 
 
-void Nepomuk::Query::setTerm( const Term& term )
+void Nepomuk::Query::Query::setTerm( const Term& term )
 {
     d->m_term = term;
 }
 
 
-void Nepomuk::Query::setLimit( int limit )
+void Nepomuk::Query::Query::setLimit( int limit )
 {
     d->m_limit = limit;
 }
 
 
-void Nepomuk::Query::setOffset( int offset )
+void Nepomuk::Query::Query::setOffset( int offset )
 {
     d->m_offset = offset;
 }
 
 
-void Nepomuk::Query::addRequestProperty( const RequestProperty& property )
+void Nepomuk::Query::Query::addRequestProperty( const RequestProperty& property )
 {
     d->m_requestProperties.append( property );
 }
 
 
-void Nepomuk::Query::setRequestProperties( const QList<RequestProperty>& properties )
+void Nepomuk::Query::Query::setRequestProperties( const QList<RequestProperty>& properties )
 {
     d->m_requestProperties = properties;
 }
 
 
-QList<Nepomuk::Query::RequestProperty> Nepomuk::Query::requestProperties() const
+QList<Nepomuk::Query::Query::RequestProperty> Nepomuk::Query::Query::requestProperties() const
 {
     return d->m_requestProperties;
 }
@@ -286,7 +286,7 @@ namespace {
     }
 }
 
-bool Nepomuk::Query::operator==( const Query& other ) const
+bool Nepomuk::Query::Query::operator==( const Query& other ) const
 {
     return( d->m_limit == other.d->m_limit &&
             d->m_offset == other.d->m_offset &&
@@ -299,7 +299,7 @@ bool Nepomuk::Query::operator==( const Query& other ) const
 }
 
 
-QString Nepomuk::Query::toSparqlQuery( SparqlFlags flags ) const
+QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 {
     Term term = d->m_term;
 
@@ -357,7 +357,7 @@ QString Nepomuk::Query::toSparqlQuery( SparqlFlags flags ) const
 }
 
 
-KUrl Nepomuk::Query::toSearchUrl( SparqlFlags flags ) const
+KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 {
     return toSearchUrl( QString(), flags );
 }
@@ -367,7 +367,7 @@ KUrl Nepomuk::Query::toSearchUrl( SparqlFlags flags ) const
 // otherwise the serialized query (which allows for more power in the kio slave). It would
 // probably be nicer to somehow put the flags in the URL. But new query items in the URL
 // would make the URL handling in the kio slave more complicated.... oh, well.
-KUrl Nepomuk::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags ) const
+KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags ) const
 {
     flags &= ~CreateCountQuery;
     KUrl url( QLatin1String("nepomuksearch:/") );
@@ -381,7 +381,7 @@ KUrl Nepomuk::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags 
 }
 
 
-Nepomuk::Query::RequestPropertyMap Nepomuk::Query::requestPropertyMap() const
+Nepomuk::Query::RequestPropertyMap Nepomuk::Query::Query::requestPropertyMap() const
 {
     RequestPropertyMap rpm;
     for ( int i = 0; i < d->m_requestProperties.count(); ++i ) {
@@ -390,14 +390,14 @@ Nepomuk::Query::RequestPropertyMap Nepomuk::Query::requestPropertyMap() const
     return rpm;
 }
 
-QString Nepomuk::Query::toString() const
+QString Nepomuk::Query::Query::toString() const
 {
     return Nepomuk::Query::serializeQuery( *this );
 }
 
 
 // static
-Nepomuk::Query::Query Nepomuk::Query::fromString( const QString& queryString )
+Nepomuk::Query::Query Nepomuk::Query::Query::fromString( const QString& queryString )
 {
     return Nepomuk::Query::parseQuery( queryString );
 }
@@ -422,7 +422,7 @@ namespace {
 }
 
 // static
-Nepomuk::Query::Query Nepomuk::Query::fromQueryUrl( const KUrl& url )
+Nepomuk::Query::Query Nepomuk::Query::Query::fromQueryUrl( const KUrl& url )
 {
     if( url.protocol() != QLatin1String("nepomuksearch") ) {
         kDebug() << "No nepomuksearch:/ URL:" << url;
@@ -438,14 +438,14 @@ Nepomuk::Query::Query Nepomuk::Query::fromQueryUrl( const KUrl& url )
     }
     else {
         Query query = QueryParser::parseQuery( extractPlainQuery(url) );
-        query.setRequestProperties( QList<RequestProperty>() << Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+        query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
         return query;
     }
 }
 
 
 // static
-QString Nepomuk::Query::sparqlFromQueryUrl( const KUrl& url )
+QString Nepomuk::Query::Query::sparqlFromQueryUrl( const KUrl& url )
 {
     if( url.protocol() != QLatin1String("nepomuksearch") ) {
         kDebug() << "No nepomuksearch:/ URL:" << url;
@@ -458,7 +458,7 @@ QString Nepomuk::Query::sparqlFromQueryUrl( const KUrl& url )
     else {
         Query query = fromQueryUrl( url );
         if( query.isValid() ) {
-            query.setRequestProperties( QList<RequestProperty>() << Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+            query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
             return query.toSparqlQuery();
         }
         else {
@@ -469,7 +469,7 @@ QString Nepomuk::Query::sparqlFromQueryUrl( const KUrl& url )
 
 
 // static
-QString Nepomuk::Query::titleFromQueryUrl( const KUrl& url )
+QString Nepomuk::Query::Query::titleFromQueryUrl( const KUrl& url )
 {
     if( url.protocol() != QLatin1String("nepomuksearch") ) {
         kDebug() << "No nepomuksearch:/ URL:" << url;
