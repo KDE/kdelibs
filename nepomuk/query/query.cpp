@@ -438,7 +438,7 @@ Nepomuk::Query::Query Nepomuk::Query::Query::fromQueryUrl( const KUrl& url )
     }
     else {
         Query query = QueryParser::parseQuery( extractPlainQuery(url) );
-        query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+        query.setRequestProperties( QList<RequestProperty>() << Nepomuk::Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
         return query;
     }
 }
@@ -458,7 +458,7 @@ QString Nepomuk::Query::Query::sparqlFromQueryUrl( const KUrl& url )
     else {
         Query query = fromQueryUrl( url );
         if( query.isValid() ) {
-            query.setRequestProperties( QList<RequestProperty>() << Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
+            query.setRequestProperties( QList<RequestProperty>() << Nepomuk::Query::Query::RequestProperty( Nepomuk::Vocabulary::NIE::url(), true ) );
             return query.toSparqlQuery();
         }
         else {
