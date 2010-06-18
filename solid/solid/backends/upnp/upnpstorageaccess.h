@@ -49,6 +49,11 @@ namespace UPnP
 
             virtual bool teardown();
 
+        private Q_SLOTS:
+            void onSetupTimeout();
+
+            void onTeardownTimeout();
+
         Q_SIGNALS:
             void accessibilityChanged(bool accessible, const QString &udi);
 

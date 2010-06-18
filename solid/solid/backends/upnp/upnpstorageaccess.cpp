@@ -21,6 +21,7 @@
 #include "upnpstorageaccess.h"
 
 #include <QtCore/QUrl>
+#include <QtCore/QTimer>
 
 namespace Solid
 {
@@ -58,16 +59,26 @@ QString UPnPStorageAccess::filePath() const
 
 bool UPnPStorageAccess::setup()
 {
-    emit setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+    QTimer::singleShot(500, this, SLOT(onSetupTimeout()));
 
     return true;
 }
 
 bool UPnPStorageAccess::teardown()
 {
-    emit teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+    QTimer::singleShot(500, this, SLOT(onTeardownTimeout()));
 
     return true;
+}
+
+void UPnPStorageAccess::onSetupTimeout()
+{
+    emit setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+}
+
+void UPnPStorageAccess::onTeardownTimeout()
+{
+    emit teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
 }
 
 }
