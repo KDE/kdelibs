@@ -178,18 +178,7 @@ void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExa
 template<>
 void TestData<ImmediateSelectionStrategy<9>, KSelectionProxyModel::ChildrenOfExactSelection>::testModifyInTopLevelData()
 {
-  QTest::addColumn<SignalList>("signalList");
-  QTest::addColumn<PersistentChangeList>("changeList");
-
-  IndexFinder parentFinder;
-
-  newModifyTest("modify01", parentFinder, 0, 0);
-  newModifyTest("modify02", parentFinder, 0, 4);
-  newModifyTest("modify03", parentFinder, 9, 9);
-  newModifyTest("modify04", parentFinder, 6, 9);
-  newModifyTest("modify05", parentFinder, 4, 4);
-  newModifyTest("modify06", parentFinder, 3, 7);
-  newModifyTest("modify07", parentFinder, 0, 9);
+  noop_testModifyInTopLevelData();
 }
 
 template<>
