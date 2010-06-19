@@ -968,7 +968,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         }
         else
         {
-	  mimeType = property.text();
+          mimeType = property.text();
         }
       }
       else if ( property.tagName() == QLatin1String("executable") )
@@ -1839,7 +1839,7 @@ bool HTTPProtocol::isOffline()
   // ### TEMPORARY WORKAROUND (While investigating why solid may
   // produce false positives)
   return false;
-    
+
   Solid::Networking::Status status = Solid::Networking::status();
 
   kDebug(7113) << "networkstatus:" << status;
@@ -3199,7 +3199,7 @@ endParsing:
         if (!cookieStr.isEmpty()) {
             if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.useCookieJar) {
                 // Give cookies to the cookiejar.
-                QString domain = config()->readEntry("cross-domain");
+                const QString domain = config()->readEntry("cross-domain");
                 if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain)) {
                     cookieStr = "Cross-Domain\n" + cookieStr;
                 }
@@ -3257,15 +3257,10 @@ endParsing:
             }
 
             QList<QByteArray> authTokens = tIt.all();
-            if (authTokens.isEmpty()) {
-                // Workaround brain dead server responses that violate the spec and
-                // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
-                // header fields. See BR #215736
-                kWarning(7113) << "No WWW-Authenticate header found! Ignoring invalid 401 Authorization request...";
-                m_request.responseCode = 200; // Change back the response code...
-                //m_request.cacheTag.writeToCache = true;
-                //mayCache = true;
-            } else {
+            // Workaround brain dead server responses that violate the spec and
+            // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
+            // header fields. See bug 215736...
+            if (!authTokens.isEmpty()) {
                 authRequiresAnotherRoundtrip = true;
                 kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
 
@@ -3472,8 +3467,8 @@ endParsing:
     // Let the app know about the mime-type iff this is not
     // a redirection and the mime-type string is not empty.
     if (!m_isRedirection &&
-       (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
-       (m_isLoadingErrorPage || (m_request.responseCode != 401 && m_request.responseCode != 407))) {
+        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
+        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
         kDebug(7113) << "Emitting mimetype " << m_mimeType;
         mimeType( m_mimeType );
     }
@@ -4399,7 +4394,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
       error(ERR_INTERNAL_SERVER, m_request.url.host());
       return false;
-    } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 && m_request.responseCode != 401 && m_request.responseCode != 407) {
+    } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 &&
+               m_request.responseCode != 401 && m_request.responseCode != 407) {
       error(ERR_DOES_NOT_EXIST, m_request.url.host());
       return false;
     }
