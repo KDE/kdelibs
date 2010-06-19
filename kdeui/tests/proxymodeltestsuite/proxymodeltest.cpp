@@ -538,6 +538,8 @@ void ProxyModelTest::doTest()
   if (signalList.isEmpty())
     QVERIFY(modelSpy()->isEmpty());
 
+  const bool isLayoutChange = signalList.contains(QVariantList() << LayoutAboutToBeChanged);
+
   while (!signalList.isEmpty())
   {
     // Process each signal we recieved as a result of running the test.
@@ -568,7 +570,8 @@ void ProxyModelTest::doTest()
 
       QCOMPARE(idx.row() + change.difference, persistentIndex.row());
       QCOMPARE(idx.column(), persistentIndex.column());
-      QCOMPARE(idx.parent(), persistentIndex.parent());
+      if (!isLayoutChange)
+        QCOMPARE(idx.parent(), persistentIndex.parent());
     }
 
     for (int i = 0; i < change.descendantIndexes.size(); i++)
@@ -585,7 +588,8 @@ void ProxyModelTest::doTest()
       // Otherwise they should be unchanged.
       QCOMPARE(idx.row(), persistentIndex.row());
       QCOMPARE(idx.column(), persistentIndex.column());
-      QCOMPARE(idx.parent(), persistentIndex.parent());
+      if (!isLayoutChange)
+        QCOMPARE(idx.parent(), persistentIndex.parent());
     }
   }
 
@@ -599,7 +603,8 @@ void ProxyModelTest::doTest()
     QPersistentModelIndex persistentIndex = unchangedPersistentIndexes.at(i);
     QCOMPARE(unchangedIdx.row(), persistentIndex.row());
     QCOMPARE(unchangedIdx.column(), persistentIndex.column());
-    QCOMPARE(unchangedIdx.parent(), persistentIndex.parent());
+    if (!isLayoutChange)
+      QCOMPARE(unchangedIdx.parent(), persistentIndex.parent());
   }
   m_modelSpy->clearTestData();
 }
