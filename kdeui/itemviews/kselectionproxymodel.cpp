@@ -1487,8 +1487,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     //
     // The new indexes are inserted in sorted order.
 
-    const QItemSelection selected = m_indexMapper->mapSelectionRightToLeft(_selected);
-    const QItemSelection deselected = m_indexMapper->mapSelectionRightToLeft(_deselected);
+    const QItemSelection selected = normalizeSelection(m_indexMapper->mapSelectionRightToLeft(_selected));
+    const QItemSelection deselected = normalizeSelection(m_indexMapper->mapSelectionRightToLeft(_deselected));
 
 #if QT_VERSION < 0x040800
     // The QItemSelectionModel sometimes doesn't remove deselected items from its selection
@@ -1499,6 +1499,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 #else
     QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel->selection());
 #endif
+
+    fullSelection = normalizeSelection(fullSelection);
 
     QItemSelection newRootRanges;
     QItemSelection removedRootRanges;
@@ -1572,6 +1574,9 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
         }
         removedRootRanges << getRootRanges(obscuredRanges);
         newRootRanges << getRootRanges(exposedSelection);
+
+        removedRootRanges = normalizeSelection(removedRootRanges);
+        newRootRanges = normalizeSelection(newRootRanges);
     } else {
         removedRootRanges = deselected;
         newRootRanges = selected;
