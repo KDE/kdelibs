@@ -137,6 +137,15 @@ struct KHTMLFrameList : public QList<khtml::ChildFrame*>
 typedef KHTMLFrameList::ConstIterator ConstFrameIt;
 typedef KHTMLFrameList::Iterator FrameIt;
 
+enum MimeType {
+    MimeHTML,
+    MimeSVG,
+    MimeXHTML,
+    MimeXML, // XML but not SVG or XHTML
+    MimeImage,
+    MimeText,
+    MimeOther
+};
 
 
 class KHTMLPartPrivate
@@ -469,6 +478,9 @@ public:
 #ifndef KHTML_NO_WALLET
   KHTMLWalletQueue *m_wq;
 #endif
+
+  // Does determination of how we should handle the given type, as per HTML5 rules
+  MimeType classifyMimeType(const QString& mime);
 
   void clearRedirection();
 

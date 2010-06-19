@@ -104,6 +104,14 @@ protected Q_SLOTS:
     void slotHistoryChanged();
 };
 
+// Used to display text in iframes
+class HTMLTextDocumentImpl: public HTMLDocumentImpl
+{
+public:
+    HTMLTextDocumentImpl(KHTMLView *v = 0);
+    khtml::Tokenizer *createTokenizer();
+};
+
 } //namespace
 
 #endif

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2010 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -335,6 +336,65 @@ HTMLCollectionImpl* HTMLDocumentImpl::all()
 HTMLCollectionImpl* HTMLDocumentImpl::scripts()
 {
     return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_SCRIPTS);
+}
+
+// --------------------------------------------------------------------------
+// Support for displaying plaintext
+// --------------------------------------------------------------------------
+
+class HTMLTextTokenizer: public khtml::Tokenizer
+{
+public:
+    HTMLTextTokenizer(DOM::HTMLDocumentImpl* doc): m_doc(doc)
+    {}
+
+    virtual void begin();
+    virtual void write(const TokenizerString &str, bool appendData);
+
+    virtual void end()    { emit finishedParsing(); };
+    virtual void finish() { end(); };
+
+    // We don't support any inline scripts here
+    virtual bool isWaitingForScripts() const { return false; }
+    virtual bool isExecutingScript() const   { return false; }
+    virtual void executeScriptsWaitingForStylesheets() {};
+private:
+    DOM::HTMLDocumentImpl* m_doc;
+};
+
+void HTMLTextTokenizer::begin()
+{
+    int dummy;
+    DOM::ElementImpl* html = m_doc->createElement("html", &dummy);
+    DOM::ElementImpl* head = m_doc->createElement("head", &dummy);
+    DOM::ElementImpl* body = m_doc->createElement("body", &dummy);
+    DOM::ElementImpl* pre  = m_doc->createElement("pre", &dummy);
+
+    m_doc->appendChild(html, dummy);
+    html->appendChild(head, dummy);
+    html->appendChild(body, dummy);
+    body->appendChild(pre, dummy);
+}
+
+void HTMLTextTokenizer::write(const TokenizerString &str, bool /*appendData*/)
+{
+    // A potential worry here is the document being modified by
+    // a script while we're still loading. To handle that, we always look up
+    // the pre again, and append to it, even for document.write mess
+    // and the like.
+    RefPtr<NodeListImpl> coll = m_doc->getElementsByTagName("pre");
+    if (coll->length() >= 1ul) {
+        int dummy;
+        coll->item(0)->appendChild(m_doc->createTextNode(str.toString()), dummy);
+    }
+}
+
+HTMLTextDocumentImpl::HTMLTextDocumentImpl(KHTMLView *v): HTMLDocumentImpl(v)
+{}
+
+khtml::Tokenizer* HTMLTextDocumentImpl::createTokenizer()
+{
+    return new HTMLTextTokenizer(this);
 }
 
 #include "html_documentimpl.moc"

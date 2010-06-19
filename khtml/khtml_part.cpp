@@ -9,6 +9,7 @@
  *                     2001-2003 Dirk Mueller <mueller@kde.org>
  *                     2000-2005 David Faure <faure@kde.org>
  *                     2002 Apple Computer, Inc.
+ *                     2010 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -45,6 +46,7 @@
 #include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
+#include "imload/imagemanager.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
@@ -776,6 +778,32 @@ bool KHTMLPart::openUrl( const KUrl &url )
   d->m_restoreScrollPosition = d->m_restored;
   disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+
+  // Classify the mimetype. Some, like images and plugins are handled
+  // by wrapping things up in tags, so we want to plain output the HTML,
+  // and not start the job and all that (since we would want the
+  // KPart or whatever to load it).
+  // This is also the only place we need to do this, as it's for
+  // internal iframe use, not any other clients. 
+  MimeType type = d->classifyMimeType(args.mimeType());
+  
+  if (type == MimeImage || type == MimeOther) {
+      begin(url, args.xOffset(), args.yOffset());
+      write(QString::fromLatin1("<html><head></head><body>"));
+      if (type == MimeImage)
+          write(QString::fromLatin1("<img "));
+      else
+          write(QString::fromLatin1("<embed "));
+      write(QString::fromLatin1("src=\""));
+
+      assert(url.url().indexOf('"') == -1);
+      write(url.url());
+
+      write(QString::fromLatin1("\">"));
+      end();
+      return true;
+  }
+  
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -1900,6 +1928,29 @@ void KHTMLPart::slotFinished( KJob * job )
     end(); //will emit completed()
 }
 
+MimeType KHTMLPartPrivate::classifyMimeType(const QString& mimeStr)
+{
+  // See HTML5's "5.5.1 Navigating across documents" section.
+  if (mimeStr == "application/xhtml+xml")
+      return MimeXHTML;
+  if (mimeStr == "image/svg+xml")
+      return MimeSVG;
+  if (mimeStr == "text/html" || mimeStr.isEmpty())
+      return MimeHTML;
+
+  KMimeType::Ptr mime = KMimeType::mimeType(mimeStr, KMimeType::ResolveAliases);
+  if ((mime && mime->is("text/xml")) || mimeStr.endsWith("+xml"))
+      return MimeXML;
+
+  if (mime && mime->is("text/plain"))
+      return MimeText;
+  
+  if (khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes().contains(mimeStr))
+      return MimeImage;
+
+    return MimeOther;
+}
+
 void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 {
   if ( d->m_view->underMouse() )
@@ -1950,22 +2001,27 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 
   setUrl(url);
 
-  bool servedAsXHTML = args.mimeType() == "application/xhtml+xml";
-  bool servedAsSVG = !servedAsXHTML && args.mimeType() == "image/svg+xml";
-  KMimeType::Ptr mime = KMimeType::mimeType( args.mimeType(), KMimeType::ResolveAliases );
-        // We want to make sure text/xml and application/xml are both handled right...
-  bool servedAsXML = mime && mime->is( "text/xml" );
-  // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if ( servedAsSVG ) {
-    d->m_doc = DOMImplementationImpl::createSVGDocument( d->m_view );
-  } else {
-    if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
-      d->m_doc = DOMImplementationImpl::createXMLDocument( d->m_view );
-    } else {
+  // Note: by now, any special mimetype besides plaintext would have been
+  // handled specially inside openURL, so we handle their cases the same
+  // as HTML.
+  MimeType type = d->classifyMimeType(args.mimeType());
+  switch (type) {
+  case MimeSVG:
+      d->m_doc = DOMImplementationImpl::createSVGDocument( d->m_view );
+      break;
+  case MimeXML: // any XML derivative, except XHTML or SVG
+      // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
+     d->m_doc = DOMImplementationImpl::createXMLDocument( d->m_view );
+     break;
+  case MimeText:
+     d->m_doc = new HTMLTextDocumentImpl( d->m_view );
+     break;
+  case MimeXHTML:
+  case MimeHTML:
+  default:
       d->m_doc = DOMImplementationImpl::createHTMLDocument( d->m_view );
       // HTML or XHTML? (#86446)
-      static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
-    }
+      static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( type != MimeXHTML );
   }
 
   d->m_doc->ref();
