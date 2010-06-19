@@ -580,6 +580,8 @@ KHTMLPart::~KHTMLPart()
 
   if (!parentPart()) // only delete d->m_frame if the top khtml_part closes
       delete d->m_frame;
+  else if (d->m_frame && d->m_frame->m_run) // for kids, they may get detached while
+      d->m_frame->m_run->abort();  //  resolving mimetype; cancel that if needed
   delete d; d = 0;
   KHTMLGlobal::deregisterPart( this );
 }
