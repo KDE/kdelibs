@@ -318,7 +318,7 @@ ForwardIterator kMaxElement(ForwardIterator it, ForwardIterator end)
  */
 struct RangeLessThan
 {
-    bool operator()(const QItemSelectionRange &left, const QItemSelectionRange &right)
+    bool operator()(const QItemSelectionRange &left, const QItemSelectionRange &right) const
     {
         if (right.model() == left.model()) {
             // parent has to be calculated, so we only do so once.
