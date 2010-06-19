@@ -101,8 +101,8 @@ public:
     // Otherwise, returns 0L
     inline KCompTreeNode * find( const QChar& ch ) const {
       KCompTreeNode * cur = myChildren.begin();
-      while (cur != myChildren.end() && (*cur != ch)) cur = cur->next;
-      return (cur != myChildren.end())? cur : 0L;
+      while (cur && (*cur != ch)) cur = cur->next;
+      return cur;
     }
     KCompTreeNode *	insert( const QChar&, bool sorted );
     void 		remove( const QString& );

@@ -617,7 +617,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     QString w;
 
     // loop thru all children
-    for ( KCompTreeNode *cur = list->begin(); cur != list->end(); cur = cur->next) {
+    for ( KCompTreeNode *cur = list->begin(); cur ; cur = cur->next) {
         string = beginning;
         node = cur;
         if ( !node->isNull() )
@@ -727,7 +727,7 @@ KCompTreeNode::~KCompTreeNode()
 {
     // delete all children
     KCompTreeNode *cur = myChildren.begin();
-    while (cur != myChildren.end()) {
+    while (cur) {
         KCompTreeNode * next = cur->next;
         delete myChildren.remove(cur);
         cur = next;
@@ -747,7 +747,7 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
         if ( sorted ) {
             KCompTreeNode * prev = 0;
             KCompTreeNode * cur = myChildren.begin();
-            while ( cur != myChildren.end() ) {
+            while ( cur ) {
                 if ( ch > *cur ) {
                     prev = cur;
                     cur = cur->next;
@@ -957,7 +957,7 @@ void KCompTreeNodeList::insert(KCompTreeNode *after, KCompTreeNode *item)
 
 KCompTreeNode *KCompTreeNodeList::remove(KCompTreeNode *item)
 {
-    if (!first || !item || first == last)
+    if (!first || !item)
         return 0;
     KCompTreeNode *cur = 0;
 
@@ -965,8 +965,8 @@ KCompTreeNode *KCompTreeNodeList::remove(KCompTreeNode *item)
         first = first->next;
     else {
         cur = first;
-        while (cur != last && cur->next != item) cur = cur->next;
-        if (cur != last)
+        while (cur && cur->next != item) cur = cur->next;
+        if (!cur)
             return 0;
         cur->next = item->next;
     }
@@ -979,7 +979,7 @@ KCompTreeNode *KCompTreeNodeList::remove(KCompTreeNode *item)
 KCompTreeNode *KCompTreeNodeList::at(uint index) const
 {
     KCompTreeNode *cur = first;
-    while (index-- && cur != last) cur = cur->next;
+    while (index-- && cur) cur = cur->next;
     return cur;
 }
 
