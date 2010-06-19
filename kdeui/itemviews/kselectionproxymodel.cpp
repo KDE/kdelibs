@@ -505,9 +505,6 @@ public:
                               const QModelIndex &proxyFirst, const QModelIndex &proxyLast);
     void sourceDataChanged(const QModelIndex &topLeft , const QModelIndex &bottomRight);
 
-    void refreshParentMappings(QList<QPersistentModelIndex> &mappings);
-    void refreshFirstChildMappings(QList<QPersistentModelIndex> &mappings);
-
     void removeSelectionFromProxy(const QItemSelection &selection);
     void removeRangeFromProxy(const QItemSelectionRange &range);
 
@@ -561,15 +558,6 @@ public:
 
     QList<QPersistentModelIndex> m_layoutChangePersistentIndexes;
     QModelIndexList m_proxyIndexes;
-
-    QModelIndexList m_weakSourceParents;
-    QModelIndexList m_weakSourceFirstChilds;
-    QModelIndexList m_weakRootIndexes;
-    QModelIndexList m_weakRootParents;
-    QList<QPersistentModelIndex> m_sourceFirstChildParents;
-    QList<QPersistentModelIndex> m_sourceGrandParents;
-    QList<QPersistentModelIndex> m_sourcePersistentParents;
-    QList<QPersistentModelIndex> m_sourcePersistentFirstChilds;
 };
 
 void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &sourceFirst, const QModelIndex &sourceLast,
@@ -692,7 +680,7 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
         return;
     }
 
-    if (!m_selectionModel->hasSelection())
+    if (m_rootIndexList.isEmpty())
         return;
 
     emit q->layoutAboutToBeChanged();
@@ -706,88 +694,16 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
         m_layoutChangePersistentIndexes << srcPersistentIndex;
     }
 
-    SourceProxyIndexMapping::left_const_iterator parentIt = m_mappedParents.leftConstBegin();
-    const SourceProxyIndexMapping::left_const_iterator parentEnd = m_mappedParents.leftConstEnd();
-    for ( ; parentIt != parentEnd; ++parentIt) {
-        m_sourcePersistentParents << parentIt.key();
-        m_weakSourceParents << parentIt.key();
-        m_sourceGrandParents << parentIt.key().parent();
+    QItemSelection selection;
+    foreach (const QModelIndex &rootIndex, m_rootIndexList)
+    {
+      // This will be optimized later.
+      emit q->rootIndexAboutToBeRemoved(rootIndex);
+      selection.append(QItemSelectionRange(rootIndex, rootIndex));
     }
-    SourceProxyIndexMapping::left_const_iterator firstChildIt = m_mappedFirstChildren.leftConstBegin();
-    const SourceProxyIndexMapping::left_const_iterator firstChildEnd = m_mappedFirstChildren.leftConstEnd();
-    for ( ; firstChildIt != firstChildEnd; ++firstChildIt) {
-        m_sourcePersistentFirstChilds << firstChildIt.key();
-        m_weakSourceFirstChilds << firstChildIt.key();
-        m_sourceFirstChildParents << firstChildIt.key().parent();
-    }
-    QList<QPersistentModelIndex>::const_iterator rootIt = m_rootIndexList.constBegin();
-    const QList<QPersistentModelIndex>::const_iterator rootEnd = m_rootIndexList.constEnd();
-    for ( ; rootIt != rootEnd; ++rootIt) {
-        m_weakRootIndexes << *rootIt;
-        m_weakRootParents << rootIt->parent();
-    }
-}
 
-void KSelectionProxyModelPrivate::refreshFirstChildMappings(QList<QPersistentModelIndex> &mappings)
-{
-    Q_Q(KSelectionProxyModel);
-
-    QList<QPersistentModelIndex>::const_iterator it = mappings.constBegin();
-    const QList<QPersistentModelIndex>::const_iterator end = mappings.constEnd();
-
-    for ( ; it != end; ++it) {
-        if (!it->isValid()) {
-            m_mappedFirstChildren.removeLeft(*it);
-            continue;
-        }
-        Q_ASSERT(it->model() == q->sourceModel());
-        if (!it->parent().isValid())
-            continue;
-
-        Q_ASSERT(m_mappedFirstChildren.leftContains(*it));
-        m_mappedFirstChildren.removeLeft(*it);
-
-        int _newProxyRow = 0;
-        const int rootListRow = m_rootIndexList.indexOf(it->parent());
-        for (int i = 0; i < rootListRow; ++i)
-            _newProxyRow += q->sourceModel()->rowCount(m_rootIndexList.at(i));
-
-        createFirstChildMapping(it->parent(), _newProxyRow);
-    }
-}
-
-void KSelectionProxyModelPrivate::refreshParentMappings(QList<QPersistentModelIndex> &mappings)
-{
-    Q_Q(KSelectionProxyModel);
-
-    const int lastSize = mappings.size();
-
-    QList<QPersistentModelIndex>::iterator it = mappings.begin();
-
-    while (it != mappings.end()) {
-        if (!it->isValid()) {
-            m_parentIds.removeRight(m_mappedParents.takeLeft(*it));
-            it = mappings.erase(it);
-            continue;
-        }
-        Q_ASSERT(it->model() == q->sourceModel());
-        if (it->parent().isValid() || m_mappedParents.leftContains(it->parent()) || m_rootIndexList.contains(*it)) {
-            const qint64 id = m_parentIds.takeRight(m_mappedParents.takeLeft(*it));
-            const QModelIndex newProxyIndex = q->mapFromSource(*it);
-            m_mappedParents.insert(*it, newProxyIndex);
-            m_parentIds.insert(id, newProxyIndex);
-
-            it = mappings.erase(it);
-        } else
-            ++it;
-    }
-    if (!mappings.isEmpty()) {
-        if (lastSize == mappings.size()) {
-            Q_ASSERT(!"Something went very wrong");
-            return;
-        }
-        refreshParentMappings(mappings);
-    }
+    selection = normalizeSelection(selection);
+    emit q->rootSelectionAboutToBeRemoved(selection);
 }
 
 void KSelectionProxyModelPrivate::sourceLayoutChanged()
@@ -799,80 +715,35 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
         return;
     }
 
-    if (!m_selectionModel->hasSelection()) {
+    if (m_rootIndexList.isEmpty()) {
         return;
     }
 
-    QList<QPersistentModelIndex> parentMappingsToUpdate;
-    for (int i = 0; i < m_sourcePersistentParents.size(); ++i) {
-        const QPersistentModelIndex persistentIndex = m_sourcePersistentParents.at(i);
-        const QModelIndex nonPersistentIndex = m_weakSourceParents.at(i);
-        if (persistentIndex.row() == nonPersistentIndex.row()
-                && persistentIndex.column() == nonPersistentIndex.column()
-                && persistentIndex.parent() == m_sourceGrandParents.at(i))
-            continue;
+    // Handling this signal is slow.
+    // The problem is that anything can happen between emissions of layoutAboutToBeChanged and layoutChanged.
+    // We can't assume anything is the same about the structure anymore. items have been sorted, items which
+    // were parents before are now not, items which were not parents before now are, items which used to be the
+    // first child are now the Nth child and items which used to be the Nth child are now the first child.
+    // We effectively can't update our mapping because we don't have enough information to update everything.
+    // The only way we would have is if we take a persistent index of the entire source model
+    // on sourceLayoutAboutToBeChanged and then examine it here. That would be far too expensive.
+    // Instead we just have to clear the entire mapping and recreate it.
 
-        parentMappingsToUpdate << persistentIndex;
-    }
-    if (!parentMappingsToUpdate.isEmpty())
-        refreshParentMappings(parentMappingsToUpdate);
+    m_rootIndexList.clear();
+    m_mappedFirstChildren.clear();
+    m_mappedParents.clear();
+    m_parentIds.clear();
 
-    QList<QPersistentModelIndex> changedRoots;
-    QList<QPersistentModelIndex>::iterator rootIt = m_rootIndexList.begin();
-    const QList<QPersistentModelIndex>::iterator rootEnd = m_rootIndexList.end();
-    int rootPosition = 0;
-    while (rootIt != rootEnd) {
-        const QPersistentModelIndex persistentIndex = *rootIt;
-        const QModelIndex nonPersistentIndex = m_weakRootIndexes.at(rootPosition);
-        const QModelIndex weakParent = m_weakRootParents.at(rootPosition);
-        ++rootPosition;
-        if (persistentIndex.row() == nonPersistentIndex.row()
-                && persistentIndex.column() == nonPersistentIndex.column()
-                && persistentIndex.parent() == weakParent) {
-            ++rootIt;
-            continue;
-        }
-
-        if (persistentIndex.isValid())
-            changedRoots << persistentIndex;
-
-        rootIt = m_rootIndexList.erase(rootIt);
-    }
-    foreach(const QPersistentModelIndex &idx, changedRoots) {
-        int row = getRootListRow(m_rootIndexList, idx);
-        m_rootIndexList.insert(row, idx);
-    }
-
-    QList<QPersistentModelIndex> firstChildsToUpdate;
-    for (int i = 0; i < m_sourcePersistentFirstChilds.size(); ++i) {
-        const QPersistentModelIndex persistentIndex = m_sourcePersistentFirstChilds.at(i);
-        const QModelIndex nonPersistentIndex = m_weakSourceFirstChilds.at(i);
-        if (persistentIndex.row() == nonPersistentIndex.row()
-                && persistentIndex.column() == nonPersistentIndex.column()
-                && persistentIndex.parent() == m_sourceFirstChildParents.at(i))
-            continue;
-
-        firstChildsToUpdate << persistentIndex;
-    }
-    if (!firstChildsToUpdate.isEmpty())
-        refreshFirstChildMappings(firstChildsToUpdate);
+    m_resetting = true;
+    selectionChanged(m_selectionModel->selection(), QItemSelection());
+    m_resetting = false;
 
     for (int i = 0; i < m_proxyIndexes.size(); ++i) {
-        // Need to update m_mappedParents and m_mappedFirstChildren and m_parentIds before trying mapFromSource.
         q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
     }
 
     m_layoutChangePersistentIndexes.clear();
     m_proxyIndexes.clear();
-
-    m_weakSourceParents.clear();
-    m_weakSourceFirstChilds.clear();
-    m_weakRootIndexes.clear();
-    m_weakRootParents.clear();
-    m_sourceFirstChildParents.clear();
-    m_sourceGrandParents.clear();
-    m_sourcePersistentParents.clear();
-    m_sourcePersistentFirstChilds.clear();
 
     emit q->layoutChanged();
 }
@@ -882,14 +753,6 @@ void KSelectionProxyModelPrivate::resetInternalData()
     m_rootIndexList.clear();
     m_layoutChangePersistentIndexes.clear();
     m_proxyIndexes.clear();
-    m_weakSourceParents.clear();
-    m_weakSourceFirstChilds.clear();
-    m_weakRootIndexes.clear();
-    m_weakRootParents.clear();
-    m_sourceFirstChildParents.clear();
-    m_sourceGrandParents.clear();
-    m_sourcePersistentParents.clear();
-    m_sourcePersistentFirstChilds.clear();
     m_mappedParents.clear();
     m_parentIds.clear();
     m_mappedFirstChildren.clear();
@@ -1759,7 +1622,8 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
                 q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(rootListRow, newIndex);
-            emit q->rootIndexAdded(newIndex);
+            if (!m_resetting)
+                emit q->rootIndexAdded(newIndex);
 
             int _start = 0;
             for (int i = 0; i < rootListRow; ++i)
@@ -1780,7 +1644,9 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
 
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(row, newIndex);
-            emit q->rootIndexAdded(newIndex);
+
+            if (!m_resetting)
+                emit q->rootIndexAdded(newIndex);
             Q_ASSERT(m_rootIndexList.size() > row);
             updateInternalIndexes(QModelIndex(), row, 1);
             createParentMappings(newIndex.parent(), newIndex.row(), newIndex.row());
