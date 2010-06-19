@@ -512,7 +512,7 @@ public:
   // The return value doesn't consider any pending redirections.
   // If the return value is true, however, pendingRedirections will
   // report if there are any
-  bool fullyLoaded(bool* pendingRedirections) const;
+  bool isFullyLoaded(bool* pendingRedirections) const;
 };
 
 #endif

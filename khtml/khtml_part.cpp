@@ -2320,7 +2320,7 @@ void KHTMLPart::slotUserSheetStatDone( KJob *_job )
   setUserStyleSheet( KUrl( settings()->userStyleSheet() ) );
 }
 
-bool KHTMLPartPrivate::fullyLoaded(bool* pendingRedirections) const
+bool KHTMLPartPrivate::isFullyLoaded(bool* pendingRedirections) const
 {
   *pendingRedirections = false;
   
@@ -2328,7 +2328,7 @@ bool KHTMLPartPrivate::fullyLoaded(bool* pendingRedirections) const
   ConstFrameIt it = m_frames.constBegin();
   const ConstFrameIt end = m_frames.constEnd();
   for (; it != end; ++it ) {
-    if ( !(*it)->m_bCompleted )
+    if ( !(*it)->m_bCompleted || (*it)->m_run )
     {
       //kDebug( 6050 ) << this << " is waiting for " << (*it)->m_part;
       return false;
@@ -2382,7 +2382,7 @@ void KHTMLPart::checkCompleted()
   }
 
   bool fullyLoaded, pendingChildRedirections;
-  fullyLoaded = d->fullyLoaded(&pendingChildRedirections);
+  fullyLoaded = d->isFullyLoaded(&pendingChildRedirections);
 
   // Are we still loading, or already have done the relevant work?
   if (!fullyLoaded || d->m_bComplete)
@@ -2459,7 +2459,7 @@ void KHTMLPart::checkCompleted()
 void KHTMLPart::checkEmitLoadEvent()
 {
   bool fullyLoaded, pendingChildRedirections;
-  fullyLoaded = d->fullyLoaded(&pendingChildRedirections);
+  fullyLoaded = d->isFullyLoaded(&pendingChildRedirections);
 
   // ### might want to wait on pendingChildRedirections here, too
   if ( d->m_bLoadEventEmitted || !d->m_doc || !fullyLoaded ) return;
