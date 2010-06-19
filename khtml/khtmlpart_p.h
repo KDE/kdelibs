@@ -505,6 +505,9 @@ public:
 
   void propagateInitialDomainTo(KHTMLPart* kid);
 
+  void renameFrameForContainer(DOM::HTMLPartContainerElementImpl* cont,
+                               const QString& newName);
+
   // Check whether the frame is fully loaded.
   // The return value doesn't consider any pending redirections.
   // If the return value is true, however, pendingRedirections will

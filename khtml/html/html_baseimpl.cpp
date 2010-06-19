@@ -1,3 +1,4 @@
+
 /**
  * This file is part of the DOM implementation for KDE.
  *
@@ -28,6 +29,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtmlpart_p.h"
 
 #include "rendering/render_frames.h"
 #include "rendering/render_body.h"
@@ -271,8 +273,13 @@ void HTMLFrameElementImpl::ensureUniqueName()
     // Generate synthetic name if there isn't a natural one or
     // if the natural one conflicts
     KHTMLPart* parentPart = document()->part();
-    if (name.isEmpty() || parentPart->frameExists( name.string() ) )
+
+    KHTMLPart* otherFrame = parentPart->findFrame( name.string() );
+    if (name.isEmpty() || (otherFrame && otherFrame != contentPart()))
         name = DOMString(parentPart->requestFrameName());
+
+    // Make sure we're registered properly.
+    parentPart->d->renameFrameForContainer(this, name.string());
 }
 
 void HTMLFrameElementImpl::defaultEventHandler(EventImpl *e)
@@ -419,7 +426,7 @@ void HTMLFrameElementImpl::computeContent()
 
     // Go ahead and load a part... We don't need to clear the widget here,
     // since the -frames- have their lifetime managed, using the name uniqueness.
-    parentPart->requestFrame( this, url.string(), name.string() );
+    parentPart->loadFrameElement( this, url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
@@ -685,6 +692,21 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameEleme
     m_frame = true;
 }
 
+void HTMLIFrameElementImpl::insertedIntoDocument()
+{
+    HTMLFrameElementImpl::insertedIntoDocument();
+    
+    assert(!contentPart());
+    setNeedComputeContent();
+    computeContentIfNeeded(); // also clears
+}
+
+void HTMLIFrameElementImpl::removedFromDocument()
+{
+    HTMLFrameElementImpl::removedFromDocument();
+    clearChildWidget();
+}
+
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
 {
 }
@@ -716,6 +738,14 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
         setNeedComputeContent();
+        // ### synchronously start the process?
+        break;
+    case ATTR_NAME:
+        ensureUniqueName();
+        break;
+    case ATTR_ID:
+        HTMLFrameElementImpl::parseAttribute( attr ); // want default ID handling
+        ensureUniqueName();
         break;
     case ATTR_FRAMEBORDER:
     {
@@ -780,10 +810,23 @@ void HTMLIFrameElementImpl::computeContent()
     if (!document()->isURLAllowed(url.string()))
         return;
 
+    if (!inDocument()) {
+        clearChildWidget();
+        return;
+    }
+
+    // get our name in order..
     ensureUniqueName();
-    // Since we have a name, we can request even if we just want to navigate,
-    // since KHTMLPart will make sure to reuse the KPart if the mimetype doesn't change
-    parentPart->requestFrame(this, url.string(), name.string(), QStringList(), true);
+
+    // make sure "" is handled as about: blank
+    const QString aboutBlank = QLatin1String("about:blank");
+    QString effectiveURL = url.string();
+    if (effectiveURL.isEmpty())
+        effectiveURL = aboutBlank;
+
+    kDebug(6031) << "-> requesting:" << name.string() << effectiveURL << contentPart();
+    
+    parentPart->loadFrameElement(this, effectiveURL, name.string(), QStringList(), true);
 }
 
 void HTMLIFrameElementImpl::setWidgetNotify(QWidget* widget)
@@ -791,3 +834,5 @@ void HTMLIFrameElementImpl::setWidgetNotify(QWidget* widget)
     if (m_render)
         static_cast<RenderPartObject*>(m_render)->setWidget(widget);
 }
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

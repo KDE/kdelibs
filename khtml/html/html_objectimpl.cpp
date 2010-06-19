@@ -529,7 +529,7 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     kDebug(6031) << effectiveURL << effectiveServiceType << params;
 
-    if (!part->requestObject( this, effectiveURL, effectiveServiceType, params)) {
+    if (!part->loadObjectElement( this, effectiveURL, effectiveServiceType, params)) {
         // Looks like we are gonna need alternative content after all...
         m_renderAlternative = true;
     }

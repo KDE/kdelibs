@@ -204,6 +204,9 @@ public:
 
     virtual void computeContent();
     virtual void setWidgetNotify(QWidget *widget);
+
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
 protected:
 
     void updateFrame();

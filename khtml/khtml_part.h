@@ -1670,7 +1670,6 @@ private:
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
   void resetHoverText(); // Undo overURL and reset HoverText
 
-  bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
   KParts::ScriptableExtension *scriptableExtension( const DOM::NodeImpl *);
 
   KWallet::Wallet* wallet();
@@ -1720,9 +1719,6 @@ private:
 
   QVariant crossFrameExecuteScript(const QString& target, const QString& script);
 
-  bool requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
-                     const QStringList &args = QStringList(), bool isIFrame = false );
-
   /**
    * @internal returns a name for a frame without a name.
    * This function returns a sequence of names.
@@ -1730,17 +1726,50 @@ private:
    * always the same.
    * The sequence is reset in clear().
    */
-  QString requestFrameName();
+  QString requestFrameName();  
 
-  bool requestObject(  DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &serviceType,
-                      const QStringList &args = QStringList() );
+  // Requests loading of a frame or iframe element
+  bool loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
+                         const QStringList &args = QStringList(), bool isIFrame = false );
 
+  // Requests loading of an object or embed element. Returns true if
+  // loading succeeded.
+  bool loadObjectElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &serviceType,
+                          const QStringList &args = QStringList() );
+
+  // Tries an open a URL in given ChildFrame with all known navigation information
+  // like mimetype and the like in the KParts arguments.
+  //
+  // Returns true if it's done -- which excludes the case when it's still resolving
+  // the mimetype.
+  // ### refine comment wrt to error case
   bool requestObject( khtml::ChildFrame *child, const KUrl &url,
                       const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                       const KParts::BrowserArguments& browserArgs = KParts::BrowserArguments() );
 
-  // Called when a child could not be loaded.
+  // This method does the loading inside a ChildFrame once we know what mimetype to
+  // load it as
+  bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );  
+
+  // helper for reporting ChildFrame load failure
   void childLoadFailure( khtml::ChildFrame *child );
+
+  // Updates the ChildFrame to use the particular part, hooking up the various
+  // signals, connections, etc.
+  void connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPart *part,
+                           const QString &mimetype );
+
+  // Low-level navigation of the part itself --- this doesn't ask the user
+  // to save things or such, and assumes that all the ChildFrame info is already
+  // filed in with things like the mimetype and so on
+  //
+  // Returns if successful or not
+  bool navigateChild( khtml::ChildFrame *child, const KUrl& url );
+
+  // Helper for executing javascript: or about: protocols
+  bool navigateLocalProtocol( khtml::ChildFrame *child, KParts::ReadOnlyPart *part,
+                              const KUrl& url );
+  
 
   DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node, bool svg = false );
 

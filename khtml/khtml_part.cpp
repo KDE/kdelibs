@@ -4117,46 +4117,54 @@ KParts::ScriptableExtension *KHTMLPart::scriptableExtension( const DOM::NodeImpl
     return 0L;
 }
 
-bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
-                              const QString &frameName, const QStringList &params, bool isIFrame )
+bool KHTMLPart::loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
+                                  const QString &frameName, const QStringList &params, bool isIFrame )
 {
-  //kDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )";
-  FrameIt it = d->m_frames.find( frameName );
-  if ( it == d->m_frames.end() )
-  {
-    khtml::ChildFrame * child = new khtml::ChildFrame;
-    //kDebug( 6050 ) << "inserting new frame into frame map " << frameName;
-    child->m_name = frameName;
-    it = d->m_frames.insert( d->m_frames.end(), child );
-  }
+    //kDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )";
+    khtml::ChildFrame* child;
 
-  (*it)->m_type = isIFrame ? khtml::ChildFrame::IFrame : khtml::ChildFrame::Frame;
-  (*it)->m_partContainerElement = frame;
-  (*it)->m_params = params;
-
-  // Support for <frame src="javascript:string">
-  if ( d->isJavaScriptURL(url) )
-  {
-    if ( processObjectRequest(*it, KUrl("about:blank"), QString("text/html") ) ) {
-      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
-
-      // See if we want to replace content with javascript: output..
-      QVariant res = p->executeScript( DOM::Node(),
-                                       d->codeForJavaScriptURL(url) );
-      if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
-        p->begin();
-        p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
-        // We recreated the document, so propagate domain again.
-        d->propagateInitialDomainTo( p );
-        p->write( res.toString() );
-        p->end();
-      }
-      return true;
+    FrameIt it = d->m_frames.find( frameName );
+    if ( it == d->m_frames.end() ) {
+        child = new khtml::ChildFrame;
+        //kDebug( 6050 ) << "inserting new frame into frame map " << frameName;
+        child->m_name = frameName;
+        d->m_frames.insert( d->m_frames.end(), child );
+    } else {
+        child = *it;
     }
-    return false;
+
+    child->m_type = isIFrame ? khtml::ChildFrame::IFrame : khtml::ChildFrame::Frame;
+    child->m_partContainerElement = frame;
+    child->m_params = params;
+
+    // If we do not have a part, make sure we create one.
+    if (!child->m_part) {
+        QStringList dummy; // the list of servicetypes handled by the part is now unused.
+        QString     khtml = QString::fromLatin1("khtml");
+        KParts::ReadOnlyPart* part = createPart(d->m_view->viewport(), this,
+                                                QString::fromLatin1("text/html"),
+                                                khtml, dummy, QStringList());
+        // We navigate it to about:blank to setup an empty one, but we do it
+        // before hooking up the signals and extensions, so that any sync emit
+        // of completed by the kid doesn't cause us to be marked as completed.
+        // (async ones are discovered by the presense of the KHTMLRun)
+        // ### load event on the kid?
+        navigateLocalProtocol(child, part, KUrl("about:blank"));
+        connectToChildPart(child, part, "text/html" /* mimetype of the part, not what's being loaded */);
   }
+
   KUrl u = url.isEmpty() ? KUrl() : completeURL( url );
-  return requestObject( *it, u );
+
+  // Since we don't specify args here a KHTMLRun will be used to determine the
+  // mimetype, which will then be  passed down at the bottom of processObjectRequest
+  // inside URLArgs to the part. In our particular case, this means that we can
+  // use that inside KHTMLPart::openUrl to route things appropriately.
+  child->m_bCompleted = false;
+  if (!requestObject( child, u ) && !child->m_run) {
+      child->m_bCompleted = true;
+      return false;
+  }
+  return true;
 }
 
 QString KHTMLPart::requestFrameName()
@@ -4164,10 +4172,10 @@ QString KHTMLPart::requestFrameName()
    return QString::fromLatin1("<!--frame %1-->").arg(d->m_frameNameId++);
 }
 
-bool KHTMLPart::requestObject( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
-                               const QString &serviceType, const QStringList &params )
+bool KHTMLPart::loadObjectElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
+                                   const QString &serviceType, const QStringList &params )
 {
-  //kDebug( 6005 ) << this << "frame=" << frame;
+  //kDebug( 6031 ) << this << "frame=" << frame;
   khtml::ChildFrame *child = new khtml::ChildFrame;
   FrameIt it = d->m_objects.insert( d->m_objects.end(), child );
   (*it)->m_partContainerElement = frame;
@@ -4188,7 +4196,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
 {
   if (!checkLinkSecurity(url))
   {
-    kDebug(6005) << this << "checkLinkSecurity refused";
+    kDebug(6031) << this << "checkLinkSecurity refused";
     return false;
   }
 
@@ -4199,7 +4207,6 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
 
   if ( child->m_bPreloaded )
   {
-    kDebug(6005) << "preload";
     if ( child->m_partContainerElement && child->m_part )
       child->m_partContainerElement->setWidget( child->m_part->widget() );
 
@@ -4207,13 +4214,16 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
     return true;
   }
 
-  //kDebug(6005) << "child=" << child << "child->m_part=" << child->m_part;
+  //kDebug(6031) << "child=" << child << "child->m_part=" << child->m_part;
 
   KParts::OpenUrlArguments args( _args );
 
-  if ( child->m_run )
-    child->m_run->abort();
+  if ( child->m_run ) {
+      kDebug(6031) << "navigating ChildFrame while mimetype resolution was in progress...";
+      child->m_run->abort();
+  }
 
+  // ### Dubious -- the whole dir/ vs. img thing
   if ( child->m_part && !args.reload() && child->m_part->url().equals( url,
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath ) )
     args.setMimeType(child->m_serviceType);
@@ -4239,12 +4249,14 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
   child->m_args.metaData().insert("cross-domain", toplevelURL().url());
 
-  // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
-  if ((url.isEmpty() || url.url() == "about:blank") && args.mimeType().isEmpty())
+  // We know the frame will be text/html if the HTML says <frame src=""> or <frame src="about:blank">,
+  // no need to KHTMLRun to figure out the mimetype"
+  // ### What if we're inside an XML document?
+  if ((url.isEmpty() || url.url() == "about:blank" || url.protocol() == "javascript") && args.mimeType().isEmpty())
     args.setMimeType(QLatin1String("text/html"));
 
   if ( args.mimeType().isEmpty() ) {
-    kDebug(6050) << "Running new KHTMLRun for" << this << "and child=" << child;
+    kDebug(6031) << "Running new KHTMLRun for" << this << "and child=" << child;
     child->m_run = new KHTMLRun( this, child, url, child->m_args, child->m_browserArgs, true );
     d->m_bComplete = false; // ensures we stop it in checkCompleted...
     return false;
@@ -4264,98 +4276,214 @@ void KHTMLPart::childLoadFailure( khtml::ChildFrame *child )
 
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url, const QString &mimetype )
 {
-  //kDebug( 6050 ) << "trying to create part for" << mimetype;
+    kDebug( 6031 ) << "trying to create part for" << mimetype << _url;
 
-  // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
-  // by an emitting frame part (emit openUrlRequest( blahurl, ... ) . A few lines below we delete the part
-  // though -> the reference becomes invalid -> crash is likely
-  KUrl url( _url );
+    // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
+    // by an emitting frame part (emit openUrlRequest( blahurl, ... ) . A few lines below we delete the part
+    // though -> the reference becomes invalid -> crash is likely
+    KUrl url( _url );
 
-  // khtmlrun called us this way to indicate a loading error
-  if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) )
-  {
-      childLoadFailure(child);
-      return true;
-  }
-
-  // we also want to ignore any spurious requests due to closing when parser is being cleared. These should be
-  // ignored entirely  --- the tail end of ::clear will clean things up.
-  if (d->m_bClearing)
-      return false;
-
-  if (child->m_bNotify)
-  {
-      child->m_bNotify = false;
-      if ( !child->m_browserArgs.lockHistory() )
-          emit d->m_extension->openUrlNotify();
-  }
-
-  if ( child->m_serviceType != mimetype || !child->m_part || (child->m_run && child->m_run->serverSuggestsSave()))
-  {
-    // We often get here if we didn't know the mimetype in advance, and had to rely
-    // on KRun to figure it out. In this case, we let the element check if it wants to
-    // handle this mimetype itself, for e.g. images.
-    if ( child->m_partContainerElement &&
-         child->m_partContainerElement->mimetypeHandledInternally(mimetype) ) {
-      child->m_bCompleted = true;
-      checkCompleted();
-      return true;
-    }
-
-    // Before attempting to load a part, check if the user wants that.
-    // Many don't like getting ZIP files embedded.
-    // However we don't want to ask for flash and other plugin things..
-    if ( child->m_type != khtml::ChildFrame::Object && child->m_type != khtml::ChildFrame::IFrame )
-    {
-      QString suggestedFileName;
-      int disposition = 0;
-      if ( child->m_run ) {
-        suggestedFileName = child->m_run->suggestedFileName();
-        disposition = (child->m_run->serverSuggestsSave()) ? KParts::BrowserRun::AttachmentDisposition : KParts::BrowserRun::InlineDisposition;
-      }
-
-      KParts::BrowserOpenOrSaveQuestion dlg( widget(), url, mimetype );
-      dlg.setSuggestedFileName( suggestedFileName );
-      const KParts::BrowserOpenOrSaveQuestion::Result res = dlg.askEmbedOrSave( disposition );
-
-      switch( res ) {
-      case KParts::BrowserOpenOrSaveQuestion::Save:
-        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFileName );
-        // fall-through
-      case KParts::BrowserOpenOrSaveQuestion::Cancel:
-        child->m_bCompleted = true;
-        checkCompleted();
-        return true; // done
-      default: // Embed
-        break;
-      }
-    }
-
-    KMimeType::Ptr mime = KMimeType::mimeType(mimetype);
-    if (mime) {
-        // If KHTMLPart can handle the frame, then let's force using it, even
-        // if the normally preferred part is another one, so that cross-frame
-        // scripting can work.
-        if (mime->is("text/html")
-            || mime->is("application/xml")) { // this includes xhtml and svg
-            child->m_serviceName = "khtml";
-        }
-    }
-
-    QStringList dummy; // the list of servicetypes handled by the part is now unused.
-    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), this, mimetype, child->m_serviceName, dummy, child->m_params );
-
-    if ( !part )
-    {
+    // If we are not permitting anything remote, or khtmlrun called us with
+    // empty url + mimetype to indicate a loading error, we obviosuly failed
+    if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) ) {
         childLoadFailure(child);
         return false;
     }
 
+    // we also want to ignore any spurious requests due to closing when parser is being cleared. These should be
+    // ignored entirely  --- the tail end of ::clear will clean things up.
+    if (d->m_bClearing)
+        return false;
+
+    if (child->m_bNotify) {
+        child->m_bNotify = false;
+        if ( !child->m_browserArgs.lockHistory() )
+            emit d->m_extension->openUrlNotify();
+    }
+
+    // Now, depending on mimetype and current state of the world, we may have
+    // to create a new part or ask the user to save things, etc.
+    //
+    // We need a new part if there isn't one at all (doh) or the one that's there
+    // is not for the mimetype we're loading.
+    //
+    // For these new types, we may have to ask the user to save it or not
+    // (we don't if it's navigating the same type).
+    // Further, we will want to ask if content-disposition suggests we ask for
+    // saving, even if we're re-navigating.
+    if ( !child->m_part || child->m_serviceType != mimetype || (child->m_run && child->m_run->serverSuggestsSave())) {
+        // We often get here if we didn't know the mimetype in advance, and had to rely
+        // on KRun to figure it out. In this case, we let the element check if it wants to
+        // handle this mimetype itself, for e.g. objects containing images.
+        if ( child->m_partContainerElement && child->m_partContainerElement->mimetypeHandledInternally(mimetype) ) {
+            child->m_bCompleted = true;
+            checkCompleted();
+            return true;
+        }
+        
+        // Before attempting to load a part, check if the user wants that.
+        // Many don't like getting ZIP files embedded.
+        // However we don't want to ask for flash and other plugin things.
+        //
+        // Note: this is fine for frames, since we will merely effectively ignore
+        // the navigation if this happens
+        if ( child->m_type != khtml::ChildFrame::Object && child->m_type != khtml::ChildFrame::IFrame ) {
+            QString suggestedFileName;
+            int disposition = 0;
+            if ( child->m_run ) {
+                suggestedFileName = child->m_run->suggestedFileName();
+                disposition = (child->m_run->serverSuggestsSave()) ? KParts::BrowserRun::AttachmentDisposition : KParts::BrowserRun::InlineDisposition;
+            }
+
+            KParts::BrowserOpenOrSaveQuestion dlg( widget(), url, mimetype );
+            dlg.setSuggestedFileName( suggestedFileName );
+            const KParts::BrowserOpenOrSaveQuestion::Result res = dlg.askEmbedOrSave( disposition );
+
+            switch( res ) {
+            case KParts::BrowserOpenOrSaveQuestion::Save:
+                KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFileName );
+                // fall-through
+            case KParts::BrowserOpenOrSaveQuestion::Cancel:
+                child->m_bCompleted = true;
+                checkCompleted();
+                return true; // done
+            default: // Embed
+                break;
+            }
+        }
+
+        // Now, for frames and iframes, we always create a KHTMLPart anyway,
+        // doing it in advance when registering the frame. So we want the
+        // actual creation only for objects here.
+        if ( child->m_type == khtml::ChildFrame::Object ) {
+            KMimeType::Ptr mime = KMimeType::mimeType(mimetype);
+            if (mime) {
+                // Even for objects, however, we want to force a KHTMLPart for
+                // html & xml, even  if the normally preferred part is another one,
+                // so that we can script the target natively via contentDocument method.
+                if (mime->is("text/html")
+                    || mime->is("application/xml")) { // this includes xhtml and svg
+                    child->m_serviceName = "khtml";
+                }
+            }
+
+            QStringList dummy; // the list of servicetypes handled by the part is now unused.
+            KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), this, mimetype, child->m_serviceName, dummy, child->m_params );
+
+            if ( !part ) {
+                childLoadFailure(child);
+                return false;
+            }
+
+            connectToChildPart( child, part, mimetype );
+        }
+    }
+
+    checkEmitLoadEvent();
+    
+    // Some JS code in the load event may have destroyed the part
+    // In that case, abort
+    if ( !child->m_part )
+        return false;
+
+    if ( child->m_bPreloaded ) {
+        if ( child->m_partContainerElement && child->m_part )
+            child->m_partContainerElement->setWidget( child->m_part->widget() );
+
+        child->m_bPreloaded = false;
+        return true;
+    }
+
+    // reload/soft-reload arguments are always inherited from parent
+    child->m_args.setReload( arguments().reload() );
+    child->m_browserArgs.softReload = d->m_extension->browserArguments().softReload;
+
+    // make sure the part has a way to find out about the mimetype.
+    // we actually set it in child->m_args in requestObject already,
+    // but it's useless if we had to use a KHTMLRun instance, as the
+    // point the run object is to find out exactly the mimetype.
+    child->m_args.setMimeType(mimetype);
+
+    // if not a frame set child as completed
+    // ### dubious.
+    child->m_bCompleted = child->m_type == khtml::ChildFrame::Object;
+
+    if ( child->m_part ) {
+        child->m_part->setArguments( child->m_args );
+    }
+    if ( child->m_extension ) {
+        child->m_extension->setBrowserArguments( child->m_browserArgs );
+    }
+
+    return navigateChild( child, url );
+}
+
+bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::ReadOnlyPart *inPart,
+                                       const KUrl& url )
+{
+    if (!qobject_cast<KHTMLPart*>(inPart))
+        return false;
+
+    KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(inPart));
+
+    p->begin();
+    if (d->m_doc && p->d->m_doc)
+        p->d->m_doc->setBaseURL(d->m_doc->baseURL());
+
+    // We may have to re-propagate the domain here if we go here due to navigation
+    d->propagateInitialDomainTo(p);
+
+    // Support for javascript: sources
+    if (d->isJavaScriptURL(url.url())) {
+        // See if we want to replace content with javascript: output..
+        QVariant res = p->executeScript( DOM::Node(),
+                                        d->codeForJavaScriptURL(url.url()));
+        if (res.type() == QVariant::String && p->d->m_redirectURL.isEmpty()) {
+            p->begin();
+            p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
+            // We recreated the document, so propagate domain again.
+            d->propagateInitialDomainTo( p );
+            p->write( res.toString() );
+            p->end();
+        }
+    } else {
+        p->setUrl(url);
+        // we need a body element. testcase: <iframe id="a"></iframe><script>alert(a.document.body);</script>
+        p->write("<HTML><TITLE></TITLE><BODY></BODY></HTML>");
+    }
+    p->end();
+    // we don't need to worry about child completion explicitly for KHTMLPart...
+    // or do we?
+    return true;
+}
+
+bool KHTMLPart::navigateChild( khtml::ChildFrame *child, const KUrl& url )
+{
+    if (url.protocol() == "javascript" || url.url() == "about:blank") {
+        return navigateLocalProtocol(child, child->m_part, url);
+    } else if ( !url.isEmpty() ) {
+        kDebug( 6031 ) << "opening" << url << "in frame" << child->m_part;
+        bool b = child->m_part->openUrl( url );
+        if (child->m_bCompleted)
+            checkCompleted();
+        return b;
+    } else {
+        // empty URL -> no need to navigate
+        child->m_bCompleted = true;
+        checkCompleted();
+        return true;
+    }
+}
+
+void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPart *part,
+                                    const QString& mimetype)
+{
+    kDebug(6031) << "we:" << this << "kid:" << child << part << mimetype;
+    
     part->setObjectName( child->m_name );
 
     //CRITICAL STUFF
-    if ( child->m_part )
-    {
+    if ( child->m_part ) {
       if (!qobject_cast<KHTMLPart*>(child->m_part) && child->m_jscript)
           child->m_jscript->clear();
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
@@ -4370,7 +4498,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     if ( child->m_type != khtml::ChildFrame::Object )
       partManager()->addPart( part, false );
 //  else
-//      kDebug(6005) << "AH! NO FRAME!!!!!";
+//      kDebug(6031) << "AH! NO FRAME!!!!!";
 
     child->m_part = part;
 
@@ -4440,83 +4568,6 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
-  }
-  else if ( child->m_partContainerElement && child->m_part &&
-            child->m_partContainerElement->childWidget() != child->m_part->widget() )
-    child->m_partContainerElement->setWidget( child->m_part->widget() );
-
-  checkEmitLoadEvent();
-  // Some JS code in the load event may have destroyed the part
-  // In that case, abort
-  if ( !child->m_part )
-    return false;
-
-  if ( child->m_bPreloaded )
-  {
-    if ( child->m_partContainerElement && child->m_part )
-      child->m_partContainerElement->setWidget( child->m_part->widget() );
-
-    child->m_bPreloaded = false;
-    return true;
-  }
-
-  // reload/soft-reload arguments are always inherited from parent
-  child->m_args.setReload( arguments().reload() );
-  child->m_browserArgs.softReload = d->m_extension->browserArguments().softReload;
-
-  // make sure the part has a way to find out about the mimetype.
-  // we actually set it in child->m_args in requestObject already,
-  // but it's useless if we had to use a KHTMLRun instance, as the
-  // point the run object is to find out exactly the mimetype.
-  child->m_args.setMimeType(mimetype);
-
-  // if not a frame set child as completed
-  child->m_bCompleted = child->m_type == khtml::ChildFrame::Object;
-
-  if ( child->m_part ) {
-    child->m_part->setArguments( child->m_args );
-  }
-  if ( child->m_extension ) {
-    child->m_extension->setBrowserArguments( child->m_browserArgs );
-  }
-
-  if(url.protocol() == "javascript" || url.url() == "about:blank") {
-      if (!child->m_part->inherits("KHTMLPart"))
-          return false;
-
-      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
-
-      p->begin();
-      if (d->m_doc && p->d->m_doc)
-        p->d->m_doc->setBaseURL(d->m_doc->baseURL());
-
-      // We may have to re-propagate the domain here if we go here due to navigation
-      d->propagateInitialDomainTo(p);
-
-      if (!url.url().startsWith("about:")) {
-        p->write(url.path());
-      } else {
-        p->setUrl(url);
-        // we need a body element. testcase: <iframe id="a"></iframe><script>alert(a.document.body);</script>
-        p->write("<HTML><TITLE></TITLE><BODY></BODY></HTML>");
-      }
-      p->end();
-      return true;
-  }
-  else if ( !url.isEmpty() )
-  {
-      //kDebug( 6050 ) << "opening" << url << "in frame" << child->m_part;
-      bool b = child->m_part->openUrl( url );
-      if (child->m_bCompleted)
-          checkCompleted();
-      return b;
-  }
-  else
-  {
-      child->m_bCompleted = true;
-      checkCompleted();
-      return true;
-  }
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
@@ -4947,12 +4998,13 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
   khtml::ChildFrame *child = frame( sender() );
 
   if ( child ) {
-    kDebug(6050) << this << "child=" << child << "m_partContainerElement=" << child->m_partContainerElement;
+    kDebug(6031) << this << "child=" << child << "m_partContainerElement=" << child->m_partContainerElement;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::OpenUrlArguments();
     child->m_browserArgs = KParts::BrowserArguments();
-    // dispatch load event
+    // dispatch load event. We don't do that for KHTMLPart's since their internal
+    // load will be forwarded inside NodeImpl::dispatchWindowEvent
     if (!qobject_cast<KHTMLPart*>(child->m_part))
         QTimer::singleShot(0, child->m_partContainerElement, SLOT(slotEmitLoadEvent()));
   }
@@ -5184,6 +5236,16 @@ bool KHTMLPart::frameExists( const QString &frameName )
   // set. Otherwise we might find our preloaded-selve.
   // This happens when we restore the frameset.
   return (!(*it)->m_partContainerElement.isNull());
+}
+
+void KHTMLPartPrivate::renameFrameForContainer(DOM::HTMLPartContainerElementImpl* cont,
+                                               const QString& newName)
+{
+	for (int i = 0; i < m_frames.size(); ++i) {
+        khtml::ChildFrame* f = m_frames[i];
+        if (f->m_partContainerElement == cont)
+            f->m_name = newName;
+	}
 }
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
@@ -5915,7 +5977,7 @@ QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
 
 bool KHTMLPart::openUrlInFrame( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs)
 {
-  kDebug( 6050 ) << this << url;
+  kDebug( 6031 ) << this << url;
   FrameIt it = d->m_frames.find( browserArgs.frameName );
 
   if ( it == d->m_frames.end() )
