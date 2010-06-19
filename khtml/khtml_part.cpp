@@ -2320,6 +2320,52 @@ void KHTMLPart::slotUserSheetStatDone( KJob *_job )
   setUserStyleSheet( KUrl( settings()->userStyleSheet() ) );
 }
 
+bool KHTMLPartPrivate::fullyLoaded(bool* pendingRedirections) const
+{
+  *pendingRedirections = false;
+  
+  // Any frame that hasn't completed yet ?
+  ConstFrameIt it = m_frames.constBegin();
+  const ConstFrameIt end = m_frames.constEnd();
+  for (; it != end; ++it ) {
+    if ( !(*it)->m_bCompleted )
+    {
+      //kDebug( 6050 ) << this << " is waiting for " << (*it)->m_part;
+      return false;
+    }
+    // Check for frames with pending redirections
+    if ( (*it)->m_bPendingRedirection )
+      *pendingRedirections = true;
+  }
+
+  // Any object that hasn't completed yet ?
+  {
+    ConstFrameIt oi = m_objects.constBegin();
+    const ConstFrameIt oiEnd = m_objects.constEnd();
+
+    for (; oi != oiEnd; ++oi )
+      if ( !(*oi)->m_bCompleted )
+        return false;
+  }
+
+  // Are we still parsing
+  if ( m_doc && m_doc->parsing() )
+    return false;
+
+  // Still waiting for images/scripts from the loader ?
+  int requests = 0;
+  if ( m_doc && m_doc->docLoader() )
+    requests = khtml::Cache::loader()->numRequests( m_doc->docLoader() );
+
+  if ( requests > 0 )
+  {
+    //kDebug(6050) << "still waiting for images/scripts from the loader - requests:" << requests;
+    return false;
+  }
+
+  return true;
+}
+
 void KHTMLPart::checkCompleted()
 {
 //   kDebug( 6050 ) << this;
@@ -2335,45 +2381,12 @@ void KHTMLPart::checkCompleted()
       d->m_focusNodeRestored = true;
   }
 
-  bool bPendingChildRedirection = false;
-  // Any frame that hasn't completed yet ?
-  ConstFrameIt it = d->m_frames.constBegin();
-  const ConstFrameIt end = d->m_frames.constEnd();
-  for (; it != end; ++it ) {
-    if ( !(*it)->m_bCompleted )
-    {
-      //kDebug( 6050 ) << this << " is waiting for " << (*it)->m_part;
-      return;
-    }
-    // Check for frames with pending redirections
-    if ( (*it)->m_bPendingRedirection )
-      bPendingChildRedirection = true;
-  }
+  bool fullyLoaded, pendingChildRedirections;
+  fullyLoaded = d->fullyLoaded(&pendingChildRedirections);
 
-  // Any object that hasn't completed yet ?
-  {
-    ConstFrameIt oi = d->m_objects.constBegin();
-    const ConstFrameIt oiEnd = d->m_objects.constEnd();
-
-    for (; oi != oiEnd; ++oi )
-      if ( !(*oi)->m_bCompleted )
-        return;
-  }
-
-  // Are we still parsing - or have we done the completed stuff already ?
-  if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
+  // Are we still loading, or already have done the relevant work?
+  if (!fullyLoaded || d->m_bComplete)
     return;
-
-  // Still waiting for images/scripts from the loader ?
-  int requests = 0;
-  if ( d->m_doc && d->m_doc->docLoader() )
-    requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
-
-  if ( requests > 0 )
-  {
-    //kDebug(6050) << "still waiting for images/scripts from the loader - requests:" << requests;
-    return;
-  }
 
   // OK, completed.
   // Now do what should be done when we are really completed.
@@ -2410,7 +2423,7 @@ void KHTMLPart::checkCompleted()
 
     pendingAction = true;
   }
-  else if ( bPendingChildRedirection )
+  else if ( pendingChildRedirections )
   {
     pendingAction = true;
   }
@@ -2445,30 +2458,11 @@ void KHTMLPart::checkCompleted()
 
 void KHTMLPart::checkEmitLoadEvent()
 {
-  if ( d->m_bLoadEventEmitted || !d->m_doc || d->m_doc->parsing() ) return;
+  bool fullyLoaded, pendingChildRedirections;
+  fullyLoaded = d->fullyLoaded(&pendingChildRedirections);
 
-  ConstFrameIt it = d->m_frames.constBegin();
-  const ConstFrameIt end = d->m_frames.constEnd();
-  for (; it != end; ++it )
-    if ( !(*it)->m_bCompleted ) // still got a frame running -> too early
-      return;
-
-  ConstFrameIt oi = d->m_objects.constBegin();
-  const ConstFrameIt oiEnd = d->m_objects.constEnd();
-
-  for (; oi != oiEnd; ++oi )
-    if ( !(*oi)->m_bCompleted ) // still got a object running -> too early
-      return;
-
-  // Still waiting for images/scripts from the loader ?
-  // (onload must happen afterwards, #45607)
-  // ## This makes this method very similar to checkCompleted. A brave soul should try merging them.
-  int requests = 0;
-  if ( d->m_doc && d->m_doc->docLoader() )
-    requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
-
-  if ( requests > 0 )
-    return;
+  // ### might want to wait on pendingChildRedirections here, too
+  if ( d->m_bLoadEventEmitted || !d->m_doc || !fullyLoaded ) return;
 
   d->m_bLoadEventEmitted = true;
   if (d->m_doc)

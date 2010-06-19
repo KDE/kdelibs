@@ -504,6 +504,12 @@ public:
   }
 
   void propagateInitialDomainTo(KHTMLPart* kid);
+
+  // Check whether the frame is fully loaded.
+  // The return value doesn't consider any pending redirections.
+  // If the return value is true, however, pendingRedirections will
+  // report if there are any
+  bool fullyLoaded(bool* pendingRedirections) const;
 };
 
 #endif
