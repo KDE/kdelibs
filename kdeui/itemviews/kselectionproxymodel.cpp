@@ -577,6 +577,11 @@ void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &source
 {
     Q_Q(KSelectionProxyModel);
 
+    Q_ASSERT(sourceFirst.model() == q->sourceModel());
+    Q_ASSERT(sourceLast.model() == q->sourceModel());
+    Q_ASSERT(proxyFirst.model() == q);
+    Q_ASSERT(proxyLast.model() == q);
+
     const int proxyRangeSize = proxyLast.row() - proxyFirst.row();
     const int sourceRangeSize = sourceLast.row() - sourceFirst.row();
 
@@ -608,6 +613,9 @@ void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &source
 void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     Q_Q(KSelectionProxyModel);
+
+    Q_ASSERT(topLeft.model() == q->sourceModel());
+    Q_ASSERT(bottomRight.model() == q->sourceModel());
 
     const QModelIndex proxyTopLeft = q->mapFromSource(topLeft);
     const QModelIndex proxyBottomRight = q->mapFromSource(bottomRight);
@@ -732,6 +740,7 @@ void KSelectionProxyModelPrivate::refreshFirstChildMappings(QList<QPersistentMod
             m_mappedFirstChildren.removeLeft(*it);
             continue;
         }
+        Q_ASSERT(it->model() == q->sourceModel());
         if (!it->parent().isValid())
             continue;
 
@@ -761,6 +770,7 @@ void KSelectionProxyModelPrivate::refreshParentMappings(QList<QPersistentModelIn
             it = mappings.erase(it);
             continue;
         }
+        Q_ASSERT(it->model() == q->sourceModel());
         if (it->parent().isValid() || m_mappedParents.leftContains(it->parent()) || m_rootIndexList.contains(*it)) {
             const qint64 id = m_parentIds.takeRight(m_mappedParents.takeLeft(*it));
             const QModelIndex newProxyIndex = q->mapFromSource(*it);
@@ -944,6 +954,9 @@ int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) c
 
 
     Q_Q(const KSelectionProxyModel);
+
+    Q_ASSERT(parent.model() == q->sourceModel());
+
     int parentPosition = m_rootIndexList.indexOf(parent);
 
     QModelIndex parentAbove;
@@ -970,6 +983,8 @@ int KSelectionProxyModelPrivate::getProxyInitialRow(const QModelIndex &parent) c
 void KSelectionProxyModelPrivate::updateFirstChildMapping(const QModelIndex& parent, int offset)
 {
     Q_Q(KSelectionProxyModel);
+
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
     static const int column = 0;
     static const int row = 0;
@@ -1023,6 +1038,8 @@ QPair< int, int > KSelectionProxyModelPrivate::beginInsertRows(const QModelIndex
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KSelectionProxyModel);
+
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
     if (!m_selectionModel->hasSelection())
         return;
@@ -1079,6 +1096,8 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
 {
     Q_Q(KSelectionProxyModel);
 
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
+
     if (!m_rowsInserted)
         return;
     m_rowsInserted = false;
@@ -1089,6 +1108,7 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
 QPair<int, int> KSelectionProxyModelPrivate::beginRemoveRows(const QModelIndex& parent, int start, int end) const
 {
     Q_Q(const KSelectionProxyModel);
+
     QPair<int, int> pair = qMakePair(start, end);
 
     if (m_omitChildren && !m_startWithChildTrees && !m_includeAllSelected) {
@@ -1172,6 +1192,8 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 {
     Q_Q(KSelectionProxyModel);
 
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
+
     if (!m_selectionModel->hasSelection())
         return;
 
@@ -1246,6 +1268,8 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 {
     Q_Q(KSelectionProxyModel);
     Q_UNUSED(end)
+
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
     if (!m_selectionModel->hasSelection())
         return;
@@ -1437,6 +1461,8 @@ void KSelectionProxyModelPrivate::removeSelectionFromProxy(const QItemSelection 
 void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange &range)
 {
     Q_Q(KSelectionProxyModel);
+
+    Q_ASSERT(range.model() == q->sourceModel());
 
     const QModelIndex sourceTopLeft = range.topLeft();
     const QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
@@ -1712,6 +1738,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
         return;
 
     foreach(const QModelIndex &newIndex, selection.indexes()) {
+        Q_ASSERT(newIndex.model() == q->sourceModel());
         if (newIndex.column() > 0)
             continue;
         if (m_startWithChildTrees) {
@@ -1853,6 +1880,9 @@ KSelectionProxyModel::FilterBehavior KSelectionProxyModel::filterBehavior() cons
 void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
 {
     Q_D(KSelectionProxyModel);
+
+    Q_ASSERT(_sourceModel != this);
+
     if (_sourceModel == sourceModel())
         return;
 
@@ -1954,6 +1984,7 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
     Q_Q(KSelectionProxyModel);
 
     Q_ASSERT(start + offset >= 0);
+    Q_ASSERT(parent.isValid() ? parent.model() == q : true);
 
     if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
         return;
@@ -2007,17 +2038,23 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
 
 bool KSelectionProxyModelPrivate::parentAlreadyMapped(const QModelIndex &parent) const
 {
+    Q_Q(const KSelectionProxyModel);
+    Q_ASSERT(parent.model() == q->sourceModel());
     return m_mappedParents.leftContains(parent);
 }
 
 bool KSelectionProxyModelPrivate::firstChildAlreadyMapped(const QModelIndex &firstChild) const
 {
+    Q_Q(const KSelectionProxyModel);
+    Q_ASSERT(firstChild.model() == q->sourceModel());
     return m_mappedFirstChildren.leftContains(firstChild);
 }
 
 void KSelectionProxyModelPrivate::createFirstChildMapping(const QModelIndex& parent, int proxyRow) const
 {
     Q_Q(const KSelectionProxyModel);
+
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
     static const int column = 0;
     static const int row = 0;
@@ -2037,6 +2074,8 @@ void KSelectionProxyModelPrivate::createParentMappings(const QModelIndex &parent
         return;
 
     Q_Q(const KSelectionProxyModel);
+
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
     static const int column = 0;
 
@@ -2116,6 +2155,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
         return QModelIndex();
 
     Q_ASSERT(proxyIndex.internalId() >= 0);
+    Q_ASSERT(proxyIndex.model() == this);
 
     if (proxyIndex.internalId() == 0) {
         const int column = proxyIndex.column();
@@ -2160,6 +2200,8 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
 
     if (!sourceModel() || !sourceIndex.isValid() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
+
+    Q_ASSERT(sourceIndex.model() == sourceModel());
 
     QModelIndex ancestor = sourceIndex.parent();
     QModelIndexList ancestorList;
@@ -2240,6 +2282,8 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 
     if (!sourceModel() || index.column() > 0 || d->m_rootIndexList.isEmpty())
         return 0;
+
+    Q_ASSERT(index.isValid() ? index.model() == this : true);
 
     if (!index.isValid()) {
         if (!d->m_startWithChildTrees)
@@ -2336,6 +2380,8 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
     if (!sourceModel() || d->m_rootIndexList.isEmpty() || !hasIndex(row, column, parent))
         return QModelIndex();
 
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
+
     if (!parent.isValid()) {
         Q_ASSERT(indexIsValid(d->m_startWithChildTrees, row, d->m_rootIndexList, d->m_mappedFirstChildren));
         return createIndex(row, column);
@@ -2354,6 +2400,8 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
     if (!sourceModel() || !index.isValid() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
+    Q_ASSERT(index.model() == this);
+
     const qint64 parentId = index.internalId();
 
     return d->m_parentIds.leftToRight(parentId);
@@ -2363,6 +2411,8 @@ Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid() || !sourceModel())
         return QAbstractProxyModel::flags(index);
+
+    Q_ASSERT(index.model() == this);
 
     const QModelIndex srcIndex = mapToSource(index);
     Q_ASSERT(srcIndex.isValid());
@@ -2375,6 +2425,7 @@ QVariant KSelectionProxyModel::data(const QModelIndex & index, int role) const
         return QVariant();
 
     if (index.isValid()) {
+        Q_ASSERT(index.model() == this);
         const QModelIndex idx = mapToSource(index);
         return idx.data(role);
     }
@@ -2420,6 +2471,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
         return false;
 
     if (parent.isValid()) {
+        Q_ASSERT(parent.model() == this);
         if (d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants))
             return false;
         return sourceModel()->hasChildren(mapToSource(parent));
