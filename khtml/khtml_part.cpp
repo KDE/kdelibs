@@ -4196,7 +4196,9 @@ bool KHTMLPart::loadObjectElement( DOM::HTMLPartContainerElementImpl *frame, con
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const KParts::OpenUrlArguments &_args,
                                const KParts::BrowserArguments& browserArgs )
 {
-  if (!checkLinkSecurity(url))
+  // we always permit javascript: URLs here since they're basically just
+  // empty pages (and checkLinkSecurity/KAuthorized doesn't know what to do with them)
+  if (!d->isJavaScriptURL(url.url()) && !checkLinkSecurity(url))
   {
     kDebug(6031) << this << "checkLinkSecurity refused";
     return false;
