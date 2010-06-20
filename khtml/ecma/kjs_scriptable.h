@@ -75,21 +75,21 @@ public:
     // For exported objects, we keep refcounts, and mark them
     static QHash<JSObject*, int>* exportedObjects();
 
-    static JSValue* importValue(ExecState* exec, const QVariant& v);
-    static JSValue* importFunctionRef(ExecState* exec, const QVariant& v);
-    static JSObject* importObject(ExecState* exec, const QVariant& v);
+    static JSValue* importValue(ExecState* exec, const QVariant& v, bool alreadyRefd);
+    static JSValue* importFunctionRef(ExecState* exec, const QVariant& v, bool alreadyRefd);
+    static JSObject* importObject(ExecState* exec, const QVariant& v, bool alreadyRefd);
     static List importArgs(ExecState* exec, const ArgList& args);
 
-    static QVariant exportValue (JSValue* v);
-    static QVariant exportObject(JSObject* o);
-    static QVariant exportFuncRef(JSObject* base, const QString& field);
+    static QVariant exportValue (JSValue* v, bool preRef);
+    static QVariant exportObject(JSObject* o, bool preRef);
+    static QVariant exportFuncRef(JSObject* base, const QString& field, bool preRef);
 
     // Both methods may return 0. Used for security checks!
     static KHTMLPart* partForPrincipal(ScriptableExtension* callerPrincipal);
     static ExecState* execStateForPrincipal(ScriptableExtension* callerPrincipal);    
 private:
     // input should not be a WrapScriptableObject.
-    static ScriptableExtension::Object exportNativeObject(JSObject* o);
+    static ScriptableExtension::Object exportNativeObject(JSObject* o, bool preRef);
 
     // Checks exception state before handling conversion
     QVariant handleReturn(ExecState* exec, JSValue* v);
@@ -173,6 +173,10 @@ public:
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
 
     virtual UString toString(ExecState *exec) const;
+
+    // This method is used to note that the object has been ref'd on our
+    // behalf by an external producer.
+    void reportRef(); 
 private:
     // If we're a function reference type, before we perform non-call operations we need
     // to actually lookup the field. This takes care of that.
@@ -189,6 +193,7 @@ private:
                    const QString& field, bool* ok);
 
     ScriptableExtension::ArgList exportArgs(const List& l);
+    void releaseArgs(ScriptableExtension::ArgList& a);
 
     // Looks up the principal we're running as
     ScriptableExtension* principal(ExecState* exec);
@@ -198,6 +203,7 @@ private:
     quint64 objId;
     QString field;
     Type    type;
+    int     refsByUs; // how many references we hold
 
     // this is an unguarded copy of objExtension. We need it in order to
     // clean ourselves up from the imports tables properly even if the peer
