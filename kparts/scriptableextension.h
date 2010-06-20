@@ -25,7 +25,6 @@
 #include <QObject>
 #include <QVariant>
 #include <kparts/part.h>
-#include <QDBusArgument>
 
 namespace KParts {
 
@@ -56,10 +55,6 @@ public:
      * \li @ref Exception
      * \li @ref Object
      * \li @ref FunctionRef
-     *
-     * All of these other than Object and FunctionRef also provide DBus marshallers.
-     * These are registered when ScriptableExtension::registerDBusTypes()
-     * is called, which is in particular done by ScriptableExtension constructor.
      */
 
     /// Corresponds to 'null' in JavaScript
@@ -82,9 +77,17 @@ public:
 
     /// Objects are abstracted away as a pair of the ScriptableExtension
     /// the performs operations on it, and an implementation-specific Id,
-    /// which gets passed to the extension's methods. If you store a reference to
-    /// an object, you should use its owner's @ref acquire and @ref release
-    /// methods to update its count of external references (which starts at 0)
+    /// which gets passed to the extension's methods.
+    ///
+    /// Objects are reference-counted, with the following protocol:
+    /// 1) Return values from methods, rootObject(), enclosingObject(),
+    ///    and get() are already acquired by the producer, so the consumer
+    ///    should release them when done.
+    /// 2) During a call, the caller guarantees that all the arguments
+    ///    will be live for the calls duration, but the callee must
+    ///    acquire them if it stores it for longer than that.
+    ///
+    /// @see acquire, acquireValue, release, releaseValue
     struct Object {
         ScriptableExtension* owner;
         quint64              objId;
@@ -130,13 +133,6 @@ public:
     */
     static ScriptableExtension* adapterFromLiveConnect(QObject* parentObj,
                                                        LiveConnectExtension* oldApi);
-
-    /**
-     * Registers dbus encodings of Null, Undefined, and Exception.
-     * This is called by the ScriptableExtension constructor, so you
-     * likely will not need to do so yourself
-     */
-    static void registerDBusTypes();
 
     //@}
 
@@ -273,9 +269,25 @@ public:
     virtual void acquire(quint64 objid);
 
     /**
+      Helper that calls @ref acquire on any object or function reference base
+      stored in @p v.
+
+      @return a copy of the passed in value
+    */
+    static QVariant acquireValue(const QVariant& v);
+
+    /**
       decreases reference count of object @p objId
     */
     virtual void release(quint64 objid);
+
+    /**
+      Helper that calls @ref release on any object or function reference base
+      stored in @p v.
+
+      @return a copy of the passed in value
+    */
+    static QVariant releaseValue(const QVariant& v);
 
     //@}
 private:
@@ -300,19 +312,6 @@ Q_DECLARE_METATYPE(KParts::ScriptableExtension::Undefined)
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Exception)
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::Object)
 Q_DECLARE_METATYPE(KParts::ScriptableExtension::FunctionRef)
-
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
-                                              const KParts::ScriptableExtension::Null& n);
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
-                                              KParts::ScriptableExtension::Null& n);
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
-                                              const KParts::ScriptableExtension::Undefined& u);
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
-                                              KParts::ScriptableExtension::Undefined& u);
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& argument,
-                                              const KParts::ScriptableExtension::Exception& e);
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& argument,
-                                              KParts::ScriptableExtension::Exception& e);
 
 #endif
 

@@ -21,7 +21,6 @@
 #include "scriptableextension_p.h"
 #include <kglobal.h>
 #include <kdebug.h>
-#include <QDBusMetaType>
 
 namespace KParts {
 
@@ -34,9 +33,7 @@ struct ScriptableExtensionPrivate {
 
 ScriptableExtension::ScriptableExtension(QObject* parent):
     QObject(parent), d(new ScriptableExtensionPrivate)
-{
-    registerDBusTypes();
-}
+{}
 
 ScriptableExtension::~ScriptableExtension()
 {
@@ -195,9 +192,33 @@ void ScriptableExtension::acquire(quint64 objId)
     Q_UNUSED(objId);
 }
 
+QVariant ScriptableExtension::acquireValue(const QVariant& v)
+{
+    if (v.canConvert<Object>()) {
+        Object o = v.value<Object>();
+        o.owner->acquire(o.objId);
+    } else if (v.canConvert<FunctionRef>()) {
+        FunctionRef fr = v.value<FunctionRef>();
+        fr.base.owner->acquire(fr.base.objId);
+    }
+    return v;
+}
+
 void ScriptableExtension::release(quint64 objId)
 {
     Q_UNUSED(objId);
+}
+
+QVariant ScriptableExtension::releaseValue(const QVariant& v)
+{
+    if (v.canConvert<Object>()) {
+        Object o = v.value<Object>();
+        o.owner->release(o.objId);
+    } else if (v.canConvert<FunctionRef>()) {
+        FunctionRef fr = v.value<FunctionRef>();
+        fr.base.owner->release(fr.base.objId);
+    }
+    return v;
 }
 
 // LiveConnectExtension -> ScriptableExtension adapter. We use
@@ -215,13 +236,15 @@ ScriptableLiveConnectExtension::ScriptableLiveConnectExtension(QObject* p, LiveC
 QVariant ScriptableLiveConnectExtension::rootObject()
 {
     // Plugin root is always LC object #0.
-    return QVariant::fromValue(ScriptableExtension::Object(this, 0));
+    return acquireValue(QVariant::fromValue(ScriptableExtension::Object(this, 0)));
 }
 
 bool ScriptableLiveConnectExtension::hasProperty(ScriptableExtension*, quint64 objId, const QString& propName)
 {
     QVariant val = get(0, objId, propName);
-    return !val.canConvert<ScriptableExtension::Exception>();
+    bool ok = !val.canConvert<ScriptableExtension::Exception>();
+    releaseValue(val);
+    return ok;
 }
 
 // Note that since we wrap around a plugin, and do not implement the browser,
@@ -242,7 +265,7 @@ QVariant ScriptableLiveConnectExtension::callFunctionReference(ScriptableExtensi
     unsigned long              retObjId;
     QString                    retVal;
     if (wrapee->call((unsigned long)o, f, qargs, retType, retObjId, retVal)) {
-        return fromLC(QString(), retType, retObjId, retVal);
+        return acquireValue(fromLC(QString(), retType, retObjId, retVal));
     } else {
         return unimplemented();
     }
@@ -255,7 +278,7 @@ QVariant ScriptableLiveConnectExtension::get(ScriptableExtension*,
     unsigned long              retObjId;
     QString                    retVal;
     if (wrapee->get((unsigned long)objId, propName, retType, retObjId, retVal)) {
-        return fromLC(propName, retType, retObjId, retVal);
+        return acquireValue(fromLC(propName, retType, retObjId, retVal));
     } else {
         // exception signals failure. ### inellegant
         return unimplemented();
@@ -364,6 +387,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
     // We want to evaluate in the enclosure's context.
     QVariant enclosure = enclosingObject();
     if (!enclosure.canConvert<Object>()) {
+        releaseValue(enclosure);
         kDebug(1000) << "No enclosure, can't evaluate";
         return;
     }
@@ -371,6 +395,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
     Object enclosureObj = enclosure.value<Object>();    
 
     if (!host()->isScriptLanguageSupported(ECMAScript)) {
+        releaseValue(enclosure);    
         kDebug(1000) << "Host can't evaluate ECMAScript";
     }
 
@@ -397,8 +422,12 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
 
     kDebug(1000) << script;
 
-    // Ask host to evaluate.
-    host()->evaluateScript(this, enclosureObj.objId, script);
+    // Ask host to evaluate.. (unfortunately, we can't do anything with the result,
+    // but anything that uses this interface isn't expective one in the first place)
+    QVariant result = host()->evaluateScript(this, enclosureObj.objId, script);
+
+    releaseValue(result);
+    releaseValue(enclosure);
 }
 
 // hash functions
@@ -417,64 +446,6 @@ unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f)
 } // namespace KParts
 
 
-// DBus stuff
-// ----------------------------------------------------------------------------
-void KParts::ScriptableExtension::registerDBusTypes()
-{
-    qDBusRegisterMetaType<Null>();
-    qDBusRegisterMetaType<Undefined>();
-    qDBusRegisterMetaType<Exception>();
-}
-
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
-                                              const KParts::ScriptableExtension::Null&)
-{
-    arg.beginStructure();
-    arg.endStructure();
-    return arg;
-}
-
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
-                                              KParts::ScriptableExtension::Null&)
-{
-    arg.beginStructure();
-    arg.endStructure();
-    return arg;
-}
-
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
-                                              const KParts::ScriptableExtension::Undefined&)
-{
-    arg.beginStructure();
-    arg.endStructure();
-    return arg;
-}
-
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
-                                              KParts::ScriptableExtension::Undefined&)
-{
-    arg.beginStructure();
-    arg.endStructure();
-    return arg;
-}
-
-KPARTS_EXPORT const QDBusArgument& operator<<(QDBusArgument& arg,
-                                              const KParts::ScriptableExtension::Exception& e)
-{
-    arg.beginStructure();
-    arg << e.message;
-    arg.endStructure();
-    return arg;
-}
-
-KPARTS_EXPORT const QDBusArgument& operator>>(const QDBusArgument& arg,
-                                              KParts::ScriptableExtension::Exception& e)
-{
-    arg.beginStructure();
-    arg >> e.message;
-    arg.endStructure();
-    return arg;
-}
 
 #include "scriptableextension.moc"
 #include "scriptableextension_p.moc"
