@@ -86,7 +86,7 @@ void KTranslit::splitToBaseAndScript (const QString &lang,
         QString langHi = lang;
         if (locale) {
             foreach (const QString &l, locale->languageList()) {
-                if (l.startsWith(QString::fromAscii("sr@"))) {
+                if (l == QString::fromAscii("sr") || l.startsWith(QString::fromAscii("sr@"))) {
                     langHi = l;
                     break;
                 }
