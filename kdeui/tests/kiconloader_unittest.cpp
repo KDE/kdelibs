@@ -171,7 +171,7 @@ private Q_SLOTS:
                                                   KIconLoader::DefaultState, QStringList(),
                                                   &path );
         QVERIFY(!pix.isNull());
-        QVERIFY(path.endsWith(expectedFileName));
+        QCOMPARE(path.section('/', -1), expectedFileName);
 
         // do the same test using a global iconloader, so that
         // we get into the final return statement, which can only happen
