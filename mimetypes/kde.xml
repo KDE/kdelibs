@@ -68,13 +68,12 @@ Notes:
     <glob pattern="*.eml"/>
   </mime-type>
   <mime-type type="application/x-nzb"> <!-- fdo #10029 -->
-    <sub-class-of type="application/xml"/>
     <comment>NewzBin usenet index</comment>
-    <glob pattern="*.nzb"/>
+    <sub-class-of type="application/xml"/>
     <magic priority="80">
       <match type="string" value="&lt;nzb" offset="0:256"/>
     </magic>
-    <root-XML namespaceURI='http://www.newzbin.com/DTD/2003/nzb' localName='nzb'/>
+    <glob pattern="*.nzb"/>
   </mime-type>
   <mime-type type="application/x-plasma">
     <sub-class-of type="application/zip"/>
