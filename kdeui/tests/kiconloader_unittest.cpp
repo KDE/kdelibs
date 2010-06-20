@@ -183,6 +183,26 @@ private Q_SLOTS:
         QVERIFY(!pix.isNull());
         QCOMPARE(path2, path);
     }
+
+    void testPathStore()
+    {
+        QString path;
+        KIconLoader::global()->loadIcon("kde", KIconLoader::Desktop, 24,
+                                        KIconLoader::DefaultState, QStringList(),
+                                        &path);
+        QVERIFY(!path.isEmpty());
+
+        KIconLoader::global()->loadIcon("does_not_exist", KIconLoader::Desktop, 24,
+                                        KIconLoader::DefaultState, QStringList(),
+                                        &path, true /* canReturnNull */);
+        QVERIFY(path.isEmpty());
+
+        path= "some filler to check loadIcon() clears the variable";
+        KIconLoader::global()->loadIcon("does_not_exist", KIconLoader::Desktop, 24,
+                                        KIconLoader::DefaultState, QStringList(),
+                                        &path, true /* canReturnNull */);
+        QVERIFY(path.isEmpty());
+    }
 };
 
 QTEST_KDEMAIN(KIconLoader_UnitTest, GUI)

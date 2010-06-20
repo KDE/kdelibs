@@ -1217,17 +1217,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     K3Icon icon;
 
     if (d->findCachedPixmapWithPath(key, pix, icon.path)) {
+        if (path_store) {
+            *path_store = icon.path;
+        }
+
         // We cache the pixmap for the event of trying to find an unknown icon
         // with canReturnNull set to false, but if we *can* return null then
         // we should do so when necessary.
         if (canReturnNull && icon.path.isEmpty()) {
             return QPixmap();
         }
-
-        if (path_store) {
-            *path_store = icon.path;
-        }
-
         return pix;
     }
 
