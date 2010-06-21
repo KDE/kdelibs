@@ -18,10 +18,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef SOLID_BACKENDS_UPNP_UPNPMEDIASERVER_H
-#define SOLID_BACKENDS_UPNP_UPNPMEDIASERVER_H
+#ifndef SOLID_BACKENDS_UPNP_STORAGEACCESS_H
+#define SOLID_BACKENDS_UPNP_STORAGEACCESS_H
 
-#include "upnpdevice.h"
+#include <solid/ifaces/storageaccess.h>
+#include <solid/backends/upnp/upnpdeviceinterface.h>
 
 namespace Solid
 {
@@ -30,22 +31,43 @@ namespace Backends
 namespace UPnP
 {
 
-    class UPnPMediaServer : public Solid::Backends::UPnP::UPnPDevice
+    class UPnPMediaServer : public Solid::Backends::UPnP::UPnPDeviceInterface, virtual public Solid::Ifaces::StorageAccess
     {
+        Q_OBJECT
+        Q_INTERFACES(Solid::Ifaces::StorageAccess)
+
         public:
-            explicit UPnPMediaServer(Herqq::Upnp::HDeviceProxy* device);
+            explicit UPnPMediaServer(UPnPDevice* device);
 
             virtual ~UPnPMediaServer();
 
-            virtual QString icon() const;
+            virtual bool isAccessible() const;
 
-            virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
+            virtual QString filePath() const;
 
-            virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
+            virtual bool setup();
+
+            virtual bool teardown();
+
+        private Q_SLOTS:
+            void onSetupTimeout();
+
+            void onTeardownTimeout();
+
+        Q_SIGNALS:
+            void accessibilityChanged(bool accessible, const QString &udi);
+
+            void setupDone(Solid::ErrorType error, QVariant data, const QString &udi);
+
+            void teardownDone(Solid::ErrorType error, QVariant data, const QString &udi);
+
+            void setupRequested(const QString &udi);
+
+            void teardownRequested(const QString &udi);
     };
 
 }
 }
 }
 
-#endif // SOLID_BACKENDS_UPNP_UPNPMEDIASERVER_H
+#endif // SOLID_BACKENDS_UPNP_STORAGEACCESS_H

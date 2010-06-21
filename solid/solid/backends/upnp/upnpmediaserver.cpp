@@ -19,9 +19,9 @@
 */
 
 #include "upnpmediaserver.h"
-#include "upnpstorageaccess.h"
 
-#include <HDeviceInfo>
+#include <QtCore/QUrl>
+#include <QtCore/QTimer>
 
 namespace Solid
 {
@@ -30,8 +30,8 @@ namespace Backends
 namespace UPnP
 {
 
-UPnPMediaServer::UPnPMediaServer(Herqq::Upnp::HDeviceProxy* device) :
-    Solid::Backends::UPnP::UPnPDevice(device)
+UPnPMediaServer::UPnPMediaServer(UPnPDevice* device) :
+    UPnPDeviceInterface(device)
 {
 }
 
@@ -39,24 +39,46 @@ UPnPMediaServer::~UPnPMediaServer()
 {
 }
 
-QString UPnPMediaServer::icon() const
+bool UPnPMediaServer::isAccessible() const
 {
-    return QString::fromLatin1("folder-remote");
+    return upnpDevice()->isValid();
 }
 
-bool UPnPMediaServer::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
+QString UPnPMediaServer::filePath() const
 {
-    return type == Solid::DeviceInterface::StorageAccess;
-}
-
-QObject* UPnPMediaServer::createDeviceInterface(const Solid::DeviceInterface::Type& type)
-{
-    if (type == Solid::DeviceInterface::StorageAccess)
+    if (isAccessible())
     {
-      return new Solid::Backends::UPnP::UPnPStorageAccess(this);
+        QString scheme = "upnp-ms:";
+        QString url = upnpDevice()->device()->locations()[0].toString(QUrl::RemoveScheme);
+
+        return (scheme + url);
     }
 
-    return 0;
+    return QString();
+}
+
+bool UPnPMediaServer::setup()
+{
+    QTimer::singleShot(0, this, SLOT(onSetupTimeout()));
+
+    return true;
+}
+
+bool UPnPMediaServer::teardown()
+{
+    QTimer::singleShot(0, this, SLOT(onTeardownTimeout()));
+
+    return true;
+}
+
+void UPnPMediaServer::onSetupTimeout()
+{
+    emit setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+}
+
+void UPnPMediaServer::onTeardownTimeout()
+{
+    emit teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
 }
 
 }
