@@ -29,11 +29,8 @@
 #undef QT_NO_DEBUG
 
 #include "kdebug.h"
-#include <QtGui/QWidget>
 #include <kcomponentdata.h>
 #include <iostream>
-#include <QtGui/QApplication>
-#include <QtGui/QPen>
 #include <QtCore/QVariant>
 #include <map>
 #include <list>
@@ -227,7 +224,7 @@ void testKDebug()
     kError(1202) << "Error !!!";
     kError() << "Error with no area";
 
-    kDebug() << "Printing a null QWidget pointer: " << (QWidget*)0;
+    kDebug() << "Printing a null QObject pointer: " << (QObject*)0;
 
     kDebug() << "char " << '^' << " " << char(26);
     QPoint p(0,9);
