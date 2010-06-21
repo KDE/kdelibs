@@ -18,10 +18,10 @@ Known Issues [PENDING]:
 * [QtWebKit] Missing Java applet support. See https://bugs.webkit.org/show_bug.cgi?id=33044.
 
 * [QtWebKit] No access to the input/control widgets making it very difficult to
-  add very useful features such as:
-    ** Form completion like the one available for native widgets, e.g.
+  implement very useful features such as:
+    ** Form completion like the one available when using native Qt widgets such as
        QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
-    ** Spell checking specially for <textarea> widgets.
+    ** Spell checking!!
 
 Known Issues [FIXED]:
 =========================
