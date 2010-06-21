@@ -1223,6 +1223,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
+    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
     if (!(option.state & QStyle::State_Enabled))
     {
@@ -1302,8 +1303,6 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             d->gotNewIcon(index);
         }
     }
-
-    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
 
     // Compute the metrics, and lay out the text items
