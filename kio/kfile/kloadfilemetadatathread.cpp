@@ -159,7 +159,11 @@ QString  KLoadFileMetaDataThread::formatValue(const Nepomuk::Variant& value)
         return KGlobal::locale()->formatDateTime(value.toDateTime(), KLocale::FancyLongDate);
     }
 
-    if (value.isResource() || value.isResourceList()) {
+    else if(value.isDouble()) {
+        return KGlobal::locale()->formatNumber(value.toDouble());
+    }
+
+    else if (value.isResource() || value.isResourceList()) {
         QStringList links;
         foreach(const Nepomuk::Resource& res, value.toResourceList()) {
             if (KProtocolInfo::isKnownProtocol(res.resourceUri())) {
