@@ -27,6 +27,7 @@
 #include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QApplication>
+#include <QtGui/QScrollBar>
 
 #include <kdebug.h>
 
@@ -413,6 +414,13 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     d->pollDevices.setInterval(5000);
     connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_triggerDevicePolling()));
+
+    // FIXME: this is necessary to avoid flashes of black with some widget styles.
+    // could be a bug in Qt (e.g. QAbstractScrollArea) or KFilePlacesView, but has not
+    // yet been tracked down yet. until then, this works and is harmlessly enough.
+    // in fact, some QStyle (Oxygen, Skulpture, others?) do this already internally.
+    // See br #242358 for more information
+    verticalScrollBar()->setAttribute(Qt::WA_OpaquePaintEvent, false);
 }
 
 KFilePlacesView::~KFilePlacesView()
