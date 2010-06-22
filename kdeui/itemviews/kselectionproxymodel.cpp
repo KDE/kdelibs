@@ -615,7 +615,7 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
     Q_ASSERT(topLeft.model() == q->sourceModel());
     Q_ASSERT(bottomRight.model() == q->sourceModel());
 
-    const QModelIndex sourceRangeParent = mapFromSource(topLeft.parent());
+    const QModelIndex sourceRangeParent = topLeft.parent();
     if (!sourceRangeParent.isValid() && m_startWithChildTrees && !m_rootIndexList.contains(sourceRangeParent))
         return;
 
