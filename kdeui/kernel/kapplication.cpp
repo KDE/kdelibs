@@ -230,7 +230,7 @@ public:
 };
 
 
-static QList<const QWidget*> *x11Filter = 0;
+static QList<QWidget*> *x11Filter = 0;
 
 /**
    * Installs a handler for the SIGPIPE signal. It is thrown when you write to
@@ -255,7 +255,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
     if ( !filter )
         return;
     if (!x11Filter)
-        x11Filter = new QList<const QWidget *>;
+        x11Filter = new QList<QWidget *>;
     connect ( filter, SIGNAL( destroyed() ), this, SLOT( _k_x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
@@ -269,7 +269,7 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
 {
     if ( !x11Filter || !filter )
         return;
-    x11Filter->removeAll( filter );
+    x11Filter->removeAll( const_cast< QWidget* >( filter ));
     if ( x11Filter->isEmpty() ) {
         delete x11Filter;
         x11Filter = 0;
@@ -949,8 +949,9 @@ bool KApplication::x11EventFilter( XEvent *_event )
     }
 
     if (x11Filter) {
-        foreach (const QWidget *w, *x11Filter) {
-            if (((KAppX11HackWidget*) w)->publicx11Event(_event))
+        QListIterator< QWidget* > it( *x11Filter );
+        while( it.hasNext()) {
+            if (static_cast< KAppX11HackWidget*>( it.next())->publicx11Event(_event))
                 return true;
         }
     }
