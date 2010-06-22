@@ -19,6 +19,7 @@
 */
 
 #include "upnpdevice.h"
+#include "upnpmediaserver.h"
 
 #include <HResourceType>
 #include <HDeviceInfo>
@@ -67,9 +68,9 @@ static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
 
 UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
     Solid::Ifaces::Device(),
+    m_device(device),
     m_specVersion(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::Version))
 {
-    m_device = device;
 }
 
 UPnPDevice::~UPnPDevice()
@@ -88,7 +89,7 @@ QString UPnPDevice::udi() const
 
     if (!deviceInfo.udn().isValid())
     {
-        qWarning("This device UDN is not valid one!");
+        qWarning("This device UDN is not a valid one!");
     }
 
     QString udn = deviceInfo.udn().toString();
@@ -105,7 +106,7 @@ QString UPnPDevice::parentUdi() const
 
         if (!parentInfo.udn().isValid())
         {
-            qWarning("This device UDN is not valid one!");
+            qWarning("This device UDN is not a valid one!");
         }
 
         return QString::fromLatin1("/org/kde/upnp/%1").arg(parentInfo.udn().toString());
@@ -145,7 +146,7 @@ QString UPnPDevice::icon() const
 
 QStringList UPnPDevice::emblems() const
 {
-    return QStringList(); //does this apply here?
+    return QStringList();
 }
 
 QString UPnPDevice::description() const
@@ -155,14 +156,15 @@ QString UPnPDevice::description() const
 
 bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    Q_UNUSED(type)
-
-    return false;
+    return type == Solid::DeviceInterface::StorageAccess;
 }
 
 QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
-    Q_UNUSED(type)
+    if (type == Solid::DeviceInterface::StorageAccess)
+    {
+        return new Solid::Backends::UPnP::UPnPMediaServer(this);
+    }
 
     return 0;
 }
