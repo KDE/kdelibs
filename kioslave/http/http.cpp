@@ -1323,7 +1323,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   if ( (m_request.responseCode >= 200) && (m_request.responseCode < 300) )
     finished();
   else
-    httpError();
+    httpPutError();
 }
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
@@ -1754,7 +1754,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   return errorString;
 }
 
-void HTTPProtocol::httpError()
+void HTTPProtocol::httpPutError()
 {
   QString action, errorString;
   KIO::Error kError;

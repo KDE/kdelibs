@@ -280,7 +280,7 @@ public:
   void multiGet(const QByteArray &data);
   bool maybeSetRequestUrl(const KUrl &);
 
-  void httpError(); // Generate error message based on response code
+  void httpPutError(); // Generate error message based on response code
   bool sendErrorPageNotification(); // Call SlaveBase::errorPage() and remember that we've called it
 
   bool isOffline(); // Check network status
