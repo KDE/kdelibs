@@ -897,29 +897,7 @@ K3Icon KIconLoaderPrivate::findMatchingIconWithGenericFallbacks(const QString& n
     const QString genericIcon = s_globalData->genericIconFor(name);
     if (!genericIcon.isEmpty()) {
         icon = findMatchingIcon(genericIcon, size);
-        if (icon.isValid())
-            return icon;
     }
-
-    // From update-mime-database.c
-    static const char* const media_types[] = {
-        "text", "application", "image", "audio",
-        "inode", "video", "message", "model", "multipart",
-        "x-content", "x-epoc"
-    };
-    // Shared-mime-info spec says:
-    // "If [generic-icon] is not specified then the mimetype is used to generate the
-    // generic icon by using the top-level media type (e.g. "video" in "video/ogg")
-    // and appending "-x-generic" (i.e. "video-x-generic" in the previous example)."
-    for (uint i = 0 ; i < sizeof(media_types)/sizeof(*media_types) ; i++) {
-        if (name.startsWith(QLatin1String(media_types[i]))) {
-            icon = findMatchingIcon(QString::fromLatin1(media_types[i]) + "-x-generic", size);
-            if (icon.isValid())
-                return icon;
-            break;
-        }
-    }
-    // not found
     return icon;
 }
 
@@ -1010,7 +988,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 #endif
 
-    const bool genericFallback = name.endsWith(QLatin1String("-x-generic"));
+    bool genericFallback = name.endsWith(QLatin1String("-x-generic"));
 
     foreach(KIconThemeNode *themeNode, links)
     {
@@ -1055,13 +1033,28 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
                 break;
 
             int rindex = currentName.lastIndexOf('-');
-            if (rindex < 0)
-                break;
+            if (rindex > 1) { // > 1 so that we don't split x-content or x-epoc
+                currentName.truncate(rindex);
 
-            currentName.truncate(rindex);
-
-            if (currentName.endsWith(QLatin1String("-x")))
-                currentName.chop(2);
+                if (currentName.endsWith(QLatin1String("-x")))
+                    currentName.chop(2);
+            } else {
+                // From update-mime-database.c
+                static const QSet<QString> mediaTypes = QSet<QString>()
+                    << "text" << "application" << "image" << "audio"
+                    << "inode" << "video" << "message" << "model" << "multipart"
+                    << "x-content" << "x-epoc";
+                // Shared-mime-info spec says:
+                // "If [generic-icon] is not specified then the mimetype is used to generate the
+                // generic icon by using the top-level media type (e.g. "video" in "video/ogg")
+                // and appending "-x-generic" (i.e. "video-x-generic" in the previous example)."
+                if (mediaTypes.contains(currentName)) {
+                    currentName += QLatin1String("-x-generic");
+                    genericFallback = true;
+                } else {
+                    break;
+                }
+            }
         }
     }
     return icon;
@@ -1149,9 +1142,15 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     return icon.path;
 }
 
-QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Group group, int size,
+QPixmap KIconLoader::loadMimeTypeIcon( const QString& _iconName, KIconLoader::Group group, int size,
                                        int state, const QStringList& overlays, QString *path_store ) const
 {
+    QString iconName = _iconName;
+    const int slashindex = iconName.indexOf(QLatin1Char('/'));
+    if (slashindex != -1) {
+        iconName[slashindex] = QLatin1Char('-');
+    }
+
     if ( !d->extraDesktopIconsLoaded )
     {
         const QPixmap pixmap = loadIcon( iconName, group, size, state, overlays, path_store, true );
