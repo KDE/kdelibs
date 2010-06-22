@@ -69,7 +69,8 @@ static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
 UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
     Solid::Ifaces::Device(),
     m_device(device),
-    m_specVersion(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::Version))
+    m_specVersion(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::Version)),
+    m_deviceType(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version))
 {
 }
 
@@ -134,11 +135,10 @@ QString UPnPDevice::product() const
 QString UPnPDevice::icon() const
 {
     const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
-    const QString deviceType = deviceInfo.deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version);
 
-    if (typeIconMap.contains(deviceType))
+    if (typeIconMap.contains(deviceType()))
     {
-        return typeIconMap[deviceType];
+        return typeIconMap[deviceType()];
     }
 
     return QString::fromLatin1("network-server");
@@ -154,16 +154,45 @@ QString UPnPDevice::description() const
     return device()->deviceInfo().modelDescription();
 }
 
+bool UPnPDevice::isMediaServer() const
+{
+    return deviceType().startsWith(QString::fromLatin1("MediaServer"));
+}
+
+bool UPnPDevice::isInternetGatewayDevice() const
+{
+    return deviceType().startsWith(QString::fromLatin1("InternetGatewayDevice"));
+}
+
 bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    return type == Solid::DeviceInterface::StorageAccess;
+    if (type == Solid::DeviceInterface::StorageAccess)
+    {
+        if (isMediaServer())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }  
+    }
+    
+    return false;
 }
 
 QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
 {
     if (type == Solid::DeviceInterface::StorageAccess)
     {
-        return new Solid::Backends::UPnP::UPnPMediaServer(this);
+        if (isMediaServer())
+        {
+            return new Solid::Backends::UPnP::UPnPMediaServer(this);
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     return 0;
@@ -177,6 +206,11 @@ bool UPnPDevice::isValid() const
 const QString UPnPDevice::specVersion() const
 {
     return m_specVersion;
+}
+
+const QString UPnPDevice::deviceType() const
+{
+    return m_deviceType;
 }
 
 }

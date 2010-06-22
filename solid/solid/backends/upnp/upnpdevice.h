@@ -65,10 +65,18 @@ namespace UPnP
 
             const QString specVersion() const;
 
+            const QString deviceType() const;
+
+            bool isMediaServer() const;
+
+            bool isInternetGatewayDevice() const;
+
         protected:
             const Herqq::Upnp::HDeviceProxy* m_device;
 
             const QString m_specVersion;
+
+            const QString m_deviceType;
     };
 
 }
