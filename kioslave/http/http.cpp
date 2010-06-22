@@ -2841,7 +2841,10 @@ try_again:
         // Any other client errors
         // Tell that we will only get an error page here.
         if (!sendErrorPageNotification()) {
-            error(ERR_DOES_NOT_EXIST, m_request.url.url());
+            if (m_request.responseCode == 403)
+                error(ERR_ACCESS_DENIED, m_request.url.url());
+            else
+                error(ERR_DOES_NOT_EXIST, m_request.url.url());
             return false;
         }
     } else if (m_request.responseCode == 307) {
