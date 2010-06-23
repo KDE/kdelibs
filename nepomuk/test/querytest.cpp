@@ -54,6 +54,18 @@ Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
 using namespace Nepomuk::Query;
 
+namespace QTest {
+template<>
+char* toString(const Nepomuk::Query::Query& query) {
+    return qstrdup( query.toString().toUtf8().data() );
+}
+
+template<>
+char* toString(const Nepomuk::Query::Term& term) {
+    return qstrdup( term.toString().toUtf8().data() );
+}
+}
+
 
 // this is a tricky one as we nee to match the variable names and order of the queries exactly.
 void QueryTest::testToSparql_data()
@@ -101,9 +113,11 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "negated resource type" )
         << Query( NegationTerm::negateTerm( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) ) )
-        << QString::fromLatin1("select distinct ?r where { FILTER(!bif:exists((select (1) where { ?r a ?v1 . ?v1 %1 %2 . }))) . }")
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()))
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()));
+        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r a ?v1 . ?v1 %1 %2 . }))) . "
+                               "?r %3 ?v2 . } . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
 
     QDateTime now = QDateTime::currentDateTime();
     QTest::newRow( "nie:lastModified" )
@@ -126,8 +140,10 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "negated hastag with resource" )
         << Query( NegationTerm::negateTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
-        << QString::fromLatin1("select distinct ?r where { FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . }")
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . "
+                               "?r %2 ?v1 . } . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+             Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
 
     QTest::newRow( "comparators <" )
         << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::Smaller ) )
@@ -271,6 +287,16 @@ void QueryTest::testToSparql_data()
         << Query( orderByTerm5 )
         << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . } ORDER BY ASC ( count(distinct ?v1) )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()) );
+
+
+    // the empty file query should query all files
+    FileQuery emptyFileQuery;
+    QTest::newRow( "empty file query" )
+        << Query(emptyFileQuery)
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 %2 . } UNION { ?r %1 %3 . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
 
 
     FileQuery fileQuery( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm(QUrl("nepomuk:/res/foobar")) ) );
@@ -422,6 +448,41 @@ void QueryTest::testOptimization()
     and2.setSubTerms(QList<Term>() << and1 << literal);
     optimized = QueryPrivate::optimizeTerm(and2);
     QVERIFY(optimized.isLiteralTerm());
+
+    // make sure duplicate negations are removed
+    QCOMPARE( QueryPrivate::optimizeTerm(
+                  NegationTerm::negateTerm(
+                      NegationTerm::negateTerm(
+                          ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))),
+              Term( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
+
+    // make sure more than two negations are removed
+    QCOMPARE( QueryPrivate::optimizeTerm(
+                  NegationTerm::negateTerm(
+                      NegationTerm::negateTerm(
+                          NegationTerm::negateTerm(
+                              NegationTerm::negateTerm(
+                                  ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))))),
+              Term( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
+
+    // test negation removal and
+    QCOMPARE( QueryPrivate::optimizeTerm(
+                  NegationTerm::negateTerm(
+                      NegationTerm::negateTerm(
+                          NegationTerm::negateTerm(
+                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))),
+              Term( AndTerm( NegationTerm::negateTerm(ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())),
+                             ComparisonTerm(Soprano::Vocabulary::RDF::type(), Term())) ) );
+
+
+    // make sure duplicate optionals are removed
+    QCOMPARE( QueryPrivate::optimizeTerm(
+                  OptionalTerm::optionalizeTerm(
+                      OptionalTerm::optionalizeTerm(
+                          OptionalTerm::optionalizeTerm(
+                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))),
+              Term( OptionalTerm::optionalizeTerm(
+                        ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))) );
 }
 
 QTEST_KDEMAIN_CORE( QueryTest )

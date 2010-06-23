@@ -323,7 +323,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     // optimize whatever we can
     term = QueryPrivate::optimizeTerm( term );
 
-    // actually build the SPARQL query string
+    // actually build the SPARQL query patterns
     QueryBuilderData qbd( flags );
     QString termGraphPattern;
     if( term.isValid() ) {
@@ -333,26 +333,31 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
             return QString();
         }
     }
-    else {
-        // create the "all resources query"
-        termGraphPattern = QString::fromLatin1("graph ?g { ?r a ?t . } . ?g a ?gt . ?gt rdfs:subClassOf nrl:InstanceBase . ");
-    }
 
-    QString query = QString::fromLatin1( "select %1 %2 %3 %4 where { %5 %6 %7 }" )
-                    .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
-                          d->buildRequestPropertyVariableList(),
-                          qbd.customVariables().join( QLatin1String(" ") ),
-                          qbd.buildScoringExpression(),
+    // build the list of variables to select to simplify the query building below
+    const QString selectVariables =
+        QString::fromLatin1( "%1 %2 %3 %4")
+        .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
+              d->buildRequestPropertyVariableList(),
+              qbd.customVariables().join( QLatin1String(" ") ),
+              qbd.buildScoringExpression() );
+
+    // the query itself
+    QString query = QString::fromLatin1( "select %1 where { %2 %3 %4 }" )
+                    .arg( selectVariables,
                           termGraphPattern,
                           d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                           d->buildRequestPropertyPatterns() );
 
+    // add optional order terms
     query += qbd.buildOrderString();
 
+    // offset and limit
     if ( d->m_offset > 0 )
         query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
     if ( d->m_limit > 0 )
         query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
+
     return query.simplified();
 }
 

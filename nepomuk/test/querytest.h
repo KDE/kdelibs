@@ -23,6 +23,8 @@
 #define _NEPOMUK_QUERY_TEST_H_
 
 #include <QtCore/QObject>
+#include "query.h"
+#include "term.h"
 
 class QueryTest : public QObject
 {
