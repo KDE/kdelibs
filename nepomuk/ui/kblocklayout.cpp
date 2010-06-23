@@ -170,11 +170,7 @@ void KBlockLayout::setGeometry( const QRect& rect )
 
 QSize KBlockLayout::sizeHint() const
 {
-    return minimumSize();
-}
-
-QSize KBlockLayout::minimumSize() const
-{
+    // TODO: try to get the items into a square
     QSize size;
     QLayoutItem *item;
     foreach (item, d->itemList) {
@@ -184,8 +180,20 @@ QSize KBlockLayout::minimumSize() const
             size.setHeight(itemSize.height());
         }
     }
-    
+
     size.rwidth() += horizontalSpacing() * d->itemList.count();
+    size += QSize(2*margin(), 2*margin());
+    return size;
+}
+
+QSize KBlockLayout::minimumSize() const
+{
+    QSize size;
+    QLayoutItem *item;
+    foreach (item, d->itemList) {
+        size = size.expandedTo(item->minimumSize());
+    }
+
     size += QSize(2*margin(), 2*margin());
     return size;
 }
