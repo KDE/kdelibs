@@ -856,11 +856,14 @@ int Nepomuk::Resource::usageCount() const
 void Nepomuk::Resource::increaseUsageCount()
 {
     int cnt = 0;
+    const QDateTime now = QDateTime::currentDateTime();
     if( hasProperty( Vocabulary::NUAO::usageCount() ) )
         cnt = property( Vocabulary::NUAO::usageCount() ).toInt();
+    else
+        setProperty( Vocabulary::NUAO::firstUsage(), now );
     ++cnt;
     setProperty( Vocabulary::NUAO::usageCount(), cnt );
-    setProperty( Vocabulary::NUAO::lastUsage(), QDateTime::currentDateTime() );
+    setProperty( Vocabulary::NUAO::lastUsage(), now );
 }
 
 
