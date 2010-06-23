@@ -636,7 +636,7 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
         // Exact selection and SubTreeRoots and SubTrees in top level
         // Emit continuous ranges.
         QList<int> changedRows;
-        for (int row = topLeft.row(); row < bottomRight.row(); ++row) {
+        for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
             const QModelIndex index = q->sourceModel()->index(row, topLeft.column(), topLeft.parent());
             const int idx = m_rootIndexList.indexOf(index);
             if (idx != -1) {
