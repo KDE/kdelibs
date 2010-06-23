@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,6 +22,9 @@
 #include "groupterm.h"
 #include "andterm.h"
 #include "orterm.h"
+#include "comparisonterm.h"
+#include "negationterm.h"
+#include "optionalterm.h"
 
 // static
 Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeTerm( const Nepomuk::Query::Term& term )
@@ -55,8 +58,19 @@ Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeTerm( const Nepomuk::
             return Nepomuk::Query::OrTerm( newSubTerms );
     }
 
+    case Nepomuk::Query::Term::Negation:
+        return NegationTerm::negateTerm( optimizeTerm( term.toNegationTerm().subTerm() ) );
+
+    case Nepomuk::Query::Term::Optional:
+        return OptionalTerm::optionalizeTerm( optimizeTerm( term.toOptionalTerm().subTerm() ) );
+
+    case Nepomuk::Query::Term::Comparison: {
+        ComparisonTerm ct( term.toComparisonTerm() );
+        ct.setSubTerm( optimizeTerm( ct.subTerm() ) );
+        return ct;
+    }
+
     default:
         return term;
     }
 }
-
