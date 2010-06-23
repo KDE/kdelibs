@@ -50,7 +50,8 @@ static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
         }
         case KUriFilterData::Executable:
         {
-            QString exeName = url.url().mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
+            QString exeName = url.url();
+            exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
             KService::Ptr service = KService::serviceByDesktopName( exeName );
             if (service && service->icon() != QLatin1String( "unknown" ))
                 iconName = service->icon();
