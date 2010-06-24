@@ -32,8 +32,8 @@ public:
     ~BorderArcStroker();
 
     void setArc(const QRectF &r, qreal startAngle, qreal _sweepLength) { rect = r; angle = startAngle; sweepLength = _sweepLength; }
-    void setPenWidth(qreal leftRight, qreal topBottom) { hlw = leftRight; vlw = topBottom; }
-    void setDashPattern(qreal dashLength, qreal spaceLength) { pattern[0] = dashLength; pattern[1] = spaceLength; }
+    void setPenWidth(qreal leftRight, qreal topBottom);
+    void setDashPattern(qreal dashLength, qreal spaceLength);
     void setDashOffset(qreal offset) { patternOffset = offset; }
 
     QPainterPath createStroke(qreal *nextOffset = 0) const;
@@ -47,6 +47,18 @@ private:
     qreal patternOffset;
     qreal pattern[2];
 };
+
+inline void BorderArcStroker::setPenWidth(qreal leftRight, qreal topBottom)
+{
+    hlw = qMax(.1, leftRight);
+    vlw = qMax(.1, topBottom);
+}
+
+inline void BorderArcStroker::setDashPattern(qreal dashLength, qreal spaceLength)
+{
+    pattern[0] = qMax(.1, dashLength);
+    pattern[1] = qMax(.1, spaceLength);
+}
 
 } // namespace khtml
 

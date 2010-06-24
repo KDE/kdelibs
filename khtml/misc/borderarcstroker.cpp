@@ -168,7 +168,7 @@ QPointF KCubicBezier::deltaAt(qreal t) const
 qreal KCubicBezier::slopeAt(qreal t) const
 {
     const QPointF delta = deltaAt(t);
-    return qFuzzyCompare(delta.x() + 1.0, 1.0) ?
+    return qFuzzyIsNull(delta.x()) ?
                 (delta.y() < 0 ? -1 : 1) : delta.y() / delta.x();
 }
 
@@ -362,7 +362,7 @@ QPainterPath BorderArcStroker::createStroke(qreal *nextOffset) const
     else
         initialWidth = sweepLength > 0 ? vlw : hlw;
 
-    const qreal finalWidth = QLineF(outer.p3(), inner.p3()).length();
+    const qreal finalWidth = qMax(.1, QLineF(outer.p3(), inner.p3()).length());
     const qreal dashAspect  = (pattern[0] / initialWidth);
     const qreal spaceAspect = (pattern[1] / initialWidth);
     const qreal length = inner.length();
