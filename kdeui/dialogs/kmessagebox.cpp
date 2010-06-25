@@ -137,7 +137,8 @@ static void sendNotification( QString message, //krazy:exclude=passbyvalue
     }
 
     if ( !message.isEmpty() ) {
-        KNotification::event( messageType, message , QPixmap() , QWidget::find( parent_id ) );
+        KNotification::event( messageType, message, QPixmap(), QWidget::find( parent_id ),
+                              KNotification::DefaultEvent | KNotification::CloseOnTimeout );
     }
 }
 
