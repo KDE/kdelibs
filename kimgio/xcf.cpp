@@ -845,6 +845,9 @@ bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_siz
 	uchar* xcfodata;
 	uchar* xcfdatalimit;
 
+	if (data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5))
+		goto bogus_rle;
+
 	xcfdata = xcfodata = new uchar[data_length];
 
 	xcf_io.readRawData((char*)xcfdata, data_length);
