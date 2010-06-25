@@ -175,12 +175,12 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
     {
         case ATTR_TYPE:
         case ATTR_CODETYPE:
-	    if (attr->val()) {
-	      DOM::DOMStringImpl *stringImpl = attr->val();
-	      QString val = QString::fromRawData( stringImpl->s, stringImpl->l );
-	      setServiceType( val );
-              setNeedComputeContent();
-	    }
+            if (attr->val()) {
+                DOM::DOMStringImpl *stringImpl = attr->val();
+                QString val = QString( stringImpl->s, stringImpl->l );
+                setServiceType( val );
+                setNeedComputeContent();
+            }
             break;
         case ATTR_WIDTH:
             if (!attr->value().isEmpty())
