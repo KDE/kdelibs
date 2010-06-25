@@ -494,14 +494,24 @@ void RenameDialog::applyAllPressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         d->m_pLineEdit->setText(KIO::decodeFileName(d->dest.fileName()));
-        d->bSuggestNewName->setEnabled(false);
         d->m_pLineEdit->setEnabled(false);
-        d->bRename->setEnabled(true);
+
+        if (d->bRename) {
+            d->bRename->setEnabled(true);
+        }
+        if (d->bSuggestNewName) {
+            d->bSuggestNewName->setEnabled(false);
+        }
     }
     else {
-        d->bSuggestNewName->setEnabled(true);
         d->m_pLineEdit->setEnabled(true);
-        d->bRename->setEnabled(false);
+
+        if (d->bRename) {
+            d->bRename->setEnabled(false);
+        }
+        if (d->bSuggestNewName) {
+            d->bSuggestNewName->setEnabled(true);
+        }
     }
 }
 
