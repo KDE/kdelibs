@@ -464,6 +464,10 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   KApplication::KApp = q;
 
+  // make sure the clipboard is created before setting the window icon (bug 209263)
+  if(GUIenabled)
+    (void) QApplication::clipboard();
+
   parseCommandLine();
 
   if(GUIenabled)
