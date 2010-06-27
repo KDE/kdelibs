@@ -627,6 +627,11 @@ bool KHTMLPart::restoreURL( const KUrl &url )
 
 bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
 {
+    // kio_help actually uses fragments to identify different pages, so
+    // always reload with it.
+    if (url.protocol() == QLatin1String("help"))
+        return false;
+    
     return url.hasRef() && url.equals( q->url(),
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
 }
@@ -2691,6 +2696,8 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   // Implement the rule that "" and "top" both mean top of page as in other browsers.
   bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.toLower() == "top");
 
+  kDebug() << "MOO: " << quirkyName;
+  
   if (quirkyName) {
       d->m_view->setContentsPos( d->m_view->contentsX(), 0);
       return true;
