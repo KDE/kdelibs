@@ -627,6 +627,11 @@ bool KHTMLPart::restoreURL( const KUrl &url )
 
 bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
 {
+    // kio_help actually uses fragments to identify different pages, so
+    // always reload with it.
+    if (url.protocol() == QLatin1String("help"))
+        return false;
+    
     return url.hasRef() && url.equals( q->url(),
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
 }
