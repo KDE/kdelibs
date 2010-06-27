@@ -2696,8 +2696,6 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   // Implement the rule that "" and "top" both mean top of page as in other browsers.
   bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.toLower() == "top");
 
-  kDebug() << "MOO: " << quirkyName;
-  
   if (quirkyName) {
       d->m_view->setContentsPos( d->m_view->contentsX(), 0);
       return true;
