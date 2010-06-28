@@ -723,9 +723,9 @@ QString HalDevice::volumeDescription() const
 
             case Solid::OpticalDisc::DvdPlusRecordableDuallayer:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD-R Dual-Layer");
+                    description = QObject::tr("Blank DVD+R Dual-Layer");
                 else
-                    description = QObject::tr("DVD-R Dual-Layer");
+                    description = QObject::tr("DVD+R Dual-Layer");
                 break;
 
             case Solid::OpticalDisc::DvdRewritable:
@@ -751,9 +751,9 @@ QString HalDevice::volumeDescription() const
 
             case Solid::OpticalDisc::DvdPlusRewritableDuallayer:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD+R Dual-Layer");
+                    description = QObject::tr("Blank DVD+RW Dual-Layer");
                 else
-                    description = QObject::tr("DVD+R Dual-Layer");
+                    description = QObject::tr("DVD+RW Dual-Layer");
                 break;
 
             case Solid::OpticalDisc::BluRayRom:
