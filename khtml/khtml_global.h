@@ -30,10 +30,13 @@
 class KComponentData;
 class KIconLoader;
 class KAboutData;
-class HistoryProvider;
 class KHTMLSettings;
 class KHTMLPart;
 
+namespace KParts
+{
+  class HistoryProvider;
+}
 namespace DOM
 {
   class DocumentImpl;
