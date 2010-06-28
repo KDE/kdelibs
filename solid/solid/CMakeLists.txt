@@ -2,10 +2,10 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory( ifaces )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
-find_path( HUpnp_INCLUDE_DIRS HUpnp )
-find_library( HUpnp_LIBS HUpnp )
+#find_path( HUpnp_INCLUDE_DIRS HUpnp )
+#find_library( HUpnp_LIBS HUpnp )
 
-include_directories( ${HUpnp_INCLUDE_DIRS} )
+#include_directories( ${HUpnp_INCLUDE_DIRS} )
 
 if(WIN32)
    include_directories( ${KDEWIN_INCLUDES} )
@@ -79,7 +79,7 @@ set(solid_LIB_SRCS
    networking.cpp
    video.cpp
    smartcardreader.cpp
-   internetgateway.cpp
+#   internetgateway.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -103,7 +103,7 @@ set(solid_LIB_SRCS
    ifaces/storageaccess.cpp
    ifaces/video.cpp
    ifaces/smartcardreader.cpp
-   ifaces/internetgateway.cpp
+#   ifaces/internetgateway.cpp
 
    backends/fakehw/fakeacadapter.cpp
    backends/fakehw/fakeaudiointerface.cpp
@@ -146,16 +146,16 @@ if(NOT WIN32 AND NOT APPLE)
 
    )
 
-   message(STATUS "-- Building Solid UPnP backend." )
-   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+#   message(STATUS "-- Building Solid UPnP backend." )
+#   set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
-   backends/upnp/upnpdevice.cpp
-   backends/upnp/upnpdevicemanager.cpp
-   backends/upnp/upnpdeviceinterface.cpp
-   backends/upnp/upnpmediaserver.cpp
-   backends/upnp/upnpinternetgatewaydevice.cpp
+#   backends/upnp/upnpdevice.cpp
+#   backends/upnp/upnpdevicemanager.cpp
+#   backends/upnp/upnpdeviceinterface.cpp
+#   backends/upnp/upnpmediaserver.cpp
+#   backends/upnp/upnpinternetgatewaydevice.cpp
 
-   )
+#   )
 
    message(STATUS "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -270,7 +270,7 @@ endif(APPLE)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} ${HUpnp_LIBS} )
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )#${HUpnp_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
 set_target_properties(solid PROPERTIES
