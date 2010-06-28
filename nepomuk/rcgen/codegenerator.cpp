@@ -263,7 +263,7 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
             if( rc->generateClass() ) {
-                const QString decl = m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc, false );
+                const QString decl = m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc );
                 if ( decl.isEmpty() )
                     continue;
                 ms << writeComment( QString("Nepomuk does not support multiple inheritance. Thus, to access "
@@ -282,7 +282,7 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
                                     "in the local Nepomuk meta data storage and any changes made locally. "
                                     "Be aware that in some cases this list can get very big. Then it might "
                                     "be better to use libKNep directly.").arg( resourceClass->name() ), 2*4 ) << endl;
-        ms << "        static " << m_code->resourceAllResourcesDeclaration( resourceClass, false ) << ";" << endl;
+        ms << "        static " << m_code->resourceAllResourcesDeclaration( resourceClass ) << ";" << endl;
     }
 
     QString includeString;
@@ -326,7 +326,7 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
         }
 
         if ( !p->hasSimpleType() ) {
-            includes.append( QString( "#include \"%1.h\"" ).arg( p->typeString( true, false ).toLower() ) );
+            includes.append( QString( "#include \"%1.h\"" ).arg( p->typeString( true ).toLower() ) );
         }
 
         if ( m_mode == SafeMode )

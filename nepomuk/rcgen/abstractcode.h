@@ -93,7 +93,7 @@ class AbstractCode
          */
         virtual QString resourcePseudoInheritanceDeclaration( const ResourceClass* resourceBaseClass,
                                                               const ResourceClass* resourceClass,
-                                                              const QString &nameSpace ) const = 0;
+                                                              const QString &nameSpace = QString() ) const = 0;
 
         /**
          * Returns the definition of the property setter method.
