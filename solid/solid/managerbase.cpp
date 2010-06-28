@@ -28,9 +28,11 @@
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
 #include "backends/kupnp/kupnpmanager.h"
+#include "backends/upnp/upnpdevicemanager.h"
 #elif defined (Q_WS_WIN) && defined(HAVE_WBEM)
 #include "backends/wmi/wmimanager.h"
 #endif
+
 
 Solid::ManagerBasePrivate::ManagerBasePrivate()
 {
@@ -52,7 +54,8 @@ void Solid::ManagerBasePrivate::loadBackends()
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 #        elif defined (Q_OS_UNIX)
             m_backends << new Solid::Backends::Hal::HalManager(0)
-                       << new Solid::Backends::KUPnP::KUPnPManager(0);
+                       << new Solid::Backends::KUPnP::KUPnPManager(0)
+                       << new Solid::Backends::UPnP::UPnPDeviceManager(0);
 #        elif defined (Q_WS_WIN) && defined(HAVE_WBEM)
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        endif
