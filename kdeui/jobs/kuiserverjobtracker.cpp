@@ -95,16 +95,17 @@ void KUiServerJobTracker::registerJob(KJob *job)
                                                                             programIconName,
                                                                             job->capabilities());
 
-    if (!jobWatch) {
-        //kDebug() << "deleted out from under us when asking the server proxy for the view";
-        return;
-    }
-
     // If we got a valid reply, register the interface for later usage.
     if (reply.isValid()) {
         org::kde::JobViewV2 *jobView = new org::kde::JobViewV2("org.kde.JobViewServer",
                                                            reply.value().path(),
                                                            QDBusConnection::sessionBus());
+        if (!jobWatch) {
+            //kDebug() << "deleted out from under us when asking the server proxy for the view";
+            jobView->terminate(QString());
+            delete jobView;
+            return;
+        }
 
         QObject::connect(jobView, SIGNAL(cancelRequested()), this,
                          SLOT(_k_killJob()));
@@ -120,11 +121,16 @@ void KUiServerJobTracker::registerJob(KJob *job)
 
         if (!jobWatch) {
             //kDebug() << "deleted out from under us when creating the dbus interface";
+            jobView->terminate(QString());
             delete jobView;
             return;
         }
 
         d->progressJobView.insert(job, jobView);
+    } else if (!jobWatch) {
+        qWarning() << "Uh-oh...KUiServerJobTracker was trying to forward a job, but it was deleted from under us."
+        << "kuiserver *may* have a stranded job. we can't do anything about it because the returned objectPath is invalid.";
+        return;
     }
 
     KJobTrackerInterface::registerJob(job);
