@@ -481,6 +481,8 @@ public:
     */
     QModelIndex mapParentFromSource(const QModelIndex &sourceParent) const;
 
+    QModelIndex mapTopLevelToSource(int row, int column) const;
+
     void* parentId(const QModelIndex &proxyParent) const { return m_parentIds.rightToLeft(proxyParent); }
     QModelIndex parentForId(void *id) const { return m_parentIds.leftToRight(id); }
 
@@ -2024,6 +2026,27 @@ void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent
     }
 }
 
+QModelIndex KSelectionProxyModelPrivate::mapTopLevelToSource(int row, int column) const
+{
+    if (!m_startWithChildTrees)
+    {
+        const QModelIndex idx = m_rootIndexList.at(row);
+        return idx.sibling(idx.row(), column);
+    }
+
+    if (m_mappedFirstChildren.isEmpty())
+      return QModelIndex();
+
+    SourceIndexProxyRowMapping::right_const_iterator result = m_mappedFirstChildren.rightUpperBound(row) - 1;
+
+    Q_ASSERT(result != m_mappedFirstChildren.rightEnd());
+
+    const int proxyFirstRow = result.key();
+    const QModelIndex sourceFirstChild = result.value();
+    Q_ASSERT(sourceFirstChild.isValid());
+    return sourceFirstChild.sibling(row - proxyFirstRow, column);
+}
+
 QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
     Q_D(const KSelectionProxyModel);
@@ -2034,26 +2057,8 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
     Q_ASSERT(proxyIndex.internalPointer() >= 0);
     Q_ASSERT(proxyIndex.model() == this);
 
-    if (proxyIndex.internalPointer() == 0) {
-        const int column = proxyIndex.column();
-        if (!d->m_startWithChildTrees)
-        {
-            const QModelIndex idx = d->m_rootIndexList.at(proxyIndex.row());
-            return idx.sibling(idx.row(), column);
-        }
-
-        if (d->m_mappedFirstChildren.isEmpty())
-          return QModelIndex();
-
-        SourceIndexProxyRowMapping::right_const_iterator result = d->m_mappedFirstChildren.rightUpperBound(proxyIndex.row()) - 1;
-
-        Q_ASSERT(result != d->m_mappedFirstChildren.rightEnd());
-
-        const int proxyFirstRow = result.key();
-        const QModelIndex sourceFirstChild = result.value();
-        Q_ASSERT(sourceFirstChild.isValid());
-        return sourceFirstChild.sibling(proxyIndex.row() - proxyFirstRow, column);
-    }
+    if (proxyIndex.internalPointer() == 0)
+        return d->mapTopLevelToSource(proxyIndex.row(), proxyIndex.column());
 
     const QModelIndex proxyParent = d->parentForId(proxyIndex.internalPointer());
     Q_ASSERT(proxyParent.isValid());
