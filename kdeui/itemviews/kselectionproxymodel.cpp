@@ -25,11 +25,12 @@
 
 #include "kmodelindexproxymapper.h"
 #include "kbihash_p.h"
+#include "kvoidpointerfactory_p.h"
 
 #include "kdebug.h"
 
 typedef KBiHash<QPersistentModelIndex, QModelIndex> SourceProxyIndexMapping;
-typedef KBiHash<qint64, QModelIndex> ParentMapping;
+typedef KBiHash<void*, QModelIndex> ParentMapping;
 typedef KHash2Map<QPersistentModelIndex, int> SourceIndexProxyRowMapping;
 
 #define KDO(object) kDebug() << #object << object
@@ -387,8 +388,7 @@ public:
             m_resetting(false),
             m_ignoreNextLayoutAboutToBeChanged(false),
             m_ignoreNextLayoutChanged(false),
-            m_selectionModel(selectionModel),
-            m_nextId(1)
+            m_selectionModel(selectionModel)
     {
       // QItemSelectionModel doesn't clear its selection when its model is reset so we do it manually here.
       // Fixed in Qt 4.7: http://qt.gitorious.org/qt/qt/merge_requests/639
@@ -398,7 +398,7 @@ public:
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
     KSelectionProxyModel * const q_ptr;
 
-    // A unique id is generated for each parent. It is used for the internalId of its children in the proxy
+    // A unique id is generated for each parent. It is used for the internalPointer of its children in the proxy
     // This is used to store a unique id for QModelIndexes in the proxy which have children.
     // If an index newly gets children it is added to this hash. If its last child is removed it is removed from this map.
     // If this map contains an index, that index hasChildren(). This hash is populated when new rows are inserted in the
@@ -407,6 +407,8 @@ public:
     // This mapping maps indexes with children in the source to indexes with children in the proxy.
     // The order of indexes in this list is not relevant.
     mutable SourceProxyIndexMapping m_mappedParents;
+
+    KVoidPointerFactory<> m_voidPointerFactory;
 
     /**
       Keeping Persistent indexes from this model in this model breaks in certain situations
@@ -551,7 +553,6 @@ public:
     bool m_ignoreNextLayoutAboutToBeChanged;
     bool m_ignoreNextLayoutChanged;
     QItemSelectionModel * const m_selectionModel;
-    mutable qint64 m_nextId;
 
     KSelectionProxyModel::FilterBehavior m_filterBehavior;
 
@@ -759,7 +760,7 @@ void KSelectionProxyModelPrivate::resetInternalData()
     m_mappedParents.clear();
     m_parentIds.clear();
     m_mappedFirstChildren.clear();
-    m_nextId = 1;
+    m_voidPointerFactory.clear();
 }
 
 void KSelectionProxyModelPrivate::sourceModelDestroyed()
@@ -1866,7 +1867,7 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
 
     SourceProxyIndexMapping::left_iterator mappedParentIt = m_mappedParents.leftBegin();
 
-    QHash<qint64, QModelIndex> updatedParentIds;
+    QHash<void*, QModelIndex> updatedParentIds;
     QHash<QPersistentModelIndex, QModelIndex> updatedParents;
 
     for ( ; mappedParentIt != m_mappedParents.leftEnd(); ++mappedParentIt) {
@@ -1886,7 +1887,7 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
                 continue;
         }
         Q_ASSERT(m_parentIds.rightContains(proxyIndex));
-        const qint64 key = m_parentIds.rightToLeft(proxyIndex);
+        void * const key = m_parentIds.rightToLeft(proxyIndex);
 
         const QModelIndex newIndex = q->createIndex(proxyIndex.row() + offset, proxyIndex.column(), proxyIndex.internalPointer());
 
@@ -1904,8 +1905,8 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
     }
 
     {
-        QHash<qint64, QModelIndex>::const_iterator it = updatedParentIds.constBegin();
-        const QHash<qint64, QModelIndex>::const_iterator end = updatedParentIds.constEnd();
+        QHash<void*, QModelIndex>::const_iterator it = updatedParentIds.constBegin();
+        const QHash<void*, QModelIndex>::const_iterator end = updatedParentIds.constEnd();
         for ( ; it != end; ++it)
             m_parentIds.insert(it.key(), it.value());
     }
@@ -1964,7 +1965,7 @@ void KSelectionProxyModelPrivate::createParentMappings(const QModelIndex &parent
         if (!proxyIndex.isValid())
             return; // If one of them is not mapped, its siblings won't be either
 
-        const qint64 newId = m_nextId++;
+        void * const newId = m_voidPointerFactory.createPointer();
         m_parentIds.insert(newId, proxyIndex);
         Q_ASSERT(srcIndex.isValid());
         m_mappedParents.insert(QPersistentModelIndex(srcIndex), proxyIndex);
@@ -2024,10 +2025,10 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
     if (!proxyIndex.isValid() || !sourceModel() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
-    Q_ASSERT(proxyIndex.internalId() >= 0);
+    Q_ASSERT(proxyIndex.internalPointer() >= 0);
     Q_ASSERT(proxyIndex.model() == this);
 
-    if (proxyIndex.internalId() == 0) {
+    if (proxyIndex.internalPointer() == 0) {
         const int column = proxyIndex.column();
         if (!d->m_startWithChildTrees)
         {
@@ -2048,7 +2049,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
         return sourceFirstChild.sibling(proxyIndex.row() - proxyFirstRow, column);
     }
 
-    const QModelIndex proxyParent = d->m_parentIds.leftToRight(proxyIndex.internalId());
+    const QModelIndex proxyParent = d->m_parentIds.leftToRight(proxyIndex.internalPointer());
     Q_ASSERT(proxyParent.isValid());
     const QModelIndex sourceParent = d->mapParentToSource(proxyParent);
     Q_ASSERT(sourceParent.isValid());
@@ -2086,11 +2087,12 @@ bool KSelectionProxyModelPrivate::mapToParent(const QModelIndex &parent) const
     {
         const QModelIndex existingAncestor = mapParentFromSource(ancestor);
         Q_ASSERT(existingAncestor.isValid());
-        qint64 ansId = m_parentIds.rightToLeft(existingAncestor);
-        const QModelIndex newSourceParent = ancestorList.at(i);
-        const QModelIndex newProxyParent = q->createIndex(newSourceParent.row(), newSourceParent.column(), reinterpret_cast<void *>(ansId));
 
-        const qint64 newId = m_nextId++;
+        void * const ansId = m_parentIds.rightToLeft(existingAncestor);
+        const QModelIndex newSourceParent = ancestorList.at(i);
+        const QModelIndex newProxyParent = q->createIndex(newSourceParent.row(), newSourceParent.column(), ansId);
+
+        void * const newId = m_voidPointerFactory.createPointer();
         m_parentIds.insert(newId, newProxyParent);
         m_mappedParents.insert(QPersistentModelIndex(newSourceParent), newProxyParent);
         ancestor = newSourceParent;
@@ -2144,9 +2146,9 @@ QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &source
 
     const QModelIndex proxyParent = mapParentFromSource(sourceParent);
     if (proxyParent.isValid()) {
-        const qint64 parentId = m_parentIds.rightToLeft(proxyParent);
+        void * const parentId = m_parentIds.rightToLeft(proxyParent);
         static const int column = 0;
-        return q->createIndex(sourceIndex.row(), column, reinterpret_cast<void *>(parentId));
+        return q->createIndex(sourceIndex.row(), column, parentId);
     }
 
     if (!m_startWithChildTrees)
@@ -2251,8 +2253,8 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
     } else {
         Q_ASSERT(d->m_startWithChildTrees ? true : d->m_parentIds.rightContains(parent));
 
-        const qint64 parentId = d->m_parentIds.rightToLeft(parent);
-        return createIndex(row, column, reinterpret_cast<void *>(parentId));
+        void * const parentId = d->m_parentIds.rightToLeft(parent);
+        return createIndex(row, column, parentId);
     }
 }
 
@@ -2265,9 +2267,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
 
     Q_ASSERT(index.model() == this);
 
-    const qint64 parentId = index.internalId();
-
-    return d->m_parentIds.leftToRight(parentId);
+    return d->m_parentIds.leftToRight(index.internalPointer());
 }
 
 Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
