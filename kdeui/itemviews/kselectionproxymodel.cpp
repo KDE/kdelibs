@@ -441,7 +441,7 @@ public:
      * Tries to ensure that @p parent is a mapped parent in the proxy.
      * Returns true if parent is mappable in the model, and false otherwise.
      */
-    bool mapToParent(const QModelIndex &parent) const;
+    bool ensureMappable(const QModelIndex &parent) const;
 
     /**
      * Maps @p parent to source if it is already mapped, and otherwise returns an invalid QModelIndex.
@@ -2058,7 +2058,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
     return sourceModel()->index(proxyIndex.row(), proxyIndex.column(), sourceParent);
 }
 
-bool KSelectionProxyModelPrivate::mapToParent(const QModelIndex &parent) const
+bool KSelectionProxyModelPrivate::ensureMappable(const QModelIndex &parent) const
 {
     Q_Q(const KSelectionProxyModel);
 
@@ -2114,7 +2114,7 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
     if (!sourceIndex.isValid())
         return QModelIndex();
 
-    if (!d->mapToParent(sourceIndex))
+    if (!d->ensureMappable(sourceIndex))
         return QModelIndex();
 
     return d->mapFromSource(sourceIndex);
