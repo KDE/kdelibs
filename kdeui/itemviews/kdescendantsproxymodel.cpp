@@ -54,7 +54,6 @@ class KDescendantsProxyModelPrivate
   void scheduleProcessPendingParents() const;
   void processPendingParents();
 
-  QVector<QPersistentModelIndex> getParentItems(const QModelIndex &parent) const;
   void synchronousMappingRefresh();
 
   void updateInternalIndexes(int start, int offset);
@@ -94,23 +93,9 @@ void KDescendantsProxyModelPrivate::resetInternalData()
 {
   m_rowCount = 0;
   m_mapping.clear();
+  m_parentMapping.clear();
   m_layoutChangePersistentIndexes.clear();
   m_proxyIndexes.clear();
-}
-
-QVector<QPersistentModelIndex> KDescendantsProxyModelPrivate::getParentItems(const QModelIndex& parent) const
-{
-  Q_Q(const KDescendantsProxyModel);
-  const int rowCount = q->sourceModel()->rowCount(parent);
-  QVector<QPersistentModelIndex> list;
-  for (int row = 0; row < rowCount; ++row)
-  {
-    static const int column = 0;
-    const QModelIndex idx = q->sourceModel()->index(row, column, parent);
-    if (q->sourceModel()->hasChildren(idx))
-      list << QPersistentModelIndex(idx);
-  }
-  return list;
 }
 
 void KDescendantsProxyModelPrivate::synchronousMappingRefresh()
