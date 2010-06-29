@@ -93,7 +93,6 @@ void KDescendantsProxyModelPrivate::resetInternalData()
 {
   m_rowCount = 0;
   m_mapping.clear();
-//  m_parentMapping.clear();
   m_layoutChangePersistentIndexes.clear();
   m_proxyIndexes.clear();
 }
