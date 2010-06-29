@@ -442,6 +442,7 @@ public:
      * Returns true if parent is mappable in the model, and false otherwise.
      */
     bool ensureMappable(const QModelIndex &parent) const;
+    bool parentIsMappable(const QModelIndex &parent) const { return parentAlreadyMapped(parent) || m_rootIndexList.contains(parent); }
 
     /**
      * Maps @p parent to source if it is already mapped, and otherwise returns an invalid QModelIndex.
@@ -2065,18 +2066,18 @@ bool KSelectionProxyModelPrivate::ensureMappable(const QModelIndex &parent) cons
     if (isFlat())
         return true;
 
-    if (parentAlreadyMapped(parent) || m_rootIndexList.contains(parent))
+    if (parentIsMappable(parent))
         return true;
 
     QModelIndex ancestor = parent.parent();
     QModelIndexList ancestorList;
     while (ancestor.isValid())
     {
-        if (!parentAlreadyMapped(ancestor) && !m_rootIndexList.contains(ancestor))
-            ancestorList.prepend(ancestor);
-        else {
+        if (parentIsMappable(ancestor))
             break;
-        }
+        else
+            ancestorList.prepend(ancestor);
+
         ancestor = ancestor.parent();
     }
 
