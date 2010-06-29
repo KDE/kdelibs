@@ -2442,4 +2442,78 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
     return list;
 }
 
+QItemSelection KSelectionProxyModel::mapSelectionFromSource(const QItemSelection& selection) const
+{
+    Q_D(const KSelectionProxyModel);
+    if (!d->m_startWithChildTrees && d->m_includeAllSelected)
+        return QAbstractProxyModel::mapSelectionFromSource(selection);
+
+    QItemSelection proxySelection;
+    QItemSelection::const_iterator it = selection.constBegin();
+    const QItemSelection::const_iterator end = selection.constEnd();
+    for ( ; it != end; ++it) {
+        const QModelIndex proxyTopLeft = mapFromSource(it->topLeft());
+        if (!proxyTopLeft.isValid())
+            continue;
+
+        if (it->height() == 1 && it->width() == 1)
+            proxySelection.append(QItemSelectionRange(proxyTopLeft, proxyTopLeft));
+        else
+            proxySelection.append(QItemSelectionRange(proxyTopLeft, d->mapFromSource(it->bottomRight())));
+    }
+    return proxySelection;
+}
+
+QItemSelection KSelectionProxyModel::mapSelectionToSource(const QItemSelection& selection) const
+{
+    Q_D(const KSelectionProxyModel);
+
+    if (selection.isEmpty())
+        return selection;
+
+    if (!d->m_startWithChildTrees && d->m_includeAllSelected)
+        return QAbstractProxyModel::mapSelectionToSource(selection);
+
+    QItemSelection sourceSelection;
+    QItemSelection extraSelection;
+    QItemSelection::const_iterator it = selection.constBegin();
+    const QItemSelection::const_iterator end = selection.constEnd();
+    for ( ; it != end; ++it) {
+        const QModelIndex sourceTopLeft = mapToSource(it->topLeft());
+        if (it->height() == 1 && it->width() == 1) {
+            sourceSelection.append(QItemSelectionRange(sourceTopLeft, sourceTopLeft));
+        } else if (it->parent().isValid()) {
+            sourceSelection.append(QItemSelectionRange(sourceTopLeft, mapToSource(it->bottomRight())));
+        } else {
+            // A contiguous selection in the proxy might not be contiguous in the source if it
+            // is at the top level of the proxy.
+            if (d->m_startWithChildTrees) {
+                const QModelIndex sourceParent = mapFromSource(sourceTopLeft);
+                Q_ASSERT(sourceParent.isValid());
+                const int rowCount = sourceModel()->rowCount(sourceParent);
+                if (rowCount < it->bottom()) {
+                    sourceSelection.append(QItemSelectionRange(sourceTopLeft, mapToSource(it->bottomRight())));
+                    continue;
+                }
+                // Store the contiguous part...
+                const QModelIndex sourceBottomRight = sourceModel()->index(rowCount - 1, it->right(), sourceParent);
+                sourceSelection.append(QItemSelectionRange(sourceTopLeft, sourceBottomRight));
+                // ... and the rest will be processed later.
+                extraSelection.append(QItemSelectionRange(createIndex(it->top() - rowCount, it->right()), it->bottomRight()));
+            } else {
+                QItemSelection topSelection;
+                topSelection.append(QItemSelectionRange(sourceTopLeft, mapToSource(createIndex(it->top(), it->right()))));
+                for (int i = it->top() + 1; i < it->bottom(); ++it) {
+                  const QModelIndex left = mapToSource(createIndex(i, 0));
+                  const QModelIndex right = mapToSource(createIndex(i, it->right()));
+                  topSelection.append(QItemSelectionRange(left, right));
+                }
+                sourceSelection += normalizeSelection(topSelection);
+            }
+        }
+    }
+    sourceSelection << mapSelectionToSource(extraSelection);
+    return sourceSelection;
+}
+
 #include "moc_kselectionproxymodel.cpp"

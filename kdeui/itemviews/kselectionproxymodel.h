@@ -236,6 +236,9 @@ public:
     QModelIndex mapFromSource(const QModelIndex & sourceIndex) const;
     QModelIndex mapToSource(const QModelIndex & proxyIndex) const;
 
+    QItemSelection mapSelectionFromSource(const QItemSelection& selection) const;
+    QItemSelection mapSelectionToSource(const QItemSelection& selection) const;
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
