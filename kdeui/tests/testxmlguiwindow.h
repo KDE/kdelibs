@@ -35,7 +35,7 @@
 class TestXmlGuiWindow : public KXmlGuiWindow
 {
 public:
-    TestXmlGuiWindow(const QByteArray& xml) : KXmlGuiWindow() {
+    TestXmlGuiWindow(const QByteArray& xml = QByteArray()) : KXmlGuiWindow() {
         QVERIFY(m_userFile.open());
         m_userFile.write(xml);
         m_fileName = m_userFile.fileName(); // remember filename
@@ -44,6 +44,9 @@ public:
     }
     void createGUI() {
         KXmlGuiWindow::createGUI(m_fileName);
+    }
+    void createGUIBad() {
+        KXmlGuiWindow::createGUI("dontexist.rc");
     }
 
     // Same as in KMainWindow_UnitTest

@@ -762,10 +762,9 @@ void KXmlGui_UnitTest::testTopLevelSeparator() {
         " <Menu name=\"after_separator\"><text>After Separator</text></Menu>\n"
         "</MenuBar>\n"
         "</gui>";
-    
+
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(false);
-    mainWindow.createActions(QStringList());
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
@@ -776,8 +775,10 @@ void KXmlGui_UnitTest::testTopLevelSeparator() {
                  << "help");
 }
 
-void KXmlGui_UnitTest::testMenuNames() {
-    const QByteArray xml = 
+// Check that the objectName() of the menus is set from the name in the XML file
+void KXmlGui_UnitTest::testMenuNames()
+{
+    const QByteArray xml =
         "<?xml version = '1.0'?>\n"
         "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
         "<gui version=\"1\" name=\"foo\" >\n"
@@ -785,15 +786,26 @@ void KXmlGui_UnitTest::testMenuNames() {
         " <Menu name=\"filemenu\"><text>File Menu</text></Menu>\n"
         "</MenuBar>\n"
         "</gui>";
-    
+
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(false);
-    mainWindow.createActions(QStringList());
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
                  << "filemenu"
                  << "separator"
+                 << "help" );
+}
+
+// Test what happens when the application's rc file isn't found
+// We want a warning to be printed, but we don't want to see all menus from ui_standards.rc
+void KXmlGui_UnitTest::testMenusNoXmlFile()
+{
+    TestXmlGuiWindow mainWindow;
+    mainWindow.setAutoSaveSettings(false);
+    mainWindow.createGUIBad();
+
+    checkActions(mainWindow.menuBar()->actions(), QStringList()
                  << "help" );
 }
 

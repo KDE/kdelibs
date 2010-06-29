@@ -210,17 +210,8 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   if ( !allFiles.isEmpty() )
     file = findMostRecentXMLFile(allFiles, doc);
 
-  if ( file.isEmpty() )
-  {
-    // this might or might not be an error.  for the time being,
-    // let's treat this as if it isn't a problem and the user just
-    // wants the global standards file
-    setXML( QString(), true );
-  }
-  else if ( !doc.isEmpty() )
-  {
-    setXML( doc, merge );
-  }
+  // Always call setXML, even on error, so that we don't keep all ui_standards.rc menus.
+  setXML( doc, merge );
 }
 
 void KXMLGUIClient::setLocalXMLFile( const QString &file )
