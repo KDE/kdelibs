@@ -435,6 +435,8 @@ public:
 
     void updateFirstChildMapping(const QModelIndex& parent, int offset);
 
+    bool isFlat() const { return m_omitChildren || (m_omitDescendants && m_startWithChildTrees); }
+
     /**
      * Tries to ensure that @p parent is a mapped parent in the proxy.
      * Returns true if parent is mappable in the model, and false otherwise.
@@ -1215,7 +1217,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
 
     bool notifyDestination = proxyDestination.isValid();
 
-    if (proxyDestination.isValid() && (m_omitChildren || (m_startWithChildTrees && m_omitDescendants)))
+    if (proxyDestination.isValid() && (isFlat()))
         notifyDestination = false;
 
     if (m_includeAllSelected && !m_startWithChildTrees) {
@@ -1862,7 +1864,7 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
     Q_ASSERT(start + offset >= 0);
     Q_ASSERT(parent.isValid() ? parent.model() == q : true);
 
-    if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
+    if (isFlat())
         return;
 
     SourceProxyIndexMapping::left_iterator mappedParentIt = m_mappedParents.leftBegin();
@@ -1946,7 +1948,7 @@ void KSelectionProxyModelPrivate::createFirstChildMapping(const QModelIndex& par
 
 void KSelectionProxyModelPrivate::createParentMappings(const QModelIndex &parent, int start, int end) const
 {
-    if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
+    if (isFlat())
         return;
 
     Q_Q(const KSelectionProxyModel);
@@ -1995,7 +1997,7 @@ void KSelectionProxyModelPrivate::removeParentMappings(const QModelIndex &parent
 
     QModelIndexList list;
 
-    const bool flatList = m_omitChildren || (m_startWithChildTrees && m_omitDescendants);
+    const bool flatList = isFlat();
 
     while (it != endIt) {
         if (it.key().row() >= start && it.key().row() <= end)
@@ -2060,7 +2062,7 @@ bool KSelectionProxyModelPrivate::mapToParent(const QModelIndex &parent) const
 {
     Q_Q(const KSelectionProxyModel);
 
-    if (m_omitChildren || (m_omitDescendants && m_startWithChildTrees))
+    if (isFlat())
         return true;
 
     if (parentAlreadyMapped(parent) || m_rootIndexList.contains(parent))
@@ -2190,7 +2192,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
     }
 
     // index is valid
-    if (d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants))
+    if (d->isFlat())
         return 0;
 
     QModelIndex sourceParent = d->mapParentToSource(index);
@@ -2335,7 +2337,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 
     if (parent.isValid()) {
         Q_ASSERT(parent.model() == this);
-        if (d->m_omitChildren || (d->m_startWithChildTrees && d->m_omitDescendants))
+        if (d->isFlat())
             return false;
         return sourceModel()->hasChildren(mapToSource(parent));
     }
