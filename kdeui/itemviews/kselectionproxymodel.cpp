@@ -2253,12 +2253,10 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
     if (!parent.isValid()) {
         Q_ASSERT(indexIsValid(d->m_startWithChildTrees, row, d->m_rootIndexList, d->m_mappedFirstChildren));
         return createIndex(row, column);
-    } else {
-        Q_ASSERT(d->m_startWithChildTrees ? true : d->m_parentIds.rightContains(parent));
-
-        void * const parentId = d->m_parentIds.rightToLeft(parent);
-        return createIndex(row, column, parentId);
     }
+    Q_ASSERT(d->m_startWithChildTrees ? true : d->m_parentIds.rightContains(parent));
+    void * const parentId = d->m_parentIds.rightToLeft(parent);
+    return createIndex(row, column, parentId);
 }
 
 QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
