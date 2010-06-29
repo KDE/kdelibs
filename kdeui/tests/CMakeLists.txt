@@ -68,7 +68,7 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_PROXYMODEL_TESTS(
-#  kdescendantentitiesproxymodeltest
+  kdescendantsproxymodeltest
   kselectionproxymodeltest
   testmodelqueuedconnections
 )

@@ -110,7 +110,7 @@ set(kdeui_LIB_SRCS
  itemviews/kbreadcrumbselectionmodel.cpp
  itemviews/klinkitemselectionmodel.cpp
  itemviews/krecursivefilterproxymodel.cpp
-# itemviews/kdescendantsproxymodel.cpp
+ itemviews/kdescendantsproxymodel.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -478,7 +478,7 @@ install( FILES
  itemviews/kbreadcrumbselectionmodel.h
  itemviews/klinkitemselectionmodel.h
  itemviews/krecursivefilterproxymodel.h
-# itemviews/kdescendantsproxymodel.h
+ itemviews/kdescendantsproxymodel.h
  itemviews/klistwidget.h
  itemviews/kviewstatesaver.h
  itemviews/klistwidgetsearchline.h
