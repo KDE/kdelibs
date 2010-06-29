@@ -73,64 +73,64 @@ public:
 #endif
     };
 
-    typedef _iterator<T, U>                      left_iterator;
-    typedef typename QHash<T, U>::const_iterator left_const_iterator;
-    typedef _iterator<U, T>                      right_iterator;
-    typedef typename QHash<U, T>::const_iterator right_const_iterator;
+    typedef _iterator<left_type, right_type>                      left_iterator;
+    typedef typename QHash<left_type, right_type>::const_iterator left_const_iterator;
+    typedef _iterator<right_type, left_type>                      right_iterator;
+    typedef typename QHash<right_type, left_type>::const_iterator right_const_iterator;
 
     inline KBiHash() {}
-    inline KBiHash(const KBiHash<T, U> &other) {
+    inline KBiHash(const KBiHash<left_type, right_type> &other) {
         *this = other;
     }
 
-    static KBiHash<T, U> fromHash(const QHash<T, U> &hash) {
-        KBiHash<T, U> biHash;
-        typename QHash<T, U>::const_iterator it = hash.constBegin();
-        const typename QHash<T, U>::const_iterator end = hash.constEnd();
+    static KBiHash<left_type, right_type> fromHash(const QHash<left_type, right_type> &hash) {
+        KBiHash<left_type, right_type> biHash;
+        typename QHash<left_type, right_type>::const_iterator it = hash.constBegin();
+        const typename QHash<left_type, right_type>::const_iterator end = hash.constEnd();
         for ( ; it != end; ++it)
             biHash.insert(it.key(), it.value());
         return biHash;
     }
 
-    const KBiHash<T, U> &operator=(const KBiHash<T, U> &other) {
+    const KBiHash<left_type, right_type> &operator=(const KBiHash<left_type, right_type> &other) {
         _leftToRight = other._leftToRight; _rightToLeft = other._rightToLeft; return *this;
     }
 
-    inline bool removeLeft(T t) {
-        const U u = _leftToRight.take(t);
+    inline bool removeLeft(left_type t) {
+        const right_type u = _leftToRight.take(t);
         return _rightToLeft.remove(u) != 0;
     }
 
-    inline bool removeRight(U u) {
-        const T t = _rightToLeft.take(u);
+    inline bool removeRight(right_type u) {
+        const left_type t = _rightToLeft.take(u);
         return _leftToRight.remove(t) != 0;
     }
 
-    inline U takeLeft(T t) {
-        const U u = _leftToRight.take(t);
+    inline right_type takeLeft(left_type t) {
+        const right_type u = _leftToRight.take(t);
         _rightToLeft.remove(u);
         return u;
     }
 
-    inline T takeRight(U u) {
-        const T t = _rightToLeft.take(u);
+    inline left_type takeRight(right_type u) {
+        const left_type t = _rightToLeft.take(u);
         _leftToRight.remove(t);
         return t;
     }
 
-    inline T rightToLeft(U u) const {
+    inline left_type rightToLeft(right_type u) const {
         return _rightToLeft.value(u);
     }
 
-    inline U leftToRight(T t) const {
+    inline right_type leftToRight(left_type t) const {
         return _leftToRight.value(t);
     }
 
-    inline bool leftContains(T t) const {
+    inline bool leftContains(left_type t) const {
         return _leftToRight.contains(t);
     }
 
-    inline bool rightContains(U u) const {
+    inline bool rightContains(right_type u) const {
         return _rightToLeft.contains(u);
     }
 
@@ -166,7 +166,7 @@ public:
         _leftToRight.setSharable(sharable); _rightToLeft.setSharable(sharable);
     }
 
-    inline bool isSharedWith(const KBiHash<T, U> &other) const {
+    inline bool isSharedWith(const KBiHash<left_type, right_type> &other) const {
         return _leftToRight.isSharedWith(other._leftToRight) && _rightToLeft.isSharedWith(other._leftToRight);
     }
 
@@ -174,11 +174,11 @@ public:
         _leftToRight.clear(); _rightToLeft.clear();
     }
 
-    QList<T> leftValues() const {
+    QList<left_type> leftValues() const {
         return _leftToRight.keys();
     }
 
-    QList<U> rightValues() const {
+    QList<right_type> rightValues() const {
         return _rightToLeft.keys();
     }
 
@@ -194,31 +194,31 @@ public:
         return _leftToRight.erase(it);
     }
 
-    left_iterator findLeft(T t) {
+    left_iterator findLeft(left_type t) {
         return _leftToRight.find(t);
     }
 
-    left_const_iterator findLeft(T t) const {
+    left_const_iterator findLeft(left_type t) const {
         return _leftToRight.find(t);
     }
 
-    left_const_iterator constFindLeft(T t) const {
+    left_const_iterator constFindLeft(left_type t) const {
         return _leftToRight.constFind(t);
     }
 
-    right_iterator findRight(U u) {
+    right_iterator findRight(right_type u) {
         return _rightToLeft.find(u);
     }
 
-    right_const_iterator findRight(U u) const {
+    right_const_iterator findRight(right_type u) const {
         return _rightToLeft.find(u);
     }
 
-    right_const_iterator constFindRight(U u) const {
+    right_const_iterator constFindRight(right_type u) const {
         return _rightToLeft.find(u);
     }
 
-    left_iterator insert(T t, U u) {
+    left_iterator insert(left_type t, right_type u) {
         // biHash.insert(5, 7); // creates 5->7 in _leftToRight and 7->5 in _rightToLeft
         // biHash.insert(5, 9); // replaces 5->7 with 5->9 in _leftToRight and inserts 9->5 in _rightToLeft.
         // The 7->5 in _rightToLeft would be dangling, so we remove it before insertion.
@@ -234,8 +234,8 @@ public:
         return _leftToRight.insert(t, u);
     }
 
-    KBiHash<T, U> &intersect(const KBiHash<T, U> &other) {
-        typename KBiHash<T, U>::left_iterator it = leftBegin();
+    KBiHash<left_type, right_type> &intersect(const KBiHash<left_type, right_type> &other) {
+        typename KBiHash<left_type, right_type>::left_iterator it = leftBegin();
         while (it != leftEnd()) {
             if (!other.leftContains(it.key()))
                 it = eraseLeft(it);
@@ -245,8 +245,8 @@ public:
         return *this;
     }
 
-    KBiHash<T, U> &subtract(const KBiHash<T, U> &other) {
-        typename KBiHash<T, U>::left_iterator it = leftBegin();
+    KBiHash<left_type, right_type> &subtract(const KBiHash<left_type, right_type> &other) {
+        typename KBiHash<left_type, right_type>::left_iterator it = leftBegin();
         while (it != leftEnd()) {
             if (other._leftToRight.contains(it.key()))
                 it = eraseLeft(it);
@@ -256,11 +256,11 @@ public:
         return *this;
     }
 
-    KBiHash<T, U> &unite(const KBiHash<T, U> &other) {
-        typename QHash<T, U>::const_iterator it = other._leftToRight.constBegin();
-        const typename QHash<T, U>::const_iterator end = other._leftToRight.constEnd();
+    KBiHash<left_type, right_type> &unite(const KBiHash<left_type, right_type> &other) {
+        typename QHash<left_type, right_type>::const_iterator it = other._leftToRight.constBegin();
+        const typename QHash<left_type, right_type>::const_iterator end = other._leftToRight.constEnd();
         while (it != end) {
-            const T key = it.key();
+            const left_type key = it.key();
             if (!_leftToRight.contains(key))
                 insert(key, it.value());
             ++it;
@@ -268,17 +268,17 @@ public:
         return *this;
     }
 
-    void updateRight(left_iterator it, U u) {
+    void updateRight(left_iterator it, right_type u) {
         Q_ASSERT(it != leftEnd());
-        const T key = it.key();
+        const left_type key = it.key();
         _rightToLeft.remove(_leftToRight.value(key));
         _leftToRight[key] = u;
         _rightToLeft[u] = key;
     }
 
-    void updateLeft(right_iterator it, T t) {
+    void updateLeft(right_iterator it, left_type t) {
         Q_ASSERT(it != rightEnd());
-        const U key = it.key();
+        const right_type key = it.key();
         _leftToRight.remove(_rightToLeft.value(key));
         _rightToLeft[key] = t;
         _leftToRight[t] = key;
@@ -288,15 +288,15 @@ public:
         return _leftToRight.isEmpty();
     }
 
-    const U operator[](const T &t) const {
+    const right_type operator[](const left_type &t) const {
         return _leftToRight.operator[](t);
     }
 
-    bool operator==(const KBiHash<T, U> &other) {
+    bool operator==(const KBiHash<left_type, right_type> &other) {
         return _leftToRight.operator == (other._leftToRight);
     }
 
-    bool operator!=(const KBiHash<T, U> &other) {
+    bool operator!=(const KBiHash<left_type, right_type> &other) {
         return _leftToRight.operator != (other._leftToRight);
     }
 
@@ -357,12 +357,12 @@ public:
         return _rightToLeft.constEnd();
     }
 
-    friend QDataStream &operator<< <T, U>(QDataStream &out, const KBiHash<T, U> &bihash);
-    friend QDataStream &operator>> <T, U>(QDataStream &in, KBiHash<T, U> &biHash);
-    friend QDebug operator<< <T, U>(QDebug out, const KBiHash<T, U> &biHash);
+    friend QDataStream &operator<< <left_type, right_type>(QDataStream &out, const KBiHash<left_type, right_type> &bihash);
+    friend QDataStream &operator>> <left_type, right_type>(QDataStream &in, KBiHash<left_type, right_type> &biHash);
+    friend QDebug operator<< <left_type, right_type>(QDebug out, const KBiHash<left_type, right_type> &biHash);
 private:
-    QHash<T, U> _leftToRight;
-    QHash<U, T> _rightToLeft;
+    QHash<left_type, right_type> _leftToRight;
+    QHash<right_type, left_type> _rightToLeft;
 };
 
 template<typename T, typename U>
