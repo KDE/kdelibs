@@ -481,6 +481,9 @@ public:
     */
     QModelIndex mapParentFromSource(const QModelIndex &sourceParent) const;
 
+    void* parentId(const QModelIndex &proxyParent) const { return m_parentIds.rightToLeft(proxyParent); }
+    QModelIndex parentForId(void *id) const { return m_parentIds.leftToRight(id); }
+
     // Only populated if m_startWithChildTrees.
 
     mutable SourceIndexProxyRowMapping m_mappedFirstChildren;
@@ -2052,7 +2055,7 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
         return sourceFirstChild.sibling(proxyIndex.row() - proxyFirstRow, column);
     }
 
-    const QModelIndex proxyParent = d->m_parentIds.leftToRight(proxyIndex.internalPointer());
+    const QModelIndex proxyParent = d->parentForId(proxyIndex.internalPointer());
     Q_ASSERT(proxyParent.isValid());
     const QModelIndex sourceParent = d->mapParentToSource(proxyParent);
     Q_ASSERT(sourceParent.isValid());
@@ -2254,8 +2257,8 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
         Q_ASSERT(indexIsValid(d->m_startWithChildTrees, row, d->m_rootIndexList, d->m_mappedFirstChildren));
         return createIndex(row, column);
     }
-    Q_ASSERT(d->m_startWithChildTrees ? true : d->m_parentIds.rightContains(parent));
-    void * const parentId = d->m_parentIds.rightToLeft(parent);
+    void * const parentId = d->parentId(parent);
+    Q_ASSERT(parentId);
     return createIndex(row, column, parentId);
 }
 
@@ -2268,7 +2271,7 @@ QModelIndex KSelectionProxyModel::parent(const QModelIndex &index) const
 
     Q_ASSERT(index.model() == this);
 
-    return d->m_parentIds.leftToRight(index.internalPointer());
+    return d->parentForId(index.internalPointer());
 }
 
 Qt::ItemFlags KSelectionProxyModel::flags(const QModelIndex &index) const
