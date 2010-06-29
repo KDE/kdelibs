@@ -514,4 +514,54 @@ QDebug operator<<(QDebug out, const KBiHash<T, U> &biHash)
     return out;
 }
 
+template <typename T, typename U>
+struct KHash2Map : public KBiAssociativeContainer<QHash<T, U>, QMap<U, T> >
+{
+  KHash2Map()
+    : KBiAssociativeContainer<QHash<T, U>, QMap<U, T> > ()
+  {
+
+  }
+
+  KHash2Map(const KBiAssociativeContainer<QHash<T, U>, QMap<U, T> > &container)
+    : KBiAssociativeContainer<QHash<T, U>, QMap<U, T> > (container)
+  {
+
+  }
+
+  typename KBiAssociativeContainer<QHash<T, U>, QMap<U, T> >::right_iterator rightLowerBound(const U &key)
+  {
+    return this->_rightToLeft.lowerBound(key);
+  }
+
+  typename KBiAssociativeContainer<QHash<T, U>, QMap<U, T> >::right_const_iterator rightLowerBound(const U &key) const
+  {
+    return this->_rightToLeft.lowerBound(key);
+  }
+
+  typename KBiAssociativeContainer<QHash<T, U>, QMap<U, T> >::right_iterator rightUpperBound(const U &key)
+  {
+    return this->_rightToLeft.upperBound(key);
+  }
+
+  typename KBiAssociativeContainer<QHash<T, U>, QMap<U, T> >::right_const_iterator rightUpperBound(const U &key) const
+  {
+    return this->_rightToLeft.upperBound(key);
+  }
+};
+
+template<typename T, typename U>
+QDebug operator<<(QDebug out, const KHash2Map<T, U> &container)
+{
+    typename KHash2Map<T, U>::left_const_iterator it = container.leftConstBegin();
+
+    const typename KHash2Map<T, U>::left_const_iterator end = container.leftConstEnd();
+    out.nospace() << "KHash2Map(";
+    for (; it != end; ++it)
+        out << "(" << it.key() << " <=> " << it.value() << ") ";
+
+    out << ")";
+    return out;
+}
+
 #endif
