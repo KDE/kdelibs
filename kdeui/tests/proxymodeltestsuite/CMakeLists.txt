@@ -16,6 +16,7 @@ set(proxymodeltestsuite_SRCS
     modelselector.cpp
     modeltest.cpp
     proxymodeltest.cpp
+    modeldumper.cpp
 )
 
 kde4_add_library(proxymodeltestsuite ${proxymodeltestsuite_SRCS})
