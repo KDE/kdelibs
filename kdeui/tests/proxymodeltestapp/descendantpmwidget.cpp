@@ -25,90 +25,102 @@
 #include <QSplitter>
 
 #include "dynamictreemodel.h"
-#if 0
+#include "dynamictreewidget.h"
 #include "kdescendantsproxymodel.h"
-#endif
 #include <QHBoxLayout>
-#include "kselectionproxymodel.h"
 #include <QLineEdit>
 
 DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget(parent)
 {
-  return;
-#if 0
   QHBoxLayout *layout = new QHBoxLayout(this);
   QSplitter *vSplitter = new QSplitter( this );
   layout->addWidget(vSplitter);
 
-
   m_rootModel = new DynamicTreeModel(this);
 
-  const int numCols = 2;
+  DynamicTreeWidget *dynTreeWidget = new DynamicTreeWidget(m_rootModel, vSplitter);
+
+  dynTreeWidget->setInitialTree(
+ "- 1"
+ "- 2"
+ "- - 3"
+ "- - 3"
+ "- - - 4"
+ "- - - 4"
+ "- - - - 4"
+ "- - 4"
+ "- - 5"
+ "- - - 4"
+ "- - - - 4"
+ "- - 5"
+ "- 6"
+ "- 7"
+ "- - 8"
+ "- - - 9"
+ "- - - 10"
+ "- - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - - - - 9"
+ "- - - - - - - - 10"
+ "- - - - - - - - 9"
+ "- - - - - - - 10"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 9"
+ "- - - - - 10"
+ "- - - - - - 9"
+ "- - - - - - 10"
+ "- - - - 10"
+ "- - 11"
+ "- - 12"
+ "- 13"
+ "- 14"
+ "- 15"
+ "- - 16"
+ "- - - 17"
+ "- - - 18"
+ "- 19"
+ "- 20"
+ "- 21");
 
   m_descProxyModel = new KDescendantsProxyModel(this);
   m_descProxyModel->setSourceModel(m_rootModel);
 
-  KDescendantsProxyModel *descProxyModel2 = new KDescendantsProxyModel(this);
-  descProxyModel2->setSourceModel(m_rootModel);
-  descProxyModel2->setDisplayAncestorData(true);
+//   KDescendantsProxyModel *descProxyModel2 = new KDescendantsProxyModel(this);
+//   descProxyModel2->setSourceModel(m_rootModel);
+//   descProxyModel2->setDisplayAncestorData(true);
 
-  m_itemSelectionModel = new QItemSelectionModel(m_descProxyModel, this);
-
-  m_selectionProxyModel = new KSelectionProxyModel(m_itemSelectionModel, this);
-  m_selectionProxyModel->setSourceModel(m_descProxyModel);
-
-  QList<int> ancestorRows;
-
-  ModelInsertCommand *insertCommand;
-  int max_runs = 4;
-  for (int i = 0; i < max_runs; i++)
-  {
-    insertCommand = new ModelInsertCommand(m_rootModel, this);
-    insertCommand->setAncestorRowNumbers(ancestorRows);
-    insertCommand->setNumCols(numCols);
-    insertCommand->setStartRow(0);
-    insertCommand->setEndRow(9);
-    insertCommand->doCommand();
-    ancestorRows << 9;
-  }
-  ancestorRows.clear();
-  ancestorRows << 4;
-  for (int i = 0; i < max_runs; i++)
-  {
-    insertCommand = new ModelInsertCommand(m_rootModel, this);
-    insertCommand->setAncestorRowNumbers(ancestorRows);
-    insertCommand->setNumCols(numCols);
-    insertCommand->setStartRow(0);
-    insertCommand->setEndRow(9);
-    insertCommand->doCommand();
-    ancestorRows << 4;
-  }
-
-  QTreeView *treeview = new QTreeView( vSplitter );
-  treeview->setModel(m_rootModel);
-  treeview->setSelectionMode(QAbstractItemView::ExtendedSelection);
+//   QTreeView *treeview = new QTreeView( vSplitter );
+//   treeview->setModel(m_rootModel);
+//   treeview->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   m_descView = new QTreeView( vSplitter );
   m_descView->setModel(m_descProxyModel);
 
-  QTreeView *descView2 = new QTreeView( vSplitter );
-  descView2->setModel(descProxyModel2);
+//   QTreeView *descView2 = new QTreeView( vSplitter );
+//   descView2->setModel(descProxyModel2);
 
 
-  QWidget *w = new QWidget(vSplitter);
-  QVBoxLayout *vLayout = new QVBoxLayout(w);
-  QTreeView *matchView = new QTreeView(w);
-  matchView->setModel(m_selectionProxyModel);
-  m_lineEdit = new QLineEdit(w);
-  connect(m_lineEdit, SIGNAL(textChanged(const QString &)), SLOT(doMatch(const QString &)));
-  connect(m_descView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(refreshMatch()));
+//   QWidget *w = new QWidget(vSplitter);
+//   QVBoxLayout *vLayout = new QVBoxLayout(w);
+//   QTreeView *matchView = new QTreeView(w);
+//   matchView->setModel(m_selectionProxyModel);
+//   m_lineEdit = new QLineEdit(w);
+//   connect(m_lineEdit, SIGNAL(textChanged(const QString &)), SLOT(doMatch(const QString &)));
+//   connect(m_descView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(refreshMatch()));
 
-  vLayout->addWidget(m_lineEdit);
-  vLayout->addWidget(matchView);
+//   vLayout->addWidget(m_lineEdit);
+//   vLayout->addWidget(matchView);
 
   setLayout(layout);
-#endif
-
 }
 
 
