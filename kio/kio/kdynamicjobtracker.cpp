@@ -68,9 +68,6 @@ KDynamicJobTracker::~KDynamicJobTracker()
 
 void KDynamicJobTracker::registerJob(KJob *job)
 {
-    bool needWidgetTracker = false;
-
-
     if (!d->kuiserverTracker) {
         d->kuiserverTracker = new KUiServerJobTracker();
     }
@@ -84,17 +81,13 @@ void KDynamicJobTracker::registerJob(KJob *job)
 
     if (reply.isValid() && reply.value()) {
         //create a widget tracker in addition to kuiservertracker.
-        needWidgetTracker = true;
-    }
-
-
-    if (needWidgetTracker) {
         if (!d->widgetTracker) {
             d->widgetTracker = new KWidgetJobTracker();
         }
         d->trackers[job].widgetTracker = d->widgetTracker;
         d->trackers[job].widgetTracker->registerJob(job);
     }
+
     Q_ASSERT(d->trackers[job].kuiserverTracker || d->trackers[job].widgetTracker);
 }
 
@@ -103,7 +96,7 @@ void KDynamicJobTracker::unregisterJob(KJob *job)
     KUiServerJobTracker *kuiserverTracker = d->trackers[job].kuiserverTracker;
     KWidgetJobTracker *widgetTracker = d->trackers[job].widgetTracker;
 
-    if (!(widgetTracker && kuiserverTracker)) {
+    if (!(widgetTracker || kuiserverTracker)) {
         kWarning() << "Tried to unregister a kio job that hasn't been registered.";
         return;
     }
