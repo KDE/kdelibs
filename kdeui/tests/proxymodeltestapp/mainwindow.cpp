@@ -43,31 +43,19 @@ MainWindow::MainWindow() : KXmlGuiWindow()
 {
 
   QTabWidget *tabWidget = new QTabWidget( this );
-  DescendantProxyModelWidget *descPMWidget = new DescendantProxyModelWidget();
-  SelectionProxyWidget *selProxyWidget = new SelectionProxyWidget();
-  BreadcrumbsWidget *breadcrumbsWidget = new BreadcrumbsWidget();
-  BreadcrumbDirectionWidget *breadcrumbDirectionWidget = new BreadcrumbDirectionWidget();
-  BreadcrumbNavigationWidget *breadcrumbNavigationWidget = new BreadcrumbNavigationWidget();
-  ProxyItemSelectionWidget *proxyItemSelectionWidget = new ProxyItemSelectionWidget();
-  StateSaverWidget *stateSaverWidget = new StateSaverWidget();
-//   ReparentingProxyModelWidget *reparentingProxyModelWidget = new ReparentingProxyModelWidget();
-  RecursiveFilterProxyWidget *recursive = new RecursiveFilterProxyWidget();
-  ProxyModelTestWidget *proxyModelTestWidget = new ProxyModelTestWidget();
-  LessThanWidget *lessThanWidget = new LessThanWidget();
-  MatchCheckingWidget *matchCheckingWidget = new MatchCheckingWidget();
 
-  tabWidget->addTab(matchCheckingWidget, "Match Checking PM");
-  tabWidget->addTab(descPMWidget, "descendant PM");
-  tabWidget->addTab(selProxyWidget, "selection PM");
-  tabWidget->addTab(breadcrumbsWidget, "Breadcrumbs");
-  tabWidget->addTab(breadcrumbNavigationWidget, "Breadcrumb Navigation");
-  tabWidget->addTab(breadcrumbDirectionWidget, "Breadcrumb Direction");
-  tabWidget->addTab(proxyItemSelectionWidget, "Proxy Item selection");
-//   tabWidget->addTab(reparentingProxyModelWidget, "reparenting PM");
-  tabWidget->addTab(recursive, "Recursive Filter");
-  tabWidget->addTab(lessThanWidget, "Less Than");
-  tabWidget->addTab(proxyModelTestWidget, "Proxy Model Test");
-  tabWidget->addTab(stateSaverWidget, "State Saver Test");
+  tabWidget->addTab(new MatchCheckingWidget(), "Match Checking PM");
+  tabWidget->addTab(new DescendantProxyModelWidget(), "descendant PM");
+  tabWidget->addTab(new SelectionProxyWidget(), "selection PM");
+  tabWidget->addTab(new BreadcrumbsWidget(), "Breadcrumbs");
+  tabWidget->addTab(new BreadcrumbNavigationWidget(), "Breadcrumb Navigation");
+  tabWidget->addTab(new BreadcrumbDirectionWidget(), "Breadcrumb Direction");
+  tabWidget->addTab(new ProxyItemSelectionWidget(), "Proxy Item selection");
+//   tabWidget->addTab(new ReparentingProxyModelWidget(), "reparenting PM");
+  tabWidget->addTab(new RecursiveFilterProxyWidget(), "Recursive Filter");
+  tabWidget->addTab(new LessThanWidget(), "Less Than");
+  tabWidget->addTab(new ProxyModelTestWidget(), "Proxy Model Test");
+  tabWidget->addTab(new StateSaverWidget(), "State Saver Test");
 
   setCentralWidget( tabWidget );
 }
