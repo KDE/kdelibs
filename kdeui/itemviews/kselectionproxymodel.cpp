@@ -304,17 +304,6 @@ static QItemSelection getRootRanges(const QItemSelection &_selection)
     return rootSelection;
 }
 
-template <typename ForwardIterator>
-ForwardIterator kMaxElement(ForwardIterator it, ForwardIterator end)
-{
-    ForwardIterator result = it;
-    for ( ; it != end; ++it)
-    {
-        if (*result < *it)
-            result = it;
-    }
-    return result;
-}
 /**
  */
 struct RangeLessThan
