@@ -24,6 +24,7 @@
 #include <QtCore/QLocale>
 #include <QtCore/QDebug>
 #include <QtCore/QProcess>
+#include <QtCore/QTimer>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
@@ -46,15 +47,23 @@ StorageAccess::StorageAccess(HalDevice *device)
 {
     connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
              this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    // Delay connecting to DBus signals to avoid the related time penalty
+    // in hot paths such as predicate matching
+    QTimer::singleShot(0, this, SLOT(connectDBusSignals()));
+}
+
+StorageAccess::~StorageAccess()
+{
+
+}
+
+void StorageAccess::connectDBusSignals()
+{
     m_device->connectActionSignal("setupRequested",  this, SLOT(slotSetupRequested()));
     m_device->connectActionSignal("teardownRequested", this, SLOT(slotTeardownRequested()));
     m_device->connectActionSignal("setupDone",  this, SLOT(slotSetupDone(int, QDBusVariant, const QString&)));
     m_device->connectActionSignal("teardownDone",  this, SLOT(slotTeardownDone(int, QDBusVariant, const QString&)));
     m_device->connectActionSignal("ejectDone",  this, SLOT(slotEjectDone(int, QDBusVariant, const QString&)));
-}
-
-StorageAccess::~StorageAccess()
-{
 
 }
 

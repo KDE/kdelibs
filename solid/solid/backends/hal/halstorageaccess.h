@@ -57,6 +57,7 @@ Q_SIGNALS:
     void teardownRequested(const QString &udi);
 
 private Q_SLOTS:
+    void connectDBusSignals();
     void slotPropertyChanged(const QMap<QString,int> &changes);
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
