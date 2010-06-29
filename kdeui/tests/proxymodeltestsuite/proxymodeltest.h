@@ -268,6 +268,16 @@ protected:
     QSKIP("Test not implemented", SkipSingle);
   }
 
+  void skipTestData(const QString &name)
+  {
+    processTestName(name);
+
+    QTest::addColumn<SignalList>("signalList");
+    QTest::addColumn<PersistentChangeList>("changeList");
+
+    QTest::newRow(name.toAscii()) << (SignalList() << (QVariantList() << "skip") ) << PersistentChangeList();
+  }
+
   void processTestName(const QString &name)
   {
     if (m_currentTestFunction != QTest::currentTestFunction())

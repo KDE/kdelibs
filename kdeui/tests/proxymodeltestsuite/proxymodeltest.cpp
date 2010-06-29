@@ -522,6 +522,13 @@ void ProxyModelTest::doTest()
   if (testDataTag == ProxyModelTestData::failTag())
     return;
 
+  if ((signalList.size() == 1 && signalList.first().size() == 1)
+    && signalList.first().first().toString() == "skip")
+  {
+    return;
+  }
+
+
   m_modelSpy->preTestPersistIndexes(changeList);
 
   // Run the test.
