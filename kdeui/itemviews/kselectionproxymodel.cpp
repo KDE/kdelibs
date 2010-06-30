@@ -483,7 +483,7 @@ public:
 
     QModelIndex mapTopLevelToSource(int row, int column) const;
     QModelIndex mapTopLevelFromSource(const QModelIndex &sourceIndex) const;
-
+    QModelIndex createTopLevelIndex(int row, int column) const;
     int topLevelRowCount() const;
 
     void* parentId(const QModelIndex &proxyParent) const { return m_parentIds.rightToLeft(proxyParent); }
@@ -2263,6 +2263,14 @@ static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersist
     return true;
 }
 
+QModelIndex KSelectionProxyModelPrivate::createTopLevelIndex(int row, int column) const
+{
+    Q_Q(const KSelectionProxyModel);
+
+    Q_ASSERT(indexIsValid(m_startWithChildTrees, row, m_rootIndexList, m_mappedFirstChildren));
+    return q->createIndex(row, column);
+}
+
 QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
     Q_D(const KSelectionProxyModel);
@@ -2272,10 +2280,9 @@ QModelIndex KSelectionProxyModel::index(int row, int column, const QModelIndex &
 
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
 
-    if (!parent.isValid()) {
-        Q_ASSERT(indexIsValid(d->m_startWithChildTrees, row, d->m_rootIndexList, d->m_mappedFirstChildren));
-        return createIndex(row, column);
-    }
+    if (!parent.isValid())
+        return d->createTopLevelIndex(row, column);
+
     void * const parentId = d->parentId(parent);
     Q_ASSERT(parentId);
     return createIndex(row, column, parentId);
