@@ -434,6 +434,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
 KDirOperator::~KDirOperator()
 {
     resetCursor();
+    disconnect(d->dirLister, 0, this, 0);
     delete d;
 }
 
