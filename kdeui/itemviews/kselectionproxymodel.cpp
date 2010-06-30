@@ -2138,9 +2138,24 @@ QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &source
 //     Q_ASSERT((!d->m_startWithChildTrees && d->m_rootIndexList.contains(maybeMapped)) ? maybeMapped.row() < 0 : true );
         return maybeMapped;
     }
+    const QModelIndex sourceParent = sourceIndex.parent();
+
+    const QModelIndex proxyParent = mapParentFromSource(sourceParent);
+    if (proxyParent.isValid()) {
+        void * const parentId = m_parentIds.rightToLeft(proxyParent);
+        static const int column = 0;
+        return q->createIndex(sourceIndex.row(), column, parentId);
+    }
+
+    const QModelIndex firstChild = q->sourceModel()->index(0, 0, sourceParent);
+
+    if (m_mappedFirstChildren.leftContains(firstChild))
+    {
+        const int firstProxyRow = m_mappedFirstChildren.leftToRight(firstChild);
+        return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
+    }
 
     const int row = m_rootIndexList.indexOf(sourceIndex);
-    const QModelIndex sourceParent = sourceIndex.parent();
     if (row != -1) {
         if (!m_startWithChildTrees) {
             Q_ASSERT(m_rootIndexList.size() > row);
@@ -2154,24 +2169,7 @@ QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &source
 
         return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
     }
-
-    const QModelIndex proxyParent = mapParentFromSource(sourceParent);
-    if (proxyParent.isValid()) {
-        void * const parentId = m_parentIds.rightToLeft(proxyParent);
-        static const int column = 0;
-        return q->createIndex(sourceIndex.row(), column, parentId);
-    }
-
-    if (!m_startWithChildTrees)
-        return QModelIndex();
-
-    const QModelIndex firstChild = q->sourceModel()->index(0, 0, sourceParent);
-    if (!m_mappedFirstChildren.leftContains(firstChild))
-        return QModelIndex();
-
-    const int firstProxyRow = m_mappedFirstChildren.leftToRight(firstChild);
-
-    return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
+    return QModelIndex();
 }
 
 int KSelectionProxyModel::rowCount(const QModelIndex &index) const
