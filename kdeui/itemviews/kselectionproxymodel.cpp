@@ -484,6 +484,8 @@ public:
     QModelIndex mapTopLevelToSource(int row, int column) const;
     QModelIndex mapTopLevelFromSource(const QModelIndex &sourceIndex) const;
 
+    int topLevelRowCount() const;
+
     void* parentId(const QModelIndex &proxyParent) const { return m_parentIds.rightToLeft(proxyParent); }
     QModelIndex parentForId(void *id) const { return m_parentIds.leftToRight(id); }
 
@@ -2181,6 +2183,26 @@ QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &source
     return mapTopLevelFromSource(sourceIndex);
 }
 
+int KSelectionProxyModelPrivate::topLevelRowCount() const
+{
+    Q_Q(const KSelectionProxyModel);
+
+    if (!m_startWithChildTrees)
+        return m_rootIndexList.size();
+
+    if (m_mappedFirstChildren.isEmpty())
+      return 0;
+
+    const SourceIndexProxyRowMapping::right_const_iterator result = m_mappedFirstChildren.rightConstEnd() - 1;
+
+    const int proxyFirstRow = result.key();
+    const QModelIndex sourceFirstChild = result.value();
+    Q_ASSERT(sourceFirstChild.isValid());
+    const QModelIndex sourceParent = sourceFirstChild.parent();
+    Q_ASSERT(sourceParent.isValid());
+    return q->sourceModel()->rowCount(sourceParent) + proxyFirstRow;
+}
+
 int KSelectionProxyModel::rowCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
@@ -2189,23 +2211,8 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
         return 0;
 
     Q_ASSERT(index.isValid() ? index.model() == this : true);
-
-    if (!index.isValid()) {
-        if (!d->m_startWithChildTrees)
-            return d->m_rootIndexList.size();
-
-        if (d->m_mappedFirstChildren.isEmpty())
-          return 0;
-
-        const SourceIndexProxyRowMapping::right_const_iterator result = d->m_mappedFirstChildren.rightConstEnd() - 1;
-
-        const int proxyFirstRow = result.key();
-        const QModelIndex sourceFirstChild = result.value();
-        Q_ASSERT(sourceFirstChild.isValid());
-        const QModelIndex sourceParent = sourceFirstChild.parent();
-        Q_ASSERT(sourceParent.isValid());
-        return sourceModel()->rowCount(sourceParent) + proxyFirstRow;
-    }
+    if (!index.isValid())
+        return d->topLevelRowCount();
 
     // index is valid
     if (d->isFlat())
