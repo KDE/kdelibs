@@ -482,6 +482,7 @@ public:
     QModelIndex mapParentFromSource(const QModelIndex &sourceParent) const;
 
     QModelIndex mapTopLevelToSource(int row, int column) const;
+    QModelIndex mapTopLevelFromSource(const QModelIndex &sourceIndex) const;
 
     void* parentId(const QModelIndex &proxyParent) const { return m_parentIds.rightToLeft(proxyParent); }
     QModelIndex parentForId(void *id) const { return m_parentIds.leftToRight(id); }
@@ -2129,6 +2130,29 @@ QModelIndex KSelectionProxyModel::mapFromSource(const QModelIndex &sourceIndex) 
     return d->mapFromSource(sourceIndex);
 }
 
+
+QModelIndex KSelectionProxyModelPrivate::mapTopLevelFromSource(const QModelIndex &sourceIndex) const
+{
+    Q_Q(const KSelectionProxyModel);
+
+    const QModelIndex sourceParent = sourceIndex.parent();
+    const int row = m_rootIndexList.indexOf(sourceIndex);
+    if (row == -1)
+        return QModelIndex();
+
+    if (!m_startWithChildTrees) {
+        Q_ASSERT(m_rootIndexList.size() > row);
+        return q->createIndex(row, sourceIndex.column());
+    }
+    if (!m_rootIndexList.contains(sourceParent))
+        return QModelIndex();
+
+    const QModelIndex firstChild = q->sourceModel()->index(0, 0, sourceParent);
+    const int firstProxyRow = m_mappedFirstChildren.leftToRight(firstChild);
+
+    return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
+}
+
 QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &sourceIndex) const
 {
     Q_Q(const KSelectionProxyModel);
@@ -2154,22 +2178,7 @@ QModelIndex KSelectionProxyModelPrivate::mapFromSource(const QModelIndex &source
         const int firstProxyRow = m_mappedFirstChildren.leftToRight(firstChild);
         return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
     }
-
-    const int row = m_rootIndexList.indexOf(sourceIndex);
-    if (row != -1) {
-        if (!m_startWithChildTrees) {
-            Q_ASSERT(m_rootIndexList.size() > row);
-            return q->createIndex(row, sourceIndex.column());
-        }
-        if (!m_rootIndexList.contains(sourceParent))
-            return QModelIndex();
-
-        const QModelIndex firstChild = q->sourceModel()->index(0, 0, sourceParent);
-        const int firstProxyRow = m_mappedFirstChildren.leftToRight(firstChild);
-
-        return q->createIndex(firstProxyRow + sourceIndex.row(), sourceIndex.column());
-    }
-    return QModelIndex();
+    return mapTopLevelFromSource(sourceIndex);
 }
 
 int KSelectionProxyModel::rowCount(const QModelIndex &index) const
