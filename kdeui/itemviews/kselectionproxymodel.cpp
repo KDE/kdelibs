@@ -2037,7 +2037,7 @@ QModelIndex KSelectionProxyModelPrivate::mapTopLevelToSource(int row, int column
     if (m_mappedFirstChildren.isEmpty())
       return QModelIndex();
 
-    SourceIndexProxyRowMapping::right_const_iterator result = m_mappedFirstChildren.rightUpperBound(row) - 1;
+    SourceIndexProxyRowMapping::right_iterator result = m_mappedFirstChildren.rightUpperBound(row) - 1;
 
     Q_ASSERT(result != m_mappedFirstChildren.rightEnd());
 
@@ -2190,7 +2190,7 @@ int KSelectionProxyModel::rowCount(const QModelIndex &index) const
         if (d->m_mappedFirstChildren.isEmpty())
           return 0;
 
-        const SourceIndexProxyRowMapping::right_const_iterator result = d->m_mappedFirstChildren.rightEnd() - 1;
+        const SourceIndexProxyRowMapping::right_const_iterator result = d->m_mappedFirstChildren.rightConstEnd() - 1;
 
         const int proxyFirstRow = result.key();
         const QModelIndex sourceFirstChild = result.value();

@@ -185,8 +185,8 @@ void KDescendantsProxyModelPrivate::updateInternalIndexes(int start, int offset)
   // TODO: Make KHash2Map support key updates and do this backwards.
   QHash<int, QPersistentModelIndex> updates;
   {
-    Mapping::right_const_iterator it = m_mapping.rightLowerBound(start);
-    const Mapping::right_const_iterator end = m_mapping.rightEnd();
+    Mapping::right_iterator it = m_mapping.rightLowerBound(start);
+    const Mapping::right_iterator end = m_mapping.rightEnd();
 
     while (it != end)
     {
