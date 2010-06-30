@@ -541,20 +541,21 @@ public:
   QString query() const;
 
   /**
+   * Returns the reference (or "fragment") of the URL.
    * The reference is @em never decoded automatically.
    * @return the undecoded reference, or QString() if there is none
    */
   QString ref() const;
 
   /**
-   * Sets the reference part (everything after '#').
+   * Sets the reference/fragment part (everything after '#').
    * If you have an encoded fragment already (as a QByteArray), you can call setFragment directly.
-   * @param fragment the encoded reference (or QString() to remove it).
+   * @param fragment the unencoded reference (or QString() to remove it).
    */
   void setRef( const QString& fragment );
 
   /**
-   * Checks whether the URL has a reference part.
+   * Checks whether the URL has a reference/fragment part.
    * @return true if the URL has a reference part. In a URL like
    *         http://www.kde.org/kdebase.tar#tar:/README it would
    *         return true, too.
