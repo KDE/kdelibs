@@ -547,11 +547,6 @@ public:
     */
     void insertSelectionIntoProxy(const QItemSelection& selection);
 
-    /**
-      Returns true if @p sourceIndex or one of its ascendants is already part of the proxy model.
-    */
-    bool isInModel(const QModelIndex &sourceIndex) const;
-
     bool m_startWithChildTrees;
     bool m_omitChildren;
     bool m_omitDescendants;
@@ -1168,179 +1163,21 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 
 void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
-    Q_Q(KSelectionProxyModel);
-
-    // layout{,AboutToBe}Changed signals are emitted by QAIM for backward compatibility reasons when rows are moved.
-    // Processing them is expensive so we do our best to avoid them.
-    m_ignoreNextLayoutAboutToBeChanged = true;
-
-    if (!m_selectionModel->hasSelection())
-        return;
-
-    const QPair<int, int> removePair = beginRemoveRows(srcParent, srcStart, srcEnd);
-    const bool notifyRemove = removePair.first != -1;
-
-    const QModelIndex proxyDestination = q->mapFromSource(destParent);
-
-    // Notify insert if
-    // - The destParent is valid or m_startWithChildTrees and destParent is in rootIndexList
-    // - Not m_startWithChildTrees and we are moving elements of rootIndexList
-
-    if (!m_startWithChildTrees) {
-//         if (m_rootIndexList.contains())
-        {
-
-
-        }
-    }
-
-#if 0
-    if (m_omitChildren && !m_startWithChildTrees && m_includeAllSelected) {
-        // ExactSelection
-        int row = srcStart;
-        int proxyStart = -1;
-        static const int column = 0;
-        for ( ; row < srcEnd; ++row) {
-            const QModelIndex idx = q->sourceModel()->index(row, column, srcParent);
-            proxyStart = m_rootIndexList.indexOf(idx);
-            if (proxyStart != -1) {
-                break;
-            }
-        }
-        if (proxyStart == -1)
-            return;
-        const int rangeStart = row;
-        row = srcEnd;
-        int proxyEnd = proxyStart;
-        for ( ; row > rangeStart; --row) {
-            const QModelIndex idx = q->sourceModel()->index(row, column, srcParent);
-            if (m_rootIndexList.contains(idx) || isDescendantOf(srcParent, idx)) {
-                proxyEnd = m_rootIndexList.indexOf(idx);
-                break;
-            }
-        }
-        // Figure out if destination is actually a change.
-    }
-#endif
-
-
-    bool notifyDestination = proxyDestination.isValid();
-
-    if (proxyDestination.isValid() && (isFlat()))
-        notifyDestination = false;
-
-    if (m_includeAllSelected && !m_startWithChildTrees) {
-        int destMoveRow = -1;
-
-        QList<QPersistentModelIndex>::const_iterator it = m_rootIndexList.constBegin();
-        const QList<QPersistentModelIndex>::const_iterator end = m_rootIndexList.constEnd();
-
-        int startMoveRow = -1;
-        int endMoveRow = -1;
-        int count = 0;
-        int row;
-        for ( ; it != end; ++it, ++count) {
-            row = it->row();
-            if ((row >= srcStart && row <= srcEnd) && q->sourceModel()->parent(*it) == srcParent) {
-                if (startMoveRow == -1) {
-                    startMoveRow = count;
-                    endMoveRow = count;
-
-                    if (destMoveRow == -1) {
-                        if (destParent.isValid())
-                            destMoveRow = getRootListRow(m_rootIndexList, destParent);
-                        else
-                            destMoveRow = it->row();
-                    }
-                } else
-                    ++endMoveRow;
-            } else {
-                if (row < destRow && q->sourceModel()->parent(*it) == destParent) {
-                    if (destMoveRow == -1)
-                        if (destParent.isValid())
-                            destMoveRow = getRootListRow(m_rootIndexList, destParent);
-                        else
-                            destMoveRow = it->row();
-                    else
-                        ++destMoveRow;
-                }
-            }
-        }
-        if (startMoveRow != -1 && (destMoveRow < startMoveRow || destMoveRow > endMoveRow)) {
-            Q_ASSERT(destMoveRow != -1);
-            q->beginMoveRows(QModelIndex(), startMoveRow, endMoveRow, QModelIndex(), destMoveRow);
-            m_rowsMoved = true;
-        }
-        return;
-    }
-
-    const bool srcInModel = (!m_startWithChildTrees && isInModel(srcParent)) || (m_startWithChildTrees && m_rootIndexList.contains(srcParent));
-    const bool destInModel = (!m_startWithChildTrees && isInModel(destParent)) || (m_startWithChildTrees && m_rootIndexList.contains(destParent));
-
-    if (srcInModel) {
-        if (destInModel) {
-            // The easy case.
-            const bool allowMove = q->beginMoveRows(q->mapFromSource(srcParent), srcStart, srcEnd, q->mapFromSource(destParent), destRow);
-            Q_UNUSED(allowMove);   // prevent warning in release builds.
-            Q_ASSERT(allowMove);
-            m_rowsMoved = true;
-        } else {
-            // source is in the proxy, but dest isn't.
-            // Emit a remove
-            q->beginRemoveRows(srcParent, srcStart, srcEnd);
-        }
-    } else {
-        if (destInModel) {
-            // dest is in proxy, but source is not.
-            // Emit an insert
-            q->beginInsertRows(destParent, destRow, destRow + (srcEnd - srcStart));
-        }
-    }
+  Q_UNUSED(srcParent)
+  Q_UNUSED(srcStart)
+  Q_UNUSED(srcEnd)
+  Q_UNUSED(destParent)
+  Q_UNUSED(destRow)
 }
 
 void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destRow)
 {
-    Q_Q(KSelectionProxyModel);
-
-    m_ignoreNextLayoutChanged = true;
-
-    if (!m_selectionModel->hasSelection())
-        return;
-
-    if (m_rowsMoved) {
-        m_rowsMoved = false;
-        endRemoveRows(srcParent, srcStart, srcEnd);
-        endInsertRows(destParent, destRow, destRow + (srcEnd - srcStart));
-        q->endMoveRows();
-        return;
-    }
-
-    if (m_rowsRemoved)
-        q->endRemoveRows();
-
-    if (m_rowsInserted)
-        q->endInsertRows();
+  Q_UNUSED(srcParent)
+  Q_UNUSED(srcStart)
+  Q_UNUSED(srcEnd)
+  Q_UNUSED(destParent)
+  Q_UNUSED(destRow)
 }
-
-bool KSelectionProxyModelPrivate::isInModel(const QModelIndex &sourceIndex) const
-{
-    if (m_rootIndexList.contains(sourceIndex)) {
-        if (m_startWithChildTrees)
-            return false;
-        return true;
-    }
-
-    QModelIndex seekIndex = sourceIndex;
-    while (seekIndex.isValid()) {
-        if (m_rootIndexList.contains(seekIndex)) {
-            return true;
-        }
-
-        seekIndex = seekIndex.parent();
-    }
-    return false;
-}
-
 
 QModelIndex KSelectionProxyModelPrivate::mapParentToSource(const QModelIndex &proxyParent) const
 {
