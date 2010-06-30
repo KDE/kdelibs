@@ -362,7 +362,7 @@ static QItemSelection stableNormalizeSelection(QItemSelection selection)
     return selection;
 }
 
-static QItemSelection normalizeSelection(QItemSelection selection)
+QItemSelection kNormalizeSelection(QItemSelection selection)
 {
     if (selection.size() <= 1)
         return selection;
@@ -717,7 +717,7 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
       selection.append(QItemSelectionRange(rootIndex, rootIndex));
     }
 
-    selection = normalizeSelection(selection);
+    selection = kNormalizeSelection(selection);
     emit q->rootSelectionAboutToBeRemoved(selection);
 }
 
@@ -1811,7 +1811,7 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         updateInternalTopIndexes(proxyEnd + 1, -1 * numRemovedChildren);
         q->endRemoveRows();
         if (m_includeAllSelected) {
-            removeSelectionFromProxy(normalizeSelection(extraRanges));
+            removeSelectionFromProxy(kNormalizeSelection(extraRanges));
         }
     } else {
         if (!proxyTopLeft.isValid())
@@ -1864,8 +1864,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     //
     // The new indexes are inserted in sorted order.
 
-    const QItemSelection selected = normalizeSelection(m_indexMapper->mapSelectionRightToLeft(_selected));
-    const QItemSelection deselected = normalizeSelection(m_indexMapper->mapSelectionRightToLeft(_deselected));
+    const QItemSelection selected = kNormalizeSelection(m_indexMapper->mapSelectionRightToLeft(_selected));
+    const QItemSelection deselected = kNormalizeSelection(m_indexMapper->mapSelectionRightToLeft(_deselected));
 
 #if QT_VERSION < 0x040800
     // The QItemSelectionModel sometimes doesn't remove deselected items from its selection
@@ -1877,7 +1877,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel->selection());
 #endif
 
-    fullSelection = normalizeSelection(fullSelection);
+    fullSelection = kNormalizeSelection(fullSelection);
 
     QItemSelection newRootRanges;
     QItemSelection removedRootRanges;
@@ -1952,8 +1952,8 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
         removedRootRanges << getRootRanges(obscuredRanges);
         newRootRanges << getRootRanges(exposedSelection);
 
-        removedRootRanges = normalizeSelection(removedRootRanges);
-        newRootRanges = normalizeSelection(newRootRanges);
+        removedRootRanges = kNormalizeSelection(removedRootRanges);
+        newRootRanges = kNormalizeSelection(newRootRanges);
     } else {
         removedRootRanges = deselected;
         newRootRanges = selected;
@@ -2505,7 +2505,7 @@ QItemSelection KSelectionProxyModel::mapSelectionToSource(const QItemSelection& 
                   const QModelIndex right = mapToSource(createIndex(i, it->right()));
                   topSelection.append(QItemSelectionRange(left, right));
                 }
-                sourceSelection += normalizeSelection(topSelection);
+                sourceSelection += kNormalizeSelection(topSelection);
             }
         }
     }
