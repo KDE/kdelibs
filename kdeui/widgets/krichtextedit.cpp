@@ -200,6 +200,28 @@ void KRichTextEdit::alignJustify()
     d->activateRichText();
 }
 
+void KRichTextEdit::makeRightToLeft()
+{
+    QTextBlockFormat format;
+    format.setLayoutDirection(Qt::RightToLeft);
+    QTextCursor cursor = textCursor();
+    cursor.mergeBlockFormat(format);
+    setTextCursor(cursor);
+    setFocus();
+    d->activateRichText();
+}
+
+void KRichTextEdit::makeLeftToRight()
+{
+    QTextBlockFormat format;
+    format.setLayoutDirection(Qt::LeftToRight);
+    QTextCursor cursor = textCursor();
+    cursor.mergeBlockFormat(format);
+    setTextCursor(cursor);
+    setFocus();
+    d->activateRichText();
+}
+
 void KRichTextEdit::setTextBold(bool bold)
 {
     QTextCharFormat fmt;

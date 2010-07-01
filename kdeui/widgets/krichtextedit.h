@@ -206,6 +206,20 @@ public Q_SLOTS:
     void alignJustify();
 
     /**
+     * Sets the direction of the current block to Right-To-Left
+	 *
+	 * @since 4.6
+     */
+    void makeRightToLeft();
+
+    /**
+     * Sets the direction of the current block to Left-To-Right
+	 *
+	 * @since 4.6
+     */
+    void makeLeftToRight();
+
+    /**
      * Sets the list style of the current list, or creates a new list using the
      * current block. The @a _styleindex corresponds to the QTextListFormat::Style
      *

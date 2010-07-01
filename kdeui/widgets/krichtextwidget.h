@@ -214,6 +214,11 @@ public:
 //         SupportChangeParagraphSpacing = 0x200000,
 
         /**
+         * Action to change direction of text to Right-To-Left or Left-To-Right.
+         */
+         SupportDirection = 0x8000000,
+
+        /**
          * Includes all above actions for full rich text support
          */
         FullSupport = 0xffffffff
@@ -270,6 +275,8 @@ public:
      * <tr><td>format_align_center</td><td>SupportAlignment</td></tr>
      * <tr><td>format_align_right</td><td>SupportAlignment</td></tr>
      * <tr><td>format_align_justify</td><td>SupportAlignment</td></tr>
+     * <tr><td>direction_ltr</td><td>SupportDirection</td></tr>
+     * <tr><td>direction_rtl</td><td>SupportDirection</td></tr>
      * <tr><td>format_list_style</td><td>SupportChangeListStyle</td></tr>
      * <tr><td>format_list_indent_more</td><td>SupportIndentLists</td></tr>
      * <tr><td>format_list_indent_less</td><td>SupportDedentLists</td></tr>

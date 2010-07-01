@@ -69,6 +69,8 @@ public:
             action_align_right(0),
             action_align_center(0),
             action_align_justify(0),
+            action_direction_ltr(0),
+            action_direction_rtl(0),
             action_text_superscript(0),
             action_text_subscript(0)
     {
@@ -110,6 +112,9 @@ public:
     KToggleAction *action_align_right;
     KToggleAction *action_align_center;
     KToggleAction *action_align_justify;
+
+    KToggleAction *action_direction_ltr;
+    KToggleAction *action_direction_rtl;
 
     KToggleAction *action_text_superscript;
     KToggleAction *action_text_subscript;
@@ -371,6 +376,32 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_align_justify = 0;
     }
 
+    if (d->richTextSupport & SupportDirection) {
+        d->action_direction_ltr = new KToggleAction(KIcon("format-text-direction-ltr"), i18nc("@action", "Left-to-Right"), actionCollection);
+        d->action_direction_ltr->setIconText(i18nc("@label left-to-right", "Left-to-Right"));
+        d->richTextActionList.append(d->action_direction_ltr);
+        actionCollection->addAction("direction_ltr", d->action_direction_ltr);
+        connect(d->action_direction_ltr, SIGNAL(triggered()),
+                this, SLOT(makeLeftToRight()));
+
+        d->action_direction_rtl = new KToggleAction(KIcon("format-text-direction-rtl"), i18nc("@action", "Right-to-Left"), actionCollection);
+        d->action_direction_rtl->setIconText(i18nc("@label right-to-left", "Right-to-Left"));
+        d->richTextActionList.append(d->action_direction_rtl);
+        actionCollection->addAction("direction_rtl", d->action_direction_rtl);
+        connect(d->action_direction_rtl, SIGNAL(triggered()),
+                this, SLOT(makeRightToLeft()));
+
+        QActionGroup *directionGroup = new QActionGroup(this);
+        directionGroup->addAction(d->action_direction_ltr);
+        directionGroup->addAction(d->action_direction_rtl);
+    } else {
+        actionCollection->removeAction(d->action_direction_ltr);
+        actionCollection->removeAction(d->action_direction_rtl);
+
+        d->action_direction_ltr = 0;
+        d->action_direction_rtl = 0;
+    }
+
     if (d->richTextSupport & SupportChangeListStyle) {
         d->action_list_style = new KSelectAction(KIcon("format-list-unordered"), i18nc("@title:menu", "List Style"), actionCollection);
         QStringList listStyles;
@@ -593,6 +624,11 @@ void KRichTextWidget::Private::_k_updateMiscActions()
         }
     }
 
+    if (richTextSupport & SupportDirection) {
+        const Qt::LayoutDirection direction = q->textCursor().blockFormat().layoutDirection();
+        action_direction_ltr->setChecked(direction == Qt::LeftToRight);
+        action_direction_rtl->setChecked(direction == Qt::RightToLeft);
+    }
 }
 
 void KRichTextWidget::Private::_k_setTextForegroundColor()
