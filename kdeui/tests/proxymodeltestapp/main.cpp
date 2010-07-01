@@ -30,6 +30,7 @@ int main( int argc, char **argv )
   KAboutData aboutData( ba, ba, name, ba, name );
   KCmdLineArgs::init( argc, argv, &aboutData );
   KApplication app;
+  Q_INIT_RESOURCE(eventlogger);
   MainWindow* mw = new MainWindow();
   mw->show();
   app.exec();

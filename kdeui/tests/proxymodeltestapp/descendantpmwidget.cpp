@@ -23,12 +23,16 @@
 
 #include <QTreeView>
 #include <QSplitter>
+#include <QFile>
 
 #include "dynamictreemodel.h"
 #include "dynamictreewidget.h"
 #include "kdescendantsproxymodel.h"
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QApplication>
+
+#include "modeleventlogger.h"
 
 DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget(parent)
 {
@@ -91,6 +95,8 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
  "- 20"
  "- 21");
 
+  m_eventLogger = new ModelEventLogger(m_rootModel, this);
+
   m_descProxyModel = new KDescendantsProxyModel(this);
   m_descProxyModel->setSourceModel(m_rootModel);
 
@@ -121,6 +127,18 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
 //   vLayout->addWidget(matchView);
 
   setLayout(layout);
+}
+
+DescendantProxyModelWidget::~DescendantProxyModelWidget()
+{
+  QString logFileName = QString("main.%1.cpp").arg(QApplication::applicationPid());
+  kDebug() << "Writing to " << logFileName;
+  QFile outputFile(logFileName);
+  const bool logFileOpened = outputFile.open(QFile::WriteOnly | QFile::Text);
+  Q_ASSERT(logFileOpened);
+
+  m_eventLogger->writeLog(&outputFile);
+  outputFile.close();
 }
 
 

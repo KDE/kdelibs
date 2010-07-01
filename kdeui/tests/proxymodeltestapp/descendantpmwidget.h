@@ -33,11 +33,14 @@ class QItemSelectionModel;
 class KDescendantsProxyModel;
 class KSelectionProxyModel;
 
+class ModelEventLogger;
+
 class DescendantProxyModelWidget : public QWidget
 {
   Q_OBJECT
 public:
   DescendantProxyModelWidget(QWidget *parent = 0);
+  virtual ~DescendantProxyModelWidget();
 
 protected slots:
   void doMatch(const QString &matchData);
@@ -45,6 +48,7 @@ protected slots:
 
 private:
   DynamicTreeModel *m_rootModel;
+  ModelEventLogger *m_eventLogger;
   KDescendantsProxyModel *m_descProxyModel;
   KSelectionProxyModel *m_selectionProxyModel;
   QItemSelectionModel *m_itemSelectionModel;

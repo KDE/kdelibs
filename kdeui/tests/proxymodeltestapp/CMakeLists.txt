@@ -29,7 +29,6 @@ set(proxymodeltestapp_SRCS
     matchcheckingwidget.cpp
 )
 
-
 kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
 
 target_link_libraries(proxymodeltestapp
