@@ -1823,9 +1823,6 @@ bool HTTPProtocol::sendErrorPageNotification()
     if (!m_request.preferErrorPage)
         return false;
 
-    if (m_mimeType.isEmpty())
-        return false;
-
     if (m_isLoadingErrorPage)
         kWarning(7113) << "called twice during one request, something is probably wrong.";
 
