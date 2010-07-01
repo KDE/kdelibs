@@ -32,11 +32,17 @@ class ModelDumper
 public:
   ModelDumper();
 
-  void dumpModel(QAbstractItemModel *model, QIODevice *device) const;
-  QString dumpModel(QAbstractItemModel *model) const;
+  QString dumpModel(const QAbstractItemModel * const model) const;
+  QString dumpTree(const QAbstractItemModel * const model, const QModelIndex &index) const;
+  QString dumpTree(const QAbstractItemModel * const model, const QModelIndex &index, int start, int end) const;
+
+  void dumpModel(const QAbstractItemModel * const model, QIODevice *device) const;
+  void dumpTree(const QAbstractItemModel * const model, QIODevice *device, const QModelIndex &index) const;
+  void dumpTree(const QAbstractItemModel * const model, QIODevice *device, const QModelIndex &index, int start, int end) const;
 
 private:
-  QString dumpLevel(QAbstractItemModel *model, const QModelIndex &index, int level) const;
+  QString dumpLevel(const QAbstractItemModel * const model, const QModelIndex &parent, int level) const;
+  QString dumpLevel(const QAbstractItemModel * const model, const QModelIndex &parent, int level, int start, int end) const;
 
 };
 

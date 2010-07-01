@@ -30,24 +30,53 @@ ModelDumper::ModelDumper()
 
 static int num;
 
-void ModelDumper::dumpModel(QAbstractItemModel *model, QIODevice* device) const
+void ModelDumper::dumpModel(const QAbstractItemModel * const model, QIODevice* device) const
 {
   num = 1;
 
   device->write(dumpLevel(model, QModelIndex(), 1).toLatin1());
 }
 
-QString ModelDumper::dumpModel(QAbstractItemModel *model) const
+QString ModelDumper::dumpModel(const QAbstractItemModel * const model) const
 {
   num = 1;
   return dumpLevel(model, QModelIndex(), 1);
 }
 
-QString ModelDumper::dumpLevel(QAbstractItemModel *model, const QModelIndex& parent, int level) const
+QString ModelDumper::dumpTree(const QAbstractItemModel* const model, const QModelIndex& index) const
+{
+  num = 1;
+  return dumpLevel(model, index, 1);
+}
+
+QString ModelDumper::dumpTree(const QAbstractItemModel* const model, const QModelIndex& index, int start, int end) const
+{
+  num = 1;
+  return dumpLevel(model, index, 1, start, end);
+}
+
+void ModelDumper::dumpTree(const QAbstractItemModel* const model, QIODevice *device, const QModelIndex& index) const
+{
+  num = 1;
+  device->write(dumpLevel(model, index, 1).toLatin1());
+}
+
+void ModelDumper::dumpTree(const QAbstractItemModel* const model, QIODevice* device, const QModelIndex& index, int start, int end) const
+{
+  num = 1;
+  device->write(dumpLevel(model, index, 1, start, end).toLatin1());
+}
+
+QString ModelDumper::dumpLevel(const QAbstractItemModel * const model, const QModelIndex& parent, int level) const
 {
   const int rowCount = model->rowCount(parent);
+  return dumpLevel(model, parent, level, 0, rowCount - 1);
+}
+
+QString ModelDumper::dumpLevel(const QAbstractItemModel* const model, const QModelIndex &parent, int level, int start, int end) const
+{
   QString lines;
-  for (int row = 0; row < rowCount; ++row)
+  for (int row = 0; row <= end; ++row)
   {
     QString line;
     line.append("\"");
@@ -63,6 +92,7 @@ QString ModelDumper::dumpLevel(QAbstractItemModel *model, const QModelIndex& par
       lines.append(dumpLevel(model, idx, level + 1));
   }
   return lines;
+
 }
 
 

@@ -27,7 +27,7 @@ class IndexFinder
   public:
     IndexFinder(QList<int> rows = QList<int>()) : m_rows(rows), m_model(0) {}
 
-    IndexFinder(QAbstractItemModel *model, QList<int> rows = QList<int>() )
+    IndexFinder(const QAbstractItemModel *model, QList<int> rows = QList<int>() )
       :  m_rows(rows), m_model(model)
     {
       Q_ASSERT(model);
@@ -48,6 +48,21 @@ class IndexFinder
       return parent;
     }
 
+    static IndexFinder indexToIndexFinder(const QModelIndex &_idx)
+    {
+      if (!_idx.isValid())
+        return IndexFinder();
+
+      QList<int> list;
+      QModelIndex idx = _idx;
+      while (idx.isValid())
+      {
+        list.prepend(idx.row());
+        idx = idx.parent();
+      }
+      return IndexFinder(_idx.model(), list);
+    }
+
     bool operator==( const IndexFinder &other ) const
     {
       return (m_rows == other.m_rows && m_model == other.m_model );
@@ -60,7 +75,7 @@ class IndexFinder
 
   private:
     QList<int> m_rows;
-    QAbstractItemModel *m_model;
+    const QAbstractItemModel * m_model;
 };
 
 
