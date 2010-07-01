@@ -523,10 +523,10 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
   else if ( rUrl[0] == '#' )
   {
     *this = _u;
-    QString strRef_encoded = rUrl.mid(1);
+    QByteArray strRef_encoded = rUrl.mid(1).toLatin1();
     if ( strRef_encoded.isNull() )
         strRef_encoded = ""; // we know there was an (empty) html ref, we saw the '#'
-    setFragment( strRef_encoded );
+    setEncodedFragment( strRef_encoded );
   }
   else if ( isRelativeUrl( rUrl ) )
   {

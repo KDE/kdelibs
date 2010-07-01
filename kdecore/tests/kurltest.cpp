@@ -1031,6 +1031,10 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#ref") );
   }
   {
+      KUrl waba2( waba1, "#%72%22method"); // #243217
+     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#%72%22method") );
+  }
+  {
      KUrl base( "http://faure@www.kde.org" ); // no path
      KUrl waba2( base, "filename.html");
      QCOMPARE( waba2.url(), QString("http://faure@www.kde.org/filename.html") );
