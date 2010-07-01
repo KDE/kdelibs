@@ -1,0 +1,119 @@
+/*
+    Copyright (C) 2010 Klarälvdalens Datakonsult AB,
+        a KDAB Group company, info@kdab.net,
+        author Stephen Kelly <stephen@kdab.com>
+
+    This library is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version.
+
+    This library is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+    License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to the
+    Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+    02110-1301, USA.
+*/
+
+#ifndef MODELEVENTLOGGER_H
+#define MODELEVENTLOGGER_H
+
+#include <QAbstractItemModel>
+#include <QIODevice>
+
+class ModelDumper;
+
+class ModelEvent : public QObject
+{
+  Q_OBJECT
+public:
+  enum Type
+  {
+    Init,
+    RowsInserted,
+    RowsRemoved,
+    DataChanged,
+    LayoutChanged,
+    ModelReset
+  };
+
+private:
+  //TODO: See if Q_ENUMS does this:
+//   Q_PROPERTY(Type type READ type)
+
+  Q_PROPERTY(QString type READ type)
+
+  Q_PROPERTY(int start READ start)
+  Q_PROPERTY(int end READ end)
+  // TODO: custom grantlee plugin.
+//   Q_PROPERTY(QList<int> rowAncestors READ rowAncestors)
+
+  Q_PROPERTY(QString rowAncestors READ rowAncestors)
+  Q_PROPERTY(bool hasInterpretString READ hasInterpretString)
+  Q_PROPERTY(QString interpretString READ interpretString)
+
+public:
+  ModelEvent(QObject* parent = 0);
+
+//   Type type() const;
+  QString type() const;
+  void setType(Type type);
+
+  int start() const;
+  void setStart(int start);
+
+  int end() const;
+  void setEnd(int end);
+
+  QString rowAncestors() const;
+//   QList<int> rowAncestors() const;
+  void setRowAncestors(QList<int> rowAncestors);
+
+  bool hasInterpretString() const;
+
+  QString interpretString() const;
+  void setInterpretString(const QString &interpretString);
+
+private:
+  Type m_type;
+  int m_start;
+  int m_end;
+  QList<int> m_rowAncestors;
+  QString m_interpretString;
+};
+
+/**
+ * @brief A logger for QAbstractItemModel events.
+ *
+ * The log creates the same structure as the @p model, and can be compiled
+ * to reproduce failure cases.
+ *
+ * The log is written to the QIODevice @p device.
+ */
+class ModelEventLogger : public QObject
+{
+  Q_OBJECT
+public:
+  ModelEventLogger(QAbstractItemModel *model, QObject* parent = 0);
+  void writeLog(QIODevice *device);
+  virtual ~ModelEventLogger();
+
+private slots:
+  void rowsInserted(const QModelIndex &parent, int start, int end);
+  void rowsRemoved(const QModelIndex &parent, int start, int end);
+  void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+  void layoutChanged();
+  void modelReset();
+
+private:
+  const QAbstractItemModel * const m_model;
+  ModelDumper * const m_modelDumper;
+  QVariant m_initEvent;
+  QVariantList m_events;
+};
+
+#endif
