@@ -164,6 +164,8 @@ ModelEventLogger::ModelEventLogger(QAbstractItemModel *model, QObject* parent)
   modelEvent->setType(ModelEvent::Init);
   modelEvent->setInterpretString(m_modelDumper->dumpModel(model));
 
+  m_modelName = QString::fromLatin1(model->metaObject()->className()).toLower();
+
   m_initEvent = QVariant::fromValue(static_cast<QObject*>(modelEvent));
 
 }
@@ -171,7 +173,7 @@ ModelEventLogger::ModelEventLogger(QAbstractItemModel *model, QObject* parent)
 void ModelEventLogger::writeLog()
 {
 #ifdef Grantlee_FOUND
-  QString logFileName = QString("main.%1.%2.cpp").arg(reinterpret_cast<qint64>(this)).arg(m_numLogs++);
+  QString logFileName = QString("main.%1.%2.%3.cpp").arg(m_modelName).arg(reinterpret_cast<qint64>(this)).arg(m_numLogs++);
   kDebug() << "Writing to " << logFileName;
   QFile outputFile(logFileName);
   const bool logFileOpened = outputFile.open(QFile::WriteOnly | QFile::Text);

@@ -132,6 +132,7 @@ private:
   QList<QPersistentModelIndex> m_persistentIndexes;
   QList<QList<int> > m_oldPaths;
   int m_numLogs;
+  QString m_modelName;
 };
 
 #endif
