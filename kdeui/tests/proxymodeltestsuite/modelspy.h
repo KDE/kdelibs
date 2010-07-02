@@ -28,6 +28,8 @@
 #include "persistentchangelist.h"
 #include <QItemSelectionRange>
 
+#include "proxymodeltestsuite_export.h"
+
 enum SignalType
 {
   NoSignal,
@@ -46,7 +48,7 @@ enum SignalType
 
 Q_DECLARE_METATYPE( QModelIndex )
 
-class ModelSpy : public QObject, public QList<QVariantList>
+class PROXYMODELTESTSUITE_EXPORT ModelSpy : public QObject, public QList<QVariantList>
 {
   Q_OBJECT
 public:

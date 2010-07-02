@@ -26,11 +26,13 @@
 
 #include "proxymodeltest.h"
 
+#include "proxymodeltestsuite_export.h"
+
 class ModelSpy;
 
 class OnlySelectedChildrenTest;
 
-class ModelSelector : public ProxyModelTestData
+class PROXYMODELTESTSUITE_EXPORT ModelSelector : public ProxyModelTestData
 {
   Q_OBJECT
 public:

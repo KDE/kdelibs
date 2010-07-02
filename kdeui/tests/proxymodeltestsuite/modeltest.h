@@ -28,7 +28,9 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QStack>
 
-class  ModelTest : public QObject
+#include "proxymodeltestsuite_export.h"
+
+class PROXYMODELTESTSUITE_EXPORT ModelTest : public QObject
 {
   Q_OBJECT
 

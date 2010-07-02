@@ -24,10 +24,12 @@
 
 #include <QIODevice>
 
+#include "proxymodeltestsuite_export.h"
+
 class QModelIndex;
 class QAbstractItemModel;
 
-class ModelDumper
+class PROXYMODELTESTSUITE_EXPORT ModelDumper
 {
 public:
   ModelDumper();

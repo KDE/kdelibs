@@ -25,9 +25,11 @@
 #include <QAbstractItemModel>
 #include <QIODevice>
 
+#include "proxymodeltestsuite_export.h"
+
 class ModelDumper;
 
-class ModelEvent : public QObject
+class PROXYMODELTESTSUITE_EXPORT ModelEvent : public QObject
 {
   Q_OBJECT
 public:
@@ -103,7 +105,7 @@ private:
  *
  * The log is written to the QIODevice @p device.
  */
-class ModelEventLogger : public QObject
+class PROXYMODELTESTSUITE_EXPORT ModelEventLogger : public QObject
 {
   Q_OBJECT
 public:

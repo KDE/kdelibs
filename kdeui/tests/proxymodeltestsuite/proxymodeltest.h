@@ -32,23 +32,25 @@
 #include "modelspy.h"
 #include "persistentchangelist.h"
 
+#include "proxymodeltestsuite_export.h"
+
 typedef QList<QVariantList> SignalList;
 
 Q_DECLARE_METATYPE( SignalList )
 
-enum Persistence
+enum PROXYMODELTESTSUITE_EXPORT Persistence
 {
   LazyPersistence,
   ImmediatePersistence
 };
 
-enum SourceModel
+enum PROXYMODELTESTSUITE_EXPORT SourceModel
 {
   DynamicTree,
   IntermediateProxy
 };
 
-class BuiltinTestDataInterface
+class PROXYMODELTESTSUITE_EXPORT BuiltinTestDataInterface
 {
 public:
   virtual ~BuiltinTestDataInterface() { }
@@ -72,7 +74,7 @@ private:
 
 };
 
-class BuiltinTestInterface : BuiltinTestDataInterface
+class PROXYMODELTESTSUITE_EXPORT BuiltinTestInterface : BuiltinTestDataInterface
 {
 public:
   virtual ~BuiltinTestInterface() { }
@@ -118,7 +120,7 @@ private:
 
 };
 
-class ProxyModelTest : public QObject, protected BuiltinTestInterface
+class PROXYMODELTESTSUITE_EXPORT ProxyModelTest : public QObject, protected BuiltinTestInterface
 {
   Q_OBJECT
 public:
@@ -247,7 +249,7 @@ private:
   QString m_currentTest;
 };
 
-class ProxyModelTestData : public QObject, BuiltinTestDataInterface
+class PROXYMODELTESTSUITE_EXPORT ProxyModelTestData : public QObject, BuiltinTestDataInterface
 {
   Q_OBJECT
 public:

@@ -30,11 +30,13 @@
 #include <kdebug.h>
 #include "indexfinder.h"
 
+#include "proxymodeltestsuite_export.h"
+
 template<typename T> class QList;
 
 class ModelMoveCommand;
 
-class DynamicTreeModel : public QAbstractItemModel
+class PROXYMODELTESTSUITE_EXPORT DynamicTreeModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
@@ -103,7 +105,7 @@ private:
 };
 
 
-class ModelChangeCommand : public QObject
+class PROXYMODELTESTSUITE_EXPORT ModelChangeCommand : public QObject
 {
   Q_OBJECT
 public:
@@ -188,7 +190,7 @@ typedef QList<ModelChangeCommand*> ModelChangeCommandList;
     "- - C"
   @endcode
 */
-class ModelInsertCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelInsertCommand : public ModelChangeCommand
 {
   Q_OBJECT
 
@@ -217,7 +219,7 @@ protected:
   QString m_treeString;
 };
 
-class ModelInsertAndRemoveQueuedCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelInsertAndRemoveQueuedCommand : public ModelChangeCommand
 {
   Q_OBJECT
 
@@ -244,7 +246,7 @@ protected:
   void purgeItem(qint64 parent);
 };
 
-class ModelRemoveCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelRemoveCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
@@ -256,7 +258,7 @@ public:
   void purgeItem(qint64 parent);
 };
 
-class ModelDataChangeCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelDataChangeCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
@@ -272,7 +274,7 @@ protected:
   int m_startColumn;
 };
 
-class ModelMoveCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelMoveCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
@@ -296,7 +298,7 @@ protected:
   int m_destRow;
 };
 
-class ModelMoveLayoutChangeCommand : public ModelMoveCommand
+class PROXYMODELTESTSUITE_EXPORT ModelMoveLayoutChangeCommand : public ModelMoveCommand
 {
   Q_OBJECT
 public:
@@ -317,7 +319,7 @@ private:
 
 };
 
-class ModelResetCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelResetCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:
@@ -332,7 +334,7 @@ private:
 };
 
 
-class ModelLayoutChangeCommand : public ModelChangeCommand
+class PROXYMODELTESTSUITE_EXPORT ModelLayoutChangeCommand : public ModelChangeCommand
 {
   Q_OBJECT
 public:

@@ -50,7 +50,7 @@ if (Grantlee_FOUND)
 
 endif()
 
-kde4_add_library(proxymodeltestsuite
+kde4_add_library(proxymodeltestsuite SHARED
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
 )

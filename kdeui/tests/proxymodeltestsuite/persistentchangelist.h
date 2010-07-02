@@ -22,7 +22,9 @@
 
 #include "indexfinder.h"
 
-struct PersistentIndexChange
+#include "proxymodeltestsuite_export.h"
+
+struct PROXYMODELTESTSUITE_EXPORT PersistentIndexChange
 {
   IndexFinder parentFinder;
   int startRow;

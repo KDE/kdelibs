@@ -22,11 +22,13 @@
 
 #include "dynamictreemodel.h"
 
+#include "proxymodeltestsuite_export.h"
+
 class QAbstractItemModel;
 
 #include <QStringList>
 
-class ModelCommander : public QObject
+class PROXYMODELTESTSUITE_EXPORT ModelCommander : public QObject
 {
   Q_OBJECT
 public:
