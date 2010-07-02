@@ -95,6 +95,7 @@ private:
   friend class ModelMoveCommand;
   friend class ModelMoveLayoutChangeCommand;
   friend class ModelResetCommand;
+  friend class ModelLayoutChangeCommand;
 //   friend class ModelSortIndexCommand;
   friend class ModelSortIndexLayoutChangeCommand;
   friend class ModelInsertAndRemoveQueuedCommand;
@@ -328,6 +329,30 @@ public:
   /* reimp */ void doCommand();
 private:
   QString m_treeString;
+};
+
+
+class ModelLayoutChangeCommand : public ModelChangeCommand
+{
+  Q_OBJECT
+public:
+  ModelLayoutChangeCommand(DynamicTreeModel* model, QObject* parent = 0);
+  virtual ~ModelLayoutChangeCommand();
+
+  struct PersistentChange
+  {
+    QList<int> oldPath;
+    QList<int> newPath;
+  };
+
+  void setPersistentChanges(const QList<PersistentChange> &changes);
+
+  void setInitialTree(const QString &treeString);
+
+  /* reimp */ void doCommand();
+private:
+  QString m_treeString;
+  QList<PersistentChange> m_changes;
 };
 
 
