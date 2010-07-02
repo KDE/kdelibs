@@ -84,9 +84,10 @@ typedef KCompTreeNodeList KCompTreeChildren;
 class KDEUI_EXPORT KCompTreeNode : public QChar
 {
 public:
-    KCompTreeNode() : QChar(), myWeight(0) {}
+    KCompTreeNode() : QChar(), next(0), myWeight(0) {}
     explicit KCompTreeNode( const QChar& ch, uint weight = 0 )
         : QChar( ch ),
+          next(0),
           myWeight( weight ) {}
     ~KCompTreeNode();
 
