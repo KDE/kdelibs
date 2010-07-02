@@ -33,7 +33,7 @@ class IndexFinder
       Q_ASSERT(model);
     }
 
-    QModelIndex getIndex()
+    QModelIndex getIndex() const
     {
       if(!m_model)
         return QModelIndex();
