@@ -306,14 +306,16 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
         QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), (qlonglong)d->windowId);
 
         if (reply.isValid()) {
-            const QStringList cookies = reply.value().split(QL1C(';'));
+            const QString cookieStr = reply.value();
+            const QStringList cookies = cookieStr.split(QL1S("; "));
             Q_FOREACH(const QString& cookie, cookies) {
                 const int index = cookie.indexOf(QL1C('='));
                 const QString name = cookie.left(index);
                 const QString value = cookie.right((cookie.length() - index - 1));
                 cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
+                //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
             }
-            //kDebug(7044) << url.host() << reply.value();
+            //kDebug(7044) << "cookie for" << url.host() << ":" << cookieStr;
         } else {
             kWarning(7044) << "Unable to communicate with the cookiejar!";
         }
