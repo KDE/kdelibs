@@ -202,7 +202,8 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   // make sure to merge the settings from any file specified by
   // setLocalXMLFile()
   if ( !d->m_localXMLFile.isEmpty() ) {
-    if ( !allFiles.contains( d->m_localXMLFile ) )
+    const bool exists = QDir::isRelativePath(d->m_localXMLFile) || QFile::exists(d->m_localXMLFile);
+    if (exists && !allFiles.contains(d->m_localXMLFile))
       allFiles.prepend( d->m_localXMLFile );
   }
 

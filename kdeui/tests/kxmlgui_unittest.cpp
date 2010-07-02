@@ -112,6 +112,11 @@ void KXmlGui_UnitTest::testFindVersionNumber_data()
     QTest::newRow("with a dot") << // as was found in autorefresh.rc
         "<?xml version = '1.0'?>\n"
         "<gui version = \"0.2\" name=\"foo\"/>\n" << QString() /*error*/;
+    QTest::newRow("with a comment") << // as found in kmail.rc
+        "<!DOCTYPE kpartgui>\n"
+        "<!-- This file should be synchronized with kmail_part.rc to provide\n"
+        "the same menu entries at the same place in KMail and Kontact  -->\n"
+        "<kpartgui version=\"452\" name=\"kmmainwin\">\n" << "452";
 }
 
 void KXmlGui_UnitTest::testFindVersionNumber()
@@ -852,4 +857,14 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
     QVERIFY(!reloadedXml.contains("<Action name=\"print\""));
     QVERIFY(reloadedXml.contains("<Action name=\"home\""));
     QVERIFY(reloadedXml.contains("<ActionProperties>"));
+
+    // Check what happens when the local file doesn't exist
+    TestGuiClient client2;
+    QFile::remove(filenameLocal);
+    client2.replaceXMLFile(filenameReplace, filenameLocal);
+    xml = client2.domDocument().toString();
+    //qDebug() << xml;
+    QVERIFY(!xml.contains("<Action name=\"print\""));
+    QVERIFY(xml.contains("<Action name=\"home\"")); // modified toolbars
+    QVERIFY(!xml.contains("<ActionProperties>")); // but no local xml file
 }
