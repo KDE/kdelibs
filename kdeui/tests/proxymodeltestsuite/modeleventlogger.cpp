@@ -153,6 +153,7 @@ ModelEventLogger::ModelEventLogger(QAbstractItemModel *model, QObject* parent)
   : QObject(parent), m_model(model), m_modelDumper(new ModelDumper)
 {
   connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(dataChanged(QModelIndex,QModelIndex)));
+  connect(model, SIGNAL(layoutAboutToBeChanged()), SLOT(layoutAboutToBeChanged()));
   connect(model, SIGNAL(layoutChanged()), SLOT(layoutChanged()));
   connect(model, SIGNAL(modelReset()), SLOT(modelReset()));
   connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(rowsInserted(QModelIndex,int,int)));
@@ -210,11 +211,55 @@ void ModelEventLogger::dataChanged(const QModelIndex& topLeft, const QModelIndex
   m_events.append(QVariant::fromValue(static_cast<QObject*>(modelEvent)));
 }
 
+void ModelEventLogger::persistChildren(const QModelIndex &parent)
+{
+  for (int row = 0; row < m_model->rowCount(parent); ++row)
+  {
+    static const int column = 0;
+    const QModelIndex idx = m_model->index(row, column, parent);
+    m_persistentIndexes.append(idx);
+    m_oldPaths.append(IndexFinder::indexToIndexFinder(idx).rows());
+    if (m_model->hasChildren(idx))
+      persistChildren(idx);
+  }
+}
+
+void ModelEventLogger::layoutAboutToBeChanged()
+{
+  m_oldPaths.clear();
+  persistChildren(QModelIndex());
+}
+
 void ModelEventLogger::layoutChanged()
 {
   ModelEvent *modelEvent = new ModelEvent(this);
   modelEvent->setType(ModelEvent::LayoutChanged);
   modelEvent->setInterpretString(m_modelDumper->dumpModel(m_model));
+
+  QList<ModelEvent::PersistentChange> changes;
+
+  for( int i = 0; i < m_persistentIndexes.size(); ++i)
+  {
+    const QPersistentModelIndex pIdx = m_persistentIndexes.at(i);
+    if (!pIdx.isValid())
+    {
+      ModelEvent::PersistentChange change;
+      change.newPath = QList<int>();
+      change.oldPath = m_oldPaths.at(i);
+      changes.append(change);
+      continue;
+    }
+    const QList<int> rows = IndexFinder::indexToIndexFinder(pIdx).rows();
+    if (m_oldPaths.at(i) == rows)
+      continue;
+
+    ModelEvent::PersistentChange change;
+    change.newPath = rows;
+    change.oldPath = m_oldPaths.at(i);
+    changes.append(change);
+  }
+
+  modelEvent->setChanges(changes);
 
   m_events.append(QVariant::fromValue(static_cast<QObject*>(modelEvent)));
 }

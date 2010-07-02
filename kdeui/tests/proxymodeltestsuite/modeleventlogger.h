@@ -41,6 +41,12 @@ public:
     ModelReset
   };
 
+  struct PersistentChange
+  {
+    QList<int> oldPath;
+    QList<int> newPath;
+  };
+
 private:
   //TODO: See if Q_ENUMS does this:
 //   Q_PROPERTY(Type type READ type)
@@ -78,12 +84,15 @@ public:
   QString interpretString() const;
   void setInterpretString(const QString &interpretString);
 
+  void setChanges(const QList<PersistentChange> &changes) { m_changedPaths = changes; }
+
 private:
   Type m_type;
   int m_start;
   int m_end;
   QList<int> m_rowAncestors;
   QString m_interpretString;
+  QList<PersistentChange> m_changedPaths;
 };
 
 /**
@@ -102,10 +111,14 @@ public:
   void writeLog(QIODevice *device);
   virtual ~ModelEventLogger();
 
+private:
+  void persistChildren(const QModelIndex &parent);
+
 private slots:
   void rowsInserted(const QModelIndex &parent, int start, int end);
   void rowsRemoved(const QModelIndex &parent, int start, int end);
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+  void layoutAboutToBeChanged();
   void layoutChanged();
   void modelReset();
 
@@ -114,6 +127,8 @@ private:
   ModelDumper * const m_modelDumper;
   QVariant m_initEvent;
   QVariantList m_events;
+  QList<QPersistentModelIndex> m_persistentIndexes;
+  QList<QList<int> > m_oldPaths;
 };
 
 #endif
