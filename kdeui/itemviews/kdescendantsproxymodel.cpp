@@ -662,7 +662,14 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex
   Q_Q(KDescendantsProxyModel);
 
   const int proxyStart = q->mapFromSource(q->sourceModel()->index(start, 0, parent)).row();
-  const int proxyEnd = q->mapFromSource(q->sourceModel()->index(end, 0, parent)).row();
+
+  static const int column = 0;
+  QModelIndex idx = q->sourceModel()->index(end, column, parent);
+  while (q->sourceModel()->hasChildren(idx))
+  {
+    idx = q->sourceModel()->index(q->sourceModel()->rowCount(idx) - 1, column, idx);
+  }
+  const int proxyEnd = q->mapFromSource(idx).row();
 
   m_removePair = qMakePair(proxyStart, proxyEnd);
 
