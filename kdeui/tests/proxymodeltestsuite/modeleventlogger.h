@@ -108,7 +108,7 @@ class ModelEventLogger : public QObject
   Q_OBJECT
 public:
   ModelEventLogger(QAbstractItemModel *model, QObject* parent = 0);
-  void writeLog(QIODevice *device);
+  void writeLog();
   virtual ~ModelEventLogger();
 
 private:

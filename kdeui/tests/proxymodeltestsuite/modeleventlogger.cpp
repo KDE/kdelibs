@@ -24,6 +24,7 @@
 #include "indexfinder.h"
 
 #include <QStringList>
+#include <QFile>
 
 #include <kdebug.h>
 
@@ -167,9 +168,16 @@ ModelEventLogger::ModelEventLogger(QAbstractItemModel *model, QObject* parent)
 
 }
 
-void ModelEventLogger::writeLog(QIODevice* device)
+void ModelEventLogger::writeLog()
 {
 #ifdef Grantlee_FOUND
+  static int numLogs;
+  QString logFileName = QString("main.%1.%2.cpp").arg(reinterpret_cast<qint64>(this)).arg(numLogs++);
+  kDebug() << "Writing to " << logFileName;
+  QFile outputFile(logFileName);
+  const bool logFileOpened = outputFile.open(QFile::WriteOnly | QFile::Text);
+  Q_ASSERT(logFileOpened);
+
   Grantlee::Engine engine;
   Grantlee::FileSystemTemplateLoader::Ptr loader(new Grantlee::FileSystemTemplateLoader);
   loader->setTemplateDirs(QStringList() << ":/templates");
@@ -184,10 +192,12 @@ void ModelEventLogger::writeLog(QIODevice* device)
     c.insert("initEvent", m_initEvent);
     c.insert("events", m_events);
 
-    QTextStream textStream(device);
+    QTextStream textStream(&outputFile);
     NoEscapeOutputStream outputStream(&textStream);
     t->render(&outputStream, &c);
   }
+  outputFile.close();
+
   if (t->error())
     kDebug() << t->errorString();
 #else
@@ -197,6 +207,7 @@ void ModelEventLogger::writeLog(QIODevice* device)
 
 ModelEventLogger::~ModelEventLogger()
 {
+  writeLog();
   delete m_modelDumper;
 }
 

@@ -23,7 +23,6 @@
 
 #include <QTreeView>
 #include <QSplitter>
-#include <QFile>
 
 #include "dynamictreemodel.h"
 #include "dynamictreewidget.h"
@@ -131,14 +130,6 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
 
 DescendantProxyModelWidget::~DescendantProxyModelWidget()
 {
-  QString logFileName = QString("main.%1.cpp").arg(reinterpret_cast<qint64>(m_rootModel));
-  kDebug() << "Writing to " << logFileName;
-  QFile outputFile(logFileName);
-  const bool logFileOpened = outputFile.open(QFile::WriteOnly | QFile::Text);
-  Q_ASSERT(logFileOpened);
-
-  m_eventLogger->writeLog(&outputFile);
-  outputFile.close();
 }
 
 
