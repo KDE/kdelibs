@@ -650,6 +650,8 @@ protected:
     foreach(const QString &arg, app.arguments()) \
     { \
       int testObject = arg.toInt(&ok); \
+      if (arg == "-count") \
+        continue; \
       if (!ok) \
       { \
         arguments.append(arg); \

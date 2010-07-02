@@ -528,6 +528,9 @@ void ProxyModelTest::doTest()
     return;
   }
 
+  static int numTests = 0;
+  if (qApp->arguments().contains("-count"))
+    kDebug() << "numTests" << ++numTests;
 
   m_modelSpy->preTestPersistIndexes(changeList);
 
