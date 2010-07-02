@@ -406,6 +406,9 @@ void KFileMetaDataWidget::Private::removeOutdatedRows()
     for (int i = m_rows.count() - 1; i >= m_fixedRowCount; --i) {
         delete m_rows[i].label;
         delete m_rows[i].defaultValueWidget;
+        if (m_rows[i].customValueWidget != 0) {
+            m_rows[i].customValueWidget->hide();
+        }
         m_rows.pop_back();
     }
 }
