@@ -131,6 +131,7 @@ private:
   QVariantList m_events;
   QList<QPersistentModelIndex> m_persistentIndexes;
   QList<QList<int> > m_oldPaths;
+  int m_numLogs;
 };
 
 #endif
