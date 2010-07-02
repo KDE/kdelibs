@@ -1,8 +1,8 @@
 
   {
     ModelDataChangeCommand dataChangeCommand(&rootModel);
-    dataChangeCommand.setAncestorRows({{ event.rowAncestors }});
-    dataChangeCommand.setStart({{ event.start }});
-    dataChangeCommand.setEnd({{ event.end }});
+    dataChangeCommand.setAncestorRowNumbers({{ event.rowAncestors }});
+    dataChangeCommand.setStartRow({{ event.start }});
+    dataChangeCommand.setEndRow({{ event.end }});
     dataChangeCommand.doCommand();
   }
