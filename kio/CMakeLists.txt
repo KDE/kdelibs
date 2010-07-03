@@ -25,6 +25,7 @@ include_directories(
    ${KDE4_KDECORE_INCLUDES}/
    ${STRIGI_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
+   ${SOPRANO_INCLUDE_DIR}
 )
 
 configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
