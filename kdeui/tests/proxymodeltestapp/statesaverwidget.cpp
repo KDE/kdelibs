@@ -74,6 +74,11 @@ StateSaverWidget::StateSaverWidget(QWidget* parent, Qt::WindowFlags f)
   restoreState();
 }
 
+StateSaverWidget::~StateSaverWidget()
+{
+  saveState();
+}
+
 void StateSaverWidget::saveState()
 {
   DynamicTreeStateSaver saver;
