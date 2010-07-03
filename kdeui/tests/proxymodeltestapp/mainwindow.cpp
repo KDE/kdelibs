@@ -34,7 +34,7 @@
 #include "statesaverwidget.h"
 #include "proxymodeltestwidget.h"
 #include "proxyitemselectionwidget.h"
-// #include "reparentingpmwidget.h"
+#include "reparentingpmwidget.h"
 #include "recursivefilterpmwidget.h"
 #include "lessthanwidget.h"
 #include "matchcheckingwidget.h"
@@ -51,7 +51,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(new BreadcrumbNavigationWidget(), "Breadcrumb Navigation");
   tabWidget->addTab(new BreadcrumbDirectionWidget(), "Breadcrumb Direction");
   tabWidget->addTab(new ProxyItemSelectionWidget(), "Proxy Item selection");
-//   tabWidget->addTab(new ReparentingProxyModelWidget(), "reparenting PM");
+  tabWidget->addTab(new ReparentingProxyModelWidget(), "reparenting PM");
   tabWidget->addTab(new RecursiveFilterProxyWidget(), "Recursive Filter");
   tabWidget->addTab(new LessThanWidget(), "Less Than");
   tabWidget->addTab(new ProxyModelTestWidget(), "Proxy Model Test");

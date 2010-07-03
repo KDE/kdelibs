@@ -25,7 +25,7 @@
 
 #include <QWidget>
 
-#include "../itemviews/kreparentingproxymodel.h"
+#include "kreparentingproxymodel.h"
 
 class DynamicTreeModel;
 

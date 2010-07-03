@@ -18,14 +18,14 @@ set(proxymodeltestapp_SRCS
     statesaverwidget.cpp
     recursivefilterpmwidget.cpp
     descendantpmwidget.cpp
-#     reparentingpmwidget.cpp
-#     ../../itemviews/kreparentingproxymodel.cpp
+    reparentingpmwidget.cpp
+    kreparentingproxymodel.cpp
     proxymodeltestwidget.cpp
     proxyitemselectionwidget.cpp
     lessthanwidget.cpp
     dynamictreewidget.cpp
     modelcommanderwidget.cpp
-#    scriptablereparentingwidget.cpp
+    scriptablereparentingwidget.cpp
     matchcheckingwidget.cpp
 )
 
