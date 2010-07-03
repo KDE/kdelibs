@@ -22,6 +22,8 @@
 
 #include <QWidget>
 
+#include "proxymodeltestsuite_export.h"
+
 class QModelIndex;
 
 class QComboBox;
@@ -31,7 +33,7 @@ class QRadioButton;
 
 class DynamicTreeModel;
 
-class DynamicTreeWidget : public QWidget
+class PROXYMODELTESTSUITE_EXPORT DynamicTreeWidget : public QWidget
 {
   Q_OBJECT
 public:

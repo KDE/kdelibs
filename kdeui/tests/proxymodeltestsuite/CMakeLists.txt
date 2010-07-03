@@ -11,6 +11,7 @@ include_directories( ${KDE4_INCLUDES}
 
 set(proxymodeltestsuite_SRCS
     dynamictreemodel.cpp
+    dynamictreewidget.cpp
     modelcommander.cpp
     modelspy.cpp
     modelselector.cpp
