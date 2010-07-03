@@ -1,6 +1,7 @@
 /*
  * This file is part of the KDE project.
  *
+ * Copyright (C) 2009,2010 Dawit Alemayehu <adawit @ kde.org>
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
  * Copyright (C) 2007 Trolltech ASA
  *
@@ -40,8 +41,8 @@
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslConfiguration>
 
-#define QL1S(x)     QLatin1String(x)
-
+#define QL1S(x)   QLatin1String(x)
+#define QL1C(x)   QLatin1Char(x)
 
 namespace KIO {
 
@@ -306,8 +307,16 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
         QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), (qlonglong)d->windowId);
 
         if (reply.isValid()) {
-            cookieList << reply.value().toUtf8();
-            //kDebug(7044) << url.host() << reply.value();
+            const QString cookieStr = reply.value();
+            const QStringList cookies = cookieStr.split(QL1S("; "));
+            Q_FOREACH(const QString& cookie, cookies) {
+                const int index = cookie.indexOf(QL1C('='));
+                const QString name = cookie.left(index);
+                const QString value = cookie.right((cookie.length() - index - 1));
+                cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
+                //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
+            }
+            //kDebug(7044) << "cookie for" << url.host() << ":" << cookieStr;
         } else {
             kWarning(7044) << "Unable to communicate with the cookiejar!";
         }
@@ -320,12 +329,11 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
     if (d->enabled) {
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
 
-        QByteArray cookieHeader;
         Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
-            cookieHeader = "Set-Cookie: ";
+            QByteArray cookieHeader ("Set-Cookie: ");
             cookieHeader += cookie.toRawForm();
             kcookiejar.call("addCookies", url.toString(), cookieHeader, (qlonglong)d->windowId);
-            //kDebug(7044) << "[" << d->windowId << "] Got Cookie: " << cookieHeader << " from " << url;
+            //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
         }
 
         return !kcookiejar.lastError().isValid();
