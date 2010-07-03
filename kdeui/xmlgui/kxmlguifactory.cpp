@@ -201,6 +201,9 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent )
 
 KXMLGUIFactory::~KXMLGUIFactory()
 {
+    foreach (KXMLGUIClient *client, d->m_clients) {
+        client->setFactory ( 0L );
+    }
     delete d;
 }
 

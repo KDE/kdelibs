@@ -123,6 +123,8 @@ void KXmlGuiWindow::setupToolbarMenuActions()
 
 KXmlGuiWindow::~KXmlGuiWindow()
 {
+    K_D(KXmlGuiWindow);
+    delete d->factory;
 }
 
 bool KXmlGuiWindow::event( QEvent* ev )
