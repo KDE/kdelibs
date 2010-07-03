@@ -27,7 +27,9 @@
 /**
  * Thin wrapper around QSvgRenderer with SVGZ support.
  *
- * Please refer to the QSvgRenderer documentation for details.
+ * @deprecated At least since Qt 4.6, QSvgRenderer has built-in SVGZ support,
+ * so you can use QSvgRenderer instead of KSvgRenderer in new code, and
+ * replace KSvgRenderer by QSvgRenderer in old code without any regressions.
  */
 class KDEUI_EXPORT KSvgRenderer : public QSvgRenderer
 {
