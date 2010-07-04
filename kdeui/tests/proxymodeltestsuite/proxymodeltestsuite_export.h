@@ -24,7 +24,7 @@
 #include <kdemacros.h>
 
 #ifndef PROXYMODELTESTSUITE_EXPORT 
-# if defined(MAKE_KDEUI_LIB)
+# if defined(MAKE_PROXYMODELTESTSUITE_LIB)
    /* We are building this library */ 
 #  define PROXYMODELTESTSUITE_EXPORT KDE_EXPORT
 # else
