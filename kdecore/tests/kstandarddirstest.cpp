@@ -298,6 +298,12 @@ void KStandarddirsTest::testAddResourceType()
 
     const QStringList files = KGlobal::dirs()->findAllResources("dtd", "customization/*", KStandardDirs::NoDuplicates);
     QVERIFY(files.count() > 2);
+
+    KGlobal::dirs()->addResourceType("xdgdata-ontology", 0, "ontology");
+    const QStringList ontologyDirs = KGlobal::dirs()->resourceDirs("xdgdata-ontology");
+    QCOMPARE(ontologyDirs.first(), QString(qgetenv("XDG_DATA_HOME")) + "/ontology/");
+    if (QFile::exists("/usr/share/ontology"))
+        QVERIFY(ontologyDirs.contains("/usr/share/ontology/"));
 }
 
 void KStandarddirsTest::testAddResourceDir()
