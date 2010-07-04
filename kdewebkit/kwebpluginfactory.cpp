@@ -107,7 +107,7 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
         if (ptr->isDefault()) {
             d->mimeType.clear();
             QEventLoop eventLoop;
-            KIO::TransferJob *job = KIO::mimetype(url, KIO::HideProgressInfo);
+            KIO::TransferJob *job = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             connect(job, SIGNAL(mimetype (KIO::Job *, const QString&)),
                     this, SLOT( _k_slotMimeType(KIO::Job *, const QString&)));
             connect (job, SIGNAL(finished (KJob *)), &eventLoop, SLOT(quit()));
