@@ -563,7 +563,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
   DOM::NodeImpl* node = (*prev).node;
   Q_ASSERT( node );
 
-  Selection sel(Position(node, index - (*prev).index));
+  Selection sel(RenderPosition(node, index - (*prev).index).position());
 
   khtml::RenderObject* obj = node->renderer();
   khtml::RenderTextArea *renderTextArea = 0L;
@@ -607,7 +607,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
   }
   Q_ASSERT ( prev != itEnd );
 
-  sel.moveTo(sel.start(), Position((*prev).node, index + length - (*prev).index));
+  sel.moveTo(sel.start(), RenderPosition((*prev).node, index + length - (*prev).index).position());
 
 #if 0
   kDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
