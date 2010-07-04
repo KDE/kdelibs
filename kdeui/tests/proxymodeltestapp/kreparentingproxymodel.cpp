@@ -819,6 +819,7 @@ QHash<QModelIndex, QModelIndexList> KReparentingProxyModelPrivate::mergeDescenda
 
 QHash<QModelIndex, QModelIndexList> KReparentingProxyModelPrivate::insertTree( QHash<QModelIndex, QModelIndexList> mappings, const QModelIndex &parent )
 {
+    return QHash<QModelIndex, QModelIndexList>();
 
 }
 
