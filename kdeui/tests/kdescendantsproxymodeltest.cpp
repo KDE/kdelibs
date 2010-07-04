@@ -255,3 +255,4 @@ PROXYMODELTEST_MAIN(DescendantsProxyModelTest,
 )
 
 #include "kdescendantsproxymodeltest.moc"
+
