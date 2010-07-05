@@ -22,8 +22,6 @@
 
 #include <QAbstractProxyModel>
 
-#include "kdeui_export.h"
-
 class KReparentingProxyModelPrivate;
 
 /**
@@ -73,7 +71,7 @@ class KReparentingProxyModelPrivate;
   The implementation must return the correct value for all of its descendants, not only its direct parent.
   The actual location to insert the descendant in the tree is determined internally by a binary find algorithm.
 */
-class KDEUI_EXPORT KReparentingProxyModel : public QAbstractProxyModel
+class KReparentingProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 public:
