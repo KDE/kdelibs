@@ -260,20 +260,3 @@ void KApplication_activateWindowForProcess( const QString& executableName )
 }
 
 // </copy>
-
-// returns true if dbus patched for KDE is used
-bool KApplication_dbusIsPatched()
-{
-# ifdef __GNUC__
-#  define DBUSLIB_PREFIX "lib"
-# else
-#  define DBUSLIB_PREFIX ""
-# endif
-# ifdef _DEBUG
-#  define DBUSLIB_SUFFIX "d"
-# else
-#  define DBUSLIB_SUFFIX ""
-# endif
-   QLibrary myLib(DBUSLIB_PREFIX "dbus-1" DBUSLIB_SUFFIX);
-   return myLib.resolve("dbus_kde_patch");
-}

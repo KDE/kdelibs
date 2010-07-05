@@ -16,6 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <unistd.h>
 #include "kuniqueapplication.h"
 #include "kglobalsettings.h"
 
@@ -23,19 +24,44 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <QtCore/QTimer>
+#include <kprocess.h>
+
+#include <QTimer>
+#include <QFile>
 
 class TestApp : public KUniqueApplication
 {
+    Q_OBJECT
 public:
-    TestApp() : KUniqueApplication("TestApp") { }
-    virtual int newInstance( );
+    TestApp() : KUniqueApplication("TestApp"), m_callCount(0) { }
+    virtual int newInstance();
+    int callCount() const { return m_callCount; }
+
+private Q_SLOTS:
+    void executeNewChild() {
+        // Duplicated from kglobalsettingstest.cpp - make a shared helper method?
+        KProcess* proc = new KProcess(this);
+        const QString appName = "kuniqueapptest";
+#ifdef Q_OS_WIN
+        (*proc) << appName + ".exe";
+#else
+        if (QFile::exists(appName+".shell"))
+            (*proc) << "./" + appName+".shell";
+        else {
+            Q_ASSERT(QFile::exists(appName));
+            (*proc) << "./" + appName;
+        }
+#endif
+        proc->start();
+    }
+private:
+    int m_callCount;
 };
 
 
-int
-TestApp::newInstance( )
+int TestApp::newInstance()
 {
+    ++m_callCount;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     kDebug() << "NewInstance";
     for ( int i = 0; i < args->count(); i++ )
@@ -43,16 +69,10 @@ TestApp::newInstance( )
         kDebug() << "argument " << i << " : " << args->arg(i);
     }
 
-    // Auto-terminate this process, so that we can run it as part of the automated unittests,
-    // without ending up with a process lying around
-    // You have 10s to call it again, when doing manual testing ;)
-    QTimer::singleShot( 10000, this, SLOT(quit()) );
-
     return 0;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     KCmdLineOptions options;
     options.add("!+[argument]", ki18n("arguments passed to new instance"));
@@ -68,9 +88,23 @@ main(int argc, char *argv[])
     }
     TestApp a;
 
+    // Testcase for the problem coming from the old fork-on-startup solution:
+    // the "newInstance" D-Bus call would time out if the app took too much time
+    // to be ready.
+    //printf("Sleeping.\n");
+    //sleep(200);
+
+    QTimer::singleShot( 400, &a, SLOT(executeNewChild()) );
+    QTimer::singleShot( 800, &a, SLOT(quit()) );
+
     printf("Running.\n");
     kapp->exec();
     printf("Terminating.\n");
 
-    return 0;
+    Q_ASSERT(a.callCount() == 2);
+    const bool ok = a.callCount() == 2;
+
+    return ok ? 0 : 1;
 }
+
+#include "kuniqueapptest.moc"
