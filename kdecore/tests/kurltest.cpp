@@ -1627,6 +1627,14 @@ void KUrlTest::testMailto()
   QUrl qurl("mailto:null@kde.org?subject=hello#world"); // #80165: is #world part of fragment or query? RFC-3986 says: fragment.
   QCOMPARE(QString::fromLatin1(qurl.encodedQuery()), QString("subject=hello"));
 
+  {
+      KUrl mailtoUrl;
+      mailtoUrl.setProtocol("mailto");
+      mailtoUrl.setPath("a%b");
+      QCOMPARE(mailtoUrl.path(), QString("a%b"));
+      QCOMPARE(mailtoUrl.url(), QString("mailto:a%25b"));
+  }
+
 #if 0
   // I wrote this test in the very first kurltest, but there's no proof that it's actually valid.
   // Andreas says this is broken, i.e. against rfc2368.
