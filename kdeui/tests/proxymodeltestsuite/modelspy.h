@@ -101,5 +101,6 @@ private:
   QList<QPersistentModelIndex> m_unchangedPersistentIndexes;
 };
 
+PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
 #endif
 

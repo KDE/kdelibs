@@ -602,6 +602,8 @@ protected:
   QSet<QString> m_testNames;
 };
 
+PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
+
 #define PROXYMODELTEST(TestData, TemplateArg, IntermediateProxy, LazyPersistence, Config) \
   if (testObjects.isEmpty() || testObjects.contains(testNum)) { \
     proxyModelTestClass->setTestData(new TestData<TemplateArg>(proxyModelTestClass)); \
