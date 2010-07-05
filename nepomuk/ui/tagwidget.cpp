@@ -94,9 +94,17 @@ void Nepomuk::TagWidgetPrivate::buildTagHash( const QList<Tag>& tags )
     m_showAllLinkLabel = 0;
 
     if( m_flags & TagWidget::MiniMode ) {
-        if( !(m_flags&TagWidget::ReadOnly) ) {
-            m_showAllLinkLabel = new QLabel( q );
-            m_flowLayout->addWidget( m_showAllLinkLabel );
+        m_showAllButton->hide();
+        if ( (m_flags&TagWidget::ReadOnly) && !tags.isEmpty() ) {
+            return;
+        }
+        
+        m_showAllLinkLabel = new QLabel( q );
+        m_flowLayout->addWidget( m_showAllLinkLabel );
+        if( m_flags&TagWidget::ReadOnly ) {
+            m_showAllLinkLabel->setText("-");
+        }
+        else {
             QFont f(q->font());
             f.setUnderline(true);
             m_showAllLinkLabel->setFont(f);
@@ -104,7 +112,6 @@ void Nepomuk::TagWidgetPrivate::buildTagHash( const QList<Tag>& tags )
                                          ( m_checkBoxHash.isEmpty() ? i18nc("@label", "Add Tags...") : i18nc("@label", "Change...") ) +
                                          QLatin1String("</a>") );
             q->connect( m_showAllLinkLabel, SIGNAL(linkActivated(QString)), SLOT(slotShowAll()) );
-            m_showAllButton->hide();
         }
     }
     else {
