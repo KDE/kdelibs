@@ -58,7 +58,6 @@ Nepomuk::TagCheckBox::TagCheckBox( const Tag& tag, TagWidgetPrivate* tagWidget, 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setMargin(0);
     if( tagWidget->m_flags & TagWidget::MiniMode ) {
-        setFont(KGlobalSettings::smallestReadableFont());
         m_label = new QLabel( tag.genericLabel(), this );
         m_label->setMouseTracking(true);
         m_child = m_label;
@@ -71,7 +70,6 @@ Nepomuk::TagCheckBox::TagCheckBox( const Tag& tag, TagWidgetPrivate* tagWidget, 
     m_child->installEventFilter( this );
     m_child->setMouseTracking(true);
     layout->addWidget( m_child );
-    m_font = font();
 }
 
 
@@ -158,7 +156,7 @@ void Nepomuk::TagCheckBox::enableUrlHover( bool enable )
 {
     if( m_urlHover != enable ) {
         m_urlHover = enable;
-        QFont f(m_font);
+        QFont f = font();
         if(enable)
             f.setUnderline(true);
         m_child->setFont(f);

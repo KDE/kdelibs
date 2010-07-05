@@ -23,7 +23,6 @@
 #define _NEPOMUK_TAG_CHECKBOX_H_
 
 #include <QtGui/QWidget>
-#include <QtGui/QFont>
 
 #include "tag.h"
 #include "tagwidget_p.h"
@@ -70,7 +69,6 @@ private:
 
     Tag m_tag;
     bool m_urlHover;
-    QFont m_font;
     TagWidgetPrivate* m_tagWidget;
 };
 }
