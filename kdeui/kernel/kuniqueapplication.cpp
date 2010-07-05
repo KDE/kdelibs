@@ -70,6 +70,7 @@
 #include <kkernel_mac.h>
 #endif
 
+bool KUniqueApplication::Private::s_nofork = false;
 bool KUniqueApplication::Private::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
@@ -82,7 +83,7 @@ void
 KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineOptions kunique_options;
-  kunique_options.add("nofork", ki18n("Deprecated option, ignored nowadays."));
+  kunique_options.add("nofork", ki18n("Do not run in the background."));
 #ifdef Q_WS_MACX
   kunique_options.add("psn", ki18n("Internally added if launched from Finder"));
 #endif
@@ -114,12 +115,11 @@ KUniqueApplication::start(StartFlags flags)
   s_kuniqueapplication_startCalled = true;
 
   addCmdLineOptions(); // Make sure to add cmd line options
-
-  //KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
-  //Private::s_nofork = !args->isSet("fork");
-
-#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
-  mac_initialize_dbus();
+#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
+  Private::s_nofork = true;
+#else
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
+  Private::s_nofork = !args->isSet("fork");
 #endif
 
   QString appName = KCmdLineArgs::aboutData()->appName();
@@ -133,55 +133,173 @@ KUniqueApplication::start(StartFlags flags)
         appName.prepend(s);
      }
 
-  const bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance;
+  bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance;
 
-  QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
+  if (Private::s_nofork)
+  {
 
-  const QString pid = QString::number(getpid());
-  if (forceNewProcess)
-      appName = appName + '-' + pid;
-
-    QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
-        dbusService->registerService(appName);
-    if (!reply.isValid()) {
-        kError() << "KUniqueApplication: Can't setup D-Bus service.";
-        ::exit(255);
-    }
-    if (reply == QDBusConnectionInterface::ServiceNotRegistered) {
-
-        // Already running. Ok. Make dbus call and exit.
-        QByteArray saved_args;
-        QDataStream ds(&saved_args, QIODevice::WriteOnly);
-        KCmdLineArgs::saveAppArgs(ds);
-
-        QByteArray new_asn_id;
-#if defined Q_WS_X11
-        // Forward the startupId for this process to the running instance
-        KStartupInfoId id;
-        if (kapp != NULL) // KApplication constructor unsets the env. variable
-            id.initId(kapp->startupId());
-        else
-            id = KStartupInfo::currentStartupIdEnv();
-        if (!id.none())
-            new_asn_id = id.id();
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
+     mac_initialize_dbus();
 #endif
 
-        QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", QDBusConnection::sessionBus());
-        QDBusReply<int> reply;
-        if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
+     QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
+
+     QString pid = QString::number(getpid());
+     if (forceNewProcess)
+        appName = appName + '-' + pid;
+
+     // Check to make sure that we're actually able to register with the D-Bus session
+     // server.
+     bool registered = dbusService->registerService(appName) == QDBusConnectionInterface::ServiceRegistered;
+     if (!registered)
+     {
+        kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
+                 << endl;
+#ifdef Q_WS_WIN
+        KApplication_activateWindowForProcess(KCmdLineArgs::aboutData()->appName());
+#endif
+        ::exit(255);
+     }
+
+     // We'll call newInstance in the constructor. Do nothing here.
+     return true;
+
+#if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
+  } else {
+    mac_fork_and_reexec_self();
+#endif
+
+  }
+
+#ifndef Q_WS_WIN
+  int fd[2];
+  signed char result;
+  if (0 > pipe(fd))
+  {
+     kError() << "KUniqueApplication: pipe() failed!" << endl;
+     ::exit(255);
+  }
+  int fork_result = fork();
+  switch(fork_result) {
+  case -1:
+     kError() << "KUniqueApplication: fork() failed!" << endl;
+     ::exit(255);
+     break;
+  case 0:
+     {
+        // Child
+
+        QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
+        ::close(fd[0]);
+        if (forceNewProcess)
+           appName.append("-").append(QString::number(getpid()));
+
+        QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
+            dbusService->registerService(appName);
+        if (!reply.isValid())
         {
-            QDBusError err = iface.lastError();
-            kError() << "Communication problem with " << KCmdLineArgs::aboutData()->appName() << ", it probably crashed." << endl
-                     << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
-            ::exit(255);
+           kError() << "KUniqueApplication: Can't setup D-Bus service." << endl;
+           result = -1;
+           ::write(fd[1], &result, 1);
+           ::exit(255);
         }
-        ::exit(reply);
-        return false; // not reached
-    }
+        if (reply == QDBusConnectionInterface::ServiceNotRegistered)
+        {
+           // Already running. Ok.
+           result = 0;
+           ::write(fd[1], &result, 1);
+           ::close(fd[1]);
+           return false;
+        }
 
-    // We have successfully registered to D-Bus, so this is the first instance of the application.
+#ifdef Q_WS_X11
+         KStartupInfoId id;
+         if( kapp != NULL ) // KApplication constructor unsets the env. variable
+             id.initId( kapp->startupId());
+         else
+             id = KStartupInfo::currentStartupIdEnv();
+         if( !id.none())
+         { // notice about pid change
+            Display* disp = XOpenDisplay( NULL );
+            if( disp != NULL ) // use extra X connection
+            {
+               KStartupInfoData data;
+               data.addPid( getpid());
+               KStartupInfo::sendChangeX( disp, id, data );
+               XCloseDisplay( disp );
+            }
+         }
+#else //FIXME(E): Implement
+#endif
+     }
+     result = 0;
+     ::write(fd[1], &result, 1);
+     ::close(fd[1]);
+     return true; // Finished.
+  default:
+     // Parent
 
-    return true; // Finished.
+     if (forceNewProcess)
+        appName.append("-").append(QString::number(fork_result));
+     ::close(fd[1]);
+
+     Q_FOREVER
+     {
+       int n = ::read(fd[0], &result, 1);
+       if (n == 1) break;
+       if (n == 0)
+       {
+          kError() << "KUniqueApplication: Pipe closed unexpectedly." << endl;
+          ::exit(255);
+       }
+       if (errno != EINTR)
+       {
+          kError() << "KUniqueApplication: Error reading from pipe." << endl;
+          ::exit(255);
+       }
+     }
+     ::close(fd[0]);
+
+     if (result != 0)
+        ::exit(result); // Error occurred in child.
+
+#endif
+     QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
+     if (!dbusService->isServiceRegistered(appName))
+     {
+        kError() << "KUniqueApplication: Registering failed!" << endl;
+     }
+
+     QByteArray saved_args;
+     QDataStream ds(&saved_args, QIODevice::WriteOnly);
+     KCmdLineArgs::saveAppArgs(ds);
+
+     QByteArray new_asn_id;
+#if defined Q_WS_X11
+     KStartupInfoId id;
+     if( kapp != NULL ) // KApplication constructor unsets the env. variable
+         id.initId( kapp->startupId());
+     else
+         id = KStartupInfo::currentStartupIdEnv();
+     if( !id.none())
+         new_asn_id = id.id();
+#endif
+
+     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", QDBusConnection::sessionBus());
+     QDBusReply<int> reply;
+     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
+     {
+       QDBusError err = iface.lastError();
+        kError() << "Communication problem with " << KCmdLineArgs::aboutData()->appName() << ", it probably crashed." << endl
+                 << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
+        ::exit(255);
+     }
+#ifndef Q_WS_WIN
+     ::exit(reply);
+     break;
+  }
+#endif
+  return false; // make insure++ happy
 }
 
 
@@ -195,6 +313,7 @@ KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
   // the sanity checking happened in initHack
   new KUniqueApplicationAdaptor(this);
 
+  if (Private::s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
     QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
 }
@@ -212,6 +331,7 @@ KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
   // the sanity checking happened in initHack
   new KUniqueApplicationAdaptor(this);
 
+  if (Private::s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
     QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
 }
