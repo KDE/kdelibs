@@ -927,7 +927,7 @@ void SchedulerPrivate::cancelJob(SimpleJob *job)
     // this method is called all over the place in job.cpp, so just do this check here to avoid
     // much boilerplate in job code.
     if (SimpleJobPrivate::get(job)->m_schedSerial == 0) {
-        kDebug(7006) << "Doing nothing because I don't know job" << job;
+        //kDebug(7006) << "Doing nothing because I don't know job" << job;
         return;
     }
     Slave *slave = jobSlave(job);
