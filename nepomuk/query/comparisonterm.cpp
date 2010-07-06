@@ -129,13 +129,16 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             QString v = getMainVariableName(qbd);
-            QString vScore = qbd->createScoringVariable();
-            return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" OPTION (score %5) . " )
+            QString scoringPattern;
+            if( !(qbd->flags()&Query::WithoutScoring) ) {
+                scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
+            }
+            return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" %5. " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
                       static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText(),
-                      vScore );
+                      scoringPattern );
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             QString v = getMainVariableName(qbd);
@@ -212,12 +215,15 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             }
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
-                QString v3Score = qbd->createScoringVariable();
-                return QString::fromLatin1( "%1%2 bif:contains \"%3\"  OPTION (score %4) . " )
+                QString scoringPattern;
+                if( !(qbd->flags()&Query::WithoutScoring) ) {
+                    scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
+                }
+                return QString::fromLatin1( "%1%2 bif:contains \"%3\"  %4. " )
                     .arg( pattern.arg(v3),
                           v3,
                           static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText(),
-                          v3Score );
+                          scoringPattern );
             }
             else if ( m_comparator == ComparisonTerm::Regexp ) {
                 QString v3 = qbd->uniqueVarName();

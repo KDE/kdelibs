@@ -304,6 +304,10 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 {
     Term term = d->m_term;
 
+    // we do not need scores when counting results
+    if( flags & CreateCountQuery )
+        flags |= WithoutScoring;
+
     // restrict to files if we are a file query
     if( d->m_isFileQuery ) {
         //

@@ -284,7 +284,16 @@ namespace Nepomuk {
                  * and nie:hasPart at the same time and even if only one of both is
                  * defined.
                  */
-                HandleInverseProperties = 0x2
+                HandleInverseProperties = 0x2,
+
+                /**
+                 * Disable the return of scores for full text matching. This flag is added
+                 * automatically with CreateCountQuery.
+                 *
+                 * \since 4.6
+                 */
+                WithoutScoring = 0x4
+
             };
             Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
 
