@@ -98,6 +98,7 @@ install( FILES
   KCModuleLoader
   KCModuleProxy
   KCMultiDialog
+  KIdleTime
   KCalendarSystem
   KCalendarSystemFactory
   KCharMacroExpander
