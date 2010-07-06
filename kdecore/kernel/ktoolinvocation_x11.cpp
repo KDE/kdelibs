@@ -143,14 +143,25 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         command = QLatin1String("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
         if ( !_to.isEmpty() )
         {
-            // put the whole address lists into RFC2047 encoded blobs; technically
-            // this isn't correct, but KMail understands it nonetheless
-            to = QString( "=?utf8?b?%1?=" ).arg( _to.toUtf8().toBase64().constData() );
+            KUrl url;
+            url.setProtocol(QLatin1String("mailto"));
+            url.setPath(_to);
+            to = url.toEncoded();
         }
         if ( !_cc.isEmpty() )
-            cc = QString( "=?utf8?b?%1?=" ).arg( _cc.toUtf8().toBase64().constData() );
+        {
+            KUrl url;
+            url.setProtocol(QLatin1String("mailto"));
+            url.setPath(_cc);
+            cc = url.toEncoded();
+        }
         if ( !_bcc.isEmpty() )
-            bcc = QString( "=?utf8?b?%1?=" ).arg( _bcc.toUtf8().toBase64().constData() );
+        {
+            KUrl url;
+            url.setProtocol(QLatin1String("mailto"));
+            url.setPath(_bcc);
+            bcc = url.toEncoded();
+        }
     } else {
         to = _to;
         cc = _cc;
