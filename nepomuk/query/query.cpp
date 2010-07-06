@@ -86,11 +86,11 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
 
 
 
-QString Nepomuk::Query::QueryPrivate::buildRequestPropertyVariableList() const
+QStringList Nepomuk::Query::QueryPrivate::buildRequestPropertyVariableList() const
 {
-    QString s;
+    QStringList s;
     for ( int i = 1; i <= m_requestProperties.count(); ++i ) {
-        s += QString( "?reqProp%1 " ).arg( i );
+        s << QString( "?reqProp%1 " ).arg( i );
     }
     return s;
 }
@@ -334,29 +334,45 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         }
     }
 
-    // build the list of variables to select to simplify the query building below
-    const QString selectVariables =
-        QString::fromLatin1( "%1 %2 %3 %4")
-        .arg( flags & CreateCountQuery ? QLatin1String("count(distinct ?r)") : QLatin1String("distinct ?r"),
-              d->buildRequestPropertyVariableList(),
-              qbd.customVariables().join( QLatin1String(" ") ),
-              qbd.buildScoringExpression() );
+    // build the list of variables to select (in addition to the main result variable ?r)
+    QStringList selectVariables = d->buildRequestPropertyVariableList() + qbd.customVariables();
+    const QString scoringExpression = qbd.buildScoringExpression();
+    if( !scoringExpression.isEmpty() )
+        selectVariables << scoringExpression;
 
-    // the query itself
-    QString query = QString::fromLatin1( "select %1 where { %2 %3 %4 }" )
-                    .arg( selectVariables,
-                          termGraphPattern,
-                          d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
-                          d->buildRequestPropertyPatterns() );
+    // build the core of the query - the part that never changes
+    QString queryBase = QString::fromLatin1( "%1 where { %2 %3 %4 }" )
+                        .arg( selectVariables.join( QLatin1String(" " ) ),
+                              termGraphPattern,
+                              d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
+                              d->buildRequestPropertyPatterns() );
 
     // add optional order terms
-    query += qbd.buildOrderString();
+    queryBase += qbd.buildOrderString();
 
     // offset and limit
     if ( d->m_offset > 0 )
-        query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
+        queryBase += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
     if ( d->m_limit > 0 )
-        query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
+        queryBase += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
+
+    // build the final query
+    QString query;
+    if( flags & CreateCountQuery ) {
+        if( selectVariables.isEmpty() ) {
+            // when there are no additional variables we can perfectly use count(distinct)
+            query = QLatin1String("select count(distinct ?r) as ?cnt ") + queryBase;
+        }
+        else {
+            // when there are additional variables we need to do some magic to count the
+            // number of rows instead of a list of counts
+            query = QString::fromLatin1("select count(%1) as ?cnt where { { select count(*) as %1 %2 } }")
+                    .arg(qbd.uniqueVarName(), queryBase );
+        }
+    }
+    else {
+        query = QLatin1String( "select distinct ?r " ) + queryBase;
+    }
 
     return query.simplified();
 }

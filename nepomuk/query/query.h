@@ -274,10 +274,8 @@ namespace Nepomuk {
 
                 /**
                  * Create a SPARQL count query which will return the number
-                 * of results rather than the results themselves. Be aware that
-                 * with a count query any requestProperties() will result in a grouping,
-                 * i.e. multiple count values will be returned with respect to the request
-                 * properties.
+                 * of results rather than the results themselves. The resuling query will have
+                 * a single binding called \p 'cnt'.
                  */
                 CreateCountQuery = 0x1,
 
@@ -295,7 +293,8 @@ namespace Nepomuk {
              * Nepomuk query service or directly in Soprano::Model::executeQuery.
              *
              * The resulting query will bind the results to variable \p 'r'. Request
-             * properties will be bound to variables \p 'reqProp1' through \p 'reqPropN'.
+             * properties will be bound to variables \p 'reqProp1' through \p 'reqPropN'
+             * (the only exception is a count query created via the CreateCountQuery flag).
              *
              * If you are looking for a serialization of a Query which can be parsed again
              * use toString() instead.
