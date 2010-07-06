@@ -281,69 +281,38 @@ QHash<QModelIndex, QModelIndexList> KReparentingProxyModelPrivate::recreateMappi
 
   for (int row = start; (row <= end || end == -1); )
   {
-//     kDebug() << row << end;
-
-    // TODO: Change this to get the next index by asking the proxy model, not the source model.
+    // A
+    // - B
+    // - - C
+    // - D
+    // The nextIndex of the invalid QModelIndex is A,
+    // The nextIndex of A is B,
+    // The nextIndex of B is C,
+    // The nextIndex of C is D,
+    // The nextIndex of D is invalid,
+    // When the nextIndex is invalid we're finished creating mappings.
     if (MapDescendants == strategy)
     {
       nextIndex = getIndexBelow(nextIndex);
     } else {
       nextIndex = q->sourceModel()->index(row, column, ancestor);
     }
-//     kDebug() << "nextIndex" << nextIndex;
-    if (nextIndex.parent() == ancestor)
-      ++row;
 
     if (!nextIndex.isValid())
       break;
 
-    if (ancestors.isEmpty())
-    {
-//       kDebug() << "adding" << nextIndex << ancestor;
-      mappings[ancestor].append(nextIndex);
-      ancestors.append(nextIndex);
-      continue;
-    }
+    const QVector<QModelIndex>::iterator ancestorIt = qLowerBound(ancestors.begin(), ancestors.end(), nextIndex, LessThan(q));
 
-    QModelIndex deepestAncestor = ancestors.last();
-//     kDebug() << "pre" << deepestAncestor.data() << nextIndex.data();
-    if (q->isDescendantOf(deepestAncestor, nextIndex))
-    {
-//       kDebug() << "adding" << nextIndex << deepestAncestor;
-      mappings[deepestAncestor].append(nextIndex);
-      ancestors.append(nextIndex);
-      continue;
-    }
-//     kDebug()<< "######\nNextIndex" << nextIndex.data();
-    foreach(const QModelIndex &idx, ancestors)
-    {
-//       kDebug() << "#" << idx << idx.data();
-    }
-    QVector<QModelIndex>::iterator ancestorIt = qLowerBound(ancestors.begin(), ancestors.end(), nextIndex, LessThan(q));
-
-//     kDebug() << (ancestorIt == ancestors.begin());
+    ancestors.erase(ancestorIt, ancestors.end());
 
     QModelIndex parent;
     if (ancestorIt != ancestors.begin())
       parent = *(ancestorIt - 1);
-//     kDebug() << parent;
-    ancestorIt = ancestors.insert(ancestorIt, nextIndex);
 
-    if (ancestorIt != ancestors.end())
-    {
-      ++ancestorIt;
-      while (ancestorIt != ancestors.end())
-      {
-        ancestorIt = ancestors.erase(ancestorIt);
-      }
-    }
+    ancestors.append(nextIndex);
+
     mappings[parent].append(nextIndex);
   }
-
-//   foreach(const QModelIndex &idx, mappings.keys())
-//   {
-//     kDebug() << idx << mappings.value(idx);
-//   }
 
   return mappings;
 }
