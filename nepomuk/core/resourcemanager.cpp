@@ -216,6 +216,7 @@ void Nepomuk::ResourceManagerPrivate::_k_storageServiceInitialized( bool success
 {
     if( success ) {
         kDebug() << "Nepomuk Storage service up and initialized.";
+        cleanupCache(-1);
         m_manager->init();
         emit m_manager->nepomukSystemStarted();
     }
@@ -226,6 +227,7 @@ void Nepomuk::ResourceManagerPrivate::_k_dbusServiceUnregistered( const QString&
 {
     if( serviceName == QLatin1String("org.kde.NepomukStorage") ) {
         kDebug() << "Nepomuk Storage service went down.";
+        cleanupCache(-1);
         emit m_manager->nepomukSystemStopped();
     }
 }
