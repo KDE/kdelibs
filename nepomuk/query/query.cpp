@@ -45,6 +45,7 @@
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/NRL>
 
 #include "resourcemanager.h"
 #include "literal.h"
@@ -340,12 +341,24 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     if( !scoringExpression.isEmpty() )
         selectVariables << scoringExpression;
 
+    // restrict to resources from nrl:InstanceBases only. There is no need to do that for file queries
+    // as those alreday restrict the type. While in theory there might be file or folder resources in
+    // non-InstanceBase graphs it is very unlikely and omitting the instanceBaseRestriction will give
+    // us a performance gain - even if small it is worth it.
+    const QString instanceBaseRestriction =
+        QString::fromLatin1( "graph %1 { ?r a %2 . } . { %1 a %3 . } UNION { %1 a %4 . } . " )
+        .arg( qbd.uniqueVarName(),
+              qbd.uniqueVarName(),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::InstanceBase()),
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::DiscardableInstanceBase()) );
+
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "%1 where { %2 %3 %4 }" )
+    QString queryBase = QString::fromLatin1( "%1 where { %2 %3 %4 %5 }" )
                         .arg( selectVariables.join( QLatin1String(" " ) ),
                               termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
-                              d->buildRequestPropertyPatterns() );
+                              d->buildRequestPropertyPatterns(),
+                              d->m_isFileQuery ? QString() : instanceBaseRestriction );
 
     // add optional order terms
     queryBase += qbd.buildOrderString();
