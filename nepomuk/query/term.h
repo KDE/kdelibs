@@ -371,6 +371,15 @@ namespace Nepomuk {
              */
             bool operator==( const Term& term ) const;
 
+            /**
+             * Comparison operator.
+             *
+             * \return \p true if this term differs from \p term.
+             *
+             * \since 4.6
+             */
+            bool operator!=( const Term& term ) const;
+
             // FIXME: the compiler does not find this operator!
             QDebug operator<<( QDebug ) const;
 

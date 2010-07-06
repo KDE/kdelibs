@@ -279,6 +279,12 @@ bool Nepomuk::Query::Term::operator==( const Term& other ) const
 }
 
 
+bool Nepomuk::Query::Term::operator!=( const Term& other ) const
+{
+    return !d_ptr->equals( other.d_ptr );
+}
+
+
 QDebug Nepomuk::Query::Term::operator<<( QDebug dbg ) const
 {
     return dbg << toString();
