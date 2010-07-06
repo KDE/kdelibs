@@ -1,11 +1,12 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <!-- vim:set syntax=xml ts=2 et: -->
-<xsl:import href="../docbook/xsl/manpages/docbook.xsl"/>
+<xsl:import href="kde-include-man.xsl"/>
 
 <!-- Disable the automatically generated AUTHORS section by overloading the
   respective template and making it a no-op. -->
 <xsl:template match="articleinfo|bookinfo|refentryinfo" mode="authorsect"/>
-
+<xsl:param name="chunker.output.encoding" select="'UTF-8'"/>
+<xsl:output method="text" encoding="UTF-8" indent="no"/>
 <!--
   Copied from ../docbook/xsl/manpages/docbook.xsl and changed it so that the
   output file's name is harccoded to 'manpage.troff', and the quiet parameter
