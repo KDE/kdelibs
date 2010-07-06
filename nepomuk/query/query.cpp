@@ -366,7 +366,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         else {
             // when there are additional variables we need to do some magic to count the
             // number of rows instead of a list of counts
-            query = QString::fromLatin1("select count(%1) as ?cnt where { { select count(*) as %1 %2 } }")
+            query = QString::fromLatin1("select count(%1) as ?cnt where { { select count(*) as %1 ?r %2 } }")
                     .arg(qbd.uniqueVarName(), queryBase );
         }
     }
