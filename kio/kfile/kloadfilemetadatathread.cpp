@@ -1,6 +1,6 @@
 /*****************************************************************************
  * Copyright (C) 2009-2010 by Peter Penz <peter.penz@gmx.at>                 *
- * Copyright (C) 2009 by Sebastian Trueg <trueg@kde.org>                     *
+ * Copyright (C) 2009-2010 by Sebastian Trueg <trueg@kde.org>                *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
  * modify it under the terms of the GNU Library General Public               *
@@ -28,7 +28,27 @@
 #include <kprotocolinfo.h>
 
 #include <resource.h>
+#include <thing.h>
 #include <resourcemanager.h>
+
+#include "config-nepomuk.h"
+
+#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
+#include <query/query.h>
+#include <query/andterm.h>
+#include <query/comparisonterm.h>
+#include <query/resourceterm.h>
+#include <query/resourcetypeterm.h>
+#include <query/optionalterm.h>
+
+#include "nfo.h"
+#include "nuao.h"
+#include "ndo.h"
+
+#include <Soprano/Model>
+#include <Soprano/QueryResultIterator>
+#include <Soprano/NodeIterator>
+#endif
 
 #include <QMutexLocker>
 
@@ -113,7 +133,7 @@ void KLoadFileMetaDataThread::run()
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
                 const QString uriString = prop.uri().toString();
-                data.insert(uriString, formatValue(it.value()));
+                data.insert(uriString, formatValue(prop, it.value()));
                 ++it;
             }
 
@@ -126,7 +146,7 @@ void KLoadFileMetaDataThread::run()
                 foreach (const KFileMetaInfoItem& metaInfoItem, metaInfoItems) {
                     const QString uriString = metaInfoItem.name();
                     const Nepomuk::Variant value(metaInfoItem.value());
-                    data.insert(uriString, formatValue(value));
+                    data.insert(uriString, formatValue(Nepomuk::Types::Property(), value));
                 }
             }
         }
@@ -154,7 +174,7 @@ void KLoadFileMetaDataThread::slotLoadingFinished()
     emit finished(this);
 }
 
-QString  KLoadFileMetaDataThread::formatValue(const Nepomuk::Variant& value)
+QString  KLoadFileMetaDataThread::formatValue(const Nepomuk::Types::Property& prop, const Nepomuk::Variant& value)
 {
     if (value.isDateTime()) {
         return KGlobal::locale()->formatDateTime(value.toDateTime(), KLocale::FancyLongDate);
@@ -165,12 +185,57 @@ QString  KLoadFileMetaDataThread::formatValue(const Nepomuk::Variant& value)
     }
 
     else if (value.isResource() || value.isResourceList()) {
+#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
+        //
+        // We handle the one special case of referrer URLs of downloads
+        // TODO: put stuff like this in a generic rule-based framework
+        //
+        if(prop == Nepomuk::Vocabulary::NDO::copiedFrom()) {
+            Nepomuk::Query::Query query(
+                Nepomuk::Query::AndTerm(
+                    Nepomuk::Query::ResourceTypeTerm(
+                        Nepomuk::Vocabulary::NDO::DownloadEvent()
+                        ),
+                    Nepomuk::Query::ComparisonTerm(
+                        Nepomuk::Vocabulary::NUAO::involves(),
+                        Nepomuk::Query::ResourceTerm(m_urls.first())
+                        )
+                    )
+                );
+            query.setLimit(1);
+
+            QList<Soprano::Node> results =
+                Nepomuk::ResourceManager::instance()->mainModel()->executeQuery(
+                    query.toSparqlQuery(),
+                    Soprano::Query::QueryLanguageSparql).iterateBindings(0).allNodes();
+            if(!results.isEmpty()) {
+                Nepomuk::Resource dlRes(results.first().uri());
+                KUrl url;
+                QString label;
+                if(dlRes.hasProperty(Nepomuk::Vocabulary::NDO::referrer())) {
+                    url = dlRes.property(Nepomuk::Vocabulary::NDO::referrer()).toUrl();
+                    KUrl referrerDomain(url);
+                    referrerDomain.setPath(QString());
+                    referrerDomain.setQuery(QString());
+                    label = referrerDomain.prettyUrl();
+                }
+                else {
+                    Nepomuk::Resource res(value.toResource());
+                    url = res.resourceUri();
+                    label = res.genericLabel();
+                }
+
+                return QString::fromLatin1("<a href=\"%1\">%2</a>")
+                    .arg(url.url(), label);
+            }
+        }
+#endif
         QStringList links;
         foreach(const Nepomuk::Resource& res, value.toResourceList()) {
             if (KProtocolInfo::isKnownProtocol(res.resourceUri())) {
                 links << QString::fromLatin1("<a href=\"%1\">%2</a>")
-                         .arg(KUrl(res.resourceUri()).url())
-                         .arg(res.genericLabel());
+                         .arg(KUrl(res.resourceUri()).url(),
+                              res.genericLabel());
             } else {
                 links << res.genericLabel();
             }

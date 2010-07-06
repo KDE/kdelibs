@@ -189,6 +189,12 @@ if(HAVE_NEPOMUK)
     kfile/kcommentwidget.cpp
     kfile/kloadfilemetadatathread.cpp
   )
+
+  if(HAVE_NEPOMUK_WITH_SDO_0_5)
+    soprano_add_ontology(kfile_STAT_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+    soprano_add_ontology(kfile_STAT_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/ndo.trig" "NDO" "Nepomuk::Vocabulary" "trig")
+    soprano_add_ontology(kfile_STAT_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
+  endif(HAVE_NEPOMUK_WITH_SDO_0_5)
 endif(HAVE_NEPOMUK)
 
 if(NOT WIN32)
@@ -253,7 +259,7 @@ install(FILES kssl/ksslcertificatemanager.upd
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 if(HAVE_NEPOMUK)
-  target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY})
+  target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery)
 endif(HAVE_NEPOMUK)
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )

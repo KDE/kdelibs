@@ -92,7 +92,7 @@ private:
      * Here we simply handle the most common formatting situations that do not look nice
      * when using Nepomuk::Variant::toString().
      */
-    QString formatValue(const Nepomuk::Variant& value);
+    QString formatValue(const Nepomuk::Types::Property&, const Nepomuk::Variant& value);
 
 private:
     mutable QMutex m_mutex;
