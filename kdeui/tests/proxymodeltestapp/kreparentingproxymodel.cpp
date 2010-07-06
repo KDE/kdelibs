@@ -91,6 +91,7 @@ class KReparentingProxyModelPrivate
   void sourceRowsAboutToBeMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow);
   void sourceRowsMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int destRow);
   void sourceModelAboutToBeReset();
+  void endResetProxy();
   void sourceModelReset();
   void sourceLayoutAboutToBeChanged();
   void sourceLayoutChanged();
@@ -909,7 +910,7 @@ void KReparentingProxyModelPrivate::handleInsertion(const PendingInsertion &pend
 void KReparentingProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, int start, int end)
 {
   Q_Q(KReparentingProxyModel);
-  return q->endResetModel();
+  return endResetProxy();
   if (m_pendingInsertions.contains(parent))
   {
     PendingInsertion pendingInsertion = m_pendingInsertions.value(parent);
@@ -1020,6 +1021,8 @@ void KReparentingProxyModelPrivate::removeTree(const QPersistentModelIndex &idxT
 void KReparentingProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
   Q_Q(KReparentingProxyModel);
+  q->beginResetModel();
+  return;
 //   kDebug() << parent << start << end;
 
   // This is really tricky.
@@ -1316,6 +1319,7 @@ void KReparentingProxyModelPrivate::handleRemoval(const PendingRemoval &pendingR
 
 void KReparentingProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, int start, int end)
 {
+  return endResetProxy();
 //   kDebug() << parent << start << end;
 
   Q_Q(KReparentingProxyModel);
@@ -1430,7 +1434,8 @@ void KReparentingProxyModelPrivate::sourceModelAboutToBeReset()
   q->beginResetModel();
 }
 
-void KReparentingProxyModelPrivate::sourceModelReset()
+
+void KReparentingProxyModelPrivate::endResetProxy()
 {
   Q_Q(KReparentingProxyModel);
 
@@ -1443,10 +1448,15 @@ void KReparentingProxyModelPrivate::sourceModelReset()
   m_pendingRemovalParents.clear();
 //   kDebug() << q->sourceModel()->rowCount();
   QHash<QModelIndex, QModelIndexList> mappings = recreateMappings(QModelIndex(), 0, q->sourceModel()->rowCount() - 1, KReparentingProxyModelPrivate::MapDescendants);
-//   kDebug() << mappings;
+  kDebug() << mappings;
 
   mergeDescendants(mappings, QModelIndex(), 0);
   q->endResetModel();
+}
+
+void KReparentingProxyModelPrivate::sourceModelReset()
+{
+  endResetProxy();
 }
 
 void KReparentingProxyModelPrivate::emitDataChangedSignals(const QModelIndex &startIndex, int maxChanged)
@@ -1524,18 +1534,10 @@ void KReparentingProxyModel::beginChangeRule()
 
 void KReparentingProxyModel::endChangeRule()
 {
-
-//   kDebug() << "reset" << sourceModel();
   Q_D(KReparentingProxyModel);
-
-  QHash<QModelIndex, QModelIndexList> mappings = d->recreateMappings(QModelIndex(), 0, sourceModel()->rowCount() - 1, KReparentingProxyModelPrivate::MapDescendants);
-//   kDebug() << "begin";
-  d->mergeDescendants(mappings, QModelIndex(), 0);
-
-  d->sourceModelReset();
+  d->endResetProxy();
+  return;
 }
-
-
 
 
 #include "kreparentingproxymodel.moc"
