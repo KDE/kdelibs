@@ -271,6 +271,17 @@ namespace Nepomuk {
             void entriesRemoved( const QList<QUrl>& entries );
 
             /**
+             * Emitted once the total count of the results is available. This might
+             * happen before the first result is emitted, in between the results, or
+             * in rare cases it could even happen after all results have been reported.
+             *
+             * Also be aware that no count will be provided when using sparqlQuery()
+             *
+             * \since 4.6
+             */
+            void totalCount( int count );
+
+            /**
              * Emitted when the initial listing has been finished, ie. if all
              * results have been reported via newEntries. If no further updates
              * are necessary the client should be closed now.

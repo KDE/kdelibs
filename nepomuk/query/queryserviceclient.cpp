@@ -138,6 +138,8 @@ bool Nepomuk::Query::QueryServiceClient::Private::handleQueryReply( QDBusReply<Q
                                                        dbusConnection  );
         connect( queryInterface, SIGNAL( newEntries( QList<Nepomuk::Query::Result> ) ),
                  q, SIGNAL( newEntries( QList<Nepomuk::Query::Result> ) ) );
+        connect( queryInterface, SIGNAL( totalCount(int) ),
+                 q, SIGNAL( totalCount(int) ) );
         connect( queryInterface, SIGNAL( entriesRemoved( QStringList ) ),
                  q, SLOT( _k_entriesRemoved( QStringList ) ) );
         connect( queryInterface, SIGNAL( finishedListing() ),
@@ -182,7 +184,7 @@ bool Nepomuk::Query::QueryServiceClient::query( const Query& query )
     close();
 
     if ( d->queryServiceInterface->isValid() ) {
-        return d->handleQueryReply( d->queryServiceInterface->sparqlQuery( query.toSparqlQuery(), encodeRequestProperties( query.requestProperties() ) ) );
+        return d->handleQueryReply( d->queryServiceInterface->query( query.toString() ) );
     }
     else {
         kDebug() << "Could not contact query service.";
@@ -210,7 +212,7 @@ bool Nepomuk::Query::QueryServiceClient::desktopQuery( const QString& query )
     close();
 
     if ( d->queryServiceInterface->isValid() ) {
-        return d->handleQueryReply( d->queryServiceInterface->query( query ) );
+        return d->handleQueryReply( d->queryServiceInterface->desktopQuery( query ) );
     }
     else {
         kDebug() << "Could not contact query service.";

@@ -3,6 +3,10 @@
 <node>
   <interface name="org.kde.nepomuk.QueryService">
     <method name="query">
+      <arg name="encodedQuery" type="s" direction="in" />
+      <arg name="queryobject" type="o" direction="out" />
+    </method>
+    <method name="desktopQuery">
       <arg name="query" type="s" direction="in" />
       <arg name="queryobject" type="o" direction="out" />
     </method>
