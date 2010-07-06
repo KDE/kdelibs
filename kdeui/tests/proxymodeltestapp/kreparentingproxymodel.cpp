@@ -1373,6 +1373,9 @@ void KReparentingProxyModelPrivate::sourceLayoutAboutToBeChanged()
 {
   Q_Q(KReparentingProxyModel);
 
+  q->beginResetModel();
+  return;
+
   emit q->layoutAboutToBeChanged();
 
   foreach(QPersistentModelIndex proxyPersistentIndex, q->persistentIndexList())
@@ -1385,6 +1388,9 @@ void KReparentingProxyModelPrivate::sourceLayoutAboutToBeChanged()
 void KReparentingProxyModelPrivate::sourceLayoutChanged()
 {
   Q_Q(KReparentingProxyModel);
+
+  endResetProxy();
+  return;
 
   for(int i = 0; i < m_proxyIndexes.size(); ++i)
   {
