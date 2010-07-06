@@ -23,4 +23,21 @@
    <meta name="GENERATOR" content="KDE XSL Stylesheet V{$KDE_VERSION} using libxslt"/>
 </xsl:template>
 
+<xsl:template name="user.header.navigation">
+   <!-- xsl:attribute name="id">content</xsl:attribute -->
+   <xsl:text disable-output-escaping="yes">&lt;div id="content"&gt;</xsl:text>
+</xsl:template>
+
+<xsl:template name="user.header.content">
+   <xsl:text disable-output-escaping="yes">&lt;div id="contentBody"&gt;</xsl:text>
+</xsl:template>
+
+<xsl:template name="user.footer.content">
+   <xsl:text disable-output-escaping="yes">&lt;/div&gt;</xsl:text>
+</xsl:template>
+
+<xsl:template name="user.footer.navigation">
+   <xsl:text disable-output-escaping="yes">&lt;/div&gt;</xsl:text>
+</xsl:template>
+
 </xsl:stylesheet>
