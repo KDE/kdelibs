@@ -169,6 +169,7 @@ install( FILES
   KDoubleValidator
   KEMailSettings
   KEditListBox
+  KEditListWidget
   KEditToolBar
   KEncodingFileDialog
   KEncodingProber

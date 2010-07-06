@@ -41,6 +41,10 @@ Group=Container (KDE)
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
 
+[KEditListWidget]
+ToolTip=Fullfeatured edit box with buttons (KDE)
+Group=Views (KDE)
+
 [KFontChooser]
 IncludeFile=kfontdialog.h
 IconSet=kfontcombo.png
