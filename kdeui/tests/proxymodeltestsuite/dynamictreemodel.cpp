@@ -969,6 +969,14 @@ void ModelLayoutChangeCommand::setPersistentChanges(const QList< ModelLayoutChan
 void ModelLayoutChangeCommand::doCommand()
 {
   m_model->layoutAboutToBeChanged();
+  QModelIndexList oldList;
+
+  foreach(const PersistentChange &change, m_changes)
+  {
+    const IndexFinder oldFinder(m_model, change.oldPath);
+    oldList << oldFinder.getIndex();
+  }
+
   bool blocked = m_model->blockSignals(true);
   m_model->clear();
   if (!m_treeString.isEmpty())
@@ -979,14 +987,13 @@ void ModelLayoutChangeCommand::doCommand()
     ins->doCommand();
   }
 
+  QModelIndexList newList;
   foreach(const PersistentChange &change, m_changes)
   {
-    const IndexFinder oldFinder(m_model, change.oldPath);
-    const QModelIndex oldIndex = oldFinder.getIndex();
     const IndexFinder newFinder(m_model, change.newPath);
-    const QModelIndex newIndex = newFinder.getIndex();
-    m_model->changePersistentIndex(oldIndex, newIndex);
+    newList << newFinder.getIndex();
   }
+  m_model->changePersistentIndexList(oldList, newList);
 
   m_model->blockSignals(blocked);
   m_model->layoutChanged();
