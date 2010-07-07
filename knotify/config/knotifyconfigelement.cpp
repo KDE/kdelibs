@@ -24,6 +24,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <kservice.h>
 
 KNotifyConfigElement::KNotifyConfigElement(const QString &eventid, KConfig *config)
 	: m_config( new KConfigGroup(config , "Event/" + eventid) )
@@ -61,6 +62,6 @@ void KNotifyConfigElement::save(  )
 
 bool KNotifyConfigElement::have_kttsd() //[static]
 {
-	static bool val = ! KStandardDirs::findExe("kttsd").isEmpty();
-	return val;
+    static bool val = KService::serviceByDesktopName("kttsd");
+    return val;
 }
