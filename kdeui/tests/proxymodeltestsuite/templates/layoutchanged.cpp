@@ -13,6 +13,6 @@
       changes.append(change);
     }
     {% endfor %}
-    layoutChangeCommand.setChanges(changes);
+    layoutChangeCommand.setPersistentChanges(changes);
     layoutChangeCommand.doCommand();
   }
