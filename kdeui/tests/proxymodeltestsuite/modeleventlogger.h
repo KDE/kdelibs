@@ -29,6 +29,43 @@
 
 class ModelDumper;
 
+class PROXYMODELTESTSUITE_EXPORT PersistentChange : public QObject
+{
+  Q_OBJECT
+
+  Q_PROPERTY(QString oldPath READ getOldPath)
+  Q_PROPERTY(QString newPath READ getNewPath)
+
+public:
+  PersistentChange(QObject* parent = 0)
+    : QObject(parent)
+  {
+
+  }
+  QString getPath(const QList<int> &path) const
+  {
+    QString result("QList<int>()");
+    foreach(const int part, path)
+    {
+      result.append(" << ");
+      result.append(QString::number(part));
+    }
+
+    return result;
+  }
+  QString getOldPath() const
+  {
+    return getPath(oldPath);
+  }
+  QString getNewPath() const
+  {
+    return getPath(newPath);
+  }
+
+  QList<int> oldPath;
+  QList<int> newPath;
+};
+
 class PROXYMODELTESTSUITE_EXPORT ModelEvent : public QObject
 {
   Q_OBJECT
@@ -41,12 +78,6 @@ public:
     DataChanged,
     LayoutChanged,
     ModelReset
-  };
-
-  struct PersistentChange
-  {
-    QList<int> oldPath;
-    QList<int> newPath;
   };
 
 private:
@@ -63,6 +94,7 @@ private:
   Q_PROPERTY(QString rowAncestors READ rowAncestors)
   Q_PROPERTY(bool hasInterpretString READ hasInterpretString)
   Q_PROPERTY(QString interpretString READ interpretString)
+  Q_PROPERTY(QVariantList changes READ changes)
 
 public:
   ModelEvent(QObject* parent = 0);
@@ -86,7 +118,15 @@ public:
   QString interpretString() const;
   void setInterpretString(const QString &interpretString);
 
-  void setChanges(const QList<PersistentChange> &changes) { m_changedPaths = changes; }
+  void setChanges(const QList<PersistentChange*> &changes) { m_changedPaths = changes; }
+  QVariantList changes() const {
+    QVariantList list;
+    foreach (PersistentChange *change, m_changedPaths)
+    {
+      list.append(QVariant::fromValue(static_cast<QObject*>(change)));
+    }
+    return list;
+  }
 
 private:
   Type m_type;
@@ -94,7 +134,7 @@ private:
   int m_end;
   QList<int> m_rowAncestors;
   QString m_interpretString;
-  QList<PersistentChange> m_changedPaths;
+  QList<PersistentChange*> m_changedPaths;
 };
 
 /**

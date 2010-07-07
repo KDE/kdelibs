@@ -62,6 +62,26 @@ public:
 };
 #endif
 
+class ModelWrapper : public QAbstractItemModel
+{
+public:
+    ModelWrapper( QAbstractItemModel *model, QObject* parent = 0)
+      : QAbstractItemModel(parent)
+    {
+
+    }
+
+    QModelIndexList per() const {
+      return persistentIndexList();
+    }
+
+    virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const { return QModelIndex(); }
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const { return 0; }
+    virtual QModelIndex parent(const QModelIndex& child) const { return QModelIndex(); }
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const {return 0; }
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const { return QVariant(); }
+};
+
 
 ModelEvent::ModelEvent(QObject* parent)
   : QObject(parent)
@@ -225,21 +245,18 @@ void ModelEventLogger::dataChanged(const QModelIndex& topLeft, const QModelIndex
 
 void ModelEventLogger::persistChildren(const QModelIndex &parent)
 {
-  for (int row = 0; row < m_model->rowCount(parent); ++row)
-  {
-    static const int column = 0;
-    const QModelIndex idx = m_model->index(row, column, parent);
-    m_persistentIndexes.append(idx);
-    m_oldPaths.append(IndexFinder::indexToIndexFinder(idx).rows());
-    if (m_model->hasChildren(idx))
-      persistChildren(idx);
-  }
 }
 
 void ModelEventLogger::layoutAboutToBeChanged()
 {
   m_oldPaths.clear();
-  persistChildren(QModelIndex());
+  m_persistentIndexes.clear();
+  const QModelIndexList list = static_cast<const ModelWrapper*>(m_model)->per();
+  foreach(const QPersistentModelIndex &idx, list)
+  {
+    m_persistentIndexes.append(idx);
+    m_oldPaths.append(IndexFinder::indexToIndexFinder(idx).rows());
+  }
 }
 
 void ModelEventLogger::layoutChanged()
@@ -248,16 +265,16 @@ void ModelEventLogger::layoutChanged()
   modelEvent->setType(ModelEvent::LayoutChanged);
   modelEvent->setInterpretString(m_modelDumper->dumpModel(m_model));
 
-  QList<ModelEvent::PersistentChange> changes;
+  QList<PersistentChange*> changes;
 
   for( int i = 0; i < m_persistentIndexes.size(); ++i)
   {
     const QPersistentModelIndex pIdx = m_persistentIndexes.at(i);
     if (!pIdx.isValid())
     {
-      ModelEvent::PersistentChange change;
-      change.newPath = QList<int>();
-      change.oldPath = m_oldPaths.at(i);
+      PersistentChange *change = new PersistentChange(this);
+      change->newPath = QList<int>();
+      change->oldPath = m_oldPaths.at(i);
       changes.append(change);
       continue;
     }
@@ -265,9 +282,9 @@ void ModelEventLogger::layoutChanged()
     if (m_oldPaths.at(i) == rows)
       continue;
 
-    ModelEvent::PersistentChange change;
-    change.newPath = rows;
-    change.oldPath = m_oldPaths.at(i);
+    PersistentChange *change = new PersistentChange(this);
+    change->newPath = rows;
+    change->oldPath = m_oldPaths.at(i);
     changes.append(change);
   }
 
