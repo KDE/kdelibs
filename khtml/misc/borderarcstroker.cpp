@@ -362,7 +362,7 @@ QPainterPath BorderArcStroker::createStroke(qreal *nextOffset) const
     else
         initialWidth = sweepLength > 0 ? vlw : hlw;
 
-    const qreal finalWidth = qMax(.1, QLineF(outer.p3(), inner.p3()).length());
+    const qreal finalWidth = qMax(qreal(0.1), QLineF(outer.p3(), inner.p3()).length());
     const qreal dashAspect  = (pattern[0] / initialWidth);
     const qreal spaceAspect = (pattern[1] / initialWidth);
     const qreal length = inner.length();
