@@ -1468,6 +1468,11 @@ void KReparentingProxyModelPrivate::emitDataChangedSignals(const QModelIndex &st
 void KReparentingProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
   Q_Q(KReparentingProxyModel);
+
+  q->beginResetModel();
+  endResetProxy();
+  return;
+
   QModelIndex parent = topLeft.parent();
   const int start = topLeft.row();
   const int end = bottomRight.row();

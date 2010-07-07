@@ -1,7 +1,8 @@
 
   {
     ModelResetCommand resetCommand(&rootModel);
-    resetCommand.setInitialTree({{ event.interpretString }}
+    resetCommand.setInitialTree(
+{{ event.interpretString }}
     );
     resetCommand.doCommand();
   }
