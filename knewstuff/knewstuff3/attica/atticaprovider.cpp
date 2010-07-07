@@ -30,8 +30,6 @@
 #include <attica/accountbalance.h>
 #include <attica/person.h>
 
-#include "atticajobwrapper.h"
-
 using namespace Attica;
 
 namespace KNS3
