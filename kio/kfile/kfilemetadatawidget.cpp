@@ -547,10 +547,12 @@ QSize KFileMetaDataWidget::sizeHint() const
     // Calculate the required width for the labels and values
     int leftWidthMax = 0;
     int rightWidthMax = 0;
+    int rightWidthAverage = 0;
     foreach (const Private::Row& row, d->m_rows) {
         const QWidget* valueWidget = (row.customValueWidget != 0) ? row.customValueWidget
                                                                   : row.defaultValueWidget;
         const int rightWidth = valueWidget->sizeHint().width();
+        rightWidthAverage += rightWidth;
         if (rightWidth > rightWidthMax) {
             rightWidthMax = rightWidth;
         }
@@ -558,6 +560,16 @@ QSize KFileMetaDataWidget::sizeHint() const
         const int leftWidth = row.label->sizeHint().width();
         if (leftWidth > leftWidthMax) {
             leftWidthMax = leftWidth;
+        }
+    }
+    
+    // Some value widgets might return a very huge width for the size hint.
+    // Limit the maximum width to the double width of the overall average
+    // to assure a less messed layout.
+    if (d->m_rows.count() > 1) {
+        rightWidthAverage /= d->m_rows.count();
+        if (rightWidthMax > rightWidthAverage * 2) {
+            rightWidthMax = rightWidthAverage * 2;
         }
     }
 
