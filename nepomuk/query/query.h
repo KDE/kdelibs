@@ -444,6 +444,36 @@ namespace Nepomuk {
             /** \endcond */
         };
 
+        /**
+         * Logical and operator which combines \p term into the term
+         * of \p query to match both.
+         *
+         * \sa AndTerm
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Query operator&&( const Query& query, const Term& term );
+
+        /**
+         * Logical or operator which combines \p term into the term
+         * of \p query to match either one.
+         *
+         * \sa OrTerm
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Query operator||( const Query& query, const Term& term );
+
+        /**
+         * Logical negation operator which negates the meaning of
+         * a query.
+         *
+         * \sa NegationTerm::negateTerm()
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Query operator!( const Query& query );
+
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Query& );
     }
 }

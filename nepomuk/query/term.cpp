@@ -285,15 +285,45 @@ bool Nepomuk::Query::Term::operator!=( const Term& other ) const
 }
 
 
-QDebug Nepomuk::Query::Term::operator<<( QDebug dbg ) const
-{
-    return dbg << toString();
-}
-
-
 QDebug operator<<( QDebug dbg, const Nepomuk::Query::Term& term )
 {
     return term.operator<<( dbg );
+}
+
+
+Nepomuk::Query::Term Nepomuk::Query::operator&&( const Term& term1, const Term& term2 )
+{
+    QList<Term> terms;
+    if( term1.isAndTerm() )
+        terms << term1.toAndTerm().subTerms();
+    else
+        terms << term1;
+    if( term2.isAndTerm() )
+        terms << term2.toAndTerm().subTerms();
+    else
+        terms << term2;
+    return AndTerm( terms );
+}
+
+
+Nepomuk::Query::Term Nepomuk::Query::operator||( const Term& term1, const Term& term2 )
+{
+    QList<Term> terms;
+    if( term1.isOrTerm() )
+        terms << term1.toOrTerm().subTerms();
+    else
+        terms << term1;
+    if( term2.isOrTerm() )
+        terms << term2.toOrTerm().subTerms();
+    else
+        terms << term2;
+    return OrTerm( terms );
+}
+
+
+Nepomuk::Query::Term Nepomuk::Query::operator!( const Nepomuk::Query::Term& term )
+{
+    return NegationTerm::negateTerm( term );
 }
 
 
@@ -341,4 +371,10 @@ uint Nepomuk::Query::qHash( const Nepomuk::Query::Term& term )
 template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone()
 {
     return d->clone();
+}
+
+
+QDebug Nepomuk::Query::Term::operator<<( QDebug dbg ) const
+{
+    return dbg << toString();
 }

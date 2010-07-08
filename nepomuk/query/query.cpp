@@ -536,6 +536,30 @@ QString Nepomuk::Query::Query::titleFromQueryUrl( const KUrl& url )
 }
 
 
+Nepomuk::Query::Query Nepomuk::Query::operator&&( const Query& query, const Term& term )
+{
+    Query newQuery( query );
+    newQuery.setTerm( query.term() && term );
+    return newQuery;
+}
+
+
+Nepomuk::Query::Query Nepomuk::Query::operator||( const Query& query, const Term& term )
+{
+    Query newQuery( query );
+    newQuery.setTerm( query.term() || term );
+    return newQuery;
+}
+
+
+Nepomuk::Query::Query Nepomuk::Query::operator!( const Query& query )
+{
+    Query newQuery( query );
+    newQuery.setTerm( !query.term() );
+    return newQuery;
+}
+
+
 QDebug operator<<( QDebug dbg, const Nepomuk::Query::Query& query )
 {
     return dbg << query.toString();

@@ -400,6 +400,36 @@ namespace Nepomuk {
             /** \endcond */
         };
 
+        /**
+         * Logical and operator which combines two terms into
+         * one term matching both \p term1 and \p term2.
+         *
+         * \sa AndTerm
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Term operator&&( const Term& term1, const Term& term2 );
+
+        /**
+         * Logical or operator which combines two terms into
+         * one term matching either \p term1 or \p term2.
+         *
+         * \sa OrTerm
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Term operator||( const Term& term1, const Term& term2 );
+
+        /**
+         * Logical negation operator which negates the meaning of
+         * one term.
+         *
+         * \sa NegationTerm::negateTerm()
+         *
+         * \since 4.6
+         */
+        NEPOMUKQUERY_EXPORT Term operator!( const Term& term );
+
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Term& );
     }
 }

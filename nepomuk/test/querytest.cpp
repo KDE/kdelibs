@@ -485,6 +485,23 @@ void QueryTest::testOptimization()
                         ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))) );
 }
 
+
+void QueryTest::testLogicalOperators()
+{
+    // test negation
+    ComparisonTerm ct1( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm("bla") );
+    QCOMPARE( NegationTerm::negateTerm(ct1), !ct1 );
+
+    // test logical and
+    ComparisonTerm ct2( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm("foo") );
+    LiteralTerm lt1( "bar" );
+    QCOMPARE( Term(AndTerm( ct1, ct2, lt1 )), ct1 && ct2 && lt1 );
+
+    // test logical or
+    QCOMPARE( Term(OrTerm( ct1, ct2, lt1 )), ct1 || ct2 || lt1 );
+}
+
+
 QTEST_KDEMAIN_CORE( QueryTest )
 
 #include "querytest.moc"
