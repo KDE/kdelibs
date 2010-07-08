@@ -238,7 +238,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         QString fanString;
         QString downloadString;
         if (fans > 0) {
-            fanString = i18np("1 fan", "%1 fans", fans);
+            fanString = i18ncp("fan as in supporter", "1 fan", "%1 fans", fans);
         }
         if (downloads > 0) {
             downloadString = i18np("1 download", "%1 downloads", downloads);
