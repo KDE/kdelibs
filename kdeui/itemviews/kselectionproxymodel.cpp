@@ -559,6 +559,7 @@ public:
     QPair<int, int> m_proxyRemoveRows;
     bool m_rowsMoved;
     bool m_resetting;
+    bool m_layoutChanging;
     bool m_ignoreNextLayoutAboutToBeChanged;
     bool m_ignoreNextLayoutChanged;
     QItemSelectionModel * const m_selectionModel;
@@ -718,6 +719,8 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
 
     selection = normalizeSelection(selection);
     emit q->rootSelectionAboutToBeRemoved(selection);
+
+    m_rootIndexList.clear();
 }
 
 void KSelectionProxyModelPrivate::sourceLayoutChanged()
@@ -729,7 +732,7 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
         return;
     }
 
-    if (m_rootIndexList.isEmpty()) {
+    if (m_selectionModel->selection().isEmpty()) {
         return;
     }
 
@@ -749,8 +752,10 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
     m_parentIds.clear();
 
     m_resetting = true;
+    m_layoutChanging = true;
     selectionChanged(m_selectionModel->selection(), QItemSelection());
     m_resetting = false;
+    m_layoutChanging = false;
 
     for (int i = 0; i < m_proxyIndexes.size(); ++i) {
         q->changePersistentIndex(m_proxyIndexes.at(i), q->mapFromSource(m_layoutChangePersistentIndexes.at(i)));
@@ -1638,7 +1643,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
                 // Even if the newindex doesn't have any children to put into the model yet,
                 // We still need to make sure it's future children are inserted into the model.
                 m_rootIndexList.insert(rootListRow, newIndex);
-                if (!m_resetting)
+                if (!m_resetting || m_layoutChanging)
                     emit q->rootIndexAdded(newIndex);
                 continue;
             }
@@ -1646,7 +1651,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
                 q->beginInsertRows(QModelIndex(), startRow, startRow + rowCount - 1);
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(rootListRow, newIndex);
-            if (!m_resetting)
+            if (!m_resetting || m_layoutChanging)
                 emit q->rootIndexAdded(newIndex);
 
             int _start = 0;
@@ -1669,7 +1674,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(row, newIndex);
 
-            if (!m_resetting)
+            if (!m_resetting || m_layoutChanging)
                 emit q->rootIndexAdded(newIndex);
             Q_ASSERT(m_rootIndexList.size() > row);
             updateInternalIndexes(QModelIndex(), row, 1);
