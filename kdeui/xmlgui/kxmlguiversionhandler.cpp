@@ -26,6 +26,7 @@
 #include "kxmlguifactory.h"
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <QtXml/QDomElement>
 
 struct DocStruct
 {
@@ -133,9 +134,21 @@ static void storeActionProperties( QDomDocument &doc,
     doc.documentElement().appendChild( actionPropElement );
   }
 
-  while ( !actionPropElement.firstChild().isNull() )
-    actionPropElement.removeChild( actionPropElement.firstChild() );
-
+//Remove only those ActionProperties entries from the document, that are present
+//in the properties argument. In real life this means that local ActionProperties
+//takes precedence over global ones, if they exists (think local override of shortcuts).
+  QDomNode actionNode = actionPropElement.firstChild();
+  while (!actionNode.isNull()) 
+  {
+    if (properties.contains(actionNode.toElement().attribute("name")))
+    {
+      QDomNode nextNode = actionNode.nextSibling();
+      actionPropElement.removeChild( actionNode );
+      actionNode = nextNode;
+    } else
+      actionNode = actionNode.nextSibling();
+  }
+  
   ActionPropertiesMap::ConstIterator it = properties.begin();
   const ActionPropertiesMap::ConstIterator end = properties.end();
   for (; it != end; ++it )
