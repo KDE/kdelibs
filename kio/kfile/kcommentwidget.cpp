@@ -33,12 +33,16 @@ KCommentWidget::KCommentWidget(QWidget* parent) :
     QWidget(parent),
     m_readOnly(false),
     m_label(0),
+    m_sizeHintHelper(0),
     m_comment()
 {
     m_label = new QLabel(this);
     m_label->setWordWrap(true);
     m_label->setAlignment(Qt::AlignTop);
     connect(m_label, SIGNAL(linkActivated(const QString&)), this, SLOT(slotLinkActivated(const QString&)));
+    
+    m_sizeHintHelper = new QLabel(this);
+    m_sizeHintHelper->hide();
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
@@ -69,6 +73,7 @@ void KCommentWidget::setText(const QString& comment)
     }
 
     m_label->setText(text);
+    m_sizeHintHelper->setText(text);
     m_comment = comment;
 }
 
@@ -86,6 +91,16 @@ void KCommentWidget::setReadOnly(bool readOnly)
 bool KCommentWidget::isReadOnly() const
 {
     return m_readOnly;
+}
+
+QSize KCommentWidget::sizeHint() const
+{
+    // Per default QLabel tries to provide a square size hint. This
+    // does not work well for complex layouts that rely on a heightForWidth()
+    // functionality with unclipped content. Use an unwrapped text label
+    // as layout helper instead, that returns the preferred size of
+    // the rich-text line.
+    return m_sizeHintHelper->sizeHint();
 }
 
 bool KCommentWidget::event(QEvent* event)
