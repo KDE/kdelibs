@@ -544,27 +544,36 @@ bool KFileMetaDataWidget::isReadOnly() const
 
 QSize KFileMetaDataWidget::sizeHint() const
 {
-    const int fixedWidth = 200;
-
-    int height = d->m_gridLayout->margin() * 2 +
-                 d->m_gridLayout->spacing() * (d->m_rows.count() - 1);
-
+    // Calculate the required width for the labels and values
+    int leftWidthMax = 0;
+    int rightWidthMax = 0;
     foreach (const Private::Row& row, d->m_rows) {
-        QWidget* valueWidget = row.defaultValueWidget;
-        if (valueWidget != 0) {
-            if (row.customValueWidget != 0) {
-                valueWidget = row.customValueWidget;
-            }
-
-            int rowHeight = valueWidget->heightForWidth(fixedWidth / 2);
-            if (rowHeight <= 0) {
-                rowHeight = valueWidget->sizeHint().height();
-            }
-            height += rowHeight;
+        const QWidget* valueWidget = (row.customValueWidget != 0) ? row.customValueWidget
+                                                                  : row.defaultValueWidget;
+        const int rightWidth = valueWidget->sizeHint().width();
+        if (rightWidth > rightWidthMax) {
+            rightWidthMax = rightWidth;
+        }
+        
+        const int leftWidth = row.label->sizeHint().width();
+        if (leftWidth > leftWidthMax) {
+            leftWidthMax = leftWidth;
         }
     }
 
-    return QSize(fixedWidth, height);
+    // Based on the available width calculate the required height
+    int height = d->m_gridLayout->margin() * 2 + d->m_gridLayout->spacing() * (d->m_rows.count() - 1);
+    foreach (const Private::Row& row, d->m_rows) {
+        const QWidget* valueWidget = (row.customValueWidget != 0) ? row.customValueWidget
+                                                                  : row.defaultValueWidget;
+        const int rowHeight = qMax(row.label->heightForWidth(leftWidthMax),
+                                   valueWidget->heightForWidth(rightWidthMax));
+        height += rowHeight;
+    }
+
+    const int width = d->m_gridLayout->margin() * 2 + leftWidthMax +
+                      d->m_gridLayout->spacing() + rightWidthMax;
+    return QSize(width, height);
 }
 
 bool KFileMetaDataWidget::event(QEvent* event)
