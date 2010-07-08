@@ -96,11 +96,11 @@ void InternetGateway::deletePortMapping(const QString newRemoteHost, int newExte
                deletePortMapping(newRemoteHost, newExternalPort, mappingProtocol));
 }
 
-bool InternetGateway::isEnabledForInternet() const
+InternetGateway::InternetStatus InternetGateway::isEnabledForInternet() const
 {
     Q_D(const InternetGateway);
     
-    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), false, isEnabledForInternet());
+    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), InternetGateway::UnknownStatus, isEnabledForInternet());
 }
 
 void InternetGateway::setEnabledForInternet(bool enabled)

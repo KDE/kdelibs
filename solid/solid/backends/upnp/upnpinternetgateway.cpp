@@ -23,7 +23,6 @@
 #include "upnpinternetgateway.h"
 
 #include <HDeviceInfo>
-#include <HServiceProxy>
 #include <HServiceId>
 #include <HAction>
 #include <HActionArguments>
@@ -97,12 +96,20 @@ void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyn
     Herqq::Upnp::HAction* setEnabledForInternetAction = reinterpret_cast<Herqq::Upnp::HAction*>(invocationID.userData());
 
     bool wait = setEnabledForInternetAction->waitForInvoke(&invocationID);
-    wait ? qDebug() << "setEnabledForInternetAction invocation successful" : qDebug() << "setEnabledForInternetAction invocation failed";
     
-    Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->inputArguments();
-    bool enabled = inArgs["NewEnabledForInternet"]->value().toBool();
+    if (wait)
+    {
+        qDebug() << "setEnabledForInternetAction invocation successful";
+    
+        Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->inputArguments();
+        bool enabled = inArgs["NewEnabledForInternet"]->value().toBool();
 
-    emit enabledForInternet(enabled);
+        emit enabledForInternet(enabled);
+    }
+    else
+    {
+        qDebug() << "setEnabledForInternetAction invocation failed";
+    }
 }
 
 Herqq::Upnp::HDeviceProxy* UPnPInternetGateway::getWANDevice(Herqq::Upnp::HDeviceProxies& devices) const
@@ -120,7 +127,7 @@ Herqq::Upnp::HDeviceProxy* UPnPInternetGateway::getWANDevice(Herqq::Upnp::HDevic
     return 0;
 }
 
-bool UPnPInternetGateway::isEnabledForInternet() const
+Solid::InternetGateway::InternetStatus UPnPInternetGateway::isEnabledForInternet() const
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
@@ -133,32 +140,109 @@ bool UPnPInternetGateway::isEnabledForInternet() const
             Herqq::Upnp::HStateVariable* enabledForInternetVariable = wanCommonIfaceConfigService->stateVariableByName(QString::fromLatin1("EnabledForInternet"));
             if (enabledForInternetVariable)
             {
-                return enabledForInternetVariable->value().toBool();
+                bool enabled = enabledForInternetVariable->value().toBool();
+                
+                return enabled ? Solid::InternetGateway::InternetEnabled : Solid::InternetGateway::InternetDisabled;                
             }
             else
             {
-                qWarning() << "Unable to retrieve EnabledForInternet state variable for this device:" << upnpDevice()->udi();
-                return false;
+                qWarning() << "Unable to retrieve EnabledForInternet state variable for this device:" << upnpDevice()->udi();                
+                return Solid::InternetGateway::UnknownStatus;
             }
         }
         else
         {
-            qWarning() << "Unable to retrieve WANCommonInterfaceConfig service for this device:" << upnpDevice()->udi();
-            return false;
+            qWarning() << "Unable to retrieve WANCommonInterfaceConfig service for this device:" << upnpDevice()->udi();            
+            return Solid::InternetGateway::UnknownStatus;
         }
     }
     else
     {
-        qWarning() << "Unable to retrieve WANDevice for this device:" << upnpDevice()->udi();
-        return false;
+        qWarning() << "Unable to retrieve WANDevice for this device:" << upnpDevice()->udi();        
+        return Solid::InternetGateway::UnknownStatus;
     }
 }
 
 void UPnPInternetGateway::deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol)
 {
-    Q_UNUSED(newRemoteHost);
-    Q_UNUSED(newExternalPort);
-    Q_UNUSED(mappingProtocol);
+    Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
+    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    if (wanDevice)
+    {
+        Herqq::Upnp::HServiceProxy* wanConnectionService = getWANConnectionService(wanDevice);
+        if (wanConnectionService)
+        {
+            Herqq::Upnp::HAction* deletePortMappingAction = wanConnectionService->actionByName(QString::fromLatin1("DeletePortMapping"));
+            if (deletePortMappingAction)
+            {
+                Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->inputArguments();
+                inArgs["NewRemoteHost"]->setValue(newRemoteHost);
+                inArgs["NewExternalPort"]->setValue(newExternalPort);
+                inArgs["NewProtocol"]->setValue(mappingProtocol);
+
+                connect(deletePortMappingAction, 
+                        SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                        this,
+                        SLOT(deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                
+                qDebug() << "deletePortMappingAction begin invoke";
+                
+                Herqq::Upnp::HAsyncOp id = deletePortMappingAction->beginInvoke(inArgs);
+                id.setUserData(reinterpret_cast<void*>(deletePortMappingAction));
+            }
+            else
+            {
+                qWarning() << "Unable to retrieve DeletePortMapping action for this device:" << upnpDevice()->udi();
+            }
+        }
+        else
+        {
+            qWarning() << "Unable to retrieve WAN*Connection (* = {IP, PPP}) service for this device:" << upnpDevice()->udi();
+        }
+    }
+    else
+    {
+        qWarning() << "Unable to retrieve WANDevice for this device:" << upnpDevice()->udi();
+    }    
+}
+
+void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID)
+{
+    qDebug() << "deletePortMappingAction callback";
+
+    Herqq::Upnp::HAction* deletePortMappingAction = reinterpret_cast<Herqq::Upnp::HAction*>(invocationID.userData());
+
+    bool wait = deletePortMappingAction->waitForInvoke(&invocationID);
+    
+    if (wait)
+    {
+        qDebug() << "deletePortMapping Action invocation successful";
+    
+        Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->inputArguments();
+        QString newRemoteHost = inArgs["NewRemoteHost"]->value().toString();
+        int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
+        QString newProtocol = inArgs["NewProtocol"]->value().toString();
+
+        emit portMappingDeleted(newRemoteHost, newExternalPort, newProtocol);
+    }
+    else 
+    {
+        qDebug() << "deletePortMapping Action invocation failed";
+    }
+}
+
+Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const
+{
+    Herqq::Upnp::HServiceProxy* service = 0;
+    
+    service = device->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANPPPConnection:1"));
+    
+    if (service)
+        return service;
+    
+    service = device->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANIPConnection:1"));
+    
+    return service;
 }
 
 void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 

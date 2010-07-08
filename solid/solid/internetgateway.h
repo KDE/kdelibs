@@ -42,6 +42,8 @@ namespace Solid
             explicit InternetGateway(QObject* backendObject);
 
         public:
+            enum InternetStatus { InternetEnabled = 0, InternetDisabled = 1, UnknownStatus = 2 };
+            
             virtual ~InternetGateway();
 
             static Type deviceInterfaceType() { return DeviceInterface::InternetGateway; }
@@ -54,7 +56,7 @@ namespace Solid
 
             void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
-            bool isEnabledForInternet() const;
+            InternetStatus isEnabledForInternet() const;
 
             void setEnabledForInternet(bool enabled);
 

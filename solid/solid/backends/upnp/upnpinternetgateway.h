@@ -29,6 +29,7 @@
 
 #include <HAsyncOp>
 #include <HDeviceProxy>
+#include <HServiceProxy>
 
 namespace Solid
 {
@@ -49,7 +50,7 @@ namespace UPnP
 
             virtual void setEnabledForInternet(bool enabled) const;
 
-            virtual bool isEnabledForInternet() const;
+            virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const;
 
             virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
@@ -62,8 +63,12 @@ namespace UPnP
         private:
             Herqq::Upnp::HDeviceProxy* getWANDevice(Herqq::Upnp::HDeviceProxies& devices) const;
 
+            Herqq::Upnp::HServiceProxy* getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const;
+
         private slots:
             void setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+
+            void deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
         Q_SIGNALS:
             void enabledForInternet(bool enabled);

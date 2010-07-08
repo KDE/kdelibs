@@ -24,6 +24,7 @@
 #include <QtCore/QStringList>
 
 #include "deviceinterface.h"
+#include "solid/internetgateway.h"
 
 namespace Solid
 {
@@ -43,7 +44,7 @@ namespace Ifaces
 
             virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 
-            virtual bool isEnabledForInternet() const = 0;
+            virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const = 0;
 
             virtual void setEnabledForInternet(bool enabled) const = 0;
 
