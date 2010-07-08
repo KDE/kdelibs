@@ -672,6 +672,9 @@
 # KFACE - KDE C++ wrapper for LibFace
 51005   KFACE
 
+# KMAP - KDE wrapper for world map widgets
+51006   KMAP
+
 # Network Management
 51010   Network Management (internals)
 51011   Network Management (service)
