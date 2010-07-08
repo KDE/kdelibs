@@ -47,6 +47,8 @@ public:
     // TODO: provide common interface class for metadatawidgets
     void setReadOnly(bool readOnly);
     bool isReadOnly() const;
+    
+    virtual QSize sizeHint() const;
 
 signals:
     void commentChanged(const QString& comment);
@@ -60,6 +62,7 @@ private slots:
 private:
     bool m_readOnly;
     QLabel* m_label;
+    QLabel* m_sizeHintHelper; // see comment in KCommentWidget::sizeHint()
     QString m_comment;
 };
 
