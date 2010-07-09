@@ -48,7 +48,7 @@ static void printResult(const QString &s)
     if (s.isEmpty())
         printf("\n");
 	else {
-		QString path = QDir::convertSeparators( s );
+		QString path = QDir::toNativeSeparators( s );
         printf("%s\n", path.toLocal8Bit().constData());
 	}
 }
