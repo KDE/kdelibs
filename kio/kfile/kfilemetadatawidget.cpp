@@ -48,20 +48,46 @@
     #include <QThread>
 #endif
 
+
+// The default size hint of QLabel tries to return a square size.
+// This does not work well in combination with layouts that use
+// heightForWidth(): In this case it is possible that the content
+// of a label might get clipped. By specifying a size hint
+// with a maximum width that is necessary to contain the whole text,
+// using heightForWidth() assures having a non-clipped text.
+class ValueWidget : public QLabel
+{
+public:
+    explicit ValueWidget(QWidget* parent = 0);
+    virtual QSize sizeHint() const;
+};
+
+ValueWidget::ValueWidget(QWidget* parent) :
+    QLabel(parent)
+{
+}
+QSize ValueWidget::sizeHint() const
+{
+    QFontMetrics metrics(font());
+    return metrics.size(Qt::TextSingleLine, text());
+}
+
+
+
 class KFileMetaDataWidget::Private
 {
 public:
     struct Row
     {
         QLabel* label;
-        QLabel* defaultValueWidget;
+        ValueWidget* defaultValueWidget;
         QWidget* customValueWidget;
     };
 
     Private(KFileMetaDataWidget* parent);
     ~Private();
 
-    void addRow(QLabel* label, QLabel* valueWidget);
+    void addRow(QLabel* label, ValueWidget* valueWidget);
     void setCustomValueWidget(int rowIndex, QWidget* valueWidget);
     void setRowVisible(QWidget* valueWidget, bool visible);
 
@@ -104,12 +130,12 @@ public:
 
     QGridLayout* m_gridLayout;
 
-    QLabel* m_typeInfo;
-    QLabel* m_sizeLabel;
-    QLabel* m_sizeInfo;
-    QLabel* m_modifiedInfo;
-    QLabel* m_ownerInfo;
-    QLabel* m_permissionsInfo;
+    ValueWidget* m_typeInfo;
+    ValueWidget* m_sizeLabel;
+    ValueWidget* m_sizeInfo;
+    ValueWidget* m_modifiedInfo;
+    ValueWidget* m_ownerInfo;
+    ValueWidget* m_permissionsInfo;
 
     QTimer* m_removeOutdatedRowsTimer;
 
@@ -136,12 +162,12 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_gridLayout = new QGridLayout(parent);
     m_gridLayout->setMargin(0);
 
-    m_typeInfo = new QLabel(parent);
-    m_sizeLabel = new QLabel(parent);
-    m_sizeInfo = new QLabel(parent);
-    m_modifiedInfo = new QLabel(parent);
-    m_ownerInfo = new QLabel(parent);
-    m_permissionsInfo = new QLabel(parent);
+    m_typeInfo = new ValueWidget(parent);
+    m_sizeLabel = new ValueWidget(parent);
+    m_sizeInfo = new ValueWidget(parent);
+    m_modifiedInfo = new ValueWidget(parent);
+    m_ownerInfo = new ValueWidget(parent);
+    m_permissionsInfo = new ValueWidget(parent);
 
     initMetaInfoSettings();
 
@@ -167,7 +193,7 @@ KFileMetaDataWidget::Private::~Private()
 {
 }
 
-void KFileMetaDataWidget::Private::addRow(QLabel* label, QLabel* valueWidget)
+void KFileMetaDataWidget::Private::addRow(QLabel* label, ValueWidget* valueWidget)
 {
     Row row;
     row.label = label;
@@ -367,7 +393,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
         if (rowIndex >= m_rows.count()) {
             // a new row must get created
             QLabel* label = new QLabel(itemLabel, q);
-            QLabel* valueWidget = new QLabel(q);
+            ValueWidget* valueWidget = new ValueWidget(q);
             connect(valueWidget, SIGNAL(linkActivated(QString)),
                     q, SLOT(slotLinkActivated(QString)));
             addRow(label, valueWidget);
