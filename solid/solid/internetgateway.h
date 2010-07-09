@@ -52,7 +52,7 @@ namespace Solid
 
             void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                 int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                const QString newPortMappingDescription, int newLeaseDuration);
+                                const QString newPortMappingDescription, qlonglong newLeaseDuration);
 
             void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
@@ -63,7 +63,7 @@ namespace Solid
         Q_SIGNALS:
             void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                   int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                  const QString newPortMappingDescription, int newLeaseDuration);
+                                  const QString newPortMappingDescription, qlonglong newLeaseDuration);
 
             void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 

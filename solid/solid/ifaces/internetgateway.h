@@ -40,7 +40,7 @@ namespace Ifaces
 
             virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                         int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                        const QString newPortMappingDescription, int newLeaseDuration) = 0;
+                                        const QString newPortMappingDescription, qlonglong newLeaseDuration) = 0;
 
             virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 
@@ -51,7 +51,7 @@ namespace Ifaces
         protected: //Q_SIGNALS:
             virtual void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                           int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                          const QString newPortMappingDescription, int newLeaseDuration) = 0;
+                                          const QString newPortMappingDescription, qlonglong newLeaseDuration) = 0;
 
             virtual void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 

@@ -247,16 +247,83 @@ Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::
 
 void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
                                          int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                         const QString newPortMappingDescription, int newLeaseDuration)
+                                         const QString newPortMappingDescription, qlonglong newLeaseDuration)
 {
-    Q_UNUSED(newRemoteHost);
-    Q_UNUSED(newExternalPort);
-    Q_UNUSED(mappingProtocol);
-    Q_UNUSED(newInternalPort);
-    Q_UNUSED(newInternalClient);
-    Q_UNUSED(mappingEnabled);
-    Q_UNUSED(newPortMappingDescription);
-    Q_UNUSED(newLeaseDuration);
+    Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
+    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    if (wanDevice)
+    {
+        Herqq::Upnp::HServiceProxy* wanConnectionService = getWANConnectionService(wanDevice);
+        if (wanConnectionService)
+        {
+            Herqq::Upnp::HAction* addPortMappingAction = wanConnectionService->actionByName(QString::fromLatin1("AddPortMapping"));
+            if (addPortMappingAction)
+            {
+                Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->inputArguments();
+                inArgs["NewRemoteHost"]->setValue(newRemoteHost);
+                inArgs["NewExternalPort"]->setValue(newExternalPort);
+                inArgs["NewProtocol"]->setValue(mappingProtocol);
+                inArgs["NewInternalPort"]->setValue(newInternalPort);
+                inArgs["NewInternalClient"]->setValue(newInternalClient);
+                inArgs["NewEnabled"]->setValue(mappingEnabled);
+                inArgs["NewPortMappingDescription"]->setValue(newPortMappingDescription);
+                inArgs["NewLeaseDuration"]->setValue(newLeaseDuration);
+
+                connect(addPortMappingAction, 
+                        SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                        this,
+                        SLOT(addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                
+                qDebug() << "addPortMappingAction begin invoke";
+                
+                Herqq::Upnp::HAsyncOp id = addPortMappingAction->beginInvoke(inArgs);
+                id.setUserData(reinterpret_cast<void*>(addPortMappingAction));
+            }
+            else
+            {
+                qWarning() << "Unable to retrieve AddPortMapping action for this device:" << upnpDevice()->udi();
+            }
+        }
+        else
+        {
+            qWarning() << "Unable to retrieve WAN*Connection (* = {IP, PPP}) service for this device:" << upnpDevice()->udi();
+        }
+    }
+    else
+    {
+        qWarning() << "Unable to retrieve WANDevice for this device:" << upnpDevice()->udi();
+    } 
+}
+
+void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID)
+{
+    qDebug() << "addPortMappingAction callback";
+
+    Herqq::Upnp::HAction* addPortMappingAction = reinterpret_cast<Herqq::Upnp::HAction*>(invocationID.userData());
+
+    bool wait = addPortMappingAction->waitForInvoke(&invocationID);
+    
+    if (wait)
+    {
+        qDebug() << "addPortMapping Action invocation successful";
+    
+        Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->inputArguments();
+        QString newRemoteHost = inArgs["NewRemoteHost"]->value().toString();
+        int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
+        QString newProtocol = inArgs["NewProtocol"]->value().toString();
+        int newInternalPort = inArgs["NewInternalPort"]->value().toInt();
+        QString newInternalClient = inArgs["NewInternalClient"]->value().toString();
+        bool mappingEnabled = inArgs["NewEnabled"]->value().toBool();
+        QString newPortMappingDescription = inArgs["NewPortMappingDescription"]->value().toString();
+        qlonglong newLeaseDuration = inArgs["NewLeaseDuration"]->value().toLongLong();
+
+        emit portMappingAdded(newRemoteHost, newExternalPort, newProtocol, newInternalPort, newInternalClient,
+                              mappingEnabled, newPortMappingDescription, newLeaseDuration);
+    }
+    else 
+    {
+        qDebug() << "addPortMapping Action invocation failed";
+    }
 }
 
 QStringList UPnPInternetGateway::currentConnections() const

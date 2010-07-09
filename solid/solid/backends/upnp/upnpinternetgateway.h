@@ -56,7 +56,7 @@ namespace UPnP
 
             virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
                                         int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                        const QString newPortMappingDescription, int newLeaseDuration);
+                                        const QString newPortMappingDescription, qlonglong newLeaseDuration);
 
             virtual QStringList currentConnections() const;
 
@@ -70,6 +70,8 @@ namespace UPnP
 
             void deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
+            void addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);    
+
         Q_SIGNALS:
             void enabledForInternet(bool enabled);
 
@@ -77,7 +79,7 @@ namespace UPnP
 
             void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
                                   int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                  const QString newPortMappingDescription, int newLeaseDuration);
+                                  const QString newPortMappingDescription, qlonglong newLeaseDuration);
     };
 
 }

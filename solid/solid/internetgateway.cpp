@@ -79,7 +79,7 @@ QStringList InternetGateway::currentConnections() const
 
 void InternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
                                      int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                     const QString newPortMappingDescription, int newLeaseDuration)
+                                     const QString newPortMappingDescription, qlonglong newLeaseDuration)
 {
     Q_D(const InternetGateway);
     
