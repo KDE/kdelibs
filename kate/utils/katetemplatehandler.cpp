@@ -87,7 +87,7 @@ KateTemplateHandler::KateTemplateHandler(KateView *view,
 
   if (view) view->removeSelectionText();
 
-  ifDebug(kDebug() << initial_Values;);
+  ifDebug(kDebug() << initial_Values;)
 
 
   connect(doc(), SIGNAL(aboutToReload(KTextEditor::Document*)),
@@ -367,10 +367,10 @@ void KateTemplateHandler::setCurrentRange(MovingRange* range)
     // jump to first mirrored range
     bool found = false;
     foreach(MovingRange* childRange, m_templateRangesChildren[range]) {
-      ifDebug(kDebug() << "checking range equality";);
+      ifDebug(kDebug() << "checking range equality";)
 
       if (m_masterRanges.contains(childRange)) {
-        ifDebug(kDebug() << "found master range";);
+        ifDebug(kDebug() << "found master range";)
         range = childRange;
         found = true;
         break;
@@ -439,7 +439,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
   // expression must not be escaped
 
   for (int i = 0; i < templateString.size(); ++i) {
-    ifDebug(kDebug() << "checking character:" << templateString[i];);
+    ifDebug(kDebug() << "checking character:" << templateString[i];)
 
     if (templateString[i] == '\n') {
       lastWasBrace = false;
@@ -708,7 +708,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
         // always add ${...} to the editable ranges
         // only add %{...} to the editable ranges when it's value equals the key
-        ifDebug(kDebug() << "char is:" << c << "initial value is:" << initialValues[key] << " after fixup is:" << initialVal)
+        ifDebug(kDebug() << "char is:" << c << "initial value is:" << initialValues[key] << " after fixup is:" << initialVal;)
         if (c == '$' || key == initialValues[key]) {
           if (!keyQueue.contains(key)) {
             keyQueue.append(key);
@@ -741,7 +741,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
       startPos = -1;
 
-      ifDebug(kDebug() << "i=" << i << " template size=" << templateString.size(););
+      ifDebug(kDebug() << "i=" << i << " template size=" << templateString.size();)
 
     } else {
       ++column;
