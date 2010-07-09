@@ -37,7 +37,7 @@
 
 using namespace KTextEditor;
 
-#define ifDebug(x) x;
+#define ifDebug(x)
 
 static bool cmp_moving_ranges(const KTextEditor::MovingRange* r1, const KTextEditor::MovingRange* r2)
 {
