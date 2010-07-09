@@ -80,12 +80,15 @@ KateTemplateHandler::KateTemplateHandler(KateView *view,
 
   if (initial_Values.contains("selection")) {
     if (initial_Values["selection"].isEmpty()) {
-      Q_ASSERT(view);
-      initial_Values[ "selection" ] = view->selectionText();
+      Q_ASSERT(m_view);
+      initial_Values[ "selection" ] = m_view->selectionText();
     }
   }
 
-  if (view) view->removeSelectionText();
+  if (m_view && m_view->selection()) {
+    m_lastCaretPosition = m_view->selectionRange().start();
+    m_view->removeSelectionText();
+  }
 
   ifDebug(kDebug() << initial_Values;)
 
@@ -99,7 +102,7 @@ KateTemplateHandler::KateTemplateHandler(KateView *view,
   ///TODO: maybe use Kate::CutCopyPasteEdit or similar?
   doc()->editStart();
 
-  if (doc()->insertText(position, templateString)) {
+  if (doc()->insertText(m_lastCaretPosition, templateString)) {
     Q_ASSERT(m_wholeTemplateRange);
 
     if (m_view) {
