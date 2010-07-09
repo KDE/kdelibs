@@ -717,10 +717,19 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             keyQueue.append(key);
           }
 
-          Range tmp = Range(line, column - initialVal.length(),
-
-                            line, column
-                           );
+          // support for multiline initial val, e.g. selection
+          int endColumn = column - initialVal.length();
+          int endLine = line;
+          for (int j = 0; j < initialVal.length(); ++j) {
+            if (initialVal.at(j) == '\n') {
+              endColumn = 0;
+              ++endLine;
+            } else {
+              ++endColumn;
+            }
+          }
+          Range tmp = Range(line, column - initialVal.length(), endLine, endColumn );
+          ifDebug(kDebug() << "range is:" << tmp;)
 
           if (force_first) {
             QList<Range> range_list = ranges.values(key);
@@ -735,10 +744,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
           }
 
           mirrorBehaviourBuildHelper.insert(tmp, behaviour);
-
-          ifDebug(kDebug() << "range is:" << Range(line, column - initialVal.length(),
-                  line, column
-                                                  );)
         }
       }
 
