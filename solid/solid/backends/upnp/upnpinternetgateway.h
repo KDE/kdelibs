@@ -61,7 +61,7 @@ namespace UPnP
             virtual QStringList currentConnections() const;
 
         private:
-            Herqq::Upnp::HDeviceProxy* getWANDevice(Herqq::Upnp::HDeviceProxies& devices) const;
+            Herqq::Upnp::HDeviceProxy* getDevice(const QString typePreffix, Herqq::Upnp::HDeviceProxies& devices) const;
 
             Herqq::Upnp::HServiceProxy* getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const;
 

@@ -49,7 +49,7 @@ UPnPInternetGateway::~UPnPInternetGateway()
 void UPnPInternetGateway::setEnabledForInternet(bool enabled) const
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
-    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
     
     if (wanDevice)
     {
@@ -112,13 +112,13 @@ void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyn
     }
 }
 
-Herqq::Upnp::HDeviceProxy* UPnPInternetGateway::getWANDevice(Herqq::Upnp::HDeviceProxies& devices) const
+Herqq::Upnp::HDeviceProxy* UPnPInternetGateway::getDevice(const QString typePreffix, Herqq::Upnp::HDeviceProxies& devices) const
 {
     foreach(Herqq::Upnp::HDeviceProxy* device, devices)
     {
         QString deviceType = device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | 
                                                                         Herqq::Upnp::HResourceType::Version);
-        if (deviceType.startsWith(QString::fromLatin1("WANDevice")))
+        if (deviceType.startsWith(typePreffix))
         {
             return device;
         };
@@ -130,7 +130,7 @@ Herqq::Upnp::HDeviceProxy* UPnPInternetGateway::getWANDevice(Herqq::Upnp::HDevic
 Solid::InternetGateway::InternetStatus UPnPInternetGateway::isEnabledForInternet() const
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
-    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
     
     if (wanDevice)
     {
@@ -166,7 +166,7 @@ Solid::InternetGateway::InternetStatus UPnPInternetGateway::isEnabledForInternet
 void UPnPInternetGateway::deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
-    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
     if (wanDevice)
     {
         Herqq::Upnp::HServiceProxy* wanConnectionService = getWANConnectionService(wanDevice);
@@ -233,14 +233,17 @@ void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp 
 
 Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const
 {
+    Herqq::Upnp::HDeviceProxies embeddedDevices = device->embeddedProxyDevices();
+    Herqq::Upnp::HDeviceProxy* wanConnectionDevice = getDevice(QString::fromLatin1("WANConnectionDevice"), embeddedDevices);
+
     Herqq::Upnp::HServiceProxy* service = 0;
     
-    service = device->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANPPPConnection:1"));
+    service = wanConnectionDevice->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANPPPConnection:1"));
     
     if (service)
         return service;
     
-    service = device->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANIPConnection:1"));
+    service = wanConnectionDevice->serviceProxyById(Herqq::Upnp::HServiceId("urn:schemas-upnp-org:service:WANIPConnection:1"));
     
     return service;
 }
@@ -250,7 +253,7 @@ void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExt
                                          const QString newPortMappingDescription, qlonglong newLeaseDuration)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
-    Herqq::Upnp::HDeviceProxy* wanDevice = getWANDevice(embeddedDevices);
+    Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
     if (wanDevice)
     {
         Herqq::Upnp::HServiceProxy* wanConnectionService = getWANConnectionService(wanDevice);
