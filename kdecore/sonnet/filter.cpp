@@ -3,6 +3,7 @@
  * filter.cpp
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2010  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -93,10 +94,41 @@ bool Filter::atEnd() const
     return m_finder.position() >= m_buffer.length() || m_finder.position() < 0;
 }
 
-static inline bool
-isSpaceOrPunct(const QString &str)
+// we don't want to spell check empty words, or single-char words of the form
+// '<', '=', etc.
+static bool
+isValidWord(const QString &str)
 {
-    return (str.length() <= 1 && (str[0].isSpace() || str[0].isPunct()));
+    return (str.length() >= 1 && (str.length() != 1 || str[0].isLetter()));
+}
+
+static QString
+stripLeadingAndTrailingNumbers(QTextBoundaryFinder &finder, int start, int end, int &newStart)
+{
+    newStart = start;
+    const QString& scanStr = finder.string();
+    for(int i = start; i < end; ++i) {
+        if (scanStr[i].isNumber()) {
+            ++newStart;
+        }
+        else {
+            break;
+        }
+    }
+    if(newStart >= end) {
+        return QString();
+    }
+
+    int newEnd = end;
+    for(int i = end - 1; i >= newStart; --i) {
+        if (scanStr[i].isNumber()) {
+            --newEnd;
+        }
+        else {
+            break;
+        }
+    }
+    return scanStr.mid(newStart, newEnd - newStart);
 }
 
 static bool
@@ -105,21 +137,24 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
     QTextBoundaryFinder::BoundaryReasons boundary = finder.boundaryReasons();
     int start = finder.position(), end = finder.position();
     bool inWord = (boundary & QTextBoundaryFinder::StartWord) != 0;
-
     while (finder.toNextBoundary() > 0) {
         boundary = finder.boundaryReasons();
-
         if ((boundary & QTextBoundaryFinder::EndWord) && inWord) {
-            end = finder.position();
-            QString str = finder.string().mid(start, end - start);
-            if (!isSpaceOrPunct(str)) {
-                word = str;
-                bufferStart = start;
+            end = finder.position(); 
+            if(end > start) { // just to be safe
+                QString str = finder.string().mid(start, end - start);
+                int newStart = 0;
+                // make sure that for words like '12cm' only 'cm' is spell checked
+                QString newStr = stripLeadingAndTrailingNumbers(finder, start, end, newStart);
+                if (isValidWord(newStr)) {
+                    word = newStr;
+                    bufferStart = newStart;
 #if 0
-                qDebug()<< "Word at " << start<< " word = '"
-                        <<  str << "', len = " << str.length();
+                    kDebug()<< "Word at " << newStart << " word = "
+                            <<  newStr << ", len = " << newStr.length();
 #endif
-                return true;
+                    return true;
+                }
             }
             inWord = false;
         }
