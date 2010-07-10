@@ -28,6 +28,7 @@ class ResourceTest : public TestBase
     void testResourceIdentifiers();
     void testResourceManager();
     void testLocalFileUrls();
+    void testKickOffListRemoval();
 };
 
 #endif
