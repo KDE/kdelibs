@@ -4395,7 +4395,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       error(ERR_INTERNAL_SERVER, m_request.url.host());
       return false;
     } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 &&
-               m_request.responseCode != 401 && m_request.responseCode != 407) {
+               m_request.responseCode != 401 && m_request.responseCode != 407 &&
+               // If we're doing a propfind, a 404 is not an error
+               m_request.method != DAV_PROPFIND) {
       error(ERR_DOES_NOT_EXIST, m_request.url.host());
       return false;
     }
