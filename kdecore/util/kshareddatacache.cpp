@@ -778,7 +778,7 @@ struct SharedMemory
         // Some POSIX platforms don't have full support for pthreads. On these typically
         // there will be no timedlock, so just don't bother and accept hangs on weird
         // platforms.
-        return pthread_mutex_lock(&lockMutex);
+        return pthread_mutex_lock(&lockMutex) == 0;
 #endif
     }
 
@@ -929,6 +929,8 @@ class KSharedDataCache::Private
         if (mapAddress == MAP_FAILED) {
             kError(264) << "Unable to allocate shared memory segment for shared data cache"
                         << cacheName << "of size" << cacheSize;
+            kError(265) << "The error was";
+            perror(0);
             return;
         }
 
@@ -1109,6 +1111,11 @@ class KSharedDataCache::Private
                 d->shm->unlock();
             }
         }
+
+        bool failed() const
+        {
+            return d->shm == 0;
+        }
     };
 
     SharedMemory *shm;
@@ -1196,6 +1203,9 @@ KSharedDataCache::~KSharedDataCache()
 bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
 {
     Private::CacheLocker lock(d);
+    if (lock.failed()) {
+        return false;
+    }
 
     QByteArray encodedKey = key.toUtf8();
     uint keyHash = fnvHash32(encodedKey);
@@ -1333,6 +1343,9 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
     }
 
     Private::CacheLocker lock(d);
+    if (lock.failed()) {
+        return false;
+    }
 
     // Search in the index for our data, hashed by key;
     QByteArray encodedKey = key.toUtf8();
@@ -1369,6 +1382,10 @@ void KSharedDataCache::clear()
 bool KSharedDataCache::contains(const QString &key) const
 {
     Private::CacheLocker lock(d);
+    if (lock.failed()) {
+        return false;
+    }
+
     return d->shm->findNamedEntry(key.toUtf8()) >= 0;
 }
 
@@ -1386,12 +1403,20 @@ void KSharedDataCache::deleteCache(const QString &cacheName)
 unsigned KSharedDataCache::totalSize() const
 {
     Private::CacheLocker lock(d);
+    if (lock.failed()) {
+        return 0u;
+    }
+
     return d->shm->cacheSize;
 }
 
 unsigned KSharedDataCache::freeSize() const
 {
     Private::CacheLocker lock(d);
+    if (lock.failed()) {
+        return 0u;
+    }
+
     return d->shm->cacheAvail * d->shm->cachePageSize();
 }
 
