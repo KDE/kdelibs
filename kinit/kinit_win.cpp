@@ -106,6 +106,7 @@ class ProcessList {
        ProcessListEntry *hasProcessInList(const QString &name, K_UID owner=0 );
        bool terminateProcess(const QString &name);
        QList<ProcessListEntry *> &list() { return processList; }
+       QList<ProcessListEntry *> listProcesses();
     private:
        void initProcessList();
        void getProcessNameAndID( DWORD processID );
@@ -216,11 +217,36 @@ void ProcessList::initProcessList()
             getProcessNameAndID( aProcesses[i] );
 }
 
+QList<ProcessListEntry*> ProcessList::listProcesses()
+{
+    // Get the list of process identifiers.
+
+    DWORD aProcesses[1024], cbNeeded, cProcesses;
+    unsigned int i;
+
+    if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
+        return QList<ProcessListEntry*>();
+
+    // Calculate how many process identifiers were returned.
+
+    cProcesses = cbNeeded / sizeof(DWORD);
+
+    // Print the name and process identifier for each process.
+
+    processList.erase(processList.begin(), processList.end());
+    for ( i = 0; i < cProcesses; i++ )
+        if( aProcesses[i] != 0 )
+            getProcessNameAndID( aProcesses[i] );
+            
+    return processList;
+}
+
 
 ProcessList::~ProcessList()
 {
     ProcessListEntry *ple;
-    foreach(ple,processList) {
+    QList<ProcessListEntry*> l = listProcesses();
+    foreach(ple,l) {
         CloseHandle(ple->handle);
         delete ple;
     }
@@ -237,18 +263,27 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
             qDebug() << "negative pid!";
             continue;
         }
-        if (ple->name == name || ple->name == name + ".exe") {
-            if(owner)
-            {
-                // owner is set
-                if(EqualSid(owner, ple->owner)) return ple;
-            }
-            else
-            {
-                // no owner is set, use the owner of this process
-                KUser user;
-                if(EqualSid(user.uid(), ple->owner)) return ple;
-            }
+        
+        if (ple->name != name && ple->name != name + ".exe") {
+            continue;
+        }
+        
+        if (!ple->path.isEmpty() && !ple->path.toLower().startsWith(KStandardDirs::installPath("kdedir").toLower())) {
+            // process is outside of installation directory
+            qDebug() << "path of the process" << name << "seems to be outside of the installPath:" << ple->path << KStandardDirs::installPath("kdedir");
+            continue;
+        }
+        
+        if(owner)
+        {
+            // owner is set
+            if(EqualSid(owner, ple->owner)) return ple;
+        }
+        else
+        {
+            // no owner is set, use the owner of this process
+            KUser user;
+            if(EqualSid(user.uid(), ple->owner)) return ple;
         }
     }
     return NULL;
@@ -259,13 +294,18 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
 */
 bool ProcessList::terminateProcess(const QString &name)
 {
+    qDebug() << "going to terminate process" << name;
     ProcessListEntry *p = hasProcessInList(name);
-    if (!p)
+    if (!p) {
+        qDebug() << "could not find ProcessListEntry for process name" << name;
         return false;
+    }
 
     bool ret = TerminateProcess(p->handle,0);
     if (ret) {
         CloseHandle(p->handle);
+        int i = processList.indexOf(p);
+        if(i != -1) processList.removeAt(i);
         delete p;
         return true;
     } else {
@@ -292,7 +332,7 @@ int launch(const QString &cmd)
     }
     else {
        if (verbose)
-           fprintf(stderr, "kdeinit4: could not launch %s, exiting",qPrintable(cmd));
+           fprintf(stderr, "kdeinit4: could not launch %s, exiting\n",qPrintable(cmd));
     }
     return pid;
 }
@@ -321,10 +361,11 @@ void listAllRunningKDEProcesses(ProcessList &processList)
 {
     ProcessListEntry *ple;
     QString installPrefix = KStandardDirs::installPath("kdedir");
+    QList<ProcessListEntry*> l = processList.listProcesses();
 
-    foreach(ple,processList.list()) 
+    foreach(ple,l) 
     {
-        if (ple->path.toLower().startsWith(installPrefix.toLower()))
+        if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower()))
             fprintf(stderr,"path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
     }
 }
@@ -333,10 +374,11 @@ void terminateAllRunningKDEProcesses(ProcessList &processList)
 {
     ProcessListEntry *ple;
     QString installPrefix = KStandardDirs::installPath("kdedir");
+    QList<ProcessListEntry*> l = processList.listProcesses();
 
-    foreach(ple,processList.list()) 
+    foreach(ple,l) 
     {
-        if (ple->path.toLower().startsWith(installPrefix.toLower())) 
+        if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower())) 
         {
             if (verbose)
                 fprintf(stderr,"terminating path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
