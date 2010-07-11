@@ -136,13 +136,13 @@ public:
     *
     * @note This function is more meant for removing a directory
     * not created by the user. For user-created directories,
-    * using KIO::NetAccess::del is recommended instead,
+    * using KIO::del() is recommended instead,
     * especially as it has user feedback for long operations.
     *
     * @param path Path of the directory to delete
     * @return true if successful, otherwise false
     * (Use errno for more details about the error.)
-    * @todo decide how and where this function should be defined in KDE4
+    * @todo decide how and where this function should be defined in KDE5
     */
     static bool removeDir( const QString& path );
 
