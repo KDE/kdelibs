@@ -108,7 +108,8 @@ stripLeadingAndTrailingNumbers(QTextBoundaryFinder &finder, int start, int end, 
     newStart = start;
     const QString& scanStr = finder.string();
     for(int i = start; i < end; ++i) {
-        if (scanStr[i].isNumber()) {
+        if (scanStr[i].isNumber()
+            || (scanStr[i].isPunct() && i+1 < end && scanStr[i+1].isNumber())) {
             ++newStart;
         }
         else {
@@ -120,13 +121,17 @@ stripLeadingAndTrailingNumbers(QTextBoundaryFinder &finder, int start, int end, 
     }
 
     int newEnd = end;
-    for(int i = end - 1; i >= newStart; --i) {
-        if (scanStr[i].isNumber()) {
+    for(int i = end - 1; i > newStart; --i) {
+        if (scanStr[i].isNumber()
+            || (scanStr[i].isPunct() && i-1 >= newStart && scanStr[i-1].isNumber())) {
             --newEnd;
         }
         else {
             break;
         }
+    }
+    if(newStart >= newEnd) {
+        return QString();
     }
     return scanStr.mid(newStart, newEnd - newStart);
 }
@@ -144,7 +149,7 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
             if(end > start) { // just to be safe
                 QString str = finder.string().mid(start, end - start);
                 int newStart = 0;
-                // make sure that for words like '12cm' only 'cm' is spell checked
+                // make sure that for words like '12cm', or '12.3cm' only 'cm' is spell checked
                 QString newStr = stripLeadingAndTrailingNumbers(finder, start, end, newStart);
                 if (isValidWord(newStr)) {
                     word = newStr;
