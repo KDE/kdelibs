@@ -52,7 +52,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "Usage: kioslave <slave-lib> <protocol> <klauncher-socket> <app-socket>\n\nThis program is part of KDE.\n");
         exit(1);
      }
+#ifndef _WIN32_WCE
      setlocale(LC_ALL, "");
+#endif
      QString libpath = QFile::decodeName(argv[1]);
 
      if (libpath.isEmpty())
@@ -127,7 +129,7 @@ int main(int argc, char **argv)
         Sleep(1000);
 # endif
      } 
-# ifdef Q_CC_MSVC
+# if defined(Q_CC_MSVC) && !defined(_WIN32_WCE)
      else {
         QString slaveDebugPopup( QString::fromLocal8Bit( qgetenv("KDE_SLAVE_DEBUG_POPUP") ) );
         if (slaveDebugPopup == QLatin1String("all") || slaveDebugPopup == argv[2]) {

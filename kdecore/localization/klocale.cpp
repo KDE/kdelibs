@@ -2658,10 +2658,14 @@ const QByteArray KLocale::encoding() const
 #ifdef Q_WS_WIN
     if (0 == qstrcmp("System", codecForEncoding()->name())) {
         //win32 returns "System" codec name here but KDE apps expect a real name:
+        LPWSTR buffer;
         strcpy(d->win32SystemEncoding, "cp ");
-        if (GetLocaleInfoA(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT),
-                           LOCALE_IDEFAULTANSICODEPAGE, d->win32SystemEncoding + 3,
-                           sizeof(d->win32SystemEncoding) - 3 - 1)) {
+        if (GetLocaleInfoW(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT),
+                           LOCALE_IDEFAULTANSICODEPAGE, buffer,
+                           sizeof(buffer))) {
+            QString localestr = QString::fromUtf16(buffer);
+            QByteArray localechar = localestr.toAscii();
+            strcpy(d->win32SystemEncoding, localechar.data() + 3);
             return d->win32SystemEncoding;
         }
     }

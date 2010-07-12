@@ -842,7 +842,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KCmdLineArgs::addCmdLineOptions( options );
 
      // WABA: Make sure not to enable session management.
-     putenv(strdup("SESSION_MANAGER="));
+     putenv(qstrdup("SESSION_MANAGER="));
 
      // Parse command line before checking DCOP
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
@@ -879,7 +879,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      Kded *kded = new Kded(); // Build data base
 
+#ifndef _WIN32_WCE
      KDE_signal(SIGTERM, sighandler);
+#endif
      KDE_signal(SIGHUP, sighandler);
      KDEDApplication k;
      k.setQuitOnLastWindowClosed(false);

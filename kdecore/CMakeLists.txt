@@ -104,9 +104,17 @@ if (WIN32)
       util/kde_file_win.cpp
       util/kmacroexpander_win.cpp
       util/kshell_win.cpp
-      util/kuser_win.cpp
       date/ktimezone_win.cpp
    )
+   if(NOT WINCE)
+       LIST(APPEND kdecore_OPTIONAL_SRCS
+          util/kuser_win.cpp
+       )
+   else(NOT WINCE)
+       LIST(APPEND kdecore_OPTIONAL_SRCS
+          util/kuser_wince.cpp
+       )
+   endif(NOT WINCE)
    if(NOT MSVC)
       LIST(APPEND kdecore_OPTIONAL_SRCS
          network/netsupp.cpp
@@ -359,6 +367,10 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
+if(WINCE)
+  target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)
+endif(WINCE)
+
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
    macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
@@ -449,16 +461,17 @@ install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### next target ###############
 
-if (WIN32)
+if (WIN32 AND NOT WINCE)
     kde4_add_executable(kcmdwrapper NOGUI io/kcmdwrapper.cpp )
 
     target_link_libraries(kcmdwrapper kernel32 shell32 )
 
     install(TARGETS kcmdwrapper DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif (WIN32)
+endif (WIN32 AND NOT WINCE)
 
 ########### next target ###############
 
+if(NOT WINCE)
 # kjs hash stuff for transcript plugin
 set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
@@ -488,6 +501,8 @@ else(KDE4_ENABLE_FINAL)
 endif(KDE4_ENABLE_FINAL)
 
 install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
+
+endif(NOT WINCE)
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )

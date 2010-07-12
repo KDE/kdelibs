@@ -402,12 +402,15 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             }
             newpath += oldpath;
             setenv( "PATH", newpath, 1/*overwrite*/ );
+// FIXME: wince does not have pipes
+#ifndef _WIN32_WCE
             FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
             if (fs) {
                 QTextStream ts(fs, QIODevice::ReadOnly);
                 result = ts.readAll().trimmed();
                 pclose(fs);
             }
+#endif
             setenv( "PATH", oldpath, 1/*overwrite*/ );
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
             nDollarPos += result.length();

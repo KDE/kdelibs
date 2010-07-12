@@ -190,12 +190,20 @@ int main(int argc, char **argv)
     {
         if (verbose)
             qDebug() << "\t" << a;
+#ifndef _WIN32_WCE
         if (SearchPathW((LPCWSTR)a.utf16(),(LPCWSTR)exeToStart.utf16(),
                         L".exe",MAX_PATH+1,(LPWSTR)_appName,NULL))
         {                        
             found = true;                        
             break;
-        }            
+        }
+#else
+        if (QFile::exists(a+"/"+exeToStart+".exe"))
+        {
+            found = true;                        
+            break;
+        }
+#endif
     }
     QString appName = QString::fromUtf16((unsigned short*)_appName);
 

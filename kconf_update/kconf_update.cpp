@@ -28,6 +28,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QTextCodec>
+#ifdef _WIN32_WCE
+#include <QtCore/QDir>
+#endif
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -816,10 +819,54 @@ void KonfUpdate::gotScript(const QString &_script)
             copyGroup(cg1, cg2);
         }
         cfg.sync();
+#ifndef _WIN32_WCE
         result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, scriptIn.fileName(), scriptOut.fileName(), scriptErr.fileName())));
+#else
+        QString path_ = QDir::convertSeparators ( QFileInfo ( cmd ).absoluteFilePath() );
+        QString file_ = QFileInfo ( cmd ).fileName();
+        SHELLEXECUTEINFO execInfo;
+        memset ( &execInfo,0,sizeof ( execInfo ) );
+        execInfo.cbSize = sizeof ( execInfo );
+        execInfo.fMask =  SEE_MASK_FLAG_NO_UI;
+        execInfo.lpVerb = L"open";
+        execInfo.lpFile = (LPCWSTR) path_.utf16();
+        execInfo.lpDirectory = (LPCWSTR) file_.utf16();
+        execInfo.lpParameters = (LPCWSTR) QString(" < %1 > %2 2> %3").arg( scriptIn.fileName(), scriptOut.fileName(), scriptErr.fileName()).utf16();
+        result = ShellExecuteEx ( &execInfo );
+        if (result != 0)
+        {
+            result = 0;
+        }
+        else
+        {
+            result = -1;
+        }
+#endif
     } else {
         // No config file
+#ifndef _WIN32_WCE
         result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, scriptErr.fileName())));
+#else
+        QString path_ = QDir::convertSeparators ( QFileInfo ( cmd ).absoluteFilePath() );
+        QString file_ = QFileInfo ( cmd ).fileName();
+        SHELLEXECUTEINFO execInfo;
+        memset ( &execInfo,0,sizeof ( execInfo ) );
+        execInfo.cbSize = sizeof ( execInfo );
+        execInfo.fMask =  SEE_MASK_FLAG_NO_UI;
+        execInfo.lpVerb = L"open";
+        execInfo.lpFile = (LPCWSTR) path_.utf16();
+        execInfo.lpDirectory = (LPCWSTR) file_.utf16();
+        execInfo.lpParameters = (LPCWSTR) QString(" 2> %1").arg( scriptErr.fileName()).utf16();
+        result = ShellExecuteEx ( &execInfo );
+        if (result != 0)
+        {
+            result = 0;
+        }
+        else
+        {
+            result = -1;
+        }
+#endif
     }
 
     // Copy script stderr to log file

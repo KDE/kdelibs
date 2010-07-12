@@ -57,6 +57,10 @@
 extern QString mkdtemp_QString (const QString &_template);
 #endif
 
+#ifdef _WIN32_WCE
+#include <shellapi.h>
+#endif
+
 class KTempDir::Private
 {
 public:
@@ -270,7 +274,12 @@ bool KTempDir::removeDir( const QString& path )
     memset(&fileOp, 0, sizeof(SHFILEOPSTRUCTW) );
     fileOp.wFunc = FO_DELETE;
     fileOp.pFrom = (LPCWSTR)name.constData();
-    fileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+    fileOp.fFlags = FOF_NOCONFIRMATION | FOF_SILENT;
+#ifdef _WIN32_WCE
+    // FOF_NOERRORUI is not defined in wince
+#else
+    fileOp.fFlags |= FOF_NOERRORUI;
+#endif
     errno = SHFileOperationW( &fileOp );
     return (errno == 0);
 #else

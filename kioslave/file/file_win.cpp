@@ -241,13 +241,21 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
            return;
         }
 
+#ifndef _WIN32_WCE
         dwFlags = MOVEFILE_REPLACE_EXISTING;
+#endif
     }
     // To avoid error 17 - The system cannot move the file to a different disk drive.
+#ifndef _WIN32_WCE   
     dwFlags |= MOVEFILE_COPY_ALLOWED;
+
 
     if ( MoveFileExW( ( LPCWSTR ) _src.filePath().utf16(),
                       ( LPCWSTR ) _dest.filePath().utf16(), dwFlags) == 0 )
+#else
+    if ( MoveFileW( ( LPCWSTR ) _src.filePath().utf16(),
+                      ( LPCWSTR ) _dest.filePath().utf16()) == 0 )
+#endif
     {
         DWORD dwLastErr = GetLastError();
         if ( dwLastErr == ERROR_FILE_NOT_FOUND )

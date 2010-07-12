@@ -56,7 +56,9 @@ void KApplication_init_windows()
 
     // For apps like KMail which have lots of open files, the default is too low
 	// so increase it to the maximum.
+#ifndef _WIN32_WCE
     _setmaxstdio(2048);
+#endif
 
 }
 
@@ -119,6 +121,7 @@ QString fromWChar(const wchar_t *string, int size = -1)
     : QString::fromUcs4((uint *)string, size);
 }
 
+#ifndef _WIN32_WCE
 void KApplication_getProcessesIdForName( const QString& processName, QList<int>& pids )
 {
   qDebug() << "KApplication_getProcessesIdForName" << processName;
@@ -258,5 +261,6 @@ void KApplication_activateWindowForProcess( const QString& executableName )
     return;
   KWindowSystem::forceActiveWindow( winStruct.windowId, 0 );
 }
+#endif
 
 // </copy>

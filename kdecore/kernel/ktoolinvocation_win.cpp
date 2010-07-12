@@ -36,8 +36,19 @@
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
+#ifndef _WIN32_WCE
    QString sOpen( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.utf16(), 0, 0, SW_NORMAL);
+#else
+    SHELLEXECUTEINFO cShellExecuteInfo = {0};
+    cShellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    cShellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    cShellExecuteInfo.hwnd = NULL;
+    cShellExecuteInfo.lpVerb = L"Open";
+    cShellExecuteInfo.lpFile = ( LPCWSTR )url.utf16();
+    cShellExecuteInfo.nShow = SW_SHOWNORMAL;
+    ShellExecuteEx(&cShellExecuteInfo);
+#endif
 }
 
 void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
@@ -53,8 +64,19 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
   foreach (const QString& attachURL, attachURLs)
     url.addQueryItem("attach", QLatin1String( KUrl::toPercentEncoding(attachURL) ));
 
+#ifndef _WIN32_WCE
    QString sOpen( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);
+#else
+    SHELLEXECUTEINFO cShellExecuteInfo = {0};
+    cShellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    cShellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    cShellExecuteInfo.hwnd = NULL;
+    cShellExecuteInfo.lpVerb = L"Open";
+    cShellExecuteInfo.lpFile = ( LPCWSTR )url.url().utf16();
+    cShellExecuteInfo.nShow = SW_SHOWNORMAL;
+    ShellExecuteEx(&cShellExecuteInfo);
+#endif
 }
 
 void KToolInvocation::invokeTerminal(const QString &command, const QString &workdir, const QByteArray &startup_id)

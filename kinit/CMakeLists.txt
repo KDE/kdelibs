@@ -30,7 +30,11 @@ endif(HAVE_SOCKET_LIBRARY)
 ########### kdeinit4 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp klauncher_cmds.cpp )
-  set(kdeinit_LIBS psapi)
+  if(NOT WINCE)
+    set(kdeinit_LIBS psapi)
+  else(NOT WINCE)
+    set(kdeinit_LIBS Toolhelp.lib)
+  endif(NOT WINCE)
 else (WIN32)
   set(kdeinit_SRCS kinit.cpp proctitle.cpp klauncher_cmds.cpp )
   set(kdeinit_LIBS "")
@@ -148,6 +152,9 @@ target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( klauncher kdeinit_klauncher )
+if(WINCE)
+  target_link_libraries(klauncher ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############

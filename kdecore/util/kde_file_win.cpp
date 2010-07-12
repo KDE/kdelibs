@@ -163,8 +163,12 @@ namespace KDE
   int rename(const QString &in, const QString &out)
   {
     // better than :waccess/_wunlink/_wrename
+#ifndef _WIN32_WCE
     bool ok = ( MoveFileExW( CONV(in), CONV(out),
                              MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 );
+#else
+    bool ok = ( MoveFileW( CONV(in), CONV(out)) != 0 );
+#endif
 	return ok ? 0 : -1;
   }
 
@@ -172,7 +176,11 @@ namespace KDE
   {
     int result;
 #ifdef Q_CC_MSVC
+#ifndef _WIN32_WCE
     struct _stat64 s64;
+#else
+    struct stat st;
+#endif
 #else
     struct __stat64 s64;
 #endif
@@ -182,34 +190,65 @@ namespace KDE
         QString newPath(path);
     	if (len==2)
     		newPath += QLatin1Char('\\');
+#ifndef _WIN32_WCE
     	result = _wstat64( CONV(newPath), &s64 );
+#else
+    	result = wstat( CONV(newPath), &st );
+#endif
     } else
     if ( len > 1 && (path.endsWith(QLatin1Char('\\')) || path.endsWith(QLatin1Char('/'))) ) {
     	/* 2) */
         const QString newPath = path.left( len - 1 );
+#ifndef _WIN32_WCE
     	result = _wstat64( CONV(newPath), &s64 );
+#else
+    	result = wstat( CONV(newPath), &st );
+#endif
     } else {
         //TODO: is stat("/") ok?
+#ifndef _WIN32_WCE
         result = _wstat64( CONV(path), &s64 );
+#else
+    	result = wstat( CONV(path), &st );
+#endif
     }
     if( result != 0 )
         return result;
     // KDE5: fixme!
+#ifndef _WIN32_WCE
     buf->st_dev   = s64.st_dev;
     buf->st_ino   = s64.st_ino;
     buf->st_mode  = s64.st_mode;
     buf->st_nlink = s64.st_nlink;
+#else
+    buf->st_dev   = st.st_dev;
+    buf->st_ino   = st.st_ino;
+    buf->st_mode  = st.st_mode;
+    buf->st_nlink = st.st_nlink;
+#endif
     buf->st_uid   = -2; // be in sync with Qt4
     buf->st_gid   = -2; // be in sync with Qt4
+#ifndef _WIN32_WCE
     buf->st_rdev  = s64.st_rdev;
     buf->st_size  = s64.st_size;
     buf->st_atime = s64.st_atime;
     buf->st_mtime = s64.st_mtime;
     buf->st_ctime = s64.st_ctime;
+#else
+    buf->st_rdev  = st.st_rdev;
+    buf->st_size  = st.st_size;
+    buf->st_atime = st.st_atime;
+    buf->st_mtime = st.st_mtime;
+    buf->st_ctime = st.st_ctime;
+#endif
     return result;
   }
   int utime(const QString &filename, struct utimbuf *buf)
   {
+#ifndef _WIN32_WCE
     return _wutime( CONV(filename), (struct _utimbuf*)buf );
+#else
+    return _wutime( CONV(filename), (struct utimbuf*)buf );
+#endif
   }
 };

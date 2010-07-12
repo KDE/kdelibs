@@ -347,12 +347,16 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
         }
         if (!installPath.isEmpty()) {
 #if defined(Q_WS_WIN)
+#ifndef _WIN32_WCE
             WCHAR wPath[MAX_PATH+1];
             if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
                 installdir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + installpath + QLatin1Char('/');
             } else {
+#endif
                 installdir =  QDir::home().path() + QLatin1Char('/') + installPath + QLatin1Char('/');
+#ifndef _WIN32_WCE
             }
+#endif
 #else
             installdir = QDir::home().path() + '/' + installPath + '/';
 #endif

@@ -122,8 +122,11 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 #ifdef Q_OS_WIN
         // adding drives
         foreach ( const QFileInfo& info, QDir::drives() ) {
+#ifndef _WIN32_WCE
             uint type = DRIVE_UNKNOWN;
+#endif
             QString driveIcon = "drive-harddisk";
+#ifndef _WIN32_WCE
             QT_WA({ type = GetDriveTypeW((wchar_t *)info.absoluteFilePath().utf16()); },
                   { type = GetDriveTypeA(info.absoluteFilePath().toLocal8Bit()); });
             // qDebug() << "drive " << info.absoluteFilePath() << " type: " << type;
@@ -146,6 +149,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
                 default:
                     driveIcon = "drive-harddisk";
             }
+#endif
             KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                                   info.absoluteFilePath(), info.absoluteFilePath(),
                                                   KUrl(info.absoluteFilePath()), driveIcon);

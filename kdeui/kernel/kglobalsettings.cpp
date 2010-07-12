@@ -578,9 +578,14 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
     }
 #ifdef Q_WS_WIN
     //not cached
+#ifndef _WIN32_WCE
     mMouseSettings->handed = (GetSystemMetrics(SM_SWAPBUTTON) ?
         KGlobalSettings::KMouseSettings::LeftHanded :
         KGlobalSettings::KMouseSettings::RightHanded);
+#else
+// There is no mice under wince
+    mMouseSettings->handed =KGlobalSettings::KMouseSettings::RightHanded;
+#endif
 #endif
     return *mMouseSettings;
 }

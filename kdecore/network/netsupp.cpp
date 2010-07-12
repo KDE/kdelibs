@@ -171,7 +171,7 @@ make_unix(const char *name, const char *serv)
   p->ai_family = AF_UNIX;
   p->ai_addrlen = len;
   p->ai_addr = (sockaddr*)_sun;
-  p->ai_canonname = strdup(buf);
+  p->ai_canonname = qstrdup(buf);
 
   return p;
 }
@@ -491,7 +491,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 # endif
 
   if (hint->ai_flags & AI_CANONNAME)
-    q->ai_canonname = strdup(h->h_name);
+    q->ai_canonname = qstrdup(h->h_name);
   else
     q->ai_canonname = NULL;
 
@@ -542,7 +542,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 # endif
 
       if (q->ai_canonname != NULL)
-	q->ai_canonname = strdup(q->ai_canonname);
+	q->ai_canonname = qstrdup(q->ai_canonname);
 
       q->ai_next = p;
       p = q;

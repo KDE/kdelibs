@@ -387,7 +387,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
     }
 
     free( mntctl_buffer );
-#elif defined(Q_WS_WIN)
+#elif defined(Q_WS_WIN) && !defined(_WIN32_WCE)
 	//nothing fancy with infoNeeded but it gets the job done
     DWORD bits = GetLogicalDrives();
     if(!bits)
@@ -402,6 +402,11 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
             result.append(mp);
         }
     }
+    
+#elif defined(_WIN32_WCE)
+	Ptr mp(new KMountPoint);
+    mp->d->mountPoint = QString("/");
+    result.append(mp);
 	
 #else
    STRUCT_SETMNTENT mnttab;

@@ -366,7 +366,11 @@ void Slave::kill()
                  << "(" << QString(d->m_protocol) + "://" + d->m_host << ")";
     if (d->m_pid)
     {
+#ifndef _WIN32_WCE
        ::kill(d->m_pid, SIGTERM);
+#else
+        ::kill(d->m_pid, SIGKILL);
+#endif
        d->m_pid = 0;
     }
 }

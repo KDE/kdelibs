@@ -30,12 +30,18 @@
 #include <string.h>
 
 #include <windows.h>
+#ifndef _WIN32_WCE
 #include <Sddl.h>
+#else
+#include <tlhelp32.h>
+#endif
 #include <psapi.h>
 
 
 #include <QtCore/QProcess>
 #include <QtCore/QFileInfo>
+// Under wince interface is defined, so undef it otherwise it breaks it
+#undef interface
 #include <QtDBus/QtDBus>
 
 #include <kcomponentdata.h>
@@ -66,14 +72,22 @@ class ProcessListEntry {
            name = p.baseName();
            handle = _handle; 
            pid = _pid;
+//There are no users under wince
+#ifndef _WIN32_WCE
            DWORD length = GetLengthSid(_owner);
            owner = (PSID) malloc(length);
            CopySid(length, owner, _owner);
+#else
+           owner = 0;
+#endif
        }
 
        ~ProcessListEntry()
        {
+//There are no users under wince
+#ifndef _WIN32_WCE
            free(owner);
+#endif
            owner = 0;
        }
        
@@ -116,6 +130,7 @@ class ProcessList {
 
 void ProcessList::getProcessNameAndID( DWORD processID )
 {
+#ifndef _WIN32_WCE
     char szProcessName[MAX_PATH];
     // by default use the current process' uid
     KUser user;
@@ -190,6 +205,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
         processList << new ProcessListEntry( hProcess, szProcessName, processID, processSid );
     }
     free(processSid);
+#endif
 }
 
 
@@ -198,6 +214,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
 */
 void ProcessList::initProcessList()
 {
+#ifndef _WIN32_WCE
     // Get the list of process identifiers.
 
     DWORD aProcesses[1024], cbNeeded, cProcesses;
@@ -215,10 +232,35 @@ void ProcessList::initProcessList()
     for ( i = 0; i < cProcesses; i++ )
         if( aProcesses[i] != 0 )
             getProcessNameAndID( aProcesses[i] );
+#else
+    HANDLE h;
+    PROCESSENTRY32 pe32;
+
+    h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (h == INVALID_HANDLE_VALUE) {
+        return;
+    }
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+    if (!Process32First( h, &pe32 ))
+        return;
+      
+    do
+    {
+        HANDLE hProcess = OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
+                               PROCESS_VM_READ | PROCESS_TERMINATE,
+                               false, pe32.th32ProcessID );
+                               
+        processList << new ProcessListEntry( hProcess, QString::fromWCharArray(pe32.szExeFile).toAscii().data(), pe32.th32ProcessID, 0 );
+
+    } while( Process32Next( h, &pe32 ) );
+    CloseToolhelp32Snapshot(h);
+#endif
 }
 
 QList<ProcessListEntry*> ProcessList::listProcesses()
 {
+//FIXME: Under wince there is no EnumProcesses
+#ifndef _WIN32_WCE
     // Get the list of process identifiers.
 
     DWORD aProcesses[1024], cbNeeded, cProcesses;
@@ -237,7 +279,8 @@ QList<ProcessListEntry*> ProcessList::listProcesses()
     for ( i = 0; i < cProcesses; i++ )
         if( aProcesses[i] != 0 )
             getProcessNameAndID( aProcesses[i] );
-            
+
+#endif            
     return processList;
 }
 
@@ -274,6 +317,7 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
             continue;
         }
         
+#ifndef _WIN32_WCE
         if(owner)
         {
             // owner is set
@@ -285,6 +329,9 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
             KUser user;
             if(EqualSid(user.uid(), ple->owner)) return ple;
         }
+#else
+            return ple;
+#endif
     }
     return NULL;
 }

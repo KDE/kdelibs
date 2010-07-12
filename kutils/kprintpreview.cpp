@@ -134,6 +134,8 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
 {
     kDebug(500) << "kdeprint: creating preview dialog";
 
+    //There is no printing on wince
+#ifndef _WIN32_WCE
     // Set up the dialog
     setCaption(i18n("Print Preview"));
     setButtons(KDialog::Close);
@@ -143,6 +145,7 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     printer->setOutputFileName(d->filename);
 
     setInitialSize(QSize(600, 500));
+#endif
 }
 
 KPrintPreview::~KPrintPreview()

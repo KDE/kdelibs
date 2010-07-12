@@ -16,6 +16,10 @@ set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.5.60 (KDE 4.6 >= 20100627))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
+IF(WINCE)
+    FIND_PACKAGE(WCECOMPAT REQUIRED)
+ENDIF(WINCE)
+
 # win32: give kde home in debug mode a different name as the  release home dir because the settings and caches are different
 if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set (_KDE_DEFAULT_HOME_POSTFIX "-debug" CACHE STRING "default KDE home directory postfix" )
@@ -97,7 +101,12 @@ macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
 set(SOPRANO_MIN_VERSION "2.4.63")
+# FIXME: There are no soprano backend at this time for wince
+if(NOT WINCE)
 macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
+else(NOT WINCE)
+macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION})
+endif(NOT WINCE)
 macro_log_feature(SOPRANO_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
@@ -146,9 +155,13 @@ endif(QCA2_FOUND)
 
 set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
                       ${CMAKE_BINARY_DIR}/kjs)
+                      
+if(NOT WINCE)
+    set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES} )
+endif(NOT WINCE)
 
 # kdecore depends on Qt (need only headers from kjs)
-set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
+set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore
                           ${CMAKE_BINARY_DIR}/kdecore
                           ${CMAKE_SOURCE_DIR}/kdecore/compression
@@ -211,7 +224,9 @@ set(KDE4_KDE3SUPPORT_INCLUDES ${CMAKE_SOURCE_DIR}/kde3support
                               ${CMAKE_SOURCE_DIR}/kde3support/kio
                               ${KDE4_KPARTS_INCLUDES})
 
-set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml)
+if(NOT WINCE)
+ set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml)
+endif(NOT WINCE)
 
 
 ################# configure checks and create the configured files #################
@@ -256,8 +271,10 @@ if (UNIX)
    add_subdirectory( kpty )
    add_subdirectory( kdesu )
 endif (UNIX)
+if(NOT WINCE)
 add_subdirectory( kjs )
 add_subdirectory( kjsembed )
+endif(NOT WINCE)
 add_subdirectory( kio )
 add_subdirectory( solid )
 add_subdirectory( kded       )
@@ -266,7 +283,9 @@ if (QT_QT3SUPPORT_FOUND)
 endif (QT_QT3SUPPORT_FOUND)
 add_subdirectory( kfile )
 add_subdirectory( kconf_update )
+if(NOT WINCE)
 add_subdirectory( kdoctools  )
+endif(NOT WINCE)
 add_subdirectory( kioslave   )
 add_subdirectory( knewstuff  )
 add_subdirectory( kparts     )
@@ -276,14 +295,20 @@ add_subdirectory( mimetypes  )
 add_subdirectory( kinit  )
 add_subdirectory( threadweaver )
 add_subdirectory( sonnet  )
+if(NOT WINCE)
 add_subdirectory( khtml  )
+endif(NOT WINCE)
 add_subdirectory( interfaces  )
 #if ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
 add_subdirectory( kdewidgets  )
 #endif ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
+if(NOT WINCE)
 add_subdirectory( kate  )
+endif(NOT WINCE)
 add_subdirectory( knotify )
+if(NOT WINCE)
 add_subdirectory( kimgio )
+endif(NOT WINCE)
 add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( security )

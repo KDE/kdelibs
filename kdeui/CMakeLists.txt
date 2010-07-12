@@ -71,7 +71,6 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
- dialogs/kdeprintdialog.cpp
  dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
@@ -261,6 +260,13 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguiversionhandler.cpp
 )
 
+if(NOT WINCE)
+set(kdeui_LIB_SRCS
+ ${kdeui_LIB_SRCS}
+ dialogs/kdeprintdialog.cpp
+)
+endif(NOT WINCE)
+
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
@@ -382,6 +388,10 @@ endif(X11_Xfixes_FOUND)
 if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
+
+if (WINCE)
+   target_link_libraries(kdeui ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY})
 

@@ -413,8 +413,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         const QByteArray nameStr = name.toLocal8Bit();
 
         QByteArray key;
-        // strxfrm() crashes on Solaris
-#ifndef USE_SOLARIS
+        // strxfrm() crashes on Solaris and strxfrm is not defined under wince
+#if !defined(USE_SOLARIS) && !defined(_WIN32_WCE)
         // maybe it'd be better to use wcsxfrm() where available
         key.resize( name.length() * 4 + 1 );
         size_t ln = strxfrm(key.data(), nameStr.constData(), key.size());

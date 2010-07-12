@@ -46,6 +46,10 @@ kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
 target_link_libraries(kio_help  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
+if(WINCE)
+  target_link_libraries(kio_help ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
+
 install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
@@ -57,6 +61,10 @@ set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp xslt_help.cpp xslt_
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
 target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
+
+if(WINCE)
+  target_link_libraries(kio_ghelp ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 
 install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

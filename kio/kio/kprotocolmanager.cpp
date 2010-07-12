@@ -497,7 +497,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
   struct utsname unameBuf;
   if ( 0 != uname( &unameBuf ) )
     return false;
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) && !defined(_WIN32_WCE)
   // we do not use unameBuf.sysname information constructed in kdewin32
   // because we want to get separate name and version
   systemName = QLatin1String( "Windows" );

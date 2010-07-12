@@ -211,6 +211,8 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
     // FIXME: distinguish between mounted & unmounted
     int size = path.size();
     if ( size == 2 || size == 3 ) {
+    //GetDriveTypeW is not defined in wince
+#ifndef _WIN32_WCE
         unsigned int type = GetDriveTypeW( (LPCWSTR) path.utf16() );
         switch( type ) {
             case DRIVE_REMOVABLE:
@@ -226,6 +228,9 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
             default:
                 break;
         };
+#else
+        return KMimeType::mimeType( "media/hdd_mounted" );
+#endif
     }
 #endif
     // remote executable file? stop here (otherwise findFromContent can do that better for local files)

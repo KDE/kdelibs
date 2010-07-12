@@ -219,9 +219,12 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
             KWindowSystem::s_d_func()->windowRemoved(reinterpret_cast<WId>(message->lParam));
             break;
           case HSHELL_WINDOWACTIVATED:
+#ifndef _WIN32_WCE
           case HSHELL_RUDEAPPACTIVATED:
+#endif
             KWindowSystem::s_d_func()->windowActivated(reinterpret_cast<WId>(message->lParam));
             break;
+#ifndef _WIN32_WCE
           case HSHELL_GETMINRECT:
             KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
             break;
@@ -231,6 +234,7 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
           case HSHELL_FLASH:
             KWindowSystem::s_d_func()->windowFlash(reinterpret_cast<WId>(message->lParam));
             break;
+#endif
         }
     }
     return QWidget::winEvent(message,result);
@@ -238,13 +242,13 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 
 bool CALLBACK KWindowSystemPrivate::EnumWindProc(WId hWnd, LPARAM lparam)
 {
-    QByteArray windowText = QByteArray ( GetWindowTextLength(hWnd)+1, 0 ) ;
-    GetWindowTextA(hWnd, windowText.data(), windowText.size());
+    QByteArray windowText = QByteArray ( (GetWindowTextLength(hWnd)+1) * sizeof(wchar_t), 0 ) ;
+    GetWindowTextW(hWnd, (LPWSTR)windowText.data(), windowText.size());
 	DWORD ex_style = GetWindowExStyle(hWnd);
     KWindowSystemPrivate *p = KWindowSystem::s_d_func();
 
     QString add;
-    if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW)
+    if( !QString::fromWCharArray((wchar_t*)windowText.data()).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW)
        && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(hWnd) ) {
 
 //        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
@@ -260,15 +264,17 @@ bool CALLBACK KWindowSystemPrivate::EnumWindProc(WId hWnd, LPARAM lparam)
 
 void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo)
 {
-    QByteArray windowText = QByteArray ( GetWindowTextLength(hWnd)+1, 0 ) ;
-    GetWindowTextA(hWnd, windowText.data(), windowText.size());
+    QByteArray windowText = QByteArray ( (GetWindowTextLength(hWnd)+1) * sizeof(wchar_t), 0 ) ;
+    GetWindowTextW(hWnd, (LPWSTR)windowText.data(), windowText.size());
      //maybe use SendMessageTimout here?
     QPixmap smallIcon;
     HICON hSmallIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
     //if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
+#ifndef _WIN32_WCE
     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
+#endif
     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
     if(hSmallIcon)  smallIcon  = HIcon2QPixmap(hSmallIcon);
 
@@ -276,14 +282,16 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     HICON hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
     //if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
+#ifndef _WIN32_WCE
     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
+#endif
     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
     if(hBigIcon)  bigIcon  = HIcon2QPixmap(hBigIcon);
 
     winfo->bigIcon    = bigIcon;
     winfo->smallIcon  = smallIcon;
-    winfo->windowName = QString(windowText).trimmed();
+    winfo->windowName = QString::fromWCharArray((wchar_t*)windowText.data()).trimmed();
 }
 
 
@@ -423,17 +431,21 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
     // But the mouse cursor still acts as if the widgets were there (e.g. button clicking works),
     // which indicates the issue is at the window/backingstore level.
     // This is probably a side effect of bypassing Qt's internal window state handling.
+#ifndef _WIN32_WCE
     if ( IsIconic( win ) /*|| !IsWindowVisible( win ) */) {
         // Do not activate the window as we restore it,
         // otherwise the window appears see-through (contents not updated).
         ShowWindow( win, SW_SHOWNOACTIVATE );
     }
+#endif
     // Puts the window in front and activates it.
     SetForegroundWindow( win );
 }
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
+// One can not flash a windows in wince
+#ifndef _WIN32_WCE
     FLASHWINFO fi;
     fi.cbSize = sizeof( FLASHWINFO );
     fi.hwnd = win;
@@ -442,6 +454,7 @@ void KWindowSystem::demandAttention( WId win, bool set )
     fi.dwTimeout = 0;
 
     FlashWindowEx( &fi );
+#endif
 }
 
 
@@ -496,11 +509,13 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 void KWindowSystem::setState( WId win, unsigned long state )
 {
     bool got = false;
+#ifndef _WIN32_WCE
     if (state & NET::SkipTaskbar) {
         got = true;
         LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
         SetWindowLongPtr(win, GWL_EXSTYLE, lp | WS_EX_TOOLWINDOW);
     }
+#endif
     if (state & NET::KeepAbove) {
         got = true;
         SetWindowPos(win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -521,11 +536,13 @@ void KWindowSystem::clearState( WId win, unsigned long state )
 {
     bool got = false;
 
+#ifndef _WIN32_WCE
     if (state & NET::SkipTaskbar) {
         got = true;
         LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
         SetWindowLongPtr(win, GWL_EXSTYLE, lp & ~WS_EX_TOOLWINDOW);
     }
+#endif
     if (state & NET::KeepAbove) {
         got = true;
         //lets hope this remove the topmost
@@ -682,7 +699,9 @@ bool KWindowSystem::hasWId(WId w)
 
 void KWindowSystem::allowExternalProcessWindowActivation( int pid )
 {
+#ifndef _WIN32_WCE
     AllowSetForegroundWindow( pid == -1 ? ASFW_ANY : pid );
+#endif
 }
 
 #include "kwindowsystem.moc"

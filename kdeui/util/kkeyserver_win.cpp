@@ -43,7 +43,10 @@ namespace KKeyServer
         { Qt::Key_Pause,            VK_PAUSE },
         { Qt::Key_CapsLock,         VK_CAPITAL },
         { Qt::Key_Escape,           VK_ESCAPE },
+//FIXME: under wince VK_MODECHANGE is not defined
+#ifndef _WIN32_WCE
         { Qt::Key_Mode_switch,          VK_MODECHANGE },
+#endif
         { Qt::Key_Space,            VK_SPACE },
         { Qt::Key_PageUp,           VK_PRIOR },
         { Qt::Key_PageDown,         VK_NEXT },

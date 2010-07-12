@@ -36,7 +36,9 @@
 #ifdef Q_WS_WIN
 #include <fcntl.h>
 #include <windows.h>
+#ifndef _WIN32_WCE
 #include <wincon.h>
+#endif
 #else
 #include <unistd.h>
 #include <stdio.h>

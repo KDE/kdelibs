@@ -214,7 +214,7 @@ if(WIN32)
    else(HAVE_WBEM AND WBEM_LIBRARIES)
       set(HAVE_WBEM False)
    endif(HAVE_WBEM AND WBEM_LIBRARIES)
-   if(HAVE_WBEM)
+   if(HAVE_WBEM AND NOT WINCE)
        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
        message(STATUS "-- Building Solid WMI backend." )
 
@@ -242,7 +242,7 @@ if(WIN32)
        backends/wmi/wmivolume.cpp
 
        )
-    endif(HAVE_WBEM)
+    endif(HAVE_WBEM AND NOT WINCE)
 endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
@@ -272,6 +272,10 @@ kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )#${HUpnp_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
+
+if (WINCE)
+   target_link_libraries(solid ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 
 set_target_properties(solid PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

@@ -39,7 +39,9 @@ static bool s_localeSet = false;
 // a Q[Core]Application exists (David)
 int kInitializeLocale()
 {
+#ifndef _WIN32_WCE
     setlocale(LC_ALL, "");
+#endif
     extern Q_CORE_EXPORT bool qt_locale_initialized; // in Qt since 4.5.0
     qt_locale_initialized = true; // as recommended by Thiago
     s_localeSet = true;

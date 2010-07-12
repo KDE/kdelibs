@@ -896,6 +896,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 {
     kDebug(7101) << "fstype=" << _fstype;
 
+#ifndef _WIN32_WCE
 #ifdef HAVE_VOLMGT
 	/*
 	 *  support for Solaris volume management
@@ -1030,11 +1031,18 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
         }
     }
 #endif /* ! HAVE_VOLMGT */
+#else
+    QString err;
+    err = i18n("mounting is not supported by wince.");
+    error( KIO::ERR_COULD_NOT_MOUNT, err );
+#endif
+
 }
 
 
 void FileProtocol::unmount( const QString& _point )
 {
+#ifndef _WIN32_WCE
     QByteArray buffer;
 
     KTemporaryFile tmpFile;
@@ -1145,6 +1153,11 @@ void FileProtocol::unmount( const QString& _point )
         finished();
     else
         error( KIO::ERR_COULD_NOT_UNMOUNT, err );
+#else
+    QString err;
+    err = i18n("unmounting is not supported by wince.");
+    error( KIO::ERR_COULD_NOT_MOUNT, err );
+#endif
 }
 
 /*************************************
@@ -1155,6 +1168,7 @@ void FileProtocol::unmount( const QString& _point )
 
 bool FileProtocol::pmount(const QString &dev)
 {
+#ifndef _WIN32_WCE
     QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
@@ -1170,10 +1184,14 @@ bool FileProtocol::pmount(const QString &dev)
     int res = system( buffer.constData() );
 
     return res==0;
+#else
+    return false;
+#endif
 }
 
 bool FileProtocol::pumount(const QString &point)
 {
+#ifndef _WIN32_WCE
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints(KMountPoint::NeedRealDeviceName).findByPath(point);
     if (!mp)
         return false;
@@ -1196,6 +1214,9 @@ bool FileProtocol::pumount(const QString &point)
     int res = system( buffer.data() );
 
     return res==0;
+#else
+    return false;
+#endif
 }
 
 /*************************************

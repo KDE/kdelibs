@@ -56,6 +56,9 @@
 #include <grp.h>
 #ifdef Q_WS_WIN
 #include <windows.h>
+#ifdef _WIN32_WCE
+#include <basetyps.h>
+#endif
 #ifdef Q_WS_WIN64
 // FIXME: did not find a reliable way to fix with kdewin mingw header 
 #define interface struct
@@ -1679,12 +1682,16 @@ void KStandardDirs::addKDEDefaults()
 #if defined(Q_WS_MACX)
         localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
 #elif defined(Q_WS_WIN)
+#ifndef _WIN32_WCE
         WCHAR wPath[MAX_PATH+1];
         if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
           localKdeDir = QDir::fromNativeSeparators(QString::fromUtf16((const ushort *) wPath)) + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
         } else {
+#endif
           localKdeDir =  QDir::homePath() + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
+#ifndef _WIN32_WCE  
         }
+#endif
 #else
         localKdeDir =  QDir::homePath() + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
 #endif

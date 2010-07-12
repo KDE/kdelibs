@@ -490,6 +490,8 @@ static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zon
         return 0;
     const bool isDst = is_dst( tz, systemtime_to_qdatetime( utc ), utc.wYear );
     int result = effective_offset( tz, isDst );
+//FIXME: SystemTimeToTzSpecificLocalTime does not exsit on wince
+#ifndef _WIN32_WCE
     if ( secondOffset ) {
         const SYSTEMTIME utcplus1 = qdatetime_to_systemtime( systemtime_to_qdatetime( utc ).addSecs( OneHour ) );
         const SYSTEMTIME utcminus1 = qdatetime_to_systemtime( systemtime_to_qdatetime( utc ).addSecs( -OneHour ) );
@@ -505,6 +507,7 @@ static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zon
                 qSwap( result, *secondOffset );
         }
     }
+#endif
     return result;
 }
 

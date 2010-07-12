@@ -24,6 +24,9 @@ target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kded4 kdeinit_kded4 )
+if(WINCE)
+  target_link_libraries(kded4 ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 install(TARGETS kded4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
@@ -51,6 +54,10 @@ set(kbuildsycoca_KDEINIT_SRCS
 
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+
+if(WINCE)
+  target_link_libraries(kbuildsycoca4 ${WCECOMPAT_LIBRARIES})
+endif(WINCE)
 
 target_link_libraries(kdeinit_kbuildsycoca4 ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
 

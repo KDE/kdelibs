@@ -197,7 +197,7 @@ KEncodingProber::ProberState KEncodingProber::state() const
 //DEPRECATED, do *not* use
 const char* KEncodingProber::encodingName() const
 {
-    return strdup(encoding().constData());
+    return qstrdup(encoding().constData());
 }
 
 QByteArray KEncodingProber::encoding() const

@@ -99,14 +99,18 @@ WId KWindowInfo::win() const
 unsigned long KWindowInfo::state() const
 {
     unsigned long state = 0;
+#ifndef _WIN32_WCE
      if(IsZoomed(d->win_))
         state |= NET::Max;
+#endif
      if(!IsWindowVisible(d->win_))
         state |= NET::Hidden;
-        
+     
+#ifndef _WIN32_WCE     
     LONG_PTR lp = GetWindowLongPtr(d->win_, GWL_EXSTYLE);
     if(lp & WS_EX_TOOLWINDOW)
         state |= NET::SkipTaskbar;
+#endif
         
     return state;
 }
@@ -118,13 +122,19 @@ bool KWindowInfo::hasState( unsigned long s ) const
 
 bool KWindowInfo::isMinimized() const
 {
+#ifndef _WIN32_WCE
     return IsIconic(d->win_);
+#else
+    return false;
+#endif
 }
 
 NET::MappingState KWindowInfo::mappingState() const
 {    
+#ifndef _WIN32_WCE
     if(IsIconic(d->win_))
         return NET::Iconic;  
+#endif
     if(!IsWindowVisible(d->win_)) 
         return NET::Withdrawn;
     return NET::Visible;
@@ -165,9 +175,9 @@ QString KWindowInfo::visibleName() const
 
 QString KWindowInfo::name() const
 {
-    QByteArray windowText = QByteArray ( GetWindowTextLength(d->win_)+1, 0 ) ;
-    GetWindowTextA(d->win_, windowText.data(), windowText.size());
-    return QString(windowText);
+    QByteArray windowText = QByteArray ( (GetWindowTextLength(d->win_)+1) * sizeof(wchar_t), 0 ) ;
+    GetWindowTextW(d->win_, (LPWSTR)windowText.data(), windowText.size());
+    return QString::fromWCharArray((wchar_t*)windowText.data());
 }
 
 QString KWindowInfo::visibleIconNameWithState() const

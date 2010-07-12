@@ -76,7 +76,9 @@ bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
 #ifdef Q_WS_WIN
 /* private helpers from kapplication_win.cpp */
+#ifndef _WIN32_WCE
 void KApplication_activateWindowForProcess( const QString& executableName );
+#endif
 #endif
 
 void
@@ -155,7 +157,7 @@ KUniqueApplication::start(StartFlags flags)
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) && !defined(_WIN32_WCE)
         KApplication_activateWindowForProcess(KCmdLineArgs::aboutData()->appName());
 #endif
         ::exit(255);

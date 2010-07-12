@@ -55,14 +55,22 @@ using namespace std;
 # define WIN32_CAST_CHAR (LPCWSTR)
 #endif
 
+#ifndef _WIN32_WCE
 static HINSTANCE kdecoreDllInstance = NULL;
+#else
+static HANDLE kdecoreDllInstance = NULL;
+#endif
 static wchar_t kde4prefixUtf16[MAX_PATH + 2];
 static QString *kde4Prefix = NULL;
 
 void initKde4prefixUtf16()
 {
     //the path is C:\some\path\kde4\bin\kdecore.dll
+#ifndef _WIN32_WCE
     GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
+#else
+    GetModuleFileNameW((HMODULE)kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
+#endif
     int bs1 = 0, bs2 = 0;
 
     //we convert \ to / and remove \bin\kdecore.dll from the string
@@ -93,7 +101,11 @@ QString getKde4Prefix()
  * Maybe also some special initialization / cleanup can be done here
  **/
 extern "C"
+#ifndef _WIN32_WCE
 BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
+#else
+BOOL WINAPI DllMain ( HANDLE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
+#endif
 {
     switch ( fdwReason ) {
     case DLL_PROCESS_ATTACH:
@@ -171,14 +183,28 @@ bool showWin32FilePropertyDialog ( const QString& fileName )
 {
     QString path_ = QDir::convertSeparators ( QFileInfo ( fileName ).absoluteFilePath() );
 
+#ifndef _WIN32_WCE
     SHELLEXECUTEINFOW execInfo;
+#else
+    SHELLEXECUTEINFO execInfo;
+#endif
     memset ( &execInfo,0,sizeof ( execInfo ) );
     execInfo.cbSize = sizeof ( execInfo );
+#ifndef _WIN32_WCE
     execInfo.fMask = SEE_MASK_INVOKEIDLIST | SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+#else
+    execInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+#endif
     const QString verb ( QLatin1String ( "properties" ) );
     execInfo.lpVerb = WIN32_CAST_CHAR verb.utf16();
     execInfo.lpFile = WIN32_CAST_CHAR path_.utf16();
+#ifndef _WIN32_WCE
     return ShellExecuteExW ( &execInfo );
+#else
+    return ShellExecuteEx ( &execInfo );
+    //There is no native file property dialog in wince
+   // return false;
+#endif
 }
 
 // note: QLocale().name().left(2).toLatin1() returns the same
@@ -236,7 +262,7 @@ static void kMessageOutputDebugString(QtMsgType type, const char *msg)
             break;
     }
     strlcat(buf,"\n",BUFSIZE);
-    OutputDebugStringA(buf);
+    OutputDebugStringW( QString::fromAscii(buf).utf16());
     delete[] buf;
 }
 
@@ -283,6 +309,8 @@ static bool attachToConsole()
 */ 
 static void redirectToConsole()
 {
+//FIXME: for wince we cannot set stdio buffers
+#ifndef _WIN32_WCE
     int hCrt;
     FILE *hf;
     int i;
@@ -310,6 +338,7 @@ static void redirectToConsole()
     // make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog
     // point to console as well
     ios::sync_with_stdio();
+#endif
 }
 
 #include <streambuf>
@@ -337,7 +366,7 @@ class debug_streambuf: public std::streambuf
                 if (cc == '\n')
                 {
                     buf[index] = '\0';
-                    OutputDebugStringA((LPCSTR)buf);
+                    OutputDebugStringW(QString::fromAscii(buf).utf16());
                     index = rindex;
                 }
             }
