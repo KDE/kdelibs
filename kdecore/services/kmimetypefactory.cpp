@@ -173,7 +173,7 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
     foreach(int offset, offsetList) {
         KMimeType::Ptr newMimeType(createEntry(offset));
         // Check whether the dictionary was right.
-        if (newMimeType && newMimeType->patterns().contains(expectedPattern)) {
+        if (newMimeType && newMimeType->patterns().contains(expectedPattern, Qt::CaseInsensitive) ) {
             mimeList.append(newMimeType);
         }
     }

@@ -187,6 +187,7 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
 
     QTest::newRow("text") << "textfile.txt" << "text/plain";
     QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
+    QTest::newRow("case-insensitive match on a non-lowercase glob") << "foo.z" << "application/x-compress";
 
     QTest::newRow("case-sensitive uppercase match") << "textfile.C" << "text/x-c++src";
     QTest::newRow("case-sensitive lowercase match") << "textfile.c" << "text/x-csrc";
