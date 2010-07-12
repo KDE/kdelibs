@@ -48,7 +48,7 @@
 #include "kservice.h"
 
 /** File dialogs are native by default on Windows. */
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_MAEMO_5)
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 #else
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
