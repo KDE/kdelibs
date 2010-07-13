@@ -152,9 +152,6 @@ target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( klauncher kdeinit_klauncher )
-if(WINCE)
-  target_link_libraries(klauncher ${WCECOMPAT_LIBRARIES})
-endif(WINCE)
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############

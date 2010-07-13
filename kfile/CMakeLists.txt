@@ -48,10 +48,6 @@ if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-if(WINCE)
-  target_link_libraries(kfile ${WCECOMPAT_LIBRARIES})
-endif(WINCE)
-
 target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 

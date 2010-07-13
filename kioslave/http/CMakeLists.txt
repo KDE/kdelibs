@@ -40,10 +40,6 @@ kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_clean
 
 target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY})
 
-if(WINCE)
-  target_link_libraries(kio_http_cache_cleaner ${WCECOMPAT_LIBRARIES})
-endif(WINCE)
-
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
@@ -66,10 +62,6 @@ target_link_libraries(kio_http ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)
-
-if(WINCE)
-  target_link_libraries(kio_http ${WCECOMPAT_LIBRARIES})
-endif(WINCE)
 
 install(TARGETS  kio_http  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

@@ -16,10 +16,6 @@ set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.5.60 (KDE 4.6 >= 20100627))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
-IF(WINCE)
-    FIND_PACKAGE(WCECOMPAT REQUIRED)
-ENDIF(WINCE)
-
 # win32: give kde home in debug mode a different name as the  release home dir because the settings and caches are different
 if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set (_KDE_DEFAULT_HOME_POSTFIX "-debug" CACHE STRING "default KDE home directory postfix" )
