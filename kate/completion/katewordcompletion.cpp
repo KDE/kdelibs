@@ -242,11 +242,6 @@ const QStringList KateWordCompletionModel::allMatches( KTextEditor::View *view, 
   return l;
 }
 
-KTextEditor::CodeCompletionModelControllerInterface3::MatchReaction KateWordCompletionModel::matchingItem(const QModelIndex& /*matched*/)
-{
-  return HideListIfAutomaticInvocation;
-}
-
 //END KateWordCompletionModel
 
 
