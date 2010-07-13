@@ -125,7 +125,7 @@ namespace Nepomuk {
                         scores += var;
                 }
                 if( !scores.isEmpty() )
-                    return '(' + scores.join(QLatin1String("+")) + QLatin1String(") as ?_n_f_t_m_s_");
+                    return QLatin1String("max(") + scores.join(QLatin1String("+")) + QLatin1String(") as ?_n_f_t_m_s_");
                 else
                     return QString();
             }

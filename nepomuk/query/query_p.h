@@ -47,7 +47,7 @@ namespace Nepomuk {
             }
 
             QString createFolderFilter( const QString& resourceVarName, QueryBuilderData* ) const;
-            QString buildRequestPropertyVariableList() const;
+            QStringList buildRequestPropertyVariableList() const;
             QString buildRequestPropertyPatterns() const;
 
             /**
