@@ -2566,14 +2566,14 @@ void HTTPProtocol::parseHeaderFromCache()
 
     // this header comes from the cache, so the response must have been cacheable :)
     setCacheabilityMetadata(true);
-    kDebug() << "emitting mimeType" << m_mimeType;
+    kDebug(7113) << "Emitting mimeType" << m_mimeType;
     mimeType(m_mimeType);
     forwardHttpResponseHeader();
 }
 
 void HTTPProtocol::fixupResponseMimetype()
 {
-    kDebug() << "before fixup" << m_mimeType;
+    kDebug(7113) << "before fixup" << m_mimeType;
     // Convert some common mimetypes to standard mimetypes
     if (m_mimeType == QLatin1String("application/x-targz"))
         m_mimeType = QString::fromLatin1("application/x-compressed-tar");
@@ -2613,7 +2613,7 @@ void HTTPProtocol::fixupResponseMimetype()
         else if (ext == QLatin1String(".WMV"))
             m_mimeType = QString::fromLatin1("video/x-ms-wmv");
     }
-    kDebug() << "after fixup" << m_mimeType;
+    kDebug(7113) << "after fixup" << m_mimeType;
 }
 
 
@@ -3464,15 +3464,6 @@ endParsing:
 
     }
 
-    // Let the app know about the mime-type iff this is not
-    // a redirection and the mime-type string is not empty.
-    if (!m_isRedirection &&
-        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
-        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
-        kDebug(7113) << "Emitting mimetype " << m_mimeType;
-        mimeType( m_mimeType );
-    }
-
     if (m_request.cacheTag.ioMode == ReadFromCache) {
         if (m_request.cacheTag.policy == CC_Verify &&
             m_request.cacheTag.plan(m_maxCacheAge) != CacheTag::UseCached) {
@@ -3481,6 +3472,15 @@ endParsing:
         }
         parseHeaderFromCache();
         return true;
+    }
+
+    // Let the app know about the mime-type iff this is not
+    // a redirection and the mime-type string is not empty.
+    if (!m_isRedirection &&
+        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
+        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
+        kDebug(7113) << "Emitting mimetype " << m_mimeType;
+        mimeType( m_mimeType );
     }
 
     if (config()->readEntry("PropagateHttpHeader", false) ||
