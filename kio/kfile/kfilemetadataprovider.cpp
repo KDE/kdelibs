@@ -244,8 +244,9 @@ QList<Nepomuk::Resource> KFileMetaDataProvider::Private::resourceList() const
 {
     QList<Nepomuk::Resource> list;
     foreach (const KFileItem& item, m_fileItems) {
-        const KUrl url = item.url();
-        list.append(Nepomuk::Resource(url));
+        const KUrl url = item.nepomukUri();
+        if(url.isValid())
+            list.append(Nepomuk::Resource(url));
     }
     return list;
 }
