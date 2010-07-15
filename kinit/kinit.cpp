@@ -559,8 +559,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (cwd && *cwd) {
          (void)chdir(cwd);
      } else {
+         // on Maemo5, documentPath() is on the SD card, setting it as working directory would block
+         // USB mass storage access
+#ifndef Q_WS_MAEMO_5
          const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
          (void)chdir(docPath.constData());
+#endif
      }
 
      if( reset_env ) // KWRAPPER/SHELL
