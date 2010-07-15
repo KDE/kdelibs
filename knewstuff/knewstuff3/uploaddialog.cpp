@@ -488,6 +488,28 @@ void UploadDialog::setVersion(const QString& version)
     d->ui.mVersionEdit->setText(version);
 }
 
+void UploadDialog::setPreviewImageFile(uint number, const KUrl& file)
+{
+    QPixmap preview(file.toLocalFile());
+    switch(number) {
+    case 0 :
+        d->previewFile1 = file;
+        d->ui.previewImage1->setPixmap(preview.scaled(d->ui.previewImage1->size()));
+        break;
+    case 1 :
+        d->previewFile2 = file;
+        d->ui.previewImage2->setPixmap(preview.scaled(d->ui.previewImage2->size()));
+        break;
+    case 2 :
+        d->previewFile3 = file;
+        d->ui.previewImage3->setPixmap(preview.scaled(d->ui.previewImage3->size()));
+        break;
+    default :
+        kError() << "Wrong preview image file number";
+        break;
+    }
+}
+
 void UploadDialog::Private::_k_priceToggled(bool priceEnabled)
 {
     ui.priceGroupBox->setEnabled(priceEnabled);
