@@ -1532,7 +1532,7 @@ public:
     /**
      * Adds another catalog to search for translation lookup.
      * This function is useful for extern libraries and/or code,
-     * that provide there own messages.
+     * that provide their own messages.
      *
      * If the catalog does not exist for the chosen language,
      * it will be ignored and en_US will be used.
