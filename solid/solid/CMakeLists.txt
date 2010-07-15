@@ -122,22 +122,22 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
-   message(STATUS "-- Building Solid KUPnP backend." )
-   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+#   message(STATUS "-- Building Solid KUPnP backend." )
+#   set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
-   backends/kupnp/cagibidbuscodec.cpp
-   backends/kupnp/cagibidevice.cpp
-   backends/kupnp/kupnpstorageaccess.cpp
-   backends/kupnp/kupnpdeviceinterface.cpp
-   backends/kupnp/mediaserver1.cpp
-   backends/kupnp/mediaserver2.cpp
-   backends/kupnp/mediaserver3.cpp
-   backends/kupnp/internetgatewaydevice1.cpp
-   backends/kupnp/kupnpdevice.cpp
-   backends/kupnp/kupnprootdevice.cpp
-   backends/kupnp/kupnpmanager.cpp
+#   backends/kupnp/cagibidbuscodec.cpp
+#   backends/kupnp/cagibidevice.cpp
+#   backends/kupnp/kupnpstorageaccess.cpp
+#   backends/kupnp/kupnpdeviceinterface.cpp
+#   backends/kupnp/mediaserver1.cpp
+#   backends/kupnp/mediaserver2.cpp
+#   backends/kupnp/mediaserver3.cpp
+#   backends/kupnp/internetgatewaydevice1.cpp
+#   backends/kupnp/kupnpdevice.cpp
+#   backends/kupnp/kupnprootdevice.cpp
+#   backends/kupnp/kupnpmanager.cpp
 
-   )
+#   )
 
    message(STATUS "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
