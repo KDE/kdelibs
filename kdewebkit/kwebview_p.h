@@ -94,7 +94,7 @@ public:
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -110,11 +110,18 @@ public:
             if (event->isAccepted())
                 return true;
 
-            if (!hitTest.isContentEditable() && !page->isModified()) {
-                QString clipboardText(QApplication::clipboard()->text(QClipboard::Selection).trimmed());
-                if (KUriFilter::self()->filterUri(clipboardText, QStringList() << "kshorturifilter")) {
-                    emit q->selectionClipboardUrlPasted(KUrl(clipboardText));
-                    return true;
+            if (!hitTest.linkUrl().isValid() && !hitTest.isContentEditable() && !page->isModified()) {
+                const QClipboard *clipboard = QApplication::clipboard();
+                const QString clipboardText (clipboard->text(QClipboard::Selection));
+                if (!clipboardText.isEmpty()) {
+                    KUriFilterData data (clipboardText.left(256).trimmed());
+                    data.setCheckForExecutables(false); // don't allow executables...
+                    if ((KUriFilter::self()->filterUri(data, QStringList() << "kshorturifilter") ||
+                         KUriFilter::self()->filterUri(data, QStringList() << "kuriikwsfilter")) &&
+                        data.uriType() == KUriFilterData::NetProtocol) {
+                        emit q->selectionClipboardUrlPasted(data.uri());
+                        return true;
+                    }
                 }
             }
         }
