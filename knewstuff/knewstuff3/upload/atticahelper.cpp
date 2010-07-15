@@ -43,7 +43,9 @@ void AtticaHelper::defaultProvidersLoaded()
 {
     QStringList providers;
     foreach(Attica::Provider p, providerManager.providers()) {
-        providers.append(p.name());
+        if(p.isEnabled()) {
+            providers.append(p.name());
+        }
     }
     emit providersLoaded(providers);
 }
