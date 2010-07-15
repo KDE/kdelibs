@@ -350,13 +350,20 @@ void PreviewJob::slotResult( KJob *job )
             const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
             d->tOrig = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, 0 );
 
-            const KIO::filesize_t maximumSize = d->currentItem.item.url().isLocalFile()
-                                                ? d->maximumLocalSize
-                                                : d->maximumRemoteSize;
-            const bool skipCurrentItem = !d->ignoreMaximumSize
-                && (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 ) > maximumSize
-                && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
-            if (skipCurrentItem) {
+            bool skipCurrentItem = false;
+            const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
+            if (d->currentItem.item.url().isLocalFile())
+            {
+                skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
+                                  && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
+            }
+            else
+            {
+                // For remote items the "IgnoreMaximumSize" plugin property is not respected
+                skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumRemoteSize;
+            }
+            if (skipCurrentItem)
+            {
                 d->determineNextFile();
                 return;
             }
