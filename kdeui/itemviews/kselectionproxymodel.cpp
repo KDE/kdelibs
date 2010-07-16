@@ -1472,6 +1472,13 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
     }
 }
 
+static void debugSelectionData(const QItemSelection &selection) {
+  kDebug() << "Selection(";
+  foreach (const QItemSelectionRange &range, selection)
+    kDebug() << "  Range(" << range.topLeft() << range.topLeft().data() << range.bottomRight() << range.bottomRight().data() << " )";
+  kDebug() << ")";
+}
+
 void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_selected, const QItemSelection &_deselected)
 {
     Q_Q(KSelectionProxyModel);
