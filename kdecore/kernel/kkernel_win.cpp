@@ -383,6 +383,10 @@ class debug_streambuf: public std::streambuf
 */
 static int subSystem()
 {
+#ifdef _WIN32_WCE
+    // there is only one subsystem on Windows CE
+    return IMAGE_SUBSYSTEM_WINDOWS_CE_GUI;
+#else
     static int subSystem = -1;
     if (subSystem > -1)
         return subSystem; 
@@ -397,6 +401,7 @@ static int subSystem()
     }
     subSystem = ntHeader->OptionalHeader.Subsystem;
     return subSystem;
+#endif
 }
     
 /**
@@ -415,6 +420,8 @@ static int subSystem()
 
     gui        yes       win32debug         console         console
     gui        no        win32debug         win32debug      win32debug 
+
+    win-ce     no        win32debug         win32debug      win32debug
 
 [1]no redirect solution for FILE * based output yet
 
@@ -457,6 +464,11 @@ static class kMessageOutputInstaller {
                     oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
                     // TODO: redirect FILE * level to console, no idea how to do yet
                 }
+            } else if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_CE_GUI) {
+                // do not try to get a console on WinCE systems
+                qInstallMsgHandler(kMessageOutputDebugString);
+                oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+                oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
             }
             else
                 qWarning("unknown subsystem %d detected, could not setup qt message handler",subSystem());
