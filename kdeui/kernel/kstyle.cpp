@@ -88,6 +88,16 @@ static const qint32 r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2
 
 // ----------------------------------------------------------------------------
 
+
+// For item view selections
+struct SelectionTiles
+{
+    QPixmap left, center, right;
+};
+
+
+// ----------------------------------------------------------------------------
+
 static const QStyle::StyleHint SH_KCustomStyleElement = (QStyle::StyleHint)0xff000001;
 static const int X_KdeBase = 0xff000000;
 
@@ -95,6 +105,7 @@ class KStylePrivate
 {
 public:
     KStylePrivate();
+    QCache<quint64, SelectionTiles> selectionCache;
     KComponentData m_componentData;
 
     QHash<QString, int> styleElements;
@@ -118,6 +129,7 @@ KStylePrivate::KStylePrivate() : m_componentData()
 
         m_componentData = KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
     }
+    selectionCache.setMaxCost(10);
     controlCounter = subElementCounter = X_KdeBase;
     hintCounter = X_KdeBase+1; //sic! X_KdeBase is covered by SH_KCustomStyleElement
 }
@@ -1180,6 +1192,130 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_IndicatorButtonDropDown:
             drawKStylePrimitive(WT_ToolButton, Generic::ArrowDown, option, r, pal, flags, painter, widget);
             return;
+
+        case PE_PanelItemViewItem: {
+
+            const QStyleOptionViewItemV4 *opt = qstyleoption_cast<const QStyleOptionViewItemV4*>(option);
+            const QAbstractItemView *view = qobject_cast<const QAbstractItemView *>(widget);
+            bool hover = (option->state & State_MouseOver) && (!view ||
+                         view->selectionMode() != QAbstractItemView::NoSelection);
+
+            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush &&
+                                        !(option->state & State_Selected);
+            bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
+
+            const qreal rounding = 2.5;
+
+            if (!hover && !(option->state & State_Selected) && !hasCustomBackground &&
+                !(opt->features & QStyleOptionViewItemV2::Alternate))
+                return;
+
+            QPalette::ColorGroup cg;
+            if (option->state & State_Enabled)
+                cg = (option->state & State_Active) ? QPalette::Normal : QPalette::Inactive;
+            else
+                cg = QPalette::Disabled;
+
+            QColor color;
+
+            if (hasCustomBackground && hasSolidBackground)
+                color = opt->backgroundBrush.color();
+            else
+                color = option->palette.color(cg, QPalette::Highlight);
+
+            if (hover && !hasCustomBackground) {
+                if (!(option->state & State_Selected))
+                    color.setAlphaF(.20);
+                else
+                    color = color.lighter(110);
+            }
+
+            if (opt && (opt->features & QStyleOptionViewItemV2::Alternate))
+                painter->fillRect(option->rect, option->palette.brush(cg, QPalette::AlternateBase));
+
+            if (!hover && !(option->state & State_Selected) && !hasCustomBackground)
+                return;
+
+            quint64 key = quint64(option->rect.height()) << 32 | color.rgba();
+            SelectionTiles* tiles = d->selectionCache.object(key);
+            if (!tiles && hasSolidBackground)
+            {
+                QImage image(32 + 16, option->rect.height(), QImage::Format_ARGB32_Premultiplied);
+                image.fill(0);
+
+                QRect r = image.rect().adjusted(0, 0, -1, -1);
+
+                QPainterPath path1, path2;
+                path1.addRoundedRect(r, rounding, rounding);
+                path2.addRoundedRect(r.adjusted(1, 1, -1, -1), rounding - 1, rounding - 1);
+
+                // items with custom background brushes always have their background drawn
+                // regardless of whether they are hovered or selected or neither so
+                // the gradient effect needs to be more subtle
+                int lightenAmount = hasCustomBackground ? 110 : 130;
+                QLinearGradient gradient(0, 0, 0, r.bottom());
+                gradient.setColorAt(0, color.lighter(lightenAmount));
+                gradient.setColorAt(1, color);
+
+                QPainter p(&image);
+                p.setRenderHint(QPainter::Antialiasing);
+                p.translate(.5, .5);
+                p.setPen(QPen(color, 1));
+                p.setBrush(gradient);
+                p.drawPath(path1);
+                p.strokePath(path2, QPen(QColor(255, 255, 255, 64), 1));
+                p.end();
+
+                QPixmap pixmap = QPixmap::fromImage(image);
+
+                tiles = new SelectionTiles;
+                tiles->left   = pixmap.copy(0, 0, 8, image.height());
+                tiles->center = pixmap.copy(8, 0, 32, image.height());
+                tiles->right  = pixmap.copy(40, 0, 8, image.height());
+
+                d->selectionCache.insert(key, tiles);
+            }
+            else if (hasCustomBackground && !hasSolidBackground)
+            {
+                const QPointF oldBrushOrigin = painter->brushOrigin();
+                painter->setBrushOrigin(opt->rect.topLeft());
+                painter->setBrush(opt->backgroundBrush);
+                painter->setPen(Qt::NoPen);
+                painter->drawRect(opt->rect);
+                painter->setBrushOrigin(oldBrushOrigin);
+                return;
+            }
+
+            bool roundedLeft  = false;
+            bool roundedRight = false;
+            if (opt) {
+                roundedLeft  = (opt->viewItemPosition == QStyleOptionViewItemV4::Beginning);
+                roundedRight = (opt->viewItemPosition == QStyleOptionViewItemV4::End);
+                if (opt->viewItemPosition == QStyleOptionViewItemV4::OnlyOne ||
+                    opt->viewItemPosition == QStyleOptionViewItemV4::Invalid ||
+                    (view && view->selectionBehavior() != QAbstractItemView::SelectRows))
+                {
+                    roundedLeft  = true;
+                    roundedRight = true;
+                }
+            }
+
+            QRect r = option->rect;
+            bool reverseLayout = option->direction == Qt::RightToLeft;
+
+            if (!reverseLayout ? roundedLeft : roundedRight) {
+                painter->drawPixmap(r.topLeft(), tiles->left);
+                r.adjust(8, 0, 0, 0);
+            }
+            if (!reverseLayout ? roundedRight : roundedLeft) {
+                painter->drawPixmap(r.right() - 8 + 1, r.top(), tiles->right);
+                r.adjust(0, 0, -8, 0);
+            }
+            if (r.isValid())
+                painter->drawTiledPixmap(r, tiles->center);
+
+            return;
+        }
 
         default:
             break;
