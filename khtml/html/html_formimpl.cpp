@@ -2206,9 +2206,9 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
     if (before == 0 && (m_multiple || !option->selectedBit()) && !m_recalcListItems)
         fastAppendLast = true;
 
-    insertBefore(option, before, exceptioncode );
+    insertBefore(option, before, exceptioncode);
 
-    if (fastAppendLast) {
+    if (fastAppendLast && !exceptioncode) {
         m_listItems.resize(m_listItems.size() + 1);
         m_listItems[m_listItems.size() - 1] = option;
         ++m_length;
