@@ -268,6 +268,7 @@ private:
   KViewStateSaverPrivate * const d_ptr;
   Q_PRIVATE_SLOT( d_func(), void rowsInserted( const QModelIndex&, int, int ) )
   Q_PRIVATE_SLOT( d_func(), void restoreScrollBarState() )
+  Q_PRIVATE_SLOT( d_func(), void processPendingChanges() )
   //@endcond
 };
 

@@ -92,7 +92,7 @@ public:
   void rowsInserted( const QModelIndex &index, int start, int end )
   {
     Q_Q(KViewStateSaver);
-    processPendingChanges();
+    QTimer::singleShot(0, q, SLOT(processPendingChanges()));
 
     if ( !hasPendingChanges() )
     {
@@ -198,9 +198,8 @@ void KViewStateSaver::restoreState(const KConfigGroup& configGroup)
   d->m_horizontalScrollBarValue = configGroup.readEntry( scrollStateHorizontalKey, -1 );
   d->m_verticalScrollBarValue = configGroup.readEntry( scrollStateVerticalKey, -1 );
 
-  d->processPendingChanges();
-  if (d->hasPendingChanges())
-    d->listenToPendingChanges();
+  QTimer::singleShot(0, this, SLOT(processPendingChanges()));
+  d->listenToPendingChanges();
 }
 
 QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) const
