@@ -140,6 +140,11 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
         dwFlags = 0;
     }
+    
+    if( !QFileInfo(_dest.dir().absolutePath()).exists() )
+    {
+        _dest.dir().mkdir(_dest.dir().absolutePath());
+    }
 
     if ( CopyFileExW( ( LPCWSTR ) _src.filePath().utf16(),
                       ( LPCWSTR ) _dest.filePath().utf16(),
@@ -154,6 +159,20 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
         else if ( dwLastErr == ERROR_ACCESS_DENIED )
             error( KIO::ERR_ACCESS_DENIED, _dest.filePath() );
         else {
+#if 0
+            LPVOID lpMsgBuf;
+
+            FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+                FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL,
+                dwLastErr,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR) &lpMsgBuf,
+                0, NULL );
+            OutputDebugString((WCHAR*)lpMsgBuf);
+#endif
             error( KIO::ERR_CANNOT_RENAME, _src.filePath() );
             kDebug( 7101 ) <<  "Copying file "
                            << _src.filePath()
