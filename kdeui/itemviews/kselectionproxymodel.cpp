@@ -1472,12 +1472,15 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
     }
 }
 
+// Uncomment this to use it. If left uncommented it causes a compiler warning.
+#if 0
 static void debugSelectionData(const QItemSelection &selection) {
   kDebug() << "Selection(";
   foreach (const QItemSelectionRange &range, selection)
     kDebug() << "  Range(" << range.topLeft() << range.topLeft().data() << range.bottomRight() << range.bottomRight().data() << " )";
   kDebug() << ")";
 }
+#endif
 
 void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_selected, const QItemSelection &_deselected)
 {
