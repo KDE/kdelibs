@@ -27,6 +27,7 @@
 #include "orterm.h"
 #include "negationterm.h"
 #include "comparisonterm.h"
+#include "comparisonterm_p.h"
 #include "resourcetypeterm.h"
 #include "optionalterm.h"
 
@@ -44,47 +45,6 @@
 using namespace Nepomuk::Query;
 
 namespace {
-    QString comparatorToString( Nepomuk::Query::ComparisonTerm::Comparator c )
-    {
-        switch( c ) {
-        case Nepomuk::Query::ComparisonTerm::Contains:
-            return QChar( ':' );
-        case Nepomuk::Query::ComparisonTerm::Equal:
-            return QChar( '=' );
-        case Nepomuk::Query::ComparisonTerm::Regexp:
-            return QLatin1String( "regex" );
-        case Nepomuk::Query::ComparisonTerm::Greater:
-            return QChar( '>' );
-        case Nepomuk::Query::ComparisonTerm::Smaller:
-            return QChar( '<' );
-        case Nepomuk::Query::ComparisonTerm::GreaterOrEqual:
-            return QLatin1String( ">=" );
-        case Nepomuk::Query::ComparisonTerm::SmallerOrEqual:
-            return QLatin1String( "<=" );
-        default:
-            return QString();
-        }
-    }
-
-
-    Nepomuk::Query::ComparisonTerm::Comparator stringToComparator( const QStringRef& c )
-    {
-        if( c == QChar( '=' ) )
-            return Nepomuk::Query::ComparisonTerm::Equal;
-        else if( c == QLatin1String( "regex" ) )
-            return Nepomuk::Query::ComparisonTerm::Regexp;
-        else if( c == QChar( '>' ) )
-            return Nepomuk::Query::ComparisonTerm::Greater;
-        else if( c == QChar( '<' ) )
-            return Nepomuk::Query::ComparisonTerm::Smaller;
-        else if( c == QLatin1String( ">=" ) )
-            return Nepomuk::Query::ComparisonTerm::GreaterOrEqual;
-        else if( c == QLatin1String( "<=" ) )
-            return Nepomuk::Query::ComparisonTerm::SmallerOrEqual;
-        else
-            return Nepomuk::Query::ComparisonTerm::Contains;
-    }
-
 
     QString aggregateToString( Nepomuk::Query::ComparisonTerm::AggregateFunction f )
     {
@@ -177,7 +137,7 @@ namespace {
 
             if( cTerm.property().isValid() )
                 xml.writeAttribute( QLatin1String("property"), KUrl(cTerm.property().uri()).url() );
-            xml.writeAttribute( QLatin1String("comparator"), comparatorToString(cTerm.comparator()) );
+            xml.writeAttribute( QLatin1String("comparator"), Nepomuk::Query::comparatorToString(cTerm.comparator()) );
             if( !cTerm.variableName().isEmpty() )
                 xml.writeAttribute( QLatin1String("varname"), cTerm.variableName() );
             if( cTerm.aggregateFunction() != ComparisonTerm::NoAggregateFunction )
@@ -312,7 +272,7 @@ namespace {
                 cTerm.setProperty( KUrl(attr.value( QLatin1String("property")).toString()) );
 
             if( attr.hasAttribute( QLatin1String("comparator") ) )
-                cTerm.setComparator( stringToComparator(attr.value( QLatin1String("comparator"))) );
+                cTerm.setComparator( Nepomuk::Query::stringToComparator(attr.value( QLatin1String("comparator"))) );
 
             if( attr.hasAttribute( QLatin1String("varname") ) )
                 cTerm.setVariableName( attr.value( QLatin1String("varname")).toString() );

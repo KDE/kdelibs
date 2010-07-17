@@ -38,21 +38,6 @@
 
 
 namespace {
-    QString comparatorToString( Nepomuk::Query::ComparisonTerm::Comparator c )
-    {
-        switch( c ) {
-        case Nepomuk::Query::ComparisonTerm::Greater:
-            return QChar( '>' );
-        case Nepomuk::Query::ComparisonTerm::Smaller:
-            return QChar( '<' );
-        case Nepomuk::Query::ComparisonTerm::GreaterOrEqual:
-            return QLatin1String( ">=" );
-        case Nepomuk::Query::ComparisonTerm::SmallerOrEqual:
-            return QLatin1String( "<=" );
-        default:
-            return QString();
-        }
-    }
 
     QString varInAggregateFunction( Nepomuk::Query::ComparisonTerm::AggregateFunction f, const QString& varName )
     {
