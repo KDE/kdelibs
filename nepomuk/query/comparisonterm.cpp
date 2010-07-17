@@ -64,6 +64,46 @@ namespace {
     }
 }
 
+QString Nepomuk::Query::comparatorToString( Nepomuk::Query::ComparisonTerm::Comparator c )
+{
+    switch( c ) {
+    case Nepomuk::Query::ComparisonTerm::Contains:
+        return QChar( ':' );
+    case Nepomuk::Query::ComparisonTerm::Equal:
+        return QChar( '=' );
+    case Nepomuk::Query::ComparisonTerm::Regexp:
+        return QLatin1String( "regex" );
+    case Nepomuk::Query::ComparisonTerm::Greater:
+        return QChar( '>' );
+    case Nepomuk::Query::ComparisonTerm::Smaller:
+        return QChar( '<' );
+    case Nepomuk::Query::ComparisonTerm::GreaterOrEqual:
+        return QLatin1String( ">=" );
+    case Nepomuk::Query::ComparisonTerm::SmallerOrEqual:
+        return QLatin1String( "<=" );
+    default:
+        return QString();
+    }
+}
+
+
+Nepomuk::Query::ComparisonTerm::Comparator Nepomuk::Query::stringToComparator( const QStringRef& c )
+{
+    if( c == QChar( '=' ) )
+        return Nepomuk::Query::ComparisonTerm::Equal;
+    else if( c == QLatin1String( "regex" ) )
+        return Nepomuk::Query::ComparisonTerm::Regexp;
+    else if( c == QChar( '>' ) )
+        return Nepomuk::Query::ComparisonTerm::Greater;
+    else if( c == QChar( '<' ) )
+        return Nepomuk::Query::ComparisonTerm::Smaller;
+    else if( c == QLatin1String( ">=" ) )
+        return Nepomuk::Query::ComparisonTerm::GreaterOrEqual;
+    else if( c == QLatin1String( "<=" ) )
+        return Nepomuk::Query::ComparisonTerm::SmallerOrEqual;
+    else
+        return Nepomuk::Query::ComparisonTerm::Contains;
+}
 
 QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
