@@ -217,6 +217,7 @@
 5710        kabc/vcard
 5720        kaddressbook
 5800        kdepimlibs (kcal)
+5810        kdepimlibs (kcalcore)
 5850        korganizer
 5855        korganizer (verbose)
 5860        konsolekalendar
