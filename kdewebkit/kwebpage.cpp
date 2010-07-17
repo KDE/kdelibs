@@ -108,7 +108,7 @@ public:
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
-{   
+{ 
     // KDE KParts integration for <embed> tag...
     if (!flags || (flags & KPartsIntegration))
         setPluginFactory(new KWebPluginFactory(this));
