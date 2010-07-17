@@ -39,14 +39,9 @@
 
 namespace KNS3
 {
-    static const int DelegateTitleLabel = 0;
-    static const int DelegateAuthorLabel = 1;
-    static const int DelegateDownloadCounterLabel = 2;
-    static const int DelegateRatingWidget = 3;
-    //optional maybe not sure for now
-    static const int DelegateDetailsButton = 5;
-    static const int DelegateDescriptionLabel = 6;
-    
+    enum { DelegateTitleLabel, DelegateAuthorLabel, DelegateDownloadCounterLabel,
+        DelegateGridRatingWidget };
+
 ItemsGridViewDelegate::ItemsGridViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : ItemsViewBaseDelegate(itemView, engine, parent)
         ,m_elementYPos(0)
@@ -101,7 +96,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     int elementYPos = PreviewHeight + ItemMargin + FrameThickness*2;
     
     //setup rating widget
-    RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
+    RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateGridRatingWidget));
     if (rating) {
         if (entry.rating() > 0) {
             rating->setToolTip(i18n("Rating: %1%", entry.rating()));
