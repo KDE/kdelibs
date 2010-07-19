@@ -136,7 +136,7 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
-    //qDebug("Comment is %s", qPrintable(s0->comment()) );
+    QCOMPARE( s0->comment(), QString::fromLatin1("empty document") );
 
     KMimeType::Ptr s0Again = KMimeType::mimeType("application/x-zerosize");
     QCOMPARE(s0Again->name(), s0->name());
@@ -150,8 +150,14 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr krita = KMimeType::mimeType("application/x-krita");
     QVERIFY( krita );
 
-    KMimeType::Ptr bzip2 = KMimeType::mimeType("application/x-bzip2", KMimeType::ResolveAliases);
+    // Test <comment> parsing with application/rdf+xml which has the english comment after the other ones
+    KMimeType::Ptr rdf = KMimeType::mimeType("application/rdf+xml");
+    QVERIFY(rdf);
+    QCOMPARE(rdf->comment(), QString::fromLatin1("RDF/XML document"));
+
+    KMimeType::Ptr bzip2 = KMimeType::mimeType("application/x-bzip2");
     QVERIFY( bzip2 );
+    QCOMPARE(bzip2->comment(), QString::fromLatin1("Bzip archive"));
 
     KMimeType::Ptr defaultMime = KMimeType::mimeType("application/octet-stream");
     QVERIFY(defaultMime);
