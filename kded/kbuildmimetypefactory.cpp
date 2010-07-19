@@ -31,7 +31,7 @@
 #include <kdesktopfile.h>
 #include <QtCore/QHash>
 #include <QtCore/QFile>
-#include <QtXml/QDomAttr>
+#include <QXmlStreamReader>
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
     KMimeTypeFactory(), m_parser(this),
@@ -112,42 +112,46 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         QFile qfile(fullPath);
         if (!qfile.open(QFile::ReadOnly))
             continue;
-        QDomDocument doc;
-        if (!doc.setContent(&qfile)) {
-            kWarning() << "Parse error in " << fullPath;
-            continue;
-        }
-        const QDomElement mimeTypeElement = doc.documentElement();
-        if (mimeTypeElement.tagName() != "mime-type")
-            continue;
-        name = mimeTypeElement.attribute("type");
-        if (name.isEmpty())
-            continue;
 
-        for ( QDomElement e = mimeTypeElement.firstChildElement();
-              !e.isNull();
-              e = e.nextSiblingElement() ) {
-            const QString tag = e.tagName();
-            if (tag == "comment") {
-                QString lang = e.attribute("xml:lang");
-                if (lang.isEmpty()) {
-                    comment = e.text();
-                    lang = "en";
+        QXmlStreamReader xml(&qfile);
+        if (xml.readNextStartElement()) {
+            if (xml.name() != "mime-type") {
+                continue;
+            }
+            name = xml.attributes().value("type").toString();
+            if (name.isEmpty())
+                continue;
+
+            while (xml.readNextStartElement()) {
+                const QStringRef tag = xml.name();
+                if (tag == "comment") {
+                    QString lang = xml.attributes().value("xml:lang").toString();
+                    const QString text = xml.readElementText();
+                    if (lang.isEmpty()) {
+                        comment = text;
+                        lang = "en";
+                    }
+                    commentsByLanguage.insert(lang, text);
+                    continue; // we called readElementText, so we're at the EndElement already.
+                } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
+                    userIcon = xml.attributes().value("name").toString();
+                } else if (tag == "glob-deleteall") { // as written out by shared-mime-info > 0.60
+                    mainPattern.clear();
+                    m_parsedMimeTypes[name] = QString();
+                } else if (tag == "glob" && mainPattern.isEmpty()) { // as written out by shared-mime-info > 0.60
+                    const QString pattern = xml.attributes().value("pattern").toString();
+                    if (pattern.startsWith('*')) {
+                        mainPattern = pattern;
+                    }
                 }
-                commentsByLanguage.insert(lang, e.text());
-            } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
-                userIcon = e.attribute("name");
-            } else if (tag == "glob-deleteall") { // as written out by shared-mime-info > 0.60
-                mainPattern.clear();
-                m_parsedMimeTypes[name] = QString();
-            } else if (tag == "glob" && mainPattern.isEmpty()) { // as written out by shared-mime-info > 0.60
-                const QString pattern = e.attribute("pattern");
-                if (pattern.startsWith('*')) {
-                    mainPattern = pattern;
-                }
+                xml.skipCurrentElement();
+            }
+            if (xml.name() != "mime-type") {
+                kFatal() << "Programming error in KBuildMimeTypeFactory::createEntry, please create a bug report on http://bugs.kde.org and attach the file" << fullPath;
             }
         }
     }
+
     if (name.isEmpty()) {
         return 0;
     }
