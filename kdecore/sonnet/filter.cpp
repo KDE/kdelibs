@@ -164,6 +164,8 @@ Word Filter::nextWord() const
     if (!finderNextWord(m_finder, foundWord, start))
         return Filter::end();
 
+    allUppercase = ( foundWord == foundWord.toUpper() );
+
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
     return Word( foundWord, start );
