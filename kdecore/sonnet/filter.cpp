@@ -145,7 +145,7 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
     while (finder.toNextBoundary() > 0) {
         boundary = finder.boundaryReasons();
         if ((boundary & QTextBoundaryFinder::EndWord) && inWord) {
-            end = finder.position(); 
+            end = finder.position();
             if(end > start) { // just to be safe
                 QString str = finder.string().mid(start, end - start);
                 int newStart = 0;
@@ -204,6 +204,7 @@ Word Filter::nextWord() const
     if (!finderNextWord(m_finder, foundWord, start))
         return Filter::end();
 
+    allUppercase = ( foundWord == foundWord.toUpper() );
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
     return Word( foundWord, start );
@@ -317,6 +318,7 @@ bool Filter::shouldBeSkipped( bool wordWasUppercase, bool wordWasRunTogether,
 {
     bool checkUpper = ( d->settings ) ?
                       d->settings->checkUppercase () : true;
+
     bool skipRunTogether = ( d->settings ) ?
                            d->settings->skipRunTogether() : true;
 
