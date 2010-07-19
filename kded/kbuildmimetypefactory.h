@@ -71,13 +71,9 @@ public:
    */
   static QStringList resourceTypes();
 
-    void parseSubclasses();
 private:
-    void parseSubclassFile(const QString& fileName);
-    void parseAliasFile(const QString& fileName);
     void savePatternLists(QDataStream &str);
     KMimeFileParser m_parser;
-    int m_oldOtherPatternOffset;
     mutable QHash<QString, QString /*mainExtension*/> m_parsedMimeTypes;
 };
 

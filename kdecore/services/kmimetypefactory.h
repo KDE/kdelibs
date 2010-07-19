@@ -64,7 +64,7 @@ public:
     /**
      * Check if mime is an alias, and return the canonical name for it if it is.
      */
-    QString resolveAlias(const QString& mime) const;
+    QString resolveAlias(const QString& mime);
 
     /**
      * Returns the list of parents for a given mimetype
@@ -109,16 +109,7 @@ private: // only for KMimeType
 
 protected:
     typedef QHash<QString, QString> AliasesMap;
-    /**
-     * @internal for kbuildsycoca
-     */
-    AliasesMap& aliases() { return m_aliases; }
-
-    typedef QHash<QString, QStringList> ParentsMap;
-    /**
-     * @internal for kbuildsycoca
-     */
-    ParentsMap& parentsMap() { return m_parents; }
+    const AliasesMap& aliases();
 
 public:
     /**
@@ -153,7 +144,7 @@ protected: // accessed by KBuildMimeTypeFactory
     /// @internal
     int m_lowWeightPatternOffset;
     /// @internal
-    int m_parentsMapOffset;
+    //int m_parentsMapOffset;
 
     KSycocaDict* m_fastPatternDict;
 
@@ -190,13 +181,16 @@ private:
     OtherPatternList m_highWeightPatterns;
     OtherPatternList m_lowWeightPatterns;
 
-    AliasesMap m_aliases; // alias -> canonicalName
+    mutable AliasesMap m_aliases; // alias -> canonicalName
+
+    typedef QHash<QString, QStringList> ParentsMap;
     ParentsMap m_parents;
 
     bool m_highWeightPatternsLoaded;
     bool m_lowWeightPatternsLoaded;
     bool m_parentsMapLoaded;
     bool m_magicFilesParsed;
+    mutable bool m_aliasFilesParsed;
     QList<KMimeMagicRule> m_magicRules;
 
 private:

@@ -487,7 +487,6 @@ void KBuildSycoca::save(QDataStream* str)
    (*str) << (*g_allResourceDirs);
 
    // Calculate per-servicetype/mimetype data
-   mimeTypeFactory->parseSubclasses();
    serviceFactory->postProcessServices();
 
    // Here so that it's the last debug message

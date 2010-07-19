@@ -24,6 +24,8 @@
 #include <ksycocadict.h>
 #include <kshell.h>
 #include <kdebug.h>
+#include <kstandarddirs.h>
+#include <QFile>
 
 extern int servicesDebugArea();
 
@@ -34,11 +36,11 @@ KMimeTypeFactory::KMimeTypeFactory()
       m_fastPatternOffset(0),
       m_highWeightPatternOffset(0),
       m_lowWeightPatternOffset(0),
-      m_parentsMapOffset(0),
       m_highWeightPatternsLoaded(false),
       m_lowWeightPatternsLoaded(false),
       m_parentsMapLoaded(false),
-      m_magicFilesParsed(false)
+      m_magicFilesParsed(false),
+      m_aliasFilesParsed(false)
 {
     kMimeTypeFactoryInstance->instanceCreated(this);
     if (!KSycoca::self()->isBuilding()) {
@@ -51,16 +53,15 @@ KMimeTypeFactory::KMimeTypeFactory()
         (*str) >> i;
         // that's the old m_otherPatternOffset, kept for compat but unused
 
-        // alias map
-        // TODO: to save time in apps that don't need this, we could
-        // do like the parents hash (move it, store offset, and load it delayed).
+        // alias map - old and unused now
+        // KDE5: remove this block
         qint32 n;
         (*str) >> n;
         QString str1, str2;
         for(;n;n--) {
             KSycocaEntry::read(*str, str1);
             KSycocaEntry::read(*str, str2);
-            m_aliases.insert(str1, str2);
+            // ignore str1 and str2
         }
 
         (*str) >> i;
@@ -68,14 +69,14 @@ KMimeTypeFactory::KMimeTypeFactory()
         (*str) >> i;
         m_lowWeightPatternOffset = i;
         (*str) >> i;
-        m_parentsMapOffset = i;
+        //m_parentsMapOffset = i;
 
         const int saveOffset = str->device()->pos();
         // Init index tables
         m_fastPatternDict = new KSycocaDict(str, m_fastPatternOffset);
         str->device()->seek(saveOffset);
     } else {
-        m_parentsMapLoaded = true;
+        //m_parentsMapLoaded = true;
     }
 }
 
@@ -98,6 +99,8 @@ KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeT
 
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
+        if (!m_aliasFilesParsed)
+            aliases();
         AliasesMap::const_iterator it = m_aliases.constFind(_name);
         if (it != m_aliases.constEnd())
             name = *it;
@@ -156,9 +159,9 @@ KMimeType * KMimeTypeFactory::createEntry(int offset) const
 }
 
 
-QString KMimeTypeFactory::resolveAlias(const QString& mime) const
+QString KMimeTypeFactory::resolveAlias(const QString& mime)
 {
-    return m_aliases.value(mime);
+    return aliases().value(mime);
 }
 
 QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &extension)
@@ -397,17 +400,36 @@ QStringList KMimeTypeFactory::parents(const QString& mime)
     if (!m_parentsMapLoaded) {
         m_parentsMapLoaded = true;
         Q_ASSERT(m_parents.isEmpty());
-        QDataStream* str = stream();
-        str->device()->seek(m_parentsMapOffset);
-        qint32 n;
-        (*str) >> n;
-        QString str1, str2;
-        for(;n;n--) {
-            KSycocaEntry::read(*str, str1);
-            KSycocaEntry::read(*str, str2);
-            m_parents.insert(str1, str2.split('|'));
-        }
 
+        const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
+        //kDebug() << subclassFiles;
+        Q_FOREACH(const QString& fileName, subclassFiles) {
+
+            QFile qfile( fileName );
+            //kDebug(7021) << "Now parsing" << fileName;
+            if (qfile.open(QIODevice::ReadOnly)) {
+                QTextStream stream(&qfile);
+                stream.setCodec("ISO 8859-1");
+                while (!stream.atEnd()) {
+                    const QString line = stream.readLine();
+                    if (line.isEmpty() || line[0] == '#')
+                        continue;
+                    const int pos = line.indexOf(' ');
+                    if (pos == -1) // syntax error
+                        continue;
+                    const QString derivedTypeName = line.left(pos);
+                    KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName, KMimeType::ResolveAliases);
+                    if (!derivedType)
+                        kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName;
+                    else {
+                        const QString parentTypeName = line.mid(pos+1);
+                        Q_ASSERT(!parentTypeName.isEmpty());
+                        //derivedType->setParentMimeType(parentTypeName);
+                        m_parents[derivedTypeName].append(parentTypeName);
+                    }
+                }
+            }
+        }
     }
     return m_parents.value(mime);
 }
@@ -618,4 +640,41 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
         }
     }
     return rules;
+}
+
+const KMimeTypeFactory::AliasesMap& KMimeTypeFactory::aliases()
+{
+    if (!m_aliasFilesParsed) {
+        m_aliasFilesParsed = true;
+
+        const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
+        Q_FOREACH(const QString& fileName, aliasFiles) {
+            QFile qfile(fileName);
+            //kDebug(7021) << "Now parsing" << fileName;
+            if (qfile.open(QIODevice::ReadOnly)) {
+                QTextStream stream(&qfile);
+                stream.setCodec("ISO 8859-1");
+                while (!stream.atEnd()) {
+                    const QString line = stream.readLine();
+                    if (line.isEmpty() || line[0] == '#')
+                        continue;
+                    const int pos = line.indexOf(' ');
+                    if (pos == -1) // syntax error
+                        continue;
+                    const QString aliasTypeName = line.left(pos);
+                    const QString parentTypeName = line.mid(pos+1);
+                    Q_ASSERT(!aliasTypeName.isEmpty());
+                    Q_ASSERT(!parentTypeName.isEmpty());
+
+                    const KMimeType::Ptr realMimeType =
+                        findMimeTypeByName(aliasTypeName, KMimeType::DontResolveAlias);
+                    if (realMimeType)
+                        kDebug(servicesDebugArea()) << "Ignoring alias" << aliasTypeName << "because also defined as a real mimetype";
+                    else
+                        m_aliases.insert(aliasTypeName, parentTypeName);
+                }
+            }
+        }
+    }
+    return m_aliases;
 }

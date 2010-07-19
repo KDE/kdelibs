@@ -34,8 +34,7 @@
 #include <QXmlStreamReader>
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
-    KMimeTypeFactory(), m_parser(this),
-    m_oldOtherPatternOffset(0)
+    KMimeTypeFactory(), m_parser(this)
 {
     m_resourceList = new KSycocaResourceList;
     // We want all xml files under xdgdata-mime - but not packages/*.xml
@@ -212,104 +211,11 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
     KSycocaFactory::saveHeader(str);
     // This header is read by KMimeTypeFactory's constructor
     str << (qint32) m_fastPatternOffset;
-    str << (qint32) m_oldOtherPatternOffset;
-    const AliasesMap& aliasMap = aliases();
-    str << (qint32) aliasMap.count();
-    for (AliasesMap::const_iterator it = aliasMap.begin(); it != aliasMap.end(); ++it) {
-        str << it.key() << it.value();
-    }
+    str << (qint32) 0; // old "other pattern offset"
+    str << (qint32) 0;
     str << (qint32) m_highWeightPatternOffset;
     str << (qint32) m_lowWeightPatternOffset;
-    str << (qint32) m_parentsMapOffset;
-}
-
-void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
-{
-    ParentsMap& parentsMap = this->parentsMap();
-    QFile qfile( fileName );
-    //kDebug(7021) << "Now parsing" << fileName;
-    if (qfile.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&qfile);
-        stream.setCodec("ISO 8859-1");
-        while (!stream.atEnd()) {
-            const QString line = stream.readLine();
-            if (line.isEmpty() || line[0] == '#')
-                continue;
-            const int pos = line.indexOf(' ');
-            if (pos == -1) // syntax error
-                continue;
-            const QString derivedTypeName = line.left(pos);
-            KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName, KMimeType::ResolveAliases);
-            if (!derivedType)
-                kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName;
-            else {
-                const QString parentTypeName = line.mid(pos+1);
-                Q_ASSERT(!parentTypeName.isEmpty());
-                //derivedType->setParentMimeType(parentTypeName);
-                parentsMap[derivedTypeName].append(parentTypeName);
-            }
-        }
-    }
-}
-
-void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
-{
-    AliasesMap& aliasMap = aliases();
-    QFile qfile( fileName );
-    //kDebug(7021) << "Now parsing" << fileName;
-    if (qfile.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&qfile);
-        stream.setCodec("ISO 8859-1");
-        while (!stream.atEnd()) {
-            const QString line = stream.readLine();
-            if (line.isEmpty() || line[0] == '#')
-                continue;
-            const int pos = line.indexOf(' ');
-            if (pos == -1) // syntax error
-                continue;
-            const QString aliasTypeName = line.left(pos);
-            const QString parentTypeName = line.mid(pos+1);
-            Q_ASSERT(!aliasTypeName.isEmpty());
-            Q_ASSERT(!parentTypeName.isEmpty());
-
-            const KMimeType::Ptr realMimeType =
-                findMimeTypeByName(aliasTypeName, KMimeType::DontResolveAlias);
-            if (realMimeType)
-                kDebug(7021) << "Ignoring alias" << aliasTypeName << "because also defined as a real mimetype";
-            else
-                aliasMap.insert(aliasTypeName, parentTypeName);
-        }
-    }
-}
-
-// Called by kbuildsycoca since it needs the subclasses and aliases for the trader index
-void KBuildMimeTypeFactory::parseSubclasses()
-{
-    // First clear up any old data (loaded by the incremental mode) that we are going to reload anyway
-    aliases().clear();
-
-#if 0
-    KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
-    const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
-    for( ; itmime != endmime ; ++itmime ) {
-        const KSycocaEntry::Ptr& entry = (*itmime);
-        Q_ASSERT( entry->isType( KST_KMimeType ) );
-        KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
-        mimeType->internalClearData();
-    }
-#endif
-
-    const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
-    //kDebug() << subclassFiles;
-    Q_FOREACH(const QString& file, subclassFiles) {
-        parseSubclassFile(file);
-    }
-
-    const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
-    //kDebug() << aliasFiles;
-    Q_FOREACH(const QString& file, aliasFiles) {
-        parseAliasFile(file);
-    }
+    str << (qint32) 0;
 }
 
 void KBuildMimeTypeFactory::save(QDataStream &str)
@@ -321,12 +227,7 @@ void KBuildMimeTypeFactory::save(QDataStream &str)
 
     savePatternLists(str);
 
-    m_parentsMapOffset = str.device()->pos();
-    ParentsMap& parentsMap = this->parentsMap();
-    str << (qint32) parentsMap.count();
-    for (ParentsMap::const_iterator it = parentsMap.constBegin(); it != parentsMap.constEnd(); ++it) {
-        str << it.key() << it.value().join("|");
-    }
+    str << (qint32) 0;
 
     int endOfFactoryData = str.device()->pos();
 
@@ -407,9 +308,5 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
         str << (qint32)op.weight;
         str << (qint32)op.flags;
     }
-    str << QString(""); // end of list marker (has to be a string !)
-
-    // For compat with kde-4.1 kdecore: write the old "other patterns" thing, but empty
-    m_oldOtherPatternOffset = str.device()->pos();
     str << QString(""); // end of list marker (has to be a string !)
 }
