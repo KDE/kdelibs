@@ -49,7 +49,7 @@ ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
     setCaption( i18n( "Sonnet Configuration" ) );
-    setButtons( Ok | Apply | Cancel );
+    setButtons( Ok /*| Apply*/ | Cancel );
     setDefaultButton( Ok );
 
     init(config);
@@ -66,8 +66,10 @@ void ConfigDialog::init(KConfig *config)
     setMainWidget(d->ui);
     connect(this, SIGNAL(okClicked()),
             this, SLOT(slotOk()));
+    /*
     connect(this, SIGNAL(applyClicked()),
             this, SLOT(slotApply()));
+	    */
     connect(d->ui, SIGNAL(configChanged()),
             this, SLOT(slotConfigChanged()));
 }
