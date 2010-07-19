@@ -1990,7 +1990,7 @@ size_t HTTPProtocol::readBuffered(char *buf, size_t size, bool unlimited)
         // If we have an unread buffer and the size of the content returned by the
         // server is unknown, e.g. chuncked transfer, return the bytes read here since
         // we may already have enough data to complete the response and don't want to
-        // for more. See BR# 180631.
+        // wait for more. See BR# 180631.
         if (unlimited)
             return bytesRead;
     }
@@ -4060,7 +4060,7 @@ int HTTPProtocol::readLimited()
   else
      bytesToReceive = m_iBytesLeft;
 
-  const int bytesReceived = readBuffered(m_receiveBuf.data(), bytesToReceive /*, false*/);
+  const int bytesReceived = readBuffered(m_receiveBuf.data(), bytesToReceive, false);
 
   if (bytesReceived <= 0)
      return -1; // Error: connection lost
