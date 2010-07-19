@@ -57,7 +57,7 @@ QString UPnPMediaServer::filePath() const
         QString udn = upnpDevice()->device()->deviceInfo().udn().toString();
         QString uuid = udn.mid(5); //udn without the uuid: preffix
 
-        return (scheme + uuid);
+        return (scheme + QString::fromLatin1("//") + uuid);
     }
 
     return QString();
