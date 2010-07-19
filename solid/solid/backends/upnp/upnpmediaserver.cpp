@@ -22,6 +22,9 @@
 
 #include "upnpmediaserver.h"
 
+#include <HDeviceInfo>
+#include <HUdn>
+
 #include <QtCore/QUrl>
 #include <QtCore/QTimer>
 
@@ -51,9 +54,10 @@ QString UPnPMediaServer::filePath() const
     if (isAccessible())
     {
         QString scheme = "upnp-ms:";
-        QString url = upnpDevice()->device()->locations()[0].toString(QUrl::RemoveScheme);
+        QString udn = upnpDevice()->device()->deviceInfo().udn().toString();
+        QString uuid = udn.mid(5); //udn without the uuid: preffix
 
-        return (scheme + url);
+        return (scheme + uuid);
     }
 
     return QString();

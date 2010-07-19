@@ -45,7 +45,7 @@ namespace UPnP
 
             virtual ~UPnPDeviceInterface();
 
-        protected:
+        public:
             const Solid::Backends::UPnP::UPnPDevice* upnpDevice() const;
 
         private:
