@@ -94,7 +94,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     textEdit->viewport()->installEventFilter( this );
 
     d->loader = Loader::openLoader();
-    
+
     //Do not load an empty settings file as it will cause the spellchecker to fail
     //if the KGlobal::locale()->language() (default value) spellchecker is not installed,
     //and we have a global sonnetrc file with a spellcheck lang installed which could be used.
@@ -105,7 +105,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
             d->filter->setSettings(d->loader->settings());
         }
     }
-    
+
     d->dict   = new Sonnet::Speller();
     if(!d->dict->isValid()) {
 	d->spellCheckerFound = false;
@@ -143,7 +143,7 @@ bool Highlighter::spellCheckerFound() const
 }
 
 // Since figuring out spell correction suggestions is extremely costly,
-// we keep track of whether the user actually wants some, and only offer them 
+// we keep track of whether the user actually wants some, and only offer them
 // in that case
 void Highlighter::connectNotify(const char* signal)
 {
@@ -438,5 +438,11 @@ void Highlighter::setMisspelledColor(const QColor &color)
 {
     d->spellColor = color;
 }
+
+bool Highlighter::checkerEnabledByDefault() const
+{
+    return d->loader->settings()->checkerEnabledByDefault();
+}
+
 
 }
