@@ -208,7 +208,8 @@ Word Filter::nextWord() const
 
     if( !allUppercase ) {
         const int lengthOfWord = foundWord.length();
-        for( int i = 0; i < lengthOfWord ; ++i ) {
+        //ignore first letter
+        for( int i = 1; i < lengthOfWord ; ++i ) {
             if( foundWord[i].isUpper() ) {
                 runTogether = true;
                 break;
