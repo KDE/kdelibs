@@ -166,6 +166,16 @@ Word Filter::nextWord() const
 
     allUppercase = ( foundWord == foundWord.toUpper() );
 
+    if( !allUppercase ) {
+        const int lengthOfWord = foundWord.length();
+        for( int i = 0; i < lengthOfWord ; ++i ) {
+            if( foundWord[i].isUpper() ) {
+                runTogether = true;
+                break;
+            }
+        }
+    }
+
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
     return Word( foundWord, start );
