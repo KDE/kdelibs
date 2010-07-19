@@ -122,6 +122,12 @@ namespace Sonnet
          */
         void setMisspelledColor(const QColor &color);
 
+        /**
+         * Return true if checker is enabled by default
+         * @since 4.5
+         */
+        bool checkerEnabledByDefault() const;
+
     Q_SIGNALS:
 
         /**
