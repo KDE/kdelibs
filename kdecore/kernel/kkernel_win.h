@@ -19,14 +19,12 @@
 #ifndef KKERNEL_WIN_H
 #define KKERNEL_WIN_H
 
-#include <winbase.h>
-
 #include <QtCore/QString>
 
 #ifdef Q_OS_WIN
 
+#include <winbase.h>
 #include <kdecore_export.h>
-
 
 /**
  * @short Windows-specific functions needed in kdecore
