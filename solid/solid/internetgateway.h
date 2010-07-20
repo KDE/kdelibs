@@ -23,7 +23,7 @@
 #ifndef SOLID_INTERNETGATEWAY_H
 #define SOLID_INTERNETGATEWAY_H
 
-#include <deviceinterface.h>
+#include <solid/deviceinterface.h>
 
 #include <solid/solid_export.h>
 #include <solid/solidnamespace.h>
