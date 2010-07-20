@@ -19,6 +19,7 @@
 */
 
 #include "part.h"
+#include <kprotocolinfo.h>
 #include "event.h"
 #include "plugin.h"
 #include "mainwindow.h"
@@ -373,6 +374,7 @@ public:
     ReadOnlyPartPrivate(ReadOnlyPart *q): PartPrivate(q)
     {
         m_job = 0;
+        m_statJob = 0;
         m_uploadJob = 0;
         m_showProgressInfo = true;
         m_saveOk = false;
@@ -387,9 +389,13 @@ public:
     }
 
     void _k_slotJobFinished( KJob * job );
+    void _k_slotStatJobFinished(KJob * job);
     void _k_slotGotMimeType(KIO::Job *job, const QString &mime);
+    bool openLocalFile();
+    void openRemoteFile();
 
     KIO::FileCopyJob * m_job;
+    KIO::StatJob * m_statJob;
     KIO::FileCopyJob * m_uploadJob;
     KUrl m_originalURL; // for saveAs
     QString m_originalFilePath; // for saveAs
@@ -538,65 +544,89 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
         return false;
     d->m_arguments = args;
     d->m_url = url;
-    if ( d->m_url.isLocalFile() )
-    {
-        emit started( 0 );
-        d->m_file = d->m_url.toLocalFile();
-        d->m_bTemp = false;
-        // set the mimetype only if it was not already set (for example, by the host application)
-        if (d->m_arguments.mimeType().isEmpty())
-        {
-            // get the mimetype of the file
-            // using findByUrl() to avoid another string -> url conversion
-            KMimeType::Ptr mime = KMimeType::findByUrl(d->m_url, 0, true /* local file*/);
-            if (mime) {
-                d->m_arguments.setMimeType(mime->name());
-                d->m_bAutoDetectedMime = true;
-            }
-        }
-        bool ret = openFile();
-        if (ret) {
-            emit setWindowCaption( d->m_url.prettyUrl() );
-            emit completed();
-        } else emit canceled(QString());
-        return ret;
-    }
-    else
-    {
-        d->m_bTemp = true;
-        // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-        QString fileName = url.fileName();
-        QFileInfo fileInfo(fileName);
-        QString ext = fileInfo.completeSuffix();
-        QString extension;
-        if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
-            extension = '.'+ext; // keep the '.'
-        KTemporaryFile tempFile;
-        tempFile.setSuffix(extension);
-        tempFile.setAutoRemove(false);
-        tempFile.open();
-        d->m_file = tempFile.fileName();
 
-        KUrl destURL;
-        destURL.setPath( d->m_file );
+    d->m_file.clear();
+
+    if (d->m_url.isLocalFile()) {
+        d->m_file = d->m_url.toLocalFile();
+        return d->openLocalFile();
+    } else if (KProtocolInfo::protocolClass(url.protocol()) == ":local") {
+        // Maybe we can use a "local path", to avoid a temp copy?
         KIO::JobFlags flags = d->m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
-        flags |= KIO::Overwrite;
-        d->m_job = KIO::file_copy( d->m_url, destURL, 0600, flags );
-        d->m_job->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
-        emit started( d->m_job );
-        connect( d->m_job, SIGNAL( result( KJob * ) ), this, SLOT( _k_slotJobFinished ( KJob * ) ) );
-        connect(d->m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
-                this, SLOT(_k_slotGotMimeType(KIO::Job *, const QString&)));
+        d->m_statJob = KIO::mostLocalUrl(d->m_url, flags);
+        d->m_statJob->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
+        connect(d->m_statJob, SIGNAL(result(KJob*)), this, SLOT(_k_slotStatJobFinished(KJob*)));
+        return true;
+    } else {
+        d->openRemoteFile();
         return true;
     }
+}
+
+bool ReadOnlyPartPrivate::openLocalFile()
+{
+    Q_Q(ReadOnlyPart);
+    emit q->started( 0 );
+    m_bTemp = false;
+    // set the mimetype only if it was not already set (for example, by the host application)
+    if (m_arguments.mimeType().isEmpty()) {
+        // get the mimetype of the file
+        // using findByUrl() to avoid another string -> url conversion
+        KMimeType::Ptr mime = KMimeType::findByUrl(m_url, 0, true /* local file*/);
+        if (mime) {
+            m_arguments.setMimeType(mime->name());
+            m_bAutoDetectedMime = true;
+        }
+    }
+    const bool ret = q->openFile();
+    if (ret) {
+        emit q->setWindowCaption(m_url.prettyUrl());
+        emit q->completed();
+    } else {
+        emit q->canceled(QString());
+    }
+    return ret;
+}
+
+void ReadOnlyPartPrivate::openRemoteFile()
+{
+    Q_Q(ReadOnlyPart);
+    m_bTemp = true;
+    // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
+    QString fileName = m_url.fileName();
+    QFileInfo fileInfo(fileName);
+    QString ext = fileInfo.completeSuffix();
+    QString extension;
+    if (!ext.isEmpty() && m_url.query().isNull()) // not if the URL has a query, e.g. cgi.pl?something
+        extension = '.'+ext; // keep the '.'
+    KTemporaryFile tempFile;
+    tempFile.setSuffix(extension);
+    tempFile.setAutoRemove(false);
+    tempFile.open();
+    m_file = tempFile.fileName();
+
+    KUrl destURL;
+    destURL.setPath( m_file );
+    KIO::JobFlags flags = m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
+    flags |= KIO::Overwrite;
+    m_job = KIO::file_copy(m_url, destURL, 0600, flags);
+    m_job->ui()->setWindow(q->widget() ? q->widget()->topLevelWidget() : 0);
+    emit q->started(m_job);
+    QObject::connect(m_job, SIGNAL(result(KJob*)), q, SLOT(_k_slotJobFinished(KJob*)));
+    QObject::connect(m_job, SIGNAL(mimetype(KIO::Job*, QString)),
+                     q, SLOT(_k_slotGotMimeType(KIO::Job*,QString)));
 }
 
 void ReadOnlyPart::abortLoad()
 {
     Q_D(ReadOnlyPart);
 
-    if ( d->m_job )
-    {
+    if ( d->m_statJob ) {
+        //kDebug(1000) << "Aborting job" << d->m_statJob;
+        d->m_statJob->kill();
+        d->m_statJob = 0;
+    }
+    if ( d->m_job ) {
         //kDebug(1000) << "Aborting job" << d->m_job;
         d->m_job->kill();
         d->m_job = 0;
@@ -620,6 +650,25 @@ bool ReadOnlyPart::closeUrl()
     // but the return value exists for reimplementations
     // (e.g. pressing cancel for a modified read-write part)
     return true;
+}
+
+void ReadOnlyPartPrivate::_k_slotStatJobFinished(KJob * job)
+{
+    Q_ASSERT(job == m_statJob);
+    m_statJob = 0;
+
+    // We could emit canceled on error, but we haven't even emitted started yet,
+    // this could maybe confuse some apps? So for now we'll just fallback to KIO::get
+    // and error again. Well, maybe this even helps with wrong stat results.
+    if (!job->error()) {
+        const KUrl localUrl = static_cast<KIO::StatJob*>(job)->mostLocalUrl();
+        if (localUrl.isLocalFile()) {
+            m_file = localUrl.toLocalFile();
+            (void)openLocalFile();
+            return;
+        }
+    }
+    openRemoteFile();
 }
 
 void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )

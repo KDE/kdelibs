@@ -710,6 +710,7 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
+    Q_PRIVATE_SLOT(d_func(), void _k_slotStatJobFinished(KJob*))
     Q_PRIVATE_SLOT(d_func(), void _k_slotGotMimeType(KIO::Job *job, const QString &mime))
 
     Q_DISABLE_COPY(ReadOnlyPart)
