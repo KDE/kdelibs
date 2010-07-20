@@ -1989,9 +1989,14 @@ void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
 
     int testYear, testMonth, testDay;
     QDate testDate;
-    QDate loopDate = calendar->earliestValidDate();
+    // Limit to a short interesting date range for regular testing
+    // Later add an Env var to choose full test whenever the formulas are changed.
+    //QDate loopDate = calendar->earliestValidDate();
+    //QDate terminateDate = calendar->latestValidDate();
+    QDate loopDate = qMax(QDate(1990, 1, 1), calendar->earliestValidDate());
+    QDate terminateDate = qMin(QDate(2020, 1, 1), calendar->latestValidDate());
     QByteArray msg;
-    while ( loopDate <= calendar->latestValidDate() ) {
+    while ( loopDate <= terminateDate ) {
         testYear = calendar->year( loopDate );
         testMonth = calendar->month( loopDate );
         testDay = calendar->day( loopDate );
