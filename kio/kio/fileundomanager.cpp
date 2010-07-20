@@ -31,7 +31,7 @@
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kuiserverjobtracker.h>
+#include <kjobtrackerinterface.h>
 
 #include <QtDBus/QtDBus>
 
