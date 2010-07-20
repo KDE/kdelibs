@@ -160,7 +160,7 @@ namespace KIO {
      * @return the new PreviewJob
      * @see PreviewJob::availablePlugins()
      */
-    KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 ); // KDE5: use enums instead of bool scale + bool save
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image
