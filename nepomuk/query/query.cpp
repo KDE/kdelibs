@@ -414,7 +414,9 @@ KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags
     else
         url.addQueryItem( QLatin1String("sparql"), toSparqlQuery( flags ) );
     if( !customTitle.isEmpty() )
-        url.addQueryItem( QLatin1String("title"), customTitle );
+        url.addPath( customTitle );
+    else
+        url.addPath( titleFromQueryUrl( url ) );
     return url;
 }
 
@@ -449,8 +451,7 @@ namespace {
         if( url.queryItems().contains( "query" ) ) {
             return url.queryItem( "query" );
         }
-        else if ( !url.queryItems().contains( "sparql" ) &&
-                  !url.queryItems().contains( "encodedquery" ) ) {
+        else if ( !url.hasQuery() ) {
             return url.path().section( '/', 0, 0, QString::SectionSkipEmpty );
         }
         else {
@@ -514,23 +515,22 @@ QString Nepomuk::Query::Query::titleFromQueryUrl( const KUrl& url )
         return QString();
     }
 
-    if ( url.hasQueryItem( QLatin1String( "title" ) ) ) {
-        return url.queryItem(QLatin1String( "title" ) );
+    // the title is the first section of the path, but only if we have a query
+    if( url.hasQuery() ) {
+        QString title = url.path().section( '/', 0, 0, QString::SectionSkipEmpty );
+        if(!title.isEmpty())
+            return title;
     }
 
-    QString userQuery( url.queryItem(QLatin1String( "userquery" ) ) );
-
-    if ( userQuery.isEmpty() ) {
-        userQuery = extractPlainQuery( url );
-    }
-
+    // no title in the path, try to get the user query, i.e. a non-encoded and non-sparql query
+    QString userQuery = extractPlainQuery( url );
     if ( !userQuery.isEmpty() ) {
         return i18nc( "@title UDS_DISPLAY_NAME for a KIO directory listing. %1 is the query the user entered.",
                       "Query Results from '%1'",
                       userQuery );
     }
 
-    // fallback
+    // fallback: generic query title
     return i18nc( "@title UDS_DISPLAY_NAME for a KIO directory listing.",
                   "Query Results");
 }
