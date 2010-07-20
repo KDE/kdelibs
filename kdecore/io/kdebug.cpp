@@ -515,13 +515,22 @@ struct KDebugPrivate
         static bool printProcessInfo = (qgetenv("KDE_DEBUG_NOPROCESSINFO").isEmpty());
         static bool printAreaName = (qgetenv("KDE_DEBUG_NOAREANAME").isEmpty());
         static bool printMethodName = (qgetenv("KDE_DEBUG_NOMETHODNAME").isEmpty());
-        static bool printTimeStamp = !(qgetenv("KDE_DEBUG_TIMESTAMP").isEmpty());
+
+        static int printTimeStamp = qgetenv("KDE_DEBUG_TIMESTAMP").toInt();
         QByteArray programName;
         s = s.nospace();
-        if (printTimeStamp) {
-            s << qPrintable(QDateTime::currentDateTime().time().toString());
+        if (printTimeStamp > 0) {
+            if (printTimeStamp >= 2) {
+                // the extended print: 17:03:24.123
+                const QString sformat = QString::fromLatin1("hh:mm:ss.zzz");
+                s << qPrintable(QDateTime::currentDateTime().time().toString(sformat));
+            } else {
+                // the default print: 17:03:24
+                s << qPrintable(QDateTime::currentDateTime().time().toString());
+            }
             s << ' ';
         }
+
         if (printProcessInfo) {
             programName = cache.value(0).name;
             if (programName.isEmpty()) {
