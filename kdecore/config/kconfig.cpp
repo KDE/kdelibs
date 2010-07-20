@@ -70,7 +70,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 #ifdef Q_WS_WIN
             QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
 #else
-        QLatin1String("/etc/kde4rc");
+            QLatin1String("/etc/kde4rc");
 #endif
         if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
             etc_kderc.clear();
