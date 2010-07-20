@@ -1955,7 +1955,15 @@ MimeType KHTMLPartPrivate::classifyMimeType(const QString& mimeStr)
   if (khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes().contains(mimeStr))
       return MimeImage;
 
-    return MimeOther;
+  // Sometimes our subclasses like to handle custom mimetypes. In that case,
+  // we want to handle them as HTML. We do that in the following cases:
+  // 1) We're at top-level, so we were forced to open something
+  // 2) We're an object --- this again means we were forced to open something,
+  //    as an iframe-generating-an-embed case would have us as an iframe
+  if (!q->parentPart() || (m_frame && m_frame->m_type == khtml::ChildFrame::Object))
+      return MimeHTML;
+
+  return MimeOther;
 }
 
 void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
