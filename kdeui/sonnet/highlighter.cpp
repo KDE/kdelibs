@@ -70,6 +70,7 @@ public:
 Highlighter::Private::~Private()
 {
   qDeleteAll(dictCache);
+  delete filter;
 }
 
 Highlighter::Highlighter(QTextEdit *textEdit,
