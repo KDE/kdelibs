@@ -99,41 +99,17 @@ bool Filter::atEnd() const
 static bool
 isValidWord(const QString &str)
 {
-    return (str.length() >= 1 && (str.length() != 1 || str[0].isLetter()));
-}
-
-static QString
-stripLeadingAndTrailingNumbers(QTextBoundaryFinder &finder, int start, int end, int &newStart)
-{
-    newStart = start;
-    const QString& scanStr = finder.string();
-    for(int i = start; i < end; ++i) {
-        if (scanStr[i].isNumber()
-            || (scanStr[i].isPunct() && i+1 < end && scanStr[i+1].isNumber())) {
-            ++newStart;
-        }
-        else {
-            break;
-        }
+    if(str.isEmpty() || (str.length() == 1 && !str[0].isLetter())) {
+      return false;
     }
-    if(newStart >= end) {
-        return QString();
+    const int length = str.length();
+    for(int i = 0; i < length; ++i) {
+      if(!str[i].isNumber()) {
+        return true;
+      }
     }
-
-    int newEnd = end;
-    for(int i = end - 1; i > newStart; --i) {
-        if (scanStr[i].isNumber()
-            || (scanStr[i].isPunct() && i-1 >= newStart && scanStr[i-1].isNumber())) {
-            --newEnd;
-        }
-        else {
-            break;
-        }
-    }
-    if(newStart >= newEnd) {
-        return QString();
-    }
-    return scanStr.mid(newStart, newEnd - newStart);
+    // 'str' only contains numbers
+    return false;
 }
 
 static bool
@@ -146,20 +122,15 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
         boundary = finder.boundaryReasons();
         if ((boundary & QTextBoundaryFinder::EndWord) && inWord) {
             end = finder.position();
-            if(end > start) { // just to be safe
-                QString str = finder.string().mid(start, end - start);
-                int newStart = 0;
-                // make sure that for words like '12cm', or '12.3cm' only 'cm' is spell checked
-                QString newStr = stripLeadingAndTrailingNumbers(finder, start, end, newStart);
-                if (isValidWord(newStr)) {
-                    word = newStr;
-                    bufferStart = newStart;
+            QString str = finder.string().mid(start, end - start);
+            if (isValidWord(str)) {
+                word = str;
+                bufferStart = start;
 #if 0
-                    kDebug()<< "Word at " << newStart << " word = "
-                            <<  newStr << ", len = " << newStr.length();
+                kDebug() << "Word at " << newStart << " word = "
+                         <<  newStr << ", len = " << newStr.length();
 #endif
-                    return true;
-                }
+                return true;
             }
             inWord = false;
         }
