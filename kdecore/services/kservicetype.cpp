@@ -56,14 +56,7 @@ KServiceTypePrivate::init( KDesktopFile *config )
 //    Q_Q(KServiceType);
 
     KConfigGroup desktopGroup = config->desktopGroup();
-    // Is it a mimetype ? ### KDE4: remove
-    m_strName = desktopGroup.readEntry( "MimeType" );
-
-    // Or is it a servicetype ?
-    if ( m_strName.isEmpty() ) {
-        m_strName = desktopGroup.readEntry( "X-KDE-ServiceType" );
-    }
-
+    m_strName = desktopGroup.readEntry( "X-KDE-ServiceType" );
     m_strComment = desktopGroup.readEntry("Comment");
     deleted = desktopGroup.readEntry("Hidden", false);
 
@@ -101,6 +94,8 @@ KServiceTypePrivate::init( KDesktopFile *config )
 KServiceType::KServiceType( QDataStream& _str, int offset )
     : KSycocaEntry(*new KServiceTypePrivate(_str, offset))
 {
+    Q_D(KServiceType);
+    d->load(_str);
 }
 
 KServiceType::KServiceType( KServiceTypePrivate &dd)
