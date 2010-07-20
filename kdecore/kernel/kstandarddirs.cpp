@@ -1593,9 +1593,21 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
 static QString readEnvPath(const char *env)
 {
-    QByteArray c_path = qgetenv(env);
+    QByteArray c_path;
+#ifndef _WIN32_WCE
+    c_path = qgetenv(env);
     if (c_path.isEmpty())
         return QString();
+#else
+    bool ok;
+    QString retval;
+    getWin32RegistryValue(HKEY_LOCAL_MACHINE, "Software\\kde", retval, &ok);
+    if (!ok){
+        return QString();
+    } else {
+        c_path = retval.toAscii();
+    }
+#endif
     return QDir::fromNativeSeparators(QFile::decodeName(c_path));
 }
 
@@ -1651,9 +1663,9 @@ void KStandardDirs::addKDEDefaults()
     addResourcesFrom_krcdirs();
 
     QStringList kdedirList;
-
     // begin KDEDIRS
     QString kdedirs = readEnvPath("KDEDIRS");
+
     if (!kdedirs.isEmpty())
     {
         tokenize(kdedirList, kdedirs, QString(QChar(KPATH_SEPARATOR)));

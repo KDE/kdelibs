@@ -145,7 +145,7 @@ BOOL WINAPI DllMain ( HANDLE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
  @param item is an item inside subKey or "" if default folder's value should be returned
  @param ok if not null, will be set to true on success and false on failure
 */
-QString getWin32RegistryValue ( HKEY key, const QString& subKey, const QString& item, bool *ok = 0 )
+QString getWin32RegistryValue ( HKEY key, const QString& subKey, const QString& item, bool *ok )
 {
 #define FAILURE \
  { if (ok) \

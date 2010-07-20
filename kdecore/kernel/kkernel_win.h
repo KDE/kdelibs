@@ -19,6 +19,8 @@
 #ifndef KKERNEL_WIN_H
 #define KKERNEL_WIN_H
 
+#include <winbase.h>
+
 #include <QtCore/QString>
 
 #ifdef Q_OS_WIN
@@ -58,6 +60,10 @@ KDECORE_EXPORT QByteArray getWin32LocaleName();
 */
 KDECORE_EXPORT bool isExecutable(const QString &filename);
 
+/**
+ \return a value from MS Windows native registry.
+*/
+QString getWin32RegistryValue ( HKEY key, const QString& subKey, const QString& item, bool *ok = 0 );
 
 #endif  // Q_OS_WIN
 #endif  // KKERNEL_WIN_H
