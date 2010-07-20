@@ -94,8 +94,8 @@ KServiceTypePrivate::init( KDesktopFile *config )
 KServiceType::KServiceType( QDataStream& _str, int offset )
     : KSycocaEntry(*new KServiceTypePrivate(_str, offset))
 {
-    Q_D(KServiceType);
-    d->load(_str);
+    //Q_D(KServiceType);
+    //d->load(_str);
 }
 
 KServiceType::KServiceType( KServiceTypePrivate &dd)
