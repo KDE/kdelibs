@@ -26,7 +26,7 @@
 #include "job.h"
 #include "kcompositejob_p.h"
 #include "jobuidelegate.h"
-#include "kuiserverjobtracker.h"
+#include "kjobtrackerinterface.h"
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 

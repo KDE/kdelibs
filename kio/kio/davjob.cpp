@@ -32,7 +32,6 @@
 #include <sys/stat.h>
 
 #include <kdebug.h>
-#include <kuiserverjobtracker.h>
 #include <kio/http.h>
 
 #include "jobclasses.h"

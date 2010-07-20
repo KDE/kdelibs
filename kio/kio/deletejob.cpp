@@ -28,7 +28,6 @@
 #include "kprotocolmanager.h"
 #include "jobuidelegate.h"
 #include <kdirnotify.h>
-#include <kuiserverjobtracker.h>
 
 #include <kauthorized.h>
 #include <klocale.h>

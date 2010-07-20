@@ -39,7 +39,6 @@
 
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
-#include <kuiserverjobtracker.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>

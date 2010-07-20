@@ -25,7 +25,6 @@
 #include "jobuidelegate.h"
 
 #include <kglobal.h>
-#include <kuiserverjobtracker.h>
 
 #include <klocale.h>
 #include <kdebug.h>
