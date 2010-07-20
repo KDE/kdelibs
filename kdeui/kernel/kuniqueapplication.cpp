@@ -422,10 +422,13 @@ int KUniqueApplicationAdaptor::newInstance(const QByteArray &asn_id, const QByte
     if (!asn_id.isEmpty())
       parent()->setStartupId(asn_id);
 
-    // This hook allows the application to set up KCmdLineArgs using addCmdLineOptions
-    // before we load the app args. Normally not necessary, but needed by kontact
-    // since it switches to other sets of options when called as e.g. kmail or korganizer
-    QMetaObject::invokeMethod(parent(), "loadCommandLineOptionsForNewInstance");
+    const int index = parent()->metaObject()->indexOfMethod("loadCommandLineOptionsForNewInstance");
+    if (index != -1) {
+      // This hook allows the application to set up KCmdLineArgs using addCmdLineOptions
+      // before we load the app args. Normally not necessary, but needed by kontact
+      // since it switches to other sets of options when called as e.g. kmail or korganizer
+      QMetaObject::invokeMethod(parent(), "loadCommandLineOptionsForNewInstance");
+    }
 
     QDataStream ds(args);
     KCmdLineArgs::loadAppArgs(ds);
