@@ -138,8 +138,7 @@ public:
 
    /**
     * @internal
-    * Save ourselves to the database. Don't forget to call the parent class
-    * first if you override this function.
+    * Save ourselves to the database.
     */
    void save(QDataStream &s);
 

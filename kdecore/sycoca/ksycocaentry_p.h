@@ -38,6 +38,8 @@ public:
 
     virtual ~KSycocaEntryPrivate() {}
 
+    // Don't forget to call the parent class
+    // first if you override this function.
     virtual void save(QDataStream &s);
 
     virtual bool isType(KSycocaType t) const
