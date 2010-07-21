@@ -272,6 +272,7 @@
 <!ENTITY kmouth "<application>KMouth</application>">
 <!ENTITY kmousetool "<application>KMouseTool</application>">
 <!ENTITY kmplot	"<application>KmPlot</application>">
+<!ENTITY kmymoney	"<application>KMyMoney</application>">
 <!ENTITY knetattach     "<application>KNetAttach</application>">
 <!ENTITY knetwalk       "<application>KNetWalk</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
