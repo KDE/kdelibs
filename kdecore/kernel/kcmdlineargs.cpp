@@ -170,8 +170,8 @@ class KCmdLineArgsStatic {
     KCmdLineArgsList *argsList; // All options.
     const KAboutData *about;
 
-    int argc; // The original argc
-    char **argv; // The original argv
+    int all_argc; // The original argc
+    char **all_argv; // The original argv
     char *appName;
     bool parsed : 1; // Whether we have parsed the arguments since calling init
     bool ignoreUnknown : 1; // Ignore unknown options and arguments
@@ -258,8 +258,8 @@ K_GLOBAL_STATIC(KCmdLineArgsStatic, s)
 KCmdLineArgsStatic::KCmdLineArgsStatic () {
     // Global data
     argsList = 0;
-    argc = 0;
-    argv = 0;
+    all_argc = 0;
+    all_argv = 0;
     appName = 0;
     mCwd.clear();
     about = 0;
@@ -449,10 +449,10 @@ KCmdLineArgs::init(const KAboutData* ab)
 void
 KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLineArgs stdargs)
 {
-   s->argc = _argc;
-   s->argv = _argv;
+   s->all_argc = _argc;
+   s->all_argv = _argv;
 
-   if (!s->argv)
+   if (!s->all_argv)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Passing null-pointer to 'argv' is not allowed.\n\n");
@@ -462,12 +462,12 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
    }
 
    // Strip path from argv[0]
-   if (s->argc) {
-     char *p = strrchr(s->argv[0], QDir::separator().toAscii());
+   if (s->all_argc) {
+     char *p = strrchr(s->all_argv[0], QDir::separator().toAscii());
      if (p)
        s->appName = p+1;
      else
-       s->appName = s->argv[0];
+       s->appName = s->all_argv[0];
    }
 
    s->about = _about;
@@ -819,12 +819,12 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (argument.isEmpty())
       {
          i++;
-         if (i >= s->argc)
+         if (i >= s->all_argc)
          {
             KCmdLineArgs::enable_i18n();
             KCmdLineArgs::usageError( i18nc("@info:shell %1 is cmdoption name","'%1' missing.",  QString::fromLocal8Bit(opt_name)));
          }
-         argument = s->argv[i];
+         argument = s->all_argv[i];
       }
       (*args)->d->setOption(opt, argument);
    }
@@ -849,20 +849,20 @@ KCmdLineArgsStatic::parseAllArgs()
        allowArgs = allowArgs || name.startsWith('+') || everythingAfterArgIsArgs;
      }
    }
-   for(int i = 1; i < s->argc; i++)
+   for(int i = 1; i < s->all_argc; i++)
    {
-      if (!s->argv[i])
+      if (!s->all_argv[i])
          continue;
 
-      if ((s->argv[i][0] == '-') && s->argv[i][1] && inOptions)
+      if ((s->all_argv[i][0] == '-') && s->all_argv[i][1] && inOptions)
       {
          bool enabled = true;
-         QByteArray orig = s->argv[i];
+         QByteArray orig = s->all_argv[i];
          QByteArray option = orig.mid(1);
          if (option.startsWith('-'))
          {
             option = option.mid(1);
-            s->argv[i]++;
+            s->all_argv[i]++;
             if (option.isEmpty())
             {
                inOptions = false;
@@ -951,11 +951,11 @@ KCmdLineArgsStatic::parseAllArgs()
             if (s->ignoreUnknown)
                continue;
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", KuitSemantics::escape(s->decodeInput(s->argv[i]))));
+            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", KuitSemantics::escape(s->decodeInput(s->all_argv[i]))));
          }
          else
          {
-            appOptions->d->addArgument(s->argv[i]);
+            appOptions->d->addArgument(s->all_argv[i]);
             if (everythingAfterArgIsArgs)
                 inOptions = false;
          }
@@ -981,7 +981,7 @@ int & KCmdLineArgs::qtArgc()
 
    KCmdLineArgs *args = parsedArgs("qt");
    Q_ASSERT(args); // No qt options have been added!
-   if (!s->argv)
+   if (!s->all_argv)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Application has not called KCmdLineArgs::init(...).\n\n");
@@ -990,7 +990,7 @@ int & KCmdLineArgs::qtArgc()
       exit(255);
    }
 
-   Q_ASSERT(s->argc >= (args->count()+1));
+   Q_ASSERT(s->all_argc >= (args->count()+1));
    qt_argc = args->count() +1;
    return qt_argc;
 }
@@ -1009,15 +1009,22 @@ KCmdLineArgs::qtArgv()
    if (!(s->mStdargs & KCmdLineArgs::CmdLineArgQt))
    {
      s_qt_argv = new char*[2];
-     s_qt_argv[0] = qstrdup(s->argc?s->argv[0]:"");
+     s_qt_argv[0] = qstrdup(s->all_argc?s->all_argv[0]:"");
      s_qt_argv[1] = 0;
 
      return s_qt_argv;
    }
 
    KCmdLineArgs *args = parsedArgs("qt");
-   Q_ASSERT(args); // No qt options have been added!
-   if (!s->argv)
+   if (!args)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "The \"qt\" options have not be added to KCmdLineArgs!\n\n");
+
+      assert( 0 );
+      exit(255);
+   }
+   if (!s->all_argv)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Application has not called KCmdLineArgs::init(...).\n\n");
@@ -1028,7 +1035,7 @@ KCmdLineArgs::qtArgv()
 
    int count=args->count();
    s_qt_argv = new char*[ count + 2 ];
-   s_qt_argv[0] = qstrdup(s->argc?s->argv[0]:"");
+   s_qt_argv[0] = qstrdup(s->all_argc?s->all_argv[0]:"");
    int i = 0;
    for(; i < count; i++)
    {
