@@ -521,11 +521,10 @@ void KFileMetaDataWidget::setItems(const KFileItemList& items)
         // update values for "type", "size", "modified",
         // "owner" and "permissions" synchronously
         d->m_sizeLabel->setText(i18nc("@label", "Size"));
+        d->m_typeInfo->setText(item.mimeComment());
         if (item.isDir()) {
-            d->m_typeInfo->setText(i18nc("@label", "Folder"));
             d->setRowVisible(d->m_sizeInfo, false);
         } else {
-            d->m_typeInfo->setText(item.mimeComment());
             d->m_sizeInfo->setText(KIO::convertSize(item.size()));
             d->setRowVisible(d->m_sizeInfo, d->m_sizeVisible);
         }
@@ -582,13 +581,13 @@ QSize KFileMetaDataWidget::sizeHint() const
         if (rightWidth > rightWidthMax) {
             rightWidthMax = rightWidth;
         }
-        
+
         const int leftWidth = row.label->sizeHint().width();
         if (leftWidth > leftWidthMax) {
             leftWidthMax = leftWidth;
         }
     }
-    
+
     // Some value widgets might return a very huge width for the size hint.
     // Limit the maximum width to the double width of the overall average
     // to assure a less messed layout.
