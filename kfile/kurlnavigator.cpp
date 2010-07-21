@@ -526,11 +526,6 @@ void KUrlNavigator::Private::updateContent()
 void KUrlNavigator::Private::updateButtons(int startIndex)
 {
     KUrl currentUrl = q->locationUrl();
-    if (currentUrl.protocol() == QLatin1String("nepomuksearch")) {
-        // hide the Nepomuk search URL from the user
-        currentUrl = KUrl("nepomuksearch:/");
-        startIndex = -1;
-    }
 
     const QString path = currentUrl.pathOrUrl();
 
