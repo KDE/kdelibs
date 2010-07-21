@@ -286,7 +286,6 @@ private:
     class KWebWalletPrivate;
     friend class KWebWalletPrivate;
     KWebWalletPrivate * const d;
-    
 
     Q_PRIVATE_SLOT(d, void _k_openWalletDone(bool))
     Q_PRIVATE_SLOT(d, void _k_walletClosed())

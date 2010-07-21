@@ -84,14 +84,14 @@ static void collectAllChildFrames(QWebFrame* frame, QList<QWebFrame*>& list)
 
 
 class KWebWallet::KWebWalletPrivate
-{  
+{
 public:
     struct FormsData
     {
         QPointer<QWebFrame> frame;
         KWebWallet::WebFormList forms;
     };
-  
+
     KWebWalletPrivate(KWebWallet* parent);
     KWebWallet::WebFormList parseFormData(QWebFrame* frame, bool fillform = true, bool ignorepasswd = false);
     void fillDataFromCache(KWebWallet::WebFormList &formList);
@@ -108,6 +108,7 @@ public:
     KWebWallet::WebFormList pendingRemoveRequests;
     QHash<KUrl, FormsData> pendingFillRequests;
     QHash<QString, KWebWallet::WebFormList> pendingSaveRequests;
+    QHash<KUrl, bool> confirmSaveRequestOverwrites;
 };
 
 KWebWallet::KWebWalletPrivate::KWebWalletPrivate(KWebWallet *parent)
@@ -196,26 +197,49 @@ void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
 
     if (wallet) {
         int count = 0;
-        const KWebWallet::WebFormList list = pendingSaveRequests.take(key);
+        const KWebWallet::WebFormList list = pendingSaveRequests.value(key);
         QListIterator<KWebWallet::WebForm> formIt (list);
 
         while (formIt.hasNext()) {
-            QMap<QString, QString> values;
+            QMap<QString, QString> values, storedValues;
             const KWebWallet::WebForm form = formIt.next();
+            const QString accessKey = walletKey(form);
+            if (confirmSaveRequestOverwrites.value(url)) {
+                confirmSaveRequestOverwrites.remove(url);
+                const int status = wallet->readMap(accessKey, storedValues);
+                if (status == 0 && storedValues.count()) {
+                    QListIterator<KWebWallet::WebForm::WebField> fieldIt (form.fields);
+                    while (fieldIt.hasNext()) {
+                        const KWebWallet::WebForm::WebField field = fieldIt.next();
+                        if (storedValues.contains(field.first) &&
+                            storedValues.value(field.first) != field.second) {
+                            emit q->saveFormDataRequested(key, url);
+                            return;
+                        }
+                    }
+                    // If we got here it means the new credential is exactly
+                    // the same as the one already cached ; so skip the
+                    // re-saving part...
+                    success = true;
+                    continue;
+                }
+            }
             QListIterator<KWebWallet::WebForm::WebField> fieldIt (form.fields);
             while (fieldIt.hasNext()) {
                 const KWebWallet::WebForm::WebField field = fieldIt.next();
                 values.insert(field.first, field.second);
             }
 
-            if (wallet->writeMap(walletKey(form), values) == 0)
+            if (wallet->writeMap(accessKey, values) == 0)
                 count++;
             else
                 kWarning(800) << "Unable to write form data to wallet";
         }
 
-        if (list.isEmpty())
+        if (list.isEmpty() || count > 0)
           success = true;
+
+        pendingSaveRequests.remove(key);
     } else {
         kWarning(800) << "NULL KWallet instance!";
     }
@@ -236,7 +260,7 @@ void KWebWallet::KWebWalletPrivate::removeDataFromCache(const WebFormList &formL
 }
 
 void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
-{ 
+{
     Q_ASSERT (wallet);
 
     if (ok &&
@@ -263,8 +287,6 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
             QListIterator<QString> keysIt (pendingSaveRequests.keys());
             while (keysIt.hasNext())
                 saveDataToCache(keysIt.next());
-
-            pendingSaveRequests.clear();
         }
 
         // Do pending remove requests...
@@ -389,18 +411,21 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
 
         if (!list.isEmpty()) {
             const QString key = QString::number(qHash(frame->url().toString() + frame->frameName()), 16);
-            if (!d->pendingSaveRequests.contains(key)) {
-                d->pendingSaveRequests.insert(key, list);
+            const bool isAlreadyPending = d->pendingSaveRequests.contains(key);
+            d->pendingSaveRequests.insert(key, list);
 
+            if (!isAlreadyPending) {
                 for (int i =0 ; i < list.count(); ++i) {
                     if (hasCachedFormData(list.at(i)))
                         list.takeAt(i);
                 }
 
-                if (list.isEmpty())
+                if (list.isEmpty()) {
+                    d->confirmSaveRequestOverwrites.insert(frame->url(), true);
                     saveFormDataToCache(key);
-                else
+                } else {
                     emit saveFormDataRequested(key, frame->url());
+                }
             }
         }
     }
@@ -450,10 +475,6 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                 if (!formElement.isNull()) {
                     formElement = formElement.findFirst(QString::fromLatin1("input[name=%1]").arg(field.first));
                     if (isValidInputElement(formElement)) {
-                        // HACK: Autofill does not work on Facebook without this hack!
-                        // TODO: Find a generic solution that might work everywhere instead...
-                        if (formElement.hasAttribute(QL1S("placeholder")))
-                            formElement.setAttribute(QL1S("placeholder"), QL1S(""));
                         formElement.setAttribute(QL1S("value"), field.second);
                         filledForm = true;
                         //kDebug(800) << "Filled out input name=" << field.first;
@@ -518,7 +539,6 @@ void KWebWallet::saveFormDataToCache(const QString &key)
     }
 
     d->saveDataToCache(key);
-    d->pendingSaveRequests.clear();
 }
 
 void KWebWallet::removeFormDataFromCache(const WebFormList &forms)
