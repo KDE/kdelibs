@@ -25,6 +25,7 @@
 #include <kwallet.h>
 #include <kdebug.h>
 
+#include <QtCore/QSet>
 #include <QtCore/QHash>
 #include <QtCore/QFile>
 #include <QtCore/QPointer>
@@ -108,7 +109,7 @@ public:
     KWebWallet::WebFormList pendingRemoveRequests;
     QHash<KUrl, FormsData> pendingFillRequests;
     QHash<QString, KWebWallet::WebFormList> pendingSaveRequests;
-    QHash<KUrl, bool> confirmSaveRequestOverwrites;
+    QSet<KUrl> confirmSaveRequestOverwrites;
 };
 
 KWebWallet::KWebWalletPrivate::KWebWalletPrivate(KWebWallet *parent)
@@ -204,7 +205,7 @@ void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
             QMap<QString, QString> values, storedValues;
             const KWebWallet::WebForm form = formIt.next();
             const QString accessKey = walletKey(form);
-            if (confirmSaveRequestOverwrites.value(url)) {
+            if (confirmSaveRequestOverwrites.contains(url)) {
                 confirmSaveRequestOverwrites.remove(url);
                 const int status = wallet->readMap(accessKey, storedValues);
                 if (status == 0 && storedValues.count()) {
@@ -421,7 +422,7 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
                 }
 
                 if (list.isEmpty()) {
-                    d->confirmSaveRequestOverwrites.insert(frame->url(), true);
+                    d->confirmSaveRequestOverwrites.insert(frame->url());
                     saveFormDataToCache(key);
                 } else {
                     emit saveFormDataRequested(key, frame->url());
