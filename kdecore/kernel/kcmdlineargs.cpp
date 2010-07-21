@@ -1596,3 +1596,16 @@ bool KCmdLineArgs::isTempFileSet()
     KCmdLineArgs* args = KCmdLineArgs::parsedArgs( "kde-tempfile" );
     return args && args->isSet( "tempfile" );
 }
+
+QStringList KCmdLineArgs::allArguments()
+{
+    QStringList lst;
+
+    for(int i = 0; i < s->all_argc; i++) {
+        char* arg = s->all_argv[i];
+        if (!arg)
+            continue;
+        lst.append(QString::fromLocal8Bit(arg));
+    }
+    return lst;
+}

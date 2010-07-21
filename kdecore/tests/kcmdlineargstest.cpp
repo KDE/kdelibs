@@ -24,6 +24,8 @@ main(int argc, char *argv[])
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
+   kDebug() << "allArguments:" << KCmdLineArgs::allArguments();
+
    // MyWidget::addCmdLineOptions();
 
    //KApplication app( false );

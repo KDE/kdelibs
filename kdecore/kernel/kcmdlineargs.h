@@ -632,6 +632,12 @@ public:
   static char **qtArgv();
 
   /**
+   * Returns the list of command-line arguments.
+   * @since 4.6
+   */
+  static QStringList allArguments();
+
+  /**
    * Returns the KAboutData for consumption by KComponentData
    */
   static const KAboutData *aboutData();
