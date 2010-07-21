@@ -23,7 +23,7 @@
 
 #ifdef Q_OS_WIN
 
-#include <winbase.h>
+#include <windows.h>
 #include <kdecore_export.h>
 
 /**
