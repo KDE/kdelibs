@@ -84,14 +84,14 @@ static void collectAllChildFrames(QWebFrame* frame, QList<QWebFrame*>& list)
 
 
 class KWebWallet::KWebWalletPrivate
-{  
+{
 public:
     struct FormsData
     {
         QPointer<QWebFrame> frame;
         KWebWallet::WebFormList forms;
     };
-  
+
     KWebWalletPrivate(KWebWallet* parent);
     KWebWallet::WebFormList parseFormData(QWebFrame* frame, bool fillform = true, bool ignorepasswd = false);
     void fillDataFromCache(KWebWallet::WebFormList &formList);
@@ -214,7 +214,7 @@ void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
                 kWarning(800) << "Unable to write form data to wallet";
         }
 
-        if (list.isEmpty())
+        if (list.isEmpty() || count > 0)
           success = true;
     } else {
         kWarning(800) << "NULL KWallet instance!";
@@ -236,7 +236,7 @@ void KWebWallet::KWebWalletPrivate::removeDataFromCache(const WebFormList &formL
 }
 
 void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
-{ 
+{
     Q_ASSERT (wallet);
 
     if (ok &&
@@ -450,10 +450,6 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
                 if (!formElement.isNull()) {
                     formElement = formElement.findFirst(QString::fromLatin1("input[name=%1]").arg(field.first));
                     if (isValidInputElement(formElement)) {
-                        // HACK: Autofill does not work on Facebook without this hack!
-                        // TODO: Find a generic solution that might work everywhere instead...
-                        if (formElement.hasAttribute(QL1S("placeholder")))
-                            formElement.setAttribute(QL1S("placeholder"), QL1S(""));
                         formElement.setAttribute(QL1S("value"), field.second);
                         filledForm = true;
                         //kDebug(800) << "Filled out input name=" << field.first;
