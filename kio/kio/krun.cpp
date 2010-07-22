@@ -201,12 +201,11 @@ bool KRun::displayOpenWithDialog(const KUrl::List& lst, QWidget* window, bool te
     KOpenWithDialog l(lst, i18n("Open with:"), QString(), window);
     if (l.exec()) {
         KService::Ptr service = l.service();
-        if (service) {
-            return KRun::run(*service, lst, window, tempFiles, suggestedFileName, asn);
+        if (!service) {
+            kDebug(7010) << "No service set, running " << l.text();
+            service = KService::Ptr(new KService(QString() /*name*/, l.text(), QString() /*icon*/));
         }
-
-        kDebug(7010) << "No service set, running " << l.text();
-        return KRun::run(l.text(), lst, window, false, suggestedFileName, asn);   // TODO handle tempFiles
+        return KRun::run(*service, lst, window, tempFiles, suggestedFileName, asn);
     }
     return false;
 }
@@ -1155,13 +1154,13 @@ void KRun::init()
                 mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
                 return;
             }
-            run(exec, urls, d->m_window, false, QString(), d->m_asn);
+            run(exec, urls, d->m_window, QString(), QString(), d->m_asn);
             ok = true;
         }
         else if (exec.startsWith('!')) {
             exec = exec.mid(1); // Literal command
             exec += " %u";
-            run(exec, urls, d->m_window, false, QString(), d->m_asn);
+            run(exec, urls, d->m_window, QString(), QString(), d->m_asn);
             ok = true;
         }
         else {
