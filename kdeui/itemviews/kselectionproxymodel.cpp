@@ -390,9 +390,6 @@ public:
             m_ignoreNextLayoutChanged(false),
             m_selectionModel(selectionModel)
     {
-      // QItemSelectionModel doesn't clear its selection when its model is reset so we do it manually here.
-      // Fixed in Qt 4.7: http://qt.gitorious.org/qt/qt/merge_requests/639
-      QObject::connect(selectionModel->model(), SIGNAL(modelAboutToBeReset()), selectionModel, SLOT(clear()));
     }
 
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
@@ -521,6 +518,8 @@ public:
     void removeRangeFromProxy(const QItemSelectionRange &range);
 
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void selectionModelSourceAboutToBeReset();
+    void selectionModelSourceReset();
     void sourceModelDestroyed();
 
     void resetInternalData();
@@ -787,11 +786,15 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
     Q_Q(KSelectionProxyModel);
 
-    // Deselecting an index in the selectionModel will cause it to
-    // be removed from m_rootIndexList, so we don't need to clear
-    // the list here manually.
-    // We also don't need to notify that an index is about to be removed.
-    m_selectionModel->clearSelection();
+    // We might be resetting as a result of the selection source model resetting.
+    // If so we don't want to emit
+    // sourceModelAboutToBeReset
+    // sourceModelAboutToBeReset
+    // sourceModelReset
+    // sourceModelReset
+    // So we ensure that we just emit one.
+    if (m_resetting)
+      return;
 
     q->beginResetModel();
     m_resetting = true;
@@ -801,8 +804,38 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 {
     Q_Q(KSelectionProxyModel);
 
+    if (!m_resetting)
+      return;
+
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
+    m_selectionModel->clear();
+    resetInternalData();
+    m_resetting = false;
+    q->endResetModel();
+}
+
+void KSelectionProxyModelPrivate::selectionModelSourceAboutToBeReset()
+{
+    Q_Q(KSelectionProxyModel);
+
+    if (m_resetting)
+      return;
+
+    q->beginResetModel();
+    m_resetting = true;
+}
+
+void KSelectionProxyModelPrivate::selectionModelSourceReset()
+{
+    Q_Q(KSelectionProxyModel);
+
+    if (!m_resetting)
+      return;
+
+    // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
+    // but when it gets one we'll be notified anyway.
+    m_selectionModel->clear();
     resetInternalData();
     m_resetting = false;
     q->endResetModel();
@@ -1976,8 +2009,17 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
     if (_sourceModel == sourceModel())
         return;
 
+
+
+    disconnect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+            this, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
     connect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
             SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
+
+    disconnect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(selectionModelSourceAboutToBeReset()));
+    connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(selectionModelSourceAboutToBeReset()));
+    disconnect(d->m_selectionModel->model(), SIGNAL(modelReset()), this, SLOT(selectionModelSourceReset()));
+    connect(d->m_selectionModel->model(), SIGNAL(modelReset()), this, SLOT(selectionModelSourceReset()));
 
     beginResetModel();
     d->m_resetting = true;
