@@ -401,9 +401,6 @@ public:
             m_selectionModel(selectionModel),
             m_nextId(1)
     {
-      // QItemSelectionModel doesn't clear its selection when its model is reset so we do it manually here.
-      // Fixed in Qt 4.7: http://qt.gitorious.org/qt/qt/merge_requests/639
-      QObject::connect(selectionModel->model(), SIGNAL(modelAboutToBeReset()), selectionModel, SLOT(clear()));
     }
 
     Q_DECLARE_PUBLIC(KSelectionProxyModel)
@@ -790,12 +787,6 @@ void KSelectionProxyModelPrivate::sourceModelDestroyed()
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
     Q_Q(KSelectionProxyModel);
-
-    // Deselecting an index in the selectionModel will cause it to
-    // be removed from m_rootIndexList, so we don't need to clear
-    // the list here manually.
-    // We also don't need to notify that an index is about to be removed.
-    m_selectionModel->clearSelection();
 
     q->beginResetModel();
     m_resetting = true;
@@ -1857,6 +1848,10 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
         connect(_sourceModel, SIGNAL(destroyed()),
                 SLOT(sourceModelDestroyed()));
     }
+
+    // We need to clear the selection after /this/ has executed its sourceModelAboutToBeReset
+    // slot and any downstreams have handled it.
+    connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), d->m_selectionModel, SLOT(clear()));
 
     d->m_resetting = false;
     endResetModel();
