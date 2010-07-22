@@ -1824,8 +1824,19 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
     if (_sourceModel == sourceModel())
         return;
 
+
+    disconnect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+            this, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
     connect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
             SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
+    disconnect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()),
+            this, SLOT(selectionModelSourceAboutToBeReset()));
+    connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()),
+            this, SLOT(selectionModelSourceAboutToBeReset()));
+    disconnect(d->m_selectionModel->model(), SIGNAL(modelReset()),
+            this, SLOT(selectionModelSourceReset()));
+    connect(d->m_selectionModel->model(), SIGNAL(modelReset()),
+            this, SLOT(selectionModelSourceReset()));
 
     beginResetModel();
     d->m_resetting = true;
