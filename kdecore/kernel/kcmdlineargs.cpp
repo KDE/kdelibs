@@ -862,7 +862,6 @@ KCmdLineArgsStatic::parseAllArgs()
          if (option.startsWith('-'))
          {
             option = option.mid(1);
-            s->all_argv[i]++;
             if (option.isEmpty())
             {
                inOptions = false;
