@@ -135,6 +135,9 @@ void QueryParserTest::testQueryParser_data()
 
     // or queries
     QTest::newRow( "or: two literals" )          << QString( "Hello OR World" ) << Query( OrTerm( LiteralTerm( "Hello" ), LiteralTerm( "World" ) ) );
+
+    // the invalid query
+    QTest::newRow( "empty query string" ) << QString() << Query();
 }
 
 
