@@ -272,7 +272,7 @@ KRecursiveFilterProxyModel::KRecursiveFilterProxyModel(QObject* parent)
 
 KRecursiveFilterProxyModel::~KRecursiveFilterProxyModel()
 {
-
+  delete d_ptr;
 }
 
 bool KRecursiveFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
