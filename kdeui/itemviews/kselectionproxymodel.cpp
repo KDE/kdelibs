@@ -2264,8 +2264,17 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
-    if (!sourceModel() || index.column() > 0 || d->m_rootIndexList.isEmpty())
+
+    if (!sourceModel() || index.column() > 0
+      // Qt 4.6 doesn't notice changes in columnCount, so we can't return 0 when
+      // it's actually 0 ,but must return what the source model says, even if we
+      // have no rows or columns.
+#if QT_VERSION > 0x040700
+      || d->m_rootIndexList.isEmpty()
+#endif
+        )
         return 0;
+
     return sourceModel()->columnCount(mapToSource(index));
 }
 
