@@ -2441,7 +2441,11 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
-    if (!sourceModel() || index.column() > 0 || d->m_rootIndexList.isEmpty())
+    if (!sourceModel() || index.column() > 0 
+#if Qt_VERSION > 0x040700
+       || d->m_rootIndexList.isEmpty()
+#endif
+    )
         return 0;
     return sourceModel()->columnCount(mapToSource(index));
 }
