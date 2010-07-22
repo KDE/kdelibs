@@ -494,7 +494,7 @@ static KService::Ptr preferredService(const QString& mimeType, const QString& co
 void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& traderConstraint)
 {
     d->m_traderConstraint = traderConstraint;
-    const KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
+    KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
 
     //// Ok, we have everything, now insert
 
@@ -513,14 +513,28 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
 
 
         const QStringList serviceIdList = d->listPreferredServiceIds(d->m_mimeTypeList, traderConstraint);
+        //kDebug(7010) << "serviceIdList=" << serviceIdList;
 
-        if (serviceIdList.count() != 0 && !(serviceIdList.count()==1 && serviceIdList.first().isEmpty())) {
+        // When selecting files with multiple mimetypes, offer either "open with <app for all>"
+        // or a generic <open> (if there are any apps associated).
+        if (d->m_mimeTypeList.count() > 1
+            && !serviceIdList.isEmpty()
+            && !(serviceIdList.count()==1 && serviceIdList.first().isEmpty())) { // empty means "no apps associated"
+
             d->m_ownActions.append(runAct);
 
             if (serviceIdList.count() == 1) {
                 const KService::Ptr app = preferredService(d->m_mimeTypeList.first(), traderConstraint);
                 runActionName = i18n("&Open with %1", app->name());
                 runAct->setIcon(KIcon(app->icon()));
+
+                // Remove that app from the offers list (#242731)
+                for (int i = 0; i < offers.count() ; ++i) {
+                    if (offers[i]->storageId() == app->storageId()) {
+                        offers.removeAt(i);
+                        break;
+                    }
+                }
             } else {
                 runActionName = i18n("&Open");
             }
