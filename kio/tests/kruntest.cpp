@@ -40,8 +40,6 @@ void testKRun::foundMimeType( const QString& _type )
   kDebug() << "testKRun::foundMimeType " << _type;
   kDebug() << "testKRun::foundMimeType URL=" << url().url();
   setFinished( true );
-  timer().setSingleShot( true );
-  timer().start( 0 );
   return;
 }
 
