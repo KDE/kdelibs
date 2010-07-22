@@ -218,7 +218,7 @@ void AtticaHelper::slotPreviewData(KIO::Job *job, const QByteArray& buf)
 
 void AtticaHelper::slotPreviewDownload(KJob *job)
 {
-    int previewNum;
+    int previewNum = -1;
     if (job == m_previewJob[0]) {
         previewNum = 1;
     } else if (job == m_previewJob[1]) {
@@ -226,6 +226,7 @@ void AtticaHelper::slotPreviewDownload(KJob *job)
     } else if (job == m_previewJob[2]) {
         previewNum = 3;
     }
+    Q_ASSERT(previewNum != -1);
     if (job->error()) {
         m_previewBuffer[previewNum-1].clear();
         return;
