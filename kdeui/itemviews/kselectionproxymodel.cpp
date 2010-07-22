@@ -517,6 +517,8 @@ public:
 
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void sourceModelDestroyed();
+    void selectionModelSourceAboutToBeReset();
+    void selectionModelSourceReset();
 
     void resetInternalData();
 
@@ -788,6 +790,16 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
 {
     Q_Q(KSelectionProxyModel);
 
+    // We might be resetting as a result of the selection source model resetting.
+    // If so we don't want to emit
+    // sourceModelAboutToBeReset
+    // sourceModelAboutToBeReset
+    // sourceModelReset
+    // sourceModelReset
+    // So we ensure that we just emit one.
+    if (m_resetting)
+      return;
+
     q->beginResetModel();
     m_resetting = true;
 }
@@ -796,8 +808,38 @@ void KSelectionProxyModelPrivate::sourceModelReset()
 {
     Q_Q(KSelectionProxyModel);
 
+    if (!m_resetting)
+      return;
+
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
+    m_selectionModel->clear();
+    resetInternalData();
+    m_resetting = false;
+    q->endResetModel();
+}
+
+void KSelectionProxyModelPrivate::selectionModelSourceAboutToBeReset()
+{
+    Q_Q(KSelectionProxyModel);
+
+    if (m_resetting)
+      return;
+
+    q->beginResetModel();
+    m_resetting = true;
+}
+
+void KSelectionProxyModelPrivate::selectionModelSourceReset()
+{
+    Q_Q(KSelectionProxyModel);
+
+    if (!m_resetting)
+      return;
+
+    // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
+    // but when it gets one we'll be notified anyway.
+    m_selectionModel->clear();
     resetInternalData();
     m_resetting = false;
     q->endResetModel();
@@ -1848,10 +1890,6 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
         connect(_sourceModel, SIGNAL(destroyed()),
                 SLOT(sourceModelDestroyed()));
     }
-
-    // We need to clear the selection after /this/ has executed its sourceModelAboutToBeReset
-    // slot and any downstreams have handled it.
-    connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), d->m_selectionModel, SLOT(clear()));
 
     d->m_resetting = false;
     endResetModel();
