@@ -650,6 +650,7 @@ struct KDebugPrivate
             const QString key = QString::fromLatin1("InfoOutput");
             if (!cg.hasKey(key)) {
                 cg.writeEntry(key, int(enabled ? KDebugPrivate::QtOutput : KDebugPrivate::NoOutput));
+                cg.sync();
             }
         }
     }
