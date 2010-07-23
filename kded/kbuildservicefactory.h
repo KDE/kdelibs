@@ -89,7 +89,7 @@ private:
     void populateServiceTypes();
     void saveOfferList(QDataStream &str);
     void collectInheritedServices();
-    void collectInheritedServices(KMimeType::Ptr mime, QSet<KMimeType::Ptr>& visitedMimes);
+    void collectInheritedServices(const QString& mime, QSet<QString>& visitedMimes);
 
     QHash<QString, KService::Ptr> m_nameMemoryHash; // m_nameDict is not useable while building ksycoca
     QHash<QString, KService::Ptr> m_relNameMemoryHash; // m_relNameDict is not useable while building ksycoca

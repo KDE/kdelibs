@@ -20,6 +20,7 @@
 #include "kmimetype.h"
 #include "kmimetype_p.h"
 #include "kmimetypefactory.h"
+#include "kmimetyperepository_p.h"
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -59,13 +60,6 @@ static void errorMissingMimeTypes( const QStringList& _types )
                 "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
 }
 
-void KMimeTypePrivate::loadInternal( QDataStream& _str )
-{
-    QString oldParentMimeTypeString;
-    QStringList oldParentMimeTypesList;
-    _str >> m_lstPatterns >> oldParentMimeTypeString >> oldParentMimeTypesList >> m_iconName;
-}
-
 /**
  * This function makes sure that the default mime type exists.
  * Not file-static because it needs access to the private KMimeType constructor...
@@ -74,7 +68,7 @@ void KMimeType::buildDefaultType()
 {
     assert ( !s_pDefaultMimeType );
     // Try to find the default type
-    KMimeType::Ptr mime = KMimeTypeFactory::self()->
+    KMimeType::Ptr mime = KMimeTypeRepository::self()->
                           findMimeTypeByName( KMimeType::defaultMimeType() );
 
     if (mime)
@@ -118,7 +112,7 @@ void KMimeType::checkEssentialMimeTypes()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
-  if ( !KMimeTypeFactory::self()->checkMimeTypes() )
+  if ( !KMimeTypeRepository::self()->checkMimeTypes() )
   {
     // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
 
@@ -156,12 +150,17 @@ void KMimeType::checkEssentialMimeTypes()
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name, FindByNameOption options )
 {
-    return KMimeTypeFactory::self()->findMimeTypeByName( _name, options );
+    return KMimeTypeRepository::self()->findMimeTypeByName( _name, options );
 }
 
 KMimeType::List KMimeType::allMimeTypes()
 {
-    return KMimeTypeFactory::self()->allMimeTypes();
+    // This could be done faster...
+    KMimeType::List lst;
+    Q_FOREACH(const QString& mimeType, KMimeTypeFactory::self()->allMimeTypes()) {
+        lst.append(KMimeType::mimeType(mimeType));
+    }
+    return lst;
 }
 
 bool KMimeType::isBufferBinaryData(const QByteArray& data)
@@ -240,11 +239,6 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
     return KMimeType::Ptr();
 }
 
-static bool mimeTypeListSortByName(const KMimeType::Ptr& m1, const KMimeType::Ptr& m2)
-{
-    return m1->name() < m2->name();
-}
-
 /*
 
 As agreed on the XDG list (and unlike the current shared-mime spec):
@@ -293,16 +287,16 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
 
     // First try to find out by looking at the filename (if there's one)
     const QString fileName( _url.fileName() );
-    QList<KMimeType::Ptr> mimeList;
+    QStringList mimeList;
     if ( !fileName.isEmpty() && !path.endsWith( '/' ) ) {
         // and if we can trust it (e.g. don't trust *.pl over HTTP, could be anything)
         if ( is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
              KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) ) {
-            mimeList = KMimeTypeFactory::self()->findFromFileName( fileName );
+            mimeList = KMimeTypeRepository::self()->findFromFileName( fileName );
             // Found one glob match exactly: OK, use that.
             // We disambiguate multiple glob matches by sniffing, below.
             if ( mimeList.count() == 1 ) {
-                return mimeList.first();
+                return mimeType(mimeList.first());
             }
         }
     }
@@ -317,8 +311,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     QByteArray beginning;
     if ( device ) {
         int magicAccuracy;
-        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
-            device, KMimeTypeFactory::AllRules, &magicAccuracy, beginning );
+        KMimeType::Ptr mime = KMimeTypeRepository::self()->findFromContent(device, &magicAccuracy, beginning);
         // mime can't be 0, except in case of install problems.
         // However we get magicAccuracy==0 for octet-stream, i.e. no magic match found.
         //kDebug(servicesDebugArea()) << "findFromContent said" << (mime?mime->name():QString()) << "with accuracy" << magicAccuracy;
@@ -329,7 +322,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                 // "for glob_match in glob_matches:"
                 // "if glob_match is subclass or equal to sniffed_type, use glob_match"
                 const QString sniffedMime = mime->name();
-                foreach(const KMimeType::Ptr &mimeFromPattern, mimeList) {
+                foreach(const QString &m, mimeList) {
+                    KMimeType::Ptr mimeFromPattern = KMimeType::mimeType(m);
                     //kDebug(servicesDebugArea()) << "sniffedMime=" << sniffedMime << "mimeFromPattern=" << mimeFromPattern->name();
                     if (mimeFromPattern->is(sniffedMime)) {
                         // We have magic + pattern pointing to this, so it's a pretty good match
@@ -354,8 +348,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
             *accuracy = 20;
         // We have to pick one...
         // At least make this deterministic
-        qSort(mimeList.begin(), mimeList.end(), mimeTypeListSortByName);
-        return mimeList.first();
+        qSort(mimeList.begin(), mimeList.end());
+        return mimeType(mimeList.first());
     }
 
     // Find a fallback from the protocol
@@ -437,7 +431,7 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* 
 QString KMimeType::extractKnownExtension(const QString &fileName)
 {
     QString pattern;
-    KMimeTypeFactory::self()->findFromFileName( fileName, &pattern );
+    KMimeTypeRepository::self()->findFromFileName( fileName, &pattern );
     return pattern;
 }
 
@@ -446,15 +440,13 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
     QBuffer buffer(const_cast<QByteArray *>(&data));
     buffer.open(QIODevice::ReadOnly);
     QByteArray cache;
-    return KMimeTypeFactory::self()->findFromContent(
-        &buffer, KMimeTypeFactory::AllRules, accuracy, cache );
+    return KMimeTypeRepository::self()->findFromContent(&buffer, accuracy, cache);
 }
 
 KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
 {
     QByteArray cache;
-    return KMimeTypeFactory::self()->findFromContent(
-        device, KMimeTypeFactory::AllRules, accuracy, cache );
+    return KMimeTypeRepository::self()->findFromContent(device, accuracy, cache);
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
@@ -476,8 +468,7 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     }
 
     QByteArray cache;
-    return KMimeTypeFactory::self()->findFromContent(
-        &device, KMimeTypeFactory::AllRules, accuracy, cache );
+    return KMimeTypeRepository::self()->findFromContent(&device, accuracy, cache);
 }
 
 bool KMimeType::isBinaryData( const QString &fileName )
@@ -596,38 +587,9 @@ QString KMimeType::comment( const KUrl &url) const
     return d->comment(url);
 }
 
-static QString fallbackParent(const QString& mimeTypeName)
-{
-    const QString myGroup = mimeTypeName.left(mimeTypeName.indexOf('/'));
-    // All text/* types are subclasses of text/plain.
-    if (myGroup == "text" && mimeTypeName != "text/plain")
-        return "text/plain";
-    // All real-file mimetypes implicitly derive from application/octet-stream
-    if (myGroup != "inode" &&
-        // kde extensions
-        myGroup != "all" && myGroup != "fonts" && myGroup != "print" && myGroup != "uri"
-        && mimeTypeName != "application/octet-stream") {
-        return "application/octet-stream";
-    }
-    return QString();
-}
-
-static QStringList parentMimeTypesList(const QString& mimeTypeName)
-{
-    QStringList parents = KMimeTypeFactory::self()->parents(mimeTypeName);
-    if (parents.isEmpty()) {
-        const QString myParent = fallbackParent(mimeTypeName);
-        if (!myParent.isEmpty())
-            parents.append(myParent);
-    }
-    return parents;
-}
-
 QString KMimeType::parentMimeType() const
 {
-    Q_D(const KMimeType);
-
-    const QStringList parents = parentMimeTypesList(d->m_strName);
+    const QStringList parents = parentMimeTypes();
     if (!parents.isEmpty())
         return parents.first();
     return QString();
@@ -641,7 +603,7 @@ bool KMimeTypePrivate::inherits(const QString& mime) const
         const QString current = toCheck.pop();
         if (current == mime)
             return true;
-        Q_FOREACH(const QString& parent, parentMimeTypesList(current)) {
+        Q_FOREACH(const QString& parent, KMimeTypeRepository::self()->parents(current)) {
             toCheck.push(parent);
         }
     }
@@ -653,21 +615,19 @@ bool KMimeType::is( const QString& mimeTypeName ) const
     Q_D(const KMimeType);
     if (name() == mimeTypeName)
         return true;
-    QString mime = KMimeTypeFactory::self()->resolveAlias(mimeTypeName);
-    if (mime.isEmpty())
-        mime = mimeTypeName;
+    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeTypeName);
     return d->inherits(mime);
 }
 
 QStringList KMimeType::parentMimeTypes() const
 {
     Q_D(const KMimeType);
-    return parentMimeTypesList(d->m_strName);
+    return KMimeTypeRepository::self()->parents(d->m_strName);
 }
 
 static void collectParentMimeTypes(const QString& mime, QStringList& allParents)
 {
-    QStringList parents = parentMimeTypesList(mime);
+    QStringList parents = KMimeTypeRepository::self()->parents(mime);
     Q_FOREACH(const QString& parent, parents) {
         // I would use QSet, but since order matters I better not
         if (!allParents.contains(parent))
@@ -684,7 +644,7 @@ QStringList KMimeType::allParentMimeTypes() const
 {
     Q_D(const KMimeType);
     QStringList allParents;
-    const QString canonical = KMimeTypeFactory::self()->resolveAlias(name());
+    const QString canonical = KMimeTypeRepository::self()->resolveAlias(name());
     if (!canonical.isEmpty())
         allParents.append(canonical);
     collectParentMimeTypes(d->m_strName, allParents);
@@ -707,31 +667,133 @@ QString KMimeType::iconName( const KUrl& url) const
 QStringList KMimeType::patterns() const
 {
     Q_D(const KMimeType);
+    d->ensureXmlDataLoaded();
     return d->m_lstPatterns;
 }
 
-void KMimeType::setPatterns(const QStringList& patterns)
+// loads comment, icon, mainPattern, m_lstPatterns
+void KMimeTypePrivate::ensureXmlDataLoaded() const
 {
-    Q_D(KMimeType);
-    d->m_lstPatterns = patterns;
-}
+    if (m_xmlDataLoaded)
+        return;
 
-void KMimeType::internalClearData() // KDE5: remove
-{
-    //Q_D(KMimeType);
-    // Clear the data that KBuildMimeTypeFactory is going to refill - and only that data.
-    //d->m_lstPatterns.clear(); // not true anymore
-}
+    m_xmlDataLoaded = true;
 
-void KMimeType::setUserSpecifiedIcon(const QString& icon)
-{
-    Q_D(KMimeType);
-    d->m_iconName = icon;
+    const QString file = m_strName + ".xml";
+    const QStringList mimeFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", file);
+    if (mimeFiles.isEmpty()) {
+        kWarning() << "No file found for" << file << ", even though the file appeared in a directory listing.";
+        kWarning() << "Either it was just removed, or the directory doesn't have executable permission...";
+        kWarning() << KGlobal::dirs()->resourceDirs("xdgdata-mime");
+        return;
+    }
+
+    QString comment;
+    QString mainPattern;
+    const QStringList languageList = KGlobal::locale()->languageList();
+    QString preferredLanguage = languageList.first();
+    QMap<QString, QString> commentsByLanguage;
+
+    QListIterator<QString> mimeFilesIter(mimeFiles);
+    mimeFilesIter.toBack();
+    while (mimeFilesIter.hasPrevious()) { // global first, then local.
+        const QString fullPath = mimeFilesIter.previous();
+        QFile qfile(fullPath);
+        if (!qfile.open(QFile::ReadOnly))
+            continue;
+
+        QXmlStreamReader xml(&qfile);
+        if (xml.readNextStartElement()) {
+            if (xml.name() != "mime-type") {
+                continue;
+            }
+            const QString name = xml.attributes().value("type").toString();
+            if (name.isEmpty())
+                continue;
+            if (name != m_strName) {
+                kWarning() << "Got name" << name << "in file" << file << "expected" << m_strName;
+            }
+
+            while (xml.readNextStartElement()) {
+                const QStringRef tag = xml.name();
+                if (tag == "comment") {
+                    if (!comment.isEmpty()) { // already found, skip this one
+                        xml.skipCurrentElement();
+                        continue;
+                    }
+                    QString lang = xml.attributes().value("xml:lang").toString();
+                    const QString text = xml.readElementText();
+                    if (lang.isEmpty()) {
+                        lang = "en_US";
+                    }
+                    if (lang == preferredLanguage) {
+                        comment = text;
+                    } else {
+                        commentsByLanguage.insert(lang, text);
+                    }
+                    continue; // we called readElementText, so we're at the EndElement already.
+                } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
+                    m_iconName = xml.attributes().value("name").toString();
+                } else if (tag == "glob-deleteall") { // as written out by shared-mime-info >= 0.70
+                    mainPattern.clear();
+                    m_lstPatterns.clear();
+                } else if (tag == "glob") { // as written out by shared-mime-info >= 0.70
+                    const QString pattern = xml.attributes().value("pattern").toString();
+                    if (mainPattern.isEmpty() && pattern.startsWith('*')) {
+                        mainPattern = pattern;
+                    }
+                    if (!m_lstPatterns.contains(pattern))
+                        m_lstPatterns.append(pattern);
+                }
+                xml.skipCurrentElement();
+            }
+            if (xml.name() != "mime-type") {
+                kFatal() << "Programming error in KMimeType XML loading, please create a bug report on http://bugs.kde.org and attach the file" << fullPath;
+            }
+        }
+    }
+
+    if (comment.isEmpty()) {
+        Q_FOREACH(const QString& lang, languageList) {
+            const QString comm = commentsByLanguage.value(lang);
+            if (!comm.isEmpty()) {
+                comment = comm;
+                break;
+            }
+            const int pos = lang.indexOf('_');
+            if (pos != -1) {
+                // "pt_BR" not found? try just "pt"
+                const QString shortLang = lang.left(pos);
+                const QString comm = commentsByLanguage.value(shortLang);
+                if (!comm.isEmpty()) {
+                    comment = comm;
+                    break;
+                }
+            }
+        }
+        if (comment.isEmpty()) {
+            kWarning() << "Missing <comment> field in" << file;
+        }
+    }
+    m_strComment = comment;
+
+    const bool globsInXml = (KMimeType::sharedMimeInfoVersion() >= KDE_MAKE_VERSION(0, 70, 0));
+    if (globsInXml) {
+        if (!mainPattern.isEmpty() && m_lstPatterns.first() != mainPattern) {
+            // ensure it's first in the list of patterns
+            m_lstPatterns.removeAll(mainPattern);
+            m_lstPatterns.prepend(mainPattern);
+        }
+    } else {
+        // Fallback: get the patterns from the globs file
+        m_lstPatterns = KMimeTypeRepository::self()->patternsForMimetype(m_strName);
+    }
 }
 
 QString KMimeType::userSpecifiedIconName() const
 {
     Q_D(const KMimeType);
+    d->ensureXmlDataLoaded();
     return d->m_iconName;
 }
 
@@ -765,7 +827,7 @@ QString KMimeType::mainExtension() const
 {
     Q_D(const KMimeType);
 
-#if 1 // HACK START - can be removed once shared-mime-info > 0.60 is used/required.
+#if 1 // HACK START - can be removed once shared-mime-info >= 0.70 is used/required.
     // The idea was: first usable pattern from m_lstPatterns.
     // But update-mime-database makes a mess of the order of the patterns,
     // because it uses a hash internally.
@@ -793,8 +855,7 @@ QString KMimeType::mainExtension() const
     return QString();
 }
 
-void KMimeType::setParentMimeType(const QString&) // KDE5: remove
+int KMimeTypePrivate::serviceOffersOffset() const
 {
-    // Nothing. Don't ever call this. The method was internal, is now unused,
-    // but is wrapped by bindings (because it was protected before).
+    return KMimeTypeFactory::self()->serviceOffersOffset(name());
 }

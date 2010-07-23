@@ -20,7 +20,7 @@
 
 #include "kmimeassociations.h"
 #include <kmimetype.h>
-#include <kmimetypefactory.h>
+#include <kmimetyperepository_p.h>
 #include <kservice.h>
 #include <kconfiggroup.h>
 #include <kconfig.h>
@@ -28,8 +28,8 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-KMimeAssociations::KMimeAssociations(KOfferHash& offerHash, KMimeTypeFactory* mimeTypeFactory)
-    : m_offerHash(offerHash), m_mimeTypeFactory(mimeTypeFactory)
+KMimeAssociations::KMimeAssociations(KOfferHash& offerHash)
+    : m_offerHash(offerHash)
 {
 }
 
@@ -84,12 +84,7 @@ void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const 
 {
     Q_FOREACH(const QString& mimeName, group.keyList()) {
         const QStringList services = group.readXdgListEntry(mimeName);
-        KMimeType::Ptr mime = m_mimeTypeFactory->findMimeTypeByName(mimeName, KMimeType::ResolveAliases);
-        if (!mime) {
-            kDebug(7021) << file << "specifies unknown mimetype" << mimeName;
-            continue;
-        }
-        const QString resolvedMimeName = mime->name();
+        const QString resolvedMimeName = KMimeTypeRepository::self()->canonicalName(mimeName);
         int pref = basePreference;
         Q_FOREACH(const QString &service, services) {
             KService::Ptr pService = KService::serviceByStorageId(service);

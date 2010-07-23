@@ -19,6 +19,8 @@
 
 #include "kservice.h"
 #include "kservice_p.h"
+#include "kmimetypefactory.h"
+#include "kmimetyperepository_p.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -415,16 +417,7 @@ bool KService::hasServiceType( const QString& serviceType ) const
 
     if (!d->m_bValid) return false; // (useless) safety test
     const KServiceType::Ptr ptr = KServiceType::serviceType( serviceType );
-    // share the implementation, at least as long as
-    // we don't have special code for mimetype inheritance
-    return hasMimeType( ptr.data() );
-}
-
-bool KService::hasMimeType( const KServiceType* ptr ) const
-{
-    Q_D(const KService);
-    if (!ptr) return false;
-    int serviceOffset = offset();
+    const int serviceOffset = offset();
     // doesn't seem to work:
     //if ( serviceOffset == 0 )
     //    serviceOffset = serviceByStorageId( storageId() );
@@ -443,6 +436,38 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
         // also the case of parent servicetypes
         KServiceType::Ptr p = KServiceType::serviceType( st );
         if ( p && p->inherits( ptr->name() ) )
+            return true;
+    }
+    return false;
+}
+
+bool KService::hasMimeType( const KServiceType* ptr ) const
+{
+    if (!ptr) return false;
+
+    return hasMimeType(ptr->name());
+}
+
+bool KService::hasMimeType(const QString& mimeType) const
+{
+    Q_D(const KService);
+    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    int serviceOffset = offset();
+    if ( serviceOffset ) {
+        KMimeTypeFactory *factory = KMimeTypeFactory::self();
+        const int mimeOffset = factory->entryOffset(mime);
+        const int serviceOffersOffset = factory->serviceOffersOffset(mime);
+        if (serviceOffersOffset == -1)
+            return false;
+        return KServiceFactory::self()->hasOffer(mimeOffset, serviceOffersOffset, serviceOffset);
+    }
+
+    // fall-back code for services that are NOT from ksycoca
+    QVector<ServiceTypeAndPreference>::ConstIterator it = d->m_serviceTypes.begin();
+    for( ; it != d->m_serviceTypes.end(); ++it ) {
+        const QString& st = (*it).serviceType;
+        //kDebug(servicesDebugArea()) << "    has " << (*it);
+        if ( st == mime )
             return true;
         // TODO: should we handle inherited mimetypes here?
         // KMimeType was in kio when this code was written, this is the only reason it's not done.

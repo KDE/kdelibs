@@ -28,8 +28,7 @@ Boston, MA 02110-1301, USA.
 class KServiceTypePrivate : public KSycocaEntryPrivate
 {
 public:
-    K_SYCOCATYPE( KST_KServiceType, KSycocaEntryPrivate )  
-
+    K_SYCOCATYPE( KST_KServiceType, KSycocaEntryPrivate )
 
     KServiceTypePrivate(const QString &path)
         : KSycocaEntryPrivate(path),
@@ -41,11 +40,10 @@ public:
         : KSycocaEntryPrivate(_str, offset),
           m_serviceOffersOffset( -1 ), m_bDerived(false), m_parentTypeLoaded(false)
     {
-        load(_str);
     }
-  
+
     virtual ~KServiceTypePrivate() {}
-    
+
     virtual void save( QDataStream& );
 
     virtual QString name() const
@@ -62,12 +60,14 @@ public:
         return m_strComment;
     }
 
+    virtual int serviceOffersOffset() const { return m_serviceOffersOffset; }
+
     void init( KDesktopFile *config );
     void load(QDataStream& _str);
 
     KServiceType::Ptr parentType;
     QString m_strName;
-    QString m_strComment;
+    mutable /*remove mutable when kmimetype doesn't use this anymore*/ QString m_strComment;
     int m_serviceOffersOffset;
     QMap<QString, QVariant::Type> m_mapPropDefs;
     QMap<QString,QVariant> m_mapProps;

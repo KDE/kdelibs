@@ -94,8 +94,8 @@ KServiceTypePrivate::init( KDesktopFile *config )
 KServiceType::KServiceType( QDataStream& _str, int offset )
     : KSycocaEntry(*new KServiceTypePrivate(_str, offset))
 {
-    //Q_D(KServiceType);
-    //d->load(_str);
+    Q_D(KServiceType);
+    d->load(_str);
 }
 
 KServiceType::KServiceType( KServiceTypePrivate &dd)
@@ -226,7 +226,7 @@ void KServiceType::setServiceOffersOffset( int offset )
 int KServiceType::serviceOffersOffset() const
 {
     Q_D(const KServiceType);
-    return d->m_serviceOffersOffset;
+    return d->serviceOffersOffset();
 }
 
 QString KServiceType::comment() const

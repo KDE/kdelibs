@@ -237,6 +237,8 @@ set(kdecore_LIB_SRCS
    services/kmimemagicrule.cpp
    services/kmimetypetrader.cpp
    services/kmimetype.cpp
+   services/kmimeglobsfileparser.cpp
+   services/kmimetyperepository.cpp
    services/kservice.cpp
    services/kserviceaction.cpp
    services/kservicefactory.cpp

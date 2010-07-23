@@ -25,6 +25,7 @@
 #include "kmimetype.h"
 #include "kservicefactory.h"
 #include "kmimetypefactory.h"
+#include "kmimetyperepository_p.h"
 
 #include <kdebug.h>
 
@@ -53,13 +54,18 @@ KMimeTypeTrader::~KMimeTypeTrader()
 static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
 {
     KServiceOfferList lst;
-    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
-    if ( !mime ) {
+
+    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    KMimeTypeFactory *factory = KMimeTypeFactory::self();
+    const int offset = factory->entryOffset(mime);
+    if ( !offset ) {
         kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
         return lst; // empty
     }
-    if ( mime->serviceOffersOffset() > -1 ) {
-        lst = KServiceFactory::self()->offers( mime->offset(), mime->serviceOffersOffset() );
+
+    const int serviceOffersOffset = factory->serviceOffersOffset(mime);
+    if ( serviceOffersOffset > -1 ) {
+        lst = KServiceFactory::self()->offers(offset, serviceOffersOffset);
     }
     return lst;
 }
@@ -67,13 +73,16 @@ static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
 static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
 {
     KService::List lst;
-    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
-    if ( !mime ) {
+    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    KMimeTypeFactory *factory = KMimeTypeFactory::self();
+    const int offset = factory->entryOffset(mime);
+    if ( !offset ) {
         kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
         return lst; // empty
     }
-    if ( mime->serviceOffersOffset() > -1 ) {
-        lst = KServiceFactory::self()->serviceOffers( mime->offset(), mime->serviceOffersOffset() );
+    const int serviceOffersOffset = factory->serviceOffersOffset(mime);
+    if ( serviceOffersOffset > -1 ) {
+        lst = KServiceFactory::self()->serviceOffers(offset, serviceOffersOffset);
     }
     return lst;
 }

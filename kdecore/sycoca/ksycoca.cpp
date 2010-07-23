@@ -55,7 +55,7 @@
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
  */
-#define KSYCOCA_VERSION 162
+#define KSYCOCA_VERSION 200
 
 /**
  * Sycoca file name, used internally (by kbuildsycoca)
@@ -193,7 +193,7 @@ bool KSycocaPrivate::openDatabase(bool openDummyIfNotFound)
     QString path = KSycoca::absoluteFilePath();
 
     bool canRead = KDE::access(path, R_OK) == 0;
-    kDebug(7011) << "Trying to open ksycoca from " << path;
+    kDebug(7011) << "Trying to open ksycoca from" << path;
     if (!canRead) {
         path = KSycoca::absoluteFilePath(KSycoca::GlobalDatabase);
         if (!path.isEmpty()) {

@@ -26,11 +26,11 @@ class KMimeTypePrivate: public KServiceTypePrivate
 public:
   K_SYCOCATYPE( KST_KMimeType, KServiceTypePrivate )
 
-  KMimeTypePrivate(const QString &path) : KServiceTypePrivate(path) {}
+  KMimeTypePrivate(const QString &path) : KServiceTypePrivate(path), m_xmlDataLoaded(false)
+    {}
   KMimeTypePrivate(QDataStream &_str, int offset)
-      : KServiceTypePrivate(_str, offset)
+      : KServiceTypePrivate(_str, offset), m_xmlDataLoaded(false)
   {
-    loadInternal(_str);
   }
 
   virtual void save(QDataStream &s);
@@ -38,6 +38,12 @@ public:
   virtual QVariant property(const QString &name ) const;
 
   virtual QStringList propertyNames() const;
+
+    virtual QString comment(const KUrl & = KUrl()) const
+    {
+        ensureXmlDataLoaded();
+        return m_strComment;
+    }
 
     // virtual because reimplemented in KFolderMimeType
     virtual QString iconName(const KUrl &) const
@@ -57,12 +63,12 @@ public:
     }
 
     bool inherits(const QString& mime) const;
+    void ensureXmlDataLoaded() const;
+    virtual int serviceOffersOffset() const;
 
-    QStringList m_lstPatterns;
-    QString m_iconName; // user-specified
-    // For any new field here, add it to loadInternal() and save(), for persistence.
-
-    void loadInternal(QDataStream& _str);
+    mutable QStringList m_lstPatterns;
+    mutable QString m_iconName; // user-specified
+    mutable bool m_xmlDataLoaded;
 };
 
 #endif // __kmimetype_p_h__

@@ -43,7 +43,7 @@ class KMimeTypePrivate;
  *
  * @see KServiceType
  */
-class KDECORE_EXPORT KMimeType : public KServiceType
+class KDECORE_EXPORT KMimeType : public KServiceType // TODO KDE5: drop kservicetype inheritance, inherit kshared
 {
     Q_DECLARE_PRIVATE( KMimeType )
 public:
@@ -411,9 +411,7 @@ public:
 
 protected:
 
-    friend class KMimeTypeFactory; // for KMimeType(QDataStream&,int)
-    friend class KBuildMimeTypeFactory; // for KMimeType(QDataStream&,int), setUserSpecifiedIcon etc.
-    friend class KMimeFileParser; // for addPattern and addMagicRule
+    friend class KMimeTypeRepository; // for KMimeType(QString,QString,QString)
 
     /**
      * @internal Construct a service from a stream.
@@ -449,14 +447,10 @@ protected:
     KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );
 
 private:
-    /// @internal for kbuildsycoca
-    void setPatterns(const QStringList& patterns);
-    /// @internal for kbuildsycoca
-    void internalClearData();
-    /// @internal for kbuildsycoca
-    void setUserSpecifiedIcon(const QString& icon);
-    /// @internal for kbuildsycoca
-    void setParentMimeType(const QString& parent);
+    // Forbidden nowadays in KMimeType
+    int offset() const;
+    void save(QDataStream &s);
+
     void loadInternal( QDataStream& _str);
     static void buildDefaultType();
     static void checkEssentialMimeTypes();

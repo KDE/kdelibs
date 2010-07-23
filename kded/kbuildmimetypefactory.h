@@ -22,7 +22,8 @@
 
 #include <kmimetypefactory.h>
 #include <QtCore/QStringList>
-#include "kmimefileparser.h"
+#include <kmimeglobsfileparser_p.h>
+#include <kmimetype.h>
 
 /**
  * Mime-type factory for building ksycoca
@@ -39,10 +40,10 @@ public:
   virtual ~KBuildMimeTypeFactory();
 
     /**
-     * Find a mime type in the database file
+     * Find a mime type entry in the database file
      * @return a pointer to the mimetype in the memory dict (don't free!)
      */
-    virtual KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
+    MimeTypeEntry::Ptr findMimeTypeEntryByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
 
   virtual KSycocaEntry::List allEntries() const;
 
@@ -51,7 +52,7 @@ public:
    */
   virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
 
-  virtual KMimeType * createEntry( int ) const { assert(0); return 0L; }
+  virtual MimeTypeEntry * createEntry( int ) const { assert(0); return 0L; }
 
   /**
    * Write out mime type specific index files.
@@ -70,11 +71,6 @@ public:
    * Returns all resource types for this factory
    */
   static QStringList resourceTypes();
-
-private:
-    void savePatternLists(QDataStream &str);
-    KMimeFileParser m_parser;
-    mutable QHash<QString, QString /*mainExtension*/> m_parsedMimeTypes;
 };
 
 #endif

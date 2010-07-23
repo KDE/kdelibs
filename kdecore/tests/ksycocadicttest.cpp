@@ -19,7 +19,7 @@
 
 #include <ksycoca.h>
 #include <QBuffer>
-#include <kmimetype.h>
+#include <kservicetype.h>
 #include <ksycocadict.h>
 #include <kdebug.h>
 #include "qtest_kde.h"
@@ -30,18 +30,18 @@ class KSycocaDictTest : public QObject
 
 private Q_SLOTS:
     void testStandardDict();
-    void testExtensionDict();
+    //void testExtensionDict();
 private:
-    void add(KSycocaDict& dict, const QString& key, const QString& mimeType);
+    void add(KSycocaDict& dict, const QString& key, const QString& name)
+    {
+        KServiceType::Ptr ptr = KServiceType::serviceType(name);
+        if (!ptr)
+            kWarning() << "serviceType not found" << name;
+        dict.add(key, KSycocaEntry::Ptr::staticCast(ptr));
+    }
 };
 
 QTEST_KDEMAIN_CORE(KSycocaDictTest)
-
-void KSycocaDictTest::add(KSycocaDict& dict, const QString& key, const QString& mimeType)
-{
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
-    dict.add(key, KSycocaEntry::Ptr::staticCast(mime));
-}
 
 // Standard use of KSycocaDict: mapping entry name to entry
 void KSycocaDictTest::testStandardDict()
@@ -49,22 +49,23 @@ void KSycocaDictTest::testStandardDict()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll ); // needed for KMimeType...
 
+  QBENCHMARK {
     QByteArray buffer;
     QStringList mimeTypes;
-    mimeTypes << "text/plain"
-              << "application/xml"
-              << "application/pdf"
-              << "application/x-php"
-              << "application/x-zerosize"
-              << "application/octet-stream"
-              << "application/msword";
+    mimeTypes << "KUriFilter/Plugin"
+              << "KDataTool"
+              << "ThumbCreator"
+              << "KScan/KScanDialog"
+              << "Browser/View"
+              << "Plasma/Applet"
+              << "Plasma/Runner";
     {
         KSycocaDict dict;
         foreach(const QString& str, mimeTypes) {
             add(dict, str, str);
         }
-        dict.remove("application/msword"); // just to test remove
-        add(dict, "application/msword", "application/msword");
+        dict.remove("ThumbCreator"); // just to test remove
+        add(dict, "ThumbCreator", "ThumbCreator");
         QCOMPARE((int)dict.count(), mimeTypes.count());
         QDataStream saveStream(&buffer, QIODevice::WriteOnly);
         dict.save(saveStream);
@@ -72,24 +73,28 @@ void KSycocaDictTest::testStandardDict()
 
     QDataStream stream(buffer);
     KSycocaDict loadingDict(&stream, 0);
-    int offset = loadingDict.find_string("text/plain");
+    int offset = loadingDict.find_string("Browser/View");
     QVERIFY(offset > 0);
-    QCOMPARE(offset, KMimeType::mimeType("text/plain")->offset());
+    QCOMPARE(offset, KServiceType::serviceType("Browser/View")->offset());
     foreach(const QString& str, mimeTypes) {
         int offset = loadingDict.find_string(str);
         QVERIFY(offset > 0);
-        QCOMPARE(offset, KMimeType::mimeType(str)->offset());
+        QCOMPARE(offset, KServiceType::serviceType(str)->offset());
     }
     offset = loadingDict.find_string("doesnotexist");
     QCOMPARE(offset, 0); // could be non 0 according to the docs, too; if non 0, we should check that the pointed mimetype doesn't have this name.
+  }
 }
 
 // New use of KSycocaDict: mapping extension to mimetype; kind of a qmultihash
+//   Not used anymore -> test disabled
+#if 0
 void KSycocaDictTest::testExtensionDict()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll ); // needed for KMimeType...
 
+  /*QBENCHMARK*/ {
     QByteArray buffer;
     QStringList extensions;
     extensions << "txt"
@@ -136,6 +141,8 @@ void KSycocaDictTest::testExtensionDict()
     QCOMPARE(offsetList.count(), 2);
     QCOMPARE(offsetList[0], KMimeType::mimeType("application/msword")->offset());
     QCOMPARE(offsetList[1], KMimeType::mimeType("text/plain")->offset());
+  }
 }
+#endif
 
 #include "ksycocadicttest.moc"

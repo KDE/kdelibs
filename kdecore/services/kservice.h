@@ -53,7 +53,7 @@ class KServicePrivate;
  * @see KServiceGroup
  * @author Torben Weis
  */
-class KDECORE_EXPORT KService : public KSycocaEntry
+class KDECORE_EXPORT KService : public KSycocaEntry // TODO KDE5: inherit kshared, but move KSycocaEntry to Private
 {
 public:
     typedef KSharedPtr<KService> Ptr;
@@ -272,7 +272,7 @@ public:
     bool hasServiceType( const QString& serviceTypePtr ) const;
 
     /**
-     * Checks whether the mime supports this mime type
+     * Checks whether the service supports this mime type
      * @param mimeTypePtr The name of the mime type you are
      *        interested in determining whether this service supports.
      *
@@ -287,8 +287,17 @@ public:
      * or one of the KService::serviceBy methods.
      *
      * @return true if the mime type you specified is supported, otherwise false.
+     * @deprecated, use hasMimeType(QString)
      */
-    bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+    KDE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+
+    /**
+     * Checks whether the service supports this mime type
+     * @param mimeTypePtr The name of the mime type you are
+     *        interested in determining whether this service supports.
+     * @since 4.6
+     */
+    bool hasMimeType( const QString& mimeType ) const;
 
     /**
      * Set to true if it is allowed to use this service as the default (main)
@@ -336,7 +345,7 @@ public:
      * Whether the service should be shown in KDE at all
      * (including in context menus).
      * @return true if the service should be shown.
-     * 
+     *
      * KMimeTypeTrader honours this and removes such services
      * from its results.
      *

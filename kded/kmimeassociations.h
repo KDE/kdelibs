@@ -62,7 +62,7 @@ private:
 class KMimeAssociations
 {
 public:
-    explicit KMimeAssociations(KOfferHash& offerHash, KMimeTypeFactory* mimeTypeFactory);
+    explicit KMimeAssociations(KOfferHash& offerHash);
 
     // Read mimeapps.list files
     bool parseAllMimeAppsList();
@@ -74,7 +74,6 @@ private:
     void parseRemovedAssociations(const KConfigGroup& group, const QString& file);
 
     KOfferHash& m_offerHash;
-    KMimeTypeFactory* m_mimeTypeFactory;
 };
 
 #endif /* KMIMEASSOCIATIONS_H */

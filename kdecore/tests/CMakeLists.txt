@@ -107,6 +107,13 @@ set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
 kde4_add_unit_test(kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
+########### kmimeglobsfileparsertest ###############
+
+# compile kmimeglobsfileparser.cpp into the test since it's not exported
+set(kmimeglobsfileparsertest_SRCS kmimeglobsfileparsertest.cpp ../services/kmimeglobsfileparser.cpp)
+kde4_add_unit_test(kmimeglobsfileparsertest ${kmimeglobsfileparsertest_SRCS})
+target_link_libraries(kmimeglobsfileparsertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+
 ########### kfiltertest ###############
 
 # compile httpfilter.cpp into the test since it's not part of kdelibs

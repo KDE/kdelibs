@@ -36,7 +36,7 @@
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <kmimetypefactory.h>
+#include <kmimetyperepository_p.h>
 #include <ktemporaryfile.h>
 #include <ktempdir.h>
 #include <kdesktopfile.h>
@@ -254,6 +254,9 @@ void KMimeTypeTest::testAdditionalGlobs_data()
     QTest::addColumn<bool>("expected");
 
     QTest::newRow("one star, match") << "foo.txt" << "*.txt" << true;
+    QTest::newRow("README*, match") << "README.foo" << "README*" << true;
+    QTest::newRow("README.*, match") << "README.foo" << "README.*" << true;
+    QTest::newRow("README.*, no match") << "README" << "README.*" << false;
     QTest::newRow("two stars, match") << "andre.ts.001" << "*.ts.0*" << true;
     QTest::newRow("two stars, no match") << "andre.ts" << "*.ts.0*" << false;
 }
@@ -264,7 +267,7 @@ void KMimeTypeTest::testAdditionalGlobs()
     QFETCH(QString, pattern);
     QFETCH(bool, expected);
 
-    QCOMPARE(KMimeTypeFactory::matchFileName(filename, pattern), expected);
+    QCOMPARE(KMimeTypeRepository::matchFileName(filename, pattern), expected);
 }
 
 // All the simple tests for findByPath are in testFindByPathUsingFileName_data.
@@ -350,7 +353,6 @@ void KMimeTypeTest::testFindByUrl()
     mime = KMimeType::findByUrl(KUrl("fish://host/test1")); // like fish does, to test for known extensions
     QVERIFY(mime);
     QCOMPARE(mime->name(), QString::fromLatin1("application/octet-stream"));
-
 }
 
 void KMimeTypeTest::testFindByNameAndContent()
@@ -597,6 +599,8 @@ void KMimeTypeTest::testMimeTypeInheritancePerformance()
     // 0.57 msec / 1,115,000 ticks / 938,356 instr. loads per iteration
     // After converting the QMap for aliases into a QHash too:
     // 0.48 msec / 960,000 ticks / 791,404 instr. loads per iteration
+    // July 2010: After moving KMimeType out of ksycoca:
+    // 0.21 msec / 494,000 ticks / 568,345 instr. loads per iteration
 }
 
 // Helper method for all the trader tests
@@ -694,9 +698,9 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QString katepartPath = KStandardDirs::locate( "services", "katepart.desktop" );
     QVERIFY( !katepartPath.isEmpty() );
     KService katepart( katepartPath );
-    QVERIFY( katepart.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    //QVERIFY( katepart.hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // inherited mimetype; fails
-    QVERIFY( !katepart.hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
+    QVERIFY( katepart.hasMimeType( "text/plain" ) );
+    //QVERIFY( katepart.hasMimeType( "text/x-patch" ) ); // inherited mimetype; fails
+    QVERIFY( !katepart.hasMimeType( "image/png" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
     QVERIFY( !katepart.hasServiceType( "KTextEditor/Plugin" ) );
@@ -712,9 +716,9 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
 {
     KService::Ptr katepart = KService::serviceByDesktopPath( "katepart.desktop" );
     QVERIFY( !katepart.isNull() );
-    QVERIFY( katepart->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    QVERIFY( katepart->hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // due to inheritance
-    QVERIFY( !katepart->hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
+    QVERIFY( katepart->hasMimeType( "text/plain" ) );
+    QVERIFY( katepart->hasMimeType( "text/x-patch" ) ); // due to inheritance
+    QVERIFY( !katepart->hasMimeType( "image/png" ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
     QVERIFY( !katepart->hasServiceType( "KTextEditor/Plugin" ) );
@@ -844,7 +848,7 @@ void KMimeTypeTest::testParseMagicFile_data()
 
     QBuffer magicBuffer(&magicData);
     magicBuffer.open(QIODevice::ReadOnly);
-    m_rules = KMimeTypeFactory::self()->parseMagicFile(&magicBuffer, "magicData");
+    m_rules = KMimeTypeRepository::self()->parseMagicFile(&magicBuffer, "magicData");
     QCOMPARE(m_rules.count(), 7);
 
     const KMimeMagicRule rule = m_rules[0];

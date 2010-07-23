@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kmimetypefactory.h>
 #include <kprocess.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
@@ -193,7 +192,7 @@ private Q_SLOTS:
     void testParseSingleFile()
     {
         KOfferHash offerHash;
-        KMimeAssociations parser(offerHash, KMimeTypeFactory::self());
+        KMimeAssociations parser(offerHash);
 
         KTemporaryFile tempFile;
         QVERIFY(tempFile.open());
@@ -234,7 +233,7 @@ private Q_SLOTS:
     void testGlobalAndLocalFiles()
     {
         KOfferHash offerHash;
-        KMimeAssociations parser(offerHash, KMimeTypeFactory::self());
+        KMimeAssociations parser(offerHash);
 
         // Write global file
         KTemporaryFile tempFileGlobal;

@@ -37,12 +37,10 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_IN
 set(kbuildsycoca_KDEINIT_SRCS
    kbuildsycoca.cpp
    kbuildmimetypefactory.cpp
-   kmimefileparser.cpp
    kmimeassociations.cpp
    kbuildservicetypefactory.cpp
    kbuildservicefactory.cpp
    kbuildservicegroupfactory.cpp
-   #kbuildimageiofactory.cpp
    kbuildprotocolinfofactory.cpp
    kctimefactory.cpp
    vfolder_menu.cpp

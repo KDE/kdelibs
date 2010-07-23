@@ -20,6 +20,7 @@
 #include "kbuildservicefactory.h"
 #include "kbuildservicegroupfactory.h"
 #include "kbuildmimetypefactory.h"
+#include "kmimetyperepository_p.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
@@ -150,50 +151,40 @@ void KBuildServiceFactory::collectInheritedServices()
     // For "removed associations" to work, we can't just grab everything from all parents.
     // We need to process parents before children, hence the recursive call in
     // collectInheritedServices(mime) and the QSet to process a given parent only once.
-    QSet<KMimeType::Ptr> visitedMimes;
-    const KMimeType::List allMimeTypes = m_mimeTypeFactory->allMimeTypes();
-    KMimeType::List::const_iterator itm = allMimeTypes.begin();
-    for( ; itm != allMimeTypes.end(); ++itm ) {
-        const KMimeType::Ptr mimeType = *itm;
+    QSet<QString> visitedMimes;
+    const QStringList allMimeTypes = m_mimeTypeFactory->allMimeTypes();
+    Q_FOREACH(const QString& mimeType, allMimeTypes) {
         collectInheritedServices(mimeType, visitedMimes);
     }
     // TODO do the same for all/all and all/allfiles, if (!KServiceTypeProfile::configurationMode())
 }
 
-void KBuildServiceFactory::collectInheritedServices(KMimeType::Ptr mimeType, QSet<KMimeType::Ptr>& visitedMimes)
+void KBuildServiceFactory::collectInheritedServices(const QString& mimeTypeName, QSet<QString>& visitedMimes)
 {
-    if (visitedMimes.contains(mimeType))
+    if (visitedMimes.contains(mimeTypeName))
         return;
-    visitedMimes.insert(mimeType);
+    visitedMimes.insert(mimeTypeName);
 
     // With multiple inheritance, the "mimeTypeInheritanceLevel" isn't exactly
     // correct (it should only be increased when going up a level, not when iterating
     // through the multiple parents at a given level). I don't think we care, though.
     int mimeTypeInheritanceLevel = 0;
 
-    const QString mimeTypeName = mimeType->name();
-    Q_FOREACH(const QString& parent, mimeType->parentMimeTypes()) {
-        const KMimeType::Ptr parentMimeType =
-            m_mimeTypeFactory->findMimeTypeByName(parent, KMimeType::ResolveAliases);
+    Q_FOREACH(const QString& parentMimeType, KMimeTypeRepository::self()->parents(mimeTypeName)) {
 
-        if ( parentMimeType ) {
-            collectInheritedServices(parentMimeType, visitedMimes);
+        collectInheritedServices(parentMimeType, visitedMimes);
 
-            ++mimeTypeInheritanceLevel;
-            const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
-            QList<KServiceOffer>::const_iterator itserv = offers.begin();
-            const QList<KServiceOffer>::const_iterator endserv = offers.end();
-            for ( ; itserv != endserv; ++itserv ) {
-                if (!m_offerHash.hasRemovedOffer(mimeTypeName, (*itserv).service())) {
-                    KServiceOffer offer(*itserv);
-                    offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
-                    //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
-                    m_offerHash.addServiceOffer( mimeTypeName, offer );
-                }
+        ++mimeTypeInheritanceLevel;
+        const QList<KServiceOffer>& offers = m_offerHash.offersFor(parentMimeType);
+        QList<KServiceOffer>::const_iterator itserv = offers.begin();
+        const QList<KServiceOffer>::const_iterator endserv = offers.end();
+        for ( ; itserv != endserv; ++itserv ) {
+            if (!m_offerHash.hasRemovedOffer(mimeTypeName, (*itserv).service())) {
+                KServiceOffer offer(*itserv);
+                offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
+                //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
+                m_offerHash.addServiceOffer( mimeTypeName, offer );
             }
-        } else {
-            kWarning(7012) << "parent mimetype not found:" << parent;
-            break;
         }
     }
 }
@@ -252,41 +243,31 @@ void KBuildServiceFactory::populateServiceTypes()
             const QString stName = serviceTypeList[i].serviceType;
             // It could be a servicetype or a mimetype.
             KServiceType::Ptr serviceType = KServiceType::serviceType(stName);
-            if (!serviceType) {
-                serviceType = KServiceType::Ptr::staticCast(m_mimeTypeFactory->findMimeTypeByName(stName, KMimeType::ResolveAliases));
-            }
-            // TODO. But maybe we should rename all/all to */*, to also support image/*?
-            // Not sure how to model all/allfiles then, though
-            // Also this kind of thing isn't in the XDG standards...
-#if 0
-            if (!serviceType) {
-                if ( stName == QLatin1String( "all/all" ) ) {
-                    hasAllAll = true;
+            if (serviceType) {
+                const int preference = serviceTypeList[i].preference;
+                const QString parent = serviceType->parentServiceType();
+                if (!parent.isEmpty())
+                    serviceTypeList.append(KService::ServiceTypeAndPreference(preference, parent));
+
+                //kDebug(7021) << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
+                m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
+            } else {
+                KMimeType::Ptr mime = KMimeType::mimeType(stName, KMimeType::ResolveAliases);
+                if (mime) {
+                    m_offerHash.addServiceOffer(stName, KServiceOffer(service, serviceTypeList[i].preference, 0, service->allowAsDefault()) );
+                } else {
+                    kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
                     continue;
-                } else if ( stName == QLatin1String( "all/allfiles" ) ) {
-                    hasAllFiles = true;
-                    continue;
+                    // technically we could call addServiceOffer here, 'mime' isn't used. But it
+                    // would be useless, since the loops for writing out the offers iterate
+                    // over all known servicetypes and mimetypes. Unknown -> never written out.
                 }
             }
-#endif
-
-            if (!serviceType) {
-                kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
-                continue;
-            }
-
-            const int preference = serviceTypeList[i].preference;
-            const QString parent = serviceType->parentServiceType();
-            if (!parent.isEmpty())
-                serviceTypeList.append(KService::ServiceTypeAndPreference(preference, parent));
-
-            //kDebug(7021) << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
-            m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
         }
     }
 
     // Read user preferences (added/removed associations) and add/remove serviceoffers to m_offerHash
-    KMimeAssociations mimeAssociations(m_offerHash, m_mimeTypeFactory);
+    KMimeAssociations mimeAssociations(m_offerHash);
     mimeAssociations.parseAllMimeAppsList();
 
     // Now for each mimetype, collect services from parent mimetypes
@@ -311,9 +292,10 @@ void KBuildServiceFactory::populateServiceTypes()
     const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf )
     {
-        KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
+        KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr::staticCast( *itmtf );
         const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
+            //kDebug() << entry->name() << "offset=" << offersOffset;
             entry->setServiceOffersOffset( offersOffset );
             offersOffset += offerEntrySize * numOffers;
         }
@@ -352,7 +334,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
     const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf ) {
         // export associated services
-        const KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
+        const KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr::staticCast( *itmtf );
         Q_ASSERT( entry );
         QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
