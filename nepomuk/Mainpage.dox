@@ -510,6 +510,29 @@ Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
 Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
 \endcode
 
+\subsection nepomuk_fancy_query_operators Fancy Operators
+
+Starting with KDE SC 4.6 queries can be constructed using well known C++ operators. The above examples can now be
+written as:
+
+\code
+// match all EmailAddress instances with a specific email address:
+Nepomuk::Query::ComparisonTerm email = Vocabulary::NCO::emailAddress() == Soprano::LiteralValue( "trueg@kde.org" );
+
+// match all nco:PersonContact instances
+Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+
+// match all person contacts with a specific email address
+Nepomuk::Query::AndTerm = type && ( Vocabulary::NCO::hasEmailAddress() == email );
+\endcode
+
+Furthermore literal comparisons can now be written as:
+
+\code
+Nepomuk::Query::ComparisonTerm mtime
+     = Nepomuk::Vocabulary::NIE::lastModified() > Nepomuk::Query::LiteralTerm( QDateTime::currentDateTime().addDays(-7) );
+\endcode
+
 \sa \ref examples_query
 */
 

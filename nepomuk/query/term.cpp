@@ -327,6 +327,42 @@ Nepomuk::Query::Term Nepomuk::Query::operator!( const Nepomuk::Query::Term& term
 }
 
 
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator<( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return ComparisonTerm( property, term, ComparisonTerm::Smaller );
+}
+
+
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator>( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return ComparisonTerm( property, term, ComparisonTerm::Greater );
+}
+
+
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator<=( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return ComparisonTerm( property, term, ComparisonTerm::SmallerOrEqual );
+}
+
+
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator>=( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return ComparisonTerm( property, term, ComparisonTerm::GreaterOrEqual );
+}
+
+
+Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator==( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return ComparisonTerm( property, term, ComparisonTerm::Equal );
+}
+
+
+Nepomuk::Query::Term Nepomuk::Query::operator!=( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
+{
+    return !( property == term );
+}
+
+
 uint Nepomuk::Query::qHash( const Nepomuk::Query::Term& term )
 {
     switch( term.type() ) {

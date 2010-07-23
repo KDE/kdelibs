@@ -29,6 +29,10 @@
 #include "nepomukquery_export.h"
 
 namespace Nepomuk {
+    namespace Types {
+        class Property;
+    }
+
     namespace Query {
 
         class LiteralTerm;
@@ -404,7 +408,7 @@ namespace Nepomuk {
          * Logical and operator which combines two terms into
          * one term matching both \p term1 and \p term2.
          *
-         * \sa AndTerm
+         * \relates AndTerm
          *
          * \since 4.6
          */
@@ -414,7 +418,7 @@ namespace Nepomuk {
          * Logical or operator which combines two terms into
          * one term matching either \p term1 or \p term2.
          *
-         * \sa OrTerm
+         * \relates OrTerm
          *
          * \since 4.6
          */
@@ -425,17 +429,82 @@ namespace Nepomuk {
          * one term.
          *
          * \sa NegationTerm::negateTerm()
+         * \relates NegationTerm
          *
          * \since 4.6
          */
         NEPOMUKQUERY_EXPORT Term operator!( const Term& term );
 
+        /**
+         * Comparision operator for simple creation of ComparisonTerm objects using the
+         * ComparisonTerm::Smaller comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         */
+        NEPOMUKQUERY_EXPORT ComparisonTerm operator<( const Types::Property& property, const Term& term );
+
+        /**
+         * Comparision operator for simple creation of ComparisonTerm objects using the
+         * ComparisonTerm::Greater comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         */
+        NEPOMUKQUERY_EXPORT ComparisonTerm operator>( const Types::Property& property, const Term& term );
+
+        /**
+         * Comparision operator for simple creation of ComparisonTerm objects using the
+         * ComparisonTerm::SmallerOrEqual comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         */
+        NEPOMUKQUERY_EXPORT ComparisonTerm operator<=( const Types::Property& property, const Term& term );
+
+        /**
+         * Comparision operator for simple creation of ComparisonTerm objects using the
+         * ComparisonTerm::GreaterOrEqual comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         */
+        NEPOMUKQUERY_EXPORT ComparisonTerm operator>=( const Types::Property& property, const Term& term );
+
+        /**
+         * Comparision operator for simple creation of ComparisonTerm objects using the
+         * ComparisonTerm::Equal comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         */
+        NEPOMUKQUERY_EXPORT ComparisonTerm operator==( const Types::Property& property, const Term& term );
+
+        /**
+         * Comparision operator for simple creation of negated ComparisionTerm objects using the
+         * ComparisonTerm::Equal comparator.
+         *
+         * \since 4.6
+         *
+         * \relates ComparisonTerm
+         *
+         * \sa NegationTerm
+         */
+        NEPOMUKQUERY_EXPORT Term operator!=( const Types::Property& property, const Term& term );
+
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Term& );
     }
 }
 
+/** \cond hide_nepomuk_term_clone_from_doxygen */
 // there is a hand written instantiation of clone()
 template<> Nepomuk::Query::TermPrivate* QSharedDataPointer<Nepomuk::Query::TermPrivate>::clone();
+/** \endcond */
 
 // FIXME: the compiler does not find the operator in the class
 NEPOMUKQUERY_EXPORT QDebug operator<<( QDebug, const Nepomuk::Query::Term& );
