@@ -734,10 +734,14 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
         if ( dt.isValid() ) {
             KDE_struct_stat dest_statbuf;
             if (KDE::stat( dest_orig, &dest_statbuf ) == 0) {
-                struct utimbuf utbuf;
-                utbuf.actime = dest_statbuf.st_atime; // access time, unchanged
-                utbuf.modtime = dt.toTime_t(); // modification time
-                KDE::utime( dest_orig, &utbuf );
+                struct timeval utbuf[2];
+                // access time
+                utbuf[0].tv_sec = dest_statbuf.st_atime; // access time, unchanged  ## TODO preserve msec
+                utbuf[0].tv_usec = 0;
+                // modification time
+                utbuf[1].tv_sec = dt.toTime_t();
+                utbuf[1].tv_usec = dt.time().msec() * 1000;
+                utimes( QFile::encodeName(dest_orig), utbuf );
             }
         }
 
@@ -1315,6 +1319,8 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
 }
 #endif
 
+// We could port this to KTempDir::removeDir but then we wouldn't be able to tell the user
+// where exactly the deletion failed, in case of errors.
 bool FileProtocol::deleteRecursive(const QString& path)
 {
     //kDebug() << path;
