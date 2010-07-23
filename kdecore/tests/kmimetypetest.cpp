@@ -130,9 +130,6 @@ QTEST_KDEMAIN_CORE( KMimeTypeTest )
 
 void KMimeTypeTest::testByName()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
@@ -166,9 +163,6 @@ void KMimeTypeTest::testByName()
 
 void KMimeTypeTest::testIcons()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
     checkIcon( KUrl( "file:/tmp/" ), "inode-directory" );
 
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
@@ -185,8 +179,6 @@ void KMimeTypeTest::testIcons()
 
 void KMimeTypeTest::testFindByPathUsingFileName_data()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
     QTest::addColumn<QString>("fileName");
     QTest::addColumn<QString>("expectedMimeType");
     // Maybe we could also add a expectedAccuracy column...
@@ -274,10 +266,6 @@ void KMimeTypeTest::testAdditionalGlobs()
 // In here we do the tests that need some content in a temporary file.
 void KMimeTypeTest::testFindByPathWithContent()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
-
     KMimeType::Ptr mime;
 
     // Test a real PDF file.
@@ -466,9 +454,6 @@ void KMimeTypeTest::testFindByFileContent()
 
 void KMimeTypeTest::testAllMimeTypes()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
     const KMimeType::List lst = KMimeType::allMimeTypes(); // does NOT include aliases
     QVERIFY( !lst.isEmpty() );
 
@@ -489,9 +474,6 @@ void KMimeTypeTest::testAllMimeTypes()
 
 void KMimeTypeTest::testAlias()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
     const KMimeType::Ptr canonical = KMimeType::mimeType( "application/xml" );
     QVERIFY( canonical );
     KMimeType::Ptr alias = KMimeType::mimeType("text/xml", KMimeType::DontResolveAlias);
@@ -510,9 +492,6 @@ void KMimeTypeTest::testAlias()
 
 void KMimeTypeTest::testMimeTypeParent()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
     // All file-like mimetypes inherit from octet-stream
     const KMimeType::Ptr wordperfect = KMimeType::mimeType("application/vnd.wordperfect");
     QVERIFY(wordperfect);
@@ -892,6 +871,24 @@ void KMimeTypeTest::testParseMagicFile()
     }
     QCOMPARE(found, expected);
     testBuffer.close();
+}
+
+void KMimeTypeTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    // Note that data-based tests cannot be used here (QTest::fetchData asserts).
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByUrl);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByFileContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByNameAndContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByPathWithContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testAllMimeTypes);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testAlias);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testMimeTypeParent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testPreferredService);
+    kDebug() << "Joining all threads";
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
 }
 
 #include "kmimetypetest.moc"

@@ -58,6 +58,8 @@ private Q_SLOTS:
     void testExtractKnownExtension();
     void testParseMagicFile_data();
     void testParseMagicFile();
+
+    void testThreads();
 private:
     QList<KMimeMagicRule> m_rules;
     QString m_nonKdeApp;

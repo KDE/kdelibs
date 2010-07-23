@@ -21,6 +21,8 @@
 #include <kstandarddirs.h>
 #include <QFile>
 #include "kmimetype.h"
+#include <kmessage.h>
+#include <klocale.h>
 #include "kfoldermimetype.h"
 
 extern int servicesDebugArea();
@@ -36,7 +38,9 @@ KMimeTypeRepository::KMimeTypeRepository()
       m_magicFilesParsed(false),
       m_aliasFilesParsed(false),
       m_globsFilesParsed(false),
-      m_patternsMapCalculated(false)
+      m_patternsMapCalculated(false),
+      m_mimeTypesChecked(false),
+      m_mutex(QReadWriteLock::Recursive)
 {
 }
 
@@ -48,11 +52,7 @@ KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMi
 {
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
-        if (!m_aliasFilesParsed)
-            aliases();
-        AliasesMap::const_iterator it = m_aliases.constFind(_name);
-        if (it != m_aliases.constEnd())
-            name = *it;
+        name = canonicalName(name);
     }
 
     const QString filename = name + ".xml";
@@ -85,11 +85,6 @@ QString KMimeTypeRepository::canonicalName(const QString& mime)
     if (c.isEmpty())
         return mime;
     return c;
-}
-
-QStringList KMimeTypeRepository::findFromFastPatternDict(const QString &extension)
-{
-    return m_globs.m_fastPatterns.value(extension);
 }
 
 bool KMimeTypeRepository::matchFileName( const QString &filename, const QString &pattern )
@@ -138,10 +133,11 @@ bool KMimeTypeRepository::matchFileName( const QString &filename, const QString 
     return rx.exactMatch(filename);
 }
 
+// Helper for findFromFileName
 void KMimeTypeRepository::findFromOtherPatternList(QStringList& matchingMimeTypes,
-                                                const QString &fileName,
-                                                QString& foundExt,
-                                                bool highWeight)
+                                                   const QString &fileName,
+                                                   QString& foundExt,
+                                                   bool highWeight)
 {
     KMimeGlobsFileParser::GlobList& patternList = highWeight ? m_globs.m_highWeightGlobs : m_globs.m_lowWeightGlobs;
 
@@ -187,8 +183,11 @@ void KMimeTypeRepository::findFromOtherPatternList(QStringList& matchingMimeType
 
 QStringList KMimeTypeRepository::findFromFileName(const QString &fileName, QString *pMatchingExtension)
 {
+    m_mutex.lockForWrite();
     parseGlobs();
+    m_mutex.unlock();
 
+    QReadLocker lock(&m_mutex);
     // First try the high weight matches (>50), if any.
     QStringList matchingMimeTypes;
     QString foundExt;
@@ -203,7 +202,7 @@ QStringList KMimeTypeRepository::findFromFileName(const QString &fileName, QStri
             const QString simpleExtension = fileName.right( ext_len ).toLower();
             // (toLower because fast matterns are always case-insensitive and saved as lowercase)
 
-            matchingMimeTypes = findFromFastPatternDict(simpleExtension);
+            matchingMimeTypes = m_globs.m_fastPatterns.value(simpleExtension);
             if (!matchingMimeTypes.isEmpty()) {
                 foundExt = simpleExtension;
                 // Can't return yet; *.tar.bz2 has to win over *.bz2, so we need the low-weight mimetypes anyway,
@@ -228,16 +227,22 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
         return findMimeTypeByName("application/x-zerosize");
     }
 
+    m_mutex.lockForWrite();
     if (!m_magicFilesParsed) {
         parseMagic();
         m_magicFilesParsed = true;
     }
+    m_mutex.unlock();
 
-    Q_FOREACH ( const KMimeMagicRule& rule, m_magicRules ) {
-        if (rule.match(device, beginning)) {
-            if (accuracy)
-                *accuracy = rule.priority();
-            return findMimeTypeByName(rule.mimetype());
+    // Apply magic rules
+    {
+        QReadLocker lock(&m_mutex);
+        Q_FOREACH ( const KMimeMagicRule& rule, m_magicRules ) {
+            if (rule.match(device, beginning)) {
+                if (accuracy)
+                    *accuracy = rule.priority();
+                return findMimeTypeByName(rule.mimetype());
+            }
         }
     }
 
@@ -250,7 +255,7 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
     }
     if (accuracy)
         *accuracy = 0;
-    return KMimeType::defaultMimeTypePtr();
+    return defaultMimeTypePtr();
 }
 
 static QString fallbackParent(const QString& mimeTypeName)
@@ -271,6 +276,7 @@ static QString fallbackParent(const QString& mimeTypeName)
 
 QStringList KMimeTypeRepository::parents(const QString& mime)
 {
+    QWriteLocker lock(&m_mutex);
     if (!m_parentsMapLoaded) {
         m_parentsMapLoaded = true;
         Q_ASSERT(m_parents.isEmpty());
@@ -325,7 +331,7 @@ static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule
     return lhs.priority() > rhs.priority();
 }
 
-
+// Caller must hold m_mutex
 void KMimeTypeRepository::parseMagic()
 {
     const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "magic");
@@ -335,7 +341,7 @@ void KMimeTypeRepository::parseMagic()
     while (magicIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = magicIter.previous();
         QFile magicFile(fileName);
-        kDebug(servicesDebugArea()) << "Now parsing " << fileName;
+        //kDebug(servicesDebugArea()) << "Now parsing " << fileName;
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }
@@ -526,6 +532,7 @@ QList<KMimeMagicRule> KMimeTypeRepository::parseMagicFile(QIODevice* file, const
 
 const KMimeTypeRepository::AliasesMap& KMimeTypeRepository::aliases()
 {
+    QWriteLocker lock(&m_mutex);
     if (!m_aliasFilesParsed) {
         m_aliasFilesParsed = true;
 
@@ -562,6 +569,7 @@ const KMimeTypeRepository::AliasesMap& KMimeTypeRepository::aliases()
     return m_aliases;
 }
 
+// Caller must lock m_mutex for write
 void KMimeTypeRepository::parseGlobs()
 {
     if (!m_globsFilesParsed) {
@@ -573,11 +581,83 @@ void KMimeTypeRepository::parseGlobs()
 
 QStringList KMimeTypeRepository::patternsForMimetype(const QString& mimeType)
 {
+    QWriteLocker lock(&m_mutex);
     if (!m_patternsMapCalculated) {
         m_patternsMapCalculated = true;
         parseGlobs();
         m_patterns = m_globs.patternsMap();
     }
     return m_patterns.value(mimeType);
+}
+
+static void errorMissingMimeTypes( const QStringList& _types )
+{
+    KMessage::message( KMessage::Error, i18np( "Could not find mime type <resource>%2</resource>",
+                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
+}
+
+void KMimeTypeRepository::checkEssentialMimeTypes()
+{
+    QWriteLocker lock(&m_mutex);
+    if (m_mimeTypesChecked) // already done
+        return;
+
+    m_mimeTypesChecked = true; // must be done before building mimetypes
+
+    // No Mime-Types installed ?
+    // Lets do some rescue here.
+    if (!checkMimeTypes()) {
+        // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
+
+        // No mimetypes installed? Are you setting XDG_DATA_DIRS without including /usr/share in it?
+        KMessage::message(KMessage::Error, i18n("No mime types installed. "
+            "Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share."));
+        return; // no point in going any further
+    }
+
+    QStringList missingMimeTypes;
+
+    if (!KMimeType::mimeType("inode/directory"))
+        missingMimeTypes.append("inode/directory");
+#ifndef Q_OS_WIN
+    //if (!KMimeType::mimeType("inode/directory-locked"))
+    //  missingMimeTypes.append("inode/directory-locked");
+    if (!KMimeType::mimeType("inode/blockdevice"))
+        missingMimeTypes.append("inode/blockdevice");
+    if (!KMimeType::mimeType("inode/chardevice"))
+        missingMimeTypes.append("inode/chardevice");
+    if (!KMimeType::mimeType("inode/socket"))
+        missingMimeTypes.append("inode/socket");
+    if (!KMimeType::mimeType("inode/fifo"))
+        missingMimeTypes.append("inode/fifo");
+#endif
+    if (!KMimeType::mimeType("application/x-shellscript"))
+        missingMimeTypes.append("application/x-shellscript");
+    if (!KMimeType::mimeType("application/x-executable"))
+        missingMimeTypes.append("application/x-executable");
+    if (!KMimeType::mimeType("application/x-desktop"))
+        missingMimeTypes.append("application/x-desktop");
+
+    if (!missingMimeTypes.isEmpty())
+        errorMissingMimeTypes(missingMimeTypes);
+}
+
+KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
+{
+    QWriteLocker lock(&m_mutex);
+    if (!m_defaultMimeType) {
+        // Try to find the default type
+        KMimeType::Ptr mime = findMimeTypeByName(KMimeType::defaultMimeType());
+        if (mime) {
+            m_defaultMimeType = mime;
+        } else {
+            const QString defaultMimeType = KMimeType::defaultMimeType();
+            errorMissingMimeTypes(QStringList(defaultMimeType));
+            const QString pathDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+".xml";
+            m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, "mime");
+        }
+    }
+    return m_defaultMimeType;
+
 }
 

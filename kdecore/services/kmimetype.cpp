@@ -22,73 +22,28 @@
 #include "kmimetypefactory.h"
 #include "kmimetyperepository_p.h"
 
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kde_file.h>
-#include <kdeversion.h>
+#include <kde_file.h> // KDE::stat
+#include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocale.h>
-#include <kmessage.h>
 #include <kprotocolinfo.h>
 #include <kprotocolinfofactory.h>
 #include <kstandarddirs.h>
-#include <ksycoca.h>
 #include <kurl.h>
 
 #include <QtCore/QFile>
 #include <QtDBus/QtDBus>
 #include <QBuffer>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <assert.h>
-#include <errno.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <stdlib.h>
-
 extern int servicesDebugArea();
 
 template class KSharedPtr<KMimeType>;
 
-static KMimeType::Ptr s_pDefaultMimeType;
-
-static void errorMissingMimeTypes( const QStringList& _types )
-{
-    KMessage::message( KMessage::Error, i18np( "Could not find mime type <resource>%2</resource>",
-                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
-}
-
-/**
- * This function makes sure that the default mime type exists.
- * Not file-static because it needs access to the private KMimeType constructor...
- */
-void KMimeType::buildDefaultType()
-{
-    assert ( !s_pDefaultMimeType );
-    // Try to find the default type
-    KMimeType::Ptr mime = KMimeTypeRepository::self()->
-                          findMimeTypeByName( KMimeType::defaultMimeType() );
-
-    if (mime)
-    {
-        s_pDefaultMimeType = mime;
-    }
-    else
-    {
-        QString defaultMimeType = KMimeType::defaultMimeType();
-        errorMissingMimeTypes( QStringList(defaultMimeType) );
-        QString sDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+".xml";
-        s_pDefaultMimeType = new KMimeType( sDefaultMimeType, defaultMimeType, "mime" );
-    }
-}
-
 KMimeType::Ptr KMimeType::defaultMimeTypePtr()
 {
-    if ( !s_pDefaultMimeType ) // we need a default type first
-        buildDefaultType();
-    return s_pDefaultMimeType;
+    return KMimeTypeRepository::self()->defaultMimeTypePtr();
 }
 
 bool KMimeType::isDefault() const
@@ -96,56 +51,9 @@ bool KMimeType::isDefault() const
     return name() == defaultMimeType();
 }
 
-/**
- * This function makes sure that vital mime types are installed.
- */
 void KMimeType::checkEssentialMimeTypes()
 {
-    static bool s_bChecked = false;
-
-    if ( s_bChecked ) // already done
-        return;
-    if ( !s_pDefaultMimeType ) // we need a default type first
-        KMimeType::buildDefaultType();
-
-  s_bChecked = true; // must be done before building mimetypes
-
-  // No Mime-Types installed ?
-  // Lets do some rescue here.
-  if ( !KMimeTypeRepository::self()->checkMimeTypes() )
-  {
-    // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
-
-    // No mimetypes installed? Are you setting XDG_DATA_DIRS without including /usr/share in it?
-    KMessage::message( KMessage::Error, i18n( "No mime types installed. Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share." ) );
-    return; // no point in going any further
-  }
-
-  QStringList missingMimeTypes;
-
-#ifndef Q_OS_WIN
-  if ( !KMimeType::mimeType( "inode/directory" ) )
-    missingMimeTypes.append( "inode/directory" );
-  //if ( !KMimeType::mimeType( "inode/directory-locked" ) )
-  //  missingMimeTypes.append( "inode/directory-locked" );
-  if ( !KMimeType::mimeType( "inode/blockdevice" ) )
-    missingMimeTypes.append( "inode/blockdevice" );
-  if ( !KMimeType::mimeType( "inode/chardevice" ) )
-    missingMimeTypes.append( "inode/chardevice" );
-  if ( !KMimeType::mimeType( "inode/socket" ) )
-    missingMimeTypes.append( "inode/socket" );
-  if ( !KMimeType::mimeType( "inode/fifo" ) )
-    missingMimeTypes.append( "inode/fifo" );
-#endif
-  if ( !KMimeType::mimeType( "application/x-shellscript" ) )
-    missingMimeTypes.append( "application/x-shellscript" );
-  if ( !KMimeType::mimeType( "application/x-executable" ) )
-    missingMimeTypes.append( "application/x-executable" );
-  if ( !KMimeType::mimeType( "application/x-desktop" ) )
-    missingMimeTypes.append( "application/x-desktop" );
-
-  if (!missingMimeTypes.isEmpty())
-    errorMissingMimeTypes(missingMimeTypes);
+    KMimeTypeRepository::self()->checkEssentialMimeTypes();
 }
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name, FindByNameOption options )

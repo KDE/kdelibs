@@ -24,6 +24,7 @@
 #include "kmimemagicrule_p.h"
 #include "kmimeglobsfileparser_p.h"
 #include "kmimetype.h"
+#include <QReadWriteLock>
 
 /**
  * @internal  - this header is not installed
@@ -70,6 +71,13 @@ public:
      * TEMPORARY method, it will go away once we can require shared-mime-info >= 0.70.
      */
     QStringList patternsForMimetype(const QString& mimeType);
+
+    /**
+     * This function makes sure that vital mime types are installed.
+     */
+    void checkEssentialMimeTypes();
+
+    KMimeType::Ptr defaultMimeTypePtr();
 
 private: // only for KMimeType and unittests
     friend class KMimeType;
@@ -123,7 +131,6 @@ private:
 
     void parseGlobs();
 
-    QStringList findFromFastPatternDict(const QString &extension);
     /**
      * Look into either the high-weight patterns or the low-weight patterns.
      * @param matchingMimeTypes in/out parameter. In: the already found mimetypes;
@@ -151,8 +158,11 @@ private:
     mutable bool m_aliasFilesParsed;
     bool m_globsFilesParsed;
     bool m_patternsMapCalculated;
+    bool m_mimeTypesChecked;
     QList<KMimeMagicRule> m_magicRules;
     KMimeGlobsFileParser::AllGlobs m_globs;
+    KMimeType::Ptr m_defaultMimeType;
+    QReadWriteLock m_mutex;
 };
 
 #endif /* KMIMETYPEREPOSITORY_H */
