@@ -716,35 +716,35 @@ QList<TextRange *> TextBuffer::rangesForLine (int line, KTextEditor::View *view,
   // get block, this will assert on invalid line
   const int blockIndex = blockForLine (line);
 
-  // get the ranges
-  const QSet<TextRange *> ranges = m_blocks[blockIndex]->m_ranges;
+  // get the ranges of the right block
 
-  // collect the right ones
   QList<TextRange *> rightRanges;
-  foreach (TextRange * const range, ranges) {
-      /**
-       * we want only ranges with attributes, but this one has none
-       */
-      if (rangesWithAttributeOnly && !range->hasAttribute())
-          continue;
 
-      /**
-       * we want ranges for no view, but this one's attribute is only valid for views
-       */
-      if (!view && range->attributeOnlyForViews())
-          continue;
+  foreach(const QSet<TextRange *> &ranges, m_blocks[blockIndex]->allRangesIntersectingLine(line))
+  {
+    foreach (TextRange * const range, ranges) {
+        /**
+        * we want only ranges with attributes, but this one has none
+        */
+        if (rangesWithAttributeOnly && !range->hasAttribute())
+            continue;
+         /**
+        * we want ranges for no view, but this one's attribute is only valid for views
+        */
+        if (!view && range->attributeOnlyForViews())
+            continue;
+         /**
+        * the range's attribute is not valid for this view
+        */
+        if (range->view() && range->view() != view)
+            continue;
 
-      /**
-       * the range's attribute is not valid for this view
-       */
-      if (range->view() && range->view() != view)
-          continue;
-
-      /**
-       * if line is in the range, ok
-       */
-      if (range->startInternal().lineInternal() <= line && line <= range->endInternal().lineInternal())
-        rightRanges.append (range);
+        /**
+        * if line is in the range, ok
+        */
+        if (range->startInternal().lineInternal() <= line && line <= range->endInternal().lineInternal())
+          rightRanges.append (range);
+    }
   }
 
   // return right ranges
