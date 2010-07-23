@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <QDir>
 #include <kdebug.h>
@@ -63,7 +64,8 @@ private Q_SLOTS: // test methods
     void removeAndReAdd();
     void watchNonExistent();
     void testDelete();
-    void testDeleteAndRecreate();
+    void testDeleteAndRecreateFile();
+    void testDeleteAndRecreateDir();
     void testMoveTo();
     void nestedEventLoop();
     void testHardlinkChange();
@@ -147,7 +149,7 @@ void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
             totalWait += 50;
             QTest::qWait(50);
         } else {
-            Q_ASSERT(now_tv.tv_sec > ctime); // can't go back in time ;)
+            QVERIFY(now_tv.tv_sec > ctime); // can't go back in time ;)
             break;
         }
     }
@@ -182,6 +184,15 @@ void KDirWatch_UnitTest::appendToFile(int num)
     appendToFile(m_path + fileName);
 }
 
+static QString removeTrailingSlash(const QString& path)
+{
+    if (path.endsWith('/')) {
+        return path.left(path.length()-1);
+    } else {
+        return path;
+    }
+}
+
 // helper method
 QList<QVariantList> KDirWatch_UnitTest::waitForDirtySignal(KDirWatch& watch, int expected)
 {
@@ -209,6 +220,11 @@ bool KDirWatch_UnitTest::waitForOneSignal(KDirWatch& watch, const char* sig, con
             return false;
         }
         QTest::qWait(50);
+    }
+    const QString got = spyDirty[0][0].toString();
+    if (got != removeTrailingSlash(path)) {
+        kWarning() << "Expected" << sig << '(' << removeTrailingSlash(path) << ')' << "but got" << sig << '(' << got << ')';
+        return false;
     }
     return true;
 }
@@ -354,7 +370,7 @@ void KDirWatch_UnitTest::testDelete()
     QCOMPARE(spyDirty.count(), 0);
 }
 
-void KDirWatch_UnitTest::testDeleteAndRecreate()
+void KDirWatch_UnitTest::testDeleteAndRecreateFile()
 {
     const QString subdir = m_path + "subdir";
     QDir().mkdir(subdir);
@@ -370,7 +386,7 @@ void KDirWatch_UnitTest::testDeleteAndRecreate()
     QFile::remove(file1);
     // And recreate immediately, to try and fool KDirWatch with unchanged ctime/mtime ;)
     createFile(file1);
-    //QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
+    QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
     //QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), subdir));
     QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), file1));
 
@@ -380,6 +396,26 @@ void KDirWatch_UnitTest::testDeleteAndRecreate()
     appendToFile(file1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), file1));
 }
+
+void KDirWatch_UnitTest::testDeleteAndRecreateDir()
+{
+    // Like KDirModelTest::testOverwriteFileWithDir does at the end.
+    // The linux-2.6.31 bug made kdirwatch emit deletion signals about the -new- dir!
+    KTempDir* tempDir1 = new KTempDir(KStandardDirs::locateLocal("tmp", "olddir-"));
+    KDirWatch watch;
+    const QString path1 = tempDir1->name();
+    watch.addDir(path1);
+
+    delete tempDir1;
+    KTempDir* tempDir2 = new KTempDir(KStandardDirs::locateLocal("tmp", "newdir-"));
+    const QString path2 = tempDir2->name();
+    watch.addDir(path2);
+
+    QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), path1));
+
+    delete tempDir2;
+}
+
 
 void KDirWatch_UnitTest::testMoveTo()
 {
