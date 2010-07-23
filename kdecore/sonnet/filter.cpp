@@ -127,8 +127,8 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
                 word = str;
                 bufferStart = start;
 #if 0
-                kDebug() << "Word at " << newStart << " word = "
-                         <<  newStr << ", len = " << newStr.length();
+                kDebug() << "Word at " << start << " word = '"
+                         <<  str << "', len = " << str.length();
 #endif
                 return true;
             }
