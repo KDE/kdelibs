@@ -110,8 +110,6 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->dict   = new Sonnet::Speller();
     if(!d->dict->isValid()) {
 	d->spellCheckerFound = false;
-	delete d->dict;
-	d->dict = 0;
     } else {
         d->dictCache.insert(d->dict->language(),
                             d->dict);
