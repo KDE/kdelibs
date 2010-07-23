@@ -24,8 +24,6 @@ main(int argc, char *argv[])
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-   kDebug() << "allArguments:" << KCmdLineArgs::allArguments();
-
    // MyWidget::addCmdLineOptions();
 
    //KApplication app( false );
@@ -45,6 +43,8 @@ main(int argc, char *argv[])
       // Do stuff
       printf("Option 'baud' is set.\n");
    }
+
+   kDebug() << "allArguments:" << KCmdLineArgs::allArguments();
 
    // Read the value of an option.
    QString baudrate = args->getOption("baud"); // 9600 is the default value.
