@@ -231,14 +231,11 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
    for(int i = 0; i < hashList.count(); i++)
    {
       int pos = hashList[i];
-      if (pos < 0)
-      {
+      if (pos < 0) {
          pos = -pos-1;
          if (pos < l)
             h = ((h * 13) + (key[l-pos].cell() % 29)) & 0x3ffffff;
-      }
-      else
-      {
+      } else {
          pos = pos-1;
          if (pos < l)
             h = ((h * 13) + (key[pos].cell() % 29)) & 0x3ffffff;
@@ -247,47 +244,65 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
    return h;
 }
 
-//
+// If we have the strings
+//    hello
+//    world
+//    kde
+// Then we end up with
+//    ABCDE
+// where A = diversity of 'h' + 'w' + 'k' etc.
+// Also, diversity(-2) == 'l'+'l'+'d' (second character from the end)
+
+// The hasList is used for hashing:
+//  hashList = (-2, 1, 3) means that the hash key comes from
+//  the 2nd character from the right, then the 1st from the left, then the 3rd from the left.
+
 // Calculate the diversity of the strings at position 'pos'
+// NOTE: this code is slow, it takes 30% of the _overall_ `kbuildsycoca4 --noincremental` running time
 static int
-calcDiversity(KSycocaDictStringList *stringlist, int pos, int sz)
+calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
 {
-   if (pos == 0) return 0;
-   QBitArray matrix(sz);
-   uint usz = sz;
+    if (inPos == 0) return 0;
+    QBitArray matrix(sz);
+    int pos;
 
-   if (pos < 0)
-   {
-      pos = -pos-1;
-      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
-      {
-        string_entry* entry = *it;
-	register int l = entry->length;
-         if (pos < l && pos != 0)
-         {
-           register uint hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3ffffff;
-	   matrix.setBit( hash % usz, true );
-         }
-      }
-   }
-   else
-   {
-      pos = pos-1;
-      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
-      {
-         string_entry* entry = *it;
-         if (pos < entry->length)
-         {
-            register uint hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3ffffff;
-	    matrix.setBit( hash % usz, true );
-         }
-      }
-   }
-   int diversity = 0;
-   for(int i=0;i< sz;i++)
-      if (matrix.testBit(i)) diversity++;
+    //static const int s_maxItems = 50;
+    //int numItem = 0;
 
-   return diversity;
+    if (inPos < 0) {
+        pos = -inPos-1;
+        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+        {
+            string_entry* entry = *it;
+            register int l = entry->length;
+            if (pos < l && pos != 0) {
+                register uint hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3ffffff;
+                matrix.setBit( hash % sz, true );
+            }
+            //if (++numItem == s_maxItems)
+            //    break;
+        }
+    } else {
+        pos = inPos-1;
+        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+        {
+            string_entry* entry = *it;
+            if (pos < entry->length) {
+                register uint hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3ffffff;
+                matrix.setBit( hash % sz, true );
+            }
+            //if (++numItem == s_maxItems)
+            //    break;
+        }
+    }
+    int diversity = 0;
+    for (uint i=0;i< sz;++i)
+        if (matrix.testBit(i))
+            ++diversity;
+
+    //kDebug() << "inPos=" << inPos << "pos=" << pos << "diversity=" << diversity;
+
+    return diversity;
 }
 
 //
@@ -296,21 +311,18 @@ static void
 addDiversity(KSycocaDictStringList *stringlist, int pos)
 {
    if (pos == 0) return;
-   if (pos < 0)
-   {
+   if (pos < 0) {
       pos = -pos-1;
-      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
+      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
       {
          string_entry* entry = *it;
          register int l = entry->length;
          if (pos < l)
             entry->hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3fffffff;
       }
-   }
-   else
-   {
+   } else {
       pos = pos - 1;
-      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
+      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
       {
          string_entry* entry = *it;
          if (pos < entry->length)
@@ -334,13 +346,13 @@ KSycocaDict::save(QDataStream &str)
 
    d->offset = str.device()->pos();
 
-   //kDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count());
+   //kDebug(7011) << "KSycocaDict:" << count() << "entries.";
 
    //kDebug(7011) << "Calculating hash keys..";
 
    int maxLength = 0;
    //kDebug(7011) << "Finding maximum string length";
-   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
+   for(KSycocaDictStringList::const_iterator it = d->stringlist->constBegin(); it != d->stringlist->constEnd(); ++it)
    {
       string_entry* entry = *it;
       entry->hash = 0;
@@ -348,7 +360,7 @@ KSycocaDict::save(QDataStream &str)
          maxLength = entry->length;
    }
 
-   //kDebug(7011) << QString("Max string length = %1").arg(maxLength);
+   //kDebug(7011) << "Max string length=" << maxLength << "existing hashList=" << d->hashList;
 
    // use "almost prime" number for sz (to calculate diversity) and later
    // for the table size of big tables
@@ -357,38 +369,47 @@ KSycocaDict::save(QDataStream &str)
    while(!(((sz % 3) && (sz % 5) && (sz % 7) && (sz % 11) && (sz % 13))))
       sz+=2;
 
-   int maxDiv = 0;
-   int maxPos = 0;
-   int lastDiv = 0;
-
    d->hashList.clear();
+
+   // Times (with warm caches, i.e. after multiple runs)
+   // kbuildsycoca4 --noincremental  2.83s user 0.20s system 95% cpu 3.187 total
+   // kbuildsycoca4 --noincremental  2.74s user 0.25s system 93% cpu 3.205 total
+   // unittest: 0.50-60 msec per iteration / 0.40-50 msec per iteration
+
+   // Now that MimeTypes are not parsed anymore:
+   // kbuildsycoca4 --noincremental  2.18s user 0.30s system 91% cpu 2.719 total
+   // kbuildsycoca4 --noincremental  2.07s user 0.34s system 89% cpu 2.681 total
+
+   // If I enabled s_maxItems = 50, it goes down to
+   // but I don't know if that's a good idea.
+   // kbuildsycoca4 --noincremental  1.73s user 0.31s system 85% cpu 2.397 total
+   // kbuildsycoca4 --noincremental  1.84s user 0.29s system 95% cpu 2.230 total
 
    // try to limit diversity scan by "predicting" positions
    // with high diversity
-   int *oldvec=new int[maxLength*2+1];
-   for (int i=0; i<(maxLength*2+1); i++) oldvec[i]=0;
+   QVector<int> oldvec(maxLength*2+1);
+   oldvec.fill(0);
    int mindiv=0;
+   int lastDiv = 0;
 
    while(true)
    {
       int divsum=0,divnum=0;
 
-      maxDiv = 0;
-      maxPos = 0;
-      for(int pos=-maxLength; pos <= maxLength; pos++)
-      {
+      int maxDiv = 0;
+      int maxPos = 0;
+      for (int pos = -maxLength; pos <= maxLength; ++pos) {
          // cut off
-         if (oldvec[pos+maxLength]<mindiv)
-         { oldvec[pos+maxLength]=0; continue; }
+         if (oldvec[pos+maxLength] < mindiv) { oldvec[pos+maxLength]=0; continue; }
 
-         int diversity = calcDiversity(d->stringlist, pos, sz);
-         if (diversity > maxDiv)
-         {
+         const int diversity = calcDiversity(d->stringlist, pos, sz);
+         if (diversity > maxDiv) {
             maxDiv = diversity;
             maxPos = pos;
          }
-         oldvec[pos+maxLength]=diversity;
-         divsum+=diversity; divnum++;
+         oldvec[pos + maxLength] = diversity;
+         divsum += diversity;
+         ++divnum;
       }
       // arbitrary cut-off value 3/4 of average seems to work
       if (divnum)
@@ -396,19 +417,21 @@ KSycocaDict::save(QDataStream &str)
 
       if (maxDiv <= lastDiv)
          break;
-      // qWarning("Max Div = %d at pos %d", maxDiv, maxPos);
+      //kDebug() << "Max Div=" << maxDiv << "at pos" << maxPos;
       lastDiv = maxDiv;
       addDiversity(d->stringlist, maxPos);
       d->hashList.append(maxPos);
    }
 
-   delete [] oldvec;
 
-   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
+   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it) {
       (*it)->hash = d->hashKey((*it)->keyStr);
+   }
 // fprintf(stderr, "Calculating minimum table size..\n");
 
    d->hashTableSize = sz;
+
+   //kDebug() << "hashTableSize=" << sz << "hashList=" << d->hashList << "oldvec=" << oldvec;
 
    struct hashtable_entry {
       string_entry *entry;
@@ -426,7 +449,7 @@ KSycocaDict::save(QDataStream &str)
    }
 
    //kDebug(7011) << "Filling hashtable...";
-   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
+   for(KSycocaDictStringList::const_iterator it = d->stringlist->constBegin(); it != d->stringlist->constEnd(); ++it)
    {
       string_entry* entry = *it;
       //kDebug(7011) << "entry keyStr=" << entry->keyStr << entry->payload.data() << entry->payload->entryPath();
