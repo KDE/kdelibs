@@ -305,7 +305,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     Term term = d->m_term;
 
     // we do not need scores when counting results
-    if( flags & CreateCountQuery )
+    if( flags & (CreateCountQuery|CreateAskQuery) )
         flags |= WithoutScoring;
 
     // restrict to files if we are a file query
@@ -357,9 +357,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
               Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::DiscardableInstanceBase()) );
 
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "%1 where { %2 %3 %4 %5 }" )
-                        .arg( selectVariables.join( QLatin1String(" " ) ),
-                              termGraphPattern,
+    QString queryBase = QString::fromLatin1( "where { %1 %2 %3 %4 }" )
+                        .arg( termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                               d->buildRequestPropertyPatterns(),
                               d->m_isFileQuery ? QString() : instanceBaseRestriction );
@@ -378,17 +377,26 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     if( flags & CreateCountQuery ) {
         if( selectVariables.isEmpty() ) {
             // when there are no additional variables we can perfectly use count(distinct)
-            query = QLatin1String("select count(distinct ?r) as ?cnt ") + queryBase;
+            query = QString::fromLatin1("select count(distinct ?r) as ?cnt %1 %2")
+                    .arg( selectVariables.join( QLatin1String(" " ) ),
+                          queryBase );
         }
         else {
             // when there are additional variables we need to do some magic to count the
             // number of rows instead of a list of counts
-            query = QString::fromLatin1("select count(%1) as ?cnt where { { select count(*) as %1 ?r %2 } }")
-                    .arg(qbd.uniqueVarName(), queryBase );
+            query = QString::fromLatin1("select count(%1) as ?cnt %2 where { { select count(*) as %1 ?r %3 } }")
+                    .arg(qbd.uniqueVarName(),
+                         selectVariables.join( QLatin1String(" " ) ),
+                         queryBase );
         }
     }
+    else if( flags & CreateAskQuery ) {
+        query = QLatin1String( "ask ") + queryBase;
+    }
     else {
-        query = QLatin1String( "select distinct ?r " ) + queryBase;
+        query = QString::fromLatin1( "select distinct ?r %1 %2" )
+                .arg( selectVariables.join( QLatin1String(" " ) ),
+                      queryBase );
     }
 
     return query.simplified();

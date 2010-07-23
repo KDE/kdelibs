@@ -292,8 +292,15 @@ namespace Nepomuk {
                  *
                  * \since 4.6
                  */
-                WithoutScoring = 0x4
+                WithoutScoring = 0x4,
 
+                /**
+                 * Create a SPARQL ask query which will simply check if a matching result exists.
+                 * Use Soprano::QueryResultIterator::boolValue() to check the result.
+                 *
+                 * \since 4.6
+                 */
+                CreateAskQuery = 0x8
             };
             Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
 
