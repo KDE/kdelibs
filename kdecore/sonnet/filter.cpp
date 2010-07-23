@@ -178,17 +178,10 @@ Word Filter::nextWord() const
         return Filter::end();
 
     allUppercase = ( foundWord == foundWord.toUpper() );
+    
+    //TODO implement runtogether correctly.
+    //We must ask to sonnet plugins to do it and not directly here.
 
-    if( !allUppercase ) {
-        const int lengthOfWord = foundWord.length();
-        //Ignore first letter
-        for( int i = 1; i < lengthOfWord ; ++i ) {
-            if( foundWord[i].isUpper() ) {
-                runTogether = true;
-                break;
-            }
-        }
-    }
 
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
