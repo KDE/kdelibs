@@ -3,6 +3,7 @@
  * filter.cpp
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2010  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -93,10 +94,22 @@ bool Filter::atEnd() const
     return m_finder.position() >= m_buffer.length() || m_finder.position() < 0;
 }
 
-static inline bool
-isSpaceOrPunct(const QString &str)
+// we don't want to spell check empty words, or single-char words of the form
+// '<', '=', etc.
+static bool
+isValidWord(const QString &str)
 {
-    return (str.length() <= 1 && (str[0].isSpace() || str[0].isPunct()));
+    if(str.isEmpty() || (str.length() == 1 && !str[0].isLetter())) {
+      return false;
+    }
+    const int length = str.length();
+    for(int i = 0; i < length; ++i) {
+      if(!str[i].isNumber()) {
+        return true;
+      }
+    }
+    // 'str' only contains numbers
+    return false;
 }
 
 static bool
@@ -112,12 +125,12 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
         if ((boundary & QTextBoundaryFinder::EndWord) && inWord) {
             end = finder.position();
             QString str = finder.string().mid(start, end - start);
-            if (!isSpaceOrPunct(str)) {
+            if (isValidWord(str)) {
                 word = str;
                 bufferStart = start;
 #if 0
-                qDebug()<< "Word at " << start<< " word = '"
-                        <<  str << "', len = " << str.length();
+                kDebug() << "Word at " << start << " word = '"
+                         <<  str << "', len = " << str.length();
 #endif
                 return true;
             }
