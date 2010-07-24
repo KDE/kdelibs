@@ -515,7 +515,7 @@ protected:
   QByteArray m_unreadBuf;
   void clearUnreadBuffer();
   void unread(char *buf, size_t size);
-  size_t readBuffered(char *buf, size_t size);
+  size_t readBuffered(char *buf, size_t size, bool unlimited = true);
   bool readDelimitedText(char *buf, int *idx, int end, int numNewlines);
 };
 #endif

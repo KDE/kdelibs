@@ -1925,7 +1925,7 @@ void HTTPProtocol::unread(char *buf, size_t size)
     }
 }
 
-size_t HTTPProtocol::readBuffered(char *buf, size_t size)
+size_t HTTPProtocol::readBuffered(char *buf, size_t size, bool unlimited)
 {
     size_t bytesRead = 0;
     if (!m_unreadBuf.isEmpty()) {
@@ -1937,9 +1937,12 @@ size_t HTTPProtocol::readBuffered(char *buf, size_t size)
         }
         m_unreadBuf.truncate(bufSize - bytesRead);
 
-        // if we have an unread buffer, return here, since we may already have enough data to
-        // complete the response, so we don't want to wait for more.
-        return bytesRead;
+        // If we have an unread buffer and the size of the content returned by the
+        // server is unknown, e.g. chuncked transfer, return the bytes read here since
+        // we may already have enough data to complete the response and don't want to
+        // wait for more. See BR# 180631.
+        if (unlimited)
+            return bytesRead;
     }
     if (bytesRead < size) {
         int rawRead = TCPSlaveBase::read(buf + bytesRead, size - bytesRead);
@@ -3946,7 +3949,7 @@ int HTTPProtocol::readLimited()
   else
      bytesToReceive = m_iBytesLeft;
 
-  int bytesReceived = readBuffered(m_receiveBuf.data(), bytesToReceive);
+  const int bytesReceived = readBuffered(m_receiveBuf.data(), bytesToReceive, false);
 
   if (bytesReceived <= 0)
      return -1; // Error: connection lost
