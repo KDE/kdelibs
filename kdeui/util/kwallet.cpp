@@ -49,13 +49,15 @@ Q_DECLARE_METATYPE(StringByteArrayMap)
 
 static QString appid()
 {
-    KComponentData cData = KGlobal::mainComponent();
-    if (cData.isValid()) {
-        const KAboutData* aboutData = cData.aboutData();
-        if (aboutData) {
-            return aboutData->programName();
+    if (KGlobal::hasMainComponent()) {
+        KComponentData cData = KGlobal::mainComponent();
+        if (cData.isValid()) {
+            const KAboutData* aboutData = cData.aboutData();
+            if (aboutData) {
+                return aboutData->programName();
+            }
+            return cData.componentName();
         }
-        return cData.componentName();
     }
     return qApp->applicationName();
 }
