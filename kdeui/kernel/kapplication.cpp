@@ -509,9 +509,9 @@ void KApplicationPrivate::init(bool GUIenabled)
   qDBusBindToApplication();
   QDBusConnectionInterface *bus = 0;
   if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
-      kFatal(101) << "Session bus not found" << endl;
-      kFatal(101) << "To circumvent this problem try the following command (with Linux and bash)" << endl;
-      kFatal(101) << "export $(dbus-launch)" << endl;
+      kFatal(101) << "Session bus not found" << endl <<
+                     "To circumvent this problem try the following command (with Linux and bash)" << endl <<
+                     "export $(dbus-launch)" << endl;
       ::exit(125);
   }
 
