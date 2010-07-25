@@ -124,7 +124,7 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
             caseSensitive = true;
 
         if (pattern == "__NOGLOBS__") {
-            kDebug() << "removing" << mimeTypeName;
+            //kDebug() << "removing" << mimeTypeName;
             globs.removeMime(mimeTypeName);
             lastMime.clear();
         } else {
