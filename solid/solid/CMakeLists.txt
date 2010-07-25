@@ -184,6 +184,15 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halvolume.cpp
    backends/hal/halsmartcardreader.cpp
 
+   backends/udisks/udisksmanager.cpp
+   backends/udisks/udisksdevice.cpp
+   backends/udisks/udisksblock.cpp
+   backends/udisks/udisksstoragevolume.cpp
+   backends/udisks/udisksdeviceinterface.cpp
+   backends/udisks/udisksopticaldisc.cpp
+   backends/udisks/udisksopticaldrive.cpp
+   backends/udisks/udisksstoragedrive.cpp
+   backends/udisks/udisksstorageaccess.cpp
    )
 endif(NOT WIN32 AND NOT APPLE)
 
