@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1611,13 +1611,13 @@ Q_DECLARE_METATYPE(KDateTime)
 Q_DECLARE_METATYPE(KDateTime::Spec)
 
 /** Write @p spec to the datastream @p out, in binary format. */
-QDataStream &operator<<(QDataStream &out, const KDateTime::Spec &spec);
+QDataStream KDECORE_EXPORT &operator<<(QDataStream &out, const KDateTime::Spec &spec);
 /** Read a KDateTime::Spec object into @p spec from @p in, in binary format. */
-QDataStream &operator>>(QDataStream &in, KDateTime::Spec &spec);
+QDataStream KDECORE_EXPORT &operator>>(QDataStream &in, KDateTime::Spec &spec);
 
 /** Write @p dateTime to the datastream @p out, in binary format. */
-QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
+QDataStream KDECORE_EXPORT &operator<<(QDataStream &out, const KDateTime &dateTime);
 /** Read a KDateTime object into @p dateTime from @p in, in binary format. */
-QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
+QDataStream KDECORE_EXPORT &operator>>(QDataStream &in, KDateTime &dateTime);
 
 #endif

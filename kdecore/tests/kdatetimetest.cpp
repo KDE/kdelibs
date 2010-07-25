@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005,2006,2010 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -3566,6 +3566,43 @@ void KDateTimeTest::cache()
     KDateTime la2 = utc2.toTimeSpec(losAngeles);
     QVERIFY(la1 != la2);
     QCOMPARE(la1.secsTo(la2), 86400);
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+void KDateTimeTest::stream()
+{
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    // Ensure that the original contents of the KDateTime receiving a streamed value
+    // don't affect the new contents.
+    KDateTime local(QDate(2005,6,1), QTime(12,0,0), KDateTime::LocalZone);
+    QByteArray data;
+    QDataStream ds(&data, QIODevice::ReadWrite);
+    KDateTime dest;
+
+    data.clear();
+    dest = KDateTime::currentUtcDateTime();
+    ds << local;
+    ds.device()->seek(0);
+    ds >> dest;
+    QCOMPARE(dest, local);
+
+    data.clear();
+    dest = KDateTime::currentLocalDateTime();
+    ds.device()->seek(0);
+    ds << local;
+    ds.device()->seek(0);
+    ds >> dest;
+    QCOMPARE(dest, local);
 
     // Restore the original local time zone
     if (!originalZone)
