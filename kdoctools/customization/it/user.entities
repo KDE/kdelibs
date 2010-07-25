@@ -28,6 +28,7 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
 <!ENTITY kmenu  "menu <guimenu>K</guimenu>">
+<!ENTITY kremotecontrol "<application>Telekomando</application>">
 <!ENTITY LMB    "tasto <mousebutton>sinistro</mousebutton> del mouse">
 <!ENTITY MMB    "tasto <mousebutton>centrale</mousebutton> del mouse">
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
