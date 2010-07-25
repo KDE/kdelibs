@@ -2340,21 +2340,21 @@ KDateTime KDateTime::realCurrentLocalDateTime()
 
 QDataStream & operator<<(QDataStream &s, const KDateTime &dt)
 {
-    s << dt.dateTime() << dt.timeSpec() << quint8(dt.isDateOnly() ? 0x01 : 0x00);
+    s << dt.date() << dt.time() << dt.timeSpec() << quint8(dt.isDateOnly() ? 0x01 : 0x00);
     return s;
 }
 
 QDataStream & operator>>(QDataStream &s, KDateTime &kdt)
 {
-    QDateTime dt;
+    QDate d;
+    QTime t;
     KDateTime::Spec spec;
     quint8 flags;
-    s >> dt >> spec >> flags;
-    kdt = KDateTime();
-    kdt.setDateTime(dt);
-    kdt.setTimeSpec(spec);
+    s >> d >> t >> spec >> flags;
     if (flags & 0x01)
-        kdt.setDateOnly(true);
+        kdt = KDateTime(d, spec);
+    else
+        kdt = KDateTime(d, t, spec);
     return s;
 }
 

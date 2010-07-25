@@ -3584,25 +3584,44 @@ void KDateTimeTest::stream()
 
     // Ensure that the original contents of the KDateTime receiving a streamed value
     // don't affect the new contents.
-    KDateTime local(QDate(2005,6,1), QTime(12,0,0), KDateTime::LocalZone);
     QByteArray data;
     QDataStream ds(&data, QIODevice::ReadWrite);
-    KDateTime dest;
+    KDateTime testdt, result;
 
     data.clear();
-    dest = KDateTime::currentUtcDateTime();
-    ds << local;
+    testdt = KDateTime(QDate(2005,6,1), QTime(12,0,0), KDateTime::LocalZone);
+    result = KDateTime::currentUtcDateTime();
+    ds << testdt;
     ds.device()->seek(0);
-    ds >> dest;
-    QCOMPARE(dest, local);
+    ds >> result;
+    QCOMPARE(result, testdt);
 
     data.clear();
-    dest = KDateTime::currentLocalDateTime();
+    testdt = KDateTime(QDate(2005,6,1), QTime(12,0,0), KDateTime::LocalZone);
+    result = KDateTime::currentLocalDateTime();
     ds.device()->seek(0);
-    ds << local;
+    ds << testdt;
     ds.device()->seek(0);
-    ds >> dest;
-    QCOMPARE(dest, local);
+    ds >> result;
+    QCOMPARE(result, testdt);
+
+    data.clear();
+    testdt = KDateTime(QDate(2006,8,30), QTime(7,0,0), KDateTime::UTC);
+    result = KDateTime::currentUtcDateTime();
+    ds.device()->seek(0);
+    ds << testdt;
+    ds.device()->seek(0);
+    ds >> result;
+    QCOMPARE(result, testdt);
+
+    data.clear();
+    testdt = KDateTime(QDate(2006,8,30), QTime(7,0,0), KDateTime::UTC);
+    result = KDateTime::currentLocalDateTime();
+    ds.device()->seek(0);
+    ds << testdt;
+    ds.device()->seek(0);
+    ds >> result;
+    QCOMPARE(result, testdt);
 
     // Restore the original local time zone
     if (!originalZone)
