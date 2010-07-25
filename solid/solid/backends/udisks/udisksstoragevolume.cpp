@@ -36,6 +36,7 @@ UDisksStorageVolume::~UDisksStorageVolume()
 QString UDisksStorageVolume::encryptedContainerUdi() const
 {
 //TODO:...
+    return QString();
 }
 
 qulonglong UDisksStorageVolume::size() const

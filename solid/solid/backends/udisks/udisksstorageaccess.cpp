@@ -60,21 +60,21 @@ void UDisksStorageAccess::accessibilityChanged(bool accessible, const QString& u
 
 bool UDisksStorageAccess::teardown()
 {
-
+    return false;
 }
 
 bool UDisksStorageAccess::setup()
 {
-
+    return false;
 }
 
 QString UDisksStorageAccess::filePath() const
 {
-
+    return QString();
 }
 
 bool UDisksStorageAccess::isAccessible() const
 {
-
+    return false;
 }
 

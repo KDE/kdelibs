@@ -40,6 +40,7 @@ UDisksOpticalDrive::~UDisksOpticalDrive()
 bool UDisksOpticalDrive::eject()
 {
 // TODO
+    return false;
 }
 
 QList< int > UDisksOpticalDrive::writeSpeeds() const
@@ -51,11 +52,13 @@ QList< int > UDisksOpticalDrive::writeSpeeds() const
 int UDisksOpticalDrive::writeSpeed() const
 {
     // TODO
+    return 0;
 }
 
 int UDisksOpticalDrive::readSpeed() const
 {
     // TODO
+    return 0;
 }
 
 Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
