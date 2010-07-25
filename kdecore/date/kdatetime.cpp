@@ -2331,7 +2331,6 @@ void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
 
 KDateTime KDateTime::realCurrentLocalDateTime()
 {
-    Q_UNUSED(newTime);
 #ifndef NDEBUG
     return KDateTime(QDateTime::currentDateTime(), KSystemTimeZones::realLocalZone());
 #else
