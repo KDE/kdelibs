@@ -176,6 +176,13 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
             mountedFrom = potentialDevice;
         }
     }
+    if (mountedFrom.startsWith(QLatin1String("LABEL="))) {
+        const QString label = mountedFrom.mid(6);
+        const QString potentialDevice = QFile::symLinkTarget("/dev/disk/by-label/" + label);
+        if (QFile::exists(potentialDevice)) {
+            mountedFrom = potentialDevice;
+        }
+    }
 
     if (infoNeeded & NeedRealDeviceName) {
         if (mountedFrom.startsWith('/'))
