@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -2314,6 +2314,7 @@ void KDateTime::setFromStringDefault(const Spec &spec)
 
 void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
 {
+    Q_UNUSED(newTime);
 #ifndef NDEBUG
     if (newTime.isValid())
     {
@@ -2349,6 +2350,7 @@ QDataStream & operator>>(QDataStream &s, KDateTime &kdt)
     KDateTime::Spec spec;
     quint8 flags;
     s >> dt >> spec >> flags;
+    kdt = KDateTime();
     kdt.setDateTime(dt);
     kdt.setTimeSpec(spec);
     if (flags & 0x01)

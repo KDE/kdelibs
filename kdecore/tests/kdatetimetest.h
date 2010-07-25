@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005,2010 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,6 +48,7 @@ private Q_SLOTS:
     void strings_qttextdate();
     void strings_format();
     void cache();
+    void stream();
     void misc();
 private:
     void removeDir(const QString &subdir);
