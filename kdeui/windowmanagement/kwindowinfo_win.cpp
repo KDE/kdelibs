@@ -202,9 +202,7 @@ bool KWindowInfo::isOnCurrentDesktop() const
 
 bool KWindowInfo::isOnDesktop( int desk ) const
 {
-    if(desk == desktop())
-        return true;
-    return false;
+    return desk == desktop();
 }
 
 bool KWindowInfo::onAllDesktops() const
@@ -214,21 +212,21 @@ bool KWindowInfo::onAllDesktops() const
 
 int KWindowInfo::desktop() const
 {
-    return 0;
+    return 1;
 }
 
 QRect KWindowInfo::geometry() const
 {
     RECT wndRect;
     memset(&wndRect,0,sizeof(wndRect));
-    
+
     //fetch the geometry INCLUDING the frames
-    if(GetWindowRect(d->win_,&wndRect)){
-    QRect result;
-    result.setCoords ( wndRect.left, wndRect.top, wndRect.right, wndRect.bottom );
-    return result;
+    if (GetWindowRect(d->win_,&wndRect)) {
+        QRect result;
+        result.setCoords ( wndRect.left, wndRect.top, wndRect.right, wndRect.bottom );
+        return result;
     }
-    
+
     return QRect();
 }
 
