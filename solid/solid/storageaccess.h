@@ -32,7 +32,8 @@ namespace Solid
     class Device;
 
     /**
-     * This device interface is available on volume devices.
+     * This device interface is available on volume devices to access them
+     * (i.e. mount or unmount them).
      *
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
