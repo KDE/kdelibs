@@ -326,8 +326,8 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
         else
         {
             /// @todo KUser lacks domain support yet: if user is in a domain skip process owner check for now because it simply does not work
-            QString domain = qgetenv("USERDOMAIN");
-            QString host  = qgetenv("COMPUTERNAME");
+            const QString domain = qgetenv("USERDOMAIN");
+            const QString host  = qgetenv("COMPUTERNAME");
             if (domain != host)
                 return ple; 
                 
