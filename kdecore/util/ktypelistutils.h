@@ -353,6 +353,12 @@ struct KTypeListSort
                         >::Result Result;
 };
 
+template<template<typename A, typename B> class Comparator>
+struct KTypeListSort<KDE::NullType, Comparator>
+{
+    typedef KDE::NullType Result;
+};
+
 #undef NC
 
 #endif
