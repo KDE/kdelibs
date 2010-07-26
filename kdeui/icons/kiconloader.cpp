@@ -48,7 +48,9 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
+#ifndef _WIN32_WCE
 #include <ksvgrenderer.h>
+#endif
 #include <kde_file.h>
 #include <kshareddatacache.h>
 
@@ -796,6 +798,7 @@ QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
     }
     else
     {
+#ifndef _WIN32_WCE
         KSvgRenderer renderer(path, q);
 
         if (renderer.isValid()) {
@@ -804,6 +807,7 @@ QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
             QPainter p(&img);
             renderer.render(&p);
         }
+#endif
     }
 
     return img;

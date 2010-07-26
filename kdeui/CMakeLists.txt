@@ -137,9 +137,6 @@ set(kdeui_LIB_SRCS
  kernel/kstyle.cpp
  kernel/kstartupinfo.cpp
  kernel/kglobalsettings.cpp
- notifications/kstatusnotifieritem.cpp
- notifications/kstatusnotifieritemdbus_p.cpp
- notifications/ksystemtrayicon.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
@@ -185,7 +182,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
  util/kstandardguiitem.cpp
- util/ksvgrenderer.cpp
  util/kwallet.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
@@ -264,6 +260,10 @@ if(NOT WINCE)
 set(kdeui_LIB_SRCS
  ${kdeui_LIB_SRCS}
  dialogs/kdeprintdialog.cpp
+ util/ksvgrenderer.cpp
+ notifications/kstatusnotifieritem.cpp
+ notifications/kstatusnotifieritemdbus_p.cpp
+ notifications/ksystemtrayicon.cpp
 )
 endif(NOT WINCE)
 
@@ -341,8 +341,10 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${statusnotifierwatcher_xml} statusnotifie
 set(notifications_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.freedesktop.Notifications.xml)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${notifications_xml} notifications_interface)
 
+if(NOT WINCE)
 qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierItem.xml
                      ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
+endif(NOT WINCE)
 
 set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
 set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
@@ -359,7 +361,11 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} ${DBUSMENUQT_LIBRARIES})
+target_link_libraries(kdeui ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})
+
+if(NOT WINCE)
+target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
+endif(NOT WINCE)
 
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
@@ -389,7 +395,11 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTGUI_LIBRARY})
+
+if(NOT WINCE)
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})
+endif(NOT WINCE)
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
