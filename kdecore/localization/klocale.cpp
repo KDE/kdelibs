@@ -2663,7 +2663,7 @@ const QByteArray KLocale::encoding() const
         if (GetLocaleInfoW(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT),
                            LOCALE_IDEFAULTANSICODEPAGE, buffer,
                            sizeof(buffer))) {
-            QString localestr = QString::fromUtf16(buffer);
+            QString localestr = QString::fromUtf16((const ushort*)buffer);
             QByteArray localechar = localestr.toAscii();
             strcpy(d->win32SystemEncoding, localechar.data() + 3);
             return d->win32SystemEncoding;

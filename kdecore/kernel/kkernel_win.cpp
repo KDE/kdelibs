@@ -262,7 +262,7 @@ static void kMessageOutputDebugString(QtMsgType type, const char *msg)
             break;
     }
     strlcat(buf,"\n",BUFSIZE);
-    OutputDebugStringW( QString::fromAscii(buf).utf16());
+    OutputDebugStringW( (WCHAR*)QString::fromAscii(buf).utf16());
     delete[] buf;
 }
 
@@ -366,7 +366,7 @@ class debug_streambuf: public std::streambuf
                 if (cc == '\n')
                 {
                     buf[index] = '\0';
-                    OutputDebugStringW(QString::fromAscii(buf).utf16());
+                    OutputDebugStringW((WCHAR*)QString::fromAscii(buf).utf16());
                     index = rindex;
                 }
             }
