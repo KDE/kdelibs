@@ -439,6 +439,12 @@ namespace Nepomuk {
          * Comparision operator for simple creation of ComparisonTerm objects using the
          * ComparisonTerm::Smaller comparator.
          *
+         * \return A ComparisonTerm equvalent to:
+         *
+         * \code
+         * ComparisonTerm( property, term, ComparisonTerm::Smaller );
+         * \endcode
+         *
          * \since 4.6
          *
          * \relates ComparisonTerm
@@ -448,6 +454,12 @@ namespace Nepomuk {
         /**
          * Comparision operator for simple creation of ComparisonTerm objects using the
          * ComparisonTerm::Greater comparator.
+         *
+         * \return A ComparisonTerm equvalent to:
+         *
+         * \code
+         * ComparisonTerm( property, term, ComparisonTerm::Greater );
+         * \endcode
          *
          * \since 4.6
          *
@@ -459,6 +471,12 @@ namespace Nepomuk {
          * Comparision operator for simple creation of ComparisonTerm objects using the
          * ComparisonTerm::SmallerOrEqual comparator.
          *
+         * \return A ComparisonTerm equvalent to:
+         *
+         * \code
+         * ComparisonTerm( property, term, ComparisonTerm::SmallerOrEqual );
+         * \endcode
+         *
          * \since 4.6
          *
          * \relates ComparisonTerm
@@ -469,6 +487,12 @@ namespace Nepomuk {
          * Comparision operator for simple creation of ComparisonTerm objects using the
          * ComparisonTerm::GreaterOrEqual comparator.
          *
+         * \return A ComparisonTerm equvalent to:
+         *
+         * \code
+         * ComparisonTerm( property, term, ComparisonTerm::GreaterOrEqual );
+         * \endcode
+         *
          * \since 4.6
          *
          * \relates ComparisonTerm
@@ -478,6 +502,12 @@ namespace Nepomuk {
         /**
          * Comparision operator for simple creation of ComparisonTerm objects using the
          * ComparisonTerm::Equal comparator.
+         *
+         * \return A ComparisonTerm equvalent to:
+         *
+         * \code
+         * ComparisonTerm( property, term, ComparisonTerm::Equal );
+         * \endcode
          *
          * \since 4.6
          *
@@ -490,6 +520,12 @@ namespace Nepomuk {
          * ComparisonTerm::Equal comparator.
          *
          * \since 4.6
+         *
+         * \return A Term equvalent to:
+         *
+         * \code
+         * NegationTerm::negateTerm( ComparisonTerm( property, term, ComparisonTerm::Equal ) );
+         * \endcode
          *
          * \relates ComparisonTerm
          *
