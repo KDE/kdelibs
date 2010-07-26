@@ -25,13 +25,55 @@
 #include <QtCore/QString>
 #include <QtCore/QLatin1String>
 #include <QtCore/QSet>
+#include <QtCore/QStack>
 
+#include "literal.h"
 #include "query.h"
+#include "groupterm_p.h"
 
 namespace Nepomuk {
     namespace Query {
         class QueryBuilderData
         {
+        private:
+            struct OrderVariable {
+                OrderVariable(int w, const QString& n, Qt::SortOrder o)
+                    : weight(w),
+                      name(n),
+                      sortOrder(o) {
+                }
+                int weight;
+                QString name;
+                Qt::SortOrder sortOrder;
+            };
+
+            /// see uniqueVarName()
+            struct GroupTermPropertyCache {
+                const GroupTermPrivate* term;
+                QHash<Types::Property, QString> variableNameHash;
+            };
+
+            /// a running counter for unique variable names
+            int m_varNameCnt;
+
+            /// copy of the flags as set in Query::toSparqlQuery
+            const Query::SparqlFlags m_flags;
+
+            /// custom variables that have been added via ComparisonTerm::setVariableName
+            QSet<QString> m_customVariables;
+
+            /// variables that are used for sorting set via ComparisonTerm::setSortWeight
+            QList<OrderVariable> m_orderVariables;
+
+            /// all full-text matching scoring variables
+            QHash<QString, int> m_scoreVariables;
+
+            /// The depth of a term in the query. This is only changed by ComparisonTerm
+            int m_depth;
+
+            /// a stack of the group terms, the top item is the group the currently handled term is in
+            QStack<GroupTermPropertyCache> m_groupTermStack;
+
         public:
             inline QueryBuilderData( Query::SparqlFlags flags )
                 : m_varNameCnt( 0 ),
@@ -56,8 +98,31 @@ namespace Nepomuk {
             }
 
             /// used by different implementations of TermPrivate::toSparqlGraphPattern and Query::toSparqlQuery
-            inline QString uniqueVarName() {
-                return QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
+            ///
+            /// we use a simple query optimization trick here that Virtuoso cannot pull itself since it does
+            /// not know about NRL cardinalities:
+            /// In one group term we can use the same variable name for comparisons on the same property with a
+            /// cardinality of 1. This reduces the number of match candidates for Virtuoso, thus, significantly
+            /// speeding up the query.
+            inline QString uniqueVarName( const Types::Property& property = Types::Property() ) {
+                if( property.isValid() &&
+                    property.maxCardinality() == 1 &&
+                    !m_groupTermStack.isEmpty() ) {
+                    // use only one variable name for all occurrences of this property
+                    GroupTermPropertyCache& gpc = m_groupTermStack.top();
+                    QHash<Types::Property, QString>::const_iterator it = gpc.variableNameHash.constFind( property );
+                    if( it == gpc.variableNameHash.constEnd() ) {
+                        QString v = QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
+                        gpc.variableNameHash.insert( property, v );
+                        return v;
+                    }
+                    else {
+                        return *it;
+                    }
+                }
+                else {
+                    return QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
+                }
             }
 
             /// used by ComparisonTerm to add variable names set via ComparisonTerm::setVariableName
@@ -70,17 +135,6 @@ namespace Nepomuk {
                 return m_customVariables.toList();
             }
 
-            struct OrderVariable {
-                OrderVariable(int w, const QString& n, Qt::SortOrder o)
-                    : weight(w),
-                      name(n),
-                      sortOrder(o) {
-                }
-                int weight;
-                QString name;
-                Qt::SortOrder sortOrder;
-            };
-
             /// used by ComparisonTerm to add sorting variables (names include the '?')
             inline void addOrderVariable( const QString& name, int weight, Qt::SortOrder order ) {
                 int i = 0;
@@ -88,6 +142,18 @@ namespace Nepomuk {
                        m_orderVariables[i].weight > weight )
                     ++i;
                 m_orderVariables.insert( i, OrderVariable( weight, name, order ) );
+            }
+
+            /// used by AndTermPrivate and OrTermPrivate in toSparqlGraphPattern
+            inline void pushGroupTerm( const GroupTermPrivate* group ) {
+                GroupTermPropertyCache gpc;
+                gpc.term = group;
+                m_groupTermStack.push( gpc );
+            }
+
+            /// used by AndTermPrivate and OrTermPrivate in toSparqlGraphPattern
+            inline void popGroupTerm() {
+                m_groupTermStack.pop();
             }
 
             /// used by Query::toSparqlQuery
@@ -129,25 +195,6 @@ namespace Nepomuk {
                 else
                     return QString();
             }
-
-        private:
-            /// a running counter for unique variable names
-            int m_varNameCnt;
-
-            /// copy of the flags as set in Query::toSparqlQuery
-            const Query::SparqlFlags m_flags;
-
-            /// custom variables that have been added via ComparisonTerm::setVariableName
-            QSet<QString> m_customVariables;
-
-            /// variables that are used for sorting set via ComparisonTerm::setSortWeight
-            QList<OrderVariable> m_orderVariables;
-
-            /// all full-text matching scoring variables
-            QHash<QString, int> m_scoreVariables;
-
-            /// The depth of a term in the query. This is only changed by ComparisonTerm
-            int m_depth;
         };
     }
 }

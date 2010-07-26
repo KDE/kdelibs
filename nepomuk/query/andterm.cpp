@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -28,9 +28,13 @@
 QString Nepomuk::Query::AndTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
     QStringList pattern;
+
+    qbd->pushGroupTerm(this);
     foreach( const Nepomuk::Query::Term &t, m_subTerms ) {
         pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, qbd );
     }
+    qbd->popGroupTerm();
+
     return QLatin1String( "{ " ) + pattern.join(QString()) + QLatin1String( "} . " );
 }
 

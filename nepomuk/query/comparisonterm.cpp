@@ -358,7 +358,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilder
         }
     }
     else {
-        v = qbd->uniqueVarName();
+        v = qbd->uniqueVarName( m_property );
         if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction )
             sortVar = v;
         else
