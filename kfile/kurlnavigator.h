@@ -427,6 +427,11 @@ protected:
      * @see QWidget::keyPressEvent()
      */
     virtual void keyPressEvent(QKeyEvent* event);
+    
+    /**
+     * Reimplemented for internal purposes
+     */
+    virtual void keyReleaseEvent(QKeyEvent* event);
 
     /*
      * Paste the clipboard content as URL, if the middle mouse
