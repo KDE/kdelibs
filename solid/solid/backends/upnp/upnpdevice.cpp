@@ -22,6 +22,7 @@
 
 #include "upnpdevice.h"
 #include "upnpmediaserver.h"
+//#include "upnpinternetgateway.h"
 
 #include <HResourceType>
 #include <HDeviceInfo>
@@ -78,7 +79,6 @@ UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
 
 UPnPDevice::~UPnPDevice()
 {
-    delete m_device;
 }
 
 const Herqq::Upnp::HDeviceProxy* UPnPDevice::device() const
@@ -179,6 +179,13 @@ bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) 
             return false;
         }  
     }
+/*    else if (type == Solid::DeviceInterface::InternetGateway)
+    {
+        if (isInternetGatewayDevice())
+        {
+            return true;
+        }
+    } */
     
     return false;
 }
@@ -196,6 +203,13 @@ QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& t
             return 0;
         }
     }
+/*    else if (type == Solid::DeviceInterface::InternetGateway)
+    {
+        if (isInternetGatewayDevice())
+        {
+            return new Solid::Backends::UPnP::UPnPInternetGateway(this);
+        }
+    } */
 
     return 0;
 }

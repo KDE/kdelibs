@@ -85,24 +85,16 @@ QStringList UPnPDeviceManager::allDevices()
     QStringList result;
 
     result << udiPrefix();
-
-    Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
-    if (m_controlPoint->scan(discoveryType))
+    
+    Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
+    for (int i = 0; i < list.size(); ++i)
     {
-        Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
-        for (int i = 0; i < list.size(); ++i)
-        {
-            Herqq::Upnp::HDeviceProxy* device = list[i];
-            Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
+        Herqq::Upnp::HDeviceProxy* device = list[i];
+        Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
 
-            result << ( udiPrefix() + '/' + info.udn().toString() );
-            qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
-            //TODO listing only root devices
-        }
-    }
-    else
-    {
-        qDebug() << "scan error:" << m_controlPoint->errorDescription();
+        result << ( udiPrefix() + '/' + info.udn().toString() );
+        qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
+        // listing only root devices
     }
 
     return result;
@@ -144,7 +136,7 @@ void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
 
     emit deviceRemoved(udiPrefix() + '/' + udn);
 
-    m_controlPoint->removeRootDevice(device);
+    //m_controlPoint->removeRootDevice(device);
 }
 
 }
