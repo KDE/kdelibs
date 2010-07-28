@@ -543,7 +543,7 @@ QRect Corona::screenGeometry(int id) const
     } else {
         QGraphicsView *v = views()[0];
         QRect r = sceneRect().toRect();
-        r.moveTo(v->mapToGlobal(v->pos()));
+        r.moveTo(v->mapToGlobal(QPoint(0, 0)));
         return r;
     }
 }
