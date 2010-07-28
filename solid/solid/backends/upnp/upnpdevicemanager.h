@@ -31,6 +31,8 @@
 #include <HDeviceProxy>
 #include <HControlPoint>
 
+#include "upnpcontrolpoint.h"
+
 namespace Solid
 {
 namespace Backends
@@ -65,7 +67,7 @@ namespace UPnP
         private:
             QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 
-            Herqq::Upnp::HControlPoint* m_controlPoint;
+            Solid::Backends::UPnP::UPnPControlPoint* m_upnpControlPoint;
     };
 
 }
