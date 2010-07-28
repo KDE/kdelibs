@@ -56,8 +56,6 @@ namespace UPnP
 
             static QMutex mutex;
 
-            static bool locked;
-
             Herqq::Upnp::HControlPoint* m_controlPoint;
     };
 

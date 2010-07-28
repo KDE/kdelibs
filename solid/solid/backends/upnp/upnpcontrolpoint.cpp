@@ -60,23 +60,16 @@ UPnPControlPoint* UPnPControlPoint::instance()
 
 QMutex UPnPControlPoint::mutex;
 
-bool UPnPControlPoint::locked = false;
-
 UPnPControlPoint* UPnPControlPoint::acquireInstance()
 {
-    do
-    {
-        locked = mutex.tryLock();
-    }
-    while (!locked);
-    
+    mutex.lock();
+
     return instance();
 }
 
 void UPnPControlPoint::releaseInstance()
 {
-    if (locked)
-        mutex.unlock();
+    mutex.unlock();
 }
 
 Herqq::Upnp::HControlPoint* UPnPControlPoint::controlPoint()
