@@ -41,22 +41,26 @@ namespace UPnP
 
 UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
     Solid::Ifaces::DeviceManager(parent),
-    m_supportedInterfaces(),
-    m_upnpControlPoint(Solid::Backends::UPnP::UPnPControlPoint::instance())
+    m_supportedInterfaces()
+    //m_upnpControlPoint(Solid::Backends::UPnP::UPnPControlPoint::instance())
 {
+    UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
+
     connect(
-        m_upnpControlPoint->controlPoint(),
+        upnpControlPoint->controlPoint(),
         SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
         this,
         SLOT(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)));
 
     connect(
-        m_upnpControlPoint->controlPoint(),
+        upnpControlPoint->controlPoint(),
         SIGNAL(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)),
         this,
         SLOT(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)));
 
-    m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;
+    UPnPControlPoint::releaseInstance();
+
+    m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;    
 }
 
 UPnPDeviceManager::~UPnPDeviceManager()
@@ -78,8 +82,13 @@ QStringList UPnPDeviceManager::allDevices()
     QStringList result;
 
     result << udiPrefix();
-    
-    Herqq::Upnp::HDeviceProxies list = m_upnpControlPoint->controlPoint()->rootDevices();
+
+    UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
+
+    Herqq::Upnp::HDeviceProxies list = upnpControlPoint->controlPoint()->rootDevices();
+
+    UPnPControlPoint::releaseInstance();
+
     for (int i = 0; i < list.size(); ++i)
     {
         Herqq::Upnp::HDeviceProxy* device = list[i];
@@ -88,7 +97,7 @@ QStringList UPnPDeviceManager::allDevices()
         result << ( udiPrefix() + '/' + info.udn().toString() );
         qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
         // listing only root devices
-    }
+    } 
 
     return result;
 }
@@ -106,7 +115,11 @@ QObject* UPnPDeviceManager::createDevice(const QString& udi)
     Herqq::Upnp::HUdn udn(udnFromUdi);
     if (udn.isValid())
     {
-        Herqq::Upnp::HDeviceProxy* device = m_upnpControlPoint->controlPoint()->device(udn);
+        UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
+
+        Herqq::Upnp::HDeviceProxy* device = upnpControlPoint->controlPoint()->device(udn);
+
+        UPnPControlPoint::releaseInstance();
         if (device)
         {
             return new Solid::Backends::UPnP::UPnPDevice(device);

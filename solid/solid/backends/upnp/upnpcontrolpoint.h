@@ -24,6 +24,7 @@
 #define SOLID_BACKENDS_UPNP_UPNPCONTROLPOINT_H
 
 #include <QtCore/QObject>
+#include <QtCore/QMutex>
 
 #include <HDeviceProxy>
 #include <HControlPoint>
@@ -38,7 +39,9 @@ namespace UPnP
     class UPnPControlPoint : public QObject
     {
         public:
-            static UPnPControlPoint* instance();
+            static UPnPControlPoint* acquireInstance();
+
+            static void releaseInstance();
 
             Herqq::Upnp::HControlPoint* controlPoint();    
 
@@ -47,14 +50,15 @@ namespace UPnP
         private:
             explicit UPnPControlPoint();
 
+            static UPnPControlPoint* instance();
+
             static UPnPControlPoint* inst;
 
+            static QMutex mutex;
+
+            static bool locked;
+
             Herqq::Upnp::HControlPoint* m_controlPoint;
-
-        /* Q_SIGNALS:
-            void rootDeviceOnline(Herqq::Upnp::HDeviceProxy* device);
-
-            void rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device); */
     };
 
 }

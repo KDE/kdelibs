@@ -47,14 +47,36 @@ UPnPControlPoint::~UPnPControlPoint()
 }
 
 UPnPControlPoint* UPnPControlPoint::inst = 0;
+
 UPnPControlPoint* UPnPControlPoint::instance()
 {
     if (!inst)
     {
-        inst = new UPnPControlPoint();
+        inst = new UPnPControlPoint;
     }
     
     return inst;
+}
+
+QMutex UPnPControlPoint::mutex;
+
+bool UPnPControlPoint::locked = false;
+
+UPnPControlPoint* UPnPControlPoint::acquireInstance()
+{
+    do
+    {
+        locked = mutex.tryLock();
+    }
+    while (!locked);
+    
+    return instance();
+}
+
+void UPnPControlPoint::releaseInstance()
+{
+    if (locked)
+        mutex.unlock();
 }
 
 Herqq::Upnp::HControlPoint* UPnPControlPoint::controlPoint()
