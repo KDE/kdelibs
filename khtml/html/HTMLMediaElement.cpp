@@ -94,6 +94,14 @@ void HTMLMediaElement::attach()
     updateLoadState();
 }
 
+void HTMLMediaElement::close()
+{
+    HTMLElement::close();
+    updateLoadState();
+    if (renderer())
+        renderer()->updateFromElement();
+}
+
 HTMLMediaElement::~HTMLMediaElement()
 {
     if (m_player) m_player->deleteLater();
