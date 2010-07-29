@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -19,11 +20,12 @@
 */
 
 #include "udisksopticaldrive.h"
+#include "udisks.h"
 
 using namespace Solid::Backends::UDisks;
 
 UDisksOpticalDrive::UDisksOpticalDrive(UDisksDevice *device)
-    : UDisksStorageDrive(device)//, m_ejectInProgress(false)
+    : UDisksStorageDrive(device), m_ejectInProgress(false)
 {
   // TODO: ...
 /*    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
@@ -39,104 +41,83 @@ UDisksOpticalDrive::~UDisksOpticalDrive()
 
 bool UDisksOpticalDrive::eject()
 {
-// TODO
-    return false;
+    if (m_ejectInProgress)
+        return false;
+    m_ejectInProgress = true;
+
+    QDBusConnection c = QDBusConnection::systemBus();
+    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
+    msg << QStringList();
+    return c.callWithCallback(msg, this, SLOT(slotDBusReply(const QDBusMessage &)), SLOT(slotDBusError(const QDBusError &)));
+}
+
+void UDisksOpticalDrive::slotDBusReply(const QDBusMessage &/*reply*/)
+{
+    m_ejectInProgress = false;
+    emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
+}
+
+void UDisksOpticalDrive::slotDBusError(const QDBusError &error)
+{
+    m_ejectInProgress = false;
+    // TODO: Better error reporting here
+    // TODO port to policykit-1; error: org.freedesktop.PolicyKit.Error.NotAuthorized; action: org.freedesktop.udisks.drive-eject
+    emit ejectDone(Solid::UnauthorizedOperation, error.name()+": "+error.message(), m_device->udi());
 }
 
 QList< int > UDisksOpticalDrive::writeSpeeds() const
 {
-    // TODO
+    // FIXME unsupported in DK
     return QList<int>();
 }
 
 int UDisksOpticalDrive::writeSpeed() const
 {
-    // TODO
+    // FIXME unsupported in DK
     return 0;
 }
 
 int UDisksOpticalDrive::readSpeed() const
 {
-    // TODO
+    // FIXME unsupported in DK
     return 0;
 }
 
 Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
 {
-    QStringList compatibleDiscs = m_device->property("DriveMediaCompatibility").toStringList();
-    
-    Solid::OpticalDrive::MediumTypes types = 0;
+    const QStringList mediaTypes = m_device->property("DriveMediaCompatibility").toStringList();
+    Solid::OpticalDrive::MediumTypes supported;
 
-    if (compatibleDiscs.contains("optical_cd"))
+    QMap<Solid::OpticalDrive::MediumType, QString> map;
+    map[Solid::OpticalDrive::Cdr] = "optical_cd_r";
+    map[Solid::OpticalDrive::Cdrw] = "optical_cd_rw";
+    map[Solid::OpticalDrive::Dvd] = "optical_dvd";
+    map[Solid::OpticalDrive::Dvdr] = "optical_dvd_r";
+    map[Solid::OpticalDrive::Dvdrw] ="optical_dvd_rw";
+    map[Solid::OpticalDrive::Dvdram] ="optical_dvd_ram";
+    map[Solid::OpticalDrive::Dvdplusr] ="optical_dvd_plus_r";
+    map[Solid::OpticalDrive::Dvdplusrw] ="optical_dvd_plus_rw";
+    map[Solid::OpticalDrive::Dvdplusdl] ="optical_dvd_plus_r_dl";
+    map[Solid::OpticalDrive::Dvdplusdlrw] ="optical_dvd_plus_rw_dl";
+    map[Solid::OpticalDrive::Bd] ="optical_bd";
+    map[Solid::OpticalDrive::Bdr] ="optical_bd_r";
+    map[Solid::OpticalDrive::Bdre] ="optical_bd_re";
+    map[Solid::OpticalDrive::HdDvd] ="optical_hddvd";
+    map[Solid::OpticalDrive::HdDvdr] ="optical_hddvd_r";
+    map[Solid::OpticalDrive::HdDvdrw] ="optical_hddvd_rw";
+    // TODO add these to Solid
+    //map[Solid::OpticalDrive::Mo] ="optical_mo";
+    //map[Solid::OpticalDrive::Mr] ="optical_mrw";
+    //map[Solid::OpticalDrive::Mrw] ="optical_mrw_w";
+
+    foreach ( const Solid::OpticalDrive::MediumType & type, map.keys() )
     {
-        types |= Solid::OpticalDrive::Cdr; // TODO: No Solid::OpticalDrive::Cd ?
-    }
-    if (compatibleDiscs.contains("optical_cd_r"))
-    {
-        types |= Solid::OpticalDrive::Cdr;
-    }
-    if (compatibleDiscs.contains("optical_cd_rw"))
-    {
-        types |= Solid::OpticalDrive::Cdrw;
-    }
-    if (compatibleDiscs.contains("optical_dvd"))
-    {
-        types |= Solid::OpticalDrive::Dvd;
-    }
-    if (compatibleDiscs.contains("optical_dvd_ram"))
-    {
-        types |= Solid::OpticalDrive::Dvdram;
-    }
-    if (compatibleDiscs.contains("optical_dvd_r"))
-    {
-        types |= Solid::OpticalDrive::Dvdr;
-    }
-    if (compatibleDiscs.contains("optical_dvd_rw"))
-    {
-        types |= Solid::OpticalDrive::Dvdrw;
-    }
-    if (compatibleDiscs.contains("optical_dvd_plus_r"))
-    {
-        types |= Solid::OpticalDrive::Dvdplusr;
-    }
-    if (compatibleDiscs.contains("optical_dvd_plus_rw"))
-    {
-        types |= Solid::OpticalDrive::Dvdplusrw;
-    }
-    if (compatibleDiscs.contains("optical_dvd_plus_r_dl"))
-    {
-        types |= Solid::OpticalDrive::Dvdplusdl;
-    }
-    if (compatibleDiscs.contains("optical_dvd_plus_rw_dl"))
-    {
-        types |= Solid::OpticalDrive::Dvdplusdlrw;
-    }
-    if (compatibleDiscs.contains("optical_bd"))
-    {
-        types |= Solid::OpticalDrive::Bd;
-    }
-    if (compatibleDiscs.contains("optical_bd_r"))
-    {
-        types |= Solid::OpticalDrive::Bdr;
-    }
-    if (compatibleDiscs.contains("optical_bd_re"))
-    {
-        types |= Solid::OpticalDrive::Bdre;
-    }
-    if (compatibleDiscs.contains("optical_hddvd"))
-    {
-        types |= Solid::OpticalDrive::HdDvd;
-    }
-    if (compatibleDiscs.contains("optical_hddvd_r"))
-    {
-        types |= Solid::OpticalDrive::HdDvdr;
-    }
-    if (compatibleDiscs.contains("optical_hddvd_rw"))
-    {
-        types |= Solid::OpticalDrive::HdDvdrw;
+        if ( mediaTypes.contains( map[type] ) )
+        {
+            supported |= type;
+        }
     }
 
-    //TODO: Check all types (e.g. optical_mrw)
-    return types;
+    return supported;
 }
 

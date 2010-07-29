@@ -34,9 +34,9 @@ namespace Ifaces
      * This class specifies the interface a backend will have to implement in
      * order to be used in the system.
      *
-     * A device manager allow to query the underlying platform to discover the
+     * A device manager allows to query the underlying platform to discover the
      * available devices. It has also the responsibility to notify when a device
-     * appear or disappear.
+     * appears or disappears.
      */
     class DeviceManager : public QObject
     {
@@ -59,8 +59,7 @@ namespace Ifaces
         virtual QString udiPrefix() const = 0;
 
         /**
-         * Retrieves the prefix used for the UDIs off all the devices
-         * reported by the device manager
+         * Retrieves a set of interfaces the backend supports
          */
         virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const = 0;
 
@@ -96,14 +95,14 @@ namespace Ifaces
 
     Q_SIGNALS:
         /**
-         * This signal is emitted when a new device appear in the system.
+         * This signal is emitted when a new device appears in the system.
          *
          * @param udi the new device identifier
          */
         void deviceAdded(const QString &udi);
 
         /**
-         * This signal is emitted when a device disappear from the system.
+         * This signal is emitted when a device disappears from the system.
          *
          * @param udi the old device identifier
          */

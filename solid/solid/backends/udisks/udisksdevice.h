@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -22,6 +23,7 @@
 #define UDISKSDEVICE_H
 
 #include <ifaces/device.h>
+#include <solid/deviceinterface.h>
 
 #include <QtDBus/QDBusInterface>
 #include <QtCore/QSet>
@@ -35,7 +37,7 @@ namespace UDisks
 
 class UDisksDevice : public Solid::Ifaces::Device
 {
-
+    Q_OBJECT
 public:
     UDisksDevice(const QString &udi);
     virtual ~UDisksDevice();
@@ -52,16 +54,24 @@ public:
     virtual QString parentUdi() const;
 
     QVariant property(const QString &key) const;
+    bool propertyExists(const QString &key) const;
+    QMap<QString, QVariant> allProperties() const;
+
+Q_SIGNALS:
+    void changed();
+
+private Q_SLOTS:
+    void slotChanged();
     
 private:
+    QString storageDescription() const;
+    QString volumeDescription() const;
     mutable QDBusInterface m_device;
     QString m_udi;
     mutable QMap<QString,QVariant> m_cache;
     mutable QSet<QString> m_invalidKeys;
     
-    
     void checkCache(const QString &key) const;
-
 };
 
 }

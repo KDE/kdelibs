@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -20,25 +21,35 @@
 
 #include "udisksmanager.h"
 #include "udisksdevice.h"
+#include "udisks.h"
 
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
+#include <QtDBus/QDBusMetaType>
 
 using namespace Solid::Backends::UDisks;
 
 UDisksManager::UDisksManager(QObject *parent)
-    : m_manager("org.freedesktop.UDisks",
-                "/org/freedesktop/UDisks",
-                "org.freedesktop.UDisks",
+    : m_manager(UD_DBUS_SERVICE,
+                UD_DBUS_PATH,
+                UD_DBUS_INTERFACE_DISKS,
                 QDBusConnection::systemBus())
 {
-    m_supportedInterfaces  << Solid::DeviceInterface::StorageAccess
-                           << Solid::DeviceInterface::StorageDrive
-                           << Solid::DeviceInterface::OpticalDrive
-                           << Solid::DeviceInterface::OpticalDisc
-                           << Solid::DeviceInterface::StorageVolume;
+    m_supportedInterfaces
+            << Solid::DeviceInterface::GenericInterface
+            << Solid::DeviceInterface::Block
+            << Solid::DeviceInterface::StorageAccess
+            << Solid::DeviceInterface::StorageDrive
+            << Solid::DeviceInterface::OpticalDrive
+            << Solid::DeviceInterface::OpticalDisc
+            << Solid::DeviceInterface::StorageVolume;
 
-//TODO: React to Device changes (remove/add)
+    qDBusRegisterMetaType<QList<QDBusObjectPath> >();
+
+    connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+            this, SLOT(slotDeviceAdded(QDBusObjectPath)));
+    connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+            this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
 }
 
 UDisksManager::~UDisksManager()
@@ -48,6 +59,7 @@ UDisksManager::~UDisksManager()
 
 QObject* UDisksManager::createDevice(const QString& udi)
 {
+    // TODO should check for device existence given the UDI
     return new UDisksDevice(udi);
 }
 
@@ -82,6 +94,16 @@ QSet< Solid::DeviceInterface::Type > UDisksManager::supportedInterfaces() const
 QString UDisksManager::udiPrefix() const
 {
     return "/org/freedesktop/UDisks";
+}
+
+void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
+{
+    emit deviceAdded(opath.path());
+}
+
+void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
+{
+    emit deviceRemoved(opath.path());
 }
 
 #include "backends/udisks/udisksmanager.moc"

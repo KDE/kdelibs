@@ -36,7 +36,7 @@ namespace UDisks
 
 class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
-     Q_OBJECT
+    Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::DeviceInterface)
 public:
     DeviceInterface(UDisksDevice *device);
@@ -53,7 +53,7 @@ public:
         switch(type)
         {
         case Solid::DeviceInterface::GenericInterface:
-            // Doesn't exist with UDisks
+            list << "generic";
             break;
         case Solid::DeviceInterface::Processor:
             // Doesn't exist with UDisks
@@ -119,7 +119,9 @@ public:
 
     inline static Solid::DeviceInterface::Type fromString(const QString &capability)
     {
-        if (capability == "processor")
+        if (capability == "generic")
+            return Solid::DeviceInterface::GenericInterface;
+        else if (capability == "processor")
             return Solid::DeviceInterface::Processor;
         else if (capability == "block")
             return Solid::DeviceInterface::Block;

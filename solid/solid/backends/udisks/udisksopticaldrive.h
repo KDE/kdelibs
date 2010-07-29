@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -51,6 +52,13 @@ public:
     virtual int writeSpeed() const;
     virtual int readSpeed() const;
     virtual Solid::OpticalDrive::MediumTypes supportedMedia() const;
+
+private Q_SLOTS:
+    void slotDBusReply(const QDBusMessage &reply);
+    void slotDBusError(const QDBusError &error);
+
+private:
+    bool m_ejectInProgress;
 };
 
 }

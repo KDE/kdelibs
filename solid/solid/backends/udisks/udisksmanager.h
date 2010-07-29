@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -45,6 +46,10 @@ public:
     virtual QSet< Solid::DeviceInterface::Type > supportedInterfaces() const;
     virtual QString udiPrefix() const;
     virtual ~UDisksManager();
+
+private Q_SLOTS:
+    void slotDeviceAdded(const QDBusObjectPath &opath);
+    void slotDeviceRemoved(const QDBusObjectPath &opath);
     
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;

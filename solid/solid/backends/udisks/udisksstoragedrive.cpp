@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010  Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -42,87 +43,111 @@ qulonglong UDisksStorageDrive::size() const
 
 bool UDisksStorageDrive::isHotpluggable() const
 {
-    return m_device->property("DriveCanDetach").toULongLong();
+    return m_device->property("DriveCanDetach").toBool();
 }
 
 bool UDisksStorageDrive::isRemovable() const
 {
-    return m_device->property("DeviceIsRemovable").toULongLong();
+    return m_device->property("DeviceIsRemovable").toBool();
 }
 
 Solid::StorageDrive::DriveType UDisksStorageDrive::driveType() const
 {
+    const QStringList mediaTypes = m_device->property("DriveMediaCompatibility").toStringList();
+    bool isHardDisk = m_device->property( "DeviceIsSystemInternal" ).toBool();
 
-    if (m_device->property("DeviceIsPartition").toBool())
+    if ( isHardDisk )
     {
         return Solid::StorageDrive::HardDisk;
     }
-    else if (m_device->property("DeviceIsOpticalDisc").toBool())
+    else if ( !mediaTypes.filter( "optical" ).isEmpty() ) // optical disks
     {
         return Solid::StorageDrive::CdromDrive;
     }
-    
-    //TODO: http://hal.freedesktop.org/docs/udisks/Device.html#Device:DriveMediaCompatibility
-    
-    // Seems there is no floppy support in UDisks?
-/*    else if (type=="floppy")
+    else if ( mediaTypes.contains( "floppy" ) )
     {
         return Solid::StorageDrive::Floppy;
     }
-    else if (type=="tape")
+#if 0 // TODO add to Solid
+    else if ( mediaTypes.contains( "floppy_jaz" ) )
+    {
+        return Solid::StorageDrive::Jaz;
+    }
+    else if ( mediaTypes.contains( "floppy_zip" ) )
+    {
+        return Solid::StorageDrive::Zip;
+    }
+#endif
+    /*
+    else if (type=="tape")      // FIXME: DK doesn't know about tapes
     {
         return Solid::StorageDrive::Tape;
     }
-    else if (type=="compact_flash")
+    */
+#if 0 // TODO add to Solid
+    else if ( mediaTypes.contains( "flash" ) )
+    {
+        return Solid::StorageDrive::Flash;
+    }
+#endif
+    else if ( mediaTypes.contains( "flash_cf" ) )
     {
         return Solid::StorageDrive::CompactFlash;
-    }*/
-    else if (m_device->property("DeviceIsDrive").toBool())
+    }
+    else if ( mediaTypes.contains( "flash_ms" ) )
     {
         return Solid::StorageDrive::MemoryStick;
     }
-/*    else if (type=="smart_media")
+    else if ( mediaTypes.contains( "flash_sm" ) )
     {
         return Solid::StorageDrive::SmartMedia;
     }
-    else if (type=="sd_mmc")
+    else if ( mediaTypes.contains( "flash_sd" ) || mediaTypes.contains( "flash_sdhc" ) || mediaTypes.contains( "flash_mmc" ) )
     {
         return Solid::StorageDrive::SdMmc;
-    }*/
+    }
+    // FIXME: DK doesn't know about xD cards either
     else
     {
         return Solid::StorageDrive::HardDisk;
     }
-
 }
 
 Solid::StorageDrive::Bus UDisksStorageDrive::bus() const
 {
-    QString bus = m_device->property("DriveConnectionInterface").toString();
-    
-    if (bus=="ide") //TODO: Test/Verify
+    const QString bus = m_device->property( "DriveConnectionInterface" ).toString();
+
+    if ( bus == "ata" || bus == "ata_parallel" ) // parallel (classical) ATA
     {
         return Solid::StorageDrive::Ide;
     }
-    else if (bus=="usb")
+    else if ( bus == "usb" )
     {
         return Solid::StorageDrive::Usb;
     }
-    else if (bus=="ieee1394") // TODO: Test/Verify
+    else if ( bus == "firewire" )
     {
         return Solid::StorageDrive::Ieee1394;
     }
-    else if (bus=="scsi")
+    else if ( bus == "scsi" )
     {
         return Solid::StorageDrive::Scsi;
     }
-    else if (bus=="ata")
+    else if ( bus == "ata_serial" || bus == "ata_serial_esata" ) // serial ATA
     {
         return Solid::StorageDrive::Sata;
     }
-    else
+#if 0  // TODO add these to Solid
+    else if ( bus == "sdio" )
     {
-        return Solid::StorageDrive::Platform;
+        return Solid::StorageDrive::SDIO;
     }
+    else if ( bus == "virtual" )
+    {
+        return Solid::StorageDrive::Virtual;
+    }
+#endif
+    else
+        return Solid::StorageDrive::Platform;
 }
 

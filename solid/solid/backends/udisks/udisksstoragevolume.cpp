@@ -1,4 +1,5 @@
 /*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+              2010 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -35,7 +36,9 @@ UDisksStorageVolume::~UDisksStorageVolume()
   
 QString UDisksStorageVolume::encryptedContainerUdi() const
 {
-//TODO:...
+    if ( m_device->property( "DeviceIsLuks" ).toBool() )
+        return m_device->property( "LuksHolder" ).toString();
+
     return QString();
 }
 
@@ -91,25 +94,5 @@ Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const
 
 bool UDisksStorageVolume::isIgnored() const
 {
-    return false;
-    //TODO: ...
-/*    const QString mount_point = StorageAccess(m_device).filePath();
-    const bool mounted = m_device->property("volume.is_mounted").toBool();
-    if (!mounted) {
-        return false;
-    } else if (mount_point.startsWith(QLatin1String("/media/")) || mount_point.startsWith(QLatin1String("/mnt/"))) {
-        return false;
-    }
-*/
-    /* Now be a bit more aggressive on what we want to ignore,
-     * the user generally need to check only what's removable or in /media
-     * the volumes mounted to make the system (/, /boot, /var, etc.)
-     * are useless to him.
-     */
-/*    Solid::Device drive(m_device->property("block.storage_device").toString());
-
-    const bool removable = drive.as<Solid::GenericInterface>()->property("storage.removable").toBool();
-    const bool hotpluggable = drive.as<Solid::GenericInterface>()->property("storage.hotpluggable").toBool();
-
-    return !removable && !hotpluggable;*/
+    return m_device->property( "DevicePresentationHide" ).toBool();
 }

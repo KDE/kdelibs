@@ -193,6 +193,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/udisks/udisksopticaldrive.cpp
    backends/udisks/udisksstoragedrive.cpp
    backends/udisks/udisksstorageaccess.cpp
+   backends/udisks/udisksgenericinterface.cpp
    )
 endif(NOT WIN32 AND NOT APPLE)
 
