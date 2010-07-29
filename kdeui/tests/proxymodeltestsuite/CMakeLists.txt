@@ -55,6 +55,8 @@ kde4_add_library(proxymodeltestsuite SHARED
 )
 
 target_link_libraries(proxymodeltestsuite
+   ${QT_QTCORE_LIBRARY}
+   ${QT_QTGUI_LIBRARY}
    ${QT_QTTEST_LIBRARY}
    ${Grantlee_CORE_LIBRARIES}
 )
