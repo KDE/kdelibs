@@ -271,8 +271,9 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
         return;
     // removeAll doesn't work, creating QWeakPointer to something that's about to be deleted aborts
     // x11Filter->removeAll( const_cast< QWidget* >( filter ));
-    QMutableListIterator< QWeakPointer< QWidget > > it( *x11Filter );
-    while( it.hasNext()) {
+    for( QMutableListIterator< QWeakPointer< QWidget > > it( *x11Filter );
+         it.hasNext();
+         ) {
         QWidget* w = it.next().data();
         if( w == filter || w == NULL )
             it.remove();
