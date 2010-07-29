@@ -93,7 +93,7 @@ QSet< Solid::DeviceInterface::Type > UDisksManager::supportedInterfaces() const
 
 QString UDisksManager::udiPrefix() const
 {
-    return "/org/freedesktop/UDisks";
+    return UD_UDI_DISKS_PREFIX;
 }
 
 void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
