@@ -858,6 +858,7 @@ QString KCalendarSystemPrivate::getUnicodeString( const QDate &fromDate, const Q
 QString KCalendarSystemPrivate::formatDateUnicode( const QDate &fromDate, const QString &toFormat,
                                                    KLocale::DigitSet digitSet ) const
 {
+    Q_UNUSED(digitSet);
     const QLatin1Char quote('\'');
 
     QString buffer;
@@ -1159,7 +1160,6 @@ DateComponents KCalendarSystemPrivate::parseDateUnicode( const QString &inputStr
     int dayOfIsoWeek = -1;
     int strpos = 0;
     int fmtpos = 0;
-    int readLength; // Temporary variable used when reading input
     bool error = false;
 
     DateComponents result;
