@@ -329,12 +329,12 @@ void DynamicTreeWidget::removeSelected()
   {
     const QItemSelectionRange range = selection.takeFirst(); // The selection model will take care of updating persistent indexes.
     Q_ASSERT(range.isValid());
-    kDebug() << range.parent() << range.top() << range.bottom();
+    qDebug() << range.parent() << range.top() << range.bottom();
     removeCommand->setAncestorRowNumbers(m_dynamicTreeModel->indexToPath(range.parent()));
     removeCommand->setStartRow(range.top());
     removeCommand->setEndRow(range.bottom());
 
-    kDebug() << m_dynamicTreeModel->indexToPath(range.parent());
+    qDebug() << m_dynamicTreeModel->indexToPath(range.parent());
 
     removeCommand->doCommand();
     selection = m_treeView->selectionModel()->selection();

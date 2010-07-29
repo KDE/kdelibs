@@ -27,7 +27,6 @@
 
 #include <QDebug>
 
-#include <kdebug.h>
 #include <QStringList>
 
 // If DUMPTREE is defined, ModelInsertCommand dumps the tree of what it is inserting.
@@ -189,7 +188,7 @@ bool DynamicTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action
   {
     id = ba.toInt(&ok);
     if (!ok)
-      kDebug() << ba;
+      qDebug() << ba;
     Q_ASSERT(ok);
 
     _row = -1;

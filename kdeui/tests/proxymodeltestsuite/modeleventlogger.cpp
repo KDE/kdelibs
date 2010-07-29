@@ -25,8 +25,7 @@
 
 #include <QStringList>
 #include <QFile>
-
-#include <kdebug.h>
+#include <QDebug>
 
 #ifdef Grantlee_FOUND
 #include <grantlee_core.h>
@@ -194,7 +193,7 @@ void ModelEventLogger::writeLog()
 {
 #ifdef Grantlee_FOUND
   QString logFileName = QString("main.%1.%2.%3.cpp").arg(m_modelName).arg(reinterpret_cast<qint64>(this)).arg(m_numLogs++);
-  kDebug() << "Writing to " << logFileName;
+  qDebug() << "Writing to " << logFileName;
   QFile outputFile(logFileName);
   const bool logFileOpened = outputFile.open(QFile::WriteOnly | QFile::Text);
   Q_ASSERT(logFileOpened);
@@ -220,9 +219,9 @@ void ModelEventLogger::writeLog()
   outputFile.close();
 
   if (t->error())
-    kDebug() << t->errorString();
+    qDebug() << t->errorString();
 #else
-  kDebug() << "Grantlee not found. No log written.";
+  qDebug() << "Grantlee not found. No log written.";
 #endif
 }
 

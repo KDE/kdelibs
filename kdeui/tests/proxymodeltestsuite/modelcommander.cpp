@@ -61,7 +61,7 @@ QStringList ModelCommander::execute_testInsertWhenEmpty(const QString &dataTag)
       " - - 9"
     );
   } else {
-    kDebug() << dataTag;
+    qDebug() << dataTag;
     return testData;
   }
   execute(ins);
@@ -622,7 +622,7 @@ QStringList ModelCommander::executeTestInsert(QList<int> rowAncestors, const QSt
       " - - 10"
     );
   } else {
-    kDebug() << dataTag;
+    qDebug() << dataTag;
     delete ins;
     return testData;
   }

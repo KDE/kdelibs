@@ -23,6 +23,7 @@
 #include "proxymodeltestsuite/proxymodeltest.h"
 #include <kdescendantsproxymodel.h>
 
+#include "kdebug.h"
 
 class TestData : public ProxyModelTestData
 {

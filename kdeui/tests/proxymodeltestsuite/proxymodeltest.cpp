@@ -174,9 +174,9 @@ void ProxyModelTest::handleSignal(QVariantList expected)
 
 // This is where is usually goes wrong...
 #if 0
-    kDebug() << qvariant_cast<QModelIndex>(result.at(0)) << parent;
-    kDebug() << result.at(1) << expected.at(1);
-    kDebug() << result.at(2) << expected.at(2);
+    qDebug() << qvariant_cast<QModelIndex>(result.at(0)) << parent;
+    qDebug() << result.at(1) << expected.at(1);
+    qDebug() << result.at(2) << expected.at(2);
 #endif
 
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(0)), parent );
@@ -222,8 +222,8 @@ void ProxyModelTest::handleSignal(QVariantList expected)
     QVERIFY(topLeft.isValid() && bottomRight.isValid());
 
 #if 0
-    kDebug() << qvariant_cast<QModelIndex>(result.at(0)) << topLeft;
-    kDebug() << qvariant_cast<QModelIndex>(result.at(1)) << bottomRight;
+    qDebug() << qvariant_cast<QModelIndex>(result.at(0)) << topLeft;
+    qDebug() << qvariant_cast<QModelIndex>(result.at(1)) << bottomRight;
 #endif
 
     QCOMPARE(qvariant_cast<QModelIndex>(result.at(0)), topLeft );
@@ -530,7 +530,7 @@ void ProxyModelTest::doTest()
 
   static int numTests = 0;
   if (qApp->arguments().contains("-count"))
-    kDebug() << "numTests" << ++numTests;
+    qDebug() << "numTests" << ++numTests;
 
   m_modelSpy->preTestPersistIndexes(changeList);
 
@@ -575,7 +575,7 @@ void ProxyModelTest::doTest()
         continue;
       }
 #if 0
-      kDebug() << idx << idx.data() << change.difference << change.toInvalid << persistentIndex.row();
+      qDebug() << idx << idx.data() << change.difference << change.toInvalid << persistentIndex.row();
 #endif
 
       QCOMPARE(idx.row() + change.difference, persistentIndex.row());
@@ -720,4 +720,4 @@ uint qHash( const QVariant & var )
     // could not generate a hash for the given variant
     Q_ASSERT(0);
 	return -1;
-} 
+}

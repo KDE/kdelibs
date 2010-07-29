@@ -29,6 +29,8 @@
 #include "dynamictreewidget.h"
 #include <kselectionproxymodel.h>
 
+#include "kdebug.h"
+
 MatchCheckingWidget::MatchCheckingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f)
 {

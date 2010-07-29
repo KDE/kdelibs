@@ -19,7 +19,7 @@
 
 #include "modelspy.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 ModelSpy::ModelSpy(QObject *parent)
   : QObject(parent), QList<QVariantList>(), m_model(0), m_isSpying(false), m_lazyPersist(false)
@@ -270,7 +270,7 @@ void ModelSpy::doPersist()
     Q_ASSERT(change.startRow <= change.endRow);
 
     if (change.endRow >= m_model->rowCount(parent))
-      kDebug() << m_model << parent << change.startRow << change.endRow << parent.data() << m_model->rowCount(parent);
+      qDebug() << m_model << parent << change.startRow << change.endRow << parent.data() << m_model->rowCount(parent);
 
     Q_ASSERT(change.endRow < m_model->rowCount(parent));
 
