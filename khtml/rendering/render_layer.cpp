@@ -1680,6 +1680,16 @@ bool RenderLayer::shouldBeOverflowOnly() const
 
 void RenderLayer::styleChanged()
 {
+    // If we stopped being a stacking context, make sure to clear our
+    // child lists so we don't end up with dangling references when a kid
+    // is removed (as it wouldn't know to remove from us)
+    if (!isStackingContext() && (m_posZOrderList || m_negZOrderList)) {
+        delete m_posZOrderList;
+        m_posZOrderList = 0;
+        delete m_negZOrderList;
+        m_negZOrderList = 0;
+    }
+
     bool isOverflowOnly = shouldBeOverflowOnly();
     if (isOverflowOnly != m_isOverflowOnly) {
         m_isOverflowOnly = isOverflowOnly;
