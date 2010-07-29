@@ -373,6 +373,7 @@ install( FILES
   KSvgRenderer
   KSycoca
   KSycocaEntry
+  KSystemEventFilter
   KSystemTimeZone
   KSystemTimeZoneSource
   KSystemTimeZones
