@@ -280,7 +280,7 @@ public:
 #endif
 
   /**
-   * @deprecated Use KWindowSystemEventFilter::installEventFilter() instead.
+   * @deprecated Use KSystemEventFilter::installEventFilter() instead.
    *
    * Installs widget filter as global X11 event filter.
    *
@@ -293,7 +293,7 @@ public:
   void KDE_DEPRECATED installX11EventFilter( QWidget* filter );
 
   /**
-   * @deprecated Use KWindowSystemEventFilter::removeEventFilter() instead.
+   * @deprecated Use KSystemEventFilter::removeEventFilter() instead.
    *
    * Removes global X11 event filter previously installed by
    * installX11EventFilter().
