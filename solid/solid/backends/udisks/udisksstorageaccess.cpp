@@ -58,6 +58,7 @@ bool UDisksStorageAccess::setup()
     if ( m_teardownInProgress || m_setupInProgress )
         return false;
     m_setupInProgress = true;
+    emit setupRequested(m_device->udi());
 
     if (m_device->property("DeviceIsLuks").toBool())
         return requestPassphrase();
@@ -70,6 +71,7 @@ bool UDisksStorageAccess::teardown()
     if ( m_teardownInProgress || m_setupInProgress )
         return false;
     m_teardownInProgress = true;
+    emit teardownRequested(m_device->udi());
 
     if (m_device->property("DeviceIsLuks").toBool())
         return callCryptoTeardown();
