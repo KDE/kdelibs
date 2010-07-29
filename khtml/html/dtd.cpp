@@ -131,7 +131,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_SCRIPT
     6, // ID_SELECT
     1, // ID_SMALL
-    1, // ID_SOURCE
+    0, // ID_SOURCE
     1, // ID_SPAN
     1, // ID_STRIKE
     1, // ID_STRONG
