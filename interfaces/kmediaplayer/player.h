@@ -135,6 +135,11 @@ protected Q_SLOTS:
 	 * state.*/
 	void setState(int);
 
+protected:
+	/* Enable the stateChanged(QString&, ...) method that was hidden by
+	   the stateChanged(int) signal */
+	using KXMLGUIClient::stateChanged;
+
 private:
 	bool currentLooping;
 	State currentState;
