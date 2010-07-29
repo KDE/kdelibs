@@ -46,6 +46,7 @@ public:
     virtual ~HTMLMediaElement();
 
     virtual void attach();
+    virtual void close();
 
 //    virtual void parseAttribute(AttributeImpl *token);
     using DOM::ElementImpl::attributeChanged;
