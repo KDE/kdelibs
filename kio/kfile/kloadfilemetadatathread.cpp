@@ -138,8 +138,14 @@ void KLoadFileMetaDataThread::run()
             }
 
             if (variants.isEmpty()) {
-                // the file has not been indexed, query the meta data
+                // The file has not been indexed, query the meta data
                 // directly from the file
+                
+                // TODO: KFileMetaInfo (or one of it's used components) is not reentrant.
+                // As temporary workaround the access is protected by a mutex.
+                static QMutex metaInfoMutex;
+                metaInfoMutex.lock();
+                
                 const QString path = urls.first().toLocalFile();
                 KFileMetaInfo metaInfo(path, QString(), KFileMetaInfo::Fastest);
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
@@ -148,6 +154,8 @@ void KLoadFileMetaDataThread::run()
                     const Nepomuk::Variant value(metaInfoItem.value());
                     data.insert(uriString, formatValue(Nepomuk::Types::Property(), value));
                 }
+                
+                metaInfoMutex.unlock();
             }
         }
 
