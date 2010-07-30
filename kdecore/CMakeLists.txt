@@ -346,7 +346,7 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
 
 if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIB_INIT})
+    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)
