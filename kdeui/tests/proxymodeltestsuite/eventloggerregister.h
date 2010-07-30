@@ -26,9 +26,11 @@
 
 #include <memory>
 
+#include "proxymodeltestsuite_export.h"
+
 class ModelEventLogger;
 
-class EventLoggerRegister
+class PROXYMODELTESTSUITE_EXPORT EventLoggerRegister
 {
 public:
   enum Behaviour {
