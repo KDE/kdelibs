@@ -17,6 +17,7 @@ set(proxymodeltestsuite_SRCS
     proxymodeltest.cpp
     modeldumper.cpp
     modeleventlogger.cpp
+    eventloggerregister.cpp
 )
 
 set(eventlogger_RCSS

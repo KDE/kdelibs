@@ -23,6 +23,8 @@
 #include "modeldumper.h"
 #include "indexfinder.h"
 
+#include "eventloggerregister.h"
+
 #include <QStringList>
 #include <QFile>
 #include <QDebug>
@@ -187,6 +189,7 @@ ModelEventLogger::ModelEventLogger(QAbstractItemModel *model, QObject* parent)
 
   m_initEvent = QVariant::fromValue(static_cast<QObject*>(modelEvent));
 
+  EventLoggerRegister::instance()->registerLogger(this);
 }
 
 void ModelEventLogger::writeLog()
