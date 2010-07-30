@@ -56,7 +56,7 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
     lseek (fd, 0x8080, SEEK_CUR);
     if (read (fd, &bs, 2) != 2)
     {
-        qDebug("Advanced probing on %s failed while reading block size", device_file);
+        qDebug("Advanced probing on %s failed while reading block size", qPrintable(device_file));
         goto out;
     }
 
@@ -64,7 +64,7 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
     lseek (fd, 2, SEEK_CUR);
     if (read (fd, &ts, 2) != 2)
     {
-        qDebug("Advanced probing on %s failed while reading path table size", device_file);
+        qDebug("Advanced probing on %s failed while reading path table size", qPrintable(device_file));
         goto out;
     }
 
@@ -72,7 +72,7 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
     lseek (fd, 6, SEEK_CUR);
     if (read (fd, &tl, 4) != 4)
     {
-        qDebug("Advanced probing on %s failed while reading path table block", device_file);
+        qDebug("Advanced probing on %s failed while reading path table block", qPrintable(device_file));
         goto out;
     }
 
@@ -85,7 +85,7 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
         /* get the length of the filename of the current entry */
         if (read (fd, &len_di, 1) != 1)
         {
-            qDebug("Advanced probing on %s failed, cannot read more entries", device_file);
+            qDebug("Advanced probing on %s failed, cannot read more entries", qPrintable(device_file));
             break;
         }
 
@@ -94,14 +94,14 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
         lseek (fd, 5, SEEK_CUR);
         if (read (fd, &parent, 2) != 2)
         {
-            qDebug("Advanced probing on %s failed, couldn't read parent entry", device_file);
+            qDebug("Advanced probing on %s failed, couldn't read parent entry", qPrintable(device_file));
             break;
         }
 
         /* read the name */
         if (read (fd, dirname, len_di) != len_di)
         {
-            qDebug("Advanced probing on %s failed, couldn't read the entry name", device_file);
+            qDebug("Advanced probing on %s failed, couldn't read the entry name", qPrintable(device_file));
             break;
         }
         dirname[len_di] = 0;
@@ -112,26 +112,26 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
         {
             if (!strcasecmp (dirname, "VIDEO_TS"))
             {
-                qDebug("Disc in %s is a Video DVD", device_file);
+                qDebug("Disc in %s is a Video DVD", qPrintable(device_file));
                 result = Solid::OpticalDisc::VideoDvd;
                 break;
             }
 #if 0 // TODO add this to Solid
             else if (!strcasecmp (dirname, "BDMV"))
             {
-                qDebug("Disc in %s is a Blu-ray video disc", device_file);
+                qDebug("Disc in %s is a Blu-ray video disc", qPrintable(device_file));
                 break;
             }
 #endif
             else if (!strcasecmp (dirname, "VCD"))
             {
-                qDebug("Disc in %s is a Video CD", device_file);
+                qDebug("Disc in %s is a Video CD", qPrintable(device_file));
                 result = Solid::OpticalDisc::VideoCd;
                 break;
             }
             else if (!strcasecmp (dirname, "SVCD"))
             {
-                qDebug("Disc in %s is a Super Video CD", device_file);
+                qDebug("Disc in %s is a Super Video CD", qPrintable(device_file));
                 result = Solid::OpticalDisc::SuperVideoCd;
                 break;
             }
