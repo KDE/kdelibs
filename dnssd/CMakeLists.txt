@@ -54,7 +54,7 @@ endif (HAVE_AVAHI)
 ########### next target ###############
 
 
-kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
+kde4_add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
 
 # KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
 if (HAVE_DNSSD)

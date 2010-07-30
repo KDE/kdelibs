@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KDESU_EXPORT
-# if defined(MAKE_KDESU_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KDESU_EXPORT
+# elif defined(MAKE_KDESU_LIB)
    /* We are building this library */ 
 #  define KDESU_EXPORT KDE_EXPORT
 # else

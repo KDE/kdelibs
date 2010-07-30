@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KIOSLAVE_FILE_EXPORT
-# if defined(MAKE_KIOSLAVE_FILE_LIB) || defined(MAKE_KIO_FILE_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KIOSLAVE_FILE_EXPORT
+# elif defined(MAKE_KIOSLAVE_FILE_LIB) || defined(MAKE_KIO_FILE_LIB)
    /* We are building this library */ 
 #  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 # else

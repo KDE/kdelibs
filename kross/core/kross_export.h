@@ -25,7 +25,10 @@
 #include <kdemacros.h>
 
 #ifndef KROSS_EXPORT
-# if defined(MAKE_KROSS_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KROSS_EXPORT
+# elif defined(MAKE_KROSS_LIB)
    /* We are building this library */
 #  define KROSS_EXPORT KDE_EXPORT
 # else
@@ -35,7 +38,10 @@
 #endif
 
 #ifndef KROSSCORE_EXPORT
-# if defined(MAKE_KROSSCORE_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KROSSCORE_EXPORT
+# elif defined(MAKE_KROSSCORE_LIB)
    /* We are building this library */
 #  define KROSSCORE_EXPORT KDE_EXPORT
 # else
@@ -45,7 +51,10 @@
 #endif
 
 #ifndef KROSSUI_EXPORT
-# if defined(MAKE_KROSSUI_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KROSSUI_EXPORT
+# elif defined(MAKE_KROSSUI_LIB)
    /* We are building this library */
 #  define KROSSUI_EXPORT KDE_EXPORT
 # else

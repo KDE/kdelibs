@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KNTLM_EXPORT
-# if defined(MAKE_KNTLM_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KNTLM_EXPORT
+# elif defined(MAKE_KNTLM_LIB)
    /* We are building this library */ 
 #  define KNTLM_EXPORT KDE_EXPORT
 # else

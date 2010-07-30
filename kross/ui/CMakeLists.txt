@@ -13,7 +13,7 @@ set(krossui_LIB_SRCS
 #   guiclient.cpp
    )
 
-kde4_add_library(krossui SHARED ${krossui_LIB_SRCS})
+kde4_add_library(krossui ${LIBRARY_TYPE} ${krossui_LIB_SRCS})
 target_link_libraries(krossui krosscore ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} ${KDE4_KIO_LIBS})
 set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                          SOVERSION ${GENERIC_LIB_SOVERSION}

@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KDE3SUPPORT_EXPORT
-# if defined(MAKE_KDE3SUPPORT_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KDE3SUPPORT_EXPORT
+# elif defined(MAKE_KDE3SUPPORT_LIB)
    /* We are building this library */ 
 #  define KDE3SUPPORT_EXPORT KDE_EXPORT
 # else

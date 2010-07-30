@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef NEPOMUKQUERY_EXPORT
-# if defined(MAKE_NEPOMUKQUERY_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define NEPOMUKQUERY_EXPORT
+# elif defined(MAKE_NEPOMUKQUERY_LIB)
    /* We are building this library */ 
 #  define NEPOMUKQUERY_EXPORT KDE_EXPORT
 # else

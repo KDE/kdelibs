@@ -7,7 +7,7 @@ set(ThreadWeaverExperimental_LIB_SRCS FileLoaderJob.cpp )
 
 include_directories( ../Weaver )
 
-kde4_add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
+kde4_add_library(ThreadWeaverExperimental ${LIBRARY_TYPE} ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental threadweaver)
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 

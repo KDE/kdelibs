@@ -10,7 +10,7 @@ set(kemoticons_LIB_SRCS
     kemoticons/kemoticonsprovider.cpp
 )
 
-kde4_add_library(kemoticons SHARED ${kemoticons_LIB_SRCS})
+kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
 target_link_libraries(kemoticons ${KDE4_KIO_LIBS})
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
@@ -56,7 +56,7 @@ elseif (Q_WS_WIN)
     set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} kidletime/windowspoller.cpp)
 endif (Q_WS_X11)
 
-kde4_add_library(kidletime SHARED ${kidletime_LIB_SRCS})
+kde4_add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
 target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 target_link_libraries(kidletime ${KDE4_KDEUI_LIBS})
 
@@ -96,7 +96,7 @@ set(kcmutils_LIB_SRCS
     ksettings/componentsdialog.cpp
 )
 
-kde4_add_library(kcmutils SHARED ${kcmutils_LIB_SRCS})
+kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 
 target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS})
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
@@ -129,7 +129,7 @@ set(kprintutils_LIB_SRCS
     kprintpreview.cpp
 )
 
-kde4_add_library(kprintutils SHARED ${kprintutils_LIB_SRCS})
+kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 
 target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS})
 target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
@@ -152,7 +152,7 @@ set(kutils_LIB_SRCS
     dummy.cpp
 )
 
-kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
+kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
 target_link_libraries(kutils kemoticons kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
 target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY} kemoticons kidletime kcmutils kprintutils)

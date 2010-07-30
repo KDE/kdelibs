@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KEMOTICONS_EXPORT
-# if defined(MAKE_KEMOTICONS_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KEMOTICONS_EXPORT
+# elif defined(MAKE_KEMOTICONS_LIB)
    /* We are building this library */ 
 #  define KEMOTICONS_EXPORT KDE_EXPORT
 # else

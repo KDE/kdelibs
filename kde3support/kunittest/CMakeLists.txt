@@ -6,7 +6,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kde3support )
 set(kunittest_LIB_SRCS runner.cpp tester.cpp )
 
 
-kde4_add_library(kunittest SHARED ${kunittest_LIB_SRCS})
+kde4_add_library(kunittest ${LIBRARY_TYPE} ${kunittest_LIB_SRCS})
 
 target_link_libraries(kunittest ${KDE4_KDECORE_LIBS} )
 target_link_libraries(kunittest LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )

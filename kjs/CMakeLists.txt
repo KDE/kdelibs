@@ -198,7 +198,7 @@ else (NOT DEFINED QT_ONLY)
 endif (NOT DEFINED QT_ONLY)
 
 
-kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
+kde4_add_library(${KJSLIBNAME} ${LIBRARY_TYPE} ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})

@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KIMPROXY_EXPORT
-# if defined(MAKE_KIMPROXY_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KIMPROXY_EXPORT
+# elif defined(MAKE_KIMPROXY_LIB)
    /* We are building this library */ 
 #  define KIMPROXY_EXPORT KDE_EXPORT
 # else

@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KDECORE_EXPORT
-# if defined(MAKE_KDECORE_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KDECORE_EXPORT
+# elif defined(MAKE_KDECORE_LIB)
    /* We are building this library */ 
 #  define KDECORE_EXPORT KDE_EXPORT
 # else

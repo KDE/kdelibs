@@ -222,6 +222,14 @@ endif(NOT WINCE)
 
 ################# configure checks and create the configured files #################
 
+if(WINCE)
+  set(LIBRARY_TYPE STATIC)
+  add_definitions(-DKDELIBS_STATIC_LIBS)
+  add_definitions(-DSTATIC_INSTALL_PATH=L\\\"/programme/kde\\\")
+else(WINCE)
+  set(LIBRARY_TYPE SHARED)
+endif(WINCE)
+
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)

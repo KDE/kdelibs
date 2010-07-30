@@ -42,7 +42,7 @@ kde4_add_ui_files(knewstuff3_SRCS
     uploaddialog.ui
 )
 
-kde4_add_library(knewstuff3 SHARED ${knewstuff3_SRCS} )
+kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}

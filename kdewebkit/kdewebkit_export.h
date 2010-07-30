@@ -27,7 +27,10 @@
 #include <kdemacros.h>
 
 #ifndef KDEWEBKIT_EXPORT
-# if defined(MAKE_KDEWEBKIT_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KDEWEBKIT_EXPORT
+# elif defined(MAKE_KDEWEBKIT_LIB)
    /* We are building this library */ 
 #  define KDEWEBKIT_EXPORT KDE_EXPORT
 # else

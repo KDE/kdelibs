@@ -30,7 +30,7 @@ if(HAVE_NEPOMUK_WITH_SDO_0_5)
   soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
 endif(HAVE_NEPOMUK_WITH_SDO_0_5)
 
-kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
+kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )

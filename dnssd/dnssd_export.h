@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KDNSSD_EXPORT
-# if defined(MAKE_KDNSSD_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KDNSSD_EXPORT
+# elif defined(MAKE_KDNSSD_LIB)
    /* We are building this library */ 
 #  define KDNSSD_EXPORT KDE_EXPORT
 # else

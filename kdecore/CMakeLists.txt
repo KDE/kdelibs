@@ -147,13 +147,15 @@ endif (UNIX)
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
-add_subdirectory( network/kssld )
+if ( NOT WINCE )
+    add_subdirectory( network/kssld )
+endif ( NOT WINCE )
 
 ########### next target ###############
 
 if (UNIX)
 
-   kde4_add_library(kdefakes SHARED fakes.c)
+   kde4_add_library(kdefakes ${LIBRARY_TYPE} fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
    if (NOT HAVE_TRUNC)
        target_link_libraries(kdefakes  m )
@@ -366,7 +368,7 @@ if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
+kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
@@ -422,34 +424,36 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
 
-########### next target ###############
+if ( NOT WINCE )
+    ########### next target ###############
 
-# KAuth backend plugin
+    # KAuth backend plugin
 
-if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-    set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
-    kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
-    target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
-    install(TARGETS kauth_backend_plugin
-            LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-            ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-            RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-    )
-endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+    if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+        set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
+        kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
+        target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
+        install(TARGETS kauth_backend_plugin
+                LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+                ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+                RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+        )
+    endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
 
-########### next target ###############
+    ########### next target ###############
 
-# KAuth helper plugin
+    # KAuth helper plugin
 
-if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
-    kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
-    target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
-    install(TARGETS kauth_helper_plugin
-            LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-            ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-            RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-    )
-endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+    if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+        kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
+        target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
+        install(TARGETS kauth_helper_plugin
+                LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+                ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+                RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+        )
+    endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+endif ( NOT WINCE )
 
 ########### next target ###############
 
@@ -475,35 +479,35 @@ endif (WIN32 AND NOT WINCE)
 ########### next target ###############
 
 if(NOT WINCE)
-# kjs hash stuff for transcript plugin
-set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+    # kjs hash stuff for transcript plugin
+    set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
-add_custom_command(
-   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
-   COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE}
-           ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
-           > ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
-   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
-)
+    add_custom_command(
+       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+       COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE}
+               ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+               > ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+    )
 
-# the transcript plugin
-set( ktranscript_LIB_SRCS
-   localization/ktranscript.cpp
-   localization/common_helpers.cpp
-)
+    # the transcript plugin
+    set( ktranscript_LIB_SRCS
+       localization/ktranscript.cpp
+       localization/common_helpers.cpp
+    )
 
-kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
+    kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
 
-target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
+    target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
 
 
-if(KDE4_ENABLE_FINAL)
-   macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-else(KDE4_ENABLE_FINAL)
-   macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-endif(KDE4_ENABLE_FINAL)
+    if(KDE4_ENABLE_FINAL)
+       macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+    else(KDE4_ENABLE_FINAL)
+       macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+    endif(KDE4_ENABLE_FINAL)
 
-install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
+    install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 endif(NOT WINCE)
 

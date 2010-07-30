@@ -40,7 +40,10 @@
 # elif defined(_WIN32) || defined(_WIN64)
 
 #  define SOLID_NO_EXPORT
-#  if defined(MAKE_SOLID_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define SOLID_EXPORT
+#  elif defined(MAKE_SOLID_LIB)
     /* We are building this library */
 #   define SOLID_EXPORT __declspec(dllexport)
 #  else

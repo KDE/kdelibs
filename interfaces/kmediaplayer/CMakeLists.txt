@@ -12,7 +12,7 @@ kmediaplayeradaptor.cpp
 )
 
 
-kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
+kde4_add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
 target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} )

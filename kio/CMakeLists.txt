@@ -256,7 +256,7 @@ install(FILES kssl/ksslcertificatemanager.upd
               kssl/ksslcertificatemanager.upd.sh
         DESTINATION  ${DATA_INSTALL_DIR}/kconf_update)
 
-kde4_add_library(kio SHARED ${kio_LIB_SRCS})
+kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 
 if(HAVE_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery)

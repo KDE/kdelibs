@@ -23,7 +23,10 @@
 #include <kdemacros.h>
 
 #ifndef KNEWSTUFF_EXPORT
-# if defined(MAKE_KNEWSTUFF3_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KNEWSTUFF_EXPORT
+# elif defined(MAKE_KNEWSTUFF3_LIB)
 /* We are building this library */
 #  define KNEWSTUFF_EXPORT KDE_EXPORT
 # else

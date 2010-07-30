@@ -2,7 +2,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_IN
 
 ########### next target ###############
 set(krossqtsplugin_LIB_SRCS plugin.cpp)
-kde4_add_library(krossqtsplugin SHARED ${krossqtsplugin_LIB_SRCS})
+kde4_add_library(krossqtsplugin ${LIBRARY_TYPE} ${krossqtsplugin_LIB_SRCS})
 target_link_libraries(krossqtsplugin ${QT_QTUITOOLS_LIBRARY} ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} krosscore ${QT_QTSCRIPT_LIBRARY})
 if (NOT CYGWIN)
     set_target_properties(krossqtsplugin PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})

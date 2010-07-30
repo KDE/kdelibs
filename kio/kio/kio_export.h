@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KIO_EXPORT
-# if defined(MAKE_KIO_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KIO_EXPORT
+# elif defined(MAKE_KIO_LIB)
    /* We are building this library */
 #  define KIO_EXPORT KDE_EXPORT
 # else

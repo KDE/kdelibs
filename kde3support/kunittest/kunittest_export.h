@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KUNITTEST_EXPORT
-# if defined(MAKE_KUNITTEST_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KUNITTEST_EXPORT
+# elif defined(MAKE_KUNITTEST_LIB)
    /* We are building this library */ 
 #  define KUNITTEST_EXPORT KDE_EXPORT
 # else

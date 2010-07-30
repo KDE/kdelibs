@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef NEPOMUK_EXPORT
-# if defined(MAKE_NEPOMUK_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define NEPOMUK_EXPORT
+# elif defined(MAKE_NEPOMUK_LIB)
    /* We are building this library */
 #  define NEPOMUK_EXPORT KDE_EXPORT
 # else

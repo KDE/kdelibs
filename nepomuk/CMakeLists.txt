@@ -96,7 +96,7 @@ soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/n
 soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
 
-kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
+kde4_add_library(nepomuk ${LIBRARY_TYPE} ${nepomuk_LIB_SRCS})
 
 target_link_libraries(nepomuk
   ${SOPRANO_LIBRARIES}

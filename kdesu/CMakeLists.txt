@@ -15,7 +15,7 @@ set(kdesu_LIB_SRCS
    )
 
 
-kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
+kde4_add_library(kdesu ${LIBRARY_TYPE} ${kdesu_LIB_SRCS})
 
 target_link_libraries(kdesu ${KDE4_KPTY_LIBS} )
 target_link_libraries(kdesu LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )

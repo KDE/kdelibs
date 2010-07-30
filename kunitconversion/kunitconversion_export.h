@@ -24,7 +24,10 @@
 #include <kdemacros.h>
 
 #ifndef KUNITCONVERSION_EXPORT
-# if defined(MAKE_KUNITCONVERSION_LIB)
+# if defined(KDELIBS_STATIC_LIBS)
+   /* No export/import for static libraries */
+#  define KUNITCONVERSION_EXPORT
+# elif defined(MAKE_KUNITCONVERSION_LIB)
    /* We are building this library */
 #  define KUNITCONVERSION_EXPORT KDE_EXPORT
 # else

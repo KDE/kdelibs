@@ -39,7 +39,7 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/solid/ ${CMAKE_BINARY_DIR}/solid/ ${KDE4_KDECORE_INCLUDES})
 
 
-kde4_add_library(kunitconversion SHARED ${kunitconversion_LIB_SRCS})
+kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
 target_link_libraries(kunitconversion ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS})
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

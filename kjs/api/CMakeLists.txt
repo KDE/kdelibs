@@ -8,7 +8,7 @@ set(kjsapi_LIB_SRCS
     kjsarguments.cpp
    )
 
-kde4_add_library(kjsapi SHARED ${kjsapi_LIB_SRCS})
+kde4_add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
 
 target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
 

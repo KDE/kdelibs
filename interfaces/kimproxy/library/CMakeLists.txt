@@ -14,7 +14,7 @@ qt4_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimpro
 qt4_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
 
 
-kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
+kde4_add_library(kimproxy ${LIBRARY_TYPE} ${kimproxy_LIB_SRCS})
 
 target_link_libraries(kimproxy  ${KDE4_KIO_LIBS} )
 target_link_libraries(kimproxy  LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )

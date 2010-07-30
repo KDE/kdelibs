@@ -55,7 +55,7 @@ qt4_add_dbus_interface(nepomukquery_SRC
   org.kde.nepomuk.Query.xml
   queryinterface)
 
-kde4_add_library(nepomukquery SHARED ${nepomukquery_SRC})
+kde4_add_library(nepomukquery ${LIBRARY_TYPE} ${nepomukquery_SRC})
 
 set_target_properties(nepomukquery PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
