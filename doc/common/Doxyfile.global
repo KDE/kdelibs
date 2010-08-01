@@ -200,6 +200,7 @@ ALIASES                = "intern=\par<b>Internal use only.</b>" \
                          "x11=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#3\">X11</a>" \
                          "gpl=<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1\">GPLv2</a>" \
                          "lgpl=<a href=\"http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html#SEC1\">LGPLv2</a>" \
+                         "mit=<a href=\"http://www.opensource.org/licenses/mit-license.php\">MIT</a>" \
                          "qpl=<a href=\"http://www.trolltech.com/products/qt/licenses\">QPL</a>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
