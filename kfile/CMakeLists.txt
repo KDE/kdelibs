@@ -4,8 +4,10 @@ include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/solid
   ${CMAKE_BINARY_DIR}/solid
-  ${SOPRANO_INCLUDE_DIR}
 )
+if(Soprano_FOUND)
+include_directories(${SOPRANO_INCLUDE_DIR})
+endif(Soprano_FOUND)
 
 add_subdirectory(tests)
 
