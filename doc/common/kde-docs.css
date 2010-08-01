@@ -306,7 +306,9 @@ h3.title {
     border: 0px;
 
     /* Force footer to bottom of viewport/page */
-    position: absolute;
+    /* Either should be position:fixed to stay always at the bottom of the viewport, or 
+       removed to be at the bottom of the page. I chose bottom of the page.
+       position: absolute; */
     bottom: 0;
     height: 8.7em;
 }
