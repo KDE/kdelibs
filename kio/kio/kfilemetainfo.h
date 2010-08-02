@@ -40,7 +40,7 @@ public:
     const QString& name() const;
     const QStringList& keys() const;
 private:
-    QSharedDataPointer<KFileMetaInfoGroupPrivate> p;
+    QSharedDataPointer<KFileMetaInfoGroupPrivate> d;
 };
 
 typedef QList<KFileMetaInfoGroup> KFileMetaInfoGroupList;
@@ -153,7 +153,7 @@ public:
     const KUrl& url() const;
 
 private:
-    QSharedDataPointer<KFileMetaInfoPrivate> p;
+    QSharedDataPointer<KFileMetaInfoPrivate> d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KFileMetaInfo::WhatFlags)

@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
-
+                 2010 Sebastian Trueg <trueg@kde.org>
+   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License (LGPL) as published by the Free Software Foundation; either
@@ -17,46 +18,22 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KFILEMETAINFO_P_H
-#define KFILEMETAINFO_P_H
+#ifndef KFILEMETAINFOITEM_P_H
+#define KFILEMETAINFOITEM_P_H
 
-#include "kfilewriteplugin.h"
+#include "kurl.h"
 #include "predicateproperties.h"
-#include "kfilemetainfoitem.h"
-#include "kfilemetainfo.h"
-#include <QHash>
 
-namespace Strigi {
-    class StreamAnalyzer;
-}
+#include <QtCore/QHash>
+#include <QtCore/QSharedData>
 
-class KFileWriterProvider {
-private:
-    QHash<QString, QHash<QString, KFileWritePlugin*> > loadedWriters;
-public:
-    KFileWritePlugin* loadPlugin(const QString& key);
-    QHash<QString, KFileWritePlugin*> plugins;
-    ~KFileWriterProvider();
-    static KFileWriterProvider* self();
-};
-
-class PredicatePropertyProvider {
-private:
-    class Private;
-    Private* p;
-public:
-    PredicatePropertyProvider();
-    ~PredicatePropertyProvider();
-    static PredicatePropertyProvider* self();
-    Strigi::StreamAnalyzer& indexer();
-    static PredicateProperties getPredicateProperties(const QString& key);
-};
+class KFileWritePlugin;
 
 class KFileMetaInfoItemPrivate : public QSharedData {
 public:
     KFileMetaInfoItemPrivate() : writer(0) {}
-    static const QVariant null;
     PredicateProperties pp;
+    KUrl propertyUri;
     QVariant value;
     KFileWritePlugin* writer;
     bool embedded;

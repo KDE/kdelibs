@@ -2,6 +2,7 @@
 
    Copyright (c) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
                  2007 Jos van den Oever <jos@vandenoever.info>
+                 2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,6 +28,7 @@
 class KFileWritePlugin;
 class QVariant;
 class PredicateProperties;
+class KUrl;
 
 class KFileMetaInfoItemPrivate;
 class KIO_EXPORT KFileMetaInfoItem {
@@ -55,7 +57,7 @@ public:
      **/
     bool isEditable() const;
     /**
-     * @brief Has this value been removed, e.g with setValue(QVarian())
+     * @brief Has this value been removed, e.g with setValue(QVariant())
      **/
     bool isRemoved() const;
     /**
@@ -84,11 +86,12 @@ public:
     bool isValid() const;
     /**
      * @brief Retrieve the properties of this field type.
+     *
+     * @deprecated
      **/
-    const PredicateProperties& properties() const;
+    KDE_DEPRECATED const PredicateProperties& properties() const;
     /**
      * Localized name of the predicate.
-     * Convenience function for properties().name();
      **/
     const QString& name() const;
     /**
@@ -106,9 +109,9 @@ public:
      */
     QString prefix() const;
 private:
-    QSharedDataPointer<KFileMetaInfoItemPrivate> p;
+    QSharedDataPointer<KFileMetaInfoItemPrivate> d;
 
-    KFileMetaInfoItem(const PredicateProperties& p,
+    KFileMetaInfoItem(const QString& p,
         const QVariant& v, KFileWritePlugin* w, bool e);
 };
 

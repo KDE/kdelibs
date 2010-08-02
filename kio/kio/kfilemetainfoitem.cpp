@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
-
+                 2010 Sebastian Trueg <trueg@kde.org>
+                 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License (LGPL) as published by the Free Software Foundation; either
@@ -18,64 +19,63 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kfilemetainfo_p.h"
-#include <QDebug>
+#include "kfilemetainfoitem.h"
+#include "kfilemetainfoitem_p.h"
 
-const QVariant KFileMetaInfoItemPrivate::null;
 
-KFileMetaInfoItem::KFileMetaInfoItem() :p(new KFileMetaInfoItemPrivate()) {
+KFileMetaInfoItem::KFileMetaInfoItem() : d(new KFileMetaInfoItemPrivate()) {
 }
 
-KFileMetaInfoItem::KFileMetaInfoItem(const KFileMetaInfoItem& item) :p(item.p) {
+KFileMetaInfoItem::KFileMetaInfoItem(const KFileMetaInfoItem& item) : d(item.d) {
 }
-KFileMetaInfoItem::KFileMetaInfoItem(const PredicateProperties& pp,
-            const QVariant& v, KFileWritePlugin* w, bool e)
-        :p(new KFileMetaInfoItemPrivate()) {
-    p->pp = pp;
-    p->value = v;
-    p->writer = w;
-    p->embedded = e;
-    p->modified = false;
+KFileMetaInfoItem::KFileMetaInfoItem(const QString& pp,
+                                     const QVariant& v, KFileWritePlugin* w, bool e)
+    : d(new KFileMetaInfoItemPrivate()) {
+    d->pp = pp;
+    d->value = v;
+    d->writer = w;
+    d->embedded = e;
+    d->modified = false;
 }
 KFileMetaInfoItem::~KFileMetaInfoItem() {
 }
 const KFileMetaInfoItem&
 KFileMetaInfoItem::operator=(const KFileMetaInfoItem& item) {
-    p = item.p;
+    d = item.d;
     return item;
 }
 const QString&
 KFileMetaInfoItem::name() const {
-    return p->pp.name();
+    return d->pp.name();
 }
 const QVariant&
 KFileMetaInfoItem::value() const {
-    return p->value;
+    return d->value;
 }
 bool
 KFileMetaInfoItem::setValue(const QVariant& value) {
-    bool changed = p->value != value;
-    p->value = value;
-    p->modified |= changed;
+    bool changed = d->value != value;
+    d->value = value;
+    d->modified |= changed;
     return changed;
 }
 bool
 KFileMetaInfoItem::addValue(const QVariant& value) {
-    QVariant& v = p->value;
+    QVariant& v = d->value;
     if (v.type() == QVariant::List) {
         QVariantList vl = v.toList();
         vl.append(value);
-        p->value = vl;
+        d->value = vl;
     }
     return false;
 }
 bool
 KFileMetaInfoItem::isModified() const {
-    return p->modified;
+    return d->modified;
 }
 bool
 KFileMetaInfoItem::isRemoved() const {
-    return p->modified && p->value.isNull();
+    return d->modified && d->value.isNull();
 }
 bool
 KFileMetaInfoItem::isValid() const {
@@ -88,11 +88,11 @@ KFileMetaInfoItem::isSkipped() const {
 }
 const PredicateProperties&
 KFileMetaInfoItem::properties() const {
-    return p->pp;
+    return d->pp;
 }
 bool
 KFileMetaInfoItem::isEditable() const {
-    return p->writer != NULL;
+    return d->writer != 0;
 }
 QString
 KFileMetaInfoItem::suffix() const {

@@ -17,12 +17,15 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include "kfilemetainfo_p.h"
-#include "kglobal.h"
+
+#include "predicateproperties.h"
+
 #include <strigi/streamanalyzer.h>
 #include <strigi/analysisresult.h>
 #include <strigi/analyzerconfiguration.h>
-#include <QDebug>
+
+#include <QtCore/QStringList>
+
 using namespace Strigi;
 using namespace std;
 
@@ -43,24 +46,24 @@ const PredicateProperties PredicateProperties::Private::nullPP;
 
 PredicateProperties::PredicateProperties(const QString& predicate) {
     if (!predicate.isEmpty()) {
-        p = new Private();
-        p->key = predicate;
+        d = new Private();
+        d->key = predicate;
     }
 }
 PredicateProperties::PredicateProperties(const PredicateProperties& pp)
-        :p(pp.p) {
+        : d(pp.d) {
 }
 PredicateProperties::~PredicateProperties() {
 }
 const PredicateProperties&
 PredicateProperties::operator=(const PredicateProperties& pp) {
-    p = pp.p;
+    d = pp.d;
     return pp;
 }
 const QString&
 PredicateProperties::name() const {
-    if (p == 0) return Private::nullString;
-    return (p->name.isEmpty()) ?p->key :p->name;
+    if ( d == 0) return Private::nullString;
+    return ( d->name.isEmpty()) ? d->key : d->name;
 }
 
 const QStringList&
@@ -80,11 +83,11 @@ PredicateProperties::maxCardinality() const {
 
 uint
 PredicateProperties::attributes() const {
-    return (p) ?p->attributes :0;
+    return ( d) ? d->attributes :0;
 }
 QVariant::Type
 PredicateProperties::type() const {
-    return (p) ?p->type :QVariant::Invalid;
+    return ( d) ? d->type :QVariant::Invalid;
 }
 QValidator*
 PredicateProperties::createValidator() const {
@@ -92,52 +95,9 @@ PredicateProperties::createValidator() const {
 }
 const PredicateProperties&
 PredicateProperties::parent() const {
-    return (p) ?p->parent :Private::nullPP;
+    return ( d) ? d->parent :Private::nullPP;
 }
 bool
 PredicateProperties::isValid() const {
-    return p;
-}
-
-/// PredicatePropertyProvider
-
-K_GLOBAL_STATIC(PredicatePropertyProvider, staticPredicatePropertyProvider)
-
-PredicatePropertyProvider*
-PredicatePropertyProvider::self() {
-    return staticPredicatePropertyProvider;
-}
-PredicateProperties
-PredicatePropertyProvider::getPredicateProperties(const QString& key) {
-    PredicateProperties p(key);
-    return p;
-}
-
-class ShallowAnalysisConfiguration : public Strigi::AnalyzerConfiguration { 
-     /** Limit the amount of data we will read from a stream. 
-       * This is a suggestion to analyzers which they should follow. 
-       * Only index real files. We do not look at subfiles. 
-       * This setting is needed because by default all subfiles are examined. 
-       **/ 
-     int64_t maximalStreamReadLength(const Strigi::AnalysisResult& ar) { 
-         // 64k should be enough 
-         return (ar.depth() == 0) ?65536 :0; 
-     } 
-}; 
-
-class PredicatePropertyProvider::Private {
-public:
-    ShallowAnalysisConfiguration config;
-    StreamAnalyzer indexer;
-    Private() :indexer(config) {}
-};
-PredicatePropertyProvider::PredicatePropertyProvider() {
-    p = new PredicatePropertyProvider::Private();
-}
-PredicatePropertyProvider::~PredicatePropertyProvider() {
-    delete p;
-}
-StreamAnalyzer&
-PredicatePropertyProvider::indexer() {
-    return p->indexer;
+    return d;
 }
