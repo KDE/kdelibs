@@ -4151,7 +4151,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         m_mimeTypeBuffer.resize(0);
       }
 
-      kDebug(7013) << "Sending data of size" << d.size();
+      //kDebug(7113) << "Sending data of size" << d.size();
       data( d );
       if (m_request.cacheTag.ioMode == WriteToCache) {
         cacheFileWritePayload(d);
