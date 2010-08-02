@@ -124,7 +124,8 @@ namespace Nepomuk {
          * Retrieve a list of all resource managed by this manager.
          *
          * \warning This list will be very big. Usage of this method is
-         * discouraged.
+         * discouraged. Use Query::QueryServiceClient in combination with an
+         * empty Query::Query instead.
          *
          * \since 4.3
          */
@@ -135,6 +136,10 @@ namespace Nepomuk {
          *
          * This includes Resources that are not synced yet so it might
          * not represent exactly the state as in the RDF store.
+         *
+         * \warning This list can be very big. Usage of this method is
+         * discouraged. Use Query::QueryServiceClient in combination with
+         * a Query::Query containing one Query::ResourceTypeTerm instead.
          */
         QList<Resource> allResourcesOfType( const QUrl& type );
 
@@ -153,6 +158,10 @@ namespace Nepomuk {
          *            not include a namespace the default namespace is
          *            prepended.
          * \param v The value all returned resources should have set as properts \a uri.
+         *
+         * \warning This list can be very big. Usage of this method is
+         * discouraged. Use Query::QueryServiceClient in combination with
+         * a Query::Query containing one Query::ComparisonTerm instead.
          */
         QList<Resource> allResourcesWithProperty( const QUrl& uri, const Variant& v );
 

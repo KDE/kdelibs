@@ -29,9 +29,9 @@ namespace Nepomuk {
     /**
      * \class Tag tag.h Nepomuk/Tag
      *
-     * A Tag can be assigned to any Thing. This allows simple grouping 
-     * of resources. Each Tag is identifed by its label which should 
-     * be unique. 
+     * A Tag can be assigned to any Thing. This allows simple grouping
+     * of resources. Each Tag is identifed by its label which should
+     * be unique.
      *
      * \author Sebastian Trueg <trueg@kde.org>
      */
@@ -105,18 +105,21 @@ namespace Nepomuk {
         Tag& operator=( const Tag& );
 
         /**
-         * Get all resources that have this resource set as property 'Tag'. 
-         * Each Resource can be tagged with an arbitrary number of Tags. 
-         * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty 
+         * Get all resources that have this resource set as property 'Tag'.
+         * Each Resource can be tagged with an arbitrary number of Tags.
+         * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty
          */
         QList<Resource> tagOf() const;
 
         /**
-         * Retrieve a list of all available Tag resources. This list consists 
-         * of all resource of type Tag that are stored in the local Nepomuk 
-         * meta data storage and any changes made locally. Be aware that 
-         * in some cases this list can get very big. Then it might be better 
-         * to use libKNep directly. 
+         * Retrieve a list of all available Tag resources. This list consists
+         * of all resource of type Tag that are stored in the local Nepomuk
+         * meta data storage and any changes made locally. Be aware that
+         * in some cases this list can get very big.
+         *
+         * In those cases it might be better to use the asyncronous approach
+         * via Query::QueryServiceClient and a Query::ResourceTypeTerm with
+         * type Soprano::Vocabulary::NAO::Tag().
          */
         static QList<Tag> allTags();
 

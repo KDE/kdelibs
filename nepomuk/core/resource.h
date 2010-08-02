@@ -719,6 +719,10 @@ namespace Nepomuk {
          * might be better to use libKNep directly.
          *
          * \sa ResourceManager::allResources
+         *
+         * \warning This list will be very big. Usage of this method is
+         * discouraged. Use Query::QueryServiceClient in combination with an
+         * empty Query::Query instead.
          */
         static QList<Resource> allResources();
 
