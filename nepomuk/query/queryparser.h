@@ -34,6 +34,8 @@ namespace Nepomuk {
          *
          * \brief Parser for desktop user queries.
          *
+         * \warning This is NOT a SPARQL parser.
+         *
          * The QueryParser can be used to parse queries and convert them into
          * Query instances.
          *
