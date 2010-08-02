@@ -80,7 +80,7 @@ namespace Solid
          * Retrieves the type of this smart card reader.
          *
          * @return the smart card reader type
-         * @see Solid::Ifaces::Enums::SmartCardReader::ReaderType
+         * @see Solid::SmartCardReader::ReaderType
          */
         ReaderType readerType() const;
     };

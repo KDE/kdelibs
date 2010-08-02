@@ -201,7 +201,7 @@ namespace Solid
          * Retrieves the type of this audio interface (in/out/control).
          *
          * @return the type of this audio interface
-         * @see Solid::AudioInterface::AudioInterfaceTypes
+         * @see Solid::AudioInterface::AudioInterfaceType
          */
         AudioInterfaceTypes deviceType() const;
 

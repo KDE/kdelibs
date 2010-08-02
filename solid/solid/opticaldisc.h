@@ -128,6 +128,7 @@ namespace Solid
          * data...).
          *
          * @return the flag set indicating the available contents
+         * @see Solid::OpticalDisc::ContentType
          */
         ContentTypes availableContent() const;
 

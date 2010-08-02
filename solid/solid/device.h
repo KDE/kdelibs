@@ -190,6 +190,7 @@ namespace Solid
          * The naming follows the freedesktop.org specification.
          *
          * @return the emblem names
+         * @since 4.4
          */
         QStringList emblems() const;
 

@@ -98,7 +98,7 @@ namespace Solid
          * Get the Solid::DeviceInterface::Type of the StorageDrive device interface.
          *
          * @return the StorageDrive device interface type
-         * @see Solid::Ifaces::Enums::DeviceInterface::Type
+         * @see Solid::DeviceInterface::Type
          */
         static Type deviceInterfaceType() { return DeviceInterface::StorageDrive; }
 
@@ -108,7 +108,7 @@ namespace Solid
          * connected to.
          *
          * @return the bus type
-         * @see Solid::Ifaces::Enums::StorageDrive::Bus
+         * @see Solid::StorageDrive::Bus
          */
         Bus bus() const;
 
@@ -116,7 +116,7 @@ namespace Solid
          * Retrieves the type of this storage drive.
          *
          * @return the drive type
-         * @see Solid::Ifaces::Enums::StorageDrive::DriveType
+         * @see Solid::StorageDrive::DriveType
          */
         DriveType driveType() const;
 

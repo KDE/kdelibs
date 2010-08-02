@@ -119,6 +119,7 @@ namespace Solid
          * Queries the instructions set extensions of the CPU.
          *
          * @return the extensions supported by the CPU
+         * @see Solid::Processor::InstructionSet
          */
         InstructionSets instructionSets() const;
     };

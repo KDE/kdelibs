@@ -83,7 +83,7 @@ namespace Solid
          * Get the Solid::DeviceInterface::Type of the StorageVolume device interface.
          *
          * @return the StorageVolume device interface type
-         * @see Solid::Ifaces::Enums::DeviceInterface::Type
+         * @see Solid::DeviceInterface::Type
          */
         static Type deviceInterfaceType() { return DeviceInterface::StorageVolume; }
 
@@ -103,7 +103,7 @@ namespace Solid
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
-         * @see Solid::Ifaces::Enums::StorageVolume::UsageType
+         * @see Solid::StorageVolume::UsageType
          */
         UsageType usage() const;
 
