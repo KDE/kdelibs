@@ -48,7 +48,6 @@
     #include <QThread>
 #endif
 
-
 // The default size hint of QLabel tries to return a square size.
 // This does not work well in combination with layouts that use
 // heightForWidth(): In this case it is possible that the content
@@ -66,6 +65,7 @@ ValueWidget::ValueWidget(QWidget* parent) :
     QLabel(parent)
 {
 }
+
 QSize ValueWidget::sizeHint() const
 {
     QFontMetrics metrics(font());
@@ -425,6 +425,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 #endif
 
     q->updateGeometry();
+    emit q->metaDataRequestFinished();
 }
 
 void KFileMetaDataWidget::Private::removeOutdatedRows()
