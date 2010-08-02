@@ -18,6 +18,7 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #include "kfilemetainfo_p.h"
 #include <strigi/bufferedstream.h>
 #include <strigi/analyzerconfiguration.h>
@@ -29,9 +30,6 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QStringList>
-
-using namespace std;
-using namespace Strigi;
 
 class KFileMetaInfoGroupPrivate : public QSharedData {
 public:
@@ -53,7 +51,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&) {
 /**
  * @brief Wrap a QIODevice in a Strigi stream.
  **/
-class QIODeviceInputStream : public BufferedInputStream {
+class QIODeviceInputStream : public Strigi::BufferedInputStream {
 private:
     QIODevice& in;
     int32_t fillBuffer(char* start, int32_t space);
@@ -91,54 +89,54 @@ QIODeviceInputStream::QIODeviceInputStream(QIODevice &i) :in(i)
  * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and
  * store it in a KFileMetaInfo.
  **/
-class KMetaInfoWriter : public IndexWriter {
+class KMetaInfoWriter : public Strigi::IndexWriter {
 public:
     // irrelevant for KFileMetaInfo
-    void startAnalysis(const AnalysisResult*) {
+    void startAnalysis(const Strigi::AnalysisResult*) {
     }
     // irrelevant for KFileMetaInfo
     // we do not store text as metainfo
-    void addText(const AnalysisResult*, const char* /*s*/, int32_t /*n*/) {
+    void addText(const Strigi::AnalysisResult*, const char* /*s*/, int32_t /*n*/) {
     }
-    void addValue(const AnalysisResult* idx, const RegisteredField* field,
-            const string& value) {
+    void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
+            const std::string& value) {
         if (idx->writerData()) {
             QString val = QString::fromUtf8(value.c_str(), value.size());
             addValue(idx, field, val);
         }
     }
-    void addValue(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
         const unsigned char* data, uint32_t size) {
         if (idx->writerData()) {
             QByteArray d((const char*)data, size);
             addValue(idx, field, QVariant(d));
         }
     }
-    void addValue(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
             uint32_t value) {
         if (idx->writerData()) {
             addValue(idx, field, QVariant((quint32)value));
         }
     }
-    void addValue(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
             int32_t value) {
         if (idx->writerData()) {
             addValue(idx, field, QVariant((qint32)value));
         }
     }
-    void addValue(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
             double value) {
         if (idx->writerData()) {
             addValue(idx, field, QVariant(value));
         }
     }
-    void addValue(const AnalysisResult* idx,
-            const RegisteredField* field, const QVariant& value) {
+    void addValue(const Strigi::AnalysisResult* idx,
+                  const Strigi::RegisteredField* field, const QVariant& value) {
         QHash<QString, KFileMetaInfoItem>* info
             = static_cast<QHash<QString, KFileMetaInfoItem>*>(
             idx->writerData());
         if (info) {
-            string name(field->key());
+            std::string name(field->key());
             QString key = QString::fromUtf8(name.c_str(), name.size());
             QHash<QString, KFileMetaInfoItem>::iterator i = info->find(key);
             if (i == info->end()) {
@@ -151,7 +149,7 @@ public:
         }
     }
     void addValue(const Strigi::AnalysisResult* ar,
-            const RegisteredField* field, const std::string& name,
+                  const Strigi::RegisteredField* field, const std::string& name,
             const std::string& value) {
         if (ar->writerData()) {
             QVariantMap m;
@@ -166,9 +164,9 @@ public:
         const std::string& /*predicate*/, const std::string& /*object*/) {
     }
     // irrelevant for KFileMetaInfo
-    void finishAnalysis(const AnalysisResult*) {}
+    void finishAnalysis(const Strigi::AnalysisResult*) {}
     // irrelevant for KFileMetaInfo
-    void deleteEntries(const vector<string>&) {}
+    void deleteEntries(const std::vector<std::string>&) {}
     // irrelevant for KFileMetaInfo
     void deleteAllEntries() {}
 };
@@ -199,12 +197,12 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime, KFi
     // get data from Strigi
     kurl = url;
     ComprehensiveAnalysisConfiguration c;
-    StreamAnalyzer comprehensiveIndexer(c);
-    StreamAnalyzer& indexer = (w==KFileMetaInfo::Everything)?comprehensiveIndexer:PredicatePropertyProvider::self()->indexer();
+    Strigi::StreamAnalyzer comprehensiveIndexer(c);
+    Strigi::StreamAnalyzer& indexer = (w==KFileMetaInfo::Everything)?comprehensiveIndexer:PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
     kDebug(7033) << url;
-    AnalysisResult idx(url.toLocalFile().toUtf8().constData(), mtime, writer, indexer);
+    Strigi::AnalysisResult idx(url.toLocalFile().toUtf8().constData(), mtime, writer, indexer);
 
     idx.setWriterData(&items);
     indexer.analyze(idx, &strigiStream);
