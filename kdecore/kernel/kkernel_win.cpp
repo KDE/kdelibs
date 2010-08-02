@@ -61,10 +61,9 @@ static HINSTANCE kdecoreDllInstance = NULL;
 static HANDLE kdecoreDllInstance = NULL;
 #endif
 #ifdef KDELIBS_STATIC_LIBS
-static wchar_t kde4prefixUtf16[] = STATIC_INSTALL_PATH;
-#else
-static wchar_t kde4prefixUtf16[MAX_PATH + 2];
+static bool kde4prefixInitialized = false;
 #endif
+static wchar_t kde4prefixUtf16[MAX_PATH + 2] = L"";
 
 static QString *kde4Prefix = NULL;
 
@@ -97,8 +96,33 @@ void initKde4prefixUtf16()
 // don't have an instantiated QCoreApplication
 QString getKde4Prefix()
 {
+#ifdef _WIN32_WCE
+    if (kde4prefixInitialized)
+        return QString::fromUtf16((ushort*) kde4prefixUtf16);
+    
+    QDir kde4prefixDir(QString::fromUtf16((ushort*) STATIC_INSTALL_PATH));
+    if (kde4prefixDir.exists()){
+        wcscpy(kde4prefixUtf16, STATIC_INSTALL_PATH);
+        kde4prefixUtf16[wcslen(kde4prefixUtf16)] = 0;       
+        kde4prefixInitialized = true;
+        return QString::fromUtf16((ushort*) kde4prefixUtf16);
+    } else {
+        bool ok;
+        QString retval = getWin32RegistryValue(HKEY_LOCAL_MACHINE, "Software\\kde", "KDEDIRS", &ok);
+        if (!ok){
+            return QString();
+        } else {
+            retval = QDir::fromNativeSeparators(retval);
+            wcscpy(kde4prefixUtf16, retval.utf16());
+            kde4prefixUtf16[wcslen(kde4prefixUtf16)] = 0;
+            kde4prefixInitialized = true;
+            return retval;
+        }
+    }
+#else
   // we can get called after DLL_PROCESS_DETACH!
   return kde4Prefix ? *kde4Prefix : QString::fromUtf16((ushort*) kde4prefixUtf16);
+#endif
 }
 
 #ifndef KDELIBS_STATIC_LIBS

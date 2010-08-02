@@ -1600,8 +1600,7 @@ static QString readEnvPath(const char *env)
         return QString();
 #else
     bool ok;
-    QString retval;
-    getWin32RegistryValue(HKEY_LOCAL_MACHINE, "Software\\kde", retval, &ok);
+    QString retval = getWin32RegistryValue(HKEY_LOCAL_MACHINE, "Software\\kde", "KDEDIRS", &ok);
     if (!ok){
         return QString();
     } else {
