@@ -103,6 +103,7 @@ if(proxymodeltestsuite_standalone)
     modelselector.h
     modeltest.h
     proxymodeltest.h
+    proxymodeltestsuite_export.h
     modeldumper.h
     modeleventlogger.h
     eventloggerregister.h
