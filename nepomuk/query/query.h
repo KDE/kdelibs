@@ -300,7 +300,18 @@ namespace Nepomuk {
                  *
                  * \since 4.6
                  */
-                CreateAskQuery = 0x8
+                CreateAskQuery = 0x8,
+
+                /**
+                 * By default toSparqlQuery() creates a query that will only return results
+                 * which are intended for the user's eyes. In situations where an application
+                 * needs to work on internal or statistical data this restriction is not
+                 * desireable. This flag disables the restriction and returns the full set
+                 * of results.
+                 *
+                 * \since 4.6
+                 */
+                NoResultRestrictions = 0x10
             };
             Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
 

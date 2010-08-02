@@ -349,19 +349,21 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     // as those alreday restrict the type. While in theory there might be file or folder resources in
     // non-InstanceBase graphs it is very unlikely and omitting the instanceBaseRestriction will give
     // us a performance gain - even if small it is worth it.
-    const QString instanceBaseRestriction =
-        QString::fromLatin1( "graph %1 { ?r a %2 . } . { %1 a %3 . } UNION { %1 a %4 . } . " )
-        .arg( qbd.uniqueVarName(),
-              qbd.uniqueVarName(),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::InstanceBase()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::DiscardableInstanceBase()) );
+    QString instanceBaseRestriction;
+    if( !d->m_isFileQuery && !(flags&NoResultRestrictions) ) {
+        instanceBaseRestriction = QString::fromLatin1( "graph %1 { ?r a %2 . } . { %1 a %3 . } UNION { %1 a %4 . } . " )
+                                  .arg( qbd.uniqueVarName(),
+                                        qbd.uniqueVarName(),
+                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::InstanceBase()),
+                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::DiscardableInstanceBase()) );
+    }
 
     // build the core of the query - the part that never changes
     QString queryBase = QString::fromLatin1( "where { %1 %2 %3 %4 }" )
                         .arg( termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                               d->buildRequestPropertyPatterns(),
-                              d->m_isFileQuery ? QString() : instanceBaseRestriction );
+                              instanceBaseRestriction );
 
     // add optional order terms
     queryBase += qbd.buildOrderString();
