@@ -60,6 +60,6 @@ namespace KSystemEventFilter
      * Removes a global widget filter.
      */
     void KDEUI_EXPORT removeEventFilter(const QWidget *filter);
-};
+}
 
 #endif
