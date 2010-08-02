@@ -2,8 +2,18 @@ project(proxymodeltestsuite)
 
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+
+  # Building the test suite standalone
+  set(proxymodeltestsuite_standalone TRUE)
+
+  find_package(Qt4 REQUIRED)
+  find_package(Automoc4 REQUIRED)
+  cmake_minimum_required(VERSION 2.6.3)
+endif()
 
 include_directories(
+  ${QT_INCLUDES}
   ${proxymodeltestsuite_BINARY_DIR}
 )
 
@@ -29,16 +39,25 @@ qt4_add_resources(
   ${eventlogger_RCSS}
 )
 
+if(proxymodeltestsuite_standalone)
+  set(GRANTLEE_FIND_ARG REQUIRED)
+else ()
+  set(GRANTLEE_FIND_ARG QUIET)
+endif()
+
 # Grantlee is used for generating compilable code by the ModelEventLogger.
 # If Grantlee is not found, the logger does nothing.
-find_package(Grantlee QUIET)
-macro_log_feature(Grantlee_FOUND
-  "Grantlee"
-  "Grantlee template system"
-  "http://www.grantlee.org" FALSE
-  "0.1.0"
-  "Required for the model logging feature"
-)
+find_package(Grantlee ${GRANTLEE_FIND_ARG})
+
+if(NOT proxymodeltestsuite_standalone)
+  macro_log_feature(Grantlee_FOUND
+    "Grantlee"
+    "Grantlee template system"
+    "http://www.grantlee.org" FALSE
+    "0.1.0"
+    "Required for the model logging feature"
+  )
+endif()
 
 if (Grantlee_FOUND)
 
@@ -50,7 +69,7 @@ if (Grantlee_FOUND)
 
 endif()
 
-kde4_add_library(proxymodeltestsuite ${LIBRARY_TYPE}
+automoc4_add_library(proxymodeltestsuite ${LIBRARY_TYPE}
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
 )
@@ -61,5 +80,34 @@ target_link_libraries(proxymodeltestsuite
    ${QT_QTTEST_LIBRARY}
    ${Grantlee_CORE_LIBRARIES}
 )
+set_target_properties(proxymodeltestsuite PROPERTIES
+    LINK_INTERFACE_LIBRARIES "" )
 
+if(proxymodeltestsuite_standalone)
+
+  set( LIB_SUFFIX "" CACHE STRING "Define suffix of library directory name (eg. '64')")
+  set( INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include )
+
+  install(TARGETS proxymodeltestsuite
+         RUNTIME DESTINATION bin
+         LIBRARY DESTINATION lib${LIB_SUFFIX}
+         ARCHIVE DESTINATION lib${LIB_SUFFIX}
+         COMPONENT Devel
+  )
+
+  install(FILES
+    dynamictreemodel.h
+    dynamictreewidget.h
+    modelcommander.h
+    modelspy.h
+    modelselector.h
+    modeltest.h
+    proxymodeltest.h
+    modeldumper.h
+    modeleventlogger.h
+    eventloggerregister.h
+    indexfinder.h
+    DESTINATION ${INCLUDE_INSTALL_DIR}
+  )
+endif()
 
