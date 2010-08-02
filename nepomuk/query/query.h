@@ -392,6 +392,15 @@ namespace Nepomuk {
             bool operator==( const Query& query ) const;
 
             /**
+             * Comparison operator.
+             *
+             * \return \p true if this query differs from \p query.
+             *
+             * \since 4.6
+             */
+            bool operator!=( const Query& query ) const;
+
+            /**
              * Encode the Query in a string. Be aware that this does NOT create a SPARQL
              * query. The returned string can be used to serialize queries that can later
              * be read via fromString().

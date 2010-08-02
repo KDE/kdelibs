@@ -300,6 +300,12 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
 }
 
 
+bool Nepomuk::Query::Query::operator!=( const Query& other ) const
+{
+    return !operator==( other );
+}
+
+
 QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 {
     Term term = d->m_term;
