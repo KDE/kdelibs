@@ -95,9 +95,10 @@ void KEmoticonsPrivate::themeChanged(const QString &path)
 
 KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
 {
-    for (int i = 0; i < m_loaded.size(); ++i) {
-        QString fName = m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
-        QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
+    const int numberOfTheme = m_loaded.size();
+    for (int i = 0; i < numberOfTheme; ++i) {
+        const QString fName = m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
+        const QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
 
         if (QFile::exists(path)) {
             KEmoticonsProvider *provider = loadProvider(m_loaded.at(i));
@@ -199,7 +200,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
         return QStringList();
     }
 
-    QString currentBundleMimeType = KMimeType::findByPath(archiveName, 0, false)->name();
+    const QString currentBundleMimeType = KMimeType::findByPath(archiveName, 0, false)->name();
 
     if (currentBundleMimeType == "application/zip" ||
             currentBundleMimeType == "application/x-zip" ||
