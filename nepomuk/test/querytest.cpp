@@ -421,8 +421,8 @@ void QueryTest::testToSparql()
     QFETCH( Nepomuk::Query::Query, query );
     QFETCH( QString, queryString );
 
-//    kDebug() << query;
-    QCOMPARE( query.toSparqlQuery().simplified(), queryString );
+    // we test without result restrictions which always look the same anyway
+    QCOMPARE( query.toSparqlQuery( Query::NoResultRestrictions ).simplified(), queryString );
 }
 
 
