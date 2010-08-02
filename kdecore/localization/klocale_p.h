@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright 2009 David Faure <faure@kde.org>
+ *  Copyright 2010 John Layt <john@layt.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,10 +21,1033 @@
 #ifndef KLOCALE_P_H
 #define KLOCALE_P_H
 
+#include "klocale.h"
+
 class QMutex;
+
+class KCatalog;
 
 // Used by both KLocale and KLocalizedString, since they call each other.
 QMutex* kLocaleMutex();
+
+class KLocalePrivate
+{
+public:
+    KLocalePrivate(KLocale *q, const QString &catalog, KConfig *config,
+                   const QString &language = QString(), const QString &country = QString());
+
+    /**
+     * Copy constructor
+     */
+    KLocalePrivate(const KLocalePrivate &rhs);
+
+    /**
+     * Assignment operator
+     */
+    KLocalePrivate &operator=(const KLocalePrivate &rhs);
+
+    /**
+     * Destructor
+     */
+    virtual ~KLocalePrivate();
+
+    /**************************
+     **    Initialization    **
+     **************************/
+
+protected:
+
+    /**
+     * @internal Copies object members
+     */
+    virtual void copy(const KLocalePrivate &rhs);
+
+    /**
+     * @internal Reads the format configuration from disk.
+     */
+    virtual void initFormat(KConfig *config);
+
+    /**************************
+     **   Country settings   **
+     **************************/
+
+public:
+
+    /**
+     * @internal Sets the Locale Country
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool setCountry(const QString &country, KConfig *config);
+
+    /**
+     * @internal Returns the Locale ISO Country Code
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString country() const;
+
+    /**
+     * @internal Returns the name of the default country.
+     * The worker of the same-name KLocale API function.
+     */
+    static QString defaultCountry();
+
+    /**
+     * @internal Returns a list of all known country codes.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QStringList allCountriesList() const;
+
+    /**
+     * @internal Convert a known country code to a human readable, localized form.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString countryCodeToName(const QString &country) const;
+
+    /**************************
+     **  Language settings   **
+     **************************/
+
+protected:
+
+    /**
+     * @internal Converts a language variable in a list of languages
+     */
+    static void getLanguagesFromVariable(QStringList &list, const char *variable, bool isLanguageList = false);
+
+    /**
+     * @internal Returns the list of host system languages
+     */
+    virtual QStringList systemLanguageList() const;
+
+    /**
+     * @internal Initializes the list of valid languages from the user's point of view. This is the
+     * list of languages that the user picks in kcontrol. The config object should be valid and
+     * contain the global entries.
+     *
+     * @param config The configuration object used for init
+     * @param useEnv True if we should use environment variables
+     */
+    virtual void initLanguageList(KConfig *config, bool useEnv);
+
+    /**
+     * @internal function used to determine if we are using the en_US translation
+     */
+    virtual bool useDefaultLanguage() const;
+
+public:
+
+    /**
+     * @internal Sets the Locale Language
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool setLanguage(const QString &language, KConfig *config);
+
+    /**
+     * @internal Sets the list of preferred languages for the locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool setLanguage(const QStringList &languages);
+
+    /**
+     * @internal Returns the Locale Language
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString language() const;
+
+    /**
+     * @internal Returns the language codes selected by user
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QStringList languageList() const;
+
+    /**
+     * @internal Returns a list of all known language codes.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QStringList allLanguagesList();
+
+    /**
+     * @internal Returns the name of the internal language.
+     * The worker of the same-name KLocale API function.
+     */
+    static QString defaultLanguage();
+
+    /**
+     * @internal Convert a known language code to a human readable, localized form.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString languageCodeToName(const QString &language);
+
+    /**
+     * @deprecated
+     * @internal Returns if nouns are declined in the locale language.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool nounDeclension() const;
+
+    /**
+     * @deprecated
+     * @internal Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
+     * The worker of the same-name KLocale API function.
+     */
+    static QString langLookup(const QString &fname, const char *rtype = "html");
+
+    /**
+     * @internal Returns whether evaluation of translation scripts is enabled.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool useTranscript() const;
+
+    /**************************
+     **   Catalog settings   **
+     **************************/
+
+protected:
+
+    /**
+     * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
+     */
+    virtual void initMainCatalogs();
+
+    /**
+     * @internal evaluate the list of catalogs and check that all instances for all languages are
+     * loaded and that they are sorted according to the catalog names
+     *
+     * Callers must lock the mutex first.
+     */
+    virtual void updateCatalogs();
+
+public:
+
+    /**
+     * @internal Set the main catalog for *all* KLocales
+     * The worker of the same-name KLocale API function.
+     */
+    static void setMainCatalog(const char *catalog);
+
+    /**
+     * Sets the active catalog for translation lookup.
+     * @param catalog The catalog to activate.
+     */
+    virtual void setActiveCatalog(const QString &catalog);
+
+    /**
+     * @internal Adds another catalog to search for translation lookup.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void insertCatalog(const QString &catalog);
+
+    /**
+     * @internal Removes a catalog for translation lookup.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void removeCatalog(const QString &catalog);
+
+    /**
+     * @internal Copies the catalogs of this object to an other KLocale object.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void copyCatalogsTo(KLocale *locale);
+
+    /**
+     * @internal Function used by the translate versions
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void translateRawFrom(const char *catname, const char *msgctxt, const char *msgid, const char *msgid_plural = 0,
+                                  unsigned long n = 0, QString *language = 0, QString *translation = 0) const;
+
+    /**
+     * @internal Translates a message as a QTranslator is supposed to.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString translateQt(const char *context, const char *sourceText, const char *comment) const;
+
+    /**
+     * @internal Checks whether or not the active catalog is found for the given language.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool isApplicationTranslatedInto(const QString &language);
+
+    /***************************
+     **   Calendar settings   **
+     ***************************/
+
+public:
+
+    /**
+     * @internal Sets the current calendar system to the calendar specified.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setCalendar(const QString &calendarType);
+
+    /**
+     * @internal Returns the name of the calendar system that is currently being used by the system.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString calendarType() const;
+
+    /**
+     * @internal Returns a pointer to the calendar system object.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual const KCalendarSystem *calendar();
+
+    /**
+     * @internal Changes how KLocale defines the first day in week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setWeekStartDay(int day);
+
+    /**
+     * @internal Returns which day is the first day of the week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int weekStartDay() const;
+
+    /**
+     * @internal Changes how KLocale defines the first working day in week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setWorkingWeekStartDay(int day);
+
+    /**
+     * @internal Returns which day is the first working day of the week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int workingWeekStartDay() const;
+
+    /**
+     * @internal Changes how KLocale defines the last working day in week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setWorkingWeekEndDay(int day);
+
+    /**
+     * @internal Returns which day is the last working day of the week.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int workingWeekEndDay() const;
+
+    /**
+     * @internal Changes how KLocale defines the day reserved for religious observance.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setWeekDayOfPray(int day);
+
+    /**
+     * @internal Returns which day is reserved for religious observance
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int weekDayOfPray() const;
+
+    /***************************
+     **  Date/Time settings   **
+     ***************************/
+
+public:
+
+    /**
+     * @internal Sets the current date format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDateFormat(const QString &format);
+
+    /**
+     * @internal Returns the currently selected date format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString dateFormat() const;
+
+    /**
+     * @internal Sets the current short date format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDateFormatShort(const QString &format);
+
+    /**
+     * @internal Returns the currently selected short date format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString dateFormatShort() const;
+
+    /**
+     * @internal Changes the current time format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setTimeFormat(const QString &format);
+
+    /**
+     * @internal Returns the currently selected time format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString timeFormat() const;
+
+    /**
+     * @internal Set digit characters used to display dates and time.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDateTimeDigitSet(KLocale::DigitSet digitSet);
+
+    /**
+     * @internal Returns the identifier of the digit set used to display dates and time.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::DigitSet dateTimeDigitSet() const;
+
+    /**
+     * @internal Sets of the possessive form of month name should be used in dates.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDateMonthNamePossessive(bool possessive);
+
+    /**
+     * @internal Returns if possessive form of month name should be used
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool dateMonthNamePossessive() const;
+
+    /**
+     * @internal Returns if the user wants 12h clock
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool use12Clock() const;
+
+    /**
+     * @internal Returns a string formatted to the current locale's conventions
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatDate(const QDate &date, KLocale::DateFormat format = KLocale::LongDate);
+
+    /**
+     * @internal Converts a localized date string to a QDate.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QDate readDate(const QString &str, bool *ok = 0);
+
+    /**
+     * @internal Converts a localized date string to a QDate, using the specified format.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QDate readDate(const QString &intstr, const QString &fmt, bool *ok = 0);
+
+    /**
+     * @internal Converts a localized date string to a QDate.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QDate readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0);
+
+    /**
+     * @deprecated replaced by formatLocaleTime()
+     * @internal Returns a string formatted to the current locale's conventions regarding times.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatTime(const QTime &pTime, bool includeSecs = false, bool isDuration = false) const;
+
+    /**
+     * @internal Returns a string formatted to the current locale's conventions regarding times.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatLocaleTime(const QTime &pTime, KLocale::TimeFormatOptions options = KLocale::TimeDefault) const;
+
+    /**
+     * @internal Converts a localized time string to a QTime.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QTime readTime(const QString &str, bool *ok = 0) const;
+
+    /**
+     * @deprecated replaced by readLocaleTime()
+     * @internal Converts a localized time string to a QTime.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QTime readTime(const QString &str, KLocale::ReadTimeFlags flags, bool *ok = 0) const;
+
+    /**
+     * @internal Converts a localized time string to a QTime.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QTime readLocaleTime(const QString &str, bool *ok = 0,
+                                 KLocale::TimeFormatOptions options = KLocale::TimeDefault,
+                                 KLocale::TimeProcessingOptions processing = KLocale::ProcessNonStrict) const;
+
+    /**
+     * @internal Formats a date/time according to specified format.
+     * The worker of the same-name KLocale API function.
+     */
+    static QString formatDateTime(const KLocale *locale, const QDateTime &dateTime, KLocale::DateFormat,
+                                  bool includeSeconds, int daysToNow, int secsToNow);
+
+    /**
+     * @internal Return the date and time as a string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatDateTime(const QDateTime &dateTime, KLocale::DateFormat format = KLocale::ShortDate,
+                                   bool includeSecs = false) const;
+
+    /**
+     * @internal Return the date and time as a string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatDateTime(const KDateTime &dateTime, KLocale::DateFormat format = KLocale::ShortDate,
+                                   KLocale::DateTimeFormatOptions options = 0);
+
+    /**
+     * @internal Returns converted duration as a string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatDuration(unsigned long mSec) const;
+
+    /**
+     * @internal Returns converted duration as a string.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString prettyFormatDuration(unsigned long mSec) const;
+
+    /***************************
+     **  Digit Set settings   **
+     ***************************/
+
+protected:
+
+    /**
+     * @internal Converts a number string in any digit set into Arabic digits
+     */
+    static QString toArabicDigits(const QString &str);
+
+    /**
+     * @internal Returns the digits for a digit set as a string, e.g. "0123456789"
+     */
+    static QString digitSetString(KLocale::DigitSet digitSet);
+
+public:
+
+    /**
+     * @internal Provides list of all known digit set identifiers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QList<KLocale::DigitSet> allDigitSetsList() const;
+
+    /**
+     * @internal Convert a digit set identifier to a human readable, localized name.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString digitSetToName(KLocale::DigitSet digitSet, bool withDigits = false) const;
+
+    /**
+     * @internal Convert all digits in the string to the given digit set.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString convertDigits(const QString &str, KLocale::DigitSet digitSet, bool ignoreContext = false) const;
+
+    /***************************
+     **    Number settings    **
+     ***************************/
+
+public:
+
+    /**
+     * @internal Sets the number of decimal places used when formating numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDecimalPlaces(int digits);
+
+    /**
+     * @internal Returns the number of numeric decimal places used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int decimalPlaces() const;
+
+    /**
+     * @internal Sets the symbol used to identify the decimal pointer.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDecimalSymbol(const QString &symbol);
+
+    /**
+     * @internal Returns the decimal symbol used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString decimalSymbol() const;
+
+    /**
+     * @internal Sets the separator used to group digits when formating numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setThousandsSeparator(const QString &separator);
+
+    /**
+     * @internal Returns the thousands separator used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString thousandsSeparator() const;
+
+    /**
+     * @internal Sets the sign used to identify a positive number.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setPositiveSign(const QString &sign);
+
+    /**
+     * @internal Returns the positive sign used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString positiveSign() const;
+
+    /**
+     * @internal Sets the sign used to identify a negative number.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setNegativeSign(const QString &sign);
+
+    /**
+     * @internal Returns the negative sign used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString negativeSign() const;
+
+    /**
+     * @internal Sets the set of digit characters used to display numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDigitSet(KLocale::DigitSet digitSet);
+
+    /**
+     * @internal Returns the identifier of the digit set used to display numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::DigitSet digitSet() const;
+
+    /**
+     * @internal Returns a number as a localized string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatNumber(double num, int precision = -1) const;
+
+    /**
+     * @internal Returns a number as a localized string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatNumber(const QString &numStr, bool round = true, int precision = -1) const;
+
+    /**
+     * @internal Returns a number as a localized string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatLong(long num) const;
+
+    /**
+     * @internal Converts a localized numeric string to a double.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual double readNumber(const QString &numStr, bool *ok = 0) const;
+
+    /**************************
+     **  Currency settings   **
+     **************************/
+
+protected:
+
+    /**
+     * @internal Initialises the Currency
+     */
+    virtual void initCurrency();
+
+public:
+
+    /**
+     * @internal Sets the Locale Currency Code
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setCurrencyCode(const QString &newCurrencyCode);
+
+    /**
+     * @internal Returns the Locale ISO Currency Code
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString currencyCode() const;
+
+    /**
+     * @internal Returns the Locale Currency object
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KCurrencyCode *currency();
+
+    /**
+     * @internal Returns the ISO Code of the default currency.
+     * The worker of the same-name KLocale API function.
+     */
+    static QString defaultCurrencyCode();
+
+    /**
+     * @internal Returns the ISO Currency Codes used in the locale
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QStringList currencyCodeList() const;
+
+    /***************************
+     **    Money settings     **
+     ***************************/
+
+public:
+
+    /**
+     * @internal Sets the current currency symbol.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setCurrencySymbol(const QString &symbol);
+
+    /**
+     * @internal Returns the default currency symbol used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString currencySymbol() const;
+
+    /**
+     * @internal Sets the symbol used to identify the decimal pointer for monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setMonetaryDecimalSymbol(const QString &symbol);
+
+    /**
+     * @internal Returns the monetary decimal symbol used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString monetaryDecimalSymbol() const;
+
+    /**
+     * @internal Sets the separator used to group digits when formating monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setMonetaryThousandsSeparator(const QString &separator);
+
+    /**
+     * @internal Returns the monetary thousands separator used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString monetaryThousandsSeparator() const;
+
+    /**
+     * @internal Sets the number of decimal places used when formating money.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setMonetaryDecimalPlaces(int digits);
+
+    /**
+     * @internal Returns the number of monetary decimal places used by locale.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int monetaryDecimalPlaces() const;
+
+    /**
+     * @internal Sets the position where the currency symbol should be printed for
+     * positive monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setPositivePrefixCurrencySymbol(bool prefix);
+
+    /**
+     * @internal Returns where to print the currency symbol for positive numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool positivePrefixCurrencySymbol() const;
+
+    /**
+     * @internal Sets the position where the currency symbol should be printed for
+     * negative monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setNegativePrefixCurrencySymbol(bool prefix);
+
+    /**
+     * @internal Returns if the currency symbol precedes negative numbers.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool negativePrefixCurrencySymbol() const;
+
+    /**
+     * @internal Sets the sign position used for positive monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setPositiveMonetarySignPosition(KLocale::SignPosition signpos);
+
+    /**
+     * @internal Returns where/how to print the positive sign.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::SignPosition positiveMonetarySignPosition() const;
+
+    /**
+     * @internal Sets the sign position used for negative monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setNegativeMonetarySignPosition(KLocale::SignPosition signpos);
+
+    /**
+     * @internal Returns where/how to print the negative sign.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::SignPosition negativeMonetarySignPosition() const;
+
+    /**
+     * @internal Set digit characters used to display monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setMonetaryDigitSet(KLocale::DigitSet digitSet);
+
+    /**
+     * @internal Retuns the digit set used to display monetary values.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::DigitSet monetaryDigitSet() const;
+
+    /**
+     * @internal Returns an amount of money as a localized string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatMoney(double num, const QString &currency = QString(), int precision = -1) const;
+
+    /**
+     * @internal Converts a localized monetary string to a double.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual double readMoney(const QString &numStr, bool *ok = 0) const;
+
+    /***************************
+     **    Units settings     **
+     ***************************/
+
+protected:
+
+    /**
+     * @internal
+     * @return list of translated binary unit for @p dialect.
+     */
+    QList<QString> dialectUnitsList(KLocale::BinaryUnitDialect dialect);
+
+    enum DurationType {
+        DaysDurationType = 0,
+        HoursDurationType,
+        MinutesDurationType,
+        SecondsDurationType
+    };
+
+    /**
+     * @internal Formats a duration according to the given type and number
+     */
+    static QString formatSingleDuration(KLocalePrivate::DurationType durationType, int n);
+
+public:
+
+    /**
+     * @internal Returns the user's default binary unit dialect.
+     * The worker of the same-name KLocale API function.
+     */
+   virtual KLocale::BinaryUnitDialect binaryUnitDialect() const;
+
+    /**
+     * @internal Sets the default dialect for this locale
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setBinaryUnitDialect(KLocale::BinaryUnitDialect newDialect);
+
+    /**
+     * @internal Returns converted size as a string
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatByteSize(double size);
+
+    /**
+     * @internal Returns converted size as a translated string including the units.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString formatByteSize(double size, int precision,
+                                   KLocale::BinaryUnitDialect dialect = KLocale::DefaultBinaryDialect,
+                                   KLocale:: BinarySizeUnits specificUnit = KLocale::DefaultBinaryUnits);
+
+    /**
+     * @internal Sets the preferred page size when printing.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setPageSize(int paperFormat);
+
+    /**
+     * @internal Returns the preferred page size for printing.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int pageSize() const;
+
+    /**
+     * @internal Sets the preferred measuring system.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setMeasureSystem(KLocale::MeasureSystem value);
+
+    /**
+     * @internal Returns which measuring system we use.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KLocale::MeasureSystem measureSystem() const;
+
+    /***************************
+     **   Encoding settings   **
+     ***************************/
+
+protected:
+
+    /**
+     * @internal Figures out which encoding the user prefers.
+     */
+    virtual void initEncoding();
+
+    /**
+     * @internal Figures out which encoding the user prefers for filenames
+     * and sets up the appropriate QFile encoding and decoding functions.
+     */
+    virtual void initFileNameEncoding();
+
+    /**
+     * @internal Returns the system codeset.
+     */
+    virtual QByteArray systemCodeset() const;
+
+    /**
+     * @internal A QFile filename encoding function (QFile::encodeFn).
+     */
+    static QByteArray encodeFileNameUTF8(const QString &fileName);
+
+    /**
+     * @internal QFile filename decoding function (QFile::decodeFn).
+     */
+    static QString decodeFileNameUTF8(const QByteArray &localFileName);
+
+public:
+
+    /**
+     * @internal Sets the current encoding
+     * The worker of the same-name KLocale API function.
+     */
+    virtual bool setEncoding(int mibEnum);
+
+    /**
+     * @internal Returns the user's preferred encoding.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual const QByteArray encoding();
+
+    /**
+     * @internal Returns the user's preferred encoding.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int encodingMib() const;
+
+    /**
+     * @internal Returns the file encoding.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual int fileEncodingMib() const;
+
+    /**
+     * @internal Returns the user's preferred encoding.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QTextCodec *codecForEncoding() const;
+
+    /***************************
+     **       Utilities       **
+     ***************************/
+
+public:
+
+    /**
+     * @internal Parses locale string into distinct parts.
+     * The worker of the same-name KLocale API function.
+     */
+    static void splitLocale(const QString &locale, QString &language, QString &country,
+                            QString &modifier, QString &charset);
+
+    /**
+     * @internal Tries to find a path to the localized file for the given original path.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString localizedFilePath(const QString &filePath) const;
+
+    /**
+     * @internal Removes accelerator marker from a UI text label.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QString removeAcceleratorMarker(const QString &label) const;
+
+    // Parent KLocale, public needed for copy ctor
+    KLocale *q;
+
+private:
+    // Country settings
+    QString m_country;
+
+    // Language settings
+    QString      m_language;
+    KConfig     *m_languages;
+    QStringList  m_languageList;
+    bool         m_languageSensitiveDigits;  // FIXME: Temporary until full language-sensitivity implemented.
+    bool         m_nounDeclension;
+
+    // Catalog settings
+    QString             m_catalogName;          // catalogName ("app name") used by this KLocale object
+    QList<KCatalogName> m_catalogNames;         // list of all catalogs (regardless of language)
+    QList<KCatalog>     m_catalogs;             // list of all found catalogs, one instance per catalog name and language
+    int                 m_numberOfSysCatalogs;  // number of catalogs that each app draws from
+    bool                m_useTranscript;        // indicates if scripted messages are to be executed
+
+    // Calendar settings
+    QString          m_calendarType;
+    KCalendarSystem *m_calendar;
+    int              m_weekStartDay;
+    int              m_workingWeekStartDay;
+    int              m_workingWeekEndDay;
+    int              m_weekDayOfPray;
+
+    // Date/Time settings
+    QString           m_dateFormat;
+    QString           m_dateFormatShort;
+    QString           m_timeFormat;
+    KLocale::DigitSet m_dateTimeDigitSet;
+    bool              m_dateMonthNamePossessive;
+
+    // Number settings
+    int               m_decimalPlaces;
+    QString           m_decimalSymbol;
+    QString           m_thousandsSeparator;
+    QString           m_positiveSign;
+    QString           m_negativeSign;
+    KLocale::DigitSet m_digitSet;
+
+    // Currency settings
+    QString        m_currencyCode;
+    KCurrencyCode *m_currency;
+    QStringList    m_currencyCodeList;
+
+    // Money settings
+    QString               m_currencySymbol;
+    QString               m_monetaryDecimalSymbol;
+    QString               m_monetaryThousandsSeparator;
+    int                   m_monetaryDecimalPlaces;
+    KLocale::SignPosition m_positiveMonetarySignPosition;
+    KLocale::SignPosition m_negativeMonetarySignPosition;
+    bool                  m_positivePrefixCurrencySymbol;
+    bool                  m_negativePrefixCurrencySymbol;
+    KLocale::DigitSet     m_monetaryDigitSet;
+
+    // Units settings
+    KLocale::BinaryUnitDialect m_binaryUnitDialect;
+    QList<QString>             m_byteSizeFmt;
+    int                        m_pageSize;
+    KLocale::MeasureSystem     m_measureSystem;
+
+    // Encoding settings
+    QString     m_encoding;
+    QTextCodec *m_codecForEncoding;
+    bool        m_utf8FileEncoding;
+};
 
 #endif /* KLOCALE_P_H */
 

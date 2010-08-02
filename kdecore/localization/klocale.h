@@ -1806,6 +1806,7 @@ public:
                           bool ignoreContext = false) const;
 
 private:
+    friend class KLocalePrivate;
     KLocalePrivate * const d;
 };
 

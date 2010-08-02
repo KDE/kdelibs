@@ -89,6 +89,7 @@ endif (HAVE_RESOLV_LIBRARY)
 if (APPLE)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/kkernel_mac.cpp
+      localization/klocale_mac.cpp
    )
 
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
@@ -99,6 +100,7 @@ if (WIN32)
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       kernel/kstandarddirs_win.cpp
+      localization/klocale_win.cpp
       network/klocalsocket_win.cpp
       io/klockfile_win.cpp
       util/kde_file_win.cpp
@@ -325,6 +327,7 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    localization/probers/nsSJISProber.cpp
    localization/probers/nsUniversalDetector.cpp
    localization/klocale.cpp
+   localization/klocale_kde.cpp
    localization/klocalizedstring.cpp
    localization/kuitsemantics.cpp
    localization/kuitformats.cpp
