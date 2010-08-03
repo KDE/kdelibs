@@ -69,6 +69,11 @@ if (Grantlee_FOUND)
 
 endif()
 
+if (proxymodeltestsuite_standalone)
+  set(LIBRARY_TYPE SHARED)
+endif()
+
+
 automoc4_add_library(proxymodeltestsuite ${LIBRARY_TYPE}
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
