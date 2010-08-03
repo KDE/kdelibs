@@ -146,7 +146,7 @@ if(NOT WIN32 AND NOT APPLE)
 
    )
 
-#   message(STATUS "-- Building Solid UPnP backend." )
+#   message(STATUS "Building Solid UPnP backend." )
 #   set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
 #   backends/upnp/upnpdevice.cpp
@@ -157,7 +157,7 @@ if(NOT WIN32 AND NOT APPLE)
 
 #   )
 
-   message(STATUS "-- Building Solid HAL backend." )
+   message(STATUS "Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
    backends/hal/halacadapter.cpp
@@ -194,6 +194,13 @@ if(NOT WIN32 AND NOT APPLE)
    backends/udisks/udisksstoragedrive.cpp
    backends/udisks/udisksstorageaccess.cpp
    backends/udisks/udisksgenericinterface.cpp
+
+   backends/upower/upowermanager.cpp
+   backends/upower/upowerdevice.cpp
+   backends/upower/upowerbattery.cpp
+   backends/upower/upoweracadapter.cpp
+   backends/upower/upowerdeviceinterface.cpp
+   backends/upower/upowergenericinterface.cpp
    )
 endif(NOT WIN32 AND NOT APPLE)
 
