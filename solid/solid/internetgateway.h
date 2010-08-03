@@ -53,8 +53,7 @@ namespace Solid
             QStringList currentConnections() const;
 
             void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                const QString newPortMappingDescription, qlonglong newLeaseDuration);
+                                int newInternalPort, const QString newInternalClient);
 
             void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
@@ -64,12 +63,11 @@ namespace Solid
 
         Q_SIGNALS:
             void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                  int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                  const QString newPortMappingDescription, qlonglong newLeaseDuration);
+                                  int newInternalPort, const QString newInternalClient);
 
             void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
-            void enabledForInternet(bool enabled); // needed? [2]
+            void enabledForInternet(bool enabled);
 
         protected:
             InternetGateway(InternetGatewayPrivate& dd, QObject* backendObject);

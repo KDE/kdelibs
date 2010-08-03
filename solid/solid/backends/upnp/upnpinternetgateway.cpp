@@ -253,9 +253,8 @@ Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::
     return service;
 }
 
-void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
-                                         int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                         const QString newPortMappingDescription, qlonglong newLeaseDuration)
+void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
+                                         int newInternalPort, const QString newInternalClient)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
@@ -273,9 +272,9 @@ void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExt
                 inArgs["NewProtocol"]->setValue(mappingProtocol);
                 inArgs["NewInternalPort"]->setValue(newInternalPort);
                 inArgs["NewInternalClient"]->setValue(newInternalClient);
-                inArgs["NewEnabled"]->setValue(mappingEnabled);
-                inArgs["NewPortMappingDescription"]->setValue(newPortMappingDescription);
-                inArgs["NewLeaseDuration"]->setValue(newLeaseDuration);
+                inArgs["NewEnabled"]->setValue(true);
+                inArgs["NewPortMappingDescription"]->setValue(QString());
+                inArgs["NewLeaseDuration"]->setValue(0);
 
                 connect(addPortMappingAction, 
                         SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
@@ -330,12 +329,11 @@ void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp inv
         QString newProtocol = inArgs["NewProtocol"]->value().toString();
         int newInternalPort = inArgs["NewInternalPort"]->value().toInt();
         QString newInternalClient = inArgs["NewInternalClient"]->value().toString();
-        bool mappingEnabled = inArgs["NewEnabled"]->value().toBool();
+        /* bool mappingEnabled = inArgs["NewEnabled"]->value().toBool();
         QString newPortMappingDescription = inArgs["NewPortMappingDescription"]->value().toString();
-        qlonglong newLeaseDuration = inArgs["NewLeaseDuration"]->value().toLongLong();
+        qlonglong newLeaseDuration = inArgs["NewLeaseDuration"]->value().toLongLong(); */
 
-        emit portMappingAdded(newRemoteHost, newExternalPort, newProtocol, newInternalPort, newInternalClient,
-                              mappingEnabled, newPortMappingDescription, newLeaseDuration);
+        emit portMappingAdded(newRemoteHost, newExternalPort, newProtocol, newInternalPort, newInternalClient);
     }
     else 
     {

@@ -79,15 +79,13 @@ QStringList InternetGateway::currentConnections() const
     return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), currentConnections());
 }
 
-void InternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol, 
-                                     int newInternalPort, const QString newInternalClient, bool mappingEnabled, 
-                                     const QString newPortMappingDescription, qlonglong newLeaseDuration)
+void InternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
+                                     int newInternalPort, const QString newInternalClient)
 {
     Q_D(const InternetGateway);
     
     SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), 
-               addPortMapping(newRemoteHost, newExternalPort, mappingProtocol, newInternalPort, newInternalClient,
-                              mappingEnabled, newPortMappingDescription, newLeaseDuration));
+               addPortMapping(newRemoteHost, newExternalPort, mappingProtocol, newInternalPort, newInternalClient));
 }
 
 void InternetGateway::deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol)

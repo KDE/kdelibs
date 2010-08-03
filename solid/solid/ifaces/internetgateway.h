@@ -41,8 +41,7 @@ namespace Ifaces
             virtual QStringList currentConnections() const = 0;
 
             virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                        int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                        const QString newPortMappingDescription, qlonglong newLeaseDuration) = 0;
+                                        int newInternalPort, const QString newInternalClient) = 0;
 
             virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 
@@ -52,12 +51,11 @@ namespace Ifaces
 
         protected: //Q_SIGNALS:
             virtual void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                          int newInternalPort, const QString newInternalClient, bool mappingEnabled,
-                                          const QString newPortMappingDescription, qlonglong newLeaseDuration) = 0;
+                                          int newInternalPort, const QString newInternalClient) = 0;
 
             virtual void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 
-            virtual void enabledForInternet(bool enabled) = 0; // needed?
+            virtual void enabledForInternet(bool enabled) = 0;
     };
 
 }
