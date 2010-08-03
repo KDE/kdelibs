@@ -205,7 +205,7 @@ Nepomuk::Query::Query& Nepomuk::Query::Query::operator=( const Term& term )
 
 bool Nepomuk::Query::Query::isValid() const
 {
-    return d->m_term.isValid();
+    return( d->m_term.isValid() || isFileQuery() );
 }
 
 
