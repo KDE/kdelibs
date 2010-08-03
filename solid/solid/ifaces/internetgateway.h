@@ -38,7 +38,9 @@ namespace Ifaces
         public:
             virtual ~InternetGateway();
 
-            virtual QStringList currentConnections() const = 0;
+            virtual void requestCurrentConnections() = 0;
+
+            virtual QStringList getCurrentConnections() const = 0;
 
             virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                         int newInternalPort, const QString newInternalClient) = 0;
@@ -56,6 +58,8 @@ namespace Ifaces
             virtual void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
 
             virtual void enabledForInternet(bool enabled) = 0;
+
+            virtual void currentConnectionsDataIsReady(QStringList currentConnections) = 0;
     };
 
 }

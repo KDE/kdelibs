@@ -23,6 +23,8 @@
 #ifndef SOLID_INTERNETGATEWAY_H
 #define SOLID_INTERNETGATEWAY_H
 
+#include <QtCore/QStringList>
+
 #include <solid/deviceinterface.h>
 
 #include <solid/solid_export.h>
@@ -50,7 +52,9 @@ namespace Solid
 
             static Type deviceInterfaceType() { return DeviceInterface::InternetGateway; }
 
-            QStringList currentConnections() const;
+            void requestCurrentConnections() const;
+
+            QStringList getCurrentConnections() const;
 
             void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                 int newInternalPort, const QString newInternalClient);
@@ -68,6 +72,8 @@ namespace Solid
             void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
 
             void enabledForInternet(bool enabled);
+
+            void currentConnectionsDataIsReady(QStringList currentConnections);
 
         protected:
             InternetGateway(InternetGatewayPrivate& dd, QObject* backendObject);

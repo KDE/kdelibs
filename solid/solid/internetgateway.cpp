@@ -72,11 +72,18 @@ InternetGateway::~InternetGateway()
 {
 }
 
-QStringList InternetGateway::currentConnections() const
+void InternetGateway::requestCurrentConnections() const
 {
     Q_D(const InternetGateway);
 
-    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), currentConnections());
+    SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), requestCurrentConnections());
+}
+
+QStringList InternetGateway::getCurrentConnections() const
+{
+    Q_D(const InternetGateway);
+
+    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), getCurrentConnections());
 }
 
 void InternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,

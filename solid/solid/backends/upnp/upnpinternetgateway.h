@@ -57,19 +57,29 @@ namespace UPnP
             virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                         int newInternalPort, const QString newInternalClient);
 
-            virtual QStringList currentConnections() const;
+            virtual void requestCurrentConnections();
+
+            virtual QStringList getCurrentConnections() const;
 
         private:
             Herqq::Upnp::HDeviceProxy* getDevice(const QString typePreffix, Herqq::Upnp::HDeviceProxies& devices) const;
 
             Herqq::Upnp::HServiceProxy* getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const;
 
+            int getNumberOfActiveConnections();
+
+            QStringList activeConnections;
+
+            int numberOfConnections;
+
         private slots:
             void setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
             void deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
-            void addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);    
+            void addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+
+            void getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
         Q_SIGNALS:
             void enabledForInternet(bool enabled);
@@ -78,6 +88,8 @@ namespace UPnP
 
             void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
                                   int newInternalPort, const QString newInternalClient);
+
+            void currentConnectionsDataIsReady(QStringList currentConnections);
     };
 
 }
