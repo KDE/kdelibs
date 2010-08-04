@@ -296,13 +296,19 @@ Nepomuk::Query::Term Nepomuk::Query::operator&&( const Term& term1, const Term& 
     QList<Term> terms;
     if( term1.isAndTerm() )
         terms << term1.toAndTerm().subTerms();
-    else
+    else if( term1.isValid() )
         terms << term1;
     if( term2.isAndTerm() )
         terms << term2.toAndTerm().subTerms();
-    else
+    else if( term2.isValid() )
         terms << term2;
-    return AndTerm( terms );
+
+    if( terms.count() == 1 )
+        return terms.first();
+    else if( terms.count() > 1 )
+        return AndTerm( terms );
+    else
+        return Term();
 }
 
 
@@ -311,13 +317,19 @@ Nepomuk::Query::Term Nepomuk::Query::operator||( const Term& term1, const Term& 
     QList<Term> terms;
     if( term1.isOrTerm() )
         terms << term1.toOrTerm().subTerms();
-    else
+    else if( term1.isValid() )
         terms << term1;
     if( term2.isOrTerm() )
         terms << term2.toOrTerm().subTerms();
-    else
+    else if( term2.isValid() )
         terms << term2;
-    return OrTerm( terms );
+
+    if( terms.count() == 1 )
+        return terms.first();
+    else if( terms.count() > 1 )
+        return OrTerm( terms );
+    else
+        return Term();
 }
 
 
