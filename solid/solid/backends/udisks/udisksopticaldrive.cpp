@@ -44,6 +44,7 @@ bool UDisksOpticalDrive::eject()
     if (m_ejectInProgress)
         return false;
     m_ejectInProgress = true;
+    emit ejectRequested(m_device->udi());
 
     QDBusConnection c = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");

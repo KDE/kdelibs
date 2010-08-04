@@ -30,9 +30,7 @@ UDisksStorageVolume::UDisksStorageVolume(UDisksDevice *device)
 
 UDisksStorageVolume::~UDisksStorageVolume()
 {
-
 }
-
   
 QString UDisksStorageVolume::encryptedContainerUdi() const
 {
