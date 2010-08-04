@@ -52,8 +52,7 @@ int Processor::maxSpeed() const
 
 bool Processor::canChangeFrequency() const
 {
-    // dummy for now, need some changes in HAL!
-    return false;
+    return m_device->property("processor.can_throttle").toBool();
 }
 
 static Solid::Processor::InstructionSets cpuFeatures();
