@@ -1150,6 +1150,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * @return current date
      * @see currentLocalDateTime(), currentLocalTime()
+     * @since 4.3
      */
     static QDate currentLocalDate();
 
