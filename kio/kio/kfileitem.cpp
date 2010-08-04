@@ -1114,11 +1114,6 @@ QString KFileItem::getToolTipText(int maxcount) const
             if ( item.isValid() )
             {
                 QString s = item.value().toString();
-                if ( ( item.properties().attributes() & PredicateProperties::SqueezeText )
-                     && s.length() > 50) {
-                    s.truncate(47);
-                    s.append("...");
-                }
                 if ( !s.isEmpty() )
                 {
                     count++;
