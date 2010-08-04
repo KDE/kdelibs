@@ -1160,6 +1160,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * @return current date
      * @see currentLocalDateTime(), currentLocalDate()
+     * @since 4.3
      */
     static QTime currentLocalTime();
 
@@ -1581,6 +1582,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * @see currentDateTime(), currentLocalDateTime(), currentUtcDateTime(),
      *      currentLocalDate(), currentLocalTime()
+     * @since 4.3
      */
     static void setSimulatedSystemTime(const KDateTime& newTime);
 
@@ -1598,6 +1600,8 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *             dt = KDateTime::realCurrentLocalDateTime();
      *          #endif
      *          \endcode
+     *
+     * @since 4.3
      */
     static KDateTime realCurrentLocalDateTime();
 
