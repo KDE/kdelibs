@@ -357,7 +357,7 @@ QString KLocale::formatDate(const QDate &date, KLocale::DateFormat format) const
 
 void KLocale::setMainCatalog(const char *catalog)
 {
-    KLocale::setMainCatalog(catalog);
+    //KLocale::setMainCatalog(catalog);
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const
