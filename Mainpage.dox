@@ -26,7 +26,7 @@ Among other things, the KDE libraries provide:
 - a method of embedding application components in other applications
   (<a href="kparts/html/index.html">KParts</a>)
 - straightforward multimedia and hardware interaction
-  (<a href="/kdesupport-api/kdesupport-apidocs/phonon/html/">Phonon</a> and
+  (<a href="/kdesupport-api/kdesupport-apidocs/phonon-git/html/">Phonon</a> and
   <a href="solid/html/index.html">Solid</a>)
 - fully-fledged JavaScript and HTML engines
   (<a href="kjs/html/index.html">KJS</a> and
