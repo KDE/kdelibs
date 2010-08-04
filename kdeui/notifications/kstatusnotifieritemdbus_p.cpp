@@ -187,6 +187,11 @@ QString KStatusNotifierItemDBus::service() const
     return m_service;
 }
 
+bool KStatusNotifierItemDBus::ItemIsMenu() const
+{
+    return (m_statusNotifierItem->d->associatedWidget == m_statusNotifierItem->d->menu);
+}
+
 //DBUS slots
 
 QString KStatusNotifierItemDBus::Category() const
