@@ -1348,12 +1348,15 @@ KUrl KFileItem::targetUrl() const
 
 KUrl KFileItem::nepomukUri() const
 {
-    if(isLocalFile()) {
-        return url();
+    const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
+    if(!nepomukUriStr.isEmpty()) {
+        return KUrl(nepomukUriStr);
+    }
+    else if(targetUrl().isLocalFile()) {
+        return targetUrl();
     }
     else {
-        const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
-        return KUrl(nepomukUriStr);
+        return KUrl();
     }
 }
 
