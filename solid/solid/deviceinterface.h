@@ -52,7 +52,7 @@ namespace Solid
          * - Processor : A processor
          * - Block : A block device
          * - StorageDrive : A storage drive
-         * - Cdrom : A CD-ROM drive
+         * - OpticalDrive : An optical drive (CD-ROM, DVD, ...)
          * - StorageVolume : A volume
          * - OpticalDisc : An optical disc
          * - Camera : A digital camera

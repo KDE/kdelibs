@@ -36,7 +36,7 @@ namespace Solid
     /**
      * This device interface is available on CD-R*,DVD*,Blu-Ray,HD-DVD drives.
      *
-     * A Cdrom is a storage that can handle optical discs.
+     * An OpticalDrive is a storage that can handle optical discs.
      */
     class SOLID_EXPORT OpticalDrive : public StorageDrive
     {
@@ -52,7 +52,7 @@ namespace Solid
 
     public:
         /**
-         * This enum type defines the type of medium a cdrom drive supports.
+         * This enum type defines the type of medium an optical drive supports.
          *
          * - Cdr : A Recordable Compact Disc (CD-R)
          * - Cdrw : A ReWritable Compact Disc (CD-RW)
@@ -85,7 +85,7 @@ namespace Solid
 
     private:
         /**
-         * Creates a new Cdrom object.
+         * Creates a new OpticalDrive object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
@@ -96,15 +96,15 @@ namespace Solid
 
     public:
         /**
-         * Destroys a Cdrom object.
+         * Destroys an OpticalDrive object.
          */
         virtual ~OpticalDrive();
 
 
         /**
-         * Get the Solid::DeviceInterface::Type of the Cdrom device interface.
+         * Get the Solid::DeviceInterface::Type of the OpticalDrive device interface.
          *
-         * @return the Cdrom device interface type
+         * @return the OpticalDrive device interface type
          * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
         static Type deviceInterfaceType() { return DeviceInterface::OpticalDrive; }
