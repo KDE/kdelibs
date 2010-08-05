@@ -124,7 +124,7 @@ void KModelIndexProxyMapperPrivate::createProxyChain()
 
     if (targetIndex != -1)
     {
-      m_proxyChainDown = proxyChainDown.mid(targetIndex, proxyChainDown.size());
+      m_proxyChainDown = proxyChainDown.mid(targetIndex + 1, proxyChainDown.size());
       return;
     }
   }
