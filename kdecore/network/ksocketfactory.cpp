@@ -55,7 +55,9 @@ void KSocketFactory::connectToHost(QTcpSocket *socket, const QString &protocol, 
     if (!socket)
         return;
 
+#ifndef QT_NO_NETWORKPROXY
     socket->setProxy(proxyForConnection(protocol, host));
+#endif
     socket->connectToHost(host, port);
 }
 
@@ -114,7 +116,9 @@ QTcpServer *KSocketFactory::listen(const QString &protocol, const QHostAddress &
                                    QObject *parent)
 {
     QTcpServer *server = new QTcpServer(parent);
+#ifndef QT_NO_NETWORKPROXY
     server->setProxy(proxyForListening(protocol));
+#endif
     server->listen(address, port);
     return server;
 }
@@ -122,11 +126,14 @@ QTcpServer *KSocketFactory::listen(const QString &protocol, const QHostAddress &
 QUdpSocket *KSocketFactory::datagramSocket(const QString &protocol, const QString &host, QObject *parent)
 {
     QUdpSocket *socket = new QUdpSocket(parent);
+#ifndef QT_NO_NETWORKPROXY
     // ### do something else?
     socket->setProxy(proxyForDatagram(protocol, host));
+#endif
     return socket;
 }
 
+#ifndef QT_NO_NETWORKPROXY
 QNetworkProxy KSocketFactory::proxyForConnection(const QString &, const QString &)
 {
     return QNetworkProxy::NoProxy;
@@ -141,3 +148,4 @@ QNetworkProxy KSocketFactory::proxyForDatagram(const QString &, const QString &)
 {
     return QNetworkProxy::NoProxy;
 }
+#endif

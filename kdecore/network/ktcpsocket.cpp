@@ -31,8 +31,8 @@
 #include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>
+#include <QtNetwork/QHostAddress>
 #include <QtNetwork/QNetworkProxy>
-
 
 static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
 {
@@ -385,8 +385,10 @@ KTcpSocket::KTcpSocket(QObject *parent)
     connect(&d->sock, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
     connect(&d->sock, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+#ifndef QT_NO_NETWORKPROXY
     connect(&d->sock, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
             this, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)));
+#endif
     connect(&d->sock, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(reemitSocketError(QAbstractSocket::SocketError)));
     connect(&d->sock, SIGNAL(sslErrors(const QList<QSslError> &)),
@@ -579,11 +581,12 @@ quint16 KTcpSocket::peerPort() const
 }
 
 
+#ifndef QT_NO_NETWORKPROXY
 QNetworkProxy KTcpSocket::proxy() const
 {
     return d->sock.proxy();
 }
-
+#endif
 
 qint64 KTcpSocket::readBufferSize() const
 {
@@ -591,11 +594,12 @@ qint64 KTcpSocket::readBufferSize() const
 }
 
 
+#ifndef QT_NO_NETWORKPROXY
 void KTcpSocket::setProxy(const QNetworkProxy &proxy)
 {
     d->sock.setProxy(proxy);
 }
-
+#endif
 
 void KTcpSocket::setReadBufferSize(qint64 size)
 {

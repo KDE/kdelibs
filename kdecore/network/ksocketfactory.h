@@ -194,9 +194,11 @@ namespace KSocketFactory
 
     KDECORE_EXPORT QUdpSocket *datagramSocket(const QString &protocol, const QString &host, QObject *parent = 0);
 
+#ifndef QT_NO_NETWORKPROXY
     KDECORE_EXPORT QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
     KDECORE_EXPORT QNetworkProxy proxyForListening(const QString &protocol);
     KDECORE_EXPORT QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
+#endif
 }
 
 #endif

@@ -262,16 +262,20 @@ public:
     QString peerName() const;
     quint16 peerPort() const;
 
+#ifndef QT_NO_NETWORKPROXY
     /**
      * @see: connectToHost()
      */
     QNetworkProxy proxy() const;
+#endif
     qint64 readBufferSize() const; //probably hard to implement correctly
 
+#ifndef QT_NO_NETWORKPROXY
     /**
      * @see: connectToHost()
      */
     void setProxy(const QNetworkProxy &proxy); //people actually seem to need it
+#endif
     void setReadBufferSize(qint64 size);
     State state() const;
     bool waitForConnected(int msecs = 30000);
@@ -331,7 +335,9 @@ Q_SIGNALS:
     void disconnected();
     void error(KTcpSocket::Error);
     void hostFound();
+#ifndef QT_NO_NETWORKPROXY
     void proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
+#endif
     // only for raw socket state, SSL is separate
     void stateChanged(KTcpSocket::State);
 
