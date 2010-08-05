@@ -21,6 +21,8 @@
 #ifndef KMEMFILE_H
 #define KMEMFILE_H
 
+#ifndef QT_NO_SHAREDMEMORY
+
 #include <QtCore/QIODevice>
 #include <kdecore_export.h>
 
@@ -92,5 +94,7 @@ private:
   friend class Private;
   Private * const d;
 };
+
+#endif //QT_NO_SHAREDMEMORY
 
 #endif  // KMEMFILE_H

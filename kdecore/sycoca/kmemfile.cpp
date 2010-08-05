@@ -20,6 +20,8 @@
 
 #include "kmemfile.h"
 
+#ifndef QT_NO_SHAREDMEMORY
+
 #include <QtCore/QSharedMemory>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QFile>
@@ -247,3 +249,5 @@ void KMemFile::fileContentsChanged ( const QString &filename )
   infoPtr->shmDataSize = 0;
   shmData.unlock();
 }
+
+#endif //QT_NO_SHAREDMEMORY

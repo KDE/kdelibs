@@ -246,13 +246,14 @@ KSycocaAbstractDevice* KSycocaPrivate::device()
             }
         }
 #endif
+#ifndef QT_NO_SHAREDMEMORY
         if (!device && m_sycocaStrategy == StrategyMemFile) {
             device = new KSycocaMemFileDevice(m_databasePath);
             if (!device->device()->open(QIODevice::ReadOnly)) {
                 delete device; device = 0;
             }
         }
-
+#endif
         if (!device) {
             device = new KSycocaFileDevice(m_databasePath);
             if (!device->device()->open(QIODevice::ReadOnly)) {

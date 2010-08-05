@@ -85,6 +85,7 @@ private:
     QFile* m_database;
 };
 
+#ifndef QT_NO_SHAREDMEMORY
 // Reading from a KMemFile
 class KSycocaMemFileDevice : public KSycocaAbstractDevice
 {
@@ -101,6 +102,7 @@ public:
 private:
     KMemFile* m_database;
 };
+#endif
 
 // Reading from a dummy memory buffer
 class KSycocaBufferDevice : public KSycocaAbstractDevice
