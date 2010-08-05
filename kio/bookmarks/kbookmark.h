@@ -24,6 +24,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QMetaType>
 #include <QtXml/QDomElement>
 #include <kurl.h>
 
@@ -459,5 +460,8 @@ protected:
     virtual void visitEnter(const KBookmarkGroup &);
     virtual void visitLeave(const KBookmarkGroup &);
 };
+
+#define KIO_KBOOKMARK_METATYPE_DEFINED 1
+Q_DECLARE_METATYPE( KBookmark )
 
 #endif
