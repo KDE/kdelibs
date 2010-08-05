@@ -353,7 +353,7 @@ QString UDisksDevice::volumeDescription() const
     // Handle media in optical drives
     if (drive_type == Solid::StorageDrive::CdromDrive)
     {
-        const OpticalDisc disc(const_cast<UDisksDevice*>(this));
+        const UDisks::OpticalDisc disc(const_cast<UDisksDevice*>(this));
         switch (disc.discType())
         {
             case Solid::OpticalDisc::UnknownDiscType:
@@ -547,23 +547,33 @@ QString UDisksDevice::icon() const
         {
             if ( isOptical )    // optical stuff
             {
-                bool hasAudio = property( "OpticalDiscNumAudioTracks" ).toInt() > 0; // audio disc
-                bool isBlank = property( "OpticalDiscIsBlank" ).toBool(); // assume recordable
-                bool isWritable = !property( "DeviceIsReadOnly" ).toBool();  // not blank but maybe rewritable
-                if ( hasAudio )
+                bool isWritable = property( "OpticalDiscIsBlank" ).toBool() || property("OpticalDiscIsAppendable").toBool();
+
+                const UDisks::OpticalDisc disc(const_cast<UDisksDevice*>(this));
+                Solid::OpticalDisc::ContentTypes availContent = disc.availableContent();
+
+                if (availContent & Solid::OpticalDisc::VideoDvd) // Video DVD
+                    return "media-optical-dvd-video";
+                else if ((availContent & Solid::OpticalDisc::VideoCd) || (availContent & Solid::OpticalDisc::SuperVideoCd)) // Video CD
+                    return "media-optical";
+                else if ((availContent & Solid::OpticalDisc::Data) && (availContent & Solid::OpticalDisc::Audio)) // Mixed CD
+                    return "media-optical-mixed-cd";
+                else if (availContent & Solid::OpticalDisc::Audio) // Audio CD
                     return "media-optical-audio";
-                else if ( isBlank || isWritable )
+                else if (availContent & Solid::OpticalDisc::Data) // Data CD
+                    return "media-optical-data";
+                else if ( isWritable )
                     return "media-optical-recordable";
                 else
                 {
-                    if ( media.startsWith( "optical_dvd" ) ) // DVD
+                    if ( media.startsWith( "optical_dvd" ) || media.startsWith( "optical_hddvd" ) ) // DVD
                         return "media-optical-dvd";
                     else if ( media.startsWith( "optical_bd" ) ) // BluRay
                         return "media-optical-blu-ray";
                 }
 
                 // fallback for every other optical disc
-                return "media-optical"; // TODO support discs like HD-DVD, MO, MR, ...
+                return "media-optical";
             }
 
             if ( media == "flash_ms" ) // Flash & Co.
@@ -581,7 +591,7 @@ QString UDisksDevice::icon() const
 
         // handle drives
         bool isDrive = property( "DeviceIsDrive" ).toBool();
-        bool isRemovable = !property( "DeviceIsSystemInternal" ).toBool();
+        bool isRemovable = property( "DeviceIsRemovable" ).toBool();
         const QString conn = property( "DriveConnectionInterface" ).toString();
 
         if ( isDrive && isOptical )
