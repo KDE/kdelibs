@@ -422,7 +422,9 @@ void KLocalePrivate::initFormat(KConfig *config)
                        m_dateTimeDigitSet, KLocale::DigitSet);
 
     // other
+#ifndef QT_NO_PRINTER
     readConfigNumEntry("PageSize", QPrinter::A4, m_pageSize, QPrinter::PageSize);
+#endif
     readConfigNumEntry("MeasureSystem", KLocale::Metric, m_measureSystem, KLocale::MeasureSystem);
     readConfigEntry("CalendarSystem", "gregorian", m_calendarType);
     delete m_calendar;
