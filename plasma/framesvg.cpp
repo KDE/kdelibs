@@ -282,7 +282,9 @@ QPixmap FrameSvg::alphaMask() const
 QRegion FrameSvg::mask() const
 {
     FrameData *frame = d->frames[d->prefix];
-    frame->cachedMask = QRegion(QBitmap(d->alphaMask().alphaChannel().createMaskFromColor(Qt::black)));
+    if (frame->cachedMask.isEmpty()) {
+        frame->cachedMask = QRegion(QBitmap(d->alphaMask().alphaChannel().createMaskFromColor(Qt::black)));
+    }
     return frame->cachedMask;
 }
 
