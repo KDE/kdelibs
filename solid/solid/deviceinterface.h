@@ -51,6 +51,7 @@ namespace Solid
          * - Unknown : An undetermined device interface
          * - Processor : A processor
          * - Block : A block device
+         * - StorageAccess : A mechanism to access data on a storage device
          * - StorageDrive : A storage drive
          * - OpticalDrive : An optical drive (CD-ROM, DVD, ...)
          * - StorageVolume : A volume
