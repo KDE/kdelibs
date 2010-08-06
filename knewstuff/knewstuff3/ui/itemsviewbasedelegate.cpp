@@ -31,6 +31,7 @@ namespace KNS3
 ItemsViewBaseDelegate::ItemsViewBaseDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : KWidgetItemDelegate(itemView, parent)
         , m_engine(engine)
+        , m_itemView(itemView)
         , m_iconInvalid(KIcon("dialog-error"))
         , m_iconInstall(KIcon("dialog-ok"))
         , m_iconUpdate(KIcon("system-software-update"))
@@ -87,7 +88,7 @@ void ItemsViewBaseDelegate::slotInstallActionTriggered(QAction* action)
 {
     QPoint rowDownload = action->data().toPoint();
     int row = rowDownload.x();
-    QModelIndex index = focusedIndex().model()->index(row, 0);
+    QModelIndex index = m_itemView->model()->index(row, 0);
     if (index.isValid()) {
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         m_engine->install(entry, rowDownload.y());

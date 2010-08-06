@@ -69,6 +69,7 @@ protected slots:
 
 protected:
     Engine* m_engine;
+    QAbstractItemView *m_itemView;
     KIcon m_iconInvalid;
     KIcon m_iconDownloadable;
     KIcon m_iconInstall;
