@@ -70,7 +70,8 @@ void ImagePreviewWidget::paintEvent(QPaintEvent *event)
     int height = contentsRect().height();
     
     if (m_scaledImage.isNull()) {
-        m_scaledImage = m_image.scaled(width - 2*margin, height - 2*margin, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QSize scaled = QSize(qMin(width - 2*margin, m_image.width()*2), qMin(height - 2*margin, m_image.height()*2));
+        m_scaledImage = m_image.scaled(scaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
     
     QPoint point;

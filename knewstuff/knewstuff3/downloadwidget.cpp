@@ -367,7 +367,6 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
     }
     titleText = ui.m_titleWidget->text();
     
-    details->setEntry(entry);
     ui.backButton->setVisible(true);
     ui.detailsStack->setCurrentIndex(1);
     ui.descriptionScrollArea->verticalScrollBar()->setValue(0);
@@ -375,6 +374,7 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
     ui.preview2->setImage(QImage());
     ui.preview3->setImage(QImage());
     ui.previewBig->setImage(QImage());
+    details->setEntry(entry);
 }
 
 void DownloadWidgetPrivate::slotShowOverview()
