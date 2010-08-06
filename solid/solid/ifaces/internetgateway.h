@@ -40,12 +40,12 @@ namespace Ifaces
 
             virtual void requestCurrentConnections() = 0;
 
-            virtual QStringList getCurrentConnections() const = 0;
+            virtual QStringList currentConnections() const = 0;
 
-            virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                        int newInternalPort, const QString newInternalClient) = 0;
+            virtual void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
+                                        qint16 internalPort, const QString internalClient) = 0;
 
-            virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
+            virtual void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol) = 0;
 
             virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const = 0;
 

@@ -54,12 +54,12 @@ namespace Solid
 
             void requestCurrentConnections() const;
 
-            QStringList getCurrentConnections() const;
+            QStringList currentConnections() const;
 
-            void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                int newInternalPort, const QString newInternalClient);
+            void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
+                                qint16 internalPort, const QString internalClient);
 
-            void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
+            void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol);
 
             InternetStatus isEnabledForInternet() const;
 

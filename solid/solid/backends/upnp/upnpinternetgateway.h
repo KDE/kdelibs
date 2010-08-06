@@ -52,14 +52,14 @@ namespace UPnP
 
             virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const;
 
-            virtual void deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
+            virtual void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol);
 
-            virtual void addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                        int newInternalPort, const QString newInternalClient);
+            virtual void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
+                                        qint16 internalPort, const QString internalClient);
 
             virtual void requestCurrentConnections();
 
-            virtual QStringList getCurrentConnections() const;
+            virtual QStringList currentConnections() const;
 
         private:
             Herqq::Upnp::HDeviceProxy* getDevice(const QString typePreffix, Herqq::Upnp::HDeviceProxies& devices) const;

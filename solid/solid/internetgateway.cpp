@@ -79,28 +79,28 @@ void InternetGateway::requestCurrentConnections() const
     SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), requestCurrentConnections());
 }
 
-QStringList InternetGateway::getCurrentConnections() const
+QStringList InternetGateway::currentConnections() const
 {
     Q_D(const InternetGateway);
 
-    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), getCurrentConnections());
+    return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), currentConnections());
 }
 
-void InternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                     int newInternalPort, const QString newInternalClient)
+void InternetGateway::addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
+                                     qint16 internalPort, const QString internalClient)
 {
     Q_D(const InternetGateway);
     
     SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), 
-               addPortMapping(newRemoteHost, newExternalPort, mappingProtocol, newInternalPort, newInternalClient));
+               addPortMapping(remoteHost, externalPort, mappingProtocol, internalPort, internalClient));
 }
 
-void InternetGateway::deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol)
+void InternetGateway::deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol)
 {
     Q_D(const InternetGateway);
     
     SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), 
-               deletePortMapping(newRemoteHost, newExternalPort, mappingProtocol));
+               deletePortMapping(remoteHost, externalPort, mappingProtocol));
 }
 
 InternetGateway::InternetStatus InternetGateway::isEnabledForInternet() const

@@ -143,7 +143,7 @@ Solid::InternetGateway::InternetStatus UPnPInternetGateway::isEnabledForInternet
     }
 }
 
-void UPnPInternetGateway::deletePortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol)
+void UPnPInternetGateway::deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
@@ -153,8 +153,8 @@ void UPnPInternetGateway::deletePortMapping(const QString newRemoteHost, int new
             Herqq::Upnp::HAction* deletePortMappingAction = wanConnectionService->actionByName(QString::fromLatin1("DeletePortMapping"));
             if (deletePortMappingAction) {
                 Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->inputArguments();
-                inArgs["NewRemoteHost"]->setValue(newRemoteHost);
-                inArgs["NewExternalPort"]->setValue(newExternalPort);
+                inArgs["NewRemoteHost"]->setValue(remoteHost);
+                inArgs["NewExternalPort"]->setValue(externalPort);
                 inArgs["NewProtocol"]->setValue(mappingProtocol);
 
                 connect(deletePortMappingAction, 
@@ -220,8 +220,8 @@ Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::
     return service;
 }
 
-void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                         int newInternalPort, const QString newInternalClient)
+void UPnPInternetGateway::addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
+                                         qint16 internalPort, const QString internalClient)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
@@ -231,11 +231,11 @@ void UPnPInternetGateway::addPortMapping(const QString newRemoteHost, int newExt
             Herqq::Upnp::HAction* addPortMappingAction = wanConnectionService->actionByName(QString::fromLatin1("AddPortMapping"));
             if (addPortMappingAction) {
                 Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->inputArguments();
-                inArgs["NewRemoteHost"]->setValue(newRemoteHost);
-                inArgs["NewExternalPort"]->setValue(newExternalPort);
+                inArgs["NewRemoteHost"]->setValue(remoteHost);
+                inArgs["NewExternalPort"]->setValue(externalPort);
                 inArgs["NewProtocol"]->setValue(mappingProtocol);
-                inArgs["NewInternalPort"]->setValue(newInternalPort);
-                inArgs["NewInternalClient"]->setValue(newInternalClient);
+                inArgs["NewInternalPort"]->setValue(internalPort);
+                inArgs["NewInternalClient"]->setValue(internalClient);
                 inArgs["NewEnabled"]->setValue(true);
                 inArgs["NewPortMappingDescription"]->setValue(QString());
                 inArgs["NewLeaseDuration"]->setValue(0);
@@ -380,7 +380,7 @@ void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::H
     }
 }
 
-QStringList UPnPInternetGateway::getCurrentConnections() const
+QStringList UPnPInternetGateway::currentConnections() const
 {
     return activeConnections;
 }
