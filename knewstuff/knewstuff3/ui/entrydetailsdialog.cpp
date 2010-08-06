@@ -141,22 +141,27 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     ui->preview2->setVisible(!hideSmallPreviews);
     ui->preview3->setVisible(!hideSmallPreviews);
 
+    // in static xml we often only get a small preview, use that in details
+    if(m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty() && !m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
+        m_entry.setPreviewUrl(m_entry.previewUrl(EntryInternal::PreviewSmall1), EntryInternal::PreviewBig1);
+        m_entry.setPreviewImage(m_entry.previewImage(EntryInternal::PreviewSmall1), EntryInternal::PreviewBig1);
+    }
+
     for (int type = EntryInternal::PreviewSmall1; type <= EntryInternal::PreviewBig3; ++type) {
         if (m_entry.previewUrl(EntryInternal::PreviewSmall1).isEmpty()) {
             ui->previewBig->setVisible(false);
         } else
 
-        if (!m_entry.previewUrl((EntryInternal::PreviewType)type).isEmpty()
-            && m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
-            m_engine->loadPreview(m_entry, (EntryInternal::PreviewType)type);
-        } else {
-            slotEntryPreviewLoaded(m_entry, (EntryInternal::PreviewType)type);
+        if (!m_entry.previewUrl((EntryInternal::PreviewType)type).isEmpty()) {
+            kDebug() << "type: " << type << m_entry.previewUrl((EntryInternal::PreviewType)type);
+            if (m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
+                m_engine->loadPreview(m_entry, (EntryInternal::PreviewType)type);
+            } else {
+                slotEntryPreviewLoaded(m_entry, (EntryInternal::PreviewType)type);
+            }
         }
     }
-
-    if(m_entry.previewImage(EntryInternal::PreviewBig1).isNull() && !m_entry.previewUrl(EntryInternal::PreviewBig1).isEmpty()) {
-// TODO        ui->previewBig->setText(i18n("Loading preview..."));
-    }
+    
     updateButtons();
 }
 
@@ -254,29 +259,19 @@ void EntryDetails::slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3
 
     switch (type) {
     case EntryInternal::PreviewSmall1:
-        kDebug() << "preview 1 loaded";
         ui->preview1->setImage(entry.previewImage(EntryInternal::PreviewSmall1));
         break;
     case EntryInternal::PreviewSmall2:
-        kDebug() << "preview 2 loaded";
         ui->preview2->setImage(entry.previewImage(EntryInternal::PreviewSmall2));
         break;
     case EntryInternal::PreviewSmall3:
-        kDebug() << "preview 3 loaded";
         ui->preview3->setImage(entry.previewImage(EntryInternal::PreviewSmall3));
         break;
     case EntryInternal::PreviewBig1:
-        kDebug() << "preview big 1";
         m_currentPreview = entry.previewImage(EntryInternal::PreviewBig1);
         ui->previewBig->setImage(m_currentPreview);
         break;
-    case EntryInternal::PreviewBig2:
-        kDebug() << "preview big 2";
-        //ui->previewBig->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewBig2).scaled(ui->previewBig->size(), Qt::KeepAspectRatio)));
-        break;
-    case EntryInternal::PreviewBig3:
-        kDebug() << "preview big 3";
-        //ui->previewBig->setPixmap(QPixmap::fromImage(entry.previewImage(EntryInternal::PreviewBig3).scaled(ui->previewBig->size(), Qt::KeepAspectRatio)));
+    default:
         break;
     }
 }
