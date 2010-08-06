@@ -865,6 +865,7 @@ install( FILES
   KTextEditor/CommandInterface
   KTextEditor/ConfigInterface
   KTextEditor/ConfigPage
+  KTextEditor/ContainerInterface
   KTextEditor/Cursor
   KTextEditor/Document
   KTextEditor/Editor
@@ -872,6 +873,9 @@ install( FILES
   KTextEditor/Factory
   KTextEditor/HighlightInterface
   KTextEditor/MarkInterface
+  KTextEditor/MovingCursor
+  KTextEditor/MovingInterface
+  KTextEditor/MovingRange
   KTextEditor/ModificationInterface
   KTextEditor/Plugin
   KTextEditor/Range
