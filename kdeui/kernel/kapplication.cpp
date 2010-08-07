@@ -52,7 +52,6 @@
 #include "kurl.h"
 #include "kmessage.h"
 #include "kmessageboxmessagehandler.h"
-#include "ksystemeventfilter.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -200,6 +199,7 @@ public:
   KConfig *config() { return KGlobal::config().data(); }
 #endif
 
+  void _k_x11FilterDestroyed();
   void _k_checkAppStartedSlot();
   void _k_slot_KToolInvocation_hook(QStringList&, QByteArray&);
 
@@ -230,6 +230,8 @@ public:
 };
 
 
+static QList< QWeakPointer< QWidget > > *x11Filter = 0;
+
 /**
    * Installs a handler for the SIGPIPE signal. It is thrown when you write to
    * a pipe or socket that has been closed.
@@ -250,12 +252,36 @@ static void installSigpipeHandler()
 
 void KApplication::installX11EventFilter( QWidget* filter )
 {
-    KSystemEventFilter::installEventFilter(filter);
+    if ( !filter )
+        return;
+    if (!x11Filter)
+        x11Filter = new QList< QWeakPointer< QWidget > >;
+    connect ( filter, SIGNAL( destroyed() ), this, SLOT( _k_x11FilterDestroyed() ) );
+    x11Filter->append( filter );
+}
+
+void KApplicationPrivate::_k_x11FilterDestroyed()
+{
+    q->removeX11EventFilter( static_cast< const QWidget* >(q->sender()));
 }
 
 void KApplication::removeX11EventFilter( const QWidget* filter )
 {
-    KSystemEventFilter::removeEventFilter(filter);
+    if ( !x11Filter || !filter )
+        return;
+    // removeAll doesn't work, creating QWeakPointer to something that's about to be deleted aborts
+    // x11Filter->removeAll( const_cast< QWidget* >( filter ));
+    for( QMutableListIterator< QWeakPointer< QWidget > > it( *x11Filter );
+         it.hasNext();
+         ) {
+        QWidget* w = it.next().data();
+        if( w == filter || w == NULL )
+            it.remove();
+    }
+    if ( x11Filter->isEmpty() ) {
+        delete x11Filter;
+        x11Filter = 0;
+    }
 }
 
 bool KApplication::notify(QObject *receiver, QEvent *event)
@@ -885,6 +911,16 @@ KApplication::~KApplication()
 
 
 #ifdef Q_WS_X11
+class KAppX11HackWidget: public QWidget
+{
+public:
+    bool publicx11Event( XEvent * e) { return x11Event( e ); }
+};
+#endif
+
+
+
+#ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     switch ( _event->type ) {
@@ -924,6 +960,14 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 }
         }
         default: break;
+    }
+
+    if (x11Filter) {
+        foreach (const QWeakPointer< QWidget >& wp, *x11Filter) {
+            if( QWidget* w = wp.data())
+                if ( static_cast<KAppX11HackWidget*>( w )->publicx11Event(_event))
+                    return true;
+        }
     }
 
     return false;

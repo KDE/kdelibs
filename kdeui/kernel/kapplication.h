@@ -280,9 +280,7 @@ public:
 #endif
 
   /**
-   * @deprecated Use KSystemEventFilter::installEventFilter() instead.
-   *
-   * Installs widget filter as global X11 event filter.
+   *  Installs widget filter as global X11 event filter.
    *
    * The widget
    *  filter receives XEvents in its standard QWidget::x11Event() function.
@@ -290,15 +288,13 @@ public:
    *  Warning: Only do this when absolutely necessary. An installed X11 filter
    *  can slow things down.
    **/
-  void KDE_DEPRECATED installX11EventFilter( QWidget* filter );
+  void installX11EventFilter( QWidget* filter );
 
   /**
-   * @deprecated Use KSystemEventFilter::removeEventFilter() instead.
-   *
    * Removes global X11 event filter previously installed by
    * installX11EventFilter().
    */
-  void KDE_DEPRECATED removeX11EventFilter( const QWidget* filter );
+  void removeX11EventFilter( const QWidget* filter );
 
 #ifdef KDE3_SUPPORT
   /**
@@ -479,6 +475,7 @@ private:
   friend class KApplicationPrivate;
   KApplicationPrivate* const d;
 
+  Q_PRIVATE_SLOT(d, void _k_x11FilterDestroyed())
   Q_PRIVATE_SLOT(d, void _k_checkAppStartedSlot())
   Q_PRIVATE_SLOT(d, void _k_slot_KToolInvocation_hook(QStringList&, QByteArray&))
 };
