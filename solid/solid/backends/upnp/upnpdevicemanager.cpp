@@ -142,7 +142,11 @@ void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
 
     emit deviceRemoved(udiPrefix() + '/' + udn);
 
-    //m_controlPoint->removeRootDevice(device);
+    UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
+    
+    upnpControlPoint->controlPoint()->removeRootDevice(device);
+    
+    UPnPControlPoint::releaseInstance();
 }
 
 }
