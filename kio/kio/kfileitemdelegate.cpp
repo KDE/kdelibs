@@ -588,10 +588,10 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
 {
     int value = int(0xff * amount);
 
-    if (value == 0)
+    if (value == 0 || to.isNull())
         return from;
 
-    if (value == 0xff)
+    if (value == 0xff || from.isNull())
         return to;
 
     QColor color;
