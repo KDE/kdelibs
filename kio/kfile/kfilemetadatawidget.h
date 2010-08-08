@@ -51,6 +51,8 @@ public:
 
     /**
      * Sets the items for which the meta data should be shown.
+     * The signal metaDataRequestFinished() will be emitted,
+     * as soon as the meta data for the items has been received.
      */
     void setItems(const KFileItemList& items);
     KFileItemList items() const;
@@ -71,6 +73,13 @@ Q_SIGNALS:
      * been clicked by the user.
      */
     void urlActivated(const KUrl& url);
+
+    /**
+     * Is emitted after the meta data has been received for the items
+     * set by KFileMetaDataWidget::setItems().
+     * @since 4.5.1
+     */
+    void metaDataRequestFinished();
 
 protected:
     virtual bool event(QEvent* event);
