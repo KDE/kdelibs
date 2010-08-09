@@ -124,7 +124,7 @@ class KDateTimeSpecPrivate;
  * conversions even after the copy is performed. A separate copy of the data is
  * created whenever a non-const method is called. If you want to force the
  * creation of a separate copy of the data (e.g. if you want two copies to
- * cache different time zone conversions), call detach(). 
+ * cache different time zone conversions), call detach().
  *
  * @section compatibility QDateTime Considerations
  *
