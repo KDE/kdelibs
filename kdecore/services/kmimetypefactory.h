@@ -75,10 +75,6 @@ public:
      */
     static KMimeTypeFactory * self();
 
-    class MimeTypeEntry;
-protected:
-    virtual MimeTypeEntry *createEntry(int offset) const;
-
 public: // public for KBuildServiceFactory
     // A small entry for each mimetype with name and offset into the services-offer-list.
     class MimeTypeEntryPrivate;
@@ -95,6 +91,8 @@ public: // public for KBuildServiceFactory
         void setServiceOffersOffset(int off);
     };
 
+protected:
+    virtual MimeTypeEntry *createEntry(int offset) const;
 private:
     // d pointer: useless since this header is not installed
     //class KMimeTypeFactoryPrivate* d;
