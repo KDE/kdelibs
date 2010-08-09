@@ -104,7 +104,7 @@ KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 class KDateTimeSpecPrivate
 {
   public:
-    KDateTimeSpecPrivate()  {}
+    KDateTimeSpecPrivate() : utcOffset(0) {}
     // *** NOTE: This structure is replicated in KDateTimePrivate. Any changes must be copied there.
     KTimeZone tz;            // if type == TimeZone, the instance's time zone.
     int       utcOffset;     // if type == OffsetFromUTC, the offset from UTC
