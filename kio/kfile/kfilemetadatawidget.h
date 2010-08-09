@@ -79,7 +79,7 @@ Q_SIGNALS:
      * set by KFileMetaDataWidget::setItems().
      * @since 4.6
      */
-    void metaDataRequestFinished();
+    void metaDataRequestFinished(const KFileItemList& items);
 
 protected:
     virtual bool event(QEvent* event);
