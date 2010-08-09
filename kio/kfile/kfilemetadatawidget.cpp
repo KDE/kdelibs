@@ -425,7 +425,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 #endif
 
     q->updateGeometry();
-    emit q->metaDataRequestFinished();
+    emit q->metaDataRequestFinished(m_fileItems);
 }
 
 void KFileMetaDataWidget::Private::removeOutdatedRows()
