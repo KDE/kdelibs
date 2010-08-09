@@ -23,6 +23,8 @@
 
 #include <kwindowsystem.h>
 
+#include "theme.h"
+
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -38,7 +40,7 @@ namespace WindowEffects
 //FIXME: check if this works for any atom?
 bool isEffectAvailable(Effect effect)
 {
-    if (!KWindowSystem::compositingActive()) {
+    if (!Plasma::Theme::defaultTheme()->windowTranslucencyEnabled()) {
         return false;
     }
 #ifdef Q_WS_X11
