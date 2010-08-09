@@ -375,3 +375,5 @@
                       instead of fileref -->
 <!ENTITY menuk  "menu <guimenu>K</guimenu>">
 <!ENTITY partman "Gestionnaire de partitions de &kde;">  <!-- English: &partman; -->
+<!ENTITY Lequipe.rekonq "L'&eacute;quipe rekonq">
+<!ENTITY Lequipe.rekonq.mail "(rekonq@kde.org)">
