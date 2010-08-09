@@ -70,6 +70,10 @@
 #include <ucontext.h>
 #endif
 
+#if defined(Q_OS_WIN)
+# include <windows.h>
+#endif
+
 static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
@@ -82,6 +86,10 @@ static bool s_launchDrKonqi = false;
 namespace KCrash
 {
     void startProcess(int argc, const char *argv[], bool waitAndExit);
+
+#if defined(Q_OS_WIN)
+    LONG WINAPI win32UnhandledExceptionFilter(_EXCEPTION_POINTERS *exceptionInfo);
+#endif
 }
 
 void
@@ -201,7 +209,16 @@ bool KCrash::isDrKonqiEnabled()
 void
 KCrash::setCrashHandler (HandlerType handler)
 {
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_WIN)
+  static LPTOP_LEVEL_EXCEPTION_FILTER s_previousExceptionFilter = NULL;
+
+  if (handler && !s_previousExceptionFilter) {
+    s_previousExceptionFilter = SetUnhandledExceptionFilter(KCrash::win32UnhandledExceptionFilter);
+  } else if (!handler && s_previousExceptionFilter) {
+    SetUnhandledExceptionFilter(s_previousExceptionFilter);
+    s_previousExceptionFilter = NULL;
+  }
+#else
   if (!handler)
     handler = SIG_DFL;
 
@@ -230,7 +247,7 @@ KCrash::setCrashHandler (HandlerType handler)
 #endif
 
   sigprocmask(SIG_UNBLOCK, &mask, 0);
-#endif //Q_OS_UNIX
+#endif
 
   s_crashHandler = handler;
 }
@@ -254,14 +271,15 @@ closeAllFDs()
 void
 KCrash::defaultCrashHandler (int sig)
 {
-#ifdef Q_OS_UNIX
     // WABA: Do NOT use kDebug() in this function because it is much too risky!
     // Handle possible recursions
     static int crashRecursionCounter = 0;
     crashRecursionCounter++; // Nothing before this, please !
 
+#if !defined(Q_OS_WIN)
     signal(SIGALRM, SIG_DFL);
     alarm(3); // Kill me... (in case we deadlock in malloc)
+#endif
 
 #ifdef Q_OS_SOLARIS
     (void) printstack(2 /* stderr, assuming it's still open. */);
@@ -279,11 +297,13 @@ KCrash::defaultCrashHandler (int sig)
         crashRecursionCounter++;
     }
 
+#if !defined(Q_OS_WIN)
     if (!(s_flags & KeepFDs))
         closeAllFDs();
-#if defined(Q_WS_X11)
+# if defined(Q_WS_X11)
     else if (QX11Info::display())
         close(ConnectionNumber(QX11Info::display()));
+# endif
 #endif
 
     if (crashRecursionCounter < 3)
@@ -291,9 +311,9 @@ KCrash::defaultCrashHandler (int sig)
 #ifndef NDEBUG
         fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n",
                 crashRecursionCounter);
-        fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n",
+        fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %lld\n",
                 s_appName ? s_appName : "<unknown>" ,
-                s_appPath ? s_appPath : "<unknown>", getpid());
+                s_appPath ? s_appPath : "<unknown>", QCoreApplication::applicationPid());
 #else
         fprintf(stderr, "KCrash: Application '%s' crashing...\n",
                 s_appName ? s_appName : "<unknown>");
@@ -301,11 +321,13 @@ KCrash::defaultCrashHandler (int sig)
 
         if (!s_launchDrKonqi) {
             setCrashHandler(0);
+#if !defined(Q_OS_WIN)
             raise(sig); // dump core, or whatever is the default action for this signal.
+#endif
             return;
         }
 
-        const char * argv[25]; // don't forget to update this
+        const char * argv[27]; // don't forget to update this
         int i = 0;
 
         // argument 0 has to be drkonqi
@@ -342,8 +364,8 @@ KCrash::defaultCrashHandler (int sig)
         argv[i++] = "--signal";
         argv[i++] = sigtxt;
 
-        char pidtxt[ 10 ];
-        sprintf( pidtxt, "%d", getpid());
+        char pidtxt[ 20 ];
+        sprintf( pidtxt, "%lld", QCoreApplication::applicationPid());
         argv[i++] = "--pid";
         argv[i++] = pidtxt;
 
@@ -379,6 +401,13 @@ KCrash::defaultCrashHandler (int sig)
         if ((s_flags & AutoRestart) && s_autoRestartCommand)
             argv[i++] = "--restarted"; //tell drkonqi if the app has been restarted
 
+#if defined(Q_OS_WIN)
+        char threadId[8] = { 0 };
+        sprintf( threadId, "%d", GetCurrentThreadId() );
+        argv[i++] = "--thread";
+        argv[i++] = threadId;
+#endif
+
         // NULL terminated list
         argv[i] = NULL;
 
@@ -389,12 +418,71 @@ KCrash::defaultCrashHandler (int sig)
     {
       fprintf(stderr, "Unable to start Dr. Konqi\n");
     }
-#endif //Q_OS_UNIX
 
     _exit(255);
 }
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_WIN)
+
+void KCrash::startProcess(int argc, const char *argv[], bool waitAndExit)
+{
+    QString cmdLine;
+    for(int i=0; i<argc; ++i) {
+        cmdLine.append('\"');
+        cmdLine.append(QFile::decodeName(argv[i]));
+        cmdLine.append("\" ");
+    }
+
+    PROCESS_INFORMATION procInfo;
+    STARTUPINFOW startupInfo = { sizeof( STARTUPINFO ), 0, 0, 0,
+                                (ulong)CW_USEDEFAULT, (ulong)CW_USEDEFAULT,
+                                (ulong)CW_USEDEFAULT, (ulong)CW_USEDEFAULT,
+                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    bool success = CreateProcess(0, (wchar_t*) cmdLine.utf16(), NULL, NULL,
+                                 false, CREATE_UNICODE_ENVIRONMENT, NULL, NULL,
+                                 &startupInfo, &procInfo);
+
+    if (success && waitAndExit) {
+        // wait for child to exit
+        WaitForSingleObject(procInfo.hProcess, INFINITE);
+        _exit(253);
+    }
+}
+
+//glue function for calling the unix signal handler from the windows unhandled exception filter
+LONG WINAPI KCrash::win32UnhandledExceptionFilter(_EXCEPTION_POINTERS *exceptionInfo)
+{
+    // kdbgwin needs the context inside exceptionInfo because if getting the context after the
+    // exception happened, it will walk down the stack and will stop at KiUserEventDispatch in
+    // ntdll.dll, which is supposed to dispatch the exception from kernel mode back to user mode
+    // so... let's create some shared memory
+    HANDLE hMapFile = NULL;
+    hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,
+        NULL,
+        PAGE_READWRITE,
+        0,
+        sizeof(CONTEXT),
+        TEXT("Local\\KCrashShared"));
+
+    LPCTSTR pBuf = NULL;
+    pBuf = (LPCTSTR) MapViewOfFile(
+        hMapFile,
+        FILE_MAP_ALL_ACCESS,
+        0,
+        0,
+        sizeof(CONTEXT));
+    CopyMemory((PVOID) pBuf, exceptionInfo->ContextRecord, sizeof(CONTEXT));
+
+    if (s_crashHandler) {
+        s_crashHandler(exceptionInfo->ExceptionRecord->ExceptionCode);
+    }
+
+    CloseHandle(hMapFile);
+    return EXCEPTION_EXECUTE_HANDLER; //allow windows to do the default action (terminate)
+}
+#else
 
 static bool startProcessInternal(int argc, const char *argv[], bool waitAndExit, bool directly);
 static pid_t startFromKdeinit(int argc, const char *argv[]);
