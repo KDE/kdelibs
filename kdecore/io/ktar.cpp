@@ -38,6 +38,13 @@
 /////////////////////////// KTar ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+// Mime types of known filters
+static const char application_gzip[] = "application/x-gzip";
+static const char application_bzip[] = "application/x-bzip";
+static const char application_lzma[] = "application/x-lzma";
+static const char application_xz[] = "application/x-xz";
+static const char application_zip[] = "application/zip";
+
 class KTar::KTarPrivate
 {
 public:
@@ -83,60 +90,48 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
 {
     if ( d->mimetype.isEmpty() ) // Find out mimetype manually
     {
+        KMimeType::Ptr mime;
         if ( mode != QIODevice::WriteOnly && QFile::exists( fileName() ) )
-            d->mimetype = KMimeType::findByFileContent( fileName() )->name();
+        {
+            mime = KMimeType::findByFileContent( fileName() );
+            if ( mime == KMimeType::defaultMimeTypePtr() )
+            {
+                // Unable to determine mimetype from contents, get it from file name
+                mime = KMimeType::findByPath( fileName(), 0, true );
+            }
+        }
         else
-            d->mimetype = KMimeType::findByPath( fileName(), 0, true )->name();
-        kDebug(7041) << "mimetype=" << d->mimetype;
+            mime = KMimeType::findByPath( fileName(), 0, true );
 
-        if ( d->mimetype == "application/x-compressed-tar"
-             || d->mimetype == "application/x-tgz" // old deprecated name
-             || d->mimetype == "application/x-targz" // old deprecated name
-             || d->mimetype == "application/x-webarchive" )
-        {
-            // that's a gzipped tar file, so ask for gzip filter
-            d->mimetype = "application/x-gzip";
-        }
-        else if ( d->mimetype == "application/x-bzip-compressed-tar" ) // that's a bzipped2 tar file, so ask for bz2 filter
-        {
-            d->mimetype = "application/x-bzip";
-        }
-        else if ( d->mimetype == "application/x-lzma-compressed-tar" ) // that's a lzma compressed tar file, so ask for xz filter
-        {
-            d->mimetype = "application/x-lzma";
-        }
-        else if ( d->mimetype == "application/x-xz-compressed-tar" ) // that's a xz compressed tar file, so ask for xz filter
-        {
-            d->mimetype = "application/x-xz";
-        }
+        kDebug(7041) << "mimetype=" << mime->name();
+
+        if ( mime->is( "application/x-compressed-tar" ) ) // that's a gzipped tar file, so ask for gzip filter
+            d->mimetype = application_gzip;
+        else if ( mime->is( "application/x-bzip-compressed-tar" ) ) // that's a bzipped2 tar file, so ask for bz2 filter
+            d->mimetype = application_bzip;
+        else if ( mime->is( "application/x-lzma-compressed-tar" ) ) // that's a lzma compressed tar file, so ask for xz filter
+            d->mimetype = application_lzma;
+        else if ( mime->is( "application/x-xz-compressed-tar" ) ) // that's a xz compressed tar file, so ask for xz filter
+            d->mimetype = application_xz;
         else
         {
             // Something else. Check if it's not really gzip though (e.g. for old-style KOffice files)
             QFile file( fileName() );
             if ( file.open( QIODevice::ReadOnly ) )
             {
-                char firstByte, secondByte, thirdByte;
-                if ( file.getChar( &firstByte ) &&
-                     file.getChar( &secondByte ) &&
-                     file.getChar( &thirdByte ) ) {
-                    if ( firstByte == 0037 && static_cast<uchar>(secondByte) == static_cast<uchar>(0213) )
-                        d->mimetype = "application/x-gzip";
-                    else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
-                        d->mimetype = "application/x-bzip";
-                    else if ( firstByte == '\xFD' && secondByte == '7' && thirdByte == 'z' )
-                    {
-                        char fourthByte, fifthByte, sixthByte;
-                        if ( file.getChar(&fourthByte) && fourthByte == 'X' &&
-			     file.getChar(&fifthByte) && fifthByte == 'Z' &&
-			     file.getChar(&sixthByte) && sixthByte == 0x00 )
-                            d->mimetype = "application/x-xz";
-                    }
-                    else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
-                    {
-                        char fourthByte;
-                        if ( file.getChar(&fourthByte) && fourthByte == 4 )
-                            d->mimetype = "application/zip";
-                    }
+                char header[6] = {0};
+                if ( file.read(header, sizeof(header)) == sizeof(header) )
+                {
+                    if ( header[0] == 0x1F && header[1] == 0x8B )
+                        d->mimetype = application_gzip;
+                    else if ( header[0] == 'B'  && header[1] == 'Z'  && header[2] == 'h' )
+                        d->mimetype = application_bzip;
+                    else if ( header[0] == 0xFD && header[1] == '7'  && header[2] == 'z'  && header[3] == 'X' && header[4] == 'Z' && header[5] == 0x00 )
+                        d->mimetype = application_xz;
+                    else if ( header[0] == 0x5D && header[1] == 0x00 && header[2] == 0x00 && header[3] == 0x00 )
+                        d->mimetype = application_lzma;
+                    else if ( header[0] == 'P'  && header[1] == 'K'  && header[2] == 0x03 && header[3] == 0x04 )
+                        d->mimetype = application_zip;
                 }
             }
             file.close();
@@ -299,8 +294,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     kDebug( 7041 ) << "filling tmpFile of mimetype" << mimetype;
 
     bool forced = false;
-    if( "application/x-gzip" == mimetype
-    || "application/x-bzip" == mimetype)
+    if ( application_gzip == mimetype || application_bzip == mimetype )
         forced = true;
 
     QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
@@ -509,10 +503,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
     kDebug(7041) << fileName << " " << mimetype;
 
     bool forced = false;
-    if( "application/x-gzip" == mimetype
-        || "application/x-bzip" == mimetype
-	|| "application/x-lzma" == mimetype
-	|| "application/x-xz" == mimetype)
+    if ( application_gzip == mimetype || application_bzip == mimetype ||
+         application_lzma == mimetype || application_xz == mimetype )
         forced = true;
 
     // #### TODO this should use KSaveFile to avoid problems on disk full
