@@ -27,7 +27,6 @@ set(nepomukquery_SRC
   resourcetypeterm.cpp
   optionalterm.cpp
   query.cpp
-  query_p.cpp
   filequery.cpp
   queryparser.cpp
   dateparser.cpp

@@ -23,7 +23,6 @@
 
 #include "query.h"
 #include "filequery.h"
-#include "query_p.h"
 #include "literalterm.h"
 #include "resourceterm.h"
 #include "andterm.h"
@@ -431,58 +430,57 @@ void QueryTest::testOptimization()
     LiteralTerm literal("Hello World");
     AndTerm and1;
     and1.addSubTerm(literal);
-    Term optimized = QueryPrivate::optimizeTerm(and1);
-    QVERIFY(optimized.isLiteralTerm());
+    QCOMPARE( Query(and1).optimized(), Query(literal) );
 
     AndTerm and2;
     and2.addSubTerm(and1);
-    optimized = QueryPrivate::optimizeTerm(and2);
-    QVERIFY(optimized.isLiteralTerm());
+    QCOMPARE( Query(and2).optimized(), Query(literal) );
 
     Term invalidTerm;
     and2.addSubTerm(invalidTerm);
-    optimized = QueryPrivate::optimizeTerm(and2);
-    QVERIFY(optimized.isLiteralTerm());
+    QCOMPARE( Query(and2).optimized(), Query(literal) );
 
     and1.setSubTerms(QList<Term>() << invalidTerm);
     and2.setSubTerms(QList<Term>() << and1 << literal);
-    optimized = QueryPrivate::optimizeTerm(and2);
-    QVERIFY(optimized.isLiteralTerm());
+    QCOMPARE( Query(and2).optimized(), Query(literal) );
 
     // make sure duplicate negations are removed
-    QCOMPARE( QueryPrivate::optimizeTerm(
+    QCOMPARE( Query(
                   NegationTerm::negateTerm(
                       NegationTerm::negateTerm(
-                          ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))),
-              Term( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
+                          ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))
+                  ).optimized(),
+              Query( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
 
     // make sure more than two negations are removed
-    QCOMPARE( QueryPrivate::optimizeTerm(
+    QCOMPARE( Query(
                   NegationTerm::negateTerm(
                       NegationTerm::negateTerm(
                           NegationTerm::negateTerm(
                               NegationTerm::negateTerm(
-                                  ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))))),
-              Term( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
+                                  ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())))))
+                  ).optimized(),
+              Query( ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) ) );
 
-    // test negation removal and
-    QCOMPARE( QueryPrivate::optimizeTerm(
+    // test negation removal while keeping one
+    QCOMPARE( Query(
                   NegationTerm::negateTerm(
                       NegationTerm::negateTerm(
                           NegationTerm::negateTerm(
-                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))),
-              Term( AndTerm( NegationTerm::negateTerm(ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())),
-                             ComparisonTerm(Soprano::Vocabulary::RDF::type(), Term())) ) );
+                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))
+                  ).optimized(),
+              Query( NegationTerm::negateTerm(ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag())) ) );
 
 
     // make sure duplicate optionals are removed
-    QCOMPARE( QueryPrivate::optimizeTerm(
+    QCOMPARE( Query(
                   OptionalTerm::optionalizeTerm(
                       OptionalTerm::optionalizeTerm(
                           OptionalTerm::optionalizeTerm(
-                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))),
-              Term( OptionalTerm::optionalizeTerm(
-                        ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))) );
+                              ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))))
+                  ).optimized(),
+              Query( OptionalTerm::optionalizeTerm(
+                         ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()))) );
 }
 
 

@@ -401,6 +401,17 @@ namespace Nepomuk {
             bool operator!=( const Query& query ) const;
 
             /**
+             * Optimizes the query without chaning its meaning. This removes
+             * redundant terms such as NegationTerm and OptionalTerm nestings and flattens
+             * AndTerm and OrTerm hierarchies.
+             *
+             * \return An optimized version of this query.
+             *
+             * \since 4.6
+             */
+            Query optimized() const;
+
+            /**
              * Encode the Query in a string. Be aware that this does NOT create a SPARQL
              * query. The returned string can be used to serialize queries that can later
              * be read via fromString().

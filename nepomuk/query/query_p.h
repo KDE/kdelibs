@@ -50,11 +50,6 @@ namespace Nepomuk {
             QStringList buildRequestPropertyVariableList() const;
             QString buildRequestPropertyPatterns() const;
 
-            /**
-             * Removes redundant AND and OR operators.
-             */
-            static Term optimizeTerm( const Term& term );
-
             Term m_term;
             int m_limit;
             int m_offset;

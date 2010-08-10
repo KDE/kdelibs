@@ -31,6 +31,7 @@
 #include "negationterm.h"
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
+#include "optionalterm.h"
 #include "queryserializer.h"
 #include "queryparser.h"
 
@@ -65,6 +66,148 @@ WHERE { ?s ?p ?o .
 ORDER BY  desc (?
 */
 
+
+namespace {
+    Nepomuk::Query::Term optimizeTerm( const Nepomuk::Query::Term& term )
+    {
+        switch( term.type() ) {
+        case Nepomuk::Query::Term::And:
+        case Nepomuk::Query::Term::Or: {
+            QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms();
+            QList<Nepomuk::Query::Term> newSubTerms;
+            QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
+            for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
+                  it != end; ++it ) {
+                const Nepomuk::Query::Term& t = *it;
+                Nepomuk::Query::Term ot = optimizeTerm( t );
+                QList<Nepomuk::Query::Term> terms;
+                if ( ot.type() == term.type() ) {
+                    terms = static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
+                }
+                else if( ot.isValid() ) {
+                    terms += ot;
+                }
+                Q_FOREACH( const Nepomuk::Query::Term& t, terms ) {
+                    if( !newSubTerms.contains( t ) )
+                        newSubTerms += t;
+                }
+            }
+            if ( newSubTerms.count() == 0 )
+                return Nepomuk::Query::Term();
+            else if ( newSubTerms.count() == 1 )
+                return *newSubTerms.begin();
+            else if ( term.isAndTerm() )
+                return Nepomuk::Query::AndTerm( newSubTerms );
+            else
+                return Nepomuk::Query::OrTerm( newSubTerms );
+        }
+
+        case Nepomuk::Query::Term::Negation: {
+            Nepomuk::Query::NegationTerm nt = term.toNegationTerm();
+            // a negation in a negation
+            if( nt.subTerm().isNegationTerm() )
+                return optimizeTerm( nt.subTerm().toNegationTerm().subTerm() );
+            else
+                return Nepomuk::Query::NegationTerm::negateTerm( optimizeTerm( nt.subTerm() ) );
+        }
+
+        case Nepomuk::Query::Term::Optional: {
+            Nepomuk::Query::OptionalTerm ot = term.toOptionalTerm();
+            // remove duplicate optional terms
+            if( ot.subTerm().isOptionalTerm() )
+                return optimizeTerm( ot.subTerm() );
+            else
+                return Nepomuk::Query::OptionalTerm::optionalizeTerm( optimizeTerm( ot.subTerm() ) );
+        }
+
+        case Nepomuk::Query::Term::Comparison: {
+            Nepomuk::Query::ComparisonTerm ct( term.toComparisonTerm() );
+            ct.setSubTerm( optimizeTerm( ct.subTerm() ) );
+            return ct;
+        }
+
+        default:
+            return term;
+        }
+    }
+
+    Nepomuk::Query::Term prepareForSparql( const Nepomuk::Query::Term& term )
+    {
+        //
+        // A negation is expressed via a filter. Since filters can only work on a "real" graph pattern
+        // we need to make sure that such a pattern exists. This can be done by searching one in a
+        // surrounding and term.
+        //
+        // Why is that enough?
+        // Nested AndTerms are flattened before the SPARQL query is constructed in Query. Thus, an AndTerm can
+        // only be embedded in an OrTerm or as a child term to either a ComparisonTerm or an OptionalTerm.
+        // In both cases we need a real pattern inside the AndTerm.
+        //
+        // We use a type pattern for performance reasons. Thus, we assume that each resource has a type. This
+        // is not perfect but much faster than using a wildcard for the property. And in the end all Nepomuk
+        // resources should have a properly defined type.
+        //
+
+        switch( term.type() ) {
+        case Nepomuk::Query::Term::And: {
+            // check if there are negation terms without proper patterns
+            Nepomuk::Query::AndTerm at = term.toAndTerm();
+            Nepomuk::Query::AndTerm newAndTerm;
+            bool haveNegationTerm = false;
+            bool haveRealTerm = false;
+            Q_FOREACH( const Nepomuk::Query::Term& term, at.subTerms() ) {
+                if( term.isNegationTerm() ) {
+                    haveNegationTerm = true;
+                    newAndTerm.addSubTerm( term );
+                }
+                else {
+                    if( term.isComparisonTerm() ||
+                        term.isResourceTypeTerm() ||
+                        term.isLiteralTerm() ) {
+                        haveRealTerm = true;
+                    }
+                    newAndTerm.addSubTerm( prepareForSparql( term ) );
+                }
+            }
+            if( haveNegationTerm && !haveRealTerm ) {
+                newAndTerm.addSubTerm( Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::Term() ) );
+            }
+            return newAndTerm;
+        }
+
+        case Nepomuk::Query::Term::Or: {
+            // call prepareForSparql on all subterms
+            QList<Nepomuk::Query::Term> subTerms = term.toOrTerm().subTerms();
+            QList<Nepomuk::Query::Term> newSubTerms;
+            Q_FOREACH( const Nepomuk::Query::Term& term, subTerms ) {
+                newSubTerms.append( prepareForSparql( term ) );
+            }
+            return Nepomuk::Query::OrTerm( newSubTerms );
+        }
+
+        case Nepomuk::Query::Term::Negation: {
+            // add an additional type term since there is no useful pattern. Otherwise
+            // we would have caught it above
+            return Nepomuk::Query::AndTerm(
+                term,
+                Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::Term() ) );
+        }
+
+        case Nepomuk::Query::Term::Optional: {
+            return Nepomuk::Query::OptionalTerm::optionalizeTerm( prepareForSparql( term.toOptionalTerm().subTerm() ) );
+        }
+
+        case Nepomuk::Query::Term::Comparison: {
+            Nepomuk::Query::ComparisonTerm ct = term.toComparisonTerm();
+            ct.setSubTerm( prepareForSparql( ct.subTerm() ) );
+            return ct;
+        }
+
+        default:
+            return term;
+        }
+    }
+}
 
 
 QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourceVarName, QueryBuilderData* qbd ) const
@@ -332,7 +475,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     }
 
     // optimize whatever we can
-    term = QueryPrivate::optimizeTerm( term );
+    term = optimizeTerm( prepareForSparql( term ) );
 
     // actually build the SPARQL query patterns
     QueryBuilderData qbd( flags );
@@ -447,9 +590,18 @@ Nepomuk::Query::RequestPropertyMap Nepomuk::Query::Query::requestPropertyMap() c
     return rpm;
 }
 
+
 QString Nepomuk::Query::Query::toString() const
 {
     return Nepomuk::Query::serializeQuery( *this );
+}
+
+
+Nepomuk::Query::Query Nepomuk::Query::Query::optimized() const
+{
+    Query newQuery( *this );
+    newQuery.setTerm( optimizeTerm( term() ) );
+    return newQuery;
 }
 
 
