@@ -83,10 +83,10 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
         QString uriVarName = qbd->uniqueVarName();
         QString filter = resourceVarName + ' ' + Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) + ' ' + uriVarName + QLatin1String( " . " );
         if ( !m_includeFolders.isEmpty() ) {
-            filter += QString( " FILTER(REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( urlsToStringList(m_includeFolders, KUrl::AppendTrailingSlash).join( "|" ) );
+            filter += QString( " FILTER(REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( urlsToStringList(m_includeFolders, KUrl::AddTrailingSlash).join( "|" ) );
         }
         if ( !m_excludeFolders.isEmpty() ) {
-            filter += QString( " FILTER(!REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( urlsToStringList(m_excludeFolders,  KUrl::AppendTrailingSlash).join( "|" ) );
+            filter += QString( " FILTER(!REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( urlsToStringList(m_excludeFolders,  KUrl::AddTrailingSlash).join( "|" ) );
         }
         return filter;
     }
@@ -371,7 +371,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                               d->m_isFileQuery ? QString() : instanceBaseRestriction );
 
     // add optional order terms
-    if( !(flags & (CreateAskQuery|CreateCountQuery)) )
+    if( !(flags & CreateCountQuery) )
         queryBase += qbd.buildOrderString();
 
     // offset and limit
