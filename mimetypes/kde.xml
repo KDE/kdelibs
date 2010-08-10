@@ -102,7 +102,7 @@ Notes:
     <glob pattern="*.kug"/>
   </mime-type>
   <mime-type type="application/x-webarchive">
-    <sub-class-of type="application/zip"/>
+    <sub-class-of type="application/x-compressed-tar"/>
     <comment>web archive</comment>
     <glob pattern="*.war"/>
   </mime-type>
