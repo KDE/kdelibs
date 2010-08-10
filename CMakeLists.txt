@@ -6,3 +6,5 @@ SET (ksecretservice_lib_SRCS
 
 KDE4_ADD_LIBRARY (ksecretservicelib STATIC ${ksecretservice_lib_SRCS})
 TARGET_LINK_LIBRARIES (ksecretservicelib ${QT_QTCORE_LIBRARY})
+
+ADD_SUBDIRECTORY (tests)

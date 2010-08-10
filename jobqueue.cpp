@@ -66,6 +66,7 @@ void JobQueuePrivate::process()
    
    connect(m_currentJob.data(), SIGNAL(result(QueuedJob*)),
                                 SLOT(jobFinished(QueuedJob*)));
+   m_currentJob->start();
 }
 
 void JobQueuePrivate::jobFinished(QueuedJob *job)

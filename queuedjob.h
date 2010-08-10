@@ -81,9 +81,9 @@ public:
     * not involve an event-loop and it should only be available if the job
     * advertised that it can be called immediately.
     *
-    * @note This method may emit the result but it doesn't have to. If it
-    *       doesn't call emitResult() it has to ensure that the object gets
-    *       deleted using deleteLater() by itself.
+    * @note This method has to call emitResult() before returning. Even if
+    *       noone is interested in the signal it's used to set mark this
+    *       job as finished.
     */
    virtual void exec() = 0;
    
