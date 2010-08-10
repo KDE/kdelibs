@@ -372,7 +372,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                               instanceBaseRestriction );
 
     // add optional order terms
-    queryBase += qbd.buildOrderString();
+    if( !(flags & (CreateAskQuery|CreateCountQuery)) )
+        queryBase += qbd.buildOrderString();
 
     // offset and limit
     if ( d->m_offset > 0 )
