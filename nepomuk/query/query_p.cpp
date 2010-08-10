@@ -37,19 +37,22 @@ Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
     case Nepomuk::Query::Term::And:
     case Nepomuk::Query::Term::Or: {
         QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms();
-        QSet<Nepomuk::Query::Term> newSubTerms;
+        QList<Nepomuk::Query::Term> newSubTerms;
         QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
         for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
               it != end; ++it ) {
             const Nepomuk::Query::Term& t = *it;
             Nepomuk::Query::Term ot = flattenGroupTerms( t );
-            if ( ot.isValid() ) {
-                if ( ot.type() == term.type() ) {
-                    newSubTerms += QSet<Nepomuk::Query::Term>::fromList( static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms() );
-                }
-                else {
-                    newSubTerms += ot;
-                }
+            QList<Nepomuk::Query::Term> terms;
+            if ( ot.type() == term.type() ) {
+                terms = static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
+            }
+            else if( ot.isValid() ) {
+                terms += ot;
+            }
+            Q_FOREACH( const Nepomuk::Query::Term& t, terms ) {
+                if( !newSubTerms.contains( t ) )
+                    newSubTerms += t;
             }
         }
         if ( newSubTerms.count() == 0 )
@@ -57,9 +60,9 @@ Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
         else if ( newSubTerms.count() == 1 )
             return *newSubTerms.begin();
         else if ( term.isAndTerm() )
-            return Nepomuk::Query::AndTerm( newSubTerms.toList() );
+            return Nepomuk::Query::AndTerm( newSubTerms );
         else
-            return Nepomuk::Query::OrTerm( newSubTerms.toList() );
+            return Nepomuk::Query::OrTerm( newSubTerms );
     }
 
     case Nepomuk::Query::Term::Negation: {
