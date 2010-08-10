@@ -28,6 +28,7 @@
 
 #include <Soprano/Vocabulary/RDF>
 
+#include <QtCore/QSet>
 
 namespace {
 Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
@@ -36,7 +37,7 @@ Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
     case Nepomuk::Query::Term::And:
     case Nepomuk::Query::Term::Or: {
         QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms();
-        QList<Nepomuk::Query::Term> newSubTerms;
+        QSet<Nepomuk::Query::Term> newSubTerms;
         QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
         for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
               it != end; ++it ) {
@@ -44,7 +45,7 @@ Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
             Nepomuk::Query::Term ot = flattenGroupTerms( t );
             if ( ot.isValid() ) {
                 if ( ot.type() == term.type() ) {
-                    newSubTerms += static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
+                    newSubTerms += QSet<Nepomuk::Query::Term>::fromList( static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms() );
                 }
                 else {
                     newSubTerms += ot;
@@ -54,11 +55,11 @@ Nepomuk::Query::Term flattenGroupTerms( const Nepomuk::Query::Term& term )
         if ( newSubTerms.count() == 0 )
             return Nepomuk::Query::Term();
         else if ( newSubTerms.count() == 1 )
-            return newSubTerms.first();
+            return *newSubTerms.begin();
         else if ( term.isAndTerm() )
-            return Nepomuk::Query::AndTerm( newSubTerms );
+            return Nepomuk::Query::AndTerm( newSubTerms.toList() );
         else
-            return Nepomuk::Query::OrTerm( newSubTerms );
+            return Nepomuk::Query::OrTerm( newSubTerms.toList() );
     }
 
     case Nepomuk::Query::Term::Negation: {
