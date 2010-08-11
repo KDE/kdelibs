@@ -32,7 +32,7 @@
 
 static void checkInsertPos( QMenu *popup, const QString &str, int &index )
 {
-  if ( index == -1 )
+  if ( index != -1 )
     return;
 
   int a = 0;
@@ -149,7 +149,7 @@ void KLanguageButton::insertLanguage( const QString &languageCode, const QString
   QAction *a = new QAction(QIcon(), text, this);
   a->setData(languageCode);
   if ( index >= 0 && index < d->popup->actions().count()-1)
-    d->popup->insertAction(a, d->popup->actions()[index]);
+    d->popup->insertAction(d->popup->actions()[index], a);
   else
     d->popup->addAction(a);
   d->ids.append(languageCode);
