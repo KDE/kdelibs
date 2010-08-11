@@ -151,9 +151,27 @@ void KEditTagsDialog::slotTextEdited(const QString& text)
     const QString tagText = text.simplified();
     if (tagText.isEmpty()) {
         removeNewTagItem();
+
+        for (int j = 0; j < m_tagsList->count(); j++)
+        {
+            QListWidgetItem *entry = m_tagsList->item(j);
+            entry->setHidden(false);
+        }
+
         return;
     }
-
+ 
+    QSet<QListWidgetItem*> matchedEntries = m_tagsList->findItems(tagText, Qt::MatchContains).toSet();
+    for (int j = 0; j < m_tagsList->count(); j++)
+    {
+        QListWidgetItem *entry = m_tagsList->item(j);
+        if(matchedEntries.contains(entry))
+            entry->setHidden(false);
+        else
+            entry->setHidden(true);
+    }
+    
+    
     // Check whether the new tag already exists. If this
     // is the case, remove the new tag item.
     const int count = m_tagsList->count();
