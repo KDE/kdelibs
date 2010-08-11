@@ -26,6 +26,7 @@
 #include "tag.h"
 #include "pimo.h"
 #include "thing.h"
+#include "file.h"
 #include "property.h"
 #include "nfo.h"
 #include "nie.h"
@@ -864,6 +865,24 @@ void Nepomuk::Resource::increaseUsageCount()
     ++cnt;
     setProperty( Vocabulary::NUAO::usageCount(), cnt );
     setProperty( Vocabulary::NUAO::lastUsage(), now );
+}
+
+
+bool Nepomuk::Resource::isFile() const
+{
+    if( m_data ) {
+        determineFinalResourceData();
+        return m_data->isFile();
+    }
+    else {
+        return false;
+    }
+}
+
+
+Nepomuk::File Nepomuk::Resource::toFile() const
+{
+    return File( *this );
 }
 
 

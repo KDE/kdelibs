@@ -37,6 +37,7 @@ namespace Nepomuk {
     class Variant;
     class Tag;
     class Thing;
+    class File;
     namespace Types {
         class Property;
     }
@@ -742,6 +743,23 @@ namespace Nepomuk {
          * \since 4.5
          */
         void increaseUsageCount();
+
+        /**
+         * \return \p true if this resource represents a file. Use toFile() to retrieve the
+         * corresponding file resource which provides convinience methods to handle file
+         * resources.
+         *
+         * \since 4.6
+         */
+        bool isFile() const;
+
+        /**
+         * Convert this resource into a File resource to have access to the convinience methods
+         * provided by the File class.
+         *
+         * \since 4.6
+         */
+        File toFile() const;
 
         /**
          * Allows to quickly load a resource from its resource URI without any

@@ -983,6 +983,7 @@ install(FILES
   Nepomuk/Tag
   Nepomuk/Variant
   Nepomuk/Thing
+  Nepomuk/File
   Nepomuk/KRatingWidget
   Nepomuk/KRatingPainter
   Nepomuk/TagWidget

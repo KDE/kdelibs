@@ -28,6 +28,7 @@ set(nepomuk_core_SRCS
   core/dbusconnectionpool.cpp
   core/resource.cpp
   core/thing.cpp
+  core/file.cpp
   core/tag.cpp
   core/nepomukservice.cpp
   core/graphwrapper.cpp
