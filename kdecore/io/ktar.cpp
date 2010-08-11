@@ -86,64 +86,71 @@ KTar::KTar( QIODevice * dev )
 }
 
 // Only called when a filename was given
-bool KTar::createDevice( QIODevice::OpenMode mode )
+bool KTar::createDevice(QIODevice::OpenMode mode)
 {
-    if ( d->mimetype.isEmpty() ) // Find out mimetype manually
-    {
+    if (d->mimetype.isEmpty()) {
+        // Find out mimetype manually
+
         KMimeType::Ptr mime;
-        if ( mode != QIODevice::WriteOnly && QFile::exists( fileName() ) )
-        {
-            mime = KMimeType::findByFileContent( fileName() );
-            if ( mime == KMimeType::defaultMimeTypePtr() )
-            {
+        if (mode != QIODevice::WriteOnly && QFile::exists(fileName())) {
+            // Give priority to file contents: if someone renames a .tar.bz2 to .tar.gz,
+            // we can still do the right thing here.
+            mime = KMimeType::findByFileContent(fileName());
+            if (mime == KMimeType::defaultMimeTypePtr()) {
                 // Unable to determine mimetype from contents, get it from file name
-                mime = KMimeType::findByPath( fileName(), 0, true );
+                mime = KMimeType::findByPath(fileName(), 0, true);
             }
+        } else {
+            mime = KMimeType::findByPath(fileName(), 0, true);
         }
-        else
-            mime = KMimeType::findByPath( fileName(), 0, true );
 
-        kDebug(7041) << "mimetype=" << mime->name();
+        kDebug(7041) << mode << mime->name();
 
-        if ( mime->is( "application/x-compressed-tar" ) ) // that's a gzipped tar file, so ask for gzip filter
+        if (mime->is("application/x-compressed-tar")) { // that's a gzipped tar file, so ask for gzip filter
             d->mimetype = application_gzip;
-        else if ( mime->is( "application/x-bzip-compressed-tar" ) ) // that's a bzipped2 tar file, so ask for bz2 filter
+        } else if (mime->is("application/x-bzip-compressed-tar")) { // that's a bzipped2 tar file, so ask for bz2 filter
             d->mimetype = application_bzip;
-        else if ( mime->is( "application/x-lzma-compressed-tar" ) ) // that's a lzma compressed tar file, so ask for xz filter
+        } else if (mime->is("application/x-lzma-compressed-tar")) { // that's a lzma compressed tar file, so ask for xz filter
             d->mimetype = application_lzma;
-        else if ( mime->is( "application/x-xz-compressed-tar" ) ) // that's a xz compressed tar file, so ask for xz filter
+        } else if (mime->is("application/x-xz-compressed-tar")) { // that's a xz compressed tar file, so ask for xz filter
             d->mimetype = application_xz;
-        else
-        {
+        } else {
             // Something else. Check if it's not really gzip though (e.g. for old-style KOffice files)
-            QFile file( fileName() );
-            if ( file.open( QIODevice::ReadOnly ) )
-            {
+            QFile file(fileName());
+            if (file.open(QIODevice::ReadOnly)) {
                 char header[6] = {0};
-                if ( file.read(header, sizeof(header)) == sizeof(header) )
-                {
-                    if ( header[0] == 0x1F && header[1] == 0x8B )
+                if (file.read(header, sizeof(header)) == sizeof(header)) {
+                    if (!memcmp(header, "\x1F\x8B", 2)) {
                         d->mimetype = application_gzip;
-                    else if ( header[0] == 'B'  && header[1] == 'Z'  && header[2] == 'h' )
+                    } else if (!memcmp(header, "BZh", 3)) {
                         d->mimetype = application_bzip;
-                    else if ( header[0] == 0xFD && header[1] == '7'  && header[2] == 'z'  && header[3] == 'X' && header[4] == 'Z' && header[5] == 0x00 )
+                    } else if (!memcmp(header, "\xFD""7zXZ""\x00", 6)) {
                         d->mimetype = application_xz;
-                    else if ( header[0] == 0x5D && header[1] == 0x00 && header[2] == 0x00 && header[3] == 0x00 )
+                    } else if (!memcmp(header, "\x5D\x00\x00\x00", 4))
                         d->mimetype = application_lzma;
-                    else if ( header[0] == 'P'  && header[1] == 'K'  && header[2] == 0x03 && header[3] == 0x04 )
+                    else if (!memcmp(header, "PK""\x03\x04", 4)) {
                         d->mimetype = application_zip;
+                    }
                 }
             }
             file.close();
         }
     }
 
-    if (d->mimetype == "application/x-tar" || mode == QIODevice::WriteOnly)
-    {
-        return KArchive::createDevice( mode );
-    }
-    else
-    {
+    if (d->mimetype == "application/x-tar") {
+        return KArchive::createDevice(mode);
+    } else if (mode == QIODevice::WriteOnly) {
+        if (!KArchive::createDevice(mode))
+            return false;
+        if (!d->mimetype.isEmpty()) {
+            // Create a compression filter on top of the KSaveFile device that KArchive created.
+            kDebug(7041) << "creating KFilterDev for" << d->mimetype;
+            QIODevice *filterDev = KFilterDev::device(device(), d->mimetype);
+            Q_ASSERT(filterDev);
+            setDevice(filterDev);
+        }
+        return true;
+    } else {
         // The compression filters are very slow with random access.
         // So instead of applying the filter to the device,
         // the file is completely extracted instead,
@@ -159,9 +166,9 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         d->tmpFile->setPrefix("ktar-");
         d->tmpFile->setSuffix(".tar");
         d->tmpFile->open();
-        kDebug( 7041 ) << "creating tempfile:" << d->tmpFile->fileName();
+        kDebug(7041) << "creating tempfile:" << d->tmpFile->fileName();
 
-        setDevice( d->tmpFile );
+        setDevice(d->tmpFile);
         return true;
     }
 }
@@ -544,10 +551,10 @@ bool KTar::closeArchive() {
 
     bool ok = true;
 
-    // If we are in write mode and had created
+    // If we are in readwrite mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() & QIODevice::WriteOnly) {
+    if (d->tmpFile && (mode() & QIODevice::WriteOnly)) {
         ok = d->writeBackTempFile( fileName() );
         delete d->tmpFile;
         d->tmpFile = 0;
