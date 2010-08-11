@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
 
 #include "karchivetest.h"
 #include <kmimetype.h>
@@ -38,61 +39,49 @@ QTEST_KDEMAIN_CORE( KArchiveTest )
 
 static const int SIZE1 = 100;
 
+/**
+ * Writes test fileset specified archive
+ * @param archive archive
+ */
 static void writeTestFilesToArchive( KArchive* archive )
 {
-    bool ok;
-    ok = archive->writeFile( "empty", "weis", "users", "", 0 );
-    QVERIFY( ok );
-    ok = archive->writeFile( "test1", "weis", "users", "Hallo", 5, 0100440 );
-    QVERIFY( ok );
+    QVERIFY( archive->writeFile( "empty", "weis", "users", "", 0 ) );
+    QVERIFY( archive->writeFile( "test1", "weis", "users", "Hallo", 5, 0100440 ) );
     // Now let's try with the prepareWriting/writeData/finishWriting API
-    ok = archive->prepareWriting( "test2", "weis", "users", 8 );
-    QVERIFY( ok );
-    ok = archive->writeData( "Hallo ", 6 );
-    QVERIFY( ok );
-    ok = archive->writeData( "Du", 2 );
-    QVERIFY( ok );
-    ok = archive->finishWriting( 8 );
-    QVERIFY( ok );
+    QVERIFY( archive->prepareWriting( "test2", "weis", "users", 8 ) );
+    QVERIFY( archive->writeData( "Hallo ", 6 ) );
+    QVERIFY( archive->writeData( "Du", 2 ) );
+    QVERIFY( archive->finishWriting( 8 ) );
     // Add local file
     QFile localFile( "test3" );
-    ok = localFile.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
-    ok = localFile.write( "Noch so einer", 13 ) == 13;
-    QVERIFY( ok );
+    QVERIFY( localFile.open( QIODevice::WriteOnly ) );
+    QVERIFY( localFile.write( "Noch so einer", 13 ) == 13 );
     localFile.close();
-    ok = archive->addLocalFile( "test3", "z/test3" );
-    QVERIFY( ok );
+    QVERIFY( archive->addLocalFile( "test3", "z/test3" ) );
 
     // writeFile API
-    ok = archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I do not speak German\nDavid.", 29 );
-    QVERIFY( ok );
+    QVERIFY( archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I do not speak German\nDavid.", 29 ) );
 
     // Now a medium file : 100 null bytes
     char medium[ SIZE1 ];
     memset( medium, 0, SIZE1 );
-    ok = archive->writeFile( "mediumfile", "user", "group", medium, SIZE1 );
-    QVERIFY( ok );
+    QVERIFY( archive->writeFile( "mediumfile", "user", "group", medium, SIZE1 ) );
     // Another one, with an absolute path
-    ok = archive->writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 );
-    QVERIFY( ok );
+    QVERIFY( archive->writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 ) );
 
     // Now a huge file : 20000 null bytes
     int n = 20000;
     char * huge = new char[ n ];
     memset( huge, 0, n );
-    ok = archive->writeFile( "hugefile", "user", "group", huge, n );
-    QVERIFY( ok );
+    QVERIFY( archive->writeFile( "hugefile", "user", "group", huge, n ) );
     delete [] huge;
 
     // Now an empty directory
-    ok = archive->writeDir( "aaaemptydir", "user", "group" );
-    QVERIFY( ok );
+    QVERIFY( archive->writeDir( "aaaemptydir", "user", "group" ) );
 
 #ifndef Q_OS_WIN
     // Add local symlink
-    ok = archive->addLocalFile( "test3_symlink", "z/test3_symlink");
-    QVERIFY( ok );
+    QVERIFY( archive->addLocalFile( "test3_symlink", "z/test3_symlink") );
 #endif
 }
 
@@ -131,6 +120,10 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
   return ret;
 }
 
+/**
+ * Verifies contents of specified archive against test fileset
+ * @param archive archive
+ */
 static void testFileData( KArchive* archive )
 {
     const KArchiveDirectory* dir = archive->directory();
@@ -203,8 +196,7 @@ static void testFileData( KArchive* archive )
 
 static void testReadWrite( KArchive* archive )
 {
-    bool ok = archive->writeFile( "newfile", "dfaure", "users", "New File", 8, 0100440 );
-    QVERIFY(ok);
+    QVERIFY(archive->writeFile("newfile", "dfaure", "users", "New File", 8, 0100440));
 }
 
 static void testCopyTo( KArchive* archive )
@@ -266,14 +258,27 @@ static void testCopyTo( KArchive* archive )
 #endif
 }
 
-static const char s_tarFileName[] = "karchivetest.tar";
-static const char s_tarGzFileName[]  = "karchivetest.tar.gz";
-static const char s_tarBz2FileName[]  = "karchivetest.tar.bz2";
-static const char s_tarGzMaxLengthFileName[] = "karchivetest-maxlength.tar.gz";
-static const char s_zipFileName[] = "karchivetest.zip";
-static const char s_zipMaxLengthFileName[] = "karchivetest-maxlength.zip";
-static const char s_zipLocaleFileName[] = "karchivetest-locale.zip";
+/**
+ * Prepares dataset for archive filter tests
+ */
+void KArchiveTest::setupData()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::addColumn<QString>("mimeType");
 
+    QTest::newRow(".tar.gz") << "karchivetest.tar.gz" << "application/x-gzip";
+#if defined (HAVE_BZIP2_SUPPORT)
+    QTest::newRow(".tar.bz2") << "karchivetest.tar.bz2" << "application/x-bzip";
+#endif
+#if defined (HAVE_XZ_SUPPORT)
+    QTest::newRow(".tar.lzma") << "karchivetest.tar.lzma" << "application/x-lzma";
+    QTest::newRow(".tar.xz") << "karchivetest.tar.xz" << "application/x-xz";
+#endif
+}
+
+/**
+ * @see QTest::initTestCase()
+ */
 void KArchiveTest::initTestCase()
 {
 #ifndef Q_OS_WIN
@@ -289,76 +294,76 @@ void KArchiveTest::initTestCase()
     KMimeType::findByContent(QByteArray("hello"));
 }
 
+void KArchiveTest::testCreateTar_data()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::newRow(".tar") << "karchivetest.tar";
+}
+
+/**
+ * @dataProvider testCreateTar_data
+ */
 void KArchiveTest::testCreateTar()
 {
+    QFETCH(QString, fileName);
+
     // With    tempfile: 0.7-0.8 ms, 994236 instr. loads
     // Without tempfile:    0.81 ms, 992541 instr. loads
     // Note: use ./karchivetest 2>&1 | grep ms
     //       to avoid being slowed down by the kDebugs.
     QBENCHMARK {
 
-    KTar tar( s_tarFileName );
+    KTar tar(fileName);
+    QVERIFY(tar.open(QIODevice::WriteOnly));
 
-    bool ok = tar.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    writeTestFilesToArchive(&tar);
 
-    writeTestFilesToArchive( &tar );
+    QVERIFY(tar.close());
 
-    ok = tar.close();
-    QVERIFY( ok );
-
-    QFileInfo fileInfo( QFile::encodeName( s_tarFileName ) );
-    QVERIFY( fileInfo.exists() );
+    QFileInfo fileInfo(QFile::encodeName(fileName));
+    QVERIFY(fileInfo.exists());
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
-    QVERIFY( fileInfo.size() > 450 );
+    QVERIFY(fileInfo.size() > 450);
+
     }
+
+    // NOTE The only .tar test, cleanup here
+    QFile::remove(fileName);
 }
 
-void KArchiveTest::testCreateTarGz()
+/**
+ * @dataProvider setupData
+ */
+void KArchiveTest::testCreateTarXXX()
 {
+    QFETCH(QString, fileName);
+
     // With    tempfile: 1.3-1.7 ms, 2555089 instr. loads
     // Without tempfile:    0.87 ms,  987915 instr. loads
     QBENCHMARK {
 
-    KTar tar( s_tarGzFileName );
+    KTar tar(fileName);
+    QVERIFY(tar.open(QIODevice::WriteOnly));
 
-    bool ok = tar.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    writeTestFilesToArchive(&tar);
 
-    writeTestFilesToArchive( &tar );
+    QVERIFY(tar.close());
 
-    ok = tar.close();
-    QVERIFY( ok );
-
-    QFileInfo fileInfo( QFile::encodeName( s_tarGzFileName ) );
-    QVERIFY( fileInfo.exists() );
+    QFileInfo fileInfo(QFile::encodeName(fileName));
+    QVERIFY(fileInfo.exists());
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
-    QVERIFY( fileInfo.size() > 350 );
+    QVERIFY(fileInfo.size() > 350);
 
     }
 }
 
-void KArchiveTest::testCreateTarBz2()
-{
-    KTar tar( s_tarBz2FileName );
-
-    bool ok = tar.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
-
-    writeTestFilesToArchive( &tar );
-
-    ok = tar.close();
-    QVERIFY( ok );
-
-    QFileInfo fileInfo( QFile::encodeName( s_tarBz2FileName ) );
-    QVERIFY( fileInfo.exists() );
-    // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
-    QVERIFY( fileInfo.size() > 350 );
-}
-
+/**
+ * @dataProvider setupData
+ */
 void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 {
-    kDebug() << "START";
+    QFETCH( QString, fileName );
+
     // 1.6-1.7 ms per interaction, 2908428 instruction loads
     // After the "no tempfile when writing fix" this went down
     // to 0.9-1.0 ms, 1689059 instruction loads.
@@ -366,10 +371,9 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     // used when writing.
     QBENCHMARK {
 
-    KTar tar( s_tarGzFileName );
+    KTar tar( fileName );
 
-    bool ok = tar.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -383,10 +387,8 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     QCOMPARE( listing.count(), 14 );
 #endif
     QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir") );
-    QCOMPARE( listing[ 1],
-	      QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 2],
-	      QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100") );
     QCOMPARE( listing[ 4], QString("mode=100644 user=weis group=users path=empty type=file size=0") );
     QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000") );
@@ -407,97 +409,125 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
 #endif
 
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY( tar.close() );
+
     }
 }
 
-// This tests the decompression using kfilterdev, basically.
-// To debug KTarPrivate::fillTempFile().
+/**
+ * This tests the decompression using kfilterdev, basically.
+ * To debug KTarPrivate::fillTempFile().
+ *
+ * @dataProvider setupData
+ */
 void KArchiveTest::testUncompress()
 {
+    QFETCH(QString, fileName);
+    QFETCH(QString, mimeType);
+
     // testCreateTar must have been run first.
-    QVERIFY( QFile::exists( s_tarGzFileName ) );
-    QIODevice *filterDev = KFilterDev::deviceForFile( s_tarGzFileName, "application/x-gzip", true );
-    QVERIFY( filterDev );
+    QVERIFY(QFile::exists(fileName));
+    QIODevice *filterDev = KFilterDev::deviceForFile(fileName, mimeType, true);
+    QVERIFY(filterDev);
     QByteArray buffer;
     buffer.resize(8*1024);
     kDebug() << "buffer.size()=" << buffer.size();
-    QVERIFY( filterDev->open( QIODevice::ReadOnly ) );
+    QVERIFY(filterDev->open(QIODevice::ReadOnly));
 
     qint64 totalSize = 0;
     qint64 len = -1;
-    while ( !filterDev->atEnd() && len != 0 ) {
+    while (!filterDev->atEnd() && len != 0) {
         len = filterDev->read(buffer.data(), buffer.size());
-        QVERIFY( len >= 0 );
+        QVERIFY(len >= 0);
         totalSize += len;
         // kDebug() << "read len=" << len << " totalSize=" << totalSize;
     }
     filterDev->close();
     delete filterDev;
     // kDebug() << "totalSize=" << totalSize;
-    QVERIFY( totalSize > 26000 ); // 27648 here when using gunzip
+    QVERIFY(totalSize > 26000); // 27648 here when using gunzip
 }
 
+/**
+ * @dataProvider setupData
+ */
 void KArchiveTest::testTarFileData()
 {
+    QFETCH(QString, fileName);
+
     // testCreateTar must have been run first.
-    KTar tar( s_tarGzFileName );
-    bool ok = tar.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    KTar tar(fileName);
+    QVERIFY(tar.open(QIODevice::ReadOnly));
 
-    testFileData( &tar );
+    testFileData(&tar);
 
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY(tar.close());
 }
 
+/**
+ * @dataProvider setupData
+ */
 void KArchiveTest::testTarCopyTo()
 {
+    QFETCH(QString, fileName);
+
     // testCreateTar must have been run first.
-    KTar tar( s_tarGzFileName );
-    bool ok = tar.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    KTar tar(fileName);
+    QVERIFY(tar.open(QIODevice::ReadOnly));
 
-    testCopyTo( &tar );
+    testCopyTo(&tar);
 
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY(tar.close());
 }
 
+/**
+ * @dataProvider setupData
+ */
 void KArchiveTest::testTarReadWrite()
 {
+    QFETCH(QString, fileName);
+
     // testCreateTar must have been run first.
-    KTar tar( s_tarGzFileName );
-    bool ok = tar.open( QIODevice::ReadWrite );
-    QVERIFY( ok );
+    KTar tar(fileName);
+    QVERIFY(tar.open(QIODevice::ReadWrite));
 
-    testReadWrite( &tar );
-    testFileData( &tar );
+    testReadWrite(&tar);
+    testFileData(&tar);
 
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY(tar.close());
 
     // Reopen it and check it
     {
-        KTar tar( s_tarGzFileName );
-        bool ok = tar.open( QIODevice::ReadOnly );
-        QVERIFY( ok );
+        KTar tar(fileName);
+        QVERIFY(tar.open(QIODevice::ReadOnly));
         testFileData( &tar );
         const KArchiveDirectory* dir = tar.directory();
-        const KArchiveEntry* e = dir->entry( "newfile" );
-        QVERIFY( e && e->isFile() );
+        const KArchiveEntry* e = dir->entry("newfile");
+        QVERIFY(e && e->isFile());
         const KArchiveFile* f = (KArchiveFile*)e;
-        QCOMPARE( f->data().size(), 8 );
+        QCOMPARE(f->data().size(), 8);
     }
+
+    // NOTE This is the last test for this dataset. so cleanup here
+    QFile::remove(fileName);
 }
 
+void KArchiveTest::testTarMaxLength_data()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::newRow("maxlength.tar.gz") << "karchivetest-maxlength.tar.gz";
+}
+
+/**
+ * @dataProvider testTarMaxLength_data
+ */
 void KArchiveTest::testTarMaxLength()
 {
-    KTar tar( s_tarGzMaxLengthFileName );
+    QFETCH( QString, fileName );
 
-    bool ok = tar.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    KTar tar( fileName );
+
+    QVERIFY( tar.open( QIODevice::WriteOnly ) );
 
     // Generate long filenames of each possible length bigger than 98...
     // Also exceed 512 byte block size limit to see how well the ././@LongLink
@@ -512,11 +542,9 @@ void KArchiveTest::testTarMaxLength()
     }
     // Result of this test : works perfectly now (failed at 482 formerly and
     // before that at 154).
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY( tar.close() );
 
-    ok = tar.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -531,22 +559,26 @@ void KArchiveTest::testTarMaxLength()
     // There seems to be a bug (which is in kde3 too), we miss 512 and 513.
     // But note that tar tvzf says "skipping next header" (and it skips 511),
     // so the bug is probably during writing...
-    QCOMPARE( listing.count(), /*514 - 98*/ 414 );
+    QCOMPARE( listing.count(), 414 ); // TODO investigate 514 - 98
 
-    ok = tar.close();
-    QVERIFY( ok );
+    QVERIFY( tar.close() );
+
+    // NOTE Cleanup here
+    QFile::remove( fileName );
 }
 
 ///
 
-static const char* s_zipMimeType = "application/vnd.oasis.opendocument.text";
+static const char s_zipFileName[] = "karchivetest.zip";
+static const char s_zipMaxLengthFileName[] = "karchivetest-maxlength.zip";
+static const char s_zipLocaleFileName[] = "karchivetest-locale.zip";
+static const char s_zipMimeType[] = "application/vnd.oasis.opendocument.text";
 
 void KArchiveTest::testCreateZip()
 {
     KZip zip( s_zipFileName );
 
-    bool ok = zip.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::WriteOnly ) );
 
     zip.setExtraField( KZip::NoExtraField );
 
@@ -557,8 +589,7 @@ void KArchiveTest::testCreateZip()
 
     writeTestFilesToArchive( &zip );
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY( zip.close() );
 
     QFile zipFile( QFile::encodeName( s_zipFileName ) );
     QFileInfo fileInfo( zipFile );
@@ -567,12 +598,10 @@ void KArchiveTest::testCreateZip()
 
     // Check that the header with no-compression and no-extrafield worked.
     // (This is for the "magic" for koffice documents)
-    ok = zipFile.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( zipFile.open( QIODevice::ReadOnly ) );
     QByteArray arr = zipFile.read( 4 );
     QCOMPARE( arr, QByteArray( "PK\003\004" ) );
-    ok = zipFile.seek( 30 );
-    QVERIFY( ok );
+    QVERIFY( zipFile.seek( 30 ) );
     arr = zipFile.read( 8 );
     QCOMPARE( arr, QByteArray( "mimetype" ) );
     arr = zipFile.read( zipMimeType.size() );
@@ -583,15 +612,13 @@ void KArchiveTest::testCreateZipError()
 {
     // Giving a directory name to kzip must give an error case in close(), see #136630.
     // Otherwise we just lose data.
-    KZip zip( QDir::currentPath() );
+    KZip zip(QDir::currentPath());
 
-    bool ok = zip.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    QVERIFY(zip.open(QIODevice::WriteOnly));
 
-    writeTestFilesToArchive( &zip );
+    writeTestFilesToArchive(&zip);
 
-    ok = zip.close();
-    QVERIFY( !ok );
+    QVERIFY(!zip.close());
 }
 
 void KArchiveTest::testReadZip()
@@ -599,8 +626,7 @@ void KArchiveTest::testReadZip()
     // testCreateZip must have been run first.
     KZip zip( s_zipFileName );
 
-    bool ok = zip.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::ReadOnly ) );
 
     const KArchiveDirectory* dir = zip.directory();
     QVERIFY( dir != 0 );
@@ -637,42 +663,36 @@ void KArchiveTest::testReadZip()
     QCOMPARE( str, QString("path=z/test3_symlink type=file size=5 symlink=test3") );
 #endif
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY( zip.close() );
 }
 
 void KArchiveTest::testZipFileData()
 {
     // testCreateZip must have been run first.
-    KZip zip( s_zipFileName );
-    bool ok = zip.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    KZip zip(s_zipFileName);
+    QVERIFY(zip.open( QIODevice::ReadOnly));
 
-    testFileData( &zip );
+    testFileData(&zip);
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY(zip.close());
 }
 
 void KArchiveTest::testZipCopyTo()
 {
     // testCreateZip must have been run first.
-    KZip zip( s_zipFileName );
-    bool ok = zip.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    KZip zip(s_zipFileName);
+    QVERIFY(zip.open(QIODevice::ReadOnly));
 
-    testCopyTo( &zip );
+    testCopyTo(&zip);
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY(zip.close());
 }
 
 void KArchiveTest::testZipMaxLength()
 {
     KZip zip( s_zipMaxLengthFileName );
 
-    bool ok = zip.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::WriteOnly ) );
 
     // Similar to testTarMaxLength just to make sure, but of course zip doesn't have
     // those limitations in the first place.
@@ -684,11 +704,9 @@ void KArchiveTest::testZipMaxLength()
       num = num.rightJustified( 10, '0' );
       zip.writeFile( str+num, "testu", "testg", "hum", 3 );
     }
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY( zip.close() );
 
-    ok = zip.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::ReadOnly ) );
 
     const KArchiveDirectory* dir = zip.directory();
     QVERIFY( dir != 0 );
@@ -700,28 +718,23 @@ void KArchiveTest::testZipMaxLength()
 
     QCOMPARE( listing.count(), 514 - 98 );
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY( zip.close() );
 }
 
 void KArchiveTest::testZipWithNonLatinFileNames()
 {
     KZip zip( s_zipLocaleFileName );
 
-    bool ok = zip.open( QIODevice::WriteOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::WriteOnly ) );
 
     const QByteArray fileData("Test of data with a russian file name");
     const QString fileName = QString::fromUtf8( "Архитектура.okular" );
     const QString recodedFileName = QFile::decodeName( QFile::encodeName( fileName ) );
-    ok = zip.writeFile( fileName, "pino", "users", fileData.constData(), fileData.size() );
-    QVERIFY( ok );
+    QVERIFY( zip.writeFile( fileName, "pino", "users", fileData.constData(), fileData.size() ) );
 
-    ok = zip.close();
-    QVERIFY( ok );
+    QVERIFY( zip.close() );
 
-    ok = zip.open( QIODevice::ReadOnly );
-    QVERIFY( ok );
+    QVERIFY( zip.open( QIODevice::ReadOnly ) );
 
     const KArchiveDirectory* dir = zip.directory();
     QVERIFY( dir != 0 );
@@ -732,19 +745,6 @@ void KArchiveTest::testZipWithNonLatinFileNames()
 
     const KArchiveFile* fileEntry = static_cast< const KArchiveFile* >( dir->entry( dir->entries()[0] ) );
     QCOMPARE( fileEntry->data(), fileData );
-}
-
-void KArchiveTest::cleanupTestCase()
-{
-    QFile::remove(s_tarGzMaxLengthFileName);
-    QFile::remove(s_zipMaxLengthFileName);
-    QFile::remove(s_tarGzFileName);
-    QFile::remove(s_zipFileName);
-    QFile::remove(s_zipLocaleFileName);
-    QFile::remove(s_tarFileName);
-#ifndef Q_OS_WIN
-    QFile::remove("test3_symlink");
-#endif
 }
 
 static bool writeFile(const QString& dirName, const QString& fileName, const QByteArray& data)
@@ -770,25 +770,34 @@ void KArchiveTest::testZipAddLocalDirectory()
     {
         KZip zip(s_zipFileName);
 
-        bool ok = zip.open(QIODevice::WriteOnly);
-        QVERIFY(ok);
-        ok = zip.addLocalDirectory(dirName, ".");
-        QVERIFY(ok);
-        ok = zip.close();
-        QVERIFY(ok);
+        QVERIFY(zip.open(QIODevice::WriteOnly));
+        QVERIFY(zip.addLocalDirectory(dirName, "."));
+        QVERIFY(zip.close());
     }
     {
         KZip zip(s_zipFileName);
 
-        bool ok = zip.open(QIODevice::ReadOnly);
-        QVERIFY(ok);
+        QVERIFY(zip.open(QIODevice::ReadOnly));
 
         const KArchiveDirectory* dir = zip.directory();
         QVERIFY(dir != 0);
 
-        const KArchiveEntry* e = dir->entry(file1 );
+        const KArchiveEntry* e = dir->entry(file1);
         QVERIFY(e && e->isFile());
         const KArchiveFile* f = (KArchiveFile*)e;
         QCOMPARE(f->data(), file1Data);
     }
+}
+
+/**
+ * @see QTest::cleanupTestCase()
+ */
+void KArchiveTest::cleanupTestCase()
+{
+    QFile::remove(s_zipMaxLengthFileName);
+    QFile::remove(s_zipFileName);
+    QFile::remove(s_zipLocaleFileName);
+#ifndef Q_OS_WIN
+    QFile::remove("test3_symlink");
+#endif
 }

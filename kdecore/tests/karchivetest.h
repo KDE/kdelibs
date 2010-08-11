@@ -25,17 +25,27 @@
 class KArchiveTest : public QObject
 {
     Q_OBJECT
+
+    void setupData();
+
 private Q_SLOTS:
     void initTestCase();
 
+    void testCreateTar_data();
     void testCreateTar();
-    void testCreateTarGz();
-    void testCreateTarBz2();
+    void testCreateTarXXX_data(){ setupData(); };
+    void testCreateTarXXX();
+    void testReadTar_data(){ setupData(); };
     void testReadTar();
+    void testUncompress_data(){ setupData(); };
     void testUncompress();
+    void testTarFileData_data(){ setupData(); };
     void testTarFileData();
+    void testTarCopyTo_data(){ setupData(); };
     void testTarCopyTo();
+    void testTarReadWrite_data(){ setupData(); };
     void testTarReadWrite();
+    void testTarMaxLength_data();
     void testTarMaxLength();
 
     void testCreateZip();
@@ -49,6 +59,5 @@ private Q_SLOTS:
 
     void cleanupTestCase();
 };
-
 
 #endif
