@@ -106,34 +106,18 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
 
         kDebug(7041) << mode << mime->name();
 
-        if (mime->is("application/x-compressed-tar")) { // that's a gzipped tar file, so ask for gzip filter
+        if (mime->is("application/x-compressed-tar") || mime->is(application_gzip)) {
+            // gzipped tar file (with possibly invalid file name), ask for gzip filter
             d->mimetype = application_gzip;
-        } else if (mime->is("application/x-bzip-compressed-tar")) { // that's a bzipped2 tar file, so ask for bz2 filter
+        } else if (mime->is("application/x-bzip-compressed-tar") || mime->is(application_bzip)) {
+            // bzipped2 tar file (with possibly invalid file name), ask for bz2 filter
             d->mimetype = application_bzip;
-        } else if (mime->is("application/x-lzma-compressed-tar")) { // that's a lzma compressed tar file, so ask for xz filter
+        } else if (mime->is("application/x-lzma-compressed-tar") || mime->is(application_lzma)) {
+            // lzma compressed tar file (with possibly invalid file name), ask for xz filter
             d->mimetype = application_lzma;
-        } else if (mime->is("application/x-xz-compressed-tar")) { // that's a xz compressed tar file, so ask for xz filter
+        } else if (mime->is("application/x-xz-compressed-tar") || mime->is(application_xz)) {
+            // xz compressed tar file (with possibly invalid name), ask for xz filter
             d->mimetype = application_xz;
-        } else {
-            // Something else. Check if it's not really gzip though (e.g. for old-style KOffice files)
-            QFile file(fileName());
-            if (file.open(QIODevice::ReadOnly)) {
-                char header[6] = {0};
-                if (file.read(header, sizeof(header)) == sizeof(header)) {
-                    if (!memcmp(header, "\x1F\x8B", 2)) {
-                        d->mimetype = application_gzip;
-                    } else if (!memcmp(header, "BZh", 3)) {
-                        d->mimetype = application_bzip;
-                    } else if (!memcmp(header, "\xFD""7zXZ""\x00", 6)) {
-                        d->mimetype = application_xz;
-                    } else if (!memcmp(header, "\x5D\x00\x00\x00", 4))
-                        d->mimetype = application_lzma;
-                    else if (!memcmp(header, "PK""\x03\x04", 4)) {
-                        d->mimetype = application_zip;
-                    }
-                }
-            }
-            file.close();
         }
     }
 
