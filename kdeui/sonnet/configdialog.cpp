@@ -48,7 +48,7 @@ ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
 {
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
-    setCaption( i18n( "Sonnet Configuration" ) );
+    setCaption( i18n( "Spellchecking Configuration" ) );
     setButtons( Ok /*| Apply*/ | Cancel );
     setDefaultButton( Ok );
 
