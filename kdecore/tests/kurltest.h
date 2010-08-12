@@ -70,6 +70,9 @@ private Q_SLOTS:
     void testIdn();
     void testUriMode();
     void testToLocalFile();
+    void testUrl_data();
+    void testUrl();
+    void testToStringList();
 };
 
 #endif

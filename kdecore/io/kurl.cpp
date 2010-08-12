@@ -204,14 +204,17 @@ KUrl::List::List(const QStringList &list)
 
 QStringList KUrl::List::toStringList() const
 {
-   QStringList lst;
-   for( KUrl::List::ConstIterator it = begin();
-        it != end();
-        ++it)
-   {
-      lst.append( (*it).url() );
-   }
-   return lst;
+    return toStringList(KUrl::LeaveTrailingSlash);
+}
+
+QStringList KUrl::List::toStringList(KUrl::AdjustPathOption trailing) const
+{
+    QStringList lst;
+    for(KUrl::List::ConstIterator it = constBegin();
+         it != constEnd(); ++it) {
+        lst.append(it->url(trailing));
+    }
+    return lst;
 }
 
 static QByteArray uriListData(const KUrl::List& urls)
@@ -1014,8 +1017,16 @@ QString KUrl::url( AdjustPathOption trailing ) const
       newUrl.setPath( path() + QLatin1Char('/') );
       return QString::fromLatin1(newUrl.toEncoded());
   }
-  else if ( trailing == RemoveTrailingSlash && path() == "/" ) {
-      return QLatin1String(toEncoded(None));
+  else if ( trailing == RemoveTrailingSlash) {
+      const QString cleanedPath = trailingSlash(trailing, path());
+      if (cleanedPath == "/") {
+          if (path() != "/") {
+              QUrl fixedUrl = *this;
+              fixedUrl.setPath(cleanedPath);
+              return QLatin1String(fixedUrl.toEncoded(None));
+          }
+          return QLatin1String(toEncoded(None));
+      }
   }
   return QString::fromLatin1(toEncoded(trailing == RemoveTrailingSlash ? StripTrailingSlash : None));
 }

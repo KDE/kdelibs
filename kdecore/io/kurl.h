@@ -115,6 +115,27 @@ public:
   enum MimeDataFlags { DefaultMimeDataFlags = 0, NoTextExport = 1 };
 
   /**
+   * Options to be used in adjustPath
+   */
+  enum AdjustPathOption
+  {
+    /**
+     * strips a trailing '/', except when the path is already just "/".
+     */
+    RemoveTrailingSlash,
+
+    /**
+     * Do not change the path.
+     */
+    LeaveTrailingSlash,
+
+    /**
+     * adds a trailing '/' if there is none yet
+     */
+    AddTrailingSlash
+  };
+
+  /**
    * \class List kurl.h <KUrl>
    *
    * KUrl::List is a QList that contains KUrls with a few
@@ -151,6 +172,17 @@ public:
        * @return the list of strings
        */
       QStringList toStringList() const;
+
+      /**
+       * Converts the URLs of this list to a list of strings.
+       *
+       * @param trailing use to add or remove a trailing slash to/from the path.
+       *
+       * @return the list of strings
+       *
+       * @since 4.6
+       */
+      QStringList toStringList(KUrl::AdjustPathOption trailing) const;
 
       /**
        * Converts this KUrl::List to a QVariant, this allows to use KUrl::List
@@ -387,27 +419,6 @@ public:
    * @return true if the URL has a host
    **/
   bool hasHost() const;
-
-  /**
-   * Options to be used in adjustPath
-   */
-  enum AdjustPathOption
-  {
-    /**
-     * strips a trailing '/', except when the path is already just "/".
-     */
-    RemoveTrailingSlash,
-
-    /**
-     * Do not change the path.
-     */
-    LeaveTrailingSlash,
-
-    /**
-     * adds a trailing '/' if there is none yet
-     */
-    AddTrailingSlash
-  };
 
   /**
    * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath
