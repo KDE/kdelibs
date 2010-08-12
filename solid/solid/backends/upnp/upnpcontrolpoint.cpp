@@ -22,6 +22,11 @@
 
 #include <QtCore/QtDebug>
 
+#include <HDeviceProxy>
+#include <HDeviceInfo>
+#include <HUdn>
+#include <HDiscoveryType>
+
 #include "upnpcontrolpoint.h"
 
 namespace Solid
@@ -75,6 +80,27 @@ void UPnPControlPoint::releaseInstance()
 Herqq::Upnp::HControlPoint* UPnPControlPoint::controlPoint()
 {
     return m_controlPoint;
+}
+
+QStringList UPnPControlPoint::allDevices()
+{
+    QStringList result;
+    Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
+
+    Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
+    qDebug() << "#**" << list.isEmpty();
+
+    for (int i = 0; i < list.size(); ++i)
+    {
+        Herqq::Upnp::HDeviceProxy* device = list[i];
+        Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
+
+        result << ( QString::fromLatin1("/org/kde/upnp") + '/' + info.udn().toString() );
+        qDebug() << "Found device:" << ( QString::fromLatin1("/org/kde/upnp") + '/' + info.udn().toString() );
+        // listing only root devices
+    }
+
+    return result;
 }
 
 }

@@ -28,6 +28,7 @@
 
 #include <HDeviceProxy>
 #include <HControlPoint>
+#include <QtCore/QStringList>
 
 namespace Solid
 {
@@ -43,7 +44,9 @@ namespace UPnP
 
             static void releaseInstance();
 
-            Herqq::Upnp::HControlPoint* controlPoint();    
+            Herqq::Upnp::HControlPoint* controlPoint();
+
+            QStringList allDevices();
 
             virtual ~UPnPControlPoint();
 

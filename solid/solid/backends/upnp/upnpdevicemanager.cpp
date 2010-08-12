@@ -46,6 +46,8 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
 {
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
+    qDebug() << "******** UPnP Device Manager Created *********";
+    
     connect(
         upnpControlPoint->controlPoint(),
         SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
@@ -85,19 +87,9 @@ QStringList UPnPDeviceManager::allDevices()
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
-    Herqq::Upnp::HDeviceProxies list = upnpControlPoint->controlPoint()->rootDevices();
+    result = upnpControlPoint->allDevices();
 
     UPnPControlPoint::releaseInstance();
-
-    for (int i = 0; i < list.size(); ++i)
-    {
-        Herqq::Upnp::HDeviceProxy* device = list[i];
-        Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
-
-        result << ( udiPrefix() + '/' + info.udn().toString() );
-        qDebug() << "Found device:" << ( udiPrefix() + '/' + info.udn().toString() );
-        // listing only root devices
-    } 
 
     return result;
 }
@@ -132,14 +124,14 @@ QObject* UPnPDeviceManager::createDevice(const QString& udi)
 void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HDeviceProxy* device)
 {
     QString udn = device->deviceInfo().udn().toString();
-
+    qDebug() << "UPnP device entered:" << udn;
     emit deviceAdded(udiPrefix() + '/' + udn);
 }
 
 void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
 {
     QString udn = device->deviceInfo().udn().toString();
-
+    qDebug() << "UPnP device gone:" << udn;
     emit deviceRemoved(udiPrefix() + '/' + udn);
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
