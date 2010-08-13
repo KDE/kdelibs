@@ -36,6 +36,8 @@
 #include <kurl.h>
 #include <kurifilter.h>
 
+#define QL1S(x)   QLatin1String(x)
+
 template <class T>
 class KWebViewPrivate
 {
@@ -111,14 +113,24 @@ public:
                 return true;
 
             if (!hitTest.linkUrl().isValid() && !hitTest.isContentEditable() && !page->isModified()) {
-                const QClipboard *clipboard = QApplication::clipboard();
-                const QString clipboardText (clipboard->text(QClipboard::Selection));
+                QString subType (QLatin1String("plain"));
+                const QString clipboardText = QApplication::clipboard()->text(subType, QClipboard::Selection);
                 if (!clipboardText.isEmpty()) {
-                    KUriFilterData data (clipboardText.left(256).trimmed());
+                    KUriFilterData data (clipboardText.left(250).trimmed());
                     data.setCheckForExecutables(false); // don't allow executables...
-                    if ((KUriFilter::self()->filterUri(data, QStringList() << "kshorturifilter") ||
-                         KUriFilter::self()->filterUri(data, QStringList() << "kuriikwsfilter")) &&
-                        data.uriType() == KUriFilterData::NetProtocol) {
+                    if (KUriFilter::self()->filterUri(data, QStringList(QL1S("kshorturifilter")))) {
+                        switch (data.uriType()) {
+                        case KUriFilterData::LocalFile:
+                        case KUriFilterData::LocalDir:
+                        case KUriFilterData::NetProtocol:
+                            emit q->selectionClipboardUrlPasted(data.uri(), QString());
+                            emit q->selectionClipboardUrlPasted(data.uri());
+                            return true;
+                        default:
+                            break;
+                        }
+                    } else if (KUriFilter::self()->filterUri(data, QStringList(QL1S("kuriikwsfilter")))) {
+                        emit q->selectionClipboardUrlPasted(data.uri(), clipboardText);
                         emit q->selectionClipboardUrlPasted(data.uri());
                         return true;
                     }

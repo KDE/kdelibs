@@ -96,9 +96,28 @@ Q_SIGNALS:
      * This signal is emitted when a url from the selection clipboard is pasted
      * on this view.
      *
-     * @param url   the url of the clicked link.
+     * @param url   url generated from the selection clipboard content.
+     * @deprecated  use selectionClipboardUrlPasted(KUrl, bool) instead.
      */
-    void selectionClipboardUrlPasted(const KUrl &url);
+    KDE_DEPRECATED void selectionClipboardUrlPasted(const KUrl &url);
+
+    /**
+     * This signal is emitted when a url from the selection clipboard is pasted
+     * on this view.
+     *
+     * If the content in the selection clipboard is not a valid url and a
+     * default search engine is configured, @p searchText will be set to the
+     * content of the clipboard (250 characters maximum) and @p url will be
+     * set to a query to the default search engine.
+     *
+     * @param url         url generated from the selection clipboard content.
+     * @param searchText  content of the selection clipboard if it is not a valid url.
+     *
+     * @see KUriFilter
+     * @see QClipboard
+     * @since 4.6
+     */
+    void selectionClipboardUrlPasted(const KUrl &url, const QString& searchText);
 
     /**
      * This signal is emitted when a link is shift clicked with the left mouse
