@@ -2384,6 +2384,15 @@ void RenderObject::detach()
     arenaDelete(renderArena(), this);
 }
 
+void RenderObject::remove()
+{
+    if (m_parent) {
+        m_parent->removeChild(this);
+        if (isFloating() || inPosObjectList())
+            removeFromObjectLists();
+    }
+}
+
 void RenderObject::arenaDelete(RenderArena *arena, void *base)
 {
 #ifndef NDEBUG
