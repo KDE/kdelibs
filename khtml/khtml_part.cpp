@@ -2538,7 +2538,7 @@ bool KHTMLPartPrivate::isJavaScriptURL(const QString& url)
 // and by xml/dom_docimpl.cpp in case of http-equiv meta refresh.
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-  kDebug(6050) << "delay=" << delay << " url=" << url;
+  kDebug(6050) << "delay=" << delay << " url=" << url << " from=" << this->url() << "parent=" << parentPart();
   kDebug(6050) << "current redirectURL=" << d->m_redirectURL << " with delay " << d->m_delayRedirect;
 
   // In case of JS redirections, some, such as jump to anchors, and javascript:
@@ -4508,6 +4508,8 @@ void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPa
       child->m_scriptable.clear();
     }
 
+    child->m_part = part;    
+
     child->m_serviceType = mimetype;
     if ( child->m_partContainerElement && part->widget() )
       child->m_partContainerElement->setWidget( part->widget() );
@@ -4516,8 +4518,6 @@ void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPa
       partManager()->addPart( part, false );
 //  else
 //      kDebug(6031) << "AH! NO FRAME!!!!!";
-
-    child->m_part = part;
 
     if (qobject_cast<KHTMLPart*>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
