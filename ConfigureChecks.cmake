@@ -34,6 +34,8 @@ macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
+macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)      # kdeui
+
 # FIXME: Make this changeable!
 # khtml svg support
 set(SVG_SUPPORT 1)              # unused yet, but for the future

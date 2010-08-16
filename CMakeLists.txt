@@ -110,8 +110,8 @@ macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Des
 macro_optional_find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
 
-find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "API to import export QMenu instance using DBusMenu protocol" "git clone git://gitorious.org/dbusmenu/dbusmenu-qt.git" TRUE "" "dbusmenu-qt is a standalone library providing a way to import and export QMenu instances using the DBusMenu protocol.")
+macro_optional_find_package(DBusMenuQt)
+macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "API to import export QMenu instance using DBusMenu protocol" "http://people.canonical.com/~agateau/dbusmenu/" FALSE "" "dbusmenu-qt is a standalone library providing a way to import and export QMenu instances using the DBusMenu protocol.")
 
 ################# Disallow in-source build #################
 

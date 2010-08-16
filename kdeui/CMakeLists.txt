@@ -1,6 +1,14 @@
 
 project(kdeui)
 
+if ( DBUSMENUQT_FOUND )
+   set( _kdeui_DBUSMENUQT_INCLUDE_DIR ${DBUSMENUQT_INCLUDE_DIR} )
+   set( _kdeui_DBUSMENUQT_LIBRARIES ${DBUSMENUQT_LIBRARIES} )
+else ( DBUSMENUQT_FOUND )
+   set( _kdeui_DBUSMENUQT_INCLUDE_DIR )
+   set( _kdeui_DBUSMENUQT_LIBRARIES )
+endif ( DBUSMENUQT_FOUND )
+
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
@@ -26,7 +34,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
- ${DBUSMENUQT_INCLUDE_DIR}
+ ${_kdeui_DBUSMENUQT_INCLUDE_DIR}
 )
 
 add_subdirectory( about )
@@ -352,7 +360,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} ${DBUSMENUQT_LIBRARIES})
+target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} ${_kdeui_DBUSMENUQT_LIBRARIES})
 
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
