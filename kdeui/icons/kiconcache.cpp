@@ -190,16 +190,17 @@ QSet<QString> KIconCache::existingIconThemeDirs(const QStringList& themeNames) c
 {
     // Find all possible icontheme dirs
     // This has been taken from kicontheme.cpp
-    const QStringList icondirs = KGlobal::dirs()->resourceDirs("icon")
+    QStringList icondirs = KGlobal::dirs()->resourceDirs("icon")
             << KGlobal::dirs()->resourceDirs("xdgdata-icon")
-            << "/usr/share/pixmaps"
+            << "/usr/share/pixmaps/"
             // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
             << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
+    icondirs.removeDuplicates();
 
     // Check which of theme actually contain existing dir of one of the
     //  given themes
     QSet<QString> dirs;
-    for (QStringList::ConstIterator it = icondirs.begin(); it != icondirs.end(); ++it) {
+    for (QStringList::ConstIterator it = icondirs.constBegin(); it != icondirs.constEnd(); ++it) {
         QStringList::ConstIterator themeIt;
         for (themeIt = themeNames.begin(); themeIt != themeNames.end(); ++themeIt) {
             QString dirName = *it + *themeIt + '/';
