@@ -27,6 +27,7 @@
 #include <HResourceType>
 #include <HDeviceInfo>
 #include <HUdn>
+#include <QtCore/QUrl>
 
 namespace Solid
 {
@@ -153,7 +154,20 @@ QStringList UPnPDevice::emblems() const
 
 QString UPnPDevice::description() const
 {
-    return device()->deviceInfo().modelDescription();
+    QString desc = device()->deviceInfo().friendlyName();
+    
+    if (desc.isEmpty()) {
+        QString ipAddress = device()->locations()[0].toString(QUrl::RemoveScheme | QUrl::RemovePort | QUrl::RemovePath).mid(2);
+        if (isMediaServer()) {
+            desc = QString::fromLatin1("Media Server on %1").arg(ipAddress);
+        } else if (isInternetGatewayDevice()) {
+            desc = QString::fromLatin1("Internet Gateway on %1").arg(ipAddress);
+        } else {
+            desc = QString::fromLatin1("UPnP Device on %1").arg(ipAddress);
+        }        
+    }
+    
+    return desc;
 }
 
 bool UPnPDevice::isMediaServer() const

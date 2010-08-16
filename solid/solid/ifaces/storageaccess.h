@@ -57,6 +57,8 @@ namespace Ifaces
          */
         virtual QString filePath() const = 0;
 
+        virtual bool isIgnored() const = 0;
+
         /**
          * Mounts the volume.
          *

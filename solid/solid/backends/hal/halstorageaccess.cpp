@@ -123,6 +123,10 @@ QString StorageAccess::filePath() const
     return result;
 }
 
+bool StorageAccess::isIgnored() const
+{
+    return true;
+}
 
 bool StorageAccess::setup()
 {

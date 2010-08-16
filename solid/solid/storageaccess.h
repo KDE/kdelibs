@@ -43,6 +43,7 @@ namespace Solid
         Q_OBJECT
         Q_PROPERTY(bool accessible READ isAccessible)
         Q_PROPERTY(QString filePath READ filePath)
+        Q_PROPERTY(bool isIgnored READ isIgnored)
         Q_DECLARE_PRIVATE(StorageAccess)
         friend class Device;
 
@@ -87,6 +88,8 @@ namespace Solid
          * mounted, QString() otherwise
          */
         QString filePath() const;
+
+        bool isIgnored() const;
 
         /**
          * Mounts the volume.

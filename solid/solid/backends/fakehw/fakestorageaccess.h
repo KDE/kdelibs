@@ -40,6 +40,7 @@ public:
 
     virtual bool isAccessible() const;
     virtual QString filePath() const;
+    virtual bool isIgnored() const;
 public Q_SLOTS:
     virtual bool setup();
     virtual bool teardown();

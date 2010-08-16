@@ -53,6 +53,11 @@ QString UDisksStorageAccess::filePath() const
     return m_device->property("DeviceMountPaths").toStringList().first(); // FIXME Solid doesn't support multiple mount points
 }
 
+bool UDisksStorageAccess::isIgnored() const
+{
+    return true;
+}
+
 bool UDisksStorageAccess::setup()
 {
     if ( m_teardownInProgress || m_setupInProgress )

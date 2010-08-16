@@ -44,6 +44,7 @@ public:
 
     virtual bool isAccessible() const;
     virtual QString filePath() const;
+    virtual bool isIgnored() const;
     virtual bool setup();
     virtual bool teardown();
 

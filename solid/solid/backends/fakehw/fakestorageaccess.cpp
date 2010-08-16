@@ -44,6 +44,11 @@ QString FakeStorageAccess::filePath() const
     return fakeDevice()->property("mountPoint").toString();
 }
 
+bool FakeStorageAccess::isIgnored() const
+{
+    return true;
+}
+
 bool FakeStorageAccess::setup()
 {
     if (fakeDevice()->isBroken() || isAccessible()) {

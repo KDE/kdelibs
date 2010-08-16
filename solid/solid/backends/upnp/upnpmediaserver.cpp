@@ -63,6 +63,11 @@ QString UPnPMediaServer::filePath() const
     return QString();
 }
 
+bool UPnPMediaServer::isIgnored() const
+{
+    return false;
+}
+
 bool UPnPMediaServer::setup()
 {
     QTimer::singleShot(0, this, SLOT(onSetupTimeout()));

@@ -47,6 +47,8 @@ namespace UPnP
 
             virtual QString filePath() const;
 
+            virtual bool isIgnored() const;
+
             virtual bool setup();
 
             virtual bool teardown();
