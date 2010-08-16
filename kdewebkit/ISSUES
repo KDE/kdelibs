@@ -1,37 +1,38 @@
 Known Issues [PENDING]:
 ===========================
+* [QtWebKit] HTML 5 <video> tag will not properly work for most users depending
+  on how their distro created their Qt library package. As a result of differences
+  between the Phonon library needed by KDE and bundled with Qt, most distros opt for
+  disabling Phonon support (-no-phonon) when compiling Qt and simply use the Phonon
+  libraries from kdesupport to ensure multimedia in KDE is functional. Unfortunately,
+  compiling Qt without phonon support means no HTML 5 <video> support in the QtWebKit
+  module. This is supposed to change in some future release, perhaps QtWebKit 2.1 ??
+  For more details see the links below:
+    http://bugreports.qt.nokia.com/browse/QTWEBKIT-9
+    http://webkit.org/b/34631.
+
+* [QtWebKit] Spell checking support. See
+
+* [QtWebKit] Missing Java applet support. See http://webkit.org/b/33044.
+
+* [QtWebKit] No access to the input/control widgets making it very difficult to
+  implement very useful features such as form completion like the one available
+  when using native Qt widgets, e.g. QLineEdit. See http://webkit.org/b/36668
+
 * [kdewebkit] Handling unsupported content always requires more than one
   connection to the same server to download a single request. The fix for
   this requires an upstream patch that allows us to determine the content
-  types by the rendering engine, i.e. webkit.
-  See https://bugs.webkit.org/show_bug.cgi?id=37880
-
-* [QtWebKit] HTML 5 <video> tag will not work properly until Qt 4.7 for most users
-  depending on how their distro created their Qt library package. As a result of
-  differences between the Phonon library needed by KDE and bundled with Qt, most
-  distros opt for disabling Phonon support (-no-phonon) when compiling Qt and simply
-  use the Phonon libraries from kdesupport to ensure multimedia in KDE is funational.
-  Unfortunately, compiling Qt without phonon support means no HTML 5 <video> support
-  in the QtWebKit module. This is going to change in the upcoming Qt 4.7 release. For
-  details, see https://bugs.webkit.org/show_bug.cgi?id=34631.
-
-* [QtWebKit] Missing Java applet support. See https://bugs.webkit.org/show_bug.cgi?id=33044.
-
-* [QtWebKit] No access to the input/control widgets making it very difficult to
-  implement very useful features such as:
-    ** Form completion like the one available when using native Qt widgets such as
-       QLineEdit and QComboBox. See https://bugs.webkit.org/show_bug.cgi?id=36668
-    ** Spell checking!!
+  types by the rendering engine, i.e. webkit. See http://webkit.org/b/37880
 
 Known Issues [FIXED]:
 =========================
 * [QtWebKit] Crash while browsing facebook. [QtWebKit 2.0/Qt 4.7]
-  See https://bugs.webkit.org/show_bug.cgi?id=35204.
+  See http://webkit.org/b/35204.
 
 * [QtWebKit] Does not have support "Content-Disposition". [QtWebKit 2.0/Qt 4.7]
   Specifically when it contains the keyword "attachement" the content returned
   is not supposed to be rendered. Test case site: http://greenbytes.de/tech/tc2231/
-  See https://bugs.webkit.org/show_bug.cgi?id=36395.
+  See http://webkit.org/b/36395.
 
 * [QtWebKit] No way to stop <meta> tag based page refresh. [QtWebKit 2.0/Qt 4.7]
-  See https://bugs.webkit.org/show_bug.cgi?id=29899
+  See http://webkit.org/b/29899
