@@ -171,7 +171,10 @@ void KDescendantsProxyModelPrivate::processPendingParents()
       Q_ASSERT(child.isValid());
 
       if (q->sourceModel()->hasChildren(child))
+      {
+        Q_ASSERT(q->sourceModel()->rowCount(child) > 0);
         newPendingParents.append(child);
+      }
     }
   }
   m_pendingParents += newPendingParents;
@@ -335,6 +338,7 @@ int KDescendantsProxyModel::rowCount(const QModelIndex &parent) const
 
   if (d->m_mapping.isEmpty() && sourceModel()->hasChildren())
   {
+    Q_ASSERT(sourceModel()->rowCount() > 0);
     const_cast<KDescendantsProxyModelPrivate*>(d)->synchronousMappingRefresh();
   }
   return d->m_rowCount;
@@ -538,6 +542,7 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelInde
 
   if (!q->sourceModel()->hasChildren(parent))
   {
+    Q_ASSERT(q->sourceModel()->rowCount(parent) > 0);
     // parent was not a parent before.
     return;
   }
@@ -559,6 +564,7 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelInde
     QModelIndex idx = q->sourceModel()->index(rowCount - 1, column, parent);
     while (q->sourceModel()->hasChildren(idx))
     {
+      Q_ASSERT(q->sourceModel()->rowCount(idx) > 0);
       idx = q->sourceModel()->index(q->sourceModel()->rowCount(idx) - 1, column, idx);
     }
     // The last item in the list is getting a sibling below it.
@@ -648,7 +654,10 @@ void KDescendantsProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent
     const QModelIndex idx = q->sourceModel()->index(row, column, parent);
     Q_ASSERT(idx.isValid());
     if (q->sourceModel()->hasChildren(idx))
+    {
+      Q_ASSERT(q->sourceModel()->rowCount(idx) > 0);
       m_pendingParents.append(idx);
+    }
   }
 
   m_rowCount += difference;
@@ -667,6 +676,7 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex
   QModelIndex idx = q->sourceModel()->index(end, column, parent);
   while (q->sourceModel()->hasChildren(idx))
   {
+    Q_ASSERT(q->sourceModel()->rowCount(idx) > 0);
     idx = q->sourceModel()->index(q->sourceModel()->rowCount(idx) - 1, column, idx);
   }
   const int proxyEnd = q->mapFromSource(idx).row();
@@ -751,6 +761,7 @@ void KDescendantsProxyModelPrivate::sourceModelReset()
   resetInternalData();
   if (q->sourceModel()->hasChildren())
   {
+    Q_ASSERT(q->sourceModel()->rowCount() > 0);
     m_pendingParents.append(QModelIndex());
     scheduleProcessPendingParents();
   }
