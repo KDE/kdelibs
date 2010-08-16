@@ -48,6 +48,7 @@ public:
 public: // Solid::Ifaces::StorageAccess API
     virtual bool isAccessible() const;
     virtual QString filePath() const;
+    virtual bool isIgnored() const;
     virtual bool setup();
     virtual bool teardown();
 

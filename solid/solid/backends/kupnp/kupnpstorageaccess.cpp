@@ -61,6 +61,10 @@ QString StorageAccess::filePath() const
     return result;
 }
 
+bool KUPnP::StorageAccess::isIgnored() const
+{
+    return true;
+}
 
 bool StorageAccess::setup()
 {

@@ -69,6 +69,10 @@ QString StorageAccess::filePath() const
     return m_device->property("volume.mount_point").toString();
 }
 
+bool Solid::Backends::Wmi::StorageAccess::isIgnored() const
+{
+    return true;
+}
 
 bool StorageAccess::setup()
 {
