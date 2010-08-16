@@ -542,7 +542,7 @@ void KDescendantsProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelInde
 
   if (!q->sourceModel()->hasChildren(parent))
   {
-    Q_ASSERT(q->sourceModel()->rowCount(parent) > 0);
+    Q_ASSERT(q->sourceModel()->rowCount(parent) == 0);
     // parent was not a parent before.
     return;
   }
