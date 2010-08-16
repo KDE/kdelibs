@@ -174,30 +174,41 @@ private Q_SLOTS:
     void testCompletionBox()
     {
         KLineEdit w;
-        w.setText("K");
+        w.setText("/");
         w.setCompletionMode(KGlobalSettings::CompletionPopup);
         KCompletion completion;
         completion.setSoundsEnabled(false);
         w.setCompletionObject(&completion);
         QStringList items;
-        items << "KDE is cool" << "KDE is really cool";
+        items << "/home/" << "/hold/";
         completion.setItems(items);
-        QTest::keyClick(&w, 'D', Qt::ShiftModifier);
-        QCOMPARE(w.text(), QString::fromLatin1("KD"));
+        QTest::keyClick(&w, 'h');
+        QCOMPARE(w.text(), QString::fromLatin1("/h"));
         QCOMPARE(w.completionBox()->currentRow(), -1);
-        QTest::keyClick(&w, 'E', Qt::ShiftModifier);
-        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        QCOMPARE(w.completionBox()->items(), items);
+        QTest::keyClick(&w, 'o');
+        QCOMPARE(w.text(), QString::fromLatin1("/ho"));
         QCOMPARE(w.completionBox()->currentRow(), -1);
         w.completionBox()->up(); // no-op
-        QCOMPARE(w.text(), QString::fromLatin1("KDE"));
+        QCOMPARE(w.text(), QString::fromLatin1("/ho"));
         w.completionBox()->down(); // select 1st item
         QCOMPARE(w.text(), items.at(0));
         w.completionBox()->down(); // select 2nd item
         QCOMPARE(w.text(), items.at(1));
-        w.completionBox()->up();
+        w.completionBox()->up();   // select 1st item again
         QCOMPARE(w.text(), items.at(0));
         w.completionBox()->up(); // no-op
         QCOMPARE(w.text(), items.at(0));
+
+        QStringList newItems;
+        newItems << "/home/kde";
+        completion.setItems(newItems);
+        QTest::keyClick(&w, 'k');
+        QCOMPARE(w.text(), QString("/home/k"));
+        //QCOMPARE(w.completionBox()->currentRow(), -1); // #247552
+        w.completionBox()->down(); // select the item
+        QCOMPARE(w.completionBox()->items(), newItems);
+        QCOMPARE(w.text(), newItems.at(0));
     }
 
     void testPaste()

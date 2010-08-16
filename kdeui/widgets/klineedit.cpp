@@ -1364,7 +1364,7 @@ bool KLineEdit::event( QEvent* ev )
 
             kleStyle->m_subStyle = style();
             // this guards against "wrap around" where another style, e.g. QStyleSheetStyle,
-            // is setting the style on QEvent::StyleChange 
+            // is setting the style on QEvent::StyleChange
             d->lastStyleClass = QLatin1String(style()->metaObject()->className());
             setStyle(kleStyle);
             d->lastStyleClass.clear();
@@ -1551,11 +1551,12 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
             const QList<QListWidgetItem*> matchedItems = d->completionBox->findItems(currentSelection, Qt::MatchExactly);
             QListWidgetItem* matchedItem = matchedItems.isEmpty() ? 0 : matchedItems.first();
 
-            if ( matchedItem )
-            {
+            if (matchedItem) {
                 const bool blocked = d->completionBox->blockSignals( true );
                 d->completionBox->setCurrentItem( matchedItem );
                 d->completionBox->blockSignals( blocked );
+            } else {
+                d->completionBox->setCurrentRow(-1);
             }
         }
         else // completion box not visible yet -> show it
