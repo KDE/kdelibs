@@ -882,7 +882,7 @@ bool Nepomuk::Resource::isFile() const
 
 Nepomuk::File Nepomuk::Resource::toFile() const
 {
-    return File( resourceUri() );
+    return File( *this );
 }
 
 

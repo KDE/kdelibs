@@ -51,9 +51,9 @@ namespace Nepomuk {
         File( const KUrl& url = KUrl(), ResourceManager* manager = 0 );
 
         /**
-         * Copy constructor.
+         * Construct from a Resource
          */
-        File( const File& other );
+        File( const Resource& other );
 
         /**
          * Desctructor
