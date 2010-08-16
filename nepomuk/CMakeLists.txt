@@ -131,6 +131,7 @@ install(FILES
   core/resource.h
   core/thing.h
   core/tag.h
+  core/file.h
   types/entity.h
   types/class.h
   types/property.h
