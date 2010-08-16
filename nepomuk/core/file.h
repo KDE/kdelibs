@@ -53,7 +53,7 @@ namespace Nepomuk {
         /**
          * Copy constructor.
          */
-        File( const Resource& other );
+        File( const File& other );
 
         /**
          * Desctructor

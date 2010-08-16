@@ -30,8 +30,8 @@ Nepomuk::File::File( const KUrl& url, ResourceManager* manager )
 }
 
 
-Nepomuk::File::File( const Resource& other )
-    : Resource( other )
+Nepomuk::File::File( const File& other )
+    : Resource( other.url() )
 {
 }
 
@@ -43,6 +43,7 @@ Nepomuk::File::~File()
 
 Nepomuk::File& Nepomuk::File::operator=( const KUrl& url )
 {
+    return (*this);
 }
 
 
