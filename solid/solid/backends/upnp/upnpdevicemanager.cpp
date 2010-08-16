@@ -123,14 +123,14 @@ QObject* UPnPDeviceManager::createDevice(const QString& udi)
 
 void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HDeviceProxy* device)
 {
-    QString udn = device->deviceInfo().udn().toString();
+    QString udn = device->info().udn().toString();
     qDebug() << "UPnP device entered:" << udn;
     emit deviceAdded(udiPrefix() + '/' + udn);
 }
 
 void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
 {
-    QString udn = device->deviceInfo().udn().toString();
+    QString udn = device->info().udn().toString();
     qDebug() << "UPnP device gone:" << udn;
     emit deviceRemoved(udiPrefix() + '/' + udn);
 

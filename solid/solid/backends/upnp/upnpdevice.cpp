@@ -73,8 +73,8 @@ static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
 UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
     Solid::Ifaces::Device(),
     m_device(device),
-    m_specVersion(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::Version)),
-    m_deviceType(device->deviceInfo().deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version))
+    m_specVersion(device->info().deviceType().toString(Herqq::Upnp::HResourceType::Version)),
+    m_deviceType(device->info().deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix | Herqq::Upnp::HResourceType::Version))
 {
 }
 
@@ -89,7 +89,7 @@ const Herqq::Upnp::HDeviceProxy* UPnPDevice::device() const
 
 QString UPnPDevice::udi() const
 {
-    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->info();
 
     if (!deviceInfo.udn().isValid())
     {
@@ -106,7 +106,7 @@ QString UPnPDevice::parentUdi() const
     const Herqq::Upnp::HDeviceProxy* parent = device()->parentProxyDevice();
     if (parent)
     {
-        Herqq::Upnp::HDeviceInfo parentInfo = parent->deviceInfo();
+        Herqq::Upnp::HDeviceInfo parentInfo = parent->info();
 
         if (!parentInfo.udn().isValid())
         {
@@ -121,7 +121,7 @@ QString UPnPDevice::parentUdi() const
 
 QString UPnPDevice::vendor() const
 {
-    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->info();
     QString vendor = deviceInfo.manufacturer();
 
     return vendor;
@@ -129,7 +129,7 @@ QString UPnPDevice::vendor() const
 
 QString UPnPDevice::product() const
 {
-    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->info();
     QString model = deviceInfo.modelName();
 
     return model;
@@ -137,7 +137,7 @@ QString UPnPDevice::product() const
 
 QString UPnPDevice::icon() const
 {
-    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->deviceInfo();
+    const Herqq::Upnp::HDeviceInfo deviceInfo = device()->info();
 
     if (typeIconMap.contains(deviceType()))
     {
@@ -154,7 +154,7 @@ QStringList UPnPDevice::emblems() const
 
 QString UPnPDevice::description() const
 {
-    QString desc = device()->deviceInfo().friendlyName();
+    QString desc = device()->info().friendlyName();
     
     if (desc.isEmpty()) {
         QString ipAddress = device()->locations()[0].toString(QUrl::RemoveScheme | QUrl::RemovePort | QUrl::RemovePath).mid(2);
@@ -230,7 +230,7 @@ QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& t
 
 bool UPnPDevice::isValid() const
 {
-    return m_device->deviceInfo().isValid();
+    return m_device->info().isValid();
 }
 
 const QString UPnPDevice::specVersion() const

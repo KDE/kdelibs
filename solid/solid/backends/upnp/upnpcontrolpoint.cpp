@@ -93,7 +93,7 @@ QStringList UPnPControlPoint::allDevices()
     for (int i = 0; i < list.size(); ++i)
     {
         Herqq::Upnp::HDeviceProxy* device = list[i];
-        Herqq::Upnp::HDeviceInfo info = device->deviceInfo();
+        Herqq::Upnp::HDeviceInfo info = device->info();
 
         result << ( QString::fromLatin1("/org/kde/upnp") + '/' + info.udn().toString() );
         qDebug() << "Found device:" << ( QString::fromLatin1("/org/kde/upnp") + '/' + info.udn().toString() );
