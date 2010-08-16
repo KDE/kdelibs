@@ -269,6 +269,8 @@ void RenderBlock::updateFirstLetter()
             letter->setStyle(newStyle);
             firstLetterObject->addChild(letter);
             oldText->deref();
+
+            remainingText->setFirstLetter(letter);
         }
         firstLetterObject->close();
     }
