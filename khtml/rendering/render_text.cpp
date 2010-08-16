@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003, 2006 Apple Computer, Inc.
  *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2008 Germain Garand (germain@ebooksfrance.org)
  *
@@ -1382,7 +1382,11 @@ const QFont &RenderText::font()
 void RenderText::setText(DOMStringImpl *text, bool force)
 {
     if( !force && str == text ) return;
+    setTextInternal(text);
+}
 
+void RenderText::setTextInternal(DOMStringImpl *text)
+{
     DOMStringImpl *oldstr = str;
     if(text && style())
         str = text->collapseWhiteSpace(style()->preserveLF(), style()->preserveWS());
@@ -1740,11 +1744,11 @@ void RenderText::dump(QTextStream &stream, const QString &ind) const
 RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str,
                                        int startOffset, int endOffset)
 :RenderText(_node, _str->substring(startOffset, endOffset)),
-m_start(startOffset), m_end(endOffset), m_generatedContentStr(0)
+m_start(startOffset), m_end(endOffset), m_generatedContentStr(0), m_firstLetter(0)
 {}
 
 RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str)
-:RenderText(_node, _str), m_start(0)
+:RenderText(_node, _str), m_start(0), m_firstLetter(0)
 {
     m_generatedContentStr = _str;
     if (_str) {
@@ -1759,6 +1763,14 @@ RenderTextFragment::~RenderTextFragment()
 {
     if (m_generatedContentStr)
         m_generatedContentStr->deref();
+}
+
+void RenderTextFragment::detach()
+{
+    if (m_firstLetter)
+        m_firstLetter->detach();
+    
+    RenderText::detach();
 }
 
 bool RenderTextFragment::isTextFragment() const
@@ -1776,6 +1788,15 @@ DOM::DOMStringImpl* RenderTextFragment::originalString() const
     if (result && (start() > 0 || start() < result->l))
         result = result->substring(start(), end());
     return result;
+}
+
+void RenderTextFragment::setTextInternal(DOM::DOMStringImpl *text)
+{
+    if (m_firstLetter) {
+        m_firstLetter->detach();
+        m_firstLetter = 0;
+    }
+    RenderText::setTextInternal(text);
 }
 
 #undef BIDI_DEBUG

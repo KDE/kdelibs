@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll <knoll@kde.org>
  * Copyright (C) 2000-2003 Dirk Mueller <mueller@kde.org>
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2003, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -281,8 +281,10 @@ public:
     // (takes into account space collapsing)
     unsigned convertToDOMPosition(unsigned position) const;
     unsigned convertToRenderedPosition(unsigned position) const;
+protected:
+    virtual void setTextInternal(DOM::DOMStringImpl *text);
 
-protected: // members
+    // members
     InlineTextBox* m_firstTextBox;
     InlineTextBox* m_lastTextBox;
 
@@ -333,10 +335,18 @@ public:
     DOM::DOMStringImpl* contentString() const { return m_generatedContentStr; }
     virtual DOM::DOMStringImpl* originalString() const;
 
+    RenderObject* firstLetter() const { return m_firstLetter; }
+    void setFirstLetter(RenderObject* firstLetter) { m_firstLetter = firstLetter; }
+
+    // overrides
+    virtual void detach();
 private:
+    virtual void setTextInternal(DOM::DOMStringImpl *text);
+
     uint m_start;
     uint m_end;
     DOM::DOMStringImpl* m_generatedContentStr;
+    RenderObject* m_firstLetter;
 };
 } // end namespace
 #endif
