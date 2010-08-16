@@ -164,14 +164,14 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         if (KStandardDirs::exists(cDir)) {
             themeDirs += cDir;
             if (d->mDir.isEmpty()) {
-                if (KStandardDirs::exists(cDir + "index.desktop")) {
-                    d->mDir = cDir;
-                    fileName = d->mDir + "index.desktop";
-                    mainSection = "KDE Icon Theme";
-                } else  if (KStandardDirs::exists(cDir + "index.theme")) {
+                if (KStandardDirs::exists(cDir + "index.theme")) {
                     d->mDir = cDir;
                     fileName = d->mDir + "index.theme";
                     mainSection = "Icon Theme";
+                } else if (KStandardDirs::exists(cDir + "index.desktop")) {
+                    d->mDir = cDir;
+                    fileName = d->mDir + "index.desktop";
+                    mainSection = "KDE Icon Theme";
                 }
             }
         }
