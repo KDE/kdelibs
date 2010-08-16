@@ -42,10 +42,10 @@ UPowerManager::UPowerManager(QObject *parent)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-            this, SLOT(slotDeviceAdded(QDBusObjectPath)));
-    connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-            this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
+    connect(&m_manager, SIGNAL(DeviceAdded(QString)),
+            this, SLOT(slotDeviceAdded(QString)));
+    connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
+            this, SLOT(slotDeviceRemoved(QString)));
 }
 
 UPowerManager::~UPowerManager()
@@ -91,14 +91,14 @@ QString UPowerManager::udiPrefix() const
     return UP_UDI_PREFIX;
 }
 
-void UPowerManager::slotDeviceAdded(const QDBusObjectPath &opath)
+void UPowerManager::slotDeviceAdded(const QString &opath)
 {
-    emit deviceAdded(opath.path());
+    emit deviceAdded(opath);
 }
 
-void UPowerManager::slotDeviceRemoved(const QDBusObjectPath &opath)
+void UPowerManager::slotDeviceRemoved(const QString &opath)
 {
-    emit deviceRemoved(opath.path());
+    emit deviceRemoved(opath);
 }
 
 #include "backends/upower/upowermanager.moc"

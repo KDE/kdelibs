@@ -48,8 +48,8 @@ public:
     virtual QString udiPrefix() const;
 
 private Q_SLOTS:
-    void slotDeviceAdded(const QDBusObjectPath &opath);
-    void slotDeviceRemoved(const QDBusObjectPath &opath);
+    void slotDeviceAdded(const QString &opath);
+    void slotDeviceRemoved(const QString &opath);
     
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
