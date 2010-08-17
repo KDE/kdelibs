@@ -55,7 +55,7 @@ QString UDisksStorageAccess::filePath() const
 
 bool UDisksStorageAccess::isIgnored() const
 {
-    return true;
+    return m_device->property( "DevicePresentationHide" ).toBool();
 }
 
 bool UDisksStorageAccess::setup()

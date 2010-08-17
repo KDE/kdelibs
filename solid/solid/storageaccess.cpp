@@ -88,7 +88,7 @@ bool Solid::StorageAccess::teardown()
 bool Solid::StorageAccess::isIgnored() const
 {
     Q_D(const StorageAccess);
-    return_SOLID_CALL(Ifaces::StorageAccess *, d->backendObject(), false, isIgnored());
+    return_SOLID_CALL(Ifaces::StorageAccess *, d->backendObject(), true, isIgnored());
 }
 
 #include "storageaccess.moc"

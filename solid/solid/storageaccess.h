@@ -43,7 +43,7 @@ namespace Solid
         Q_OBJECT
         Q_PROPERTY(bool accessible READ isAccessible)
         Q_PROPERTY(QString filePath READ filePath)
-        Q_PROPERTY(bool isIgnored READ isIgnored)
+        Q_PROPERTY(bool ignored READ isIgnored)
         Q_DECLARE_PRIVATE(StorageAccess)
         friend class Device;
 
@@ -89,6 +89,15 @@ namespace Solid
          */
         QString filePath() const;
 
+        /**
+         * Indicates if this volume should be ignored by applications.
+         *
+         * If it should be ignored, it generally means that it should be
+         * invisible to the user. It's useful for firmware partitions or
+         * OS reinstall partitions on some systems.
+         *
+         * @return true if the volume should be ignored
+         */
         bool isIgnored() const;
 
         /**

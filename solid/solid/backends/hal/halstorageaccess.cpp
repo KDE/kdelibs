@@ -20,6 +20,7 @@
 #include "halstorageaccess.h"
 
 #include "halfstabhandling.h"
+#include "../../genericinterface.h"
 
 #include <QtCore/QLocale>
 #include <QtCore/QDebug>
@@ -125,7 +126,32 @@ QString StorageAccess::filePath() const
 
 bool StorageAccess::isIgnored() const
 {
-    return true;
+    HalDevice lock("/org/freedesktop/Hal/devices/computer");
+    bool isLocked = lock.property("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
+
+    if (m_device->property("volume.ignore").toBool() || isLocked ){
+        return true;
+    }
+
+    const QString mount_point = StorageAccess(m_device).filePath();
+    const bool mounted = m_device->property("volume.is_mounted").toBool();
+    if (!mounted) {
+        return false;
+    } else if (mount_point.startsWith(QLatin1String("/media/")) || mount_point.startsWith(QLatin1String("/mnt/"))) {
+        return false;
+    }
+
+    /* Now be a bit more aggressive on what we want to ignore,
+     * the user generally need to check only what's removable or in /media
+     * the volumes mounted to make the system (/, /boot, /var, etc.)
+     * are useless to him.
+     */
+    Solid::Device drive(m_device->property("block.storage_device").toString());
+
+    const bool removable = drive.as<Solid::GenericInterface>()->property("storage.removable").toBool();
+    const bool hotpluggable = drive.as<Solid::GenericInterface>()->property("storage.hotpluggable").toBool();
+
+    return !removable && !hotpluggable;
 }
 
 bool StorageAccess::setup()

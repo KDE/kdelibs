@@ -57,6 +57,15 @@ namespace Ifaces
          */
         virtual QString filePath() const = 0;
 
+        /**
+         * Indicates if this volume should be ignored by applications.
+         *
+         * If it should be ignored, it generally means that it should be
+         * invisible to the user. It's useful for firmware partitions or
+         * OS reinstall partitions on some systems.
+         *
+         * @return true if the volume should be ignored
+         */
         virtual bool isIgnored() const = 0;
 
         /**

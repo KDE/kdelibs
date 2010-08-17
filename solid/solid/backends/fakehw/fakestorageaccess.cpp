@@ -46,7 +46,7 @@ QString FakeStorageAccess::filePath() const
 
 bool FakeStorageAccess::isIgnored() const
 {
-    return true;
+    return fakeDevice()->property("isIgnored").toBool();
 }
 
 bool FakeStorageAccess::setup()
