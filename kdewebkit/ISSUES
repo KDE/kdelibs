@@ -11,7 +11,7 @@ Known Issues [PENDING]:
     http://bugreports.qt.nokia.com/browse/QTWEBKIT-9
     http://webkit.org/b/34631.
 
-* [QtWebKit] Spell checking support. See
+* [QtWebKit] Spell checking support. See http://webkit.org/b/44114.
 
 * [QtWebKit] Missing Java applet support. See http://webkit.org/b/33044.
 
