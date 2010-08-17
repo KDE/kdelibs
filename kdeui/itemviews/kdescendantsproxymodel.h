@@ -63,7 +63,7 @@ view->setModel(descProxy);
 
 \image html descendantentitiesproxymodel-withansecnames.png "A KDescendantsProxyModel with ancestor names."
 
-@since 4.4
+@since 4.6
 @author Stephen Kelly <steveire@gmail.com>
 */
 class KDEUI_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
