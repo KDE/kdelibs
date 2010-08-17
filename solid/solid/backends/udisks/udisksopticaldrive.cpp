@@ -60,7 +60,7 @@ bool UDisksOpticalDrive::eject()
 
             msg << QStringList();   // options, unused now
 
-            c.call(msg, QDBus::BlockWithGui);
+            c.call(msg, QDBus::NoBlock);
         }
     }
 
