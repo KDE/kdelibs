@@ -1130,12 +1130,21 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
 void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &sourceParent, int proxyStart, int proxyEnd)
 {
-    const QModelIndex proxyParent = mapParentFromSource(sourceParent);
+    // We need to make sure to remove entries from the mappings before updating internal indexes.
 
-    if (proxyParent.isValid())
-        updateInternalIndexes(proxyParent, proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
-    else
-        updateInternalTopIndexes(proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
+    // - A
+    // - - B
+    // - C
+    // - - D
+
+    // If A and C are selected, B and D are in the proxy. B maps to row 0 and D maps to row 1.
+    // If B is then deleted leaving only D in the proxy, D needs to be updated to be a mapping
+    // to row 0 instead of row 1. If that is done before removing the mapping for B, then the mapping
+    // for D would overwrite the mapping for B and then the code for removing mappings would incorrectly
+    // remove D.
+    // So we first remove B and then update D.
+
+    const QModelIndex proxyParent = mapParentFromSource(sourceParent);
 
     {
         SourceProxyIndexMapping::right_iterator it = m_mappedParents.rightBegin();
@@ -1174,6 +1183,12 @@ void KSelectionProxyModelPrivate::endRemoveRows(const QModelIndex &sourceParent,
                 ++it;
         }
     }
+
+    if (proxyParent.isValid())
+        updateInternalIndexes(proxyParent, proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
+    else
+        updateInternalTopIndexes(proxyEnd + 1, -1*(proxyEnd - proxyStart + 1));
+
 
     QList<QPersistentModelIndex>::iterator rootIt = m_rootIndexList.begin();
     while (rootIt != m_rootIndexList.end()) {
