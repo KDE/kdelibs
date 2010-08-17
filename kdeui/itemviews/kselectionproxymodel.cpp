@@ -810,7 +810,7 @@ void KSelectionProxyModelPrivate::sourceModelReset()
     resetInternalData();
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
-    m_selectionModel->clear();
+    m_selectionModel->reset();
     m_resetting = false;
     q->endResetModel();
 }
@@ -836,7 +836,7 @@ void KSelectionProxyModelPrivate::selectionModelSourceReset()
     resetInternalData();
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
-    m_selectionModel->clear();
+    m_selectionModel->reset();
     m_resetting = false;
     q->endResetModel();
 }
