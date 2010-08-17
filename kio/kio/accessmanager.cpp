@@ -307,7 +307,7 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
 
         if (reply.isValid()) {
             const QString cookieStr = reply.value();
-            const QStringList cookies = cookieStr.split(QL1S("; "));
+            const QStringList cookies = cookieStr.split(QL1S("; "), QString::SkipEmptyParts);
             Q_FOREACH(const QString& cookie, cookies) {
                 const int index = cookie.indexOf(QL1C('='));
                 const QString name = cookie.left(index);
