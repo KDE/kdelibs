@@ -33,10 +33,10 @@ class QValidator;
  *
  * @deprecated use Nepomuk::Types::Property instead
  **/
-class KDE_DEPRECATED KIO_EXPORT PredicateProperties {
+class KIO_EXPORT PredicateProperties {
 friend class PredicatePropertyProvider;
 public:
-    PredicateProperties(const QString& predicate = QString());
+    KDE_DEPRECATED PredicateProperties(const QString& predicate = QString());
     PredicateProperties(const PredicateProperties& p);
     ~PredicateProperties();
     const PredicateProperties& operator=(const PredicateProperties& p);
