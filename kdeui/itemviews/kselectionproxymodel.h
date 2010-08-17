@@ -313,9 +313,6 @@ private:
     Q_PRIVATE_SLOT(d_func(), void sourceDataChanged(const QModelIndex &, const QModelIndex &))
     Q_PRIVATE_SLOT(d_func(), void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected))
     Q_PRIVATE_SLOT(d_func(), void sourceModelDestroyed())
-    Q_PRIVATE_SLOT(d_func(), void selectionModelSourceAboutToBeReset())
-    Q_PRIVATE_SLOT(d_func(), void selectionModelSourceReset())
-
 
     //@endcond
 
