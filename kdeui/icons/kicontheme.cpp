@@ -133,7 +133,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList icnlibs;
     QStringList::ConstIterator it, itDir;
     QStringList themeDirs;
-    QString cDir;
     QSet<QString> addedDirs; // Used for avoiding duplicates.
 
     // Applications can have local additions to the global "locolor" and
@@ -144,7 +143,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
        ( name == defaultThemeName() || name== "hicolor" || name == "locolor" ) ) {
         icnlibs = KGlobal::dirs()->resourceDirs("data");
         for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
-            cDir = *it + appName + "/icons/" + name;
+            const QString cDir = *it + appName + "/icons/" + name;
             if (QFile::exists( cDir )) {
                 themeDirs += cDir + '/';
             }
@@ -154,33 +153,35 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     icnlibs = KGlobal::dirs()->resourceDirs("icon")
         << KGlobal::dirs()->resourceDirs("xdgdata-icon")
-        << "/usr/share/pixmaps"
+        << "/usr/share/pixmaps/"
         // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
         << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
+    icnlibs.removeDuplicates();
+
+    QString fileName, mainSection;
     for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
-        cDir = *it + name + '/';
+        const QString cDir = *it + name + '/';
         if (KStandardDirs::exists(cDir)) {
             themeDirs += cDir;
-            if (d->mDir.isEmpty() &&
-                (KStandardDirs::exists( cDir + "index.desktop") || KStandardDirs::exists( cDir + "index.theme"))) {
-                d->mDir = cDir;
+            if (d->mDir.isEmpty()) {
+                if (KStandardDirs::exists(cDir + "index.theme")) {
+                    d->mDir = cDir;
+                    fileName = d->mDir + "index.theme";
+                    mainSection = "Icon Theme";
+                } else if (KStandardDirs::exists(cDir + "index.desktop")) {
+                    d->mDir = cDir;
+                    fileName = d->mDir + "index.desktop";
+                    mainSection = "KDE Icon Theme";
+                }
             }
         }
     }
 
     if (d->mDir.isEmpty()) {
-        kDebug(264) << "Icon theme " << name << " not found.\n";
+        kDebug(264) << "Icon theme" << name << "not found.";
         return;
     }
 
-    QString fileName, mainSection;
-    if (QFile::exists(d->mDir + "index.desktop")) {
-        fileName = d->mDir + "index.desktop";
-        mainSection="KDE Icon Theme";
-    } else {
-        fileName = d->mDir + "index.theme";
-        mainSection="Icon Theme";
-    }
     // Use KSharedConfig to avoid parsing the file many times, from each kinstance.
     // Need to keep a ref to it to make this useful
     d->sharedConfig = KSharedConfig::openConfig(fileName);
@@ -207,7 +208,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         KConfigGroup cg(d->sharedConfig, *it);
         for (itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir) {
             const QString currentDir(*itDir + *it + '/');
-            if (KStandardDirs::exists(currentDir) && !addedDirs.contains(currentDir)) {
+            if (!addedDirs.contains(currentDir) && KStandardDirs::exists(currentDir)) {
                 addedDirs.insert(currentDir);
                 KIconThemeDir *dir = new KIconThemeDir(*itDir, *it, cg);
                 if (!dir->isValid()) {
@@ -636,7 +637,7 @@ KIconThemeDir::KIconThemeDir(const QString& basedir, const QString &themedir, co
 {
     mbValid = false;
     mBaseDirThemeDir = basedir + themedir;
-    
+
     mSize = config.readEntry("Size", 0);
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
