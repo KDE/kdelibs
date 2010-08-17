@@ -563,6 +563,13 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     }
 }
 
+bool ReadOnlyPart::openFile()
+{
+    kWarning(1000) << "Default implementation of ReadOnlyPart::openFile called!"
+                   << metaObject()->className() << "should reimplement either openUrl or openFile.";
+    return false;
+}
+
 bool ReadOnlyPartPrivate::openLocalFile()
 {
     Q_Q(ReadOnlyPart);

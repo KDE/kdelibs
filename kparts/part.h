@@ -659,9 +659,9 @@ protected:
     /**
      * If the part uses the standard implementation of openUrl(),
      * it must reimplement this, to open the local file.
-     * Otherwise simply define it to { return false; }
+     * The default implementation is simply { return false; }
      */
-    virtual bool openFile() = 0;
+    virtual bool openFile();
 
     /**
      * @internal
