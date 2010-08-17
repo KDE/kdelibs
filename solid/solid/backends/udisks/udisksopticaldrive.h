@@ -48,7 +48,7 @@ Q_SIGNALS:
     
 public:
     virtual bool eject();
-    virtual QList< int > writeSpeeds() const;
+    virtual QList<int> writeSpeeds() const;
     virtual int writeSpeed() const;
     virtual int readSpeed() const;
     virtual Solid::OpticalDrive::MediumTypes supportedMedia() const;

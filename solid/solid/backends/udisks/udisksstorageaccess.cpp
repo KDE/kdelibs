@@ -179,7 +179,6 @@ bool UDisksStorageAccess::unmount()
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
-    QString fstype;
 
     msg << QStringList();   // options, unused now
 

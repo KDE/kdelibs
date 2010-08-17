@@ -137,8 +137,6 @@ QObject* UDisksDevice::createDeviceInterface(const Solid::DeviceInterface::Type&
 
 bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    QStringList cap_list = DeviceInterface::toStringList(type);
-
     switch (type) {
         case Solid::DeviceInterface::GenericInterface:
             return true;

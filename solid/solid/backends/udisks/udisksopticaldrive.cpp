@@ -21,6 +21,8 @@
 
 #include "udisksopticaldrive.h"
 #include "udisks.h"
+#include "udisksstorageaccess.h"
+#include "udisksdevice.h"
 
 using namespace Solid::Backends::UDisks;
 
@@ -47,6 +49,21 @@ bool UDisksOpticalDrive::eject()
     emit ejectRequested(m_device->udi());
 
     QDBusConnection c = QDBusConnection::systemBus();
+
+    // check if the device is mounted and call umount if needed
+    if (m_device->queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
+    {
+        const UDisks::UDisksStorageAccess accessIface(const_cast<UDisksDevice *>(m_device));
+        if (accessIface.isAccessible())
+        {
+            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
+
+            msg << QStringList();   // options, unused now
+
+            c.call(msg, QDBus::BlockWithGui);
+        }
+    }
+
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
     msg << QStringList();
     return c.callWithCallback(msg, this, SLOT(slotDBusReply(const QDBusMessage &)), SLOT(slotDBusError(const QDBusError &)));
@@ -61,8 +78,6 @@ void UDisksOpticalDrive::slotDBusReply(const QDBusMessage &/*reply*/)
 void UDisksOpticalDrive::slotDBusError(const QDBusError &error)
 {
     m_ejectInProgress = false;
-    // TODO: Better error reporting here
-    // TODO port to policykit-1; error: org.freedesktop.PolicyKit.Error.NotAuthorized; action: org.freedesktop.udisks.drive-eject
     emit ejectDone(Solid::UnauthorizedOperation, error.name()+": "+error.message(), m_device->udi());
 }
 
