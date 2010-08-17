@@ -202,6 +202,15 @@ if(NOT WIN32 AND NOT APPLE)
    backends/upower/upowerdeviceinterface.cpp
    backends/upower/upowergenericinterface.cpp
    )
+
+   message(STATUS "Building Solid fstab backend." )
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+   backends/fstab/fstabmanager.cpp
+   backends/fstab/fstabdevice.cpp
+   backends/fstab/fstabstorageaccess.cpp
+   backends/fstab/fstabhandling.cpp
+   backends/fstab/rootdevice.cpp
+   )
 endif(NOT WIN32 AND NOT APPLE)
 
 if(APPLE)

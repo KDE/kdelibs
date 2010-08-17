@@ -31,6 +31,8 @@
 #include "backends/udisks/udisksmanager.h"
 #include "backends/upower/upowermanager.h"
 //#include "backends/upnp/upnpdevicemanager.h"
+#include "backends/fstab/fstabmanager.h"
+
 #elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
 #include "backends/wmi/wmimanager.h"
 #endif
@@ -58,7 +60,8 @@ void Solid::ManagerBasePrivate::loadBackends()
             m_backends << new Solid::Backends::Hal::HalManager(0)
                        << new Solid::Backends::KUPnP::KUPnPManager(0)
                        << new Solid::Backends::UDisks::UDisksManager(0)
-                       << new Solid::Backends::UPower::UPowerManager(0);
+                       << new Solid::Backends::UPower::UPowerManager(0)
+                       << new Solid::Backends::Fstab::FstabManager(0);
                        //<< new Solid::Backends::UPnP::UPnPDeviceManager(0);
 #        elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
