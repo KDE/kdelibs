@@ -1251,6 +1251,9 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     if ( oldUrl == newUrl ) {
         kDebug(7004) << "New redirection url same as old, giving up.";
         return;
+    } else if (newUrl.isEmpty()) {
+        kDebug(7004) << "New redirection url is empty, giving up.";
+        return;
     }
 
     const QString oldUrlStr = oldUrl.url();
