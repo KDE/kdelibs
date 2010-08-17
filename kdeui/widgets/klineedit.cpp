@@ -126,6 +126,18 @@ public:
         }
     }
 
+    // This is called when the lineedit is readonly.
+    // Either from setReadOnly() itself, or when we realize that
+    // we became readonly and setReadOnly() wasn't called (because it's not virtual)
+    // Typical case: comboBox->lineEdit()->setReadOnly(true)
+    void adjustForReadOnly()
+    {
+        if (style && style.data()->m_overlap) {
+            style.data()->m_overlap = 0;
+        }
+    }
+
+
     /**
      * Checks whether we should/should not consume a key used as a shortcut.
      * This makes it possible to handle shortcuts in the focused widget before any
@@ -308,9 +320,14 @@ QSize KLineEdit::clearButtonUsedSize() const
     return s;
 }
 
+// Decides whether to show or hide the icon; called when the text changes
 void KLineEdit::updateClearButtonIcon(const QString& text)
 {
-    if (!d->clearButton || isReadOnly()) {
+    if (!d->clearButton) {
+        return;
+    }
+    if (isReadOnly()) {
+        d->adjustForReadOnly();
         return;
     }
 
@@ -332,12 +349,17 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
     }
 
-    d->clearButton->setVisible(text.length());
+    d->clearButton->setVisible(text.length() > 0);
 }
 
+// Determine geometry of clear button. Called initially, and on resizeEvent.
 void KLineEdit::updateClearButton()
 {
-    if (!d->clearButton || isReadOnly()) {
+    if (!d->clearButton) {
+        return;
+    }
+    if (isReadOnly()) {
+        d->adjustForReadOnly();
         return;
     }
 
@@ -515,9 +537,7 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton) {
             d->clearButton->animateVisible(false);
-            if (d->style) {
-                d->style.data()->m_overlap = 0;
-            }
+            d->adjustForReadOnly();
         }
     } else {
         if (!d->squeezedText.isEmpty()) {
