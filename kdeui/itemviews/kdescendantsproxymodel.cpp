@@ -662,8 +662,8 @@ void KDescendantsProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent
 
   m_rowCount += difference;
 
-  scheduleProcessPendingParents();
   q->endInsertRows();
+  scheduleProcessPendingParents();
 }
 
 void KDescendantsProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
