@@ -524,7 +524,7 @@ quint32 KSycoca::updateSignature()
 QString KSycoca::absoluteFilePath(DatabaseType type)
 {
    if (type == GlobalDatabase)
-      return KStandardDirs::locate("services", KSYCOCA_FILENAME);
+      return KGlobal::dirs()->saveLocation("services") + KSYCOCA_FILENAME;
 
    const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
    if (ksycoca_env.isEmpty())
