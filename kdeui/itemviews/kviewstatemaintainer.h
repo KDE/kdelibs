@@ -27,9 +27,8 @@
 #include <QtGui/QItemSelectionModel>
 #include <QtGui/QAbstractItemView>
 
-#include <KConfigGroup>
-#include <KSharedConfig>
-#include <KSharedConfigPtr>
+#include "kconfiggroup.h"
+#include "ksharedconfig.h"
 
 class KViewStateMaintainerBasePrivate;
 
