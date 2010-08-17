@@ -451,7 +451,8 @@ Q_SIGNALS:
 public Q_SLOTS:
 
     /**
-     * Re-implemented for internal reasons. API not changed.
+     * Sets the lineedit to read-only. Similar to QLineEdit::setReadOnly
+     * but also takes care of the background color, and the clear button.
      */
     virtual void setReadOnly(bool);
 
@@ -460,7 +461,7 @@ public Q_SLOTS:
      * the history list.
      *
      * This function simply iterates over all possible matches in case
-     * multimple matches are found as a result of a text completion request.
+     * multiple matches are found as a result of a text completion request.
      * It will have no effect if only a single match is found.
      *
      * @param type The key-binding invoked.
