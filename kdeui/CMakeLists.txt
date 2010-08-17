@@ -114,6 +114,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
  itemviews/kviewstatesaver.cpp
+ itemviews/kviewstatemaintainer.cpp
  itemviews/kfilterproxysearchline.cpp
  itemviews/kextendableitemdelegate.cpp
  itemviews/kcategorizedsortfilterproxymodel.cpp
