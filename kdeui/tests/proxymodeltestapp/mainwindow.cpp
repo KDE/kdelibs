@@ -38,6 +38,7 @@
 #include "recursivefilterpmwidget.h"
 #include "lessthanwidget.h"
 #include "matchcheckingwidget.h"
+#include "kidentityproxymodelwidget.h"
 
 MainWindow::MainWindow() : KXmlGuiWindow()
 {
@@ -47,6 +48,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(new MatchCheckingWidget(), "Match Checking PM");
   tabWidget->addTab(new DescendantProxyModelWidget(), "descendant PM");
   tabWidget->addTab(new SelectionProxyWidget(), "selection PM");
+  tabWidget->addTab(new KIdentityProxyModelWidget(), "Identity PM");
   tabWidget->addTab(new BreadcrumbsWidget(), "Breadcrumbs");
   tabWidget->addTab(new BreadcrumbNavigationWidget(), "Breadcrumb Navigation");
   tabWidget->addTab(new BreadcrumbDirectionWidget(), "Breadcrumb Direction");
