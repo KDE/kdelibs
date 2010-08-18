@@ -139,13 +139,6 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
 
 void UDisksStorageAccess::slotDBusError( const QDBusError & error )
 {
-    // TODO: Better error reporting here
-
-    // TODO support policykit-1; error: org.freedesktop.PolicyKit.Error.NotAuthorized
-    // actions: org.freedesktop.udisks.filesystem-mount: If the operation is on a non-system-internal device
-    //          org.freedesktop.udisks.filesystem-mount-system-internal: If the operation is on a system-internal device
-    //          org.freedesktop.udisks.filesystem-unmount-others: To unmount a device mounted by another user
-
     if (m_setupInProgress)
     {
         m_setupInProgress = false;
