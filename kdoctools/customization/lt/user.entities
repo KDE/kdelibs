@@ -6,9 +6,10 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
+<!ENTITY Backspace "<keycap>Backspace</keycap>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY Enter  "<keycap>Enter</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
+<!ENTITY FAQ    "<keycap>DUK</keycap>">
 <!ENTITY Shift  "<keycap>Shift</keycap>">
-<!ENTITY Tab    "<keycap>Tab</keycap>">
-<!ENTITY Backspace    "<keycap>Backspace</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
