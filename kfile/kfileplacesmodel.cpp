@@ -175,11 +175,13 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
 
     d->predicate = Solid::Predicate::fromString(
-        "[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
+        "[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
         " OR "
         "[ IS StorageAccess AND StorageDrive.driveType == 'Floppy' ]]"
         " OR "
-        "OpticalDisc.availableContent & 'Audio' ]");
+        "OpticalDisc.availableContent & 'Audio' ]"
+        " OR "
+        "StorageAccess.ignored == false ]");
     Q_ASSERT(d->predicate.isValid());
 
     connect(d->bookmarkManager, SIGNAL(changed(const QString&, const QString&)),
