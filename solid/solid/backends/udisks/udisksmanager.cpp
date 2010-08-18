@@ -20,7 +20,6 @@
 */
 
 #include "udisksmanager.h"
-#include "udisksdevice.h"
 #include "udisks.h"
 
 #include <QtDBus/QDBusReply>
@@ -29,7 +28,7 @@
 
 using namespace Solid::Backends::UDisks;
 
-UDisksManager::UDisksManager(QObject *parent)
+UDisksManager::UDisksManager(QObject */*parent*/)
     : m_manager(UD_DBUS_SERVICE,
                 UD_DBUS_PATH,
                 UD_DBUS_INTERFACE_DISKS,
@@ -50,6 +49,8 @@ UDisksManager::UDisksManager(QObject *parent)
             this, SLOT(slotDeviceAdded(QDBusObjectPath)));
     connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
             this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
+    connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
+            this, SLOT(slotDeviceChanged(QDBusObjectPath)));
 }
 
 UDisksManager::~UDisksManager()
@@ -70,6 +71,30 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
 }
 
 QStringList UDisksManager::allDevices()
+{
+    m_knownDrivesWithMedia.clear();
+    QStringList result;
+
+    foreach(const QString & udi, allDevicesInternal())
+    {
+        result.append(udi);
+
+        UDisksDevice device(udi);
+        if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) // forge a special (separate) device for optical discs
+        {
+            if (device.property("DeviceIsOpticalDisc").toBool())
+            {
+                if (!m_knownDrivesWithMedia.contains(udi))
+                    m_knownDrivesWithMedia.append(udi);
+                result.append(udi + "/media");
+            }
+        }
+    }
+
+    return result;
+}
+
+QStringList UDisksManager::allDevicesInternal()
 {
     QDBusReply<QList<QDBusObjectPath> > reply = m_manager.call("EnumerateDevices");
 
@@ -99,11 +124,34 @@ QString UDisksManager::udiPrefix() const
 void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 {
     emit deviceAdded(opath.path());
+    slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
 
 void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
 {
     emit deviceRemoved(opath.path());
+    slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
+}
+
+void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
+{
+    QString udi = opath.path();
+    UDisksDevice device(udi);
+
+    if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
+    {
+        if (!m_knownDrivesWithMedia.contains(udi) && device.property("DeviceIsOpticalDisc").toBool())
+        {
+            m_knownDrivesWithMedia.append(udi);
+            emit deviceAdded(udi + ":media");
+        }
+
+        if (m_knownDrivesWithMedia.contains(udi) && !device.property("DeviceIsOpticalDisc").toBool())
+        {
+            m_knownDrivesWithMedia.removeAll(udi);
+            emit deviceRemoved(udi + ":media");
+        }
+    }
 }
 
 #include "backends/udisks/udisksmanager.moc"

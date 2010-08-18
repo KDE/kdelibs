@@ -623,7 +623,13 @@ QString UDisksDevice::udi() const
 
 QString UDisksDevice::parentUdi() const
 {
-    return property("PartitionSlave").value<QDBusObjectPath>().path();
+    if (m_udi.endsWith(QLatin1String(":media")))
+    {
+        QString result = m_udi;
+        return result.remove(":media");
+    }
+    else
+        return property("PartitionSlave").value<QDBusObjectPath>().path();
 }
 
 void UDisksDevice::checkCache(const QString &key) const

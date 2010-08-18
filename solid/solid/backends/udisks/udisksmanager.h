@@ -22,6 +22,8 @@
 #ifndef UDISKSMANAGER_H
 #define UDISKSMANAGER_H
 
+#include "udisksdevice.h"
+
 #include "solid/ifaces/devicemanager.h"
 
 #include <QtDBus/QDBusInterface>
@@ -50,11 +52,13 @@ public:
 private Q_SLOTS:
     void slotDeviceAdded(const QDBusObjectPath &opath);
     void slotDeviceRemoved(const QDBusObjectPath &opath);
+    void slotDeviceChanged(const QDBusObjectPath &opath);
     
 private:
+    QStringList allDevicesInternal();
+    QStringList m_knownDrivesWithMedia;  // list of known optical drives which contain a media
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QDBusInterface m_manager;
-
 };
 
 }
