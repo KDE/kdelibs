@@ -86,7 +86,7 @@ QStringList UDisksManager::allDevices()
             {
                 if (!m_knownDrivesWithMedia.contains(udi))
                     m_knownDrivesWithMedia.append(udi);
-                result.append(udi + "/media");
+                result.append(udi + ":media");
             }
         }
     }
