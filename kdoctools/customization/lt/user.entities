@@ -11,3 +11,4 @@
 <!ENTITY Esc    "<keycap>Esc</keycap>">
 <!ENTITY Shift  "<keycap>Shift</keycap>">
 <!ENTITY Tab    "<keycap>Tab</keycap>">
+<!ENTITY Backspace    "<keycap>Backspace</keycap>">
