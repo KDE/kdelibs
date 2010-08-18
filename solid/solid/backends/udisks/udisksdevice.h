@@ -66,7 +66,7 @@ private Q_SLOTS:
 private:
     QString storageDescription() const;
     QString volumeDescription() const;
-    mutable QDBusInterface m_device;
+    mutable QDBusInterface *m_device;
     QString m_udi;
     mutable QMap<QString,QVariant> m_cache;
     mutable QSet<QString> m_invalidKeys;

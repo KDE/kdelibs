@@ -85,13 +85,17 @@ static QString formatByteSize(double size)
 }
 
 UDisksDevice::UDisksDevice(const QString &udi)
-    : m_device(UD_DBUS_SERVICE,
-               udi,
-               UD_DBUS_INTERFACE_DISKS_DEVICE,
-               QDBusConnection::systemBus()),
-      m_udi(udi)
+    : m_udi(udi)
 {
-    connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
+    QString realUdi = m_udi;
+    if (realUdi.endsWith(":media")) {
+        realUdi.chop(6);
+    }
+    m_device = new QDBusInterface(UD_DBUS_SERVICE, realUdi,
+                                  UD_DBUS_INTERFACE_DISKS_DEVICE,
+                                  QDBusConnection::systemBus());
+
+    connect(m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
 }
 
 UDisksDevice::~UDisksDevice()
@@ -141,18 +145,19 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::GenericInterface:
             return true;
         case Solid::DeviceInterface::Block:
-            return m_device.property("DeviceBlockSize").toULongLong() > 0;
+            return m_device->property("DeviceBlockSize").toULongLong() > 0;
         case Solid::DeviceInterface::StorageVolume:
-            return m_device.property("DeviceIsPartition").toBool();
+            return m_device->property("DeviceIsPartition").toBool();
         case Solid::DeviceInterface::StorageAccess:
             return property("DeviceIsPartition").toBool() && property("PartitionNumber").toInt() > 0;
         case Solid::DeviceInterface::StorageDrive:
-            return property("DeviceIsDrive").toBool();
+            return !m_udi.endsWith(":media") && property("DeviceIsDrive").toBool();
         case Solid::DeviceInterface::OpticalDrive:
-            return property( "DeviceIsDrive" ).toBool() &&
-                    ! property( "DriveMediaCompatibility" ).toStringList().filter( "optical_" ).isEmpty();
+            return !m_udi.endsWith(":media")
+                && property( "DeviceIsDrive" ).toBool()
+                && !property( "DriveMediaCompatibility" ).toStringList().filter( "optical_" ).isEmpty();
         case Solid::DeviceInterface::OpticalDisc:
-            return m_device.property("DeviceIsOpticalDisc").toBool();
+            return m_udi.endsWith(":media") && m_device->property("DeviceIsOpticalDisc").toBool();
         default:
             return false;
     }
@@ -638,7 +643,7 @@ void UDisksDevice::checkCache(const QString &key) const
         return;
     }
     
-    QVariant reply = m_device.property(key.toUtf8());
+    QVariant reply = m_device->property(key.toUtf8());
 
     if (reply.isValid()) {
         m_cache[key] = reply;
@@ -663,12 +668,12 @@ bool UDisksDevice::propertyExists(const QString &key) const
 
 QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(m_device.service(), m_device.path(), QLatin1String("org.freedesktop.DBus.Properties"), QLatin1String("GetAll"));
+    QDBusMessage message = QDBusMessage::createMethodCall(m_device->service(), m_device->path(), QLatin1String("org.freedesktop.DBus.Properties"), QLatin1String("GetAll"));
     QList<QVariant> arguments;
-    arguments << m_device.interface();
+    arguments << m_device->interface();
     message.setArguments(arguments);
 
-    QDBusMessage reply = m_device.connection().call(message);
+    QDBusMessage reply = m_device->connection().call(message);
 
     if (reply.type() != QDBusMessage::ReplyMessage)
     {
