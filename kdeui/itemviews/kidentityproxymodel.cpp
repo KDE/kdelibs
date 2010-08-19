@@ -170,7 +170,7 @@ QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& p
     if (!sourceModel())
       return QModelIndex();
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
-    if (row < 0 || column < 0 || row >= sourceModel()->rowCount(parent) || column >= sourceModel()->columnCount(parent))
+    if (row < 0 || column < 0 || !hasIndex(row, column, parent))
       return QModelIndex();
     const QModelIndex sourceParent = mapToSource(parent);
     const QModelIndex sourceIndex = sourceModel()->index(row, column, sourceParent);
