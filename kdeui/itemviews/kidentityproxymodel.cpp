@@ -570,7 +570,6 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
 
     m_ignoreNextLayoutAboutToBeChanged = true;
 
-    //saved_persistent_indexes.clear();
     const QModelIndex proxyParent1 = q->mapFromSource(parent1);
     const QModelIndex proxyParent2 = q->mapFromSource(parent2);
     //emit q->childrenLayoutsAboutToBeChanged(proxyParent1, proxyParent2);
@@ -579,10 +578,16 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
     if (q->persistentIndexList().isEmpty())
         return;
 
-//     if (it1 != source_index_mapping.constEnd())
-//         saved_persistent_indexes = store_persistent_indexes(parent1);
-//     if (it2 != source_index_mapping.constEnd())
-//         saved_persistent_indexes += store_persistent_indexes(parent2);
+    foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
+        const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
+        Q_ASSERT(proxyPersistentIndex.isValid());
+        Q_ASSERT(srcPersistentIndex.isValid());
+        const QModelIndex idxParent = srcPersistentIndex.parent();
+        if (idxParent != parent1 && idxParent != parent2)
+            continue;
+        m_proxyIndexes << proxyPersistentIndex;
+        m_layoutChangePersistentIndexes << srcPersistentIndex;
+    }
 }
 
 void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2)
@@ -593,8 +598,17 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelInd
 
     m_ignoreNextLayoutChanged = true;
 
-//     update_persistent_indexes(saved_persistent_indexes);
-//     saved_persistent_indexes.clear();
+    QModelIndexList oldList, newList;
+    for( int i = 0; i < m_layoutChangePersistentIndexes.size(); ++i)
+    {
+      const QModelIndex srcIdx = m_layoutChangePersistentIndexes.at(i);
+      const QModelIndex oldProxyIdx = m_proxyIndexes.at(i);
+      oldList << oldProxyIdx;
+      newList << q->mapFromSource(srcIdx);
+    }
+    q->changePersistentIndexList(oldList, newList);
+    m_layoutChangePersistentIndexes.clear();
+    m_proxyIndexes.clear();
 
     const QModelIndex proxyParent1 = q->mapFromSource(parent1);
     const QModelIndex proxyParent2 = q->mapFromSource(parent2);
