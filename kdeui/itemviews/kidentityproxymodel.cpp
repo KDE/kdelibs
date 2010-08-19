@@ -383,8 +383,8 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
                    this, SLOT(_k_sourceColumnsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
         disconnect(sourceModel, SIGNAL(modelAboutToBeReset()),
                    this, SLOT(_k_sourceModelAboutToBeReset()));
-        disconnect(sourceModel, SIGNAL(internalDataReset()),
-                   this, SLOT(resetInternalData()));
+//        disconnect(sourceModel, SIGNAL(internalDataReset()),
+//                   this, SLOT(resetInternalData()));
         disconnect(sourceModel, SIGNAL(modelReset()),
                    this, SLOT(_k_sourceModelReset()));
         disconnect(sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
@@ -432,8 +432,8 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
                 SLOT(_k_sourceColumnsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
         connect(sourceModel, SIGNAL(modelAboutToBeReset()),
                 SLOT(_k_sourceModelAboutToBeReset()));
-        connect(sourceModel, SIGNAL(internalDataReset()),
-                SLOT(resetInternalData()));
+//        connect(sourceModel, SIGNAL(internalDataReset()),
+//                SLOT(resetInternalData()));
         connect(sourceModel, SIGNAL(modelReset()),
                 SLOT(_k_sourceModelReset()));
         connect(sourceModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
