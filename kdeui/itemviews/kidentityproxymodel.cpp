@@ -132,6 +132,7 @@ int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
       return 0;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->columnCount(mapToSource(parent));
 }
 
@@ -139,6 +140,7 @@ bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction act
 {
     if (!sourceModel())
       return false;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->dropMimeData(data, action, row, column, mapToSource(parent));
 }
 
@@ -146,6 +148,7 @@ QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& p
 {
     if (!sourceModel())
       return QModelIndex();
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     if (row < 0 || column < 0 || row >= sourceModel()->rowCount(parent) || column >= sourceModel()->columnCount(parent))
       return QModelIndex();
     const QModelIndex sourceParent = mapToSource(parent);
@@ -158,6 +161,7 @@ bool KIdentityProxyModel::insertColumns(int column, int count, const QModelIndex
 {
     if (!sourceModel())
       return false;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->insertColumns(column, count, mapToSource(parent));
 }
 
@@ -165,6 +169,7 @@ bool KIdentityProxyModel::insertRows(int row, int count, const QModelIndex& pare
 {
     if (!sourceModel())
       return false;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->insertRows(row, count, mapToSource(parent));
 }
 
@@ -172,6 +177,8 @@ QModelIndex KIdentityProxyModel::mapFromSource(const QModelIndex& sourceIndex) c
 {
     if (!sourceModel() || !sourceIndex.isValid())
         return QModelIndex();
+
+    Q_ASSERT(sourceIndex.model() == sourceModel());
     return createIndex(sourceIndex.row(), sourceIndex.column(), sourceIndex.internalPointer());
 }
 
@@ -186,6 +193,7 @@ QItemSelection KIdentityProxyModel::mapSelectionFromSource(const QItemSelection&
     const QItemSelection::const_iterator end = selection.constEnd();
     for ( ; it != end; ++it)
     {
+        Q_ASSERT(it->model() == sourceModel());
         const QItemSelectionRange range(mapFromSource(it->topLeft()), mapFromSource(it->bottomRight()));
         proxySelection.append(range);
     }
@@ -204,6 +212,7 @@ QItemSelection KIdentityProxyModel::mapSelectionToSource(const QItemSelection& s
     const QItemSelection::const_iterator end = selection.constEnd();
     for ( ; it != end; ++it)
     {
+        Q_ASSERT(it->model() == this);
         const QItemSelectionRange range(mapToSource(it->topLeft()), mapToSource(it->bottomRight()));
         sourceSelection.append(range);
     }
@@ -230,11 +239,13 @@ QModelIndex KIdentityProxyModel::mapToSource(const QModelIndex& proxyIndex) cons
 {
     if (!sourceModel() || !proxyIndex.isValid())
         return QModelIndex();
+    Q_ASSERT(proxyIndex.model() == this);
     return SourceModelIndex(proxyIndex.row(), proxyIndex.column(), proxyIndex.internalPointer(), sourceModel());
 }
 
 QModelIndexList KIdentityProxyModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
 {
+    Q_ASSERT(start.isValid() ? start.model() == this : true);
     if (!sourceModel())
         return QModelIndexList();
 
@@ -252,6 +263,7 @@ QModelIndex KIdentityProxyModel::parent(const QModelIndex& child) const
     if (!sourceModel())
         return QModelIndex();
 
+    Q_ASSERT(child.isValid() ? child.model() == this : true);
     const QModelIndex sourceIndex = mapToSource(child);
     const QModelIndex sourceParent = sourceIndex.parent();
     return mapFromSource(sourceParent);
@@ -262,6 +274,7 @@ bool KIdentityProxyModel::removeColumns(int column, int count, const QModelIndex
     if (!sourceModel())
         return false;
 
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->removeColumns(column, count, mapToSource(parent));
 }
 
@@ -270,6 +283,7 @@ bool KIdentityProxyModel::removeRows(int row, int count, const QModelIndex& pare
     if (!sourceModel())
         return false;
 
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->removeRows(row, count, mapToSource(parent));
 }
 
@@ -277,6 +291,7 @@ int KIdentityProxyModel::rowCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
         return 0;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->rowCount(mapToSource(parent));
 }
 
@@ -387,24 +402,29 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 void KIdentityProxyModelPrivate::_k_sourceColumnsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     q->beginInsertColumns(q->mapFromSource(parent), start, end);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceColumnsAboutToBeMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destParent, int dest)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(sourceParent.isValid() ? sourceParent.model() == q->sourceModel() : true);
+    Q_ASSERT(destParent.isValid() ? destParent.model() == q->sourceModel() : true);
     q->beginMoveColumns(q->mapFromSource(sourceParent), sourceStart, sourceEnd, q->mapFromSource(destParent), dest);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceColumnsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     q->beginRemoveColumns(q->mapFromSource(parent), start, end);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceColumnsInserted(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     Q_UNUSED(parent)
     Q_UNUSED(start)
     Q_UNUSED(end)
@@ -414,6 +434,8 @@ void KIdentityProxyModelPrivate::_k_sourceColumnsInserted(const QModelIndex &par
 void KIdentityProxyModelPrivate::_k_sourceColumnsMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destParent, int dest)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(sourceParent.isValid() ? sourceParent.model() == q->sourceModel() : true);
+    Q_ASSERT(destParent.isValid() ? destParent.model() == q->sourceModel() : true);
     Q_UNUSED(sourceParent)
     Q_UNUSED(sourceStart)
     Q_UNUSED(sourceEnd)
@@ -425,6 +447,7 @@ void KIdentityProxyModelPrivate::_k_sourceColumnsMoved(const QModelIndex &source
 void KIdentityProxyModelPrivate::_k_sourceColumnsRemoved(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     Q_UNUSED(parent)
     Q_UNUSED(start)
     Q_UNUSED(end)
@@ -434,6 +457,8 @@ void KIdentityProxyModelPrivate::_k_sourceColumnsRemoved(const QModelIndex &pare
 void KIdentityProxyModelPrivate::_k_sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(topLeft.isValid() ? topLeft.model() == q->sourceModel() : true);
+    Q_ASSERT(bottomRight.isValid() ? bottomRight.model() == q->sourceModel() : true);
     q->dataChanged(q->mapFromSource(topLeft), q->mapFromSource(bottomRight));
 }
 
@@ -482,6 +507,9 @@ void KIdentityProxyModelPrivate::_k_sourceLayoutChanged()
 void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent1.isValid() ? parent1.model() == q->sourceModel() : true);
+    Q_ASSERT(parent2.isValid() ? parent2.model() == q->sourceModel() : true);
+
 
     m_ignoreNextLayoutAboutToBeChanged = true;
 
@@ -503,6 +531,8 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
 void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent1.isValid() ? parent1.model() == q->sourceModel() : true);
+    Q_ASSERT(parent2.isValid() ? parent2.model() == q->sourceModel() : true);
 
     m_ignoreNextLayoutChanged = true;
 
@@ -536,24 +566,29 @@ void KIdentityProxyModelPrivate::_k_sourceModelDestroyed()
 void KIdentityProxyModelPrivate::_k_sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     q->beginInsertRows(q->mapFromSource(parent), start, end);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceRowsAboutToBeMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destParent, int dest)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(sourceParent.isValid() ? sourceParent.model() == q->sourceModel() : true);
+    Q_ASSERT(destParent.isValid() ? destParent.model() == q->sourceModel() : true);
     q->beginMoveRows(q->mapFromSource(sourceParent), sourceStart, sourceEnd, q->mapFromSource(destParent), dest);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     q->beginRemoveRows(q->mapFromSource(parent), start, end);
 }
 
 void KIdentityProxyModelPrivate::_k_sourceRowsInserted(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     Q_UNUSED(parent)
     Q_UNUSED(start)
     Q_UNUSED(end)
@@ -563,6 +598,8 @@ void KIdentityProxyModelPrivate::_k_sourceRowsInserted(const QModelIndex &parent
 void KIdentityProxyModelPrivate::_k_sourceRowsMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destParent, int dest)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(sourceParent.isValid() ? sourceParent.model() == q->sourceModel() : true);
+    Q_ASSERT(destParent.isValid() ? destParent.model() == q->sourceModel() : true);
     Q_UNUSED(sourceParent)
     Q_UNUSED(sourceStart)
     Q_UNUSED(sourceEnd)
@@ -574,6 +611,7 @@ void KIdentityProxyModelPrivate::_k_sourceRowsMoved(const QModelIndex &sourcePar
 void KIdentityProxyModelPrivate::_k_sourceRowsRemoved(const QModelIndex &parent, int start, int end)
 {
     Q_Q(KIdentityProxyModel);
+    Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
     Q_UNUSED(parent)
     Q_UNUSED(start)
     Q_UNUSED(end)
