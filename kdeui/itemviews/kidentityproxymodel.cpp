@@ -323,10 +323,10 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
                    this, SLOT(_k_sourceLayoutAboutToBeChanged()));
         disconnect(sourceModel, SIGNAL(layoutChanged()),
                    this, SLOT(_k_sourceLayoutChanged()));
-        disconnect(sourceModel, SIGNAL(childrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)),
-                   this, SLOT(_k_sourceChildrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)));
-        disconnect(sourceModel, SIGNAL(childrenLayoutsChanged(QModelIndex,QModelIndex)),
-                   this, SLOT(_k_sourceChildrenLayoutsChanged(QModelIndex,QModelIndex)));
+//         disconnect(sourceModel, SIGNAL(childrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)),
+//                    this, SLOT(_k_sourceChildrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)));
+//         disconnect(sourceModel, SIGNAL(childrenLayoutsChanged(QModelIndex,QModelIndex)),
+//                    this, SLOT(_k_sourceChildrenLayoutsChanged(QModelIndex,QModelIndex)));
         disconnect(sourceModel, SIGNAL(destroyed()),
                    this, SLOT(_k_sourceModelDestroyed()));
     }
@@ -372,10 +372,11 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
                 SLOT(_k_sourceLayoutAboutToBeChanged()));
         connect(sourceModel, SIGNAL(layoutChanged()),
                 SLOT(_k_sourceLayoutChanged()));
-        connect(sourceModel, SIGNAL(childrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)),
-                SLOT(_k_sourceChildrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)));
-        connect(sourceModel, SIGNAL(childrenLayoutsChanged(QModelIndex,QModelIndex)),
-                SLOT(_k_sourceChildrenLayoutsChanged(QModelIndex,QModelIndex)));
+        // Hopefully this will be in Qt4.8
+//         connect(sourceModel, SIGNAL(childrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)),
+//                 SLOT(_k_sourceChildrenLayoutsAboutToBeChanged(QModelIndex,QModelIndex)));
+//         connect(sourceModel, SIGNAL(childrenLayoutsChanged(QModelIndex,QModelIndex)),
+//                 SLOT(_k_sourceChildrenLayoutsChanged(QModelIndex,QModelIndex)));
         connect(sourceModel, SIGNAL(destroyed()),
                 SLOT(_k_sourceModelDestroyed()));
     }
