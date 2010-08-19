@@ -57,6 +57,7 @@ protected:
   KIdentityProxyModel(KIdentityProxyModelPrivate *privateClass, QObject* parent);
   KIdentityProxyModelPrivate * const d_ptr;
 
+protected Q_SLOTS:
   virtual void resetInternalData();
 
 private:
