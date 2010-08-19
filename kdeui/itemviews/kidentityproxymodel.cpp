@@ -69,15 +69,19 @@ class KIdentityProxyModelPrivate
 };
 
 /*!
+    \since 4.6
     \class KIdentityProxyModel
-
-    \brief The KIdentityProxyModel proxies its source model unmodified
+    \brief The KIdentityProxyModel class proxies its source model unmodified
 
     \ingroup model-view
 
-    KIdentityProxyModel can be used to forward the structure of a source model exactly, with no sorting, filtering or other transformation. This is similar in concept to an identity matrix where A.I = A.
+    KIdentityProxyModel can be used to forward the structure of a source model exactly, with no sorting, filtering or other transformation.
+    This is similar in concept to an identity matrix where A.I = A.
 
-    Because it does no sorting or filtering, this class is most suitable to proxy models which transform the data() of the source model. For example, a proxy model could be created to define the font used, or the background colour, or the tooltip etc. This removes the need to implement all data handling in the same class that creates the structure of the model, and can also be used to create re-usable components.
+    Because it does no sorting or filtering, this class is most suitable to proxy models which transform the data() of the source model.
+    For example, a proxy model could be created to define the font used, or the background colour, or the tooltip etc. This removes the
+    need to implement all data handling in the same class that creates the structure of the model, and can also be used to create
+    re-usable components.
 
     This also provides a way to change the data in the case where a source model is supplied by a third party which can not be modified.
 
@@ -111,23 +115,34 @@ class KIdentityProxyModelPrivate
 
 */
 
+/*!
+    Constructs an identity model with the given \a parent.
+*/
 KIdentityProxyModel::KIdentityProxyModel(QObject* parent)
   : QAbstractProxyModel(parent), d_ptr(new KIdentityProxyModelPrivate(this))
 {
 
 }
 
+/*! \internal
+ */
 KIdentityProxyModel::KIdentityProxyModel(KIdentityProxyModelPrivate* privateClass, QObject* parent)
   : QAbstractProxyModel(parent), d_ptr(privateClass)
 {
 
 }
 
+/*!
+    Destroys this identity model.
+*/
 KIdentityProxyModel::~KIdentityProxyModel()
 {
     delete d_ptr;
 }
 
+/*!
+    \reimp
+ */
 int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
@@ -136,6 +151,9 @@ int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
     return sourceModel()->columnCount(mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
     if (!sourceModel())
@@ -144,6 +162,9 @@ bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction act
     return sourceModel()->dropMimeData(data, action, row, column, mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!sourceModel())
@@ -157,6 +178,9 @@ QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& p
     return mapFromSource(sourceIndex);
 }
 
+/*!
+    \reimp
+ */
 bool KIdentityProxyModel::insertColumns(int column, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
@@ -165,6 +189,9 @@ bool KIdentityProxyModel::insertColumns(int column, int count, const QModelIndex
     return sourceModel()->insertColumns(column, count, mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 bool KIdentityProxyModel::insertRows(int row, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
@@ -173,6 +200,9 @@ bool KIdentityProxyModel::insertRows(int row, int count, const QModelIndex& pare
     return sourceModel()->insertRows(row, count, mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 QModelIndex KIdentityProxyModel::mapFromSource(const QModelIndex& sourceIndex) const
 {
     if (!sourceModel() || !sourceIndex.isValid())
@@ -182,6 +212,9 @@ QModelIndex KIdentityProxyModel::mapFromSource(const QModelIndex& sourceIndex) c
     return createIndex(sourceIndex.row(), sourceIndex.column(), sourceIndex.internalPointer());
 }
 
+/*!
+    \reimp
+ */
 QItemSelection KIdentityProxyModel::mapSelectionFromSource(const QItemSelection& selection) const
 {
     QItemSelection proxySelection;
@@ -201,6 +234,9 @@ QItemSelection KIdentityProxyModel::mapSelectionFromSource(const QItemSelection&
     return proxySelection;
 }
 
+/*!
+    \reimp
+ */
 QItemSelection KIdentityProxyModel::mapSelectionToSource(const QItemSelection& selection) const
 {
     QItemSelection sourceSelection;
@@ -235,6 +271,9 @@ struct SourceModelIndex
     const QAbstractItemModel *m;
 };
 
+/*!
+    \reimp
+ */
 QModelIndex KIdentityProxyModel::mapToSource(const QModelIndex& proxyIndex) const
 {
     if (!sourceModel() || !proxyIndex.isValid())
@@ -243,6 +282,9 @@ QModelIndex KIdentityProxyModel::mapToSource(const QModelIndex& proxyIndex) cons
     return SourceModelIndex(proxyIndex.row(), proxyIndex.column(), proxyIndex.internalPointer(), sourceModel());
 }
 
+/*!
+    \reimp
+ */
 QModelIndexList KIdentityProxyModel::match(const QModelIndex& start, int role, const QVariant& value, int hits, Qt::MatchFlags flags) const
 {
     Q_ASSERT(start.isValid() ? start.model() == this : true);
@@ -258,6 +300,9 @@ QModelIndexList KIdentityProxyModel::match(const QModelIndex& start, int role, c
     return proxyList;
 }
 
+/*!
+    \reimp
+ */
 QModelIndex KIdentityProxyModel::parent(const QModelIndex& child) const
 {
     if (!sourceModel())
@@ -269,6 +314,9 @@ QModelIndex KIdentityProxyModel::parent(const QModelIndex& child) const
     return mapFromSource(sourceParent);
 }
 
+/*!
+    \reimp
+ */
 bool KIdentityProxyModel::removeColumns(int column, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
@@ -278,6 +326,9 @@ bool KIdentityProxyModel::removeColumns(int column, int count, const QModelIndex
     return sourceModel()->removeColumns(column, count, mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 bool KIdentityProxyModel::removeRows(int row, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
@@ -287,6 +338,9 @@ bool KIdentityProxyModel::removeRows(int row, int count, const QModelIndex& pare
     return sourceModel()->removeRows(row, count, mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 int KIdentityProxyModel::rowCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
@@ -295,6 +349,9 @@ int KIdentityProxyModel::rowCount(const QModelIndex& parent) const
     return sourceModel()->rowCount(mapToSource(parent));
 }
 
+/*!
+    \reimp
+ */
 void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 {
     beginResetModel();
@@ -618,6 +675,11 @@ void KIdentityProxyModelPrivate::_k_sourceRowsRemoved(const QModelIndex &parent,
     q->endRemoveRows();
 }
 
+/*!
+  This slot is automatically invoked when the model is reset. It can be used to clear any data internal to the proxy at the approporiate time.
+
+  \sa QAbstractItemModel::internalDataReset()
+ */
 void KIdentityProxyModel::resetInternalData()
 {
 
