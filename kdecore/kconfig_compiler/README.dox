@@ -287,8 +287,22 @@ void setSound(int SoundEvent, const QString &v) function.
 
 - Parameterized groups
 
-...STILL TODO...
+A group name can be parametrized using a parameter given to the KConfigSkeleton
+instance (which means this feature cannot be used with singleton classes).
 
+Example 1:
+\verbatim
+  <kcfgfile name="testrc">
+    <parameter name="groupname"/>
+  </kcfgfile>
+  <group name="$(groupname)">
+    <entry key="Text" type="string">
+    </entry>
+  </group>
+\endverbatim
+
+In this case passing "Group2" as the 'groupname' parameter to the generated class
+will make it use group "Group2" for the entry "Text".
 
 - Enums
 
