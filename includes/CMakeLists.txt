@@ -335,6 +335,7 @@ install( FILES
   KScanDialog
   KSelectAction
   KSelectionOwner
+  KSelectionProxyModel
   KSelectionWatcher
   KSelector
   KSeparator
