@@ -56,7 +56,8 @@ static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
             if (service && service->icon() != QLatin1String( "unknown" ))
                 iconName = service->icon();
             // Try to find an icon with the same name as the binary (useful for non-kde apps)
-            else if ( !KIconLoader::global()->loadIcon( exeName, KIconLoader::NoGroup, 16, KIconLoader::DefaultState, QStringList(), 0, true ).isNull() )
+            // Use iconPath rather than loadIcon() as the latter uses QPixmap (not threadsafe)
+            else if ( !KIconLoader::global()->iconPath( exeName, KIconLoader::NoGroup, true ).isNull() )
                 iconName = exeName;
             else
                 // not found, use default
