@@ -57,6 +57,13 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             col.setNamedColor(QString::fromUtf8(data.constData(), data.length()));
             output = col;
             return true;
+        } else if (!data.contains(',')) {
+            QColor col;
+            col.setNamedColor(QString::fromUtf8(data.constData(), data.length()));
+            if (!col.isValid())
+                kError() << errString << endl;
+            output = col;
+            return true;
         } else {
             const QList<QByteArray> list = data.split(',');
             const int count = list.count();
