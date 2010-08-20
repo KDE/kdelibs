@@ -130,12 +130,14 @@ void KViewStateSaver::setView(QAbstractItemView* view)
 {
   Q_D(KViewStateSaver);
   d->m_scrollArea = view;
-  if (view)
+  if (view) {
     d->m_selectionModel = view->selectionModel();
-  else
+    d->m_treeView = qobject_cast<QTreeView*>(view);
+  } else {
     d->m_selectionModel = 0;
+    d->m_treeView = 0;
+  }
   d->m_view = view;
-  d->m_treeView = qobject_cast<QTreeView*>(view);
 }
 
 QAbstractItemView* KViewStateSaver::view() const
