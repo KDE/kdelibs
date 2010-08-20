@@ -21,6 +21,7 @@
 
 #include <QtCore/QStack>
 #include <QtCore/QStringList>
+#include <QtCore/QWeakPointer>
 #include <QtGui/QItemSelectionRange>
 
 #include "kmodelindexproxymapper.h"
@@ -397,6 +398,7 @@ public:
             m_rowsMoved(false),
             m_resetting(false),
             m_doubleResetting(false),
+            m_layoutChanging(false),
             m_ignoreNextLayoutAboutToBeChanged(false),
             m_ignoreNextLayoutChanged(false),
             m_selectionModel(selectionModel),
@@ -561,7 +563,7 @@ public:
     bool m_layoutChanging;
     bool m_ignoreNextLayoutAboutToBeChanged;
     bool m_ignoreNextLayoutChanged;
-    QItemSelectionModel * const m_selectionModel;
+    const QWeakPointer<QItemSelectionModel> m_selectionModel;
     mutable qint64 m_nextId;
 
     KSelectionProxyModel::FilterBehavior m_filterBehavior;
@@ -731,7 +733,7 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
         return;
     }
 
-    if (m_selectionModel->selection().isEmpty()) {
+    if (m_selectionModel.data()->selection().isEmpty()) {
         return;
     }
 
@@ -752,7 +754,7 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
 
     m_resetting = true;
     m_layoutChanging = true;
-    selectionChanged(m_selectionModel->selection(), QItemSelection());
+    selectionChanged(m_selectionModel.data()->selection(), QItemSelection());
     m_resetting = false;
     m_layoutChanging = false;
 
@@ -822,7 +824,8 @@ void KSelectionProxyModelPrivate::sourceModelReset()
     resetInternalData();
     // No need to try to refill this. When the model is reset it doesn't have a meaningful selection anymore,
     // but when it gets one we'll be notified anyway.
-    m_selectionModel->reset();
+    if (!m_selectionModel.isNull())
+      m_selectionModel.data()->reset();
     m_resetting = false;
     q->endResetModel();
 }
@@ -943,7 +946,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex 
 
     Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
         return;
 
     if (m_omitChildren)
@@ -1096,7 +1099,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex &
 
     Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
         return;
 
     QPair<int, int> pair = beginRemoveRows(parent, start, end);
@@ -1188,7 +1191,7 @@ void KSelectionProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent, i
 
     Q_ASSERT(parent.isValid() ? parent.model() == q->sourceModel() : true);
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
         return;
 
     if (!m_rowsRemoved)
@@ -1215,7 +1218,7 @@ void KSelectionProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &sr
     // Processing them is expensive so we do our best to avoid them.
     m_ignoreNextLayoutAboutToBeChanged = true;
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
         return;
 
     const QPair<int, int> removePair = beginRemoveRows(srcParent, srcStart, srcEnd);
@@ -1345,7 +1348,7 @@ void KSelectionProxyModelPrivate::sourceRowsMoved(const QModelIndex &srcParent, 
 
     m_ignoreNextLayoutChanged = true;
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
         return;
 
     if (m_rowsMoved) {
@@ -1526,7 +1529,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
     // All ranges from the selection model need to be split into individual rows. Ranges which are contiguous in
     // the selection model may not be contiguous in the source model if there's a sort filter proxy model in the chain.
     //
-    // Some descendants of deselected indexes may still be selected. The ranges in m_selectionModel->selection()
+    // Some descendants of deselected indexes may still be selected. The ranges in m_selectionModel.data()->selection()
     // are examined. If any of the ranges are descendants of one of the
     // indexes in deselected, they are added to the ranges to be inserted into the model.
     //
@@ -1538,11 +1541,11 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 #if QT_VERSION < 0x040800
     // The QItemSelectionModel sometimes doesn't remove deselected items from its selection
     // Fixed in Qt 4.8 : http://qt.gitorious.org/qt/qt/merge_requests/2403
-    QItemSelection reportedSelection = m_selectionModel->selection();
+    QItemSelection reportedSelection = m_selectionModel.data()->selection();
     reportedSelection.merge(deselected, QItemSelectionModel::Deselect);
     QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(reportedSelection);
 #else
-    QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel->selection());
+    QItemSelection fullSelection = m_indexMapper->mapSelectionRightToLeft(m_selectionModel.data()->selection());
 #endif
 
     fullSelection = normalizeSelection(fullSelection);
@@ -1629,7 +1632,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
     removeSelectionFromProxy(removedRootRanges);
 
-    if (!m_selectionModel->hasSelection())
+    if (!m_selectionModel.data()->hasSelection())
     {
         Q_ASSERT(m_rootIndexList.isEmpty());
         Q_ASSERT(m_mappedFirstChildren.isEmpty());
@@ -1801,7 +1804,7 @@ void KSelectionProxyModel::setFilterBehavior(FilterBehavior behavior)
     }
     }
     d->resetInternalData();
-    d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
+    d->selectionChanged(d->m_selectionModel.data()->selection(), QItemSelection());
 
     endResetModel();
 }
@@ -1821,14 +1824,14 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
     if (_sourceModel == sourceModel())
         return;
 
-    disconnect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset()));
-    connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset()));
-    disconnect(d->m_selectionModel->model(), SIGNAL(modelReset()), this, SLOT(sourceModelReset()));
-    connect(d->m_selectionModel->model(), SIGNAL(modelReset()), this, SLOT(sourceModelReset()));
+    disconnect(d->m_selectionModel.data()->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset()));
+    connect(d->m_selectionModel.data()->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset()));
+    disconnect(d->m_selectionModel.data()->model(), SIGNAL(modelReset()), this, SLOT(sourceModelReset()));
+    connect(d->m_selectionModel.data()->model(), SIGNAL(modelReset()), this, SLOT(sourceModelReset()));
 
-    disconnect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+    disconnect(d->m_selectionModel.data(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
             this, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect(d->m_selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+    connect(d->m_selectionModel.data(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
             SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
 
     beginResetModel();
@@ -1865,9 +1868,9 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
     d->resetInternalData();
     QAbstractProxyModel::setSourceModel(_sourceModel);
     if (_sourceModel) {
-        d->m_indexMapper = new KModelIndexProxyMapper(_sourceModel, d->m_selectionModel->model(), this);
-        if (d->m_selectionModel->hasSelection())
-            d->selectionChanged(d->m_selectionModel->selection(), QItemSelection());
+        d->m_indexMapper = new KModelIndexProxyMapper(_sourceModel, d->m_selectionModel.data()->model(), this);
+        if (d->m_selectionModel.data()->hasSelection())
+            d->selectionChanged(d->m_selectionModel.data()->selection(), QItemSelection());
 
         connect(_sourceModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)),
                 SLOT(sourceRowsAboutToBeInserted(const QModelIndex &, int, int)));
@@ -2434,7 +2437,7 @@ bool KSelectionProxyModel::hasChildren(const QModelIndex & parent) const
 int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 {
     Q_D(const KSelectionProxyModel);
-    if (!sourceModel() || index.column() > 0 
+    if (!sourceModel() || index.column() > 0
 #if Qt_VERSION > 0x040700
        || d->m_rootIndexList.isEmpty()
 #endif
@@ -2446,7 +2449,7 @@ int KSelectionProxyModel::columnCount(const QModelIndex &index) const
 QItemSelectionModel* KSelectionProxyModel::selectionModel() const
 {
     Q_D(const KSelectionProxyModel);
-    return d->m_selectionModel;
+    return d->m_selectionModel.data();
 }
 
 bool KSelectionProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
