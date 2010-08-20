@@ -212,6 +212,9 @@
 <!ENTITY traducteurSebastienRenard     '<othercredit role="translator"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY traducteurSebastienRenard      '<othercredit role="relecteur"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurJosephRichard     '<othercredit role="translator"><firstname>Joseph</firstname><surname>Richard</surname><affiliation><address><email>jrchcell@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY traducteurJosephRichard      '<othercredit role="relecteur"><firstname>Joseph</firstname><surname>Richard</surname><affiliation><address><email>jrchcell@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurDamienRaudeMorvan     '<othercredit role="translator"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurtraducteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -323,6 +326,7 @@
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
 <!ENTITY OlivierRenaud     'Olivier Renaud <email>o.renaud@laposte.net</email>'>
 <!ENTITY SebastienRenard     'Sébastien Renard <email>Sebastien.Renard@digitalfox.homeip.net</email>'>
+<!ENTITY JosephRichard     'Joseph Richard <email>jrchcell@gmail.com</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY BriceRothschild 'Brice Rothschild <email>brice.rothschild@gmail.com</email>'>
 <!ENTITY MickaelSibelle 'Mickaël Sibelle <email>kimael@gmail.com</email>'>
