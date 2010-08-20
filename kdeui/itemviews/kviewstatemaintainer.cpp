@@ -21,10 +21,12 @@
 
 #include "kviewstatemaintainer.h"
 
+#include <QtCore/QWeakPointer>
+
 class KViewStateMaintainerBasePrivate
 {
   KViewStateMaintainerBasePrivate(KSharedConfigPtr configPtr, const QString &name, KViewStateMaintainerBase *qq)
-    : q_ptr(qq), m_view( 0 ), m_selectionModel( 0 ), m_configPtr(configPtr), m_name(name)
+    : q_ptr(qq), m_configPtr(configPtr), m_name(name)
   {
 
   }
@@ -35,8 +37,8 @@ class KViewStateMaintainerBasePrivate
   void _k_modelAboutToBeReset();
   void _k_modelReset();
 
-  QAbstractItemView *m_view;
-  QItemSelectionModel *m_selectionModel;
+  QWeakPointer<QAbstractItemView> m_view;
+  QWeakPointer<QItemSelectionModel> m_selectionModel;
 
   const KSharedConfigPtr m_configPtr;
   const QString m_name;
@@ -74,7 +76,7 @@ KConfigGroup KViewStateMaintainerBase::configGroup() const
 QItemSelectionModel* KViewStateMaintainerBase::selectionModel() const
 {
   Q_D(const KViewStateMaintainerBase);
-  return d->m_selectionModel;
+  return d->m_selectionModel.data();
 }
 
 void KViewStateMaintainerBase::setSelectionModel(QItemSelectionModel* selectionModel)
@@ -82,18 +84,18 @@ void KViewStateMaintainerBase::setSelectionModel(QItemSelectionModel* selectionM
   Q_D(KViewStateMaintainerBase);
   d->m_selectionModel = selectionModel;
 
-  if (d->m_view && d->m_view->model()) {
-    disconnect(d->m_view->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(_k_modelAboutToBeReset()));
-    disconnect(d->m_view->model(), SIGNAL(modelReset()), this, SLOT(_k_modelReset()));
+  if (d->m_view && d->m_view.data()->model()) {
+    disconnect(d->m_view.data()->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(_k_modelAboutToBeReset()));
+    disconnect(d->m_view.data()->model(), SIGNAL(modelReset()), this, SLOT(_k_modelReset()));
   }
-  connect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), SLOT(_k_modelAboutToBeReset()), Qt::UniqueConnection);
-  connect(d->m_selectionModel->model(), SIGNAL(modelReset()), SLOT(_k_modelReset()), Qt::UniqueConnection);
+  connect(d->m_selectionModel.data()->model(), SIGNAL(modelAboutToBeReset()), SLOT(_k_modelAboutToBeReset()), Qt::UniqueConnection);
+  connect(d->m_selectionModel.data()->model(), SIGNAL(modelReset()), SLOT(_k_modelReset()), Qt::UniqueConnection);
 }
 
 QAbstractItemView* KViewStateMaintainerBase::view() const
 {
   Q_D(const KViewStateMaintainerBase);
-  return d->m_view;
+  return d->m_view.data();
 }
 
 void KViewStateMaintainerBase::setView(QAbstractItemView* view)
@@ -101,13 +103,13 @@ void KViewStateMaintainerBase::setView(QAbstractItemView* view)
   Q_D(KViewStateMaintainerBase);
   d->m_view = view;
 
-  if (d->m_selectionModel && d->m_selectionModel->model()) {
-    disconnect(d->m_selectionModel->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(_k_modelAboutToBeReset()));
-    disconnect(d->m_selectionModel->model(), SIGNAL(modelReset()), this, SLOT(_k_modelReset()));
+  if (d->m_selectionModel && d->m_selectionModel.data()->model()) {
+    disconnect(d->m_selectionModel.data()->model(), SIGNAL(modelAboutToBeReset()), this, SLOT(_k_modelAboutToBeReset()));
+    disconnect(d->m_selectionModel.data()->model(), SIGNAL(modelReset()), this, SLOT(_k_modelReset()));
   }
-  if (d->m_view && d->m_view->model()) {
-    connect(d->m_view->model(), SIGNAL(modelAboutToBeReset()), SLOT(_k_modelAboutToBeReset()), Qt::UniqueConnection);
-    connect(d->m_view->model(), SIGNAL(modelReset()), SLOT(_k_modelReset()), Qt::UniqueConnection);
+  if (d->m_view && d->m_view.data()->model()) {
+    connect(d->m_view.data()->model(), SIGNAL(modelAboutToBeReset()), SLOT(_k_modelAboutToBeReset()), Qt::UniqueConnection);
+    connect(d->m_view.data()->model(), SIGNAL(modelReset()), SLOT(_k_modelReset()), Qt::UniqueConnection);
   }
 }
 
