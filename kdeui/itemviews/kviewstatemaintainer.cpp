@@ -76,6 +76,8 @@ KConfigGroup KViewStateMaintainerBase::configGroup() const
 QItemSelectionModel* KViewStateMaintainerBase::selectionModel() const
 {
   Q_D(const KViewStateMaintainerBase);
+  if (d->m_selectionModel.isNull())
+    return 0;
   return d->m_selectionModel.data();
 }
 
@@ -95,6 +97,8 @@ void KViewStateMaintainerBase::setSelectionModel(QItemSelectionModel* selectionM
 QAbstractItemView* KViewStateMaintainerBase::view() const
 {
   Q_D(const KViewStateMaintainerBase);
+  if (d->m_view.isNull())
+    return 0;
   return d->m_view.data();
 }
 
