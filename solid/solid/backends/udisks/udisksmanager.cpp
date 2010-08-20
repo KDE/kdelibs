@@ -60,14 +60,41 @@ UDisksManager::~UDisksManager()
 
 QObject* UDisksManager::createDevice(const QString& udi)
 {
-    // TODO should check for device existence given the UDI
-    return new UDisksDevice(udi);
+    if (allDevices().contains(udi))
+        return new UDisksDevice(udi);
+    else
+        return 0;
 }
 
 QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
 {
-    // TODO: do this!
-    return QStringList();
+    QStringList allDev = allDevices();
+    QStringList result;
+
+    if (!parentUdi.isEmpty())
+    {
+        foreach (const QString & udi, allDev)
+        {
+            UDisksDevice device(udi);
+            if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
+                result << udi;
+        }
+
+        return result;
+    }
+    else if (type != Solid::DeviceInterface::Unknown)
+    {
+        foreach (const QString & udi, allDev)
+        {
+            UDisksDevice device(udi);
+            if (device.queryDeviceInterface(type))
+                result << udi;
+        }
+
+        return result;
+    }
+    else
+        return allDev;
 }
 
 QStringList UDisksManager::allDevices()

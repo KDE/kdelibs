@@ -54,14 +54,41 @@ UPowerManager::~UPowerManager()
 
 QObject* UPowerManager::createDevice(const QString& udi)
 {
-    // TODO should check for device existence given the UDI
-    return new UPowerDevice(udi);
+    if (allDevices().contains(udi))
+        return new UPowerDevice(udi);
+    else
+        return 0;
 }
 
 QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
 {
-    // TODO: do this!
-    return QStringList();
+    QStringList allDev = allDevices();
+    QStringList result;
+
+    if (!parentUdi.isEmpty())
+    {
+        foreach (const QString & udi, allDev)
+        {
+            UPowerDevice device(udi);
+            if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
+                result << udi;
+        }
+
+        return result;
+    }
+    else if (type != Solid::DeviceInterface::Unknown)
+    {
+        foreach (const QString & udi, allDev)
+        {
+            UPowerDevice device(udi);
+            if (device.queryDeviceInterface(type))
+                result << udi;
+        }
+
+        return result;
+    }
+    else
+        return allDev;
 }
 
 QStringList UPowerManager::allDevices()
