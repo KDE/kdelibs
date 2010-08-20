@@ -315,6 +315,10 @@ void KWindowSystemPrivate::windowRemoved   (WId wid)
 void KWindowSystemPrivate::windowActivated (WId wid)
 {
 //     kDebug() << "window activated!";
+    if (!wid) {
+        return;
+    }
+
     KWindowSystem::s_d_func()->reloadStackList();
     emit KWindowSystem::self()->activeWindowChanged(wid);
     emit KWindowSystem::self()->stackingOrderChanged();
