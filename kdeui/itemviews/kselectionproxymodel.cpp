@@ -388,6 +388,7 @@ public:
             m_rowsMoved(false),
             m_resetting(false),
             m_doubleResetting(false),
+            m_layoutChanging(false),
             m_ignoreNextLayoutAboutToBeChanged(false),
             m_ignoreNextLayoutChanged(false),
             m_selectionModel(selectionModel)
