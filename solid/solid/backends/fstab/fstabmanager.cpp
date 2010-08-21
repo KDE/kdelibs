@@ -26,6 +26,14 @@
 #include "rootdevice.h"
 #include "fstabservice.h"
 
+#include <QtCore/QFileSystemWatcher>
+
+
+#ifdef Q_OS_SOLARIS
+#define FSTAB "/etc/vfstab"
+#else
+#define FSTAB "/etc/fstab"
+#endif
 
 using namespace Solid::Backends::Fstab;
 
@@ -34,6 +42,15 @@ FstabManager::FstabManager(QObject *parent)
   : Solid::Ifaces::DeviceManager(parent)
 {
     m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;
+
+    m_deviceList = FstabHandling::deviceList();
+
+    QStringList fileList;
+    fileList << FSTAB;
+
+    m_fileSystemWatcher = new QFileSystemWatcher(fileList, this);
+
+    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 }
 
 
@@ -52,19 +69,26 @@ QStringList FstabManager::allDevices()
     QStringList result;
 
     result << udiPrefix();
-    foreach (QString device, FstabHandling::deviceList()) {
+    foreach (QString device, m_deviceList) {
         result << udiPrefix() + "/" + device;
     }
 
     return result;
 }
 
-
-QStringList FstabManager::devicesFromQuery( const QString &/*parentUdi*/,
+QStringList FstabManager::devicesFromQuery( const QString &parentUdi,
                                              Solid::DeviceInterface::Type type)
 {
     if (type == Solid::DeviceInterface::StorageAccess) {
-        return allDevices();
+        if (parentUdi.isEmpty() || parentUdi == udiPrefix()) {
+            QStringList list = allDevices();
+            list.removeFirst();
+            return list;
+        } else {
+            QStringList list;
+            list << parentUdi;
+            return list;
+        }
     }
     return QStringList();
 }
@@ -78,6 +102,31 @@ QObject *FstabManager::createDevice(const QString &udi)
         result = new FstabDevice(udi);
     }
     return result;
+}
+
+void FstabManager::onFileChanged(const QString &/*path*/)
+{
+    QStringList deviceList = FstabHandling::deviceList();
+    if (deviceList.count() > m_deviceList.count()) {
+        //new device
+        foreach (QString device, deviceList) {
+            if (!m_deviceList.contains(device)) {
+                emit deviceAdded(udiPrefix() + "/" + device);
+            }
+        }
+    } else {
+        //device has been removed
+        foreach (QString device, m_deviceList) {
+            if (!deviceList.contains(device)) {
+                emit deviceRemoved(udiPrefix() + "/" + device);
+            }
+        }
+    }
+    m_deviceList = deviceList;
+
+    if (!m_fileSystemWatcher->files().contains(FSTAB)) {
+        m_fileSystemWatcher->addPath(FSTAB);
+    }
 }
 
 FstabManager::~FstabManager()

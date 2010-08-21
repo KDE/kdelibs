@@ -24,6 +24,7 @@
 #define SOLID_BACKENDS_FSTAB_FSTAB_DEVICE_H
 
 #include <solid/ifaces/device.h>
+#include <QtCore/QStringList>
 
 namespace Solid
 {
@@ -65,6 +66,7 @@ namespace Fstab
             QString m_device;
             QString m_product;
             QString m_vendor;
+            QString m_description;
     };
 
 }

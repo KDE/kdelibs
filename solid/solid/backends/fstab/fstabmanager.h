@@ -28,6 +28,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QSet>
 
+class QFileSystemWatcher;
+
 namespace Solid
 {
 namespace Backends
@@ -35,7 +37,6 @@ namespace Backends
 namespace Fstab
 {
 class AbstractDeviceFactory;
-
 
 class FstabManager : public Solid::Ifaces::DeviceManager
 {
@@ -51,8 +52,13 @@ public:
     virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
     virtual QObject *createDevice(const QString &udi);
 
+private Q_SLOTS:
+    void onFileChanged(const QString &path);
+
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
+    QStringList m_deviceList;
+    QFileSystemWatcher *m_fileSystemWatcher;
 };
 
 }

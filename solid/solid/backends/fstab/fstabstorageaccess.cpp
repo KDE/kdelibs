@@ -23,7 +23,11 @@
 #include "fstabstorageaccess.h"
 #include <solid/backends/fstab/fstabdevice.h>
 #include <solid/backends/fstab/fstabhandling.h>
+#include <solid/backends/fstab/fstabservice.h>
 #include <QtCore/QStringList>
+#include <QtCore/QFileSystemWatcher>
+
+#define MTAB "/etc/mtab"
 
 using namespace Solid::Backends::Fstab;
 
@@ -31,6 +35,14 @@ FstabStorageAccess::FstabStorageAccess(Solid::Backends::Fstab::FstabDevice *devi
     QObject(device),
     m_fstabDevice(device)
 {
+    m_currentMountPoints = FstabHandling::currentMountPoints();
+
+    QStringList fileList;
+    fileList << MTAB;
+
+    m_fileSystemWatcher = new QFileSystemWatcher(fileList, this);
+
+    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 }
 
 FstabStorageAccess::~FstabStorageAccess()
@@ -44,7 +56,7 @@ const Solid::Backends::Fstab::FstabDevice *FstabStorageAccess::fstabDevice() con
 
 bool FstabStorageAccess::isAccessible() const
 {
-    if (FstabHandling::currentMountPoints().contains(m_fstabDevice->device())) {
+    if (m_currentMountPoints.contains(m_fstabDevice->device())) {
         return true;
     } else {
         return false;
@@ -108,4 +120,30 @@ void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus
         emit teardownDone(Solid::UnauthorizedOperation, m_process->readAllStandardError(), m_fstabDevice->udi());
     }
     delete m_process;
+}
+
+void FstabStorageAccess::onFileChanged(const QString &/*path*/)
+{
+    QStringList currentMountPoints = FstabHandling::currentMountPoints();
+    if (currentMountPoints.count() > m_currentMountPoints.count()) {
+        // device mounted
+        foreach (QString device, currentMountPoints) {
+            if (!m_currentMountPoints.contains(device)) {
+                 emit accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + device);
+            }
+        }
+    } else {
+        // device umounted
+        foreach (QString device, m_currentMountPoints) {
+            if (!currentMountPoints.contains(device)) {
+                emit accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + device);
+            }
+        }
+    }
+
+    m_currentMountPoints = currentMountPoints;
+
+    if (!m_fileSystemWatcher->files().contains(MTAB)) {
+        m_fileSystemWatcher->addPath(MTAB);
+    }
 }

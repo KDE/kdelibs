@@ -21,6 +21,7 @@
 */
 
 #include "fstabdevice.h"
+#include "fstabhandling.h"
 #include "fstabstorageaccess.h"
 #include "fstabservice.h"
 #include <QtCore/QStringList>
@@ -42,6 +43,7 @@ FstabDevice::FstabDevice(QString uid) :
         m_vendor = m_device.mid(m_device.indexOf(":") + 1);
     }
 
+    m_description = m_vendor + " on " + m_product;
 }
 
 FstabDevice::~FstabDevice()
@@ -88,7 +90,7 @@ QStringList FstabDevice::emblems() const
 
 QString FstabDevice::description() const
 {
-    return QString();
+    return m_description;
 }
 
 bool FstabDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
