@@ -543,6 +543,17 @@ public:
     static KGlobalSettings* self();
 
     /**
+     * Specifies options passed to activate().
+     *
+     * @since 4.6
+     */
+    enum ActivateOption {
+        ApplySettings = 0x1, ///< Make all globally applicable settings take effect.
+        ListenForChanges = 0x2 ///< Listen for changes to the settings.
+    };
+    Q_DECLARE_FLAGS(ActivateOptions, ActivateOption);
+
+    /**
      * Makes all globally applicable settings take effect
      * and starts listening for changes to these settings.
      *
@@ -550,7 +561,14 @@ public:
      *
      * @since 4.3.3
      */
-    void activate();
+    void activate(); //KDE5: Merge with the overloaded method below
+
+    /**
+     * @overload
+     *
+     * @since 4.6
+     */
+    void activate(ActivateOptions options);
 
     /**
      * Valid values for the settingsChanged signal
@@ -652,5 +670,6 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalSettings::GraphicEffects)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalSettings::ActivateOptions)
 
 #endif

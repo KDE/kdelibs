@@ -191,8 +191,6 @@ KGlobalSettings* KGlobalSettings::self()
 KGlobalSettings::KGlobalSettings()
     : QObject(0), d(new Private(this))
 {
-    QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
-                                           "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
 }
 
 KGlobalSettings::~KGlobalSettings()
@@ -202,12 +200,24 @@ KGlobalSettings::~KGlobalSettings()
 
 void KGlobalSettings::activate()
 {
+    activate(ApplySettings | ListenForChanges);
+}
+
+void KGlobalSettings::activate(ActivateOptions options)
+{
     if (!d->activated) {
         d->activated = true;
 
-        d->kdisplaySetStyle(); // implies palette setup
-        d->kdisplaySetFont();
-        d->propagateQtSettings();
+        if (options & ListenForChanges) {
+            QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                                   "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
+        }
+
+        if (options & ApplySettings) {
+            d->kdisplaySetStyle(); // implies palette setup
+            d->kdisplaySetFont();
+            d->propagateQtSettings();
+        }
     }
 }
 
