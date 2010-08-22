@@ -17,8 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef VALUE_TEST_H
-#define VALUE_TEST_H
+#ifndef CATEGORYTEST_H
+#define CATEGORYTEST_H
 
 #include <QtCore/QObject>
 #include <qtest_kde.h>
@@ -40,4 +40,4 @@ private:
     Converter c;
 };
 
-#endif
+#endif // CATEGORYTEST_H

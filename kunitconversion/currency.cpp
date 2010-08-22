@@ -46,7 +46,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "EUR",
       KCurrencyCode::currencyCodeToName("EUR"),
       i18nc("EUR Euro - unit synonyms for matching user input", "euro;euros") +
-          ";EUR;" + QString::fromUtf8("€") + ";" + KCurrencyCode::currencyCodeToName("EUR"),
+          ";EUR;" + QString::fromUtf8("€") + ';' + KCurrencyCode::currencyCodeToName("EUR"),
       ki18nc("amount in units (real)", "%1 euros"),
       ki18ncp("amount in units (integer)", "%1 euro", "%1 euros")
     ));
@@ -210,7 +210,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "JPY",
       KCurrencyCode::currencyCodeToName("JPY"),
       i18nc("JPY Japanese Yen - unit synonyms for matching user input", "yen") +
-      ";JPY;" + QString::fromUtf8("¥") + ";" +
+      ";JPY;" + QString::fromUtf8("¥") + ';' +
       KGlobal::locale()->countryCodeToName("jp") + ';' + KCurrencyCode::currencyCodeToName("JPY"),
       ki18nc("amount in units (real)", "%1 yen"),
       ki18ncp("amount in units (integer)", "%1 yen", "%1 yen")
@@ -257,7 +257,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("GBP"),
       i18nc("GBP British Pound - unit synonyms for matching user input",
           "pound;pounds;pound sterling;pounds sterling") +
-          ";GBP;" + QString::fromUtf8("£") + ";" +
+          ";GBP;" + QString::fromUtf8("£") + ';' +
           KGlobal::locale()->countryCodeToName("gb") + ';' +
           KCurrencyCode::currencyCodeToName("GBP"),
       ki18nc("amount in units (real)", "%1 pounds sterling"),
