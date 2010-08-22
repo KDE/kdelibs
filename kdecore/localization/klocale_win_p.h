@@ -22,6 +22,8 @@
 
 #include "klocale_p.h"
 
+#include <windows.h>
+
 class KLocaleWindowsPrivate : public KLocalePrivate
 {
 public:
@@ -33,6 +35,14 @@ public:
     KLocaleWindowsPrivate &operator=( const KLocaleWindowsPrivate &rhs );
 
     virtual ~KLocaleWindowsPrivate();
+
+protected:
+
+    /**************************
+     **   Country settings   **
+     **************************/
+
+    virtual QString systemCountry() const;
 
     /**************************
      **  Language settings   **
@@ -49,6 +59,8 @@ public:
     virtual const QByteArray encoding();
 
 private:
+    QString windowsLocaleValue( LCTYPE key ) const;
+    LCID m_winLocaleId;
     // Encoding settings
     char m_win32SystemEncoding[3+7]; //"cp " + lang ID
 };

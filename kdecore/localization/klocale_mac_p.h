@@ -22,6 +22,8 @@
 
 #include "klocale_p.h"
 
+#include <CoreFoundation/CoreFoundation.h>
+
 class KLocaleMacPrivate : public KLocalePrivate
 {
 public:
@@ -34,12 +36,23 @@ public:
 
     virtual ~KLocaleMacPrivate();
 
+protected:
+
+    /**************************
+     **   Country settings   **
+     **************************/
+
+    virtual QString systemCountry() const;
+
     /***************************
      **   Encoding settings   **
      ***************************/
 
     virtual QByteArray systemCodeset() const;
 
+private:
+    QString macLocaleValue( CFStringRef key ) const;
+    CFLocaleRef m_macLocale;
 };
 
 #endif // KLOCALE_MAC_P_H

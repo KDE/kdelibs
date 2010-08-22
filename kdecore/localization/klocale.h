@@ -1130,7 +1130,14 @@ public:
 
     /**
      * Returns the country code of the country where the user lives.
-     * defaultCountry() is returned by default, if no other available.
+     *
+     * The returned code complies with the ISO 3166-1 alpha-2 standard,
+     * except by KDE convention it is returned in lowercase whereas the
+     * official standard is uppercase.
+     * See http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 for details.
+     *
+     * defaultCountry() is returned by default, if no other available,
+     * this will always be uppercase 'C'.
      *
      * Use countryCodeToName(country) to get human readable, localized
      * country names.
@@ -1667,7 +1674,12 @@ public:
     static QString defaultLanguage();
 
     /**
-     * Returns the name of the default country.
+     * Returns the code of the default country, i.e. "C"
+     *
+     * This function will not provide a sensible value to use in your app,
+     * please use country() instead.
+     *
+     * @see country
      *
      * @return Name of the default country
      */

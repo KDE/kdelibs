@@ -33,6 +33,14 @@ QMutex* kLocaleMutex();
 class KLocalePrivate
 {
 public:
+    /**
+     * Constructor
+     *
+     * This class should not be instantited directly, it is intended as a base class for each
+     * platform to provide a common KDE fallback implemenation.  Instead use the relevent
+     * derived system class for Unix, Win, or Mac which will prefer the local platform settings
+     * where possible.
+     */
     KLocalePrivate(KLocale *q, const QString &catalog, KConfig *config,
                    const QString &language = QString(), const QString &country = QString());
 
@@ -67,9 +75,31 @@ protected:
      */
     virtual void initFormat(KConfig *config);
 
+    /**
+     * @internal Main init function, needs to be called by appropriate child constructor.
+     */
+    void init( KConfig *config );
+
     /**************************
      **   Country settings   **
      **************************/
+
+protected:
+
+    /**
+     * @internal Initializes the country if not already explicity set when calling the constructor
+     * Will default to any value set in the config, otherwise will attempt to use the host system
+     * country, or finally fall back to the default C.
+     *
+     * @param config The configuration object used for init
+     */
+    virtual void initCountry( KConfigGroup localeSettings );
+
+    /**
+     * @internal Returns the host system country ISO code
+     * If country could not be determined then may return an empty string or "C"
+     */
+    virtual QString systemCountry() const;
 
 public:
 
@@ -127,7 +157,7 @@ protected:
      * @param config The configuration object used for init
      * @param useEnv True if we should use environment variables
      */
-    virtual void initLanguageList(KConfig *config, bool useEnv);
+    virtual void initLanguageList(KConfigGroup localeSettings, bool useEnv);
 
     /**
      * @internal function used to determine if we are using the en_US translation

@@ -100,7 +100,8 @@ QDebug operator<<(QDebug debug, const KCatalogName &cn)
     return debug << cn.name << cn.loadCount;
 }
 
-KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *config, const QString &language, const QString &country)
+KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *config,
+                               const QString &language, const QString &country )
                : q(q_ptr),
                  m_country(country),
                  m_language(language),
@@ -110,19 +111,6 @@ KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *
                  m_currency(0),
                  m_codecForEncoding(0)
 {
-    initEncoding();
-    initFileNameEncoding();
-
-    if (config) {
-        initLanguageList(config, false);
-    } else {
-        config = KGlobal::config().data();
-        initLanguageList(config, true);
-    }
-
-    initMainCatalogs();
-
-    initFormat(config);
 }
 
 KLocalePrivate::KLocalePrivate(const KLocalePrivate &rhs)
@@ -216,6 +204,29 @@ KLocalePrivate::~KLocalePrivate()
     delete m_languages;
 }
 
+void KLocalePrivate::init( KConfig *config ) {
+    initEncoding();
+    initFileNameEncoding();
+
+    bool useEnv = false;
+    if ( !config ) {
+        useEnv = true;
+        config = KGlobal::config().data();
+    }
+
+    KConfigGroup localeSettings( config, "Locale" );
+
+    if ( m_country.isEmpty() ) {
+        initCountry( localeSettings );
+    }
+
+    initLanguageList( localeSettings, useEnv );
+
+    initMainCatalogs();
+
+    initFormat( config );
+}
+
 void KLocalePrivate::initMainCatalogs()
 {
     KLocaleStaticData *s = staticData;
@@ -278,20 +289,57 @@ void KLocalePrivate::getLanguagesFromVariable(QStringList &list, const char *var
     }
 }
 
-void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
+void KLocalePrivate::initCountry( KConfigGroup localeSettings )
 {
-    KConfigGroup cg(config, "Locale");
+    // First check if the constructor passed in a country and if that is valid
+    QString putativeCountry = m_country;
+    // Cache the valid countries list to save re-reading from disk
+    QStringList validCountries = allCountriesList();
+    // Add the default C as it is valid to use but is not in the list
+    validCountries.append( defaultCountry() );
 
-    // Set the country as specified by the KDE config or use default,
-    // do not consider environment variables.
-    if (m_country.isEmpty()) {
-        m_country = cg.readEntry("Country");
+    // If the constructor country is not valid
+    if ( putativeCountry.isEmpty() || !validCountries.contains( putativeCountry, Qt::CaseInsensitive ) ) {
+
+        // Default to country as set in config (in priorty order as sorted out by KConfig):
+        // * Application level setting, i.e. from the kapprc
+        // * User level setting, i.e. from kdeglobals
+        // * Any group policy setting
+        putativeCountry = localeSettings.readEntry( "Country" );
+
+        // If the config country is not valid
+        if ( putativeCountry.isEmpty() || !validCountries.contains( putativeCountry, Qt::CaseInsensitive ) ) {
+
+            // Try obtain a sensible default based on current host system settings
+            putativeCountry = systemCountry();
+
+            if ( putativeCountry.isEmpty() || !validCountries.contains( putativeCountry, Qt::CaseInsensitive ) ) {
+                // Only if no other option, resort to the default C
+                putativeCountry = defaultCountry();
+            }
+        }
     }
 
-    if (m_country.isEmpty()) {
-        m_country = KLocalePrivate::defaultCountry();
+    // Always save as lowercase, unless it's C when we want it uppercase
+    if ( putativeCountry.toLower() == defaultCountry().toLower() ) {
+        m_country = defaultCountry();
+    } else {
+        m_country = putativeCountry.toLower();
     }
+}
 
+
+QString KLocalePrivate::systemCountry() const
+{
+    // Use QLocale for now as it supposedly provides a sensible default most times,
+    // e.g. if locale is only "de" it is assumed to mean country of "DE"
+    QString systemCountry, s1, s2, s3;
+    splitLocale( QLocale::system().name(), s1, systemCountry, s2, s3 );
+    return systemCountry.toLower();
+}
+
+void KLocalePrivate::initLanguageList(KConfigGroup localeSettings, bool useEnv)
+{
     // Collect possible languages by decreasing priority.
     // The priority is as follows:
     // - the internally set language, if any
@@ -309,7 +357,7 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
         getLanguagesFromVariable(list, "KDE_LANG", true);
     }
 
-    QString languages(cg.readEntry("Language", QString()));
+    QString languages(localeSettings.readEntry("Language", QString()));
     if (!languages.isEmpty()) {
         list += languages.split(':');
     }
@@ -447,11 +495,21 @@ void KLocalePrivate::initFormat(KConfig *config)
 
 bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
 {
-    // Check if the file exists too??
-    if (country.isEmpty()) {
+    QStringList validCountries = allCountriesList();
+    // Add the default C as it is valid to use but is not in the list
+    validCountries.append( defaultCountry() );
+
+    if ( country.isEmpty() || !validCountries.contains( country, Qt::CaseInsensitive ) ) {
         return false;
     }
-    m_country = country;
+
+    // Always save as lowercase, unless it's C when we want it uppercase
+    if ( country.toLower() == defaultCountry().toLower() ) {
+        m_country = defaultCountry();
+    } else {
+        m_country = country.toLower();
+    }
+
     initFormat(config);
     return true;
 }

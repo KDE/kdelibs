@@ -23,22 +23,37 @@ KLocaleMacPrivate::KLocaleMacPrivate( KLocale *q_ptr, const QString &catalog, KC
                                       const QString &language, const QString &country )
                   :KLocalePrivate( q_ptr, catalog, config, language, country )
 {
+    // Lock in the current Mac Locale settings
+    m_macLocale = CFLocaleCopyCurrent();
+    init( config );
 }
 
 KLocaleMacPrivate::KLocaleMacPrivate( const KLocaleMacPrivate &rhs )
                   :KLocalePrivate( rhs )
 {
     KLocalePrivate::copy( rhs );
+    m_macLocale = rhs.m_macLocale;
 }
 
 KLocaleMacPrivate &KLocaleMacPrivate::operator=( const KLocaleMacPrivate &rhs )
 {
     KLocalePrivate::copy( rhs );
+    m_macLocale = rhs.m_macLocale;
     return *this;
 }
 
 KLocaleMacPrivate::~KLocaleMacPrivate()
 {
+}
+
+QString KLocaleMacPrivate::macLocaleValue( CFStringRef key ) const
+{
+    return QCFString::toQString( CFStringRef( CFLocaleGetValue( m_macLocale, key ) ) );
+}
+
+QString KLocaleMacPrivate::systemCountry() const
+{
+    return macLocaleValue( kCFLocaleCountryCode );
 }
 
 QByteArray KLocaleMacPrivate::systemCodeset() const

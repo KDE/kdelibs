@@ -20,8 +20,6 @@
 
 #include "klocale_win_p.h"
 
-#include <windows.h>
-
 #include <QtCore/QLocale>
 #include <QtCore/QTextCodec>
 
@@ -29,24 +27,47 @@ KLocaleWindowsPrivate::KLocaleWindowsPrivate( KLocale *q_ptr, const QString &cat
                                               const QString &language, const QString &country )
                       :KLocalePrivate( q_ptr, catalog, config, language, country )
 {
+    // Lock in the current Windows Locale ID
+    // Can we also lock in the actual settings like we do for Mac?
+    m_winLocaleId = GetUserDefaultLCID();
+    init( config );
 }
 
 KLocaleWindowsPrivate::KLocaleWindowsPrivate( const KLocaleWindowsPrivate &rhs )
                       :KLocalePrivate( rhs )
 {
     KLocalePrivate::copy( rhs );
+    m_winLocaleId = rhs.m_winLocaleId;
     strcpy( m_win32SystemEncoding, rhs.m_win32SystemEncoding );
 }
 
 KLocaleWindowsPrivate &KLocaleWindowsPrivate::operator=( const KLocaleWindowsPrivate &rhs )
 {
     KLocalePrivate::copy( rhs );
+    m_winLocaleId = rhs.m_winLocaleId;
     strcpy( m_win32SystemEncoding, rhs.m_win32SystemEncoding );
     return *this;
 }
 
 KLocaleWindowsPrivate::~KLocaleWindowsPrivate()
 {
+}
+
+QString KLocaleWindowsPrivate::windowsLocaleValue( LCTYPE key ) const
+{
+    // Find out how big the buffer needs to be
+    int size = GetLocaleInfo( m_winLocaleId, key, 0, 0 );
+    wchar_t buffer[size];
+    if ( GetLocaleInfo( m_winLocaleId, key, buffer, size ) ) {
+        return QString::fromWCharArray( buffer );
+    } else {
+        return QString();
+    }
+}
+
+QString KLocaleWindowsPrivate::systemCountry() const
+{
+    return windowsLocaleValue( LOCALE_SISO3166CTRYNAME );
 }
 
 QStringList KLocaleWindowsPrivate::systemLanguageList() const
