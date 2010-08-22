@@ -327,12 +327,14 @@ static QString enumName(const QString &n, const CfgEntry::Choices &c)
   return result;
 }
 
-static QString enumType(const CfgEntry *e)
+static QString enumType(const CfgEntry *e, bool globalEnums)
 {
   QString result = e->choices().name();
   if ( result.isEmpty() )
   {
-    result = "Enum" + e->name() + "::type";
+    result = "Enum" + e->name();
+    if( !globalEnums )
+        result += "::type";
     result[4] = result[4].toUpper();
   }
   return result;
@@ -1061,7 +1063,7 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i
 // returns the member accesor implementation
 // which should go in the h file if inline
 // or the cpp file if not inline
-QString memberAccessorBody( CfgEntry *e )
+QString memberAccessorBody( CfgEntry *e, bool globalEnums )
 {
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
@@ -1071,7 +1073,7 @@ QString memberAccessorBody( CfgEntry *e )
 
     out << "return ";
     if (useEnumType)
-      out << "static_cast<" << enumType(e) << ">(";
+      out << "static_cast<" << enumType(e, globalEnums) << ">(";
     out << This << varPath(n);
     if (!e->param().isEmpty())
       out << "[i]";
@@ -1491,7 +1493,7 @@ int main( int argc, char **argv )
       }
       if ( choices.name().isEmpty() ) {
         if ( globalEnums ) {
-          h << "    enum { " << values.join( ", " ) << " };" << endl;
+          h << "    enum " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << " { " << values.join( ", " ) << " };" << endl;
         } else {
           // Create an automatically named enum
           h << "    class " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << endl;
@@ -1511,7 +1513,7 @@ int main( int argc, char **argv )
         // ### FIXME!!
         // make the following string table an index-based string search!
         // ###
-        h << "    enum { " << values.join( ", " ) << " };" << endl;
+        h << "    enum " << enumName( (*itEntry)->param() ) << " { " << values.join( ", " ) << " };" << endl;
         h << "    static const char* const " << enumName( (*itEntry)->param() ) << "ToString[];" << endl;
         cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
            "ToString[] = { \"" + values.join( "\", \"" ) + "\" };\n";
@@ -1598,7 +1600,7 @@ int main( int argc, char **argv )
       if (!(*itEntry)->param().isEmpty())
         h << cppType((*itEntry)->paramType()) << " i, ";
       if (useEnumTypes && t == "Enum")
-        h << enumType(*itEntry);
+        h << enumType(*itEntry, globalEnums);
       else
         h << param( t );
       h << " v )";
@@ -1624,7 +1626,7 @@ int main( int argc, char **argv )
       h << "    static" << endl;
     h << "    ";
     if (useEnumTypes && t == "Enum")
-      h << enumType(*itEntry);
+      h << enumType(*itEntry, globalEnums);
     else
       h << cppType(t);
     h << " " << getFunction(n) << "(";
@@ -1636,7 +1638,7 @@ int main( int argc, char **argv )
     if ( !dpointer )
     {
        h << endl << "    {" << endl;
-      h << indent(memberAccessorBody((*itEntry)), 6 );
+      h << indent(memberAccessorBody(*itEntry, globalEnums), 6 );
        h << "    }" << endl;
     }
     else
@@ -1654,7 +1656,7 @@ int main( int argc, char **argv )
         h << "    static" << endl;
       h << "    ";
       if (useEnumTypes && t == "Enum")
-        h << enumType(*itEntry);
+        h << enumType(*itEntry, globalEnums);
       else
         h << cppType(t);
       h << " " << getDefaultFunction(n) << "(";
@@ -1664,7 +1666,7 @@ int main( int argc, char **argv )
       h << "    {" << endl;
       h << "        return ";
       if (useEnumTypes && t == "Enum")
-        h << "static_cast<" << enumType(*itEntry) << ">(";
+        h << "static_cast<" << enumType(*itEntry, globalEnums) << ">(";
       h << getDefaultFunction(n) << "_helper(";
       if ( !(*itEntry)->param().isEmpty() )
           h << " i ";
@@ -1723,7 +1725,7 @@ int main( int argc, char **argv )
         if ( useEnumTypes && argument.type == "Enum" ) {
           for ( int i = 0, end = entries.count(); i < end; ++i ) {
             if ( entries[i]->name() == argument.variableName ) {
-              type = enumType(entries[i]);
+              type = enumType(entries[i], globalEnums);
               break;
             }
           }
@@ -2130,7 +2132,7 @@ int main( int argc, char **argv )
         if ( !(*itEntry)->param().isEmpty() )
           cpp << cppType( (*itEntry)->paramType() ) << " i, ";
         if (useEnumTypes && t == "Enum")
-          cpp << enumType(*itEntry);
+          cpp << enumType(*itEntry, globalEnums);
         else
           cpp << param( t );
         cpp << " v )" << endl;
@@ -2143,7 +2145,7 @@ int main( int argc, char **argv )
 
       // Accessor
       if (useEnumTypes && t == "Enum")
-        cpp << enumType(*itEntry);
+        cpp << enumType(*itEntry, globalEnums);
       else
         cpp << cppType(t);
       cpp << " " << getFunction(n, className) << "(";
@@ -2153,7 +2155,7 @@ int main( int argc, char **argv )
       // function body inline only if not using dpointer
       // for BC mode
       cpp << "{" << endl;
-      cpp << indent(memberAccessorBody( *itEntry ), 2);
+      cpp << indent(memberAccessorBody( *itEntry, globalEnums ), 2);
       cpp << "}" << endl << endl;
 
       // Default value Accessor -- written by the loop below
@@ -2220,7 +2222,7 @@ int main( int argc, char **argv )
         if ( useEnumTypes && argument.type == "Enum" ) {
           for ( int i = 0, end = entries.count(); i < end; ++i ) {
             if ( entries[i]->name() == argument.variableName ) {
-              cpp << "static_cast<" << enumType(entries[i]) << ">(";
+              cpp << "static_cast<" << enumType(entries[i], globalEnums) << ">(";
               cast = true;
               break;
             }
