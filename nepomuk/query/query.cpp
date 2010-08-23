@@ -49,6 +49,7 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/NAO>
 
 #include "resourcemanager.h"
 #include "literal.h"
@@ -500,17 +501,13 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     if( !scoringExpression.isEmpty() )
         selectVariables << scoringExpression;
 
-    // restrict to resources from nrl:InstanceBases only. There is no need to do that for file queries
-    // as those alreday restrict the type. While in theory there might be file or folder resources in
-    // non-InstanceBase graphs it is very unlikely and omitting the instanceBaseRestriction will give
-    // us a performance gain - even if small it is worth it.
-    QString instanceBaseRestriction;
+    // restrict to resources to user visible types only. There is no need to do that for file queries
+    // as those already restrict the type.
+    QString userVisibilityRestriction;
     if( !d->m_isFileQuery && !(flags&NoResultRestrictions) ) {
-        instanceBaseRestriction = QString::fromLatin1( "graph %1 { ?r a %2 . } . { %1 a %3 . } UNION { %1 a %4 . } . " )
+        userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 true . " )
                                   .arg( qbd.uniqueVarName(),
-                                        qbd.uniqueVarName(),
-                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::InstanceBase()),
-                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NRL::DiscardableInstanceBase()) );
+                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()) );
     }
 
     // build the core of the query - the part that never changes
@@ -518,7 +515,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                         .arg( termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                               d->buildRequestPropertyPatterns(),
-                              instanceBaseRestriction );
+                              userVisibilityRestriction );
 
     // add optional order terms
     if( !(flags & (CreateAskQuery|CreateCountQuery)) )
