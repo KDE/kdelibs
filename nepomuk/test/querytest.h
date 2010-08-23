@@ -35,6 +35,8 @@ private Q_SLOTS:
     void testToSparql();
     void testOptimization();
     void testLogicalOperators();
+    void testComparison_data();
+    void testComparison();
 };
 
 #endif

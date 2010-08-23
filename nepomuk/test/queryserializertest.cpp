@@ -187,6 +187,13 @@ void QuerySerializerTest::testSerialization_data()
     QTest::newRow( "file query (only folders)" )
         << Query(fileQuery);
 
+    fileQuery.setFileMode(FileQuery::QueryFolders|FileQuery::QueryFiles);
+    fileQuery.addIncludeFolder( KUrl("/tmp"), true );
+    fileQuery.addIncludeFolder( KUrl("/wurst"), false );
+    fileQuery.addExcludeFolder( KUrl("/tmp/hello") );
+    QTest::newRow( "file query with include and exclude folders" )
+        << Query(fileQuery);
+
     //
     // A more complex example
     //

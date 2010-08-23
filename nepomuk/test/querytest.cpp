@@ -500,6 +500,33 @@ void QueryTest::testLogicalOperators()
 }
 
 
+void QueryTest::testComparison_data()
+{
+    QTest::addColumn<Nepomuk::Query::Query>( "q1" );
+    QTest::addColumn<Nepomuk::Query::Query>( "q2" );
+
+    // invalid queries should always be similar - trivial but worth checking anyway
+    Query q1, q2;
+    QTest::newRow("invalid") << q1 << q2;
+
+    // file queries with differently sorted folder lists
+    FileQuery fq1, fq2;
+    fq1.addIncludeFolder( KUrl("/tmp") );
+    fq1.addIncludeFolder( KUrl("/wurst") );
+    fq2.addIncludeFolder( KUrl("/wurst") );
+    fq2.addIncludeFolder( KUrl("/tmp") );
+    QTest::newRow("file query include sorting") << Query(fq1) << Query(fq2);
+}
+
+
+void QueryTest::testComparison()
+{
+    QFETCH( Nepomuk::Query::Query, q1 );
+    QFETCH( Nepomuk::Query::Query, q2 );
+
+    QCOMPARE( q1, q2 );
+}
+
 QTEST_KDEMAIN_CORE( QueryTest )
 
 #include "querytest.moc"
