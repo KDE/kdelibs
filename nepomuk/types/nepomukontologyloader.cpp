@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-    Copyright (c) 2007 Sebastian Trueg <trueg@kde.org>
+    Copyright (c) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,12 +19,12 @@
 
 #include "nepomukontologyloader.h"
 #include "global.h"
+#include "resourcemanager.h"
 
 #include <Soprano/Statement>
 #include <Soprano/Model>
+#include <Soprano/Node>
 #include <Soprano/QueryResultIterator>
-#include <Soprano/Client/DBusModel>
-#include <Soprano/Client/DBusClient>
 
 #include <QtCore/QDebug>
 
@@ -32,23 +32,18 @@
 class Nepomuk::NepomukOntologyLoader::Private
 {
 public:
-    Private()
-        : client("org.kde.nepomuk.services.nepomukstorage") {
-    }
-    Soprano::Client::DBusClient client;
 };
 
 
 Nepomuk::NepomukOntologyLoader::NepomukOntologyLoader()
     : OntologyLoader(),
-      d( new Private() )
+      d( 0 )
 {
 }
 
 
 Nepomuk::NepomukOntologyLoader::~NepomukOntologyLoader()
 {
-    delete d;
 }
 
 
@@ -56,18 +51,14 @@ QList<Soprano::Statement> Nepomuk::NepomukOntologyLoader::loadOntology( const QU
 {
     QList<Soprano::Statement> sl;
 
-    if ( Soprano::Model* model = d->client.createModel( "main" ) ) {
-        // get the complete named graph describing the ontology
-        Soprano::QueryResultIterator it = model->executeQuery( QString( "construct {?s ?p ?o} "
-                                                                        "where { GRAPH <%1> { ?s ?p ?o } . }" )
-                                                               .arg( uri.toString() ),
-                                                               Soprano::Query::QUERY_LANGUAGE_SPARQL );
-        while ( it.next() ) {
-            sl.append( it.currentStatement() );
-        }
-    }
-    else {
-        qDebug() << "(NepomukOntologyLoader) could not find ontology statements for " << uri;
+    // get the complete named graph describing the ontology
+    Soprano::QueryResultIterator it
+        = ResourceManager::instance()->mainModel()->executeQuery( QString::fromLatin1( "construct {?s ?p ?o} "
+                                                                                       "where { GRAPH %1 { ?s ?p ?o } . }" )
+                                                                  .arg( Soprano::Node::resourceToN3(uri) ),
+                                                                  Soprano::Query::QueryLanguageSparql );
+    while ( it.next() ) {
+        sl.append( it.currentStatement() );
     }
 
     return sl;
