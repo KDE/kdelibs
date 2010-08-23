@@ -57,7 +57,7 @@ namespace Nepomuk {
             QList<Query::RequestProperty> m_requestProperties;
 
             bool m_isFileQuery;
-            KUrl::List m_includeFolders;
+            QHash<KUrl, bool> m_includeFolders;
             KUrl::List m_excludeFolders;
             FileQuery::FileMode m_fileMode;
         };

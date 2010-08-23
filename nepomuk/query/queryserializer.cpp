@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -348,10 +348,13 @@ QString Nepomuk::Query::serializeQuery( const Query& query )
 
     if( query.isFileQuery() ) {
         FileQuery fq( query );
-        Q_FOREACH( const KUrl& url, fq.includeFolders() ) {
+        const QHash<KUrl, bool> includeFolders = fq.allIncludeFolders();
+        for( QHash<KUrl, bool>::ConstIterator it = includeFolders.constBegin();
+            it != includeFolders.constEnd(); ++it ) {
             xml.writeStartElement( QLatin1String("folder") );
-            xml.writeAttribute( QLatin1String("url"), url.url() );
+            xml.writeAttribute( QLatin1String("url"), it.key().url() );
             xml.writeAttribute( QLatin1String("include"), QLatin1String("true") );
+            xml.writeAttribute( QLatin1String("recursive"), it.value() ? QLatin1String("true") : QLatin1String("false") );
             xml.writeEndElement();
         }
         Q_FOREACH( const KUrl& url, fq.excludeFolders() ) {
@@ -408,10 +411,14 @@ Query Nepomuk::Query::parseQuery( const QString& s )
             }
 
             FileQuery fileQuery(query);
-            if( xml.attributes().value( QLatin1String("include") ) == QLatin1String("true") )
-                fileQuery.addIncludeFolder( KUrl( xml.attributes().value( QLatin1String("url") ).toString() ) );
-            else
+            if( xml.attributes().value( QLatin1String("include") ) == QLatin1String("true") ) {
+                // for the recursive flag we use double negation since the default is true (even if the flag is not specified)
+                fileQuery.addIncludeFolder( KUrl( xml.attributes().value( QLatin1String("url") ).toString() ),
+                                            xml.attributes().value( QLatin1String("recursive") ) != QLatin1String("false") );
+            }
+            else {
                 fileQuery.addExcludeFolder( KUrl( xml.attributes().value( QLatin1String("url") ).toString() ) );
+            }
             query = fileQuery;
             xml.readNextStartElement(); // skip to next element
         }

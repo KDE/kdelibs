@@ -477,8 +477,6 @@ namespace Nepomuk {
         protected:
             /** \cond protected_query_members */
             QSharedDataPointer<QueryPrivate> d;
-
-            friend class QueryParser;
             /** \endcond */
         };
 

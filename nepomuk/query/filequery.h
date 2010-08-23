@@ -75,15 +75,25 @@ namespace Nepomuk {
              * Add a folder to include in the search. If include folders are set the query
              * will be restricted to files from that folders and their subfolders.
              *
-             * Be aware that setting a folder filter will implicitely restrict the query
-             * to files and folders.
-             *
              * \param folder The folder to include in the search.
              *
              * \sa setIncludeFolders, includeFolders, addExcludeFolder
              */
             void addIncludeFolder( const KUrl& folder );
 
+            /**
+             * Add a folder to include in the search path. If include folders are set the query
+             * will be restricted to files from that folders and optionally their subfolders.
+             *
+             * \param folder The folder to include in the search.
+             * \param recursive If \p true subfolders of \p folder will be searched, too.
+             *
+             * \sa setIncludeFolders, includeFolders, addExcludeFolder
+             * 
+             * \since 4.6
+             */
+            void addIncludeFolder( const KUrl& folder, bool recursive );
+            
             /**
              * \overload
              *
@@ -94,19 +104,36 @@ namespace Nepomuk {
             void setIncludeFolders( const KUrl::List& folders );
 
             /**
+             * \overload
+             * 
+             * \param folders A hash of the folders to include in the search and
+             * their recursive flag.
+             *
+             * \since 4.6
+             */
+            void setIncludeFolders( const QHash<KUrl, bool>& folders );
+            
+            /**
              * The list of include folders set via addIncludeFolder() and
              * setIncludeFolders().
              *
-             * \sa addIncludeFolder, setIncludeFolders, excludeFolders
+             * \sa allIncludeFolders, addIncludeFolder, setIncludeFolders, excludeFolders
              */
             KUrl::List includeFolders() const;
 
             /**
+             * The hash of include folders set via addIncludeFolder() and
+             * setIncludeFolders() including their recursive flag.
+             *
+             * \sa includeFolders, addIncludeFolder, setIncludeFolders, excludeFolders
+             *
+             * \since 4.6
+             */
+            QHash<KUrl, bool> allIncludeFolders() const;
+            
+            /**
              * Add a folder to exclude from the search. If exclude folders are set the query
              * will be restricted to files that are not in that folder and its subfolders.
-             *
-             * Be aware that setting a folder filter will implicitely restrict the query
-             * to files and folders.
              *
              * \param folder The folder to exclude from the search.
              *

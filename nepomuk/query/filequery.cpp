@@ -56,17 +56,38 @@ Nepomuk::Query::FileQuery& Nepomuk::Query::FileQuery::operator=( const Query& qu
 
 void Nepomuk::Query::FileQuery::addIncludeFolder( const KUrl& folder )
 {
-    d->m_includeFolders << folder;
+    addIncludeFolder( folder, true );
+}
+
+
+void Nepomuk::Query::FileQuery::addIncludeFolder( const KUrl& folder, bool recursive )
+{
+    d->m_includeFolders[folder] = recursive;
 }
 
 
 void Nepomuk::Query::FileQuery::setIncludeFolders( const KUrl::List& folders )
+{
+    d->m_includeFolders.clear();
+    Q_FOREACH( const KUrl& url, folders ) {
+        d->m_includeFolders[url] = true;
+    }
+}
+
+
+void Nepomuk::Query::FileQuery::setIncludeFolders( const QHash<KUrl, bool>& folders )
 {
     d->m_includeFolders = folders;
 }
 
 
 KUrl::List Nepomuk::Query::FileQuery::includeFolders() const
+{
+    return d->m_includeFolders.keys();
+}
+
+
+QHash<KUrl, bool> Nepomuk::Query::FileQuery::allIncludeFolders() const
 {
     return d->m_includeFolders;
 }

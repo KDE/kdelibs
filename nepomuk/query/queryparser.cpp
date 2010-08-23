@@ -508,11 +508,12 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                 if( stripQuotes ( s_fieldRx.cap( 2 ) ).compare( QString( "inFolder" ), Qt::CaseInsensitive ) == 0 ) {
                     KUrl url( s_fieldRx.cap( 5 ) );
                     kDebug() << "found include path" << url;
-                    final.d->m_isFileQuery = true;
+                    FileQuery fileQuery(final);
                     if ( positiveTerm( s_fieldRx.cap( 1 ) ) )
-                        final.d->m_includeFolders << url;
+                        fileQuery.addIncludeFolder(url);
                     else
-                        final.d->m_excludeFolders << url;
+                        fileQuery.addExcludeFolder(url);
+                    final = fileQuery;
                     pos += s_fieldRx.matchedLength();
                 }
                 else {

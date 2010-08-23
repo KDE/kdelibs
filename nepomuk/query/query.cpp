@@ -216,10 +216,19 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
         QString uriVarName = qbd->uniqueVarName();
         QString filter = resourceVarName + ' ' + Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) + ' ' + uriVarName + QLatin1String( " . " );
         if ( !m_includeFolders.isEmpty() ) {
-            filter += QString( " FILTER(REGEX(STR(%1), \"^(%2/)\")) ." ).arg( uriVarName ).arg( m_includeFolders.toStringList().join( "|" ) );
+            QStringList includeFilter;
+            for( QHash<KUrl, bool>::ConstIterator it = m_includeFolders.constBegin();
+                it != m_includeFolders.constEnd(); ++it ) {
+                const QString urlStr = it.key().url(KUrl::AddTrailingSlash);
+                if( it.value() )
+                    includeFilter.append( QString::fromLatin1("(^%1)").arg( urlStr ) );
+                else
+                    includeFilter.append( QString::fromLatin1("(^%1[^/]*$)").arg( urlStr ) );
+            }
+            filter += QString::fromLatin1( " FILTER(REGEX(STR(%1), \"%2\")) ." ).arg( uriVarName ).arg( includeFilter.join( "|" ) );
         }
         if ( !m_excludeFolders.isEmpty() ) {
-            filter += QString( " FILTER(!REGEX(STR(%1), \"^(%2/)\")) ." ).arg( uriVarName ).arg( m_excludeFolders.toStringList().join( "|" ) );
+            filter += QString::fromLatin1( " FILTER(!REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( m_excludeFolders.toStringList(KUrl::AddTrailingSlash).join( "|" ) );
         }
         return filter;
     }
@@ -415,16 +424,26 @@ QList<Nepomuk::Query::Query::RequestProperty> Nepomuk::Query::Query::requestProp
 namespace {
     template<typename T>
     bool compareQList( const QList<T>& rp1, const QList<T>& rp2 ) {
-        // brute force
+        if( rp1.count() != rp2.count() )
+            return false;
         foreach( const T& rp, rp1 ) {
             if ( !rp2.contains( rp ) ) {
                 return false;
             }
         }
-        foreach( const T& rp, rp2 ) {
-            if ( !rp1.contains( rp ) ) {
+        return true;
+    }
+
+    template<typename Key, typename Value>
+    bool compareHash( const QHash<Key, Value>& h1, const QHash<Key, Value>& h2 ) {
+        if( h1.count() != h2.count() )
+            return false;
+        for( typename QHash<Key, Value>::ConstIterator it1 = h1.constBegin();
+             it1 != h1.constEnd(); ++it1 ) {
+            typename QHash<Key, Value>::ConstIterator it2 = h2.find( it1.key() );
+            if( it2 == h2.constEnd() ||
+                *it1 != *it2 )
                 return false;
-            }
         }
         return true;
     }
@@ -436,7 +455,7 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
             d->m_offset == other.d->m_offset &&
             d->m_term == other.d->m_term &&
             compareQList( d->m_requestProperties, other.d->m_requestProperties ) &&
-            compareQList( d->m_includeFolders, other.d->m_includeFolders ) &&
+            compareHash( d->m_includeFolders, other.d->m_includeFolders ) &&
             compareQList( d->m_excludeFolders, other.d->m_excludeFolders ) &&
             d->m_isFileQuery == other.d->m_isFileQuery &&
             d->m_fileMode == other.d->m_fileMode );
@@ -445,7 +464,14 @@ bool Nepomuk::Query::Query::operator==( const Query& other ) const
 
 bool Nepomuk::Query::Query::operator!=( const Query& other ) const
 {
-    return !operator==( other );
+    return( d->m_limit != other.d->m_limit ||
+            d->m_offset != other.d->m_offset ||
+            d->m_term != other.d->m_term ||
+            !compareQList( d->m_requestProperties, other.d->m_requestProperties ) ||
+            !compareHash( d->m_includeFolders, other.d->m_includeFolders ) ||
+            !compareQList( d->m_excludeFolders, other.d->m_excludeFolders ) ||
+            d->m_isFileQuery != other.d->m_isFileQuery ||
+            d->m_fileMode != other.d->m_fileMode );
 }
 
 
