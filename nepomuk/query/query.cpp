@@ -535,6 +535,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
         else {
             // when there are additional variables we need to do some magic to count the
             // number of rows instead of a list of counts
+            // we cannot simply leave out the additional variables since that would change
+            // the number of results.
             query = QString::fromLatin1("select count(%1) as ?cnt %2 where { { select count(*) as %1 ?r %3 } }")
                     .arg(qbd.uniqueVarName(),
                          selectVariables.join( QLatin1String(" " ) ),
@@ -567,6 +569,7 @@ KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags ) const
 {
     flags &= ~CreateCountQuery;
+    flags &= ~CreateAskQuery;
     KUrl url( QLatin1String("nepomuksearch:/") );
     if( flags == NoFlags )
         url.addQueryItem( QLatin1String("encodedquery"), toString() );
