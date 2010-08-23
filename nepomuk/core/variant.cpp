@@ -1351,6 +1351,34 @@ Nepomuk::Variant Nepomuk::Variant::fromNode( const Soprano::Node& node )
 }
 
 
+// static
+Nepomuk::Variant Nepomuk::Variant::fromNodeList( const QList<Soprano::Node>& valueNodes )
+{
+    if( valueNodes.size() == 1 ) {
+        return Nepomuk::Variant::fromNode( valueNodes.first() );
+    }
+    else {
+        if( valueNodes.first().isResource() ) {
+            QList<Nepomuk::Resource> resList;
+            Q_FOREACH( const Soprano::Node & n, valueNodes ) {
+                if( n.isResource() )
+                    resList << Nepomuk::Resource( n.uri() );
+            }
+            return Nepomuk::Variant( resList );
+        }
+        else if( valueNodes.first().isLiteral() ) {
+            QList<Variant> varList;
+            Q_FOREACH( const Soprano::Node & n, valueNodes ) {
+                if( n.isLiteral() )
+                    varList << Nepomuk::Variant( n.literal().variant() );
+            }
+            return Nepomuk::Variant( varList );
+        }
+        return Nepomuk::Variant();
+    }
+}
+
+
 bool Nepomuk::Variant::operator==( const Variant& other ) const
 {
     // we handle the special case of Urls and Resources before

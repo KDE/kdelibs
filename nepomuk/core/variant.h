@@ -359,6 +359,13 @@ namespace Nepomuk {
          */
         static Variant fromNode( const Soprano::Node& node );
 
+        /**
+         * Create a Variant object from a list of Soprano::Node.
+         *
+         * \since 4.6
+         */
+        static Variant fromNodeList( const QList<Soprano::Node>& node );
+
     private:
         class Private;
         Private* const d;
