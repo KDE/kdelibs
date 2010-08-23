@@ -240,6 +240,13 @@ namespace KIO
             /// @since 4.5
             UDS_ICON_OVERLAY_NAMES = 26 | UDS_STRING,
 
+            /// A serialized Nepomuk::Query::Query which lists the contents of
+            /// the folder this UDSEntry describes. This can be used to enable
+            /// faceted browsing via any local KIO slave.
+            ///
+            /// @since 4.6
+            UDS_NEPOMUK_QUERY = 27 | UDS_STRING,
+
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
             /// until UDS_EXTRA_END.
