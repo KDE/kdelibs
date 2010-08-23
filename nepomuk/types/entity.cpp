@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-    Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
+    Copyright (c) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,6 +36,7 @@
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
     : mutex(QMutex::Recursive),
       uri( uri_ ),
+      userVisible( true ),
       available( uri_.isValid() ? -1 : 0 ),
       ancestorsAvailable( uri_.isValid() ? -1 : 0 )
 {
@@ -96,6 +97,10 @@ bool Nepomuk::Types::EntityPrivate::load()
 
         else if ( property == Soprano::Vocabulary::NAO::hasSymbol() ) {
             icon = KIcon( value.toString() );
+        }
+
+        else if ( property == Soprano::Vocabulary::NAO::userVisible() ) {
+            userVisible = value.literal().toBool();
         }
 
         else {
@@ -276,6 +281,18 @@ bool Nepomuk::Types::Entity::isAvailable() const
 void Nepomuk::Types::Entity::reset( bool recursive )
 {
     d->reset( recursive );
+}
+
+
+bool Nepomuk::Types::Entity::userVisible() const
+{
+    if ( d ) {
+        d->init();
+        return d->userVisible;
+    }
+    else {
+        return true;
+    }
 }
 
 

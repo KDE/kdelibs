@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-   Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -199,6 +199,16 @@ namespace Nepomuk {
              * \since 4.1
              */
             void reset( bool recursive = false );
+
+            /**
+             * nao:userVisible can be used to hide certain properties and
+             * resources of a certain type from the user.
+             *
+             * \return \p true if this entity should be visible to the user.
+             *
+             * \since 4.6
+             */
+            bool userVisible() const;
 
             /**
              * An Entity can be used as a QUrl automagically.

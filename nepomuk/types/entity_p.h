@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-    Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
+    Copyright (c) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -46,6 +46,8 @@ namespace Nepomuk {
             QString l10nComment;
 
             QIcon icon;
+
+            bool userVisible;
 
             // -1 - unknown
             // 0  - no
