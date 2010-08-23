@@ -38,6 +38,7 @@ namespace Nepomuk {
 
         class Term;
         class QueryPrivate;
+        class FileQuery;
 
         /**
          * \brief Convinience definition for request property mappings as used in
@@ -124,6 +125,13 @@ namespace Nepomuk {
              * \since 4.5
              */
             bool isFileQuery() const;
+
+            /**
+             * \return A copy of this query which is restricted to files.
+             *
+             * \since 4.6
+             */
+            FileQuery toFileQuery() const;
 
             /**
              * The root term of the query.

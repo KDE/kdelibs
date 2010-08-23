@@ -35,6 +35,7 @@
 #include "queryserializer.h"
 #include "queryparser.h"
 #include "util.h"
+#include "filequery.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
@@ -365,6 +366,12 @@ bool Nepomuk::Query::Query::isValid() const
 bool Nepomuk::Query::Query::isFileQuery() const
 {
     return d->m_isFileQuery;
+}
+
+
+Nepomuk::Query::FileQuery Nepomuk::Query::Query::toFileQuery() const
+{
+    return FileQuery( *this );
 }
 
 
