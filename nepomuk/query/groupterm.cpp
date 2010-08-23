@@ -21,15 +21,15 @@
 
 #include "groupterm.h"
 #include "groupterm_p.h"
+#include "util.h"
 
 #include <QtCore/QStringList>
 
 bool Nepomuk::Query::GroupTermPrivate::equals( const TermPrivate* other ) const
 {
     if ( other->m_type == m_type ) {
-        // TODO: would be nicer to compare sorted lists or something
         const GroupTermPrivate* gtp = static_cast<const GroupTermPrivate*>( other );
-        return gtp->m_subTerms == m_subTerms;
+        return compareQList( gtp->m_subTerms, m_subTerms );
     }
     else {
         return false;
