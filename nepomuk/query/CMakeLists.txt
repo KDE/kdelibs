@@ -35,10 +35,12 @@ set(nepomukquery_SRC
   dbusoperators.cpp
   ../core/dbusconnectionpool.cpp
   queryserializer.cpp
+  standardqueries.cpp
 )
 
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(
   org.kde.nepomuk.QueryService.xml
@@ -84,5 +86,6 @@ install(FILES
   queryserviceclient.h
   queryparser.h
   nepomukquery_export.h
+  standardqueries.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
