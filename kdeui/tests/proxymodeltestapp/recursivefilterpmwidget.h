@@ -55,8 +55,10 @@ public:
 
   void setRegExp( const QRegExp &re)
   {
+    layoutAboutToBeChanged();
     m_regExp = re;
     invalidateFilter();
+    layoutChanged();
   }
 
 private:
