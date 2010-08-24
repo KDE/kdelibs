@@ -20,6 +20,7 @@
 
 #include "variant.h"
 #include "resource.h"
+#include "tools.h"
 
 #include <soprano/literalvalue.h>
 #include <soprano/node.h>
@@ -1256,6 +1257,46 @@ QList<Nepomuk::Variant> Nepomuk::Variant::toVariantList() const
     }
 
     return l;
+}
+
+
+Soprano::Node Nepomuk::Variant::toNode() const
+{
+    if( isList() )
+        return Soprano::Node();
+        
+    if( isResource() )
+        return Soprano::Node( toUrl() );
+    else
+        return Soprano::Node( Soprano::LiteralValue( variant() ) );
+}
+
+QList<Soprano::Node> Nepomuk::Variant::toNodeList() const
+{
+    QList<Soprano::Node> valueNodes;
+    
+    // one Resource
+    if( isResource() ) {
+        valueNodes.append( toUrl() );
+    }
+    
+    // many Resources
+    else if( isResourceList() ) {
+        const QList<QUrl>& l = toUrlList();
+        for( QList<QUrl>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
+            valueNodes.append( *resIt );
+        }
+    }
+    
+    // many literals
+    else if( isList() ) {
+        valueNodes = Nepomuk::valuesToRDFNodes( *this );
+    }
+    
+    // one literal
+    else {
+        valueNodes.append( Nepomuk::valueToRDFNode( *this ) );
+    }
 }
 
 

@@ -346,6 +346,20 @@ namespace Nepomuk {
         QList<Variant> toVariantList() const;
 
         /**
+         * Convert a Variant to a Node.
+         *
+         * \since 4.6
+         */
+        Soprano::Node toNode() const;
+
+        /**
+         * Convert a Variant to a a list of Nodes.
+         *
+         * \since 4.6
+         */
+        QList<Soprano::Node> toNodeList() const;
+        
+        /**
          * Create a Variant object by parsing string \a value based on \a type.
          * If \a type is unknown a simple string Variant object is returned
          * containing the plain string \a value.
