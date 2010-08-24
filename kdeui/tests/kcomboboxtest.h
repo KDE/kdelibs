@@ -25,8 +25,13 @@ private Q_SLOTS:
   void slotReturnPressed(const QString&);
   void slotActivated( int );
   void slotActivated( const QString& );
+  void slotCurrentIndexChanged(int);
+  void slotCurrentIndexChanged(const QString&);
 
-protected:
+private:
+
+  void connectComboSignals(QComboBox* combo);
+
   QComboBox* m_qc;
 
   KComboBox* m_ro;
