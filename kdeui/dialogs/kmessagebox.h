@@ -1086,6 +1086,7 @@ public:
      * @param ask     The text of the checkbox. If empty none will be shown.
      * @param checkboxReturn The result of the checkbox. If it's initially
      *                true then the checkbox will be checked by default.
+     *                May be 0.
      * @param options  see Options
      * @param details Detailed message string.
      * @return A KDialog button code, not a KMessageBox button code,
@@ -1115,6 +1116,7 @@ public:
      * @param ask     The text of the checkbox. If empty none will be shown.
      * @param checkboxReturn The result of the checkbox. If it's initially
      *                true then the checkbox will be checked by default.
+     *                May be 0.
      * @param options  see Options
      * @param details Detailed message string.
      * @param notifyType The type of notification to send when this message
