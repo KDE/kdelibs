@@ -551,7 +551,7 @@ public:
         ApplySettings = 0x1, ///< Make all globally applicable settings take effect.
         ListenForChanges = 0x2 ///< Listen for changes to the settings.
     };
-    Q_DECLARE_FLAGS(ActivateOptions, ActivateOption);
+    Q_DECLARE_FLAGS(ActivateOptions, ActivateOption)
 
     /**
      * Makes all globally applicable settings take effect
