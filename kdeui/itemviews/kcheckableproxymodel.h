@@ -30,7 +30,8 @@
 
 class KCheckableProxyModelPrivate;
 
-class KDEUI_EXPORT KCheckableProxyModel : public Future::KIdentityProxyModel
+
+class KDEUI_EXPORT KCheckableProxyModel : public KIdentityProxyModel
 {
   Q_OBJECT
 public:
