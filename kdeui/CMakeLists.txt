@@ -107,6 +107,7 @@ set(kdeui_LIB_SRCS
  icons/kicontheme.cpp
  icons/kiconcache.cpp
  itemviews/kbreadcrumbselectionmodel.cpp
+ itemviews/kcheckableproxymodel.cpp
  itemviews/klinkitemselectionmodel.cpp
  itemviews/kidentityproxymodel.cpp
  itemviews/krecursivefilterproxymodel.cpp
@@ -496,6 +497,7 @@ install( FILES
  icons/kicontheme.h
  icons/kiconcache.h
  itemviews/kbreadcrumbselectionmodel.h
+ itemviews/kcheckableproxymodel.h
  itemviews/klinkitemselectionmodel.h
  itemviews/krecursivefilterproxymodel.h
  itemviews/kdescendantsproxymodel.h
