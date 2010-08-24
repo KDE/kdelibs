@@ -487,13 +487,10 @@ void BrowserRun::handleError( KJob * job )
     KRun::slotStatResult( job );
 }
 
-void BrowserRun::redirectToError( int error, const QString& errorText )
+// static
+KUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QString& initialUrl)
 {
-    /**
-     * To display this error in KHTMLPart instead of inside a dialog box,
-     * we tell konq that the mimetype is text/html, and we redirect to
-     * an error:/ URL that sends the info to khtml.
-     *
+    /*
      * The format of the error:/ URL is error:/?query#url,
      * where two variables are passed in the query:
      * error = int kio error code, errText = QString error text from kio
@@ -502,13 +499,31 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     KUrl newURL(QString("error:/?error=%1&errText=%2")
                 .arg( error )
                 .arg( QString::fromUtf8( QUrl::toPercentEncoding( errorText ) ) ) );
-    KUrl runURL = KRun::url();
-    runURL.setPass( QString() ); // don't put the password in the error URL
 
-    KUrl::List lst;
-    lst << newURL << runURL;
-    KRun::setUrl( KUrl::join( lst ) );
+    QString cleanedOrigUrl = initialUrl;
+    KUrl runURL = cleanedOrigUrl;
+    if (runURL.isValid()) {
+        runURL.setPass( QString() ); // don't put the password in the error URL
+        cleanedOrigUrl = runURL.url();
+    }
 
+    newURL.setFragment(cleanedOrigUrl);
+    return newURL;
+
+    // The kde3 approach broke with invalid urls, now that they become empty in qt4.
+    //KUrl::List lst;
+    //lst << newURL << runURL;
+    //return KUrl::join(lst);
+}
+
+void BrowserRun::redirectToError( int error, const QString& errorText )
+{
+    /**
+     * To display this error in KHTMLPart instead of inside a dialog box,
+     * we tell konq that the mimetype is text/html, and we redirect to
+     * an error:/ URL that sends the info to khtml.
+     */
+    KRun::setUrl(makeErrorUrl(error, errorText, url().url()));
     setJob( 0 );
     mimeTypeDetermined( "text/html" );
 }

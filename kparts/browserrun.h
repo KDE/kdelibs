@@ -136,6 +136,17 @@ namespace KParts {
 
         static bool isTextExecutable( const QString &mimeType );
 
+        /**
+         * KDE webbrowsing kparts support error urls to display errors in-line in the browser component.
+         * This helper method creates the error URL from its parameters.
+         * @param error the KIO error code (or KIO::ERR_SLAVE_DEFINED if not from KIO)
+         * @param errorText the text of the error message
+         * @param initialUrl the URL that we were trying to open (as a string, so that this can
+         *                   support invalid URLs as well)
+         * @since 4.6
+         */
+        static KUrl makeErrorUrl(int error, const QString& errorText, const QString& initialUrl);
+
     protected:
         /**
          * Reimplemented from KRun
@@ -182,7 +193,7 @@ namespace KParts {
                 setFinished(true);
             }
          * @endcode
-         *        
+         *
          * @since 4.5
          */
         NonEmbeddableResult handleNonEmbeddable(const QString& mimeType, KService::Ptr* pSelectedService);
