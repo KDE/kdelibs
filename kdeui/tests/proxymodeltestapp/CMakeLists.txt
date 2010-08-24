@@ -14,6 +14,7 @@ set(proxymodeltestapp_SRCS
     breadcrumbswidget.cpp
     breadcrumbnavigationwidget.cpp
     breadcrumbdirectionwidget.cpp
+    checkablewidget.cpp
     selectionpmwidget.cpp
     statesaverwidget.cpp
     kidentityproxymodelwidget.cpp

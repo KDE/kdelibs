@@ -29,6 +29,7 @@
 #include "breadcrumbswidget.h"
 #include "breadcrumbnavigationwidget.h"
 #include "breadcrumbdirectionwidget.h"
+#include "checkablewidget.h"
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"
 #include "statesaverwidget.h"
@@ -49,6 +50,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(new DescendantProxyModelWidget(), "descendant PM");
   tabWidget->addTab(new SelectionProxyWidget(), "selection PM");
   tabWidget->addTab(new KIdentityProxyModelWidget(), "Identity PM");
+  tabWidget->addTab(new CheckableWidget(), "Checkable");
   tabWidget->addTab(new BreadcrumbsWidget(), "Breadcrumbs");
   tabWidget->addTab(new BreadcrumbNavigationWidget(), "Breadcrumb Navigation");
   tabWidget->addTab(new BreadcrumbDirectionWidget(), "Breadcrumb Direction");
