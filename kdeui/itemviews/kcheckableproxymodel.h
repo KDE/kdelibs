@@ -30,7 +30,41 @@
 
 class KCheckableProxyModelPrivate;
 
-
+/**
+ * @brief Adds a checkable capability to a source model
+ *
+ * Items is standard Qt views such as QTreeView and QListView can have a
+ * checkable capability and draw checkboxes. Adding such a capability
+ * requires specific implementations of the data() and flags() virtual methods.
+ * This class implements those methods generically so that it is not necessary to
+ * implement them in your model.
+ *
+ * This can be combined with a KSelectionProxyModel showing the items currently selected
+ *
+ * @code
+ *
+ *   QItemSelectionModel *checkModel = new QItemSelectionModel(rootModel, this);
+ *   KCheckableProxyModel *checkable = new KCheckableProxyModel(this);
+ *   checkable->setSourceModel(rootModel);
+ *   checkable->setSelectionModel(checkModel);
+ *
+ *   QTreeView *tree1 = new QTreeView(vSplitter);
+ *   tree1->setModel(checkable);
+ *   tree1->expandAll();
+ *
+ *   KSelectionProxyModel *selectionProxy = new KSelectionProxyModel(checkModel, this);
+ *   selectionProxy->setFilterBehavior(KSelectionProxyModel::ExactSelection);
+ *   selectionProxy->setSourceModel(rootModel);
+ *
+ *   QTreeView *tree2 = new QTreeView(vSplitter);
+ *   tree2->setModel(selectionProxy);
+ * @endcode
+ *
+ * @image html kcheckableproxymodel.png "A KCheckableProxyModel and KSelectionProxyModel showing checked items"
+ *
+ * @since 4.6
+ * @author Stephen Kelly <steveire@gmail.com>
+ */
 class KDEUI_EXPORT KCheckableProxyModel : public KIdentityProxyModel
 {
   Q_OBJECT
