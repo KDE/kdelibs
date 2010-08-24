@@ -821,6 +821,8 @@ void KDescendantsProxyModelPrivate::sourceLayoutChanged()
 void KDescendantsProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
   Q_Q(KDescendantsProxyModel);
+  Q_ASSERT(topLeft.model() == q->sourceModel());
+  Q_ASSERT(bottomRight.model() == q->sourceModel());
 
   const int topRow = topLeft.row();
   const int bottomRow = bottomRight.row();
@@ -828,11 +830,14 @@ void KDescendantsProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft
   for(int i = topRow; i <= bottomRow; ++i)
   {
     const QModelIndex sourceTopLeft = q->sourceModel()->index(i, topLeft.column(), topLeft.parent());
+    Q_ASSERT(sourceTopLeft.isValid());
     const QModelIndex proxyTopLeft = q->mapFromSource(sourceTopLeft);
     // TODO. If an index does not have any descendants, then we can emit in blocks of rows.
     // As it is we emit once for each row.
     const QModelIndex sourceBottomRight = q->sourceModel()->index(i, bottomRight.column(), bottomRight.parent());
     const QModelIndex proxyBottomRight = q->mapFromSource(sourceBottomRight);
+    Q_ASSERT(proxyTopLeft.isValid());
+    Q_ASSERT(proxyBottomRight.isValid());
     emit q->dataChanged(proxyTopLeft, proxyBottomRight);
   }
 }
