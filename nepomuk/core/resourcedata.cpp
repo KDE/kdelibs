@@ -424,8 +424,6 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         // step 0: make sure this resource is in the store
         QMutexLocker lock(&m_modificationMutex);
 
-        QList<Node> valueNodes;
-
         // make sure resource values are in the store
         if ( value.simpleType() == qMetaTypeId<Resource>() ) {
             QList<Resource> l = value.toResourceList();
@@ -434,36 +432,11 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
             }
         }
 
-        // add the actual property statements
-
-        // one-to-one Resource
-        if( value.isResource() ) {
-            valueNodes.append( value.toUrl() );
-        }
-
-        // one-to-many Resource
-        else if( value.isResourceList() ) {
-            const QList<QUrl>& l = value.toUrlList();
-            for( QList<QUrl>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-                valueNodes.append( *resIt );
-            }
-        }
-
-        // one-to-many literals
-        else if( value.isList() ) {
-            valueNodes = Nepomuk::valuesToRDFNodes( value );
-        }
-
-        // one-to-one literal
-        else {
-            valueNodes.append( Nepomuk::valueToRDFNode( value ) );
-        }
-
         // update the cache for now
         m_cache[uri] = value;
 
         // update the store
-        MAINMODEL->updateProperty( m_uri, uri, valueNodes );
+        MAINMODEL->updateProperty( m_uri, uri, value.toNodeList() );
 
         // update the kickofflists
         updateKickOffLists( uri, value.toUrl() );

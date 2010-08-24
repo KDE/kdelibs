@@ -1297,6 +1297,8 @@ QList<Soprano::Node> Nepomuk::Variant::toNodeList() const
     else {
         valueNodes.append( Nepomuk::valueToRDFNode( *this ) );
     }
+
+    return valueNodes;
 }
 
 
