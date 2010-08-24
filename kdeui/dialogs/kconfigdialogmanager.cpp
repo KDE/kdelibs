@@ -112,6 +112,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert("QSpinBox", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
+    s_changedMap->insert("QPlainTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTabWidget", SIGNAL(currentChanged(int)));
 
     // KDE
