@@ -434,16 +434,8 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         }
 
         // check remote data
-        Soprano::Node n;
-        if( v.isResource() ) {
-            n = v.toResource().resourceUri();
-        }
-        else {
-            n = valueToRDFNode(v);
-        }
-
         Soprano::Model* model = mainModel();
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), uri, n ) );
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), uri, v.toNode() ) );
 
         while( it.next() ) {
             Statement s = *it;
