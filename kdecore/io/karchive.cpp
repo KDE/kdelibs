@@ -268,7 +268,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
     // Read and write data in chunks to minimize memory usage
     QByteArray array;
-    array.resize(8*1024);
+    array.resize( int( qMin( qint64( 1024 * 1024 ), size ) ) );
     qint64 n;
     qint64 total = 0;
     while ( ( n = file.read( array.data(), array.size() ) ) > 0 )
@@ -640,7 +640,6 @@ QByteArray KArchiveFile::data() const
   QByteArray arr;
   if ( d->size )
   {
-    assert( arr.data() );
     arr = archive()->device()->read( d->size );
     Q_ASSERT( arr.size() == d->size );
   }
@@ -662,7 +661,21 @@ void KArchiveFile::copyTo(const QString& dest) const
   QFile f( dest + '/'  + name() );
   if ( f.open( QIODevice::ReadWrite | QIODevice::Truncate ) )
   {
-      f.write( data() );
+      archive()->device()->seek( d->pos );
+
+      // Read and write data in chunks to minimize memory usage
+      const qint64 chunkSize = 1024 * 1024;
+      qint64 remainingSize = d->size;
+      QByteArray array;
+      array.resize( int( qMin( chunkSize, remainingSize ) ) );
+
+      while ( remainingSize > 0 ) {
+          const qint64 currentChunkSize = qMin( chunkSize, remainingSize );
+          const qint64 n = archive()->device()->read( array.data(), currentChunkSize );
+          Q_ASSERT( n == currentChunkSize );
+          f.write( array.data(), currentChunkSize );
+          remainingSize -= currentChunkSize;
+      }
       f.close();
   }
 }
