@@ -258,9 +258,17 @@ bool KHistoryComboBox::removeFromHistory( const QString& item )
     return removed;
 }
 
+// going up in the history, rotating when reaching QListBox::count()
+//
+// Note: this differs from QComboBox because "up" means ++index here,
+// to simulate the way shell history works (up goes to the most
+// recent item). In QComboBox "down" means ++index, to match the popup...
+//
 void KHistoryComboBox::rotateUp()
 {
     // save the current text in the lineedit
+    // (This is also where this differs from standard up/down in QComboBox,
+    // where a single keypress can make you lose your typed text)
     if ( d->myIterateIndex == -1 )
         d->myText = currentText();
 
@@ -284,11 +292,13 @@ void KHistoryComboBox::rotateUp()
             d->myIterateIndex = 0;
 
         setEditText( d->myText );
+    } else {
+        setCurrentIndex(d->myIterateIndex);
     }
-    else
-        setEditText( itemText( d->myIterateIndex ));
 }
 
+// going down in the history, no rotation possible. Last item will be
+// the text that was in the lineedit before Up was called.
 void KHistoryComboBox::rotateDown()
 {
     // save the current text in the lineedit
@@ -322,22 +332,17 @@ void KHistoryComboBox::rotateDown()
             if ( currentText() != d->myText )
                 setEditText( d->myText );
         }
+    } else {
+        setCurrentIndex(d->myIterateIndex);
     }
-    else
-        setEditText( itemText( d->myIterateIndex ));
-
 }
 
 void KHistoryComboBox::keyPressEvent( QKeyEvent *e )
 {
     int event_key = e->key() | e->modifiers();
 
-    // going up in the history, rotating when reaching QListBox::count()
     if ( KStandardShortcut::rotateUp().contains(event_key) )
         rotateUp();
-
-    // going down in the history, no rotation possible. Last item will be
-    // the text that was in the lineedit before Up was called.
     else if ( KStandardShortcut::rotateDown().contains(event_key) )
         rotateDown();
     else

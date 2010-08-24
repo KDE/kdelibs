@@ -88,6 +88,21 @@ private Q_SLOTS:
         QCOMPARE(comboActivatedSpy[0][0].toString(), QString("Hello world"));
     }
 
+    void testHistoryComboKeyUp()
+    {
+        KHistoryComboBox w;
+        QStringList items;
+        items << "One" << "Two" << "Three" << "Four";
+        w.addItems(items);
+        QSignalSpy currentIndexChangedSpy(&w, SIGNAL(currentIndexChanged(int)));
+        w.completionObject()->setItems(items);
+        QCOMPARE(w.currentIndex(), 0);
+        QTest::keyClick(&w, Qt::Key_Up);
+        QCOMPARE(w.currentIndex(), 1);
+        QCOMPARE(currentIndexChangedSpy.count(), 1);
+        QCOMPARE(currentIndexChangedSpy[0][0].toInt(), 1);
+    }
+
     void testHistoryComboInsertItems()
     {
         KHistoryComboBox combo;

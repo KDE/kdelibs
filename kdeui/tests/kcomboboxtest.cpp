@@ -37,8 +37,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_qc = new QComboBox(hbox);
   m_qc->setObjectName( QLatin1String( "QtReadOnlyCombo" ) );
   lbl->setBuddy (m_qc);
-  QObject::connect (m_qc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-  QObject::connect (m_qc, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
+  connectComboSignals(m_qc);
   vbox->addWidget (hbox);
 
   // Read-only combobox
@@ -51,8 +50,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_ro->setObjectName( "ReadOnlyCombo" );
   lbl->setBuddy (m_ro);
   m_ro->setCompletionMode( KGlobalSettings::CompletionAuto );
-  QObject::connect (m_ro, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-  QObject::connect (m_ro, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
+  connectComboSignals(m_ro);
   vbox->addWidget (hbox);
 
   // Read-write combobox
@@ -67,10 +65,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_rw->setDuplicatesEnabled( true );
   m_rw->setInsertPolicy( QComboBox::NoInsert );
   m_rw->setTrapReturnKey( true );
-  QObject::connect (m_rw, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-  QObject::connect (m_rw, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
-  QObject::connect (m_rw, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
-  QObject::connect (m_rw, SIGNAL(returnPressed(const QString&)), SLOT(slotReturnPressed(const QString&)));
+  connectComboSignals(m_rw);
   vbox->addWidget (hbox);
 
   // History combobox...
@@ -84,9 +79,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
   m_hc->setInsertPolicy( QComboBox::NoInsert );
-  QObject::connect (m_hc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-  QObject::connect (m_hc, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
-  QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
+  connectComboSignals(m_hc);
   vbox->addWidget (hbox);
   m_hc->setTrapReturnKey(true);
 
@@ -100,9 +93,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_konqc->setObjectName( "KonqyCombo" );
   lbl->setBuddy (m_konqc);
   m_konqc->setMaxCount( 10 );
-  QObject::connect (m_konqc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-  QObject::connect (m_konqc, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
-  QObject::connect (m_konqc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
+  connectComboSignals(m_konqc);
   vbox->addWidget (hbox);
 
   // Create an exit button
@@ -133,9 +124,9 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_rw->addItems( list );
   m_rw->completionObject()->setItems( list );
 
-  // Setup read-write combo
+  // Setup history combo
   m_hc->addItems( list );
-  m_hc->completionObject()->setItems( list );
+  m_hc->completionObject()->setItems( list + QStringList() << "One" << "Two" << "Three" );
 
   // Setup konq's combobox
   KConfig historyConfig( "konq_history", KConfig::SimpleConfig );
@@ -156,11 +147,18 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
 KComboBoxTest::~KComboBoxTest()
 {
-  if (m_timer)
-  {
     delete m_timer;
     m_timer = 0;
-  }
+}
+
+void KComboBoxTest::connectComboSignals(QComboBox* combo)
+{
+    QObject::connect(combo, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+    QObject::connect(combo, SIGNAL(activated(QString)), SLOT(slotActivated(QString)));
+    QObject::connect(combo, SIGNAL(currentIndexChanged(int)), SLOT(slotCurrentIndexChanged(int)));
+    QObject::connect(combo, SIGNAL(currentIndexChanged(QString)), SLOT(slotCurrentIndexChanged(QString)));
+    QObject::connect(combo, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
+    QObject::connect(combo, SIGNAL(returnPressed(QString)), SLOT(slotReturnPressed(QString)));
 }
 
 void KComboBoxTest::slotDisable ()
@@ -192,24 +190,34 @@ void KComboBoxTest::slotTimeout ()
   m_btnEnable->setEnabled (!m_btnEnable->isEnabled());
 }
 
+void KComboBoxTest::slotCurrentIndexChanged(int index)
+{
+  kDebug() << qPrintable(sender()->objectName()) << ", index:" << index;
+}
+
+void KComboBoxTest::slotCurrentIndexChanged(const QString& item)
+{
+  kDebug() << qPrintable(sender()->objectName()) << ", item:" << item;
+}
+
 void KComboBoxTest::slotActivated( int index )
 {
-  kDebug() << "Activated Combo: " << qPrintable(sender()->objectName()) << ", index:" << index;
+  kDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", index:" << index;
 }
 
 void KComboBoxTest::slotActivated (const QString& item)
 {
-  kDebug() << "Activated Combo: " << qPrintable(sender()->objectName()) << ", item: " << item;
+  kDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", item:" << item;
 }
 
 void KComboBoxTest::slotReturnPressed ()
 {
-  kDebug() << "Return Pressed: " << qPrintable(sender()->objectName());
+  kDebug() << "Return Pressed:" << qPrintable(sender()->objectName());
 }
 
 void KComboBoxTest::slotReturnPressed(const QString& item)
 {
-  kDebug() << "Return Pressed, value = " << item;
+  kDebug() << "Return Pressed:" << qPrintable(sender()->objectName()) << ", value =" << item;
 }
 
 void KComboBoxTest::quitApp()
