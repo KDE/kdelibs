@@ -43,7 +43,7 @@ class KDEUI_EXPORT KButtonGroup
 {
   Q_OBJECT
 
-  Q_PROPERTY(int current READ selected WRITE setSelected)
+  Q_PROPERTY(int current READ selected WRITE setSelected NOTIFY changed USER true)
 
   public:
     /**

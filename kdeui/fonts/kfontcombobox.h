@@ -50,7 +50,7 @@ class KDEUI_EXPORT KFontComboBox : public KComboBox
 {
     Q_OBJECT
 
-    Q_PROPERTY(QFont currentFont READ currentFont WRITE setCurrentFont)
+    Q_PROPERTY(QFont currentFont READ currentFont WRITE setCurrentFont NOTIFY currentFontChanged USER true)
 
 public:
 

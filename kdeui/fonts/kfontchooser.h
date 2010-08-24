@@ -47,7 +47,7 @@ class QStringList;
 class KDEUI_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY( QFont font READ font WRITE setFont USER true )
+  Q_PROPERTY( QFont font READ font WRITE setFont NOTIFY fontSelected USER true )
 
 public:
     /**

@@ -42,7 +42,7 @@ class QDate;
 class KDEUI_EXPORT KDateWidget : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY( QDate date READ date WRITE setDate USER true )
+    Q_PROPERTY( QDate date READ date WRITE setDate NOTIFY changed USER true )
 //FIXME    Q_PROPERTY( KCalendarSystem calendar READ calendar WRITE setCalendar USER true )
 
 public:

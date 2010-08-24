@@ -53,7 +53,7 @@ class KCalendarSystem;
 class KDEUI_EXPORT KDatePicker: public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY( QDate date READ date WRITE setDate USER true )
+    Q_PROPERTY( QDate date READ date WRITE setDate NOTIFY dateChanged USER true )
 //FIXME    Q_PROPERTY( KCalendarSystem calendar READ calendar WRITE setCalendar USER true )
     Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )

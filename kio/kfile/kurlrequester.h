@@ -55,7 +55,7 @@ class QEvent;
 class KIO_EXPORT KUrlRequester : public KHBox
 {
     Q_OBJECT
-    Q_PROPERTY( KUrl url READ url WRITE setUrl USER true )
+    Q_PROPERTY( KUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
