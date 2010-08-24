@@ -514,8 +514,8 @@ void KIdentityProxyModelPrivate::_k_sourceColumnsRemoved(const QModelIndex &pare
 void KIdentityProxyModelPrivate::_k_sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     Q_Q(KIdentityProxyModel);
-    Q_ASSERT(topLeft.isValid() ? topLeft.model() == q->sourceModel() : true);
-    Q_ASSERT(bottomRight.isValid() ? bottomRight.model() == q->sourceModel() : true);
+    Q_ASSERT(topLeft.model() == q->sourceModel());
+    Q_ASSERT(bottomRight.model() == q->sourceModel());
     q->dataChanged(q->mapFromSource(topLeft), q->mapFromSource(bottomRight));
 }
 
