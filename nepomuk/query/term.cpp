@@ -42,6 +42,7 @@
 #include <QtCore/QDebug>
 
 #include "property.h"
+#include "variant.h"
 
 
 Nepomuk::Query::Term::Term()
@@ -273,6 +274,24 @@ Nepomuk::Query::Term Nepomuk::Query::Term::fromString( const QString& s )
 }
 
 
+// static
+Nepomuk::Query::Term Nepomuk::Query::Term::fromVariant( const Variant& variant )
+{
+    if( variant.isResource() ) {
+        return ResourceTerm( variant.toResource() );
+    }
+    else if( !variant.isList() ) {
+        Soprano::LiteralValue v( variant.variant() );
+        if( v.isValid() ) {
+            return LiteralTerm( v );
+        }
+    }
+
+    // fallback: invalid term
+    return Term();
+}
+
+
 bool Nepomuk::Query::Term::operator==( const Term& other ) const
 {
     return d_ptr->equals( other.d_ptr );
@@ -366,6 +385,21 @@ Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator>=( const Nepomuk::Types:
 Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator==( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
 {
     return ComparisonTerm( property, term, ComparisonTerm::Equal );
+}
+
+
+Nepomuk::Query::Term Nepomuk::operator==( const Nepomuk::Types::Property& property, const Nepomuk::Variant& variant )
+{
+    if( variant.isList() ) {
+        Query::AndTerm andTerm;
+        Q_FOREACH( const Variant& v, variant.toVariantList() ) {
+            andTerm.addSubTerm( property == v );
+        }
+        return andTerm;
+    }
+    else {
+        return Query::ComparisonTerm( property, Query::Term::fromVariant(variant), Query::ComparisonTerm::Equal );
+    }
 }
 
 

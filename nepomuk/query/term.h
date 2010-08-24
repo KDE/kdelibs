@@ -29,6 +29,9 @@
 #include "nepomukquery_export.h"
 
 namespace Nepomuk {
+
+    class Variant;
+
     namespace Types {
         class Property;
     }
@@ -369,6 +372,19 @@ namespace Nepomuk {
             static Term fromString( const QString& s );
 
             /**
+             * Construct a Term from a Variant value. This is a convenience method
+             * that simplifies handling Nepomuk values. However, list variants are
+             * not supported and will result in an invalid Term.
+             *
+             * \return A ResourceTerm in case \p variant is a resource, a LiteralTerm
+             * if \p variant is a supported literal value, or an invalid Term if \p
+             * variant is invalid or a list.
+             *
+             * \since 4.6
+             */
+            static Term fromVariant( const Variant& variant );
+
+            /**
              * Comparison operator.
              *
              * \return \p true if this term is equal to \p term.
@@ -535,6 +551,20 @@ namespace Nepomuk {
 
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Term& );
     }
+
+    /**
+     * Comparision operator for simple creation of ComparisonTerm objects using the
+     * ComparisonTerm::Equal comparator.
+     *
+     * \param property The property to be used in the ComparisonTerm.
+     * \param variant The value to be compared to. Either ResourceTerm or LiteralTerm is used. List
+     * variants (Variant::isList()) are handled via an AndTerm meaning all values need to match.
+     *
+     * \since 4.6
+     *
+     * \relates ComparisonTerm
+     */
+    NEPOMUKQUERY_EXPORT Query::Term operator==( const Types::Property& property, const Variant& variant );
 }
 
 /** \cond hide_nepomuk_term_clone_from_doxygen */
