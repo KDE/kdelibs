@@ -89,13 +89,12 @@ const QByteArray KLocaleWindowsPrivate::encoding()
 {
     if ( qstrcmp( codecForEncoding()->name(), "System" ) == 0 ) {
         //win32 returns "System" codec name here but KDE apps expect a real name:
-        LPWSTR buffer;
         strcpy( m_win32SystemEncoding, "cp " );
-        if ( GetLocaleInfoW( MAKELCID( MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT ), SORT_DEFAULT ),
+        // MSDN says the returned string for LOCALE_IDEFAULTANSICODEPAGE is max 6 char including '\0'
+        char buffer[6];
+        if ( GetLocaleInfoA( MAKELCID( MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT ), SORT_DEFAULT ),
                              LOCALE_IDEFAULTANSICODEPAGE, buffer, sizeof( buffer ) ) ) {
-            QString localestr = QString::fromUtf16( (const ushort*) buffer ) ;
-            QByteArray localechar = localestr.toAscii();
-            strcpy( m_win32SystemEncoding, localechar.data() + 3 );
+            strcpy( m_win32SystemEncoding + 3, buffer );
             return m_win32SystemEncoding;
         }
     }
