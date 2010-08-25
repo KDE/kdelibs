@@ -311,6 +311,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
     kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup);
+    d->proxyModel->sort(0);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
@@ -334,6 +335,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
     kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, true /* manually added */);
+    d->proxyModel->sort(0);
 }
 
 void KPluginSelector::load()
