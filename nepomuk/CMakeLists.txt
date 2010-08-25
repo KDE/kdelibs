@@ -156,4 +156,5 @@ install(FILES
 
 add_subdirectory(rcgen)
 add_subdirectory(query)
+add_subdirectory(utils)
 add_subdirectory(test)

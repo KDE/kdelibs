@@ -536,6 +536,11 @@ Nepomuk::Query::ComparisonTerm mtime
 \sa \ref examples_query
 */
 
+/** \namespace Nepomuk::Utils
+\brief The %Utils namespace contains utility and convenience methods that help the application developer with
+using %Nepomuk.
+*/
+
 // DOXYGEN_SET_RECURSIVE = NO
 // DOXYGEN_SET_FILE_PATTERNS = *.h
 // DOXYGEN_SET_INPUT = @topdir@/nepomuk/Mainpage.dox
