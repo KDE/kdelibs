@@ -443,7 +443,7 @@ void KFileMetaDataWidget::Private::removeOutdatedRows()
 
 void KFileMetaDataWidget::Private::slotLinkActivated(const QString& link)
 {
-    const QUrl url(link);
+    const KUrl url(link);
     if (url.isValid()) {
         emit q->urlActivated(url);
     }
