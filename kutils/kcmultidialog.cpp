@@ -37,6 +37,7 @@
 #include <kpushbutton.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 
 #include "auth/kauthaction.h"
 
@@ -45,73 +46,139 @@
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
 
-void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *item )
-{
-  kDebug(710) ;
-
-  if ( !item )
-    return;
-
-  KCModuleProxy *module = 0;
-  for ( int i = 0; i < modules.count(); ++i ) {
-    if ( modules[ i ].item == item ) {
-      module = modules[ i ].kcm;
-      break;
-    }
-  }
-
-  if ( !module )
-    return;
-  kDebug(710) << "found module for page: " << module->moduleInfo().moduleName();
-
-  currentModule = module;
-
-  updateButtons(currentModule);
-}
-
-void KCMultiDialogPrivate::updateButtons(KCModuleProxy *currentModule)
+bool KCMultiDialogPrivate::resolveChanges(KCModuleProxy *currentProxy)
 {
     Q_Q(KCMultiDialog);
-    q->enableButton(KDialog::Help, currentModule->buttons() & KCModule::Help);
-    q->enableButton(KDialog::Default, currentModule->buttons() & KCModule::Default);
-
-    if (q->button(KDialog::Apply))
-    {
-      q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
-      q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotApplyClicked()));
+    if( !currentProxy || !currentProxy->changed() ) {
+        return true;
     }
 
-    if (q->button(KDialog::Ok))
-    {
-      q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
-      q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotOkClicked()));
+    // Let the user decide
+    const int queryUser = KMessageBox::warningYesNoCancel(
+        q,
+        i18n("The settings of the current module have changed.\n"
+             "Do you want to apply the changes or discard them?"),
+        i18n("Apply Settings"),
+        KStandardGuiItem::apply(),
+        KStandardGuiItem::discard(),
+        KStandardGuiItem::cancel());
+
+    switch (queryUser) {
+        case KMessageBox::Yes:
+            return moduleSave(currentProxy);
+
+        case KMessageBox::No:
+            currentProxy->load();
+            return true;
+
+        case KMessageBox::Cancel:
+            return false;
+
+        default:
+            Q_ASSERT(false);
+            return false;
     }
+}
 
-    if (currentModule->realModule()->needsAuthorization()) {
-      if (q->button(KDialog::Apply))
-      {
-        q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
-        q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), SLOT(slotApplyClicked()));
-      }
+void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *current, KPageWidgetItem *previous )
+{
+    Q_Q(KCMultiDialog);
+    kDebug(710);
 
-      if (q->button(KDialog::Ok))
-      {
-        q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
-        q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), SLOT(slotOkClicked()));
-      }
-    } else {
+    q->blockSignals(true);
+    q->setCurrentPage(previous);
 
-        if (q->button(KDialog::Apply))
-        {
-          q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
-          q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
+    KCModuleProxy *previousModule = 0;
+    for ( int i = 0; i < modules.count(); ++i ) {
+        if ( modules[ i ].item == previous ) {
+            previousModule = modules[ i ].kcm;
+            break;
         }
-        if (q->button(KDialog::Ok))
-        {
-          q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
-          q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
+    }
+
+    KCModuleProxy *currentModule = 0;
+    for ( int i = 0; i < modules.count(); ++i ) {
+        if ( modules[ i ].item == current ) {
+            currentModule = modules[ i ].kcm;
+            break;
         }
     }
+
+    if ( !previousModule || !currentModule ) {
+        q->blockSignals(false);
+        return;
+    }
+
+    if( resolveChanges(previousModule) ) {
+        q->setCurrentPage(current);
+    }
+    q->blockSignals(false);
+
+    // We need to get the state of the now active module
+    _k_clientChanged();
+}
+
+void KCMultiDialogPrivate::_k_clientChanged()
+{
+    Q_Q(KCMultiDialog);
+    kDebug(710);
+    // Get the current module
+    KCModuleProxy *activeModule = 0;
+    for ( int i = 0; i < modules.count(); ++i ) {
+        if ( modules[ i ].item == q->currentPage() ) {
+            activeModule = modules[ i ].kcm;
+            break;
+        }
+    }
+
+    bool change = false;
+    if (activeModule) {
+        change = activeModule->changed();
+
+        if (q->button(KDialog::Apply)) {
+            q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
+            q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotApplyClicked()));
+            q->button(KDialog::Apply)->setEnabled(change);
+        }
+
+        if (q->button(KDialog::Ok)) {
+            q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
+            q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotOkClicked()));
+        }
+
+        if (activeModule->realModule()->needsAuthorization()) {
+            if (q->button(KDialog::Apply)) {
+                q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
+                q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), SLOT(slotApplyClicked()));
+            }
+
+            if (q->button(KDialog::Ok)) {
+                q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
+                q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), SLOT(slotOkClicked()));
+            }
+        } else {
+            if (q->button(KDialog::Apply)) {
+                q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
+                q->button(KDialog::Apply)->setAuthAction(activeModule->realModule()->authAction());
+            }
+
+            if (q->button(KDialog::Ok)) {
+                q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
+                q->button(KDialog::Ok)->setAuthAction(activeModule->realModule()->authAction());
+            }
+        }
+    }
+
+    if (q->button(KDialog::Reset)) {
+        q->button(KDialog::Reset)->setEnabled(change);
+    }
+
+    if (q->button(KDialog::Apply)) {
+        q->button(KDialog::Apply)->setEnabled(change);
+    }
+
+    q->enableButton(KDialog::Help,    activeModule->buttons() & KCModule::Help);
+    q->enableButton(KDialog::Default, activeModule->buttons() & KCModule::Default);
 }
 
 void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
@@ -128,19 +195,6 @@ void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
         item->setHeader( kcm->moduleInfo().comment() );
         item->setIcon( KIcon( kcm->moduleInfo().icon() ) );
     }
-}
-
-void KCMultiDialogPrivate::_k_clientChanged()
-{
-    Q_Q(KCMultiDialog);
-  for ( int i = 0; i < modules.count(); ++i ) {
-    if ( modules[ i ].kcm->changed() ) {
-            q->enableButton(KDialog::Apply, true);
-      return;
-    }
-  }
-
-    q->enableButton(KDialog::Apply, false);
 }
 
 void KCMultiDialogPrivate::_k_dialogClosed()
@@ -161,24 +215,20 @@ void KCMultiDialogPrivate::init()
     Q_Q(KCMultiDialog);
     q->setFaceType(KPageDialog::Auto);
     q->setCaption(i18n("Configure"));
-    q->setButtons(KDialog::Help | KDialog::Default |KDialog::Cancel | KDialog::Apply | KDialog::Ok | KDialog::User1);
-    q->setButtonGuiItem(KDialog::User1, KStandardGuiItem::reset());
-    q->setDefaultButton(KDialog::Ok);
+    q->setButtons(KDialog::Help | KDialog::Default |KDialog::Cancel | KDialog::Apply | KDialog::Ok | KDialog::Reset);
+
     q->setModal(false);
 
     q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
-
-    q->showButton(KDialog::User1, false);
-    q->enableButton(KDialog::Apply, false);
-
-    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*, KPageWidgetItem*)),
-            SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*)));
-
     q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
     q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
     q->connect(q, SIGNAL(defaultClicked()), SLOT(slotDefaultClicked()));
     q->connect(q, SIGNAL(helpClicked()), SLOT(slotHelpClicked()));
     q->connect(q, SIGNAL(user1Clicked()), SLOT(slotUser1Clicked()));
+    q->connect(q, SIGNAL(resetClicked()), SLOT(slotUser1Clicked()));
+
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*, KPageWidgetItem*)),
+            SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*, KPageWidgetItem*)));
 
     q->setInitialSize(QSize(800, 550));
 }
@@ -235,6 +285,16 @@ void KCMultiDialog::slotUser1Clicked()
       return;
     }
   }
+}
+
+bool KCMultiDialogPrivate::moduleSave(KCModuleProxy *module)
+{
+    if( !module ) {
+        return false;
+    }
+
+    module->save();
+    return true;
 }
 
 void KCMultiDialogPrivate::apply()
@@ -335,7 +395,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
     kDebug(710) << moduleInfo.moduleName();
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
-  
+
     if (kcm->useRootOnlyMessage()) {
         item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
         item->setIcon( KIcon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
@@ -401,7 +461,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   if ( d->modules.count() == 1 || updateCurrentPage )
   {
     setCurrentPage( item );
-    d->updateButtons(kcm);
+    d->_k_clientChanged();
   }
   return item;
 }
@@ -421,6 +481,35 @@ void KCMultiDialog::clear()
     d->_k_clientChanged();
 }
 
+void KCMultiDialog::setButtons(ButtonCodes buttonMask)
+{
+    KPageDialog::setButtons(buttonMask);
+
+    // Set Auto-Default mode ( KDE Bug #211187 )
+    if (buttonMask & KDialog::Ok) {
+        button(KDialog::Ok)->setAutoDefault(true);
+    }
+    if (buttonMask & KDialog::Apply) {
+        button(KDialog::Apply)->setAutoDefault(true);
+    }
+    if (buttonMask & KDialog::Default) {
+        button(KDialog::Default)->setAutoDefault(true);
+    }
+    if (buttonMask & KDialog::Reset) {
+        button(KDialog::Reset)->setAutoDefault(true);
+    }
+    if (buttonMask & KDialog::Cancel) {
+        button(KDialog::Cancel)->setAutoDefault(true);
+    }
+    if (buttonMask & KDialog::Help) {
+        button(KDialog::Help)->setAutoDefault(true);
+    }
+
+    // Old Reset Button
+    enableButton(KDialog::User1, false);
+    enableButton(KDialog::Reset, false);
+    enableButton(KDialog::Apply, false);
+}
 
 
 #include "kcmultidialog.moc"

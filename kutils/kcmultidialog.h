@@ -66,7 +66,7 @@ class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
      *
      * @returns The @see KPageWidgetItem associated with the new dialog page.
      **/
-    KPageWidgetItem* addModule( const QString& module, const QStringList& 
+    KPageWidgetItem* addModule( const QString& module, const QStringList&
                                 args = QStringList() );
 
     /**
@@ -84,13 +84,18 @@ class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
      *
      * @param args The arguments that should be given to the KCModule when it is created
      **/
-    KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0, 
+    KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0,
                                 const QStringList& args = QStringList() );
 
     /**
      * Removes all modules from the dialog.
      */
     void clear();
+
+    /**
+     * Reimplemented for internal reasons.
+     */
+    void setButtons(ButtonCodes buttonMask);
 
   Q_SIGNALS:
     /**
@@ -171,7 +176,7 @@ class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
     void slotHelpClicked();
 
     private:
-        Q_PRIVATE_SLOT(d_func(), void _k_slotCurrentPageChanged(KPageWidgetItem *))
+        Q_PRIVATE_SLOT(d_func(), void _k_slotCurrentPageChanged(KPageWidgetItem *, KPageWidgetItem *))
         Q_PRIVATE_SLOT(d_func(), void _k_clientChanged())
         Q_PRIVATE_SLOT(d_func(), void _k_dialogClosed())
         Q_PRIVATE_SLOT(d_func(), void _k_updateHeader(bool use, const QString &message))

@@ -49,15 +49,16 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
         typedef QList<CreatedModule> ModuleList;
         ModuleList modules;
 
-        void _k_slotCurrentPageChanged(KPageWidgetItem *);
+        void _k_slotCurrentPageChanged(KPageWidgetItem *current, KPageWidgetItem *previous);
         virtual void _k_clientChanged();
         void _k_dialogClosed();
         void _k_updateHeader(bool use, const QString &message);
 
-        void updateButtons(KCModuleProxy *currentModule);
     private:
         void init();
         void apply();
+        bool resolveChanges(KCModuleProxy *currentProxy);
+        bool moduleSave(KCModuleProxy *module);
 };
 
 #endif // KCMULTIDIALOG_P_H
