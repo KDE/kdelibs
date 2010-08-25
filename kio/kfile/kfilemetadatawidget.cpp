@@ -442,7 +442,7 @@ void KFileMetaDataWidget::Private::removeOutdatedRows()
 
 void KFileMetaDataWidget::Private::slotLinkActivated(const QString& link)
 {
-    const QUrl url(link);
+    const KUrl url(link);
     if (url.isValid()) {
         emit q->urlActivated(url);
     }
@@ -583,13 +583,13 @@ QSize KFileMetaDataWidget::sizeHint() const
         if (rightWidth > rightWidthMax) {
             rightWidthMax = rightWidth;
         }
-        
+
         const int leftWidth = row.label->sizeHint().width();
         if (leftWidth > leftWidthMax) {
             leftWidthMax = leftWidth;
         }
     }
-    
+
     // Some value widgets might return a very huge width for the size hint.
     // Limit the maximum width to the double width of the overall average
     // to assure a less messed layout.
