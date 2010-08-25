@@ -756,10 +756,8 @@ void KApplication::saveState( QSessionManager& sm )
     // discard commands. In fact it would be harmful to remove the
     // file here, as the session might be stored under a different
     // name, meaning the user still might need it eventually.
-    if ( d->pSessionConfig ) {
-        delete d->pSessionConfig;
-        d->pSessionConfig = 0;
-    }
+    delete d->pSessionConfig;
+    d->pSessionConfig = 0;
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();

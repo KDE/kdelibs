@@ -1390,10 +1390,9 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
     m_request.davData.overwrite = (flags & KIO::Overwrite);
     m_request.url.setQuery(QString());
     m_request.cacheTag.policy = CC_Reload;
-    if (m_wwwAuth) {  // force re-authentication...
-        delete m_wwwAuth;
-        m_wwwAuth = 0;
-    }
+    // force re-authentication...
+    delete m_wwwAuth;
+    m_wwwAuth = 0;
     proceedUntilResponseHeader();
   }
 
@@ -1426,10 +1425,9 @@ void HTTPProtocol::del( const KUrl& url, bool )
     m_request.method = HTTP_DELETE;
     m_request.url.setQuery(QString());;
     m_request.cacheTag.policy = CC_Reload;
-    if (m_wwwAuth) { // force re-authentication...
-        delete m_wwwAuth;
-        m_wwwAuth = 0;
-    }
+    // force re-authentication...
+    delete m_wwwAuth;
+    m_wwwAuth = 0;
     proceedUntilResponseHeader();
   }
 

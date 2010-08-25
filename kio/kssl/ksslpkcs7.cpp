@@ -56,7 +56,7 @@ KSSLPKCS7::~KSSLPKCS7() {
 #ifdef KSSL_HAVE_SSL
    if (_pkcs) kossl->PKCS7_free(_pkcs);
 #endif
-   if (_cert) delete _cert;
+   delete _cert;
 }
 
 

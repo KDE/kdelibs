@@ -49,16 +49,14 @@ nsUniversalDetector::nsUniversalDetector()
     mCharSetProbers[i] = 0;
 }
 
-nsUniversalDetector::~nsUniversalDetector() 
+nsUniversalDetector::~nsUniversalDetector()
 {
   for (int i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
-    if (mCharSetProbers[i])      
-      delete mCharSetProbers[i];
-  if (mEscCharSetProber)
-    delete mEscCharSetProber;
+    delete mCharSetProbers[i];
+  delete mEscCharSetProber;
 }
 
-void 
+void
 nsUniversalDetector::Reset()
 {
   mDone = false;
@@ -105,10 +103,8 @@ nsProbingState nsUniversalDetector::HandleData(const char* aBuf, unsigned int aL
         mInputState = eHighbyte;
 
         //kill mEscCharSetProber if it is active
-        if (mEscCharSetProber) {
-          delete mEscCharSetProber;
-          mEscCharSetProber = 0;
-        }
+        delete mEscCharSetProber;
+        mEscCharSetProber = 0;
 
         //start multibyte and singlebyte charset prober
         if (0 == mCharSetProbers[0])

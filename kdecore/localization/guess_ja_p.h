@@ -96,9 +96,9 @@ namespace khtml {
         }
 
         ~JapaneseCode () {
-            if (eucj) delete eucj;
-            if (sjis) delete sjis;
-            if (utf8) delete utf8;
+            delete eucj;
+            delete sjis;
+            delete utf8;
         }
 
     protected:

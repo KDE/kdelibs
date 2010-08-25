@@ -51,7 +51,7 @@ Responder::~Responder()
 
 void Responder::stop()
 {
-	if (m_socket) delete m_socket;
+	delete m_socket;
 	m_socket = 0;
 	if (m_ref) DNSServiceRefDeallocate(m_ref);
 	m_ref = 0;

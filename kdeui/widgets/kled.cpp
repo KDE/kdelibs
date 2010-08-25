@@ -562,15 +562,11 @@ void KLed::setColor( const QColor &color )
   if ( d->color == color )
     return;
 
-  if ( d->onMap ) {
-    delete d->onMap;
-    d->onMap = 0;
-  }
+  delete d->onMap;
+  d->onMap = 0;
 
-  if ( d->offMap ) {
-    delete d->offMap;
-    d->offMap = 0;
-  }
+  delete d->offMap;
+  d->offMap = 0;
 
   d->color = color;
   d->offColor = color.dark( d->darkFactor );

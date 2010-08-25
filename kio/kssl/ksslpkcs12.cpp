@@ -68,7 +68,7 @@ KSSLPKCS12::~KSSLPKCS12() {
    }
    if (_pkcs) kossl->PKCS12_free(_pkcs);
 #endif
-   if (_cert) delete _cert;
+   delete _cert;
 }
 
 
@@ -146,7 +146,7 @@ X509 *x = NULL;
 
   assert(_pkcs);   // if you're calling this before pkcs gets set, it's a BUG!
 
-   if (_cert) delete _cert;
+   delete _cert;
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
    if (_caStack) {
       for (;;) {

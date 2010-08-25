@@ -691,8 +691,7 @@ void KTimeZone::setData(KTimeZoneData *data, KTimeZoneSource *source)
 {
     if (!isValid())
         return;
-    if (d->d->data)
-        delete d->d->data;
+    delete d->d->data;
     d->d->data = data;
     if (source)
         d->d->source = source;

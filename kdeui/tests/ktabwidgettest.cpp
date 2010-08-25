@@ -268,8 +268,7 @@ void Test::toggleCloseButtons(bool state)
 
 void Test::contextMenu(QWidget *w, const QPoint &p)
 {
-  if (mContextPopup)
-      delete mContextPopup;
+  delete mContextPopup;
 
   int idx = mWidget->indexOf( w );
   mContextPopup = new QMenu(this);
@@ -312,8 +311,7 @@ void Test::contextMenuActivated(QAction *action)
 
 void Test::tabbarContextMenu(const QPoint &p)
 {
-  if (mTabbarContextPopup)
-      delete mTabbarContextPopup;
+  delete mTabbarContextPopup;
 
   mTabbarContextPopup = new QMenu(this);
   mTabbarContextPopup->addAction(SmallIcon( "tab-new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button");

@@ -1330,9 +1330,7 @@ KCmdLineArgs::clear()
 void
 KCmdLineArgs::reset()
 {
-   if ( s->argsList ) {
-      delete s->argsList; s->argsList = 0;
-   }
+   delete s->argsList; s->argsList = 0;
    s->parsed = false;
 }
 

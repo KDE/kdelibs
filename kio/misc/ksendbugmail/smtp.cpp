@@ -65,10 +65,8 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 
 SMTP::~SMTP()
 {
-    if(sock){
-        delete sock;
-        sock = 0L;
-    }
+    delete sock;
+    sock = 0L;
     connectTimer.stop();
     timeOutTimer.stop();
 }
@@ -169,10 +167,8 @@ void SMTP::connectTimerTick(void)
 
     kDebug() << "connectTimerTick called...";
 
-    if(sock){
-        delete sock;
-        sock = 0L;
-    }
+    delete sock;
+    sock = 0L;
 
     kDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... ";
     sock = KSocketFactory::connectToHost("smtp", serverHost, hostPort, this);
