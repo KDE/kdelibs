@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testLogicalOperators();
     void testComparison_data();
     void testComparison();
+    void testTermFromProperty();
 };
 
 #endif

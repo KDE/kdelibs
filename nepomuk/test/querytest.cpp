@@ -499,41 +499,6 @@ void QueryTest::testLogicalOperators()
 
     // test logical or
     QCOMPARE( ct1 || ct2 || lt1, Term(OrTerm( ct1, ct2, lt1 )) );
-
-    // test variant handling
-    QCOMPARE( Soprano::Vocabulary::NAO::hasTag() == Nepomuk::Variant( QString::fromLatin1("Hello World") ),
-              Term(
-                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
-                                  LiteralTerm( QLatin1String("Hello World") ),
-                                  ComparisonTerm::Equal ) )
-        );
-
-    QCOMPARE( Soprano::Vocabulary::NAO::hasTag() == Nepomuk::Variant( 42 ),
-              Term(
-                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
-                                  LiteralTerm( 42 ),
-                                  ComparisonTerm::Equal ) )
-        );
-
-    Nepomuk::Resource res( QUrl("nepomuk:/res/foobar") );
-    QCOMPARE( Soprano::Vocabulary::NAO::hasTag() == Nepomuk::Variant( res ),
-              Term(
-                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
-                                  ResourceTerm( res ),
-                                  ComparisonTerm::Equal ) )
-        );
-
-    Nepomuk::Resource res2( QUrl("nepomuk:/res/foobar2") );
-    QCOMPARE( Soprano::Vocabulary::NAO::hasTag() == Nepomuk::Variant( QList<Nepomuk::Resource>() << res << res2 ),
-              Term(
-                  AndTerm(
-                      ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
-                                      ResourceTerm( res ),
-                                      ComparisonTerm::Equal ),
-                      ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
-                                      ResourceTerm( res2 ),
-                                      ComparisonTerm::Equal ) ) )
-        );
 }
 
 
@@ -562,6 +527,44 @@ void QueryTest::testComparison()
     QFETCH( Nepomuk::Query::Query, q2 );
 
     QCOMPARE( q1, q2 );
+}
+
+
+void QueryTest::testTermFromProperty()
+{
+    QCOMPARE( Term::fromProperty(Soprano::Vocabulary::NAO::hasTag(), Nepomuk::Variant( QString::fromLatin1("Hello World") )),
+              Term(
+                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                  LiteralTerm( QLatin1String("Hello World") ),
+                                  ComparisonTerm::Equal ) )
+        );
+
+    QCOMPARE( Term::fromProperty(Soprano::Vocabulary::NAO::hasTag(), Nepomuk::Variant( 42 )),
+              Term(
+                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                  LiteralTerm( 42 ),
+                                  ComparisonTerm::Equal ) )
+        );
+
+    Nepomuk::Resource res( QUrl("nepomuk:/res/foobar") );
+    QCOMPARE( Term::fromProperty(Soprano::Vocabulary::NAO::hasTag(), Nepomuk::Variant( res )),
+              Term(
+                  ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                  ResourceTerm( res ),
+                                  ComparisonTerm::Equal ) )
+        );
+
+    Nepomuk::Resource res2( QUrl("nepomuk:/res/foobar2") );
+    QCOMPARE( Term::fromProperty(Soprano::Vocabulary::NAO::hasTag(), Nepomuk::Variant( QList<Nepomuk::Resource>() << res << res2 )),
+              Term(
+                  AndTerm(
+                      ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                      ResourceTerm( res ),
+                                      ComparisonTerm::Equal ),
+                      ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                      ResourceTerm( res2 ),
+                                      ComparisonTerm::Equal ) ) )
+        );
 }
 
 QTEST_KDEMAIN_CORE( QueryTest )
