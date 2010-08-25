@@ -56,13 +56,16 @@ KLocaleWindowsPrivate::~KLocaleWindowsPrivate()
 QString KLocaleWindowsPrivate::windowsLocaleValue( LCTYPE key ) const
 {
     // Find out how big the buffer needs to be
-    int size = GetLocaleInfo( m_winLocaleId, key, 0, 0 );
-    wchar_t buffer[size];
-    if ( GetLocaleInfo( m_winLocaleId, key, buffer, size ) ) {
-        return QString::fromWCharArray( buffer );
-    } else {
-        return QString();
+    int size = GetLocaleInfoW( m_winLocaleId, key, 0, 0 );
+
+    QString result;
+    if ( size ) {
+        wchar_t* buffer = new wchar_t[size];
+        if ( GetLocaleInfoW( m_winLocaleId, key, buffer, size ) )
+            result = QString::fromWCharArray( buffer );
+        delete[] buffer;
     }
+    return result;
 }
 
 QString KLocaleWindowsPrivate::systemCountry() const
