@@ -292,6 +292,22 @@ Nepomuk::Query::Term Nepomuk::Query::Term::fromVariant( const Variant& variant )
 }
 
 
+// static
+Nepomuk::Query::Term Nepomuk::Query::Term::fromProperty( const Nepomuk::Types::Property& property, const Nepomuk::Variant& variant )
+{
+    if( variant.isList() ) {
+        AndTerm andTerm;
+        Q_FOREACH( const Variant& v, variant.toVariantList() ) {
+            andTerm.addSubTerm( fromProperty(property, v) );
+        }
+        return andTerm;
+    }
+    else {
+        return ComparisonTerm( property, Term::fromVariant(variant), ComparisonTerm::Equal );
+    }
+}
+
+
 bool Nepomuk::Query::Term::operator==( const Term& other ) const
 {
     return d_ptr->equals( other.d_ptr );
@@ -385,21 +401,6 @@ Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator>=( const Nepomuk::Types:
 Nepomuk::Query::ComparisonTerm Nepomuk::Query::operator==( const Nepomuk::Types::Property& property, const Nepomuk::Query::Term& term )
 {
     return ComparisonTerm( property, term, ComparisonTerm::Equal );
-}
-
-
-Nepomuk::Query::Term Nepomuk::operator==( const Nepomuk::Types::Property& property, const Nepomuk::Variant& variant )
-{
-    if( variant.isList() ) {
-        Query::AndTerm andTerm;
-        Q_FOREACH( const Variant& v, variant.toVariantList() ) {
-            andTerm.addSubTerm( property == v );
-        }
-        return andTerm;
-    }
-    else {
-        return Query::ComparisonTerm( property, Query::Term::fromVariant(variant), Query::ComparisonTerm::Equal );
-    }
 }
 
 

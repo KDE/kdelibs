@@ -385,6 +385,20 @@ namespace Nepomuk {
             static Term fromVariant( const Variant& variant );
 
             /**
+             * Create a term using a Types::Property and a Variant. Sadly this cannot be modelled
+             * as an operator since it would clash with Entity::operator==().
+             *
+             * \param property The property to be used in the ComparisonTerm.
+             * \param variant The value to be compared to. Either ResourceTerm or LiteralTerm is used. List
+             * variants (Variant::isList()) are handled via an AndTerm meaning all values need to match.
+             *
+             * \since 4.6
+             *
+             * \relates ComparisonTerm
+             */
+            static Term fromProperty( const Types::Property& property, const Variant& variant );
+
+            /**
              * Comparison operator.
              *
              * \return \p true if this term is equal to \p term.
@@ -552,19 +566,6 @@ namespace Nepomuk {
         NEPOMUKQUERY_EXPORT uint qHash( const Nepomuk::Query::Term& );
     }
 
-    /**
-     * Comparision operator for simple creation of ComparisonTerm objects using the
-     * ComparisonTerm::Equal comparator.
-     *
-     * \param property The property to be used in the ComparisonTerm.
-     * \param variant The value to be compared to. Either ResourceTerm or LiteralTerm is used. List
-     * variants (Variant::isList()) are handled via an AndTerm meaning all values need to match.
-     *
-     * \since 4.6
-     *
-     * \relates ComparisonTerm
-     */
-    NEPOMUKQUERY_EXPORT Query::Term operator==( const Types::Property& property, const Variant& variant );
 }
 
 /** \cond hide_nepomuk_term_clone_from_doxygen */
