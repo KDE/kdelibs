@@ -117,7 +117,7 @@ void KConfigDialogManager::initMaps()
 
     // KDE
     s_changedMap->insert( "KComboBox", SIGNAL(activated (int)));
-    s_changedMap->insert( "KFontCombo", SIGNAL(activated (int)));
+    s_changedMap->insert( "KFontComboBox", SIGNAL(activated (int)));
     s_changedMap->insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
     s_changedMap->insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
     s_changedMap->insert( "KHistoryCombo", SIGNAL(activated (int)));
