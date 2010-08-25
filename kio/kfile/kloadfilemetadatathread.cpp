@@ -27,36 +27,29 @@
 #include "kfilemetadataprovider_p.h"
 #include <kprotocolinfo.h>
 
-#include <resource.h>
-#include <thing.h>
-#include <resourcemanager.h>
+#include "resource.h"
+#include "thing.h"
+#include "variant.h"
+#include "resourcemanager.h"
 
 #include "config-nepomuk.h"
 
-#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
-#include <query/query.h>
-#include <query/andterm.h>
-#include <query/comparisonterm.h>
-#include <query/resourceterm.h>
-#include <query/resourcetypeterm.h>
-#include <query/optionalterm.h>
-
-#include "nfo.h"
-#include "nuao.h"
-#include "ndo.h"
+#include "query/filequery.h"
+#include "query/comparisonterm.h"
+#include "query/andterm.h"
+#include "query/resourceterm.h"
+#include "query/resourcetypeterm.h"
+#include "query/optionalterm.h"
+#include "utils/global.h"
 
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 #include <Soprano/NodeIterator>
-#endif
 
 #include <QMutexLocker>
 
-KLoadFileMetaDataThread::KLoadFileMetaDataThread() :
-    m_mutex(),
-    m_data(),
-    m_urls(),
-    m_canceled(false)
+KLoadFileMetaDataThread::KLoadFileMetaDataThread()
+    : m_canceled(false)
 {
     connect(this, SIGNAL(finished()), this, SLOT(slotLoadingFinished()));
 }
@@ -132,29 +125,28 @@ void KLoadFileMetaDataThread::run()
             QHash<QUrl, Nepomuk::Variant>::const_iterator it = variants.constBegin();
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
-                const QString uriString = prop.uri().toString();
-                data.insert(uriString, formatValue(prop, it.value()));
+                data.insert(prop.uri(), Nepomuk::Utils::formatPropertyValue(prop, it.value(), QList<Nepomuk::Resource>() << file, Nepomuk::Utils::WithKioLinks));
                 ++it;
             }
 
             if (variants.isEmpty()) {
                 // The file has not been indexed, query the meta data
                 // directly from the file
-                
+
                 // TODO: KFileMetaInfo (or one of it's used components) is not reentrant.
                 // As temporary workaround the access is protected by a mutex.
                 static QMutex metaInfoMutex;
                 metaInfoMutex.lock();
-                
+
                 const QString path = urls.first().toLocalFile();
                 KFileMetaInfo metaInfo(path, QString(), KFileMetaInfo::Fastest);
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
                 foreach (const KFileMetaInfoItem& metaInfoItem, metaInfoItems) {
                     const QString uriString = metaInfoItem.name();
                     const Nepomuk::Variant value(metaInfoItem.value());
-                    data.insert(uriString, formatValue(Nepomuk::Types::Property(), value));
+                    data.insert(uriString, Nepomuk::Utils::formatPropertyValue(Nepomuk::Types::Property(), value));
                 }
-                
+
                 metaInfoMutex.unlock();
             }
         }
@@ -180,78 +172,6 @@ void KLoadFileMetaDataThread::run()
 void KLoadFileMetaDataThread::slotLoadingFinished()
 {
     emit finished(this);
-}
-
-QString  KLoadFileMetaDataThread::formatValue(const Nepomuk::Types::Property& prop, const Nepomuk::Variant& value)
-{
-    if (value.isDateTime()) {
-        return KGlobal::locale()->formatDateTime(value.toDateTime(), KLocale::FancyLongDate);
-    }
-
-    else if(value.isDouble()) {
-        return KGlobal::locale()->formatNumber(value.toDouble());
-    }
-
-    else if (value.isResource() || value.isResourceList()) {
-#ifdef HAVE_NEPOMUK_WITH_SDO_0_5
-        //
-        // We handle the one special case of referrer URLs of downloads
-        // TODO: put stuff like this in a generic rule-based framework
-        //
-        if(prop == Nepomuk::Vocabulary::NDO::copiedFrom()) {
-            Nepomuk::Query::Query query(
-                Nepomuk::Query::AndTerm(
-                    Nepomuk::Query::ResourceTypeTerm(
-                        Nepomuk::Vocabulary::NDO::DownloadEvent()
-                        ),
-                    Nepomuk::Query::ComparisonTerm(
-                        Nepomuk::Vocabulary::NUAO::involves(),
-                        Nepomuk::Query::ResourceTerm(m_urls.first())
-                        )
-                    )
-                );
-            query.setLimit(1);
-
-            QList<Soprano::Node> results =
-                Nepomuk::ResourceManager::instance()->mainModel()->executeQuery(
-                    query.toSparqlQuery(),
-                    Soprano::Query::QueryLanguageSparql).iterateBindings(0).allNodes();
-            if(!results.isEmpty()) {
-                Nepomuk::Resource dlRes(results.first().uri());
-                KUrl url;
-                QString label;
-                if(dlRes.hasProperty(Nepomuk::Vocabulary::NDO::referrer())) {
-                    url = dlRes.property(Nepomuk::Vocabulary::NDO::referrer()).toUrl();
-                    KUrl referrerDomain(url);
-                    referrerDomain.setPath(QString());
-                    referrerDomain.setQuery(QString());
-                    label = referrerDomain.prettyUrl();
-                }
-                else {
-                    Nepomuk::Resource res(value.toResource());
-                    url = res.resourceUri();
-                    label = res.genericLabel();
-                }
-
-                return QString::fromLatin1("<a href=\"%1\">%2</a>")
-                    .arg(url.url(), label);
-            }
-        }
-#endif
-        QStringList links;
-        foreach(const Nepomuk::Resource& res, value.toResourceList()) {
-            if (KProtocolInfo::isKnownProtocol(res.resourceUri())) {
-                links << QString::fromLatin1("<a href=\"%1\">%2</a>")
-                         .arg(KUrl(res.resourceUri()).url(),
-                              res.genericLabel());
-            } else {
-                links << res.genericLabel();
-            }
-        }
-        return links.join(QLatin1String(";\n"));
-    }
-
-    return value.toString();
 }
 
 #include "kloadfilemetadatathread_p.moc"

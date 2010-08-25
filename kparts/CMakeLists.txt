@@ -26,21 +26,14 @@ set(kparts_LIB_SRCS
    scriptableextension.cpp
    )
 
-if(HAVE_NEPOMUK_WITH_SDO_0_5)
-  soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
-  soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
-  soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/ndo.trig" "NDO" "Nepomuk::Vocabulary" "trig")
-  soprano_add_ontology(kparts_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
-endif(HAVE_NEPOMUK_WITH_SDO_0_5)
-
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
-if(HAVE_NEPOMUK_WITH_SDO_0_5)
-  target_link_libraries(kparts  nepomuk)
-  target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk )
-endif(HAVE_NEPOMUK_WITH_SDO_0_5)
+if(HAVE_NEPOMUK)
+  target_link_libraries(kparts  nepomuk nepomukutils)
+  target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )
+endif(HAVE_NEPOMUK)
 
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                         SOVERSION ${GENERIC_LIB_SOVERSION} 

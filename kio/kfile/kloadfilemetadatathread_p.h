@@ -87,14 +87,6 @@ private slots:
     void slotLoadingFinished();
 
 private:
-    /**
-     * Temporary helper method until there is a proper formating facility in Nepomuk.
-     * Here we simply handle the most common formatting situations that do not look nice
-     * when using Nepomuk::Variant::toString().
-     */
-    QString formatValue(const Nepomuk::Types::Property&, const Nepomuk::Variant& value);
-
-private:
     mutable QMutex m_mutex;
     QHash<KUrl, Nepomuk::Variant> m_data;
     KUrl::List m_urls;

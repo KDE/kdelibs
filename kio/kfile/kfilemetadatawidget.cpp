@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2008 by Sebastian Trueg <trueg@kde.org>                     *
+ * Copyright (C) 2008-2010 by Sebastian Trueg <trueg@kde.org>                *
  * Copyright (C) 2009-2010 by Peter Penz <peter.penz@gmx.at>                 *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
@@ -375,7 +375,8 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
     QHash<KUrl, Nepomuk::Variant>::iterator it = data.begin();
     while (it != data.end()) {
         const QString uriString = it.key().url();
-        if (!settings.readEntry(uriString, true)) {
+        if (!settings.readEntry(uriString, true) ||
+            !Nepomuk::Types::Property(it.key()).userVisible()) {
             it = data.erase(it);
         } else {
             ++it;
