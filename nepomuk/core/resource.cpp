@@ -872,6 +872,7 @@ bool Nepomuk::Resource::isFile() const
 {
     if( m_data ) {
         determineFinalResourceData();
+        m_data->load();
         return m_data->isFile();
     }
     else {
