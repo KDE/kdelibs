@@ -35,14 +35,18 @@ namespace Nepomuk {
     /**
      * Used internally by Resource.
      * Converts a Variant into a literal value to be used in the RDF store.
+     *
+     * \deprecated Use Nepomuk::Varaint::toNodeList()
      */
-    NEPOMUK_EXPORT QList<Soprano::Node> valuesToRDFNodes( const Variant& );
+    KDE_DEPRECATED NEPOMUK_EXPORT QList<Soprano::Node> valuesToRDFNodes( const Variant& );
 
     /**
      * Used internally by Resource.
      * Converts a non-list Variant into a Soprano::Node.
+     *
+     * \deprecated Use Nepomuk::Varaint::toNode()
      */
-    NEPOMUK_EXPORT Soprano::Node valueToRDFNode( const Variant& );
+    KDE_DEPRECATED NEPOMUK_EXPORT Soprano::Node valueToRDFNode( const Variant& );
 
     /**
      * Used internally by Resource.

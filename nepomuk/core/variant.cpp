@@ -1264,41 +1264,35 @@ Soprano::Node Nepomuk::Variant::toNode() const
 {
     if( isList() )
         return Soprano::Node();
-        
+
     if( isResource() )
         return Soprano::Node( toUrl() );
     else
         return Soprano::Node( Soprano::LiteralValue( variant() ) );
 }
 
+
 QList<Soprano::Node> Nepomuk::Variant::toNodeList() const
 {
-    QList<Soprano::Node> valueNodes;
+    QList<Soprano::Node> nl;
     
-    // one Resource
-    if( isResource() ) {
-        valueNodes.append( toUrl() );
-    }
-    
-    // many Resources
-    else if( isResourceList() ) {
-        const QList<QUrl>& l = toUrlList();
-        for( QList<QUrl>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-            valueNodes.append( *resIt );
+    if ( isResourceList() ) {
+        QList<QUrl> urls = toUrlList();
+        for ( QList<QUrl>::const_iterator it = urls.constBegin(); it != urls.constEnd(); ++it ) {
+            nl.append( Soprano::Node( *it ) );
         }
     }
-    
-    // many literals
     else if( isList() ) {
-        valueNodes = Nepomuk::valuesToRDFNodes( *this );
+        QStringList vl = toStringList();
+        for( QStringList::const_iterator it = vl.constBegin(); it != vl.constEnd(); ++it ) {
+            nl.append( Soprano::Node( Soprano::LiteralValue::fromString( *it, ( QVariant::Type )simpleType() ) ) );
+        }
     }
-    
-    // one literal
     else {
-        valueNodes.append( Nepomuk::valueToRDFNode( *this ) );
+        nl.append( toNode() );
     }
 
-    return valueNodes;
+    return nl;
 }
 
 
