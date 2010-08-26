@@ -723,6 +723,8 @@ void KStatusNotifierItemPrivate::serviceChange(const QString &name, const QStrin
         //unregistered
         kDebug(299) << "Connection to the KStatusNotifierWatcher lost";
         setLegacyMode(true);
+        delete statusNotifierWatcher;
+        statusNotifierWatcher = 0;
     } else if (oldOwner.isEmpty()) {
         //registered
        setLegacyMode(false);
@@ -770,9 +772,6 @@ void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
     }
 
     if (enabled) {
-        delete statusNotifierWatcher;
-        statusNotifierWatcher = 0;
-
         if (!systemTrayIcon) {
             systemTrayIcon = new KStatusNotifierLegacyIcon(associatedWidget);
             syncLegacySystemTrayIcon();
