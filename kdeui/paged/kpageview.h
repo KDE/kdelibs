@@ -192,7 +192,7 @@ class KDEUI_EXPORT KPageView : public QWidget
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_rebuildGui())
         Q_PRIVATE_SLOT(d_func(), void _k_modelChanged())
-        Q_PRIVATE_SLOT(d_func(), void _k_pageSelected(const QModelIndex &, const QModelIndex &))
+        Q_PRIVATE_SLOT(d_func(), void _k_pageSelected(const QItemSelection &, const QItemSelection &))
         Q_PRIVATE_SLOT(d_func(), void _k_dataChanged(const QModelIndex &, const QModelIndex &))
 };
 
