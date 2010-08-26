@@ -848,10 +848,10 @@ QString Nepomuk::Variant::toString() const
         return Soprano::LiteralValue( toTime() ).toString();
     else if( isDateTime() )
         return Soprano::LiteralValue( toDateTime() ).toString();
-    else if( isResource() )
-        return toResource().genericLabel();
     else if( isUrl() )
         return toUrl().toString();
+    else if( isResource() )
+        return toResource().genericLabel();
     else
         return d->value.toString();
 }
@@ -1083,10 +1083,10 @@ QStringList Nepomuk::Variant::toStringList() const
         return convertToStringList<QTime>( toTimeList() );
     else if( isDateTimeList() )
         return convertToStringList<QDateTime>( toDateTimeList() );
-    else if( isResourceList() )
-        return convertToStringList<Resource>( toResourceList() );
     else if( isUrlList() )
         return convertToStringList<QUrl>( toUrlList() );
+    else if( isResourceList() )
+        return convertToStringList<Resource>( toResourceList() );
     else
         return d->value.value<QStringList>();
 }
