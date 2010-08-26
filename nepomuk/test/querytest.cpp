@@ -424,6 +424,10 @@ void QueryTest::testToSparql()
 
     // we test without result restrictions which always look the same anyway
     QCOMPARE( query.toSparqlQuery( Query::NoResultRestrictions ).simplified(), queryString );
+
+    // test fromQueryUrl
+    QCOMPARE( Query::fromQueryUrl(query.toSearchUrl()), query );
+    QCOMPARE( Query::fromQueryUrl(query.toSearchUrl(QLatin1String("Hello World"))), query );
 }
 
 
