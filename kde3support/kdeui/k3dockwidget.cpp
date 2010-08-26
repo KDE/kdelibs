@@ -1367,7 +1367,7 @@ K3DockWidget::DockPosition K3DockWidget::currentDockPosition() const
 
 void K3DockWidget::undock()
 {
-//  kDebug(282)<<"K3DockWidget::undock()";
+  //  kDebug(282) << "K3DockWidget::undock : undocking " << name();
 
   manager->d->dragRect = QRect ();
   manager->drawDragRectangle ();
@@ -2437,7 +2437,8 @@ void K3DockManager::readConfig(QDomElement &base)
 
     QObjectList::iterator it = childDock->begin();
     K3DockWidget *obj1;
-    while ( (obj1=(K3DockWidget*)(*it)) ) {
+    while ( it != childDock->end() ) {
+	obj1=(K3DockWidget*)(*it);
         if ( !obj1->isGroup && !obj1->isTabGroup ) {
             if ( obj1->parent() )
                 obj1->undock();
@@ -2789,11 +2790,11 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   if (!c) {
       c = KGlobal::config().data();
   }
-  QString group = group.isEmpty() ? "dock_setting_default" : _group;
+  QString group = _group.isEmpty() ? "dock_setting_default" : _group;
 
   KConfigGroup cg(c, group );
   QStringList nameList;
-  cg.readEntry( "NameList", nameList );
+  nameList = cg.readEntry( "NameList", QStringList() );
   QString ver = cg.readEntry( "Version", "0.0.1" );
   if ( nameList.isEmpty() || ver != DOCK_CONFIG_VERSION ){
     activate();
@@ -2810,10 +2811,10 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   QObjectList::iterator it = childDock->begin();
   K3DockWidget * obj;
 
-  while ( (obj=(K3DockWidget*)(*it)) ){
+  while ( it != childDock->end() ){
+    obj = (K3DockWidget*)(*it);
     ++it;
-    if ( !obj->isGroup && !obj->isTabGroup )
-    {
+    if ( !obj->isGroup && !obj->isTabGroup ) {
       if ( obj->parent() ) obj->undock(); else obj->hide();
     }
   }
@@ -2974,9 +2975,10 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 void K3DockManager::dumpDockWidgets() {
   QObjectList::iterator it = childDock->begin();
   K3DockWidget * obj;
-  while ( (obj=(K3DockWidget*)(*it)) ) {
+  while ( it != childDock->end() ) {
+    obj = (K3DockWidget*)(*it);
     ++it;
-    kDebug(282)<<"K3DockManager::dumpDockWidgets:"<<obj->name();
+    kDebug(282) << "K3DockManager::dumpDockWidgets:" << obj->name();
   }
 
 }
@@ -2985,7 +2987,8 @@ K3DockWidget* K3DockManager::getDockWidgetFromName( const QString& dockName )
 {
   QObjectList::iterator it = childDock->begin();
   K3DockWidget * obj;
-  while ( (obj=(K3DockWidget*)(*it)) ) {
+  while ( it != childDock->end() ) {
+    obj=(K3DockWidget*)(*it);
     ++it;
     if ( obj->objectName() == dockName ) return obj;
   }
@@ -3035,16 +3038,15 @@ void K3DockManager::slotMenuPopup()
 
   QObjectList::iterator it = childDock->begin();
   K3DockWidget * obj;
-  while ( (obj=(K3DockWidget*)(*it)) ) {
+  while ( it != childDock->end() ) {
+    obj=(K3DockWidget*)(*it);
     ++it;
-    if ( obj->mayBeHide() )
-    {
+    if ( obj->mayBeHide() ) {
       menu->insertItem( i18n("Hide %1", obj->windowTitle()));
       menuData->append( new MenuDockData( obj, true ) );
     }
 
-    if ( obj->mayBeShow() )
-    {
+    if ( obj->mayBeShow() ) {
       menu->insertItem( i18n("Show %1", obj->windowTitle()));
       menuData->append( new MenuDockData( obj, false ) );
     }
@@ -3063,7 +3065,8 @@ K3DockWidget* K3DockManager::findWidgetParentDock( QWidget* w ) const
   K3DockWidget * dock;
   K3DockWidget * found = 0L;
 
-  while ( (dock=(K3DockWidget*)(*it)) ) {
+  while (it != childDock->end()  ) {
+    dock=(K3DockWidget*)(*it);
     ++it;
     if ( dock->widget == w ){ found  = dock; break; }
   }
