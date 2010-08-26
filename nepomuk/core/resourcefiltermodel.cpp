@@ -95,6 +95,10 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
         return Error::ErrorInvalidArgument;
     }
 
+    if( !value.isValid() ) {
+        return removeProperty( resource, property );
+    }
+
     StatementIterator it = listStatements( Statement( resource, property, Node() ) );
     if ( it.next() ) {
         Statement s = it.current();
@@ -122,6 +126,10 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
     if( !property.isValid() ) {
         setError( "Cannot update invalid property", Error::ErrorInvalidArgument );
         return Error::ErrorInvalidArgument;
+    }
+
+    if( values.isEmpty() ) {
+        return removeProperty( resource, property );
     }
 
     QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
