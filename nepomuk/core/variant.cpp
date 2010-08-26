@@ -1255,10 +1255,9 @@ QList<Nepomuk::Variant> Nepomuk::Variant::toVariantList() const
 
 Soprano::Node Nepomuk::Variant::toNode() const
 {
-    if( isList() )
+    if( !isValid() || isList() )
         return Soprano::Node();
-
-    if( isResource() )
+    else if( isResource() )
         return Soprano::Node( toUrl() );
     else
         return Soprano::Node( Soprano::LiteralValue( variant() ) );
@@ -1281,7 +1280,7 @@ QList<Soprano::Node> Nepomuk::Variant::toNodeList() const
             nl.append( Soprano::Node( Soprano::LiteralValue::fromString( *it, ( QVariant::Type )simpleType() ) ) );
         }
     }
-    else {
+    else if( isValid() ) {
         nl.append( toNode() );
     }
 
