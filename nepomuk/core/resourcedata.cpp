@@ -433,7 +433,10 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         }
 
         // update the cache for now
-        m_cache[uri] = value;
+        if( value.isValid() )
+            m_cache[uri] = value;
+        else
+            m_cache.remove(uri);
 
         // update the store
         MAINMODEL->updateProperty( m_uri, uri, value.toNodeList() );
