@@ -87,7 +87,7 @@ class KPageViewPrivate
         void _k_rebuildGui();
         void _k_modelChanged();
         void _k_dataChanged(const QModelIndex&, const QModelIndex&);
-        void _k_pageSelected(const QModelIndex&, const QModelIndex&);
+        void _k_pageSelected(const QItemSelection&, const QItemSelection&);
 
     private:
         void init();

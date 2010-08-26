@@ -43,8 +43,8 @@ void KPageViewPrivate::_k_rebuildGui()
 
   QModelIndex currentLastIndex;
   if ( view && view->selectionModel() ) {
-        QObject::disconnect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-                q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
+        QObject::disconnect(view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+                q, SLOT(_k_pageSelected(const QItemSelection &, const QItemSelection &)));
         currentLastIndex = view->selectionModel()->currentIndex();
   }
 
@@ -62,7 +62,7 @@ void KPageViewPrivate::_k_rebuildGui()
 
   // setup new view
   if ( view->selectionModel() ) {
-    QObject::connect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
+    QObject::connect(view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), q, SLOT(_k_pageSelected(const QItemSelection &, const QItemSelection &)));
 
     if ( currentLastIndex.isValid() )
       view->selectionModel()->setCurrentIndex( currentLastIndex, QItemSelectionModel::Select );
@@ -207,16 +207,25 @@ void KPageViewPrivate::_k_modelChanged()
   updateSelection();
 }
 
-void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelIndex &previous)
+void KPageViewPrivate::_k_pageSelected(const QItemSelection &index, const QItemSelection &previous)
 {
   if ( !model )
     return;
 
-  if ( !index.isValid() )
+  // Return if the current Index is not valid
+  if ( index.indexes().size() != 1 ) {
     return;
+  }
+  QModelIndex currentIndex = index.indexes().first();
+
+  QModelIndex previousIndex;
+  // The previous index can be invalid
+  if ( previous.indexes().size() == 1 ) {
+    previousIndex = previous.indexes().first();
+  }
 
   if (faceType != KPageView::Tabbed) {
-  QWidget *widget = qvariant_cast<QWidget*>( model->data( index, KPageModel::WidgetRole ) );
+  QWidget *widget = qvariant_cast<QWidget*>( model->data( currentIndex, KPageModel::WidgetRole ) );
 
   if ( widget ) {
     if ( stack->indexOf( widget ) == -1 ) { // not included yet
@@ -228,11 +237,11 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
     stack->setCurrentWidget( defaultWidget );
   }
 
-  updateTitleWidget(index);
+  updateTitleWidget(currentIndex);
   }
 
   Q_Q(KPageView);
-  emit q->currentPageChanged(index, previous);
+  emit q->currentPageChanged(currentIndex, previousIndex);
 }
 
 void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
