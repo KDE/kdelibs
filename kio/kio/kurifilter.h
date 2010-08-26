@@ -544,13 +544,14 @@ class KUriFilterPrivate;
  * To simply filter a given string:
  *
  * \code
- * bool filtered = KUriFilter::self()->filterUri( "kde.org" );
+ * QString url("kde.org");
+ * bool filtered = KUriFilter::self()->filteredUri( url );
  * \endcode
  *
  * You can alternatively use a KUrl:
  *
  * \code
- * KUrl url = "kde.org";
+ * KUrl url("kde.org");
  * bool filtered = KUriFilter::self()->filterUri( url );
  * \endcode
  *
