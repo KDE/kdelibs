@@ -848,19 +848,12 @@ QString Nepomuk::Variant::toString() const
         return Soprano::LiteralValue( toTime() ).toString();
     else if( isDateTime() )
         return Soprano::LiteralValue( toDateTime() ).toString();
+    else if( isResource() )
+        return toResource().genericLabel();
     else if( isUrl() )
         return toUrl().toString();
-    else if( isResource() ) {
-        Resource r = toResource();
-        if( !r.resourceUri().isEmpty() )
-            return r.resourceUri().toString();
-        else if( !r.identifiers().isEmpty() )
-            return r.identifiers().first();
-        else
-            return QString();
-    }
     else
-        return d->value.value<QString>();
+        return d->value.toString();
 }
 
 
@@ -1090,10 +1083,10 @@ QStringList Nepomuk::Variant::toStringList() const
         return convertToStringList<QTime>( toTimeList() );
     else if( isDateTimeList() )
         return convertToStringList<QDateTime>( toDateTimeList() );
-    else if( isUrlList() )
-        return convertToStringList<QUrl>( toUrlList() );
     else if( isResourceList() )
         return convertToStringList<Resource>( toResourceList() );
+    else if( isUrlList() )
+        return convertToStringList<QUrl>( toUrlList() );
     else
         return d->value.value<QStringList>();
 }
@@ -1275,7 +1268,7 @@ Soprano::Node Nepomuk::Variant::toNode() const
 QList<Soprano::Node> Nepomuk::Variant::toNodeList() const
 {
     QList<Soprano::Node> nl;
-    
+
     if ( isResourceList() ) {
         QList<QUrl> urls = toUrlList();
         for ( QList<QUrl>::const_iterator it = urls.constBegin(); it != urls.constEnd(); ++it ) {
