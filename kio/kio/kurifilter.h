@@ -247,14 +247,24 @@ public:
     /**
      * Returns a list of the names of the preferred search providers.
      *
-     * This function returns the list of favorite or preferred providers only
-     * when this data filtered through the default search uri plugin 'kurisearchfilter'.
-     * Otherwise, it returns an empty list.
+     * This function returns the list of providers that are marked as favorite
+     * or preferred by the user whenever this data is filtered through by the
+     * search uri filter plugin 'kurisearchfilter'.
+     *
+     * If there are no search providers marked favorite or chosen as a default
+     * search provider by the user, then this function will return an empty list.
+     *
+     * This function will also return an empty list if the data is not filtered by
+     * one of the two search uri filter plugins, 'kurisearchfilter' and
+     * 'kuriikwsfilter'.
      *
      * You can use @ref queryForPreferredServiceProvider to obtain the queries
      * associated with the returned search providers.
      *
      * @see searchProvider
+     * @see alternateSearchProviders
+     * @see alternateDefaultSearchProviders
+     * @see queryForPreferredServiceProvider
      * @since 4.5
      */
     QStringList preferredSearchProviders() const;
@@ -287,8 +297,9 @@ public:
      * Returns the list of alternate search providers.
      *
      * This function returns an empty list if @ref setAlternateSearchProviders
-     * was not called to set alternate search providers to be used in place of
-     * the preferred search providers when they are not available.
+     * was not called to set the alternate search providers to be when no
+     * preferred providers have been chosen by the user through the search
+     * configuration module.
      *
      * @see setAlternatteSearchProviders
      * @see preferredSearchProviders
@@ -299,8 +310,9 @@ public:
     /**
      * Returns the search provider to use when a default provider is not available.
      *
-     * The alternate default search provider is not set by default and this function
-     * returns an empty string.
+     * This function returns an empty string if @ref setAlternateDefaultSearchProvider
+     * was not called to set the default search provider to be used when none has been
+     * chosen by the user through the search configuration module.
      *
      * @see setAlternateDefaultSearchProvider
      * @since 4.5
@@ -362,25 +374,30 @@ public:
     bool setAbsolutePath( const QString& abs_path );
 
     /**
-     * Sets a list of search providers to use in case no default preferred search
+     * Sets a list of search providers to use in case no preferred search
      * providers are available.
      *
-     * The list of preferred search providers set using this function will only be
-     * used if the default and favorite search providers have not yet been configured
-     * through the configuration dialogs. Otherwise, the providers specified by this
+     * The list of preferred search providers set using this function will only
+     * be used if the default and favorite search providers have not yet been
+     * selected by the user. Otherwise, the providers specified through this
      * function will be ignored.
      *
-     * @see alternatteSearchProviders
+     * @see alternateSearchProviders
      * @see preferredSearchProviders
      * @since 4.5
      */
     void setAlternateSearchProviders(const QStringList &providers);
 
     /**
-     * Sets the search provider to use when there no default provider has been
-     * set by though the web shortcuts configuration dialog.
+     * Sets the search provider to use in case no default provider is available.
      *
-     * @see setAlternateDefaultSearchProvider
+     * The default search provider set using this function will only be used if
+     * the default and favorite search providers have not yet been selected by
+     * the user. Otherwise, the default provider specified by through function
+     * will be ignored.
+     *
+     * @see alternateDefaultSearchProvider
+     * @see preferredSearchProviders
      * @since 4.5
      */
     void setAlternateDefaultSearchProvider(const QString &provider);
