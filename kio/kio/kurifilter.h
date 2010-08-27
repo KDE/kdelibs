@@ -248,22 +248,20 @@ public:
      * Returns a list of the names of the preferred search providers.
      *
      * This function returns the list of providers that are marked as favorite
-     * or preferred by the user whenever this data is filtered through by the
-     * search uri filter plugin 'kurisearchfilter'.
+     * or preferred by the user whenever the data it contains is filtered by the
+     * 'kuriikwsfilter' search uri filter plugin.
      *
-     * If there are no search providers marked favorite or chosen as a default
-     * search provider by the user, then this function will return an empty list.
-     *
-     * This function will also return an empty list if the data is not filtered by
-     * one of the two search uri filter plugins, 'kurisearchfilter' and
-     * 'kuriikwsfilter'.
+     * If no prior search providers were marked preferred or no default search
+     * engine was selected, then this function will return an empty list unless
+     * you set alternate default or search providers using the appropriate function.
+     * See @ref setAlternateDefaultSearchProvider and @ref setAlternateSearchProviders.
      *
      * You can use @ref queryForPreferredServiceProvider to obtain the queries
      * associated with the returned search providers.
      *
      * @see searchProvider
      * @see alternateSearchProviders
-     * @see alternateDefaultSearchProviders
+     * @see alternateDefaultSearchProvider
      * @see queryForPreferredServiceProvider
      * @since 4.5
      */
