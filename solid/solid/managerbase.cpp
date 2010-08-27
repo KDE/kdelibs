@@ -20,6 +20,7 @@
 #include "managerbase_p.h"
 
 #include <stdlib.h>
+#include <config-solid.h>
 
 #include "backends/fakehw/fakemanager.h"
 
@@ -30,7 +31,11 @@
 #include "backends/kupnp/kupnpmanager.h"
 #include "backends/udisks/udisksmanager.h"
 #include "backends/upower/upowermanager.h"
-//#include "backends/upnp/upnpdevicemanager.h"
+
+#if defined (HUPNP_FOUND)
+#include "backends/upnp/upnpdevicemanager.h"
+#endif
+
 #include "backends/fstab/fstabmanager.h"
 
 #elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
@@ -62,7 +67,9 @@ void Solid::ManagerBasePrivate::loadBackends()
                        << new Solid::Backends::UDisks::UDisksManager(0)
                        << new Solid::Backends::UPower::UPowerManager(0)
                        << new Solid::Backends::Fstab::FstabManager(0);
-                       //<< new Solid::Backends::UPnP::UPnPDeviceManager(0);
+#        if defined (HUPNP_FOUND)
+            m_backends << new Solid::Backends::UPnP::UPnPDeviceManager(0);
+#        endif
 #        elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        endif

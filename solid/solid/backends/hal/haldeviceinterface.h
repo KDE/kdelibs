@@ -107,6 +107,8 @@ public:
             break;
         case Solid::DeviceInterface::SmartCardReader:
             list << "smart_card_reader";
+        case Solid::DeviceInterface::InternetGateway:
+            list << "internet_gateway";
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:

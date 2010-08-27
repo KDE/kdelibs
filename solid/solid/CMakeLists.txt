@@ -2,11 +2,6 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory( ifaces )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
-#find_path( HUpnp_INCLUDE_DIRS HUpnp )
-#find_library( HUpnp_LIBS HUpnp )
-
-#include_directories( ${HUpnp_INCLUDE_DIRS} )
-
 if(WIN32)
    include_directories( ${KDEWIN_INCLUDES} )
 endif(WIN32)
@@ -37,6 +32,8 @@ check_cxx_source_compiles("     #ifdef __SUNPRO_CC
 				int main() { __asm__(\"mtspr 256, %0; vand %%v0, %%v0, %%v0\" : : \"r\"(-1) ); }" HAVE_PPC_ALTIVEC)
 
 configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-processor.h )
+
+
 
 ########### next target ###############
 
@@ -79,7 +76,7 @@ set(solid_LIB_SRCS
    networking.cpp
    video.cpp
    smartcardreader.cpp
-#   internetgateway.cpp
+   internetgateway.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -103,7 +100,7 @@ set(solid_LIB_SRCS
    ifaces/storageaccess.cpp
    ifaces/video.cpp
    ifaces/smartcardreader.cpp
-#   ifaces/internetgateway.cpp
+   ifaces/internetgateway.cpp
 
    backends/fakehw/fakeacadapter.cpp
    backends/fakehw/fakeaudiointerface.cpp
@@ -129,7 +126,7 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
-   message(STATUS "-- Building Solid KUPnP backend." )
+   message(STATUS "Building Solid KUPnP backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
    backends/kupnp/cagibidbuscodec.cpp
@@ -146,16 +143,23 @@ if(NOT WIN32 AND NOT APPLE)
 
    )
 
-#   message(STATUS "Building Solid UPnP backend." )
-#   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+   find_package( HUpnp )
+   configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
+   if ( HUPNP_FOUND )
+      include_directories( ${HUPNP_INCLUDE_DIR} )
 
-#   backends/upnp/upnpdevice.cpp
-#   backends/upnp/upnpdevicemanager.cpp
-#   backends/upnp/upnpdeviceinterface.cpp
-#   backends/upnp/upnpmediaserver.cpp
-#   backends/upnp/upnpinternetgatewaydevice.cpp
+      message(STATUS "Building Solid UPnP backend." )
+      set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
-#   )
+         backends/upnp/upnpdevice.cpp
+         backends/upnp/upnpdevicemanager.cpp
+         backends/upnp/upnpdeviceinterface.cpp
+         backends/upnp/upnpmediaserver.cpp
+         backends/upnp/upnpinternetgateway.cpp
+         backends/upnp/upnpcontrolpoint.cpp
+      )
+
+   endif()
 
    message(STATUS "Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -296,7 +300,11 @@ endif(APPLE)
 
 kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )#${HUpnp_LIBS} )
+if ( HUPNP_FOUND )
+   set(solid_OPTIONAL_LIBS ${HUPNP_LIBS})
+endif()
+
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
 if (WINCE)
@@ -329,7 +337,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
-               networking.h video.h serialinterface.h smartcardreader.h
+               networking.h video.h serialinterface.h smartcardreader.h internetgateway.h
                DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############

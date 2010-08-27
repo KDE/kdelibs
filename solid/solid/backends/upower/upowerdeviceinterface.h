@@ -106,6 +106,8 @@ public:
         case Solid::DeviceInterface::SerialInterface:
             // Doesn't exist with UDisks
             break;
+        case Solid::DeviceInterface::InternetGateway:
+            break;
         case Solid::DeviceInterface::SmartCardReader:
             // Doesn't exist with UDisks
         case Solid::DeviceInterface::Unknown:

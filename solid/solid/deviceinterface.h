@@ -68,7 +68,7 @@ namespace Solid
                     Camera = 9, PortableMediaPlayer = 10,
                     NetworkInterface = 11, AcAdapter = 12, Battery = 13,
                     Button = 14, AudioInterface = 15, DvbInterface = 16, Video = 17,
-                    SerialInterface = 18, SmartCardReader = 19, //InternetGateway = 20,
+                    SerialInterface = 18, SmartCardReader = 19, InternetGateway = 20,
                     Last = 0xffff  };
 
         /**

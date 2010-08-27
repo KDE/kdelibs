@@ -104,8 +104,8 @@ QString Solid::DeviceInterface::typeDescription(Type type)
         return QObject::tr("Serial Interface", "Serial Interface device type");
     case SmartCardReader:
         return QObject::tr("Smart Card Reader", "Smart Card Reader device type");
-/*    case InternetGateway:
-        return QObject::tr("Internet Gateway Device", "Internet Gateway device type"); */
+    case InternetGateway:
+        return QObject::tr("Internet Gateway Device", "Internet Gateway device type");
     case Last:
         return QString();
     }
