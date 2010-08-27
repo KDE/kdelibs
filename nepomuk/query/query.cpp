@@ -505,9 +505,10 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     // as those already restrict the type.
     QString userVisibilityRestriction;
     if( !d->m_isFileQuery && !(flags&NoResultRestrictions) ) {
-        userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 true . " )
-                                  .arg( qbd.uniqueVarName(),
-                                        Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()) );
+        userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 %3 . " )
+                                    .arg( qbd.uniqueVarName(),
+                                          Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
+                                          Soprano::Node::literalToN3(true) );
     }
 
     // build the core of the query - the part that never changes
