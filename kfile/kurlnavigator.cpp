@@ -971,22 +971,19 @@ KUrl KUrlNavigator::uncommittedUrl() const
 
 void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
 {
-    const KUrl currentUrl = locationUrl();
-    if (newUrl == currentUrl) {
+    if (newUrl == locationUrl()) {
         return;
     }
 
     KUrl url = newUrl;
     url.cleanPath();
     
-    QString urlStr;
     KUriFilterData urlData(url);
     urlData.setCheckForExecutables(false);
     if (KUriFilter::self()->filterUri(urlData, QStringList() << "kshorturifilter" << "kurisearchfilter")) {
         url = urlData.uri();
-        urlStr = urlData.uri().url();
     } else {
-        urlStr = KUrlCompletion::replacedPath(url.url(), true, true);
+        url = KUrlCompletion::replacedPath(url.url(), true, true);
     }
     
     if ((url.protocol() == QLatin1String("tar")) || (url.protocol() == QLatin1String("zip"))) {
@@ -1009,22 +1006,20 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
         if (!insideCompressedPath) {
             // drop the tar: or zip: protocol since we are not
             // inside the compressed path anymore
-            urlStr = url.path();
+            url.setProtocol(QString());
         }
     }
-
-    const KUrl transformedUrl(urlStr);
 
     // Check whether current history element has the same URL.
     // If this is the case, just ignore setting the URL.
     const LocationData& data = d->m_history[d->m_historyIndex];
-    const bool isUrlEqual = transformedUrl.equals(locationUrl(), KUrl::CompareWithoutTrailingSlash) ||
-                            (!transformedUrl.isValid() && (urlStr == data.url.url()));
+    const bool isUrlEqual = url.equals(locationUrl(), KUrl::CompareWithoutTrailingSlash) ||
+                            (!url.isValid() && url.equals(data.url, KUrl::CompareWithoutTrailingSlash));
     if (isUrlEqual) {
         return;
     }
 
-    emit urlAboutToBeChanged(transformedUrl);
+    emit urlAboutToBeChanged(url);
 
     if (d->m_historyIndex > 0) {
         // If an URL is set when the history index is not at the end (= 0),
@@ -1038,7 +1033,7 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
 
     Q_ASSERT(d->m_historyIndex == 0);
     LocationData newData;
-    newData.url = transformedUrl;
+    newData.url = url;
     d->m_history.insert(0, newData);
 
     // Prevent an endless growing of the history: remembering
@@ -1051,7 +1046,7 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
     }
 
     emit historyChanged();
-    emit urlChanged(transformedUrl);
+    emit urlChanged(url);
 
     d->updateContent();
 
