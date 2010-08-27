@@ -301,8 +301,8 @@ endif(APPLE)
 kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
 
 if ( HUPNP_FOUND )
-   set(solid_OPTIONAL_LIBS ${HUPNP_LIBS})
-endif()
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
+endif( HUPNP_FOUND )
 
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
