@@ -103,7 +103,7 @@ public:
             list << "video4linux";
             break;
         case Solid::DeviceInterface::InternetGateway:
-            list << "internet_gateway"
+            list << "internet_gateway";
             break;
         case Solid::DeviceInterface::Unknown:
             break;
