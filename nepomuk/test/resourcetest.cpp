@@ -154,6 +154,55 @@ void ResourceTest::testProperties()
 }
 
 
+void ResourceTest::testRemoveProperty()
+{
+    QUrl p = QUrl("http://nepomuk.test.org/int");
+
+    Resource r1;
+
+    r1.setProperty( p, 17 );
+    r1.removeProperty( p, 17 );
+
+    QVERIFY( !r1.hasProperty( p ) );
+    QVERIFY( !r1.property( p ).isValid() );
+    QVERIFY( r1.property( p ).toVariantList().isEmpty() );
+    QVERIFY( r1.property( p ).toNodeList().isEmpty() );
+
+    QList<Soprano::Node> nodes =
+        ResourceManager::instance()->mainModel()->listStatements(r1.resourceUri(), p, Soprano::Node()).iterateObjects().allNodes();
+    QCOMPARE(nodes.count(), 0);
+
+    r1.setProperty( p, 17 );
+    r1.addProperty( p, 18 );
+    r1.removeProperty( p, 17 );
+
+    QVERIFY( r1.hasProperty( p ) );
+    QCOMPARE( r1.property( p ), Variant(18) );
+    QCOMPARE( r1.property( p ).toVariantList().count(), 1 );
+    QCOMPARE( r1.property( p ).toNodeList().count(), 1 );
+
+    nodes =
+        ResourceManager::instance()->mainModel()->listStatements(r1.resourceUri(), p, Soprano::Node()).iterateObjects().allNodes();
+    QCOMPARE(nodes.count(), 1);
+    QCOMPARE(nodes[0], Soprano::Node(Soprano::LiteralValue(18)));
+
+    r1.addProperty( p, 17 );
+    Variant v;
+    v.append(17);
+    v.append(18);
+    r1.removeProperty( p, v );
+
+    QVERIFY( !r1.hasProperty( p ) );
+    QVERIFY( !r1.property( p ).isValid() );
+    QVERIFY( r1.property( p ).toVariantList().isEmpty() );
+    QVERIFY( r1.property( p ).toNodeList().isEmpty() );
+
+    nodes =
+        ResourceManager::instance()->mainModel()->listStatements(r1.resourceUri(), p, Soprano::Node()).iterateObjects().allNodes();
+    QCOMPARE(nodes.count(), 0);
+}
+
+
 void ResourceTest::testResourceIdentifiers()
 {
     QUrl theUri;
@@ -365,23 +414,23 @@ void ResourceTest::testKickOffListRemoval()
 
         // make sure a proper nepomuk:/ uri has been created
         QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
-        
+
         // Remove the nie:url
         fileRes.removeProperty( Nepomuk::Vocabulary::NIE::url() );
-        
+
         Resource fileRes2( KUrl(tmpFile1.fileName()) );
         QVERIFY( fileRes.resourceUri() != fileRes2.resourceUri() );
-        
+
         Resource r1( "res1" );
-        r1.setProperty( QUrl("http://test/prop1"), 42 );        
+        r1.setProperty( QUrl("http://test/prop1"), 42 );
         r1.removeProperty( Soprano::Vocabulary::NAO::identifier() );
-        
+
         Resource r2( "res1" );
         r2.setProperty( QUrl("http://test/prop1"), 46 );
-        
+
         QVERIFY( r2.resourceUri() != r1.resourceUri() );
         QVERIFY( r1.property(QUrl("http://test/prop1")) != r2.property(QUrl("http://test/prop1")) );
-            
+
     }
     {
         KTemporaryFile tmpFile;
@@ -395,29 +444,29 @@ void ResourceTest::testKickOffListRemoval()
 
         // make sure a proper nepomuk:/ uri has been created
         QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
-        
+
         // Add a different the nie:url
         KTemporaryFile tmpFile2;
         QVERIFY( tmpFile2.open() );
         fileRes.setProperty( Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
-        
+
         Resource fileRes2( KUrl(tmpFile.fileName()) );
         QVERIFY( fileRes.resourceUri() != fileRes2.resourceUri() );
-        
+
         Resource fileRes3( KUrl(tmpFile2.fileName()) );
         QVERIFY( fileRes3.resourceUri() == fileRes.resourceUri() );
-        
+
         Resource r1( "res1" );
         r1.setProperty( QUrl("http://test/prop1"), 42 );
-        
+
         r1.setProperty( Soprano::Vocabulary::NAO::identifier(), "foo" );
-        
+
         Resource r2( "res1" );
         r2.setProperty( QUrl("http://test/prop1"), 46 );
-        
+
         QVERIFY( r2.resourceUri() != r1.resourceUri() );
         QVERIFY( r1.property(QUrl("http://test/prop1")) != r2.property(QUrl("http://test/prop1")) );
-        
+
         Resource r3( "foo" );
         QVERIFY( r3.resourceUri() == r1.resourceUri() );
     }

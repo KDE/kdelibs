@@ -24,6 +24,7 @@ class ResourceTest : public TestBase
  private Q_SLOTS:
     void testResourceStates();
     void testProperties();
+    void testRemoveProperty();
     void testResourceRemoval();
     void testResourceIdentifiers();
     void testResourceManager();
