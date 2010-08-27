@@ -86,6 +86,8 @@ Nepomuk::Query::Query Nepomuk::Query::standardQuery( StandardQuery query, const 
         // FIXME
     }
     }
+
+    return query;
 }
 
 
