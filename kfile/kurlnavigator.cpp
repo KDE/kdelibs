@@ -37,6 +37,7 @@
 #include <kprotocolinfo.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
+#include <kurifilter.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QLinkedList>
@@ -977,14 +978,17 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
 
     KUrl url = newUrl;
     url.cleanPath();
-
-    QString urlStr = KUrlCompletion::replacedPath(url.url(), true, true);
-    if ((urlStr.length() > 0) && (urlStr.at(0) == '~')) {
-        // replace '~' by the home directory
-        urlStr.remove(0, 1);
-        urlStr.insert(0, QDir::homePath());
+    
+    QString urlStr;
+    KUriFilterData urlData(url);
+    urlData.setCheckForExecutables(false);
+    if (KUriFilter::self()->filterUri(urlData, QStringList() << "kshorturifilter" << "kurisearchfilter")) {
+        url = urlData.uri();
+        urlStr = urlData.uri().url();
+    } else {
+        urlStr = KUrlCompletion::replacedPath(url.url(), true, true);
     }
-
+    
     if ((url.protocol() == QLatin1String("tar")) || (url.protocol() == QLatin1String("zip"))) {
         // The URL represents a tar- or zip-file. Check whether
         // the URL is really part of the tar- or zip-file, otherwise
