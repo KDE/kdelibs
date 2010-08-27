@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-   Copyright (c) 2007 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,18 +45,13 @@ namespace Nepomuk {
         public:
             EntityManager();
 
-            ClassPrivate* getClass( const QUrl& uri );
-            PropertyPrivate* getProperty( const QUrl& uri );
-            OntologyPrivate* getOntology( const QUrl& uri );
+            QExplicitlySharedDataPointer<ClassPrivate> getClass( const QUrl& uri );
+            QExplicitlySharedDataPointer<PropertyPrivate> getProperty( const QUrl& uri );
+            QExplicitlySharedDataPointer<OntologyPrivate> getOntology( const QUrl& uri );
 
             static EntityManager* self();
 
         private:
-            EntityPrivate* findEntity( const QUrl& uri ) const;
-            ClassPrivate* findClass( const QUrl& uri ) const;
-            PropertyPrivate* findProperty( const QUrl& uri ) const;
-            OntologyPrivate* findOntology( const QUrl& uri ) const;
-
             QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> > m_classMap;
             QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> > m_propertyMap;
             QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> > m_ontologyMap;
