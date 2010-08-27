@@ -280,7 +280,8 @@ bool Nepomuk::Types::Entity::isAvailable() const
 
 void Nepomuk::Types::Entity::reset( bool recursive )
 {
-    d->reset( recursive );
+    if( d )
+        d->reset( recursive );
 }
 
 
@@ -308,7 +309,10 @@ bool Nepomuk::Types::Entity::operator==( const QUrl& other ) const
 {
     // since we use one instace cache we can improve comparation operations
     // intensly by not comparing URLs but pointers.
-    return( d->uri == other );
+    if( d )
+        return( d->uri == other );
+    else
+        return !other.isValid();
 }
 
 
@@ -324,7 +328,10 @@ bool Nepomuk::Types::Entity::operator!=( const QUrl& other ) const
 {
     // since we use one instace cache we can improve comparation operations
     // intensly by not comparing URLs but pointers.
-    return( d->uri != other );
+    if( d )
+        return( d->uri != other );
+    else
+        return other.isValid();
 }
 
 
