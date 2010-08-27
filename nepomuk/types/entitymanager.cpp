@@ -33,23 +33,6 @@ Nepomuk::Types::EntityManager::EntityManager()
 }
 
 
-Nepomuk::Types::EntityPrivate* Nepomuk::Types::EntityManager::findEntity( const QUrl& uri ) const
-{
-    if ( ClassPrivate* cp = findClass( uri ) ) {
-        return cp;
-    }
-    else if ( PropertyPrivate* pp = findProperty( uri ) ) {
-        return pp;
-    }
-    else if ( OntologyPrivate* op = findOntology( uri ) ) {
-        return op;
-    }
-    else {
-        return 0;
-    }
-}
-
-
 Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::findClass( const QUrl& uri ) const
 {
     QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> >::const_iterator it = m_classMap.constFind( uri );

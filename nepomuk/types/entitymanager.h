@@ -52,7 +52,6 @@ namespace Nepomuk {
             static EntityManager* self();
 
         private:
-            EntityPrivate* findEntity( const QUrl& uri ) const;
             ClassPrivate* findClass( const QUrl& uri ) const;
             PropertyPrivate* findProperty( const QUrl& uri ) const;
             OntologyPrivate* findOntology( const QUrl& uri ) const;
