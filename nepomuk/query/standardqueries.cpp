@@ -87,7 +87,7 @@ Nepomuk::Query::Query Nepomuk::Query::standardQuery( StandardQuery query, const 
     }
     }
 
-    return query;
+    return Query();
 }
 
 
