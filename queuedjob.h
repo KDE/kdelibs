@@ -82,8 +82,8 @@ public:
     * advertised that it can be called immediately.
     *
     * @note This method has to call emitResult() before returning. Even if
-    *       noone is interested in the signal it's used to set mark this
-    *       job as finished.
+    *       noone is interested in the signal it's used to mark this job
+    *       as finished and call deleteLater().
     */
    virtual void exec() = 0;
    
