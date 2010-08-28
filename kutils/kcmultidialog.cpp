@@ -177,8 +177,10 @@ void KCMultiDialogPrivate::_k_clientChanged()
         q->button(KDialog::Apply)->setEnabled(change);
     }
 
-    q->enableButton(KDialog::Help,    activeModule->buttons() & KCModule::Help);
-    q->enableButton(KDialog::Default, activeModule->buttons() & KCModule::Default);
+    if (activeModule) {
+        q->enableButton(KDialog::Help,    activeModule->buttons() & KCModule::Help);
+        q->enableButton(KDialog::Default, activeModule->buttons() & KCModule::Default);
+    }
 }
 
 void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
