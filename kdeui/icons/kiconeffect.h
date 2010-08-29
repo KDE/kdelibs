@@ -49,6 +49,10 @@ class KDEUI_EXPORT KIconEffect
 public:
   /**
    * Create a new KIconEffect.
+   * You will most likely never have to use this to create a new KIconEffect
+   * yourself, as you can use the KIconEffect provided by the global KIconLoader
+   * (which itself is accessible by KIconLoader::global()) through its
+   * iconEffect() function.
    */
     KIconEffect();
     ~KIconEffect();
