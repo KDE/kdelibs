@@ -23,6 +23,7 @@
 #include "khtml_part.h"
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
+#include <kparts/statusbarextension.h>
 
 #include "misc/loader_client.h"
 
@@ -96,6 +97,7 @@ private:
 
     QPointer<KHTMLPart> m_khtml;
     KParts::BrowserExtension *m_ext;
+    KParts::StatusBarExtension *m_sbExt;
     QString m_mimeType;
     khtml::CachedImage *m_image;
     int m_xOffset, m_yOffset;

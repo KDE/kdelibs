@@ -93,6 +93,9 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     m_ext = new KHTMLImageBrowserExtension( this );
     m_ext->setObjectName( "be" );
 
+    m_sbExt = new KParts::StatusBarExtension( this );
+    m_sbExt->setObjectName( "sbe" );
+
     // Remove unnecessary actions.
     delete actionCollection()->action( "setEncoding" );
     delete actionCollection()->action( "viewDocumentSource" );
@@ -133,6 +136,9 @@ KHTMLImage::~KHTMLImage()
 bool KHTMLImage::openUrl( const KUrl &url )
 {
     static const QString &html = KGlobal::staticQString( "<html><body><img src=\"%1\"></body></html>" );
+
+    // Propagate statusbar to our kid part.
+    KParts::StatusBarExtension::childObject( m_khtml )->setStatusBar( m_sbExt->statusBar() );
 
     disposeImage();
 
