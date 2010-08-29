@@ -230,7 +230,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         }
         if ((dir->type() == KIconLoader::Scalable) && !scIcons.contains(dir->size())) {
             QList<int> lst;
-            for (i=dir->minSize(); i<=dir->maxSize(); i++) {
+            for (i=dir->minSize(); i<=dir->maxSize(); ++i) {
                 lst += i;
             }
             scIcons[dir->size()] = lst;

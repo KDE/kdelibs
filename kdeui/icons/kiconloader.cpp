@@ -493,7 +493,7 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
 
     // loading config and default sizes
     mpGroups = new KIconGroup[(int) KIconLoader::LastGroup];
-    for (KIconLoader::Group i=KIconLoader::FirstGroup; i<KIconLoader::LastGroup; i++)
+    for (KIconLoader::Group i=KIconLoader::FirstGroup; i<KIconLoader::LastGroup; ++i)
     {
         if (groups[i] == 0L)
             break;
@@ -1304,7 +1304,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     // Don't add the path to our unknown icon to the cache, only cache the
     // actual image.
     if (iconWasUnknown) {
-        icon.path = QString();
+        icon.path.clear();
     }
 
     d->insertCachedPixmapWithPath(key, pix, icon.path);

@@ -524,19 +524,19 @@ void KIconEffect::semiTransparent(QImage &img)
 
         if(painterSupportsAntialiasing()){
             unsigned char *line;
-            for(y=0; y<height; y++){
+            for(y=0; y<height; ++y){
                 if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
                     line = img.scanLine(y);
                 else
                     line = img.scanLine(y) + 3;
-                for(x=0; x<width; x++){
+                for(x=0; x<width; ++x){
                     *line >>= 1;
                     line += 4;
                 }
             }
         }
         else{
-            for(y=0; y<height; y++){
+            for(y=0; y<height; ++y){
                 QRgb* line = (QRgb*)img.scanLine(y);
                 for(x=(y%2); x<width; x+=2)
                     line[x] &= 0x00ffffff;
@@ -559,7 +559,7 @@ void KIconEffect::semiTransparent(QImage &img)
         int transColor = -1;
 
         // search for a color that is already transparent
-        for(x=0; x<img.numColors(); x++){
+        for(x=0; x<img.numColors(); ++x){
             // try to find already transparent pixel
             if(qAlpha(img.color(x)) < 127){
                 transColor = x;
@@ -574,7 +574,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	img.setColor(transColor, 0);
         unsigned char *line;
         if(img.depth() == 8){
-            for(y=0; y<img.height(); y++){
+            for(y=0; y<img.height(); ++y){
                 line = img.scanLine(y);
                 for(x=(y%2); x<img.width(); x+=2)
                     line[x] = transColor;
@@ -583,7 +583,7 @@ void KIconEffect::semiTransparent(QImage &img)
         else{
             bool setOn = (transColor != 0);
             if(img.format() == QImage::Format_MonoLSB){
-                for(y=0; y<img.height(); y++){
+                for(y=0; y<img.height(); ++y){
                     line = img.scanLine(y);
                     for(x=(y%2); x<img.width(); x+=2){
                         if(!setOn)
@@ -594,7 +594,7 @@ void KIconEffect::semiTransparent(QImage &img)
                 }
             }
             else{
-                for(y=0; y<img.height(); y++){
+                for(y=0; y<img.height(); ++y){
                     line = img.scanLine(y);
                     for(x=(y%2); x<img.width(); x+=2){
                         if(!setOn)
@@ -655,11 +655,11 @@ QImage KIconEffect::doublePixels(const QImage &src) const
     if (src.depth() == 32)
     {
 	QRgb* l1, *l2;
-	for (y=0; y<h; y++)
+	for (y=0; y<h; ++y)
 	{
 	    l1 = (QRgb*)src.scanLine(y);
 	    l2 = (QRgb*)dst.scanLine(y*2);
-	    for (x=0; x<w; x++)
+	    for (x=0; x<w; ++x)
 	    {
 		l2[x*2] = l2[x*2+1] = l1[x];
 	    }
@@ -667,16 +667,16 @@ QImage KIconEffect::doublePixels(const QImage &src) const
 	}
     } else
     {
-	for (x=0; x<src.numColors(); x++)
+	for (x=0; x<src.numColors(); ++x)
 	    dst.setColor(x, src.color(x));
 
 	const unsigned char *l1;
 	unsigned char *l2;
-	for (y=0; y<h; y++)
+	for (y=0; y<h; ++y)
 	{
 	    l1 = src.scanLine(y);
 	    l2 = dst.scanLine(y*2);
-	    for (x=0; x<w; x++)
+	    for (x=0; x<w; ++x)
 	    {
 		l2[x*2] = l1[x];
 		l2[x*2+1] = l1[x];
@@ -749,18 +749,18 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	// Merge color tables
 	int nc = src.numColors();
 	src.setNumColors(nc + overlay.numColors());
-	for (i=0; i<overlay.numColors(); i++)
+	for (i=0; i<overlay.numColors(); ++i)
 	{
 	    src.setColor(nc+i, overlay.color(i));
 	}
 
 	// Overwrite nontransparent pixels.
 	unsigned char *oline, *sline;
-	for (i=0; i<src.height(); i++)
+	for (i=0; i<src.height(); ++i)
 	{
 	    oline = overlay.scanLine(i);
 	    sline = src.scanLine(i);
-	    for (j=0; j<src.width(); j++)
+	    for (j=0; j<src.width(); ++j)
 	    {
 		if (oline[j] != trans)
 		    sline[j] = oline[j]+nc;
@@ -776,12 +776,12 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	int r1, g1, b1, a1;
 	int r2, g2, b2, a2;
 
-	for (i=0; i<src.height(); i++)
+	for (i=0; i<src.height(); ++i)
 	{
 	    oline = (QRgb*)overlay.scanLine(i);
 	    sline = (QRgb*)src.scanLine(i);
 
-	    for (j=0; j<src.width(); j++)
+	    for (j=0; j<src.width(); ++j)
 	    {
 		r1 = qRed(oline[j]);
 		g1 = qGreen(oline[j]);
