@@ -183,7 +183,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 }
 
 // for a given response code, conclude if the response is going to/likely to have a response body
-static bool canHaveResponseBody(int rCode, KIO::HTTP_METHOD method)
+static bool canHaveResponseBody(int responseCode, KIO::HTTP_METHOD method)
 {
 /* RFC 2616 says...
     1xx: false
@@ -205,10 +205,10 @@ static bool canHaveResponseBody(int rCode, KIO::HTTP_METHOD method)
     4xx: see 200
     5xx :see 200
 */
-    if (rCode >= 100 && rCode < 200) {
+    if (responseCode >= 100 && responseCode < 200) {
         return false;
     }
-    switch (rCode) {
+    switch (responseCode) {
     case 201:
     case 202:
     case 206:
@@ -301,9 +301,9 @@ static QString formatHttpDate(qint64 date)
     return ret;
 }
 
-static bool shouldDiscardContent(int code)
+static bool isAuthenticationRequired(int responseCode)
 {
-    return ((code == 401) || (code == 407));
+    return responseCode == 401 || responseCode == 407;
 }
 
 #define NO_SIZE ((KIO::filesize_t) -1)
@@ -626,8 +626,8 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
       // If not loading error page and the response code requires us to resend the query,
       // then throw away any error message that might have been sent by the server.
-      if (!m_isLoadingErrorPage && shouldDiscardContent(m_request.responseCode)) {
-          // This gets rid of any error page sent with 401 or 407 response...
+      if (!m_isLoadingErrorPage && isAuthenticationRequired(m_request.responseCode)) {
+          // This gets rid of any error page sent with 401 or 407 authentication required response...
           readBody(true);
       }
 
@@ -2826,8 +2826,6 @@ try_again:
                 return false;
             }
         }
-    } else if (m_request.responseCode == 401 || m_request.responseCode == 407) {
-        // Unauthorized access
     } else if (m_request.responseCode == 416) {
         // Range not supported
         m_request.offset = 0;
@@ -2845,11 +2843,6 @@ try_again:
                 error(ERR_DOES_NOT_EXIST, m_request.url.url());
             return false;
         }
-    } else if (m_request.responseCode == 307) {
-        // 307 Temporary Redirect
-    } else if (m_request.responseCode == 304) {
-        // 304 Not Modified
-        // The value in our cache is still valid. See below for actual processing.
     } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
         // 301 Moved permanently
         if (m_request.responseCode == 301) {
@@ -2866,9 +2859,6 @@ try_again:
             // these pages correctly.
             m_request.method = HTTP_GET; // Force a GET
         }
-    } else if ( m_request.responseCode == 207 ) {
-        // Multi-status (for WebDav)
-
     } else if (m_request.responseCode == 204) {
         // No content
 
@@ -2905,8 +2895,8 @@ endParsing:
 
         // Auth handling
         {
-            const bool wasAuthError = m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407;
-            const bool isAuthError = m_request.responseCode == 401 || m_request.responseCode == 407;
+            const bool wasAuthError = isAuthenticationRequired(m_request.prevResponseCode);
+            const bool isAuthError = isAuthenticationRequired(m_request.responseCode);
             const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
             kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
                          << "sameAuthError=" << sameAuthError;
@@ -3229,8 +3219,7 @@ endParsing:
 
         // we may need to send (Proxy or WWW) authorization data
         authRequiresAnotherRoundtrip = false;
-        if (!m_request.doNotAuthenticate &&
-            (m_request.responseCode == 401 || m_request.responseCode == 407)) {
+        if (!m_request.doNotAuthenticate && isAuthenticationRequired(m_request.responseCode)) {
             KIO::AuthInfo authinfo;
             KAbstractHttpAuthentication **auth;
 
@@ -4397,7 +4386,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       error(ERR_INTERNAL_SERVER, m_request.url.host());
       return false;
     } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 &&
-               m_request.responseCode != 401 && m_request.responseCode != 407 &&
+               !isAuthenticationRequired(m_request.responseCode) &&
                // If we're doing a propfind, a 404 is not an error
                m_request.method != DAV_PROPFIND) {
       error(ERR_DOES_NOT_EXIST, m_request.url.host());
