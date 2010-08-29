@@ -60,6 +60,10 @@ KateOnTheFlyChecker::KateOnTheFlyChecker(KateDocument *document)
           this, SLOT(updateConfig()));
   connect(document, SIGNAL(respellCheckBlock(KateDocument*, int, int)),
           this, SLOT(handleRespellCheckBlock(KateDocument*, int, int)));
+
+  // load the settings for the speller
+  updateConfig();
+
   foreach(KTextEditor::View* view, document->views()) {
     addView(document, view);
   }
@@ -407,6 +411,7 @@ void KateOnTheFlyChecker::performSpellCheck()
             this,
             SLOT(misspelling(const QString&,int)));
     connect(m_backgroundChecker, SIGNAL(done()), this, SLOT(spellCheckDone()));
+    m_backgroundChecker->restore(KGlobal::config().data());
   }
   m_backgroundChecker->setSpeller(m_speller);
   m_backgroundChecker->setText(text); // don't call 'start()' after this!
@@ -665,6 +670,9 @@ void KateOnTheFlyChecker::updateConfig()
 {
   ON_THE_FLY_DEBUG;
   m_speller.restore(KGlobal::config().data());
+  if(m_backgroundChecker) {
+    m_backgroundChecker->restore(KGlobal::config().data());
+  }
 }
 
 void KateOnTheFlyChecker::refreshSpellCheck(const KTextEditor::Range &range)
