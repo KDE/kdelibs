@@ -76,6 +76,9 @@ namespace Sonnet
         bool checkWord(const QString &word);
         QStringList suggest(const QString &word) const;
         bool addWordToPersonal(const QString &word);
+
+        void restore(KConfig *config);
+
     public Q_SLOTS:
         virtual void start();
         virtual void stop();

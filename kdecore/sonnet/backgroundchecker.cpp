@@ -23,6 +23,7 @@
 #include "loader_p.h"
 #include "backgroundengine_p.h"
 #include "filter_p.h"
+#include "settings_p.h"
 
 #include <kdebug.h>
 
@@ -62,6 +63,13 @@ BackgroundChecker::BackgroundChecker(const Speller &speller, QObject *parent)
 BackgroundChecker::~BackgroundChecker()
 {
     delete d;
+}
+
+void BackgroundChecker::restore(KConfig *config)
+{
+    Loader *loader = Loader::openLoader();
+    loader->settings()->restore(config);
+    d->engine->filter()->setSettings(loader->settings());
 }
 
 void BackgroundChecker::setText(const QString &text)
