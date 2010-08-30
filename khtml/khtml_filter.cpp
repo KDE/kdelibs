@@ -84,7 +84,7 @@ void FilterSet::addFilter(const QString& filterStr)
             filter = filter.mid(first, last - first + 1);
 
         // Now, do we still have any wildcard stuff left?
-        if (filter.contains("*") || filter.contains("?"))
+        if (filter.contains("*"))
         {
 //             qDebug() << "W:" << filter;
             // check if we can use RK first (and then check full RE for the rest) for better performance
