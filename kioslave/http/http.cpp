@@ -400,14 +400,14 @@ void HTTPProtocol::resetSessionSettings()
     m_request.proxyUrl = proxy;
 
     kDebug(7113) << "Using proxy:" << m_request.useProxy()
-                 << "URL: " << m_request.proxyUrl.url()
-                 << "Realm: " << m_proxyAuth.realm;
+                 << "URL:" << m_request.proxyUrl.url()
+                 << "Realm:" << m_proxyAuth.realm;
   }
 #endif
     m_request.proxyUrl = proxy;
     kDebug(7113) << "Using proxy:" << isValidProxy(m_request.proxyUrl)
-                 << "URL: " << m_request.proxyUrl.url();
-                 //<< "Realm: " << m_proxyAuth.realm;
+                 << "URL:" << m_request.proxyUrl.url();
+                 //<< "Realm:" << m_proxyAuth.realm;
 
   if (isValidProxy(m_request.proxyUrl)) {
       if (m_request.proxyUrl.protocol() == QLatin1String("socks")) {
@@ -428,9 +428,8 @@ void HTTPProtocol::resetSessionSettings()
   QNetworkProxy::setApplicationProxy(appProxy);
 
   if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
-    m_request.isKeepAlive = config()->readEntry("PersistentProxyConnection", false);
-    kDebug(7113) << "Enable Persistent Proxy Connection: "
-                 << m_request.isKeepAlive;
+      m_request.isKeepAlive = config()->readEntry("PersistentProxyConnection", false);
+      kDebug(7113) << "Enable Persistent Proxy Connection:" << m_request.isKeepAlive;
   }
 
   m_request.redirectUrl = KUrl();
@@ -443,8 +442,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.windowId = config()->readEntry("window-id");
 
   kDebug(7113) << "Window Id =" << m_request.windowId;
-  kDebug(7113) << "ssl_was_in_use ="
-               << metaData(QLatin1String("ssl_was_in_use"));
+  kDebug(7113) << "ssl_was_in_use =" << metaData(QLatin1String("ssl_was_in_use"));
 
   m_request.referrer.clear();
   // RFC 2616: do not send the referrer if the referrer page was served using SSL and
@@ -1027,7 +1025,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       }
       else
       {
-        kDebug(7113) << "Found unknown webdav property: " << property.tagName();
+        kDebug(7113) << "Found unknown webdav property:" << property.tagName();
       }
     }
   }
@@ -1312,11 +1310,11 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
   proceedUntilResponseHeader();
 
-  kDebug(7113) << "error = " << m_isError;
+  kDebug(7113) << "error =" << m_isError;
   if (m_isError)
     return;
 
-  kDebug(7113) << "responseCode = " << m_request.responseCode;
+  kDebug(7113) << "responseCode =" << m_request.responseCode;
 
   httpClose(false); // Always close connection.
 
@@ -2252,7 +2250,7 @@ bool HTTPProtocol::sendQuery()
         davHeader = QLatin1String("Depth: ");
         if ( hasMetaData( QLatin1String("davDepth") ) )
         {
-          kDebug(7113) << "Reading DAV depth from metadata: " << metaData( QLatin1String("davDepth") );
+          kDebug(7113) << "Reading DAV depth from metadata:" << metaData( QLatin1String("davDepth") );
           davHeader += metaData( QLatin1String("davDepth") );
         }
         else
@@ -2351,13 +2349,13 @@ bool HTTPProtocol::sendQuery()
     {
         header += QString::fromLatin1("Range: bytes=%1-%2\r\n").arg(KIO::number(m_request.offset))
                          .arg(KIO::number(m_request.endoffset));
-        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) <<
-                        " - "  << KIO::number(m_request.endoffset);
+        kDebug(7103) << "kio_http : Range =" << KIO::number(m_request.offset) <<
+                        "-"  << KIO::number(m_request.endoffset);
     }
     else if ( m_request.offset > 0 && m_request.endoffset == 0 )
     {
         header += QString::fromLatin1("Range: bytes=%1-\r\n").arg(KIO::number(m_request.offset));
-        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset);
+        kDebug(7103) << "kio_http: Range =" << KIO::number(m_request.offset);
     }
 
     if ( !m_request.cacheTag.useCache || m_request.cacheTag.policy==CC_Reload )
@@ -2730,7 +2728,7 @@ try_again:
             // Some web-servers fail to respond properly to a HEAD request.
             // We compensate for their failure to properly implement the HTTP standard
             // by assuming that they will be sending html.
-            kDebug(7113) << "HEAD -> returned mimetype: " << DEFAULT_MIME_TYPE;
+            kDebug(7113) << "HEAD -> returned mimetype:" << DEFAULT_MIME_TYPE;
             mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
             return true;
         }
@@ -2990,7 +2988,7 @@ endParsing:
             if (!l.isEmpty()) {
                 // Assign the mime-type.
                 m_mimeType = QString::fromLatin1(l.first().trimmed().toLower());
-                kDebug(7113) << "Content-type: " << m_mimeType;
+                kDebug(7113) << "Content-type:" << m_mimeType;
                 l.removeFirst();
             }
 
@@ -3007,7 +3005,7 @@ endParsing:
                     (mediaValue[mediaValue.length() - 1] == QLatin1Char('"'))) {
                     mediaValue = mediaValue.mid(1, mediaValue.length() - 2);
                 }
-                kDebug (7113) << "Encoding-type: " << mediaAttribute
+                kDebug (7113) << "Encoding-type:" << mediaAttribute
                               << "=" << mediaValue;
 
                 if (mediaAttribute == QLatin1String("charset")) {
@@ -3511,7 +3509,7 @@ void HTTPProtocol::parseContentDisposition(const QString &disposition)
     QMap<QString, QString>::const_iterator i = parameters.constBegin();
     while (i != parameters.constEnd()) {
         setMetaData(QLatin1String("content-disposition-") + i.key(), i.value());
-        kDebug(7113) << "Content-Disposition: " << i.key() << "=" << i.value();
+        kDebug(7113) << "Content-Disposition:" << i.key() << "=" << i.value();
         ++i;
     }
 }
@@ -3796,7 +3794,7 @@ bool HTTPProtocol::sendBody()
   }
 
   // Send the data...
-  // kDebug( 7113 ) << "POST DATA: " << QCString(m_POSTbuf);
+  // kDebug( 7113 ) << "POST DATA:" << QCString(m_POSTbuf);
   sendOk = (write(m_POSTbuf.data(), m_POSTbuf.size()) == (ssize_t) m_POSTbuf.size());
   if (!sendOk)
   {
@@ -3878,7 +3876,7 @@ void HTTPProtocol::mimetype( const KUrl& url )
   httpClose(m_request.isKeepAlive);
   finished();
 
-  kDebug(7113) << "http: mimetype = " << m_mimeType;
+  kDebug(7113) << "http: mimetype =" << m_mimeType;
 }
 
 void HTTPProtocol::special( const QByteArray &data )
@@ -3994,7 +3992,7 @@ int HTTPProtocol::readChunked()
      }
      m_iBytesLeft = nextChunkSize;
 
-     kDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes";
+     kDebug(7113) << "Chunk size =" << m_iBytesLeft << "bytes";
 
      if (m_iBytesLeft == 0)
      {
@@ -4111,19 +4109,19 @@ void HTTPProtocol::slotData(const QByteArray &_d)
           return;   // Do not send up the data since we do not yet know its mimetype!
         }
 
-        kDebug(7113) << "Mimetype buffer size: " << m_mimeTypeBuffer.size();
+        kDebug(7113) << "Mimetype buffer size:" << m_mimeTypeBuffer.size();
 
         KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_request.url.fileName(), m_mimeTypeBuffer);
         if( mime && !mime->isDefault() )
         {
           m_mimeType = mime->name();
-          kDebug(7113) << "Mimetype from content: " << m_mimeType;
+          kDebug(7113) << "Mimetype from content:" << m_mimeType;
         }
 
         if ( m_mimeType.isEmpty() )
         {
           m_mimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
-          kDebug(7113) << "Using default mimetype: " <<  m_mimeType;
+          kDebug(7113) << "Using default mimetype:" <<  m_mimeType;
         }
 
         //### we could also open the cache file here
@@ -4360,7 +4358,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     if (m_iBytesLeft == 0)
     {
-      kDebug(7113) << "EOD received! Left = "<< KIO::number(m_iBytesLeft);
+      kDebug(7113) << "EOD received! Left ="<< KIO::number(m_iBytesLeft);
       break;
     }
   }
@@ -4371,8 +4369,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     QString calculatedMD5 = md5Filter->md5();
 
     if ( m_contentMD5 != calculatedMD5 )
-      kWarning(7113) << "MD5 checksum MISMATCH! Expected: "
-                     << calculatedMD5 << ", Got: " << m_contentMD5;
+      kWarning(7113) << "MD5 checksum MISMATCH! Expected:"
+                     << calculatedMD5 << ", Got:" << m_contentMD5;
   }
 
   // Close cache entry
@@ -4978,7 +4976,7 @@ QString HTTPProtocol::authenticationHeader()
 void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
     Q_UNUSED(proxy);
-    kDebug(7113) << "Authenticator received -- realm: " << authenticator->realm() << "user:"
+    kDebug(7113) << "Authenticator received -- realm:" << authenticator->realm() << "user:"
                  << authenticator->user();
 
     AuthInfo info;
@@ -5030,7 +5028,7 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
                this, SLOT(saveProxyAuthenticationForSocket()));
     Q_ASSERT(m_socketProxyAuth);
     if (m_socketProxyAuth) {
-        kDebug(7113) << "-- realm: " << m_socketProxyAuth->realm() << "user:"
+        kDebug(7113) << "-- realm:" << m_socketProxyAuth->realm() << "user:"
                      << m_socketProxyAuth->user();
         KIO::AuthInfo a;
         a.verifyPath = true;
