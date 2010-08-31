@@ -52,17 +52,15 @@ FstabManager::FstabManager(QObject *parent)
     m_fileSystemWatcher = new QFileSystemWatcher(fileList);
 
     if (qApp) {
-        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(orphanFileSystemWatcher()));
+        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(destroyFileSystemWatcher()));
     }
     connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 }
 
-void FstabManager::orphanFileSystemWatcher()
+void FstabManager::destroyFileSystemWatcher()
 {
-    if (m_fileSystemWatcher) {
-        delete m_fileSystemWatcher;
-        m_fileSystemWatcher = 0;
-    }
+    delete m_fileSystemWatcher;
+    m_fileSystemWatcher = 0;
 }
 
 QString FstabManager::udiPrefix() const

@@ -43,7 +43,7 @@ FstabStorageAccess::FstabStorageAccess(Solid::Backends::Fstab::FstabDevice *devi
 
     m_fileSystemWatcher = new QFileSystemWatcher(fileList/*, this*/);
     if (qApp) {
-        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(orphanFileSystemWatcher()));
+        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(destroyFileSystemWatcher()));
     }
 
     connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
@@ -57,12 +57,10 @@ FstabStorageAccess::~FstabStorageAccess()
     }
 }
 
-void FstabStorageAccess::orphanFileSystemWatcher()
+void FstabStorageAccess::destroyFileSystemWatcher()
 {
-    if (m_fileSystemWatcher) {
-        delete m_fileSystemWatcher;
-        m_fileSystemWatcher = 0;
-    }
+    delete m_fileSystemWatcher;
+    m_fileSystemWatcher = 0;
 }
 
 const Solid::Backends::Fstab::FstabDevice *FstabStorageAccess::fstabDevice() const
