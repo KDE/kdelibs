@@ -143,12 +143,12 @@ if(NOT WIN32 AND NOT APPLE)
 
    )
 
-   find_package( HUpnp )
+   macro_optional_find_package( HUpnp )
+   macro_log_feature( HUPNP_FOUND "HUPnP" "Qt-based library for building UPnP devices and control points" "http://www.herqq.org" FALSE "" "" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
    if ( HUPNP_FOUND )
       include_directories( ${HUPNP_INCLUDE_DIR} )
 
-      message(STATUS "Building Solid UPnP backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
          backends/upnp/upnpdevice.cpp
