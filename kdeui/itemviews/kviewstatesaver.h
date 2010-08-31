@@ -109,7 +109,7 @@ class KViewStateSaverPrivate;
 
   After creating a saver, the state can be saved using a KConfigGroup.
 
-  It is also possbile to save and restore state directly by using the restoreSelection,
+  It is also possible to save and restore state directly by using the restoreSelection,
   restoreExpanded etc methods. Note that the implementation of these methods should return
   strings that the indexFromConfigString implementation can handle.
 
