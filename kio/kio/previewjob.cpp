@@ -22,6 +22,7 @@
 */
 
 #include "previewjob.h"
+#include <kdebug.h>
 
 #include <sys/stat.h>
 #ifdef __FreeBSD__
@@ -361,6 +362,15 @@ void PreviewJob::slotResult( KJob *job )
             {
                 // For remote items the "IgnoreMaximumSize" plugin property is not respected
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumRemoteSize;
+
+                // Remote directories are not supported, don't try to do a file_copy on them
+                if (!skipCurrentItem) {
+                    // TODO update item.mimeType from the UDS entry, in case it wasn't set initially
+                    KMimeType::Ptr mime = d->currentItem.item.mimeTypePtr();
+                    if (mime && mime->is("inode/directory")) {
+                        skipCurrentItem = true;
+                    }
+                }
             }
             if (skipCurrentItem)
             {
