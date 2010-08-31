@@ -631,7 +631,7 @@ bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
     // always reload with it.
     if (url.protocol() == QLatin1String("help"))
         return false;
-    
+
     return url.hasRef() && url.equals( q->url(),
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
 }
@@ -663,7 +663,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // check to see if this is an "error://" URL. This is caused when an error
   // occurs before this part was loaded (e.g. KonqRun), and is passed to
   // khtmlpart so that it can display the error.
-  if ( url.protocol() == "error" && url.hasSubUrl() ) {
+  if ( url.protocol() == "error" ) {
     closeUrl();
 
     if(  d->m_bJScriptEnabled ) {
@@ -679,12 +679,12 @@ bool KHTMLPart::openUrl( const KUrl &url )
     KUrl::List urls = KUrl::split( url );
     //kDebug(6050) << "Handling error URL. URL count:" << urls.count();
 
-    if ( urls.count() > 1 ) {
-      KUrl mainURL = urls.first();
+    if ( !urls.isEmpty() ) {
+      const KUrl mainURL = urls.first();
       int error = mainURL.queryItem( "error" ).toInt();
       // error=0 isn't a valid error code, so 0 means it's missing from the URL
       if ( error == 0 ) error = KIO::ERR_UNKNOWN;
-      QString errorText = mainURL.queryItem( "errText" );
+      const QString errorText = mainURL.queryItem( "errText" );
       urls.pop_front();
       d->m_workingURL = KUrl::join( urls );
       //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyUrl();
@@ -791,9 +791,9 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // and not start the job and all that (since we would want the
   // KPart or whatever to load it).
   // This is also the only place we need to do this, as it's for
-  // internal iframe use, not any other clients. 
+  // internal iframe use, not any other clients.
   MimeType type = d->classifyMimeType(args.mimeType());
-  
+
   if (type == MimeImage || type == MimeOther) {
       begin(url, args.xOffset(), args.yOffset());
       write(QString::fromLatin1("<html><head></head><body>"));
@@ -810,7 +810,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
       end();
       return true;
   }
-  
+
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -1951,7 +1951,7 @@ MimeType KHTMLPartPrivate::classifyMimeType(const QString& mimeStr)
 
   if (mime && mime->is("text/plain"))
       return MimeText;
-  
+
   if (khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes().contains(mimeStr))
       return MimeImage;
 
@@ -2338,7 +2338,7 @@ void KHTMLPart::slotUserSheetStatDone( KJob *_job )
 bool KHTMLPartPrivate::isFullyLoaded(bool* pendingRedirections) const
 {
   *pendingRedirections = false;
-  
+
   // Any frame that hasn't completed yet ?
   ConstFrameIt it = m_frames.constBegin();
   const ConstFrameIt end = m_frames.constEnd();
@@ -4337,7 +4337,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
             checkCompleted();
             return true;
         }
-        
+
         // Before attempting to load a part, check if the user wants that.
         // Many don't like getting ZIP files embedded.
         // However we don't want to ask for flash and other plugin things.
@@ -4397,7 +4397,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     }
 
     checkEmitLoadEvent();
-    
+
     // Some JS code in the load event may have destroyed the part
     // In that case, abort
     if ( !child->m_part )
@@ -4496,7 +4496,7 @@ void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPa
                                     const QString& mimetype)
 {
     kDebug(6031) << "we:" << this << "kid:" << child << part << mimetype;
-    
+
     part->setObjectName( child->m_name );
 
     //CRITICAL STUFF
@@ -4508,7 +4508,7 @@ void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPa
       child->m_scriptable.clear();
     }
 
-    child->m_part = part;    
+    child->m_part = part;
 
     child->m_serviceType = mimetype;
     if ( child->m_partContainerElement && part->widget() )
