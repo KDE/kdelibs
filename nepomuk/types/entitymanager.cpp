@@ -38,7 +38,7 @@ QExplicitlySharedDataPointer<Nepomuk::Types::ClassPrivate> Nepomuk::Types::Entit
     QMutexLocker lock( &m_mutex );
 
     QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> >::const_iterator it = m_classMap.constFind( uri );
-    if ( it != m_classMap.end() ) {
+    if ( it != m_classMap.constEnd() ) {
         return it.value();
     }
     else {
@@ -54,7 +54,7 @@ QExplicitlySharedDataPointer<Nepomuk::Types::PropertyPrivate> Nepomuk::Types::En
     QMutexLocker lock( &m_mutex );
 
     QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> >::const_iterator it = m_propertyMap.constFind( uri );
-    if ( it != m_propertyMap.end() ) {
+    if ( it != m_propertyMap.constEnd() ) {
         return it.value();
     }
     else {
@@ -70,7 +70,7 @@ QExplicitlySharedDataPointer<Nepomuk::Types::OntologyPrivate> Nepomuk::Types::En
     QMutexLocker lock( &m_mutex );
 
     QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> >::const_iterator it = m_ontologyMap.constFind( uri );
-    if ( it != m_ontologyMap.end() ) {
+    if ( it != m_ontologyMap.constEnd() ) {
         return it.value();
     }
     else {
