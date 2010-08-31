@@ -429,7 +429,7 @@ bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) c
 }
 
 StyleCSS3InheritedData::StyleCSS3InheritedData()
-:Shared<StyleCSS3InheritedData>(), textShadow(0)
+:Shared<StyleCSS3InheritedData>(), textShadow(0), wordWrap(RenderStyle::initialWordWrap())
 #ifdef APPLE_CHANGES
 , userModify(READ_ONLY), textSizeAdjust(RenderStyle::initialTextSizeAdjust())
 #endif
@@ -441,6 +441,7 @@ StyleCSS3InheritedData::StyleCSS3InheritedData(const StyleCSS3InheritedData& o)
 :Shared<StyleCSS3InheritedData>()
 {
     textShadow = o.textShadow ? new ShadowData(*o.textShadow) : 0;
+    wordWrap = o.wordWrap;
 #ifdef APPLE_CHANGES
     userModify = o.userModify;
     textSizeAdjust = o.textSizeAdjust;
@@ -454,7 +455,7 @@ StyleCSS3InheritedData::~StyleCSS3InheritedData()
 
 bool StyleCSS3InheritedData::operator==(const StyleCSS3InheritedData& o) const
 {
-    return shadowDataEquivalent(o)
+    return shadowDataEquivalent(o) && (wordWrap == o.wordWrap)
 #ifdef APPLE_CHANGES
             && (userModify == o.userModify) && (textSizeAdjust == o.textSizeAdjust)
 #endif

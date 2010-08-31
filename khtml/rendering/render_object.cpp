@@ -244,6 +244,11 @@ bool RenderObject::isHR() const
     return element() && element()->id() == ID_HR;
 }
 
+bool RenderObject::isWordBreak() const
+{
+    return element() && element()->id() == ID_WBR;
+}
+
 bool RenderObject::isHTMLMarquee() const
 {
     return element() && element()->renderer() == this && element()->id() == ID_MARQUEE;

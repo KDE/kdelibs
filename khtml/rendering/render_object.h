@@ -282,6 +282,7 @@ public:
     virtual bool isApplet() const { return false; }
 
     bool isHTMLMarquee() const;
+    bool isWordBreak() const;
 
     bool isAnonymous() const { return m_isAnonymous; }
     void setIsAnonymous(bool b) { m_isAnonymous = b; }

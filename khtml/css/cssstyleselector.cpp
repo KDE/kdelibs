@@ -175,6 +175,26 @@ if (id == propID) \
     return;\
 }
 
+#define HANDLE_INHERIT_ON_INHERITED_PROPERTY(prop, Prop) \
+if (isInherit) \
+{\
+    style->set##Prop(parentStyle->prop());\
+    return;\
+}
+
+#define HANDLE_INITIAL(prop, Prop) \
+if (isInitial) \
+{\
+    style->set##Prop(RenderStyle::initial##Prop());\
+    return;\
+}
+
+#define HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(prop, Prop) \
+HANDLE_INITIAL(prop, Prop) \
+else \
+HANDLE_INHERIT_ON_INHERITED_PROPERTY(prop, Prop)
+
+
 namespace khtml {
 
 CSSStyleSelectorList *CSSStyleSelector::s_defaultStyle;
@@ -3952,6 +3972,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setTextOverflow(primitiveValue->getIdent() == CSS_VAL_ELLIPSIS);
         break;
     }
+    }
+    case CSS_PROP_WORD_WRAP: {
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(wordWrap, WordWrap)
+        if (!primitiveValue)
+            return;
+        style->setWordWrap(primitiveValue->getIdent() == CSS_VAL_NORMAL ? WWNORMAL : WWBREAKWORD);
+        break;
     }
     default:
         return;
