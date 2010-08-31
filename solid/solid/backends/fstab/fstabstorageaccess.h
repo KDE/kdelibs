@@ -75,6 +75,7 @@ namespace Fstab
             void slotSetupFinished(int exitCode, QProcess::ExitStatus exitStatus);
             void slotTeardownFinished(int exitCode, QProcess::ExitStatus exitStatus);
             void onFileChanged(const QString &path);
+            void orphanFileSystemWatcher();
         private:
             Solid::Backends::Fstab::FstabDevice *m_fstabDevice;
             QProcess *m_process;

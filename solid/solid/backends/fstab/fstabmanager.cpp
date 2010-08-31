@@ -26,6 +26,7 @@
 #include "rootdevice.h"
 #include "fstabservice.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QFileSystemWatcher>
 
 
@@ -48,11 +49,21 @@ FstabManager::FstabManager(QObject *parent)
     QStringList fileList;
     fileList << FSTAB;
 
-    m_fileSystemWatcher = new QFileSystemWatcher(fileList, this);
+    m_fileSystemWatcher = new QFileSystemWatcher(fileList);
 
+    if (qApp) {
+        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(orphanFileSystemWatcher()));
+    }
     connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 }
 
+void FstabManager::orphanFileSystemWatcher()
+{
+    if (m_fileSystemWatcher) {
+        delete m_fileSystemWatcher;
+        m_fileSystemWatcher = 0;
+    }
+}
 
 QString FstabManager::udiPrefix() const
 {
@@ -124,11 +135,15 @@ void FstabManager::onFileChanged(const QString &/*path*/)
     }
     m_deviceList = deviceList;
 
-    if (!m_fileSystemWatcher->files().contains(FSTAB)) {
+    if (m_fileSystemWatcher && !m_fileSystemWatcher->files().contains(FSTAB)) {
         m_fileSystemWatcher->addPath(FSTAB);
     }
 }
 
 FstabManager::~FstabManager()
 {
+    if (m_fileSystemWatcher) {
+        delete m_fileSystemWatcher;
+        m_fileSystemWatcher = 0;
+    }
 }

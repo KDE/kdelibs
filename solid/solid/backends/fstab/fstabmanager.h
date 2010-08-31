@@ -54,6 +54,7 @@ public:
 
 private Q_SLOTS:
     void onFileChanged(const QString &path);
+    void orphanFileSystemWatcher();
 
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
