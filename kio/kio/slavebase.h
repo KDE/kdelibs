@@ -292,7 +292,7 @@ public:
      * data() or finished() signal.
      */
     void setMetaData(const QString &key, const QString &value);
-
+    
     /**
      * Queries for the existence of a certain config/meta-data entry
      * send by the application to the slave.
@@ -868,6 +868,9 @@ protected:
     MetaData mOutgoingMetaData;
     MetaData mIncomingMetaData;
 
+    enum VirtualFunctionId {
+        AppConnectionMade = 0
+    };
     virtual void virtual_hook( int id, void* data );
 
 private:

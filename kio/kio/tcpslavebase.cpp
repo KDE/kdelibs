@@ -105,19 +105,20 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 public:
     TcpSlaveBasePrivate(TCPSlaveBase* qq) : q(qq) {}
 
-    void prepareSslRelatedMetaData()
+    void setSslMetaData()
     {
+        sslMetaData.insert("ssl_in_use", "TRUE");
         KSslCipher cipher = socket.sessionCipher();
-        q->setMetaData("ssl_protocol_version", socket.negotiatedSslVersionName());
+        sslMetaData.insert("ssl_protocol_version", socket.negotiatedSslVersionName());
         QString sslCipher = cipher.encryptionMethod() + '\n';
         sslCipher += cipher.authenticationMethod() + '\n';
         sslCipher += cipher.keyExchangeMethod() + '\n';
         sslCipher += cipher.digestMethod();
-        q->setMetaData("ssl_cipher", sslCipher);
-        q->setMetaData("ssl_cipher_name", cipher.name());
-        q->setMetaData("ssl_cipher_used_bits", QString::number(cipher.usedBits()));
-        q->setMetaData("ssl_cipher_bits", QString::number(cipher.supportedBits()));
-        q->setMetaData("ssl_peer_ip", ip);
+        sslMetaData.insert("ssl_cipher", sslCipher);
+        sslMetaData.insert("ssl_cipher_name", cipher.name());
+        sslMetaData.insert("ssl_cipher_used_bits", QString::number(cipher.usedBits()));
+        sslMetaData.insert("ssl_cipher_bits", QString::number(cipher.supportedBits()));
+        sslMetaData.insert("ssl_peer_ip", ip);
 
         // try to fill in the blanks, i.e. missing certificates, and just assume that
         // those belong to the peer (==website or similar) certificate.
@@ -142,7 +143,7 @@ public:
             errorStr += '\n';
         }
         errorStr.chop(1);
-        q->setMetaData("ssl_cert_errors", errorStr);
+        sslMetaData.insert("ssl_cert_errors", errorStr);
 
         QString peerCertChain;
         Q_FOREACH (const QSslCertificate &cert, socket.peerCertificateChain()) {
@@ -150,7 +151,23 @@ public:
             peerCertChain.append('\x01');
         }
         peerCertChain.chop(1);
-        q->setMetaData("ssl_peer_chain", peerCertChain);
+        sslMetaData.insert("ssl_peer_chain", peerCertChain);
+        sendSslMetaData();
+    }
+    
+    void clearSslMetaData()
+    {
+        sslMetaData.clear();
+        sslMetaData.insert("ssl_in_use", "FALSE");
+        sendSslMetaData();
+    }
+    
+    void sendSslMetaData()
+    {
+        MetaData::ConstIterator it = sslMetaData.constBegin();
+        for (; it != sslMetaData.constEnd(); ++it) {
+            q->setMetaData(it.key(), it.value());
+        }
     }
 
     TCPSlaveBase* q;
@@ -170,6 +187,8 @@ public:
     bool sslNoUi; // If true, we just drop the connection silently
                   // if SSL certificate check fails in some way.
     QList<KSslError> sslErrors;
+    
+    MetaData sslMetaData;
 };
 
 
@@ -241,7 +260,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 {
     if (d->usingSSL && (d->socket.encryptionMode() != KTcpSocket::SslClientMode)) {
-        setMetaData("ssl_in_use", "FALSE");
+        d->clearSslMetaData();
         kDebug(7029) << "lost SSL connection.";
         return -1;
     }
@@ -266,7 +285,7 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 {
     if (d->usingSSL && (d->socket.encryptionMode() != KTcpSocket::SslClientMode)) {
-        setMetaData("ssl_in_use", "FALSE");
+        d->clearSslMetaData();
         kDebug(7029) << "lost SSL connection.";
         return -1;
     }
@@ -291,7 +310,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                                  const QString &host,
                                  quint16 port)
 {
-    setMetaData("ssl_in_use", "FALSE"); //We have separate connection and SSL setup phases
+    d->clearSslMetaData(); //We have separate connection and SSL setup phases
 
     //  - leaving SSL - warn before we even connect
     //### see if it makes sense to move this into the HTTP ioslave which is the only
@@ -443,7 +462,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     //### we don't support session reuse for now...
 
     d->usingSSL = true;
-    setMetaData("ssl_in_use", "TRUE");
 
     d->socket.setAdvertisedSslVersion(sslVersion);
 
@@ -461,7 +479,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     if (!encryptionStarted || d->socket.encryptionMode() != KTcpSocket::SslClientMode
         || cipher.isNull() || cipher.usedBits() == 0 || d->socket.peerCertificateChain().isEmpty()) {
         d->usingSSL = false;
-        setMetaData("ssl_in_use", "FALSE");
+        d->clearSslMetaData();
         kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
                      << encryptionStarted << ", cipher.isNull() is" << cipher.isNull()
                      << ", cipher.usedBits() is" << cipher.usedBits()
@@ -507,6 +525,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
         }
     }
 
+    // TODO: review / rewrite / remove the comment
     // The app side needs the metadata now for the SSL error dialog (if any) but
     // the same metadata will be needed later, too. When "later" arrives the slave
     // may actually be connected to a different application that doesn't know
@@ -515,13 +534,13 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     // from here, for example. And Konqi will be the second application to connect
     // to the slave.
     // Therefore we choose to have our metadata and send it, too :)
-    d->prepareSslRelatedMetaData();
+    d->setSslMetaData();
     sendAndKeepMetaData();
 
     SslResult rc = verifyServerCertificate();
     if (rc & ResultFailed) {
         d->usingSSL = false;
-        setMetaData("ssl_in_use", "FALSE");
+        d->clearSslMetaData();
         kDebug(7029) << "server certificate verification failed.";
         d->socket.disconnectFromHost();     //Make the connection fail (cf. ignoreSslErrors())
         return ResultFailed;
@@ -931,7 +950,9 @@ void TCPSlaveBase::setBlocking(bool b)
 
 void TCPSlaveBase::virtual_hook(int id, void* data)
 {
-    SlaveBase::virtual_hook(id, data);
+    if (id == SlaveBase::AppConnectionMade) {
+        d->sendSslMetaData();
+    } else {
+        SlaveBase::virtual_hook(id, data);
+    }
 }
-
-

@@ -295,12 +295,17 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         break;
     }
     case INF_META_DATA: {
-        MetaData meta_data;
-        stream >> meta_data;
-        d->m_incomingMetaData += meta_data;
-//         kDebug(7007) << "incoming metadata now" << d->m_incomingMetaData
-//                  << "\n newly arrived metadata is" << meta_data;
-        emit metaData(meta_data);
+        MetaData m;
+        stream >> m;
+        if (m.contains(QLatin1String("ssl_in_use"))) {
+            // this could be optimized using QMap::lowerBound().
+            for (MetaData::ConstIterator it = m.constBegin(); it != m.constEnd(); ++it) {
+                if (it.key().startsWith(QLatin1String("ssl_"))) {
+                    d->sslMetaData.insert(it.key(), it.value());
+                }
+            }
+        }
+        emit metaData(m);
         break;
     }
     case MSG_NET_REQUEST: {
@@ -447,7 +452,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         break;
     case KIO::SlaveBase::SSLMessageBox:
     {
-        KIO::MetaData meta = m_incomingMetaData;
+        KIO::MetaData meta = sslMetaData;
         KSslInfoDialog *kid = new KSslInfoDialog(0);
         //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
         QStringList sl = meta["ssl_peer_chain"].split('\x01', QString::SkipEmptyParts);

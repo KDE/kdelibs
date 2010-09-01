@@ -979,6 +979,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         disconnectSlave();
         d->isConnectedToApp = true;
         connectSlave(app_socket);
+        virtual_hook(AppConnectionMade, 0);
     } break;
     case CMD_SLAVE_HOLD: {
         KUrl url;

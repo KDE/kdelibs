@@ -30,7 +30,7 @@ class SlaveKeeper : public QObject
 public:
     SlaveKeeper();
     void returnSlave(KIO::Slave *slave);
-    // pick suitable slave for job and return it, return zero if no slave found.
+    // pick suitable slave for job and return it, return null if no slave found.
     // the slave is removed from the keeper.
     KIO::Slave *takeSlaveForJob(KIO::SimpleJob *job);
     // remove slave from keeper
@@ -146,7 +146,7 @@ public:
     KIO::Slave *createSlave(const QString &protocol, KIO::SimpleJob *job, const KUrl &url);
     bool removeSlave (KIO::Slave *slave);
     QList<KIO::Slave *> allSlaves() const;
-    ConnectedSlaveQueue m_connectedSlaveQueue;    
+    ConnectedSlaveQueue m_connectedSlaveQueue;
 
 private slots:
     // start max one (non-connected) job and return
