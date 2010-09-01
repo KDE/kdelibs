@@ -201,6 +201,7 @@ public:
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
     m_onlyLocalReferences = false;
+    m_forcePermitLocalImages = false;
     m_bDNSPrefetch = KHTMLPart::DNSPrefetchDisabled;
     m_bDNSPrefetchIsDefault = true;
     m_DNSPrefetchTimer = -1;
@@ -233,9 +234,10 @@ public:
             m_bPluginsOverride = part->d->m_bPluginsOverride;
             m_bDNSPrefetch = part->d->m_bDNSPrefetch;
             m_bDNSPrefetchIsDefault = part->d->m_bDNSPrefetchIsDefault;
+            m_onlyLocalReferences = part->d->m_onlyLocalReferences;
+            m_forcePermitLocalImages = part->d->m_forcePermitLocalImages;            
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
-            m_onlyLocalReferences = part->d->m_onlyLocalReferences;
             m_caretMode = part->d->m_caretMode;
             m_designMode = part->d->m_designMode;
             m_zoomFactor = part->d->m_zoomFactor;
@@ -359,6 +361,7 @@ public:
   bool m_bLoadEventEmitted;
   bool m_haveEncoding;
   bool m_onlyLocalReferences;
+  bool m_forcePermitLocalImages;  
   bool m_redirectLockHistory;
 
   KUrl m_workingURL;

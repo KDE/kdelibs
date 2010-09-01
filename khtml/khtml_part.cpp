@@ -2780,6 +2780,16 @@ void KHTMLPart::setOnlyLocalReferences(bool enable)
   d->m_onlyLocalReferences = enable;
 }
 
+bool KHTMLPart::forcePermitLocalImages() const
+{
+    return d->m_forcePermitLocalImages;
+}
+
+void KHTMLPart::setForcePermitLocalImages(bool enable)
+{
+    d->m_forcePermitLocalImages = enable;
+}
+
 void KHTMLPartPrivate::setFlagRecursively(
         bool KHTMLPartPrivate::*flag, bool value)
 {

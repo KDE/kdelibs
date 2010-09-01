@@ -509,6 +509,17 @@ public:
   void setOnlyLocalReferences( bool enable );
 
   /**
+   * Security option. If this is set to true, content loaded from external URLs
+   * will be permitted to access images on disk regardless of of the Kiosk policy.
+   * You should be careful in enabling this, as it may make it easier to fake
+   * any HTML-based chrome or to perform other such user-confusion attack.
+   * @p false by default.
+   *
+   * @since 4.6
+   */
+  void setForcePermitLocalImages( bool enable );
+
+  /**
    * Sets whether DNS Names found in loaded documents'anchors should be pre-fetched (pre-resolved).
    * Note that calling this function will permanently override the User settings about
    * DNS prefetch support.
@@ -537,6 +548,14 @@ public:
    * to be loaded ( default @p false ).  See setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
+
+  /**
+   * If true, local image files will be loaded even when forbidden by the
+   * Kiosk/KAuthorized policies ( default @p false ). See @ref setForcePermitLocalImages.
+   *
+   * @since 4.6
+   **/
+  bool forcePermitLocalImages() const;
 
   /** Returns whether caret mode is on/off.
    */

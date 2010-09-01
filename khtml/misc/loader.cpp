@@ -1045,12 +1045,30 @@ void DocLoader::printPreloadStats()
 #endif
 }
 
-#define DOCLOADER_SECCHECK(doRedirectCheck) \
-    KUrl fullURL (m_doc->completeURL( url.string() )); \
-    if ( !fullURL.isValid() || \
-         ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
-         ( doRedirectCheck && (m_doc && !KAuthorized::authorizeUrlAction("redirect", m_doc->URL(), fullURL)))) \
+static inline bool securityCheckUrl(const KUrl& fullURL, KHTMLPart* part, DOM::DocumentImpl* doc,
+                                    bool doRedirectCheck, bool isImg)
+{
+    if (!fullURL.isValid())
+        return false;
+    if (part && part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data")
+        return false;
+    if (doRedirectCheck && doc) {
+        if (isImg && part && part->forcePermitLocalImages() && fullURL.protocol() == "file")
+            return true;
+        else
+            return KAuthorized::authorizeUrlAction("redirect", doc->URL(), fullURL);
+    }
+
+    return true;
+}
+
+#define DOCLOADER_SECCHECK_IMP(doRedirectCheck,isImg) \
+    KUrl fullURL(m_doc->completeURL(url.string())); \
+    if (!securityCheckUrl(fullURL, m_part, m_doc, doRedirectCheck, isImg)) \
          return 0L;
+
+#define DOCLOADER_SECCHECK(doRedirectCheck)     DOCLOADER_SECCHECK_IMP(doRedirectCheck, false)
+#define DOCLOADER_SECCHECK_IMG(doRedirectCheck) DOCLOADER_SECCHECK_IMP(doRedirectCheck, true)
 
 bool DocLoader::willLoadMediaElement( const DOM::DOMString &url)
 {
@@ -1061,7 +1079,7 @@ bool DocLoader::willLoadMediaElement( const DOM::DOMString &url)
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
-    DOCLOADER_SECCHECK(true);
+    DOCLOADER_SECCHECK_IMG(true);
 
     CachedImage* i = Cache::requestObject<CachedImage, CachedObject::Image>( this, fullURL, 0);
 
