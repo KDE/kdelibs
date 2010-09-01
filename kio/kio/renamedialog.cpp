@@ -395,6 +395,7 @@ QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
 {
   QString dotSuffix, suggestedName;
   QString basename = oldName;
+  const QChar spacer(' ');
 
   int index = basename.indexOf( '.' );
   if ( index != -1 ) {
@@ -402,22 +403,22 @@ QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
     basename.truncate( index );
   }
 
-  int pos = basename.lastIndexOf( '_' );
+  int pos = basename.lastIndexOf( spacer );
   if(pos != -1 ){
     QString tmp = basename.mid( pos+1 );
     bool ok;
     int number = tmp.toInt( &ok );
     if ( !ok ) {// ok there is no number
-      suggestedName = basename + '1' + dotSuffix;
+      suggestedName = basename + spacer + '1' + dotSuffix;
     }
     else {
-     // yes there's already a number behind the _ so increment it by one
+     // yes there's already a number behind the spacer so increment it by one
       basename.replace( pos+1, tmp.length(), QString::number(number+1) );
       suggestedName = basename + dotSuffix;
     }
   }
-  else // no underscore yet
-    suggestedName = basename + "_1" + dotSuffix ;
+  else // no spacer yet
+    suggestedName = basename + spacer + "1" + dotSuffix ;
 
   // Check if suggested name already exists
   bool exists = false;
