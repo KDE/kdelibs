@@ -221,7 +221,8 @@ QStringList KMimeTypeRepository::findFromFileName(const QString &fileName, QStri
 KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accuracy, QByteArray& beginning)
 {
     Q_ASSERT(device->isOpen());
-    if (device->size() == 0) {
+    const qint64 deviceSize = device->size();
+    if (deviceSize == 0) {
         if (accuracy)
             *accuracy = 100;
         return findMimeTypeByName("application/x-zerosize");
@@ -238,7 +239,7 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
     {
         QReadLocker lock(&m_mutex);
         Q_FOREACH ( const KMimeMagicRule& rule, m_magicRules ) {
-            if (rule.match(device, beginning)) {
+            if (rule.match(device, deviceSize, beginning)) {
                 if (accuracy)
                     *accuracy = rule.priority();
                 return findMimeTypeByName(rule.mimetype());

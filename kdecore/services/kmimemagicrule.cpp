@@ -42,12 +42,12 @@
  *
  */
 
-static bool testMatches(QIODevice* device, QByteArray& availableData, const QList<KMimeMagicMatch>& matches, const QString& mimeType)
+static bool testMatches(QIODevice* device, qint64 deviceSize, QByteArray& availableData, const QList<KMimeMagicMatch>& matches, const QString& mimeType)
 {
     for ( QList<KMimeMagicMatch>::const_iterator it = matches.begin(), end = matches.end() ;
           it != end ; ++it ) {
         const KMimeMagicMatch& match = *it;
-        if (match.match(device, availableData, mimeType)) {
+        if (match.match(device, deviceSize, availableData, mimeType)) {
             // One of the hierarchies matched -> mimetype recognized.
             return true;
         }
@@ -99,16 +99,15 @@ static int indexOf(const QByteArray& that, const QByteArray &ba)
 }
 
 
-bool KMimeMagicRule::match(QIODevice* device, QByteArray& availableData) const
+bool KMimeMagicRule::match(QIODevice* device, const qint64 deviceSize, QByteArray& availableData) const
 {
-    return testMatches(device, availableData, m_matches, m_mimetype);
+    return testMatches(device, deviceSize, availableData, m_matches, m_mimetype);
 }
 
-bool KMimeMagicMatch::match(QIODevice* device, QByteArray& availableData, const QString& mimeType) const
+bool KMimeMagicMatch::match(QIODevice* device, const qint64 deviceSize, QByteArray& availableData, const QString& mimeType) const
 {
     // First, check that "this" matches, then we'll dive into subMatches if any.
 
-    const qint64 deviceSize = device->size();
     const qint64 mDataSize = m_data.size();
     if (m_rangeStart + mDataSize > deviceSize)
         return false; // file is too small
@@ -187,5 +186,5 @@ bool KMimeMagicMatch::match(QIODevice* device, QByteArray& availableData, const 
         return true;
 
     // Check that one of the submatches matches too
-    return testMatches(device, availableData, m_subMatches, mimeType);
+    return testMatches(device, deviceSize, availableData, m_subMatches, mimeType);
 }
