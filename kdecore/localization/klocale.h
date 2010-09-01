@@ -866,11 +866,16 @@ public:
                                     ///< keep the 12/24h format as specified by locale time
                                     ///< format, eg. "07.33.05" instead of "07.33.05 pm" for
                                     ///< time format "%I.%M.%S %p".
-        TimeDuration       = 0x6    ///< Read/format time string as duration. This will strip
+        TimeDuration       = 0x6,   ///< Read/format time string as duration. This will strip
                                     ///< the am/pm suffix and read/format times with an hour
                                     ///< value of 0-23 hours, eg. "19.33.05" instead of
                                     ///< "07.33.05 pm" for time format "%I.%M.%S %p".
                                     ///< This automatically implies @c TimeWithoutAmPm.
+        TimeFoldHours      = 0xE    ///< Read/format time string as duration. This will not
+                                    ///< not output the hours part of the duration but will
+                                    ///< add the hours (times sixty) to the number of minutes,
+                                    ///< eg. "70.23" instead of "01.10.23" for time format
+                                    ///< "%I.%M.%S %p".
     };
     Q_DECLARE_FLAGS(TimeFormatOptions, TimeFormatOption)
 

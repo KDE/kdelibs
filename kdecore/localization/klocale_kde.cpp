@@ -1875,6 +1875,24 @@ static void stripStringAndPreceedingSeparator(QString &inout, const QLatin1Strin
     inout.remove(remPos, endPos - remPos);
 }
 
+// remove the first occurrence of the 2-character string
+// strip2char from inout and if found, also remove one
+// succeeding punctuation character and arbitrary number of spaces.
+static void stripStringAndSucceedingSeparator(QString &inout, const QLatin1String &strip2char)
+{
+    int remPos = inout.indexOf(strip2char);
+    if (remPos == -1) {
+        return;
+    }
+    int curPos = remPos + 2;
+    while (curPos < inout.size() &&
+           (inout.at(curPos).isSpace() ||
+            (inout.at(curPos).isPunct() && inout.at(curPos) != '%'))) {
+        curPos++;
+    }
+    inout.remove(remPos, curPos - remPos);
+}
+
 // remove the first occurrence of "%p" from the inout.
 static void stripAmPmFormat(QString &inout)
 {
@@ -1917,12 +1935,21 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
     bool excludeSecs = ((options & KLocale::TimeWithoutSeconds) == KLocale::TimeWithoutSeconds);
     bool isDuration = ((options & KLocale::TimeDuration) == KLocale::TimeDuration);
     bool noAmPm = ((options & KLocale::TimeWithoutAmPm) == KLocale::TimeWithoutAmPm);
+    bool foldHours = ((options & KLocale::TimeFoldHours) == KLocale::TimeFoldHours);
     bool strict = ((processing & KLocale::ProcessStrict) == KLocale::ProcessStrict);
 
     // if seconds aren't needed, strip them from the timeFormat
     if (excludeSecs) {
         stripStringAndPreceedingSeparator(format, QLatin1String("%S"));
         second = 0; // seconds are always 0
+    }
+    
+    // if hours are folded, strip them from the timeFormat
+    if (foldHours) {
+        stripStringAndSucceedingSeparator(format, QLatin1String("%H"));
+        stripStringAndSucceedingSeparator(format, QLatin1String("%k"));
+        stripStringAndSucceedingSeparator(format, QLatin1String("%I"));
+        stripStringAndSucceedingSeparator(format, QLatin1String("%l"));
     }
 
     // if am/pm isn't needed, strip it from the timeFormat
@@ -2011,8 +2038,19 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
 
         case 'M':
             minute = readInt(str, strpos);
-            if (minute < 0 || minute > 59) {
+            // minutes can be bigger than 59 if hours are folded
+            if (minute < 0 || (minute > 59 && !foldHours)) {
                 error = true;
+            } else if (foldHours) {
+                // if hours are folded, make sure minutes doesn't get bigger
+                // than 59.
+                hour = minute / 60;
+                minute = minute % 60;
+                // check if hour is <=23. everything else will not work
+                // using QTime.
+                if (hour > 23) {
+                    error = true;
+                }
             }
             break;
 
@@ -2066,10 +2104,19 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
     bool excludeSecs = ((options & KLocale::TimeWithoutSeconds) == KLocale::TimeWithoutSeconds);
     bool isDuration = ((options & KLocale::TimeDuration) == KLocale::TimeDuration);
     bool noAmPm = ((options & KLocale::TimeWithoutAmPm) == KLocale::TimeWithoutAmPm);
+    bool foldHours = ((options & KLocale::TimeFoldHours) == KLocale::TimeFoldHours);
 
     // if seconds aren't needed, strip them from the timeFormat
     if (excludeSecs) {
         stripStringAndPreceedingSeparator(rst, QLatin1String("%S"));
+    }
+    
+    // if hours should be folded, strip all hour symbols from the timeFormat
+    if (foldHours) {
+        stripStringAndSucceedingSeparator(rst, QLatin1String("%H"));
+        stripStringAndSucceedingSeparator(rst, QLatin1String("%k"));
+        stripStringAndSucceedingSeparator(rst, QLatin1String("%I"));
+        stripStringAndSucceedingSeparator(rst, QLatin1String("%l"));
     }
 
     // if am/pm isn't needed, strip it from the timeFormat
@@ -2077,9 +2124,9 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
         stripAmPmFormat(rst);
     }
 
-    // only "pm/am" here can grow, the rest shrinks, but
+    // only "pm/am" and %M here can grow, the rest shrinks, but
     // I'm rather safe than sorry
-    QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
+    QChar *buffer = new QChar[rst.length() * 3 / 2 + 32];
 
     int index = 0;
     bool escape = false;
@@ -2108,7 +2155,11 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
                 }
                 break;
             case 'M':
-                put_it_in(buffer, index, time.minute());
+                if (foldHours) {
+                    put_it_in(buffer, index, QString("%1").arg(time.hour() * 60 + time.minute()));
+                } else {
+                    put_it_in(buffer, index, time.minute());
+                }
                 break;
             case 'S':
                 put_it_in(buffer, index, time.second());

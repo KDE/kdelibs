@@ -63,6 +63,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds] = "03:59 pm";
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "03:59";
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15:59";
+    m_timeFormats["ampm"].exp[KLocale::TimeFoldHours] = "959:59";
+    m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["24h"].timeFormat = "%H:%M:%S";
     m_timeFormats["24h"].exp[KLocale::TimeDefault] = "15:59:59";
@@ -71,6 +73,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["24h"].exp[KLocale::TimeWithoutSeconds] = "15:59";
     m_timeFormats["24h"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "15:59";
     m_timeFormats["24h"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15:59";
+    m_timeFormats["24h"].exp[KLocale::TimeFoldHours] = "959:59";
+    m_timeFormats["24h"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampm2"].timeFormat = "%l:%M:%S %p";
     m_timeFormats["ampm2"].exp[KLocale::TimeDefault] = "3:59:59 pm";
@@ -79,6 +83,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds] = "3:59 pm";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3:59";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15:59";
+    m_timeFormats["ampm2"].exp[KLocale::TimeFoldHours] = "959:59";
+    m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ag"].timeFormat = "%I.%M.%S.%p";
     m_timeFormats["ag"].exp[KLocale::TimeDefault] = "03.59.59.pm";
@@ -87,6 +93,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds] = "03.59.pm";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "03.59";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15.59";
+    m_timeFormats["ag"].exp[KLocale::TimeFoldHours] = "959.59";
+    m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampre"].timeFormat = "%p %l-%M-%S";
     m_timeFormats["ampre"].exp[KLocale::TimeDefault] = "pm 3-59-59";
@@ -95,6 +103,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds] = "pm 3-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15-59";
+    m_timeFormats["ampre"].exp[KLocale::TimeFoldHours] = "959-59";
+    m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampresep"].timeFormat = "%p-%l-%M-%S";
     m_timeFormats["ampresep"].exp[KLocale::TimeDefault] = "pm-3-59-59";
@@ -103,6 +113,8 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds] = "pm-3-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15-59";
+    m_timeFormats["ampresep"].exp[KLocale::TimeFoldHours] = "959-59";
+    m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 }
 
 void KLocaleTimeFormatTest::formatTimeTest()
@@ -133,6 +145,8 @@ void KLocaleTimeFormatTest::readTimeTest()
     timeMap[KLocale::TimeDuration | KLocale::TimeWithoutSeconds] = QTime(15, 59, 0);
     timeMap[KLocale::TimeWithoutAmPm] = QTime(3, 59, 59);
     timeMap[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = QTime(3, 59, 0);
+    timeMap[KLocale::TimeFoldHours] = QTime(15, 59, 59);
+    timeMap[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = QTime(15, 59);
 
     QMap<QString, TimeFormatTestValue>::const_iterator it;
     QMap<QString, TimeFormatTestValue>::const_iterator end(m_timeFormats.constEnd());
@@ -191,6 +205,9 @@ void KLocaleTimeFormatTest::formatAndReadAllCountriesTest()
         QVERIFY(ok);
         QCOMPARE(locale.readLocaleTime(locale.formatLocaleTime(timeS, KLocale::TimeWithoutSeconds | KLocale::TimeDuration), &ok, KLocale::TimeWithoutSeconds | KLocale::TimeDuration), timeNs);
         QVERIFY(ok);
+        QCOMPARE(locale.readLocaleTime(locale.formatLocaleTime(timeS, KLocale::TimeFoldHours), &ok, KLocale::TimeFoldHours), timeS);
+        QVERIFY(ok);
+        QCOMPARE(locale.readLocaleTime(locale.formatLocaleTime(timeS, KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours), &ok, KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours), timeNs);
     }
 }
 
