@@ -321,7 +321,7 @@ public:
 
 Q_SIGNALS:
     /**
-     * This signal is emitted when an item is selected; @param action 
+     * This signal is emitted when an item is selected; @param action
      * indicates the item selected.
      */
     void triggered( QAction* action );
@@ -359,6 +359,8 @@ protected:
      * Reimplemented from @see QWidgetAction.
      */
     virtual void deleteWidget(QWidget *widget);
+
+    virtual bool event(QEvent *event);
 
     virtual bool eventFilter (QObject *watched, QEvent *event);
 

@@ -175,17 +175,9 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
         d->klineEdit->rotateText( type );
 }
 
+// Not needed anymore
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
-    // hack for the fact that QWidgetAction does not sync all its created widgets
-    // to its enabled state, just QToolButtons (Qt 4.4.3)
-    if( ev->type() == QEvent::ActionChanged )
-    {
-        KSelectAction* selectAction = qobject_cast<KSelectAction*>( o );
-        if ( selectAction )
-            setEnabled( selectAction->isEnabled() );
-    }
-
     return QComboBox::eventFilter( o, ev );
 }
 

@@ -242,7 +242,7 @@ void KSelectAction::addAction(QAction* action)
   //kDebug (129) << "KSelectAction::addAction(" << action << ")";
 
   action->setActionGroup(selectableActionGroup());
-  
+
   // Re-Enable when an action is added
   setEnabled(true);
 
@@ -311,7 +311,7 @@ QAction* KSelectAction::removeAction(QAction* action)
 
   menu()->removeAction(action);
 
-  
+
   return action;
 }
 
@@ -530,6 +530,9 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
     switch (mode) {
     case MenuMode: {
       QToolButton* button = new QToolButton(toolBar);
+      button->setToolTip(toolTip());
+      button->setWhatsThis(whatsThis());
+      button->setStatusTip(statusTip());
       button->setAutoRaise(true);
       button->setFocusPolicy(Qt::NoFocus);
       button->setIconSize(toolBar->iconSize());
@@ -550,11 +553,8 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
     }
 
     case ComboBoxMode: {
-        KComboBox* comboBox = new KComboBox(parent);
+      KComboBox* comboBox = new KComboBox(parent);
       comboBox->installEventFilter (this);
-      // hack for the fact that QWidgetAction does not sync all its created widgets
-      // to its enabled state, just QToolButtons (Qt 4.4.3)
-      installEventFilter( comboBox );
 
       if ( d->m_maxComboViewCount != -1 )
         comboBox->setMaxVisibleItems( d->m_maxComboViewCount );
@@ -563,6 +563,9 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
         comboBox->setMaximumWidth( d->m_comboWidth );
 
       comboBox->setEditable(isEditable());
+      comboBox->setToolTip(toolTip());
+      comboBox->setWhatsThis(whatsThis());
+      comboBox->setStatusTip(statusTip());
 
       foreach (QAction* action, selectableActionGroup()->actions())
         comboBox->addAction(action);
@@ -589,6 +592,24 @@ void KSelectAction::deleteWidget(QWidget *widget)
     else if (KComboBox *comboBox = qobject_cast<KComboBox *>(widget))
         d->m_comboBoxes.removeAll(comboBox);
     KAction::deleteWidget(widget);
+}
+
+bool KSelectAction::event(QEvent *event)
+{
+    Q_D(KSelectAction);
+    if (event->type() == QEvent::ActionChanged) {
+        Q_FOREACH(KComboBox* comboBox, d->m_comboBoxes) {
+            comboBox->setToolTip(toolTip());
+            comboBox->setWhatsThis(whatsThis());
+            comboBox->setStatusTip(statusTip());
+        }
+        Q_FOREACH(QToolButton* toolButton, d->m_buttons) {
+            toolButton->setToolTip(toolTip());
+            toolButton->setWhatsThis(whatsThis());
+            toolButton->setStatusTip(statusTip());
+        }
+    }
+    return KAction::event(event);
 }
 
 // KSelectAction::eventFilter() is called before action->setChecked()
@@ -630,6 +651,7 @@ static int TrueCurrentItem (KSelectAction *sa)
 
 // A plain "QVariant (action)" results in a bool being stored.  So all
 // QAction pointers become stored as "true".  This hacks around it.
+// TODO this is bogus, just use Q_DECLARE_METATYPE and qVariantFromValue(action)
 static QVariant QVariantFromQAction (QAction *action)
 {
     // "(void *)" or "long" would be smaller than "qlonglong"
