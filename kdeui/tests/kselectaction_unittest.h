@@ -28,6 +28,7 @@ class KSelectAction_UnitTest : public QObject
 
 private Q_SLOTS:
 
+    // The next 8 are from bug 205293.
     void testSetToolTipBeforeRequestingComboBoxWidget();
     void testSetToolTipAfterRequestingComboBoxWidget();
     void testSetToolTipBeforeRequestingToolButtonWidget();
@@ -38,8 +39,17 @@ private Q_SLOTS:
     void testSetWhatsThisBeforeRequestingToolButtonWidget();
     void testSetWhatsThisAfterRequestingToolButtonWidget();
 
+    // Test for the eventFilter code.
     void testChildActionStateChangeComboMode();
 
+    // The next 6 are from bug 203114.
+    void testRequestWidgetComboBoxModeWidgetParent();
+    void testRequestWidgetComboBoxModeWidgetParentSeveralActions();
+
+    void testRequestWidgetMenuModeWidgetParent();
+    void testRequestWidgetMenuModeWidgetParentSeveralActions();
+    void testRequestWidgetMenuModeWidgetParentAddActions();
+    void testRequestWidgetMenuModeWidgetParentRemoveActions();
 };
 
 #endif

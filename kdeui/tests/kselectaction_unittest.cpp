@@ -196,3 +196,135 @@ void KSelectAction_UnitTest::testChildActionStateChangeComboMode()
     selectAction.removeAction(childAction);
     QCOMPARE(comboBox->count(), 0);
 }
+
+void KSelectAction_UnitTest::testRequestWidgetComboBoxModeWidgetParent()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::ComboBoxMode);
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QVERIFY(comboBox);
+    QVERIFY(!comboBox->isEnabled());
+}
+
+void KSelectAction_UnitTest::testRequestWidgetComboBoxModeWidgetParentSeveralActions()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::ComboBoxMode);
+
+    selectAction.addAction(new QAction("action1", &selectAction));
+    selectAction.addAction(new QAction("action2", &selectAction));
+    selectAction.addAction(new QAction("action3", &selectAction));
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QVERIFY(comboBox);
+    QVERIFY(comboBox->isEnabled());
+}
+
+void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParent()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::MenuMode);
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+    QToolButton* toolButton = qobject_cast<QToolButton*>(widget);
+    QVERIFY(toolButton);
+    QVERIFY(!toolButton->isEnabled());
+    QVERIFY(toolButton->autoRaise());
+    QCOMPARE((int)toolButton->focusPolicy(), (int)Qt::NoFocus);
+    QCOMPARE(toolButton->defaultAction(), &selectAction);
+    QCOMPARE(toolButton->actions().count(), 1);
+    QCOMPARE(toolButton->actions().at(0)->text(), QString("selectAction"));
+}
+
+void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParentSeveralActions()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::MenuMode);
+
+    selectAction.addAction(new QAction("action1", &selectAction));
+    selectAction.addAction(new QAction("action2", &selectAction));
+    selectAction.addAction(new QAction("action3", &selectAction));
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+    QToolButton* toolButton = qobject_cast<QToolButton*>(widget);
+    QVERIFY(toolButton);
+    QVERIFY(toolButton->isEnabled());
+    QVERIFY(toolButton->autoRaise());
+    QCOMPARE((int)toolButton->focusPolicy(), (int)Qt::NoFocus);
+    QCOMPARE(toolButton->defaultAction(), &selectAction);
+    QCOMPARE(toolButton->actions().count(), 4);
+    QCOMPARE(toolButton->actions().at(0)->text(), QString("selectAction"));
+    QCOMPARE(toolButton->actions().at(1)->text(), QString("action1"));
+    QCOMPARE(toolButton->actions().at(2)->text(), QString("action2"));
+    QCOMPARE(toolButton->actions().at(3)->text(), QString("action3"));
+}
+
+void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParentAddActions()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::MenuMode);
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+    QVERIFY(!widget->isEnabled());
+
+    selectAction.addAction(new QAction("action1", &selectAction));
+    selectAction.addAction(new QAction("action2", &selectAction));
+    selectAction.addAction(new QAction("action3", &selectAction));
+
+    QVERIFY(widget->isEnabled());
+    QCOMPARE(widget->actions().count(), 4);
+    QCOMPARE(widget->actions().at(0)->text(), QString("selectAction"));
+    QCOMPARE(widget->actions().at(1)->text(), QString("action1"));
+    QCOMPARE(widget->actions().at(2)->text(), QString("action2"));
+    QCOMPARE(widget->actions().at(3)->text(), QString("action3"));
+}
+
+void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParentRemoveActions()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::MenuMode);
+
+    QToolBar toolBar;
+    toolBar.addAction(&selectAction);
+    QWidget* widget = toolBar.widgetForAction(&selectAction);
+
+    QVERIFY(widget);
+
+    QAction* action1 = new QAction("action1", &selectAction);
+    selectAction.addAction(action1);
+    QAction* action2 = new QAction("action2", &selectAction);
+    selectAction.addAction(action2);
+    QAction* action3 = new QAction("action3", &selectAction);
+    selectAction.addAction(action3);
+
+    delete selectAction.removeAction(action1);
+    delete selectAction.removeAction(action2);
+    delete selectAction.removeAction(action3);
+
+    QVERIFY(!widget->isEnabled());
+    QCOMPARE(widget->actions().count(), 1);
+    QCOMPARE(widget->actions().at(0)->text(), QString("selectAction"));
+}
