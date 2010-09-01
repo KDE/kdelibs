@@ -32,11 +32,13 @@ private Q_SLOTS:
     void testSetToolTipAfterRequestingComboBoxWidget();
     void testSetToolTipBeforeRequestingToolButtonWidget();
     void testSetToolTipAfterRequestingToolButtonWidget();
-    
+
     void testSetWhatsThisBeforeRequestingComboBoxWidget();
     void testSetWhatsThisAfterRequestingComboBoxWidget();
     void testSetWhatsThisBeforeRequestingToolButtonWidget();
     void testSetWhatsThisAfterRequestingToolButtonWidget();
+
+    void testChildActionStateChangeComboMode();
 
 };
 

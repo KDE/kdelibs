@@ -18,6 +18,7 @@
 */
 
 #include "kselectaction_unittest.h"
+#include <QStandardItemModel>
 #include "kselectaction_unittest.moc"
 #include "qtest_kde.h"
 #include <kselectaction.h>
@@ -172,4 +173,26 @@ void KSelectAction_UnitTest::testSetWhatsThisAfterRequestingToolButtonWidget()
     QToolButton* toolButton = qobject_cast<QToolButton*>(widget);
     QVERIFY(toolButton);
     QCOMPARE(toolButton->whatsThis(), QString("Test"));
+}
+
+void KSelectAction_UnitTest::testChildActionStateChangeComboMode()
+{
+    KSelectAction selectAction("selectAction", 0);
+    selectAction.setToolBarMode(KSelectAction::ComboBoxMode);
+    QWidget parent;
+    QWidget* widget = selectAction.requestWidget(&parent);
+    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QVERIFY(comboBox);
+    const QString itemText = "foo";
+    KAction* childAction = selectAction.addAction(itemText);
+    QCOMPARE(comboBox->itemText(0), itemText);
+    childAction->setEnabled(false);
+    // There's no API for item-is-enabled, need to go via the internal model like kselectaction does...
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(comboBox->model());
+    QVERIFY(model);
+    QVERIFY(!model->item(0)->isEnabled());
+
+    // Now remove the action
+    selectAction.removeAction(childAction);
+    QCOMPARE(comboBox->count(), 0);
 }
