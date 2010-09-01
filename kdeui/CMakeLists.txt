@@ -504,6 +504,7 @@ install( FILES
  itemviews/klistwidget.h
  itemviews/kidentityproxymodel.h
  itemviews/kviewstatesaver.h
+ itemviews/kviewstatemaintainer.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
  itemviews/kfilterproxysearchline.h
