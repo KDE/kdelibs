@@ -335,7 +335,8 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName(const QString &fileName
 KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, QByteArray& beginning)
 {
     Q_ASSERT(device->isOpen());
-    if (device->size() == 0) {
+    const qint64 deviceSize = device->size();
+    if (deviceSize == 0) {
         if (accuracy)
             *accuracy = 100;
         return findMimeTypeByName("application/x-zerosize");
@@ -351,7 +352,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriorit
         // LowPriorityRules: select rules with priority < 80
         if ( ( whichPriority == AllRules ) ||
              ( (rule.priority() >= 80) == (whichPriority == HighPriorityRules) ) ) {
-            if (rule.match(device, beginning)) {
+            if (rule.match(device, deviceSize, beginning)) {
                 if (accuracy)
                     *accuracy = rule.priority();
                 return findMimeTypeByName(rule.mimetype());
