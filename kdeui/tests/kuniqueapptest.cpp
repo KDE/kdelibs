@@ -69,6 +69,10 @@ int TestApp::newInstance()
         kDebug() << "argument " << i << " : " << args->arg(i);
     }
 
+    if (m_callCount == 2) { // OK, all done, quit
+        quit();
+    }
+
     return 0;
 }
 
@@ -95,7 +99,6 @@ int main(int argc, char *argv[])
     //sleep(200);
 
     QTimer::singleShot( 400, &a, SLOT(executeNewChild()) );
-    QTimer::singleShot( 800, &a, SLOT(quit()) );
 
     printf("Running.\n");
     kapp->exec();
