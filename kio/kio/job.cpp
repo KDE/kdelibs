@@ -28,8 +28,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
-#include <assert.h>
-
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -965,7 +963,7 @@ StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int detai
 
 SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expireDate)
 {
-    assert( (url.protocol() == "http") || (url.protocol() == "https") );
+    Q_ASSERT(url.protocol() == "http" || url.protocol() == "https");
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
     SimpleJob * job = SimpleJobPrivate::newJob(url, CMD_SPECIAL, packedArgs);
@@ -1240,7 +1238,7 @@ bool TransferJob::isErrorPage() const
 void TransferJobPrivate::start(Slave *slave)
 {
     Q_Q(TransferJob);
-    assert(slave);
+    Q_ASSERT(slave);
     JobPrivate::emitTransferring(q, m_url);
     q->connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
@@ -1315,8 +1313,8 @@ void TransferJobPrivate::slotCanResume( KIO::filesize_t offset )
 void TransferJob::slotResult( KJob *job)
 {
     Q_D(TransferJob);
-   // This can only be our suburl.
-   assert(job == d->m_subJob);
+    // This can only be our suburl.
+    Q_ASSERT(job == d->m_subJob);
 
    SimpleJob::slotResult( job );
 
@@ -2177,7 +2175,7 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 void FileCopyJobPrivate::slotData( KIO::Job * , const QByteArray &data)
 {
    //kDebug(7007) << "data size:" << data.size();
-   assert(m_putJob);
+   Q_ASSERT(m_putJob);
    if (!m_putJob) return; // Don't crash
    m_getJob->d_func()->internalSuspend();
    m_putJob->d_func()->internalResume(); // Drink the beer
