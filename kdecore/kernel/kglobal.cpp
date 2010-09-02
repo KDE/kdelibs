@@ -149,13 +149,9 @@ KLocale *KGlobal::locale()
 {
     PRIVATE_DATA;
     if (d->locale == 0) {
-        if (!d->mainComponent.isValid()) {
-            return 0;
-        }
-
-        d->locale = new KLocale(d->mainComponent.catalogName());
+        d->locale = new KLocale(mainComponent().catalogName());
         QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
-        d->mainComponent.aboutData()->translateInternalProgramName();
+        mainComponent().aboutData()->translateInternalProgramName();
         QCoreApplication* coreApp = QCoreApplication::instance();
         if (coreApp) // testcase: kwrite --help: no qcore app
             QCoreApplication::installTranslator(new KDETranslator(coreApp));
