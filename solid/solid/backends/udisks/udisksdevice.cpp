@@ -145,13 +145,13 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::GenericInterface:
             return true;
         case Solid::DeviceInterface::Block:
-            return m_device->property("DeviceBlockSize").toULongLong() > 0;
+            return property("DeviceBlockSize").toULongLong() > 0;
         case Solid::DeviceInterface::StorageVolume:
-            return m_device->property("DeviceIsPartition").toBool()
-                    || (m_device->property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
+            return property("DeviceIsPartition").toBool()
+                    || (property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
         case Solid::DeviceInterface::StorageAccess:
             return (property("DeviceIsPartition").toBool() && property("PartitionNumber").toInt() > 0)
-                    || (m_device->property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
+                    || (property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
         case Solid::DeviceInterface::StorageDrive:
             return !m_udi.endsWith(":media") && property("DeviceIsDrive").toBool();
         case Solid::DeviceInterface::OpticalDrive:
@@ -159,7 +159,7 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
                     && property( "DeviceIsDrive" ).toBool()
                     && !property( "DriveMediaCompatibility" ).toStringList().filter( "optical_" ).isEmpty();
         case Solid::DeviceInterface::OpticalDisc:
-            return m_udi.endsWith(":media") && m_device->property("DeviceIsOpticalDisc").toBool();
+            return m_udi.endsWith(":media") && property("DeviceIsOpticalDisc").toBool();
         default:
             return false;
     }
