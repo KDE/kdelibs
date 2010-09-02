@@ -2432,11 +2432,11 @@ bool KateDocument::closeUrl()
     QMutexLocker l(smartMutex());
     history()->doEdit( new KateEditInfo(Kate::CloseFileEdit, documentRange(), QStringList(), KTextEditor::Range(0,0,0,0), QStringList()) );
 
-    // clear the buffer
-    m_buffer->clear();
-
     // remove all marks
     clearMarks ();
+
+    // clear the buffer
+    m_buffer->clear();
 
     // clear undo/redo history
     m_undoManager->clearUndo();
