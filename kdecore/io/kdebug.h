@@ -242,7 +242,11 @@ class KDebug                    //krazy= ?
 public:
     explicit inline KDebug(QtMsgType type, const char *f = 0, int l = -1, const char *info = 0)
         : file(f), funcinfo(info), line(l), level(type)
-        { }
+        {
+#ifdef CMAKE_TOPLEVEL_DIR_LENGTH // set by FindKDE4Internal.cmake
+            file = file + CMAKE_TOPLEVEL_DIR_LENGTH + 1;
+#endif
+        }
 
     inline QDebug operator()(int area = KDE_DEFAULT_DEBUG_AREA)
         { return kDebugStream(level, area, file, line, funcinfo); }

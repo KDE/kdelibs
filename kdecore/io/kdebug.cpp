@@ -509,12 +509,13 @@ struct KDebugPrivate
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, const QByteArray &areaName, const char *, int, const char *funcinfo, QtMsgType type, bool colored)
+    QDebug printHeader(QDebug s, const QByteArray &areaName, const char * file, int line, const char *funcinfo, QtMsgType type, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
         static bool printProcessInfo = (qgetenv("KDE_DEBUG_NOPROCESSINFO").isEmpty());
         static bool printAreaName = (qgetenv("KDE_DEBUG_NOAREANAME").isEmpty());
         static bool printMethodName = (qgetenv("KDE_DEBUG_NOMETHODNAME").isEmpty());
+        static bool printFileLine = (!qgetenv("KDE_DEBUG_FILELINE").isEmpty());
 
         static int printTimeStamp = qgetenv("KDE_DEBUG_TIMESTAMP").toInt();
         QByteArray programName;
@@ -545,6 +546,10 @@ struct KDebugPrivate
             if (printProcessInfo)
                 s << "/";
             s << areaName.constData();
+        }
+
+        if (printFileLine) {
+            s << ' ' << file << ':' << line << ' ';
         }
 
         if (funcinfo && printMethodName) {
