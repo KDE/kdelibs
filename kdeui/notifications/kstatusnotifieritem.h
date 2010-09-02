@@ -41,18 +41,33 @@ class KStatusNotifierItemPrivate;
  * This class implements the Status notifier Item Dbus specification.
  * It provides an icon similar to the classical systemtray icons,
  * with some key differences:
- *  the actual representation is done by the systemtray 
- *  (or the app behaving like it) itself, not by this app.
  *
- *  there is communication between the systemtray and the icon owner,
- *  so the system tray can know if the application is in a normal
- *  or in a requesting attention state
+ * - the actual representation is done by the systemtray (or the app behaving
+ *   like it) itself, not by this app.  Since 4.5 this also includes the menu,
+ *   which means you cannot use embed widgets in the menu.
  *
- *  icons are divided in categories, so the systemtray can represent
- *  in a different way the icons from normal applications and for
- *  instance the ones about hardware status.
- *  @author Marco Martin <notmart@gmail.com>
- *  @since 4.4
+ * - there is communication between the systemtray and the icon owner, so the
+ *   system tray can know if the application is in a normal or in a requesting
+ *   attention state.
+ *
+ * - icons are divided in categories, so the systemtray can represent in a
+ *   different way the icons from normal applications and for instance the ones
+ *   about hardware status.
+ *
+ * Whenever possible you should prefer passing icon by name rather than by
+ * pixmap because:
+ *  
+ * - it is much lighter on Dbus (no need to pass all image pixels).
+ *
+ * - it makes it possible for the systemtray to load an icon of the appropriate
+ *   size or to replace your icon with a systemtray specific icon which matches
+ *   with the desktop theme.
+ *
+ * - some implementations of the system tray do not support passing icons by
+ *   pixmap and will show a blank icon instead.
+ *
+ * @author Marco Martin <notmart@gmail.com>
+ * @since 4.4
  */
 class KDEUI_EXPORT KStatusNotifierItem : public QObject
 {
@@ -355,6 +370,11 @@ public:
 
     /**
      * Sets the main widget associated with this StatusNotifierItem
+     *
+     * If you pass contextMenu() as a parent then the menu will be displayed
+     * when the user activate the icon. In this case the activate() method will
+     * not be called and the activateRequested() signal will not be emitted
+     *
      * @param parent the new main widget: must be a top level window,
      *               if it's not parent->window() will be used instead.
      */
