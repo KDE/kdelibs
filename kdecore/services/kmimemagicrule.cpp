@@ -99,12 +99,12 @@ static int indexOf(const QByteArray& that, const QByteArray &ba)
 }
 
 
-bool KMimeMagicRule::match(QIODevice* device, const qint64 deviceSize, QByteArray& availableData) const
+bool KMimeMagicRule::match(QIODevice* device, qint64 deviceSize, QByteArray& availableData) const
 {
     return testMatches(device, deviceSize, availableData, m_matches, m_mimetype);
 }
 
-bool KMimeMagicMatch::match(QIODevice* device, const qint64 deviceSize, QByteArray& availableData, const QString& mimeType) const
+bool KMimeMagicMatch::match(QIODevice* device, qint64 deviceSize, QByteArray& availableData, const QString& mimeType) const
 {
     // First, check that "this" matches, then we'll dive into subMatches if any.
 
