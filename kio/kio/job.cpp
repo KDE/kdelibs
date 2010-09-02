@@ -416,6 +416,11 @@ void SimpleJobPrivate::start(Slave *slave)
 {
     Q_Q(SimpleJob);
     m_slave = slave;
+
+    // Slave::setJob can send us SSL metadata if there is a persistent connection
+    q->connect( slave, SIGNAL(metaData(KIO::MetaData)),
+                SLOT(slotMetaData(KIO::MetaData)) );
+
     slave->setJob(q);
 
     q->connect( slave, SIGNAL(error(int,QString)),
@@ -444,8 +449,6 @@ void SimpleJobPrivate::start(Slave *slave)
         q->connect( slave, SIGNAL(speed(ulong)),
                     SLOT(slotSpeed(ulong)) );
     }
-    q->connect( slave, SIGNAL(metaData(KIO::MetaData)),
-                SLOT(slotMetaData(KIO::MetaData)) );
 
     if (ui() && ui()->window())
     {
@@ -588,7 +591,6 @@ void SimpleJobPrivate::restartAfterRedirection(KUrl *redirectionUrl)
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
 {
     Q_D(SimpleJob);
-
     QMapIterator<QString,QString> it (_metaData);
     while (it.hasNext()) {
         it.next();
@@ -998,9 +1000,10 @@ void TransferJob::slotData( const QByteArray &_data)
     }
     // shut up the warning, HACK: downside is that it changes the meaning of the variable
     d->m_isMimetypeEmitted = true;
-
-    if(d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error())
-      emit data( this, _data);
+    
+    if (d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error()) {
+        emit data(this, _data);
+    }
 }
 
 void KIO::TransferJob::setTotalSize(KIO::filesize_t bytes)
@@ -1044,7 +1047,7 @@ void TransferJob::slotFinished()
 {
     Q_D(TransferJob);
 
-    //kDebug(7007) << this << "," << m_url;
+    kDebug(7007) << d->m_url;
     if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid()) {
 
         //kDebug(7007) << "Redirection to" << m_redirectionURL;

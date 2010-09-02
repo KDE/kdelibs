@@ -44,8 +44,8 @@ public:
     Connection *connection;
     QTimer speed_timer;
 
-    // We keep a copy; Job does too but we need it here for the SSL code.
-    MetaData m_incomingMetaData;
+    // We need some metadata here for our SSL code in messageBox() and for sslMetaData().
+    MetaData sslMetaData;
 
     KIO::filesize_t sizes[max_nums];
     long times[max_nums];

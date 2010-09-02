@@ -276,6 +276,9 @@ int Slave::slave_pid()
 void Slave::setJob(KIO::SimpleJob *job)
 {
     Q_D(Slave);
+    if (!d->sslMetaData.isEmpty()) {
+        emit metaData(d->sslMetaData);
+    }
     d->m_job = job;
 }
 
@@ -379,6 +382,7 @@ void Slave::setHost( const QString &host, quint16 port,
     d->m_port = port;
     d->m_user = user;
     d->m_passwd = passwd;
+    d->sslMetaData.clear();
 
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
@@ -389,6 +393,7 @@ void Slave::setHost( const QString &host, quint16 port,
 void Slave::resetHost()
 {
     Q_D(Slave);
+    d->sslMetaData.clear();
     d->m_host = "<reset>";
 }
 
