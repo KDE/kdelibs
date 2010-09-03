@@ -36,6 +36,9 @@ int main(int argc, char **argv)
     const QString ok = i18n("OK");
     Q_UNUSED(ok);
 
+    // Test that KDebug does not pollute us
+    kDebug() << "This should not appear";
+
     return 0;
 }
 
