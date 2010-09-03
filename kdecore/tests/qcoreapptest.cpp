@@ -23,6 +23,7 @@
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kdebug.h>
 
 int main(int argc, char **argv)
 {
@@ -34,6 +35,9 @@ int main(int argc, char **argv)
     // Test that KLocale works
     const QString ok = i18n("OK");
     Q_UNUSED(ok);
+
+    // Test that KDebug does not pollute us
+    kDebug() << "This should not appear";
 
     return 0;
 }
