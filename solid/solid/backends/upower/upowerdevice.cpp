@@ -75,7 +75,7 @@ QObject* UPowerDevice::createDeviceInterface(const Solid::DeviceInterface::Type&
 
 bool UPowerDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    const uint uptype = m_device.property("Type").toUInt();
+    const uint uptype = property("Type").toUInt();
     switch (type)
     {
         case Solid::DeviceInterface::GenericInterface:
@@ -106,7 +106,7 @@ QString UPowerDevice::description() const
 
 QString UPowerDevice::batteryTechnology() const
 {
-    const uint tech = m_device.property("Technology").toUInt();
+    const uint tech = property("Technology").toUInt();
     switch (tech)
     {
     case 1:
