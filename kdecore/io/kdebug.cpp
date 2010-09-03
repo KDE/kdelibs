@@ -624,6 +624,7 @@ struct KDebugPrivate
         case SyslogOutput:
             s = setupSyslogWriter(type);
             break;
+        case Unknown: // don't want kdelibs debug output in Qt-only programs with no componentdata (-> no kdebugrc)
         case NoOutput:
             s = QDebug(&devnull);
             return s; //no need to take the time to "print header" if we don't want to output anyway
