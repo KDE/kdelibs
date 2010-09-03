@@ -315,10 +315,31 @@ QSize KTabBar::tabSizeHint( int index ) const
 #ifndef QT_NO_WHEELEVENT
 void KTabBar::wheelEvent( QWheelEvent *event )
 {
-  if ( event->orientation() == Qt::Horizontal )
-    return;
-
-  emit( wheelDelta( event->delta() ) );
+  if ( !( event->orientation() == Qt::Horizontal ) ) {
+    if ( receivers( SIGNAL(wheelDelta(int)) ) ) {
+      emit( wheelDelta( event->delta() ) );
+      return;
+    }
+    int lastIndex = count() - 1;
+    //Set an invalid index as base case
+    int targetIndex = -1;
+    bool forward = event->delta() < 0;
+    if ( forward && lastIndex == currentIndex() ) {
+      targetIndex = 0;
+    }
+    else if ( !forward && 0 == currentIndex() ) {
+      targetIndex = lastIndex;
+    }
+    //Will not move when targetIndex is invalid
+    setCurrentIndex( targetIndex );
+    //If it has not moved yet (targetIndex == -1), or if it moved but current tab is disabled
+    if ( targetIndex != currentIndex() || !isTabEnabled( targetIndex ) ) {
+      QTabBar::wheelEvent( event );
+    }
+    event->accept();
+  } else {
+    event->ignore();
+  }
 }
 #endif
 

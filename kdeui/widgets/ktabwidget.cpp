@@ -236,9 +236,6 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
   connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
   connect(tabBar(), SIGNAL(tabCloseRequested( int )), SLOT(closeRequest( int )));
-#ifndef QT_NO_WHEELEVENT
-  connect(tabBar(), SIGNAL(wheelDelta( int )), SLOT(wheelDelta( int )));
-#endif
 }
 
 KTabWidget::~KTabWidget()
@@ -448,13 +445,10 @@ void KTabWidget::dropEvent( QDropEvent *event )
 #ifndef QT_NO_WHEELEVENT
 void KTabWidget::wheelEvent( QWheelEvent *event )
 {
-  if ( event->orientation() == Qt::Horizontal )
-    return;
-
   if ( d->isEmptyTabbarSpace( event->pos() ) )
-    wheelDelta( event->delta() );
+    QCoreApplication::sendEvent( tabBar(), event );
   else
-    event->ignore();
+    QTabWidget::wheelEvent( event );
 }
 
 void KTabWidget::wheelDelta( int delta )
