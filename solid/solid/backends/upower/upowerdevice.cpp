@@ -156,9 +156,11 @@ QString UPowerDevice::parentUdi() const
 
 void UPowerDevice::checkCache(const QString &key) const
 {
-    if (m_cache.contains(key) && !m_invalidKeys.contains(key)) {
+    if (m_cache.isEmpty()) // recreate the cache
+        allProperties();
+
+    if (m_cache.contains(key) && !m_invalidKeys.contains(key))
         return;
-    }
     
     QVariant reply = m_device.property(key.toUtf8());
 
