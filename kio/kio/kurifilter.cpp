@@ -92,7 +92,7 @@ class KUriFilterDataPrivate
 public:
     explicit KUriFilterDataPrivate( const KUrl& u, const QString& typedUrl )
       : checkForExecs(true), wasModified(true), uriType(KUriFilterData::Unknown),
-        url(u), typedString(typedUrl)
+        url(u), searchTermSeparator(':'), typedString(typedUrl)
     {
     }
 
