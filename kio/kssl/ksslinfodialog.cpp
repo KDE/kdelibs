@@ -190,9 +190,11 @@ void KSslInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
 
     const QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
     if (cipherInfo.size() >= 4) {
-        d->ui.encryption->setText(i18n("%1, using %2 bits of a %3 bit key",
-                                         cipherInfo[0], QString::number(usedBits),
-                                              QString::number(bits)));
+        d->ui.encryption->setText(i18nc("%1, using %2 bits of a %3 bit key", "%1, %2 %3", cipherInfo[0], 
+                                  i18ncp("Part of: %1, using %2 bits of a %3 bit key", 
+                                  "using %2 bit", "using %2 bits", QString::number(usedBits)),
+                                  i18ncp("Part of: %1, using %2 bits of a %3 bit key", 
+                                  "of a %3 bit key", "of a %3 bit key", QString::number(bits))));
         d->ui.details->setText(QString("Auth = %1, Kx = %2, MAC = %3")
                                       .arg(cipherInfo[1], cipherInfo[2],
                                            cipherInfo[3]));
