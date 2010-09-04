@@ -44,6 +44,7 @@ class KUrl;
 class KIO_EXPORT KFileMetaDataWidget : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly)
 
 public:
     explicit KFileMetaDataWidget(QWidget* parent = 0);

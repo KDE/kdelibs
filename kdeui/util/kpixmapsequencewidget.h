@@ -43,6 +43,7 @@ class KPixmapSequence;
 class KDEUI_EXPORT KPixmapSequenceWidget : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(int interval READ interval WRITE setInterval)
 
 public:
     /**

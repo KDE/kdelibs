@@ -80,6 +80,9 @@ class KDEUI_EXPORT KCategorizedView
     : public QListView
 {
     Q_OBJECT
+    Q_PROPERTY(int categorySpacing READ categorySpacing WRITE setCategorySpacing)
+    Q_PROPERTY(bool alternatingBlockColors READ alternatingBlockColors WRITE setAlternatingBlockColors)
+    Q_PROPERTY(bool collapsibleBlocks READ collapsibleBlocks WRITE setCollapsibleBlocks)
 
 public:
     KCategorizedView(QWidget *parent = 0);
