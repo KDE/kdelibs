@@ -2271,7 +2271,9 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
     case QEvent::WindowBlocked:
       // next focus originates from an internal dialog:
       // don't show the modonhd prompt
-      doc()->ignoreModifiedOnDiskOnce();
+      if (isVisible()) {
+        doc()->ignoreModifiedOnDiskOnce();
+      }
       break;
 
     default:
