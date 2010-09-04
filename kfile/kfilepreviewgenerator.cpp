@@ -616,8 +616,8 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     if (m_hasCutSelection && isCutItem(item)) {
         // apply the disabled effect to the icon for marking it as "cut item"
         // and apply the icon to the item
-        KIconEffect iconEffect;
-        icon = iconEffect.apply(icon, KIconLoader::Desktop, KIconLoader::DisabledState);
+        KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
+        icon = iconEffect->apply(icon, KIconLoader::Desktop, KIconLoader::DisabledState);
     }
 
     // remember the preview and URL, so that it can be applied to the model
@@ -844,7 +844,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
     const QSet<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData).toSet();
 
     DataChangeObtainer obt(this);
-    KIconEffect iconEffect;
+    KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
     foreach (const KFileItem& item, items) {
         if (cutUrls.contains(item.url())) {
             const QModelIndex index = m_dirModel->indexForItem(item);
@@ -856,7 +856,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
                 
                 const QHash<KUrl, QPixmap>::const_iterator cacheIt = m_cutItemsCache.constFind(item.url());
                 if ((cacheIt == m_cutItemsCache.constEnd()) || (cacheIt->cacheKey() != pixmap.cacheKey())) {
-                    pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
+                    pixmap = iconEffect->apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
                     m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
                     
                     m_cutItemsCache.insert(item.url(), pixmap);
