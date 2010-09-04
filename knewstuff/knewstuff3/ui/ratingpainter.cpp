@@ -28,6 +28,7 @@
 
 #include <kicon.h>
 #include <kiconeffect.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 
 using namespace KNS3;
@@ -199,7 +200,8 @@ void RatingPainter::paint( QPainter* painter, const QRect& rect, int rating, int
     int maxHSizeOnePix = ( rect.width() - (numUsedStars-1)*usedSpacing ) / numUsedStars;
     QPixmap ratingPix = d->getPixmap( qMin( rect.height(), maxHSizeOnePix ) );
 
-    QPixmap disabledRatingPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), false );
+    KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
+    QPixmap disabledRatingPix = iconEffect->apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), false );
     QPixmap hoverPix;
 
     // if we are disabled we become gray and more transparent
@@ -216,7 +218,7 @@ void RatingPainter::paint( QPainter* painter, const QRect& rect, int rating, int
     if ( hoverRating > 0 && rating != hoverRating && d->isEnabled ) {
         numHoverStars = d->bHalfSteps ? hoverRating/2 : hoverRating;
         halfHover = d->bHalfSteps && hoverRating%2;
-        hoverPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), false );
+        hoverPix = iconEffect->apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), false );
     }
 
     if ( d->alignment & Qt::AlignJustify ) {
