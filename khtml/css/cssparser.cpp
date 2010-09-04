@@ -156,7 +156,7 @@ void CSSParser::runParser()
 void CSSParser::setupParser(const char *prefix, const DOMString &string, const char *suffix)
 {
     unsigned preflen = strlen(prefix);
-    unsigned sufflen = strlen(suffix); 
+    unsigned sufflen = strlen(suffix);
     int length = string.length() + preflen + sufflen + 8;
 
     free(data);
@@ -214,7 +214,7 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
 {
     styleElement  = sheet;
     styleDocument = 0;
-    
+
     setupParser("@-khtml-rule{", string, "} ");
     runParser();
 
@@ -251,9 +251,9 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 
     id = _id;
     important = _important;
-    
+
     runParser();
-    
+
     delete rule;
     rule = 0;
 
@@ -342,7 +342,7 @@ QList<DOM::CSSSelector*> CSSParser::parseSelectorList(DOM::DocumentImpl* doc, co
         qDeleteAll(selectors);
         selectors.clear();
     }
-    
+
     return selectors;
 }
 
@@ -803,12 +803,12 @@ bool CSSParser::parseValue( int propId, bool important )
 
     case CSS_PROP_CURSOR:
         //  [ auto | default | none |
-	//  context-menu | help | pointer | progress | wait | 
-	//  cell | crosshair | text | vertical-text | 
-	//  alias | copy | move | no-drop | not-allowed | 
+	//  context-menu | help | pointer | progress | wait |
+	//  cell | crosshair | text | vertical-text |
+	//  alias | copy | move | no-drop | not-allowed |
 	//  e-resize | ne-resize | nw-resize | n-resize | se-resize | sw-resize | s-resize | w-resize |
 	//  ew-resize | ns-resize | nesw-resize | nwse-resize |
-	//  col-resize | row-resize | all-scroll 
+	//  col-resize | row-resize | all-scroll
         // ] ] | inherit
     // MSIE 5 compatibility :/
         if ( !strict && id == CSS_VAL_HAND ) {
@@ -1027,11 +1027,11 @@ bool CSSParser::parseValue( int propId, bool important )
 
     case CSS_PROP_SRC:  // Only used within @font-face, so cannot use inherit | initial or be !important.  This is a list of urls or local references.
         return parseFontFaceSrc();
-            
+
     case CSS_PROP_UNICODE_RANGE:
         // return parseFontFaceUnicodeRange();
         break;
-                        
+
     case CSS_PROP__KHTML_FLOW_MODE:
         if ( id == CSS_VAL__KHTML_NORMAL || id == CSS_VAL__KHTML_AROUND_FLOATS )
             valid_primitive = true;
@@ -1371,7 +1371,7 @@ bool CSSParser::parseBorderRadius(bool important) {
         value = valueList->current();
         if (!value || (value->unit == Value::Operator && value->iValue == '/'))
             break; //Saw slash -- exit w/o consuming as we'll use it below.
-    
+
         if (!validUnit(value, FLength|FNonNeg, strict))
             return false;
 
@@ -1392,7 +1392,7 @@ bool CSSParser::parseBorderRadius(bool important) {
             kDebug() << c;
             value = valueList->current();
             if (!value)
-                break; 
+                break;
 
             if (!validUnit(value, FLength|FNonNeg, strict))
                 return false;
@@ -1896,7 +1896,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                         if (pos == BgPos_X) {
                             delete currValue;
                             currValue = 0;
-                        } else {                    
+                        } else {
                             valueList->next();
                         }
                     }
@@ -2299,7 +2299,7 @@ bool CSSParser::parseFontFaceSrc()
             valueList->next();
             continue;
         }
-    
+
         if (parsedValue)
             values->append(parsedValue);
         else {
@@ -2308,7 +2308,7 @@ bool CSSParser::parseFontFaceSrc()
         }
         valueList->next();
     }
-    
+
     if (values->length() && !failed) {
         addProperty(CSS_PROP_SRC, values, important);
         valueList->next();
@@ -2346,11 +2346,11 @@ bool CSSParser::parseColorParameters(Value* value, int* colorArray, bool parseAl
         v = args->next();
         if (!validUnit(v, FNumber, true))
             return false;
-        colorArray[3] = static_cast<int>(qMax(0.0, qMin(1.0, v->fValue)) * 255);
+        colorArray[3] = static_cast<int>(qMax(qreal(0.0), qMin(qreal(1.0), v->fValue)) * 255);
     }
     return true;
 }
- 
+
 // CSS3 specification defines the format of a HSL color as
 // hsl(<number>, <percent>, <percent>)
 // and with alpha, the format is
@@ -2372,7 +2372,7 @@ bool CSSParser::parseHSLParameters(Value* value, double* colorArray, bool parseA
         v = args->next();
         if (!validUnit(v, FPercent, true))
             return false;
-        colorArray[i] = qMax(0.0, qMin(100.0, v->fValue)) / 100.0; // needs to be value between 0 and 1.0
+        colorArray[i] = qMax(qreal(0.0), qMin(qreal(100.0), v->fValue)) / 100.0; // needs to be value between 0 and 1.0
     }
     if (parseAlpha) {
         v = args->next();
@@ -2381,7 +2381,7 @@ bool CSSParser::parseHSLParameters(Value* value, double* colorArray, bool parseA
         v = args->next();
         if (!validUnit(v, FNumber, true))
             return false;
-        colorArray[3] = qMax(0.0, qMin(1.0, v->fValue));
+        colorArray[3] = qMax(qreal(0.0), qMin(qreal(1.0), v->fValue));
     }
     return true;
 }
@@ -2942,7 +2942,7 @@ unsigned short *DOM::CSSParser::text(int *length)
 
 // When we reach the end of the input we switch over
 // the lexer to this alternative buffer and keep it stuck here.
-// (and as it contains nulls, flex will keep on reporting 
+// (and as it contains nulls, flex will keep on reporting
 //  end of buffer, and we will keep reseting the input
 //  pointer to the beginning of this).
 static unsigned short postEofBuf[2];

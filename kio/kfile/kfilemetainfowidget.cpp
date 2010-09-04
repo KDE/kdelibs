@@ -271,8 +271,9 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
 QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 {
     double value = d->m_item.value().toDouble();
-    KDoubleNumInput* dni = new KDoubleNumInput(qMin(0.0,value),qMax(0.0,value),value,this,0.01,2);
-
+    KDoubleNumInput* dni = new KDoubleNumInput(qMin(qreal(0.0),value),
+                                               qMax(qreal(0.0),value),
+                                               value, this, 0.01 ,2);
 
     if (d->m_validator) {
         if (QDoubleValidator* dv = qobject_cast<QDoubleValidator*>(d->m_validator)) {
