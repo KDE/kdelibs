@@ -201,7 +201,6 @@ public:
 
     /**
      * Returns the global icon loader initialized with the global KComponentData.
-     * Therefore you must have a KComponentData instantiated before calling this.
      * @return global icon loader
      */
     static KIconLoader* global();
