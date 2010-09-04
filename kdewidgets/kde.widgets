@@ -32,6 +32,11 @@ ToolTip=Capacity Bar (KDE)
 ConstructorArgs=(KCapacityBar::DrawTextOutline, parent)
 Group=Display (KDE)
 
+[KCategorizedView]
+ToolTip=Categorized Item View (KDE)
+WhatsThis=Item view for listing items in a categorized fashion optionally.
+Group=Views (KDE)
+
 [KCharSelect]
 ToolTip=Character Selection Widget (KDE)
 WhatsThis=A widget that allows selection a character out ot a table
@@ -111,6 +116,11 @@ Group=Views (KDE)
 [KEditListWidget]
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
+
+[KFileMetaDataWidget]
+ToolTip=File Meta Data Display
+WhatsThis=Shows the meta data of one or more file items.
+Group=Display (KDE)
 
 [KFilterProxySearchLine]
 IncludeFile=kfilterproxysearchline.h
@@ -201,10 +211,31 @@ ToolTip=QListWidget Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
 
+[KMultiTabBar]
+ToolTip=Multi Tab Bar Widget (KDE)
+WhatsThis=A Widget for horizontal and vertical tabs.
+ConstructorArgs=(KMultiTabBar::Left, parent)
+Group=Display (KDE)
+
+[KPageView]
+ToolTip=Paged View (KDE)
+WhatsThis=A base class which can handle multiple pages.
+Group=Views (KDE)
+
+[KPageWidget]
+ToolTip=Paged Widget (KDE)
+WhatsThis=Page widget with many layouts (faces).
+Group=Views (KDE)
+
 [KPixmapRegionSelectorWidget]
 IncludeFile=kpixmapregionselectorwidget.h
 ToolTip=Pixmap Region Selector (KDE)
 Group=Graphics (KDE)
+
+[KPixmapSequenceWidget]
+ToolTip=Pixmap Sequence Widget (KDE)
+WhatsThis=A simple widget showing a fixed size pixmap sequence.
+Group=Display (KDE)
 
 [KPlotWidget]
 IncludeFile=kplotwidget.h
@@ -257,6 +288,11 @@ Group=Buttons (KDE)
 ToolTip=A QLabel that squeezes its text (KDE)
 WhatsThis=If the text is too long to fit into the label it is divided into remaining left and right parts which are separated by three dots
 ConstructorArgs=("KSqueezedTextLabel", parent)
+Group=Display (KDE)
+
+[KTabBar]
+ToolTip=KDE Tab Bar
+WhatsThis=A QTabBar with extended features.
 Group=Display (KDE)
 
 [KTabWidget]
