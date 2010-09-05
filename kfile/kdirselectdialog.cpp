@@ -210,7 +210,7 @@ void KDirSelectDialog::Private::slotComboTextChanged( const QString& text )
     {
         KUrl tmp = url.upUrl();
         while(tmp != KUrl("file:///")) {
-            url = tmp; 
+            url = tmp;
             tmp = url.upUrl();
         }
         m_treeView->setRootUrl( url );
@@ -445,14 +445,14 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
     //Check if url represents a hidden folder and enable showing them
     QString fileName = url.fileName();
     //TODO a better hidden file check?
-    bool isHidden = fileName.length() > 1 && fileName[0] == '.' && 
+    bool isHidden = fileName.length() > 1 && fileName[0] == '.' &&
                                                 (fileName.length() > 2 ? fileName[1] != '.' : true);
     bool showHiddenFiles = isHidden && !d->m_treeView->showHiddenFiles();
     if (showHiddenFiles) {
         d->showHiddenFoldersAction->setChecked(true);
         d->m_treeView->setShowHiddenFiles(true);
     }
-        
+
     d->m_treeView->setCurrentUrl( url );
 }
 
