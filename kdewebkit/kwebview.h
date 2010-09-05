@@ -48,6 +48,7 @@ template<class T> class KWebViewPrivate;
 class KDEWEBKIT_EXPORT KWebView : public QWebView
 {
     Q_OBJECT
+    Q_PROPERTY(bool externalContentAllowed READ isExternalContentAllowed WRITE setAllowExternalContent)
 public:
     /**
      * Constructs a KWebView object with parent @p parent.
