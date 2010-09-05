@@ -148,12 +148,12 @@ void KCMultiDialogPrivate::_k_clientChanged()
 
         if (activeModule->realModule()->needsAuthorization()) {
             if (q->button(KDialog::Apply)) {
-                q->button(KDialog::Apply)->setAuthAction(currentModule->realModule()->authAction());
+                q->button(KDialog::Apply)->setAuthAction(activeModule->realModule()->authAction());
                 q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), SLOT(slotApplyClicked()));
             }
 
             if (q->button(KDialog::Ok)) {
-                q->button(KDialog::Ok)->setAuthAction(currentModule->realModule()->authAction());
+                q->button(KDialog::Ok)->setAuthAction(activeModule->realModule()->authAction());
                 q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), SLOT(slotOkClicked()));
             }
         } else {
