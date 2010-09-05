@@ -57,6 +57,9 @@ class KMultiTabBarInternal;
 class KDEUI_EXPORT KMultiTabBar: public QWidget
 {
     Q_OBJECT
+    Q_ENUMS(KMultiTabBarPosition KMultiTabBarStyle)
+    Q_PROPERTY(KMultiTabBarPosition position READ position WRITE setPosition)
+    Q_PROPERTY(KMultiTabBarStyle tabStyle READ tabStyle WRITE setStyle)
 public:
     enum KMultiTabBarPosition { Left, Right, Top, Bottom };
 

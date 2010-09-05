@@ -48,6 +48,10 @@ class KDEUI_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QFont font READ font WRITE setFont NOTIFY fontSelected USER true )
+  Q_PROPERTY( QColor color READ color WRITE setColor )
+  Q_PROPERTY( QColor backgroundColor READ backgroundColor WRITE setBackgroundColor )
+  Q_PROPERTY( Qt::CheckState sizeIsRelative READ sizeIsRelative WRITE setSizeIsRelative )
+  Q_PROPERTY( QString sampleText READ sampleText WRITE setSampleText )
 
 public:
     /**

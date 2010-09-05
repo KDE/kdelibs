@@ -28,6 +28,9 @@
 class KDEUI_EXPORT KColorValueSelector : public KSelector
 {
     Q_OBJECT
+    Q_PROPERTY( int hue READ hue WRITE setHue )
+    Q_PROPERTY( int saturation READ saturation WRITE setSaturation )
+    Q_PROPERTY( int colorValue READ colorValue WRITE setColorValue )
 public:
   /**
    * Constructs a widget for color selection.

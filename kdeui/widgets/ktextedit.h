@@ -87,6 +87,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
 {
     Q_OBJECT
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
+    Q_PROPERTY( bool checkSpellingEnabled READ checkSpellingEnabled WRITE setCheckSpellingEnabled )
+    Q_PROPERTY( QString spellCheckingLanguage READ spellCheckingLanguage WRITE setSpellCheckingLanguage )
 
   public:
     /**

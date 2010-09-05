@@ -52,6 +52,8 @@ class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 {
 	Q_OBJECT
 
+	Q_FLAGS(ShortcutTypes)
+
 	Q_PROPERTY( 
 			bool multiKeyShortcutsAllowed
 			READ multiKeyShortcutsAllowed
@@ -62,6 +64,10 @@ class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 			READ checkForConflictsAgainst
 			WRITE setCheckForConflictsAgainst )
 
+	Q_PROPERTY(
+			bool modifierlessAllowed
+			READ isModifierlessAllowed
+			WRITE setModifierlessAllowed )
 
 public:
 	///An enum about validation when setting a key sequence.

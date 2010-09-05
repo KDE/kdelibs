@@ -31,6 +31,7 @@ class KShortcutWidgetPrivate;
 class KDEUI_EXPORT KShortcutWidget : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool modifierlessAllowed READ isModifierlessAllowed WRITE setModifierlessAllowed)
 public:
     KShortcutWidget(QWidget *parent = 0);
     ~KShortcutWidget();

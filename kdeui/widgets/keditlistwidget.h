@@ -52,6 +52,7 @@ class KDEUI_EXPORT KEditListWidget : public QWidget
    Q_FLAGS( Buttons )
    Q_PROPERTY( Buttons buttons READ buttons WRITE setButtons )
    Q_PROPERTY( QStringList items READ items WRITE setItems NOTIFY changed USER true )
+   Q_PROPERTY( bool checkAtEntering READ checkAtEntering WRITE setCheckAtEntering )
 
 public:
     class CustomEditorPrivate;
