@@ -44,7 +44,7 @@ class KDEUI_EXPORT KSelector : public QAbstractSlider
   Q_PROPERTY( int value READ value WRITE setValue )
   Q_PROPERTY( int minValue READ minimum WRITE setMinimum )
   Q_PROPERTY( int maxValue READ maximum WRITE setMaximum )
-  Q_PROPERTY( int indent READ indent WRITE setIndent )
+  Q_PROPERTY( bool indent READ indent WRITE setIndent )
   Q_PROPERTY( Qt::ArrowType arrowDirection READ arrowDirection WRITE setArrowDirection )
 public:
 
