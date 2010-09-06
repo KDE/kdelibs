@@ -22,7 +22,7 @@
 
 #include "upnpdevice.h"
 #include "upnpmediaserver.h"
-//#include "upnpinternetgateway.h"
+#include "upnpinternetgateway.h"
 
 #include <HResourceType>
 #include <HDeviceInfo>
@@ -91,7 +91,7 @@ QString UPnPDevice::udi() const
 {
     const Herqq::Upnp::HDeviceInfo deviceInfo = device()->info();
 
-    if (!deviceInfo.udn().isValid())
+    if (!deviceInfo.udn().isValid(Herqq::Upnp::LooseChecks))
     {
         qWarning("This device UDN is not a valid one!");
     }
@@ -108,7 +108,7 @@ QString UPnPDevice::parentUdi() const
     {
         Herqq::Upnp::HDeviceInfo parentInfo = parent->info();
 
-        if (!parentInfo.udn().isValid())
+        if (!parentInfo.udn().isValid(Herqq::Upnp::LooseChecks))
         {
             qWarning("This device UDN is not a valid one!");
         }
@@ -193,13 +193,13 @@ bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) 
             return false;
         }  
     }
-/*    else if (type == Solid::DeviceInterface::InternetGateway)
+    else if (type == Solid::DeviceInterface::InternetGateway)
     {
         if (isInternetGatewayDevice())
         {
             return true;
         }
-    } */
+    }
     
     return false;
 }
@@ -217,20 +217,20 @@ QObject* UPnPDevice::createDeviceInterface(const Solid::DeviceInterface::Type& t
             return 0;
         }
     }
-/*    else if (type == Solid::DeviceInterface::InternetGateway)
+    else if (type == Solid::DeviceInterface::InternetGateway)
     {
         if (isInternetGatewayDevice())
         {
             return new Solid::Backends::UPnP::UPnPInternetGateway(this);
         }
-    } */
+    }
 
     return 0;
 }
 
 bool UPnPDevice::isValid() const
 {
-    return m_device->info().isValid();
+    return m_device->info().isValid(Herqq::Upnp::LooseChecks);
 }
 
 const QString UPnPDevice::specVersion() const

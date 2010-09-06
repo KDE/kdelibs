@@ -105,7 +105,7 @@ QObject* UPnPDeviceManager::createDevice(const QString& udi)
 {
     QString udnFromUdi = udi.mid(udiPrefix().length() + 1);
     Herqq::Upnp::HUdn udn(udnFromUdi);
-    if (udn.isValid())
+    if (udn.isValid(Herqq::Upnp::LooseChecks))
     {
         UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
