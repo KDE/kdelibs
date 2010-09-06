@@ -127,6 +127,10 @@ namespace Nepomuk {
          * from \p start to \p end (including both full days). The flags specified in \p dateFlags can be used to influence the
          * type of dates that are queried.
          *
+         * \param start The start date of the range, if invalid no start is used, i.e. everything before \p end matches.
+         * \param end The end date of the range, if invalid no end is used, i.e. everything after \p start matches.
+         * \param dateFlags Optional flags to influence the final query.
+         *
          * \since 4.6
          */
         NEPOMUKQUERY_EXPORT Query dateRangeQuery( const QDate& start, const QDate& end, DateRangeFlags dateFlags = AllDates );

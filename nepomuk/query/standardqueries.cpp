@@ -84,6 +84,9 @@ Nepomuk::Query::Query Nepomuk::Query::standardQuery( StandardQuery query, const 
 
     case ResourcesForActivityQuery: {
         // FIXME
+        // get all resources that have some prop defined in a graph which was created in the requested activity?
+        // select distinct ?r where { graph ?g { ?r ?p ?o . } . ?g <activity> <A> . }
+        // it would be something like: MetaDataTerm( <activity>, <A> )
     }
     }
 
@@ -103,14 +106,24 @@ Nepomuk::Query::Query Nepomuk::Query::dateRangeQuery( const QDate& start, const 
         // include files modified in our date range
         ComparisonTerm lastModifiedStart = Nepomuk::Vocabulary::NIE::lastModified() > dateFrom;
         ComparisonTerm lastModifiedEnd = Nepomuk::Vocabulary::NIE::lastModified() < dateTo;
-        query = query || ( lastModifiedStart && lastModifiedEnd );
+        if( start.isValid() && end.isValid() )
+            query = query || ( lastModifiedStart && lastModifiedEnd );
+        else if( start.isValid() )
+            query = query || lastModifiedStart;
+        else if( end.isValid() )
+            query = query || lastModifiedEnd;
     }
 
     if( dateFlags & ContentDate ) {
         // include files created (as in photos taken) in our data range
         ComparisonTerm contentCreatedStart = Nepomuk::Vocabulary::NIE::contentCreated() > dateFrom;
         ComparisonTerm contentCreatedEnd = Nepomuk::Vocabulary::NIE::contentCreated() < dateTo;
-        query = query || ( contentCreatedStart && contentCreatedEnd );
+        if( start.isValid() && end.isValid() )
+            query = query || ( contentCreatedStart && contentCreatedEnd );
+        else if( start.isValid() )
+            query = query || contentCreatedStart;
+        else if( end.isValid() )
+            query = query || contentCreatedEnd;
     }
 
     if( dateFlags & UsageDate ) {
@@ -118,8 +131,15 @@ Nepomuk::Query::Query Nepomuk::Query::dateRangeQuery( const QDate& start, const 
         // TODO: also take the end of the event into account
         ComparisonTerm accessEventStart = Nepomuk::Vocabulary::NUAO::start() > dateFrom;
         ComparisonTerm accessEventEnd = Nepomuk::Vocabulary::NUAO::start() < dateTo;
-        ComparisonTerm accessEventCondition = Nepomuk::Vocabulary::NUAO::involves() == ( accessEventStart && accessEventEnd );
-        query = query || accessEventCondition.inverted();
+        ComparisonTerm accessEventCondition( Nepomuk::Vocabulary::NUAO::involves(), Term() );
+        if( start.isValid() && end.isValid() )
+            accessEventCondition.setSubTerm( accessEventStart && accessEventEnd );
+        else if( start.isValid() )
+            accessEventCondition.setSubTerm( accessEventStart );
+        else if( end.isValid() )
+            accessEventCondition.setSubTerm( accessEventEnd );
+        if( accessEventCondition.subTerm().isValid() )
+            query = query || accessEventCondition.inverted();
     }
 
     return query;
