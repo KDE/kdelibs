@@ -101,7 +101,7 @@ namespace KJS {
      */
     static Window *retrieveActive(ExecState *exec);
     KParts::ReadOnlyPart *part() const {
-        return m_frame.isNull() ? 0L : static_cast<KParts::ReadOnlyPart *>(m_frame->m_part);
+        return m_frame.isNull() ? 0L : m_frame->m_part.data();
     }
 
     virtual void mark();

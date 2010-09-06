@@ -1446,6 +1446,9 @@ private Q_SLOTS:
    * @internal
    */
   void slotDebugRenderTree();
+
+  void slotDebugFrameTree();
+  
   /**
    * @internal
    */
@@ -1927,6 +1930,11 @@ private:
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
+
+public: // So we don't end up having to add 50 more friends
+
+  /** @internal Access to internal APIs. Don't use outside */
+  KHTMLPartPrivate* impl() { return d; }
 };
 
 

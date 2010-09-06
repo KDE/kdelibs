@@ -492,6 +492,7 @@ set(khtml_LIB_SRCS
    khtmlviewbar.cpp
    khtmlviewbarwidget.cpp
    khtml_part.cpp
+   khtml_childframe.cpp
    khtml_run.cpp
    khtml_global.cpp
    khtml_settings.cpp

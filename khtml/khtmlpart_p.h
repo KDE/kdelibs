@@ -49,6 +49,8 @@
 #include "khtml_events.h"
 #include "khtml_ext.h"
 #include "khtml_settings.h"
+#include "khtml_childframe_p.h"
+
 #include <kencodingdetector.h>
 #include "ecma/kjs_proxy.h"
 #include "xml/dom_nodeimpl.h"
@@ -77,65 +79,6 @@ namespace KParts
 }
 
 #include "khtml_wallet_p.h"
-
-namespace khtml
-{
-  class KHTML_EXPORT ChildFrame : public QObject
-  {
-      Q_OBJECT
-  public:
-      enum Type { Frame, IFrame, Object };
-
-      ChildFrame() : QObject (0) {
-          setObjectName( "khtml_child_frame" );
-          m_jscript = 0L;
-#ifndef DIRECT_LINKAGE_TO_ECMA
-          m_kjs_lib = 0;
-#endif
-          m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;
-          m_bPendingRedirection = false;
-      }
-
-      ~ChildFrame() {
-          if (m_run) m_run->abort();
-          delete m_jscript;
-#ifndef DIRECT_LINKAGE_TO_ECMA
-          if ( m_kjs_lib)
-              m_kjs_lib->unload();
-#endif
-      }
-
-    QPointer<DOM::HTMLPartContainerElementImpl> m_partContainerElement;
-    QPointer<KParts::ReadOnlyPart> m_part;
-    QPointer<KParts::BrowserExtension> m_extension;
-    QWeakPointer<KParts::ScriptableExtension> m_scriptable;
-    QString m_serviceName;
-    QString m_serviceType;
-    KJSProxy *m_jscript;
-#ifndef DIRECT_LINKAGE_TO_ECMA
-    KLibrary *m_kjs_lib;
-#endif
-    bool m_bCompleted;
-    QString m_name;
-    KParts::OpenUrlArguments m_args;
-    KParts::BrowserArguments m_browserArgs;
-    QPointer<KHTMLRun> m_run;
-    KUrl m_workingURL;
-    Type m_type;
-    QStringList m_params;
-    bool m_bPreloaded;
-    bool m_bNotify;
-    bool m_bPendingRedirection;
-  };
-}
-
-struct KHTMLFrameList : public QList<khtml::ChildFrame*>
-{
-    Iterator find( const QString &name ) KDE_NO_EXPORT;
-};
-
-typedef KHTMLFrameList::ConstIterator ConstFrameIt;
-typedef KHTMLFrameList::Iterator FrameIt;
 
 enum MimeType {
     MimeHTML,

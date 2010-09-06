@@ -529,7 +529,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
-  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part.data());
 
   // properties that work on all windows
   if (entry) {
@@ -735,7 +735,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return getDOMNode(exec, part->xmlDocImpl());
     case FrameElement:
       if (m_frame->m_partContainerElement)
-        return getDOMNode(exec,m_frame->m_partContainerElement);
+        return getDOMNode(exec,m_frame->m_partContainerElement.data());
       else
         return jsUndefined();
     case Node:
@@ -1479,7 +1479,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   } else if (!part && m_frame->m_partContainerElement) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      emit b->openUrlRequest(m_frame->m_partContainerElement->document()->completeURL(url));
+      emit b->openUrlRequest(m_frame->m_partContainerElement.data()->document()->completeURL(url));
     kDebug() << "goURL for ROPart";
   }
 }

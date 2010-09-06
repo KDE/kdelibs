@@ -29,6 +29,7 @@
   <Separator />
   <Action name="debugRenderTree" />
   <Action name="debugDOMTree" />
+  <Action name="debugFrameTree" />
 -->
  </Menu>
 </MenuBar>

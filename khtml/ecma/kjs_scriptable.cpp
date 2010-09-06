@@ -834,7 +834,7 @@ QVariant KHTMLPartScriptable::encloserForKid(KParts::ScriptableExtension* kid)
     // ### this should never actually get an iframe once iframes are fixed
     if (!f->m_partContainerElement.isNull()) {
         return ScriptableOperations::exportValue(
-                getDOMNode(i->globalExec(), f->m_partContainerElement), true);
+                getDOMNode(i->globalExec(), f->m_partContainerElement.data()), true);
     }
 
     kWarning(6031) << "could not find the part container";

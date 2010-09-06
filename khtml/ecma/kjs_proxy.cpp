@@ -310,7 +310,8 @@ void KJSProxy::initScript()
 void KJSProxy::applyUserAgent()
 {
   assert( m_script );
-  QString host = m_frame->m_part->url().isLocalFile() ? "localhost" : m_frame->m_part->url().host();
+  KUrl url = m_frame->m_part.data()->url();
+  QString host = url.isLocalFile() ? "localhost" : url.host();
   QString userAgent = KProtocolManager::userAgentForHost(host);
   if (userAgent.indexOf(QLatin1String("Microsoft"), 0, Qt::CaseSensitive) >= 0 ||
       userAgent.indexOf(QLatin1String("MSIE"), 0, Qt::CaseSensitive) >= 0)

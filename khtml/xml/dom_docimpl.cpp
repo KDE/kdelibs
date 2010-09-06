@@ -2841,7 +2841,7 @@ HTMLPartContainerElementImpl *DocumentImpl::ownerElement() const
     ChildFrame *childFrame = childPart->d->m_frame;
     if (!childFrame)
         return 0;
-    return childFrame->m_partContainerElement;
+    return childFrame->m_partContainerElement.data();
 }
 
 DOMString DocumentImpl::domain() const

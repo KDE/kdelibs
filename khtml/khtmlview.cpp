@@ -871,7 +871,8 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
         if (m_part->parentPart()) {
             // sub-frame : queue the resize event until our toplevel is done layouting
             khtml::ChildFrame *cf = m_part->parentPart()->frame( m_part );
-            cf->m_partContainerElement->postResizeEvent();
+            if (!cf->m_partContainerElement.isNull())
+                cf->m_partContainerElement.data()->postResizeEvent();
         } else {
             // toplevel : dispatch sub-frames'resize events before our own
             HTMLPartContainerElementImpl::sendPostedResizeEvents();

@@ -116,7 +116,7 @@ void ScriptInterpreter::mark(bool isMain)
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {
-    return m_frame->m_part;
+    return m_frame->m_part.data();
 }
 
 bool ScriptInterpreter::isWindowOpenAllowed() const
