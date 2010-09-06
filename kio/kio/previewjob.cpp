@@ -353,7 +353,7 @@ void PreviewJob::slotResult( KJob *job )
 
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
-            if (d->currentItem.item.url().isLocalFile())
+            if (d->currentItem.item.isLocalFile())
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
                                   && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
@@ -423,7 +423,8 @@ bool PreviewJobPrivate::statResultThumbnail()
     if ( thumbPath.isEmpty() )
         return false;
 
-    KUrl url = currentItem.item.url();
+    bool local = false;
+    KUrl url = currentItem.item.mostLocalUrl(local);
     // Don't include the password if any
     url.setPass(QString());
     origName = url.url();
@@ -485,7 +486,8 @@ void PreviewJobPrivate::getOrCreateThumbnail()
         localFile.open();
         KUrl localURL;
         localURL.setPath( tempName = localFile.fileName() );
-        const KUrl currentURL = item.url();
+        bool local = false;
+        const KUrl currentURL = item.mostLocalUrl(local);
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, KIO::Overwrite | KIO::HideProgressInfo /* No GUI */ );
         job->addMetaData("thumbnail","1");
         q->addSubjob(job);
