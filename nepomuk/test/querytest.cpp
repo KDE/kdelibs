@@ -352,7 +352,7 @@ void QueryTest::testToSparql_data()
     QString sparql = QString::fromLatin1("select distinct ?r count(?v5) as ?cnt where { { "
                                          "{ ?r a ?v1 . ?v1 %1 %2 . } UNION { ?r a ?v2 . ?v2 %1 %3 . } . "
                                          "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v3 ?r . }))) . "
-                                         "?r ?v4 ?v5 . } . } ORDER BY DESC ( ?cnt )")
+                                         "?v5 ?v4 ?r . } . } ORDER BY DESC ( ?cnt )")
                      .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));

@@ -114,8 +114,12 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     if ( !m_subTerm.isValid() ) {
         QString prop = propertyToString( qbd );
         QString ov = getMainVariableName( qbd );
-        return QString::fromLatin1( "%1 %2 %3 . " )
-            .arg( resourceVarName, prop, ov );
+        if( m_inverted )
+            return QString::fromLatin1( "%1 %2 %3 . " )
+                .arg( ov, prop, resourceVarName );
+        else
+            return QString::fromLatin1( "%1 %2 %3 . " )
+                .arg( resourceVarName, prop, ov );
     }
 
     else if ( m_property.literalRangeType().isValid() ) {
