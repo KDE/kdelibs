@@ -51,6 +51,8 @@ UDisksManager::UDisksManager(QObject */*parent*/)
             this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
     connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
             this, SLOT(slotDeviceChanged(QDBusObjectPath)));
+
+    m_deviceCache = allDevices(); // prefill the cache
 }
 
 UDisksManager::~UDisksManager()
@@ -60,7 +62,7 @@ UDisksManager::~UDisksManager()
 
 QObject* UDisksManager::createDevice(const QString& udi)
 {
-    if (allDevices().contains(udi))
+    if (m_deviceCache.contains(udi))
         return new UDisksDevice(udi);
     else
         return 0;
@@ -68,12 +70,11 @@ QObject* UDisksManager::createDevice(const QString& udi)
 
 QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
 {
-    QStringList allDev = allDevices();
     QStringList result;
 
     if (!parentUdi.isEmpty())
     {
-        foreach (const QString & udi, allDev)
+        foreach (const QString & udi, m_deviceCache)
         {
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
@@ -84,7 +85,7 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     }
     else if (type != Solid::DeviceInterface::Unknown)
     {
-        foreach (const QString & udi, allDev)
+        foreach (const QString & udi, m_deviceCache)
         {
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type))
@@ -94,7 +95,7 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
         return result;
     }
     else
-        return allDev;
+        return m_deviceCache;
 }
 
 QStringList UDisksManager::allDevices()
@@ -117,6 +118,8 @@ QStringList UDisksManager::allDevices()
             }
         }
     }
+
+    m_deviceCache = result; // set the cache
 
     return result;
 }
@@ -151,12 +154,14 @@ QString UDisksManager::udiPrefix() const
 void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 {
     emit deviceAdded(opath.path());
+    m_deviceCache.append(opath.path());
     slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
 
 void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
 {
     emit deviceRemoved(opath.path());
+    m_deviceCache.removeAll(opath.path());
     slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
 

@@ -59,6 +59,7 @@ private:
     QStringList m_knownDrivesWithMedia;  // list of known optical drives which contain a media
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QDBusInterface m_manager;
+    QStringList m_deviceCache;
 };
 
 }
