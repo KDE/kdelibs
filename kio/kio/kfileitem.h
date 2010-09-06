@@ -594,6 +594,13 @@ public:
     KUrl mostLocalUrl(bool &local) const; // KDE4 TODO: bool* local = 0
 
     /**
+     * Tries to give a local URL for this file item if possible.
+     *
+     * \since 4.6
+     */
+    KUrl mostLocalUrl() const; // KDE5: merge with above version
+
+    /**
      * Return true if default-constructed
      */
     bool isNull() const;

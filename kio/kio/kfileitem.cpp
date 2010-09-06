@@ -1271,6 +1271,12 @@ KUrl KFileItem::mostLocalUrl(bool &local) const
     }
 }
 
+KUrl KFileItem::mostLocalUrl() const
+{
+    bool local = false;
+    return mostLocalUrl(local);
+}
+
 QDataStream & operator<< ( QDataStream & s, const KFileItem & a )
 {
     // We don't need to save/restore anything that refresh() invalidates,
