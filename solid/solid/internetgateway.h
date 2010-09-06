@@ -47,6 +47,8 @@ namespace Solid
 
         public:
             enum InternetStatus { InternetEnabled = 0, InternetDisabled = 1, UnknownStatus = 2 };
+
+            enum NetworkProtocol { TCP = 0, UDP = 1 };
             
             virtual ~InternetGateway();
 
@@ -56,20 +58,20 @@ namespace Solid
 
             QStringList currentConnections() const;
 
-            void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
-                                qint16 internalPort, const QString internalClient);
+            void addPortMapping(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol,
+                                qint16 internalPort, const QString& internalClient);
 
-            void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol);
+            void deletePortMapping(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol);
 
             InternetStatus isEnabledForInternet() const;
 
             void setEnabledForInternet(bool enabled);
 
         Q_SIGNALS:
-            void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                  int newInternalPort, const QString newInternalClient);
+            void portMappingAdded(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol,
+                                  qint16 internalPort, const QString& internalClient);
 
-            void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
+            void portMappingDeleted(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol);
 
             void enabledForInternet(bool enabled);
 

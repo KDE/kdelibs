@@ -42,20 +42,20 @@ namespace Ifaces
 
             virtual QStringList currentConnections() const = 0;
 
-            virtual void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
-                                        qint16 internalPort, const QString internalClient) = 0;
+            virtual void addPortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol,
+                                        qint16 internalPort, const QString& internalClient) = 0;
 
-            virtual void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol) = 0;
+            virtual void deletePortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol) = 0;
 
             virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const = 0;
 
             virtual void setEnabledForInternet(bool enabled) const = 0;
 
         protected: //Q_SIGNALS:
-            virtual void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                          int newInternalPort, const QString newInternalClient) = 0;
+            virtual void portMappingAdded(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol,
+                                          qint16 internalPort, const QString& internalClient) = 0;
 
-            virtual void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol) = 0;
+            virtual void portMappingDeleted(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol) = 0;
 
             virtual void enabledForInternet(bool enabled) = 0;
 

@@ -52,10 +52,10 @@ namespace UPnP
 
             virtual Solid::InternetGateway::InternetStatus isEnabledForInternet() const;
 
-            virtual void deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol);
+            virtual void deletePortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol);
 
-            virtual void addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
-                                        qint16 internalPort, const QString internalClient);
+            virtual void addPortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol,
+                                        qint16 internalPort, const QString& internalClient);
 
             virtual void requestCurrentConnections();
 
@@ -84,10 +84,10 @@ namespace UPnP
         Q_SIGNALS:
             void enabledForInternet(bool enabled);
 
-            void portMappingDeleted(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol);
+            void portMappingDeleted(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol);
 
-            void portMappingAdded(const QString newRemoteHost, int newExternalPort, const QString mappingProtocol,
-                                  int newInternalPort, const QString newInternalClient);
+            void portMappingAdded(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol,
+                                  qint16 internalPort, const QString& internalClient);
 
             void currentConnectionsDataIsReady(QStringList currentConnections);
     };

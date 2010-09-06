@@ -88,7 +88,6 @@ QStringList UPnPControlPoint::allDevices()
     Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
 
     Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
-    qDebug() << "#**" << list.isEmpty();
 
     for (int i = 0; i < list.size(); ++i)
     {

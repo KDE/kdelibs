@@ -34,14 +34,14 @@ InternetGateway::InternetGateway(QObject* backendObject) :
     DeviceInterface(*new InternetGatewayPrivate(), backendObject)
 {
     connect(backendObject, 
-            SIGNAL(portMappingAdded(const QString, int, const QString, int, const QString, bool, const QString, int)),
+            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
             this,
-            SIGNAL(portMappingAdded(const QString, int, const QString, int, const QString, bool, const QString, int)));
+            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
     
     connect(backendObject,
-            SIGNAL(portMappingDeleted(const QString, int, const QString)),
+            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
             this,
-            SIGNAL(portMappingDeleted(const QString, int, const QString)));
+            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)));
 
     connect(backendObject,
             SIGNAL(enabledForInternet(bool)),
@@ -53,14 +53,14 @@ InternetGateway::InternetGateway(InternetGatewayPrivate& dd, QObject* backendObj
     : DeviceInterface(dd, backendObject)
 {
     connect(backendObject, 
-            SIGNAL(portMappingAdded(const QString, int, const QString, int, const QString, bool, const QString, int)),
+            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
             this,
-            SIGNAL(portMappingAdded(const QString, int, const QString, int, const QString, bool, const QString, int)));
+            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
     
     connect(backendObject,
-            SIGNAL(portMappingDeleted(const QString, int, const QString)),
+            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
             this,
-            SIGNAL(portMappingDeleted(const QString, int, const QString)));
+            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)));
 
     connect(backendObject,
             SIGNAL(enabledForInternet(bool)),
@@ -86,8 +86,8 @@ QStringList InternetGateway::currentConnections() const
     return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), QStringList(), currentConnections());
 }
 
-void InternetGateway::addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
-                                     qint16 internalPort, const QString internalClient)
+void InternetGateway::addPortMapping(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol,
+                                     qint16 internalPort, const QString& internalClient)
 {
     Q_D(const InternetGateway);
     
@@ -95,7 +95,7 @@ void InternetGateway::addPortMapping(const QString remoteHost, qint16 externalPo
                addPortMapping(remoteHost, externalPort, mappingProtocol, internalPort, internalClient));
 }
 
-void InternetGateway::deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol)
+void InternetGateway::deletePortMapping(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol)
 {
     Q_D(const InternetGateway);
     

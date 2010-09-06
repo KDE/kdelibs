@@ -144,7 +144,7 @@ Solid::InternetGateway::InternetStatus UPnPInternetGateway::isEnabledForInternet
     }
 }
 
-void UPnPInternetGateway::deletePortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol)
+void UPnPInternetGateway::deletePortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
@@ -156,7 +156,12 @@ void UPnPInternetGateway::deletePortMapping(const QString remoteHost, qint16 ext
                 Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->info().inputArguments();
                 inArgs["NewRemoteHost"]->setValue(remoteHost);
                 inArgs["NewExternalPort"]->setValue(externalPort);
-                inArgs["NewProtocol"]->setValue(mappingProtocol);
+
+                if (mappingProtocol == Solid::InternetGateway::TCP) {
+                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("TCP"));
+                } else {
+                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("UDP"));
+                }
 
                 connect(deletePortMappingAction, 
                         SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
@@ -198,7 +203,14 @@ void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp 
         int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
         QString newProtocol = inArgs["NewProtocol"]->value().toString();
 
-        emit portMappingDeleted(newRemoteHost, newExternalPort, newProtocol);
+        Solid::InternetGateway::NetworkProtocol protocol;
+        if (newProtocol == QString::fromLatin1("TCP")) {
+            protocol = Solid::InternetGateway::TCP;
+        } else {
+            protocol = Solid::InternetGateway::UDP;  
+        }
+
+        emit portMappingDeleted(newRemoteHost, newExternalPort, protocol);
     } else {
         qDebug() << "deletePortMapping Action invocation failed";
     }
@@ -221,8 +233,8 @@ Herqq::Upnp::HServiceProxy* UPnPInternetGateway::getWANConnectionService(Herqq::
     return service;
 }
 
-void UPnPInternetGateway::addPortMapping(const QString remoteHost, qint16 externalPort, const QString mappingProtocol,
-                                         qint16 internalPort, const QString internalClient)
+void UPnPInternetGateway::addPortMapping(const QString& remoteHost, qint16 externalPort, const Solid::InternetGateway::NetworkProtocol& mappingProtocol,
+                                         qint16 internalPort, const QString& internalClient)
 {
     Herqq::Upnp::HDeviceProxies embeddedDevices = upnpDevice()->device()->embeddedProxyDevices();
     Herqq::Upnp::HDeviceProxy* wanDevice = getDevice(QString::fromLatin1("WANDevice"), embeddedDevices);
@@ -234,7 +246,13 @@ void UPnPInternetGateway::addPortMapping(const QString remoteHost, qint16 extern
                 Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->info().inputArguments();
                 inArgs["NewRemoteHost"]->setValue(remoteHost);
                 inArgs["NewExternalPort"]->setValue(externalPort);
-                inArgs["NewProtocol"]->setValue(mappingProtocol);
+
+                if (mappingProtocol == Solid::InternetGateway::TCP) {
+                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("TCP"));
+                } else {
+                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("UDP"));
+                }
+
                 inArgs["NewInternalPort"]->setValue(internalPort);
                 inArgs["NewInternalClient"]->setValue(internalClient);
                 inArgs["NewEnabled"]->setValue(true);
@@ -285,10 +303,18 @@ void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp inv
         QString newRemoteHost = inArgs["NewRemoteHost"]->value().toString();
         int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
         QString newProtocol = inArgs["NewProtocol"]->value().toString();
+
+        Solid::InternetGateway::NetworkProtocol protocol;
+        if (newProtocol == QString::fromLatin1("TCP")) {
+            protocol = Solid::InternetGateway::TCP;
+        } else {
+            protocol = Solid::InternetGateway::UDP;  
+        }
+        
         int newInternalPort = inArgs["NewInternalPort"]->value().toInt();
         QString newInternalClient = inArgs["NewInternalClient"]->value().toString();
 
-        emit portMappingAdded(newRemoteHost, newExternalPort, newProtocol, newInternalPort, newInternalClient);
+        emit portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
     } else {
         qDebug() << "addPortMapping Action invocation failed" << invocationID.waitCode() << invocationID.returnValue();
     }

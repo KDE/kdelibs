@@ -83,7 +83,7 @@ QStringList UPnPDeviceManager::allDevices()
 {
     QStringList result;
 
-    result << udiPrefix();
+    //result << udiPrefix();
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
