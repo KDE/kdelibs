@@ -175,6 +175,11 @@ void QueryTest::testToSparql_data()
         << QString::fromLatin1("select distinct ?r where { <nepomuk:/res/foobar> %1 ?r . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 
+    QTest::newRow( "inverted comparisonterm 2" )
+        << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), Term() ).inverted() )
+        << QString::fromLatin1("select distinct ?r where { ?v1 %1 ?r . }")
+        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
+
     QTest::newRow( "optional term" )
         << Query(OptionalTerm::optionalizeTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
         << QString::fromLatin1("select distinct ?r where { OPTIONAL { ?r %1 <nepomuk:/res/foobar> . } }")
@@ -353,7 +358,7 @@ void QueryTest::testToSparql_data()
     QString sparql = QString::fromLatin1("select distinct ?r count(?v5) as ?cnt where { { "
                                          "{ ?r a ?v1 . ?v1 %1 %2 . } UNION { ?r a ?v2 . ?v2 %1 %3 . } . "
                                          "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v3 ?r . }))) . "
-                                         "?r ?v4 ?v5 . } . } ORDER BY DESC ( ?cnt )")
+                                         "?v5 ?v4 ?r . } . } ORDER BY DESC ( ?cnt )")
                      .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));
