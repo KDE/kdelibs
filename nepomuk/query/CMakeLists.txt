@@ -36,11 +36,17 @@ set(nepomukquery_SRC
   ../core/dbusconnectionpool.cpp
   queryserializer.cpp
   standardqueries.cpp
+  facet.cpp
+  facetmodel.cpp
+  facetcontainer.cpp
 )
 
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nco.trig" "NCO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nmo.trig" "NMO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/tmo.trig" "TMO" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(
   org.kde.nepomuk.QueryService.xml
@@ -85,6 +91,9 @@ install(FILES
   result.h
   queryserviceclient.h
   queryparser.h
+  standardqueries.h
+  facet.h
+  facetmodel.h
   nepomukquery_export.h
   standardqueries.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
