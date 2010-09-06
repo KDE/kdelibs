@@ -36,9 +36,6 @@ set(nepomukquery_SRC
   ../core/dbusconnectionpool.cpp
   queryserializer.cpp
   standardqueries.cpp
-  facet.cpp
-  facetmodel.cpp
-  facetcontainer.cpp
 )
 
 soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
@@ -92,8 +89,6 @@ install(FILES
   queryserviceclient.h
   queryparser.h
   standardqueries.h
-  facet.h
-  facetmodel.h
   nepomukquery_export.h
   standardqueries.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
