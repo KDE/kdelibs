@@ -87,6 +87,70 @@ Nepomuk::Query::Term::Type Nepomuk::Query::Term::type() const
 }
 
 
+Nepomuk::Query::Term Nepomuk::Query::Term::optimized() const
+{
+    switch( type() ) {
+    case Nepomuk::Query::Term::And:
+    case Nepomuk::Query::Term::Or: {
+        QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( *this ).subTerms();
+        QList<Nepomuk::Query::Term> newSubTerms;
+        QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
+        for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
+              it != end; ++it ) {
+            const Nepomuk::Query::Term& t = *it;
+            Nepomuk::Query::Term ot = t.optimized();
+            QList<Nepomuk::Query::Term> terms;
+            if ( ot.type() == type() ) {
+                terms = static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
+            }
+            else if( ot.isValid() ) {
+                terms += ot;
+            }
+            Q_FOREACH( const Nepomuk::Query::Term& t, terms ) {
+                if( !newSubTerms.contains( t ) )
+                    newSubTerms += t;
+            }
+        }
+        if ( newSubTerms.count() == 0 )
+            return Nepomuk::Query::Term();
+        else if ( newSubTerms.count() == 1 )
+            return *newSubTerms.begin();
+        else if ( isAndTerm() )
+            return Nepomuk::Query::AndTerm( newSubTerms );
+        else
+            return Nepomuk::Query::OrTerm( newSubTerms );
+    }
+
+    case Nepomuk::Query::Term::Negation: {
+        Nepomuk::Query::NegationTerm nt = toNegationTerm();
+        // a negation in a negation
+        if( nt.subTerm().isNegationTerm() )
+            return nt.subTerm().toNegationTerm().subTerm().optimized();
+        else
+            return Nepomuk::Query::NegationTerm::negateTerm( nt.subTerm().optimized() );
+    }
+
+    case Nepomuk::Query::Term::Optional: {
+        Nepomuk::Query::OptionalTerm ot = toOptionalTerm();
+        // remove duplicate optional terms
+        if( ot.subTerm().isOptionalTerm() )
+            return ot.subTerm().optimized();
+        else
+            return Nepomuk::Query::OptionalTerm::optionalizeTerm( ot.subTerm().optimized() );
+    }
+
+    case Nepomuk::Query::Term::Comparison: {
+        Nepomuk::Query::ComparisonTerm ct( toComparisonTerm() );
+        ct.setSubTerm( ct.subTerm().optimized() );
+        return ct;
+    }
+
+    default:
+        return *this;
+    }
+}
+
+
 bool Nepomuk::Query::Term::isLiteralTerm() const
 {
     return type() == Literal;

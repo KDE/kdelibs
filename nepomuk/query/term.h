@@ -168,6 +168,19 @@ namespace Nepomuk {
             Type type() const;
 
             /**
+             * Optimizes the term without chaning its meaning. This removes
+             * redundant terms such as NegationTerm and OptionalTerm nestings and flattens
+             * AndTerm and OrTerm hierarchies.
+             *
+             * \return An optimized version of this term.
+             *
+             * \since 4.6
+             *
+             * \sa Query::optimized()
+             */
+            Term optimized() const;
+
+            /**
              * \return \p true if this term is a LiteralTerm.
              */
             bool isLiteralTerm() const;

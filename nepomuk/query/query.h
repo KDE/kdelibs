@@ -416,6 +416,8 @@ namespace Nepomuk {
              * \return An optimized version of this query.
              *
              * \since 4.6
+             *
+             * \sa Query::optimized()
              */
             Query optimized() const;
 

@@ -71,69 +71,6 @@ ORDER BY  desc (?
 
 
 namespace {
-    Nepomuk::Query::Term optimizeTerm( const Nepomuk::Query::Term& term )
-    {
-        switch( term.type() ) {
-        case Nepomuk::Query::Term::And:
-        case Nepomuk::Query::Term::Or: {
-            QList<Nepomuk::Query::Term> subTerms = static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms();
-            QList<Nepomuk::Query::Term> newSubTerms;
-            QList<Nepomuk::Query::Term>::const_iterator end( subTerms.constEnd() );
-            for ( QList<Nepomuk::Query::Term>::const_iterator it = subTerms.constBegin();
-                  it != end; ++it ) {
-                const Nepomuk::Query::Term& t = *it;
-                Nepomuk::Query::Term ot = optimizeTerm( t );
-                QList<Nepomuk::Query::Term> terms;
-                if ( ot.type() == term.type() ) {
-                    terms = static_cast<const Nepomuk::Query::GroupTerm&>( ot ).subTerms();
-                }
-                else if( ot.isValid() ) {
-                    terms += ot;
-                }
-                Q_FOREACH( const Nepomuk::Query::Term& t, terms ) {
-                    if( !newSubTerms.contains( t ) )
-                        newSubTerms += t;
-                }
-            }
-            if ( newSubTerms.count() == 0 )
-                return Nepomuk::Query::Term();
-            else if ( newSubTerms.count() == 1 )
-                return *newSubTerms.begin();
-            else if ( term.isAndTerm() )
-                return Nepomuk::Query::AndTerm( newSubTerms );
-            else
-                return Nepomuk::Query::OrTerm( newSubTerms );
-        }
-
-        case Nepomuk::Query::Term::Negation: {
-            Nepomuk::Query::NegationTerm nt = term.toNegationTerm();
-            // a negation in a negation
-            if( nt.subTerm().isNegationTerm() )
-                return optimizeTerm( nt.subTerm().toNegationTerm().subTerm() );
-            else
-                return Nepomuk::Query::NegationTerm::negateTerm( optimizeTerm( nt.subTerm() ) );
-        }
-
-        case Nepomuk::Query::Term::Optional: {
-            Nepomuk::Query::OptionalTerm ot = term.toOptionalTerm();
-            // remove duplicate optional terms
-            if( ot.subTerm().isOptionalTerm() )
-                return optimizeTerm( ot.subTerm() );
-            else
-                return Nepomuk::Query::OptionalTerm::optionalizeTerm( optimizeTerm( ot.subTerm() ) );
-        }
-
-        case Nepomuk::Query::Term::Comparison: {
-            Nepomuk::Query::ComparisonTerm ct( term.toComparisonTerm() );
-            ct.setSubTerm( optimizeTerm( ct.subTerm() ) );
-            return ct;
-        }
-
-        default:
-            return term;
-        }
-    }
-
     Nepomuk::Query::Term prepareForSparql( const Nepomuk::Query::Term& term )
     {
         //
@@ -482,7 +419,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     }
 
     // optimize whatever we can
-    term = optimizeTerm( prepareForSparql( term ) );
+    term = prepareForSparql( term ).optimized();
 
     // actually build the SPARQL query patterns
     QueryBuilderData qbd( flags );
@@ -607,7 +544,7 @@ QString Nepomuk::Query::Query::toString() const
 Nepomuk::Query::Query Nepomuk::Query::Query::optimized() const
 {
     Query newQuery( *this );
-    newQuery.setTerm( optimizeTerm( term() ) );
+    newQuery.setTerm( term().optimized() );
     return newQuery;
 }
 
