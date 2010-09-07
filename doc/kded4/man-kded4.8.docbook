@@ -62,7 +62,7 @@ cache of servicetypes, mimetypes, and services for a particular user.
 <para>
 It monitors the directories containing .desktop files.
 When a file is added/removed, it waits 5 seconds (in case of series of
-updates), and then launches <command>kbuildsycoca4</command>.
+updates), and then launches <command>kbuildsycoca</command>.
 </para>
 <!--
 <para>
@@ -155,14 +155,14 @@ it shows the message:
 </para>
 <para>
 If <command>kded4</command> is called with <command>kded4 --check</command>, then
-it updates the &kde; sycoca using <command>kbuildsycoca4</command>.
+it updates the &kde; sycoca using <command>kbuildsycoca</command>.
 </para>
 </refsect1>
 
 <refsect1>
 <title>See Also</title>
 <para><replaceable>kdeoptions</replaceable>(7), <replaceable>qtoptions</replaceable>(7),
-<replaceable>kbuildsycoca4</replaceable>(8)
+<replaceable>kbuildsycoca</replaceable>(8)
 </para>
 </refsect1>
 
