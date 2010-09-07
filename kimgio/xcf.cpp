@@ -628,34 +628,49 @@ void XCFImageFormat::setPalette(XCFImage& xcf_image, QImage& image)
  */
 void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
 {
+	QImage &image = layer.image_tiles[j][i];
 	uchar* tile = layer.tile;
+	const int width = image.width();
+	const int height = image.height();
+	const int bytesPerLine = image.bytesPerLine();
+	uchar *bits = image.bits();
 
 	switch (layer.type) {
 		case RGB_GIMAGE:
-			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
-					layer.image_tiles[j][i].setPixel(k, l,
-							qRgb(tile[0], tile[1], tile[2]));
+			for (int y = 0; y < height; y++) {
+				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
+				for (int x = 0; x < width; x++) {
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+					*dataPtr++ = qRgba(*((QRgb *) tile), 255);
+#else
+					*dataPtr++ = qRgb(tile[0], tile[1], tile[2]);
+#endif
 					tile += sizeof(QRgb);
 				}
 			}
 			break;
 
 		case RGBA_GIMAGE:
-			for ( int l = 0; l < layer.image_tiles[j][i].height(); l++ ) {
-				for ( int k = 0; k < layer.image_tiles[j][i].width(); k++ ) {
-					layer.image_tiles[j][i].setPixel(k, l,
-							qRgba(tile[0], tile[1], tile[2], tile[3]));
+			for (int y = 0; y < height; y++) {
+				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+				memcpy(dataPtr, tile, width * sizeof(QRgb));
+				tile += width * sizeof(QRgb);
+#else
+				for (int x = 0; x < width; x++) {
+					*dataPtr++ = 	qRgba(tile[0], tile[1], tile[2], tile[3]);
 					tile += sizeof(QRgb);
 				}
+#endif
 			}
 			break;
 
 		case GRAY_GIMAGE:
 		case INDEXED_GIMAGE:
-			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
-					layer.image_tiles[j][i].setPixel(k, l, tile[0]);
+			for (int y = 0; y < height; y++) {
+				uchar *dataPtr = bits + y * bytesPerLine;
+				for (int x = 0; x < width; x++) {
+					*dataPtr++ = tile[0];
 					tile += sizeof(QRgb);
 				}
 			}
@@ -663,17 +678,21 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
 
 		case GRAYA_GIMAGE:
 		case INDEXEDA_GIMAGE:
-			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
+			for (int y = 0; y < height; y++) {
+				uchar *dataPtr = bits + y * bytesPerLine;
+				uchar *alphaPtr = layer.alpha_tiles[j][i].scanLine(y);
+				for (int x = 0; x < width; x++) {
 
 				// The "if" here should not be necessary, but apparently there
 				// are some cases where the image can contain larger indices
 				// than there are colors in the palette. (A bug in The GIMP?)
 
-					if (tile[0] < layer.image_tiles[j][i].numColors())
-						layer.image_tiles[j][i].setPixel(k, l, tile[0]);
+					if (tile[0] < image.numColors())
+						*dataPtr = tile[0];
 
-					layer.alpha_tiles[j][i].setPixel(k, l, tile[1]);
+					*alphaPtr = tile[1];
+					dataPtr += 1;
+					alphaPtr += 1;
 					tile += sizeof(QRgb);
 				}
 			}
@@ -999,11 +1018,17 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
  */
 void XCFImageFormat::assignMaskBytes(Layer& layer, uint i, uint j)
 {
+	QImage &image = layer.mask_tiles[j][i];
 	uchar* tile = layer.tile;
+	const int width = image.width();
+	const int height = image.height();
+	const int bytesPerLine = image.bytesPerLine();
+	uchar *bits = image.bits();
 
-	for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-		for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
-			layer.mask_tiles[j][i].setPixel(k, l, tile[0]);
+	for (int y = 0; y < height; y++) {
+		uchar *dataPtr = bits + y * bytesPerLine;
+		for (int x = 0; x < width; x++) {
+			*dataPtr++ = tile[0];
 			tile += sizeof(QRgb);
 		}
 	}
