@@ -781,6 +781,12 @@ void KLocalePrivate::updateCatalogs()
     // in trouble with a language sequende nds,<default>,de. In this case <default> must hide
     // everything after itself in the language list.
     foreach(const QString &lang, languageList) {
+        if (lang == KLocale::defaultLanguage()) {
+            // Default language has no catalogs (messages from the code),
+            // so loading catalogs for languages below the default
+            // would later confuse the fallback resolution.
+            break;
+        }
         foreach(const KCatalogName &name, catalogNames) {
             // create and add catalog for this name and language if it exists
             if (! KCatalog::catalogLocaleDir(name.name, lang).isEmpty()) {
