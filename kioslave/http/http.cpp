@@ -303,7 +303,7 @@ static QString formatHttpDate(qint64 date)
 
 static bool isAuthenticationRequired(int responseCode)
 {
-    return responseCode == 401 || responseCode == 407;
+    return (responseCode == 401) || (responseCode == 407);
 }
 
 #define NO_SIZE ((KIO::filesize_t) -1)
@@ -2831,7 +2831,7 @@ try_again:
     } else if (m_request.responseCode == 426) {
         // Upgrade Required
         upgradeRequired = true;
-    } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499) {
+    } else if (!isAuthenticationRequired(m_request.responseCode) && m_request.responseCode >= 400 && m_request.responseCode <= 499) {
         // Any other client errors
         // Tell that we will only get an error page here.
         if (!sendErrorPageNotification()) {
