@@ -91,8 +91,12 @@ class KUriFilterDataPrivate
 {
 public:
     explicit KUriFilterDataPrivate( const KUrl& u, const QString& typedUrl )
-      : checkForExecs(true), wasModified(true), uriType(KUriFilterData::Unknown),
-        url(u), searchTermSeparator(':'), typedString(typedUrl)
+      : checkForExecs(true),
+        wasModified(true),
+        uriType(KUriFilterData::Unknown),
+        searchFilterOptions(KUriFilterData::SearchFilterOptionNone),
+        url(u),
+        typedString(typedUrl)
     {
     }
 
@@ -101,6 +105,7 @@ public:
         checkForExecs = true;
         wasModified = true;
         uriType = KUriFilterData::Unknown;
+        searchFilterOptions = KUriFilterData::SearchFilterOptionNone;
 
         url = u;
         typedString = typedUrl;
@@ -111,9 +116,11 @@ public:
         args.clear();
         searchTerm.clear();
         searchProvider.clear();
+        searchTermSeparator = QChar();
         alternateDefaultSearchProvider.clear();
         alternateSearchProviders.clear();
         searchProviderInfoList.clear();
+        defaultUrlScheme.clear();
     }
 
     KUriFilterDataPrivate( KUriFilterDataPrivate * data )
@@ -121,6 +128,7 @@ public:
         wasModified = data->wasModified;
         checkForExecs = data->checkForExecs;
         uriType = data->uriType;
+        searchFilterOptions = data->searchFilterOptions;
 
         url = data->url;
         typedString = data->typedString;
@@ -130,15 +138,18 @@ public:
         absPath = data->absPath;
         args = data->args;
         searchTerm = data->searchTerm;
+        searchTermSeparator = data->searchTermSeparator;
         searchProvider = data->searchProvider;
         alternateDefaultSearchProvider = data->alternateDefaultSearchProvider;
         alternateSearchProviders = data->alternateSearchProviders;
         searchProviderInfoList = data->searchProviderInfoList;
+        defaultUrlScheme = data->defaultUrlScheme;
     }
 
     bool checkForExecs;
     bool wasModified;
     KUriFilterData::UriTypes uriType;
+    KUriFilterData::SearchFilterOptions searchFilterOptions;
 
     KUrl url;
     QString typedString;
@@ -149,6 +160,7 @@ public:
     QString searchTerm;
     QString searchProvider;
     QString alternateDefaultSearchProvider;
+    QString defaultUrlScheme;
     QChar searchTermSeparator;
 
     QStringList alternateSearchProviders;
@@ -248,7 +260,16 @@ QStringList KUriFilterData::preferredSearchProviders() const
 
 QString KUriFilterData::queryForPreferredSearchProvider(const QString &provider) const
 {
-    return d->searchProviderInfoList.value(provider).first;
+    QStringList items = d->searchProviderInfoList.value(provider).first.split(QLatin1Char(','));
+    if (items.isEmpty())
+        return QString();
+
+    return items.first();
+}
+
+QStringList KUriFilterData::allQueriesForSearchProvider(const QString& provider) const
+{
+    return d->searchProviderInfoList.value(provider).first.split(QLatin1Char(','));
 }
 
 QString KUriFilterData::iconNameForPreferredSearchProvider(const QString &provider) const
@@ -264,6 +285,16 @@ QStringList KUriFilterData::alternateSearchProviders() const
 QString KUriFilterData::alternateDefaultSearchProvider() const
 {
     return d->alternateDefaultSearchProvider;
+}
+
+QString KUriFilterData::defaultUrlScheme() const
+{
+    return d->defaultUrlScheme;
+}
+
+KUriFilterData::SearchFilterOptions KUriFilterData::searchFilteringOptions() const
+{
+    return d->searchFilterOptions;
 }
 
 QString KUriFilterData::iconName()
@@ -311,6 +342,16 @@ void KUriFilterData::setAlternateSearchProviders(const QStringList &providers)
 void KUriFilterData::setAlternateDefaultSearchProvider(const QString &provider)
 {
     d->alternateDefaultSearchProvider = provider;
+}
+
+void KUriFilterData::setDefaultUrlScheme(const QString& scheme)
+{
+    d->defaultUrlScheme = scheme;
+}
+
+void KUriFilterData::setSearchFilteringOptions(SearchFilterOptions options)
+{
+    d->searchFilterOptions = options;
 }
 
 KUriFilterData& KUriFilterData::operator=( const KUrl& url )
@@ -478,8 +519,22 @@ QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters 
 
 bool KUriFilter::filterSearchUri(KUriFilterData &data)
 {
-    return filterUri(data, QStringList() << "kuriikwsfilter" << "kurisearchfilter");
+    return filterSearchUri(data, (NormalTextFilter | WebShortcutFilter));
 }
+
+bool KUriFilter::filterSearchUri(KUriFilterData &data, SearchFilterTypes types)
+{
+    QStringList filters;
+
+    if (types & NormalTextFilter)
+        filters << "kuriikwsfilter";
+
+    if (types & WebShortcutFilter)
+        filters << "kurisearchfilter";
+
+    return filterUri(data, filters);
+}
+
 
 QStringList KUriFilter::pluginNames() const
 {
