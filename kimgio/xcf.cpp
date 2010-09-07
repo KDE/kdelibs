@@ -31,8 +31,8 @@
 
 
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
+bool random_table_initialized;
 
-//int XCFImageFormat::add_lut[256][256];
 
 
 const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
@@ -69,10 +69,16 @@ inline QRgb qRgba ( const QRgb& rgb, int a )
 
 
 /*!
- * The constructor for the XCF image loader. This initializes the
- * tables used in the layer merging routines.
+ * The constructor for the XCF image loader.
  */
 XCFImageFormat::XCFImageFormat()
+{
+}
+
+/*!
+ * This initializes the tables used in the layer dissolving routines.
+ */
+void XCFImageFormat::initializeRandomTable()
 {
 	// From GIMP "paint_funcs.c" v1.2
 	srand(RANDOM_SEED);
@@ -87,15 +93,6 @@ XCFImageFormat::XCFImageFormat()
 		random_table[i] = random_table[swap];
 		random_table[swap] = tmp;
 	}
-
-//	for (int j = 0; j < 256; j++) {
-//		for (int k = 0; k < 256; k++) {
-//			int tmp_sum = j + k;
-//			if (tmp_sum > 255)
-//				tmp_sum = 255;
-//			add_lut[j][k] = tmp_sum;
-//		}
-//	}
 }
 
 inline
@@ -1233,6 +1230,10 @@ void XCFImageFormat::copyLayerToImage(XCFImage& xcf_image)
 			// single layer.
 
 			if (layer.mode == DISSOLVE_MODE) {
+				if (!random_table_initialized) {
+					initializeRandomTable();
+					random_table_initialized = true;
+				}
 				if (layer.type == RGBA_GIMAGE)
 					dissolveRGBPixels(layer.image_tiles[j][i], x, y);
 
@@ -1502,6 +1503,10 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
 			// single layer.
 
 			if (layer.mode == DISSOLVE_MODE) {
+				if (!random_table_initialized) {
+					initializeRandomTable();
+					random_table_initialized = true;
+				}
 				if (layer.type == RGBA_GIMAGE)
 					dissolveRGBPixels(layer.image_tiles[j][i], x, y);
 

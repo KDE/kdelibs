@@ -233,6 +233,7 @@ private:
 	static void mergeIndexedAToRGB(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);
 
+	static void initializeRandomTable();
 	static void dissolveRGBPixels(QImage& image, int x, int y);
 	static void dissolveAlphaPixels(QImage& image, int x, int y);
 };
