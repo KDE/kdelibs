@@ -159,6 +159,12 @@ private:
 	//! for each ROW of an image. Therefore, the random numbers chosen
 	//! are consistent from run to run.
 	static int random_table[RANDOM_TABLE_SIZE];
+	static bool random_table_initialized;
+
+	//! This table is used as a shared grayscale ramp to be set on grayscale
+	//! images. This is because Qt does not differentiate between indexed and
+	//! grayscale images.
+	static QVector<QRgb> grayTable;
 
 	//! This table provides the add_pixel saturation values (i.e. 250 + 250 = 255).
 	//static int add_lut[256][256]; - this is so lame waste of 256k of memory

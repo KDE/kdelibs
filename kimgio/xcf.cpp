@@ -31,8 +31,9 @@
 
 
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
-bool random_table_initialized;
+bool XCFImageFormat::random_table_initialized;
 
+QVector<QRgb> XCFImageFormat::grayTable;
 
 
 const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
@@ -599,8 +600,14 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
  */
 void XCFImageFormat::setGrayPalette(QImage& image)
 {
-	for (int i = 0; i < 256; i++)
-		image.setColor(i, qRgb(i, i, i));
+	if (grayTable.isEmpty()) {
+		grayTable.resize(256);
+
+		for (int i = 0; i < 256; i++)
+			grayTable[i] = qRgb(i, i, i);
+	}
+
+	image.setColorTable(grayTable);
 }
 
 
@@ -611,8 +618,9 @@ void XCFImageFormat::setGrayPalette(QImage& image)
  */
 void XCFImageFormat::setPalette(XCFImage& xcf_image, QImage& image)
 {
-	for (int i = 0; i < xcf_image.num_colors; i++)
-		image.setColor(i, xcf_image.palette[i]);
+	Q_ASSERT (xcf_image.num_colors == xcf_image.palette.size());
+
+	image.setColorTable(xcf_image.palette);
 }
 
 
