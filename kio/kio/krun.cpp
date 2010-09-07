@@ -356,6 +356,40 @@ KRunMX2::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
     return 2;
 }
 
+static QStringList supportedProtocols(const KService& _service)
+{
+    // Check which protocols the application supports.
+    // This can be a list of actual protocol names, or just KIO for KDE apps.
+    QStringList supportedProtocols = _service.property("X-KDE-Protocols").toStringList();
+    KRunMX1 mx1(_service);
+    QString exec = _service.exec();
+    if (mx1.expandMacrosShellQuote(exec) && !mx1.hasUrls) {
+        Q_ASSERT(supportedProtocols.isEmpty());   // huh? If you support protocols you need %u or %U...
+    }
+    else {
+        if (supportedProtocols.isEmpty()) {
+            // compat mode: assume KIO if not set and it's a KDE app
+            const QStringList categories = _service.property("Categories").toStringList();
+            if (categories.contains("KDE")) {
+                supportedProtocols.append("KIO");
+            }
+            else { // if no KDE app, be a bit over-generic
+                supportedProtocols.append("http");
+                supportedProtocols.append("ftp");
+            }
+        }
+    }
+    kDebug(7010) << "supportedProtocols:" << supportedProtocols;
+    return supportedProtocols;
+}
+
+static bool isProtocolInSupportedList(const KUrl& url, const QStringList& supportedProtocols)
+{
+    if (supportedProtocols.contains("KIO"))
+        return true;
+    return url.isLocalFile() || supportedProtocols.contains(url.protocol().toLower());
+}
+
 QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool tempFiles, const QString& suggestedFileName)
 {
     QString exec = _service.exec();
@@ -392,24 +426,38 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     }
 
     // Check if we need kioexec
+    bool useKioexec = false;
     if (!mx1.hasUrls) {
         for (KUrl::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
             if (!(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it)) {
-                // We need to run the app through kioexec
-                const QString kioexec = KStandardDirs::findExe("kioexec");
-                Q_ASSERT(!kioexec.isEmpty());
-                result << kioexec;
-                if (tempFiles) {
-                    result << "--tempfiles";
-                }
-                if (!suggestedFileName.isEmpty()) {
-                    result << "--suggestedfilename";
-                    result << suggestedFileName;
-                }
-                result << exec;
-                result += _urls.toStringList();
-                return result;
+                useKioexec = true;
+                kDebug(7010) << "non-local files, application does not support urls, using kioexec";
+                break;
             }
+    } else { // app claims to support %u/%U, check which protocols
+        QStringList appSupportedProtocols = supportedProtocols(_service);
+        for (KUrl::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
+            if( !isProtocolInSupportedList(*it, appSupportedProtocols)) {
+                useKioexec = true;
+                kDebug(7010) << "application does not support url, using kioexec:" << *it;
+                break;
+            }
+    }
+    if (useKioexec) {
+        // We need to run the app through kioexec
+        const QString kioexec = KStandardDirs::findExe("kioexec");
+        Q_ASSERT(!kioexec.isEmpty());
+        result << kioexec;
+        if (tempFiles) {
+            result << "--tempfiles";
+        }
+        if (!suggestedFileName.isEmpty()) {
+            result << "--suggestedfilename";
+            result << suggestedFileName;
+        }
+        result << exec;
+        result += _urls.toStringList();
+        return result;
     }
 
     if (appHasTempFileOption) {
@@ -678,32 +726,12 @@ static KUrl::List resolveURLs(const KUrl::List& _urls, const KService& _service)
 {
     // Check which protocols the application supports.
     // This can be a list of actual protocol names, or just KIO for KDE apps.
-    QStringList supportedProtocols = _service.property("X-KDE-Protocols").toStringList();
-    KRunMX1 mx1(_service);
-    QString exec = _service.exec();
-    if (mx1.expandMacrosShellQuote(exec) && !mx1.hasUrls) {
-        Q_ASSERT(supportedProtocols.isEmpty());   // huh? If you support protocols you need %u or %U...
-    }
-    else {
-        if (supportedProtocols.isEmpty()) {
-            // compat mode: assume KIO if not set and it's a KDE app
-            const QStringList categories = _service.property("Categories").toStringList();
-            if (categories.contains("KDE")) {
-                supportedProtocols.append("KIO");
-            }
-            else { // if no KDE app, be a bit over-generic
-                supportedProtocols.append("http");
-                supportedProtocols.append("ftp");
-            }
-        }
-    }
-    kDebug(7010) << "supportedProtocols:" << supportedProtocols;
-
+    QStringList appSupportedProtocols = supportedProtocols(_service);
     KUrl::List urls(_urls);
-    if (!supportedProtocols.contains("KIO")) {
+    if (!appSupportedProtocols.contains("KIO")) {
         for (KUrl::List::Iterator it = urls.begin(); it != urls.end(); ++it) {
             const KUrl url = *it;
-            bool supported = url.isLocalFile() || supportedProtocols.contains(url.protocol().toLower());
+            bool supported = isProtocolInSupportedList(url, appSupportedProtocols);
             kDebug(7010) << "Looking at url=" << url << " supported=" << supported;
             if (!supported && KProtocolInfo::protocolClass(url.protocol()) == ":local") {
                 // Maybe we can resolve to a local URL?
