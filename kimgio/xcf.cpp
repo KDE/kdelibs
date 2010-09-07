@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <QtGui/QImage>
+#include <QtGui/QPainter>
 #include <QtCore/QIODevice>
 #include <QtCore/QStack>
 #include <QtCore/QVector>
@@ -1240,6 +1241,15 @@ void XCFImageFormat::copyLayerToImage(XCFImage& xcf_image)
 					dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
 			}
 
+			// Shortcut for common case
+			if (copy == copyRGBToRGB && layer.apply_mask != 1) {
+				QPainter painter(&image);
+				painter.setOpacity(layer.opacity / 255.0);
+				painter.setCompositionMode(QPainter::CompositionMode_Source);
+				painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+				continue;
+			}
+
 			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
 				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
 
@@ -1511,6 +1521,16 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
 
 				else if (layer.type == GRAYA_GIMAGE)
 					dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
+			}
+
+			// Shortcut for common case
+			if (merge == mergeRGBToRGB && layer.apply_mask != 1
+			    && layer.mode == NORMAL_MODE) {
+				QPainter painter(&image);
+				painter.setOpacity(layer.opacity / 255.0);
+				painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+				continue;
 			}
 
 			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
