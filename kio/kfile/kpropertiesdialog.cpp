@@ -2935,13 +2935,13 @@ void KDevicePropsPlugin::slotFoundMountPoint( const QString&,
     d->m_freeSpaceText->show();
     d->m_freeSpaceLabel->show();
 
-    int percUsed = 100 - (int)(100.0 * kibAvail / kibSize);
+    int percUsed = kibSize != 0 ? (100 - (int)(100.0 * kibAvail / kibSize)) : 100;
 
     d->m_freeSpaceLabel->setText(
-            i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
+            i18nc("Available space out of total partition size (percent used)", "%1 free of %2 (%3% used)",
                   KIO::convertSizeFromKiB(kibAvail),
                   KIO::convertSizeFromKiB(kibSize),
-                  100 - (int)(100.0 * kibAvail / kibSize) ));
+                  percUsed ));
 
     d->m_freeSpaceBar->setRange(0, 100);
     d->m_freeSpaceBar->setValue(percUsed);
