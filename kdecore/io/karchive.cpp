@@ -771,8 +771,8 @@ bool KArchiveDirectory::isDirectory() const
     return true;
 }
 
-static int sortByPosition( const KArchiveFile* file1, const KArchiveFile* file2 ) {
-    return file1->position() - file2->position();
+static bool sortByPosition( const KArchiveFile* file1, const KArchiveFile* file2 ) {
+    return file1->position() < file2->position();
 }
 
 void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
