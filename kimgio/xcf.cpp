@@ -645,11 +645,7 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
 			for (int y = 0; y < height; y++) {
 				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
 				for (int x = 0; x < width; x++) {
-#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
-					*dataPtr++ = qRgba(*((QRgb *) tile), 255);
-#else
 					*dataPtr++ = qRgb(tile[0], tile[1], tile[2]);
-#endif
 					tile += sizeof(QRgb);
 				}
 			}
@@ -658,15 +654,10 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
 		case RGBA_GIMAGE:
 			for (int y = 0; y < height; y++) {
 				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
-#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
-				memcpy(dataPtr, tile, width * sizeof(QRgb));
-				tile += width * sizeof(QRgb);
-#else
 				for (int x = 0; x < width; x++) {
 					*dataPtr++ = 	qRgba(tile[0], tile[1], tile[2], tile[3]);
 					tile += sizeof(QRgb);
 				}
-#endif
 			}
 			break;
 

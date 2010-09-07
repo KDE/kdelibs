@@ -204,10 +204,10 @@ private:
 	bool initializeImage(XCFImage& xcf_image);
 	bool loadTileRLE(QDataStream& xcf_io, uchar* tile, int size,
 			int data_length, qint32 bpp);
+
 	static void copyLayerToImage(XCFImage& xcf_image);
 	static void copyRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);
-
 	static void copyGrayToGray(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);
 	static void copyGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
