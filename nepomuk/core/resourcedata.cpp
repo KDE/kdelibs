@@ -52,7 +52,7 @@
 
 using namespace Soprano;
 
-#define MAINMODEL m_rm->resourceFilterModel
+#define MAINMODEL static_cast<ResourceFilterModel*>(m_rm->m_manager->mainModel())
 
 
 Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type, ResourceManagerPrivate* rm )
