@@ -207,6 +207,10 @@ QString getWin32RegistryValue ( HKEY key, const QString& subKey, const QString& 
 
     QString res = QString::fromUtf16 ( ( const ushort* ) lszValue );
     delete [] lszValue;
+    
+    if (ok)
+        *ok = true;
+    
     return res;
 }
 
