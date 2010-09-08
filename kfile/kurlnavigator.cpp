@@ -966,7 +966,14 @@ bool KUrlNavigator::isPlacesSelectorVisible() const
 
 KUrl KUrlNavigator::uncommittedUrl() const
 {
-    return KUrl(d->m_pathBox->currentText().trimmed());
+    KUriFilterData filteredData(d->m_pathBox->currentText().trimmed());
+    filteredData.setCheckForExecutables(false);
+    if (KUriFilter::self()->filterUri(filteredData, QStringList() << "kshorturifilter" << "kurisearchfilter")) {
+        return filteredData.uri();
+    }
+    else {
+        return KUrl(filteredData.typedString());
+    }
 }
 
 void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
@@ -977,15 +984,7 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
 
     KUrl url = newUrl;
     url.cleanPath();
-    
-    KUriFilterData urlData(url);
-    urlData.setCheckForExecutables(false);
-    if (KUriFilter::self()->filterUri(urlData, QStringList() << "kshorturifilter" << "kurisearchfilter")) {
-        url = urlData.uri();
-    } else {
-        url = KUrlCompletion::replacedPath(url.url(), true, true);
-    }
-    
+
     if ((url.protocol() == QLatin1String("tar")) || (url.protocol() == QLatin1String("zip"))) {
         // The URL represents a tar- or zip-file. Check whether
         // the URL is really part of the tar- or zip-file, otherwise
