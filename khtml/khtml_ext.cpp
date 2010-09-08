@@ -265,9 +265,8 @@ void KHTMLPartBrowserExtension::searchProvider()
     if (action) {
         KUrl url = action->data().toUrl();
         if (url.host().isEmpty()) {
-            KUriFilterData data;
-            data.setData(action->data().toString());
-            if (KUriFilter::self()->filterUri(data, QStringList() << "kurisearchfilter"))
+            KUriFilterData data(action->data().toString());
+            if (KUriFilter::self()->filterSearchUri(data, KUriFilter::WebShortcutFilter))
                 url = data.uri();
         }
 
@@ -628,14 +627,13 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
     if (selectedText.isEmpty())
         return;
 
-    KUriFilterData data;
-    data.setData(selectedText);
+    KUriFilterData data (selectedText);
     QStringList alternateProviders;
     alternateProviders << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
     data.setAlternateSearchProviders(alternateProviders);
     data.setAlternateDefaultSearchProvider("google");
 
-    if (KUriFilter::self()->filterUri(data, QStringList() << "kuriikwsfilter")) {
+    if (KUriFilter::self()->filterSearchUri(data, KUriFilter::NormalTextFilter)) {
         const QString squeezedText = KStringHandler::rsqueeze(selectedText, 21);
         KAction *action = new KAction(i18n("Search for '%1' with %2",
                                            squeezedText, data.searchProvider()), this);
