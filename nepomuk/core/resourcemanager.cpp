@@ -107,12 +107,12 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::dataForResourceUri( cons
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOfType( const QUrl& type )
 {
-    QMutexLocker lock( &mutex );
-
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
+        mutex.lock();
         QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
+        mutex.unlock();
         for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
              rdIt != rdl.end(); ++rdIt ) {
             ResourceData* rd = *rdIt;
@@ -133,15 +133,15 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOf
 
 QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWithProperty( const QUrl& uri, const Variant& v )
 {
-    QMutexLocker lock( &mutex );
-
     QList<ResourceData*> l;
 
     //
     // We need to cache m_uriKickoffData since it might be changed
     // in the loop by ResourceData::load()
     //
+    mutex.lock();
     QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
+    mutex.unlock();
 
     //
     // make sure none of the ResourceData objects are deleted by ResourceData::load below
