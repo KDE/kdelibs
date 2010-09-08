@@ -183,6 +183,9 @@ namespace KShell {
      * "^~" on Windows), the escape char is removed and the path is returned
      * as is.
      *
+     * Note that if @p path starts with a tilde but cannot be properly expanded,
+     * this function will return an empty string.
+     *
      * @param path the path to tilde-expand
      * @return the expanded path
      */
