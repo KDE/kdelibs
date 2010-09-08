@@ -134,10 +134,23 @@ QString HelpProtocol::lookupFile(const QString &fname,
             redirect = true;
 	}
         else
-	{
-	    unicodeError( i18n("There is no documentation available for %1." , Qt::escape(path)) );
-            return QString();
-	}
+        {
+            const QString documentationNotFound = "khelpcenter/documentationnotfound/index.html";
+            if (!langLookup(documentationNotFound).isEmpty())
+            {
+                KUrl red;
+                red.setProtocol("help");
+                red.setPath(documentationNotFound);
+                red.setQuery(query);
+                redirection(red);
+                redirect = true;
+            }
+            else
+            {
+                unicodeError( i18n("There is no documentation available for %1." , Qt::escape(path)) );
+                return QString();
+            }
+        }
     } else
         kDebug( 7119 ) << "result " << result;
 
