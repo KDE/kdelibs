@@ -44,6 +44,8 @@ class KNewFileMenuPrivate;
  * KNewFileMenu automatically updates the list of templates shown if installed templates
  * are added/updated/deleted.
  *
+ * @author Björn Ruberg <bjoern@ruberg-wegener.de>
+ * Made dialogs working asynchronously
  * @author David Faure <faure@kde.org>
  * Ideas and code for the new template handling mechanism ('link' desktop files)
  * from Christoph Pickart <pickart@iam.uni-bonn.de>
@@ -72,38 +74,49 @@ public:
     virtual ~KNewFileMenu();
 
     /**
+     * Returns the modality of dialogs
+     */
+    bool isModal() const;
+    
+    /**
+     * Returns the files that the popup is shown for
+     */
+    KUrl::List popupFiles() const;
+
+    /**
+     * Sets the modality of dialogs created by KNewFile. Set to false if you do not want to block
+     * your application window when entering a new directory name i.e.
+     */
+    void setModal(bool modality);
+    
+    /**
      * Sets a parent widget for the dialogs shown by KNewFileMenu.
      * This is strongly recommended, for apps with a main window.
      */
     void setParentWidget(QWidget* parentWidget);
-
+    
+    /**
+     * Set the files the popup is shown for
+     * Call this before showing up the menu
+     */
+    void setPopupFiles(const KUrl::List& files);
+    
     /**
      * Only show the files in a given set of mimetypes.
      * This is useful in specialized applications (while file managers, on
      * the other hand, want to show all mimetypes).
      */
     void setSupportedMimeTypes(const QStringList& mime);
-
-    /**
-     * Returns the mimetypes set in supportedMimeTypes()
-     */
-    QStringList supportedMimeTypes() const;
-
+    
     /**
      * Set if the directory view currently shows dot files.
      */
     void setViewShowsHiddenFiles(bool b);
-
+    
     /**
-     * Set the files the popup is shown for
-     * Call this before showing up the menu
+     * Returns the mimetypes set in supportedMimeTypes()
      */
-    void setPopupFiles(const KUrl::List& files);
-
-    /**
-     * Returns the files that the popup is shown for
-     */
-    KUrl::List popupFiles() const;
+    QStringList supportedMimeTypes() const;
 
 public Q_SLOTS:
     /**
@@ -135,6 +148,7 @@ Q_SIGNALS:
     void directoryCreated(const KUrl& url);
 
 protected Q_SLOTS:
+
     /**
      * Called when the job that copied the template has finished.
      * This method is virtual so that error handling can be reimplemented.
@@ -142,10 +156,21 @@ protected Q_SLOTS:
      */
     virtual void slotResult(KJob* job);
 
+
 private:
+    Q_PRIVATE_SLOT(d, void _k_slotAbortDialog())
     Q_PRIVATE_SLOT(d, void _k_slotActionTriggered(QAction*))
+    Q_PRIVATE_SLOT(d, void _k_slotCreateDirectory(bool writeHiddenDir = false))
+    Q_PRIVATE_SLOT(d, void _k_slotCreateHiddenDirectory())
     Q_PRIVATE_SLOT(d, void _k_slotFillTemplates())
+    Q_PRIVATE_SLOT(d, void _k_slotOtherDesktopFile())
+    Q_PRIVATE_SLOT(d, void _k_slotRealFileOrDir())
+    Q_PRIVATE_SLOT(d, void _k_slotTextChanged(const QString))
+    Q_PRIVATE_SLOT(d, void _k_slotSymLink())
+    Q_PRIVATE_SLOT(d, void _k_slotUrlDesktopFile())
+    
     KNewFileMenuPrivate* const d;
+    
 };
 
 #endif

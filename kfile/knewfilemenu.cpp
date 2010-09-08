@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QVBoxLayout>
 #include <QList>
+#include <QLabel>
 #include <kactioncollection.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -31,7 +32,9 @@
 #include <kicon.h>
 #include <kcomponentdata.h>
 #include <kinputdialog.h>
+#include <kdialog.h>
 #include <klocale.h>
+#include <klineedit.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kprotocolinfo.h>
@@ -55,16 +58,17 @@ class KNewFileMenuSingleton
 {
 public:
     KNewFileMenuSingleton()
-        : templatesList(0),
-          templatesVersion(0),
-          filesParsed(false),
-          dirWatch(0)
+        : dirWatch(0),
+	  filesParsed(false),
+	  templatesList(0),
+          templatesVersion(0)
     {
     }
+    
     ~KNewFileMenuSingleton()
     {
-        delete templatesList;
-        delete dirWatch;
+	delete dirWatch;
+        delete templatesList;        
     }
 
 
@@ -83,6 +87,8 @@ public:
      */
     enum EntryType { Unknown, LinkToTemplate = 1, Template, Separator };
 
+    KDirWatch * dirWatch;
+    
     struct Entry {
         QString text;
         QString filePath; // empty for Separator
@@ -99,6 +105,12 @@ public:
      * the same order as the 'New' menu.
      */
     typedef QList<Entry> EntryList;
+    
+    /**
+     * Set back to false each time new templates are found,
+     * and to true on the first call to parseFiles
+     */
+    bool filesParsed;
     EntryList * templatesList;
 
     /**
@@ -107,124 +119,7 @@ public:
      * to templatesVersion before showing up
      */
     int templatesVersion;
-
-    /**
-     * Set back to false each time new templates are found,
-     * and to true on the first call to parseFiles
-     */
-    bool filesParsed;
-    KDirWatch * dirWatch;
 };
-
-K_GLOBAL_STATIC(KNewFileMenuSingleton, kNewMenuGlobals)
-
-class KNewFileMenuPrivate
-{
-public:
-    KNewFileMenuPrivate(KNewFileMenu* qq)
-        : m_menuItemsVersion(0),
-          m_viewShowsHiddenFiles(false),
-          q(qq)
-    {}
-
-    /**
-     * Fills the menu from the templates list.
-     */
-    void fillMenu();
-
-    /**
-     * Called when New->* is clicked
-     */
-    void _k_slotActionTriggered(QAction*);
-
-    /**
-     * Fills the templates list.
-     */
-    void _k_slotFillTemplates();
-
-    KActionCollection * m_actionCollection;
-    QWidget *m_parentWidget;
-    KActionMenu *m_menuDev;
-    QAction* m_newDirAction;
-
-    int m_menuItemsVersion;
-    bool m_viewShowsHiddenFiles;
-
-    /**
-     * When the user pressed the right mouse button over an URL a popup menu
-     * is displayed. The URL belonging to this popup menu is stored here.
-     */
-    KUrl::List m_popupFiles;
-
-    QStringList m_supportedMimeTypes;
-
-    QString m_tempFileToDelete; // set when a tempfile was created for a Type=URL desktop file
-
-    /**
-     * The action group that our actions belong to
-     */
-    QActionGroup* m_newMenuGroup;
-    KNewFileMenu* q;
-
-    class StrategyInterface;
-    class UrlDesktopFileStrategy;
-    class SymLinkStrategy;
-    class OtherDesktopFileStrategy;
-    class RealFileOrDirStrategy;
-};
-
-KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
-    : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),
-      d(new KNewFileMenuPrivate(this))
-{
-    // Don't fill the menu yet
-    // We'll do that in checkUpToDate (should be connected to aboutToShow)
-    d->m_newMenuGroup = new QActionGroup(this);
-    connect(d->m_newMenuGroup, SIGNAL(triggered(QAction*)), this, SLOT(_k_slotActionTriggered(QAction*)));
-    d->m_actionCollection = collection;
-    d->m_parentWidget = qobject_cast<QWidget*>(parent);
-    d->m_newDirAction = 0;
-
-    d->m_actionCollection->addAction(name, this);
-
-    d->m_menuDev = new KActionMenu(KIcon("drive-removable-media"), i18n("Link to Device"), this);
-}
-
-KNewFileMenu::~KNewFileMenu()
-{
-    //kDebug(1203) << this;
-    delete d;
-}
-
-void KNewFileMenu::checkUpToDate()
-{
-    KNewFileMenuSingleton* s = kNewMenuGlobals;
-    //kDebug(1203) << this << "m_menuItemsVersion=" << d->m_menuItemsVersion
-    //              << "s->templatesVersion=" << s->templatesVersion;
-    if (d->m_menuItemsVersion < s->templatesVersion || s->templatesVersion == 0) {
-        //kDebug(1203) << "recreating actions";
-        // We need to clean up the action collection
-        // We look for our actions using the group
-        foreach (QAction* action, d->m_newMenuGroup->actions())
-            delete action;
-
-        if (!s->templatesList) { // No templates list up to now
-            s->templatesList = new KNewFileMenuSingleton::EntryList;
-            d->_k_slotFillTemplates();
-            s->parseFiles();
-        }
-
-        // This might have been already done for other popupmenus,
-        // that's the point in s->filesParsed.
-        if (!s->filesParsed) {
-            s->parseFiles();
-        }
-
-        d->fillMenu();
-
-        d->m_menuItemsVersion = s->templatesVersion;
-    }
-}
 
 void KNewFileMenuSingleton::parseFiles()
 {
@@ -290,6 +185,359 @@ void KNewFileMenuSingleton::parseFiles()
             (*templ).entryType = KNewFileMenuSingleton::Separator;
         }
     }
+}
+
+K_GLOBAL_STATIC(KNewFileMenuSingleton, kNewMenuGlobals)
+
+
+class KNewFileMenuStrategy
+{
+friend class KNewFileMenuPrivate;
+public:
+    KNewFileMenuStrategy() { m_isSymlink = false;}
+    ~KNewFileMenuStrategy() {}
+    QString chosenFileName() const { return m_chosenFileName; }
+
+    // If empty, no copy is performed.
+    QString sourceFileToCopy() const { return m_src; }
+    QString tempFileToDelete() const { return m_tempFileToDelete; }
+    bool m_isSymlink;
+    
+protected:    
+    QString m_chosenFileName;
+    QString m_src;
+    QString m_tempFileToDelete;
+    QString m_templatePath;
+};
+
+class KNewFileMenuPrivate
+{
+public:
+    KNewFileMenuPrivate(KNewFileMenu* qq)
+        : m_menuItemsVersion(0),          
+          m_modal(true),
+          m_viewShowsHiddenFiles(false),
+          q(qq)
+    {}
+        
+    bool checkSourceExists(const QString& src);
+    
+    /**
+      * Asks user whether to create a hidden directory with a dialog
+      */
+    void confirmCreatingHiddenDir(const QString& name);
+    
+    /**
+      *	The strategy used for other desktop files than Type=Link. Example: Application, Device.
+      */ 
+    void executeOtherDesktopFile(const KNewFileMenuSingleton::Entry& entry);
+    
+    /**
+      * The strategy used for "real files or directories" (the common case)
+      */
+    void executeRealFileOrDir(const KNewFileMenuSingleton::Entry& entry);
+
+    /**
+      * Actually performs file handling. Reads in m_strategy for needed data, that has been collected by execute*() before
+      */
+    void executeStrategy();
+        
+    /**
+      *	The strategy used when creating a symlink
+      */ 
+    void executeSymLink(const KNewFileMenuSingleton::Entry& entry);    
+        
+    /**
+      * The strategy used for "url" desktop files
+      */
+    void executeUrlDesktopFile(const KNewFileMenuSingleton::Entry& entry);
+
+    /**
+     * Fills the menu from the templates list.
+     */
+    void fillMenu();
+      
+    /**
+      * Just clears the string buffer d->m_text, but I need a slot for this to occur
+      */
+    void _k_slotAbortDialog();
+    
+    /**
+     * Called when New->* is clicked
+     */
+    void _k_slotActionTriggered(QAction* action);
+  
+    /**
+     * Callback function that reads in directory name from dialog and processes it
+     */
+    void _k_slotCreateDirectory(bool writeHiddenDir = false);
+    
+    /**
+     * Callback function that reads in directory name from dialog and processes it. This will wirte
+     * a hidden directory without further questions
+     */
+    void _k_slotCreateHiddenDirectory();
+            
+    /**
+     * Fills the templates list.
+     */
+    void _k_slotFillTemplates();
+    
+    /**
+      * Callback in KNewFileMenu for the OtherDesktopFile Dialog. Handles dialog input and gives over
+      * to exectueStrategy()
+      */
+    void _k_slotOtherDesktopFile();
+    
+    /**
+      * Callback in KNewFileMenu for the RealFile Dialog. Handles dialog input and gives over
+      * to exectueStrategy()
+      */
+    void _k_slotRealFileOrDir();
+        
+    /**
+      * Dialogs use this slot to write the changed string into KNewFile menu when the user 
+      * changes touches them
+      */
+    void _k_slotTextChanged(const QString & text);
+        
+    /**
+      * Callback in KNewFileMenu for the Symlink Dialog. Handles dialog input and gives over
+      * to exectueStrategy()
+      */
+    void _k_slotSymLink();
+    
+    /**
+      * Callback in KNewFileMenu for the Url/Desktop Dialog. Handles dialog input and gives over
+      * to exectueStrategy()
+      */
+    void _k_slotUrlDesktopFile();
+
+
+    KActionCollection * m_actionCollection;
+    KDialog* m_fileDialog;
+    
+    KActionMenu *m_menuDev;
+    int m_menuItemsVersion;
+    bool m_modal;
+    QAction* m_newDirAction;
+
+    /**
+     * The action group that our actions belong to
+     */
+    QActionGroup* m_newMenuGroup;
+    QWidget *m_parentWidget;
+
+    /**
+     * When the user pressed the right mouse button over an URL a popup menu
+     * is displayed. The URL belonging to this popup menu is stored here.
+     */
+    KUrl::List m_popupFiles;
+    
+    QStringList m_supportedMimeTypes;
+    QString m_tempFileToDelete; // set when a tempfile was created for a Type=URL desktop file
+    QString m_text;
+    bool m_viewShowsHiddenFiles;
+    
+    KNewFileMenu* q;   
+
+    class Strategy;
+    KNewFileMenuStrategy m_strategy;
+};
+
+bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
+{
+    if (!QFile::exists(src)) {
+        kWarning(1203) << src << "doesn't exist" ;
+	
+	KDialog* dialog = new KDialog(m_parentWidget);
+	dialog->setCaption( i18n("Sorry") );
+	dialog->setButtons( KDialog::Ok );
+	dialog->setObjectName( "sorry" );
+	dialog->setModal(q->isModal());
+	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	dialog->setDefaultButton( KDialog::Ok );
+	dialog->setEscapeButton( KDialog::Ok );
+	
+	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
+	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src), 
+	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QString());
+	
+	dialog->show();
+	
+        return false;
+    }
+    return true;
+}
+
+void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
+{
+    if(!KMessageBox::shouldBeShownContinue("confirm_create_hidden_dir")){
+	_k_slotCreateHiddenDirectory();
+	return;
+    }
+  
+    KGuiItem continueGuiItem(KStandardGuiItem::cont());
+    continueGuiItem.setText(i18nc("@action:button", "Create directory"));
+    KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
+    cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
+    
+    KDialog* confirmDialog = new KDialog(m_parentWidget);
+    confirmDialog->setCaption(i18n("Create hidden directory?"));
+    confirmDialog->setModal(m_modal);
+    confirmDialog->setAttribute(Qt::WA_DeleteOnClose);
+    KMessageBox::createKMessageBox(confirmDialog, QMessageBox::Warning, 
+	  i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
+	  QStringList(),
+	  i18n("Do not ask again"),
+	  false,
+	  KMessageBox::NoExec,
+	  QString());
+    confirmDialog->setButtonGuiItem(KDialog::Ok, continueGuiItem);
+    confirmDialog->setButtonGuiItem(KDialog::Cancel, cancelGuiItem);
+    
+    QObject::connect(confirmDialog, SIGNAL(accepted()), q, SLOT(_k_slotCreateHiddenDirectory()));
+    QObject::connect(confirmDialog, SIGNAL(rejected()), q, SLOT(createDirectory()));
+    
+    m_fileDialog = confirmDialog;
+    confirmDialog->show();
+    
+}
+
+void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::Entry& entry)
+{
+    if (!checkSourceExists(entry.templatePath)) {
+        return;
+    }
+
+    KUrl::List::const_iterator it = m_popupFiles.constBegin();
+    for (; it != m_popupFiles.constEnd(); ++it)
+    {
+        QString text = entry.text;
+        text.remove("..."); // the ... is fine for the menu item but not for the default filename
+
+        KUrl defaultFile(*it);
+        defaultFile.addPath(KIO::encodeFileName(text));
+        if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
+            text = KIO::RenameDialog::suggestName(*it, text);
+
+        const KUrl templateUrl(entry.templatePath);
+	
+	KDialog* dlg = new KPropertiesDialog(templateUrl, *it, text, m_parentWidget);
+	dlg->setModal(q->isModal());
+	dlg->setAttribute(Qt::WA_DeleteOnClose);
+        QObject::connect(dlg, SIGNAL(applied()), q, SLOT(_k_slotOtherDesktopFile()));
+	dlg->show();
+    }
+    // We don't set m_src here -> there will be no copy, we are done.
+}
+
+void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entry& entry)
+{
+    // The template is not a desktop file
+    // Show the small dialog for getting the destination filename
+    QString text = entry.text;
+    text.remove("..."); // the ... is fine for the menu item but not for the default filename
+    m_strategy.m_src = entry.templatePath;
+
+    KUrl defaultFile(m_popupFiles.first());
+    defaultFile.addPath(KIO::encodeFileName(text));
+    if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
+        text = KIO::RenameDialog::suggestName(m_popupFiles.first(), text);
+    
+    KDialog* fileDialog = new KDialog(m_parentWidget);
+    fileDialog->setAttribute(Qt::WA_DeleteOnClose);
+    fileDialog->setModal(q->isModal());
+    fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
+    
+    QWidget* mainWidget = new QWidget(fileDialog);
+    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
+    QLabel *label = new QLabel(entry.comment);
+    KLineEdit *lineEdit = new KLineEdit(text);
+    _k_slotTextChanged(text);
+    QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)), q, SLOT(_k_slotTextChanged(const QString &)));
+    
+    layout->addWidget(label);
+    layout->addWidget(lineEdit);
+    
+    fileDialog->setMainWidget(mainWidget);
+    QObject::connect(fileDialog, SIGNAL(accepted()), q, SLOT(_k_slotRealFileOrDir()));
+    QObject::connect(fileDialog, SIGNAL(rejected()), q, SLOT(_k_slotAbortDialog()));
+ 
+    fileDialog->show();
+    lineEdit->selectAll();
+    lineEdit->setFocus();
+}
+
+void KNewFileMenuPrivate::executeSymLink(const KNewFileMenuSingleton::Entry& entry)
+{
+    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);    
+    dlg->setModal(q->isModal());
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setCaption(i18n("Create Symlink"));
+    m_fileDialog = dlg;
+    QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotSymLink()));
+    dlg->show();    
+}
+
+void KNewFileMenuPrivate::executeStrategy()
+{
+    m_tempFileToDelete = m_strategy.tempFileToDelete();
+    const QString src = m_strategy.sourceFileToCopy();
+    const QString chosenFileName = m_strategy.chosenFileName();    
+
+    if (src.isEmpty())
+        return;
+    KUrl uSrc(src);
+
+    if (uSrc.isLocalFile()) {
+        // In case the templates/.source directory contains symlinks, resolve
+        // them to the target files. Fixes bug #149628.
+        KFileItem item(uSrc, QString(), KFileItem::Unknown);
+        if (item.isLink())
+            uSrc.setPath(item.linkDest());
+    }
+
+    // The template is not a desktop file [or it's a URL one]
+    // Copy it.
+    KUrl::List::const_iterator it = m_popupFiles.constBegin();
+    for (; it != m_popupFiles.constEnd(); ++it)
+    {
+        KUrl dest(*it);
+        dest.addPath(KIO::encodeFileName(chosenFileName));
+
+        KUrl::List lstSrc;
+        lstSrc.append(uSrc);
+        KIO::Job* kjob;
+        if (m_strategy.m_isSymlink) {
+            kjob = KIO::symlink(src, dest);
+            // This doesn't work, FileUndoManager registers new links in copyingLinkDone,
+            // which KIO::symlink obviously doesn't emit... Needs code in FileUndoManager.
+            //KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Link, lstSrc, dest, kjob);
+        } else {
+            //kDebug(1203) << "KIO::copyAs(" << uSrc.url() << "," << dest.url() << ")";
+            KIO::CopyJob * job = KIO::copyAs(uSrc, dest);
+            job->setDefaultPermissions(true);
+            kjob = job;
+            KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Copy, lstSrc, dest, job);
+        }
+        kjob->ui()->setWindow(m_parentWidget);
+        QObject::connect(kjob, SIGNAL(result(KJob*)), q, SLOT(slotResult(KJob*)));
+    }
+    
+}
+
+void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Entry& entry)
+{
+    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);    
+    m_strategy.m_templatePath = entry.templatePath;
+    dlg->setModal(q->isModal());
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setCaption(i18n("Create link to URL"));
+    m_fileDialog = dlg;
+    QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotUrlDesktopFile()));
+    dlg->show();    
 }
 
 void KNewFileMenuPrivate::fillMenu()
@@ -425,6 +673,96 @@ void KNewFileMenuPrivate::fillMenu()
     }
 }
 
+void KNewFileMenuPrivate::_k_slotAbortDialog()
+{
+    m_text = QString();
+}
+
+void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
+{
+    q->trigger(); // was for kdesktop's slotNewMenuActivated() in kde3 times. Can't hurt to keep it...
+
+    if (action == m_newDirAction) {
+        q->createDirectory();
+        return;
+    }
+    const int id = action->data().toInt();
+    Q_ASSERT(id > 0);
+
+    KNewFileMenuSingleton* s = kNewMenuGlobals;
+    const KNewFileMenuSingleton::Entry entry = s->templatesList->at(id - 1);
+
+    const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
+
+    m_strategy = KNewFileMenuStrategy();
+    
+    if (createSymlink) {
+        m_strategy.m_isSymlink = true;
+	executeSymLink(entry);
+    } 
+    else if (KDesktopFile::isDesktopFile(entry.templatePath)) {
+        KDesktopFile df(entry.templatePath);
+        if (df.readType() == "Link") {
+	    executeUrlDesktopFile(entry);
+        } else { // any other desktop file (Device, App, etc.)
+	    executeOtherDesktopFile(entry);
+        }
+    } 
+    else {
+	executeRealFileOrDir(entry);
+    }
+    
+}
+
+void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
+{    
+    KUrl url;
+    KUrl baseUrl = m_popupFiles.first();
+    bool askAgain = false;
+  
+    QString name = m_text;
+    
+    if (!name.isEmpty()) {
+      if ((name[0] == '/') || (name[0] == '~')) {
+	url.setPath(KShell::tildeExpand(name));
+      } 
+      else {
+	if (!m_viewShowsHiddenFiles && name.startsWith('.')) {
+	  if (!writeHiddenDir) {
+	    confirmCreatingHiddenDir(name);
+	    return;    
+	  }
+	}
+	name = KIO::encodeFileName( name );
+	url = baseUrl;
+	url.addPath( name );
+      }
+    }
+    
+    if(!askAgain){      
+      KIO::SimpleJob * job = KIO::mkdir(url);
+      job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
+      job->ui()->setWindow(m_parentWidget);
+      job->ui()->setAutoErrorHandlingEnabled(true);
+      KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, KUrl(), url, job );
+      
+      if (job) {
+	// We want the error handling to be done by slotResult so that subclasses can reimplement it
+	job->ui()->setAutoErrorHandlingEnabled(false);
+	QObject::connect(job, SIGNAL(result(KJob *)), q, SLOT(slotResult(KJob *)));
+      }      
+    } 
+    else {
+      q->createDirectory(); // ask again for the name
+    }
+    _k_slotAbortDialog();
+}
+
+void KNewFileMenuPrivate::_k_slotCreateHiddenDirectory()
+{
+    _k_slotCreateDirectory(true);    
+}
+
 void KNewFileMenuPrivate::_k_slotFillTemplates()
 {
     KNewFileMenuSingleton* s = kNewMenuGlobals;
@@ -479,147 +817,67 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     (*s->templatesList) += slist.values();
 }
 
-// Duplicated in libkonq's KonqOperations
-static bool confirmCreatingHiddenDir(const QString& name, QWidget* parent)
+void KNewFileMenuPrivate::_k_slotOtherDesktopFile()
 {
-    KGuiItem continueGuiItem(KStandardGuiItem::cont());
-    continueGuiItem.setText(i18nc("@action:button", "Create directory"));
-    KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
-    cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
-    return KMessageBox::warningContinueCancel(
-        parent,
-        i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
-        i18n("Create hidden directory?"),
-        continueGuiItem,
-        cancelGuiItem,
-        "confirm_create_hidden_dir") == KMessageBox::Continue;
+    executeStrategy();
 }
 
-void KNewFileMenu::createDirectory()
+void KNewFileMenuPrivate::_k_slotRealFileOrDir()
 {
-    if (d->m_popupFiles.isEmpty())
-       return;
-
-    KUrl baseUrl = d->m_popupFiles.first();
-    QString name = i18nc("Default name for a new folder", "New Folder");
-    if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
-        name = KIO::RenameDialog::suggestName(baseUrl, name);
-
-    KUrl url;
-    bool askAgain;
-    do {
-        askAgain = false;
-        bool ok;
-        name = KInputDialog::getText(i18nc("@title:window", "New Folder"),
-                                     i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()),
-                                     name, &ok, d->m_parentWidget);
-        if (ok && !name.isEmpty()) {
-            if ((name[0] == '/') || (name[0] == '~')) {
-                url.setPath(KShell::tildeExpand(name));
-            } else {
-                if (!d->m_viewShowsHiddenFiles && name.startsWith('.')) {
-                    if (!confirmCreatingHiddenDir(name, d->m_parentWidget)) {
-                        askAgain = true;
-                        continue;
-                    }
-                }
-                name = KIO::encodeFileName( name );
-                url = baseUrl;
-                url.addPath( name );
-            }
-
-            KIO::SimpleJob * job = KIO::mkdir(url);
-            job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
-            job->ui()->setWindow(d->m_parentWidget);
-            job->ui()->setAutoErrorHandlingEnabled(true);
-            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, KUrl(), url, job );
-
-            if (job) {
-                // We want the error handling to be done by slotResult so that subclasses can reimplement it
-                job->ui()->setAutoErrorHandlingEnabled(false);
-                connect(job, SIGNAL(result(KJob *)),
-                        this, SLOT(slotResult(KJob *)));
-            }
-
-            break;
-        }
-    } while (askAgain);
-
+    m_strategy.m_chosenFileName = m_text;
+    _k_slotAbortDialog();
+    executeStrategy();
 }
 
-class KNewFileMenuPrivate::StrategyInterface
+void KNewFileMenuPrivate::_k_slotSymLink()
 {
-public:
-    void setParentWidget(QWidget* widget) { m_parentWidget = widget; }
-    void setPopupFiles(const KUrl::List& urls) { m_popupUrls = urls; }
-
-    virtual void execute(const KNewFileMenuSingleton::Entry& entry) = 0;
-    virtual ~StrategyInterface() {}
-
-    QString chosenFileName() const { return m_chosenFileName; }
-    // If empty, no copy is performed.
-    QString sourceFileToCopy() const { return m_src; }
-    QString tempFileToDelete() const { return m_tempFileToDelete; }
-
-    bool checkSourceExists(const QString& src);
-
-protected:
-    QWidget* m_parentWidget;
-    QString m_chosenFileName;
-    QString m_src;
-    QString m_tempFileToDelete;
-    KUrl::List m_popupUrls;
-};
-
-// The strategy used for "url" desktop files
-class KNewFileMenuPrivate::UrlDesktopFileStrategy : public KNewFileMenuPrivate::StrategyInterface
-{
-public:
-    virtual void execute(const KNewFileMenuSingleton::Entry& entry);
-};
-
-// The strategy used when creating a symlink
-class KNewFileMenuPrivate::SymLinkStrategy : public KNewFileMenuPrivate::StrategyInterface
-{
-public:
-    virtual void execute(const KNewFileMenuSingleton::Entry& entry);
-};
-
-// The strategy used for other desktop files than Type=Link. Example: Application, Device.
-class KNewFileMenuPrivate::OtherDesktopFileStrategy : public KNewFileMenuPrivate::StrategyInterface
-{
-public:
-    virtual void execute(const KNewFileMenuSingleton::Entry& entry);
-};
-
-// The strategy used for "real files or directories" (the common case)
-class KNewFileMenuPrivate::RealFileOrDirStrategy : public KNewFileMenuPrivate::StrategyInterface
-{
-public:
-    virtual void execute(const KNewFileMenuSingleton::Entry& entry);
-};
-
-bool KNewFileMenuPrivate::StrategyInterface::checkSourceExists(const QString& src)
-{
-    if (!QFile::exists(src)) {
-        kWarning(1203) << src << "doesn't exist" ;
-        KMessageBox::sorry(m_parentWidget, i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src));
-        return false;
-    }
-    return true;
-}
-
-void KNewFileMenuPrivate::UrlDesktopFileStrategy::execute(const KNewFileMenuSingleton::Entry& entry)
-{
-    // entry.comment contains i18n("Enter link to location (URL):"). JFYI :)
-    KNameAndUrlInputDialog dlg(i18n("File name:"), entry.comment, m_popupUrls.first(), m_parentWidget);
-    // TODO dlg.setCaption(i18n(...));
-    if (!dlg.exec())
+    KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
+    
+    m_strategy.m_chosenFileName = dlg->name(); // no path
+    KUrl linkUrl = dlg->url(); // the url to put in the file
+    
+    if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
+    
+    if (linkUrl.isRelative())
+        m_strategy.m_src = linkUrl.url();
+    else if (linkUrl.isLocalFile())
+        m_strategy.m_src = linkUrl.toLocalFile();
+    else {
+	KDialog* dialog = new KDialog(m_parentWidget);
+	dialog->setCaption( i18n("Sorry") );
+	dialog->setButtons( KDialog::Ok );
+	dialog->setObjectName( "sorry" );
+	dialog->setModal(m_modal);
+	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	dialog->setDefaultButton( KDialog::Ok );
+	dialog->setEscapeButton( KDialog::Ok );
+	m_fileDialog = dialog;
+	
+	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
+	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."), 
+	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QString());
+	
+	dialog->show();
+	return;
+    }
+    executeStrategy();
+}
 
-    m_chosenFileName = dlg.name();
-    const KUrl linkUrl = dlg.url(); // the url to put in the file
-    if (m_chosenFileName.isEmpty() || linkUrl.isEmpty())
+void KNewFileMenuPrivate::_k_slotTextChanged(const QString & text)
+{
+    m_text = text;
+}
+
+void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
+{
+    KNameAndUrlInputDialog* dlg = (KNameAndUrlInputDialog*) m_fileDialog;
+    
+    m_strategy.m_chosenFileName = dlg->name(); // no path
+    KUrl linkUrl = dlg->url(); // the url to put in the file
+    
+    if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
 
     // It's a "URL" desktop file; we need to make a temp copy of it, to modify it
@@ -631,14 +889,14 @@ void KNewFileMenuPrivate::UrlDesktopFileStrategy::execute(const KNewFileMenuSing
         return;
     }
 
-    if (!checkSourceExists(entry.templatePath)) {
+    if (!checkSourceExists(m_strategy.m_templatePath)) {
         return;
     }
 
     // First copy the template into the temp file
-    QFile file(entry.templatePath);
+    QFile file(m_strategy.m_templatePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        kError() << "Couldn't open template" << entry.templatePath;
+        kError() << "Couldn't open template" << m_strategy.m_templatePath;
         return;
     }
     const QByteArray data = file.readAll();
@@ -646,162 +904,159 @@ void KNewFileMenuPrivate::UrlDesktopFileStrategy::execute(const KNewFileMenuSing
     const QString tempFileName = tmpFile.fileName();
     Q_ASSERT(!tempFileName.isEmpty());
     tmpFile.close();
+    file.close();
 
     KDesktopFile df(tempFileName);
     KConfigGroup group = df.desktopGroup();
     group.writeEntry("Icon", KProtocolInfo::icon(linkUrl.protocol()));
     group.writePathEntry("URL", linkUrl.prettyUrl());
     df.sync();
-    m_src = tempFileName;
-    m_tempFileToDelete = tempFileName;
+    
+    m_strategy.m_src = tempFileName;
+    m_strategy.m_tempFileToDelete = tempFileName;
+    
+    executeStrategy();
 }
 
-void KNewFileMenuPrivate::SymLinkStrategy::execute(const KNewFileMenuSingleton::Entry& entry)
-{
-    KNameAndUrlInputDialog dlg(i18n("File name:"), entry.comment, m_popupUrls.first(), m_parentWidget);
-    // TODO dlg.setCaption(i18n(...));
-    if (!dlg.exec())
-        return;
-    m_chosenFileName = dlg.name(); // no path
-    KUrl linkUrl = dlg.url(); // the url to put in the file
-    if (m_chosenFileName.isEmpty() || linkUrl.isEmpty())
-        return;
 
-    if (linkUrl.isRelative())
-        m_src = linkUrl.url();
-    else if (linkUrl.isLocalFile())
-        m_src = linkUrl.toLocalFile();
-    else {
-        KMessageBox::sorry(m_parentWidget, i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."));
-        return;
-    }
+KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
+    : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),
+      d(new KNewFileMenuPrivate(this))
+{
+    // Don't fill the menu yet
+    // We'll do that in checkUpToDate (should be connected to aboutToShow)
+    d->m_newMenuGroup = new QActionGroup(this);
+    connect(d->m_newMenuGroup, SIGNAL(triggered(QAction*)), this, SLOT(_k_slotActionTriggered(QAction*)));
+    d->m_actionCollection = collection;
+    d->m_parentWidget = qobject_cast<QWidget*>(parent);
+    d->m_newDirAction = 0;
+
+    d->m_actionCollection->addAction(name, this);
+
+    d->m_menuDev = new KActionMenu(KIcon("drive-removable-media"), i18n("Link to Device"), this);
 }
 
-void KNewFileMenuPrivate::OtherDesktopFileStrategy::execute(const KNewFileMenuSingleton::Entry& entry)
+KNewFileMenu::~KNewFileMenu()
 {
-    if (!checkSourceExists(entry.templatePath)) {
-        return;
-    }
-
-    KUrl::List::const_iterator it = m_popupUrls.constBegin();
-    for (; it != m_popupUrls.constEnd(); ++it)
-    {
-        //kDebug(1203) << "first arg=" << entry.templatePath;
-        //kDebug(1203) << "second arg=" << (*it).url();
-        //kDebug(1203) << "third arg=" << entry.text;
-        QString text = entry.text;
-        text.remove("..."); // the ... is fine for the menu item but not for the default filename
-
-        KUrl defaultFile(*it);
-        defaultFile.addPath(KIO::encodeFileName(text));
-        if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
-            text = KIO::RenameDialog::suggestName(*it, text);
-
-        const KUrl templateUrl(entry.templatePath);
-        KPropertiesDialog dlg(templateUrl, *it, text, m_parentWidget);
-        dlg.exec();
-    }
-    // We don't set m_src here -> there will be no copy, we are done.
+    //kDebug(1203) << this;
+    delete d;
 }
 
-void KNewFileMenuPrivate::RealFileOrDirStrategy::execute(const KNewFileMenuSingleton::Entry& entry)
+void KNewFileMenu::checkUpToDate()
 {
-    // The template is not a desktop file
-    // Show the small dialog for getting the destination filename
-    QString text = entry.text;
-    text.remove("..."); // the ... is fine for the menu item but not for the default filename
-
-    KUrl defaultFile(m_popupUrls.first());
-    defaultFile.addPath(KIO::encodeFileName(text));
-    if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
-        text = KIO::RenameDialog::suggestName(m_popupUrls.first(), text);
-
-    bool ok;
-    const QString name = KInputDialog::getText(QString(), entry.comment,
-                                               text, &ok, m_parentWidget);
-    if (ok) {
-        m_chosenFileName = name;
-        m_src = entry.templatePath;
-    }
-}
-
-void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
-{
-    q->trigger(); // was for kdesktop's slotNewMenuActivated() in kde3 times. Can't hurt to keep it...
-
-    if (action == m_newDirAction) {
-        q->createDirectory();
-        return;
-    }
-    const int id = action->data().toInt();
-    Q_ASSERT(id > 0);
-
     KNewFileMenuSingleton* s = kNewMenuGlobals;
-    const KNewFileMenuSingleton::Entry entry = s->templatesList->at(id - 1);
-    //kDebug(1203) << "sFile=" << sFile;
+    //kDebug(1203) << this << "m_menuItemsVersion=" << d->m_menuItemsVersion
+    //              << "s->templatesVersion=" << s->templatesVersion;
+    if (d->m_menuItemsVersion < s->templatesVersion || s->templatesVersion == 0) {
+        //kDebug(1203) << "recreating actions";
+        // We need to clean up the action collection
+        // We look for our actions using the group
+        foreach (QAction* action, d->m_newMenuGroup->actions())
+            delete action;
 
-    const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
-    KNewFileMenuPrivate::StrategyInterface* strategy = 0;
-
-    if (createSymlink) {
-        strategy = new KNewFileMenuPrivate::SymLinkStrategy;
-    } else if (KDesktopFile::isDesktopFile(entry.templatePath)) {
-        KDesktopFile df(entry.templatePath);
-        if (df.readType() == "Link") {
-            strategy = new KNewFileMenuPrivate::UrlDesktopFileStrategy;
-        } else { // any other desktop file (Device, App, etc.)
-            strategy = new KNewFileMenuPrivate::OtherDesktopFileStrategy;
+        if (!s->templatesList) { // No templates list up to now
+            s->templatesList = new KNewFileMenuSingleton::EntryList;
+            d->_k_slotFillTemplates();
+            s->parseFiles();
         }
+
+        // This might have been already done for other popupmenus,
+        // that's the point in s->filesParsed.
+        if (!s->filesParsed) {
+            s->parseFiles();
+        }
+
+        d->fillMenu();
+
+        d->m_menuItemsVersion = s->templatesVersion;
+    }
+}
+
+void KNewFileMenu::createDirectory()
+{
+    if (d->m_popupFiles.isEmpty())
+	return;
+
+    KUrl baseUrl = d->m_popupFiles.first();
+    QString name = d->m_text.isEmpty()? i18nc("Default name for a new folder", "New Folder") : 
+      d->m_text;
+      
+    if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
+	name = KIO::RenameDialog::suggestName(baseUrl, name);
+    
+    KDialog* fileDialog = new KDialog(d->m_parentWidget);
+    fileDialog->setModal(isModal());
+    fileDialog->setAttribute(Qt::WA_DeleteOnClose);
+    fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
+    fileDialog->setCaption(i18nc("@title:window", "New Folder"));
+    
+    QWidget* mainWidget = new QWidget(fileDialog);
+    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
+    QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()));
+    KLineEdit *lineEdit = new KLineEdit(name);
+    d->_k_slotTextChanged(name); // have to save string in d->m_text in case user does not touch dialog
+    connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(_k_slotTextChanged(const QString &)));
+    layout->addWidget(label);
+    layout->addWidget(lineEdit);
+    
+    fileDialog->setMainWidget(mainWidget);
+    connect(fileDialog, SIGNAL(accepted()), this, SLOT(_k_slotCreateDirectory()));
+    connect(fileDialog, SIGNAL(rejected()), this, SLOT(_k_slotAbortDialog()));    
+    
+    d->m_fileDialog = fileDialog;
+ 
+    fileDialog->show();
+    lineEdit->selectAll();
+    lineEdit->setFocus();
+}
+
+bool KNewFileMenu::isModal() const
+{
+    return d->m_modal;
+}
+
+KUrl::List KNewFileMenu::popupFiles() const
+{
+    return d->m_popupFiles;
+}
+
+void KNewFileMenu::setModal(bool modal)
+{
+    d->m_modal = modal;
+}
+
+void KNewFileMenu::setPopupFiles(const KUrl::List& files)
+{
+    d->m_popupFiles = files;
+    if (files.isEmpty()) {
+        d->m_newMenuGroup->setEnabled(false);
     } else {
-        strategy = new KNewFileMenuPrivate::RealFileOrDirStrategy;
-    }
-    strategy->setParentWidget(m_parentWidget);
-    strategy->setPopupFiles(m_popupFiles);
-    strategy->execute(entry);
-    m_tempFileToDelete = strategy->tempFileToDelete();
-    const QString src = strategy->sourceFileToCopy();
-    const QString chosenFileName = strategy->chosenFileName();
-    delete strategy;
-
-    if (src.isEmpty())
-        return;
-    KUrl uSrc(src);
-
-    if (uSrc.isLocalFile()) {
-        // In case the templates/.source directory contains symlinks, resolve
-        // them to the target files. Fixes bug #149628.
-        KFileItem item(uSrc, QString(), KFileItem::Unknown);
-        if (item.isLink())
-            uSrc.setPath(item.linkDest());
-    }
-
-    // The template is not a desktop file [or it's a URL one]
-    // Copy it.
-    KUrl::List::const_iterator it = m_popupFiles.constBegin();
-    for (; it != m_popupFiles.constEnd(); ++it)
-    {
-        KUrl dest(*it);
-        dest.addPath(KIO::encodeFileName(chosenFileName));
-
-        KUrl::List lstSrc;
-        lstSrc.append(uSrc);
-        KIO::Job* kjob;
-        if (createSymlink) {
-            kjob = KIO::symlink(src, dest);
-            // This doesn't work, FileUndoManager registers new links in copyingLinkDone,
-            // which KIO::symlink obviously doesn't emit... Needs code in FileUndoManager.
-            //KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Link, lstSrc, dest, kjob);
+        KUrl firstUrl = files.first();
+        if (KProtocolManager::supportsWriting(firstUrl)) {
+            d->m_newMenuGroup->setEnabled(true);
+            if (d->m_newDirAction) {
+                d->m_newDirAction->setEnabled(KProtocolManager::supportsMakeDir(firstUrl)); // e.g. trash:/
+            }
         } else {
-            //kDebug(1203) << "KIO::copyAs(" << uSrc.url() << "," << dest.url() << ")";
-            KIO::CopyJob * job = KIO::copyAs(uSrc, dest);
-            job->setDefaultPermissions(true);
-            kjob = job;
-            KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Copy, lstSrc, dest, job);
+            d->m_newMenuGroup->setEnabled(true);
         }
-        kjob->ui()->setWindow(m_parentWidget);
-        QObject::connect(kjob, SIGNAL(result(KJob*)),
-                         q, SLOT(slotResult(KJob*)));
     }
+}
+
+
+void KNewFileMenu::setParentWidget(QWidget* parentWidget)
+{
+    d->m_parentWidget = parentWidget;
+}
+
+void KNewFileMenu::setSupportedMimeTypes(const QStringList& mime)
+{
+    d->m_supportedMimeTypes = mime;
+}
+
+void KNewFileMenu::setViewShowsHiddenFiles(bool b)
+{
+    d->m_viewShowsHiddenFiles = b;
 }
 
 void KNewFileMenu::slotResult(KJob * job)
@@ -833,47 +1088,12 @@ void KNewFileMenu::slotResult(KJob * job)
         QFile::remove(d->m_tempFileToDelete);
 }
 
-void KNewFileMenu::setPopupFiles(const KUrl::List& files)
-{
-    d->m_popupFiles = files;
-    if (files.isEmpty()) {
-        d->m_newMenuGroup->setEnabled(false);
-    } else {
-        KUrl firstUrl = files.first();
-        if (KProtocolManager::supportsWriting(firstUrl)) {
-            d->m_newMenuGroup->setEnabled(true);
-            if (d->m_newDirAction) {
-                d->m_newDirAction->setEnabled(KProtocolManager::supportsMakeDir(firstUrl)); // e.g. trash:/
-            }
-        } else {
-            d->m_newMenuGroup->setEnabled(true);
-        }
-    }
-}
-
-KUrl::List KNewFileMenu::popupFiles() const
-{
-    return d->m_popupFiles;
-}
-
-void KNewFileMenu::setViewShowsHiddenFiles(bool b)
-{
-    d->m_viewShowsHiddenFiles = b;
-}
-
-void KNewFileMenu::setSupportedMimeTypes(const QStringList& mime)
-{
-    d->m_supportedMimeTypes = mime;
-}
 
 QStringList KNewFileMenu::supportedMimeTypes() const
 {
     return d->m_supportedMimeTypes;
 }
 
-void KNewFileMenu::setParentWidget(QWidget* parentWidget)
-{
-    d->m_parentWidget = parentWidget;
-}
 
 #include "knewfilemenu.moc"
+
