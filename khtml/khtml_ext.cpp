@@ -627,7 +627,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
     if (selectedText.isEmpty())
         return;
 
-    KUriFilterData data (selectedText);
+    KUriFilterData data(selectedText);
     QStringList alternateProviders;
     alternateProviders << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
     data.setAlternateSearchProviders(alternateProviders);
