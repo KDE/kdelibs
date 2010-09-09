@@ -6,7 +6,9 @@ add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
 
 # Query tests
 # --------------------------------------------
-kde4_add_unit_test(queryparsertest NOGUI queryparsertest.cpp)
+set(queryparsertest_SRC queryparsertest.cpp)
+soprano_add_ontology(queryparsertest_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
+kde4_add_unit_test(queryparsertest NOGUI ${queryparsertest_SRC})
 target_link_libraries(queryparsertest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}

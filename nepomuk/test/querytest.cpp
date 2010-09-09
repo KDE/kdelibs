@@ -20,6 +20,7 @@
 */
 
 #include "querytest.h"
+#include "qtest_querytostring.h"
 
 #include "query.h"
 #include "filequery.h"
@@ -54,18 +55,6 @@
 Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
 using namespace Nepomuk::Query;
-
-namespace QTest {
-template<>
-char* toString(const Nepomuk::Query::Query& query) {
-    return qstrdup( query.toString().toUtf8().data() );
-}
-
-template<>
-char* toString(const Nepomuk::Query::Term& term) {
-    return qstrdup( term.toString().toUtf8().data() );
-}
-}
 
 
 // this is a tricky one as we nee to match the variable names and order of the queries exactly.

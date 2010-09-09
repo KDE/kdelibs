@@ -27,6 +27,7 @@
 #include "negationterm.h"
 #include "comparisonterm.h"
 #include "dateparser_p.h"
+#include "nfo.h"
 
 #include <QtCore/QRegExp>
 #include <QtCore/QSet>
@@ -222,6 +223,31 @@ namespace {
         }
     }
 
+    // A filename pattern needs to contain one dot and at least one '*' or '?':
+    // *.mp3
+    // hello?.txt
+    // hello?.*
+    // test*.???
+    bool isFilenamePattern( const QString& s )
+    {
+        return( !s.contains(' ') &&
+                s.count('.') == 1 &&
+                s.count('*') + s.count('?') > 0 );
+    }
+
+    Nepomuk::Query::ComparisonTerm createFilenamePatternTerm( const QString& s )
+    {
+        QString regex = QRegExp::escape(s);
+        regex.replace( "\\*", QLatin1String( ".*" ) );
+        regex.replace( "\\?", QLatin1String( "." ) );
+        regex.replace("\\", "\\\\");
+        regex.prepend('^');
+        regex.append('$');
+        return Nepomuk::Query::ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
+                                               Nepomuk::Query::LiteralTerm( regex ),
+                                               Nepomuk::Query::ComparisonTerm::Regexp );
+    }
+
 #ifndef Q_CC_MSVC
 #warning Make the parser handle different data, time, and datetime encodings as well as suffixes like MB or GB
 #endif
@@ -330,13 +356,6 @@ namespace {
         }
     }
 #endif
-}
-
-
-Nepomuk::Query::Query Nepomuk::Query::QueryParser::parseQuery( const QString& query )
-{
-    QueryParser parser;
-    return parser.parse( query );
 }
 
 
@@ -544,7 +563,12 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                 }
                 else {
                     kDebug() << "matched literal at" << pos << value;
-                    term = LiteralTerm( createLiteral( value, flags&QueryTermGlobbing ) );
+                    if( flags&DetectFilenamePattern && isFilenamePattern(value) ) {
+                        term = createFilenamePatternTerm( value );
+                    }
+                    else {
+                        term = LiteralTerm( createLiteral( value, flags&QueryTermGlobbing ) );
+                    }
                     if ( !positiveTerm(s_plainTermRx.cap( 1 ) ) ) {
                         term = NegationTerm::negateTerm( term );
                     }
@@ -588,4 +612,20 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
 
     final.setTerm( resolveFields( final.term(), this ) );
     return final;
+}
+
+
+// static
+Nepomuk::Query::Query Nepomuk::Query::QueryParser::parseQuery( const QString& query )
+{
+    QueryParser parser;
+    return parser.parse( query );
+}
+
+
+// static
+Nepomuk::Query::Query Nepomuk::Query::QueryParser::parseQuery( const QString& query, ParserFlags flags )
+{
+    QueryParser parser;
+    return parser.parse( query, flags );
 }

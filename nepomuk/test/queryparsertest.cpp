@@ -20,6 +20,7 @@
 */
 
 #include "queryparsertest.h"
+#include "qtest_querytostring.h"
 #include "queryparser.h"
 #include "query.h"
 #include "literalterm.h"
@@ -28,6 +29,7 @@
 #include "orterm.h"
 #include "negationterm.h"
 #include "comparisonterm.h"
+#include "nfo.h"
 
 #include <QtTest>
 #include <qtest_kde.h>
@@ -101,6 +103,9 @@ void QueryParserTest::testQueryParser_data()
     QTest::addColumn<QString>( "queryString" );
     QTest::addColumn<Nepomuk::Query::Query>( "query" );
 
+    // the invalid query
+    QTest::newRow( "empty query string" ) << QString() << Query();
+
     // simple literal queries
     QTest::newRow( "simple literal query" ) << QString( "Hello" ) << Query( LiteralTerm( "Hello" ) );
     QTest::newRow( "literal with spaces without quotes" ) << QString( "Hello World" ) << Query( AndTerm( LiteralTerm("Hello"), LiteralTerm("World" ) ) );
@@ -135,9 +140,6 @@ void QueryParserTest::testQueryParser_data()
 
     // or queries
     QTest::newRow( "or: two literals" )          << QString( "Hello OR World" ) << Query( OrTerm( LiteralTerm( "Hello" ), LiteralTerm( "World" ) ) );
-
-    // the invalid query
-    QTest::newRow( "empty query string" ) << QString() << Query();
 }
 
 
@@ -147,9 +149,6 @@ void QueryParserTest::testQueryParser()
     QFETCH( Nepomuk::Query::Query, query );
 
     Query q = QueryParser::parseQuery( queryString );
-
-//    qDebug() << "Wanted query:" << query;
-//    qDebug() << "Parsed query:" << q;
 
     QCOMPARE( q, query );
 }
@@ -176,8 +175,34 @@ void QueryParserTest::testQueryParserWithGlobbing()
     QueryParser p;
     Query q = p.parse( queryString, QueryParser::QueryTermGlobbing );
 
-//     qDebug() << "Wanted query:" << query;
-//     qDebug() << "Parsed query:" << q;
+    QCOMPARE( q, query );
+}
+
+
+void QueryParserTest::testQueryParserDetectFilenamePattern_data()
+{
+    QTest::addColumn<QString>( "queryString" );
+    QTest::addColumn<Nepomuk::Query::Query>( "query" );
+
+    QTest::newRow( "DetectFilenamePattern1" ) << QString( "*.mp3" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
+                                                                                              LiteralTerm( "^.*\\.mp3$" ),
+                                                                                              ComparisonTerm::Regexp ) );
+    QTest::newRow( "DetectFilenamePattern2" ) << QString( "hello?.txt" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
+                                                                                              LiteralTerm( "^hello.\\.txt$" ),
+                                                                                              ComparisonTerm::Regexp ) );
+    QTest::newRow( "DetectFilenamePattern3" ) << QString( "*.???" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
+                                                                                              LiteralTerm( "^.*\\....$" ),
+                                                                                              ComparisonTerm::Regexp ) );
+}
+
+
+void QueryParserTest::testQueryParserDetectFilenamePattern()
+{
+    QFETCH( QString, queryString );
+    QFETCH( Nepomuk::Query::Query, query );
+
+    QueryParser p;
+    Query q = p.parse( queryString, QueryParser::DetectFilenamePattern );
 
     QCOMPARE( q, query );
 }

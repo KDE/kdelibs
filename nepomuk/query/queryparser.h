@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,8 +36,8 @@ namespace Nepomuk {
          *
          * \warning This is NOT a SPARQL parser.
          *
-         * The QueryParser can be used to parse queries and convert them into
-         * Query instances.
+         * The QueryParser can be used to parse user queries, ie. queries that the user
+         * would enter in any search interface, and convert them into Query instances.
          *
          * The syntax is fairly simple: plain strings match to LiteralTerm terms,
          * URIs need to be N3-encoded, when using white space parenthesis need to
@@ -121,7 +121,17 @@ namespace Nepomuk {
                  *
                  * This is disabled by default.
                  */
-                QueryTermGlobbing = 0x1
+                QueryTermGlobbing = 0x1,
+
+                /**
+                 * Try to detect filename pattern like *.mp3
+                 * or hello*.txt and create appropriate ComparisonTerm
+                 * instances using ComparisonTerm::Regexp instead of
+                 * ComparisonTerm::Contains.
+                 *
+                 * \since 4.6
+                 */
+                DetectFilenamePattern = 0x2
             };
             Q_DECLARE_FLAGS( ParserFlags, ParserFlag )
 
@@ -172,6 +182,16 @@ namespace Nepomuk {
              * in case the parsing failed.
              */
             static Query parseQuery( const QString& query );
+
+            /**
+             * \overload
+             *
+             * \param query The query string to parse
+             * \param flags a set of flags influencing the parsing process.
+             *
+             * \since 4.6
+             */
+            static Query parseQuery( const QString& query, ParserFlags flags );
 
         private:
             class Private;

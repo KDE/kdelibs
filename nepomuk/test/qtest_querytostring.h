@@ -19,33 +19,24 @@
    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _NEPOMUK_QUERY_PARSER_TEST_H_
-#define _NEPOMUK_QUERY_PARSER_TEST_H_
+#ifndef _NEPOMUK_QTEST_QUERY_TO_STRING_H_
+#define _NEPOMUK_QTEST_QUERY_TO_STRING_H_
 
-#include <QtCore/QObject>
-#include "ktempdir.h"
+#include "query.h"
+#include "term.h"
 
-#include <Soprano/Model>
+#include <QtTest>
 
-class QueryParserTest : public QObject
-{
-    Q_OBJECT
+namespace QTest {
+    template<>
+    char* toString(const Nepomuk::Query::Query& query) {
+        return qstrdup( query.toString().toUtf8().data() );
+    }
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void testQueryParser_data();
-    void testQueryParser();
-    void testQueryParserWithGlobbing_data();
-    void testQueryParserWithGlobbing();
-    void testQueryParserDetectFilenamePattern_data();
-    void testQueryParserDetectFilenamePattern();
-
-private:
-    KTempDir* m_storageDir;
-    Soprano::Model* m_model;
-};
+    template<>
+    char* toString(const Nepomuk::Query::Term& term) {
+        return qstrdup( term.toString().toUtf8().data() );
+    }
+}
 
 #endif
-
-
