@@ -221,14 +221,14 @@ void QueryTest::testToSparql_data()
     orderByTerm1.setSortWeight( 1 );
     QTest::newRow( "order by 1" )
         << Query( orderByTerm1 )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY ASC ( ?v1 )")
+        << QString::fromLatin1("select distinct ?r ?v1 where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY ASC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
 
     orderByTerm1.setSortWeight( 1, Qt::DescendingOrder );
     QTest::newRow( "order by 2" )
         << Query( orderByTerm1 )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY DESC ( ?v1 )")
+        << QString::fromLatin1("select distinct ?r ?v1 where { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . } ORDER BY DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()) );
 
@@ -237,7 +237,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "order by 3" )
         << Query( AndTerm( orderByTerm1, orderByTerm2 ) )
-        << QString::fromLatin1("select distinct ?r max(?v3) as ?_n_f_t_m_s_ where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"'hello'\" OPTION (score ?v3) . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
+        << QString::fromLatin1("select distinct ?r ?v1 ?v2 max(?v3) as ?_n_f_t_m_s_ where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"'hello'\" OPTION (score ?v3) . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()) );
