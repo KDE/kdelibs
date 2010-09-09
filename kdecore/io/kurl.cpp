@@ -1726,6 +1726,8 @@ void KUrl::setPath( const QString& _path )
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );
     QString path = KShell::tildeExpand( _path );
+    if (path.isEmpty())
+        path = _path;
 #ifdef Q_WS_WIN
     const int len = path.length();
     if( len == 2 && IS_LETTER(path[0]) && path[1] == QLatin1Char(':') )

@@ -338,6 +338,9 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   tilde.setPath( QString::fromUtf8( "~%1/Matériel" ).arg( userName ) );
   QString homeDir = currentUser.homeDir();
   QCOMPARE( tilde.url(), QString("file://%1/Mat%C3%A9riel").arg(homeDir));
+  tilde = KUrl("http://foo.bar/index.html");
+  tilde.setPath( "~slajsjdlsjd/test.html" );
+  QCOMPARE( tilde.url(), QString("http://foo.bar/~slajsjdlsjd/test.html"));
 #endif
 }
 
