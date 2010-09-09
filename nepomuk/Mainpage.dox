@@ -553,7 +553,6 @@ using %Nepomuk.
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/resourcefiltermodel.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nie.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/types/entitymanager.h
-// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/ui/nepomukmassupdatejob.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/ui/tagcheckbox.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/ui/kblocklayout.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/core/*_p.h
