@@ -28,8 +28,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
 
-class QFileSystemWatcher;
-
 namespace Solid
 {
 namespace Backends
@@ -74,13 +72,11 @@ namespace Fstab
         private Q_SLOTS:
             void slotSetupFinished(int exitCode, QProcess::ExitStatus exitStatus);
             void slotTeardownFinished(int exitCode, QProcess::ExitStatus exitStatus);
-            void onFileChanged(const QString &path);
-            void destroyFileSystemWatcher();
+            void onMtabChanged();
         private:
             Solid::Backends::Fstab::FstabDevice *m_fstabDevice;
             QProcess *m_process;
             QStringList m_currentMountPoints;
-            QFileSystemWatcher *m_fileSystemWatcher;
     };
 
 }

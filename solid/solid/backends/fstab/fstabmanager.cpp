@@ -25,19 +25,9 @@
 #include "fstabhandling.h"
 #include "rootdevice.h"
 #include "fstabservice.h"
-
-#include <QtCore/QCoreApplication>
-#include <QtCore/QFileSystemWatcher>
-
-
-#ifdef Q_OS_SOLARIS
-#define FSTAB "/etc/vfstab"
-#else
-#define FSTAB "/etc/fstab"
-#endif
+#include "fstabwatcher.h"
 
 using namespace Solid::Backends::Fstab;
-
 
 FstabManager::FstabManager(QObject *parent)
   : Solid::Ifaces::DeviceManager(parent)
@@ -46,21 +36,7 @@ FstabManager::FstabManager(QObject *parent)
 
     m_deviceList = FstabHandling::deviceList();
 
-    QStringList fileList;
-    fileList << FSTAB;
-
-    m_fileSystemWatcher = new QFileSystemWatcher(fileList);
-
-    if (qApp) {
-        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(destroyFileSystemWatcher()));
-    }
-    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
-}
-
-void FstabManager::destroyFileSystemWatcher()
-{
-    delete m_fileSystemWatcher;
-    m_fileSystemWatcher = 0;
+    connect(FstabWatcher::instance(), SIGNAL(fstabChanged()), this, SLOT(onFstabChanged()));
 }
 
 QString FstabManager::udiPrefix() const
@@ -113,7 +89,7 @@ QObject *FstabManager::createDevice(const QString &udi)
     return result;
 }
 
-void FstabManager::onFileChanged(const QString &/*path*/)
+void FstabManager::onFstabChanged()
 {
     QStringList deviceList = FstabHandling::deviceList();
     if (deviceList.count() > m_deviceList.count()) {
@@ -132,16 +108,8 @@ void FstabManager::onFileChanged(const QString &/*path*/)
         }
     }
     m_deviceList = deviceList;
-
-    if (m_fileSystemWatcher && !m_fileSystemWatcher->files().contains(FSTAB)) {
-        m_fileSystemWatcher->addPath(FSTAB);
-    }
 }
 
 FstabManager::~FstabManager()
 {
-    if (m_fileSystemWatcher) {
-        delete m_fileSystemWatcher;
-        m_fileSystemWatcher = 0;
-    }
 }

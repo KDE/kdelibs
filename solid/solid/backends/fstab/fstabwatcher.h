@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE project
 
-    Copyright 2010 Mario Bensi <mbensi@ipsquad.net>
+    Copyright (C) 2010 Mario Bensi <mbensi@ipsquad.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,12 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_FSTAB_FSTABMANAGER_H
-#define SOLID_BACKENDS_FSTAB_FSTABMANAGER_H
+#ifndef SOLID_BACKENDS_FSTAB_WATCHER_H
+#define SOLID_BACKENDS_FSTAB_WATCHER_H
 
-#include <solid/ifaces/devicemanager.h>
-#include <solid/deviceinterface.h>
-#include <QtCore/QStringList>
-#include <QtCore/QSet>
+#include <QObject>
+
+class QFileSystemWatcher;
 
 namespace Solid
 {
@@ -34,32 +33,28 @@ namespace Backends
 {
 namespace Fstab
 {
-class AbstractDeviceFactory;
 
-class FstabManager : public Solid::Ifaces::DeviceManager
-{
-    Q_OBJECT
+    class FstabWatcher : public QObject {
+        Q_OBJECT
+    public:
+        FstabWatcher();
+        virtual ~FstabWatcher();
 
-public:
-    explicit FstabManager(QObject *parent);
-    virtual ~FstabManager();
+        static FstabWatcher *instance();
 
-    virtual QString udiPrefix() const ;
-    virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
-    virtual QStringList allDevices();
-    virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
-    virtual QObject *createDevice(const QString &udi);
+    Q_SIGNALS:
+        void mtabChanged();
+        void fstabChanged();
 
-private Q_SLOTS:
-    void onFstabChanged();
+    private Q_SLOTS:
+        void onFileChanged(const QString &path);
 
-private:
-    QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
-    QStringList m_deviceList;
-};
-
+    private:
+        bool m_isRoutineInstalled;
+        QFileSystemWatcher *m_fileSystemWatcher;
+    };
 }
 }
 }
+#endif // SOLID_BACKENDS_FSTAB_WATCHER_H
 
-#endif

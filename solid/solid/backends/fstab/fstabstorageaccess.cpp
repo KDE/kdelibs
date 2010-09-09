@@ -21,11 +21,10 @@
 */
 
 #include "fstabstorageaccess.h"
+#include "fstabwatcher.h"
 #include <solid/backends/fstab/fstabdevice.h>
 #include <solid/backends/fstab/fstabhandling.h>
 #include <solid/backends/fstab/fstabservice.h>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QFileSystemWatcher>
 #include <QtCore/QStringList>
 
 #define MTAB "/etc/mtab"
@@ -38,29 +37,11 @@ FstabStorageAccess::FstabStorageAccess(Solid::Backends::Fstab::FstabDevice *devi
 {
     m_currentMountPoints = FstabHandling::currentMountPoints();
 
-    QStringList fileList;
-    fileList << MTAB;
-
-    m_fileSystemWatcher = new QFileSystemWatcher(fileList/*, this*/);
-    if (qApp) {
-        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(destroyFileSystemWatcher()));
-    }
-
-    connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+    connect(FstabWatcher::instance(), SIGNAL(mtabChanged()), this, SLOT(onMtabChanged()));
 }
 
 FstabStorageAccess::~FstabStorageAccess()
 {
-    if (m_fileSystemWatcher) {
-        delete m_fileSystemWatcher;
-        m_fileSystemWatcher = 0;
-    }
-}
-
-void FstabStorageAccess::destroyFileSystemWatcher()
-{
-    delete m_fileSystemWatcher;
-    m_fileSystemWatcher = 0;
 }
 
 const Solid::Backends::Fstab::FstabDevice *FstabStorageAccess::fstabDevice() const
@@ -136,7 +117,7 @@ void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus
     delete m_process;
 }
 
-void FstabStorageAccess::onFileChanged(const QString &/*path*/)
+void FstabStorageAccess::onMtabChanged()
 {
     QStringList currentMountPoints = FstabHandling::currentMountPoints();
     if (currentMountPoints.count() > m_currentMountPoints.count()) {
@@ -156,8 +137,4 @@ void FstabStorageAccess::onFileChanged(const QString &/*path*/)
     }
 
     m_currentMountPoints = currentMountPoints;
-
-    if (m_fileSystemWatcher && !m_fileSystemWatcher->files().contains(MTAB)) {
-        m_fileSystemWatcher->addPath(MTAB);
-    }
 }

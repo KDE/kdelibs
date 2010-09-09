@@ -213,6 +213,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/fstab/fstabdevice.cpp
    backends/fstab/fstabstorageaccess.cpp
    backends/fstab/fstabhandling.cpp
+   backends/fstab/fstabwatcher.cpp
    backends/fstab/rootdevice.cpp
    )
 endif(NOT WIN32 AND NOT APPLE)
