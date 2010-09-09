@@ -227,6 +227,8 @@ set(kdeui_LIB_SRCS
  widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
  widgets/kpushbutton.cpp
+ widgets/kratingpainter.cpp
+ widgets/kratingwidget.cpp
  widgets/krestrictedline.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
@@ -604,6 +606,8 @@ install( FILES
  widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
  widgets/kpushbutton.h
+ widgets/kratingpainter.h
+ widgets/kratingwidget.h
  widgets/krestrictedline.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
@@ -633,6 +637,13 @@ install( FILES
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+
+# KDE 5 remove this
+install(FILES
+ widgets/kratingpainter.h
+ widgets/kratingwidget.h
+ DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
+)
 
 install( FILES
   sonnet/dialog.h

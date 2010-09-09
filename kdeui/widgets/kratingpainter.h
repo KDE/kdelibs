@@ -21,7 +21,7 @@
 #ifndef _NEPOMUK_RATING_PAINTER_H_
 #define _NEPOMUK_RATING_PAINTER_H_
 
-#include "nepomuk_export.h"
+#include <kdeui_export.h>
 
 #include <QtCore/Qt>
 
@@ -47,7 +47,7 @@ class QRect;
  *
  * \since 4.1
  */
-class NEPOMUK_EXPORT KRatingPainter
+class KDEUI_EXPORT KRatingPainter
 {
 public:
     /**

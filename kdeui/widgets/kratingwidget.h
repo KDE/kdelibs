@@ -23,10 +23,10 @@
 
 #include <QtGui/QFrame>
 
-#include "nepomuk_export.h"
+#include <kdeui_export.h>
 
 /**
- * \class KRatingWidget kratingwidget.h Nepomuk/KRatingWidget
+ * \class KRatingWidget kratingwidget.h KDE/KRatingWidget
  *
  * \brief Displays a rating value as a row of pixmaps.
  *
@@ -37,7 +37,7 @@
  *
  * \author Sebastian Trueg <trueg@kde.org>
  */
-class NEPOMUK_EXPORT KRatingWidget : public QFrame
+class KDEUI_EXPORT KRatingWidget : public QFrame
 {
     Q_OBJECT
 

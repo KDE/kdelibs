@@ -35,12 +35,10 @@ set(nepomuk_core_SRCS
 )
 
 set(nepomuk_ui_SRCS
-  ui/kratingwidget.cpp
   ui/ktagcloudwidget.cpp
   ui/kblocklayout.cpp
   ui/kmetadatatagcloud.cpp
   ui/ktagdisplaywidget.cpp
-  ui/kratingpainter.cpp
   ui/nepomukmassupdatejob.cpp
   ui/tagwidget.cpp
   ui/kedittagsdialog.cpp
@@ -143,12 +141,10 @@ install(FILES
   types/fileontologyloader.h
   types/desktopontologyloader.h
   types/global.h
-  ui/kratingwidget.h
   ui/ktagcloudwidget.h
   ui/kmetadatatagcloud.h
   ui/kmetadatatagwidget.h
   ui/ktagdisplaywidget.h
-  ui/kratingpainter.h
   ui/nepomukmassupdatejob.h
   ui/tagwidget.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
