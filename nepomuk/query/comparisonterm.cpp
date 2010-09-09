@@ -341,7 +341,8 @@ QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilder
         qbd->addOrderVariable( sortVar, m_sortWeight, m_sortOrder );
 
         // trueg: there seems to be a bug in Virtuoso which gives wrong search order if the sort variable is not in the select list.
-        qbd->addCustomVariable( sortVar );
+        if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction )
+            qbd->addCustomVariable( sortVar );
     }
     return v;
 }
