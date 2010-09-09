@@ -56,7 +56,11 @@
 #  define READ32BE(x) ((READ16BE((x) & 0xffff) << 16) | (READ16BE((x) >> 16)))
 # endif
 
-#pragma pack(push,1)
+#if defined(__SUNPRO_CC)
+#pragma pack(1) /* no pragma stack in Sun Studio */
+#else
+#pragma pack(push,1) /* assume this is GCC compatible */
+#endif
 
 typedef struct {
   quint32 version;
@@ -125,6 +129,10 @@ typedef struct {
   quint16 newIndex;
 } tableOrderRec;
 
+#if defined(__SUNPRO_CC)
+#pragma pack()
+#else
 #pragma pack(pop)
+#endif
 
 #endif
