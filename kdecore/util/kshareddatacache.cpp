@@ -598,6 +598,9 @@ struct SharedMemory
 
         if (indexTable()[position].fileNameHash == keyHash) {
             pageID firstPage = indexTable()[position].firstPage;
+            if (firstPage < 0) {
+                return -1;
+            }
             const void *resultPage = page(firstPage);
             const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
 
