@@ -557,7 +557,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
             continue;
         }
         Q_FOREACH (const QString &dp, domainPatterns) {
-            if (isMatchingHostname(dp.lower(), d->host.lower())) {
+            if (isMatchingHostname(dp.toLower(), d->host.toLower())) {
                 it.remove();
             }
         }
