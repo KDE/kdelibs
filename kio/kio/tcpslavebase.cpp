@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
  * Copyright (C) 2007,2008 Andreas Hartmetz <ahartmetz@gmail.com>
  * Copyright (C) 2008 Roland Harnau <tau@gmx.eu>
+ * Copyright (C) 2010 Richard Moore <rich@kde.org>
  *
  * This file is part of the KDE project
  *
@@ -436,6 +437,49 @@ bool TCPSlaveBase::startSsl()
     return startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
+// Find out if a hostname matches an SSL certificate's Common Name (including wildcards)
+static bool isMatchingHostname(const QString &cnIn, const QString &hostnameIn)
+{
+    const QString cn = cnIn.toLower();
+    const QString hostname = hostnameIn.toLower();
+
+    const int wildcard = cn.indexOf(QLatin1Char('*'));
+
+    // Check this is a wildcard cert, if not then just compare the strings
+    if (wildcard < 0)
+        return cn == hostname;
+
+    const int firstCnDot = cn.indexOf(QLatin1Char('.'));
+    const int secondCnDot = cn.indexOf(QLatin1Char('.'), firstCnDot+1);
+
+    // Check at least 3 components
+    if ((-1 == secondCnDot) || (secondCnDot+1 >= cn.length()))
+        return false;
+
+    // Check * is last character of 1st component (ie. there's a following .)
+    if (wildcard+1 != firstCnDot)
+        return false;
+
+    // Check only one star
+    if (cn.lastIndexOf(QLatin1Char('*')) != wildcard)
+        return false;
+
+    // Check characters preceding * (if any) match
+    if (wildcard && (hostname.leftRef(wildcard) != cn.leftRef(wildcard)))
+        return false;
+
+    // Check characters following first . match
+    if (hostname.midRef(hostname.indexOf(QLatin1Char('.'))) != cn.midRef(firstCnDot))
+        return false;
+
+    // Check if the hostname is an IP address, if so then wildcards are not allowed
+    QHostAddress addr(hostname);
+    if (!addr.isNull())
+        return false;
+
+    // Ok, I guess this was a wildcard CN and the hostname matches.
+    return true;
+}
 
 TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
 {
@@ -492,7 +536,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     QSslCertificate peerCert = d->socket.peerCertificateChain().first();
     QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
     domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
-    QRegExp domainMatcher(QString(), Qt::CaseInsensitive, QRegExp::Wildcard);
     QMutableListIterator<KSslError> it(d->sslErrors);
     while (it.hasNext()) {
         // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
@@ -503,8 +546,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
             continue;
         }
         foreach (const QString &dp, domainPatterns) {
-            domainMatcher.setPattern(dp);
-            if (domainMatcher.exactMatch(d->host)) {
+            if (isMatchingHostname(dp,d->host)) {
                 it.remove();
             }
         }
