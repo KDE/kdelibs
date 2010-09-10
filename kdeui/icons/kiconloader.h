@@ -77,6 +77,12 @@ class KIconTheme;
 class KDEUI_EXPORT KIconLoader : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Context)
+    Q_ENUMS(Type)
+    Q_ENUMS(MatchType)
+    Q_ENUMS(Group)
+    Q_ENUMS(StdSizes)
+    Q_ENUMS(States)
 
 public:
      /**
