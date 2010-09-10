@@ -2379,20 +2379,31 @@ QItemSelection KSelectionProxyModel::mapSelectionToSource(const QItemSelection& 
                 Q_ASSERT(sourceParent.isValid());
                 const int rowCount = sourceModel()->rowCount(sourceParent);
                 if (rowCount < it->bottom()) {
-                    sourceSelection.append(QItemSelectionRange(sourceTopLeft, mapToSource(it->bottomRight())));
+                    Q_ASSERT(sourceTopLeft.isValid());
+                    Q_ASSERT(it->bottomRight().isValid());
+                    const QModelIndex sourceBottomRight = mapToSource(it->bottomRight());
+                    Q_ASSERT(sourceBottomRight.isValid());
+                    sourceSelection.append(QItemSelectionRange(sourceTopLeft, sourceBottomRight));
                     continue;
                 }
                 // Store the contiguous part...
                 const QModelIndex sourceBottomRight = sourceModel()->index(rowCount - 1, it->right(), sourceParent);
+                Q_ASSERT(sourceTopLeft.isValid());
+                Q_ASSERT(sourceBottomRight.isValid());
                 sourceSelection.append(QItemSelectionRange(sourceTopLeft, sourceBottomRight));
                 // ... and the rest will be processed later.
                 extraSelection.append(QItemSelectionRange(createIndex(it->top() - rowCount, it->right()), it->bottomRight()));
             } else {
                 QItemSelection topSelection;
-                topSelection.append(QItemSelectionRange(sourceTopLeft, mapToSource(createIndex(it->top(), it->right()))));
+                const QModelIndex idx = createIndex(it->top(), it->right());
+                const QModelIndex sourceIdx = mapToSource(idx);
+                Q_ASSERT(sourceIdx.isValid());
+                topSelection.append(QItemSelectionRange(sourceTopLeft, sourceIdx));
                 for (int i = it->top() + 1; i < it->bottom(); ++it) {
                   const QModelIndex left = mapToSource(createIndex(i, 0));
                   const QModelIndex right = mapToSource(createIndex(i, it->right()));
+                  Q_ASSERT(left.isValid());
+                  Q_ASSERT(right.isValid());
                   topSelection.append(QItemSelectionRange(left, right));
                 }
                 sourceSelection += kNormalizeSelection(topSelection);
