@@ -453,9 +453,13 @@ bool TCPSlaveBase::startSsl()
     return startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
-bool TCPSlaveBase::isMatchingHostname(const QString &cn, const QString &hostname)
+// Find out if a hostname matches an SSL certificate's hostname (including wildcards)
+static bool isMatchingHostname(const QString &cnIn, const QString &hostnameIn)
 {
-    int wildcard = cn.indexOf(QLatin1Char('*'));
+    const QString cn = cnIn.toLower();
+    const QString hostname = hostnameIn.toLower();
+
+    const int wildcard = cn.indexOf(QLatin1Char('*'));
 
     // Check this is a wildcard cert, if not then just compare the strings
     if (wildcard < 0)
@@ -557,7 +561,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
             continue;
         }
         Q_FOREACH (const QString &dp, domainPatterns) {
-            if (isMatchingHostname(dp.toLower(), d->host.toLower())) {
+            if (isMatchingHostname(dp, d->host)) {
                 it.remove();
             }
         }

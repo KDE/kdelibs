@@ -198,9 +198,6 @@ private:
     // For the certificate verification code
     SslResult verifyServerCertificate();
 
-    // For verifying ssl hostnames (including wildcards)
-    bool isMatchingHostname(const QString &cn, const QString &hostname);
-
     // For prompting for the client certificate to use
     void selectClientCertificate();
 
