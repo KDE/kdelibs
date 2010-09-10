@@ -76,6 +76,11 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
                 unsigned expectedItemSize = 0);
 
     /**
+     * Deconstructor
+     */
+    ~KImageCache();
+
+    /**
      * Inserts the pixmap given by @p pixmap to the cache, accessible with
      * @p key. The pixmap must be converted to a QImage in order to be stored
      * into shared memory. In order to prevent unnecessary conversions from
