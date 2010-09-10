@@ -21,6 +21,8 @@
 **
 ****************************************************************************/
 
+#include <QtCore/QAbstractEventDispatcher>
+#include <QtCore/QTimer>
 #include <QtGui/QtGui>
 
 #include "modeltest.h"
@@ -30,7 +32,30 @@ Q_DECLARE_METATYPE ( QModelIndex )
 /*!
     Connect to all of the models signals.  Whenever anything happens recheck everything.
 */
-ModelTest::ModelTest ( QAbstractItemModel *_model, QObject *parent ) : QObject ( parent ), model ( _model ), fetchingMore ( false )
+ModelTest::ModelTest ( QAbstractItemModel *_model, Mode testType, QObject *parent )
+  : QObject ( parent ),
+    model ( _model ),
+    fetchingMore ( false ),
+    pedantic(testType == Pedantic)
+{
+    init();
+    if (pedantic) {
+        refreshStatus();
+        // This is almost certainly not needed.
+//         connect(QAbstractEventDispatcher::instance(), SIGNAL(awake()), SLOT(ensureSteady()));
+    }
+}
+
+ModelTest::ModelTest ( QAbstractItemModel *_model, QObject *parent )
+  : QObject ( parent ),
+    model ( _model ),
+    fetchingMore ( false ),
+    pedantic( false )
+{
+    init();
+}
+
+void ModelTest::init()
 {
     Q_ASSERT ( model );
 
@@ -475,6 +500,10 @@ void ModelTest::rowsAboutToBeInserted ( const QModelIndex &parent, int start, in
     c.next = model->data ( model->index ( start, 0, parent ) );
     qDebug() << "last=" << c.last << c.next;
     insert.push ( c );
+    if (pedantic) {
+      ensureConsistent();
+      status.type = Status::InsertingRows;
+    }
 }
 
 /*!
@@ -507,22 +536,41 @@ void ModelTest::rowsInserted ( const QModelIndex & parent, int start, int end )
     */
     qDebug() << c.next << model->data(model->index(end + 1, 0, c.parent));
     Q_ASSERT ( c.next == model->data ( model->index ( end + 1, 0, c.parent ) ) );
+
+    if (pedantic) {
+        Q_ASSERT(status.type == Status::InsertingRows);
+        refreshStatus();
+    }
 }
 
 
 void ModelTest::modelAboutToBeReset()
 {
   qDebug() << "@@@@@@@@@@@" << "modelAboutToBeReset";
+
+    if (pedantic) {
+        ensureConsistent();
+        status.type = Status::Resetting;
+    }
 }
 
 void ModelTest::modelReset()
 {
-  qDebug() << "@@@@@@@@@@@" << "modelReset";
+    qDebug() << "@@@@@@@@@@@" << "modelReset";
+    if (pedantic) {
+        Q_ASSERT(status.type == Status::Resetting);
+        refreshStatus();
+    }
 }
 
 void ModelTest::layoutAboutToBeChanged()
 {
-  qDebug() << "@@@@@@@@@@@" << "layoutAboutToBeChanged";
+    qDebug() << "@@@@@@@@@@@" << "layoutAboutToBeChanged";
+
+    if (pedantic) {
+        ensureConsistent();
+        status.type = Status::ChangingLayout;
+    }
     for ( int i = 0; i < qBound ( 0, model->rowCount(), 100 ); ++i )
     {
 //       qDebug() << "persisting" << model->index ( i, 0 ) << model->index ( i, 0 ).data();
@@ -532,7 +580,7 @@ void ModelTest::layoutAboutToBeChanged()
 
 void ModelTest::layoutChanged()
 {
-  qDebug() << "@@@@@@@@@@@" << "layoutAboutToBeChanged";
+    qDebug() << "@@@@@@@@@@@" << "layoutAboutToBeChanged";
 //   qDebug() << "B";
     for ( int i = 0; i < changing.count(); ++i ) {
         QPersistentModelIndex p = changing[i];
@@ -542,6 +590,11 @@ void ModelTest::layoutChanged()
         Q_ASSERT ( p == model->index ( p.row(), p.column(), p.parent() ) );
     }
     changing.clear();
+
+    if (pedantic) {
+        Q_ASSERT(status.type == Status::ChangingLayout);
+        refreshStatus();
+    }
 
 //   qDebug() << "A";
 }
@@ -616,12 +669,16 @@ void ModelTest::rowsMoved(const QModelIndex &srcParent, int start, int end, cons
  */
 void ModelTest::rowsAboutToBeRemoved ( const QModelIndex &parent, int start, int end )
 {
-qDebug() << "ratbr" << parent << start << end;
+    qDebug() << "ratbr" << parent << start << end;
     for (int ii=start; ii <= end; ii++)
     {
       qDebug() << "itemwillbe removed:" << model->data ( model->index ( ii, 0, parent ));
     }
 
+    if (pedantic) {
+        ensureConsistent();
+        status.type = Status::RemovingRows;
+    }
 
     Changing c;
     c.parent = parent;
@@ -645,5 +702,51 @@ void ModelTest::rowsRemoved ( const QModelIndex & parent, int start, int end )
     Q_ASSERT ( c.oldSize - ( end - start + 1 ) == model->rowCount ( parent ) );
     Q_ASSERT ( c.last == model->data ( model->index ( start - 1, 0, c.parent ) ) );
     Q_ASSERT ( c.next == model->data ( model->index ( start, 0, c.parent ) ) );
+
+    if (pedantic) {
+        Q_ASSERT(status.type == Status::RemovingRows);
+        refreshStatus();
+    }
+}
+
+void ModelTest::refreshStatus()
+{
+    status.type = Status::Idle;
+    status.nonPersistent.clear();
+    status.persistent.clear();
+
+    persistStatus(QModelIndex());
+}
+
+void ModelTest::persistStatus(const QModelIndex& index)
+{
+    const int rowCount = model->rowCount(index);
+    for (int row = 0; row < rowCount; ++row)
+    {
+        // TODO: Test multi columns
+        static const int column = 0;
+        QPersistentModelIndex idx = model->index(row, column, index);
+        status.persistent.append(idx);
+        status.nonPersistent.append(idx);
+        persistStatus(idx);
+    }
+}
+
+void ModelTest::ensureSteady()
+{
+    Q_ASSERT(insert.isEmpty());
+    Q_ASSERT(remove.isEmpty());
+    Q_ASSERT(changing.isEmpty());
+    ensureConsistent();
+}
+
+void ModelTest::ensureConsistent()
+{
+    Q_ASSERT(status.type == Status::Idle);
+
+    Q_ASSERT(status.nonPersistent.size() == status.persistent.size());
+    for (int i = 0; i < status.nonPersistent.size(); ++i) {
+        Q_ASSERT(status.nonPersistent.at(i) == status.persistent.at(i));
+    }
 }
 
