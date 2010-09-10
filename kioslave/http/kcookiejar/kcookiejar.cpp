@@ -684,16 +684,18 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     KDateTime epoch;
     epoch.setTime_t(0);
 
+    // Check for cross-domain flag from kio_http
+    if (strncmp(cookieStr, "Cross-Domain\n", 13) == 0)
+    {
+        cookieStr += 13;
+        crossDomain = true;
+    }
+
     //  The hard stuff :)
     for(;;)
     {
         // check for "Set-Cookie"
-        if (strncmp(cookieStr, "Cross-Domain\n", 13) == 0)
-        {
-            cookieStr += 13;
-            crossDomain = true;
-        }
-        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
+        if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
