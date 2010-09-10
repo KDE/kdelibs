@@ -77,6 +77,8 @@ void KIconEffect::init()
     KSharedConfig::Ptr config = KGlobal::config();
 
     int i, j, effect=-1;
+    //FIXME: this really should be using KIconLoader::metaObject() to guarantee synchronization
+    // performance wise it's also practically guaranteed to be faster
     QStringList groups;
     groups += "Desktop";
     groups += "Toolbar";
@@ -149,12 +151,21 @@ void KIconEffect::init()
 
 bool KIconEffect::hasEffect(int group, int state) const
 {
+    if (group < 0 || group >= KIconLoader::LastGroup ||
+        state < 0 || state >= KIconLoader::LastState) {
+        return false;
+    }
+
     return d->effect[group][state] != NoEffect;
 }
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
-    if ( group >= KIconLoader::LastGroup ) return "";
+    if (group < 0 || group >= KIconLoader::LastGroup ||
+        state < 0 || state >= KIconLoader::LastState) {
+        return QString();
+    }
+
     QString cached = d->key[group][state];
     if (cached.isEmpty())
     {
