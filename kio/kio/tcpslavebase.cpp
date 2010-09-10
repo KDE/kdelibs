@@ -453,7 +453,7 @@ bool TCPSlaveBase::startSsl()
     return startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
-// Find out if a hostname matches an SSL certificate's hostname (including wildcards)
+// Find out if a hostname matches an SSL certificate's Common Name (including wildcards)
 static bool isMatchingHostname(const QString &cnIn, const QString &hostnameIn)
 {
     const QString cn = cnIn.toLower();
