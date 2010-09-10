@@ -36,8 +36,9 @@ class KImageCache::Private : public QObject
     Q_OBJECT
 
     public:
-    Private()
-        : timestamp(::time(0))
+    Private(QObject *parent = 0)
+        : QObject(parent)
+        ,timestamp(::time(0))
         , enablePixmapCaching(true)
     {
         QObject::connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
@@ -69,6 +70,11 @@ KImageCache::KImageCache(const QString &cacheName,
     , d(new Private)
 {
     d->pixmapCache.setMaxCost(defaultCacheSize);
+}
+
+KImageCache::~KImageCache()
+{
+    delete d;
 }
 
 bool KImageCache::insertImage(const QString &key, const QImage &image)
