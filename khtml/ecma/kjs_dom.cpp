@@ -1879,7 +1879,7 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOM
 // -------------------------------------------------------------------------
 
 /* Source for DOMExceptionProtoTable.
-@begin DOMExceptionProtoTable 15
+@begin DOMExceptionProtoTable 29
   INDEX_SIZE_ERR		DOM::DOMException::INDEX_SIZE_ERR		DontDelete|ReadOnly
   DOMSTRING_SIZE_ERR		DOM::DOMException::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
   HIERARCHY_REQUEST_ERR		DOM::DOMException::HIERARCHY_REQUEST_ERR	DontDelete|ReadOnly
@@ -1897,6 +1897,15 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOM
   INVALID_ACCESS_ERR		DOM::DOMException::INVALID_ACCESS_ERR	DontDelete|ReadOnly
   VALIDATION_ERR               DOM::DOMException::VALIDATION_ERR      DontDelete|ReadOnly
   TYPE_MISMATCH_ERR            DOM::DOMException::TYPE_MISMATCH_ERR   DontDelete|ReadOnly
+  SECURITY_ERR                 DOM::DOMException::SECURITY_ERR        DontDelete|ReadOnly            
+  NETWORK_ERR                  DOM::DOMException::NETWORK_ERR         DontDelete|ReadOnly  
+  ABORT_ERR                    DOM::DOMException::ABORT_ERR           DontDelete|ReadOnly
+  URL_MISMATCH_ERR             DOM::DOMException::URL_MISMATCH_ERR    DontDelete|ReadOnly
+  QUOTA_EXCEEDED_ERR           DOM::DOMException::QUOTA_EXCEEDED_ERR  DontDelete|ReadOnly
+  TIMEOUT_ERR                  DOM::DOMException::TIMEOUT_ERR         DontDelete|ReadOnly
+  NOT_READABLE_ERR             DOM::DOMException::NOT_READABLE_ERR    DontDelete|ReadOnly
+  DATA_CLONE_ERR               DOM::DOMException::DATA_CLONE_ERR      DontDelete|ReadOnly
+  ENCODING_ERR                 DOM::DOMException::ENCODING_ERR        DontDelete|ReadOnly
 @end
 */
 

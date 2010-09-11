@@ -526,6 +526,22 @@ DOMString DOMException::codeAsString(int code)
         return DOMString( "TYPE_MISMATCH_ERR" );
     case SECURITY_ERR:
         return DOMString( "SECURITY_ERR" );
+    case NETWORK_ERR:
+        return DOMString( "NETWORK_ERR" );
+    case ABORT_ERR:
+        return DOMString( "ABORT_ERR" );
+    case URL_MISMATCH_ERR:
+        return DOMString( "URL_MISMATCH_ERR" );
+    case QUOTA_EXCEEDED_ERR:
+        return DOMString( "QUOTA_EXCEEDED_ERR" );
+    case TIMEOUT_ERR:
+        return DOMString( "TIMEOUT_ERR" );
+    case NOT_READABLE_ERR:
+        return DOMString( "NOT_READABLE_ERR" );
+    case DATA_CLONE_ERR:
+        return DOMString( "DATA_CLONE_ERR" );
+    case ENCODING_ERR:
+        return DOMString( "ENCODING_ERR" );
     default:
         return DOMString( "(unknown exception code)" );
     }
