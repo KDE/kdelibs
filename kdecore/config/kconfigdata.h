@@ -119,12 +119,12 @@ struct KEntryKey
  */
 inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 {
-    int result = qstrcmp(k1.mGroup.constData(), k2.mGroup.constData());
+    int result = qstrcmp(k1.mGroup, k2.mGroup);
     if (result != 0) {
         return result < 0;
     }
 
-    result = qstrcmp(k1.mKey.constData(), k2.mKey.constData());
+    result = qstrcmp(k1.mKey, k2.mKey);
     if (result != 0) {
         return result < 0;
     }
