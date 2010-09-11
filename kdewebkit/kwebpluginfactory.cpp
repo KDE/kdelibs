@@ -90,6 +90,7 @@ KWebPluginFactory::KWebPluginFactory(QObject *parent)
 
 KWebPluginFactory::~KWebPluginFactory()
 {
+    delete d;
 }
 
 QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, const QStringList& argumentNames, const QStringList& argumentValues) const
