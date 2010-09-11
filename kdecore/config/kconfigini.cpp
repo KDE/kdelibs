@@ -536,8 +536,8 @@ void KConfigIniBackend::setFilePath(const QString& file)
 
     Q_ASSERT(QDir::isAbsolutePath(file));
 
-    if (QFile::exists(file)) {
-        const QFileInfo info(file);
+    const QFileInfo info(file);
+    if (info.exists()) {
         setLocalFilePath(info.canonicalFilePath());
         setLastModified(info.lastModified());
         setSize(info.size());
