@@ -1034,13 +1034,14 @@ QString KUrl::url( AdjustPathOption trailing ) const
 static QString toPrettyPercentEncoding(const QString &input, bool forFragment)
 {
   QString result;
+  result.reserve(input.length());
   for (int i = 0; i < input.length(); ++i) {
-    QChar c = input.at(i);
+    const QChar c = input.at(i);
     register ushort u = c.unicode();
     if (u < 0x20
         || (!forFragment && u == '?') // don't escape '?' in fragments, not needed and wrong (#173101)
         || u == '#' || u == '%'
-        || (u == ' ' && (i+1 == input.length() || input.at(i+1) == ' '))) {
+        || (u == ' ' && (i+1 == input.length() || input.at(i+1).unicode() == ' '))) {
       static const char hexdigits[] = "0123456789ABCDEF";
       result += QLatin1Char('%');
       result += QLatin1Char(hexdigits[(u & 0xf0) >> 4]);
