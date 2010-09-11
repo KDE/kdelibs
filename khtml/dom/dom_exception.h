@@ -87,7 +87,15 @@ public:
         INVALID_ACCESS_ERR = 15,
         VALIDATION_ERR = 16,
         TYPE_MISMATCH_ERR = 17,
-        SECURITY_ERR = 18
+        SECURITY_ERR = 18,
+        NETWORK_ERR  = 19, ///< @since 4.5.2
+        ABORT_ERR    = 20, ///< @since 4.5.2
+        URL_MISMATCH_ERR   = 21, ///< @since 4.5.2
+        QUOTA_EXCEEDED_ERR = 22, ///< @since 4.5.2
+        TIMEOUT_ERR        = 23, ///< @since 4.5.2
+        NOT_READABLE_ERR   = 24, ///< @since 4.5.2
+        DATA_CLONE_ERR     = 25, ///< @since 4.5.2
+        ENCODING_ERR       = 26  ///< @since 4.5.2
     };
     unsigned short code;
 
