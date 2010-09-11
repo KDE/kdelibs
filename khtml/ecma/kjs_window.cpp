@@ -1471,9 +1471,8 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
     kDebug(6070) << "Window::goURL dstUrl=" << dstUrl;
 
     // check if we're allowed to inject javascript
-    if ( isSafeScript(exec) ||
-        !KHTMLPartPrivate::isJavaScriptURL(dstUrl) )
-    part->scheduleRedirection(-1,
+    if ( !KHTMLPartPrivate::isJavaScriptURL(dstUrl) || isSafeScript(exec) )
+        part->scheduleRedirection(-1,
                               dstUrl,
                               lockHistory);
   } else if (!part && m_frame->m_partContainerElement) {
