@@ -32,6 +32,8 @@ namespace KJS {
   public:
     BooleanInstance(JSObject *proto);
 
+    virtual JSObject* valueClone(Interpreter* targetCtx) const;
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };

@@ -136,6 +136,11 @@ UString StringInstance::toString(ExecState *exec) const
     return JSObject::toString(exec);
 }
 
+JSObject* StringInstance::valueClone(Interpreter* targetCtx) const
+{
+    return new StringInstance(targetCtx->builtinStringPrototype(), internalValue());
+}
+
 // ------------------------------ StringPrototype ---------------------------
 const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &stringTable, 0};
 /* Source for string_object.lut.h

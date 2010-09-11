@@ -186,6 +186,13 @@ void RegExpImp::setRegExp(ExecState* exec, RegExp* r)
   putDirect(exec->propertyNames().lastIndex, jsNumber(0), DontDelete | DontEnum);
 }
 
+JSObject* RegExpImp::valueClone(Interpreter* targetCtx) const
+{
+    RegExpImp* copy = new RegExpImp(static_cast<RegExpPrototype*>(targetCtx->builtinRegExpPrototype()));
+    copy->setRegExp(targetCtx->globalExec(), new RegExp(reg->pattern(), reg->flags()));
+    return copy;
+}
+
 // ------------------------------ RegExpObjectImp ------------------------------
 
 const ClassInfo RegExpObjectImp::info = {"Function", &InternalFunctionImp::info, &RegExpTable, 0};

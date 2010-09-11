@@ -50,6 +50,14 @@ NumberInstance::NumberInstance(JSObject* proto)
     : JSWrapperObject(proto)
 {
 }
+
+JSObject* NumberInstance::valueClone(Interpreter* targetCtx) const
+{
+    NumberInstance* copy = new NumberInstance(targetCtx->builtinNumberPrototype());
+    copy->setInternalValue(internalValue());
+    return copy;
+}
+
 // ------------------------------ NumberPrototype ---------------------------
 
 // ECMA 15.7.4
