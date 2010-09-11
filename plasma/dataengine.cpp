@@ -279,10 +279,6 @@ uint DataEngine::maxSourceCount() const
 
 void DataEngine::setMinimumPollingInterval(int minimumMs)
 {
-    if (minimumMs < 0) {
-        minimumMs = 0;
-    }
-
     d->minPollingInterval = minimumMs;
 }
 
