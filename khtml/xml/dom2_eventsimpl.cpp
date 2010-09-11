@@ -374,6 +374,8 @@ khtml::IDTable<EventImpl>* EventImpl::initIdTable()
         // idem
     s_idTable->addStaticMapping(KHTML_READYSTATECHANGE_EVENT, "readystatechange");
 
+    s_idTable->addStaticMapping(MESSAGE_EVENT, "message");
+
     return s_idTable;
 }
 
@@ -1042,3 +1044,22 @@ bool MutationEventImpl::isMutationEvent() const
     return true;
 }
 
+// -----------------------------------------------------------------------------
+
+MessageEventImpl::MessageEventImpl(): m_source(0)
+{}
+
+void MessageEventImpl::initMessageEvent(const DOMString& typeArg,
+                                        bool  canBubbleArg,
+                                        bool  cancelableArg,
+                                        const RefPtr<Data>& dataArg,
+                                        const DOMString& originArg,
+                                        const DOMString& lastEventIdArg,
+                                        KHTMLPart* sourceArg)
+{
+    EventImpl::initEvent(typeArg, canBubbleArg, cancelableArg);
+    m_data   = dataArg;
+    m_origin = originArg;
+    m_lastEventId = lastEventIdArg;
+    m_source      = sourceArg;
+}

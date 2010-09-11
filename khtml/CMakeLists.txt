@@ -299,6 +299,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_audio.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_xpath.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_scriptable.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp

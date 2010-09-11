@@ -35,6 +35,7 @@
 
 class QMouseEvent;
 class QKeyEvent;
+class KHTMLPart;
 
 namespace DOM {
 
@@ -164,32 +165,34 @@ public:
         DOMNODEINSERTEDINTODOCUMENT_EVENT,
         DOMATTRMODIFIED_EVENT,
         DOMCHARACTERDATAMODIFIED_EVENT,
-       // HTML events
-       LOAD_EVENT,
-       UNLOAD_EVENT,
-       ABORT_EVENT,
-       ERROR_EVENT,
-       SELECT_EVENT,
-       CHANGE_EVENT,
-       SUBMIT_EVENT,
-       RESET_EVENT,
-       FOCUS_EVENT,
-       BLUR_EVENT,
-       RESIZE_EVENT,
-       SCROLL_EVENT,
-        // keyboard events
-       KEYDOWN_EVENT,
-       KEYUP_EVENT,
-       KEYPRESS_EVENT, //Mostly corresponds to DOM3 textInput event.
-       // khtml events (not part of DOM)
-       KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
-       KHTML_ECMA_CLICK_EVENT, // for html onclick
-       KHTML_DRAGDROP_EVENT,
-       KHTML_MOVE_EVENT,
-       KHTML_MOUSEWHEEL_EVENT,
-       KHTML_CONTENTLOADED_EVENT,
+        // HTML events
+        LOAD_EVENT,
+        UNLOAD_EVENT,
+        ABORT_EVENT,
+        ERROR_EVENT,
+        SELECT_EVENT,
+        CHANGE_EVENT,
+        SUBMIT_EVENT,
+        RESET_EVENT,
+        FOCUS_EVENT,
+        BLUR_EVENT,
+        RESIZE_EVENT,
+        SCROLL_EVENT,
+            // keyboard events
+        KEYDOWN_EVENT,
+        KEYUP_EVENT,
+        KEYPRESS_EVENT, //Mostly corresponds to DOM3 textInput event.
+        // khtml events (not part of DOM)
+        KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
+        KHTML_ECMA_CLICK_EVENT, // for html onclick
+        KHTML_DRAGDROP_EVENT,
+        KHTML_MOVE_EVENT,
+        KHTML_MOUSEWHEEL_EVENT,
+        KHTML_CONTENTLOADED_EVENT,
         // XMLHttpRequest events
-        KHTML_READYSTATECHANGE_EVENT
+        KHTML_READYSTATECHANGE_EVENT,
+        // HTML5 events
+        MESSAGE_EVENT
     };
 
     EventImpl();
@@ -573,6 +576,39 @@ protected:
     DOMStringImpl *m_newValue;
     DOMStringImpl *m_attrName;
     unsigned short m_attrChange;
+};
+
+class MessageEventImpl : public EventImpl {
+public:
+    enum DataType {
+        JS_VALUE
+    };
+
+    class Data : public khtml::Shared<Data> {
+    public:
+        virtual DataType messageDataType() const = 0;
+        virtual ~Data() {}
+    };
+
+    RefPtr<Data> data() const { return m_data; }
+    DOMString  origin() const { return m_origin; }
+    KHTMLPart* source() const { return m_source; }
+    DOMString  lastEventId() const { return m_lastEventId; }
+
+    MessageEventImpl();
+    
+    void initMessageEvent(const DOMString &eventTypeArg,
+                          bool  canBubbleArg,
+                          bool  cancelableArg,
+                          const RefPtr<Data>& dataArg,
+                          const DOMString& originArg,
+                          const DOMString& lastEventIdArg,
+                          KHTMLPart* sourceArg); // no message ports yet.
+private:
+    RefPtr<Data> m_data;
+    DOMString    m_origin;
+    DOMString    m_lastEventId;
+    KHTMLPart*   m_source;
 };
 
 } //namespace
