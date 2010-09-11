@@ -439,6 +439,11 @@ KReparentingProxyModel::KReparentingProxyModel(QObject* parent)
 
 }
 
+KReparentingProxyModel::~KReparentingProxyModel()
+{
+  delete d_ptr;
+}
+
 bool KReparentingProxyModelPrivate::isDescendantInModel(const QModelIndex& ancestor, const QModelIndex& descendant) const
 {
 //   kDebug() << ancestor.data() << descendant.data();
