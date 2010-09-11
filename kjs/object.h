@@ -366,6 +366,16 @@ namespace KJS {
     virtual JSObject* construct(ExecState* exec, const List& args);
     virtual JSObject* construct(ExecState* exec, const List& args, const Identifier& functionName, const UString& sourceURL, int lineNumber);
 
+
+    /**
+     * If this object represents a value, e.g. is a wrapper around a primitive,
+     * a regexp or a date this will return a fresh object with the same value
+     * (without cloning properties). Otherwise, returns 0
+     *
+     * The returned objects will use default prototypes from targetCtx
+     */
+    virtual JSObject* valueClone(Interpreter* targetCtx) const;
+
     /**
      * Whether or not this object should be considered a function for the purpose
      * of the typeof operator. Normally this is the same as implementsCall(),
