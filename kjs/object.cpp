@@ -412,6 +412,11 @@ JSObject* JSObject::construct(ExecState* exec, const List& args, const Identifie
   return construct(exec, args);
 }
 
+JSObject* JSObject::valueClone(Interpreter* /*targetCtx*/) const
+{
+    return 0;
+}
+
 bool JSObject::isFunctionType() const
 {
   return implementsCall();

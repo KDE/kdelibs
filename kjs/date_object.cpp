@@ -398,6 +398,13 @@ DateInstance::DateInstance(JSObject *proto)
 {
 }
 
+JSObject* DateInstance::valueClone(Interpreter* targetCtx) const
+{
+    DateInstance* copy = new DateInstance(targetCtx->builtinDatePrototype());
+    copy->setInternalValue(internalValue());
+    return copy;
+}
+
 bool DateInstance::getTime(tm &t, int &offset) const
 {
     double milli = internalValue()->getNumber();

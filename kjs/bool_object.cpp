@@ -37,6 +37,13 @@ BooleanInstance::BooleanInstance(JSObject *proto)
 {
 }
 
+JSObject* BooleanInstance::valueClone(Interpreter* targetCtx) const
+{
+    BooleanInstance* copy = new BooleanInstance(targetCtx->builtinBooleanPrototype());
+    copy->setInternalValue(internalValue());
+    return copy;
+}
+
 // ------------------------------ BooleanPrototype --------------------------
 
 // ECMA 15.6.4
