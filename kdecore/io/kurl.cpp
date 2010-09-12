@@ -1072,7 +1072,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
     if(!authority().isEmpty() || result == QLatin1String("file"))
         result += QLatin1String("://");
     else
-        result += QLatin1String(":");
+        result += QLatin1Char(':');
   }
 
   QString tmp = userName();
@@ -1083,7 +1083,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   // Check if host is an ipv6 address
   tmp = host();
-  if (tmp.contains(':'))
+  if (tmp.contains(QLatin1Char(':')))
     result += QLatin1Char('[') + tmp + QLatin1Char(']');
   else
     result += tmp;
