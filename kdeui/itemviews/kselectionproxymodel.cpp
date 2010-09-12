@@ -1430,9 +1430,9 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
         }
         if (childrenCount == 0)
         {
-            for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
+            for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; --endRootIdx)
             {
-                const QModelIndex idx = m_rootIndexList.at(startRootIdx);
+                const QModelIndex idx = m_rootIndexList.at(rootIdx);
                 q->rootIndexAboutToBeRemoved(idx);
                 m_rootIndexList.removeOne(idx);
             }
@@ -1456,17 +1456,17 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
 
         for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
         {
-            q->rootIndexAboutToBeRemoved(m_rootIndexList.at(startRootIdx));
+            q->rootIndexAboutToBeRemoved(m_rootIndexList.at(rootIdx));
         }
 
         removeParentMappings(QModelIndex(), proxyStart, proxyEnd);
         removeFirstChildMappings(proxyStart, proxyEnd);
         int numRemovedChildren = 0;
-        for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; ++rootIdx)
+        for (int rootIdx = startRootIdx; rootIdx <= endRootIdx; --endRootIdx)
         {
-          const QModelIndex idx = m_rootIndexList.at(startRootIdx);
+          const QModelIndex idx = m_rootIndexList.at(rootIdx);
           const int childCount = q->sourceModel()->rowCount(idx);
-          m_rootIndexList.removeAt(startRootIdx);
+          m_rootIndexList.removeAt(rootIdx);
           numRemovedChildren += childCount;
         }
         updateInternalTopIndexes(proxyEnd + 1, -1 * numRemovedChildren);
