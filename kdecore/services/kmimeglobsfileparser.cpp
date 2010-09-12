@@ -147,11 +147,11 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
 static bool isFastPattern(const QString& pattern)
 {
    // starts with "*.", has no other '*' and no other '.'
-   return pattern.lastIndexOf('*') == 0
-      && pattern.lastIndexOf('.') == 1
+   return pattern.lastIndexOf(QLatin1Char('*')) == 0
+      && pattern.lastIndexOf(QLatin1Char('.')) == 1
       // and contains no other special character
-      && !pattern.contains('?')
-      && !pattern.contains('[')
+      && !pattern.contains(QLatin1Char('?'))
+      && !pattern.contains(QLatin1Char('['))
       ;
 }
 
