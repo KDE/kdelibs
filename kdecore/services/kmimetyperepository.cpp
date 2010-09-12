@@ -94,10 +94,10 @@ bool KMimeTypeRepository::matchFileName( const QString &filename, const QString 
         return false;
     const int len = filename.length();
 
-    const int starCount = pattern.count('*');
+    const int starCount = pattern.count(QLatin1Char('*'));
 
     // Patterns like "*~", "*.extension"
-    if (pattern[0] == '*'  && pattern.indexOf('[') == -1 && starCount == 1)
+    if (pattern[0] == QLatin1Char('*')  && pattern.indexOf(QLatin1Char('[')) == -1 && starCount == 1)
     {
         if ( len + 1 < pattern_len ) return false;
 
@@ -110,9 +110,9 @@ bool KMimeTypeRepository::matchFileName( const QString &filename, const QString 
     }
 
     // Patterns like "README*" (well this is currently the only one like that...)
-    if (starCount == 1 && pattern[pattern_len - 1] == '*') {
+    if (starCount == 1 && pattern[pattern_len - 1] == QLatin1Char('*')) {
         if ( len + 1 < pattern_len ) return false;
-        if (pattern[0] == '*')
+        if (pattern[0] == QLatin1Char('*'))
             return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
 
         const QChar *c1 = pattern.unicode();
@@ -124,7 +124,7 @@ bool KMimeTypeRepository::matchFileName( const QString &filename, const QString 
     }
 
     // Names without any wildcards like "README"
-    if (pattern.indexOf('[') == -1 && starCount == 0 && pattern.indexOf('?'))
+    if (pattern.indexOf(QLatin1Char('[')) == -1 && starCount == 0 && pattern.indexOf(QLatin1Char('?')))
         return (pattern == filename);
 
     // Other (quite rare) patterns, like "*.anim[1-9j]": use slow but correct method
