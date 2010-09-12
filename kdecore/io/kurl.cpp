@@ -1005,10 +1005,10 @@ bool KUrl::hasSubUrl() const
 
 QString KUrl::url( AdjustPathOption trailing ) const
 {
-    if (QString::compare(scheme(), QLatin1String("mailto"), Qt::CaseInsensitive) == 0) {
-        // mailto urls should be prettified, see the url183433 testcase.
-        return prettyUrl(trailing);
-    }
+  if (QString::compare(scheme(), QLatin1String("mailto"), Qt::CaseInsensitive) == 0) {
+      // mailto urls should be prettified, see the url183433 testcase.
+      return prettyUrl(trailing);
+  }
   if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1, so that one is a bit tricky.
       // To avoid reimplementing toEncoded() all over again, I just use another QUrl
