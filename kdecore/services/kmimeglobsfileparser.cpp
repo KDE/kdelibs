@@ -82,10 +82,10 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
     QString line;
     while (!stream.atEnd()) {
         line = stream.readLine();
-        if (line.isEmpty() || line.startsWith('#'))
+        if (line.isEmpty() || line.startsWith(QLatin1Char('#')))
             continue;
 
-        const QStringList fields = line.split(':', QString::KeepEmptyParts);
+        const QStringList fields = line.split(QLatin1Char(':'), QString::KeepEmptyParts);
         if (fields.count() < 2) // syntax error
             continue;
 
@@ -101,7 +101,7 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
             mimeTypeName = fields[1];
             pattern = fields[2];
             const QString flagsStr = fields.value(3); // could be empty
-            flagList = flagsStr.split(',', QString::SkipEmptyParts);
+            flagList = flagsStr.split(QLatin1Char(','), QString::SkipEmptyParts);
         } else {
             mimeTypeName = fields[0];
             pattern = fields[1];
@@ -118,12 +118,12 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
             continue;
         }
 
-        bool caseSensitive = flagList.contains("cs");
+        bool caseSensitive = flagList.contains(QLatin1String("cs"));
 
-        if (caseSensitiveHackNeeded && (pattern == "*.C" || pattern == "*.c" || pattern == "core"))
+        if (caseSensitiveHackNeeded && (pattern == QLatin1String("*.C") || pattern == QLatin1String("*.c") || pattern == QLatin1String("core")))
             caseSensitive = true;
 
-        if (pattern == "__NOGLOBS__") {
+        if (pattern == QLatin1String("__NOGLOBS__")) {
             //kDebug() << "removing" << mimeTypeName;
             globs.removeMime(mimeTypeName);
             lastMime.clear();
