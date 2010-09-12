@@ -956,44 +956,45 @@ inline static bool hasSubUrl( const QUrl& url )
 {
   // The isValid call triggers QUrlPrivate::validate which needs the full encoded url,
   // all this takes too much time for isLocalFile()
-  if ( url.scheme().isEmpty() /*|| !isValid()*/ )
+  const QString scheme = url.scheme();
+  if ( scheme.isEmpty() /*|| !isValid()*/ )
     return false;
-  const QByteArray ref( url.fragment().toLatin1() );
+  const QString ref( url.fragment() );
   if (ref.isEmpty())
      return false;
-  switch ( ref.data()[0] ) {
+  switch ( ref.at(0).unicode() ) {
   case 'g':
-    if ( ref.startsWith("gzip:") )
+    if ( ref.startsWith(QLatin1String("gzip:")) )
       return true;
     break;
   case 'b':
-    if ( ref.startsWith("bzip:") || ref.startsWith("bzip2:") )
+    if ( ref.startsWith(QLatin1String("bzip:")) || ref.startsWith(QLatin1String("bzip2:")) )
       return true;
     break;
   case 'l':
-    if ( ref.startsWith("lzma:") )
+    if ( ref.startsWith(QLatin1String("lzma:")) )
       return true;
     break;
   case 'x':
-    if ( ref.startsWith("xz:") )
+    if ( ref.startsWith(QLatin1String("xz:")) )
       return true;
     break;
   case 't':
-    if ( ref.startsWith("tar:") )
+    if ( ref.startsWith(QLatin1String("tar:")) )
       return true;
     break;
   case 'a':
-    if ( ref.startsWith("ar:") )
+    if ( ref.startsWith(QLatin1String("ar:")) )
       return true;
     break;
   case 'z':
-    if ( ref.startsWith("zip:") )
+    if ( ref.startsWith(QLatin1String("zip:")) )
       return true;
     break;
   default:
     break;
   }
-  if ( url.scheme() == "error" ) // anything that starts with error: has suburls
+  if ( scheme == QLatin1String("error") ) // anything that starts with error: has suburls
      return true;
   return false;
 }
