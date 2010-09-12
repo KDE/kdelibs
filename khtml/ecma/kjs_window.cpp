@@ -292,6 +292,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   onkeypress	Window::Onkeypress	DontDelete
   onkeyup	Window::Onkeyup		DontDelete
   onload	Window::Onload		DontDelete
+  onmessage   Window::Onmessage DontDelete
   onmousedown	Window::Onmousedown	DontDelete
   onmousemove	Window::Onmousemove	DontDelete
   onmouseout	Window::Onmouseout	DontDelete
@@ -315,6 +316,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   RangeException Window::RangeException	DontEnum|DontDelete
   CSSRule	Window::CSSRule		DontEnum|DontDelete
   MutationEvent Window::MutationEventCtor   DontEnum|DontDelete
+  MessageEvent Window::MessageEventCtor   DontEnum|DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontEnum|DontDelete
   EventException Window::EventExceptionCtor DontEnum|DontDelete
   Audio		Window::Audio		DontEnum|DontDelete
@@ -889,7 +891,9 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case StyleSheetCtor:
         return DOMStyleSheetPseudoCtor::self(exec);
     case EventCtor:
-      return EventConstructor::self(exec);
+        return EventConstructor::self(exec);
+    case MessageEventCtor:
+        return MessageEventPseudoCtor::self(exec);
     case MutationEventCtor:
       return getMutationEventConstructor(exec);
     case KeyboardEventCtor:
@@ -1037,6 +1041,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return getListener(exec,DOM::EventImpl::KEYUP_EVENT);
     case Onload:
       return getListener(exec,DOM::EventImpl::LOAD_EVENT);
+    case Onmessage:
+      return getListener(exec,DOM::EventImpl::MESSAGE_EVENT);
     case Onmousedown:
       return getListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT);
     case Onmousemove:
@@ -1173,6 +1179,10 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
       return;
+    case Onmessage:
+      if (isSafeScript(exec))
+        setListener(exec,DOM::EventImpl::MESSAGE_EVENT,value);
+      return;    
     case Onmousedown:
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT,value);

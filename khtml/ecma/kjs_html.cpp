@@ -765,6 +765,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   onerror       KJS::HTMLElement::BodyOnError    DontDelete
   onfocus       KJS::HTMLElement::BodyOnFocus    DontDelete
   onblur        KJS::HTMLElement::BodyOnBlur     DontDelete
+  onmessage     KJS::HTMLElement::BodyOnMessage  DontDelete
 @end
 @begin HTMLBodyElementProtoTable 2
 # Even though we do blur/focus everywhere, we still handle body.focus()
@@ -1155,6 +1156,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @begin HTMLFrameSetElementTable 2
   cols		KJS::HTMLElement::FrameSetCols			DontDelete
   rows		KJS::HTMLElement::FrameSetRows			DontDelete
+  onmessage     KJS::HTMLElement::FrameSetOnMessage             DontDelete
 @end
 @begin HTMLLayerElementTable 6
   top		  KJS::HTMLElement::LayerTop			DontDelete
@@ -1708,9 +1710,19 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return getWindowListener(exec, DOM::EventImpl::BLUR_EVENT);
     case BodyOnFocus:
         return getWindowListener(exec, DOM::EventImpl::FOCUS_EVENT);
+    case BodyOnMessage:
+        return getWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT);
     }
   }
   break;
+
+  case ID_FRAMESET: {
+    switch (token) {
+    case FrameSetOnMessage:
+        return getWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT);
+    }
+  }
+  break;  
 
   case ID_FORM: {
     DOM::HTMLFormElementImpl& form = static_cast<DOM::HTMLFormElementImpl&>(element);
@@ -2473,7 +2485,17 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
         case BodyOnFocus:
             setWindowListener(exec, DOM::EventImpl::FOCUS_EVENT, value);
             break;
+        case BodyOnMessage:
+            setWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT, value);
+            break;            
       }
+    }
+    case ID_FRAMESET: {
+        switch (token) {
+        case FrameSetOnMessage:
+            setWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT, value);
+            break;        
+        }
     }
     break;
     case ID_SELECT: {

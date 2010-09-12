@@ -174,6 +174,10 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         document()->setHTMLWindowEventListener(EventImpl::SCROLL_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onscroll", NULL));
         break;
+    case ATTR_ONMESSAGE:
+        document()->setHTMLWindowEventListener(EventImpl::MESSAGE_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onmessage", NULL));
+        break;        
     case ATTR_NOSAVE:
 	break;
     default:
@@ -602,6 +606,10 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ONUNLOAD:
         document()->setHTMLWindowEventListener(EventImpl::UNLOAD_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onunload", NULL));
+        break;
+    case ATTR_ONMESSAGE:
+        document()->setHTMLWindowEventListener(EventImpl::MESSAGE_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onmessage", NULL));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

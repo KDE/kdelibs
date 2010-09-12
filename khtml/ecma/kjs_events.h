@@ -259,6 +259,22 @@ namespace KJS {
     DOM::MutationEventImpl* impl() const { return static_cast<DOM::MutationEventImpl*>(m_impl.get()); }
   };
 
+  class DOMMessageEvent: public DOMEvent {
+  public:
+    DOMMessageEvent(ExecState* exec, DOM::MessageEventImpl* me);
+    
+    using KJS::JSObject::getOwnPropertySlot;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    JSValue* getValueProperty(ExecState *, int token) const;
+    // no put - all read-only
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { Data, Origin, Source, LastEventId, InitMessageEvent };
+    DOM::MessageEventImpl* impl() const { return static_cast<DOM::MessageEventImpl*>(m_impl.get()); }
+  };
+
+  DEFINE_PSEUDO_CONSTRUCTOR(MessageEventPseudoCtor)
+
 } // namespace
 
 #endif

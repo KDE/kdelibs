@@ -285,339 +285,340 @@ const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 #define ATTR_ONKEYPRESS ((DOM::emptyNamespace << 16) | 233)
 #define ATTR_ONKEYUP ((DOM::emptyNamespace << 16) | 234)
 #define ATTR_ONLOAD ((DOM::emptyNamespace << 16) | 235)
-#define ATTR_ONMOUSEDOWN ((DOM::emptyNamespace << 16) | 236)
-#define ATTR_ONMOUSEMOVE ((DOM::emptyNamespace << 16) | 237)
-#define ATTR_ONMOUSEOUT ((DOM::emptyNamespace << 16) | 238)
-#define ATTR_ONMOUSEOVER ((DOM::emptyNamespace << 16) | 239)
-#define ATTR_ONMOUSEUP ((DOM::emptyNamespace << 16) | 240)
-#define ATTR_ONRESET ((DOM::emptyNamespace << 16) | 241)
-#define ATTR_ONSELECT ((DOM::emptyNamespace << 16) | 242)
-#define ATTR_ONSCROLL ((DOM::emptyNamespace << 16) | 243)
-#define ATTR_ONSUBMIT ((DOM::emptyNamespace << 16) | 244)
-#define ATTR_ONUNLOAD ((DOM::emptyNamespace << 16) | 245)
-#define ATTR_PROFILE ((DOM::emptyNamespace << 16) | 246)
-#define ATTR_PROMPT ((DOM::emptyNamespace << 16) | 247)
-#define ATTR_SCHEME ((DOM::emptyNamespace << 16) | 248)
-#define ATTR_SRC ((DOM::emptyNamespace << 16) | 249)
-#define ATTR_STANDBY ((DOM::emptyNamespace << 16) | 250)
-#define ATTR_SUMMARY ((DOM::emptyNamespace << 16) | 251)
-#define ATTR_USEMAP ((DOM::emptyNamespace << 16) | 252)
-#define ATTR_VALUE ((DOM::emptyNamespace << 16) | 253)
-#define ID_ALTGLYPH 254
-#define ID_ALTGLYPHDEF 255
-#define ID_ALTGLYPHITEM 256
-#define ID_ANIMATE 257
-#define ATTR_ANIMATE ((DOM::emptyNamespace << 16) | 257)
-#define ID_ANIMATECOLOR 258
-#define ID_ANIMATEMOTION 259
-#define ID_ANIMATETRANSFORM 260
-#define ID_SET 261
-#define ID_CIRCLE 262
-#define ID_CLIPPATH 263
-#define ID_COLOR_PROFILE 264
-#define ID_CURSOR 265
-#define ATTR_CURSOR ((DOM::emptyNamespace << 16) | 265)
-#define ID_DEFINITION_SRC 266
-#define ID_DEFS 267
-#define ID_DESC 268
-#define ID_ELLIPSE 269
-#define ID_FEBLEND 270
-#define ID_FECOLORMATRIX 271
-#define ATTR_FECOLORMATRIX ((DOM::emptyNamespace << 16) | 271)
-#define ID_FECOMPONENTTRANSFER 272
-#define ID_FECOMPOSITE 273
-#define ATTR_FECOMPOSITE ((DOM::emptyNamespace << 16) | 273)
-#define ID_FECONVOLVEMATRIX 274
-#define ID_FEDIFFUSELIGHTING 275
-#define ID_FEDISPLACEMENTMAP 276
-#define ID_FEDISTANTLIGHT 277
-#define ID_FEFLOOD 278
-#define ID_FEFUNCA 279
-#define ID_FEFUNCB 280
-#define ID_FEFUNCG 281
-#define ID_FEFUNCR 282
-#define ID_FEGAUSSIANBLUR 283
-#define ATTR_FEGAUSSIANBLUR ((DOM::emptyNamespace << 16) | 283)
-#define ID_FEIMAGE 284
-#define ID_FEMERGE 285
-#define ID_FEMERGENODE 286
-#define ID_FEMORPHOLOGY 287
-#define ATTR_FEMORPHOLOGY ((DOM::emptyNamespace << 16) | 287)
-#define ID_FEOFFSET 288
-#define ID_FEPOINTLIGHT 289
-#define ID_FESPECULARLIGHTING 290
-#define ID_FESPOTLIGHT 291
-#define ID_FETILE 292
-#define ATTR_FETILE ((DOM::emptyNamespace << 16) | 292)
-#define ID_FETURBULENCE 293
-#define ID_FILTER 294
-#define ATTR_FILTER ((DOM::emptyNamespace << 16) | 294)
-#define ID_FONT_FACE 295
-#define ID_FONT_FACE_FORMAT 296
-#define ID_FONT_FACE_NAME 297
-#define ID_FONT_FACE_SRC 298
-#define ID_FONT_FACE_URI 299
-#define ID_FOREIGNOBJECT 300
-#define ID_G 301
-#define ID_GLYPH 302
-#define ID_GLYPHREF 303
-#define ATTR_GLYPHREF ((DOM::emptyNamespace << 16) | 303)
-#define ID_HKERN 304
-#define ID_LINE 305
-#define ID_LINEARGRADIENT 306
-#define ID_MARKER 307
-#define ID_MASK 308
-#define ATTR_MASK ((DOM::emptyNamespace << 16) | 308)
-#define ID_METADATA 309
-#define ID_MISSING_GLYPH 310
-#define ID_MPATH 311
-#define ID_PATH 312
-#define ATTR_PATH ((DOM::emptyNamespace << 16) | 312)
-#define ID_PATTERN 313
-#define ID_POLYGON 314
-#define ID_POLYLINE 315
-#define ID_RADIALGRADIENT 316
-#define ID_RECT 317
-#define ID_STOP 318
-#define ID_SVG 319
-#define ID_SWITCH 320
-#define ID_SYMBOL 321
-#define ID_TEXTPATH 322
-#define ID_TREF 323
-#define ID_TSPAN 324
-#define ID_USE 325
-#define ID_VIEW 326
-#define ID_VKERN 327
-#define ATTR_ACCENT_HEIGHT ((DOM::emptyNamespace << 16) | 328)
-#define ATTR_ACCUMULATE ((DOM::emptyNamespace << 16) | 329)
-#define ATTR_ADDITIVE ((DOM::emptyNamespace << 16) | 330)
-#define ATTR_ALIGNMENT_BASELINE ((DOM::emptyNamespace << 16) | 331)
-#define ATTR_ALPHABETIC ((DOM::emptyNamespace << 16) | 332)
-#define ATTR_AMPLITUDE ((DOM::emptyNamespace << 16) | 333)
-#define ATTR_ARABIC_FORM ((DOM::emptyNamespace << 16) | 334)
-#define ATTR_ASCENT ((DOM::emptyNamespace << 16) | 335)
-#define ATTR_ATTRIBUTENAME ((DOM::emptyNamespace << 16) | 336)
-#define ATTR_ATTRIBUTETYPE ((DOM::emptyNamespace << 16) | 337)
-#define ATTR_AZIMUTH ((DOM::emptyNamespace << 16) | 338)
-#define ATTR_BASEFREQUENCY ((DOM::emptyNamespace << 16) | 339)
-#define ATTR_BASELINE_SHIFT ((DOM::emptyNamespace << 16) | 340)
-#define ATTR_BASEPROFILE ((DOM::emptyNamespace << 16) | 341)
-#define ATTR_BBOX ((DOM::emptyNamespace << 16) | 342)
-#define ATTR_BEGIN ((DOM::emptyNamespace << 16) | 343)
-#define ATTR_BIAS ((DOM::emptyNamespace << 16) | 344)
-#define ATTR_BY ((DOM::emptyNamespace << 16) | 345)
-#define ATTR_CALCMODE ((DOM::emptyNamespace << 16) | 346)
-#define ATTR_CAP_HEIGHT ((DOM::emptyNamespace << 16) | 347)
-#define ATTR_CLIP ((DOM::emptyNamespace << 16) | 348)
-#define ATTR_CLIP_PATH ((DOM::emptyNamespace << 16) | 349)
-#define ATTR_CLIP_RULE ((DOM::emptyNamespace << 16) | 350)
-#define ATTR_CLIPPATHUNITS ((DOM::emptyNamespace << 16) | 351)
-#define ATTR_COLOR_INTERPOLATION ((DOM::emptyNamespace << 16) | 352)
-#define ATTR_COLOR_INTERPOLATION_FILTERS ((DOM::emptyNamespace << 16) | 353)
-#define ATTR_COLOR_PROFILE ((DOM::emptyNamespace << 16) | 354)
-#define ATTR_COLOR_RENDERING ((DOM::emptyNamespace << 16) | 355)
-#define ATTR_CONTENTSCRIPTTYPE ((DOM::emptyNamespace << 16) | 356)
-#define ATTR_CONTENTSTYLETYPE ((DOM::emptyNamespace << 16) | 357)
-#define ATTR_CX ((DOM::emptyNamespace << 16) | 358)
-#define ATTR_CY ((DOM::emptyNamespace << 16) | 359)
-#define ATTR_D ((DOM::emptyNamespace << 16) | 360)
-#define ATTR_DESCENT ((DOM::emptyNamespace << 16) | 361)
-#define ATTR_DIFFUSECONSTANT ((DOM::emptyNamespace << 16) | 362)
-#define ATTR_DISPLAY ((DOM::emptyNamespace << 16) | 363)
-#define ATTR_DIVISOR ((DOM::emptyNamespace << 16) | 364)
-#define ATTR_DOMINANT_BASELINE ((DOM::emptyNamespace << 16) | 365)
-#define ATTR_DUR ((DOM::emptyNamespace << 16) | 366)
-#define ATTR_DX ((DOM::emptyNamespace << 16) | 367)
-#define ATTR_DY ((DOM::emptyNamespace << 16) | 368)
-#define ATTR_EDGEMODE ((DOM::emptyNamespace << 16) | 369)
-#define ATTR_ELEVATION ((DOM::emptyNamespace << 16) | 370)
-#define ATTR_ENABLE_BACKGROUND ((DOM::emptyNamespace << 16) | 371)
-#define ATTR_END ((DOM::emptyNamespace << 16) | 372)
-#define ATTR_EXPONENT ((DOM::emptyNamespace << 16) | 373)
-#define ATTR_EXTERNALRESOURCESREQUIRED ((DOM::emptyNamespace << 16) | 374)
-#define ATTR_FILL ((DOM::emptyNamespace << 16) | 375)
-#define ATTR_FILL_OPACITY ((DOM::emptyNamespace << 16) | 376)
-#define ATTR_FILL_RULE ((DOM::emptyNamespace << 16) | 377)
-#define ATTR_FILTERRES ((DOM::emptyNamespace << 16) | 378)
-#define ATTR_FILTERUNITS ((DOM::emptyNamespace << 16) | 379)
-#define ATTR_FLOOD_COLOR ((DOM::emptyNamespace << 16) | 380)
-#define ATTR_FLOOD_OPACITY ((DOM::emptyNamespace << 16) | 381)
-#define ATTR_FONT_FAMILY ((DOM::emptyNamespace << 16) | 382)
-#define ATTR_FONT_SIZE ((DOM::emptyNamespace << 16) | 383)
-#define ATTR_FONT_SIZE_ADJUST ((DOM::emptyNamespace << 16) | 384)
-#define ATTR_FONT_STRETCH ((DOM::emptyNamespace << 16) | 385)
-#define ATTR_FONT_STYLE ((DOM::emptyNamespace << 16) | 386)
-#define ATTR_FONT_VARIANT ((DOM::emptyNamespace << 16) | 387)
-#define ATTR_FONT_WEIGHT ((DOM::emptyNamespace << 16) | 388)
-#define ATTR_FORMAT ((DOM::emptyNamespace << 16) | 389)
-#define ATTR_FROM ((DOM::emptyNamespace << 16) | 390)
-#define ATTR_FX ((DOM::emptyNamespace << 16) | 391)
-#define ATTR_FY ((DOM::emptyNamespace << 16) | 392)
-#define ATTR_G1 ((DOM::emptyNamespace << 16) | 393)
-#define ATTR_G2 ((DOM::emptyNamespace << 16) | 394)
-#define ATTR_GLYPH_NAME ((DOM::emptyNamespace << 16) | 395)
-#define ATTR_GLYPH_ORIENTATION_HORIZONTAL ((DOM::emptyNamespace << 16) | 396)
-#define ATTR_GLYPH_ORIENTATION_VERTICAL ((DOM::emptyNamespace << 16) | 397)
-#define ATTR_GRADIENTTRANSFORM ((DOM::emptyNamespace << 16) | 398)
-#define ATTR_GRADIENTUNITS ((DOM::emptyNamespace << 16) | 399)
-#define ATTR_HANGING ((DOM::emptyNamespace << 16) | 400)
-#define ATTR_HORIZ_ADV_X ((DOM::emptyNamespace << 16) | 401)
-#define ATTR_HORIZ_ORIGIN_X ((DOM::emptyNamespace << 16) | 402)
-#define ATTR_HORIZ_ORIGIN_Y ((DOM::emptyNamespace << 16) | 403)
-#define ATTR_IDEOGRAPHIC ((DOM::emptyNamespace << 16) | 404)
-#define ATTR_IMAGE_RENDERING ((DOM::emptyNamespace << 16) | 405)
-#define ATTR_IN ((DOM::emptyNamespace << 16) | 406)
-#define ATTR_IN2 ((DOM::emptyNamespace << 16) | 407)
-#define ATTR_INTERCEPT ((DOM::emptyNamespace << 16) | 408)
-#define ATTR_K ((DOM::emptyNamespace << 16) | 409)
-#define ATTR_K1 ((DOM::emptyNamespace << 16) | 410)
-#define ATTR_K2 ((DOM::emptyNamespace << 16) | 411)
-#define ATTR_K3 ((DOM::emptyNamespace << 16) | 412)
-#define ATTR_K4 ((DOM::emptyNamespace << 16) | 413)
-#define ATTR_KERNELMATRIX ((DOM::emptyNamespace << 16) | 414)
-#define ATTR_KERNELUNITLENGTH ((DOM::emptyNamespace << 16) | 415)
-#define ATTR_KERNING ((DOM::emptyNamespace << 16) | 416)
-#define ATTR_KEYPOINTS ((DOM::emptyNamespace << 16) | 417)
-#define ATTR_KEYSPLINES ((DOM::emptyNamespace << 16) | 418)
-#define ATTR_KEYTIMES ((DOM::emptyNamespace << 16) | 419)
-#define ATTR_LENGTHADJUST ((DOM::emptyNamespace << 16) | 420)
-#define ATTR_LETTER_SPACING ((DOM::emptyNamespace << 16) | 421)
-#define ATTR_LIGHTING_COLOR ((DOM::emptyNamespace << 16) | 422)
-#define ATTR_LIMITINGCONEANGLE ((DOM::emptyNamespace << 16) | 423)
-#define ATTR_LOCAL ((DOM::emptyNamespace << 16) | 424)
-#define ATTR_MARKER_END ((DOM::emptyNamespace << 16) | 425)
-#define ATTR_MARKER_MID ((DOM::emptyNamespace << 16) | 426)
-#define ATTR_MARKER_START ((DOM::emptyNamespace << 16) | 427)
-#define ATTR_MARKERHEIGHT ((DOM::emptyNamespace << 16) | 428)
-#define ATTR_MARKERUNITS ((DOM::emptyNamespace << 16) | 429)
-#define ATTR_MARKERWIDTH ((DOM::emptyNamespace << 16) | 430)
-#define ATTR_MASKCONTENTUNITS ((DOM::emptyNamespace << 16) | 431)
-#define ATTR_MASKUNITS ((DOM::emptyNamespace << 16) | 432)
-#define ATTR_MATHEMATICAL ((DOM::emptyNamespace << 16) | 433)
-#define ATTR_MAX ((DOM::emptyNamespace << 16) | 434)
-#define ATTR_MIN ((DOM::emptyNamespace << 16) | 435)
-#define ATTR_MODE ((DOM::emptyNamespace << 16) | 436)
-#define ATTR_NUMOCTAVES ((DOM::emptyNamespace << 16) | 437)
-#define ATTR_OFFSET ((DOM::emptyNamespace << 16) | 438)
-#define ATTR_ONACTIVATE ((DOM::emptyNamespace << 16) | 439)
-#define ATTR_ONBEGIN ((DOM::emptyNamespace << 16) | 440)
-#define ATTR_ONEND ((DOM::emptyNamespace << 16) | 441)
-#define ATTR_ONFOCUSIN ((DOM::emptyNamespace << 16) | 442)
-#define ATTR_ONFOCUSOUT ((DOM::emptyNamespace << 16) | 443)
-#define ATTR_ONREPEAT ((DOM::emptyNamespace << 16) | 444)
-#define ATTR_ONZOOM ((DOM::emptyNamespace << 16) | 445)
-#define ATTR_OPACITY ((DOM::emptyNamespace << 16) | 446)
-#define ATTR_OPERATOR ((DOM::emptyNamespace << 16) | 447)
-#define ATTR_ORDER ((DOM::emptyNamespace << 16) | 448)
-#define ATTR_ORIENT ((DOM::emptyNamespace << 16) | 449)
-#define ATTR_ORIENTATION ((DOM::emptyNamespace << 16) | 450)
-#define ATTR_ORIGIN ((DOM::emptyNamespace << 16) | 451)
-#define ATTR_OVERFLOW ((DOM::emptyNamespace << 16) | 452)
-#define ATTR_OVERLINE_POSITION ((DOM::emptyNamespace << 16) | 453)
-#define ATTR_OVERLINE_THICKNESS ((DOM::emptyNamespace << 16) | 454)
-#define ATTR_PANOSE_1 ((DOM::emptyNamespace << 16) | 455)
-#define ATTR_PATHLENGTH ((DOM::emptyNamespace << 16) | 456)
-#define ATTR_PATTERNCONTENTUNITS ((DOM::emptyNamespace << 16) | 457)
-#define ATTR_PATTERNTRANSFORM ((DOM::emptyNamespace << 16) | 458)
-#define ATTR_PATTERNUNITS ((DOM::emptyNamespace << 16) | 459)
-#define ATTR_POINTER_EVENTS ((DOM::emptyNamespace << 16) | 460)
-#define ATTR_POINTS ((DOM::emptyNamespace << 16) | 461)
-#define ATTR_POINTSATX ((DOM::emptyNamespace << 16) | 462)
-#define ATTR_POINTSATY ((DOM::emptyNamespace << 16) | 463)
-#define ATTR_POINTSATZ ((DOM::emptyNamespace << 16) | 464)
-#define ATTR_PRESERVEALPHA ((DOM::emptyNamespace << 16) | 465)
-#define ATTR_PRESERVEASPECTRATIO ((DOM::emptyNamespace << 16) | 466)
-#define ATTR_PRIMITIVEUNITS ((DOM::emptyNamespace << 16) | 467)
-#define ATTR_R ((DOM::emptyNamespace << 16) | 468)
-#define ATTR_RADIUS ((DOM::emptyNamespace << 16) | 469)
-#define ATTR_REFX ((DOM::emptyNamespace << 16) | 470)
-#define ATTR_REFY ((DOM::emptyNamespace << 16) | 471)
-#define ATTR_RENDERING_INTENT ((DOM::emptyNamespace << 16) | 472)
-#define ATTR_REPEATCOUNT ((DOM::emptyNamespace << 16) | 473)
-#define ATTR_REPEATDUR ((DOM::emptyNamespace << 16) | 474)
-#define ATTR_REQUIREDEXTENSIONS ((DOM::emptyNamespace << 16) | 475)
-#define ATTR_REQUIREDFEATURES ((DOM::emptyNamespace << 16) | 476)
-#define ATTR_RESTART ((DOM::emptyNamespace << 16) | 477)
-#define ATTR_RESULT ((DOM::emptyNamespace << 16) | 478)
-#define ATTR_ROTATE ((DOM::emptyNamespace << 16) | 479)
-#define ATTR_RX ((DOM::emptyNamespace << 16) | 480)
-#define ATTR_RY ((DOM::emptyNamespace << 16) | 481)
-#define ATTR_SCALE ((DOM::emptyNamespace << 16) | 482)
-#define ATTR_SEED ((DOM::emptyNamespace << 16) | 483)
-#define ATTR_SHAPE_RENDERING ((DOM::emptyNamespace << 16) | 484)
-#define ATTR_SLOPE ((DOM::emptyNamespace << 16) | 485)
-#define ATTR_SPACING ((DOM::emptyNamespace << 16) | 486)
-#define ATTR_SPECULARCONSTANT ((DOM::emptyNamespace << 16) | 487)
-#define ATTR_SPECULAREXPONENT ((DOM::emptyNamespace << 16) | 488)
-#define ATTR_SPREADMETHOD ((DOM::emptyNamespace << 16) | 489)
-#define ATTR_STARTOFFSET ((DOM::emptyNamespace << 16) | 490)
-#define ATTR_STDDEVIATION ((DOM::emptyNamespace << 16) | 491)
-#define ATTR_STEMH ((DOM::emptyNamespace << 16) | 492)
-#define ATTR_STEMV ((DOM::emptyNamespace << 16) | 493)
-#define ATTR_STITCHTILES ((DOM::emptyNamespace << 16) | 494)
-#define ATTR_STOP_COLOR ((DOM::emptyNamespace << 16) | 495)
-#define ATTR_STOP_OPACITY ((DOM::emptyNamespace << 16) | 496)
-#define ATTR_STRIKETHROUGH_POSITION ((DOM::emptyNamespace << 16) | 497)
-#define ATTR_STRIKETHROUGH_THICKNESS ((DOM::emptyNamespace << 16) | 498)
-#define ATTR_STROKE ((DOM::emptyNamespace << 16) | 499)
-#define ATTR_STROKE_DASHARRAY ((DOM::emptyNamespace << 16) | 500)
-#define ATTR_STROKE_DASHOFFSET ((DOM::emptyNamespace << 16) | 501)
-#define ATTR_STROKE_LINECAP ((DOM::emptyNamespace << 16) | 502)
-#define ATTR_STROKE_LINEJOIN ((DOM::emptyNamespace << 16) | 503)
-#define ATTR_STROKE_MITERLIMIT ((DOM::emptyNamespace << 16) | 504)
-#define ATTR_STROKE_OPACITY ((DOM::emptyNamespace << 16) | 505)
-#define ATTR_STROKE_WIDTH ((DOM::emptyNamespace << 16) | 506)
-#define ATTR_SURFACESCALE ((DOM::emptyNamespace << 16) | 507)
-#define ATTR_SYSTEMLANGUAGE ((DOM::emptyNamespace << 16) | 508)
-#define ATTR_TABLEVALUES ((DOM::emptyNamespace << 16) | 509)
-#define ATTR_TARGETX ((DOM::emptyNamespace << 16) | 510)
-#define ATTR_TARGETY ((DOM::emptyNamespace << 16) | 511)
-#define ATTR_TEXT_ANCHOR ((DOM::emptyNamespace << 16) | 512)
-#define ATTR_TEXT_DECORATION ((DOM::emptyNamespace << 16) | 513)
-#define ATTR_TEXT_RENDERING ((DOM::emptyNamespace << 16) | 514)
-#define ATTR_TEXTLENGTH ((DOM::emptyNamespace << 16) | 515)
-#define ATTR_TO ((DOM::emptyNamespace << 16) | 516)
-#define ATTR_TRANSFORM ((DOM::emptyNamespace << 16) | 517)
-#define ATTR_U1 ((DOM::emptyNamespace << 16) | 518)
-#define ATTR_U2 ((DOM::emptyNamespace << 16) | 519)
-#define ATTR_UNDERLINE_POSITION ((DOM::emptyNamespace << 16) | 520)
-#define ATTR_UNDERLINE_THICKNESS ((DOM::emptyNamespace << 16) | 521)
-#define ATTR_UNICODE ((DOM::emptyNamespace << 16) | 522)
-#define ATTR_UNICODE_BIDI ((DOM::emptyNamespace << 16) | 523)
-#define ATTR_UNICODE_RANGE ((DOM::emptyNamespace << 16) | 524)
-#define ATTR_UNITS_PER_EM ((DOM::emptyNamespace << 16) | 525)
-#define ATTR_V_ALPHABETIC ((DOM::emptyNamespace << 16) | 526)
-#define ATTR_V_HANGING ((DOM::emptyNamespace << 16) | 527)
-#define ATTR_V_IDEOGRAPHIC ((DOM::emptyNamespace << 16) | 528)
-#define ATTR_V_MATHEMATICAL ((DOM::emptyNamespace << 16) | 529)
-#define ATTR_VALUES ((DOM::emptyNamespace << 16) | 530)
-#define ATTR_VERT_ADV_Y ((DOM::emptyNamespace << 16) | 531)
-#define ATTR_VERT_ORIGIN_X ((DOM::emptyNamespace << 16) | 532)
-#define ATTR_VERT_ORIGIN_Y ((DOM::emptyNamespace << 16) | 533)
-#define ATTR_VIEWBOX ((DOM::emptyNamespace << 16) | 534)
-#define ATTR_VIEWTARGET ((DOM::emptyNamespace << 16) | 535)
-#define ATTR_WIDTHS ((DOM::emptyNamespace << 16) | 536)
-#define ATTR_WORD_SPACING ((DOM::emptyNamespace << 16) | 537)
-#define ATTR_WRITING_MODE ((DOM::emptyNamespace << 16) | 538)
-#define ATTR_X ((DOM::emptyNamespace << 16) | 539)
-#define ATTR_X_HEIGHT ((DOM::emptyNamespace << 16) | 540)
-#define ATTR_X1 ((DOM::emptyNamespace << 16) | 541)
-#define ATTR_X2 ((DOM::emptyNamespace << 16) | 542)
-#define ATTR_XCHANNELSELECTOR ((DOM::emptyNamespace << 16) | 543)
-#define ATTR_Y ((DOM::emptyNamespace << 16) | 544)
-#define ATTR_Y1 ((DOM::emptyNamespace << 16) | 545)
-#define ATTR_Y2 ((DOM::emptyNamespace << 16) | 546)
-#define ATTR_YCHANNELSELECTOR ((DOM::emptyNamespace << 16) | 547)
-#define ATTR_Z ((DOM::emptyNamespace << 16) | 548)
-#define ATTR_ZOOMANDPAN ((DOM::emptyNamespace << 16) | 549)
-#define ATTR_XLINK_ACTUATE ((DOM::xlinkNamespace << 16) | 550)
-#define ATTR_XLINK_ARCROLE ((DOM::xlinkNamespace << 16) | 551)
-#define ATTR_XLINK_ROLE ((DOM::xlinkNamespace << 16) | 552)
-#define ATTR_XLINK_SHOW ((DOM::xlinkNamespace << 16) | 553)
-#define ATTR_XML_SPACE ((DOM::xmlNamespace << 16) | 554)
+#define ATTR_ONMESSAGE ((DOM::emptyNamespace << 16) | 236)
+#define ATTR_ONMOUSEDOWN ((DOM::emptyNamespace << 16) | 237)
+#define ATTR_ONMOUSEMOVE ((DOM::emptyNamespace << 16) | 238)
+#define ATTR_ONMOUSEOUT ((DOM::emptyNamespace << 16) | 239)
+#define ATTR_ONMOUSEOVER ((DOM::emptyNamespace << 16) | 240)
+#define ATTR_ONMOUSEUP ((DOM::emptyNamespace << 16) | 241)
+#define ATTR_ONRESET ((DOM::emptyNamespace << 16) | 242)
+#define ATTR_ONSELECT ((DOM::emptyNamespace << 16) | 243)
+#define ATTR_ONSCROLL ((DOM::emptyNamespace << 16) | 244)
+#define ATTR_ONSUBMIT ((DOM::emptyNamespace << 16) | 245)
+#define ATTR_ONUNLOAD ((DOM::emptyNamespace << 16) | 246)
+#define ATTR_PROFILE ((DOM::emptyNamespace << 16) | 247)
+#define ATTR_PROMPT ((DOM::emptyNamespace << 16) | 248)
+#define ATTR_SCHEME ((DOM::emptyNamespace << 16) | 249)
+#define ATTR_SRC ((DOM::emptyNamespace << 16) | 250)
+#define ATTR_STANDBY ((DOM::emptyNamespace << 16) | 251)
+#define ATTR_SUMMARY ((DOM::emptyNamespace << 16) | 252)
+#define ATTR_USEMAP ((DOM::emptyNamespace << 16) | 253)
+#define ATTR_VALUE ((DOM::emptyNamespace << 16) | 254)
+#define ID_ALTGLYPH 255
+#define ID_ALTGLYPHDEF 256
+#define ID_ALTGLYPHITEM 257
+#define ID_ANIMATE 258
+#define ATTR_ANIMATE ((DOM::emptyNamespace << 16) | 258)
+#define ID_ANIMATECOLOR 259
+#define ID_ANIMATEMOTION 260
+#define ID_ANIMATETRANSFORM 261
+#define ID_SET 262
+#define ID_CIRCLE 263
+#define ID_CLIPPATH 264
+#define ID_COLOR_PROFILE 265
+#define ID_CURSOR 266
+#define ATTR_CURSOR ((DOM::emptyNamespace << 16) | 266)
+#define ID_DEFINITION_SRC 267
+#define ID_DEFS 268
+#define ID_DESC 269
+#define ID_ELLIPSE 270
+#define ID_FEBLEND 271
+#define ID_FECOLORMATRIX 272
+#define ATTR_FECOLORMATRIX ((DOM::emptyNamespace << 16) | 272)
+#define ID_FECOMPONENTTRANSFER 273
+#define ID_FECOMPOSITE 274
+#define ATTR_FECOMPOSITE ((DOM::emptyNamespace << 16) | 274)
+#define ID_FECONVOLVEMATRIX 275
+#define ID_FEDIFFUSELIGHTING 276
+#define ID_FEDISPLACEMENTMAP 277
+#define ID_FEDISTANTLIGHT 278
+#define ID_FEFLOOD 279
+#define ID_FEFUNCA 280
+#define ID_FEFUNCB 281
+#define ID_FEFUNCG 282
+#define ID_FEFUNCR 283
+#define ID_FEGAUSSIANBLUR 284
+#define ATTR_FEGAUSSIANBLUR ((DOM::emptyNamespace << 16) | 284)
+#define ID_FEIMAGE 285
+#define ID_FEMERGE 286
+#define ID_FEMERGENODE 287
+#define ID_FEMORPHOLOGY 288
+#define ATTR_FEMORPHOLOGY ((DOM::emptyNamespace << 16) | 288)
+#define ID_FEOFFSET 289
+#define ID_FEPOINTLIGHT 290
+#define ID_FESPECULARLIGHTING 291
+#define ID_FESPOTLIGHT 292
+#define ID_FETILE 293
+#define ATTR_FETILE ((DOM::emptyNamespace << 16) | 293)
+#define ID_FETURBULENCE 294
+#define ID_FILTER 295
+#define ATTR_FILTER ((DOM::emptyNamespace << 16) | 295)
+#define ID_FONT_FACE 296
+#define ID_FONT_FACE_FORMAT 297
+#define ID_FONT_FACE_NAME 298
+#define ID_FONT_FACE_SRC 299
+#define ID_FONT_FACE_URI 300
+#define ID_FOREIGNOBJECT 301
+#define ID_G 302
+#define ID_GLYPH 303
+#define ID_GLYPHREF 304
+#define ATTR_GLYPHREF ((DOM::emptyNamespace << 16) | 304)
+#define ID_HKERN 305
+#define ID_LINE 306
+#define ID_LINEARGRADIENT 307
+#define ID_MARKER 308
+#define ID_MASK 309
+#define ATTR_MASK ((DOM::emptyNamespace << 16) | 309)
+#define ID_METADATA 310
+#define ID_MISSING_GLYPH 311
+#define ID_MPATH 312
+#define ID_PATH 313
+#define ATTR_PATH ((DOM::emptyNamespace << 16) | 313)
+#define ID_PATTERN 314
+#define ID_POLYGON 315
+#define ID_POLYLINE 316
+#define ID_RADIALGRADIENT 317
+#define ID_RECT 318
+#define ID_STOP 319
+#define ID_SVG 320
+#define ID_SWITCH 321
+#define ID_SYMBOL 322
+#define ID_TEXTPATH 323
+#define ID_TREF 324
+#define ID_TSPAN 325
+#define ID_USE 326
+#define ID_VIEW 327
+#define ID_VKERN 328
+#define ATTR_ACCENT_HEIGHT ((DOM::emptyNamespace << 16) | 329)
+#define ATTR_ACCUMULATE ((DOM::emptyNamespace << 16) | 330)
+#define ATTR_ADDITIVE ((DOM::emptyNamespace << 16) | 331)
+#define ATTR_ALIGNMENT_BASELINE ((DOM::emptyNamespace << 16) | 332)
+#define ATTR_ALPHABETIC ((DOM::emptyNamespace << 16) | 333)
+#define ATTR_AMPLITUDE ((DOM::emptyNamespace << 16) | 334)
+#define ATTR_ARABIC_FORM ((DOM::emptyNamespace << 16) | 335)
+#define ATTR_ASCENT ((DOM::emptyNamespace << 16) | 336)
+#define ATTR_ATTRIBUTENAME ((DOM::emptyNamespace << 16) | 337)
+#define ATTR_ATTRIBUTETYPE ((DOM::emptyNamespace << 16) | 338)
+#define ATTR_AZIMUTH ((DOM::emptyNamespace << 16) | 339)
+#define ATTR_BASEFREQUENCY ((DOM::emptyNamespace << 16) | 340)
+#define ATTR_BASELINE_SHIFT ((DOM::emptyNamespace << 16) | 341)
+#define ATTR_BASEPROFILE ((DOM::emptyNamespace << 16) | 342)
+#define ATTR_BBOX ((DOM::emptyNamespace << 16) | 343)
+#define ATTR_BEGIN ((DOM::emptyNamespace << 16) | 344)
+#define ATTR_BIAS ((DOM::emptyNamespace << 16) | 345)
+#define ATTR_BY ((DOM::emptyNamespace << 16) | 346)
+#define ATTR_CALCMODE ((DOM::emptyNamespace << 16) | 347)
+#define ATTR_CAP_HEIGHT ((DOM::emptyNamespace << 16) | 348)
+#define ATTR_CLIP ((DOM::emptyNamespace << 16) | 349)
+#define ATTR_CLIP_PATH ((DOM::emptyNamespace << 16) | 350)
+#define ATTR_CLIP_RULE ((DOM::emptyNamespace << 16) | 351)
+#define ATTR_CLIPPATHUNITS ((DOM::emptyNamespace << 16) | 352)
+#define ATTR_COLOR_INTERPOLATION ((DOM::emptyNamespace << 16) | 353)
+#define ATTR_COLOR_INTERPOLATION_FILTERS ((DOM::emptyNamespace << 16) | 354)
+#define ATTR_COLOR_PROFILE ((DOM::emptyNamespace << 16) | 355)
+#define ATTR_COLOR_RENDERING ((DOM::emptyNamespace << 16) | 356)
+#define ATTR_CONTENTSCRIPTTYPE ((DOM::emptyNamespace << 16) | 357)
+#define ATTR_CONTENTSTYLETYPE ((DOM::emptyNamespace << 16) | 358)
+#define ATTR_CX ((DOM::emptyNamespace << 16) | 359)
+#define ATTR_CY ((DOM::emptyNamespace << 16) | 360)
+#define ATTR_D ((DOM::emptyNamespace << 16) | 361)
+#define ATTR_DESCENT ((DOM::emptyNamespace << 16) | 362)
+#define ATTR_DIFFUSECONSTANT ((DOM::emptyNamespace << 16) | 363)
+#define ATTR_DISPLAY ((DOM::emptyNamespace << 16) | 364)
+#define ATTR_DIVISOR ((DOM::emptyNamespace << 16) | 365)
+#define ATTR_DOMINANT_BASELINE ((DOM::emptyNamespace << 16) | 366)
+#define ATTR_DUR ((DOM::emptyNamespace << 16) | 367)
+#define ATTR_DX ((DOM::emptyNamespace << 16) | 368)
+#define ATTR_DY ((DOM::emptyNamespace << 16) | 369)
+#define ATTR_EDGEMODE ((DOM::emptyNamespace << 16) | 370)
+#define ATTR_ELEVATION ((DOM::emptyNamespace << 16) | 371)
+#define ATTR_ENABLE_BACKGROUND ((DOM::emptyNamespace << 16) | 372)
+#define ATTR_END ((DOM::emptyNamespace << 16) | 373)
+#define ATTR_EXPONENT ((DOM::emptyNamespace << 16) | 374)
+#define ATTR_EXTERNALRESOURCESREQUIRED ((DOM::emptyNamespace << 16) | 375)
+#define ATTR_FILL ((DOM::emptyNamespace << 16) | 376)
+#define ATTR_FILL_OPACITY ((DOM::emptyNamespace << 16) | 377)
+#define ATTR_FILL_RULE ((DOM::emptyNamespace << 16) | 378)
+#define ATTR_FILTERRES ((DOM::emptyNamespace << 16) | 379)
+#define ATTR_FILTERUNITS ((DOM::emptyNamespace << 16) | 380)
+#define ATTR_FLOOD_COLOR ((DOM::emptyNamespace << 16) | 381)
+#define ATTR_FLOOD_OPACITY ((DOM::emptyNamespace << 16) | 382)
+#define ATTR_FONT_FAMILY ((DOM::emptyNamespace << 16) | 383)
+#define ATTR_FONT_SIZE ((DOM::emptyNamespace << 16) | 384)
+#define ATTR_FONT_SIZE_ADJUST ((DOM::emptyNamespace << 16) | 385)
+#define ATTR_FONT_STRETCH ((DOM::emptyNamespace << 16) | 386)
+#define ATTR_FONT_STYLE ((DOM::emptyNamespace << 16) | 387)
+#define ATTR_FONT_VARIANT ((DOM::emptyNamespace << 16) | 388)
+#define ATTR_FONT_WEIGHT ((DOM::emptyNamespace << 16) | 389)
+#define ATTR_FORMAT ((DOM::emptyNamespace << 16) | 390)
+#define ATTR_FROM ((DOM::emptyNamespace << 16) | 391)
+#define ATTR_FX ((DOM::emptyNamespace << 16) | 392)
+#define ATTR_FY ((DOM::emptyNamespace << 16) | 393)
+#define ATTR_G1 ((DOM::emptyNamespace << 16) | 394)
+#define ATTR_G2 ((DOM::emptyNamespace << 16) | 395)
+#define ATTR_GLYPH_NAME ((DOM::emptyNamespace << 16) | 396)
+#define ATTR_GLYPH_ORIENTATION_HORIZONTAL ((DOM::emptyNamespace << 16) | 397)
+#define ATTR_GLYPH_ORIENTATION_VERTICAL ((DOM::emptyNamespace << 16) | 398)
+#define ATTR_GRADIENTTRANSFORM ((DOM::emptyNamespace << 16) | 399)
+#define ATTR_GRADIENTUNITS ((DOM::emptyNamespace << 16) | 400)
+#define ATTR_HANGING ((DOM::emptyNamespace << 16) | 401)
+#define ATTR_HORIZ_ADV_X ((DOM::emptyNamespace << 16) | 402)
+#define ATTR_HORIZ_ORIGIN_X ((DOM::emptyNamespace << 16) | 403)
+#define ATTR_HORIZ_ORIGIN_Y ((DOM::emptyNamespace << 16) | 404)
+#define ATTR_IDEOGRAPHIC ((DOM::emptyNamespace << 16) | 405)
+#define ATTR_IMAGE_RENDERING ((DOM::emptyNamespace << 16) | 406)
+#define ATTR_IN ((DOM::emptyNamespace << 16) | 407)
+#define ATTR_IN2 ((DOM::emptyNamespace << 16) | 408)
+#define ATTR_INTERCEPT ((DOM::emptyNamespace << 16) | 409)
+#define ATTR_K ((DOM::emptyNamespace << 16) | 410)
+#define ATTR_K1 ((DOM::emptyNamespace << 16) | 411)
+#define ATTR_K2 ((DOM::emptyNamespace << 16) | 412)
+#define ATTR_K3 ((DOM::emptyNamespace << 16) | 413)
+#define ATTR_K4 ((DOM::emptyNamespace << 16) | 414)
+#define ATTR_KERNELMATRIX ((DOM::emptyNamespace << 16) | 415)
+#define ATTR_KERNELUNITLENGTH ((DOM::emptyNamespace << 16) | 416)
+#define ATTR_KERNING ((DOM::emptyNamespace << 16) | 417)
+#define ATTR_KEYPOINTS ((DOM::emptyNamespace << 16) | 418)
+#define ATTR_KEYSPLINES ((DOM::emptyNamespace << 16) | 419)
+#define ATTR_KEYTIMES ((DOM::emptyNamespace << 16) | 420)
+#define ATTR_LENGTHADJUST ((DOM::emptyNamespace << 16) | 421)
+#define ATTR_LETTER_SPACING ((DOM::emptyNamespace << 16) | 422)
+#define ATTR_LIGHTING_COLOR ((DOM::emptyNamespace << 16) | 423)
+#define ATTR_LIMITINGCONEANGLE ((DOM::emptyNamespace << 16) | 424)
+#define ATTR_LOCAL ((DOM::emptyNamespace << 16) | 425)
+#define ATTR_MARKER_END ((DOM::emptyNamespace << 16) | 426)
+#define ATTR_MARKER_MID ((DOM::emptyNamespace << 16) | 427)
+#define ATTR_MARKER_START ((DOM::emptyNamespace << 16) | 428)
+#define ATTR_MARKERHEIGHT ((DOM::emptyNamespace << 16) | 429)
+#define ATTR_MARKERUNITS ((DOM::emptyNamespace << 16) | 430)
+#define ATTR_MARKERWIDTH ((DOM::emptyNamespace << 16) | 431)
+#define ATTR_MASKCONTENTUNITS ((DOM::emptyNamespace << 16) | 432)
+#define ATTR_MASKUNITS ((DOM::emptyNamespace << 16) | 433)
+#define ATTR_MATHEMATICAL ((DOM::emptyNamespace << 16) | 434)
+#define ATTR_MAX ((DOM::emptyNamespace << 16) | 435)
+#define ATTR_MIN ((DOM::emptyNamespace << 16) | 436)
+#define ATTR_MODE ((DOM::emptyNamespace << 16) | 437)
+#define ATTR_NUMOCTAVES ((DOM::emptyNamespace << 16) | 438)
+#define ATTR_OFFSET ((DOM::emptyNamespace << 16) | 439)
+#define ATTR_ONACTIVATE ((DOM::emptyNamespace << 16) | 440)
+#define ATTR_ONBEGIN ((DOM::emptyNamespace << 16) | 441)
+#define ATTR_ONEND ((DOM::emptyNamespace << 16) | 442)
+#define ATTR_ONFOCUSIN ((DOM::emptyNamespace << 16) | 443)
+#define ATTR_ONFOCUSOUT ((DOM::emptyNamespace << 16) | 444)
+#define ATTR_ONREPEAT ((DOM::emptyNamespace << 16) | 445)
+#define ATTR_ONZOOM ((DOM::emptyNamespace << 16) | 446)
+#define ATTR_OPACITY ((DOM::emptyNamespace << 16) | 447)
+#define ATTR_OPERATOR ((DOM::emptyNamespace << 16) | 448)
+#define ATTR_ORDER ((DOM::emptyNamespace << 16) | 449)
+#define ATTR_ORIENT ((DOM::emptyNamespace << 16) | 450)
+#define ATTR_ORIENTATION ((DOM::emptyNamespace << 16) | 451)
+#define ATTR_ORIGIN ((DOM::emptyNamespace << 16) | 452)
+#define ATTR_OVERFLOW ((DOM::emptyNamespace << 16) | 453)
+#define ATTR_OVERLINE_POSITION ((DOM::emptyNamespace << 16) | 454)
+#define ATTR_OVERLINE_THICKNESS ((DOM::emptyNamespace << 16) | 455)
+#define ATTR_PANOSE_1 ((DOM::emptyNamespace << 16) | 456)
+#define ATTR_PATHLENGTH ((DOM::emptyNamespace << 16) | 457)
+#define ATTR_PATTERNCONTENTUNITS ((DOM::emptyNamespace << 16) | 458)
+#define ATTR_PATTERNTRANSFORM ((DOM::emptyNamespace << 16) | 459)
+#define ATTR_PATTERNUNITS ((DOM::emptyNamespace << 16) | 460)
+#define ATTR_POINTER_EVENTS ((DOM::emptyNamespace << 16) | 461)
+#define ATTR_POINTS ((DOM::emptyNamespace << 16) | 462)
+#define ATTR_POINTSATX ((DOM::emptyNamespace << 16) | 463)
+#define ATTR_POINTSATY ((DOM::emptyNamespace << 16) | 464)
+#define ATTR_POINTSATZ ((DOM::emptyNamespace << 16) | 465)
+#define ATTR_PRESERVEALPHA ((DOM::emptyNamespace << 16) | 466)
+#define ATTR_PRESERVEASPECTRATIO ((DOM::emptyNamespace << 16) | 467)
+#define ATTR_PRIMITIVEUNITS ((DOM::emptyNamespace << 16) | 468)
+#define ATTR_R ((DOM::emptyNamespace << 16) | 469)
+#define ATTR_RADIUS ((DOM::emptyNamespace << 16) | 470)
+#define ATTR_REFX ((DOM::emptyNamespace << 16) | 471)
+#define ATTR_REFY ((DOM::emptyNamespace << 16) | 472)
+#define ATTR_RENDERING_INTENT ((DOM::emptyNamespace << 16) | 473)
+#define ATTR_REPEATCOUNT ((DOM::emptyNamespace << 16) | 474)
+#define ATTR_REPEATDUR ((DOM::emptyNamespace << 16) | 475)
+#define ATTR_REQUIREDEXTENSIONS ((DOM::emptyNamespace << 16) | 476)
+#define ATTR_REQUIREDFEATURES ((DOM::emptyNamespace << 16) | 477)
+#define ATTR_RESTART ((DOM::emptyNamespace << 16) | 478)
+#define ATTR_RESULT ((DOM::emptyNamespace << 16) | 479)
+#define ATTR_ROTATE ((DOM::emptyNamespace << 16) | 480)
+#define ATTR_RX ((DOM::emptyNamespace << 16) | 481)
+#define ATTR_RY ((DOM::emptyNamespace << 16) | 482)
+#define ATTR_SCALE ((DOM::emptyNamespace << 16) | 483)
+#define ATTR_SEED ((DOM::emptyNamespace << 16) | 484)
+#define ATTR_SHAPE_RENDERING ((DOM::emptyNamespace << 16) | 485)
+#define ATTR_SLOPE ((DOM::emptyNamespace << 16) | 486)
+#define ATTR_SPACING ((DOM::emptyNamespace << 16) | 487)
+#define ATTR_SPECULARCONSTANT ((DOM::emptyNamespace << 16) | 488)
+#define ATTR_SPECULAREXPONENT ((DOM::emptyNamespace << 16) | 489)
+#define ATTR_SPREADMETHOD ((DOM::emptyNamespace << 16) | 490)
+#define ATTR_STARTOFFSET ((DOM::emptyNamespace << 16) | 491)
+#define ATTR_STDDEVIATION ((DOM::emptyNamespace << 16) | 492)
+#define ATTR_STEMH ((DOM::emptyNamespace << 16) | 493)
+#define ATTR_STEMV ((DOM::emptyNamespace << 16) | 494)
+#define ATTR_STITCHTILES ((DOM::emptyNamespace << 16) | 495)
+#define ATTR_STOP_COLOR ((DOM::emptyNamespace << 16) | 496)
+#define ATTR_STOP_OPACITY ((DOM::emptyNamespace << 16) | 497)
+#define ATTR_STRIKETHROUGH_POSITION ((DOM::emptyNamespace << 16) | 498)
+#define ATTR_STRIKETHROUGH_THICKNESS ((DOM::emptyNamespace << 16) | 499)
+#define ATTR_STROKE ((DOM::emptyNamespace << 16) | 500)
+#define ATTR_STROKE_DASHARRAY ((DOM::emptyNamespace << 16) | 501)
+#define ATTR_STROKE_DASHOFFSET ((DOM::emptyNamespace << 16) | 502)
+#define ATTR_STROKE_LINECAP ((DOM::emptyNamespace << 16) | 503)
+#define ATTR_STROKE_LINEJOIN ((DOM::emptyNamespace << 16) | 504)
+#define ATTR_STROKE_MITERLIMIT ((DOM::emptyNamespace << 16) | 505)
+#define ATTR_STROKE_OPACITY ((DOM::emptyNamespace << 16) | 506)
+#define ATTR_STROKE_WIDTH ((DOM::emptyNamespace << 16) | 507)
+#define ATTR_SURFACESCALE ((DOM::emptyNamespace << 16) | 508)
+#define ATTR_SYSTEMLANGUAGE ((DOM::emptyNamespace << 16) | 509)
+#define ATTR_TABLEVALUES ((DOM::emptyNamespace << 16) | 510)
+#define ATTR_TARGETX ((DOM::emptyNamespace << 16) | 511)
+#define ATTR_TARGETY ((DOM::emptyNamespace << 16) | 512)
+#define ATTR_TEXT_ANCHOR ((DOM::emptyNamespace << 16) | 513)
+#define ATTR_TEXT_DECORATION ((DOM::emptyNamespace << 16) | 514)
+#define ATTR_TEXT_RENDERING ((DOM::emptyNamespace << 16) | 515)
+#define ATTR_TEXTLENGTH ((DOM::emptyNamespace << 16) | 516)
+#define ATTR_TO ((DOM::emptyNamespace << 16) | 517)
+#define ATTR_TRANSFORM ((DOM::emptyNamespace << 16) | 518)
+#define ATTR_U1 ((DOM::emptyNamespace << 16) | 519)
+#define ATTR_U2 ((DOM::emptyNamespace << 16) | 520)
+#define ATTR_UNDERLINE_POSITION ((DOM::emptyNamespace << 16) | 521)
+#define ATTR_UNDERLINE_THICKNESS ((DOM::emptyNamespace << 16) | 522)
+#define ATTR_UNICODE ((DOM::emptyNamespace << 16) | 523)
+#define ATTR_UNICODE_BIDI ((DOM::emptyNamespace << 16) | 524)
+#define ATTR_UNICODE_RANGE ((DOM::emptyNamespace << 16) | 525)
+#define ATTR_UNITS_PER_EM ((DOM::emptyNamespace << 16) | 526)
+#define ATTR_V_ALPHABETIC ((DOM::emptyNamespace << 16) | 527)
+#define ATTR_V_HANGING ((DOM::emptyNamespace << 16) | 528)
+#define ATTR_V_IDEOGRAPHIC ((DOM::emptyNamespace << 16) | 529)
+#define ATTR_V_MATHEMATICAL ((DOM::emptyNamespace << 16) | 530)
+#define ATTR_VALUES ((DOM::emptyNamespace << 16) | 531)
+#define ATTR_VERT_ADV_Y ((DOM::emptyNamespace << 16) | 532)
+#define ATTR_VERT_ORIGIN_X ((DOM::emptyNamespace << 16) | 533)
+#define ATTR_VERT_ORIGIN_Y ((DOM::emptyNamespace << 16) | 534)
+#define ATTR_VIEWBOX ((DOM::emptyNamespace << 16) | 535)
+#define ATTR_VIEWTARGET ((DOM::emptyNamespace << 16) | 536)
+#define ATTR_WIDTHS ((DOM::emptyNamespace << 16) | 537)
+#define ATTR_WORD_SPACING ((DOM::emptyNamespace << 16) | 538)
+#define ATTR_WRITING_MODE ((DOM::emptyNamespace << 16) | 539)
+#define ATTR_X ((DOM::emptyNamespace << 16) | 540)
+#define ATTR_X_HEIGHT ((DOM::emptyNamespace << 16) | 541)
+#define ATTR_X1 ((DOM::emptyNamespace << 16) | 542)
+#define ATTR_X2 ((DOM::emptyNamespace << 16) | 543)
+#define ATTR_XCHANNELSELECTOR ((DOM::emptyNamespace << 16) | 544)
+#define ATTR_Y ((DOM::emptyNamespace << 16) | 545)
+#define ATTR_Y1 ((DOM::emptyNamespace << 16) | 546)
+#define ATTR_Y2 ((DOM::emptyNamespace << 16) | 547)
+#define ATTR_YCHANNELSELECTOR ((DOM::emptyNamespace << 16) | 548)
+#define ATTR_Z ((DOM::emptyNamespace << 16) | 549)
+#define ATTR_ZOOMANDPAN ((DOM::emptyNamespace << 16) | 550)
+#define ATTR_XLINK_ACTUATE ((DOM::xlinkNamespace << 16) | 551)
+#define ATTR_XLINK_ARCROLE ((DOM::xlinkNamespace << 16) | 552)
+#define ATTR_XLINK_ROLE ((DOM::xlinkNamespace << 16) | 553)
+#define ATTR_XLINK_SHOW ((DOM::xlinkNamespace << 16) | 554)
+#define ATTR_XML_SPACE ((DOM::xmlNamespace << 16) | 555)
 #define ID_LAST_TAG 110
 #define ID_CLOSE_TAG 16384
-#define ATTR_LAST_ATTR 253
+#define ATTR_LAST_ATTR 254
 #define ATTR_LAST_CI_ATTR 210
 
 #define caseSensitiveAttr(id) (((localNamePart(id)) > ATTR_LAST_CI_ATTR || (id) == ATTR_ABBR || (id) == ATTR_CITE || (id) == ATTR_CODE || (id) == ATTR_LABEL || (id) == ATTR_OBJECT || (id) == ATTR_TITLE))

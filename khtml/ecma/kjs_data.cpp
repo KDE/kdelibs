@@ -26,8 +26,11 @@
 namespace KJS {
 
 // HTML5 deep copy algorithm, as described in "2.7.5 Safe passing of structured data"
-static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QSet<JSObject*>& visited)
+static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QSet<JSObject*>& path)
 {
+    if (exec->hadException()) // e.g. OOM or DATA_CLONE_ERR
+        return jsUndefined();
+
     switch (in->type()) {
         case NumberType:
         case BooleanType:
@@ -48,13 +51,13 @@ static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QS
                 return copy;
 
             // Otherwise, we can only clone if it it's an array or plain object
-            // we haven't yet visited
-            if (visited.contains(obj)) {
+            // that isn't already on our path from the root
+            if (path.contains(obj)) {
                 setDOMException(exec, DOM::DOMException::DATA_CLONE_ERR);
                 break;
             }
 
-            visited.insert(obj);
+            path.insert(obj);
 
             JSObject* clone = 0;
             if (obj->inherits(&ArrayInstance::info)) {
@@ -72,8 +75,10 @@ static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QS
             obj->getOwnPropertyNames(exec, props);
             for (PropertyNameArrayIterator i = props.begin(); i != props.end(); ++i) {
                 JSValue* propVal = obj->get(exec, *i);
-                clone->put(exec, *i, cloneInternal(exec, ctx, propVal, visited)); // ### flags?
+                clone->put(exec, *i, cloneInternal(exec, ctx, propVal, path)); // ### flags?
             }
+
+            path.remove(obj);
             
             break;
         }

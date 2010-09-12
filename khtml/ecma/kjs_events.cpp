@@ -22,6 +22,7 @@
 #include "kjs_events.h"
 #include "kjs_events.lut.h"
 
+#include "kjs_data.h"
 #include "kjs_window.h"
 #include "kjs_views.h"
 #include "kjs_proxy.h"
@@ -1017,4 +1018,83 @@ JSValue *DOMMutationEventProtoFunc::callAsFunction(ExecState *exec, JSObject *th
       return jsUndefined();
   }
   return jsUndefined();
+}
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMMessageEvent::info = { "MessageEvent", &DOMEvent::info, &DOMMessageEventTable, 0 };
+/*
+@begin DOMMessageEventTable 5
+  data     DOMMessageEvent::Data     DontDelete|ReadOnly
+  origin   DOMMessageEvent::Origin   DontDelete|ReadOnly
+  source   DOMMessageEvent::Source   DontDelete|ReadOnly
+  lastEventId  DOMMessageEvent::LastEventId   DontDelete|ReadOnly
+@end
+@begin DOMMessageEventProtoTable 1
+  initMessageEvent     DOMMessageEvent::InitMessageEvent     DontDelete|Function 7
+@end
+*/
+KJS_DEFINE_PROTOTYPE(DOMMessageEventProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMMessageEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMMessageEvent",DOMMessageEventProto,DOMMessageEventProtoFunc,DOMEventProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(MessageEventPseudoCtor, "DOMMessageEvent", DOMMessageEventProto)
+
+DOMMessageEvent::DOMMessageEvent(ExecState *exec, DOM::MessageEventImpl* me) :
+  DOMEvent(DOMMessageEventProto::self(exec), me) {}
+
+bool DOMMessageEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+  return getStaticValueSlot<DOMMessageEvent, DOMEvent>(exec,&DOMMessageEventTable,this,propertyName,slot);
+}
+
+JSValue *DOMMessageEvent::getValueProperty(ExecState *exec, int token) const
+{
+  DOM::MessageEventImpl& event = *impl();
+  switch (token) {
+  case Data:
+    return getMessageEventData(exec, event.data().get());
+  case Origin:
+    return jsString(event.origin());
+  case LastEventId:
+    return jsString(event.lastEventId());
+  case Source: 
+    return Window::retrieve(event.source());
+  default:
+    kDebug(6070) << "WARNING: Unhandled token in DOMMessageEvent::getValueProperty : " << token;
+    return 0;
+  }
+}
+
+JSValue *DOMMessageEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+    KJS_CHECK_THIS( KJS::DOMMessageEvent, thisObj );
+    DOM::MessageEventImpl& messageEvent = *static_cast<DOMMessageEvent *>(thisObj)->impl();
+    switch (id) {
+        case DOMMessageEvent::InitMessageEvent: {
+            JSObject* sourceObj = args[3]->getObject();
+
+            Window* sourceWin = 0;
+            if (sourceObj && sourceObj->inherits(&Window::info))
+                sourceWin = static_cast<const Window *>(sourceObj);
+
+            KHTMLPart* part = 0;
+            if (sourceWin)
+                part = qobject_cast<KHTMLPart*>(sourceWin->part());
+
+            if (!part) {
+                setDOMException(exec, DOM::DOMException::TYPE_MISMATCH_ERR);
+                return jsUndefined();
+            }
+        
+            messageEvent.initMessageEvent(args[0]->toString(exec).domString(), // typeArg,
+                                          args[1]->toBoolean(exec), // canBubbleArg
+                                          args[2]->toBoolean(exec), // cancelableArg
+                                          encapsulateMessageEventData(
+                                               exec, exec->dynamicInterpreter(), args[3]), // dataArg
+                                          args[4]->toString(exec).domString(), // originArg
+                                          args[5]->toString(exec).domString(), // lastEventIdArg
+                                          part); // sourceArg
+            return jsUndefined();
+        }
+    }
+    return jsUndefined();
 }

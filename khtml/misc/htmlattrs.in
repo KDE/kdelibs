@@ -139,6 +139,7 @@ onkeydown
 onkeypress
 onkeyup
 onload
+onmessage
 onmousedown
 onmousemove
 onmouseout

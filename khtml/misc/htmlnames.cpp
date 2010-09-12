@@ -259,6 +259,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_ONKEYPRESS), "onkeypress");
     s_idTable->addStaticMapping(localNamePart(ATTR_ONKEYUP), "onkeyup");
     s_idTable->addStaticMapping(localNamePart(ATTR_ONLOAD), "onload");
+    s_idTable->addStaticMapping(localNamePart(ATTR_ONMESSAGE), "onmessage");
     s_idTable->addStaticMapping(localNamePart(ATTR_ONMOUSEDOWN), "onmousedown");
     s_idTable->addStaticMapping(localNamePart(ATTR_ONMOUSEMOVE), "onmousemove");
     s_idTable->addStaticMapping(localNamePart(ATTR_ONMOUSEOUT), "onmouseout");
