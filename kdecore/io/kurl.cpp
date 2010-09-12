@@ -509,13 +509,13 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
   // WORKAROUND THE RFC 1606 LOOPHOLE THAT ALLOWS
   // http:/index.html AS A VALID SYNTAX FOR RELATIVE
   // URLS. ( RFC 2396 section 5.2 item # 3 )
-  int len = _u.scheme().length();
+  const int len = _u.scheme().length();
   if ( !_u.host().isEmpty() && !rUrl.isEmpty() &&
        rUrl.indexOf( _u.scheme(), 0, Qt::CaseInsensitive ) == 0 &&
-       rUrl[len] == ':' && (rUrl[len+1] != QLatin1Char('/') ||
-       (rUrl[len+1] == '/' && rUrl[len+2] != QLatin1Char('/'))) )
+       rUrl[len] == QLatin1Char(':') && (rUrl[len+1] != QLatin1Char('/') ||
+       (rUrl[len+1] == QLatin1Char('/') && rUrl[len+2] != QLatin1Char('/'))) )
   {
-    rUrl.remove( 0, rUrl.indexOf( ':' ) + 1 );
+    rUrl.remove( 0, rUrl.indexOf( QLatin1Char(':') ) + 1 );
   }
 
 
@@ -523,7 +523,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
   {
     *this = _u;
   }
-  else if ( rUrl[0] == '#' )
+  else if ( rUrl[0] == QLatin1Char('#') )
   {
     *this = _u;
     QByteArray strRef_encoded = rUrl.mid(1).toLatin1();
@@ -549,9 +549,9 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
         }
         strPath.clear();
     }
-    else if ( rUrl[0] != '?' )
+    else if ( rUrl[0] != QLatin1Char('?') )
     {
-       int pos = strPath.lastIndexOf( QLatin1Char('/') );
+       const int pos = strPath.lastIndexOf( QLatin1Char('/') );
        if (pos >= 0)
           strPath.truncate(pos);
        strPath += QLatin1Char('/');
@@ -563,14 +563,14 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     }
     setPath( strPath );
     //kDebug(kurlDebugArea()) << "url()=" << url() << " rUrl=" << rUrl;
-    KUrl tmp( url() + rUrl);
+    const KUrl tmp( url() + rUrl);
     //kDebug(kurlDebugArea()) << "assigning tmp=" << tmp.url();
     *this = tmp;
     cleanPath(KeepDirSeparators);
   }
   else
   {
-    KUrl tmp( rUrl );
+    const KUrl tmp( rUrl );
     //kDebug(kurlDebugArea()) << "not relative; assigning tmp=" << tmp.url();
     *this = tmp;
     // Preserve userinfo if applicable.
