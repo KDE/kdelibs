@@ -46,7 +46,7 @@ namespace KStandardShortcut
    * Other Rules:
    *
    * - Never change the name of an existing shortcut
-   * - Never translate the name of an shortcut
+   * - Never translate the name of a shortcut
    */
 
   /**
