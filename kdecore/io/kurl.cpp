@@ -72,8 +72,8 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
      }
   }
 
-  bool slash = (len && path[len-1] == QLatin1Char('/')) ||
-               (len > 1 && path[len-2] == QLatin1Char('/') && path[len-1] == QLatin1Char('.'));
+  const bool slash = (len && path[len-1] == QLatin1Char('/')) ||
+                     (len > 1 && path[len-2] == QLatin1Char('/') && path[len-1] == QLatin1Char('.'));
 
   // The following code cleans up directory path much like
   // QDir::cleanPath() except it can be made to ignore multiple
@@ -89,14 +89,14 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   while ( pos && (pos = path.lastIndexOf(QLatin1Char('/'),--pos)) != -1 )
   {
     len = orig_pos - pos - 1;
-    if ( len == 2 && path[pos+1] == '.' && path[pos+2] == '.' )
+    if ( len == 2 && path[pos+1] == QLatin1Char('.') && path[pos+2] == QLatin1Char('.') )
       cdUp++;
     else
     {
       // Ignore any occurrences of '.'
       // This includes entries that simply do not make sense like /..../
       if ( (len || !cleanDirSeparator) &&
-           (len != 1 || path[pos+1] != '.' ) )
+           (len != 1 || path[pos+1] != QLatin1Char('.') ) )
       {
           if ( !cdUp )
               result.prepend(path.mid(pos, len+1));
@@ -114,9 +114,9 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 #endif
 
   if ( result.isEmpty() )
-    result = '/';
+    result = QLatin1Char('/');
   else if ( slash && result[result.length()-1] != QLatin1Char('/') )
-       result.append(QChar('/'));
+       result.append(QLatin1Char('/'));
 
   return result;
 }
