@@ -89,7 +89,7 @@ public:
    * \code
    *    QStringList list;
    *    KFontChooser::getFontList(list, KFontChooser::SmoothScalableFonts);
-   *    KFontChooser *chooseFont = new KFontChooser(0, false, list);
+   *    KFontChooser *chooseFont = new KFontChooser(0, NoDisplayFlags, list);
    * \endcode
    * <p>
    * The above creates a font chooser dialog with only SmoothScaleble fonts.
