@@ -53,6 +53,20 @@
 #include <ktemporaryfile.h>
 #include <utime.h>
 
+static QString expandTilde(const QString& name)
+{
+    if (!name.isEmpty())
+    {
+        const QString expandedName = KShell::tildeExpand(name);
+        // When a tilde mark cannot be properly expanded, the above call
+        // returns an empty string...
+        if (!expandedName.isEmpty())
+            return expandedName;
+    }
+
+    return name;
+}
+
 // Singleton, with data shared by all KNewFileMenu instances
 class KNewFileMenuSingleton
 {
@@ -485,7 +499,7 @@ void KNewFileMenuPrivate::executeStrategy()
 {
     m_tempFileToDelete = m_strategy.tempFileToDelete();
     const QString src = m_strategy.sourceFileToCopy();
-    const QString chosenFileName = m_strategy.chosenFileName();    
+    const QString chosenFileName = expandTilde(m_strategy.chosenFileName());
 
     if (src.isEmpty())
         return;
@@ -720,19 +734,11 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
     KUrl baseUrl = m_popupFiles.first();
     bool askAgain = false;
   
-    QString name = m_text;
+    QString name = expandTilde(m_text);
     
     if (!name.isEmpty()) {
-      // Expand any tilde mark that might have been specified...
-      const QString expandedName = KShell::tildeExpand(name);
-
-      // When a tilde mark cannot be properly expanded, the above call returns
-      // an empty string ; so we handle that scenario here...
-      if (!expandedName.isEmpty())
-        name = expandedName;
-
       if ((name[0] == '/'))
-        url.setPath(KShell::tildeExpand(name));
+        url.setPath(name);
       else {
         if (!m_viewShowsHiddenFiles && name.startsWith('.')) {
           if (!writeHiddenDir) {
