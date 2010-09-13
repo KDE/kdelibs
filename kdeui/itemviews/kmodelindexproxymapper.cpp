@@ -41,6 +41,9 @@ class KModelIndexProxyMapperPrivate
 
   bool assertSelectionValid(const QItemSelection &selection) const {
     foreach(const QItemSelectionRange &range, selection) {
+      if (!range.isValid()) {
+        kDebug() << selection << m_leftModel << m_rightModel << m_proxyChainDown << m_proxyChainUp;
+      }
       Q_ASSERT(range.isValid());
     }
     return true;
