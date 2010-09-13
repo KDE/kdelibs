@@ -723,19 +723,26 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
     QString name = m_text;
     
     if (!name.isEmpty()) {
-      if ((name[0] == '/') || (name[0] == '~')) {
-	url.setPath(KShell::tildeExpand(name));
-      } 
+      // Expand any tilde mark that might have been specified...
+      const QString expandedName = KShell::tildeExpand(name);
+
+      // When a tilde mark cannot be properly expanded, the above call returns
+      // an empty string ; so we handle that scenario here...
+      if (!expandedName.isEmpty())
+        name = expandedName;
+
+      if ((name[0] == '/'))
+        url.setPath(KShell::tildeExpand(name));
       else {
-	if (!m_viewShowsHiddenFiles && name.startsWith('.')) {
-	  if (!writeHiddenDir) {
-	    confirmCreatingHiddenDir(name);
-	    return;    
-	  }
-	}
-	name = KIO::encodeFileName( name );
-	url = baseUrl;
-	url.addPath( name );
+        if (!m_viewShowsHiddenFiles && name.startsWith('.')) {
+          if (!writeHiddenDir) {
+            confirmCreatingHiddenDir(name);
+            return;
+          }
+        }
+        name = KIO::encodeFileName( name );
+        url = baseUrl;
+        url.addPath( name );
       }
     }
     
@@ -747,9 +754,9 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
       KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, KUrl(), url, job );
       
       if (job) {
-	// We want the error handling to be done by slotResult so that subclasses can reimplement it
-	job->ui()->setAutoErrorHandlingEnabled(false);
-	QObject::connect(job, SIGNAL(result(KJob *)), q, SLOT(slotResult(KJob *)));
+        // We want the error handling to be done by slotResult so that subclasses can reimplement it
+        job->ui()->setAutoErrorHandlingEnabled(false);
+        QObject::connect(job, SIGNAL(result(KJob *)), q, SLOT(slotResult(KJob *)));
       }      
     } 
     else {
