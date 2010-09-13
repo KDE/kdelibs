@@ -2332,8 +2332,21 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
 QItemSelection KSelectionProxyModel::mapSelectionFromSource(const QItemSelection& selection) const
 {
     Q_D(const KSelectionProxyModel);
-    if (!d->m_startWithChildTrees && d->m_includeAllSelected)
-        return QAbstractProxyModel::mapSelectionFromSource(selection);
+    if (!d->m_startWithChildTrees && d->m_includeAllSelected) {
+        // QAbstractProxyModel::mapSelectionFromSource puts invalid ranges in the result
+        // without checking. We can't have that.
+        QItemSelection proxySelection;
+        foreach(const QItemSelectionRange &range, selection)
+        {
+          QModelIndex proxyTopLeft = mapFromSource(range.topLeft());
+          if (!proxyTopLeft.isValid())
+            continue;
+          QModelIndex proxyBottomRight = mapFromSource(range.bottomRight());
+          Q_ASSERT(proxyBottomRight.isValid());
+          proxySelection.append(QItemSelectionRange(proxyTopLeft, proxyBottomRight));
+        }
+        return proxySelection;
+    }
 
     QItemSelection proxySelection;
     QItemSelection::const_iterator it = selection.constBegin();
@@ -2358,8 +2371,22 @@ QItemSelection KSelectionProxyModel::mapSelectionToSource(const QItemSelection& 
     if (selection.isEmpty())
         return selection;
 
-    if (!d->m_startWithChildTrees && d->m_includeAllSelected)
-        return QAbstractProxyModel::mapSelectionToSource(selection);
+    if (!d->m_startWithChildTrees && d->m_includeAllSelected) {
+        // QAbstractProxyModel::mapSelectionFromSource puts invalid ranges in the result
+        // without checking. We can't have that.
+        QItemSelection sourceSelection;
+        foreach(const QItemSelectionRange &range, selection)
+        {
+          QModelIndex sourceTopLeft = mapToSource(range.topLeft());
+          Q_ASSERT(sourceTopLeft.isValid());
+
+          QModelIndex sourceBottomRight = mapToSource(range.bottomRight());
+          Q_ASSERT(sourceBottomRight.isValid());
+          sourceSelection.append(QItemSelectionRange(sourceTopLeft, sourceBottomRight));
+        }
+        return sourceSelection;
+    }
+
 
     QItemSelection sourceSelection;
     QItemSelection extraSelection;
