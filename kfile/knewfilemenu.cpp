@@ -53,9 +53,9 @@
 #include <ktemporaryfile.h>
 #include <utime.h>
 
-static QString expandTilde(const QString& name)
+static QString expandTilde(const QString& name, bool isfile = false)
 {
-    if (!name.isEmpty())
+    if (!name.isEmpty() && (!isfile || name[0] == '\\'))
     {
         const QString expandedName = KShell::tildeExpand(name);
         // When a tilde mark cannot be properly expanded, the above call
@@ -499,7 +499,7 @@ void KNewFileMenuPrivate::executeStrategy()
 {
     m_tempFileToDelete = m_strategy.tempFileToDelete();
     const QString src = m_strategy.sourceFileToCopy();
-    const QString chosenFileName = expandTilde(m_strategy.chosenFileName());
+    QString chosenFileName = expandTilde(m_strategy.chosenFileName(), true);
 
     if (src.isEmpty())
         return;
