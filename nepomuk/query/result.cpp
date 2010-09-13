@@ -36,6 +36,7 @@ public:
     double score;
     QHash<Types::Property, Soprano::Node> requestProperties;
     Soprano::BindingSet additionalBindings;
+    QString excerpt;
 };
 
 
@@ -134,6 +135,18 @@ Soprano::BindingSet Nepomuk::Query::Result::additionalBindings() const
 Nepomuk::Variant Nepomuk::Query::Result::additionalBinding( const QString& name ) const
 {
     return Variant::fromNode( d->additionalBindings.value(name) );
+}
+
+
+void Nepomuk::Query::Result::setExcerpt( const QString& text )
+{
+    d->excerpt = text;
+}
+
+
+QString Nepomuk::Query::Result::excerpt() const
+{
+    return d->excerpt;
 }
 
 

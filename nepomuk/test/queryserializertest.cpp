@@ -248,6 +248,30 @@ void QuerySerializerTest::testSerialization_data()
     fileAllQuery.addExcludeFolder( KUrl("/home/trueg/4") );
     QTest::newRow( "fileall" )
         << Query(fileAllQuery);
+
+
+    Query flagsQuery;
+    flagsQuery.setQueryFlags( Query::NoResultRestrictions );
+    QTest::newRow( "flags" )
+        << flagsQuery;
+
+    flagsQuery.setQueryFlags( Query::WithoutFullTextExcerpt );
+    QTest::newRow( "flags2" )
+        << flagsQuery;
+
+    flagsQuery.setQueryFlags( Query::NoResultRestrictions|Query::WithoutFullTextExcerpt );
+    QTest::newRow( "flags3" )
+        << flagsQuery;
+
+    flagsQuery.setFullTextScoringEnabled( true );
+    QTest::newRow( "fullTextScoring 1" )
+        << flagsQuery;
+
+    flagsQuery.setFullTextScoringEnabled( true );
+    flagsQuery.setFullTextScoringSortOrder( Qt::DescendingOrder );
+    QTest::newRow( "fullTextScoring 2" )
+        << flagsQuery;
+
 }
 
 

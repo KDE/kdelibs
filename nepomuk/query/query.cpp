@@ -147,6 +147,28 @@ namespace {
             return term;
         }
     }
+
+
+    /**
+     * term is optimized and ran through prepareForSparql. The only type terms
+     * we are interested in are those that are non-optional.
+     */
+    bool containsResourceTypeTerm( const Nepomuk::Query::Term& term )
+    {
+        if( term.isResourceTypeTerm() ) {
+            return true;
+        }
+        else if( term.isAndTerm() ) {
+            Q_FOREACH( const Nepomuk::Query::Term& subTerm, term.toAndTerm().subTerms() ) {
+                if( subTerm.isResourceTypeTerm() ) {
+                    return true;
+                }
+            }
+        }
+
+        // fallback
+        return false;
+    }
 }
 
 
@@ -349,6 +371,42 @@ void Nepomuk::Query::Query::setOffset( int offset )
 }
 
 
+void Nepomuk::Query::Query::setFullTextScoringEnabled( bool enabled )
+{
+    d->m_fullTextScoringEnabled = enabled;
+}
+
+
+void Nepomuk::Query::Query::setFullTextScoringSortOrder( Qt::SortOrder order )
+{
+    d->m_fullTextScoringSortOrder = order;
+}
+
+
+bool Nepomuk::Query::Query::fullTextScoringEnabled() const
+{
+    return d->m_fullTextScoringEnabled;
+}
+
+
+Qt::SortOrder Nepomuk::Query::Query::fullTextScoringSortOrder() const
+{
+    return d->m_fullTextScoringSortOrder;
+}
+
+
+void Nepomuk::Query::Query::setQueryFlags( QueryFlags flags )
+{
+    d->m_flags = flags;
+}
+
+
+Nepomuk::Query::Query::QueryFlags Nepomuk::Query::Query::queryFlags() const
+{
+    return d->m_flags;
+}
+
+
 void Nepomuk::Query::Query::addRequestProperty( const RequestProperty& property )
 {
     d->m_requestProperties.append( property );
@@ -393,13 +451,9 @@ bool Nepomuk::Query::Query::operator!=( const Query& other ) const
 }
 
 
-QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
+QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 {
     Term term = d->m_term;
-
-    // we do not need scores when counting results
-    if( flags & (CreateCountQuery|CreateAskQuery) )
-        flags |= WithoutScoring;
 
     // restrict to files if we are a file query
     if( d->m_isFileQuery ) {
@@ -422,7 +476,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
     term = prepareForSparql( term ).optimized();
 
     // actually build the SPARQL query patterns
-    QueryBuilderData qbd( flags );
+    QueryBuilderData qbd( d.constData(), sparqlFlags );
     QString termGraphPattern;
     if( term.isValid() ) {
         termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
@@ -434,14 +488,20 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
 
     // build the list of variables to select (in addition to the main result variable ?r)
     QStringList selectVariables = d->buildRequestPropertyVariableList() + qbd.customVariables();
-    const QString scoringExpression = qbd.buildScoringExpression();
-    if( !scoringExpression.isEmpty() )
-        selectVariables << scoringExpression;
+
+    // add additional scoring variable if requested
+    if( d->m_fullTextScoringEnabled ) {
+        const QString scoringExpression = qbd.buildScoringExpression();
+        if( !scoringExpression.isEmpty() )
+            selectVariables << scoringExpression;
+    }
 
     // restrict to resources to user visible types only. There is no need to do that for file queries
     // as those already restrict the type.
+    // Since we do the restriction on the type it gets useless as soon as the query contains a non-optional
+    // type term itself
     QString userVisibilityRestriction;
-    if( !d->m_isFileQuery && !(flags&NoResultRestrictions) ) {
+    if( !d->m_isFileQuery && !containsResourceTypeTerm(term) && !(queryFlags()&NoResultRestrictions) ) {
         userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 %3 . " )
                                     .arg( qbd.uniqueVarName(),
                                           Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
@@ -455,19 +515,9 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                               d->buildRequestPropertyPatterns(),
                               userVisibilityRestriction );
 
-    // add optional order terms
-    if( !(flags & (CreateAskQuery|CreateCountQuery)) )
-        queryBase += qbd.buildOrderString();
-
-    // offset and limit
-    if ( d->m_offset > 0 )
-        queryBase += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
-    if ( d->m_limit > 0 )
-        queryBase += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
-
     // build the final query
     QString query;
-    if( flags & CreateCountQuery ) {
+    if( sparqlFlags & CreateCountQuery ) {
         if( selectVariables.isEmpty() ) {
             // when there are no additional variables we can perfectly use count(distinct)
             query = QString::fromLatin1("select count(distinct ?r) as ?cnt %1 %2")
@@ -485,14 +535,26 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags flags ) const
                          queryBase );
         }
     }
-    else if( flags & CreateAskQuery ) {
+    else if( sparqlFlags & CreateAskQuery ) {
         query = QLatin1String( "ask ") + queryBase;
     }
     else {
-        query = QString::fromLatin1( "select distinct ?r %1 %2" )
+        QString fullTextExcerptExpression;
+        if( !(queryFlags()&WithoutFullTextExcerpt) ) {
+            fullTextExcerptExpression = qbd.buildSearchExcerptExpression();
+        }
+        query = QString::fromLatin1( "select distinct ?r %1 %2 %3" )
                 .arg( selectVariables.join( QLatin1String(" " ) ),
+                      fullTextExcerptExpression,
                       queryBase );
+        query += qbd.buildOrderString();
     }
+
+    // offset and limit
+    if ( d->m_offset > 0 )
+        query += QString::fromLatin1( " OFFSET %1" ).arg( d->m_offset );
+    if ( d->m_limit > 0 )
+        query += QString::fromLatin1( " LIMIT %1" ).arg( d->m_limit );
 
     return query.simplified();
 }
@@ -510,17 +572,27 @@ KUrl Nepomuk::Query::Query::toSearchUrl( SparqlFlags flags ) const
 // would make the URL handling in the kio slave more complicated.... oh, well.
 KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags flags ) const
 {
+    // the nepomuksearch:/ KIO slave does not handle count or ask queries
     flags &= ~CreateCountQuery;
     flags &= ~CreateAskQuery;
+
+    Query q( *this );
+
+    // the nepomuksearch:/ KIO slave does not make use of full text scores. Thus, we avoid the
+    // overhead by disabling them
+    q.setFullTextScoringEnabled( false );
+
     KUrl url( QLatin1String("nepomuksearch:/") );
     if( flags == NoFlags )
-        url.addQueryItem( QLatin1String("encodedquery"), toString() );
+        url.addQueryItem( QLatin1String("encodedquery"), q.toString() );
     else
-        url.addQueryItem( QLatin1String("sparql"), toSparqlQuery( flags ) );
+        url.addQueryItem( QLatin1String("sparql"), q.toSparqlQuery( flags ) );
+
     if( !customTitle.isEmpty() )
         url.addPath( customTitle );
     else
         url.addPath( titleFromQueryUrl( url ) );
+
     return url;
 }
 

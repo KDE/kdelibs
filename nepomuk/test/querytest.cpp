@@ -63,16 +63,19 @@ void QueryTest::testToSparql_data()
     QTest::addColumn<Nepomuk::Query::Query>( "query" );
     QTest::addColumn<QString>( "queryString" );
 
+    Query simpleLiteralQuery( LiteralTerm( "Hello" ) );
+    simpleLiteralQuery.setFullTextScoringEnabled( true );
     QTest::newRow( "simple literal query" )
-        << Query( LiteralTerm( "Hello" ) )
+        << simpleLiteralQuery
         << QString::fromLatin1( "select distinct ?r max(?v5) as ?_n_f_t_m_s_ where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } "
-                                "UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } . }" )
+                                "UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } . } ORDER BY ASC ( ?_n_f_t_m_s_ )" )
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 
-    QString helloWorldQuery = QString::fromLatin1( "select distinct ?r max(?v5) as ?_n_f_t_m_s_ where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello World'\" OPTION (score ?v5) . } "
+
+    QString helloWorldQuery = QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello World'\" . } "
                                                    "UNION "
-                                                   "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello World'\" OPTION (score ?v5) . } . }" )
+                                                   "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello World'\" . } . }" )
                               .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
                                     Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
     QTest::newRow( "simple literal query with space" )
@@ -85,15 +88,21 @@ void QueryTest::testToSparql_data()
         << Query( LiteralTerm( "\"Hello World\"" ) )
         << helloWorldQuery;
 
+    Query literalQueryWithDepth2(
+        AndTerm( LiteralTerm("foo"),
+                 ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(),
+                                 ComparisonTerm( Soprano::Vocabulary::NAO::prefLabel(), LiteralTerm("bar") ) ) ) );
+    literalQueryWithDepth2.setFullTextScoringEnabled( true );
+    literalQueryWithDepth2.setFullTextScoringSortOrder( Qt::DescendingOrder );
     QTest::newRow( "literal query with depth 2" )
-        << Query( AndTerm( LiteralTerm("foo"), ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ComparisonTerm( Soprano::Vocabulary::NAO::prefLabel(), LiteralTerm("bar") ) ) ) )
+        << literalQueryWithDepth2
         << QString::fromLatin1("select distinct ?r max((?v8/2)+?v5) as ?_n_f_t_m_s_ where { "
                                "{ { ?r ?v1 ?v2 . ?v2 bif:contains \"'foo'\" OPTION (score ?v5) . } "
                                "UNION "
                                "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . "
                                "?v4 <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#label> . ?v2 bif:contains \"'foo'\" OPTION (score ?v5) . } . "
                                "?r <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag> ?v6 . ?v6 <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#prefLabel> ?v7 . "
-                               "?v7 bif:contains \"'bar'\" OPTION (score ?v8) . } . }");
+                               "?v7 bif:contains \"'bar'\" OPTION (score ?v8) . } . } ORDER BY DESC ( ?_n_f_t_m_s_ )");
 
     QTest::newRow( "type query" )
         << Query( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) )
@@ -118,7 +127,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "hastag with literal term" )
         << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( QLatin1String("nepomuk")) ) )
-        << QString::fromLatin1("select distinct ?r max(?v4) as ?_n_f_t_m_s_ where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"'nepomuk'\" OPTION (score ?v4) . }")
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"'nepomuk'\" . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
@@ -195,7 +204,7 @@ void QueryTest::testToSparql_data()
     setVarNameTerm2.setVariableName( "myvar" );
     QTest::newRow( "set variable name 2" )
         << Query( setVarNameTerm2 )
-        << QString::fromLatin1("select distinct ?r ?myvar max(?v3) as ?_n_f_t_m_s_ where { ?r %1 ?myvar . ?myvar ?v1 ?v2 . ?v1 %2 %3 . ?v2 bif:contains \"'nepomuk'\" OPTION (score ?v3) . }")
+        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . ?myvar ?v1 ?v2 . ?v1 %2 %3 . ?v2 bif:contains \"'nepomuk'\" . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
@@ -237,7 +246,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "order by 3" )
         << Query( AndTerm( orderByTerm1, orderByTerm2 ) )
-        << QString::fromLatin1("select distinct ?r ?v1 ?v2 max(?v3) as ?_n_f_t_m_s_ where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"'hello'\" OPTION (score ?v3) . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
+        << QString::fromLatin1("select distinct ?r ?v1 ?v2 where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"'hello'\" . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()) );
@@ -417,7 +426,9 @@ void QueryTest::testToSparql()
     QFETCH( QString, queryString );
 
     // we test without result restrictions which always look the same anyway
-    QCOMPARE( query.toSparqlQuery( Query::NoResultRestrictions ).simplified(), queryString );
+    query.setQueryFlags( Query::NoResultRestrictions|Query::WithoutFullTextExcerpt );
+
+    QCOMPARE( query.toSparqlQuery().simplified(), queryString );
 
     // test fromQueryUrl
     QCOMPARE( Query::fromQueryUrl(query.toSearchUrl()), query );

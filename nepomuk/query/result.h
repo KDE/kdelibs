@@ -89,6 +89,9 @@ namespace Nepomuk {
              * The score of the result. By default the value is 0.0
              * which means no score.
              *
+             * Be aware that scoring needs to be enabled via Query::setFullTextScoringEnabled()
+             * in order for this value to be filled.
+             *
              * \sa setScore
              */
             double score() const;
@@ -175,6 +178,30 @@ namespace Nepomuk {
              * \since 4.5
              */
             Variant additionalBinding( const QString& name ) const;
+
+            /**
+             * Set the excerpt from the query.
+             *
+             * Normally there is no need to call this method as the query service
+             * does set the excerpt.
+             *
+             * \since 4.6
+             */
+            void setExcerpt( const QString& text );
+
+            /**
+             * An excerpt of the matched text with highlighted search words
+             * in case the query contained a full text matching.
+             *
+             * \return A rich-text snippet highlighting the search words or
+             * and empty string if the query did not contain any full text
+             * search terms.
+             *
+             * \sa LiteralTerm
+             *
+             * \since 4.6
+             */
+            QString excerpt() const;
 
             /**
              * Comparison operator

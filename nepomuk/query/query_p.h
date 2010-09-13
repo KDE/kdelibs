@@ -42,6 +42,8 @@ namespace Nepomuk {
             QueryPrivate()
                 : m_limit( 0 ),
                   m_offset( 0 ),
+                  m_fullTextScoringEnabled( false ),
+                  m_fullTextScoringSortOrder( Qt::AscendingOrder ),
                   m_isFileQuery( false ),
                   m_fileMode( FileQuery::QueryFilesAndFolders ) {
             }
@@ -53,6 +55,10 @@ namespace Nepomuk {
             Term m_term;
             int m_limit;
             int m_offset;
+
+            bool m_fullTextScoringEnabled;
+            Qt::SortOrder m_fullTextScoringSortOrder;
+            Query::QueryFlags m_flags;
 
             QList<Query::RequestProperty> m_requestProperties;
 

@@ -26,6 +26,7 @@
 #include "literalterm_p.h"
 #include "resourceterm.h"
 #include "resource.h"
+#include "query_p.h"
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Node>
@@ -157,16 +158,18 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
                       Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
-            QString v = getMainVariableName(qbd);
+            const QString v = getMainVariableName(qbd);
             QString scoringPattern;
-            if( !(qbd->flags()&Query::WithoutScoring) ) {
+            if( qbd->query()->m_fullTextScoringEnabled ) {
                 scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
             }
+            const QString text = static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText();
+            qbd->addFullTextSearchTerm( v, text );
             return QString::fromLatin1( "%1 %2 %3 . %3 bif:contains \"%4\" %5. " )
                 .arg( resourceVarName,
                       propertyToString( qbd ),
                       v,
-                      static_cast<const LiteralTermPrivate*>(m_subTerm.toLiteralTerm().d_ptr.constData())->queryText(),
+                      text,
                       scoringPattern );
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
@@ -245,9 +248,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             else if ( m_comparator == ComparisonTerm::Contains ) {
                 QString v3 = qbd->uniqueVarName();
                 QString scoringPattern;
-                if( !(qbd->flags()&Query::WithoutScoring) ) {
+                if( qbd->query()->m_fullTextScoringEnabled ) {
                     scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
                 }
+                // since this is not a "real" full text search but rather a match on resource "names" we do not call QueryBuilderData::addFullTextSearchTerm
                 return QString::fromLatin1( "%1%2 bif:contains \"%3\"  %4. " )
                     .arg( pattern.arg(v3),
                           v3,

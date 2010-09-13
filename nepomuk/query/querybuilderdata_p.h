@@ -29,6 +29,7 @@
 
 #include "literal.h"
 #include "query.h"
+#include "query_p.h"
 #include "groupterm_p.h"
 
 namespace Nepomuk {
@@ -36,6 +37,9 @@ namespace Nepomuk {
         class QueryBuilderData
         {
         private:
+            /// the query we are working for
+            const QueryPrivate* m_query;
+
             struct OrderVariable {
                 OrderVariable(int w, const QString& n, Qt::SortOrder o)
                     : weight(w),
@@ -74,11 +78,19 @@ namespace Nepomuk {
             /// a stack of the group terms, the top item is the group the currently handled term is in
             QStack<GroupTermPropertyCache> m_groupTermStack;
 
+            /// full text search terms with depth 0 for which bif:search_excerpt will be used
+            QHash<QString, QString> m_fullTextSearchTerms;
+
         public:
-            inline QueryBuilderData( Query::SparqlFlags flags )
-                : m_varNameCnt( 0 ),
+            inline QueryBuilderData( const QueryPrivate* query, Query::SparqlFlags flags )
+                : m_query( query ),
+                  m_varNameCnt( 0 ),
                   m_flags( flags ),
                   m_depth( 0 ) {
+            }
+
+            inline const QueryPrivate* query() const {
+                return m_query;
             }
 
             inline Query::SparqlFlags flags() const {
@@ -144,6 +156,12 @@ namespace Nepomuk {
                 m_orderVariables.insert( i, OrderVariable( weight, name, order ) );
             }
 
+            /// used by LiteralTerm and ComparisonTerm
+            /// states that "varName" is a value matching the full text search "text"
+            inline void addFullTextSearchTerm( const QString& varName, const QString& text ) {
+                m_fullTextSearchTerms.insert( varName, text );
+            }
+
             /// used by AndTermPrivate and OrTermPrivate in toSparqlGraphPattern
             inline void pushGroupTerm( const GroupTermPrivate* group ) {
                 GroupTermPropertyCache gpc;
@@ -158,18 +176,26 @@ namespace Nepomuk {
 
             /// used by Query::toSparqlQuery
             inline QString buildOrderString() const {
-                if( m_orderVariables.isEmpty() )
-                    return QString();
-                QString s = QLatin1String(" ORDER BY ");
-                for( int i = 0; i < m_orderVariables.count(); ++i ) {
-                    if( m_orderVariables[i].sortOrder == Qt::DescendingOrder )
-                        s += QLatin1String("DESC ");
-                    else
-                        s += QLatin1String("ASC ");
-                    s += QString::fromLatin1("( %1 )").arg(m_orderVariables[i].name);
-                    s += ' ';
+                QList<OrderVariable> orderVars = m_orderVariables;
+                if( m_query->m_fullTextScoringEnabled &&
+                    !m_fullTextSearchTerms.isEmpty() ) {
+                    orderVars.append( OrderVariable( 0, QLatin1String("?_n_f_t_m_s_"), m_query->m_fullTextScoringSortOrder ) );
                 }
-                return s;
+
+                if( !orderVars.isEmpty() ) {
+                    QStringList s;
+                    Q_FOREACH( const OrderVariable& orderVar, orderVars ) {
+                        if( orderVar.sortOrder == Qt::DescendingOrder )
+                            s += QLatin1String("DESC ");
+                        else
+                            s += QLatin1String("ASC ");
+                        s += QString::fromLatin1("( %1 )").arg(orderVar.name);
+                    }
+                    return QLatin1String(" ORDER BY ") + s.join( QLatin1String(" ") );
+                }
+                else {
+                    return QString();
+                }
             }
 
             /// create and remember a scoring variable for full text matching
@@ -194,6 +220,30 @@ namespace Nepomuk {
                     return QLatin1String("max(") + scores.join(QLatin1String("+")) + QLatin1String(") as ?_n_f_t_m_s_");
                 else
                     return QString();
+            }
+
+            inline QString buildSearchExcerptExpression() const {
+                if( !m_fullTextSearchTerms.isEmpty() ) {
+                    QStringList excerptParts;
+                    for( QHash<QString, QString>::const_iterator it = m_fullTextSearchTerms.constBegin();
+                         it != m_fullTextSearchTerms.constEnd(); ++it ) {
+                        const QString& varName = it.key();
+                        const QString& text = it.value();
+                        // bif:search_excerpt wants a vector of all search terms, thus, we split by spaces
+                        // and remove the quotes added by LiteralTermPrivate::queryText()
+                        const QStringList terms = text.mid(1, text.length()-2).split(' ');
+                        excerptParts
+                            << QString::fromLatin1("bif:search_excerpt(bif:vector('%1'), %2)")
+                            .arg( terms.join(QLatin1String("','")),
+                                  varName );
+                    }
+
+                    return QString::fromLatin1("(bif:concat(%1)) as ?_n_f_t_m_ex_")
+                        .arg(excerptParts.join(QLatin1String(",")));
+                }
+                else {
+                    return QString();
+                }
             }
         };
     }

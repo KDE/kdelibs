@@ -309,12 +309,42 @@ namespace {
     }
 
 
+    Query::QueryFlags parseFlags( const QString& s )
+    {
+        Query::QueryFlags flags = Query::NoQueryFlags;
+        QStringList sl = s.split( QLatin1String("|") );
+        Q_FOREACH( const QString& sf, sl ) {
+            if( sf == QLatin1String("NoResultRestrictions") )
+                flags |= Query::NoResultRestrictions;
+            else if( sf == QLatin1String("WithoutFullTextExcerpt") )
+                flags |= Query::WithoutFullTextExcerpt;
+            else
+                kError() << "Unknown query flag:" << sf;
+        }
+        return flags;
+    }
+
+    QString serializeFlags( Query::QueryFlags flags ) {
+        QStringList sl;
+        if( flags&Query::NoResultRestrictions )
+            sl << QLatin1String("NoResultRestrictions");
+        if( flags&Query::WithoutFullTextExcerpt )
+            sl << QLatin1String("WithoutFullTextExcerpt");
+        return sl.join( QLatin1String("|") );
+    }
+
     void readQueryAttributes( const QXmlStreamAttributes& attributes, Query& query )
     {
         if( attributes.hasAttribute( QLatin1String("limit") ) )
             query.setLimit( attributes.value( QLatin1String("limit") ).toString().toInt() );
         if( attributes.hasAttribute( QLatin1String("offset") ) )
             query.setOffset( attributes.value( QLatin1String("offset") ).toString().toInt() );
+        if( attributes.hasAttribute( QLatin1String("fullTextScoring") ) )
+            query.setFullTextScoringEnabled( attributes.value( QLatin1String("fullTextScoring") ) == QLatin1String("true") );
+        if( attributes.hasAttribute( QLatin1String("fullTextScoringOrder") ) )
+            query.setFullTextScoringSortOrder( attributes.value( QLatin1String("fullTextScoringOrder") ) == QLatin1String("desc") ? Qt::DescendingOrder : Qt::AscendingOrder );
+        if( attributes.hasAttribute( QLatin1String("flags") ) )
+            query.setQueryFlags( parseFlags(attributes.value( QLatin1String("flags") ).toString() ) );
     }
 }
 
@@ -338,6 +368,9 @@ QString Nepomuk::Query::serializeQuery( const Query& query )
 
     xml.writeAttribute( QLatin1String("limit"), QString::number(query.limit()) );
     xml.writeAttribute( QLatin1String("offset"), QString::number(query.offset()) );
+    xml.writeAttribute( QLatin1String("fullTextScoring"), query.fullTextScoringEnabled() ? QLatin1String("true") : QLatin1String("false") );
+    xml.writeAttribute( QLatin1String("fullTextScoringOrder"), query.fullTextScoringSortOrder() == Qt::AscendingOrder ? QLatin1String("asc") : QLatin1String("desc") );
+    xml.writeAttribute( QLatin1String("flags"), serializeFlags( query.queryFlags() ) );
 
     Q_FOREACH( const Query::RequestProperty& rp, query.requestProperties() ) {
         xml.writeStartElement( QLatin1String("requestProperty") );

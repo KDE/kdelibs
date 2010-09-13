@@ -41,7 +41,7 @@ void Nepomuk::Query::registerDBusTypes()
 QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& result )
 {
     //
-    // Signature: (sda{s(isss)})
+    // Signature: (sda{s(isss)}s)
     //
 
     arg.beginStructure();
@@ -69,6 +69,8 @@ QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& res
     }
 
     arg.endMap();
+
+    arg << result.excerpt();
 
     arg.endStructure();
 
@@ -103,6 +105,10 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Resul
             result.addRequestProperty( QUrl::fromEncoded( rs.toAscii() ), node );
     }
     arg.endMap();
+
+    QString excerpt;
+    arg >> excerpt;
+    result.setExcerpt( excerpt );
 
     arg.endStructure();
 

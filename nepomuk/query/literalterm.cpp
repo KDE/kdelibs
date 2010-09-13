@@ -22,6 +22,7 @@
 #include "literalterm.h"
 #include "literalterm_p.h"
 #include "querybuilderdata_p.h"
+#include "query_p.h"
 
 #include <Soprano/Node>
 #include <Soprano/Vocabulary/RDFS>
@@ -51,14 +52,16 @@ bool Nepomuk::Query::LiteralTermPrivate::equals( const TermPrivate* other ) cons
 //
 QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
-    QString v1 = qbd->uniqueVarName();
-    QString v2 = qbd->uniqueVarName();
-    QString v3 = qbd->uniqueVarName();
-    QString v4 = qbd->uniqueVarName();
+    const QString v1 = qbd->uniqueVarName();
+    const QString v2 = qbd->uniqueVarName();
+    const QString v3 = qbd->uniqueVarName();
+    const QString v4 = qbd->uniqueVarName();
+    const QString text = queryText();
     QString scoringPattern;
-    if( !(qbd->flags()&Query::WithoutScoring) ) {
+    if( qbd->query()->m_fullTextScoringEnabled ) {
         scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
     }
+    qbd->addFullTextSearchTerm( v2, text );
 
     return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" %9. } "
                                 "UNION "
@@ -66,7 +69,7 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
         .arg( resourceVarName,
               v1,
               v2,
-              queryText(),
+              text,
               v3,
               v4,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),

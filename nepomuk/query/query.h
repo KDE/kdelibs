@@ -181,6 +181,98 @@ namespace Nepomuk {
             void setOffset( int offset );
 
             /**
+             * %Nepomuk supports scoring the results based on any full text matching
+             * used in the query (full text matching is done via ComparisonTerm with
+             * the ComparisonTerm::Contains comperator) and sorting the results based
+             * on that score.
+             *
+             * By default full text sorting is disabled since it can mean a serious
+             * impact on query performance.
+             *
+             * \sa setFullTextScoringSortOrder()
+             *
+             * \since 4.6
+             */
+            void setFullTextScoringEnabled( bool enabled );
+
+            /**
+             * Set the full text scoring sort order. Ignored if full text scoring is
+             * disabled.
+             *
+             * By default the sort order is Qt::AscendingOrder.
+             *
+             * \sa setFullTextScoringEnabled()
+             *
+             * \since 4.6
+             */
+            void setFullTextScoringSortOrder( Qt::SortOrder order );
+
+            /**
+             * \return \p true if full text scoring has been enabled.
+             *
+             * \sa setFullTextScoringEnabled()
+             *
+             * \since 4.6
+             */
+            bool fullTextScoringEnabled() const;
+
+            /**
+             * \return The full text scoring sort order as set via setFullTextScoringSortOrder()
+             *
+             * \since 4.6
+             */
+            Qt::SortOrder fullTextScoringSortOrder() const;
+
+            /**
+             * A set of flags that influence the result of the query.
+             *
+             * \sa setQueryFlags(), SparqlFlags
+             *
+             * \since 4.6
+             */
+            enum QueryFlag {
+                /**
+                 * No flags set. This is the default.
+                 */
+                NoQueryFlags = 0x0,
+
+                /**
+                 * By default queries that will only return results which are intended for
+                 * the user's eyes. In situations where an application needs to work on
+                 * internal or statistical data this restriction is not desireable.
+                 * This flag disables the restriction and returns the full set of results.
+                 */
+                NoResultRestrictions = 0x1,
+
+                /**
+                 * Disables the return of full text search excerpts for ComparisonTerm::Contains
+                 * terms which are normally reported through Result::excerpt(). It might make sense
+                 * to set this flag in case one has no need for excerpts and does not want to suffer
+                 * the small performance penalty that comes from querying them
+                 */
+                WithoutFullTextExcerpt = 0x2
+            };
+            Q_DECLARE_FLAGS( QueryFlags, QueryFlag )
+
+            /**
+             * Set the query flags to configure this query.
+             *
+             * \sa queryFlags()
+             *
+             * \since 4.6
+             */
+            void setQueryFlags( QueryFlags flags );
+
+            /**
+             * Get the query flags to configure this query.
+             *
+             * \sa setQueryFlags()
+             *
+             * \since 4.6
+             */
+            QueryFlags queryFlags() const;
+
+            /**
              * \class RequestProperty query.h Nepomuk/Query/Query
              *
              * \brief A request property can be added to a Query to retrieve
@@ -295,31 +387,12 @@ namespace Nepomuk {
                 HandleInverseProperties = 0x2,
 
                 /**
-                 * Disable the return of scores for full text matching. This flag is added
-                 * automatically with CreateCountQuery.
-                 *
-                 * \since 4.6
-                 */
-                WithoutScoring = 0x4,
-
-                /**
                  * Create a SPARQL ask query which will simply check if a matching result exists.
                  * Use Soprano::QueryResultIterator::boolValue() to check the result.
                  *
                  * \since 4.6
                  */
-                CreateAskQuery = 0x8,
-
-                /**
-                 * By default toSparqlQuery() creates a query that will only return results
-                 * which are intended for the user's eyes. In situations where an application
-                 * needs to work on internal or statistical data this restriction is not
-                 * desireable. This flag disables the restriction and returns the full set
-                 * of results.
-                 *
-                 * \since 4.6
-                 */
-                NoResultRestrictions = 0x10
+                CreateAskQuery = 0x4,
             };
             Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
 
@@ -525,6 +598,7 @@ namespace Nepomuk {
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( Nepomuk::Query::Query::SparqlFlags )
+Q_DECLARE_OPERATORS_FOR_FLAGS( Nepomuk::Query::Query::QueryFlags )
 
 NEPOMUKQUERY_EXPORT QDebug operator<<( QDebug, const Nepomuk::Query::Query& );
 
