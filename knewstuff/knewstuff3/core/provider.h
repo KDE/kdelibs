@@ -127,7 +127,7 @@ namespace KNS3
         virtual void loadPayloadLink(const EntryInternal& entry, int linkId) = 0;
 
         virtual bool userCanVote() {return false;}
-        virtual void vote(const EntryInternal& entry, bool positiveVote) { Q_UNUSED(entry) Q_UNUSED(positiveVote) }
+        virtual void vote(const EntryInternal& entry, uint rating) { Q_UNUSED(entry) Q_UNUSED(rating) }
 
         virtual bool userCanBecomeFan() {return false;}
         virtual void becomeFan(const EntryInternal& entry) { Q_UNUSED(entry) }

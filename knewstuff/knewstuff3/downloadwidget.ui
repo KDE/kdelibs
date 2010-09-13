@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="detailsStack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="overviewPage">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -407,20 +407,6 @@
                   </property>
                   <property name="autoFillBackground">
                    <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="KPushButton" name="voteGoodButton">
-                  <property name="text">
-                   <string>I like this</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="KPushButton" name="voteBadButton">
-                  <property name="text">
-                   <string>I do not like this</string>
                   </property>
                  </widget>
                 </item>

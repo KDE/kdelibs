@@ -22,6 +22,7 @@
 
 #include <knewstuff3/core/engine.h>
 #include <knewstuff3/ui/imageloader.h>
+#include <attica/provider.h>
 
 using namespace KNS3;
 
@@ -40,10 +41,10 @@ void EntryDetails::init()
     connect(ui->preview1, SIGNAL(clicked()), this, SLOT(preview1Selected()));
     connect(ui->preview2, SIGNAL(clicked()), this, SLOT(preview2Selected()));
     connect(ui->preview3, SIGNAL(clicked()), this, SLOT(preview3Selected()));
-    
-    ui->ratingWidget->setMaxRating(10);
-    ui->ratingWidget->setHalfStepsEnabled(true);
-    ui->ratingWidget->setEditable(false);
+
+    ui->ratingWidget->setMaxRating(5);
+    ui->ratingWidget->setHalfStepsEnabled(false);
+    connect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
 
     updateButtons();
     connect(ui->installButton, SIGNAL(clicked()), this, SLOT(install()));
@@ -51,9 +52,6 @@ void EntryDetails::init()
     connect(ui->uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
     // updating is the same as installing
     connect(ui->updateButton, SIGNAL(clicked()), this, SLOT(install()));
-
-    connect(ui->voteGoodButton, SIGNAL(clicked()), this, SLOT(voteGood()));
-    connect(ui->voteBadButton, SIGNAL(clicked()), this, SLOT(voteBad()));
     connect(ui->becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
 
     ui->installButton->setIcon(KIcon("dialog-ok"));
@@ -83,10 +81,9 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
         return;
     }
     m_entry = entry;
-    if (!m_engine->userCanVote(m_entry)) {
-        ui->voteGoodButton->setEnabled(false);
-        ui->voteBadButton->setEnabled(false);
-    }
+
+    ui->ratingWidget->setEditable(m_engine->userCanVote(m_entry));
+
     if (!m_engine->userCanBecomeFan(m_entry)) {
         ui->becomeFanButton->setEnabled(false);
     }
@@ -129,10 +126,6 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     } else {
         ui->ratingWidget->setVisible(false);
     }
-    
-    bool userVote = m_engine->userCanVote(m_entry);
-    ui->voteGoodButton->setVisible(userVote);
-    ui->voteBadButton->setVisible(userVote);
 
     bool hideSmallPreviews = m_entry.previewUrl(EntryInternal::PreviewSmall2).isEmpty()
            && m_entry.previewUrl(EntryInternal::PreviewSmall3).isEmpty();
@@ -298,14 +291,11 @@ void EntryDetails::previewSelected(int current)
     ui->previewBig->setImage(m_currentPreview);
 }
 
-void EntryDetails::voteGood()
+void EntryDetails::ratingChanged(uint rating)
 {
-    m_engine->vote(m_entry, true);
-}
-
-void EntryDetails::voteBad()
-{
-    m_engine->vote(m_entry, false);
+    // engine expects values from 0..100, but we get 1..5 stars, so map that to 1..100
+    kDebug() << "rating: " << rating << " -> " << rating*20;
+    m_engine->vote(m_entry, rating*20);
 }
 
 void EntryDetails::becomeFan()

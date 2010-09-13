@@ -475,10 +475,10 @@ bool Engine::userCanVote(const EntryInternal& entry)
     return p->userCanVote();
 }
 
-void Engine::vote(const EntryInternal& entry, bool positiveVote)
+void Engine::vote(const EntryInternal& entry, uint rating)
 {
     QSharedPointer<Provider> p = m_providers.value(entry.providerId());
-    p->vote(entry, positiveVote);
+    p->vote(entry, rating);
 }
 
 bool Engine::userCanBecomeFan(const EntryInternal& entry)

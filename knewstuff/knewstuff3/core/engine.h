@@ -118,7 +118,7 @@ public:
     void contactAuthor(const EntryInternal& entry);
 
     bool userCanVote(const EntryInternal& entry);
-    void vote(const EntryInternal& entry, bool positiveVote);
+    void vote(const EntryInternal& entry, uint rating);
     bool userCanBecomeFan(const EntryInternal& entry);
     void becomeFan(const EntryInternal& entry);
 

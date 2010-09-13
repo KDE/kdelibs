@@ -39,15 +39,14 @@ public:
     
 public Q_SLOTS:
     void setEntry(const KNS3::EntryInternal& entry);
-    
+
 private Q_SLOTS:
     void slotEntryPreviewLoaded(const KNS3::EntryInternal& entry, KNS3::EntryInternal::PreviewType type);
     void install();
     void slotInstallActionTriggered(QAction*);
     void uninstall();
 
-    void voteGood();
-    void voteBad();
+    void ratingChanged(uint rating);
     void becomeFan();
     // more details loaded
     void entryChanged(const KNS3::EntryInternal& entry);

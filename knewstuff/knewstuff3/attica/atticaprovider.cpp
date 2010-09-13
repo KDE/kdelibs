@@ -325,9 +325,9 @@ EntryInternal::List AtticaProvider::installedEntries() const
     return entries;
 }
 
-void AtticaProvider::vote(const EntryInternal& entry, bool positiveVote)
+void AtticaProvider::vote(const EntryInternal& entry, uint rating)
 {
-    PostJob * job = m_provider.voteForContent(entry.uniqueId(), positiveVote);
+    PostJob * job = m_provider.voteForContent(entry.uniqueId(), rating);
     connect(job, SIGNAL(finished(Attica::BaseJob*)), this, SLOT(votingFinished(Attica::BaseJob*)));
     connect(job, SIGNAL(jobStarted(QNetworkReply*)), SLOT(atticaJobStarted(QNetworkReply*)));
     job->start();
