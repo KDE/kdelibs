@@ -42,8 +42,8 @@ void EntryDetails::init()
     connect(ui->preview2, SIGNAL(clicked()), this, SLOT(preview2Selected()));
     connect(ui->preview3, SIGNAL(clicked()), this, SLOT(preview3Selected()));
 
-    ui->ratingWidget->setMaxRating(5);
-    ui->ratingWidget->setHalfStepsEnabled(false);
+    ui->ratingWidget->setMaxRating(10);
+    ui->ratingWidget->setHalfStepsEnabled(true);
     connect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
 
     updateButtons();
@@ -82,7 +82,8 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     }
     m_entry = entry;
 
-    ui->ratingWidget->setEditable(m_engine->userCanVote(m_entry));
+    // FIXME
+    //ui->ratingWidget->setEditable(m_engine->userCanVote(m_entry));
 
     if (!m_engine->userCanBecomeFan(m_entry)) {
         ui->becomeFanButton->setEnabled(false);
@@ -293,9 +294,9 @@ void EntryDetails::previewSelected(int current)
 
 void EntryDetails::ratingChanged(uint rating)
 {
-    // engine expects values from 0..100, but we get 1..5 stars, so map that to 1..100
-    kDebug() << "rating: " << rating << " -> " << rating*20;
-    m_engine->vote(m_entry, rating*20);
+    // engine expects values from 0..100
+    kDebug() << "rating: " << rating << " -> " << rating*10;
+    m_engine->vote(m_entry, rating*10);
 }
 
 void EntryDetails::becomeFan()

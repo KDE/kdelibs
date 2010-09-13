@@ -28,14 +28,13 @@
 #include <QHBoxLayout>
 #include <QAbstractItemView>
 
-#include "itemsmodel.h"
-#include "ratingwidget.h"
-#include "ratingpainter.h"
-
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmenu.h>
+#include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>
+
+#include "itemsmodel.h"
 
 namespace KNS3
 {
@@ -77,10 +76,9 @@ QList<QWidget*> ItemsGridViewDelegate::createItemWidgets() const
     downloadCounterLabel->setTextElideMode(Qt::ElideRight);
     m_widgetList << downloadCounterLabel;
     
-    RatingWidget* rating = new RatingWidget();
+    KRatingWidget* rating = new KRatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
-    rating->setEditable(false);
     m_widgetList << rating;
     
     return m_widgetList;
@@ -101,7 +99,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     int elementYPos = PreviewHeight + ItemMargin + FrameThickness*2;
     
     //setup rating widget
-    RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
+    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
         if (entry.rating() > 0) {
             rating->setToolTip(i18n("Rating: %1%", entry.rating()));

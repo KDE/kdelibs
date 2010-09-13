@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>724</width>
-    <height>471</height>
+    <height>490</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="detailsStack">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="overviewPage">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -269,8 +269,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>702</width>
-            <height>394</height>
+            <width>684</width>
+            <height>392</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">
@@ -398,7 +398,7 @@
               <item row="3" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
-                 <widget class="KNS3::RatingWidget" name="ratingWidget" native="true">
+                 <widget class="KRatingWidget" name="ratingWidget" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -632,9 +632,9 @@
    <header>ui/itemsview.h</header>
   </customwidget>
   <customwidget>
-   <class>KNS3::RatingWidget</class>
+   <class>KRatingWidget</class>
    <extends>QWidget</extends>
-   <header>ui/ratingwidget.h</header>
+   <header location="global">kratingwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

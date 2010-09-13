@@ -29,8 +29,6 @@ set(knewstuff3_SRCS
     ui/itemsgridviewdelegate.cpp
     ui/itemsviewbasedelegate.cpp
     ui/progressindicator.cpp
-    ui/ratingpainter.cpp
-    ui/ratingwidget.cpp
     attica/atticaprovider.cpp
 
     upload/atticahelper.cpp

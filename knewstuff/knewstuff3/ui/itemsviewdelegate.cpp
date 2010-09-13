@@ -30,11 +30,10 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
+#include <kratingwidget.h>
 
 #include "itemsmodel.h"
 #include "entrydetailsdialog.h"
-#include "ratingwidget.h"
-#include "ratingpainter.h"
 
 namespace KNS3
 {
@@ -79,11 +78,11 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));
 
-    RatingWidget* rating = new RatingWidget();
+    KRatingWidget* rating = new KRatingWidget();
     rating->setMaxRating(10);
     rating->setHalfStepsEnabled(true);
-    rating->setEditable(false);
     list << rating;
+    //connect(rating, SIGNAL(ratingChanged(uint)), this, SLOT());
 
     return list;
 }
@@ -257,7 +256,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         infoLabel->setText(text);
     }
 
-    RatingWidget * rating = qobject_cast<RatingWidget*>(widgets.at(DelegateRatingWidget));
+    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
     if (rating) {
         if (entry.rating() > 0) {
             rating->setToolTip(i18n("Rating: %1%", entry.rating()));
@@ -316,9 +315,6 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
         }
 
     }
-
-    // TODO: get the right rect and use the painter? QRect rect(100, 100, 200, 120);
-    //KRatingPainter::paintRating(painter, rect, Qt::AlignLeft, index.data(ItemsModel::kRating).toInt());
     painter->restore();
 }
 
