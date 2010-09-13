@@ -26,7 +26,7 @@
 #include <QtGui/QAbstractProxyModel>
 #include <QtGui/QItemSelectionModel>
 
-#include <QDebug>
+#include "kdebug.h"
 
 class KModelIndexProxyMapperPrivate
 {
@@ -38,6 +38,13 @@ class KModelIndexProxyMapperPrivate
 
   void createProxyChain();
   bool assertValid();
+
+  bool assertSelectionValid(const QItemSelection &selection) const {
+    foreach(const QItemSelectionRange &range, selection) {
+      Q_ASSERT(range.isValid());
+    }
+    return true;
+  }
 
   Q_DECLARE_PUBLIC(KModelIndexProxyMapper)
   KModelIndexProxyMapper * const q_ptr;
@@ -185,9 +192,12 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
   if (selection.isEmpty())
     return QItemSelection();
 
+  if (selection.first().model() != d->m_leftModel.data())
+    kDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
   Q_ASSERT(selection.first().model() == d->m_leftModel.data());
 
   QItemSelection seekSelection = selection;
+  Q_ASSERT(d->assertSelectionValid(seekSelection));
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iUp(d->m_proxyChainUp);
 
   while (iUp.hasNext())
@@ -196,6 +206,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionToSource(seekSelection);
+    Q_ASSERT(d->assertSelectionValid(seekSelection));
   }
 
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iDown(d->m_proxyChainDown);
@@ -206,6 +217,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionFromSource(seekSelection);
+    Q_ASSERT(d->assertSelectionValid(seekSelection));
   }
 
   Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_rightModel.data() ) || true );
@@ -219,9 +231,12 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
   if (selection.isEmpty())
     return QItemSelection();
 
+  if (selection.first().model() != d->m_rightModel.data())
+    kDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
   Q_ASSERT(selection.first().model() == d->m_rightModel.data());
 
   QItemSelection seekSelection = selection;
+  Q_ASSERT(d->assertSelectionValid(seekSelection));
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iDown(d->m_proxyChainDown);
 
   iDown.toBack();
@@ -231,6 +246,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionToSource(seekSelection);
+    Q_ASSERT(d->assertSelectionValid(seekSelection));
   }
 
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iUp(d->m_proxyChainUp);
@@ -242,6 +258,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionFromSource(seekSelection);
+    Q_ASSERT(d->assertSelectionValid(seekSelection));
   }
 
   Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_leftModel.data() ) || true );
