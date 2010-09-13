@@ -44,7 +44,6 @@ void EntryDetails::init()
 
     ui->ratingWidget->setMaxRating(10);
     ui->ratingWidget->setHalfStepsEnabled(true);
-    connect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
 
     updateButtons();
     connect(ui->installButton, SIGNAL(clicked()), this, SLOT(install()));
@@ -123,7 +122,9 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     
     if (m_entry.rating() > 0) {
         ui->ratingWidget->setVisible(true);
+        disconnect(ui->ratingWidget);
         ui->ratingWidget->setRating((m_entry.rating()-20)/6);
+        connect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
     } else {
         ui->ratingWidget->setVisible(false);
     }
