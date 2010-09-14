@@ -47,6 +47,7 @@
 #undef QT_NO_TRANSLATION
 #include <QtCore/QCoreApplication>
 #define QT_NO_TRANSLATION
+#include <QtCore/QDebug>
 #include <QtCore/QTextCodec>
 #include "kcmdlineargs.h"
 #include <unistd.h> // umask
@@ -73,7 +74,8 @@ class KGlobalPrivate
         inline KGlobalPrivate()
             : stringDict(0),
             locale(0),
-            charsets(0)
+            charsets(0),
+            localeIsFromFakeComponent(false)
         {
             // the umask is read here before any threads are created to avoid race conditions
             mode_t tmp = 0;
@@ -96,6 +98,7 @@ class KGlobalPrivate
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
+        bool localeIsFromFakeComponent;
 
         /**
          * This component may be used in applications that doesn't have a
@@ -148,8 +151,12 @@ bool KGlobal::hasMainComponent()
 KLocale *KGlobal::locale()
 {
     PRIVATE_DATA;
-    if (d->locale == 0) {
+    if (d->locale == 0 || (d->localeIsFromFakeComponent && d->mainComponent.isValid() && d->mainComponent.config())) {
+        if (d->locale != 0) qDebug() << "KGlobal::locale::Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work";
+        delete d->locale;
+        d->locale = 0;
         d->locale = new KLocale(mainComponent().catalogName());
+        d->localeIsFromFakeComponent = !d->mainComponent.isValid();
         QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
         mainComponent().aboutData()->translateInternalProgramName();
         QCoreApplication* coreApp = QCoreApplication::instance();
