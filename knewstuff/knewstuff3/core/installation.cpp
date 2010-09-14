@@ -481,7 +481,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                 success = QFile::remove(installpath);
             }
             if (success) {
-                success = file.rename(QUrl(installpath).toLocalFile());
+                success = file.rename(KUrl(installpath).toLocalFile());
                 kDebug() << "move: " << file.fileName() << " to " << installpath;
             }
             if (!success) {
