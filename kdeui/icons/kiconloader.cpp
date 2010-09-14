@@ -37,6 +37,7 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QDataStream>
 #include <QtCore/QByteArray>
+#include <QtCore/QStringBuilder> // % operator for QString
 #include <QtGui/QIcon>
 #include <QtGui/QPainter>
 #include <QMovie>
@@ -758,26 +759,19 @@ void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &s
 QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group group,
                                          const QStringList &overlays, int size, int state) const
 {
-    // The KSharedDataCache is shared so add some namespacing.
-    QString key;
+    // The KSharedDataCache is shared so add some namespacing. The following code
+    // uses QStringBuilder (new in Qt 4.6)
 
-    if (group == KIconLoader::User) {
-        key = QLatin1String("$kicou_");
-    }
-    else {
-        key = QLatin1String("$kico_");
-    }
-
-    key.append(QString("%1_%2_%3").arg(name).arg(size).arg(overlays.join("_")));
-
-    if (group >= 0) {
-        key.append(mpEffect.fingerprint(group, state));
-    }
-    else {
-        key.append(QLatin1String("noeffect"));
-    }
-
-    return key;
+    return (group == KIconLoader::User
+                  ? QLatin1Literal("$kicou_")
+                  : QLatin1Literal("$kico_"))
+           % name
+           % QLatin1Char('_')
+           % QString::number(size)
+           % QLatin1Char('_')
+           % overlays.join("_")
+           % ( group >= 0 ? mpEffect.fingerprint(group, state)
+                          : QString::fromAscii("noeffect"));
 }
 
 QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
