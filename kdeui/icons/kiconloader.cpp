@@ -881,6 +881,13 @@ bool KIconLoaderPrivate::findCachedPixmapWithPath(const QString &key, QPixmap &d
             data = tempPixmap;
             path = tempPath;
 
+            // Since we're here we didn't have a QPixmap cache entry, add one now.
+            PixmapWithPath *newPixmapWithPath = new PixmapWithPath;
+            newPixmapWithPath->pixmap = data;
+            newPixmapWithPath->path = path;
+
+            mPixmapCache.insert(key, newPixmapWithPath, data.width() * data.height() + 1);
+
             return true;
         }
     }
