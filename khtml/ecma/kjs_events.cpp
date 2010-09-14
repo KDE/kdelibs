@@ -1074,7 +1074,7 @@ JSValue *DOMMessageEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thi
 
             Window* sourceWin = 0;
             if (sourceObj && sourceObj->inherits(&Window::info))
-                sourceWin = static_cast<const Window *>(sourceObj);
+                sourceWin = static_cast<Window *>(sourceObj);
 
             KHTMLPart* part = 0;
             if (sourceWin)
