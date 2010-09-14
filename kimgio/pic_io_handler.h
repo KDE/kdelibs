@@ -22,8 +22,8 @@
 #define __PIC_IO_HANDLER_H__
 
 #include "pic_rw.h"
-#include <qimage.h>
-#include <Qt/qvariant.h>
+#include <QtCore/QVariant>
+#include <QtGui/QImage>
 
 #include <iostream>
 
