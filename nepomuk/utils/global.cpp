@@ -111,6 +111,10 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
         valueString = KGlobal::locale()->formatNumber(value.toDouble());
     }
 
+    else if(value.isUrl()) {
+        valueString = KUrl(value.toUrl()).pathOrUrl();
+    }
+
     else {
         valueString = value.toString();
     }

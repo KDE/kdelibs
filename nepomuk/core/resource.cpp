@@ -33,16 +33,16 @@
 #include "nco.h"
 #include "nuao.h"
 
-#include <klocale.h>
-#include <kdebug.h>
+#include "klocale.h"
+#include "kdebug.h"
+#include "kurl.h"
+#include "kmimetype.h"
 
 #include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/Xesam>
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
-
-#include <kmimetype.h>
 
 
 Nepomuk::Resource::Resource()
@@ -374,14 +374,14 @@ QString Nepomuk::Resource::genericLabel() const
                                         QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
                                         if( !go.isEmpty() ) {
                                             label = go.first().genericLabel();
-                                            if( label == go.first().resourceUri().toString() ) {
+                                            if( label == KUrl(go.first().resourceUri()).pathOrUrl() ) {
                                                 label.clear();
                                             }
                                         }
 
                                         if ( label.isEmpty() ) {
                                             // ugly fallback
-                                            label = resourceUri().toString();
+                                            label = KUrl(resourceUri()).pathOrUrl();
                                         }
                                     }
                                 }
