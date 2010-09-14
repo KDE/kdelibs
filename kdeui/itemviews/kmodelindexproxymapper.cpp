@@ -178,6 +178,27 @@ QModelIndex KModelIndexProxyMapper::mapRightToLeft(const QModelIndex& index) con
   return selection.indexes().first();
 }
 
+// QAbstractProxyModel::mapSelectionFromSource creates invalid ranges to we filter
+// those out manually in a loop. Hopefully fixed in Qt 4.7.1, so we ifdef it out.
+// http://qt.gitorious.org/qt/qt/merge_requests/2474
+#if QT_VERSION < 0x040701
+#define RANGE_FIX_HACK
+#endif
+
+#ifdef RANGE_FIX_HACK
+static QItemSelection removeInvalidRanges(const QItemSelection &selection)
+{
+  QItemSelection result;
+  Q_FOREACH(const QItemSelectionRange &range, selection)
+  {
+    if (!range.isValid())
+      continue;
+    result << range;
+  }
+  return result;
+}
+#endif
+
 QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelection& selection) const
 {
   Q_D(const KModelIndexProxyMapper);
@@ -196,6 +217,10 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionToSource(seekSelection);
+
+#ifdef RANGE_FIX_HACK
+    seekSelection = removeInvalidRanges(seekSelection);
+#endif
   }
 
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iDown(d->m_proxyChainDown);
@@ -206,6 +231,10 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionFromSource(seekSelection);
+
+#ifdef RANGE_FIX_HACK
+    seekSelection = removeInvalidRanges(seekSelection);
+#endif
   }
 
   Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_rightModel.data() ) || true );
@@ -231,6 +260,10 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionToSource(seekSelection);
+
+#ifdef RANGE_FIX_HACK
+    seekSelection = removeInvalidRanges(seekSelection);
+#endif
   }
 
   QListIterator<QWeakPointer<const QAbstractProxyModel> > iUp(d->m_proxyChainUp);
@@ -242,6 +275,10 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
     if (!proxy.data())
       return QItemSelection();
     seekSelection = proxy.data()->mapSelectionFromSource(seekSelection);
+
+#ifdef RANGE_FIX_HACK
+    seekSelection = removeInvalidRanges(seekSelection);
+#endif
   }
 
   Q_ASSERT( ( !seekSelection.isEmpty() && seekSelection.first().model() == d->m_leftModel.data() ) || true );
