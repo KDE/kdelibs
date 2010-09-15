@@ -849,8 +849,6 @@ class KSharedDataCache::Private
         QString cacheName = KGlobal::dirs()->locateLocal("cache", m_cacheName + ".kcache");
         QFile file(cacheName);
 
-        kDebug(264) << "Opening cache" << cacheName << "page size is" << pageSize;
-
         // The basic idea is to open the file that we want to map into shared
         // memory, and then actually establish the mapping. Once we have mapped the
         // file into shared memory we can close the file handle, the mapping will
@@ -954,8 +952,6 @@ class KSharedDataCache::Private
             return;
         }
 
-        kDebug(264) << "Attached to cache, determining if it must be initialized";
-
         m_mapSize = size;
 
         // We never actually construct shm, but we assign it the same address as the
@@ -1000,8 +996,8 @@ class KSharedDataCache::Private
 
         // We are "attached" if we have a valid memory mapping, whether it is
         // shared or private.
-        kDebug(264) << "Cache fully initialized -- attached to memory mapping";
-        kDebug(264) << shm->cacheAvail * shm->cachePageSize() << "bytes available out of"
+        kDebug(264) << "Cache attached to shared memory,"
+                    << shm->cacheAvail * shm->cachePageSize() << "bytes available out of"
                     << shm->cacheSize;
         m_attached = true;
     }
