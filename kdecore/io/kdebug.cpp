@@ -383,10 +383,6 @@ struct KDebugPrivate
     KConfig* configObject()
     {
         if (!config) {
-            if (!KGlobal::hasMainComponent()) {
-                return NULL;
-            }
-
             config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
             m_disableAll = config->group(QString()).readEntry("DisableAll", false);
         }
@@ -398,8 +394,7 @@ struct KDebugPrivate
         if (!configObject()) {
             // we don't have a config and we can't create one...
             Area &area = cache[0]; // create a dummy entry
-            if (KGlobal::hasMainComponent())
-                area.name = KGlobal::mainComponent().componentName().toUtf8();
+            area.name = KGlobal::mainComponent().componentName().toUtf8();
             return cache.find(0);
         }
 
