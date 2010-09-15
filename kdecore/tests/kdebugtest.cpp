@@ -317,6 +317,7 @@ static void startThreads()
 
 int main(int argc, char** argv)
 {
+    KComponentData mainData("kdebugtest");
     testKDebug();
 #ifdef THREAD_TEST
     QCoreApplication app(argc, argv);
