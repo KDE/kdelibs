@@ -785,7 +785,7 @@ void KSelectionProxyModelPrivate::sourceModelDestroyed()
     // There is very little we can do here.
     resetInternalData();
     m_resetting = false;
-    q->endResetModel();
+//    q->endResetModel();
 }
 
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
