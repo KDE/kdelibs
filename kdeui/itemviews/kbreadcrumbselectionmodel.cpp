@@ -135,12 +135,21 @@ QItemSelection KBreadcrumbSelectionModelPrivate::getBreadcrumbSelection(const QI
   for ( ; it != end; ++it)
   {
     QModelIndex parent = it->parent();
+
+    if (breadcrumbSelection.contains(parent))
+      continue;
+
     int sumBreadcrumbs = 0;
     bool includeAll = m_selectionDepth < 0;
+
     while (parent.isValid() && (includeAll || sumBreadcrumbs < m_selectionDepth))
     {
       breadcrumbSelection.append(QItemSelectionRange(parent));
       parent = parent.parent();
+
+      if (breadcrumbSelection.contains(parent))
+        break;
+
       ++sumBreadcrumbs;
     }
   }
