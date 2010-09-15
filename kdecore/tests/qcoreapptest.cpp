@@ -36,8 +36,9 @@ int main(int argc, char **argv)
     const QString ok = i18n("OK");
     Q_UNUSED(ok);
 
-    // Test that KDebug does not pollute us
-    kDebug() << "This should not appear";
+    // Test that KDebug works
+    kDebug() << "This should appear, but disabling qcoreapptest in kdebugdialog should make it go away.";
+    // TODO automate the above test, see kdebug_unittest.cpp
 
     return 0;
 }

@@ -397,8 +397,14 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
-        if (!cache.contains(0)) {
-            //qDebug() << "cache size=" << cache.count() << "loading area names";
+        if (!configObject()) {
+            // we don't have a config and we can't create one...
+            Area &area = cache[0]; // create a dummy entry
+            area.name = KGlobal::mainComponent().componentName().toUtf8();
+            return cache.find(0);
+        }
+
+        if (cache.count() <= 1) { // empty or containing only entry "0"
             loadAreaNames(); // fills 'cache'
             Q_ASSERT(cache.contains(0));
         } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
