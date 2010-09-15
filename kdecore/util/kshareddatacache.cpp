@@ -1156,12 +1156,24 @@ void SharedMemory::removeEntry(uint index)
     PageTableEntry *pageTableEntries = pageTable();
     IndexTableEntry *entriesIndex = indexTable();
 
+    if (entriesIndex[index].firstPage < 0) {
+        kError(264) << "Trying to remove an entry which is already invalid. This "
+                    << "cache is likely corrupt.";
+
+        clearInternalTables(); // The nuclear option...
+        return;
+    }
+
     // Update page table first
     uint firstPage = entriesIndex[index].firstPage;
+
     if ((qint32)index != pageTableEntries[firstPage].index) {
         kError(264) << "Removing" << index << "will not work as it is assigned"
                     << "to page" << firstPage << "which is itself assigned to"
                     << "entry" << pageTableEntries[firstPage].index << "instead!";
+
+        clearInternalTables();
+        return;
     }
 
     uint entriesToRemove = intCeil(entriesIndex[index].totalItemSize, cachePageSize());
