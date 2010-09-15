@@ -631,7 +631,7 @@ void KIdentityProxyModelPrivate::_k_sourceModelReset()
 void KIdentityProxyModelPrivate::_k_sourceModelDestroyed()
 {
     Q_Q(KIdentityProxyModel);
-    q->endResetModel();
+//    q->endResetModel();
 }
 
 void KIdentityProxyModelPrivate::_k_sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
