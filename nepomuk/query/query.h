@@ -392,7 +392,7 @@ namespace Nepomuk {
                  *
                  * \since 4.6
                  */
-                CreateAskQuery = 0x4,
+                CreateAskQuery = 0x4
             };
             Q_DECLARE_FLAGS( SparqlFlags, SparqlFlag )
 
