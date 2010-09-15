@@ -78,7 +78,7 @@ if(QT_QTDESIGNER_FOUND)
 
   kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
 
-  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS})
+  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS} ${QT_QTWEBKIT_LIBRARY})
   if(NOT WIN32)
     set_target_properties(kdewebkitwidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE
