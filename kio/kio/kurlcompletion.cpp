@@ -115,7 +115,7 @@ public:
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 
-	void listUrls( const QList<KUrl *> &urls,
+        void listUrls( const QList<KUrl> &urls,
                        const QString &filter = QString(),
                        bool only_exe = false,
                        bool no_hidden = false );
@@ -136,7 +136,7 @@ public:
 	                  bool no_hidden = false );
 
   KUrlCompletion *q;
-	QList<KUrl*> list_urls;
+        QList<KUrl> list_urls;
 
 	bool onlyLocalProto;
 
@@ -666,11 +666,7 @@ void KUrlCompletion::stop()
 	if ( d->list_job ) {
 		d->list_job->kill();
 		d->list_job = 0L;
-	}
-
-	while ( !d->list_urls.isEmpty() ) {
-		delete d->list_urls.takeFirst();
-	}
+        }
 
 	if ( d->dirListThread ) {
 		d->dirListThread->requestTermination();
@@ -1000,8 +996,8 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL &ur
 
 		setListedUrl( CTUrl, url_dir.prettyUrl(), QString() );
 
-		QList<KUrl*> url_list;
-		url_list.append( new KUrl( url_dir ) );
+                QList<KUrl> url_list;
+                url_list.append( url_dir );
 
 		listUrls( url_list, QString(), false );
 
@@ -1088,13 +1084,13 @@ QString KUrlCompletionPrivate::listDirectories(
 	// Use KIO
 	//kDebug() << "Listing (listDirectories):" << dirList << "with KIO";
 
-	QList<KUrl*> url_list;
+        QList<KUrl> url_list;
 
 	QStringList::ConstIterator it = dirList.constBegin();
 	QStringList::ConstIterator end = dirList.constEnd();
 
 	for ( ; it != end; ++it ) {
-		url_list.append( new KUrl( *it ) );
+                url_list.append( KUrl( *it ) );
 	}
 
 	listUrls( url_list, filter, only_exe, no_hidden );
@@ -1112,7 +1108,7 @@ QString KUrlCompletionPrivate::listDirectories(
  * finished() is called when the listing is done
  */
 void KUrlCompletionPrivate::listUrls(
-		const QList<KUrl *> &urls,
+                const QList<KUrl> &urls,
 		const QString &filter,
 		bool only_exe,
 		bool no_hidden )
@@ -1217,7 +1213,7 @@ void KUrlCompletionPrivate::_k_slotIOFinished( KJob * job )
 	}
 	else {
 
-                KUrl kurl(*list_urls.takeFirst());
+                KUrl kurl(list_urls.takeFirst());
 
 //		list_urls.removeAll( kurl );
 
