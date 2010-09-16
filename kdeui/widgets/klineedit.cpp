@@ -1145,6 +1145,9 @@ void KLineEdit::tripleClickTimeout()
 QMenu* KLineEdit::createStandardContextMenu()
 {
     QMenu *popup = QLineEdit::createStandardContextMenu();
+    if ( !popup) { // happens on some embedded platforms
+        return 0;
+    }
 
     if( !isReadOnly() )
     {
