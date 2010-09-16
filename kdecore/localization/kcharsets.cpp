@@ -719,6 +719,8 @@ QList<QStringList> KCharsets::encodingsByScript() const
 
 QTextCodec* KCharsets::codecForName(const QString &n) const
 {
+    if ( n == "gb2312" || n == "gbk" )
+        return QTextCodec::codecForName( "gb18030" );
     const QByteArray name( n.toLatin1() );
     QTextCodec* codec = codecForNameOrNull( name );
     if ( codec )
@@ -729,6 +731,11 @@ QTextCodec* KCharsets::codecForName(const QString &n) const
 
 QTextCodec* KCharsets::codecForName(const QString &n, bool &ok) const
 {
+    if ( n == "gb2312" || n == "gbk" )
+    {
+        ok = true;
+        return QTextCodec::codecForName( "gb18030" );
+    }
     const QByteArray name( n.toLatin1() );
     QTextCodec* codec = codecForNameOrNull( name );
     if ( codec )
@@ -814,7 +821,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 #warning is it still useful with Qt4 ?
 #endif
 	//don't forget to remove the #if 0 on a few structs at the top also if you reenable that ;)  (search for 852 )
-	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
+	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not
 	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
         // Yes, it is useful (for examples EBCDIC in Kate or codepages for KOffice filters from/to MS formats) (goutte)
 #if 0
