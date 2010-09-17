@@ -624,8 +624,9 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     QPixmap icon = pixmap;
 
     const QString mimeType = item.mimetype();
-    const QString mimeTypeGroup = mimeType.left(mimeType.indexOf('/'));
-    if ((mimeTypeGroup != "image") || !applyImageFrame(icon)) {
+    const int slashIndex = mimeType.indexOf(QLatin1Char('/'));
+    const QString mimeTypeGroup = mimeType.left(slashIndex);
+    if ((mimeTypeGroup != QLatin1String("image")) || !applyImageFrame(icon)) {
         limitToSize(icon, m_viewAdapter->iconSize());
     }
 
@@ -1000,8 +1001,9 @@ void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
     QString mimeTypeGroup;
     foreach (const KFileItem& item, items) {
         mimeType = item.mimetype();
-        mimeTypeGroup = mimeType.left(mimeType.indexOf('/'));
-        if (mimeTypeGroup == "image") {
+        const int slashIndex = mimeType.indexOf(QLatin1Char('/'));
+        mimeTypeGroup = mimeType.left(slashIndex);
+        if (mimeTypeGroup == QLatin1String("image")) {
             imageItems.append(item);
         } else {
             otherItems.append(item);
@@ -1103,7 +1105,7 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
     if (data.isEmpty()) {
         return false;
     } else {
-        return data.at(0) == '1';
+        return data.at(0) == QLatin1Char('1');
     }
 }
 
