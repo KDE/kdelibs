@@ -458,6 +458,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
 
     m_iconUpdateTimer = new QTimer(q);
     m_iconUpdateTimer->setSingleShot(true);
+    m_iconUpdateTimer->setInterval(200);
     connect(m_iconUpdateTimer, SIGNAL(timeout()), q, SLOT(dispatchIconUpdateQueue()));
 
     // Whenever the scrollbar values have been changed, the pending previews should
@@ -751,9 +752,9 @@ void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
 
     if (m_pendingVisibleIconUpdates > 0) {
         // As long as there are pending previews for visible items, poll
-        // the preview queue each 200 ms. If there are no pending previews,
+        // the preview queue periodically. If there are no pending previews,
         // the queue is dispatched in slotPreviewJobFinished().
-        m_iconUpdateTimer->start(200);
+        m_iconUpdateTimer->start();
     }
 }
 
@@ -815,7 +816,7 @@ void KFilePreviewGenerator::Private::resumeIconUpdates()
 void KFilePreviewGenerator::Private::startMimeTypeResolving()
 {
     resolveMimeType();
-    m_iconUpdateTimer->start(200);
+    m_iconUpdateTimer->start();
 }
 
 void KFilePreviewGenerator::Private::resolveMimeType()
@@ -1015,7 +1016,7 @@ void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
     const int cacheSize = (size.width() > 128) || (size.height() > 128) ? 256 : 128;
     startPreviewJob(imageItems, cacheSize, cacheSize);
 
-    m_iconUpdateTimer->start(200);
+    m_iconUpdateTimer->start();
 }
 
 void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items, int width, int height)
