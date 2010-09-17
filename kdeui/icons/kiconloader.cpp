@@ -62,6 +62,9 @@
 #include <assert.h>
 #include <kconfiggroup.h>
 
+// Used to make cache keys for icons with no group. Result type is QString*
+K_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
+
 // Qt implements Tiny SVG specification. This specification does not cover important elements
 // that are pretty globally used on our icons, like blurring (and other filters). TT seems to have
 // no interest in supporting the full SVG specification (it would be slower, even with JS, CSS
@@ -771,7 +774,7 @@ QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group
            % QLatin1Char('_')
            % overlays.join("_")
            % ( group >= 0 ? mpEffect.fingerprint(group, state)
-                          : QString::fromAscii("noeffect"));
+                          : *NULL_EFFECT_FINGERPRINT);
 }
 
 QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
