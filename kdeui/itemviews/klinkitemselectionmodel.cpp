@@ -24,6 +24,10 @@
 
 #include "kmodelindexproxymapper.h"
 
+#include "kdebug.h"
+
+#include <QItemSelection>
+
 class KLinkItemSelectionModelPrivate
 {
 public:
@@ -40,10 +44,18 @@ public:
     Q_DECLARE_PUBLIC(KLinkItemSelectionModel)
     KLinkItemSelectionModel * const q_ptr;
 
-    void sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-    QList<const QAbstractProxyModel *> m_proxyChainUp;
-    QList<const QAbstractProxyModel *> m_proxyChainDown;
+    bool assertSelectionValid(const QItemSelection &selection) const {
+      foreach(const QItemSelectionRange &range, selection) {
+        if (!range.isValid()) {
+          kDebug() << range;
+        }
+        Q_ASSERT(range.isValid());
+      }
+      return true;
+    }
+
+    void sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     QAbstractItemModel * const m_model;
     QItemSelectionModel * const m_linkedItemSelectionModel;
@@ -79,20 +91,58 @@ void KLinkItemSelectionModel::select(const QModelIndex &index, QItemSelectionMod
     }
 }
 
+// QAbstractProxyModel::mapSelectionFromSource creates invalid ranges to we filter
+// those out manually in a loop. Hopefully fixed in Qt 4.7.1, so we ifdef it out.
+// http://qt.gitorious.org/qt/qt/merge_requests/2474
+#if QT_VERSION < 0x040701
+#define RANGE_FIX_HACK
+#endif
+
+#ifdef RANGE_FIX_HACK
+static QItemSelection removeInvalidRanges(const QItemSelection &selection)
+{
+  QItemSelection result;
+  Q_FOREACH(const QItemSelectionRange &range, selection)
+  {
+    if (!range.isValid())
+      continue;
+    result << range;
+  }
+  return result;
+}
+#endif
+
 void KLinkItemSelectionModel::select(const QItemSelection &selection, QItemSelectionModel::SelectionFlags command)
 {
     Q_D(KLinkItemSelectionModel);
     d->m_ignoreCurrentChanged = true;
-    QItemSelectionModel::select(selection, command);
-    d->m_linkedItemSelectionModel->select(d->m_indexMapper->mapSelectionLeftToRight(selection), command);
+#ifdef RANGE_FIX_HACK
+    QItemSelection _selection = removeInvalidRanges(selection);
+#else
+    QItemSelection _selection = selection;
+#endif
+    QItemSelectionModel::select(_selection, command);
+    Q_ASSERT(d->assertSelectionValid(_selection));
+    QItemSelection mappedSelection = d->m_indexMapper->mapSelectionLeftToRight(_selection);
+    Q_ASSERT(d->assertSelectionValid(mappedSelection));
+    d->m_linkedItemSelectionModel->select(mappedSelection, command);
     d->m_ignoreCurrentChanged = false;
 }
 
 void KLinkItemSelectionModelPrivate::sourceSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_Q(KLinkItemSelectionModel);
-    const QItemSelection mappedDeselection = m_indexMapper->mapSelectionRightToLeft(deselected);
-    const QItemSelection mappedSelection = m_indexMapper->mapSelectionRightToLeft(selected);
+#ifdef RANGE_FIX_HACK
+    QItemSelection _selected = removeInvalidRanges(selected);
+    QItemSelection _deselected = removeInvalidRanges(deselected);
+#else
+    QItemSelection _selected = selected;
+    QItemSelection _deselected = deselected;
+#endif
+    Q_ASSERT(assertSelectionValid(_selected));
+    Q_ASSERT(assertSelectionValid(_deselected));
+    const QItemSelection mappedDeselection = m_indexMapper->mapSelectionRightToLeft(_deselected);
+    const QItemSelection mappedSelection = m_indexMapper->mapSelectionRightToLeft(_selected);
 
     q->QItemSelectionModel::select(mappedDeselection, QItemSelectionModel::Deselect);
     q->QItemSelectionModel::select(mappedSelection, QItemSelectionModel::Select);
