@@ -785,7 +785,7 @@ struct SharedMemory
         // Long timeout, but if we fail to meet this timeout it's probably a cache
         // corruption (and if we take 8 seconds then it should be much much quicker
         // the next time anyways since we'd be paged back in from disk)
-        timeout.tv_sec = 10;
+        timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
         timeout.tv_nsec = 0;
 
         return pthread_mutex_timedlock(&lockMutex, &timeout) >= 0;
