@@ -441,7 +441,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
         // previews can only get generated for directory models
         m_previewShown = false;
     } else {
-        KDirModel *dirModel = m_dirModel.data();
+        KDirModel* dirModel = m_dirModel.data();
         connect(dirModel->dirLister(), SIGNAL(newItems(const KFileItemList&)),
                 q, SLOT(updateIcons(const KFileItemList&)));
         connect(dirModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
@@ -491,7 +491,7 @@ void KFilePreviewGenerator::Private::requestSequenceIcon(const QModelIndex& inde
                                                          int sequenceIndex)
 {
     if (m_pendingItems.isEmpty() || (sequenceIndex == 0)) {
-        KDirModel *dirModel = m_dirModel.data();
+        KDirModel* dirModel = m_dirModel.data();
         if (!dirModel) {
             return;
         }
@@ -539,12 +539,13 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
         // to be generated when an external data change has occurred.
         return;
     }
+
     // dataChanged emitted for the root dir (e.g. permission changes)
     if (!topLeft.isValid() || !bottomRight.isValid()) {
         return;
     }
 
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -598,7 +599,7 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         return;
     }
 
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -663,7 +664,7 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
 
 void KFilePreviewGenerator::Private::updateCutItems()
 {
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -682,8 +683,8 @@ void KFilePreviewGenerator::Private::updateCutItems()
 
 void KFilePreviewGenerator::Private::clearCutItemsCache()
 {
-    KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    KDirModel* dirModel = m_dirModel.data();
+    if (!dirModel) {
         return;
     }
 
@@ -712,7 +713,7 @@ void KFilePreviewGenerator::Private::clearCutItemsCache()
 
 void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
 {
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -871,7 +872,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
         return;
     }
 
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -1061,7 +1062,7 @@ void KFilePreviewGenerator::Private::killPreviewJobs()
 
 void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
 {
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -1108,7 +1109,7 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
 
 void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KFileItemList& list)
 {
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -1128,7 +1129,7 @@ void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KF
 
 void KFilePreviewGenerator::Private::delayedIconUpdate()
 {
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -1160,7 +1161,7 @@ void KFilePreviewGenerator::Private::rowsAboutToBeRemoved(const QModelIndex& par
         return;
     }
 
-    KDirModel *dirModel = m_dirModel.data();
+    KDirModel* dirModel = m_dirModel.data();
     if (!dirModel) {
         return;
     }
@@ -1199,7 +1200,7 @@ KFilePreviewGenerator::~KFilePreviewGenerator()
 
 void KFilePreviewGenerator::setPreviewShown(bool show)
 {
-    KDirModel *dirModel = d->m_dirModel.data();
+    KDirModel* dirModel = d->m_dirModel.data();
     if (show && (!d->m_viewAdapter->iconSize().isValid() || !dirModel)) {
         // the view must provide an icon size and a directory model,
         // otherwise the showing the previews will get ignored
