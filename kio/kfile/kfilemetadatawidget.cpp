@@ -201,19 +201,10 @@ void KFileMetaDataWidget::Private::addRow(QLabel* label, ValueWidget* valueWidge
     row.customValueWidget = 0;
     m_rows.append(row);
 
-    // use a brighter color for the label and a small font size
-    QPalette palette = label->palette();
-    const QPalette::ColorRole role = q->foregroundRole();
-    QColor textColor = palette.color(role);
-    textColor.setAlpha(128);
-    palette.setColor(role, textColor);
-    label->setPalette(palette);
-    label->setForegroundRole(role);
     label->setFont(q->font());
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop | Qt::AlignRight);
 
-    valueWidget->setForegroundRole(role);
     valueWidget->setFont(q->font());
     valueWidget->setWordWrap(true);
     valueWidget->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -388,7 +379,8 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
     const QList<KUrl> keys = sortedKeys(data);
     foreach (const KUrl& key, keys) {
         const Nepomuk::Variant value = data[key];
-        const QString itemLabel = m_provider->label(key);
+        QString itemLabel = m_provider->label(key);
+        itemLabel.append(QLatin1Char(':'));
 
         const bool valueApplied = m_provider->setValue(key, value);
         if (rowIndex >= m_rows.count()) {
@@ -623,11 +615,11 @@ bool KFileMetaDataWidget::event(QEvent* event)
         // font, which will be respected by the rows.
         d->m_gridLayout->setSpacing(fontMetrics().height() / 4);
 
-        d->addRow(new QLabel(i18nc("@label file type", "Type"), this), d->m_typeInfo);
+        d->addRow(new QLabel(i18nc("@label file type", "Type:"), this), d->m_typeInfo);
         d->addRow(d->m_sizeLabel, d->m_sizeInfo);
-        d->addRow(new QLabel(i18nc("@label", "Modified"), this), d->m_modifiedInfo);
-        d->addRow(new QLabel(i18nc("@label", "Owner"), this), d->m_ownerInfo);
-        d->addRow(new QLabel(i18nc("@label", "Permissions"), this), d->m_permissionsInfo);
+        d->addRow(new QLabel(i18nc("@label", "Modified:"), this), d->m_modifiedInfo);
+        d->addRow(new QLabel(i18nc("@label", "Owner:"), this), d->m_ownerInfo);
+        d->addRow(new QLabel(i18nc("@label", "Permissions:"), this), d->m_permissionsInfo);
 
         // The current number of rows represents meta data, that will be shown for
         // all files. Dynamic meta data will be appended after those rows (see
