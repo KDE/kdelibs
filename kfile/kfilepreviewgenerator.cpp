@@ -28,7 +28,6 @@
 #include <kio/previewjob.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
-#include <kdebug.h>
 #include <ksharedconfig.h>
 
 #include <QApplication>
@@ -665,9 +664,7 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
 void KFilePreviewGenerator::Private::updateCutItems()
 {
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
-        // see bug #196681
-        kWarning() << "KDirModel has been deleted before deleting KFilePreviewGenerator.";
+    if (!dirModel) {
         return;
     }
 
@@ -716,7 +713,7 @@ void KFilePreviewGenerator::Private::clearCutItemsCache()
 void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
 {
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
@@ -875,7 +872,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
     }
 
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
@@ -1065,7 +1062,7 @@ void KFilePreviewGenerator::Private::killPreviewJobs()
 void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
 {
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
@@ -1112,7 +1109,7 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
 void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KFileItemList& list)
 {
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
@@ -1132,7 +1129,7 @@ void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KF
 void KFilePreviewGenerator::Private::delayedIconUpdate()
 {
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
@@ -1164,7 +1161,7 @@ void KFilePreviewGenerator::Private::rowsAboutToBeRemoved(const QModelIndex& par
     }
 
     KDirModel *dirModel = m_dirModel.data();
-    if (!dirModel == 0) {
+    if (!dirModel) {
         return;
     }
 
