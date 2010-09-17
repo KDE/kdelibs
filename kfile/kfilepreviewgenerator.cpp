@@ -28,6 +28,7 @@
 #include <kio/previewjob.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <kdebug.h>
 #include <ksharedconfig.h>
 
 #include <QApplication>
@@ -650,7 +651,7 @@ void KFilePreviewGenerator::Private::updateCutItems()
 {
     if (m_dirModel == 0) {
         // see bug #196681
-        qWarning() << "KDirModel has been deleted before deleting KFilePreviewGenerator.";
+        kWarning() << "KDirModel has been deleted before deleting KFilePreviewGenerator.";
         return;
     }
 
