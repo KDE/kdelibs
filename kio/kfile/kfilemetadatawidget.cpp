@@ -201,10 +201,12 @@ void KFileMetaDataWidget::Private::addRow(QLabel* label, ValueWidget* valueWidge
     row.customValueWidget = 0;
     m_rows.append(row);
 
+    label->setForegroundRole(q->foregroundRole());
     label->setFont(q->font());
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop | Qt::AlignRight);
 
+    valueWidget->setForegroundRole(q->foregroundRole());
     valueWidget->setFont(q->font());
     valueWidget->setWordWrap(true);
     valueWidget->setAlignment(Qt::AlignTop | Qt::AlignLeft);
