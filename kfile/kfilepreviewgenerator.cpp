@@ -357,7 +357,7 @@ public:
     QTimer* m_iconUpdateTimer;
     QTimer* m_scrollAreaTimer;
     QList<KJob*> m_previewJobs;
-    KDirModel* m_dirModel;
+    QPointer<KDirModel> m_dirModel;
     QAbstractProxyModel* m_proxyModel;
 
     /**
@@ -648,6 +648,12 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
 
 void KFilePreviewGenerator::Private::updateCutItems()
 {
+    if (m_dirModel == 0) {
+        // see bug #196681
+        qWarning() << "KDirModel has been deleted before deleting KFilePreviewGenerator.";
+        return;
+    }
+
     DataChangeObtainer obt(this);
     clearCutItemsCache();
 
