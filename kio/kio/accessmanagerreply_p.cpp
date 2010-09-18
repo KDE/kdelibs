@@ -105,12 +105,14 @@ qint64 AccessManagerReply::bytesAvailable() const
 qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 {
     const qint64 length = qMin(qint64(d->m_data.length()), maxSize);
+
     if (length) {
         qMemCopy(data, d->m_data.constData(), length);
         d->m_data.remove(0, length);
+        return length;
     }
 
-    return length;
+    return -1;
 }
 
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
@@ -249,7 +251,7 @@ void AccessManagerReply::jobDone(KJob *kJob)
 }
 
 void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job, const KUrl& url)
-{   
+{
     Q_UNUSED(job);
     q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
 }
