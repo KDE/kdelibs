@@ -24,6 +24,7 @@
 #include <QtCore/QObject>
 
 // forward declaration
+class JobQueuePrivate;
 class JobQueue;
 class QueuedJobPrivate;
 
@@ -86,7 +87,8 @@ public:
     *       as finished and call deleteLater().
     */
    virtual void exec() = 0;
-   
+
+protected:
    /**
     * Start the job asynchronously.
     *
@@ -94,7 +96,6 @@ public:
     */
    virtual void start() = 0;
 
-protected:
    /**
     * Emit the result of this job, notifying every object listening that
     * it's finished.
@@ -113,6 +114,7 @@ Q_SIGNALS:
    void result(QueuedJob *job);
    
 private:
+   friend class JobQueuePrivate;
    QueuedJobPrivate *d;
 };
 
