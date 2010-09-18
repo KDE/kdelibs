@@ -28,8 +28,11 @@
 
 #include <QtGui/QPixmap>
 #include <QtCore/QHashIterator>
+#include <QtCore/QStringBuilder>
 
 typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
+typedef QMap<QString, KUriFilterSearchProvider*> SearchProviderMap;
+
 
 static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
 {
@@ -87,6 +90,96 @@ static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
     return iconName;
 }
 
+
+class KUriFilterSearchProvider::KUriFilterSearchProviderPrivate
+{
+public:
+    KUriFilterSearchProviderPrivate() {}
+    KUriFilterSearchProviderPrivate(const KUriFilterSearchProviderPrivate& other)
+      : desktopEntryName(other.desktopEntryName),
+        iconName(other.iconName),
+        name(other.name),
+        keys(other.keys) {}
+
+
+    QString desktopEntryName;
+    QString iconName;
+    QString name;
+    QStringList keys;
+};
+
+KUriFilterSearchProvider::KUriFilterSearchProvider()
+                         :d(new KUriFilterSearchProvider::KUriFilterSearchProviderPrivate)
+{
+}
+
+KUriFilterSearchProvider::KUriFilterSearchProvider(const KUriFilterSearchProvider& other)
+                         :d(new KUriFilterSearchProvider::KUriFilterSearchProviderPrivate(*(other.d)))
+{
+}
+
+KUriFilterSearchProvider::~KUriFilterSearchProvider()
+{
+    delete d;
+}
+
+QString KUriFilterSearchProvider::desktopEntryName() const
+{
+    return d->desktopEntryName;
+}
+
+QString KUriFilterSearchProvider::iconName() const
+{
+    return d->iconName;
+}
+
+QString KUriFilterSearchProvider::name() const
+{
+    return d->name;
+}
+
+QStringList KUriFilterSearchProvider::keys() const
+{
+    return d->keys;
+}
+
+QString KUriFilterSearchProvider::defaultKey() const
+{
+    if (d->keys.isEmpty())
+        return QString();
+
+    return d->keys.first();
+}
+
+KUriFilterSearchProvider& KUriFilterSearchProvider::operator=(const KUriFilterSearchProvider& other)
+{
+    d->desktopEntryName = other.d->desktopEntryName;
+    d->iconName = other.d->iconName;
+    d->keys = other.d->keys;
+    d->name = other.d->name;
+    return *this;
+}
+
+void KUriFilterSearchProvider::setDesktopEntryName(const QString& desktopEntryName)
+{
+    d->desktopEntryName = desktopEntryName;
+}
+
+void KUriFilterSearchProvider::setIconName(const QString& iconName)
+{
+    d->iconName = iconName;
+}
+
+void KUriFilterSearchProvider::setName(const QString& name)
+{
+    d->name = name;
+}
+
+void KUriFilterSearchProvider::setKeys(const QStringList& keys)
+{
+    d->keys = keys;
+}
+
 class KUriFilterDataPrivate
 {
 public:
@@ -98,6 +191,11 @@ public:
         url(u),
         typedString(typedUrl)
     {
+    }
+
+    ~KUriFilterDataPrivate()
+    {
+        qDeleteAll(searchProviderMap.begin(), searchProviderMap.end());
     }
 
     void setData( const KUrl& u, const QString& typedUrl )
@@ -119,7 +217,7 @@ public:
         searchTermSeparator = QChar();
         alternateDefaultSearchProvider.clear();
         alternateSearchProviders.clear();
-        searchProviderInfoList.clear();
+        searchProviderMap.clear();
         defaultUrlScheme.clear();
     }
 
@@ -142,7 +240,7 @@ public:
         searchProvider = data->searchProvider;
         alternateDefaultSearchProvider = data->alternateDefaultSearchProvider;
         alternateSearchProviders = data->alternateSearchProviders;
-        searchProviderInfoList = data->searchProviderInfoList;
+        searchProviderMap = data->searchProviderMap;
         defaultUrlScheme = data->defaultUrlScheme;
     }
 
@@ -164,7 +262,7 @@ public:
     QChar searchTermSeparator;
 
     QStringList alternateSearchProviders;
-    KUriFilterPlugin::ProviderInfoList searchProviderInfoList;
+    SearchProviderMap searchProviderMap;
 };
 
 KUriFilterData::KUriFilterData()
@@ -255,26 +353,41 @@ QString KUriFilterData::searchProvider() const
 
 QStringList KUriFilterData::preferredSearchProviders() const
 {
-    return d->searchProviderInfoList.keys();
+    return d->searchProviderMap.keys();
 }
 
-QString KUriFilterData::queryForPreferredSearchProvider(const QString &provider) const
+KUriFilterSearchProvider KUriFilterData::queryForSearchProvider(const QString& provider) const
 {
-    QStringList items = d->searchProviderInfoList.value(provider).first.split(QLatin1Char(','));
-    if (items.isEmpty())
-        return QString();
+    const KUriFilterSearchProvider* searchProvider = d->searchProviderMap.value(provider);
 
-    return items.first();
+    if (searchProvider)
+        return *(searchProvider);
+
+    return KUriFilterSearchProvider();
+}
+
+QString KUriFilterData::queryForPreferredSearchProvider(const QString& provider) const
+{
+    const KUriFilterSearchProvider* searchProvider = d->searchProviderMap.value(provider);
+    if (searchProvider)
+        return (searchProvider->defaultKey() % searchTermSeparator() % searchTerm());
+    return QString();
 }
 
 QStringList KUriFilterData::allQueriesForSearchProvider(const QString& provider) const
 {
-    return d->searchProviderInfoList.value(provider).first.split(QLatin1Char(','));
+    const KUriFilterSearchProvider* searchProvider = d->searchProviderMap.value(provider);
+    if (searchProvider)
+        return searchProvider->keys();
+    return QStringList();
 }
 
 QString KUriFilterData::iconNameForPreferredSearchProvider(const QString &provider) const
 {
-    return d->searchProviderInfoList.value(provider).second;
+    const KUriFilterSearchProvider* searchProvider = d->searchProviderMap.value(provider);
+    if (searchProvider)
+        return searchProvider->iconName();
+    return QString();
 }
 
 QStringList KUriFilterData::alternateSearchProviders() const
@@ -386,11 +499,9 @@ QString KUriFilterPlugin::configName() const
 
 void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) const
 {
-    if ( data.uri() != uri )
-    {
-        data.d->url = uri;
-        data.d->wasModified = true;
-    }
+    data.d->url = uri;
+    data.d->wasModified = true;
+    kDebug(7022) << "Got filtered to:" << uri;
 }
 
 void KUriFilterPlugin::setErrorMsg ( KUriFilterData& data,
@@ -422,7 +533,25 @@ void KUriFilterPlugin::setSearchProvider( KUriFilterData &data, const QString& p
 
 void KUriFilterPlugin::setPreferredSearchProviders(KUriFilterData &data, const ProviderInfoList &providers) const
 {
-    data.d->searchProviderInfoList = providers;
+    QHashIterator<QString, QPair<QString, QString> > it (providers);
+    while (it.hasNext())
+    {
+        it.next();
+        KUriFilterSearchProvider* searchProvider = data.d->searchProviderMap[it.key()];
+        searchProvider->setName(it.key());
+        searchProvider->setIconName(it.value().second);
+        QStringList keys;
+        const QStringList queries = it.value().first.split(QLatin1Char(','));
+        Q_FOREACH(const QString& query,  queries)
+            keys << query.left(query.indexOf(data.d->searchTermSeparator));
+        searchProvider->setKeys(keys);
+    }
+}
+
+void KUriFilterPlugin::setSearchProviders(KUriFilterData &data, const QList<KUriFilterSearchProvider*>& providers) const
+{
+    Q_FOREACH(KUriFilterSearchProvider* searchProvider, providers)
+        data.d->searchProviderMap.insert(searchProvider->name(), searchProvider);
 }
 
 QString KUriFilterPlugin::iconNameFor(const KUrl& url, KUriFilterData::UriTypes type) const

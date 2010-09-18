@@ -37,9 +37,87 @@
 #undef ERROR
 #endif
 
+class KUriFilterPrivate;
 class KUriFilterDataPrivate;
-
 class KCModule;
+
+/**
+ * Class that holds information about a search provider.
+ *
+ * @since 4.6
+ */
+class KIO_EXPORT KUriFilterSearchProvider
+{
+public:
+    /**
+     * Default constructor.
+     */
+    KUriFilterSearchProvider();
+
+    /**
+     * Copy constructor.
+     */
+    KUriFilterSearchProvider(const KUriFilterSearchProvider&);
+
+    /**
+     * Destructor.
+     */
+    virtual ~KUriFilterSearchProvider();
+
+    /**
+     * Returns the desktop filename of the search provider without any extension.
+     *
+     * For example, if the desktop filename of the search provider was
+     * "foobar.desktop", this function will return "foobar".
+     */
+    QString desktopEntryName() const;
+
+    /**
+     * Returns the descriptive name of the search provider, e.g. "Google News".
+     *
+     * This name comes from the "Name=" property entry in the desktop file that
+     * contains the search provider's information.
+     */
+    QString name() const;
+
+    /**
+     * Returns the icon name associated with the search provider when available.
+     */
+    QString iconName() const;
+
+    /**
+     * Returns all the web shortcut keys associated with this search provider.
+     *
+     * @see defaultKey
+     */
+    QStringList keys() const;
+
+    /**
+     * Returns the default web shortcut key for this search provider.
+     *
+     * Right now this is the same as doing keys().first(), it might however
+     * change based on what the backend plugins do.
+     *
+     * @see keys
+     */
+    QString defaultKey() const;
+
+    /**
+     * Assignment operator.
+     */
+    KUriFilterSearchProvider& operator=(const KUriFilterSearchProvider&);
+
+protected:
+    void setDesktopEntryName(const QString&);
+    void setIconName(const QString&);
+    void setKeys(const QStringList&);
+    void setName(const QString&);
+
+private:
+    friend class KUriFilterPlugin;
+    class KUriFilterSearchProviderPrivate;
+    KUriFilterSearchProviderPrivate * const d;
+};
 
 /**
 * This class is a basic messaging class used to exchange filtering information
@@ -312,14 +390,26 @@ public:
     QStringList preferredSearchProviders() const;
 
     /**
-     * Returns the query url for the given preferred search provider.
+     * Returns information about @p provider.
+     *
+     * You can use this function to obtain the more information about the search
+     * providers returned by @ref preferredSearchProviders.
+     *
+     * @see preferredSearchProviders
+     * @see KUriFilterSearchProvider
+     * @since 4.6
+     */
+     KUriFilterSearchProvider queryForSearchProvider(const QString& provider) const;
+
+    /**
+     * Returns the web shortcut url for the given preferred search provider.
      *
      * You can use this function to obtain the query for the preferred search
      * providers returned by @ref preferredSearchProviders.
      *
-     * The query returned by this function is in web shortcut format,
-     * i.e "gg:foo bar", and must be reprocessed through KUriFilter in
-     * order
+     * The query returned by this function is in web shortcut format, i.e.
+     * "gg:foo bar", and must be re-filtered through KUriFilter to obtain a
+     * valid url.
      *
      * @see preferredSearchProviders
      * @since 4.5
@@ -561,8 +651,9 @@ public:
      * ([search provider name], [search query, search query icon name])
      *
      * @since 4.5
+     * @deprecated Use @ref KUriFilterSearchProvider instead. See @ref setSearchProviders;
      */
-    typedef QHash<QString, QPair<QString, QString> > ProviderInfoList;
+    KDE_DEPRECATED typedef QHash<QString, QPair<QString, QString> > ProviderInfoList;
 
     /**
      * Constructs a filter plugin with a given name
@@ -625,15 +716,23 @@ protected:
      *
      * @since 4.5
      */
-    void setSearchProvider( KUriFilterData &data, const QString& provider,
-                            const QString &term, const QChar &separator) const;
+    void setSearchProvider( KUriFilterData& data, const QString& provider,
+                            const QString& term, const QChar& separator) const;
 
     /**
      * Sets the name of the preferred search providers in @p data.
      *
      * @since 4.5
+     * @deprecated Use @ref setSearchProviders instead.
      */
-    void setPreferredSearchProviders(KUriFilterData &data, const ProviderInfoList &providers) const;
+    KDE_DEPRECATED void setPreferredSearchProviders(KUriFilterData& data, const ProviderInfoList& providers) const;
+
+    /**
+     * Sets the information about the search @p providers in @p data.
+     *
+     * @since 4.6
+     */
+    void setSearchProviders(KUriFilterData& data, const QList<KUriFilterSearchProvider*>& providers) const;
 
     /**
      * Returns the icon name for the given @p url and URI @p type.
@@ -646,8 +745,6 @@ private:
     class KUriFilterPluginPrivate * const d;
 };
 
-
-class KUriFilterPrivate;
 /**
  * Manages the filtering of URIs.
  *
