@@ -89,6 +89,14 @@ COOKIE ASK http://secure.y.z/ Set-Cookie2: some_value3=value3; Version=1; Path="
 CHECK https://secure.y.z/Foo/bar Cookie: $Version=1; some_value3=value3; $Path="/"
 CHECK http://secure.y.z/Foo/bar
 CLEAR COOKIES
+COOKIE ASK https://secure.y.z/ Set-Cookie: some_value=value; Path="/"; Max-Age=3600;
+CHECK https://secure.y.z/Foo/bar Cookie: some_value=value
+CHECK http://secure.y.z/Foo/bar Cookie: some_value=value
+CLEAR COOKIES
+COOKIE ASK http://secure.y.z/ Set-Cookie: some_value=value; Path="/"; Max-Age=3600;
+CHECK https://secure.y.z/Foo/bar Cookie: some_value=value
+CHECK http://secure.y.z/Foo/bar Cookie: some_value=value
+CLEAR COOKIES
 ## Check domain restrictions #1
 COOKIE ASK http://www.acme.com/ Set-Cookie2: some_value=value1; Version=1; Domain=".acme.com"; Max-Age=3600
 CHECK http://www.acme.com/ Cookie: $Version=1; some_value=value1; $Domain=".acme.com"
