@@ -1267,6 +1267,7 @@ bool KateDocument::editUnWrapLine ( int line, bool removeLine, int length )
 
   history()->doEdit( new KateEditInfo(m_editSources.top(), KTextEditor::Range(line, col, line+1, 0), QStringList(QString()), KTextEditor::Range(line, col, line, col), QStringList()) );
   emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, col, line+1, 0));
+  emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, col, line+1, 0), "\n");
 
   editEnd ();
 
@@ -1415,6 +1416,7 @@ bool KateDocument::editRemoveLines ( int from, int to, Kate::EditSource editSour
 
   history()->doEdit(new KateEditInfo(m_editSources.top(), rangeRemoved, oldText, KTextEditor::Range(rangeRemoved.start(), rangeRemoved.start()), QStringList()));
   emit KTextEditor::Document::textRemoved(this, rangeRemoved);
+  emit KTextEditor::Document::textRemoved(this, rangeRemoved, oldText.join("\n"));
 
   editEnd();
 
@@ -1983,6 +1985,7 @@ bool KateDocument::openFile()
   // do we have success ?
   history()->doEdit( new KateEditInfo(Kate::CloseFileEdit, documentRange(), QStringList(), KTextEditor::Range(0,0,0,0), QStringList()) );
   emit KTextEditor::Document::textRemoved(this, documentRange());
+  emit KTextEditor::Document::textRemoved(this, documentRange(), m_buffer->text());
 
   bool success = m_buffer->openFile (localFilePath());
 
@@ -2427,6 +2430,7 @@ bool KateDocument::closeUrl()
   }
 
   emit KTextEditor::Document::textRemoved(this, documentRange());
+  emit KTextEditor::Document::textRemoved(this, documentRange(), m_buffer->text());
 
   {
     QMutexLocker l(smartMutex());
