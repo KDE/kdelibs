@@ -617,8 +617,23 @@ struct SharedMemory
         delete [] table;
     }
 
+    /**
+     * Removes the requested number of pages.
+     *
+     * @param numberNeeded the number of pages required to fulfill a current request.
+     *        This number should be <0 and <= the number of pages in the cache.
+     * @return The identifier of the beginning of a consecutive block of pages able
+     *         to fill the request. Returns a value >= pageTableSize() if no such
+     *         request can be filled.
+     * @internal
+     */
     uint removeUsedPages(uint numberNeeded)
     {
+        if (numberNeeded == 0) {
+            kError(264) << "Internal error: Asked to remove exactly 0 pages for some reason.";
+            return pageTableSize();
+        }
+
         if (numberNeeded > pageTableSize()) {
             kError(264) << "Internal error: Requested more space than exists in the cache.";
             kError(264) << numberNeeded << "requested, " << pageTableSize() << "is the total possible.";
@@ -656,6 +671,12 @@ struct SharedMemory
         // killing expired entries.
         QSharedPointer<IndexTableEntry> tablePtr(new IndexTableEntry[indexTableSize()], deleteTable);
 
+        if (!tablePtr) {
+            kError(264) << "Unable to allocate temporary memory for sorting the cache!";
+            clearInternalTables();
+            return pageTableSize();
+        }
+
         // We use tablePtr to ensure the data is destroyed, but do the access
         // via a helper pointer to allow for array ops.
         IndexTableEntry *table = tablePtr.data();
@@ -665,7 +686,7 @@ struct SharedMemory
         // Our entry ID is simply its index into the
         // index table, which qSort will rearrange all willy-nilly, so first
         // we'll save the *real* entry ID into firstPage (which is useless in
-        // our copy of the index table. On the other hand if the entry is not
+        // our copy of the index table). On the other hand if the entry is not
         // used then we note that with -1.
         for (uint i = 0; i < indexTableSize(); ++i) {
             table[i].firstPage = table[i].useCount > 0 ? static_cast<pageID>(i)
