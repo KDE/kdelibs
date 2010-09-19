@@ -108,11 +108,10 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 
     if (length) {
         qMemCopy(data, d->m_data.constData(), length);
-        d->m_data.remove(0, length);
-        return length;
+        d->m_data.remove(0, length); 
     }
 
-    return -1;
+    return length;
 }
 
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
