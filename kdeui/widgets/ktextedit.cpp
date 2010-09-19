@@ -538,7 +538,7 @@ void KTextEdit::slotSpeakText()
         QString error;
         if (KToolInvocation::startServiceByDesktopName("kttsd", QStringList(), &error))
         {
-            KMessageBox::error(this, i18n( "Starting KTTSD Failed"), error );
+            KMessageBox::error(this, i18n( "Starting Jovie Text-to-Speech Service Failed"), error );
             return;
         }
     }
