@@ -61,8 +61,8 @@
 #endif
 
 /**
- * This is the hash function used for our pixmap data to hopefully make the
- * hashing used to place the pixmaps as efficient as possible.
+ * This is the hash function used for our data to hopefully make the
+ * hashing used to place the QByteArrays as efficient as possible.
  *
  * The algorithm is in the public domain, by Glenn Fowler, Phong Vo, and Landon
  * Curt Noll, implemented by myself (mpyne).
