@@ -640,12 +640,36 @@ void KDescendantsProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent
     const QModelIndex oldIndex = q->sourceModel()->index(rowCount - 1 - difference, column, parent);
     Q_ASSERT(m_mapping.leftContains(oldIndex));
 
-    // oldIndex is E in the source. proxyRow is 4.
-    const int proxyRow = m_mapping.takeLeft(oldIndex);
     const QModelIndex newIndex = q->sourceModel()->index(rowCount - 1, column, parent);
 
+    QModelIndex indexAbove = oldIndex;
+
+    if (start > 0) {
+      // If we have something like this:
+      //
+      // - A
+      // - - B
+      // - - C
+      //
+      // and we then insert D as a sibling of A below it, we need to remove the mapping for A,
+      // and the row number used for D must take into account the descendants of A.
+
+      while (q->sourceModel()->hasChildren(indexAbove)) {
+      Q_ASSERT(q->sourceModel()->rowCount(indexAbove) > 0);
+        indexAbove = q->sourceModel()->index(q->sourceModel()->rowCount(indexAbove) - 1,  column, indexAbove);
+      }
+      Q_ASSERT(q->sourceModel()->rowCount(indexAbove) == 0);
+    }
+
+    Q_ASSERT(m_mapping.leftContains(indexAbove));
+
+    const int newProxyRow = m_mapping.leftToRight(indexAbove) + difference;
+
+    // oldIndex is E in the source. proxyRow is 4.
+    m_mapping.removeLeft(oldIndex);
+
     // newIndex is J. (proxyRow + difference) is 5.
-    m_mapping.insert(newIndex, proxyRow + difference);
+    m_mapping.insert(newIndex, newProxyRow);
   }
 
   for (int row = start; row <= end; ++row)
