@@ -158,12 +158,25 @@ namespace {
         if( term.isResourceTypeTerm() ) {
             return true;
         }
+
+        // in an and-term a single resource type term is sufficient
         else if( term.isAndTerm() ) {
             Q_FOREACH( const Nepomuk::Query::Term& subTerm, term.toAndTerm().subTerms() ) {
-                if( subTerm.isResourceTypeTerm() ) {
+                if( containsResourceTypeTerm(subTerm) ) {
                     return true;
                 }
             }
+        }
+
+        // an or-term which only consists of resource type terms is valid also
+        else if( term.isOrTerm() ) {
+            Q_FOREACH( const Nepomuk::Query::Term& subTerm, term.toOrTerm().subTerms() ) {
+                if( !containsResourceTypeTerm(subTerm) ) {
+                    return false;
+                }
+            }
+            // at this point all subterms contain a non-optional resource type term
+            return true;
         }
 
         // fallback
