@@ -76,7 +76,7 @@ QString ModelDumper::dumpLevel(const QAbstractItemModel * const model, const QMo
 QString ModelDumper::dumpLevel(const QAbstractItemModel* const model, const QModelIndex &parent, int level, int start, int end) const
 {
   QString lines;
-  for (int row = 0; row <= end; ++row)
+  for (int row = start; row <= end; ++row)
   {
     QString line;
     line.append("\"");
