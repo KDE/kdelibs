@@ -104,6 +104,9 @@ namespace Nepomuk {
             /**
              * Set the score of the result.
              *
+             * Normally there is no need to call this method as the query service
+             * does set the bindings.
+             *
              * \sa score
              */
             void setScore( double score );

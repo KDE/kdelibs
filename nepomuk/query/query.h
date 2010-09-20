@@ -186,10 +186,10 @@ namespace Nepomuk {
              * the ComparisonTerm::Contains comperator) and sorting the results based
              * on that score.
              *
-             * By default full text sorting is disabled since it can mean a serious
+             * By default full text scoring is disabled since it can mean a serious
              * impact on query performance.
              *
-             * \sa setFullTextScoringSortOrder()
+             * \sa setFullTextScoringSortOrder(), Result::score()
              *
              * \since 4.6
              */
@@ -199,7 +199,7 @@ namespace Nepomuk {
              * Set the full text scoring sort order. Ignored if full text scoring is
              * disabled.
              *
-             * By default the sort order is Qt::AscendingOrder.
+             * By default the sort order is Qt::DescendingOrder.
              *
              * \sa setFullTextScoringEnabled()
              *

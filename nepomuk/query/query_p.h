@@ -43,7 +43,7 @@ namespace Nepomuk {
                 : m_limit( 0 ),
                   m_offset( 0 ),
                   m_fullTextScoringEnabled( false ),
-                  m_fullTextScoringSortOrder( Qt::AscendingOrder ),
+                  m_fullTextScoringSortOrder( Qt::DescendingOrder ),
                   m_isFileQuery( false ),
                   m_fileMode( FileQuery::QueryFilesAndFolders ) {
             }
