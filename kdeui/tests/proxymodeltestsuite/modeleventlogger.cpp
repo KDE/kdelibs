@@ -298,7 +298,7 @@ void ModelEventLogger::layoutChanged()
 void ModelEventLogger::modelReset()
 {
   ModelEvent *modelEvent = new ModelEvent(this);
-  modelEvent->setType(ModelEvent::LayoutChanged);
+  modelEvent->setType(ModelEvent::ModelReset);
   modelEvent->setInterpretString(m_modelDumper->dumpModel(m_model));
 
   m_events.append(QVariant::fromValue(static_cast<QObject*>(modelEvent)));
