@@ -83,17 +83,19 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
     // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
     if(! group.isEmpty()) {
         KConfigGroup cfg(config, group);
-        _effects[Intensity] = cfg.readEntry( "IntensityEffect",
-                (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
-        _effects[Color]     = cfg.readEntry(     "ColorEffect",
-		(int)(state == QPalette::Disabled ?  ColorNoEffect : ColorFade));
-        _effects[Contrast]  = cfg.readEntry(  "ContrastEffect",
-                (int)(state == QPalette::Disabled ?  ContrastFade : ContrastTint));
-        _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 : 0.0 );
-        _amount[Color]      = cfg.readEntry(     "ColorAmount", state == QPalette::Disabled ?  0.0 : 0.025 );
-        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.10 );
-        if (_effects[Color] > ColorNoEffect)
-            _color = cfg.readEntry( "Color", state == QPalette::Disabled ?  QColor(56, 56, 56) : QColor(112, 111, 110));
+        if (cfg.readEntry("Enable", false)) {
+            _effects[Intensity] = cfg.readEntry( "IntensityEffect",
+                                                 (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
+            _effects[Color]     = cfg.readEntry(     "ColorEffect",
+                                                     (int)(state == QPalette::Disabled ?  ColorNoEffect : ColorFade));
+            _effects[Contrast]  = cfg.readEntry(  "ContrastEffect",
+                                                  (int)(state == QPalette::Disabled ?  ContrastFade : ContrastTint));
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 : 0.0 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", state == QPalette::Disabled ?  0.0 : 0.025 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.10 );
+            if (_effects[Color] > ColorNoEffect)
+                _color = cfg.readEntry( "Color", state == QPalette::Disabled ?  QColor(56, 56, 56) : QColor(112, 111, 110));
+        }
     }
 }
 
