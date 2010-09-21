@@ -548,6 +548,7 @@ using %Nepomuk.
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/ui
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/types
 // DOXYGEN_SET_INPUT += @topdir@/nepomuk/query
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/utils
 // DOXYGEN_SET_EXCLUDE = @topdir@/nepomuk/core/resourcedata.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nepomukmainmodel.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/resourcefiltermodel.h
@@ -559,5 +560,6 @@ using %Nepomuk.
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/types/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/ui/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/query/*_p.h
+// DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/utils/*_p.h
 // DOXYGEN_SET_PROJECT_NAME = Nepomuk
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
