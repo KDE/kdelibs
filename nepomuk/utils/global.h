@@ -69,7 +69,7 @@ namespace Nepomuk {
          * empty list is perfectly valid.
          *
          * \return A user readable representation of the value which corresponds to \p resource
-         * and \p property.
+         * and \p property. This string may contain Qt-style HTML tags for links and special formatting.
          *
          * \since 4.6
          */

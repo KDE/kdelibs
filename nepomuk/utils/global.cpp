@@ -78,7 +78,8 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
             KUrl url;
             QString label;
             if( dlRes.hasProperty(Nepomuk::Vocabulary::NDO::referrer()) ) {
-                url = dlRes.property(Nepomuk::Vocabulary::NDO::referrer()).toUrl();
+                Nepomuk::Resource referrerWebPage = dlRes.property(Nepomuk::Vocabulary::NDO::referrer()).toResource();
+                url = referrerWebPage.property(Nepomuk::Vocabulary::NIE::url()).toUrl();
                 KUrl referrerDomain(url);
                 referrerDomain.setPath(QString());
                 referrerDomain.setQuery(QString());
