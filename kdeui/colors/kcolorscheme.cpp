@@ -74,11 +74,10 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
         group = "ColorEffects:Disabled";
     else if(state == QPalette::Inactive)
         group = "ColorEffects:Inactive";
-    else {
-        _effects[0] = 0;
-        _effects[1] = 0;
-        _effects[2] = 0;
-    }
+
+    _effects[0] = 0;
+    _effects[1] = 0;
+    _effects[2] = 0;
 
     // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
     if(! group.isEmpty()) {
