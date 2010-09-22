@@ -65,6 +65,7 @@ class KSwitchLanguageDialog : public KDialog
         * Activated when the Ok button has been clicked.
         */
         virtual void slotOk();
+        void slotDefault();
         
         /**
             Called when one of language buttons changes state.

@@ -96,9 +96,10 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     d(new KSwitchLanguageDialogPrivate(this))
 {
     setCaption(i18n("Switch Application Language"));
-    setButtons(Ok | Cancel);
+    setButtons(Ok | Cancel | Default);
     setDefaultButton(Ok);
     connect(this, SIGNAL(okClicked()), SLOT(slotOk()));
+    connect(this, SIGNAL(defaultClicked()), SLOT(slotDefault()));
 
     d->page = new QWidget( this );
     setMainWidget(d->page);
@@ -229,6 +230,34 @@ void KSwitchLanguageDialog::slotOk()
             );
 
 	KGlobal::locale()->setLanguage(d->applicationLanguageList());
+        QEvent ev(QEvent::LanguageChange);
+        QApplication::sendEvent(qApp, &ev);
+    }
+
+    accept();
+}
+
+void KSwitchLanguageDialog::slotDefault()
+{
+    const QStringList defaultLanguages = d->applicationLanguageList();
+
+    KConfigGroup group(KGlobal::config(), "Locale");
+
+    group.revertToDefault("Language");
+    group.sync();
+    // read back the new default
+    QString language = group.readEntry("Language", "en_US");
+
+    if (defaultLanguages != (QStringList() << language)) {
+
+        KMessageBox::information(
+            this,
+            i18n("The language for this application has been changed. The change will take effect the next time the application is started."), //text
+            i18n("Application Language Changed"), //caption
+            "ApplicationLanguageChangedWarning" //dontShowAgainName
+            );
+
+        KGlobal::locale()->setLanguage(QStringList() << language);
         QEvent ev(QEvent::LanguageChange);
         QApplication::sendEvent(qApp, &ev);
     }
