@@ -38,11 +38,27 @@ class KImageCache::Private : public QObject
     public:
     Private(QObject *parent = 0)
         : QObject(parent)
-        ,timestamp(::time(0))
+        , timestamp(::time(0))
         , enablePixmapCaching(true)
     {
         QObject::connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
                          this, SLOT(clearPixmaps()));
+    }
+
+    /**
+     * Inserts a pixmap into the pixmap cache if the pixmap cache is enabled, with
+     * weighting based on image size and bit depth.
+     */
+    bool insertPixmap(const QString &key, QPixmap *pixmap)
+    {
+        if (enablePixmapCaching && pixmap && !pixmap->isNull()) {
+            // "cost" parameter is based on both image size and depth to make cost
+            // based on size in bytes instead of area on-screen.
+            return pixmapCache.insert(key, pixmap,
+                pixmap->width() * pixmap->height() * pixmap->depth() / 8);
+        }
+
+        return false;
     }
 
     public slots:
@@ -84,7 +100,7 @@ bool KImageCache::insertImage(const QString &key, const QImage &image)
     image.save(&buffer, "PNG");
 
     if (this->insert(key, buffer.buffer())) {
-        d->timestamp = time(0);
+        d->timestamp = ::time(0);
         return true;
     }
 
@@ -93,10 +109,7 @@ bool KImageCache::insertImage(const QString &key, const QImage &image)
 
 bool KImageCache::insertPixmap(const QString &key, const QPixmap &pixmap)
 {
-    if (d->enablePixmapCaching) {
-        d->pixmapCache.insert(key, new QPixmap(pixmap),
-                              pixmap.width() * pixmap.height());
-    }
+    d->insertPixmap(key, new QPixmap(pixmap));
 
     // One thing to think about is only inserting things to the shared cache
     // that are frequently used. But that would require tracking the use count
@@ -141,10 +154,7 @@ bool KImageCache::findPixmap(const QString &key, QPixmap *destination) const
         destination->loadFromData(cachedData, "PNG");
 
         // Manually re-insert to pixmap cache if we'll be using this one.
-        if (d->enablePixmapCaching) {
-            d->pixmapCache.insert(key, new QPixmap(*destination),
-                                  destination->height() * destination->width());
-        }
+        d->insertPixmap(key, new QPixmap(*destination));
     }
 
     return true;
