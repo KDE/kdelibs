@@ -10,8 +10,8 @@
 <!ENTITY cdrom	"<hardware>unitat lectora de CD-ROM</hardware>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY ppp	"<acronym>ppp</acronym>"><!-- English: &dpi; -->
-<!ENTITY pex	"<abbrev>p.ex.</abbrev>"><!-- English: &eg; -->
-<!ENTITY Intro	"<keycap>Intro</keycap>"><!-- English: &Enter; -->
+<!ENTITY pex	"<abbrev>p. ex.</abbrev>"><!-- English: &eg; -->
+<!ENTITY Intro	"<keycap>Retorn</keycap>"><!-- English: &Enter; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc	"<abbrev>etc.</abbrev>">
 <!ENTITY PMF	"<acronym>PMF</acronym>"><!-- English: &FAQ; -->
