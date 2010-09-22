@@ -9,8 +9,8 @@
 class Test5 : public KConfigSkeleton
 {
   public:
-    enum { Encrypt, Decrypt, CrashNBurn, PumpNDump };
-    enum { right, mid, left };
+    enum EnumMouseAction { Encrypt, Decrypt, CrashNBurn, PumpNDump };
+    enum EnumButton { right, mid, left };
     static const char* const EnumButtonToString[];
 
     static Test5 *self();

@@ -140,8 +140,9 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 			{
 				appendFileDiff( fileRef.fileName(), file.fileName() );
 			}
-			// use QVERIFY instead of QCOMPARE to avoid having
+			// use split('\n') to avoid
 			// the whole output shown inline
+			QCOMPARE(content.split('\n'), contentRef.split('\n'));
 			QVERIFY( content == contentRef );
 		}
 		else
