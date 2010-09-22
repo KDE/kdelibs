@@ -30,7 +30,6 @@
 #include <kprotocolinfo.h>
 #include <kcomponentdata.h>
 #include <kcolorscheme.h>
-#include <kapplication.h>
 
 #include <kstyle.h>
 
@@ -78,9 +77,11 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 //static QColor *_buttonBackground = 0;
 static KGlobalSettings::GraphicEffects _graphicEffects = KGlobalSettings::NoEffects;
 
-// KDE5: merge this with KGlobalSettings::Private
-// also think to make all methods static and not expose an object,
+// TODO: merge this with KGlobalSettings::Private
+//
+// F. Kossebau: KDE5: think to make all methods static and not expose an object,
 // making KGlobalSettings rather a namespace
+// D. Faure: how would people connect to signals, then?
 class KGlobalSettingsData
 {
   public:
@@ -148,10 +149,11 @@ class KGlobalSettings::Private
 {
     public:
         Private(KGlobalSettings *q)
-            : q(q), activated(false)
+            : q(q), activated(false), paletteCreated(false)
         {
         }
 
+        QPalette createApplicationPalette(const KSharedConfigPtr &config);
         void _k_slotNotifyChange(int, int);
 
         void propagateQtSettings();
@@ -180,6 +182,8 @@ class KGlobalSettings::Private
 
         KGlobalSettings *q;
         bool activated;
+        bool paletteCreated;
+        QPalette applicationPalette;
 };
 
 KGlobalSettings* KGlobalSettings::self()
@@ -952,44 +956,56 @@ void KGlobalSettings::Private::applyGUIStyle()
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
 {
-    QPalette palette;
+    return self()->d->createApplicationPalette(config);
+}
 
-    QPalette::ColorGroup states[3] = { QPalette::Active, QPalette::Inactive,
-                                       QPalette::Disabled };
+QPalette KGlobalSettings::Private::createApplicationPalette(const KSharedConfigPtr &config)
+{
+    // This method is typically called once by KQGuiPlatformPlugin::palette and once again
+    // by kdisplaySetPalette(), so we cache the palette to save time.
+    if (!paletteCreated) {
+        paletteCreated = true;
 
-    // TT thinks tooltips shouldn't use active, so we use our active colors for all states
-    KColorScheme schemeTooltip(QPalette::Active, KColorScheme::Tooltip, config);
+        QPalette palette;
 
-    for ( int i = 0; i < 3 ; i++ ) {
-        QPalette::ColorGroup state = states[i];
-        KColorScheme schemeView(state, KColorScheme::View, config);
-        KColorScheme schemeWindow(state, KColorScheme::Window, config);
-        KColorScheme schemeButton(state, KColorScheme::Button, config);
-        KColorScheme schemeSelection(state, KColorScheme::Selection, config);
+        QPalette::ColorGroup states[3] = { QPalette::Active, QPalette::Inactive,
+                                           QPalette::Disabled };
 
-        palette.setBrush( state, QPalette::WindowText, schemeWindow.foreground() );
-        palette.setBrush( state, QPalette::Window, schemeWindow.background() );
-        palette.setBrush( state, QPalette::Base, schemeView.background() );
-        palette.setBrush( state, QPalette::Text, schemeView.foreground() );
-        palette.setBrush( state, QPalette::Button, schemeButton.background() );
-        palette.setBrush( state, QPalette::ButtonText, schemeButton.foreground() );
-        palette.setBrush( state, QPalette::Highlight, schemeSelection.background() );
-        palette.setBrush( state, QPalette::HighlightedText, schemeSelection.foreground() );
-        palette.setBrush( state, QPalette::ToolTipBase, schemeTooltip.background() );
-        palette.setBrush( state, QPalette::ToolTipText, schemeTooltip.foreground() );
+        // TT thinks tooltips shouldn't use active, so we use our active colors for all states
+        KColorScheme schemeTooltip(QPalette::Active, KColorScheme::Tooltip, config);
 
-        palette.setColor( state, QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
-        palette.setColor( state, QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
-        palette.setColor( state, QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
-        palette.setColor( state, QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
-        palette.setColor( state, QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
+        for ( int i = 0; i < 3 ; i++ ) {
+            QPalette::ColorGroup state = states[i];
+            KColorScheme schemeView(state, KColorScheme::View, config);
+            KColorScheme schemeWindow(state, KColorScheme::Window, config);
+            KColorScheme schemeButton(state, KColorScheme::Button, config);
+            KColorScheme schemeSelection(state, KColorScheme::Selection, config);
 
-        palette.setBrush( state, QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
-        palette.setBrush( state, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
-        palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
+            palette.setBrush( state, QPalette::WindowText, schemeWindow.foreground() );
+            palette.setBrush( state, QPalette::Window, schemeWindow.background() );
+            palette.setBrush( state, QPalette::Base, schemeView.background() );
+            palette.setBrush( state, QPalette::Text, schemeView.foreground() );
+            palette.setBrush( state, QPalette::Button, schemeButton.background() );
+            palette.setBrush( state, QPalette::ButtonText, schemeButton.foreground() );
+            palette.setBrush( state, QPalette::Highlight, schemeSelection.background() );
+            palette.setBrush( state, QPalette::HighlightedText, schemeSelection.foreground() );
+            palette.setBrush( state, QPalette::ToolTipBase, schemeTooltip.background() );
+            palette.setBrush( state, QPalette::ToolTipText, schemeTooltip.foreground() );
+
+            palette.setColor( state, QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
+            palette.setColor( state, QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
+            palette.setColor( state, QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
+            palette.setColor( state, QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
+            palette.setColor( state, QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
+
+            palette.setBrush( state, QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
+            palette.setBrush( state, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
+            palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
+        }
+        applicationPalette = palette;
     }
 
-    return palette;
+    return applicationPalette;
 }
 
 void KGlobalSettings::Private::kdisplaySetPalette()
