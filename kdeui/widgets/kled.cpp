@@ -289,6 +289,7 @@ void KLed::paintLed(Shape shape, Look look)
     image.fill(0);
 
     QRadialGradient fillGradient(center, smallestSize / 2.0, QPointF(center.x(), size.height() / 3.0));
+    const QColor fillColor = d->state != Off ? d->color : d->color.dark(d->darkFactor);
     fillGradient.setColorAt(0.0, fillColor.light(250));
     fillGradient.setColorAt(0.5, fillColor.light(130));
     fillGradient.setColorAt(1.0, fillColor);

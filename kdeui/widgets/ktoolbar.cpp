@@ -1282,7 +1282,9 @@ void KToolBar::actionEvent(QActionEvent * event)
         foreach (QWidget* child, widget->findChildren<QWidget*>())
             child->installEventFilter(this);
         // Center widgets that do not have any use for more space. See bug 165274
-        if (!(widget->sizePolicy().horizontalPolicy() & QSizePolicy::GrowFlag)) {
+        if (!(widget->sizePolicy().horizontalPolicy() & QSizePolicy::GrowFlag)
+            // ... but do not center when using text besides icon in vertical toolbar. See bug 243196
+            && !(orientation() == Qt::Vertical && toolButtonStyle() == Qt::ToolButtonTextBesideIcon)) {
             const int index = layout()->indexOf(widget);
             if (index != -1) {
                 layout()->itemAt(index)->setAlignment(Qt::AlignJustify);
