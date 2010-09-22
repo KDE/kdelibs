@@ -108,7 +108,7 @@ void KRichTextEditTest::testUpdateLinkRemove()
     QCOMPARE(edit.fontWeight(), static_cast<int>(QFont::Bold));
     QCOMPARE(edit.fontUnderline(), false);
     QTextCharFormat charFormat = cursor.charFormat();
-    QCOMPARE(charFormat.underlineColor(), KColorScheme(QPalette::Active, KColorScheme::View).foreground().color());
+    QCOMPARE(charFormat.underlineColor().name(), KColorScheme(QPalette::Active, KColorScheme::View).foreground().color().name());
     QCOMPARE(charFormat.underlineStyle(), QTextCharFormat::NoUnderline);
-    QCOMPARE(charFormat.foreground(), QBrush(KColorScheme(QPalette::Active, KColorScheme::View).foreground().color()));
+    QCOMPARE(charFormat.foreground().color().name(), KColorScheme(QPalette::Active, KColorScheme::View).foreground().color().name());
 }
