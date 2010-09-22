@@ -255,24 +255,35 @@ void KTcpSocketTest::states()
                              "Host: ");
     QByteArray requestEpilog("\r\n\r\n");
     //Test rapid connection and disconnection to different hosts
-    const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
-    for (int i = 0; i < 20; i++) {
+    static const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
+    static const int numHosts = 4;
+    for (int i = 0; i < numHosts * 5; i++) {
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
-        s->connectToHost(hosts[i % 4], 80);
-        QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        s->connectToHost(hosts[i % numHosts], 80);
+        if (i < numHosts) {
+            QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        } else {
+            //since Qt 4.7 the Qt-internal DNS cache returns a result (if cached) immediately
+            QCOMPARE(s->state(), KTcpSocket::ConnectingState);
+        }
         //weave the host address into the HTTP request
         QByteArray request(requestProlog);
-        request.append(hosts[i % 4]);
+        request.append(hosts[i % numHosts]);
         request.append(requestEpilog);
-        qDebug("%s", hosts[i % 4]);
+        qDebug("%s", hosts[i % numHosts]);
         s->write(request);
 
-        QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        if (i < numHosts) {
+            QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        } else {
+            QCOMPARE(s->state(), KTcpSocket::ConnectingState);
+        }
+
         s->waitForBytesWritten(-1);
         QCOMPARE(s->state(), KTcpSocket::ConnectedState);
         s->waitForReadyRead(-1);
         QVERIFY(s->bytesAvailable() > 100);
-        if (i % 5) {
+        if (i % (numHosts + 1)) {
             s->readAll();
             QVERIFY(s->bytesAvailable() == 0);
         } else {
