@@ -293,12 +293,24 @@ class KDEUI_EXPORT KLed : public QWidget
     virtual void paintRectFrame( bool raised );
 
     void paintEvent( QPaintEvent* );
+    void resizeEvent( QResizeEvent* );
 
     /**
      * Paint the cached antialiased pixmap corresponding to the state if any
      * @return true if the pixmap was painted, false if it hasn't been created yet
      */
     bool paintCachedPixmap();
+
+    /**
+     * @internal
+     * invalidates caches after property changes and calls update()
+     */
+    void updateCachedPixmap();
+
+    /**
+     * @internal
+     */
+    void paintLed(Shape shape, Look look);
 
   private:
     class Private;
