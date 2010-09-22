@@ -61,6 +61,10 @@ void KRichTextEditTest::testUpdateLinkAdd()
     // Add text, apply initial formatting, and add a link
     QTextCursor cursor = edit.textCursor();
     cursor.insertText(QString("Test"));
+    QTextCharFormat charFormat = cursor.charFormat();
+    // Note that QTextEdit doesn't use the palette. Black is black.
+    QCOMPARE(charFormat.foreground().color().name(), QColor(Qt::black).name());
+
     cursor.select(QTextCursor::BlockUnderCursor);
     edit.setTextCursor(cursor);
     edit.setTextBold(true);
@@ -75,10 +79,10 @@ void KRichTextEditTest::testUpdateLinkAdd()
     QCOMPARE(edit.fontItalic(), true);
     QCOMPARE(edit.fontWeight(), static_cast<int>(QFont::Bold));
     QCOMPARE(edit.fontUnderline(), true);
-    QTextCharFormat charFormat = cursor.charFormat();
+    charFormat = cursor.charFormat();
+    QCOMPARE(charFormat.foreground(), QBrush(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color()));
     QCOMPARE(charFormat.underlineColor(), KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color());
     QCOMPARE(charFormat.underlineStyle(), QTextCharFormat::SingleUnderline);
-    QCOMPARE(charFormat.foreground(), QBrush(KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color()));
 }
 
 void KRichTextEditTest::testUpdateLinkRemove()
@@ -108,7 +112,7 @@ void KRichTextEditTest::testUpdateLinkRemove()
     QCOMPARE(edit.fontWeight(), static_cast<int>(QFont::Bold));
     QCOMPARE(edit.fontUnderline(), false);
     QTextCharFormat charFormat = cursor.charFormat();
-    QCOMPARE(charFormat.underlineColor().name(), KColorScheme(QPalette::Active, KColorScheme::View).foreground().color().name());
+    QCOMPARE(charFormat.foreground().color().name(), QColor(Qt::black).name());
+    QCOMPARE(charFormat.underlineColor().name(), QColor(Qt::black).name());
     QCOMPARE(charFormat.underlineStyle(), QTextCharFormat::NoUnderline);
-    QCOMPARE(charFormat.foreground().color().name(), KColorScheme(QPalette::Active, KColorScheme::View).foreground().color().name());
 }
