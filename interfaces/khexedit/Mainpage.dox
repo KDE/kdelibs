@@ -20,7 +20,7 @@ can thus allow the user to choose which implementation of the hex editor compone
 to use. At the time of KDE Platform 4.6 the only implementation known is the
 <a href="http://utils.kde.org/projects/okteta">Okteta</a> Component
 (found in
-<a href="http://websvn.kde.org/trunk/KDE/kdedsk/okteta/parts/kbytesedit/">kdesdk/okteta/parts/kbytesedit</a>).
+<a href="http://websvn.kde.org/trunk/KDE/kdesdk/okteta/parts/kbytesedit/">kdesdk/okteta/parts/kbytesedit</a>).
 
 
 @section khe_howto How to use the KHexEdit Interfaces
