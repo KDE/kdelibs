@@ -29,7 +29,7 @@
 #include <QtCore/QDateTime>
 
 #ifdef HAVE_NEPOMUK
-#include "../nepomuk/utils/global.h"
+#include "../nepomuk/utils/utils.h"
 #endif
 
 namespace KParts {

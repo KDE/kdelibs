@@ -1,7 +1,7 @@
 project(nepomuk_utils)
 
 set(nepomukutils_SRCS
-  global.cpp
+  utils.cpp
 )
 
 soprano_add_ontology(nepomukutils_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
@@ -27,7 +27,7 @@ set_target_properties(nepomukutils PROPERTIES
 install(TARGETS nepomukutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  global.h
+  utils.h
   nepomukutils_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )

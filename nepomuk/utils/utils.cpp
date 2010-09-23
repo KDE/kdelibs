@@ -19,7 +19,7 @@
    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "global.h"
+#include "utils.h"
 
 #include "variant.h"
 #include "resourcemanager.h"

@@ -40,7 +40,7 @@
 #include "query/resourceterm.h"
 #include "query/resourcetypeterm.h"
 #include "query/optionalterm.h"
-#include "utils/global.h"
+#include "utils/utils.h"
 
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
