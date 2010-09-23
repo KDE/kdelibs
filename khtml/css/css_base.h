@@ -263,7 +263,7 @@ namespace DOM {
 	virtual ~StyleListImpl();
 
 	unsigned long length() const { return m_lstChildren->count(); }
-	StyleBaseImpl *item(unsigned long num) const { return m_lstChildren->at(num); }
+	StyleBaseImpl *item(unsigned long num) const { return num < length() ? m_lstChildren->at(num) : 0; }
 
 	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
 

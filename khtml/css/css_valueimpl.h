@@ -171,7 +171,7 @@ public:
     virtual ~CSSValueListImpl();
 
     unsigned long length() const { return m_values.count(); }
-    CSSValueImpl *item ( unsigned long index ) { return m_values.at(index); }
+    CSSValueImpl *item ( unsigned long index ) { return  index < length() ? m_values.at(index) : 0; }
 
     virtual bool isValueList() const { return true; }
 
