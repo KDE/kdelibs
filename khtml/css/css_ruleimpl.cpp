@@ -463,7 +463,7 @@ CSSRuleImpl* CSSRuleListImpl::item(unsigned long index)
         assert(!rule || rule->isRule());
         return static_cast<CSSRuleImpl*>(rule);
     }
-    return m_lstCSSRules.at(index);
+    return index < length() ? m_lstCSSRules.at(index) : 0;
 }
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )
