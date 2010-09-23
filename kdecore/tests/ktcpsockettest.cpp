@@ -198,6 +198,26 @@ void Server::write()
     cleanupSocket();
 }
 
+static QString stateToString(KTcpSocket::State state)
+{
+    switch(state) {
+    case KTcpSocket::UnconnectedState:
+        return "UnconnectedState";
+    case KTcpSocket::HostLookupState:
+        return "HostLookupState";
+    case KTcpSocket::ConnectingState:
+        return "ConnectingState";
+    case KTcpSocket::ConnectedState:
+        return "ConnectedState";
+    case KTcpSocket::BoundState:
+        return "BoundState";
+    case KTcpSocket::ListeningState:
+        return "ListeningState";
+    case KTcpSocket::ClosingState:
+        return "ClosingState";
+    }
+    return "ERROR";
+}
 
 #define HTTPREQUEST QByteArray("GET / HTTP/1.1\nHost: www.example.com\n\n")
 
@@ -261,10 +281,10 @@ void KTcpSocketTest::states()
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
         s->connectToHost(hosts[i % numHosts], 80);
         if (i < numHosts) {
-            QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::HostLookupState));
         } else {
             //since Qt 4.7 the Qt-internal DNS cache returns a result (if cached) immediately
-            QCOMPARE(s->state(), KTcpSocket::ConnectingState);
+            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::ConnectingState));
         }
         //weave the host address into the HTTP request
         QByteArray request(requestProlog);
@@ -274,9 +294,9 @@ void KTcpSocketTest::states()
         s->write(request);
 
         if (i < numHosts) {
-            QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::HostLookupState));
         } else {
-            QCOMPARE(s->state(), KTcpSocket::ConnectingState);
+            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::ConnectingState));
         }
 
         s->waitForBytesWritten(-1);
