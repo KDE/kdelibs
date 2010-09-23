@@ -25,8 +25,8 @@
 
 class KViewStateMaintainerBasePrivate
 {
-  KViewStateMaintainerBasePrivate(KSharedConfigPtr configPtr, const QString &name, KViewStateMaintainerBase *qq)
-    : q_ptr(qq), m_configPtr(configPtr), m_name(name)
+  KViewStateMaintainerBasePrivate(KConfigGroup configGroup, KViewStateMaintainerBase *qq)
+    : q_ptr(qq), m_configGroup(configGroup)
   {
 
   }
@@ -40,8 +40,7 @@ class KViewStateMaintainerBasePrivate
   QWeakPointer<QAbstractItemView> m_view;
   QWeakPointer<QItemSelectionModel> m_selectionModel;
 
-  const KSharedConfigPtr m_configPtr;
-  const QString m_name;
+  const KConfigGroup m_configGroup;
 };
 
 void KViewStateMaintainerBasePrivate::_k_modelAboutToBeReset()
@@ -56,8 +55,8 @@ void KViewStateMaintainerBasePrivate::_k_modelReset()
   q->restoreState();
 }
 
-KViewStateMaintainerBase::KViewStateMaintainerBase(KSharedConfigPtr configPtr, const QString &name, QObject* parent)
-  : QObject(parent), d_ptr(new KViewStateMaintainerBasePrivate(configPtr, name, this))
+KViewStateMaintainerBase::KViewStateMaintainerBase(KConfigGroup configPtr, QObject* parent)
+  : QObject(parent), d_ptr(new KViewStateMaintainerBasePrivate(configPtr, this))
 {
 
 }
@@ -70,7 +69,7 @@ KViewStateMaintainerBase::~KViewStateMaintainerBase()
 KConfigGroup KViewStateMaintainerBase::configGroup() const
 {
   Q_D(const KViewStateMaintainerBase);
-  return KConfigGroup(d->m_configPtr, d->m_name);
+  return d->m_configGroup;
 }
 
 QItemSelectionModel* KViewStateMaintainerBase::selectionModel() const

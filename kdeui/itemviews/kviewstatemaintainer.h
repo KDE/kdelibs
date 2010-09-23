@@ -36,7 +36,7 @@ class KDEUI_EXPORT KViewStateMaintainerBase : public QObject
 {
   Q_OBJECT
 public:
-  KViewStateMaintainerBase(KSharedConfigPtr configPtr, const QString &name, QObject* parent = 0);
+  KViewStateMaintainerBase(KConfigGroup configGroup, QObject* parent = 0);
   ~KViewStateMaintainerBase();
 
   void setSelectionModel(QItemSelectionModel *selectionModel);
@@ -63,22 +63,22 @@ private:
  * @brief Encapsulates the maintenance of state between resets of QAbstractItemModel
  *
  * @code
- *   m_collectionViewStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config(), "collectionView");
+ *   m_collectionViewStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config()->group("collectionView"));
  *   m_collectionViewStateMaintainer->setView(m_collectionView);
  *
- *   m_collectionCheckStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config(), "collectionCheckState");
+ *   m_collectionCheckStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config()->group("collectionCheckState"));
  *   m_collectionCheckStateMaintainer->setSelectionModel(m_checkableProxy->selectionModel());
  * @endcode
  *
  * @see KViewStateSaver
  */
 template<typename StateSaver>
-class KDEUI_EXPORT KViewStateMaintainer : public KViewStateMaintainerBase
+class KViewStateMaintainer : public KViewStateMaintainerBase
 {
   typedef StateSaver StateRestorer;
 public:
-  KViewStateMaintainer(KSharedConfigPtr configPtr, const QString &name, QObject* parent = 0)
-    : KViewStateMaintainerBase(configPtr, name, parent)
+  KViewStateMaintainer(KConfigGroup configGroup, QObject* parent = 0)
+    : KViewStateMaintainerBase(configGroup, parent)
   {
 
   }
