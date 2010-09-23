@@ -278,6 +278,7 @@ void KTcpSocketTest::states()
     static const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
     static const int numHosts = 4;
     for (int i = 0; i < numHosts * 5; i++) {
+        qDebug("\nNow trying %s...", hosts[i % numHosts]);
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
         s->connectToHost(hosts[i % numHosts], 80);
         if (i < numHosts) {
@@ -290,7 +291,6 @@ void KTcpSocketTest::states()
         QByteArray request(requestProlog);
         request.append(hosts[i % numHosts]);
         request.append(requestEpilog);
-        qDebug("%s", hosts[i % numHosts]);
         s->write(request);
 
         if (i < numHosts) {
