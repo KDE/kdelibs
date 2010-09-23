@@ -1827,6 +1827,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
     doc += techName;
     doc += QLatin1String( "</h2>" );
   }
+  doc += QLatin1String( "<br clear=\"all\">" );
   doc += QLatin1String( "<h3>" );
   doc += i18n( "Details of the Request:" );
   doc += QLatin1String( "</h3><ul><li>" );
