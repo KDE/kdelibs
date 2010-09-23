@@ -41,7 +41,7 @@
 <!ENTITY Wendy.Van.Craen      '<othercredit role="translator"><firstname>Wendy</firstname><surname>Van Craen</surname><affiliation><address><email>wendy.vancraen@kde.org</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Freek.de.Kruijf      '<othercredit role="translator"><firstname>Freek</firstname><surname>de Kruijf</surname><affiliation><address><email>f.de.kruijf@gmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Hannie.Lafeber-Dumoleyn      '<othercredit role="translator"><firstname>Hannie</firstname><surname>Lafeber-Dumoleyn</surname><affiliation><address><email>hannie@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Ruben.van.Laerhoven      '<othercredit role="translator"><firstname>Ruben</firstname><surname>van Laerhoven</surname><affiliation><address><email>rubentje1991@gmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Ruben.Van.Laerhoven      '<othercredit role="translator"><firstname>Ruben</firstname><surname>Van Laerhoven</surname><affiliation><address><email>rubentje1991@gmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -81,7 +81,7 @@
 <!ENTITY vertaling.wendy        "<para>Dit document is vertaald in het Nederlands door &Wendy.Van.Craen;.</para>">
 <!ENTITY vertaling.freek        "<para>Dit document is vertaald in het Nederlands door &Freek.de.Kruijf;.</para>">
 <!ENTITY vertaling.hannie       "<para>Dit document is vertaald in het Nederlands door &Hannie.Lafeber-Dumoleyn;.</para>">
-<!ENTITY vertaling.ruben        "<para>Dit document is vertaald in het Nederlands door &Ruben.van.Laerhoven;.</para>">
+<!ENTITY vertaling.ruben        "<para>Dit document is vertaald in het Nederlands door &Ruben.Van.Laerhoven;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
@@ -122,7 +122,7 @@
 <!ENTITY nagelezen.wendy      "<para>De vertaling werd nagelezen door &Wendy.Van.Craen;.</para>">
 <!ENTITY nagelezen.freek      "<para>De vertaling werd nagelezen door &Freek.de.Kruijf;.</para>">
 <!ENTITY nagelezen.hannie     "<para>De vertaling werd nagelezen door &Hannie.Lafeber-Dumoleyn;.</para>">
-<!ENTITY nagelezen.ruben      "<para>De vertaling werd nagelezen door &Ruben.van.Laerhoven;.</para>">
+<!ENTITY nagelezen.ruben      "<para>De vertaling werd nagelezen door &Ruben.Van.Laerhoven;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
