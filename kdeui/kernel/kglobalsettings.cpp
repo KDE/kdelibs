@@ -849,6 +849,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
     case PaletteChanged:
         if (activated) {
             KGlobal::config()->reparseConfiguration();
+            paletteCreated = false;
             kdisplaySetPalette();
         }
         break;
