@@ -68,6 +68,23 @@ public:
      */
     virtual QString completeText(Format format) const;
 
+
+    /**
+     * Returns the number of pages, for parts who support the concept of pages.
+     * Otherwise returns 0.
+     */
+    virtual int pageCount() const;
+    /**
+     * Returns the current page (between 0 and pageCount()-1),
+     * for parts who support the concept of pages.
+     * Otherwise returns 0.
+     */
+    virtual int currentPage() const;
+    /**
+     * Returns the text in a given page, in the requested format.
+     */
+    virtual QString pageText(Format format) const;
+
     // for future extensions can be made via slots
 
 Q_SIGNALS:

@@ -49,3 +49,18 @@ KParts::TextExtension * KParts::TextExtension::childObject(QObject *obj)
 {
     return KGlobal::findDirectChild<KParts::TextExtension *>(obj);
 }
+
+int KParts::TextExtension::pageCount() const
+{
+    return 0;
+}
+
+int KParts::TextExtension::currentPage() const
+{
+    return 0;
+}
+
+QString KParts::TextExtension::pageText(Format) const
+{
+    return QString();
+}
