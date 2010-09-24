@@ -236,6 +236,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
   d->m_scriptableExtension = new KJS::KHTMLPartScriptable( this );
+  new KParts::TextExtension( this );
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
 

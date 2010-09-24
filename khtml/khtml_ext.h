@@ -32,6 +32,7 @@
 #include <QtCore/QPointer>
 
 #include <kselectaction.h>
+#include <kparts/textextension.h>
 #include <kio/global.h>
 
 /**
@@ -170,6 +171,23 @@ private:
 private:
     bool m_direction;
     KHTMLPart *m_part;
+};
+
+/**
+ * @internal
+ * Implements the TextExtension interface
+ */
+class KHTMLTextExtension : public KParts::TextExtension
+{
+    Q_OBJECT
+public:
+    KHTMLTextExtension(KHTMLPart* part);
+
+    virtual bool hasSelection() const;
+    virtual QString selectedText(Format format) const;
+    virtual QString completeText(Format format) const;
+
+    KHTMLPart* part() const;
 };
 
 #endif

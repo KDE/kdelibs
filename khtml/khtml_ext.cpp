@@ -33,6 +33,8 @@
 #include "misc/loader.h"
 #include "dom/html_form.h"
 #include "dom/html_image.h"
+#include "dom/dom_string.h"
+#include "dom/html_document.h"
 #include <QtGui/QClipboard>
 #include <QtCore/QFileInfo>
 #include <QtGui/QMenu>
@@ -1051,5 +1053,42 @@ void KHTMLZoomFactorAction::slotTriggered(QAction* action)
     setCurrentAction( 0L );
 }
 
-#include "khtml_ext.moc"
+KHTMLTextExtension::KHTMLTextExtension(KHTMLPart* part)
+    : KParts::TextExtension(part)
+{
+    connect(part, SIGNAL(selectionChanged()), this, SIGNAL(selectionChanged()));
+}
 
+KHTMLPart* KHTMLTextExtension::part() const
+{
+    return static_cast<KHTMLPart*>(parent());
+}
+
+bool KHTMLTextExtension::hasSelection() const
+{
+    return part()->hasSelection();
+}
+
+QString KHTMLTextExtension::selectedText(Format format) const
+{
+    switch(format) {
+    case PlainText:
+        return part()->selectedText();
+    case HTML:
+        return part()->selectedTextAsHTML();
+    }
+    return QString();
+}
+
+QString KHTMLTextExtension::completeText(Format format) const
+{
+    switch(format) {
+    case PlainText:
+        return part()->htmlDocument().body().innerText().string();
+    case HTML:
+        return part()->htmlDocument().body().innerHTML().string();
+    }
+    return QString();
+}
+
+#include "khtml_ext.moc"

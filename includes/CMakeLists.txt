@@ -811,6 +811,7 @@ install( FILES
   KParts/ReadOnlyPart
   KParts/ReadWritePart
   KParts/StatusBarExtension
+  KParts/TextExtension
   KParts/WindowArgs
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts COMPONENT Devel)
 
