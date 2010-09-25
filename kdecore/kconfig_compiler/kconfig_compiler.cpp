@@ -37,11 +37,10 @@
 #include <iostream>
 #include <stdlib.h>
 
-
-static inline std::ostream &operator<<(std::ostream &o, const QString &str)
+namespace
 {
-    o << str.toLocal8Bit().constData();
-    return o;
+  QTextStream cout(stdout);
+  QTextStream cerr(stderr);
 }
 
 static void parseArgs(const QStringList &args, QString &directory, QString &file1, QString &file2)
@@ -52,32 +51,32 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
     for (int i = 1; i < args.count(); ++i) {
         if (args.at(i) == "-d" ||  args.at(i) == "--directory") {
             if (i + 1 > args.count()) {
-                std::cerr << qPrintable(args.at(i)) << " needs an argument" << std::endl;
+                cerr << args.at(i) << " needs an argument" << endl;
                 exit(1);
             }
             directory = args.at(++i);
         } else if (args.at(i).startsWith("-d")) {
             directory = args.at(i).mid(2);
         } else if (args.at(i) == "--help" || args.at(i) == "-h") {
-            std::cout << "Options:" << std::endl;
-            std::cout << "  -L --license              Display software license" << std::endl;
-            std::cout << "  -d, --directory <dir>     Directory to generate files in [.]" << std::endl;
-            std::cout << "  -h, --help                Display this help" << std::endl;
-            std::cout << std::endl;
-            std::cout << "Arguments:" << std::endl;
-            std::cout << "      file.kcfg                 Input kcfg XML file" << std::endl;
-            std::cout << "      file.kcfgc                Code generation options file" << std::endl;
+            cout << "Options:" << endl;
+            cout << "  -L --license              Display software license" << endl;
+            cout << "  -d, --directory <dir>     Directory to generate files in [.]" << endl;
+            cout << "  -h, --help                Display this help" << endl;
+            cout << endl;
+            cout << "Arguments:" << endl;
+            cout << "      file.kcfg                 Input kcfg XML file" << endl;
+            cout << "      file.kcfgc                Code generation options file" << endl;
             exit(0);
         } else if (args.at(i) == "--license" || args.at(i) == "-L") {
-            std::cout << "Copyright 2003 Cornelius Schumacher, Waldo Bastian, Zack Rusin," << std::endl;
-            std::cout << "    Reinhold Kainhofer, Duncan Mac-Vicar P., Harald Fernengel" << std::endl;
-            std::cout << "This program comes with ABSOLUTELY NO WARRANTY." << std::endl;
-            std::cout << "You may redistribute copies of this program" << std::endl;
-            std::cout << "under the terms of the GNU Library Public License." << std::endl;
-            std::cout << "For more information about these matters, see the file named COPYING." << std::endl;
+            cout << "Copyright 2003 Cornelius Schumacher, Waldo Bastian, Zack Rusin," << endl;
+            cout << "    Reinhold Kainhofer, Duncan Mac-Vicar P., Harald Fernengel" << endl;
+            cout << "This program comes with ABSOLUTELY NO WARRANTY." << endl;
+            cout << "You may redistribute copies of this program" << endl;
+            cout << "under the terms of the GNU Library Public License." << endl;
+            cout << "For more information about these matters, see the file named COPYING." << endl;
             exit(0);
         } else if (args.at(i).startsWith('-')) {
-            std::cerr << "Unknown option: " << qPrintable(args.at(i)) << std::endl;
+            cerr << "Unknown option: " << args.at(i) << endl;
             exit(1);
         } else if (fileCount == 0) {
             file1 = args.at(i);
@@ -86,12 +85,12 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
             file2 = args.at(i);
             ++fileCount;
         } else {
-            std::cerr << "Too many arguments" << std::endl;
+            cerr << "Too many arguments" << endl;
             exit(1);
         }
     }
     if (fileCount < 2) {
-        std::cerr << "Too few arguments" << std::endl;
+        cerr << "Too few arguments" << endl;
         exit(1);
     }
 }
@@ -117,6 +116,9 @@ public:
   QString label;
   QList<SignalArguments> arguments;
 };
+
+
+
 
 class CfgEntry
 {
@@ -226,28 +228,28 @@ class CfgEntry
 
     void dump() const
     {
-      std::cerr << "<entry>" << std::endl;
-      std::cerr << "  group: " << qPrintable(mGroup) << std::endl;
-      std::cerr << "  type: " << qPrintable(mType) << std::endl;
-      std::cerr << "  key: " << qPrintable(mKey) << std::endl;
-      std::cerr << "  name: " << qPrintable(mName) << std::endl;
-      std::cerr << "  context: " << qPrintable(mContext) << std::endl;
-      std::cerr << "  label: " << qPrintable(mLabel) << std::endl;
+      cerr << "<entry>" << endl;
+      cerr << "  group: " << mGroup << endl;
+      cerr << "  type: " << mType << endl;
+      cerr << "  key: " << mKey << endl;
+      cerr << "  name: " << mName << endl;
+      cerr << "  context: " << mContext << endl;
+      cerr << "  label: " << mLabel << endl;
 // whatsthis
-      std::cerr << "  code: " << qPrintable(mCode) << std::endl;
-//      std::cerr << "  values: " << mValues.join(":") << std::endl;
+      cerr << "  code: " << mCode << endl;
+//      cerr << "  values: " << mValues.join(":") << endl;
 
       if (!param().isEmpty())
       {
-        std::cerr << "  param name: "<< qPrintable(mParamName) << std::endl;
-        std::cerr << "  param type: "<< qPrintable(mParamType) << std::endl;
-        std::cerr << "  paramvalues: " << qPrintable(mParamValues.join(":")) << std::endl;
+        cerr << "  param name: "<< mParamName << endl;
+        cerr << "  param type: "<< mParamType << endl;
+        cerr << "  paramvalues: " << mParamValues.join(":") << endl;
       }
-      std::cerr << "  default: " << qPrintable(mDefaultValue) << std::endl;
-      std::cerr << "  hidden: " << mHidden << std::endl;
-      std::cerr << "  min: " << qPrintable(mMin) << std::endl;
-      std::cerr << "  max: " << qPrintable(mMax) << std::endl;
-      std::cerr << "</entry>" << std::endl;
+      cerr << "  default: " << mDefaultValue << endl;
+      cerr << "  hidden: " << mHidden << endl;
+      cerr << "  min: " << mMin << endl;
+      cerr << "  max: " << mMax << endl;
+      cerr << "</entry>" << endl;
     }
 
   private:
@@ -565,11 +567,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       param = e.attribute( "name" );
       paramType = e.attribute( "type" );
       if ( param.isEmpty() ) {
-        std::cerr << "Parameter must have a name: " << qPrintable(dumpNode(e)) << std::endl;
+        cerr << "Parameter must have a name: " << dumpNode(e) << endl;
         return 0;
       }
       if ( paramType.isEmpty() ) {
-        std::cerr << "Parameter must have a type: " << qPrintable(dumpNode(e)) << std::endl;
+        cerr << "Parameter must have a type: " << dumpNode(e) << endl;
         return 0;
       }
       if ((paramType == "Int") || (paramType == "UInt"))
@@ -578,8 +580,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
          paramMax = e.attribute("max").toInt(&ok);
          if (!ok)
          {
-           std::cerr << "Integer parameter must have a maximum (e.g. max=\"0\"): "
-                       << qPrintable(dumpNode(e)) << std::endl;
+           cerr << "Integer parameter must have a maximum (e.g. max=\"0\"): "
+                       << dumpNode(e) << endl;
            return 0;
          }
       }
@@ -599,16 +601,16 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
          }
          if (paramValues.isEmpty())
          {
-           std::cerr << "No values specified for parameter '" << qPrintable(param)
-                       << "'." << std::endl;
+           cerr << "No values specified for parameter '" << param
+                       << "'." << endl;
            return 0;
          }
          paramMax = paramValues.count()-1;
       }
       else
       {
-        std::cerr << "Parameter '" << qPrintable(param) << "' has type " << qPrintable(paramType)
-                    << " but must be of type int, uint or Enum." << std::endl;
+        cerr << "Parameter '" << param << "' has type " << paramType
+                    << " but must be of type int, uint or Enum." << endl;
         return 0;
       }
     }
@@ -630,7 +632,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           CfgEntry::Choice choice;
           choice.name = e2.attribute( "name" );
           if ( choice.name.isEmpty() ) {
-            std::cerr << "Tag <choice> requires attribute 'name'." << std::endl;
+            cerr << "Tag <choice> requires attribute 'name'." << endl;
           }
           for( QDomElement e3 = e2.firstChildElement(); !e3.isNull(); e3 = e3.nextSiblingElement() ) {
             if ( e3.tagName() == "label" ) {
@@ -662,7 +664,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   bool nameIsEmpty = name.isEmpty();
   if ( nameIsEmpty && key.isEmpty() ) {
-    std::cerr << "Entry must have a name or a key: " << qPrintable(dumpNode(element)) << std::endl;
+    cerr << "Entry must have a name or a key: " << dumpNode(element) << endl;
     return 0;
   }
 
@@ -674,7 +676,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     name = key;
     name.remove( ' ' );
   } else if ( name.contains( ' ' ) ) {
-    std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can not contain spaces!"<<std::endl;
+    cout<<"Entry '"<<name<<"' contains spaces! <name> elements can not contain spaces!"<<endl;
     name.remove( ' ' );
   }
 
@@ -682,7 +684,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     if (param.isEmpty())
     {
-      std::cerr << "Name may not be parameterized: " << qPrintable(name) << std::endl;
+      cerr << "Name may not be parameterized: " << name << endl;
       return 0;
     }
   }
@@ -690,7 +692,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     if (!param.isEmpty())
     {
-      std::cerr << "Name must contain '$(" << qPrintable(param) << ")': " << qPrintable(name) << std::endl;
+      cerr << "Name must contain '$(" << param << ")': " << name << endl;
       return 0;
     }
   }
@@ -727,14 +729,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           i = paramValues.indexOf(index);
           if (i == -1)
           {
-            std::cerr << "Index '" << qPrintable(index) << "' for default value is unknown." << std::endl;
+            cerr << "Index '" << index << "' for default value is unknown." << endl;
             return 0;
           }
         }
 
         if ((i < 0) || (i > paramMax))
         {
-          std::cerr << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << std::endl;
+          cerr << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << endl;
           return 0;
         }
 
@@ -751,20 +753,20 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   if (!validNameRegexp->exactMatch(name))
   {
     if (nameIsEmpty)
-      std::cerr << "The key '" << qPrintable(key) << "' can not be used as name for the entry because "
-                   "it is not a valid name. You need to specify a valid name for this entry." << std::endl;
+      cerr << "The key '" << key << "' can not be used as name for the entry because "
+                   "it is not a valid name. You need to specify a valid name for this entry." << endl;
     else
-      std::cerr << "The name '" << qPrintable(name) << "' is not a valid name for an entry." << std::endl;
+      cerr << "The name '" << name << "' is not a valid name for an entry." << endl;
     return 0;
   }
 
   if (allNames.contains(name))
   {
     if (nameIsEmpty)
-      std::cerr << "The key '" << qPrintable(key) << "' can not be used as name for the entry because "
-                   "it does not result in a unique name. You need to specify a unique name for this entry." << std::endl;
+      cerr << "The key '" << key << "' can not be used as name for the entry because "
+                   "it does not result in a unique name. You need to specify a unique name for this entry." << endl;
     else
-      std::cerr << "The name '" << qPrintable(name) << "' is not unique." << std::endl;
+      cerr << "The name '" << name << "' is not unique." << endl;
     return 0;
   }
   allNames.append(name);
@@ -827,7 +829,7 @@ QString param( const QString &t )
     else if ( type == "url" )         return "const KUrl &";
     else if ( type == "urllist" )     return "const KUrl::List &";
     else {
-        std::cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
+        cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -860,7 +862,7 @@ QString cppType( const QString &t )
     else if ( type == "url" )         return "KUrl";
     else if ( type == "urllist" )     return "KUrl::List";
     else {
-        std::cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
+        cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -890,7 +892,7 @@ QString defaultValue( const QString &t )
     else if ( type == "url" )         return "KUrl()";
     else if ( type == "urllist" )     return "KUrl::List()";
     else {
-        std::cerr<<"Error, kconfig_compiler does not support the \""<< type <<"\" type!"<<std::endl;
+        cerr<<"Error, kconfig_compiler does not support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -1261,7 +1263,7 @@ int main( int argc, char **argv )
 
   if (!codegenFilename.endsWith(".kcfgc"))
   {
-    std::cerr << "Codegen options file must have extension .kcfgc" << std::endl;
+    cerr << "Codegen options file must have extension .kcfgc" << endl;
     return 1;
   }
   QString baseName = QFileInfo(codegenFilename).fileName();
@@ -1302,15 +1304,15 @@ int main( int argc, char **argv )
   int errorRow;
   int errorCol;
   if ( !doc.setContent( &input, &errorMsg, &errorRow, &errorCol ) ) {
-    std::cerr << "Unable to load document." << std::endl;
-    std::cerr << "Parse error in " << inputFilename << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << std::endl;
+    cerr << "Unable to load document." << endl;
+    cerr << "Parse error in " << inputFilename << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
     return 1;
   }
 
   QDomElement cfgElement = doc.documentElement();
 
   if ( cfgElement.isNull() ) {
-    std::cerr << "No document in kcfg file" << std::endl;
+    cerr << "No document in kcfg file" << endl;
     return 1;
   }
 
@@ -1348,7 +1350,7 @@ int main( int argc, char **argv )
     } else if ( tag == "group" ) {
       QString group = e.attribute( "name" );
       if ( group.isEmpty() ) {
-        std::cerr << "Group without name" << std::endl;
+        cerr << "Group without name" << endl;
         return 1;
       }
       for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
@@ -1356,7 +1358,7 @@ int main( int argc, char **argv )
         CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
         else {
-          std::cerr << "Can not parse entry." << std::endl;
+          cerr << "Can not parse entry." << endl;
           return 1;
         }
       }
@@ -1364,7 +1366,7 @@ int main( int argc, char **argv )
     else if ( tag == "signal" ) {
       QString signalName = e.attribute( "name" );
       if ( signalName.isEmpty() ) {
-        std::cerr << "Signal without name." << std::endl;
+        cerr << "Signal without name." << endl;
         return 1;
       }
       Signal theSignal;
@@ -1375,7 +1377,7 @@ int main( int argc, char **argv )
           SignalArguments argument;
           argument.type = e2.attribute("type");
           if ( argument.type.isEmpty() ) {
-            std::cerr << "Signal argument without type." << std::endl;
+            cerr << "Signal argument without type." << endl;
             return 1;
           }
           argument.variableName = e2.text();
@@ -1392,23 +1394,23 @@ int main( int argc, char **argv )
   if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
 
   if ( className.isEmpty() ) {
-    std::cerr << "Class name missing" << std::endl;
+    cerr << "Class name missing" << endl;
     return 1;
   }
 
   if ( singleton && !parameters.isEmpty() ) {
-    std::cerr << "Singleton class can not have parameters" << std::endl;
+    cerr << "Singleton class can not have parameters" << endl;
     return 1;
   }
 
   if ( !cfgFileName.isEmpty() && cfgFileNameArg)
   {
-    std::cerr << "Having both a fixed filename and a filename as argument is not possible." << std::endl;
+    cerr << "Having both a fixed filename and a filename as argument is not possible." << endl;
     return 1;
   }
 
   if ( entries.isEmpty() ) {
-    std::cerr << "No entries." << std::endl;
+    cerr << "No entries." << endl;
   }
 
 #if 0
@@ -1426,7 +1428,7 @@ int main( int argc, char **argv )
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( QIODevice::WriteOnly ) ) {
-    std::cerr << "Can not open '" << baseDir  << headerFileName << "for writing." << std::endl;
+    cerr << "Can not open '" << baseDir  << headerFileName << "for writing." << endl;
     return 1;
   }
 
@@ -1535,7 +1537,7 @@ int main( int argc, char **argv )
    QList<Signal>::ConstIterator it, itEnd = signalList.constEnd();
    for ( it = signalList.constBegin(); it != itEnd; val <<= 1) {
      if ( !val ) {
-       std::cerr << "Too many signals to create unique bit masks" << std::endl;
+       cerr << "Too many signals to create unique bit masks" << endl;
        exit(1);
      }
      Signal signal = *it;
@@ -1842,8 +1844,8 @@ int main( int argc, char **argv )
 
   QFile implementation( baseDir + implementationFileName );
   if ( !implementation.open( QIODevice::WriteOnly ) ) {
-    std::cerr << "Can not open '" << qPrintable(implementationFileName) << "for writing."
-              << std::endl;
+    cerr << "Can not open '" << implementationFileName << "for writing."
+              << endl;
     return 1;
   }
 
