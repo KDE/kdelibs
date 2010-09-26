@@ -301,7 +301,21 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
             languagesList = group.readEntry("Language", QString()).split(':');
         }
     }
-    return languagesList.isEmpty() ? KGlobal::locale()->languageList() : languagesList;
+    if (languagesList.isEmpty())
+    {
+      languagesList = KGlobal::locale()->languageList();
+    }
+
+    KLocale *locale = KGlobal::locale();
+    for (int i = 0; i < languagesList.count();)
+    {
+      if (!locale->isApplicationTranslatedInto(languagesList[i]))
+        languagesList.removeAt(i);
+      else
+        ++i;
+    }
+
+    return languagesList;
 }
 
 void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCode, bool primaryLanguage)
