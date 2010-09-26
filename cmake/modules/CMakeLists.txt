@@ -24,6 +24,7 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                CheckPointerMember.cmake
                CheckPrototypeExists.cmake
                CheckStructMember.cmake
+               CMakeParseArguments.cmake
                FindACL.cmake
                FindAGG.cmake
                FindAkode.cmake
