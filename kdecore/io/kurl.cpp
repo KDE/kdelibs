@@ -318,7 +318,7 @@ KUrl::List KUrl::List::fromMimeData(const QMimeData *mimeData,
         payload = mimeData->data(secondMimeType);
     if ( !payload.isEmpty() ) {
         int c = 0;
-        const char* d = payload.data();
+        const char* d = payload.constData();
         while ( c < payload.size() && d[c] ) {
             int f = c;
             // Find line end
