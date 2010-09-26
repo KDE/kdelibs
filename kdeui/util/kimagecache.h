@@ -153,6 +153,20 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      */
     void setPixmapCaching(bool enable);
 
+    /**
+     * @return The highest memory size in bytes to be used by cached pixmaps.
+     * @since 4.6
+     */
+    int pixmapCacheLimit() const;
+
+    /**
+     * Sets the highest memory size the pixmap cache should use.
+     *
+     * @param size The size in bytes
+     * @since 4.6
+     */
+    void setPixmapCacheLimit(int size);
+
     private:
     class Private;
     Private *const d; ///< @internal

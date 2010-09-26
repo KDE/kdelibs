@@ -85,7 +85,8 @@ KImageCache::KImageCache(const QString &cacheName,
     : KSharedDataCache(cacheName, defaultCacheSize, expectedItemSize)
     , d(new Private)
 {
-    d->pixmapCache.setMaxCost(defaultCacheSize);
+    // Use at least 16 KiB for the pixmap cache
+    d->pixmapCache.setMaxCost(qMax(defaultCacheSize / 8, (unsigned int) 16384));
 }
 
 KImageCache::~KImageCache()
@@ -184,6 +185,16 @@ void KImageCache::setPixmapCaching(bool enable)
             d->pixmapCache.clear();
         }
     }
+}
+
+int KImageCache::pixmapCacheLimit() const
+{
+    return d->pixmapCache.maxCost();
+}
+
+void KImageCache::setPixmapCacheLimit(int size)
+{
+    d->pixmapCache.setMaxCost(size);
 }
 
 #include "kimagecache.moc"
