@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007,2009 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2007,2009-2010 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,8 +48,14 @@ class KSystemTimeZoneDataPrivate;
  * Each individual time zone is defined in a KSystemTimeZone instance. Additional
  * time zones (of any class derived from KTimeZone) may be added if desired.
  *
- * At initialisation, KSystemTimeZones reads the zone.tab file to obtain the list
- * of system time zones, and creates a KSystemTimeZone instance for each one.
+ * At initialisation, KSystemTimeZones on UNIX systems reads the zone.tab file
+ * to obtain the list of system time zones, and creates a KSystemTimeZone
+ * instance for each one.
+ *
+ * @note KSystemTimeZones gets the system's time zone configuration, including
+ * the current local system time zone and the location of zone.tab, from the KDE
+ * time zone daemon, ktimezoned. If ktimezoned cannot be started, KSystemTimeZones
+ * will only know about the UTC time zone.
  *
  * Note that KSystemTimeZones is not derived from KTimeZones, but instead contains
  * a KTimeZones instance which holds the system time zone database. Convenience
@@ -226,6 +232,12 @@ public:
      * @return path of directory containing the zoneinfo database
      */
     static QString zoneinfoDir();
+
+    /**
+     * Return whether the KDE time zone daemon, ktimezoned, is available. If
+     * not, UTC will be the only recognized time zone.
+     */
+    static bool ktimezonedOk();
 
 private Q_SLOTS:
     // Connected to D-Bus signals

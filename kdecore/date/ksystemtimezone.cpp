@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -134,6 +134,7 @@ public:
     static QString m_zoneinfoDir;
     static QString m_zonetab;
     static KSystemTimeZoneSource *m_source;
+    static bool m_ktimezonedError;
 
 private:
     KSystemTimeZonesPrivate() {}
@@ -154,6 +155,7 @@ QString                  KSystemTimeZonesPrivate::m_localZoneName;
 QString                  KSystemTimeZonesPrivate::m_zoneinfoDir;
 QString                  KSystemTimeZonesPrivate::m_zonetab;
 KSystemTimeZoneSource   *KSystemTimeZonesPrivate::m_source = 0;
+bool                     KSystemTimeZonesPrivate::m_ktimezonedError = true;
 KTzfileTimeZoneSource   *KSystemTimeZonesPrivate::m_tzfileSource = 0;
 KSystemTimeZones        *KSystemTimeZonesPrivate::m_parent = 0;
 KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::m_instance = 0;
@@ -192,7 +194,7 @@ KTimeZone KSystemTimeZones::local()
 {
 #ifndef NDEBUG
     if (simulatedLocalZone->isValid())
-	return *simulatedLocalZone;
+        return *simulatedLocalZone;
 #endif
     KSystemTimeZonesPrivate::instance();
     return KSystemTimeZonesPrivate::m_localZone;
@@ -227,6 +229,12 @@ QString KSystemTimeZones::zoneinfoDir()
     return KSystemTimeZonesPrivate::m_zoneinfoDir;
 }
 
+bool KSystemTimeZones::ktimezonedOk()
+{
+    KSystemTimeZonesPrivate::instance();
+    return !KSystemTimeZonesPrivate::m_ktimezonedError;
+}
+
 KTimeZones *KSystemTimeZones::timeZones()
 {
     return KSystemTimeZonesPrivate::instance();
@@ -250,6 +258,7 @@ KTimeZone KSystemTimeZones::zone(const QString& name)
 void KSystemTimeZones::configChanged()
 {
     kDebug(161) << "KSystemTimeZones::configChanged()";
+    KSystemTimeZonesPrivate::m_ktimezonedError = false;
     KSystemTimeZonesPrivate::readConfig(false);
 }
 
@@ -258,6 +267,7 @@ void KSystemTimeZones::zonetabChanged(const QString &zonetab)
     Q_UNUSED(zonetab)
 #ifndef Q_OS_WIN
     kDebug(161) << "KSystemTimeZones::zonetabChanged()";
+    KSystemTimeZonesPrivate::m_ktimezonedError = false;
     // Re-read zone.tab and update our collection, removing any deleted
     // zones and adding any new zones.
     KSystemTimeZonesPrivate::updateZonetab();
@@ -271,6 +281,7 @@ void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
     // will always be accessed by the system library calls to fetch
     // local zone information.
     Q_UNUSED(zone)
+    KSystemTimeZonesPrivate::m_ktimezonedError = false;
 }
 
 // Perform initialization, create the unique KSystemTimeZones instance,
@@ -289,7 +300,8 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
             KToolInvocation::klauncher();   // this calls startKdeinit, and blocks until it returns
         QDBusInterface *ktimezoned = new QDBusInterface("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
         QDBusReply<void> reply = ktimezoned->call("initialize", false);
-        if (!reply.isValid())
+        m_ktimezonedError = !reply.isValid();
+        if (m_ktimezonedError)
             kError(161) << "KSystemTimeZones: ktimezoned initialize() D-Bus call failed: " << reply.error().message() << endl;
 kDebug(161)<<"instance(): ... initialised";
         delete ktimezoned;
@@ -383,11 +395,12 @@ void KSystemTimeZonesPrivate::updateTimezoneInformation(bool update)
     if (!m_source)
         m_source = new KSystemTimeZoneSourceWindows;
     QStringList newZones;
-    Q_FOREACH( const QString & tz, KSystemTimeZoneWindows::listTimeZones() ) {
-       // const std::wstring wstr = tz.toStdWString();
-       // const KTimeZone info = make_time_zone( wstr.c_str() );
-      KSystemTimeZoneWindows stz(m_source, tz);
-      if (update)
+    Q_FOREACH(const QString & tz, KSystemTimeZoneWindows::listTimeZones())
+    {
+        // const std::wstring wstr = tz.toStdWString();
+        // const KTimeZone info = make_time_zone( wstr.c_str() );
+        KSystemTimeZoneWindows stz(m_source, tz);
+        if (update)
         {
             // Update the existing collection with the new zone definition
             newZones += stz.name();
