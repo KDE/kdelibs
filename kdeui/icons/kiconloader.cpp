@@ -747,8 +747,13 @@ void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &s
     }
 
     // If size == 0, use default size for the specified group.
-    if (size == 0 && group != KIconLoader::User)
+    if (size == 0)
     {
+        if (group < 0)
+        {
+            kWarning(264) << "Neither size nor group specified!";
+            group = KIconLoader::Desktop;
+        }
         size = mpGroups[group].size;
     }
 }
