@@ -82,7 +82,8 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
     // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
     if(! group.isEmpty()) {
         KConfigGroup cfg(config, group);
-        if (cfg.readEntry("Enable", false)) {
+        const bool enabledByDefault = (state == QPalette::Disabled);
+        if (cfg.readEntry("Enable", enabledByDefault)) {
             _effects[Intensity] = cfg.readEntry( "IntensityEffect",
                                                  (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
             _effects[Color]     = cfg.readEntry(     "ColorEffect",
