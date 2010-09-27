@@ -58,7 +58,14 @@ namespace Solid
          * - SuperVideoCd : A Super Video Compact Disc (SVCD)
          * - VideoDvd : A Video Digital Versatile Disc (DVD-Video)
          */
-        enum ContentType { Audio = 0x01, Data = 0x02, VideoCd = 0x04, SuperVideoCd = 0x08, VideoDvd = 0x10 };
+        enum ContentType {
+            Audio = 0x01,
+            Data = 0x02,
+            VideoCd = 0x04,
+            SuperVideoCd = 0x08,
+            VideoDvd = 0x10,
+            VideoBluRay = 0x20
+        };
 
         /**
          * This type stores an OR combination of ContentType values.

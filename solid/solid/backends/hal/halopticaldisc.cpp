@@ -43,6 +43,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     map[Solid::OpticalDisc::VideoCd] = "volume.disc.is_vcd";
     map[Solid::OpticalDisc::SuperVideoCd] = "volume.disc.is_svcd";
     map[Solid::OpticalDisc::VideoDvd] ="volume.disc.is_videodvd";
+    map[Solid::OpticalDisc::VideoBluRay] ="volume.disc.is_blurayvideo";
 
     foreach (const Solid::OpticalDisc::ContentType type, map.keys())
     {
