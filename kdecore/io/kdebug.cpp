@@ -398,13 +398,14 @@ struct KDebugPrivate
             return cache.find(0);
         }
 
-        if (cache.count() <= 1) { // empty or containing only entry "0"
+        if (!cache.contains(0)) {
             loadAreaNames(); // fills 'cache'
         }
 
         Cache::Iterator it = cache.find(num);
         if (it == cache.end()) {
             // unknown area
+            Q_ASSERT(cache.contains(0));
             return cache.find(0);
         }
 
