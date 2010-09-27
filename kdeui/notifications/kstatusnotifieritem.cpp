@@ -946,8 +946,15 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
 
     QPixmap iconPixmap;
 
+    //availableSizes() won't work on KIcon
+    QList<QSize> allSizes;
+    allSizes << QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall)
+             << QSize(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium)
+             << QSize(KIconLoader::SizeMedium, KIconLoader::SizeMedium)
+             << QSize(KIconLoader::SizeLarge, KIconLoader::SizeLarge);
+
     //if an icon exactly that size wasn't found don't add it to the vector
-    foreach (const QSize &size, icon.availableSizes()) {
+    foreach (const QSize &size, allSizes) {
         //hopefully huge and enormous not necessary right now, since it's quite costly
         if (size.width() <= KIconLoader::SizeLarge) {
             iconPixmap = icon.pixmap(size);
