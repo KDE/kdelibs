@@ -404,7 +404,7 @@ struct KDebugPrivate
             return cache.find(0);
         }
 
-        if (cache.count() <= 1) { // empty or containing only entry "0"
+        if (!cache.contains(0)) {
             loadAreaNames(); // fills 'cache'
             Q_ASSERT(cache.contains(0));
         } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
@@ -417,8 +417,7 @@ struct KDebugPrivate
         if (it == cache.end()) {
             // unknown area
             Q_ASSERT(cache.contains(0));
-            it = cache.find(0);
-            num = 0;
+            return cache.find(0);
         }
 
         if (num == 0 && type == QtDebugMsg) { // area 0 is special, it becomes the named area "appname"
