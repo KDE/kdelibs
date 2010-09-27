@@ -28,8 +28,9 @@
 
 using namespace Solid::Backends::UDisks;
 
-UDisksManager::UDisksManager(QObject */*parent*/)
-    : m_manager(UD_DBUS_SERVICE,
+UDisksManager::UDisksManager(QObject *parent)
+    : Solid::Ifaces::DeviceManager(parent),
+      m_manager(UD_DBUS_SERVICE,
                 UD_DBUS_PATH,
                 UD_DBUS_INTERFACE_DISKS,
                 QDBusConnection::systemBus())
@@ -45,14 +46,16 @@ UDisksManager::UDisksManager(QObject */*parent*/)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-            this, SLOT(slotDeviceAdded(QDBusObjectPath)));
-    connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-            this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
-    connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
-            this, SLOT(slotDeviceChanged(QDBusObjectPath)));
+    if (m_manager.isValid()) {
+        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+                this, SLOT(slotDeviceAdded(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+                this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
+                this, SLOT(slotDeviceChanged(QDBusObjectPath)));
 
-    m_deviceCache = allDevices(); // prefill the cache
+        m_deviceCache = allDevices(); // prefill the cache
+    }
 }
 
 UDisksManager::~UDisksManager()
