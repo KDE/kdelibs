@@ -205,16 +205,6 @@ QString UDisksDevice::description() const
         return storageDescription();
     else if (queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
         return volumeDescription();
-#if 0 // FIXME after implementing NetworkInterface
-    else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface))
-    {
-        const Solid::DeviceInterface::NetworkInterface netIface(const_cast<UDisksDevice *>(this));
-        if (netIface.isWireless())
-            return QObject::tr("WLAN Interface");
-        else
-            return QObject::tr("Networking Interface");
-    }
-#endif
     else
         return product();
 }
