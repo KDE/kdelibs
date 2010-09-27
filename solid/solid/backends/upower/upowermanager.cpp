@@ -30,7 +30,8 @@
 using namespace Solid::Backends::UPower;
 
 UPowerManager::UPowerManager(QObject *parent)
-    : m_manager(UP_DBUS_SERVICE,
+    : Solid::Ifaces::DeviceManager(parent),
+      m_manager(UP_DBUS_SERVICE,
                 UP_DBUS_PATH,
                 UP_DBUS_INTERFACE,
                 QDBusConnection::systemBus())
@@ -42,10 +43,12 @@ UPowerManager::UPowerManager(QObject *parent)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-            this, SLOT(slotDeviceAdded(QString)));
-    connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-            this, SLOT(slotDeviceRemoved(QString)));
+    if (m_manager.isValid()) {
+        connect(&m_manager, SIGNAL(DeviceAdded(QString)),
+                this, SLOT(slotDeviceAdded(QString)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
+                this, SLOT(slotDeviceRemoved(QString)));
+    }
 }
 
 UPowerManager::~UPowerManager()
