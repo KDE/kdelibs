@@ -14,6 +14,7 @@ main(int argc, char *argv[])
    KCmdLineOptions options;
    options.add("test", ki18n("do a short test only, note that\n"
                              "this is rather long comment"));
+   options.add("b");
    options.add("baud <baudrate>", ki18n("set baudrate"), "9600");
    options.add("+file(s)", ki18n("Files to load"));
 
