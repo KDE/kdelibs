@@ -45,6 +45,11 @@ void KDebugTest::initTestCase()
     config.group("qttest").writeEntry("WarnOutput", 0 /*FileOutput*/);
     config.sync();
 
+    // Test for crash that used to happen when using an unknown area after only dynamic areas
+    KDebug::registerArea("somearea");
+    KDebug::registerArea("someotherarea");
+    QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), false); // unknown area -> area 0 is being used
+
     kClearDebugConfig();
 }
 
