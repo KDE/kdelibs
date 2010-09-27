@@ -116,13 +116,12 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
                 result = Solid::OpticalDisc::VideoDvd;
                 break;
             }
-#if 0 // TODO add this to Solid
             else if (!strcasecmp (dirname, "BDMV"))
             {
                 qDebug("Disc in %s is a Blu-ray video disc", qPrintable(device_file));
+                result = Solid::OpticalDisc::VideoBluRay;
                 break;
             }
-#endif
             else if (!strcasecmp (dirname, "VCD"))
             {
                 qDebug("Disc in %s is a Video CD", qPrintable(device_file));

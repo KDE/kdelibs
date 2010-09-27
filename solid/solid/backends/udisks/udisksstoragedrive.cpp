@@ -31,7 +31,7 @@ UDisksStorageDrive::UDisksStorageDrive(UDisksDevice* device)
 
 }
 
-Solid::Backends::UDisks::UDisksStorageDrive::~UDisksStorageDrive()
+UDisksStorageDrive::~UDisksStorageDrive()
 {
 
 }
