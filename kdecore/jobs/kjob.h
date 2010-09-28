@@ -71,7 +71,7 @@ class KJobPrivate;
  * }
  * \endcode
  *
- * @note: KJob and its subclasses is meant to be used 
+ * @note: KJob and its subclasses is meant to be used
  * in a fire-and-forget way. It's deleting itself when
  * it has finished using deleteLater() so the job
  * instance disappears after the next event loop run.
@@ -227,7 +227,7 @@ public:
      * Executes the job synchronously.
      *
      * This will start a nested QEventLoop internally. Nested event loop can be dangerous and
-     * can have unintended side effects, you should avoid calling exec() whenever you can and use the 
+     * can have unintended side effects, you should avoid calling exec() whenever you can and use the
      * asyncronous interface of KJob instead.
      *
      * Should you indeed call this method, you need to make sure that all callers are reentrant,
@@ -235,7 +235,7 @@ public:
      * called, which usually wreaks havoc.
      *
      * Note that the event loop started by this method does not process user input events, which means
-     * your user interface will effectivly be blocked. Other events like paint or network events are 
+     * your user interface will effectivly be blocked. Other events like paint or network events are
      * still being processed. The advantage of not processing user input events is that the chance of
      * accidental reentrancy is greatly reduced. Still you should avoid calling this function.
      *
@@ -332,10 +332,8 @@ public:
     bool isAutoDelete() const;
 
 Q_SIGNALS:
-#ifndef Q_MOC_RUN
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-private: // don't tell moc or doxygen, but those signals are in fact private
-#endif
+#if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
+private: // don't tell moc, doxygen or kdevelop, but those signals are in fact private
 #endif
     /**
      * Emitted when the job is finished, in any case. It is used to notify
@@ -432,10 +430,8 @@ Q_SIGNALS:
 
 
 Q_SIGNALS:
-#ifndef Q_MOC_RUN
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-private: // don't tell moc, but those signals are in fact private
-#endif
+#if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
+private: // don't tell moc, doxygen or kdevelop, but those signals are in fact private
 #endif
     /**
      * Emitted when we know the amount the job will have to process. The unit of this

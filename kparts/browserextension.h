@@ -493,10 +493,8 @@ public:
     typedef QMap<QString, QList<QAction *> > ActionGroupMap;
 
 Q_SIGNALS:
-#ifndef Q_MOC_RUN
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-public:  // yes, those signals are public; don't tell moc or doxygen :)
-#endif
+#if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
+public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :)
 #endif
   /**
    * Enables or disable a standard action held by the browser.
@@ -795,10 +793,8 @@ public:
 
   static LiveConnectExtension *childObject( QObject *obj );
 Q_SIGNALS:
-#ifndef Q_MOC_RUN
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-public:  // yes, those signals are public; don't tell moc or doxygen :)
-#endif
+#if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
+public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :)
 #endif
   /**
    * notify a event from the part of object objid
