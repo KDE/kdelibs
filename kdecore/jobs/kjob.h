@@ -347,8 +347,13 @@ private: // don't tell moc or doxygen, but those signals are in fact private
      * Client code is not supposed to connect to this signal, signal result should
      * be used instead.
      *
+     * If you store a list of jobs and they might get killed silently,
+     * then you must connect to this instead of result().
+     *
      * @param job the job that emitted this signal
      * @internal
+     *
+     * @see result
      */
     void finished(KJob *job);
 
