@@ -614,7 +614,7 @@ static bool runCommandInternal(KProcess* proc, const KService* service, const QS
         if (window) {
             data.setLaunchedBy(window->winId());
         }
-        if(service)
+        if(service && !service->entryPath().isEmpty())
             data.setApplicationId(service->entryPath());
         KStartupInfo::sendStartup(id, data);
     }
