@@ -24,7 +24,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+
 #include <QtCore/QCoreApplication>
+#include <QtCore/QStringBuilder>
+#include <QtNetwork/QSslSocket>
 #include <QtDBus/QtDBus>
 
 #include <kdeversion.h>
@@ -36,11 +39,14 @@
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kurl.h>
+#include <kmimetypetrader.h>
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
-
 #include <kprotocolinfofactory.h>
+
+#define QL1S(x)   QLatin1String(x)
+#define QL1C(x)   QLatin1Char(x)
 
 class
 KProtocolManagerPrivate
@@ -77,8 +83,11 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
 
 // DEFAULT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
-QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3) KHTML/%4.%5.%6 (like Gecko)") \
-        .arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(X).arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE)
+QL1S("Mozilla/5.0 (compatible; Konqueror/") % \
+QString::number(KDE::versionMajor()) % QL1C('.') % QString::number(KDE::versionMinor()) % \
+X % QL1S(") KHTML/") % \
+QString::number(KDE::versionMajor()) % QL1C('.') % QString::number(KDE::versionMinor()) % \
+QL1C('.') % QString::number(KDE::versionRelease()) % QL1S(" (like Gecko)")
 
 #define PRIVATE_DATA \
 KProtocolManagerPrivate *d = kProtocolManagerPrivate
@@ -219,14 +228,16 @@ QString KProtocolManager::noProxyFor()
 
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
-  QString scheme = protocol.toLower();
+  QString key = protocol.toLower();
 
-  if (scheme == "webdav")
-    scheme = "http";
-  else if (scheme == "webdavs")
-    scheme = "https";
+  if (key == QL1S("webdav"))
+    key = QL1S("http");
+  else if (key == QL1S("webdavs"))
+    key = QL1S("https");
 
-  return config()->group("Proxy Settings" ).readEntry( scheme + "Proxy", QString() );
+  key += QL1S("Proxy");
+
+  return config()->group("Proxy Settings").readEntry(key, QString());
 }
 
 QString KProtocolManager::proxyForUrl( const KUrl &url )
@@ -245,22 +256,23 @@ QString KProtocolManager::proxyForUrl( const KUrl &url )
 
             // webdav is a KDE specific protocol. Look up proxy
             // information using HTTP instead...
-            if ( p == "webdav" )
+            if (p == QL1S("webdav"))
             {
-              p = "http";
-              u.setProtocol( p );
+              p = QL1S("http");
+              u.setProtocol(p);
             }
-            else if ( p == "webdavs" )
+            else if (p == QL1S("webdavs"))
             {
-              p = "https";
-              u.setProtocol( p );
+              p = QL1S("https");
+              u.setProtocol(p);
             }
 
-            if ( p.startsWith(QLatin1String("http")) || p == "ftp" || p == "gopher" )
+            if (p.startsWith(QL1S("http")) || p.startsWith(QL1S("ftp")))
             {
-              QDBusReply<QString> reply =
-                  QDBusInterface( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )
-                  .call( "proxyForUrl", u.url() );
+              QDBusReply<QString> reply = QDBusInterface(QL1S("org.kde.kded"),
+                                                         QL1S("/modules/proxyscout"),
+                                                         QL1S("org.kde.KPAC.ProxyScout"))
+                                          .call(QL1S("proxyForUrl"), u.url() );
               proxy = reply;
             }
           }
@@ -276,13 +288,13 @@ QString KProtocolManager::proxyForUrl( const KUrl &url )
           break;
   }
 
-  return (proxy.isEmpty() ? QLatin1String("DIRECT") : proxy);
+  return (proxy.isEmpty() ? QL1S("DIRECT") : proxy);
 }
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  QDBusInterface( "org.kde.kded", "/modules/proxyscout" )
-      .call( "blackListProxy", proxy );
+  QDBusInterface( QL1S("org.kde.kded"), QL1S("/modules/proxyscout"))
+      .call(QL1S("blackListProxy"), proxy);
 }
 
 /*
@@ -372,7 +384,8 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
            // users to enter host:port in the No-proxy-For list.
            if (!isRevMatch && url.port() > 0)
            {
-              qhost += ':' + QString::number (url.port());
+              qhost += QL1C(':');
+              qhost += QString::number(url.port());
               host = qhost.toLatin1();
               isRevMatch = revmatch (host, no_proxy);
            }
@@ -390,8 +403,8 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
            {
               // The idea behind slave protocols is not applicable to http
               // and webdav protocols.
-              QString protocol = url.protocol().toLower();
-              if (protocol.startsWith(QLatin1String("http")) || protocol.startsWith(QLatin1String("webdav")))
+              const QString protocol = url.protocol().toLower();
+              if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")))
                 d->protocol = protocol;
               else
               {
@@ -417,11 +430,11 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
-  QString sendUserAgent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "SendUserAgent").toLower();
-  if (sendUserAgent == "false")
+  const QString sendUserAgent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "SendUserAgent").toLower();
+  if (sendUserAgent == QL1S("false"))
      return QString();
 
-  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "UserAgent");
+  const QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.toLower(), "UserAgent");
 
   // Return the default user-agent if none is specified
   // for the requested host.
@@ -433,8 +446,21 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
 
 QString KProtocolManager::defaultUserAgent( )
 {
-  QString modifiers = KIO::SlaveConfig::self()->configData("http", QString(), "UserAgentKeys");
+  const QString modifiers = KIO::SlaveConfig::self()->configData("http", QString(), "UserAgentKeys");
   return defaultUserAgent(modifiers);
+}
+
+static QString defaultUserAgentFromPreferredService()
+{
+  QString agentStr;
+
+  // Check if the default COMPONENT contains a custom default UA string...
+  KService::Ptr service = KMimeTypeTrader::self()->preferredService(QL1S("text/html"),
+                                                      QL1S("KParts/ReadOnlyPart"));
+  if (service && service->showInKDE())
+    agentStr = service->property(QL1S("X-KDE-Default-UserAgent-String"),
+                                 QVariant::String).toString();
+  return agentStr;
 }
 
 QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
@@ -442,53 +468,184 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     PRIVATE_DATA;
   QString modifiers = _modifiers.toLower();
   if (modifiers.isEmpty())
-     modifiers = DEFAULT_USER_AGENT_KEYS;
+    modifiers = DEFAULT_USER_AGENT_KEYS;
 
-  if (d->modifiers == modifiers)
-     return d->useragent;
+  if (d->modifiers == modifiers && !d->useragent.isEmpty())
+    return d->useragent;
+
+  d->modifiers = modifiers;
+
+  /*
+     The following code attempts to determine the default user agent string
+     from the 'X-KDE-UA-DEFAULT-STRING' property of the desktop file
+     for the preferred service that was configured to handle the 'text/html'
+     mime type. If the prefered service's desktop file does not specify this
+     property, the long standing default user agent string will be used.
+     The following keyword placeholders are automatically converted when the
+     user agent string is read from the property:
+
+     %SECURITY%      Expands to"U" when SSL is supported, "N" otherwise.
+     %OSNAME%        Expands to operating system name, e.g. Linux.
+     %OSVERSION%     Expands to operating system version, e.g. 2.6.32
+     %SYSTYPE%       Expands to machine or system type, e.g. i386
+     %PLATFORM%      Expands to windowing system, e.g. X11 on Unix/Linux.
+     %LANGUAGE%      Expands to default language in use, e.g. en-US.
+     %APPVERSION%    Expands to QCoreApplication applicationName()/applicationVerison(),
+                     e.g. Konqueror/4.5.0. If application name and/or application version
+                     number are not set, then "KDE" and the runtime KDE version numbers
+                     are used respectively.
+
+     All of the keywords are handled case-insensitively.
+  */
 
   QString systemName, systemVersion, machine, supp;
-  if (getSystemNameVersionAndMachine( systemName, systemVersion, machine ))
+  const bool sysInfoFound = getSystemNameVersionAndMachine( systemName, systemVersion, machine );
+  QString agentStr = defaultUserAgentFromPreferredService();
+
+  if (agentStr.isEmpty())
   {
-    if( modifiers.contains('o') )
+    if (sysInfoFound)
     {
-      supp += QString("; %1").arg(systemName);
-      if ( modifiers.contains('v') )
-        supp += QString(" %1").arg(systemVersion);
-    }
+      if( modifiers.contains('o') )
+      {
+        supp += QL1S("; ");
+        supp += systemName;
+        if ( modifiers.contains('v') )
+        {
+          supp += QL1C(' ');
+          supp += systemVersion;
+        }
+      }
 #ifdef Q_WS_X11
-    if( modifiers.contains('p') )
-    {
-      supp += QLatin1String("; X11");
-    }
+      if( modifiers.contains('p') )
+        supp += QL1S("; X11");
 #endif
-    if( modifiers.contains('m') )
-    {
-      supp += QString("; %1").arg(machine);
+      if( modifiers.contains('m') )
+      {
+        supp += QL1S("; ");
+        supp += machine;
+      }
+      if( modifiers.contains('l') )
+      {
+        supp += QL1S("; ");
+        supp += KGlobal::locale()->language();
+      }
     }
-    if( modifiers.contains('l') )
-    {
-      supp += QString("; %1").arg(KGlobal::locale()->language());
-    }
+
+    d->useragent = CFG_DEFAULT_UAGENT(supp);
   }
-  d->modifiers = modifiers;
-  d->useragent = CFG_DEFAULT_UAGENT(supp);
+  else
+  {
+    QString appName = QCoreApplication::applicationName();
+    if (appName.isEmpty() || appName.startsWith(QL1S("kcmshell"), Qt::CaseInsensitive))
+      appName = QL1S ("KDE");
+
+    QString appVersion = QCoreApplication::applicationVersion();
+    if (appVersion.isEmpty())
+      appVersion += (QString::number(KDE::versionMajor()) % QL1C('.') %
+                     QString::number(KDE::versionMinor()) % QL1C('.') %
+                     QString::number(KDE::versionRelease()));
+
+    appName += QL1C('/') % appVersion;
+
+    agentStr.replace(QL1S("%appversion%"), appName, Qt::CaseInsensitive);
+
+    if (QSslSocket::supportsSsl())
+      agentStr.replace(QL1S("%security%"), QL1S("U"), Qt::CaseInsensitive);
+    else
+      agentStr.replace(QL1S("%security%"), QL1S("N"), Qt::CaseInsensitive);
+
+    if (sysInfoFound)
+    {
+      if (modifiers.contains('o'))
+      {
+        agentStr.replace(QL1S("%osname%"), systemName, Qt::CaseInsensitive);
+        if (modifiers.contains('v'))
+            agentStr.replace(QL1S("%osversion%"), systemVersion, Qt::CaseInsensitive);
+        else
+            agentStr.remove(QL1S("%osversion%"), Qt::CaseInsensitive);
+      }
+      else
+      {
+         agentStr.remove(QL1S("%osname%"), Qt::CaseInsensitive);
+         agentStr.remove(QL1S("%osversion%"), Qt::CaseInsensitive);
+      }
+
+      if (modifiers.contains('p'))
+#if defined(Q_WS_X11)
+        agentStr.replace(QL1S("%platform%"), QL1S("X11"), Qt::CaseInsensitive);
+#elif defined(Q_WS_MAC)
+        agentStr.replace(QL1S("%platform%"), QL1S("Macintosh"), Qt::CaseInsensitive);
+#elif defined(Q_WS_WIN)
+        agentStr.replace(QL1S("%platform%"), QL1S("Windows"), Qt::CaseInsensitive);
+#elif defined (Q_WS_S60)
+        agentStr.replace(QL1S("%platform%"), QL1S("Symbian"), Qt::CaseInsensitive);
+#endif
+      else
+        agentStr.remove(QL1S("%platform%"), Qt::CaseInsensitive);
+
+      if (modifiers.contains('m'))
+        agentStr.replace(QL1S("%systype%"), machine, Qt::CaseInsensitive);
+      else
+        agentStr.remove(QL1S("%systype%"), Qt::CaseInsensitive);
+
+      if (modifiers.contains('l'))
+        agentStr.replace(QL1S("%language%"), KGlobal::locale()->language(), Qt::CaseInsensitive);
+      else
+        agentStr.remove(QL1S("%language%"), Qt::CaseInsensitive);
+
+      // Clean up unnecessary separators that could be left over from the
+      // possible keyword removal above...
+      agentStr.replace(QRegExp("[(]\\s*[;]\\s*"), QL1S("("));
+      agentStr.replace(QRegExp("[;]\\s*[;]\\s*"), QL1S(";"));
+      agentStr.replace(QRegExp("\\s*[;]\\s*[)]"), QL1S(")"));
+    }
+    else
+    {
+      agentStr.remove(QL1S("%osname%"));
+      agentStr.remove(QL1S("%osversion%"));
+      agentStr.remove(QL1S("%platform%"));
+      agentStr.remove(QL1S("%systype%"));
+      agentStr.remove(QL1S("%language%"));
+    }
+
+    d->useragent = agentStr.simplified();
+  }
+
+  //kDebug() << "USERAGENT STRING:" << d->useragent;
   return d->useragent;
 }
 
 QString KProtocolManager::userAgentForApplication( const QString &appName, const QString& appVersion,
   const QStringList& extraInfo )
 {
-  QString systemName, systemVersion, machine;
-  QStringList info;
+  QString systemName, systemVersion, machine, info;
+
   if (getSystemNameVersionAndMachine( systemName, systemVersion, machine ))
-    info += QString::fromLatin1("%1/%2").arg(systemName).arg(systemVersion);
-  info += QString::fromLatin1("KDE/%1.%2.%3").arg(KDE_VERSION_MAJOR)
-    .arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE);
+  {
+    info +=  systemName;
+    info += QL1C('/');
+    info += systemVersion;
+    info += QL1S("; ");
+  }
+
+  info += QL1S("KDE/");
+  info += QString::number(KDE::versionMajor());
+  info += QL1C('.');
+  info += QString::number(KDE::versionMinor());
+  info += QL1C('.');
+  info += QString::number(KDE::versionRelease());
+
   if (!machine.isEmpty())
+  {
+    info += QL1S("; ");
     info += machine;
-  info += extraInfo;
-  return QString::fromLatin1("%1/%2 (%3)").arg(appName).arg(appVersion).arg(info.join("; "));
+  }
+
+  info += QL1S("; ");
+  info += extraInfo.join(QL1S("; "));
+
+  return (appName % QL1C('/') % appVersion % QL1S(" (") % info % QL1C(')'));
 }
 
 bool KProtocolManager::getSystemNameVersionAndMachine(
@@ -500,7 +657,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
 #if defined(Q_WS_WIN) && !defined(_WIN32_WCE)
   // we do not use unameBuf.sysname information constructed in kdewin32
   // because we want to get separate name and version
-  systemName = QLatin1String( "Windows" );
+  systemName = QL1S( "Windows" );
   OSVERSIONINFOEX versioninfo;
   ZeroMemory(&versioninfo, sizeof(OSVERSIONINFOEX));
   // try calling GetVersionEx using the OSVERSIONINFOEX, if that fails, try using the OSVERSIONINFO
@@ -511,8 +668,8 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
     ok = GetVersionEx( (OSVERSIONINFO *) &versioninfo );
   }
   if ( ok )
-    systemVersion = QString::fromLatin1("%1.%2")
-      .arg(versioninfo.dwMajorVersion).arg(versioninfo.dwMinorVersion);
+    systemVersion = (QString::number(versioninfo.dwMajorVersion) %
+                     QL1C('.') % QString::number(versioninfo.dwMinorVersion));
 #else
   systemName = unameBuf.sysname;
   systemVersion = unameBuf.release;
@@ -547,7 +704,7 @@ QString KProtocolManager::acceptLanguagesHeader()
   KConfig acclangConf("accept-languages.codes", KConfig::NoGlobals);
   KConfigGroup replacementCodes(&acclangConf, "ReplacementCodes");
   QStringList languageListFinal;
-  foreach (const QString &lang, languageList)
+  Q_FOREACH (const QString &lang, languageList)
   {
     const QStringList langs = replacementCodes.readEntry(lang, QStringList());
     if (langs.isEmpty())
@@ -562,12 +719,14 @@ QString KProtocolManager::acceptLanguagesHeader()
   // the value evenly
   int prio = 10;
   QString header;
-  foreach (const QString &lang,languageListFinal) {
+  Q_FOREACH (const QString &lang,languageListFinal) {
       header += lang;
-      if (prio < 10)
-          header += QString(";q=0.%1").arg(prio);
+      if (prio < 10) {
+          header += QL1S(";q=0.");
+          header += prio;
+      }
       // do not add cosmetic whitespace in here : it is less compatible (#220677)
-      header += ",";
+      header += QL1S(",");
       if (prio > 1)
           --prio;
   }
