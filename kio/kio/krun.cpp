@@ -437,7 +437,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     } else { // app claims to support %u/%U, check which protocols
         QStringList appSupportedProtocols = supportedProtocols(_service);
         for (KUrl::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
-            if( !isProtocolInSupportedList(*it, appSupportedProtocols)) {
+            if (!isProtocolInSupportedList(*it, appSupportedProtocols) && !KProtocolInfo::isHelperProtocol(*it)) {
                 useKioexec = true;
                 kDebug(7010) << "application does not support url, using kioexec:" << *it;
                 break;
