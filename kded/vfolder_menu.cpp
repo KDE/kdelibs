@@ -373,11 +373,7 @@ VFolderMenu::buildApplicationIndex(bool unusedOnly)
             continue;
          }
 
-         const QStringList cats = s->categories();
-         for(QStringList::ConstIterator it2 = cats.begin();
-             it2 != cats.end(); ++it2)
-         {
-            const QString &cat = *it2;
+         Q_FOREACH(const QString& cat, s->categories()) {
             info->dictCategories[cat].append(s); // find or insert entry in hash
          }
       }
