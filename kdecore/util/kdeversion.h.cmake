@@ -79,7 +79,7 @@
  * @brief Version of KDE as number, at compile time
  *
  * This macro contains the KDE version in number form. As it is a macro,
- * it contains the version at compile time. See versionString() if you need
+ * it contains the version at compile time. See version() if you need
  * the KDE version used at runtime.
  */
 #define KDE_VERSION \
