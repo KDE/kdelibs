@@ -32,8 +32,6 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <ksslinfodialog.h>
-#include <ksslcertificate.h>
-#include <ksslcertchain.h>
 #include <kmessagebox.h>
 #include <time.h>
 #include <QtDBus/QtDBus>
@@ -298,10 +296,13 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         MetaData m;
         stream >> m;
         if (m.contains(QLatin1String("ssl_in_use"))) {
-            // this could be optimized using QMap::lowerBound().
-            for (MetaData::ConstIterator it = m.constBegin(); it != m.constEnd(); ++it) {
-                if (it.key().startsWith(QLatin1String("ssl_"))) {
+            const QLatin1String ssl_("ssl_");
+            for (MetaData::ConstIterator it = m.lowerBound(ssl_); it != m.constEnd(); ++it) {
+                if (it.key().startsWith(ssl_)) {
                     d->sslMetaData.insert(it.key(), it.value());
+                } else {
+                    // we're past the ssl_* entries; remember that QMap is ordered.
+                    break;
                 }
             }
         }
