@@ -1,0 +1,14 @@
+[Desktop Entry]
+Exec=kcmshell4 kcm_ssl
+Icon=preferences-system-ssl
+Type=Service
+X-KDE-ServiceTypes=KCModule
+
+X-KDE-Library=kcm_ssl
+X-KDE-ParentApp=kcontrol
+X-KDE-System-Settings-Parent-Category=advanced-user-settings
+
+Name=SSL Preferences
+Comment=SSL Versions and Certificates
+
+X-KDE-Keywords=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS

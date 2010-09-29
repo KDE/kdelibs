@@ -34,6 +34,7 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl/kssl )
+add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( kfile/tests )
