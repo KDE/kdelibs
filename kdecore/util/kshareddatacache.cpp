@@ -566,6 +566,12 @@ struct SharedMemory
                 ++currentPage;
                 ++freeSpot;
 
+                // If we've just moved the very last page and it happened to
+                // be at the very end of the cache then we're done.
+                if (currentPage >= idLimit) {
+                    break;
+                }
+
                 // We're moving consecutive used pages whether they belong to
                 // our affected entry or not, so detect if we've started moving
                 // the data for a different entry and adjust if necessary.
@@ -892,11 +898,11 @@ class KSharedDataCache::Private
             if (mapAddress != MAP_FAILED) {
                 SharedMemory *mapped = reinterpret_cast<SharedMemory *>(mapAddress);
 
-                // First make sure that the version of the cache on disk is valid.
-                // We also need to check that cacheSize > 0 to disambiguate against an
-                // uninitialized cache.
-                if (mapped->cacheSize > 0 &&
-                   mapped->version != SharedMemory::PIXMAP_CACHE_VERSION)
+                // First make sure that the version of the cache on disk is
+                // valid.  We also need to check that version != 0 to
+                // disambiguate against an uninitialized cache.
+                if (mapped->version != SharedMemory::PIXMAP_CACHE_VERSION &&
+                    mapped->version > 0)
                 {
                     kWarning(264) << "Deleting wrong version of cache" << cacheName;
 
