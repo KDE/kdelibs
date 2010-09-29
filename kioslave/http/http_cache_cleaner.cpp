@@ -791,7 +791,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         cacheDir.refresh();
         qDebug() << "time to refresh the cacheDir QDir:" << t.elapsed();
         CacheCleaner cleaner(cacheDir);
-        while (cleaner.processSlice()) { }
+        while (!cleaner.processSlice()) { }
         return 0;
     }
 
