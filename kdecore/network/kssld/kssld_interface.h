@@ -87,21 +87,6 @@ public Q_SLOTS: // METHODS
         return callWithArgumentList(QDBus::Block, QLatin1String("rule"),
                                     argumentList);
     }
-
-    Q_NOREPLY void setRootCertificates(const QList<QSslCertificate> &rootCertificates)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(rootCertificates);
-        callWithArgumentList(QDBus::Block, QLatin1String("setRootCertificates"),
-                             argumentList);
-    }
-
-    QDBusReply<QList<QSslCertificate> > rootCertificates()
-    {
-        QList<QVariant> argumentList;
-        return callWithArgumentList(QDBus::Block, QLatin1String("rootCertificates"),
-                                    argumentList);
-    }
 };
 
 namespace org {

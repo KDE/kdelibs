@@ -33,6 +33,7 @@ class QSslCertificate;
 class KSslCertificateRulePrivate;
 class KSslCertificateManagerPrivate;
 
+//### document this... :/
 class KDECORE_EXPORT KSslCertificateRule
 {
 public:
@@ -59,6 +60,7 @@ private:
 };
 
 
+//### document this too... :/
 class KDECORE_EXPORT KSslCertificateManager
 {
 public:
@@ -68,14 +70,21 @@ public:
     void clearRule(const QSslCertificate &cert, const QString &hostName);
     KSslCertificateRule rule(const QSslCertificate &cert, const QString &hostName) const;
 
-    void setRootCertificates(const QList<QSslCertificate> &rootCertificates);
-    QList<QSslCertificate> rootCertificates() const;    // TODO on monday: rename to caCertificates()
+    // do not use, it does nothing!
+    KDE_DEPRECATED void setRootCertificates(const QList<QSslCertificate> &rootCertificates)
+        { Q_UNUSED(rootCertificates) }
+    // use caCertificates() instead
+    KDE_DEPRECATED QList<QSslCertificate> rootCertificates() const
+        { return caCertificates(); }
+    
+    QList<QSslCertificate> caCertificates() const;
 
     static QList<KSslError> nonIgnorableErrors(const QList<KSslError> &);
     static QList<KSslError::Error> nonIgnorableErrors(const QList<KSslError::Error> &);
 
 private:
     friend class KSslCertificateManagerContainer;
+    friend class KSslCertificateManagerPrivate;
     KSslCertificateManager();
     ~KSslCertificateManager();
 

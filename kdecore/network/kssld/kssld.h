@@ -42,7 +42,13 @@ public:
     void setRule(const KSslCertificateRule &rule);
     void clearRule(const KSslCertificateRule &rule);
     void clearRule(const QSslCertificate &cert, const QString &hostName);
+    void pruneExpiredRules();
     KSslCertificateRule rule(const QSslCertificate &cert, const QString &hostName) const;
+
+    void setRootCertificateBlacklisted(const QSslCertificate &cert, bool isBlacklisted);
+    bool isRootCertificateBlacklisted(const QSslCertificate &cert) const;
+    // avoids many D-Bus roundtrips
+    QList<QByteArray> blacklistedRootCertDigests() const;
 
     void setRootCertificates(const QList<QSslCertificate> &rootCertificates);
     QList<QSslCertificate> rootCertificates() const;

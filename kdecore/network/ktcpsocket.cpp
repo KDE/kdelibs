@@ -27,7 +27,6 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 
-#include <QtCore/QMutex>
 #include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>
@@ -358,7 +357,7 @@ public:
     void maybeLoadCertificates()
     {
         if (!certificatesLoaded) {
-            sock.setCaCertificates(KSslCertificateManager::self()->rootCertificates());
+            sock.setCaCertificates(KSslCertificateManager::self()->caCertificates());
             certificatesLoaded = true;
         }
     }

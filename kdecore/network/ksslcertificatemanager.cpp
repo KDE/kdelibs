@@ -33,7 +33,7 @@
 #include <QtDBus/QtDBus>
 
 #include "kssld/kssld_interface.h"
-
+#include "ksslcertificatemanager_p.h"
 
 /*
   Config file format:
@@ -52,6 +52,8 @@
 CertificatePEM = <PEM-encoded certificate> #host entries are all lowercase, thus no clashes
 
  */
+
+// TODO GUI for managing exception rules
 
 class KSslCertificateRulePrivate
 {
@@ -188,6 +190,238 @@ QList<KSslError> KSslCertificateRule::filterErrors(const QList<KSslError> &error
 
 ////////////////////////////////////////////////////////////////////
 
+KSslCertificateManagerPrivate::KSslCertificateManagerPrivate()
+ : config("ksslcertificatemanager", KConfig::SimpleConfig),
+   iface(new org::kde::KSSLDInterface("org.kde.kded", "/modules/kssld",
+                                      QDBusConnection::sessionBus())),
+   isCertListLoaded(false),
+   userCertDir(KGlobal::dirs()->saveLocation("data", "kssl/userCaCertificates/"))
+{
+    // set Qt's set to empty; this is protected by the lock in K_GLOBAL_STATIC.
+    QSslSocket::setDefaultCaCertificates(QList<QSslCertificate>());
+}
+
+KSslCertificateManagerPrivate::~KSslCertificateManagerPrivate()
+{
+    delete iface;
+    iface = 0;
+}
+
+void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
+{
+    defaultCaCertificates.clear();
+
+    if (!KGlobal::hasMainComponent()) {
+        Q_ASSERT(false);
+        return;                 // we need KGlobal::dirs() available
+    }
+
+    QList<QSslCertificate> certs = QSslSocket::systemCaCertificates();
+    
+    KConfig config("ksslcablacklist", KConfig::SimpleConfig);
+    KConfigGroup group = config.group("Blacklist of CA Certificates");
+
+    certs.append(QSslCertificate::fromPath(userCertDir + QLatin1String("*"), QSsl::Pem,
+                                           QRegExp::Wildcard));
+    foreach (const QSslCertificate &cert, certs) {
+        const QByteArray digest = cert.digest().toHex();
+        if (!group.hasKey(digest.constData())) {
+            defaultCaCertificates += cert;
+        }
+    }
+
+    isCertListLoaded = true;
+}
+
+
+bool KSslCertificateManagerPrivate::addCertificate(const KSslCaCertificate &in)
+{
+    kDebug(7029);
+    // cannot add a certificate to the system store
+    if (in.store == KSslCaCertificate::SystemStore) {
+        Q_ASSERT(false);
+        return false;
+    }
+    if (knownCerts.contains(in.certHash)) {
+        Q_ASSERT(false);
+        return false;
+    }
+    
+    QString certFilename = userCertDir + in.certHash;
+    kDebug(7029) << certFilename;
+    QFile certFile(certFilename);
+    if (certFile.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    if (!certFile.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+    if (certFile.write(in.cert.toPem()) < 1) {
+        return false;
+    }
+    knownCerts.insert(in.certHash);
+    
+    updateCertificateBlacklisted(in);
+
+    return true;
+}
+
+
+bool KSslCertificateManagerPrivate::removeCertificate(const KSslCaCertificate &old)
+{
+    kDebug(7029);
+    // cannot remove a certificate from the system store
+    if (old.store == KSslCaCertificate::SystemStore) {
+        Q_ASSERT(false);
+        return false;
+    }
+
+    if (!QFile::remove(userCertDir + old.certHash)) {
+        
+        // suppose somebody copied a certificate file into userCertDir without changing the
+        // filename to the digest.
+        // the rest of the code will work fine because it loads all certificate files from
+        // userCertDir without asking for the name, we just can't remove the certificate using
+        // its digest as filename - so search the whole directory.
+        // if the certificate was added with the digest as name *and* with a different name, we
+        // still fail to remove it completely at first try - BAD USER! BAD!
+        
+        bool removed = false;
+        QDir dir(userCertDir);
+        foreach (const QString &certFilename, dir.entryList(QDir::Files)) {
+            const QString certPath = userCertDir + certFilename;
+            QList<QSslCertificate> certs = QSslCertificate::fromPath(certPath);
+            
+            if (!certs.isEmpty() && certs.at(0).digest().toHex() == old.certHash) {
+                if (QFile::remove(certPath)) {
+                    removed = true;
+                } else {
+                    // maybe the file is readable but not writable
+                    return false;
+                }
+            }
+        }
+        if (!removed) {
+            // looks like the file is not there
+            return false;
+        }
+    }
+
+    // note that knownCerts *should* need no updating due to the way setAllCertificates() works - 
+    // it should never call addCertificate and removeCertificate for the same cert in one run
+        
+    // clean up the blacklist        
+    setCertificateBlacklisted(old.certHash, false);
+
+    return true;
+}
+
+static bool certLessThan(const KSslCaCertificate &cacert1, const KSslCaCertificate &cacert2)
+{
+    if (cacert1.store != cacert2.store) {
+        // SystemStore is numerically smaller so the system certs come first; this is important
+        // so that system certificates come first in case the user added an already-present
+        // certificate as a user certificate.
+        return cacert1.store < cacert2.store;
+    }
+    return cacert1.certHash < cacert2.certHash;
+}
+
+void KSslCertificateManagerPrivate::setAllCertificates(const QList<KSslCaCertificate> &certsIn)
+{
+    Q_ASSERT(knownCerts.isEmpty());
+    QList<KSslCaCertificate> in = certsIn;
+    QList<KSslCaCertificate> old = allCertificates();
+    qSort(in.begin(), in.end(), certLessThan);
+    qSort(old.begin(), old.end(), certLessThan);
+
+    for (int ii = 0, oi = 0; ii < in.size() || oi < old.size(); ii++, oi++) {
+        // look at all elements in both lists, even if we reach the end of one early.
+        if (ii >= in.size()) {
+            removeCertificate(old.at(oi));
+            continue;
+        } else if (oi >= old.size()) {
+            addCertificate(in.at(ii));
+            continue;
+        }
+
+        if (certLessThan (old.at(oi), in.at(ii))) {
+            // the certificate in "old" is not in "in". only advance the index of "old".
+            removeCertificate(old.at(oi));
+            ii--;
+        } else if (certLessThan(in.at(ii), old.at(oi))) {
+            // the certificate in "in" is not in "old". only advance the index of "in".
+            addCertificate(in.at(ii));
+            oi--;
+        } else { // in.at(ii) "==" old.at(oi)
+            if (in.at(ii).cert != old.at(oi).cert) {
+                // hash collision, be prudent(?) and don't do anything.
+            } else {
+                knownCerts.insert(old.at(oi).certHash);
+                if (in.at(ii).isBlacklisted != old.at(oi).isBlacklisted) {
+                    updateCertificateBlacklisted(in.at(ii));
+                }
+            }
+        }
+    }
+    knownCerts.clear();
+    QMutexLocker certListLocker(&certListMutex);
+    isCertListLoaded = false;
+    loadDefaultCaCertificates();
+}
+
+QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
+{
+    kDebug(7029);
+    QList<KSslCaCertificate> ret;
+    foreach (const QSslCertificate &cert, QSslSocket::systemCaCertificates()) {
+        ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
+    }
+
+    foreach (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("/*"),
+                                                                    QSsl::Pem, QRegExp::Wildcard)) {
+        ret += KSslCaCertificate(cert, KSslCaCertificate::UserStore, false);
+    }
+
+    KConfig config("ksslcablacklist", KConfig::SimpleConfig);
+    KConfigGroup group = config.group("Blacklist of CA Certificates");
+    for (int i = 0; i < ret.size(); i++) {
+        if (group.hasKey(ret[i].certHash.constData())) {
+            ret[i].isBlacklisted = true;
+            kDebug(7029) << "is blacklisted";
+        }
+    }
+
+    return ret;
+}
+
+
+bool KSslCertificateManagerPrivate::updateCertificateBlacklisted(const KSslCaCertificate &cert)
+{
+    return setCertificateBlacklisted(cert.certHash, cert.isBlacklisted);
+}
+
+
+bool KSslCertificateManagerPrivate::setCertificateBlacklisted(const QByteArray &certHash,
+                                                              bool isBlacklisted)
+{
+    kDebug(7029) << isBlacklisted;
+    KConfig config("ksslcablacklist", KConfig::SimpleConfig);
+    KConfigGroup group = config.group("Blacklist of CA Certificates");
+    if (isBlacklisted) {
+        // TODO check against certificate list ?
+        group.writeEntry(certHash.constData(), QString());
+    } else {
+        if (!group.hasKey(certHash.constData())) {
+            return false;
+        }
+        group.deleteEntry(certHash.constData());
+    }
+
+    return true;
+}
+
+
 class KSslCertificateManagerContainer
 {
 public:
@@ -195,55 +429,6 @@ public:
 };
 
 K_GLOBAL_STATIC(KSslCertificateManagerContainer, g_instance)
-
-
-class KSslCertificateManagerPrivate
-{
-public:
-    KSslCertificateManagerPrivate()
-     : config("ksslcertificatemanager", KConfig::SimpleConfig), //TODO really good conf filename
-       iface("org.kde.kded", "/modules/kssld", QDBusConnection::sessionBus()),
-       isCertListLoaded(false)
-    {
-        // set Qt's set to empty; this is protected by the lock in K_GLOBAL_STATIC.
-        QSslSocket::setDefaultCaCertificates(QList<QSslCertificate>());
-    }
-
-    void loadDefaultCaCertificates()
-    {
-        if (isCertListLoaded) {
-            // we've had a race between two threads trying to load the certs; don't actually
-            // load them twice.
-            return;
-        }
-        defaultCaCertificates.clear();
-
-        if (!KGlobal::hasMainComponent()) {
-            Q_ASSERT(false);
-            return;                 // we need KGlobal::dirs() available
-        }
-
-        // set default CAs from KDE's own bundle
-        QStringList bundles = KGlobal::dirs()->findAllResources("data", "kssl/ca-bundle.crt");
-        foreach (const QString &bundle, bundles) {
-            defaultCaCertificates += QSslCertificate::fromPath(bundle);
-        }
-        // We don't need to lock the mutex when retrieving the list without loading it first
-        // because when the following flag is true the list is complete.
-        isCertListLoaded = true;
-
-        kDebug(7029) << "Loading" << defaultCaCertificates.count() << "CA certificates from" << bundles;
-    }
-
-    KConfig config;
-    org::kde::KSSLDInterface iface;
-    QHash<QString, KSslError::Error> stringToSslError;
-    QHash<KSslError::Error, QString> sslErrorToString;
-
-    QList<QSslCertificate> defaultCaCertificates;
-    QMutex certListMutex;
-    bool isCertListLoaded;
-};
 
 
 KSslCertificateManager::KSslCertificateManager()
@@ -271,51 +456,38 @@ KSslCertificateManager *KSslCertificateManager::self()
 
 void KSslCertificateManager::setRule(const KSslCertificateRule &rule)
 {
-    d->iface.setRule(rule);
+    d->iface->setRule(rule);
 }
 
 
 void KSslCertificateManager::clearRule(const KSslCertificateRule &rule)
 {
-    d->iface.clearRule(rule);
+    d->iface->clearRule(rule);
 }
 
 
 void KSslCertificateManager::clearRule(const QSslCertificate &cert, const QString &hostName)
 {
-    d->iface.clearRule(cert, hostName);
+    d->iface->clearRule(cert, hostName);
 }
 
 
-KSslCertificateRule KSslCertificateManager::rule(const QSslCertificate &cert, const QString &hostName) const
+KSslCertificateRule KSslCertificateManager::rule(const QSslCertificate &cert,
+                                                 const QString &hostName) const
 {
-    return d->iface.rule(cert, hostName);
+    return d->iface->rule(cert, hostName);
 }
 
 
-void KSslCertificateManager::setRootCertificates(const QList<QSslCertificate> &rootCertificates)
+QList<QSslCertificate> KSslCertificateManager::caCertificates() const
 {
-    // d->iface.setRootCertificates(rootCertificates);
-    // TODO remove above stuff from the interface
-
-    QMutexLocker certLocker(&d->certListMutex);
-    d->defaultCaCertificates = rootCertificates;
-    // don't do delayed initialization: the list *is* now initialized
-    d->isCertListLoaded = true;
-}
-
-
-QList<QSslCertificate> KSslCertificateManager::rootCertificates() const
-{
-    // return d->iface.rootCertificates();
-    // TODO remove from interface, see setRootCertificates()
-
     QMutexLocker certLocker(&d->certListMutex);
     if (!d->isCertListLoaded) {
         d->loadDefaultCaCertificates();
     }
     return d->defaultCaCertificates;
 }
+
 
 //static
 QList<KSslError> KSslCertificateManager::nonIgnorableErrors(const QList<KSslError> &/*e*/)
@@ -333,5 +505,14 @@ QList<KSslError::Error> KSslCertificateManager::nonIgnorableErrors(const QList<K
     return ret;
 }
 
+QList<KSslCaCertificate> _allKsslCaCertificates(KSslCertificateManager *cm)
+{
+    return KSslCertificateManagerPrivate::get(cm)->allCertificates();
+}
+
+void _setAllKsslCaCertificates(KSslCertificateManager *cm, const QList<KSslCaCertificate> &certsIn)
+{
+    KSslCertificateManagerPrivate::get(cm)->setAllCertificates(certsIn);
+}
 
 #include "kssld/kssld_interface.moc"

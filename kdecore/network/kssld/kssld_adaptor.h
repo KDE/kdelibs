@@ -59,12 +59,6 @@ public Q_SLOTS:
 
     inline KSslCertificateRule rule(const QSslCertificate &cert, const QString &hostName)
         { return p()->rule(cert, hostName); }
-
-    inline void setRootCertificates(const QList<QSslCertificate> &rootCertificates)
-        { return p()->setRootCertificates(rootCertificates); }
-
-    inline QList<QSslCertificate> rootCertificates()
-        { return p()->rootCertificates(); }
 };
 
 #endif //KSSLD_ADAPTOR_H
