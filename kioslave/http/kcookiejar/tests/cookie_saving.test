@@ -116,6 +116,8 @@ COOKIE ASK http://x.y.z.frop34.com/ Set-Cookie2: set_by2=x.y.z.frop.com; Version
 ## Check domain restrictions #7
 COOKIE ASK http://frop35.com/ Set-Cookie2: set_by=x.y.z.frop.com; Version=1; Domain=".foobar.com"; Max-Age=3600
 COOKIE ASK http://frop35.com/ Set-Cookie2: set_by2=x.y.z.frop.com; Version=1; Domain=".com"; Max-Age=3600
+## Check port restrictions (RFC2965 3.3.4)
+COOKIE ASK http://ports.foo.bar.com Set-Cookie2: name=value1; Version=1; Port="80 8080 443"; Max-Age=3600
 
 ## Check results
 CHECK http://w.y.z/
@@ -219,7 +221,7 @@ CHECK http://y.z.foobar.com/
 CHECK http://z.foobar.com/
 CHECK http://www.foobar.com/
 CHECK http://foobar.com/
-
+CHECK http://ports.foo.bar.com Cookie: $Version=1; name=value1; $Port="80 8080 443"
 
 SAVE
 ## Check result after saving
@@ -324,6 +326,7 @@ CHECK http://y.z.foobar.com/
 CHECK http://z.foobar.com/
 CHECK http://www.foobar.com/
 CHECK http://foobar.com/
+CHECK http://ports.foo.bar.com Cookie: $Version=1; name=value1; $Port="80 8080 443"
 
 SAVE
 ## Check result after saving a second time
@@ -428,3 +431,4 @@ CHECK http://y.z.foobar.com/
 CHECK http://z.foobar.com/
 CHECK http://www.foobar.com/
 CHECK http://foobar.com/
+CHECK http://ports.foo.bar.com Cookie: $Version=1; name=value1; $Port="80 8080 443"

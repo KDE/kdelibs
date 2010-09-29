@@ -157,9 +157,9 @@ COOKIE ASK http://192.168.0.1 Set-Cookie: name1=value1; Path="/"; expires=%NEXTY
 COOKIE ASK http://192.168.0.1 Set-Cookie: name11=value11; domain="test.local"; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK http://192.168.0.1:8080 Set-Cookie: name2=value2; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK https://192.168.0.1 Set-Cookie: name3=value3; Path="/"; expires=%NEXTYEAR%; secure
-CHECK http://192.168.0.1 Cookie: name1=value1; name11=value11
-CHECK http://192.168.0.1:8080 Cookie: name2=value2
-CHECK https://192.168.0.1 Cookie: name1=value1; name11=value11; name3=value3
+CHECK http://192.168.0.1 Cookie: name1=value1; name11=value11; name2=value2
+CHECK http://192.168.0.1:8080 Cookie: name1=value1; name11=value11; name2=value2
+CHECK https://192.168.0.1 Cookie: name1=value1; name11=value11; name2=value2; name3=value3
 CHECK http://192.168.0.10
 CHECK http://192.168.0
 CLEAR COOKIES
