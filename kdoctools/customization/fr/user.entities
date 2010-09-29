@@ -17,6 +17,9 @@
 <!ENTITY traducteurKeziahAzad      '<othercredit role="translator"><firstname>Keziah</firstname><surname>Azad</surname><affiliation><address><email>kydeza@yahoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurKeziahAzad         '<othercredit role="reviewer"><firstname>Keziah</firstname><surname>Azad</surname><affiliation><address><email>kydeza@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurXavierBesnard       '<othercredit role="translator"><firstname>Xavier</firstname><surname>Besnard</surname><affiliation><address><email>ktranslator31@yahoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurXavierBesnard        '<othercredit role="reviewer"><firstname>Xavier</firstname><surname>Besnard</surname><affiliation><address><email>ktranslator31@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurEricBischoff       '<othercredit role="translator"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurEricBischoff        '<othercredit role="reviewer"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -260,6 +263,7 @@
 <!ENTITY DavidAmmouial     'David Ammouial <email></email>'>
 <!ENTITY PierreAuckenthaler 'Pierre Auckenthaler <email>pierre.auckenthaler@polytechnique.org</email>'>
 <!ENTITY KeziahAzad        'Keziah Azad <email>kydeza@yahoo.fr</email>'>
+<!ENTITY XavierBesnard      'Xavier Besnard <email>ktranslator31@yahoo.fr</email>'>
 <!ENTITY EricBischoff      'Éric Bischoff <email>e.bischoff@noos.fr</email>'>
 <!ENTITY JeromeBlanc       'Jérôme Blanc <email>01246774@brookes.ac.uk</email>'>
 <!ENTITY CyrilleBieuzent    'Cyrille Bieuzent <email>bieuzent@gmail.com</email>'>
