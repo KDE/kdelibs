@@ -2922,13 +2922,13 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
     QLinkedList< AccessKeyData > data; // Note: this has to be a list type that keep iterators valid
                                        // when other entries are removed
     QMap< NodeImpl*, QString > labels = buildLabels( m_part->xmlDocImpl());
-    QMap< QString, QChar > hrefs;
-
     for( NodeImpl* n = m_part->xmlDocImpl();
          n != NULL;
          n = n->traverseNextNode()) {
         if( n->isElementNode()) {
             ElementImpl* element = static_cast< ElementImpl* >( n );
+            if( element->getAttribute( ATTR_ACCESSKEY ).length() == 1 )
+                continue; // has accesskey set, ignore
             if( element->renderer() == NULL )
                 continue; // not visible
             QString text;
@@ -3021,13 +3021,6 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             }
             if( ignore )
                 continue;
-
-            // build map of manually assigned accesskeys and their targets
-            DOMString akey = element->getAttribute( ATTR_ACCESSKEY );
-            if( akey.length() == 1 ) {
-                hrefs[url] = akey.string()[ 0 ].toUpper();
-                continue; // has accesskey set, ignore
-            }
             if( text.isNull() && labels.contains( element ))
                 text = labels[ element ];
             if( text.isNull() && text_before )
@@ -3080,11 +3073,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 break;
             QString text = (*it).text;
             QChar key;
-            QString url = (*it).url;
-            if( !text.isEmpty()) {
-                // an identical link already has an accesskey assigned
-                if( hrefs.contains(url) )
-                    continue;
+            if( key.isNull() && !text.isEmpty()) {
                 const QList< QPair< QString, QChar > > priorities
                     = m_part->settings()->fallbackAccessKeysAssignments();
                 for( QList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
@@ -3121,6 +3110,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 key = keys.front();
             ret[ (*it).element ] = key;
             keys.removeAll( key );
+            QString url = (*it).url;
             it = data.erase( it );
             // assign the same accesskey also to other elements pointing to the same url
             if( !url.isEmpty() && !url.startsWith( "javascript:", Qt::CaseInsensitive )) {
