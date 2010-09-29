@@ -33,36 +33,32 @@ class KConfig;
  * @short Site-independent access to standard KDE directories.
  * @author Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
  *
- * This is one of the most central classes in kdelibs as
- * it provides a basic service: It knows where the files
- * reside on the user's hard disk. And it's meant to be the
- * only one that knows -- to make the real location as
- * transparent as possible to both the user and the applications.
+ * This is one of the most central classes in kdelibs: It knows where KDE-related files
+ * reside on the user's hard disk. It's meant to be the only one that knows --
+ * so applications and the end user don't have to.
  *
- * To this end it insulates the application from all information
- * and applications always refer to a file with a resource type
- * (e.g. icon) and a filename (e.g. <tt>khexdit.xpm</tt>). In an ideal world
- * the application would make no assumption where this file is and
- * leave it up to KStandardDirs::findResource("apps", "Home.desktop")
- * to apply this knowledge to return <tt>/opt/kde/share/applnk/Home.desktop</tt>
+ * Applications should always refer to a file with a resource type.
+ * The application should leave it up to e.g. 
+ * KStandardDirs::findResource("apps", "Home.desktop")
+ * to return the desired path <tt>/opt/kde/share/applnk/Home.desktop</tt>
  * or ::locate("data", "kgame/background.jpg") to return
  * <tt>/opt/kde/share/apps/kgame/background.jpg</tt>
  *
- * The main idea behind KStandardDirs is that there are several
- * toplevel prefixes below which the files lie. One of these prefixes is
- * the one where the user installed kdelibs, one is where the
- * application was installed, and one is <tt>$HOME/.kde</tt>, but there
- * may be even more. Under these prefixes there are several well
- * defined suffixes where specific resource types are to be found.
+ * There are several toplevel prefixes under which files can be located.
+ * One of them is the kdelibs install location, one is the application
+ * install location, and one is <tt>$KDEHOME</tt>.
+ * Under these toplevel prefixes there are several well-defined suffixes
+ * where specific resource types can be found.
  * For example, for the resource type @c "html" the suffixes could be
  * @c share/doc/HTML and @c share/doc/kde/HTML.
- * So the search algorithm basically appends to each prefix each registered
- * suffix and tries to locate the file there.
- * To make the thing even more complex, it's also possible to register
+ * The search algorithm tries to locate the file under each prefix-suffix
+ * combination.
+ * 
+ * It is also possible to register
  * absolute paths that KStandardDirs looks up after not finding anything
  * in the former steps. They can be useful if the user wants to provide
- * specific directories that aren't in his <tt>$HOME/.kde</tt> directory for,
- * for example, icons.
+ * specific directories that aren't in his <tt>$KDEHOME</tt> directory, for
+ * example for icons.
  *
  * <b>Standard resources that kdelibs allocates are:</b>\n
  *
