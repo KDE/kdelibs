@@ -597,9 +597,16 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
     QColor color;
     color.setAlphaF(amount);
 
+// FIXME: Somehow this doesn't work on Mac OS..
+#if defined(Q_OS_MAC)
+    const bool usePixmap = false;
+#else
+    const bool usePixmap = from.paintEngine()->hasFeature(QPaintEngine::PorterDuff) &&
+                           from.paintEngine()->hasFeature(QPaintEngine::BlendModes);
+#endif
+
     // If the native paint engine supports Porter/Duff compositing and CompositionMode_Plus
-    if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff) &&
-        from.paintEngine()->hasFeature(QPaintEngine::BlendModes))
+    if (usePixmap)
     {
         QPixmap under = from;
         QPixmap over  = to;
