@@ -705,7 +705,7 @@ public:
     void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                          const QString &host, bool connected);
 
-    void slotReparseSlaveConfiguration(const QString &);
+    void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&);
 
     void slotSlaveConnected();
     void slotSlaveError(int error, const QString &errorMsg);
@@ -758,7 +758,7 @@ Scheduler::Scheduler()
     dbus.registerObject( "/KIO/Scheduler", this, QDBusConnection::ExportScriptableSlots |
                                                  QDBusConnection::ExportScriptableSignals );
     dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
-                 this, SLOT(slotReparseSlaveConfiguration(QString)));
+                 this, SLOT(slotReparseSlaveConfiguration(QString,QDBusMessage)));
 }
 
 Scheduler::~Scheduler()
@@ -863,12 +863,20 @@ void Scheduler::checkSlaveOnHold(bool b)
 void Scheduler::emitReparseSlaveConfiguration()
 {
     emit self()->reparseSlaveConfiguration( QString() );
+
+    // Do it immediately in this process, otherwise we might send a request before reparsing
+    // (e.g. when changing useragent in the plugin)
+    schedulerPrivate->slotReparseSlaveConfiguration(QString(), QDBusMessage());
 }
 
 
-void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
+void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const QDBusMessage& msg)
 {
-    kDebug(7006) << proto;
+    if (QDBusConnection::sessionBus().baseService() == msg.service()) {
+        kDebug(7006) << "Ignoring signal sent by myself";
+        return;
+    }
+    kDebug(7006) << "proto=" << proto;
     KProtocolManager::reparseConfiguration();
     SlaveConfig::self()->reset();
     sessionData.reset();

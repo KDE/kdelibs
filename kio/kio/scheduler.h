@@ -283,7 +283,7 @@ namespace KIO {
                                                const QString &host, bool connected))
 
         // connected to D-Bus signal:
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &))
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&))
 
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveConnected())
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveError(int error, const QString &errorMsg))
