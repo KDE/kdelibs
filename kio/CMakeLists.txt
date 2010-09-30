@@ -11,6 +11,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/kssl
+   ${CMAKE_CURRENT_SOURCE_DIR}      # for including kio/kio_export.h
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
