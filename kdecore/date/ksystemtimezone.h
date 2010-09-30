@@ -236,6 +236,7 @@ public:
     /**
      * Return whether the KDE time zone daemon, ktimezoned, is available. If
      * not, UTC will be the only recognized time zone.
+     * @since 4.6
      */
     static bool ktimezonedOk();
 
