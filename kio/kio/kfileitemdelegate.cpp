@@ -376,7 +376,7 @@ QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QString 
     }
     layout.endLayout();
 
-    return QSize(int(widthUsed), height);
+    return QSize(qCeil(widthUsed), height);
 }
 
 
