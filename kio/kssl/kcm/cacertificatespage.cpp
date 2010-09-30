@@ -371,6 +371,7 @@ bool CaCertificatesPage::addCertificateItem(const KSslCaCertificate &caCert)
     CaCertificateItem *it = new CaCertificateItem(parent, caCert.cert, !caCert.isBlacklisted);
     m_knownCertificates.insert(caCert.certHash);
     m_blockItemChanged = prevBlockItemChanged;
+    return true;
 }
 
 #include "cacertificatespage.moc"
