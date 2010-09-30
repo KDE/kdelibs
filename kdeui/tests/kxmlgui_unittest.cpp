@@ -409,6 +409,54 @@ void KXmlGui_UnitTest::testPartMerging()
                  << "other_file_action");
 }
 
+void KXmlGui_UnitTest::testPartMergingSettings() // #252911
+{
+    const QByteArray hostXml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+// The solution was to remove the duplicated definition
+//        " <Menu name=\"settings\"><text>&amp;Settings</text>\n"
+//        "    <Action name=\"options_configure_keybinding\"/>\n"
+//        "    <Action name=\"options_configure_toolbars\"/>\n"
+//        "    <Merge name=\"configure_merge\"/>\n"
+//        "    <Separator/>\n"
+//        "    <Merge/>\n"
+//        " </Menu>\n"
+        "</MenuBar></gui>\n";
+    TestGuiClient hostClient;
+    hostClient.createActions(QStringList() << "options_configure_keybinding" << "options_configure_toolbars");
+    hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
+    //kDebug() << hostClient.domDocument().toString();
+    QMainWindow mainWindow;
+    KXMLGUIBuilder builder(&mainWindow);
+    KXMLGUIFactory factory(&builder);
+    factory.addClient(&hostClient);
+    QWidget* settingsMenu = qobject_cast<QMenu *>(factory.container("settings", &hostClient));
+    QVERIFY(settingsMenu);
+    //debugActions(settingsMenu->actions());
+
+    const QByteArray partXml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"settings\"><text>&amp;Settings</text>\n"
+        "    <Action name=\"configure_klinkstatus\"/>\n"
+        " </Menu>\n"
+        "</MenuBar></gui>\n";
+    TestGuiClient partClient(partXml);
+    partClient.createActions(QStringList() << "configure_klinkstatus");
+    factory.addClient(&partClient);
+    //debugActions(settingsMenu->actions());
+    checkActions(settingsMenu->actions(), QStringList()
+                 << "separator" // that's ok, QMenuPrivate::filterActions won't show it
+                 << "options_configure_keybinding"
+                 << "options_configure_toolbars"
+                 << "configure_klinkstatus");
+}
+
 void KXmlGui_UnitTest::testUiStandardsMerging_data()
 {
     QTest::addColumn<QByteArray>("xml");
@@ -870,7 +918,7 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
 }
 
 void KXmlGui_UnitTest::testClientDestruction() { // #170806
-    const QByteArray xml = 
+    const QByteArray xml =
         "<?xml version = '1.0'?>\n"
         "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
         "<gui version=\"1\" name=\"foo\" >\n"
