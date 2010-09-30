@@ -11,9 +11,9 @@ include(CPack)
 # Release team: for .0 releases, use '00' instead of '0' because the latter is a null to CMake
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 5)
-set (KDE_VERSION_RELEASE 1)
+set (KDE_VERSION_RELEASE 2)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.5.1)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.5.2)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
