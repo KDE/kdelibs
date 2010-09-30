@@ -298,7 +298,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         if (m.contains(QLatin1String("ssl_in_use"))) {
             const QLatin1String ssl_("ssl_");
             const MetaData constM = m;
-            for (MetaData::ConstIterator it = constM.lowerBound(ssl_); it != m.constEnd(); ++it) {
+            for (MetaData::ConstIterator it = constM.lowerBound(ssl_); it != constM.constEnd(); ++it) {
                 if (it.key().startsWith(ssl_)) {
                     d->sslMetaData.insert(it.key(), it.value());
                 } else {
