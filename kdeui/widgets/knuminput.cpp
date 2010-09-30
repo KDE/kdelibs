@@ -178,7 +178,9 @@ void KNumInput::layout(bool deep)
         return;
     }
 
-    KNumInput* p = this;
+    w2 = d->column2Width;
+
+    KNumInput* p = d->previousNumInput;
     while (p) {
         p->doLayout();
         w1 = qMax(w1, p->d->column1Width);
@@ -550,7 +552,7 @@ QSize KIntNumInput::minimumSizeHint() const
         h = qMax(h, priv->labelSize.height() + 2);
     }
 
-    w = priv->slider ? priv->slider->sizeHint().width() + 8 : 0;
+    w = priv->slider ? priv->slider->sizeHint().width() + KDialog::spacingHint() : 0;
     w += priv->column1Width + priv->column2Width;
 
     if (priv->labelAlignment & (Qt::AlignTop | Qt::AlignBottom)) {
@@ -588,9 +590,9 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
         priv->label->setGeometry(0, 0, w, d->intSpinBoxSize.height());
     }
 
-    if (qApp->layoutDirection()) {
+    if (qApp->layoutDirection() == Qt::RightToLeft) {
         d->intSpinBox->setGeometry(w, h, priv->slider ? priv->column2Width : qMax(priv->column2Width, e->size().width() - w), d->intSpinBoxSize.height());
-        w += priv->column2Width + 8;
+        w += priv->column2Width + KDialog::spacingHint();
 
         if (priv->slider) {
             priv->slider->setGeometry(w, h, e->size().width() - w, d->intSpinBoxSize.height() + KDialog::spacingHint());
@@ -810,7 +812,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
         h = qMax(h, priv->labelSize.height() + 2);
     }
 
-    w = priv->slider ? priv->slider->sizeHint().width() + 8 : 0;
+    w = priv->slider ? priv->slider->sizeHint().width() + KDialog::spacingHint() : 0;
     w += priv->column1Width + priv->column2Width;
 
     if (priv->labelAlignment & (Qt::AlignTop | Qt::AlignBottom)) {
@@ -836,7 +838,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
         priv->label->setGeometry(0, 0, w, d->editSize.height());
     }
 
-    if (qApp->layoutDirection()) {
+    if (qApp->layoutDirection() == Qt::RightToLeft) {
         d->spin->setGeometry(w, h, priv->slider ? priv->column2Width
                              : e->size().width() - w, d->editSize.height());
         w += priv->column2Width + KDialog::spacingHint();
