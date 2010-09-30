@@ -117,32 +117,6 @@ static HBITMAP QPixmapMask2HBitmap(const QPixmap &pix)
     return CreateBitmap( w, h, 1, 1, bits );
 }
 
-static HICON QPixmap2HIcon(const QPixmap &pix)
-{
-    if ( pix.isNull() )
-        return 0;
-
-    ICONINFO ii;
-    ii.fIcon    = true;
-    ii.hbmMask  = QPixmapMask2HBitmap( pix );
-    ii.hbmColor = pix.toWinHBITMAP( QPixmap::PremultipliedAlpha );
-    ii.xHotspot = 0;
-    ii.yHotspot = 0;
-    HICON result = CreateIconIndirect( &ii );
-
-    DeleteObject( ii.hbmMask );
-    DeleteObject( ii.hbmColor );
-
-    return result;
-}
-
-static QPixmap HIcon2QPixmap( HICON hIcon )
-{
-    QPixmap pix  = QPixmap::fromWinHICON( hIcon );
-
-    return pix;
-}
-
 KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0),activated(false)
 {
     //i think there is no difference in windows we always load everything
@@ -276,7 +250,7 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
 #endif
     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
-    if(hSmallIcon)  smallIcon  = HIcon2QPixmap(hSmallIcon);
+    if(hSmallIcon)  smallIcon  = QPixmap::fromWinHICON(hSmallIcon);
 
     QPixmap bigIcon;
     HICON hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
@@ -287,7 +261,7 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
 #endif
     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
-    if(hBigIcon)  bigIcon  = HIcon2QPixmap(hBigIcon);
+    if(hBigIcon)  bigIcon  = QPixmap::fromWinHICON(hBigIcon);
 
     winfo->bigIcon    = bigIcon;
     winfo->smallIcon  = smallIcon;
@@ -479,7 +453,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
         if( width < 24 || height < 24 )
             size = ICON_SMALL;
         HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
-        pm = HIcon2QPixmap( hIcon );
+        pm = QPixmap::fromWinHICON( hIcon );
     }
     if( scale )
         pm = pm.scaled( width, height );
@@ -502,8 +476,8 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
         s_d->winInfos[win].bigIcon   = icon;
     }
 
-    HICON hIconBig = QPixmap2HIcon(icon);
-    HICON hIconSmall = QPixmap2HIcon(miniIcon);
+    HICON hIconBig = icon.toWinHICON();
+    HICON hIconSmall = miniIcon.toWinHICON();
 
     hIconBig = (HICON)SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
     hIconSmall = (HICON)SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
