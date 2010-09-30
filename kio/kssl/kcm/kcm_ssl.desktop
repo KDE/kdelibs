@@ -9,6 +9,8 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=advanced-user-settings
 
 Name=SSL Preferences
+Name[x-test]=xxSSL Preferencesxx
 Comment=SSL Versions and Certificates
+Comment[x-test]=xxSSL Versions and Certificatesxx
 
 X-KDE-Keywords=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS
