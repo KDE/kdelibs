@@ -369,6 +369,9 @@ int KCategorizedView::Private::highestElementInLastRow(const Block &block) const
     int res = prevRect.height();
     Q_FOREVER {
         prevIndex = proxyModel->index(prevIndex.row() - 1, q->modelColumn(), q->rootIndex());
+        if (!prevIndex.isValid()) {
+            return res;
+        }
         const QRect tempRect = q->visualRect(prevIndex);
         if (tempRect.topLeft().y() < prevRect.topLeft().y()) {
             break;
