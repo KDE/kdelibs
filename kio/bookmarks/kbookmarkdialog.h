@@ -109,6 +109,7 @@ protected:
 
   void slotButtonClicked(int);
 
+  // TODO KDE5: move all these variables to a d pointer; make as many methods private as possible.
   BookmarkDialogMode m_mode;
   void fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGroup &group);
   QWidget * m_main;
@@ -123,6 +124,9 @@ protected:
   KBookmark m_bm;
   QList<QPair<QString, QString> > m_list;
   bool m_layout;
+  // WARNING: do not add new member variables here; replace one of the pointers with a d pointer,
+  // assuming that variable isn't used anywhere in apps...
+
   void initLayoutPrivate();
 
 protected Q_SLOTS:
