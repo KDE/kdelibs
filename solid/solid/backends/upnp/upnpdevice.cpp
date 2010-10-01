@@ -1,7 +1,5 @@
 /*
-   This file is part of the KDE project
-
-   Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
+    Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -155,7 +153,7 @@ QStringList UPnPDevice::emblems() const
 QString UPnPDevice::description() const
 {
     QString desc = device()->info().friendlyName();
-    
+
     if (desc.isEmpty()) {
         QString ipAddress = device()->locations()[0].toString(QUrl::RemoveScheme | QUrl::RemovePort | QUrl::RemovePath).mid(2);
         if (isMediaServer()) {
@@ -164,9 +162,9 @@ QString UPnPDevice::description() const
             desc = QString::fromLatin1("Internet Gateway on %1").arg(ipAddress);
         } else {
             desc = QString::fromLatin1("UPnP Device on %1").arg(ipAddress);
-        }        
+        }
     }
-    
+
     return desc;
 }
 
@@ -191,7 +189,7 @@ bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) 
         else
         {
             return false;
-        }  
+        }
     }
     else if (type == Solid::DeviceInterface::InternetGateway)
     {
@@ -200,7 +198,7 @@ bool UPnPDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) 
             return true;
         }
     }
-    
+
     return false;
 }
 

@@ -1,5 +1,6 @@
-/*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
-              2010  Lukas Tinkl <ltinkl@redhat.com>
+/*
+    Copyright 2010 Michael Zanetti <mzanetti@kde.org>
+    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -14,9 +15,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
-    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef UDISKSDEVICE_H
@@ -42,7 +42,7 @@ public:
     UDisksDevice(const QString &udi);
     virtual ~UDisksDevice();
 
-    
+
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
     virtual QString description() const;
@@ -62,7 +62,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotChanged();
-    
+
 private:
     QString storageDescription() const;
     QString volumeDescription() const;
@@ -70,7 +70,7 @@ private:
     QString m_udi;
     mutable QMap<QString,QVariant> m_cache;
     mutable QSet<QString> m_invalidKeys;
-    
+
     void checkCache(const QString &key) const;
 };
 

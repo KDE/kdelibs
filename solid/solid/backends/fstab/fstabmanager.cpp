@@ -1,6 +1,4 @@
 /*
-    This file is part of the KDE project
-
     Copyright 2010 Mario Bensi <mbensi@ipsquad.net>
 
     This library is free software; you can redistribute it and/or

@@ -1,8 +1,6 @@
 /*
-   This file is part of the KDE project
-   
-   Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
-   
+    Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -47,7 +45,7 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
     qDebug() << "******** UPnP Device Manager Created *********";
-    
+
     connect(
         upnpControlPoint->controlPoint(),
         SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
@@ -62,7 +60,7 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
 
     UPnPControlPoint::releaseInstance();
 
-    m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;    
+    m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;
 }
 
 UPnPDeviceManager::~UPnPDeviceManager()
@@ -135,9 +133,9 @@ void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
     emit deviceRemoved(udiPrefix() + '/' + udn);
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
-    
+
     upnpControlPoint->controlPoint()->removeRootDevice(device);
-    
+
     UPnPControlPoint::releaseInstance();
 }
 

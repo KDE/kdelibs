@@ -1,7 +1,5 @@
 /*
-   This file is part of the KDE project
-
-   Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
+    Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -33,11 +31,11 @@ namespace Solid
 InternetGateway::InternetGateway(QObject* backendObject) :
     DeviceInterface(*new InternetGatewayPrivate(), backendObject)
 {
-    connect(backendObject, 
+    connect(backendObject,
             SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
             this,
             SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
-    
+
     connect(backendObject,
             SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
             this,
@@ -49,14 +47,14 @@ InternetGateway::InternetGateway(QObject* backendObject) :
             SIGNAL(enabledForInternet(bool)));
 }
 
-InternetGateway::InternetGateway(InternetGatewayPrivate& dd, QObject* backendObject) 
+InternetGateway::InternetGateway(InternetGatewayPrivate& dd, QObject* backendObject)
     : DeviceInterface(dd, backendObject)
 {
-    connect(backendObject, 
+    connect(backendObject,
             SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
             this,
             SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
-    
+
     connect(backendObject,
             SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
             this,
@@ -90,30 +88,30 @@ void InternetGateway::addPortMapping(const QString& remoteHost, qint16 externalP
                                      qint16 internalPort, const QString& internalClient)
 {
     Q_D(const InternetGateway);
-    
-    SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), 
+
+    SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(),
                addPortMapping(remoteHost, externalPort, mappingProtocol, internalPort, internalClient));
 }
 
 void InternetGateway::deletePortMapping(const QString& remoteHost, qint16 externalPort, const NetworkProtocol& mappingProtocol)
 {
     Q_D(const InternetGateway);
-    
-    SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), 
+
+    SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(),
                deletePortMapping(remoteHost, externalPort, mappingProtocol));
 }
 
 InternetGateway::InternetStatus InternetGateway::isEnabledForInternet() const
 {
     Q_D(const InternetGateway);
-    
+
     return_SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), InternetGateway::UnknownStatus, isEnabledForInternet());
 }
 
 void InternetGateway::setEnabledForInternet(bool enabled)
 {
     Q_D(const InternetGateway);
-    
+
     SOLID_CALL(Ifaces::InternetGateway*, d->backendObject(), setEnabledForInternet(enabled));
 }
 

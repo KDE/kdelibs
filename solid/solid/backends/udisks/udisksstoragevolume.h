@@ -1,4 +1,5 @@
-/*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
+/*
+    Copyright 2010 Michael Zanetti <mzanetti@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -13,9 +14,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
-    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef UDISKSSTORAGEVOLUME_H
@@ -31,7 +31,7 @@ namespace Backends
 {
 namespace UDisks
 {
-  
+
 class UDisksStorageVolume: public Block, virtual public Solid::Ifaces::StorageVolume
 {
     Q_OBJECT
@@ -40,7 +40,7 @@ class UDisksStorageVolume: public Block, virtual public Solid::Ifaces::StorageVo
 public:
     UDisksStorageVolume(UDisksDevice *device);
     virtual ~UDisksStorageVolume();
-    
+
     virtual QString encryptedContainerUdi() const;
     virtual qulonglong size() const;
     virtual QString uuid() const;

@@ -1,5 +1,6 @@
-/*  Copyright 2010  Michael Zanetti <mzanetti@kde.org>
-              2010  Lukas Tinkl <ltinkl@redhat.com>
+/*
+    Copyright 2010 Michael Zanetti <mzanetti@kde.org>
+    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -14,9 +15,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
-    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef UDISKSMANAGER_H
@@ -35,11 +35,11 @@ namespace Backends
 {
 namespace UDisks
 {
-  
+
 class UDisksManager : public Solid::Ifaces::DeviceManager
 {
     Q_OBJECT
-    
+
 public:
     UDisksManager(QObject *parent);
     virtual QObject* createDevice(const QString& udi);
@@ -53,7 +53,7 @@ private Q_SLOTS:
     void slotDeviceAdded(const QDBusObjectPath &opath);
     void slotDeviceRemoved(const QDBusObjectPath &opath);
     void slotDeviceChanged(const QDBusObjectPath &opath);
-    
+
 private:
     QStringList allDevicesInternal();
     QStringList m_knownDrivesWithMedia;  // list of known optical drives which contain a media

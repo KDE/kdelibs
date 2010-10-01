@@ -1,6 +1,4 @@
 /*
-    This file is part of the KUPnP library, part of the KDE project.
-
     Copyright 2009-2010 Friedrich W. H. Kossebau <kossebau@kde.org>
 
     This library is free software; you can redistribute it and/or

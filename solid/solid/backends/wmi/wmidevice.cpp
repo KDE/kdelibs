@@ -1,20 +1,21 @@
-/*  This file is part of the KDE project
-    Copyright (C) 2005-2007 Kevin Ottens <ervin@kde.org>
+/*
+    Copyright 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License version 2 as published by the Free Software Foundation.
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) version 3, or any
+    later version accepted by the membership of KDE e.V. (or its
+    successor approved by the membership of KDE e.V.), which shall
+    act as a proxy defined in Section 6 of version 3 of the license.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+    Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA 02110-1301, USA.
-
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "wmidevice.h"
@@ -54,32 +55,32 @@ public:
         , m_wmiTable()
         , m_wmiProperty()
         , m_wmiValue()
-    {    
+    {
     }
 
     ~WmiDevicePrivate()
     {
     }
-    
+
     void discoverType()
     {
         if (!convertUDItoWMI(m_udi,m_wmiTable,m_wmiProperty,m_wmiValue))
             return;
-        
+
         // todo: add nicer implementation to detect device type
         if (m_wmiTable == getWMITable(Solid::DeviceInterface::OpticalDrive))
             interfaceList << "Block" << "StorageDrive" << "OpticalDrive" << "StorageVolume";
     }
-   
+
     const QString udi() const { return m_udi; }
 
-    WmiQuery::ItemList sendQuery() 
+    WmiQuery::ItemList sendQuery()
     {
         QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + '\'');
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list;
     }
-    
+
     static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue)
     {
         QString _udi = udi;
@@ -100,7 +101,7 @@ public:
         QString wmiTable;
         QString wmiProperty;
         QString wmiValue;
-        
+
         if (!convertUDItoWMI(udi, wmiTable, wmiProperty, wmiValue))
             return false;
 
@@ -113,11 +114,11 @@ public:
     {
         return QString("/org/kde/solid/wmi/%1/%2/%3").arg(key).arg(property).arg(value);
     }
-    
+
     static QStringList getInterfaces(const Solid::DeviceInterface::Type &type)
     {
         QStringList interfaceList;
-            
+
         switch (type)
         {
         case Solid::DeviceInterface::GenericInterface:
@@ -166,7 +167,7 @@ public:
             qWarning() << "no interface found for type" << type;
         return interfaceList;
     }
-    
+
     static QString getUDIKey(const Solid::DeviceInterface::Type &type)
     {
         QStringList list = DeviceInterface::toStringList(type);
@@ -227,7 +228,7 @@ public:
             break;
         }
         return wmiTable;
-    }    
+    }
 
     static QString getPropertyNameForUDI(const Solid::DeviceInterface::Type &type)
     {
@@ -237,25 +238,25 @@ public:
         else if (type == Solid::DeviceInterface::Battery)
             propertyName = "Name";
         else
-            propertyName = "DeviceID";    
-            
+            propertyName = "DeviceID";
+
         return propertyName;
     }
-    
+
     static QStringList generateUDIList(const Solid::DeviceInterface::Type &type)
     {
         QStringList result;
-        
+
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
         foreach(WmiQuery::Item *item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item->getProperty(propertyName);
-            
+
             result << generateUDI(getUDIKey(type),propertyName.toLower(),property.toLower());
         }
         return result;
     }
-    
+
     WmiDevice *parent;
     static int m_instanceCount;
     QString m_udi;
@@ -296,7 +297,7 @@ bool WmiDevice::exists(const QString &udi)
 
 bool WmiDevice::isValid() const
 {
-    // does not work 
+    // does not work
     //return sendQuery( "SELECT * FROM Win32_SystemDevices WHERE PartComponent='\\\\\\\\BEAST\root\cimv2:Win32_Processor.DeviceID=\"CPU0\"'" ).count() == 1;
     return true;
 }
@@ -437,7 +438,7 @@ QString WmiDevice::description() const
 }
 
 QVariant WmiDevice::property(const QString &key) const
-{    
+{
     WmiQuery::ItemList list = d->sendQuery();
     if (list.size() == 0)
         return QString();
@@ -476,7 +477,7 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
 #if 1
-        qDebug() << " has to be implemented"; 
+        qDebug() << " has to be implemented";
         return true;
 #else
         return property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume")

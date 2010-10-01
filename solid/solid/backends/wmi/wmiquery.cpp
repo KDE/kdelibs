@@ -1,20 +1,21 @@
-/*  This file is part of the KDE project
-    Copyright (C) 2008 Jeff Mitchell <mitchell@kde.org>
+/*
+    Copyright 2008 Jeff Mitchell <mitchell@kde.org>
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License version 2 as published by the Free Software Foundation.
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) version 3, or any
+    later version accepted by the membership of KDE e.V. (or its
+    successor approved by the membership of KDE e.V.), which shall
+    act as a proxy defined in Section 6 of version 3 of the license.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+    Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA 02110-1301, USA.
-
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 //#define _WIN32_DCOM
@@ -69,12 +70,12 @@ BSTR BSTRFromCStr(UINT codePage, LPCSTR s)
 using namespace Solid::Backends::Wmi;
 
 /**
- When a WmiQuery instance is created as a static global 
- object a deadlock problem occurs in pLoc->ConnectServer. 
- Please DO NOT USE the following or similar statement in 
+ When a WmiQuery instance is created as a static global
+ object a deadlock problem occurs in pLoc->ConnectServer.
+ Please DO NOT USE the following or similar statement in
  the global space or a class.
- 
- static WmiQuery instance; 
+
+ static WmiQuery instance;
 */
 
 QString WmiQuery::Item::getProperty(const QString &property )
@@ -102,7 +103,7 @@ QString WmiQuery::Item::getProperty(const QString &property )
     qDebug() << "end result:" << result;
     return result;
 }
-    
+
 WmiQuery::WmiQuery()
     : m_failed(false)
     , pLoc(0)
@@ -114,7 +115,7 @@ WmiQuery::WmiQuery()
 
     HRESULT hres;
 
-    hres =  CoInitialize(0); 
+    hres =  CoInitialize(0);
     if( FAILED(hres) && hres != S_FALSE && hres != RPC_E_CHANGED_MODE )
     {
         qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
@@ -148,7 +149,7 @@ WmiQuery::WmiQuery()
     }
     if( !m_failed )
     {
-        hres = pLoc->ConnectServer( _bstr_t("ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
+        hres = pLoc->ConnectServer( _bstr_t("ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );
         if( FAILED(hres) )
         {
             qCritical() << "Could not connect. Error code = " << hres << endl;
@@ -160,7 +161,7 @@ WmiQuery::WmiQuery()
         else
             qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
     }
-    
+
     if( !m_failed )
     {
         hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
@@ -169,7 +170,7 @@ WmiQuery::WmiQuery()
         {
             qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
             pSvc->Release();
-            pLoc->Release();     
+            pLoc->Release();
             if ( m_bNeedUninit )
               CoUninitialize();
             m_failed = true;
@@ -190,13 +191,13 @@ WmiQuery::~WmiQuery()
     if( m_bNeedUninit )
       CoUninitialize();
 */
-}  
-    
+}
+
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 {
     ItemList retList;
-    
-    if (!pSvc) 
+
+    if (!pSvc)
     {
         m_failed = true;
         return retList;
@@ -212,7 +213,7 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
         qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
     }
     else
-    { 
+    {
         ULONG uReturn = 0;
 
         while( pEnumerator )
@@ -222,11 +223,11 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
             if( !uReturn )
                 break;
-            
+
          // TODO: any special thinks required to delete pclsObj ?
             retList.append( new Item(pclsObj) );
         }
-    } 
+    }
     return retList;
 }
 
