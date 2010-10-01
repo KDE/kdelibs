@@ -66,7 +66,7 @@ public:
      * process, and only using the same KSharedDataCache object.
      *
      * @param cacheName Name of the cache to use/share.
-     * @param defaultCacheSize Amount of data data to be able to store.  The
+     * @param defaultCacheSize Amount of data to be able to store, in bytes. The
      *   actual size will be slightly larger on disk due to accounting
      *   overhead.  If the cache already existed then it <em>will not</em> be
      *   resized. For this reason you should specify some reasonable size.
