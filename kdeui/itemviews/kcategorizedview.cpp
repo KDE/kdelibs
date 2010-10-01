@@ -364,14 +364,13 @@ int KCategorizedView::Private::highestElementInLastRow(const Block &block) const
 {
     //Find the highest element in the last row
     const QModelIndex lastIndex = proxyModel->index(block.firstIndex.row() + block.items.count() - 1, q->modelColumn(), q->rootIndex());
-    QModelIndex prevIndex = proxyModel->index(lastIndex.row(), q->modelColumn(), q->rootIndex());
-    QRect prevRect = q->visualRect(prevIndex);
+    QRect prevRect = q->visualRect(lastIndex);
     int res = prevRect.height();
+    QModelIndex prevIndex = proxyModel->index(lastIndex.row() - 1, q->modelColumn(), q->rootIndex());
+    if (!prevIndex.isValid()) {
+        return res;
+    }
     Q_FOREVER {
-        prevIndex = proxyModel->index(prevIndex.row() - 1, q->modelColumn(), q->rootIndex());
-        if (!prevIndex.isValid()) {
-            return res;
-        }
         const QRect tempRect = q->visualRect(prevIndex);
         if (tempRect.topLeft().y() < prevRect.topLeft().y()) {
             break;
@@ -380,6 +379,7 @@ int KCategorizedView::Private::highestElementInLastRow(const Block &block) const
         if (prevIndex == block.firstIndex) {
             break;
         }
+        prevIndex = proxyModel->index(prevIndex.row() - 1, q->modelColumn(), q->rootIndex());
     }
 
     return res;
