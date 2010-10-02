@@ -863,53 +863,9 @@ struct SharedMemory
         return fnvHash32(utf8FileName) % indexTableSize();
     }
 
-    bool lock() const
-    {
-#ifdef KSDC_TIMEOUTS_SUPPORTED
-        struct timespec timeout;
-
-        // Long timeout, but if we fail to meet this timeout it's probably a cache
-        // corruption (and if we take 8 seconds then it should be much much quicker
-        // the next time anyways since we'd be paged back in from disk)
-        timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
-        timeout.tv_nsec = 0;
-
-        if (shmLock.type == LOCKTYPE_MUTEX) {
-            return pthread_mutex_timedlock(&shmLock.mutex, &timeout) >= 0;
-        }
-        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
-            return sem_timedwait(&shmLock.semaphore, &timeout) == 0;
-        }
-#else
-        // Some POSIX platforms don't have full support for timeouts. On these typically
-        // there will be no timed(lock|wait), so just don't bother and accept hangs on weird
-        // platforms.
-        if (shmLock.type == LOCKTYPE_MUTEX) {
-            return pthread_mutex_lock(&shmLock.mutex) == 0;
-        }
-        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
-            return sem_wait(&shmLock.semaphore) == 0;
-        }
-#endif
-
-        return false; // Should be unreachable, unless the cache is damaged.
-    }
-
-    void unlock() const
-    {
-        if (shmLock.type == LOCKTYPE_MUTEX) {
-            pthread_mutex_unlock(&shmLock.mutex);
-        }
-        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
-            sem_post(&shmLock.semaphore);
-        }
-    }
-
     void clear()
     {
-        lock();
         clearInternalTables();
-        unlock();
     }
 
     void removeEntry(uint index);
@@ -1124,6 +1080,48 @@ class KSharedDataCache::Private
         mapSharedMemory();
     }
 
+    bool lock() const
+    {
+#ifdef KSDC_TIMEOUTS_SUPPORTED
+        struct timespec timeout;
+
+        // Long timeout, but if we fail to meet this timeout it's probably a cache
+        // corruption (and if we take 8 seconds then it should be much much quicker
+        // the next time anyways since we'd be paged back in from disk)
+        timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
+        timeout.tv_nsec = 0;
+
+        if (shm->shmLock.type == SharedMemory::LOCKTYPE_MUTEX) {
+            return pthread_mutex_timedlock(&shm->shmLock.mutex, &timeout) >= 0;
+        }
+        else if (shm->shmLock.type == SharedMemory::LOCKTYPE_SEMAPHORE) {
+            return sem_timedwait(&shm->shmLock.semaphore, &timeout) == 0;
+        }
+#else
+        // Some POSIX platforms don't have full support for timeouts. On these typically
+        // there will be no timed(lock|wait), so just don't bother and accept hangs on weird
+        // platforms.
+        if (shm->shmLock.type == SharedMemory::LOCKTYPE_MUTEX) {
+            return pthread_mutex_lock(&shm->shmLock.mutex) == 0;
+        }
+        else if (shm->shmLock.type == SharedMemory::LOCKTYPE_SEMAPHORE) {
+            return sem_wait(&shm->shmLock.semaphore) == 0;
+        }
+#endif
+
+        return false; // Should be unreachable, unless the cache is damaged.
+    }
+
+    void unlock() const
+    {
+        if (shm->shmLock.type == SharedMemory::LOCKTYPE_MUTEX) {
+            pthread_mutex_unlock(&shm->shmLock.mutex);
+        }
+        else if (shm->shmLock.type == SharedMemory::LOCKTYPE_SEMAPHORE) {
+            sem_post(&shm->shmLock.semaphore);
+        }
+    }
+
     class CacheLocker
     {
         mutable Private * d;
@@ -1135,7 +1133,7 @@ class KSharedDataCache::Private
             // Locking can fail due to a timeout. If it happens too often even though
             // we're taking corrective action assume there's some disastrous problem
             // and give up.
-            while (!d->shm->lock()) {
+            while (!d->lock()) {
                 d->recoverCorruptedCache();
 
                 if (!d->m_attached) {
@@ -1169,7 +1167,7 @@ class KSharedDataCache::Private
                 //
                 // Now imagine what happens if two threads in this same process
                 // tried to do this concurrently. Since we wouldn't be attached
-                // to shm we couldn't use d->shm->lock to be safe during that
+                // to shm we couldn't use d->lock to be safe during that
                 // critical section (in between unlock and the subsequent
                 // lock), so one thread could set shm = 0 after unmapping and
                 // cause the other thread to crash. So we need a separate
@@ -1190,7 +1188,7 @@ class KSharedDataCache::Private
 
                     // Linux supports mremap, but it's not portable. So,
                     // drop the map and (try to) re-establish.
-                    d->shm->unlock();
+                    d->unlock();
 
                     ::munmap(d->shm, d->m_mapSize);
                     d->m_attached = false;
@@ -1230,7 +1228,7 @@ class KSharedDataCache::Private
         ~CacheLocker()
         {
             if (d->m_attached) {
-                d->shm->unlock();
+                d->unlock();
             }
         }
 
@@ -1513,7 +1511,11 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
 
 void KSharedDataCache::clear()
 {
-    d->shm->clear();
+    Private::CacheLocker lock(d);
+
+    if(!lock.failed()) {
+        d->shm->clear();
+    }
 }
 
 bool KSharedDataCache::contains(const QString &key) const
