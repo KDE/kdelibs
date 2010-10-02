@@ -172,21 +172,30 @@ QString UDisksManager::udiPrefix() const
 
 void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 {
-    emit deviceAdded(opath.path());
-    m_deviceCache.append(opath.path());
+    const QString udi = opath.path();
+
+    m_deviceCache.append(udi);
+    emit deviceAdded(udi);
     slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
 
 void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
 {
-    emit deviceRemoved(opath.path());
+    const QString udi = opath.path();
+
+    // case: hotswap event (optical drive with media inside)
+    if (m_knownDrivesWithMedia.contains(udi)) {
+        m_knownDrivesWithMedia.removeAll(udi);
+        emit deviceRemoved(udi + ":media");
+    }
+
+    emit deviceRemoved(udi);
     m_deviceCache.removeAll(opath.path());
-    slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
 
 void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
 {
-    QString udi = opath.path();
+    const QString udi = opath.path();
     UDisksDevice device(udi);
 
     if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
