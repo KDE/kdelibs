@@ -605,7 +605,17 @@ QString UDisksDevice::icon() const
 
 QString UDisksDevice::product() const
 {
-    return property("DriveModel").toString();
+    QString product = property("DriveModel").toString();
+    const bool isDrive = property( "DeviceIsDrive" ).toBool() && !m_udi.endsWith(":media");
+
+    if (!isDrive) {
+        QString label = property("IdLabel").toString();
+        if (!label.isEmpty()) {
+            product = label;
+        }
+    }
+
+    return product;
 }
 
 QString UDisksDevice::vendor() const
