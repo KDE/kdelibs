@@ -45,13 +45,6 @@ public:
     void pruneExpiredRules();
     KSslCertificateRule rule(const QSslCertificate &cert, const QString &hostName) const;
 
-    void setRootCertificateBlacklisted(const QSslCertificate &cert, bool isBlacklisted);
-    bool isRootCertificateBlacklisted(const QSslCertificate &cert) const;
-    // avoids many D-Bus roundtrips
-    QList<QByteArray> blacklistedRootCertDigests() const;
-
-    void setRootCertificates(const QList<QSslCertificate> &rootCertificates);
-    QList<QSslCertificate> rootCertificates() const;
 private:
     //AFAICS we don't need the d-pointer technique here but it makes the code look
     //more like the rest of kdelibs and it can be reused anywhere in kdelibs.
