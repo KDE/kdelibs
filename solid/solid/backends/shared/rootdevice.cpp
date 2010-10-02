@@ -23,11 +23,11 @@
 
 using namespace Solid::Backends::Shared;
 
-RootDevice::RootDevice(const QString &udi, const QString &product, const QString &description) :
+RootDevice::RootDevice(const QString &udi, const QString &parentUdi) :
     Solid::Ifaces::Device(),
     m_udi(udi),
-    m_product(product),
-    m_description(description)
+    m_parentUdi(parentUdi),
+    m_vendor("KDE")
 {
 }
 
@@ -42,12 +42,17 @@ QString RootDevice::udi() const
 
 QString RootDevice::parentUdi() const
 {
-    return QString();
+    return m_parentUdi;
 }
 
 QString RootDevice::vendor() const
 {
-    return QString();
+    return m_vendor;
+}
+
+void RootDevice::setVendor(const QString &vendor)
+{
+    m_vendor = vendor;
 }
 
 QString RootDevice::product() const
@@ -55,20 +60,39 @@ QString RootDevice::product() const
     return m_product;
 }
 
+void RootDevice::setProduct(const QString &product)
+{
+    m_product = product;
+}
+
 QString RootDevice::icon() const
 {
-    return QString();
+    return m_icon;
+}
+
+void RootDevice::setIcon(const QString &icon)
+{
+    m_icon = icon;
 }
 
 QStringList RootDevice::emblems() const
 {
-    QStringList res;
-    return QStringList();
+    return m_emblems;
+}
+
+void RootDevice::setEmblems(const QStringList &emblems)
+{
+    m_emblems = emblems;
 }
 
 QString RootDevice::description() const
 {
     return m_description;
+}
+
+void RootDevice::setDescription(const QString &description)
+{
+    m_description = description;
 }
 
 bool RootDevice::queryDeviceInterface(const Solid::DeviceInterface::Type&) const

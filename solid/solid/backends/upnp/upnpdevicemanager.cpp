@@ -99,9 +99,13 @@ QStringList UPnPDeviceManager::devicesFromQuery(const QString& parentUdi, Device
 QObject *UPnPDeviceManager::createDevice(const QString& udi)
 {
     if (udi==udiPrefix()) {
-        return new RootDevice(udiPrefix(),
-                              tr("UPnP Devices"),
-                              tr("UPnP devices detected on your network"));
+        RootDevice *root = new RootDevice(udiPrefix());
+
+        root->setProduct(tr("UPnP Devices"));
+        root->setDescription(tr("UPnP devices detected on your network"));
+        root->setIcon("network-server");
+
+        return root;
     }
 
     QString udnFromUdi = udi.mid(udiPrefix().length() + 1);

@@ -79,15 +79,17 @@ QStringList FstabManager::devicesFromQuery( const QString &parentUdi,
 
 QObject *FstabManager::createDevice(const QString &udi)
 {
-    QObject* result = 0;
     if (udi == udiPrefix()) {
-        result = new RootDevice(FSTAB_UDI_PREFIX,
-                                tr("Network Shares"),
-                                tr("NFS and SMB shares declared in your system"));
+        RootDevice *root = new RootDevice(FSTAB_UDI_PREFIX);
+
+        root->setProduct(tr("Network Shares"));
+        root->setDescription(tr("NFS and SMB shares declared in your system"));
+        root->setIcon("folder-remote");
+
+        return root;
     } else {
-        result = new FstabDevice(udi);
+        return new FstabDevice(udi);
     }
-    return result;
 }
 
 void FstabManager::onFstabChanged()

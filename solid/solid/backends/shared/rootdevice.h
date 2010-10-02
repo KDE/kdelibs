@@ -23,6 +23,8 @@
 
 #include <solid/ifaces/device.h>
 
+#include <QtCore/QStringList>
+
 namespace Solid
 {
 namespace Backends
@@ -30,37 +32,45 @@ namespace Backends
 namespace Shared
 {
 
-    class RootDevice : public Solid::Ifaces::Device
-    {
-        Q_OBJECT
+class RootDevice : public Solid::Ifaces::Device
+{
+    Q_OBJECT
 
-        public:
-            RootDevice(const QString &udi, const QString &product, const QString &description);
+public:
+    explicit RootDevice(const QString &udi, const QString &parentUdi = QString());
 
-            virtual ~RootDevice();
+    virtual ~RootDevice();
 
-            virtual QString udi() const;
+    virtual QString udi() const;
+    virtual QString parentUdi() const;
 
-            virtual QString parentUdi() const;
+    virtual QString vendor() const;
+    void setVendor(const QString &vendor);
 
-            virtual QString vendor() const;
+    virtual QString product() const;
+    void setProduct(const QString &product);
 
-            virtual QString product() const;
+    virtual QString icon() const;
+    void setIcon(const QString &icon);
 
-            virtual QString icon() const;
+    virtual QStringList emblems() const;
+    void setEmblems(const QStringList &emblems);
 
-            virtual QStringList emblems() const;
+    virtual QString description() const;
+    void setDescription(const QString &description);
 
-            virtual QString description() const;
+    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
 
-            virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
-
-            virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
-        private:
-            QString m_udi;
-            QString m_product;
-            QString m_description;
-    };
+    virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
+private:
+    QString m_udi;
+    QString m_parentUdi;
+    QString m_vendor;
+    QString m_product;
+    QString m_icon;
+    QStringList m_emblems;
+    QString m_description;
+};
 
 }
 }
