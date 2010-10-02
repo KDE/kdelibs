@@ -34,25 +34,35 @@
 #include <QtCore/QMutexLocker>
 
 #include <pthread.h>
+#include <semaphore.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
 
-// Mac OS X, for all its POSIX compliance, does not support timeouts on its mutexes, which
-// is kind of a disaster for cross-process support. So, disable support for shared memory
-// and add a wrapper implementation.
-#if !defined(_POSIX_TIMEOUTS) || !defined(_POSIX_THREADS) || (_POSIX_TIMEOUTS < 200112L) || (_POSIX_THREADS < 200112L)
-
-#ifdef _POSIX_THREAD_PROCESS_SHARED
-#undef _POSIX_THREAD_PROCESS_SHARED
+// Mac OS X, for all its POSIX compliance, does not support timeouts on its
+// mutexes, which is kind of a disaster for cross-process support. However
+// synchronization primitives still work, they just might hang if the cache is
+// corrupted, so keep going.
+#if defined(_POSIX_TIMEOUTS) && ((_POSIX_TIMEOUTS == 0) || (_POSIX_TIMEOUTS >= 200112L))
+#define KSDC_TIMEOUTS_SUPPORTED 1
 #endif
 
-#ifdef __GNUC__
-#warning "No support for POSIX timeouts and POSIX threads -- shared memory will be ignored"
+#if defined(__GNUC__) && !defined(KSDC_TIMEOUTS_SUPPORTED)
+#warning "No support for POSIX timeouts -- application hangs are possible if the cache is corrupt"
 #endif
 
+#if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED == 0) || (_POSIX_THREAD_PROCESS_SHARED >= 200112L))
+#define KSDC_THREAD_PROCESS_SHARED_SUPPORTED 1
+#endif
+
+#if defined(_POSIX_SEMAPHORES) && ((_POSIX_SEMAPHORES == 0) || (_POSIX_SEMAPHORES >= 200112L))
+#define KSDC_SEMAPHORES_SUPPORTED 1
+#endif
+
+#if defined(__GNUC__) && !defined(KSDC_SEMAPHORES_SUPPORTED) && !defined(KSDC_THREAD_PROCESS_SHARED_SUPPORTED)
+#warning "No system support claimed for process-shared synchronization, KSharedDataCache will be mostly useless."
 #endif
 
 // BSD/Mac OS X compat
@@ -227,8 +237,15 @@ struct PageTableEntry
 // by using special accessor functions.
 struct SharedMemory
 {
+    /**
+     * Note to downstream packagers: This version flag is intended to be
+     * machine-specific. The KDE-provided source code will not set the lower
+     * two bits to allow for distribution-specific needs, with the exception
+     * of version 1 which was already defined in KDE Platform 4.5.
+     * e.g. the next version bump will be from 4 to 8, then 12, etc.
+     */
     enum {
-        PIXMAP_CACHE_VERSION = 1,
+        PIXMAP_CACHE_VERSION = 4,
         MINIMUM_CACHE_SIZE = 4096
     };
 
@@ -238,7 +255,25 @@ struct SharedMemory
     QAtomicInt ready; ///< DO NOT INITIALIZE
     quint8     version;
 
-    mutable pthread_mutex_t lockMutex;
+    // This enum controls the type of the locking used for the cache to allow
+    // for as much portability as possible. This value will be stored in the
+    // cache and used by multiple processes, therefore you should consider this
+    // a versioned field, do not re-arrange.
+    enum {
+        LOCKTYPE_MUTEX     = 1,  // pthread_mutex
+        LOCKTYPE_SEMAPHORE = 2   // sem_t
+    };
+
+    struct
+    {
+        union
+        {
+            mutable pthread_mutex_t mutex;
+            mutable sem_t semaphore;
+        };
+        uint type;
+    } shmLock;
+
     uint       cacheSize;
     uint       cacheAvail;
     QAtomicInt evictionPolicy;
@@ -300,29 +335,53 @@ struct SharedMemory
         }
 
         if (processShared) {
+            bool success = false;
+
+#ifdef KSDC_THREAD_PROCESS_SHARED_SUPPORTED
             // Perform initialization.  We effectively hold a mini-lock right
             // now as long as all clients cooperate...
             pthread_mutexattr_t mutexAttr;
 
             // Initialize attributes, enable process-shared primitives, and setup
             // the mutex.
-            if (pthread_mutexattr_init(&mutexAttr) == 0) {
-                if (pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED) != 0 ||
-                    pthread_mutex_init(&lockMutex, &mutexAttr) != 0)
+            if (::sysconf(_SC_THREAD_PROCESS_SHARED) > 0 && pthread_mutexattr_init(&mutexAttr) == 0) {
+                if (pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED) == 0 &&
+                    pthread_mutex_init(&shmLock.mutex, &mutexAttr) == 0)
                 {
-                    pthread_mutexattr_destroy(&mutexAttr);
-                    return false; // No process sharing
+                    shmLock.type = LOCKTYPE_MUTEX;
+                    success = true;
                 }
-
                 pthread_mutexattr_destroy(&mutexAttr);
             }
-            else {
-                return false; // No mutex attrs
+#endif
+
+#ifdef KSDC_SEMAPHORES_SUPPORTED
+            // Try using a semaphore if pthreads didn't work.
+            // sem_init sets up process-sharing for us.
+            if (!success && ::sysconf(_SC_SEMAPHORES) > 0 &&
+                sem_init(&shmLock.semaphore, 1, 1) == 0)
+            {
+                shmLock.type = LOCKTYPE_SEMAPHORE;
+                success = true;
+            }
+#endif
+
+            if (!success) {
+                return false; // No process sharing
             }
         }
         else {
             // Only thread-shared
-            if (pthread_mutex_init(&lockMutex, 0) != 0) {
+            if (pthread_mutex_init(&shmLock.mutex, 0) == 0) {
+                shmLock.type = LOCKTYPE_MUTEX;
+            }
+#ifdef KSDC_SEMAPHORES_SUPPORTED
+            // Semaphores may be supported only in a thread-local manner.
+            else if (::sysconf(_SC_SEMAPHORES) > 0 && sem_init(&shmLock.semaphore, 0, 1) == 0) {
+                shmLock.type = LOCKTYPE_SEMAPHORE;
+            }
+#endif
+            else {
                 return false;
             }
         }
@@ -806,7 +865,7 @@ struct SharedMemory
 
     bool lock() const
     {
-#ifdef _POSIX_THREAD_PROCESS_SHARED
+#ifdef KSDC_TIMEOUTS_SUPPORTED
         struct timespec timeout;
 
         // Long timeout, but if we fail to meet this timeout it's probably a cache
@@ -815,18 +874,35 @@ struct SharedMemory
         timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
         timeout.tv_nsec = 0;
 
-        return pthread_mutex_timedlock(&lockMutex, &timeout) >= 0;
+        if (shmLock.type == LOCKTYPE_MUTEX) {
+            return pthread_mutex_timedlock(&shmLock.mutex, &timeout) >= 0;
+        }
+        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
+            return sem_timedwait(&shmLock.semaphore, &timeout) == 0;
+        }
 #else
-        // Some POSIX platforms don't have full support for pthreads. On these typically
-        // there will be no timedlock, so just don't bother and accept hangs on weird
+        // Some POSIX platforms don't have full support for timeouts. On these typically
+        // there will be no timed(lock|wait), so just don't bother and accept hangs on weird
         // platforms.
-        return pthread_mutex_lock(&lockMutex) == 0;
+        if (shmLock.type == LOCKTYPE_MUTEX) {
+            return pthread_mutex_lock(&shmLock.mutex) == 0;
+        }
+        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
+            return sem_wait(&shmLock.semaphore) == 0;
+        }
 #endif
+
+        return false; // Should be unreachable, unless the cache is damaged.
     }
 
     void unlock() const
     {
-        pthread_mutex_unlock(&lockMutex);
+        if (shmLock.type == LOCKTYPE_MUTEX) {
+            pthread_mutex_unlock(&shmLock.mutex);
+        }
+        else if (shmLock.type == LOCKTYPE_SEMAPHORE) {
+            sem_post(&shmLock.semaphore);
+        }
     }
 
     void clear()
@@ -895,8 +971,11 @@ class KSharedDataCache::Private
 
 // Compile time check ensures the required constants from the .h are available to be
 // queried at all.
-#ifdef _POSIX_THREAD_PROCESS_SHARED
+#ifdef KSDC_THREAD_PROCESS_SHARED_SUPPORTED
         systemSupportsProcessSharing = ::sysconf(_SC_THREAD_PROCESS_SHARED) > 0;
+#endif
+#ifdef KSDC_SEMAPHORES_SUPPORTED
+        systemSupportsProcessSharing |= ::sysconf(_SC_SEMAPHORES) > 0;
 #endif
 
         // We establish the shared memory mapping here, only if we will have appropriate
@@ -1006,8 +1085,8 @@ class KSharedDataCache::Private
             if (shm->ready.testAndSetAcquire(0, 1)) {
                 if (!shm->performInitialSetup(usingSharedMapping, cacheSize, pageSize)) {
                     kError(264) << "Unable to perform initial setup, this system probably "
-                                   "does not really support process-shared pthreads, even "
-                                   "though it claims otherwise.";
+                                   "does not really support process-shared pthreads or "
+                                   "semaphores, even though it claims otherwise.";
                     ::munmap(mapAddress, size);
                     file.remove();
                     return;
