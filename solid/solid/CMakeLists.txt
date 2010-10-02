@@ -123,6 +123,8 @@ set(solid_LIB_SRCS
    backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
    backends/fakehw/fakesmartcardreader.cpp
+
+   backends/shared/rootdevice.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)
@@ -214,7 +216,6 @@ if(NOT WIN32 AND NOT APPLE)
    backends/fstab/fstabstorageaccess.cpp
    backends/fstab/fstabhandling.cpp
    backends/fstab/fstabwatcher.cpp
-   backends/fstab/rootdevice.cpp
    )
 endif(NOT WIN32 AND NOT APPLE)
 

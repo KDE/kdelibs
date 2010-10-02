@@ -21,7 +21,7 @@
 #include "rootdevice.h"
 #include <QtCore/QStringList>
 
-using namespace Solid::Backends::Fstab;
+using namespace Solid::Backends::Shared;
 
 RootDevice::RootDevice(const QString &udi, const QString &product, const QString &description) :
     Solid::Ifaces::Device(),

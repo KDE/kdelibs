@@ -18,8 +18,8 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_FSTAB_ROOT_DEVICE_H
-#define SOLID_BACKENDS_FSTAB_ROOT_DEVICE_H
+#ifndef SOLID_BACKENDS_SHARED_ROOT_DEVICE_H
+#define SOLID_BACKENDS_SHARED_ROOT_DEVICE_H
 
 #include <solid/ifaces/device.h>
 
@@ -27,7 +27,7 @@ namespace Solid
 {
 namespace Backends
 {
-namespace Fstab
+namespace Shared
 {
 
     class RootDevice : public Solid::Ifaces::Device
@@ -65,4 +65,4 @@ namespace Fstab
 }
 }
 }
-#endif // SOLID_BACKENDS_UPNP_UPNP_DEVICE_H
+#endif

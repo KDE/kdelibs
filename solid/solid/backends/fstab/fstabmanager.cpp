@@ -21,11 +21,12 @@
 #include "fstabmanager.h"
 #include "fstabdevice.h"
 #include "fstabhandling.h"
-#include "rootdevice.h"
+#include "../shared/rootdevice.h"
 #include "fstabservice.h"
 #include "fstabwatcher.h"
 
 using namespace Solid::Backends::Fstab;
+using namespace Solid::Backends::Shared;
 
 FstabManager::FstabManager(QObject *parent)
   : Solid::Ifaces::DeviceManager(parent)
@@ -80,7 +81,9 @@ QObject *FstabManager::createDevice(const QString &udi)
 {
     QObject* result = 0;
     if (udi == udiPrefix()) {
-        result = new RootDevice(FSTAB_UDI_PREFIX, "fstab devices", "list of nfs and smb device present in fstab");
+        result = new RootDevice(FSTAB_UDI_PREFIX,
+                                tr("Network Shares"),
+                                tr("NFS and SMB shares declared in your system"));
     } else {
         result = new FstabDevice(udi);
     }
