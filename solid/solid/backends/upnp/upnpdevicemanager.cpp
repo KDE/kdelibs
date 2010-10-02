@@ -30,12 +30,11 @@
 #include <HDeviceProxy>
 #include <HUdn>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UPnP
-{
+#include "../shared/rootdevice.h"
+
+
+using namespace Solid::Backends::UPnP;
+using namespace Solid::Backends::Shared;
 
 UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
     Solid::Ifaces::DeviceManager(parent),
@@ -70,7 +69,7 @@ QString UPnPDeviceManager::udiPrefix() const
     return QString::fromLatin1("/org/kde/upnp");
 }
 
-QSet< DeviceInterface::Type > UPnPDeviceManager::supportedInterfaces() const
+QSet< Solid::DeviceInterface::Type > UPnPDeviceManager::supportedInterfaces() const
 {
     return m_supportedInterfaces;
 }
@@ -79,11 +78,11 @@ QStringList UPnPDeviceManager::allDevices()
 {
     QStringList result;
 
-    //result << udiPrefix();
+    result << udiPrefix();
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
-    result = upnpControlPoint->allDevices();
+    result+= upnpControlPoint->allDevices();
 
     UPnPControlPoint::releaseInstance();
 
@@ -97,8 +96,14 @@ QStringList UPnPDeviceManager::devicesFromQuery(const QString& parentUdi, Device
     return QStringList(); //FIXME implement it!
 }
 
-QObject* UPnPDeviceManager::createDevice(const QString& udi)
+QObject *UPnPDeviceManager::createDevice(const QString& udi)
 {
+    if (udi==udiPrefix()) {
+        return new RootDevice(udiPrefix(),
+                              tr("UPnP Devices"),
+                              tr("UPnP devices detected on your network"));
+    }
+
     QString udnFromUdi = udi.mid(udiPrefix().length() + 1);
     Herqq::Upnp::HUdn udn(udnFromUdi);
     if (udn.isValid(Herqq::Upnp::LooseChecks))
@@ -137,6 +142,3 @@ void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
     UPnPControlPoint::releaseInstance();
 }
 
-}
-}
-}
