@@ -66,7 +66,6 @@ void Solid::ManagerBasePrivate::loadBackends()
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 #        elif defined (Q_OS_UNIX)
             m_backends << new Solid::Backends::Hal::HalManager(0)
-                       << new Solid::Backends::KUPnP::KUPnPManager(0)
                        << new Solid::Backends::UDisks::UDisksManager(0)
                        << new Solid::Backends::UPower::UPowerManager(0)
                        << new Solid::Backends::Fstab::FstabManager(0);

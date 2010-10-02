@@ -128,22 +128,22 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
-   message(STATUS "Building Solid KUPnP backend." )
-   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+#   message(STATUS "Building Solid KUPnP backend." )
+#   set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
-   backends/kupnp/cagibidbuscodec.cpp
-   backends/kupnp/cagibidevice.cpp
-   backends/kupnp/kupnpstorageaccess.cpp
-   backends/kupnp/kupnpdeviceinterface.cpp
-   backends/kupnp/mediaserver1.cpp
-   backends/kupnp/mediaserver2.cpp
-   backends/kupnp/mediaserver3.cpp
-   backends/kupnp/internetgatewaydevice1.cpp
-   backends/kupnp/kupnpdevice.cpp
-   backends/kupnp/kupnprootdevice.cpp
-   backends/kupnp/kupnpmanager.cpp
+#   backends/kupnp/cagibidbuscodec.cpp
+#   backends/kupnp/cagibidevice.cpp
+#   backends/kupnp/kupnpstorageaccess.cpp
+#   backends/kupnp/kupnpdeviceinterface.cpp
+#   backends/kupnp/mediaserver1.cpp
+#   backends/kupnp/mediaserver2.cpp
+#   backends/kupnp/mediaserver3.cpp
+#   backends/kupnp/internetgatewaydevice1.cpp
+#   backends/kupnp/kupnpdevice.cpp
+#   backends/kupnp/kupnprootdevice.cpp
+#   backends/kupnp/kupnpmanager.cpp
 
-   )
+#   )
 
    macro_optional_find_package( HUpnp )
    macro_log_feature( HUPNP_FOUND "HUPnP" "Qt-based library for building UPnP devices and control points" "http://www.herqq.org" FALSE "" "" )
