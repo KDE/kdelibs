@@ -882,7 +882,6 @@ class KSharedDataCache::Private
            )
         : shm(0)
         , m_cacheName(name)
-        , m_attached(false)
         , m_mapSize(0)
         , m_defaultCacheSize(defaultCacheSize)
         , m_expectedItemSize(expectedItemSize)
@@ -962,7 +961,6 @@ class KSharedDataCache::Private
 
                     // CAUTION: Potentially recursive since the recovery
                     // involves calling this function again.
-                    m_attached = true;
                     m_mapSize = size;
                     shm = mapped;
                     recoverCorruptedCache();
@@ -1033,8 +1031,9 @@ class KSharedDataCache::Private
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
                 kError(264) << "Unable to acquire shared lock, is the cache corrupt?";
 
-                ::munmap(mapAddress, size);
+                ::munmap(shm, size);
                 file.remove(); // Unlink the cache in case it's corrupt.
+                shm = 0;
                 return; // Fallback to QCache (later)
             }
 
@@ -1043,8 +1042,9 @@ class KSharedDataCache::Private
                     kError(264) << "Unable to perform initial setup, this system probably "
                                    "does not really support process-shared pthreads or "
                                    "semaphores, even though it claims otherwise.";
-                    ::munmap(mapAddress, size);
+                    ::munmap(shm, size);
                     file.remove();
+                    shm = 0;
                     return;
                 }
             }
@@ -1061,7 +1061,6 @@ class KSharedDataCache::Private
         kDebug(264) << "Cache attached to shared memory,"
                     << shm->cacheAvail * shm->cachePageSize() << "bytes available out of"
                     << shm->cacheSize;
-        m_attached = true;
     }
 
     // Called whenever the cache is apparently corrupt (for instance, a timeout trying to
@@ -1069,9 +1068,8 @@ class KSharedDataCache::Private
     void recoverCorruptedCache()
     {
         KSharedDataCache::deleteCache(m_cacheName);
-        if (m_attached) {
+        if (shm) {
             ::munmap(shm, m_mapSize);
-            m_attached = false;
             shm = 0;
             m_mapSize = 0;
         }
@@ -1138,7 +1136,7 @@ class KSharedDataCache::Private
             while (!d->lock()) {
                 d->recoverCorruptedCache();
 
-                if (!d->m_attached) {
+                if (!d->shm) {
                     kWarning(264) << "Lost the connection to shared memory for cache"
                                   << d->m_cacheName;
                     return false;
@@ -1149,7 +1147,6 @@ class KSharedDataCache::Private
                                 << d->m_cacheName << "giving up trying to access cache.";
                     ::munmap(d->shm, d->m_mapSize);
                     d->shm = 0;
-                    d->m_attached = false;
                     return false;
                 }
             }
@@ -1160,7 +1157,7 @@ class KSharedDataCache::Private
         public:
         CacheLocker(const Private *_d) : d(const_cast<Private *>(_d))
         {
-            if (d->m_attached) {
+            if (d->shm) {
                 // A separate mutex for the shm lock? What gives?
                 // The reason is that we have to check to see if the cache
                 // was made bigger by a different process. If so, we need to
@@ -1193,7 +1190,6 @@ class KSharedDataCache::Private
                     d->unlock();
 
                     ::munmap(d->shm, d->m_mapSize);
-                    d->m_attached = false;
                     d->m_mapSize = 0;
                     d->shm = 0;
 
@@ -1215,7 +1211,6 @@ class KSharedDataCache::Private
                     }
 
                     d->shm = reinterpret_cast<SharedMemory *>(newMap);
-                    d->m_attached = true;
                     d->m_mapSize = testSize;
 
                     if (!cautiousLock()) {
@@ -1229,7 +1224,7 @@ class KSharedDataCache::Private
 
         ~CacheLocker()
         {
-            if (d->m_attached) {
+            if (d->shm) {
                 d->unlock();
             }
         }
@@ -1243,7 +1238,6 @@ class KSharedDataCache::Private
     SharedMemory *shm;
     QString m_cacheName;
     QMutex m_threadLock;
-    bool m_attached;
     uint m_mapSize;
     uint m_defaultCacheSize;
     uint m_expectedItemSize;
@@ -1324,7 +1318,7 @@ KSharedDataCache::~KSharedDataCache()
     // Note that there is no other actions required to separate from the
     // shared memory segment, simply unmapping is enough. This makes things
     // *much* easier so I'd recommend maintaining this ideal.
-    if (d->m_attached) {
+    if (d->shm) {
         ::munmap(d->shm, d->m_mapSize);
     }
 
@@ -1475,7 +1469,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
 
 bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
 {
-    if (!d->m_attached) {
+    if (!d->shm) {
         return false;
     }
 
@@ -1563,7 +1557,7 @@ unsigned KSharedDataCache::freeSize() const
 
 KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 {
-    if (d->m_attached) {
+    if (d->shm) {
         int policy(d->shm->evictionPolicy);
         return static_cast<EvictionPolicy>(policy);
     }
