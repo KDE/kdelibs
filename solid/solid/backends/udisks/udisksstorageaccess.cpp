@@ -154,8 +154,13 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
 
 bool UDisksStorageAccess::mount()
 {
+    QString path = m_device->udi();
+    if (path.endsWith(":media")) {
+        path.chop(6);
+    }
+
     QDBusConnection c = QDBusConnection::systemBus();
-    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemMount");
+    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemMount");
     QString fstype;
 
     if (m_device->property("IdUsage").toString() == "filesystem")
@@ -171,8 +176,13 @@ bool UDisksStorageAccess::mount()
 
 bool UDisksStorageAccess::unmount()
 {
+    QString path = m_device->udi();
+    if (path.endsWith(":media")) {
+        path.chop(6);
+    }
+
     QDBusConnection c = QDBusConnection::systemBus();
-    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
+    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
 
     msg << QStringList();   // options, unused now
 
