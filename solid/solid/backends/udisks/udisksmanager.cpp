@@ -26,7 +26,10 @@
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusMetaType>
 
+#include "../shared/rootdevice.h"
+
 using namespace Solid::Backends::UDisks;
+using namespace Solid::Backends::Shared;
 
 UDisksManager::UDisksManager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
@@ -65,10 +68,21 @@ UDisksManager::~UDisksManager()
 
 QObject* UDisksManager::createDevice(const QString& udi)
 {
-    if (m_deviceCache.contains(udi))
+    if (udi==udiPrefix()) {
+        RootDevice *root = new RootDevice(udi);
+
+        root->setProduct(tr("Storage"));
+        root->setDescription(tr("Storage devices"));
+        root->setIcon("server-database"); // Obviously wasn't meant for that, but maps nicely in oxygen icon set :-p
+
+        return root;
+
+    } else if (m_deviceCache.contains(udi)) {
         return new UDisksDevice(udi);
-    else
+
+    } else {
         return 0;
+    }
 }
 
 QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
@@ -104,7 +118,9 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
 QStringList UDisksManager::allDevices()
 {
     m_knownDrivesWithMedia.clear();
+
     QStringList result;
+    result << udiPrefix();
 
     foreach(const QString & udi, allDevicesInternal())
     {
