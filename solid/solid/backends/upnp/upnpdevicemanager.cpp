@@ -44,8 +44,6 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
 {
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
-    qDebug() << "******** UPnP Device Manager Created *********";
-
     connect(
         upnpControlPoint->controlPoint(),
         SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
