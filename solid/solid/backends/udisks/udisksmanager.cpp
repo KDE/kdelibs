@@ -186,6 +186,7 @@ void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
     // case: hotswap event (optical drive with media inside)
     if (m_knownDrivesWithMedia.contains(udi)) {
         m_knownDrivesWithMedia.removeAll(udi);
+        m_deviceCache.removeAll(udi + ":media");
         emit deviceRemoved(udi + ":media");
     }
 
@@ -203,12 +204,14 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
         if (!m_knownDrivesWithMedia.contains(udi) && device.property("DeviceIsOpticalDisc").toBool())
         {
             m_knownDrivesWithMedia.append(udi);
+            m_deviceCache.append(udi + ":media");
             emit deviceAdded(udi + ":media");
         }
 
         if (m_knownDrivesWithMedia.contains(udi) && !device.property("DeviceIsOpticalDisc").toBool())
         {
             m_knownDrivesWithMedia.removeAll(udi);
+            m_deviceCache.removeAll(udi + ":media");
             emit deviceRemoved(udi + ":media");
         }
     }
