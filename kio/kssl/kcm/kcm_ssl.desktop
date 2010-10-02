@@ -10,6 +10,7 @@ X-KDE-System-Settings-Parent-Category=advanced-user-settings
 
 Name=SSL Preferences
 Name[en_GB]=SSL Preferences
+Name[ia]=Preferentias de SSL
 Name[pt]=Preferências do SSL
 Name[pt_BR]=Preferências do SSL
 Name[sv]=SSL-inställningar
@@ -18,6 +19,7 @@ Name[x-test]=xxSSL Preferencesxx
 Name[zh_TW]=SSL 喜好設定
 Comment=SSL Versions and Certificates
 Comment[en_GB]=SSL Versions and Certificates
+Comment[ia]=Versiones de SSL e Certificatos
 Comment[pt]=Versões e Certificados de SSL
 Comment[pt_BR]=Versões e certificados de SSL
 Comment[sv]=SSL-versioner och -certifikat
