@@ -27,7 +27,10 @@
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusMetaType>
 
+#include "../shared/rootdevice.h"
+
 using namespace Solid::Backends::UPower;
+using namespace Solid::Backends::Shared;
 
 UPowerManager::UPowerManager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
@@ -57,10 +60,21 @@ UPowerManager::~UPowerManager()
 
 QObject* UPowerManager::createDevice(const QString& udi)
 {
-    if (allDevices().contains(udi))
+    if (udi==udiPrefix()) {
+        RootDevice *root = new RootDevice(udiPrefix());
+
+        root->setProduct(tr("Power Management"));
+        root->setDescription(tr("Batteries and other sources of power"));
+        root->setIcon("preferences-system-power-management");
+
+        return root;
+
+    } else if (allDevices().contains(udi)) {
         return new UPowerDevice(udi);
-    else
+
+    } else {
         return 0;
+    }
 }
 
 QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
@@ -104,6 +118,8 @@ QStringList UPowerManager::allDevices()
     }
 
     QStringList retList;
+    retList << udiPrefix();
+
     foreach (const QDBusObjectPath &path, reply.value()) {
         retList << path.path();
     }

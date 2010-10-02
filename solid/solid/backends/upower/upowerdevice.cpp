@@ -151,7 +151,7 @@ QString UPowerDevice::udi() const
 
 QString UPowerDevice::parentUdi() const
 {
-    return QString();
+    return UP_UDI_PREFIX;
 }
 
 void UPowerDevice::checkCache(const QString &key) const
