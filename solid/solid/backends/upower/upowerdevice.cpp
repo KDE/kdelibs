@@ -97,9 +97,9 @@ QStringList UPowerDevice::emblems() const
 QString UPowerDevice::description() const
 {
     if (queryDeviceInterface(Solid::DeviceInterface::AcAdapter))
-        return QObject::tr("AC adapter");
+        return QObject::tr("A/C Adapter");
     else if (queryDeviceInterface(Solid::DeviceInterface::Battery))
-        return QObject::tr("%1 battery", "%1 is battery technology").arg(batteryTechnology());
+        return QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology());
     else
         return product();
 }
@@ -110,17 +110,17 @@ QString UPowerDevice::batteryTechnology() const
     switch (tech)
     {
     case 1:
-        return QObject::tr("Lithium ion", "battery technology");
+        return QObject::tr("Lithium Ion", "battery technology");
     case 2:
-        return QObject::tr("Lithium polymer", "battery technology");
+        return QObject::tr("Lithium Polymer", "battery technology");
     case 3:
-        return QObject::tr("Lithium iron phosphate", "battery technology");
+        return QObject::tr("Lithium Iron Phosphate", "battery technology");
     case 4:
-        return QObject::tr("Lead acid", "battery technology");
+        return QObject::tr("Lead Acid", "battery technology");
     case 5:
-        return QObject::tr("Nickel cadmium", "battery technology");
+        return QObject::tr("Nickel Cadmium", "battery technology");
     case 6:
-        return QObject::tr("Nickel metal hydride", "battery technology");
+        return QObject::tr("Nickel Metal Hydride", "battery technology");
     default:
         return QObject::tr("Unknown", "battery technology");
     }
@@ -128,15 +128,26 @@ QString UPowerDevice::batteryTechnology() const
 
 QString UPowerDevice::icon() const
 {
-    if (queryDeviceInterface(Solid::DeviceInterface::Battery))
+    if (queryDeviceInterface(Solid::DeviceInterface::AcAdapter)) {
+        return "preferences-system-power-management";
+
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Battery)) {
         return "battery";
 
-    return QString();
+    } else {
+        return QString();
+    }
 }
 
 QString UPowerDevice::product() const
 {
-    return property("Model").toString();
+    QString result = property("Model").toString();
+
+    if (result.isEmpty()) {
+        result = description();
+    }
+
+    return result;
 }
 
 QString UPowerDevice::vendor() const
