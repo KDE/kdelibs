@@ -1117,9 +1117,11 @@ class KSharedDataCache::Private
         if (shm->shmLock.type == SharedMemory::LOCKTYPE_MUTEX) {
             pthread_mutex_unlock(&shm->shmLock.mutex);
         }
+#ifdef KSDC_SEMAPHORES_SUPPORTED
         else if (shm->shmLock.type == SharedMemory::LOCKTYPE_SEMAPHORE) {
             sem_post(&shm->shmLock.semaphore);
         }
+#endif
     }
 
     class CacheLocker
