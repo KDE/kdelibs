@@ -48,7 +48,7 @@ static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device
     /* the path table record we're on */
     int curr_record = 1;
 
-    Solid::OpticalDisc::ContentType result;
+    Solid::OpticalDisc::ContentType result = Solid::OpticalDisc::NoContent;
 
     int fd = open (QFile::encodeName(device_file), O_RDONLY);
 
@@ -228,13 +228,13 @@ Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 
 Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 {
-    Solid::OpticalDisc::ContentTypes content;
+    Solid::OpticalDisc::ContentTypes content = Solid::OpticalDisc::NoContent;
 
     bool hasData = m_device->property("OpticalDiscNumTracks").toInt() > 0;
     bool hasAudio = m_device->property("OpticalDiscNumAudioTracks").toInt() > 0;
 
     if ( hasData )
-        content = Solid::OpticalDisc::Data;
+        content |= Solid::OpticalDisc::Data;
     if ( hasAudio )
         content |= Solid::OpticalDisc::Audio;
 
