@@ -151,7 +151,7 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
                 || (property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
         case Solid::DeviceInterface::StorageAccess:
             return (property("DeviceIsPartition").toBool() && property("IdUsage").toString()=="filesystem")
-                || (property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
+                || (property("DeviceIsOpticalDisc").toBool() && property("IdUsage").toString()=="filesystem" && m_udi.endsWith(":media"));
         case Solid::DeviceInterface::StorageDrive:
             return !m_udi.endsWith(":media") && property("DeviceIsDrive").toBool();
         case Solid::DeviceInterface::OpticalDrive:
