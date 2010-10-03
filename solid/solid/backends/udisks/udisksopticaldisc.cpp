@@ -230,15 +230,17 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 {
     Solid::OpticalDisc::ContentTypes content = Solid::OpticalDisc::NoContent;
 
-    bool hasData = m_device->property("OpticalDiscNumTracks").toInt() > 0;
-    bool hasAudio = m_device->property("OpticalDiscNumAudioTracks").toInt() > 0;
+    if (!m_device->property("OpticalDiscIsBlank").toBool()) {
+        bool hasData = m_device->property("OpticalDiscNumTracks").toInt() > 0;
+        bool hasAudio = m_device->property("OpticalDiscNumAudioTracks").toInt() > 0;
 
-    if ( hasData )
-        content |= Solid::OpticalDisc::Data;
-    if ( hasAudio )
-        content |= Solid::OpticalDisc::Audio;
+        if ( hasData )
+            content |= Solid::OpticalDisc::Data;
+        if ( hasAudio )
+            content |= Solid::OpticalDisc::Audio;
 
-    content |= advancedDiscDetect(m_device->property("DeviceFile").toString());
+        content |= advancedDiscDetect(m_device->property("DeviceFile").toString());
+    }
 
     return content;
 }
