@@ -38,6 +38,10 @@
 #include "backends/upnp/upnpdevicemanager.h"
 #endif
 
+#if defined (UDEV_FOUND)
+#include "backends/udev/udevmanager.h"
+#endif
+
 #include "backends/fstab/fstabmanager.h"
 
 #elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
@@ -64,6 +68,9 @@ void Solid::ManagerBasePrivate::loadBackends()
 #        if defined (Q_OS_MAC)
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 #        elif defined (Q_OS_UNIX)
+#           if defined (UDEV_FOUND)
+                m_backends << new Solid::Backends::UDev::UDevManager(0);
+#           endif
             m_backends << new Solid::Backends::Hal::HalManager(0)
                        << new Solid::Backends::UDisks::UDisksManager(0)
                        << new Solid::Backends::UPower::UPowerManager(0)

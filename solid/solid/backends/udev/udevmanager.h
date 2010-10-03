@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
+    Copyright 2010 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -18,5 +18,41 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#cmakedefine UDEV_FOUND
-#cmakedefine HUPNP_FOUND
+#ifndef SOLID_BACKENDS_UDEV_UDEVMANAGER_H
+#define SOLID_BACKENDS_UDEV_UDEVMANAGER_H
+
+#include <solid/ifaces/devicemanager.h>
+
+namespace Solid
+{
+namespace Backends
+{
+namespace UDev
+{
+class UDevManager : public Solid::Ifaces::DeviceManager
+{
+    Q_OBJECT
+
+public:
+    UDevManager(QObject *parent);
+    virtual ~UDevManager();
+
+    virtual QString udiPrefix() const;
+    virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
+
+    virtual QStringList allDevices();
+
+    virtual QStringList devicesFromQuery(const QString &parentUdi,
+                                         Solid::DeviceInterface::Type type);
+
+    virtual QObject *createDevice(const QString &udi);
+
+private:
+    class Private;
+    Private *const d;
+};
+}
+}
+}
+
+#endif // SOLID_BACKENDS_UDEV_UDEVMANAGER_H

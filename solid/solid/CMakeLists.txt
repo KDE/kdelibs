@@ -40,6 +40,7 @@ configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-proce
 file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/fakehw
    ${CMAKE_CURRENT_BINARY_DIR}/backends/hal
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/udev
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
 )
 
@@ -145,8 +146,10 @@ if(NOT WIN32 AND NOT APPLE)
 
 #   )
 
+   macro_optional_find_package( UDev )
    macro_optional_find_package( HUpnp )
    macro_log_feature( HUPNP_FOUND "HUPnP" "Qt-based library for building UPnP devices and control points" "http://www.herqq.org" FALSE "" "" )
+   macro_log_feature( UDEV_FOUND "UDev" "UDev dynamic /dev directory " "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
    if ( HUPNP_FOUND )
       include_directories( ${HUPNP_INCLUDE_DIR} )
@@ -161,7 +164,15 @@ if(NOT WIN32 AND NOT APPLE)
          backends/upnp/upnpcontrolpoint.cpp
       )
 
-   endif()
+   endif( HUPNP_FOUND )
+
+   if ( UDEV_FOUND )
+      set(solid_LIB_SRCS ${solid_LIB_SRCS}
+      backends/udev/udevdevice.cpp
+      backends/udev/udevmanager.cpp
+      )
+   endif( UDEV_FOUND )
+
 
    message(STATUS "Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -217,6 +228,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/fstab/fstabhandling.cpp
    backends/fstab/fstabwatcher.cpp
    )
+
 endif(NOT WIN32 AND NOT APPLE)
 
 if(APPLE)
@@ -305,6 +317,10 @@ kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
 if ( HUPNP_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
 endif( HUPNP_FOUND )
+
+if ( UDEV_FOUND )
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
+endif ( UDEV_FOUND )
 
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )

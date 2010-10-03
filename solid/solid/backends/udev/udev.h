@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
+    Copyright 2010 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -18,5 +18,19 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#cmakedefine UDEV_FOUND
-#cmakedefine HUPNP_FOUND
+#ifndef SOLID_BACKENDS_UDEV_H
+#define SOLID_BACKENDS_UDEV_H
+
+#include <libudev.h>
+
+#define UDEV_UDI_PREFIX "/org/kde/solid/udev"
+
+typedef struct udev udev_;
+typedef struct udev_list udev_list_;
+typedef struct udev_queue udev_queue_;
+typedef struct udev_device udev_device_;
+typedef struct udev_monitor udev_monitor_;
+typedef struct udev_enumerate udev_enumerate_;
+typedef struct udev_list_entry udev_list_entry_;
+
+#endif // SOLID_BACKENDS_UDEV_H
