@@ -839,42 +839,4 @@ QString HalDevice::volumeDescription() const
     return description;
 }
 
-QString HalDevice::deviceDBusPath() const
-{
-    return QString("/org/kde/solid/HalDevice_%1").arg(udi());
-}
-
-void HalDevice::broadcastActionDone(const QString& signalName, int error, QVariant errorData, const QString &udi) const
-{
-    QDBusMessage signal = QDBusMessage::createSignal(deviceDBusPath(), "org.kde.solid.HalDevice", signalName);
-    if (errorData.isValid()) {
-        signal << error << QVariant::fromValue(QDBusVariant(errorData)) << udi;
-    } else {
-        signal << error << QVariant::fromValue(QDBusVariant(QString())) << udi;
-    }
-
-    QDBusConnection::sessionBus().send(signal);
-}
-
-void HalDevice::broadcastActionRequested(const QString& signalName) const
-{
-    QDBusMessage signal = QDBusMessage::createSignal(deviceDBusPath(), "org.kde.solid.HalDevice", signalName);
-    QDBusConnection::sessionBus().send(signal);
-
-}
-
-void HalDevice::connectActionSignal(const QString& signalName, QObject* dest, const char * slot) const
-{
-    QDBusConnection::sessionBus().connect(QString(), deviceDBusPath(), "org.kde.solid.HalDevice", signalName,  dest, slot);
-}
-
-QVariant HalDevice::variantFromDBusVariant(const QDBusVariant variant)
-{
-    if (!variant.variant().toString().isNull()) {
-        return variant.variant();
-    } else {
-        return QVariant();
-    }
-}
-
 #include "backends/hal/haldevice.moc"

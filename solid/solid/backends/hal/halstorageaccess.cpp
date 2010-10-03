@@ -61,30 +61,35 @@ StorageAccess::~StorageAccess()
 
 void StorageAccess::connectDBusSignals()
 {
-    m_device->connectActionSignal("setupRequested",  this, SLOT(slotSetupRequested()));
-    m_device->connectActionSignal("teardownRequested", this, SLOT(slotTeardownRequested()));
-    m_device->connectActionSignal("setupDone",  this, SLOT(slotSetupDone(int, QDBusVariant, const QString&)));
-    m_device->connectActionSignal("teardownDone",  this, SLOT(slotTeardownDone(int, QDBusVariant, const QString&)));
-    m_device->connectActionSignal("ejectDone",  this, SLOT(slotEjectDone(int, QDBusVariant, const QString&)));
+    m_device->registerAction("setup", this,
+                             SLOT(slotSetupRequested()),
+                             SLOT(slotSetupDone(int, const QString&)));
 
+    m_device->registerAction("teardown", this,
+                             SLOT(slotTeardownRequested()),
+                             SLOT(slotTeardownDone(int, const QString&)));
+
+    m_device->registerAction("eject", this,
+                             SLOT(slotEjectRequested()),
+                             SLOT(slotEjectDone(int, const QString&)));
 }
 
-void StorageAccess::slotSetupDone(int error, QDBusVariant errorData, const QString& udi)
+void StorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
-    emit setupDone(static_cast<Solid::ErrorType>(error), HalDevice::variantFromDBusVariant(errorData), udi);
+    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
-void StorageAccess::slotTeardownDone(int error, QDBusVariant errorData, const QString &udi)
+void StorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
     m_teardownInProgress = false;
-    emit teardownDone(static_cast<Solid::ErrorType>(error), HalDevice::variantFromDBusVariant(errorData), udi);
+    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
-void StorageAccess::slotEjectDone(int error, QDBusVariant errorData, const QString &udi)
+void StorageAccess::slotEjectDone(int error, const QString &errorString)
 {
     m_ejectInProgress = false;
-    emit ejectDone(static_cast<Solid::ErrorType>(error), HalDevice::variantFromDBusVariant(errorData), udi);
+    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 bool StorageAccess::isAccessible() const
@@ -161,7 +166,7 @@ bool StorageAccess::setup()
         return false;
     }
     m_setupInProgress = true;
-    m_device->broadcastActionRequested("setupRequested");
+    m_device->broadcastActionRequested("setup");
 
     if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return requestPassphrase();
@@ -178,7 +183,7 @@ bool StorageAccess::teardown()
         return false;
     }
     m_teardownInProgress = true;
-    m_device->broadcastActionRequested("teardownRequested");
+    m_device->broadcastActionRequested("teardown");
 
     if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return callCryptoTeardown();
@@ -201,10 +206,10 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     if (m_setupInProgress) {
         m_setupInProgress = false;
-        m_device->broadcastActionDone("setupDone", Solid::NoError, QVariant(), m_device->udi());
+        m_device->broadcastActionDone("setup");
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
-        m_device->broadcastActionDone("teardownDone", Solid::NoError, QVariant(), m_device->udi());
+        m_device->broadcastActionDone("teardown");
 
         HalDevice drive(m_device->property("block.storage_device").toString());
         if (drive.property("storage.drive_type").toString()!="cdrom"
@@ -228,12 +233,13 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
 #endif
 
             m_ejectInProgress = true;
+            m_device->broadcastActionRequested("eject");
             m_process = FstabHandling::callSystemCommand("eject", args,
                                                          this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
         }
     } else if (m_ejectInProgress) {
         m_ejectInProgress = false;
-        m_device->broadcastActionDone("ejectDone", Solid::NoError, QVariant(), m_device->udi());
+        m_device->broadcastActionDone("eject");
     }
 }
 
@@ -242,19 +248,16 @@ void StorageAccess::slotDBusError(const QDBusError &error)
     // TODO: Better error reporting here
     if (m_setupInProgress) {
         m_setupInProgress = false;
-        m_device->broadcastActionDone("setupDone", Solid::UnauthorizedOperation,
-                       QString(error.name()+": "+error.message()),
-                       m_device->udi());
+        m_device->broadcastActionDone("setup", Solid::UnauthorizedOperation,
+                                      QString(error.name()+": "+error.message()));
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
-        m_device->broadcastActionDone("teardownDone", Solid::UnauthorizedOperation,
-                          QString(error.name()+": "+error.message()),
-                          m_device->udi());
+        m_device->broadcastActionDone("teardown", Solid::UnauthorizedOperation,
+                                      QString(error.name()+": "+error.message()));
     } else if (m_ejectInProgress) {
         m_ejectInProgress = false;
-        m_device->broadcastActionDone("ejectDone", Solid::UnauthorizedOperation,
-                       QString(error.name()+": "+error.message()),
-                       m_device->udi());
+        m_device->broadcastActionDone("eject", Solid::UnauthorizedOperation,
+                                      QString(error.name()+": "+error.message()));
     }
 }
 
@@ -265,25 +268,23 @@ void Solid::Backends::Hal::StorageAccess::slotProcessFinished(int exitCode, QPro
         m_setupInProgress = false;
 
         if (exitCode==0) {
-            m_device->broadcastActionDone("setupDone", Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("setup");
         } else {
-            m_device->broadcastActionDone("setupDone", Solid::UnauthorizedOperation,
-                           m_process->readAllStandardError(),
-                           m_device->udi());
+            m_device->broadcastActionDone("setup", Solid::UnauthorizedOperation,
+                                          m_process->readAllStandardError());
         }
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         if (exitCode==0) {
-            m_device->broadcastActionDone("teardownDone", Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("teardown");
         } else {
-            m_device->broadcastActionDone("teardownDone", Solid::UnauthorizedOperation,
-                              m_process->readAllStandardError(),
-                              m_device->udi());
+            m_device->broadcastActionDone("teardown", Solid::UnauthorizedOperation,
+                                          m_process->readAllStandardError());
         }
     } else if (m_ejectInProgress) {
         if (exitCode==0)  {
             m_ejectInProgress = false;
-            m_device->broadcastActionDone("ejectDone", Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("eject");
         } else {
             callHalVolumeEject();
         }
@@ -302,6 +303,11 @@ void StorageAccess::slotTeardownRequested()
 {
     m_teardownInProgress = true;
     emit teardownRequested(m_device->udi());
+}
+
+void StorageAccess::slotEjectRequested()
+{
+    m_ejectInProgress = true;
 }
 
 QString generateReturnObjectPath()
@@ -349,7 +355,7 @@ void StorageAccess::passphraseReply(const QString &passphrase)
             callCryptoSetup(passphrase);
         } else {
             m_setupInProgress = false;
-            m_device->broadcastActionDone("setupDone", Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("setup");
         }
     }
 }

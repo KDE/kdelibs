@@ -57,6 +57,9 @@ private Q_SLOTS:
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
 
+    void slotEjectRequested();
+    void slotEjectDone(int error, const QString &errorString);
+
 private:
     bool m_ejectInProgress;
 };

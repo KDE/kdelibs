@@ -61,7 +61,7 @@ private Q_SLOTS:
     void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void slotEjectRequested();
-    void slotEjectDone(int error, QDBusVariant errorData, const QString &udi);
+    void slotEjectDone(int error, const QString &errorString);
 
 private:
     bool callHalDriveEject();

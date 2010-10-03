@@ -31,9 +31,11 @@ UDisksOpticalDrive::UDisksOpticalDrive(UDisksDevice *device)
 {
   // TODO: ...
 /*    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-             this, SLOT(slotCondition(const QString &, const QString &)));
-    m_device->connectActionSignal("ejectRequested",  this, SLOT(slotEjectRequested()));
-    m_device->connectActionSignal("ejectDone",  this, SLOT(slotEjectDone(int, QDBusVariant, const QString&)));*/
+      this, SLOT(slotCondition(const QString &, const QString &))); */
+    m_device->registerAction("eject", this,
+                             SLOT(slotEjectRequested()),
+                             SLOT(slotEjectDone(int, const QString&)));
+
 }
 
 UDisksOpticalDrive::~UDisksOpticalDrive()
@@ -46,7 +48,7 @@ bool UDisksOpticalDrive::eject()
     if (m_ejectInProgress)
         return false;
     m_ejectInProgress = true;
-    emit ejectRequested(m_device->udi());
+    m_device->broadcastActionRequested("eject");
 
     QDBusConnection c = QDBusConnection::systemBus();
 
@@ -72,13 +74,26 @@ bool UDisksOpticalDrive::eject()
 void UDisksOpticalDrive::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     m_ejectInProgress = false;
-    emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
+    m_device->broadcastActionDone("eject");
 }
 
 void UDisksOpticalDrive::slotDBusError(const QDBusError &error)
 {
     m_ejectInProgress = false;
-    emit ejectDone(Solid::UnauthorizedOperation, error.name()+": "+error.message(), m_device->udi());
+    m_device->broadcastActionDone("eject", Solid::UnauthorizedOperation,
+                                  error.name()+": "+error.message());
+}
+
+void UDisksOpticalDrive::slotEjectRequested()
+{
+    m_ejectInProgress = true;
+    emit ejectRequested(m_device->udi());
+}
+
+void UDisksOpticalDrive::slotEjectDone(int error, const QString &errorString)
+{
+    m_ejectInProgress = false;
+    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 QList< int > UDisksOpticalDrive::writeSpeeds() const
@@ -136,4 +151,3 @@ Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
 
     return supported;
 }
-

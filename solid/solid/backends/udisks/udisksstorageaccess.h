@@ -64,6 +64,13 @@ private Q_SLOTS:
     void slotDBusReply( const QDBusMessage & reply );
     void slotDBusError( const QDBusError & error );
 
+    void connectDBusSignals();
+
+    void slotSetupRequested();
+    void slotSetupDone(int error, const QString &errorString);
+    void slotTeardownRequested();
+    void slotTeardownDone(int error, const QString &errorString);
+
 private:
     void updateCache();
 

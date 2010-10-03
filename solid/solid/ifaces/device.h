@@ -28,6 +28,7 @@
 
 #include <solid/deviceinterface.h>
 #include <solid/device.h>
+#include <solid/solidnamespace.h>
 
 namespace Solid
 {
@@ -127,6 +128,41 @@ namespace Ifaces
          * @returns a pointer to the device interface if supported by the device, 0 otherwise
          */
         virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type) = 0;
+
+        /**
+         * Register an action for the given device. Each time the same device in another process
+         * broadcast the begin or the end of such action, the corresponding slots will be called
+         * in the current process.
+         *
+         * @param actionName name of the action to register
+         * @param dest the object receiving the messages when the action begins and ends
+         * @param requestSlot the slot processing the message when the action begins
+         * @param doneSlot the slot processing the message when the action ends
+         */
+        void registerAction(const QString &actionName, QObject *dest, const char *requestSlot, const char *doneSlot) const;
+
+        /**
+         * Allows to broadcat that an action just got requested on a device to all
+         * the corresponding devices in other processes.
+         *
+         * @param actionName name of the action which just completed
+         */
+        void broadcastActionRequested(const QString &actionName) const;
+
+        /**
+         * Allows to broadcast that an action just completed in a device to all
+         * the corresponding devices in other processes.
+         *
+         * @param actionName name of the action which just completed
+         * @param error error code if the action failed
+         * @param errorString message describing a potential error
+         */
+        void broadcastActionDone(const QString &actionName,
+                                 int error = Solid::NoError,
+                                 const QString &errorString = QString()) const;
+
+    private:
+        QString deviceDBusPath() const;
     };
 }
 }

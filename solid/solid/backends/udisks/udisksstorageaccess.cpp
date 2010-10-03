@@ -33,12 +33,26 @@ UDisksStorageAccess::UDisksStorageAccess(UDisksDevice *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false), m_passphraseRequested(false)
 {
     connect(device, SIGNAL(changed()), this, SLOT(slotChanged()));
-
     updateCache();
+
+    // Delay connecting to DBus signals to avoid the related time penalty
+    // in hot paths such as predicate matching
+    QTimer::singleShot(0, this, SLOT(connectDBusSignals()));
 }
 
 UDisksStorageAccess::~UDisksStorageAccess()
 {
+}
+
+void UDisksStorageAccess::connectDBusSignals()
+{
+    m_device->registerAction("setup", this,
+                             SLOT(slotSetupRequested()),
+                             SLOT(slotSetupDone(int, const QString&)));
+
+    m_device->registerAction("teardown", this,
+                             SLOT(slotTeardownRequested()),
+                             SLOT(slotTeardownDone(int, const QString&)));
 }
 
 bool UDisksStorageAccess::isAccessible() const
@@ -64,7 +78,7 @@ bool UDisksStorageAccess::setup()
     if ( m_teardownInProgress || m_setupInProgress )
         return false;
     m_setupInProgress = true;
-    emit setupRequested(m_device->udi());
+    m_device->broadcastActionRequested("setup");
 
     if (m_device->property("DeviceIsLuks").toBool())
         return requestPassphrase();
@@ -77,7 +91,7 @@ bool UDisksStorageAccess::teardown()
     if ( m_teardownInProgress || m_setupInProgress )
         return false;
     m_teardownInProgress = true;
-    emit teardownRequested(m_device->udi());
+    m_device->broadcastActionRequested("teardown");
 
     if (m_device->property("DeviceIsLuks").toBool())
         return callCryptoTeardown();
@@ -107,12 +121,12 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
     if (m_setupInProgress)
     {
         m_setupInProgress = false;
-        emit setupDone(Solid::NoError, QVariant(), m_device->udi());
+        m_device->broadcastActionDone("setup");
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
-        emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
+        m_device->broadcastActionDone("teardown");
 
         if ( m_device->property("DriveIsMediaEjectable").toBool() )
         {
@@ -143,13 +157,39 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
     if (m_setupInProgress)
     {
         m_setupInProgress = false;
-        emit setupDone(Solid::UnauthorizedOperation, error.name()+": "+error.message(), m_device->udi());
+        m_device->broadcastActionDone("setup", Solid::UnauthorizedOperation,
+                                      error.name()+": "+error.message());
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
-        emit teardownDone(Solid::UnauthorizedOperation, error.name()+": "+error.message(), m_device->udi());
+        m_device->broadcastActionDone("teardown", Solid::UnauthorizedOperation,
+                                      error.name()+": "+error.message());
     }
+}
+
+void UDisksStorageAccess::slotSetupRequested()
+{
+    m_setupInProgress = true;
+    emit setupRequested(m_device->udi());
+}
+
+void UDisksStorageAccess::slotSetupDone(int error, const QString &errorString)
+{
+    m_setupInProgress = false;
+    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+}
+
+void UDisksStorageAccess::slotTeardownRequested()
+{
+    m_teardownInProgress = true;
+    emit teardownRequested(m_device->udi());
+}
+
+void UDisksStorageAccess::slotTeardownDone(int error, const QString &errorString)
+{
+    m_teardownInProgress = false;
+    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 bool UDisksStorageAccess::mount()
@@ -234,7 +274,7 @@ void UDisksStorageAccess::passphraseReply( const QString & passphrase )
         else
         {
             m_setupInProgress = false;
-            emit setupDone(Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("setup");
         }
     }
 }

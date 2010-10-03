@@ -35,8 +35,9 @@ Cdrom::Cdrom(HalDevice *device)
 {
     connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
              this, SLOT(slotCondition(const QString &, const QString &)));
-    m_device->connectActionSignal("ejectRequested",  this, SLOT(slotEjectRequested()));
-    m_device->connectActionSignal("ejectDone",  this, SLOT(slotEjectDone(int, QDBusVariant, const QString&)));
+    m_device->registerAction("eject", this,
+                             SLOT(slotEjectRequested()),
+                             SLOT(slotEjectDone(int, const QString&)));
 }
 
 Cdrom::~Cdrom()
@@ -115,7 +116,7 @@ bool Cdrom::eject()
         return false;
     }
     m_ejectInProgress = true;
-    m_device->broadcastActionRequested("ejectRequested");
+    m_device->broadcastActionRequested("eject");
 
     if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
         return callSystemEject();
@@ -179,7 +180,7 @@ bool Solid::Backends::Hal::Cdrom::callSystemEject()
 void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     m_ejectInProgress = false;
-    m_device->broadcastActionDone("ejectDone", Solid::NoError, QVariant(), m_device->udi());
+    m_device->broadcastActionDone("eject");
 }
 
 void Cdrom::slotDBusError(const QDBusError &error)
@@ -187,9 +188,8 @@ void Cdrom::slotDBusError(const QDBusError &error)
     m_ejectInProgress = false;
 
     // TODO: Better error reporting here
-    m_device->broadcastActionDone("ejectDone", Solid::UnauthorizedOperation,
-                   QString(error.name()+": "+error.message()),
-                   m_device->udi());
+    m_device->broadcastActionDone("eject", Solid::UnauthorizedOperation,
+                                  QString(error.name()+": "+error.message()));
 }
 
 void Solid::Backends::Hal::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -199,21 +199,20 @@ void Solid::Backends::Hal::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
         m_ejectInProgress = false;
 
         if (exitCode==0) {
-            m_device->broadcastActionDone("ejectDone", Solid::NoError, QVariant(), m_device->udi());
+            m_device->broadcastActionDone("eject");
         } else {
-            m_device->broadcastActionDone("ejectDone", Solid::UnauthorizedOperation,
-                           m_process->readAllStandardError(),
-                           m_device->udi());
+            m_device->broadcastActionDone("eject", Solid::UnauthorizedOperation,
+                                          m_process->readAllStandardError());
         }
     }
 
     delete m_process;
 }
 
-void Cdrom::slotEjectDone(int error, QDBusVariant errorData, const QString &udi)
+void Cdrom::slotEjectDone(int error, const QString &errorString)
 {
     m_ejectInProgress = false;
-    emit ejectDone(static_cast<Solid::ErrorType>(error), HalDevice::variantFromDBusVariant(errorData), udi);
+    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 #include "backends/hal/halcdrom.moc"

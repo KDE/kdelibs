@@ -66,9 +66,10 @@ private Q_SLOTS:
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void slotSetupRequested();
     void slotTeardownRequested();
-    void slotSetupDone(int error, QDBusVariant errorData, const QString &udi);
-    void slotTeardownDone(int error, QDBusVariant errorData, const QString &udi);
-    void slotEjectDone(int error, QDBusVariant errorData, const QString &udi);
+    void slotEjectRequested();
+    void slotSetupDone(int error, const QString &errorString);
+    void slotTeardownDone(int error, const QString &errorString);
+    void slotEjectDone(int error, const QString &errorString);
 
 public Q_SLOTS:
     Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);
