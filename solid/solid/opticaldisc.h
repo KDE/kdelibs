@@ -60,6 +60,7 @@ namespace Solid
          * - VideoDvd : A Video Digital Versatile Disc (DVD-Video)
          */
         enum ContentType {
+            NoContent = 0x00,
             Audio = 0x01,
             Data = 0x02,
             VideoCd = 0x04,
