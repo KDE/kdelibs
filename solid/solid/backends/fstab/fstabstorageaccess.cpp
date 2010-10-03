@@ -120,14 +120,14 @@ void FstabStorageAccess::onMtabChanged()
     QStringList currentMountPoints = FstabHandling::currentMountPoints();
     if (currentMountPoints.count() > m_currentMountPoints.count()) {
         // device mounted
-        foreach (QString device, currentMountPoints) {
+        foreach (const QString &device, currentMountPoints) {
             if (!m_currentMountPoints.contains(device)) {
                  emit accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + device);
             }
         }
     } else {
         // device umounted
-        foreach (QString device, m_currentMountPoints) {
+        foreach (const QString &device, m_currentMountPoints) {
             if (!currentMountPoints.contains(device)) {
                 emit accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + device);
             }
