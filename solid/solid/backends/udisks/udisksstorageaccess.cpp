@@ -70,7 +70,8 @@ QString UDisksStorageAccess::filePath() const
 
 bool UDisksStorageAccess::isIgnored() const
 {
-    return m_device->property( "DevicePresentationHide" ).toBool();
+    return m_device->property( "DevicePresentationHide" ).toBool()
+        || !m_device->property( "DriveCanDetach" ).toBool();
 }
 
 bool UDisksStorageAccess::setup()

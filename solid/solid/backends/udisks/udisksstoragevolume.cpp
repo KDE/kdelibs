@@ -92,5 +92,6 @@ Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const
 
 bool UDisksStorageVolume::isIgnored() const
 {
-    return m_device->property( "DevicePresentationHide" ).toBool();
+    return m_device->property( "DevicePresentationHide" ).toBool()
+        || !m_device->property( "DriveCanDetach" ).toBool();
 }
