@@ -201,7 +201,7 @@ QStringList UDisksDevice::emblems() const
 
 QString UDisksDevice::description() const
 {
-    if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
+    if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
         return storageDescription();
     else if (queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
         return volumeDescription();
