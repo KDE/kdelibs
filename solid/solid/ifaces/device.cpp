@@ -70,7 +70,7 @@ void Solid::Ifaces::Device::broadcastActionRequested(const QString &actionName) 
 
 QString Solid::Ifaces::Device::deviceDBusPath() const
 {
-    return QString("/org/kde/solid/Device_%1").arg(udi());
+    return QString("/org/kde/solid/Device_%1").arg(udi().replace(':', '_'));
 }
 
 #include "ifaces/device.moc"
