@@ -31,7 +31,6 @@
 #include "backends/iokit/iokitmanager.h"
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
-#include "backends/kupnp/kupnpmanager.h"
 #include "backends/udisks/udisksmanager.h"
 #include "backends/upower/upowermanager.h"
 
