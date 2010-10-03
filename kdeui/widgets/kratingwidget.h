@@ -40,6 +40,12 @@
 class KDEUI_EXPORT KRatingWidget : public QFrame
 {
     Q_OBJECT
+    Q_PROPERTY( int rating READ rating WRITE setRating )
+    Q_PROPERTY( int maxRating READ maxRating WRITE setMaxRating )
+    Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment )
+    Q_PROPERTY( bool halfStepsEnabled READ halfStepsEnabled WRITE setHalfStepsEnabled )
+    Q_PROPERTY( int spacing READ spacing WRITE setSpacing )
+    Q_PROPERTY( QIcon icon READ icon WRITE setIcon )
 
  public:
     /**
