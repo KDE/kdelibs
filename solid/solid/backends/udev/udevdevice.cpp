@@ -25,15 +25,14 @@
 
 using namespace Solid::Backends::UDev;
 
-UDevDevice::UDevDevice(udev_device_ *const device)
-    : Solid::Ifaces::Device(),
-      m_device(device)
+UDevDevice::UDevDevice(const UdevQt::Device device)
+    : Solid::Ifaces::Device()
+    , m_device(device)
 {
 }
 
 UDevDevice::~UDevDevice()
 {
-    udev_device_unref(m_device);
 }
 
 QString UDevDevice::udi() const
@@ -48,12 +47,12 @@ QString UDevDevice::parentUdi() const
 
 QString UDevDevice::vendor() const
 {
-    return systemAttribute("manufacturer");
+    return m_device.sysfsProperty("manufacturer").toString();
 }
 
 QString UDevDevice::product() const
 {
-    return systemAttribute("product");
+    return m_device.sysfsProperty("product").toString();
 }
 
 QString UDevDevice::icon() const
@@ -114,19 +113,20 @@ QString UDevDevice::device() const
 
 QVariant UDevDevice::property(const QString &key) const
 {
-    return QString::fromUtf8(udev_device_get_property_value(m_device, key.toAscii()));
+    const QVariant res = m_device.deviceProperty(key);
+    if (res.isValid()) {
+        return res;
+    }
+    return m_device.sysfsProperty(key);
 }
 
 QMap<QString, QVariant> UDevDevice::allProperties() const
 {
-    QMap<QString, QVariant> properties;
-
-    udev_list_entry_ *list_entry;
-    udev_list_entry_foreach(list_entry, udev_device_get_properties_list_entry(m_device)) {
-        properties[udev_list_entry_get_name(list_entry)] = udev_list_entry_get_value(list_entry);
+    QMap<QString, QVariant> res;
+    foreach (const QString &prop, m_device.deviceProperties()) {
+        res[prop] = property(prop);
     }
-
-    return properties;
+    return res;
 }
 
 bool UDevDevice::propertyExists(const QString &key) const
@@ -136,12 +136,12 @@ bool UDevDevice::propertyExists(const QString &key) const
 
 QString UDevDevice::systemAttribute(const char *attribute) const
 {
-    return QString::fromUtf8(udev_device_get_sysattr_value(m_device, attribute));
+    return m_device.sysfsProperty(attribute).toString();
 }
 
 QString UDevDevice::deviceName() const
 {
-    return QString::fromUtf8(udev_device_get_syspath(m_device));
+    return m_device.sysfsPath();
 }
 
 QString UDevDevice::devicePath() const

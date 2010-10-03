@@ -21,10 +21,10 @@
 #ifndef SOLID_BACKENDS_UDEV_UDEVDEVICE_H
 #define SOLID_BACKENDS_UDEV_UDEVDEVICE_H
 
+#include "udev.h"
+
 #include <solid/ifaces/device.h>
 #include <QtCore/QStringList>
-
-#include "udev.h"
 
 namespace Solid
 {
@@ -38,7 +38,7 @@ class UDevDevice : public Solid::Ifaces::Device
     Q_OBJECT
 
 public:
-    UDevDevice(struct udev_device *const device);
+    UDevDevice(const UdevQt::Device device);
     virtual ~UDevDevice();
 
     virtual QString udi() const;
@@ -70,8 +70,7 @@ public:
     QString devicePath() const;
 
 private:
-
-    udev_device_ *m_device;
+    UdevQt::Device m_device;
 };
 
 }

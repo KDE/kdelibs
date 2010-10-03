@@ -25,6 +25,7 @@
 #include "../shared/rootdevice.h"
 
 #include <QtCore/QSet>
+#include <QtCore/QDebug>
 
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
@@ -35,56 +36,28 @@ public:
     Private();
     ~Private();
 
-    QStringList deviceListFromEnumerate(udev_enumerate_ *en) const;
-
-    udev_ *udev;
-    QSet<Solid::DeviceInterface::Type> supportedInterfaces;
+    UdevQt::Client *const m_client;
+    QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 };
 
 UDevManager::Private::Private()
-    : udev(udev_new())
+    : m_client(new UdevQt::Client)
 {
 }
 
 UDevManager::Private::~Private()
 {
-    udev_unref(udev);
-}
-
-QStringList UDevManager::Private::deviceListFromEnumerate(udev_enumerate_ *en) const
-{
-    QStringList ret;
-    udev_list_entry_ *list, *entry;
-
-    udev_enumerate_scan_devices(en);
-    list = udev_enumerate_get_list_entry(en);
-    udev_list_entry_foreach (entry, list) {
-        udev_device_ *const device = udev_device_new_from_syspath(udev,
-                                                                  udev_list_entry_get_name(entry));
-
-        const char *const subsystem = udev_device_get_subsystem(device);
-
-        if (!device) {
-            continue;
-        }
-        ret << QString(UDEV_UDI_PREFIX) + udev_device_get_syspath(device);
-
-        udev_device_unref(device);
-    }
-
-    udev_enumerate_unref(en);
-
-    return ret;
+    delete m_client;
 }
 
 UDevManager::UDevManager(QObject *parent)
     : d(new Private)
 {
-    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
-                           << Solid::DeviceInterface::Processor
-                           << Solid::DeviceInterface::Camera
-                           << Solid::DeviceInterface::PortableMediaPlayer
-                           << Solid::DeviceInterface::Button;
+    d->m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                             << Solid::DeviceInterface::Processor
+                             << Solid::DeviceInterface::Camera
+                             << Solid::DeviceInterface::PortableMediaPlayer
+                             << Solid::DeviceInterface::Button;
 }
 
 UDevManager::~UDevManager()
@@ -99,13 +72,17 @@ QString UDevManager::udiPrefix() const
 
 QSet<Solid::DeviceInterface::Type> UDevManager::supportedInterfaces() const
 {
-    return d->supportedInterfaces;
+    return d->m_supportedInterfaces;
 }
 
 QStringList UDevManager::allDevices()
 {
-    udev_enumerate_ *const devices = udev_enumerate_new(d->udev);
-    return d->deviceListFromEnumerate(devices);
+    QStringList res;
+    const UdevQt::DeviceList deviceList = d->m_client->allDevices();
+    foreach (const UdevQt::Device &device, deviceList) {
+        res << udiPrefix() + device.sysfsPath();
+    }
+    return res;
 }
 
 QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
@@ -124,6 +101,6 @@ QObject *UDevManager::createDevice(const QString &udi_)
         device->setIcon("folder-remote"); // TODO: CHANGE ICON
         return device;
     }
-    const QString udi = udi_.right(udi_.size() - QString(UDEV_UDI_PREFIX).size());
-    return new UDevDevice(udev_device_new_from_syspath(d->udev, udi.toLatin1().data()));
+    const QString udi = udi_.right(udi_.size() - udiPrefix().size());
+    return new UDevDevice(d->m_client->deviceBySysfsPath(udi));
 }

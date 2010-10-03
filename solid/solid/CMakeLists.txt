@@ -173,6 +173,8 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevdeviceinterface.cpp
       backends/udev/udevgenericinterface.cpp
       backends/udev/udevcamera.cpp
+      backends/shared/udevqtclient.cpp
+      backends/shared/udevqtdevice.cpp
       )
    endif( UDEV_FOUND )
 

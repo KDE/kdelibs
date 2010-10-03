@@ -21,16 +21,8 @@
 #ifndef SOLID_BACKENDS_UDEV_H
 #define SOLID_BACKENDS_UDEV_H
 
-#include <libudev.h>
+#include "../shared/udevqt.h"
 
 #define UDEV_UDI_PREFIX "/org/kde/solid/udev"
-
-typedef struct udev udev_;
-typedef struct udev_list udev_list_;
-typedef struct udev_queue udev_queue_;
-typedef struct udev_device udev_device_;
-typedef struct udev_monitor udev_monitor_;
-typedef struct udev_enumerate udev_enumerate_;
-typedef struct udev_list_entry udev_list_entry_;
 
 #endif // SOLID_BACKENDS_UDEV_H
