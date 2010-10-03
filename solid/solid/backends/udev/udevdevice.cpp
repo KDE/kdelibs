@@ -21,6 +21,7 @@
 #include "udevdevice.h"
 
 #include "udevgenericinterface.h"
+#include "udevcamera.h"
 
 using namespace Solid::Backends::UDev;
 
@@ -75,22 +76,35 @@ QString UDevDevice::description() const
 
 bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
-    if (type==Solid::DeviceInterface::GenericInterface) {
+    switch (type) {
+    case Solid::DeviceInterface::GenericInterface:
         return true;
-    }
 
-    // TODO
-    return false;
+    case Solid::DeviceInterface::Camera:
+        return !property("ID_GPHOTO2").toString().isEmpty();
+
+    default:
+        return false;
+    }
 }
 
 QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    if (type==Solid::DeviceInterface::GenericInterface) {
-        return new GenericInterface(this);
+    if (!queryDeviceInterface(type)) {
+        return 0;
     }
 
-    // TODO: IMPLEMENT ALL SUPPORTED
-    return 0;
+    switch (type) {
+    case Solid::DeviceInterface::GenericInterface:
+        return new GenericInterface(this);
+
+    case Solid::DeviceInterface::Camera:
+        return new Camera(this);
+
+    default:
+        qFatal("Shouldn't happen");
+        return 0;
+    }
 }
 
 QString UDevDevice::device() const
