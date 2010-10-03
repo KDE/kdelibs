@@ -18,63 +18,26 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udev.h"
 #include "udevdevice.h"
+
+#include "udevgenericinterface.h"
 
 using namespace Solid::Backends::UDev;
 
-class UDevDevice::Private
-{
-public:
-    Private(udev_device_ *device);
-    ~Private();
-
-    QString deviceAttribute(const char *attribute) const;
-    QString deviceName() const;
-    QString devicePath() const;
-
-    udev_device_ *m_device;
-};
-
-UDevDevice::Private::Private(udev_device_ *device)
-    : m_device(device)
-{
-}
-
-UDevDevice::Private::~Private()
-{
-    udev_device_unref(m_device);
-}
-
-QString UDevDevice::Private::deviceAttribute(const char *attribute) const
-{
-    return QString::fromUtf8(udev_device_get_sysattr_value(m_device, attribute));
-}
-
-QString UDevDevice::Private::deviceName() const
-{
-    return QString::fromUtf8(udev_device_get_syspath(m_device));
-}
-
-QString UDevDevice::Private::devicePath() const
-{
-    return QString(UDEV_UDI_PREFIX) + deviceName();
-}
-
 UDevDevice::UDevDevice(udev_device_ *const device)
-    : Solid::Ifaces::Device()
-    , d(new Private(device))
+    : Solid::Ifaces::Device(),
+      m_device(device)
 {
 }
 
 UDevDevice::~UDevDevice()
 {
-    delete d;
+    udev_device_unref(m_device);
 }
 
 QString UDevDevice::udi() const
 {
-    return d->devicePath();
+    return devicePath();
 }
 
 QString UDevDevice::parentUdi() const
@@ -84,12 +47,12 @@ QString UDevDevice::parentUdi() const
 
 QString UDevDevice::vendor() const
 {
-    return d->deviceAttribute("manufacturer");
+    return systemAttribute("manufacturer");
 }
 
 QString UDevDevice::product() const
 {
-    return d->deviceAttribute("product");
+    return systemAttribute("product");
 }
 
 QString UDevDevice::icon() const
@@ -112,18 +75,62 @@ QString UDevDevice::description() const
 
 bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
+    if (type==Solid::DeviceInterface::GenericInterface) {
+        return true;
+    }
+
     // TODO
     return false;
 }
 
 QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
+    if (type==Solid::DeviceInterface::GenericInterface) {
+        return new GenericInterface(this);
+    }
+
     // TODO: IMPLEMENT ALL SUPPORTED
     return 0;
 }
 
 QString UDevDevice::device() const
 {
-    return d->devicePath();
+    return devicePath();
 }
 
+QVariant UDevDevice::property(const QString &key) const
+{
+    return QString::fromUtf8(udev_device_get_property_value(m_device, key.toAscii()));
+}
+
+QMap<QString, QVariant> UDevDevice::allProperties() const
+{
+    QMap<QString, QVariant> properties;
+
+    udev_list_entry_ *list_entry;
+    udev_list_entry_foreach(list_entry, udev_device_get_properties_list_entry(m_device)) {
+        properties[udev_list_entry_get_name(list_entry)] = udev_list_entry_get_value(list_entry);
+    }
+
+    return properties;
+}
+
+bool UDevDevice::propertyExists(const QString &key) const
+{
+    return allProperties().contains(key);
+}
+
+QString UDevDevice::systemAttribute(const char *attribute) const
+{
+    return QString::fromUtf8(udev_device_get_sysattr_value(m_device, attribute));
+}
+
+QString UDevDevice::deviceName() const
+{
+    return QString::fromUtf8(udev_device_get_syspath(m_device));
+}
+
+QString UDevDevice::devicePath() const
+{
+    return QString(UDEV_UDI_PREFIX) + deviceName();
+}

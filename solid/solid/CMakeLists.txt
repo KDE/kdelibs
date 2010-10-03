@@ -170,6 +170,8 @@ if(NOT WIN32 AND NOT APPLE)
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
       backends/udev/udevdevice.cpp
       backends/udev/udevmanager.cpp
+      backends/udev/udevdeviceinterface.cpp
+      backends/udev/udevgenericinterface.cpp
       )
    endif( UDEV_FOUND )
 

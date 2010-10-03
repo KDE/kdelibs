@@ -24,7 +24,7 @@
 #include <solid/ifaces/device.h>
 #include <QtCore/QStringList>
 
-struct udev_device;
+#include "udev.h"
 
 namespace Solid
 {
@@ -33,38 +33,46 @@ namespace Backends
 namespace UDev
 {
 
-    class UDevDevice : public Solid::Ifaces::Device
-    {
-        Q_OBJECT
+class UDevDevice : public Solid::Ifaces::Device
+{
+    Q_OBJECT
 
-        public:
-            UDevDevice(struct udev_device *const device);
-            virtual ~UDevDevice();
+public:
+    UDevDevice(struct udev_device *const device);
+    virtual ~UDevDevice();
 
-            virtual QString udi() const;
+    virtual QString udi() const;
 
-            virtual QString parentUdi() const;
+    virtual QString parentUdi() const;
 
-            virtual QString vendor() const;
+    virtual QString vendor() const;
 
-            virtual QString product() const;
+    virtual QString product() const;
 
-            virtual QString icon() const;
+    virtual QString icon() const;
 
-            virtual QStringList emblems() const;
+    virtual QStringList emblems() const;
 
-            virtual QString description() const;
+    virtual QString description() const;
 
-            virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
+    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
 
-            virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
+    virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
 
-            QString device() const;
+    QString device() const;
 
-        private:
-            class Private;
-            Private *const d;
-    };
+    QVariant property(const QString &key) const;
+    QMap<QString, QVariant> allProperties() const;
+    bool propertyExists(const QString &key) const;
+
+    QString systemAttribute(const char *attribute) const;
+    QString deviceName() const;
+    QString devicePath() const;
+
+private:
+
+    udev_device_ *m_device;
+};
 
 }
 }
