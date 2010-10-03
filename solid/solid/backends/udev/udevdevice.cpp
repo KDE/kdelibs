@@ -58,7 +58,7 @@ QString UDevDevice::Private::deviceName() const
 
 QString UDevDevice::Private::devicePath() const
 {
-    return QString(UDEV_UDI_PREFIX) + QString::fromUtf8(udev_device_get_syspath(m_device));
+    return QString(UDEV_UDI_PREFIX) + deviceName();
 }
 
 UDevDevice::UDevDevice(udev_device_ *const device)
