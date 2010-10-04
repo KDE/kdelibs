@@ -52,13 +52,17 @@ bool UDisksOpticalDrive::eject()
 
     QDBusConnection c = QDBusConnection::systemBus();
 
+    QString path = m_device->udi();
+    if (path.endsWith(":media"))
+        path.chop(6);
+
     // check if the device is mounted and call umount if needed
     if (m_device->queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
     {
         const UDisks::UDisksStorageAccess accessIface(const_cast<UDisksDevice *>(m_device));
         if (accessIface.isAccessible())
-        {
-            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
+        {   
+            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
 
             msg << QStringList();   // options, unused now
 
@@ -66,7 +70,7 @@ bool UDisksOpticalDrive::eject()
         }
     }
 
-    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
+    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
     msg << QStringList();
     return c.callWithCallback(msg, this, SLOT(slotDBusReply(const QDBusMessage &)), SLOT(slotDBusError(const QDBusError &)));
 }
