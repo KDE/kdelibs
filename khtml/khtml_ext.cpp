@@ -869,7 +869,8 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
   int query;
   do {
     query = KMessageBox::Yes;
-    destURL = KFileDialog::getSaveUrl( name, filter, parent, caption );
+    // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
+    destURL = KFileDialog::getSaveUrl( KUrl::fromPath(name), filter, parent, caption );
       if( destURL.isLocalFile() )
       {
         QFileInfo info( destURL.toLocalFile() );

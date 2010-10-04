@@ -59,10 +59,11 @@ static KUrl promptUser (QWidget *parent, const KUrl& url, const QString& suggest
 {
     KUrl destUrl;
     int result = KIO::R_OVERWRITE;
-    const QUrl fileName ((suggestedName.isEmpty() ? url.fileName() : suggestedName));
+    const QString fileName ((suggestedName.isEmpty() ? url.fileName() : suggestedName));
 
     do {
-        destUrl = KFileDialog::getSaveFileName(fileName, QString(), parent);
+        // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
+        destUrl = KFileDialog::getSaveFileName(KUrl::fromPath(fileName), QString(), parent);
 
         if (destUrl.isLocalFile()) {
             QFileInfo finfo (destUrl.toLocalFile());

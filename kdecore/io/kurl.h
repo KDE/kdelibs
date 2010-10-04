@@ -980,8 +980,9 @@ public:
 
   /**
    * Creates a KUrl object from a QString representing an absolute path.
-   * KUrl url( somePath ) does the same, but this method is more explicit
-   * and avoids the path-or-url detection in the KUrl constructor.
+   * KUrl url( somePath ) is almost the same, but this method is more explicit,
+   * avoids the path-or-url detection in the KUrl constructor, and parses
+   * "abc:def" as a filename, not as URL.
    *
    * @param text the path
    * @return the new KUrl
