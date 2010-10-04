@@ -105,18 +105,23 @@ public Q_SLOTS:
   void clear();
 
 protected:
-  /**
-   * Called when widget is resized
-   */
-  void resizeEvent( QResizeEvent * );
-  /**
+    /**
+     * \reimp
+     */
+    void mouseReleaseEvent(QMouseEvent*);
+    
+    /**
+     * Called when widget is resized
+     */
+    void resizeEvent( QResizeEvent * );
+    /**
      * \reimp
      */
     void contextMenuEvent(QContextMenuEvent* );
-  /**
-   * does the dirty work
-   */
-  void squeezeTextToLabel();
+    /**
+     * does the dirty work
+     */
+    void squeezeTextToLabel();
 
 private:
     Q_PRIVATE_SLOT(d, void _k_copyFullText())

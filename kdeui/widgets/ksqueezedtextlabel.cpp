@@ -32,9 +32,7 @@ class KSqueezedTextLabelPrivate
 public:
 
     void _k_copyFullText() {
-        QMimeData* data = new QMimeData;
-        data->setText(fullText);
-        QApplication::clipboard()->setMimeData(data);
+        QApplication::clipboard()->setText(fullText);
     }
 
     QString fullText;
@@ -172,6 +170,35 @@ void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
         menu.exec(ev->globalPos());
     } else {
         QLabel::contextMenuEvent(ev);
+    }
+}
+
+void KSqueezedTextLabel::mouseReleaseEvent(QMouseEvent* ev)
+{
+#if QT_VERSION >= 0x040700
+    if (QApplication::clipboard()->supportsSelection() &&
+        textInteractionFlags() != Qt::NoTextInteraction &&
+        ev->button() == Qt::LeftButton &&
+        !d->fullText.isEmpty() &&
+        hasSelectedText()) {
+        // Expand "..." when selecting with the mouse
+        QString txt = selectedText();
+        const QChar ellipsisChar(0x2026); // from qtextengine.cpp
+        const int dotsPos = txt.indexOf(ellipsisChar);
+        if (dotsPos > -1) {
+            // Ex: abcde...yz, selecting de...y  (selectionStart=3)
+            // charsBeforeSelection = selectionStart = 2 (ab)
+            // charsAfterSelection = 1 (z)
+            // final selection length= 26 - 2 - 1 = 23
+            const int start = selectionStart();
+            const int charsAfterSelection = text().length() - start - selectedText().length();
+            txt = d->fullText.mid(selectionStart(), d->fullText.length() - start - charsAfterSelection);
+        }
+        QApplication::clipboard()->setText(txt, QClipboard::Selection);
+    } else
+#endif
+    {
+        QLabel::mouseReleaseEvent(ev);
     }
 }
 

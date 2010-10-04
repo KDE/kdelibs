@@ -13,9 +13,11 @@ int main( int argc, char **argv )
   l = new KSqueezedTextLabel( "This is another long string, selectable by mouse", box );
   l->setTextElideMode( Qt::ElideRight );
   l->setTextInteractionFlags(Qt::TextSelectableByMouse);
+  KSqueezedTextLabel* urlLabel = new KSqueezedTextLabel("http://www.example.com/this/url/is/selectable/by/mouse", box);
+  urlLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
   new QLabel("This is a normal QLabel", box);
-  QLabel* selectableLabel = new QLabel("This is a QLabel, selectable by mouse", box);
+  QLabel* selectableLabel = new QLabel("This is a normal QLabel, selectable by mouse", box);
   selectableLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
   box->show();
