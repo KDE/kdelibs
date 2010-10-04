@@ -246,7 +246,7 @@ void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParent()
     QVERIFY(!toolButton->isEnabled());
     QVERIFY(toolButton->autoRaise());
     QCOMPARE((int)toolButton->focusPolicy(), (int)Qt::NoFocus);
-    QCOMPARE(toolButton->defaultAction(), &selectAction);
+    QCOMPARE(toolButton->defaultAction(), (QAction*)&selectAction);
     QCOMPARE(toolButton->actions().count(), 1);
     QCOMPARE(toolButton->actions().at(0)->text(), QString("selectAction"));
 }
@@ -270,7 +270,7 @@ void KSelectAction_UnitTest::testRequestWidgetMenuModeWidgetParentSeveralActions
     QVERIFY(toolButton->isEnabled());
     QVERIFY(toolButton->autoRaise());
     QCOMPARE((int)toolButton->focusPolicy(), (int)Qt::NoFocus);
-    QCOMPARE(toolButton->defaultAction(), &selectAction);
+    QCOMPARE(toolButton->defaultAction(), (QAction*)&selectAction);
     QCOMPARE(toolButton->actions().count(), 4);
     QCOMPARE(toolButton->actions().at(0)->text(), QString("selectAction"));
     QCOMPARE(toolButton->actions().at(1)->text(), QString("action1"));
