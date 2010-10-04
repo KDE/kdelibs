@@ -230,7 +230,8 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 {
     Solid::OpticalDisc::ContentTypes content = Solid::OpticalDisc::NoContent;
 
-    if (!m_device->property("OpticalDiscIsBlank").toBool()) {
+    if (!isBlank())
+    {
         bool hasData = m_device->property("OpticalDiscNumTracks").toInt() > 0;
         bool hasAudio = m_device->property("OpticalDiscNumAudioTracks").toInt() > 0;
 
