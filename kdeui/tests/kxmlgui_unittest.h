@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testXMLFileReplacement();
     void testTopLevelSeparator();
     void testMenuNames();
+    void testClientDestruction();
 };
 
 #endif

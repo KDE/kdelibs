@@ -841,3 +841,25 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
     QVERIFY(reloadedXml.contains("<Action name=\"home\""));
     QVERIFY(reloadedXml.contains("<ActionProperties>"));
 }
+
+void KXmlGui_UnitTest::testClientDestruction() { // #170806
+    const QByteArray xml = 
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"filemenu\"><text>File Menu</text></Menu>\n"
+        "</MenuBar>\n"
+        "</gui>";
+
+    TestXmlGuiWindow mainWindow(xml);
+    TestGuiClient* client = new TestGuiClient(xml);
+    mainWindow.insertChildClient(client);
+    mainWindow.setAutoSaveSettings(false);
+    mainWindow.createGUI();
+
+    QVERIFY(mainWindow.factory()->clients().contains(client));
+    delete client;
+    QVERIFY(!mainWindow.factory()->clients().contains(client));
+}
+

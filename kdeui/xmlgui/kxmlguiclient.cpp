@@ -92,9 +92,14 @@ KXMLGUIClient::KXMLGUIClient( KXMLGUIClient *parent )
 
 KXMLGUIClient::~KXMLGUIClient()
 {
-  if ( d->m_parent )
+  if ( d->m_parent ) {
     d->m_parent->removeChildClient( this );
+  }
 
+  if ( d->m_factory ) {
+    d->m_factory->removeClient ( this );
+  }
+ 
   foreach (KXMLGUIClient* client, d->m_children) {
       assert( client->d->m_parent == this );
       client->d->m_parent = 0;
