@@ -57,12 +57,13 @@ void UDisksStorageAccess::connectDBusSignals()
 
 bool UDisksStorageAccess::isAccessible() const
 {
-    return m_device->property("DeviceIsMounted").toBool();
+    return m_device->property("DeviceIsMounted").toBool()
+        || m_device->property("DeviceIsLuks").toBool();
 }
 
 QString UDisksStorageAccess::filePath() const
 {
-    if (!isAccessible())
+    if (!isAccessible() || m_device->property("DeviceIsLuks").toBool())
         return QString();
 
     return m_device->property("DeviceMountPaths").toStringList().first(); // FIXME Solid doesn't support multiple mount points
@@ -71,7 +72,8 @@ QString UDisksStorageAccess::filePath() const
 bool UDisksStorageAccess::isIgnored() const
 {
     return m_device->property( "DevicePresentationHide" ).toBool()
-        || !m_device->property( "DriveCanDetach" ).toBool();
+        || (!m_device->property("DriveCanDetach").toBool()
+         && m_device->property("LuksCleartextUnlockedByUid").toInt()==0);
 }
 
 bool UDisksStorageAccess::setup()
@@ -81,7 +83,7 @@ bool UDisksStorageAccess::setup()
     m_setupInProgress = true;
     m_device->broadcastActionRequested("setup");
 
-    if (m_device->property("DeviceIsLuks").toBool())
+    if (m_device->property("IdUsage").toString() == "crypto")
         return requestPassphrase();
     else
         return mount();
@@ -94,7 +96,7 @@ bool UDisksStorageAccess::teardown()
     m_teardownInProgress = true;
     m_device->broadcastActionRequested("teardown");
 
-    if (m_device->property("DeviceIsLuks").toBool())
+    if (m_device->property("IdUsage").toString() == "crypto")
         return callCryptoTeardown();
     else
         return unmount();

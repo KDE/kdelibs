@@ -147,11 +147,23 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::Block:
             return property("DeviceBlockSize").toULongLong() > 0;
         case Solid::DeviceInterface::StorageVolume:
-            return property("DeviceIsPartition").toBool()
-                || (property("DeviceIsOpticalDisc").toBool() && m_udi.endsWith(":media"));
+            if (property("DeviceIsOpticalDisc").toBool()) {
+                return m_udi.endsWith(":media");
+            } else {
+                return property("DeviceIsPartition").toBool()
+                    || property("IdUsage").toString()=="filesystem";
+            }
+
         case Solid::DeviceInterface::StorageAccess:
-            return (property("DeviceIsPartition").toBool() && property("IdUsage").toString()=="filesystem")
-                || (property("DeviceIsOpticalDisc").toBool() && property("IdUsage").toString()=="filesystem" && m_udi.endsWith(":media"));
+            if (property("DeviceIsOpticalDisc").toBool()) {
+                return property("IdUsage").toString()=="filesystem"
+                    && m_udi.endsWith(":media");
+
+            } else {
+                return property("IdUsage").toString()=="filesystem"
+                    || property("IdUsage").toString()=="crypto";
+            }
+
         case Solid::DeviceInterface::StorageDrive:
             return !m_udi.endsWith(":media") && property("DeviceIsDrive").toBool();
         case Solid::DeviceInterface::OpticalDrive:
