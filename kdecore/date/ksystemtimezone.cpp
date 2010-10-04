@@ -229,7 +229,7 @@ QString KSystemTimeZones::zoneinfoDir()
     return KSystemTimeZonesPrivate::m_zoneinfoDir;
 }
 
-bool KSystemTimeZones::ktimezonedOk()
+bool KSystemTimeZones::isTimeZoneDaemonAvailable()
 {
     KSystemTimeZonesPrivate::instance();
     return !KSystemTimeZonesPrivate::m_ktimezonedError;

@@ -182,6 +182,7 @@ public:
      *          \endcode
      *
      * @see setLocalZone()
+     * @since 4.3
      */
     static KTimeZone realLocalZone();
 
@@ -202,6 +203,7 @@ public:
      * @param tz the time zone to simulate, or an invalid KTimeZone instance
      *           (i.e. \code tz.isValid() == false \endcode) to cancel
      *           simulation
+     * @since 4.3
      */
     static void setLocalZone(const KTimeZone& tz);
 
@@ -223,6 +225,7 @@ public:
      *          \endcode
      *
      * @see setLocalZone()
+     * @since 4.3
      */
     static bool isSimulated();
 
@@ -238,7 +241,7 @@ public:
      * not, UTC will be the only recognized time zone.
      * @since 4.6
      */
-    static bool ktimezonedOk();
+    static bool isTimeZoneDaemonAvailable();
 
 private Q_SLOTS:
     // Connected to D-Bus signals
