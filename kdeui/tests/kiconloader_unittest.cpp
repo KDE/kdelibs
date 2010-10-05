@@ -204,6 +204,12 @@ private Q_SLOTS:
                                         &path, true /* canReturnNull */);
         QVERIFY(path.isEmpty());
     }
+
+    void testLoadIconNoGroupOrSize() // #246016
+    {
+        QPixmap pix = KIconLoader::global()->loadIcon("connected", KIconLoader::NoGroup);
+        QVERIFY(!pix.isNull());
+    }
 };
 
 QTEST_KDEMAIN(KIconLoader_UnitTest, GUI)
