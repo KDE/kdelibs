@@ -178,7 +178,9 @@ void KNumInput::layout(bool deep)
         return;
     }
 
-    KNumInput* p = this;
+    w2 = d->column2Width;
+
+    KNumInput* p = d->previousNumInput;
     while (p) {
         p->doLayout();
         w1 = qMax(w1, p->d->column1Width);
