@@ -28,11 +28,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define SAVE_DELAY 3 // Save after 3 minutes
 
-#include <unistd.h>
-
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-
 #include <QtDBus/QtDBus>
 
 #include <kconfig.h>
@@ -45,6 +42,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookieserveradaptor.h"
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
+
+
+#define QL1S(x)  QLatin1String(x)
+#define QL1C(x)  QLatin1Char(x)
 
 K_PLUGIN_FACTORY(KdedCookieServerFactory,
                  registerPlugin<KCookieServer>();
@@ -86,16 +87,16 @@ KCookieServer::KCookieServer(QObject* parent, const QList<QVariant>&)
    mConfig = new KConfig("kcookiejarrc");
    mCookieJar->loadConfig( mConfig );
 
-   QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
+   const QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
 
    // Stay backwards compatible!
-   QString filenameOld = KStandardDirs::locate("data", "kfm/cookies");
+   const QString filenameOld = KStandardDirs::locate("data", "kfm/cookies");
    if (!filenameOld.isEmpty())
    {
       mCookieJar->loadCookies( filenameOld );
       if (mCookieJar->saveCookies( filename))
       {
-         unlink(QFile::encodeName(filenameOld)); // Remove old kfm cookie file
+         QFile::remove(filenameOld); // Remove old kfm cookie file
       }
    }
    else
@@ -207,7 +208,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
             shownCookies << i;
         }
     }
-    kDebug() << shownCookies;
+    //kDebug() << shownCookies;
 
     KCookieWin *kw = new KCookieWin( 0L, currentList,
                                      mCookieJar->preferredDefaultPolicy(),
@@ -321,12 +322,9 @@ bool KCookieServer::cookieMatches(const KHttpCookie& c,
                                   const QString &path, const QString &name)
 {
     const bool hasDomain = !domain.isEmpty();
-    return
-        ((hasDomain && c.domain() == domain) ||
-         fqdn == c.host()) &&
-        (c.path()   == path) &&
-        (c.name()   == name) &&
-        (!c.isExpired(time(0)));
+    return (((hasDomain && c.domain() == domain) || fqdn == c.host()) &&
+            (c.path() == path) && (c.name() == name) &&
+            (!c.isExpired()));
 }
 
 
@@ -361,15 +359,15 @@ QStringList
 KCookieServer::findDomains()
 {
    QStringList result;
-   const QStringList domains = mCookieJar->getDomainList();
-   for ( QStringList::ConstIterator domIt = domains.begin();
-         domIt != domains.end(); ++domIt )
+   QStringListIterator it (mCookieJar->getDomainList());
+   while (it.hasNext())
    {
        // Ignore domains that have policy set for but contain
        // no cookies whatsoever...
-       const KHttpCookieList* list =  mCookieJar->getCookieList(*domIt, "");
+       const QString domain = it.next();
+       const KHttpCookieList* list =  mCookieJar->getCookieList(domain, "");
        if ( list && !list->isEmpty() )
-          result << *domIt;
+          result << domain;
    }
    return result;
 }
@@ -435,12 +433,11 @@ KCookieServer::deleteCookie(const QString &domain, const QString &fqdn,
 {
     KHttpCookieList* cookieList = mCookieJar->getCookieList( domain, fqdn );
     if (cookieList && !cookieList->isEmpty()) {
-        for (KHttpCookieList::iterator cookieIterator = cookieList->begin();
-             cookieIterator != cookieList->end();
-             ++cookieIterator ) {
-            KHttpCookie& cookie = *cookieIterator;
-            if (cookieMatches(cookie, domain, fqdn, path, name)) {
-                mCookieJar->eatCookie(cookieIterator);
+        KHttpCookieList::Iterator itEnd = cookieList->end();
+        for (KHttpCookieList::Iterator it = cookieList->begin(); it != itEnd; ++it)
+        {
+            if (cookieMatches(*it, domain, fqdn, path, name)) {
+                mCookieJar->eatCookie(it);
                 saveCookieJar();
                 break;
             }
@@ -526,15 +523,15 @@ KCookieServer::getDomainAdvice(const QString &url)
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
 
-      QStringList::ConstIterator it = domains.constBegin();
-      while ( (advice == KCookieDunno) && (it != domains.constEnd()) )
+      QStringListIterator it (domains);
+      while ( (advice == KCookieDunno) && it.hasNext() )
       {
          // Always check advice in both ".domain" and "domain". Note
          // that we only want to check "domain" if it matches the
          // fqdn of the requested URL.
-         if ( (*it)[0] == '.' || (*it) == fqdn )
-            advice = mCookieJar->getDomainAdvice(*it);
-         ++it;
+        const QString& domain = it.next();
+         if ( domain.at(0) == '.' || domain == fqdn )
+            advice = mCookieJar->getDomainAdvice(domain);
       }
       if (advice == KCookieDunno)
          advice = mCookieJar->getGlobalAdvice();

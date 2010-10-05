@@ -57,9 +57,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
            :KDialog( parent )
 {
-	setModal(true);
-	setObjectName("cookiealert");
-	setButtons(Yes|No|Details);
+    setModal(true);
+    setObjectName("cookiealert");
+    setButtons(Yes|No|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( KIcon("preferences-web-browser-cookies") );
@@ -104,10 +104,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     int pos = host.indexOf(':');
     if ( pos > 0 )
     {
-      QString portNum = host.left(pos);
-      host.remove(0, pos+1);
-      host += ':';
-      host += portNum;
+        QString portNum = host.left(pos);
+        host.remove(0, pos+1);
+        host += ':';
+        host += portNum;
     }
 
     txt = QString("<b>%1</b>").arg( QUrl::fromAce(host.toLatin1()) );
@@ -152,13 +152,13 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 #endif
     m_btnGrp->setLayout(vbox);
     if (defaultButton == KCookieJar::ApplyToShownCookiesOnly )
-	m_onlyCookies->setChecked(true);
+        m_onlyCookies->setChecked(true);
     else if (defaultButton == KCookieJar::ApplyToCookiesFromDomain)
-	m_allCookiesDomain->setChecked(true);
+        m_allCookiesDomain->setChecked(true);
     else if (defaultButton == KCookieJar::ApplyToAllCookies)
-	m_allCookies->setChecked(true);
+        m_allCookies->setChecked(true);
     else
-	m_onlyCookies->setChecked(true);
+        m_onlyCookies->setChecked(true);
     setButtonText(KDialog::Yes, i18n("&Accept"));
     setButtonText(KDialog::No, i18n("&Reject"));
     //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
@@ -182,11 +182,11 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cook
 
     KCookieJar::KCookieDefaultPolicy preferredPolicy = KCookieJar::ApplyToShownCookiesOnly;
     if (m_allCookiesDomain->isChecked()) {
-	preferredPolicy = KCookieJar::ApplyToCookiesFromDomain;
-	cookiejar->setDomainAdvice( cookie, advice );
+        preferredPolicy = KCookieJar::ApplyToCookiesFromDomain;
+        cookiejar->setDomainAdvice( cookie, advice );
     } else if (m_allCookies->isChecked()) {
-	preferredPolicy = KCookieJar::ApplyToAllCookies;
-	cookiejar->setGlobalAdvice( advice );
+        preferredPolicy = KCookieJar::ApplyToAllCookies;
+        cookiejar->setGlobalAdvice( advice );
     }
     cookiejar->setPreferredDefaultPolicy( preferredPolicy );
 

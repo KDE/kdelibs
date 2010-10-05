@@ -28,8 +28,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
-
-#include <time.h>
+#include <QtCore/QSet>
 
 class KConfig;
 class KCookieJar;
@@ -65,6 +64,7 @@ protected:
     bool    mHttpOnly;
     bool    mExplicitPath;
     QList<long> mWindowIds;
+    QList<int> mPorts;
 
     QString cookieStr(bool useDOMFormat) const;
 
@@ -87,19 +87,20 @@ public:
     QString value() const { return mValue; }
     QList<long> &windowIds() { return mWindowIds; }
     const QList<long> &windowIds() const { return mWindowIds; }
-    void    fixDomain(const QString &domain) { mDomain = domain; }
-    qint64  expireDate() const { return mExpireDate; }
-    int     protocolVersion() const { return mProtocolVersion; }
-    bool    isSecure() const { return mSecure; }
+    const QList<int> &ports() const { return mPorts; }
+    void fixDomain(const QString &domain) { mDomain = domain; }
+    qint64 expireDate() const { return mExpireDate; }
+    int protocolVersion() const { return mProtocolVersion; }
+    bool isSecure() const { return mSecure; }
     /**
      *  If currentDate is -1, the default, then the current timestamp in UTC
      *  is used for comparison against this cookie's expiration date.
      */
-    bool    isExpired(qint64 currentDate = -1) const;
-    bool    isCrossDomain() const { return mCrossDomain; }
-    bool    isHttpOnly() const { return mHttpOnly; }
-    bool    hasExplicitPath() const { return mExplicitPath; }
-    bool    match(const QString &fqdn, const QStringList &domainList, const QString &path) const;
+    bool isExpired(qint64 currentDate = -1) const;
+    bool isCrossDomain() const { return mCrossDomain; }
+    bool isHttpOnly() const { return mHttpOnly; }
+    bool hasExplicitPath() const { return mExplicitPath; }
+    bool match(const QString &fqdn, const QStringList &domainList, const QString &path, int port=-1) const;
 };
 
 QDebug operator<<(QDebug, const KHttpCookie&);
@@ -322,7 +323,8 @@ public:
      */
     static bool parseUrl(const QString &_url,
                          QString &_fqdn,
-                         QString &_path);
+                         QString &_path,
+                         int *port = 0);
 
     /**
      * Returns a list of domains in @p _domainList relevant for this host.
@@ -362,10 +364,11 @@ protected:
      QString stripDomain(const KHttpCookie& cookie);
 
 protected:
-    QStringList m_domainList;
+    QStringList m_domainList;    
     KCookieAdvice m_globalAdvice;
     QHash<QString, KHttpCookieList*> m_cookieDomains;
-    QHash<QString, int> m_twoLevelTLD;
+    QSet<QString> m_twoLevelTLD;
+    QSet<QString> m_gTLDs;
 
     bool m_configChanged;
     bool m_cookiesChanged;
