@@ -3,7 +3,7 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} NOGUI ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY})
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
@@ -98,21 +98,21 @@ target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY}
 
 ########### klimitediodevicetest ###############
 
-kde4_add_unit_test(klimitediodevicetest klimitediodevicetest.cpp ../io/klimitediodevice.cpp)
+kde4_add_unit_test(klimitediodevicetest TESTNAME kdecore-klimitediodevicetest klimitediodevicetest.cpp ../io/klimitediodevice.cpp)
 target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### kmimetypetest ###############
 
 # compile kmimemagicrule.cpp into the test since it's not exported and we call match().
 set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
-kde4_add_unit_test(kmimetypetest ${kmimetypetest_SRCS})
+kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
 ########### kmimeglobsfileparsertest ###############
 
 # compile kmimeglobsfileparser.cpp into the test since it's not exported
 set(kmimeglobsfileparsertest_SRCS kmimeglobsfileparsertest.cpp ../services/kmimeglobsfileparser.cpp)
-kde4_add_unit_test(kmimeglobsfileparsertest ${kmimeglobsfileparsertest_SRCS})
+kde4_add_unit_test(kmimeglobsfileparsertest TESTNAME kdecore-kmimeglobsfileparsertest ${kmimeglobsfileparsertest_SRCS})
 target_link_libraries(kmimeglobsfileparsertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
 ########### kfiltertest ###############
@@ -121,7 +121,7 @@ target_link_libraries(kmimeglobsfileparsertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_
 # (only par of kio_http and kmultipart)
 set(kfiltertest_SRCS kfiltertest.cpp ../../kio/httpfilter/httpfilter.cc)
 include_directories( ${CMAKE_SOURCE_DIR}/kio/httpfilter )
-kde4_add_unit_test(kfiltertest ${kfiltertest_SRCS})
+kde4_add_unit_test(kfiltertest TESTNAME kdecore-kfiltertest ${kfiltertest_SRCS})
 target_link_libraries(kfiltertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
 
