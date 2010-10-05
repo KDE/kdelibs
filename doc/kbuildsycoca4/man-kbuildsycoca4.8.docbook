@@ -236,6 +236,12 @@ command at the prompt
 installations</para>
 </listitem>
 </varlistentry>
+<varlistentry>
+<term>$<envar>KDESYCOCA</envar></term>
+<listitem>
+<para>Specifies the path to the sycoca database file</para>
+</listitem>
+</varlistentry>
 </variablelist>
 
 </refsect1>

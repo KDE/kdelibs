@@ -17,13 +17,14 @@
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 </authorgroup>
 
-<date>2010-01-19</date>
-<releaseinfo>&kde; 4.4</releaseinfo>
+<date>2010-09-02</date>
+<releaseinfo>&kde; 4.5</releaseinfo>
 <abstract>
 <para>&sonnet; is the spelling checker used by &kde; applications such
-as &kate;, &kmail;, and &kword;. It is a &GUI;
-frontend to <application>International ISpell</application> and
-<application>ASpell</application>.</para>
+as &kate;, &kmail;, and &kword;. It is a &GUI; frontend to various free spell checkers. 
+More Information about required spell checkers and dictionaries you find in the 
+documentation of the &systemsettings; module 
+<ulink url="help:kcontrol/spellchecking">Spell Checker</ulink>.</para>
 
 </abstract>
 <keywordset>
