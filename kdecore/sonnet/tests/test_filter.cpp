@@ -127,7 +127,7 @@ void SonnetFilterTest::testIndic()
     hits.append( Hit( QString::fromUtf8("राजभाषा"), 38 ) );
     hits.append( Hit( QString::fromUtf8("असून"), 46 ) );
     hits.append( Hit( QString::fromUtf8("सुमारे"), 51 ) );
-    hits.append( Hit( QString::fromUtf8("९"), 58 ) );
+    //hits.append( Hit( QString::fromUtf8("९"), 58 ) ); // This is the number 9, so we don't spell-check it
     hits.append( Hit( QString::fromUtf8("कोटी"), 60 ) );
     hits.append( Hit( QString::fromUtf8("लोकांची"), 65 ) );
     hits.append( Hit( QString::fromUtf8("मातृभाषा"), 73 ) );
@@ -136,7 +136,7 @@ void SonnetFilterTest::testIndic()
     hits.append( Hit( QString::fromUtf8("भाषा"), 93 ) );
     hits.append( Hit( QString::fromUtf8("कमीत"), 98 ) );
     hits.append( Hit( QString::fromUtf8("कमी"), 103 ) );
-    hits.append( Hit( QString::fromUtf8("१०००"), 107 ) );
+    //hits.append( Hit( QString::fromUtf8("१०००"), 107 ) ); // just a number
     hits.append( Hit( QString::fromUtf8("वर्षापासून"), 112 ) );
     hits.append( Hit( QString::fromUtf8("अस्तित्वात"), 123 ) );
     hits.append( Hit( QString::fromUtf8("आहे"), 134 ) );
