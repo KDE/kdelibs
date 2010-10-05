@@ -38,7 +38,6 @@ add_subdirectory( kssl/kssl )
 add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
-add_subdirectory( kfile/tests )
 add_subdirectory( kio/dummyanalyzers )
 
 set(kiocore_STAT_SRCS

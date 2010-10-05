@@ -51,5 +51,15 @@ KIO_EXECUTABLE_TESTS(
   kmimetypechoosertest_gui
   ksslkeygentest
   kdbusservicestartertest
+  kurlrequestertest
+  kopenwithtest
+  kicondialogtest
+  kfiledialogtest
 )
+
+########### kfstest ###############
+
+set(kfstest_SRCS kfstest.cpp kfdtest.cpp)
+kde4_add_executable(kfstest TEST ${kfstest_SRCS})
+target_link_libraries(kfstest  ${KDE4_KIO_LIBS} )
 
