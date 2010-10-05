@@ -3,7 +3,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3sup
 
 MACRO(KDE3SUPPORT_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} TESTNAME kde3support-${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KDE3SUPPORT_UNIT_TESTS)
