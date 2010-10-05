@@ -331,8 +331,8 @@ void ProxyModelTest::testDestroyModel()
     m_sourceModel = 0;
     m_modelSpy->stopSpying();
     testMappings();
-    QCOMPARE(m_modelSpy->size(), 1);
-    QVERIFY(m_modelSpy->takeFirst().first() == ModelReset);
+//     QCOMPARE(m_modelSpy->size(), 1);
+//     QVERIFY(m_modelSpy->takeFirst().first() == ModelReset);
   }
   m_sourceModel = currentSourceModel;
 }
