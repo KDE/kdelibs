@@ -150,7 +150,7 @@ void KMimeTypeTest::testByName()
     // Test <comment> parsing with application/rdf+xml which has the english comment after the other ones
     KMimeType::Ptr rdf = KMimeType::mimeType("application/rdf+xml");
     QVERIFY(rdf);
-    QCOMPARE(rdf->comment(), QString::fromLatin1("RDF/XML document"));
+    QCOMPARE(rdf->comment(), QString::fromLatin1("RDF file"));
 
     KMimeType::Ptr bzip2 = KMimeType::mimeType("application/x-bzip2");
     QVERIFY( bzip2 );
