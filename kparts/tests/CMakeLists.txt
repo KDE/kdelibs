@@ -72,7 +72,7 @@ install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} TESTNAME kparts-${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_UNIT_TESTS)
