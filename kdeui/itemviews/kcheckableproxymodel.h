@@ -73,6 +73,7 @@ public:
   ~KCheckableProxyModel();
 
   void setSelectionModel(QItemSelectionModel *itemSelectionModel);
+  QItemSelectionModel *selectionModel() const;
 
   /* reimp */ Qt::ItemFlags flags(const QModelIndex& index) const;
 

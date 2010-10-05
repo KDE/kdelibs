@@ -61,6 +61,12 @@ void KCheckableProxyModel::setSelectionModel(QItemSelectionModel* itemSelectionM
   connect(itemSelectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(selectionChanged(QItemSelection,QItemSelection)));
 }
 
+QItemSelectionModel *KCheckableProxyModel::selectionModel() const
+{
+  Q_D(const KCheckableProxyModel);
+  return d->m_itemSelectionModel;
+}
+
 Qt::ItemFlags KCheckableProxyModel::flags(const QModelIndex& index) const
 {
   if (!index.isValid())
