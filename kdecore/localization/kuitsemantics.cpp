@@ -35,7 +35,6 @@
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
 #include <klocale.h>
-#include <kconfiggroup.h>
 
 // Truncates string, for output of long messages.
 // (But don't truncate too much otherwise it's impossible to determine

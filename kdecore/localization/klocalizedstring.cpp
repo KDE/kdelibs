@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <klocale_p.h>
-#include <kcomponentdata.h>
 #include <klibrary.h>
 #include <kstandarddirs.h>
 #include <ktranscript_p.h>

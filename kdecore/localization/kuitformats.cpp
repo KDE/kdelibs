@@ -20,13 +20,11 @@
 #include <kuitformats_p.h>
 
 #include <config.h>
-#include <kglobal.h>
 #include <klocale.h>
 
 #include <QStringList>
 #include <QRegExp>
 
-#include <kdebug.h>
 
 QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
                                  const QHash<QString, QString> &keydict)
