@@ -1385,11 +1385,11 @@ void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
                     }
                 } else {
                     startDate = q->readDate( buffer, KLocale::IsoFormat );
-                    if ( q->isValid( startDate ) ) {
-                        startYear = q->year( startDate );
-                    } else {
-                        startYear = eraEntry.section( ':', 1, 1 ).toInt(); //Use offset
-                    }
+                }
+                if ( q->isValid( startDate ) ) {
+                    startYear = q->year( startDate );
+                } else {
+                    startYear = eraEntry.section( ':', 1, 1 ).toInt(); //Use offset
                 }
                 buffer = eraEntry.section( ':', 3, 3 );
                 if ( buffer.isEmpty() ) {
