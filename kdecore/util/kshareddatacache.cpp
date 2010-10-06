@@ -566,6 +566,12 @@ struct SharedMemory
         }
     }
 
+    /**
+     * Finds the index entry for a given key.
+     * @param key UTF-8 encoded key to search for.
+     * @return The index of the entry in the cache named by @p key. Returns
+     *         <0 if no such entry is present.
+     */
     qint32 findNamedEntry(const QByteArray &key) const
     {
         uint keyHash = fnvHash32(key);
@@ -583,13 +589,13 @@ struct SharedMemory
 
         if (indexTable()[position].fileNameHash == keyHash) {
             pageID firstPage = indexTable()[position].firstPage;
-            if (firstPage < 0) {
+            if (firstPage < 0 || static_cast<uint>(firstPage) >= pageTableSize()) {
                 return -1;
             }
             const void *resultPage = page(firstPage);
             const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
 
-            if (qstrcmp(utf8FileName, key.constData()) == 0) {
+            if (qstrncmp(utf8FileName, key.constData(), cachePageSize()) == 0) {
                 return position;
             }
         }
