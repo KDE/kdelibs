@@ -305,3 +305,35 @@ void ModelSpy::doPersist()
   m_unchangedPersistentIndexes = toPersistent(m_unchangedIndexes);
 }
 
+static const char * const signaltypes[] = {
+  "NoSignal",
+  "RowsAboutToBeInserted",
+  "RowsInserted",
+  "RowsAboutToBeRemoved",
+  "RowsRemoved",
+  "RowsAboutToBeMoved",
+  "RowsMoved",
+  "DataChanged",
+  "LayoutAboutToBeChanged",
+  "LayoutChanged",
+  "ModelAboutToBeReset",
+  "ModelReset"
+};
+
+
+QDebug operator<<(QDebug d, ModelSpy* modelSpy)
+{
+  d << "ModelSpy(";
+  foreach (const QVariantList &list, (QList<QVariantList>)(*modelSpy)) {
+    d << "SIGNAL(";
+    int sigType = list.first().toInt();
+    d << signaltypes[sigType];
+    if (list.size() > 1) {
+      d << ", " << list.mid(1);
+    }
+    d << ")";
+  }
+  d << ")";
+  return d;
+}
+

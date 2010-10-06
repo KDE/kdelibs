@@ -102,5 +102,8 @@ private:
 };
 
 PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
+
+PROXYMODELTESTSUITE_EXPORT QDebug operator<<( QDebug d, ModelSpy *modelSpy );
+
 #endif
 
