@@ -375,6 +375,7 @@ static QStringList supportedProtocols(const KService& _service)
             }
             else { // if no KDE app, be a bit over-generic
                 supportedProtocols.append("http");
+                supportedProtocols.append("https"); // #253294
                 supportedProtocols.append("ftp");
             }
         }
