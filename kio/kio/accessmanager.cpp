@@ -166,6 +166,18 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     }
 
     kioJob->setRedirectionHandlingEnabled(false);
+    
+    switch (req.priority()) {
+    case QNetworkRequest::HighPriority:
+        KIO::Scheduler::setJobPriority(kioJob, -5);
+        break;
+    case QNetworkRequest::LowPriority:
+        KIO::Scheduler::setJobPriority(kioJob, 5);
+        break;
+    default:
+        break;
+    }
+
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
 
     kioJob->addMetaData(d->metaDataForRequest(req));
