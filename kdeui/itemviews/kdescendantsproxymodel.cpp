@@ -870,7 +870,7 @@ void KDescendantsProxyModelPrivate::sourceModelDestroyed()
 {
   Q_Q(KDescendantsProxyModel);
   resetInternalData();
-  q->endResetModel();
+//   q->endResetModel();
 }
 
 QMimeData* KDescendantsProxyModel::mimeData( const QModelIndexList & indexes ) const
