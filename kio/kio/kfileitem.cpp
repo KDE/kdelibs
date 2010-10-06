@@ -879,6 +879,11 @@ QStringList KFileItem::overlays() const
     return names;
 }
 
+QString KFileItem::comment() const
+{
+    return d->m_entry.stringValue( KIO::UDSEntry::UDS_COMMENT );
+}
+
 // ## where is this used?
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {

@@ -307,6 +307,10 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItemV4 &op
                     string += item.url().pathOrUrl();
                 break;
 
+            case KFileItemDelegate::Comment:
+                string += item.comment();
+                break;
+
             default:
                 break;
         } // switch (info)

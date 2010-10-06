@@ -247,6 +247,12 @@ namespace KIO
             /// @since 4.6
             UDS_NEPOMUK_QUERY = 27 | UDS_STRING,
 
+            /// A comment which will be displayed as is to the user. The string
+            /// value may contain plain text or Qt-style rich-text extensions.
+            ///
+            /// @since 4.6
+            UDS_COMMENT = 28 | UDS_STRING,
+
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
             /// until UDS_EXTRA_END.

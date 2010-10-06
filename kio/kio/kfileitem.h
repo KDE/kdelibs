@@ -399,6 +399,14 @@ public:
     QStringList overlays() const;
 
     /**
+     * A comment which can contain anything - even rich text. It will
+     * simply be displayed to the user as is.
+     *
+     * @since 4.6
+     */
+    QString comment() const;
+
+    /**
      * Returns the string to be displayed in the statusbar,
      * e.g. when the mouse is over this item
      * @return the status bar information

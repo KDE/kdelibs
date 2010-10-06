@@ -172,7 +172,8 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
             MimeType,          ///< The mime type for the item, e.g. text/html.
             FriendlyMimeType,  ///< The descriptive name for the mime type, e.g. HTML Document.
             LinkDest,          ///< The destination of a symbolic link. @since 4.5
-            LocalPathOrUrl     ///< The local path to the file or the URL in case it is not a local file. @since 4.5
+            LocalPathOrUrl,    ///< The local path to the file or the URL in case it is not a local file. @since 4.5
+            Comment            ///< A simple comment that can be displayed to the user as is. @since 4.6
         };
 
         typedef QList<Information> InformationList;
