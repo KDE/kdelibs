@@ -74,11 +74,6 @@ public:
 
     // Virtual methods to re-implement if special number/string conversion needed
     // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
-    virtual QString formatDatePosix( const QDate &fromDate,
-                                     const QString &toFormat, KLocale::DigitSet digitSet,
-                                     KLocale::DateTimeFormatStandard standard ) const;
-    virtual QString formatDateUnicode( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet ) const;
-    virtual QString getUnicodeString( const QDate &fromDate, const QString &toFormat ) const;
     virtual DateComponents parseDatePosix( const QString &inputString, const QString &formatString,
                                            KLocale::DateTimeFormatStandard standard ) const;
     virtual DateComponents parseDateUnicode( const QString &inputString, const QString &formatString ) const;

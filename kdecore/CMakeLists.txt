@@ -198,6 +198,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemminguo.cpp
    date/kcalendarsystemthai.cpp
    date/kdatetime.cpp
+   date/kdatetimeformatter.cpp
    date/ktimezone.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp

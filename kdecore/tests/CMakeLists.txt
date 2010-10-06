@@ -91,6 +91,13 @@ KDECORE_EXECUTABLE_TESTS(
  startserviceby
 )
 
+########### kdatetimeformattertest ###############
+
+# compile kdatetimeformatter.cpp into the test since it's not exported
+set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter)
+kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
+target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+
 ########### kdirwatchtest_gui ###############
 
 kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
