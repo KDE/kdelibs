@@ -30,7 +30,7 @@ protected:
                       int yearInEra, const QString &shortYearInEraString, const QString &longYearInEraString,
                       const QString &shortEraName, const QString &longEraName );
     void testYmd( const KCalendarSystem *calendar, int y, int m, int d, int jd );
-    void testWeekDayName( const KCalendarSystem *calendar, int weekDay, const QDate &date, 
+    void testWeekDayName( const KCalendarSystem *calendar, int weekDay, const QDate &date,
                           const QString &shortName, const QString &longName );
     void testMonthName( const KCalendarSystem *calendar, int month, int year, const QDate &date,
                         const QString &shortName, const QString &longName,
@@ -51,7 +51,7 @@ protected:
                                  int monthsDiff );
     QDate setIsoWeekDate( const KCalendarSystem *calendar, int year, int isoWeek, int dayOfWeek );
     QDate setEraDate( const KCalendarSystem *calendar, const QString &era, int yearInEra, int month, int day );
-    void testRoundTrip( const KCalendarSystem *calendar );
+    void testRoundTrip( const KCalendarSystem *calendar, bool testFullRange = false );
     void compareFormatUnicode( const KCalendarSystem *calendar, const QDate &testDate, const QString &testFormat );
 
 private Q_SLOTS:

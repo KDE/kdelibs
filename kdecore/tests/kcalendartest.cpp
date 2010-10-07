@@ -304,9 +304,9 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%-Y" ), QString( "-9" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-C" ), QString( "-0" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-y" ), QString( "-9" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "-   9" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "- 0" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "- 9" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "  -9" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "-0" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "-9" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0Y" ), QString( "-0009" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0C" ), QString( "-00" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0y" ), QString( "-09" ) );
@@ -321,8 +321,8 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%-Y" ), QString( "-89" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-C" ), QString( "-0" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-y" ), QString( "-89" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "-  89" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "- 0" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( " -89" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "-0" ) );
     QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "-89" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0Y" ), QString( "-0089" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0C" ), QString( "-00" ) );
@@ -338,8 +338,8 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%-Y" ), QString( "-789" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-C" ), QString( "-7" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-y" ), QString( "-89" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "- 789" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "- 7" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "-789" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "-7" ) );
     QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "-89" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0Y" ), QString( "-0789" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0C" ), QString( "-07" ) );
@@ -355,9 +355,9 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%-Y" ), QString( "-709" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-C" ), QString( "-7" ) );
     QCOMPARE( calendar->formatDate( testDate, "%-y" ), QString( "-9" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "- 709" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "- 7" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "- 9" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "-709" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "-7" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "-9" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0Y" ), QString( "-0709" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0C" ), QString( "-07" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0y" ), QString( "-09" ) );
@@ -391,7 +391,7 @@ void KCalendarTest::testFormatDate()
     QCOMPARE( calendar->formatDate( testDate, "%-y" ), QString( "-9" ) );
     QCOMPARE( calendar->formatDate( testDate, "%_Y" ), QString( "-1709" ) );
     QCOMPARE( calendar->formatDate( testDate, "%_C" ), QString( "-17" ) );
-    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "- 9" ) );
+    QCOMPARE( calendar->formatDate( testDate, "%_y" ), QString( "-9" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0Y" ), QString( "-1709" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0C" ), QString( "-17" ) );
     QCOMPARE( calendar->formatDate( testDate, "%0y" ), QString( "-09" ) );
@@ -1241,6 +1241,14 @@ void KCalendarTest::testIndianNational()
     QCOMPARE( calendar->month( testDate ), 3 );
     QCOMPARE( calendar->day( testDate ), 1 );
 
+    // Test some key dates
+    testYmd( calendar,    0,  1,  1, QDate(   78,  3, 24 ).toJulianDay() );
+    testYmd( calendar,    0, 12, 30, QDate(   79,  3, 23 ).toJulianDay() );
+    testYmd( calendar, 1922,  1,  1, QDate( 2000,  3, 21 ).toJulianDay() );
+    testYmd( calendar, 1922, 12, 30, QDate( 2001,  3, 21 ).toJulianDay() );
+    testYmd( calendar, 1932,  1,  1, QDate( 2010,  3, 22 ).toJulianDay() );
+    testYmd( calendar, 1932, 12, 30, QDate( 2011,  3, 21 ).toJulianDay() );
+
     delete calendar;
 }
 
@@ -1981,7 +1989,7 @@ void KCalendarTest::testMonthName( const KCalendarSystem *calendar, int month, i
     QCOMPARE( calendar->monthName( date ), longName );
 }
 
-void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
+void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar, bool testFullRange )
 {
     kDebug() << "Testing round trip of dates for Calendar System " << calendar->calendarType();
     kDebug() << "This may take some time, or you may have created an infinite loop.";
@@ -1991,10 +1999,14 @@ void KCalendarTest::testRoundTrip( const KCalendarSystem *calendar )
     QDate testDate;
     // Limit to a short interesting date range for regular testing
     // Later add an Env var to choose full test whenever the formulas are changed.
-    //QDate loopDate = calendar->earliestValidDate();
-    //QDate terminateDate = calendar->latestValidDate();
-    QDate loopDate = qMax(QDate(1990, 1, 1), calendar->earliestValidDate());
-    QDate terminateDate = qMin(QDate(2020, 1, 1), calendar->latestValidDate());
+    QDate loopDate, terminateDate;
+    if ( testFullRange ) {
+        loopDate = calendar->earliestValidDate();
+        terminateDate = calendar->latestValidDate();
+    } else {
+        loopDate = qMax(QDate(1990, 1, 1), calendar->earliestValidDate());
+        terminateDate = qMin(QDate(2020, 1, 1), calendar->latestValidDate());
+    }
     QByteArray msg;
     while ( loopDate <= terminateDate ) {
         testYear = calendar->year( loopDate );
