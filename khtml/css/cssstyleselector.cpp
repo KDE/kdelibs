@@ -3073,7 +3073,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         case CSS_VAL_INVALID:
         {
             double widthd = primitiveValue->computeLengthFloat(style, logicalDpiY);
-            width = (int)widthd;
+            width = CSSPrimitiveValueImpl::snapValue(widthd);
             // somewhat resemble Mozilla's granularity
             // this makes border-width: 0.5pt borders visible
             if (width == 0 && widthd >= 0.025) width++;

@@ -222,6 +222,16 @@ public:
 
     double computeLengthFloat( khtml::RenderStyle *style, int logicalDpiY);
 
+    /*
+     * rounds a computer value into integer as appropriate. This takes
+     * care of the various 4.9999999999 type cases
+     */
+    static int snapValue( double result ) {
+        // Conversions are imprecise, often resulting in values of, e.g., 44.99998.  We
+        // need to go ahead and round if we're really close to the next integer value.
+        return (int)(result + (result < 0 ? -0.01 : +0.01));
+    }
+
     // Retrieves an explicit resolution from the CSSValue if it contains one.
     // This is specific to the CSS3 Media Queries module's resolution feature.
     int getDPIResolution() const;
