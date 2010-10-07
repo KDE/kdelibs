@@ -1043,21 +1043,6 @@ class KSharedDataCache::Private
         CacheLocker(const Private *_d) : d(const_cast<Private *>(_d))
         {
             if (d->shm) {
-                // A separate mutex for the shm lock? What gives?
-                // The reason is that we have to check to see if the cache
-                // was made bigger by a different process. If so, we need to
-                // re-map the cache to accomodate that. In that event, we will
-                // need to un-map the cache first.
-                //
-                // Now imagine what happens if two threads in this same process
-                // tried to do this concurrently. Since we wouldn't be attached
-                // to shm we couldn't use d->lock to be safe during that
-                // critical section (in between unlock and the subsequent
-                // lock), so one thread could set shm = 0 after unmapping and
-                // cause the other thread to crash. So we need a separate
-                // single-process/multiple-thread lock to be super-safe.
-                QMutexLocker d_locker(&d->m_threadLock);
-
                 if (!cautiousLock()) {
                     return;
                 }
@@ -1069,6 +1054,14 @@ class KSharedDataCache::Private
                 while (testSize > d->m_mapSize) {
                     kDebug(264) << "Someone enlarged the cache on us,"
                                 << "attempting to match new configuration.";
+
+                    // Protect against two threads accessing this same KSDC
+                    // from trying to execute the following remapping at the
+                    // same time.
+                    QMutexLocker d_locker(&d->m_threadLock);
+                    if (testSize == d->m_mapSize) {
+                        break; // Bail if the other thread already solved.
+                    }
 
                     // Linux supports mremap, but it's not portable. So,
                     // drop the map and (try to) re-establish.
