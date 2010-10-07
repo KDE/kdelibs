@@ -1052,11 +1052,7 @@ void CSSPrimitiveValueImpl::cleanup()
 
 int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, int logicalDpiY)
 {
-    double result = computeLengthFloat( style, logicalDpiY );
-    // This conversion is imprecise, often resulting in values of, e.g., 44.99998.  We
-    // need to go ahead and round if we're really close to the next integer value.
-    int intResult = (int)(result + (result < 0 ? -0.01 : +0.01));
-    return intResult;
+    return snapValue( computeLengthFloat( style, logicalDpiY ) );
 }
 
 double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, int logicalDpiY)
