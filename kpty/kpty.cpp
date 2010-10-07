@@ -348,7 +348,7 @@ bool KPty::open()
     return false;
   }
 
-#if (defined(__svr4__) || defined(__sgi__))
+#if (defined(__svr4__) || defined(__sgi__) || defined(Q_OS_SOLARIS))
   // Solaris
   ioctl(d->slaveFd, I_PUSH, "ptem");
   ioctl(d->slaveFd, I_PUSH, "ldterm");
