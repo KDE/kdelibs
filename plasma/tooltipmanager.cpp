@@ -236,10 +236,12 @@ void ToolTipManager::setContent(QGraphicsWidget *widget, const ToolTipContent &d
             }
         }
 
-        d->tipWidget->setContent(widget, data);
-        d->tipWidget->prepareShowing();
-        if (m_corona) {
-            d->tipWidget->moveTo(m_corona->popupPosition(widget, d->tipWidget->size(), Qt::AlignCenter));
+        if (d->tipWidget) {
+            d->tipWidget->setContent(widget, data);
+            d->tipWidget->prepareShowing();
+            if (m_corona) {
+                d->tipWidget->moveTo(m_corona->popupPosition(widget, d->tipWidget->size(), Qt::AlignCenter));
+            }
         }
     }
 }
