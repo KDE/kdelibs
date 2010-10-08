@@ -25,8 +25,8 @@
 #include <QtGui/QWidget>
 #include <QtGui/QWindowsStyle>
 
-KdeUiProxyStyle::KdeUiProxyStyle(QWidget *parent)
-    : QStyle(), parent(parent)
+KdeUiProxyStyle::KdeUiProxyStyle(QWidget *referenceWidget)
+    : QStyle(), m_referenceWidget(referenceWidget)
 {
 }
 
@@ -37,8 +37,8 @@ KdeUiProxyStyle::~KdeUiProxyStyle()
 QStyle *KdeUiProxyStyle::style() const
 {
     QStyle* baseStyle;
-    if (parent && parent->parentWidget()) {
-        baseStyle = parent->parentWidget()->style();
+    if (m_referenceWidget && m_referenceWidget->parentWidget()) {
+        baseStyle = m_referenceWidget->parentWidget()->style();
     } else {
         baseStyle = QApplication::style();
     }
