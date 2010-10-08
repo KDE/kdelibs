@@ -50,6 +50,7 @@ class KBzip2Filter::Private
 {
 public:
     Private()
+    : isInitialized(false)
     {
         memset(&zStream, 0, sizeof(zStream));
         mode = 0;
@@ -57,6 +58,7 @@ public:
 
     bz_stream zStream;
     int mode;
+    bool isInitialized;
 };
 
 KBzip2Filter::KBzip2Filter()
@@ -72,6 +74,10 @@ KBzip2Filter::~KBzip2Filter()
 
 void KBzip2Filter::init( int mode )
 {
+    if (d->isInitialized) {
+        terminate();
+    }
+
     d->zStream.next_in = 0;
     d->zStream.avail_in = 0;
     if ( mode == QIODevice::ReadOnly )
@@ -85,6 +91,7 @@ void KBzip2Filter::init( int mode )
     } else
         kWarning(7118) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
     d->mode = mode;
+    d->isInitialized = true;
 }
 
 int KBzip2Filter::mode() const
