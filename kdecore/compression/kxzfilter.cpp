@@ -38,6 +38,7 @@ class KXzFilter::Private
 {
 public:
     Private()
+    : isInitialized(false)
     {
         memset(&zStream, 0, sizeof(zStream));
         mode = 0;
@@ -45,6 +46,7 @@ public:
 
     lzma_stream zStream;
     int mode;
+    bool isInitialized;
 };
 
 KXzFilter::KXzFilter()
@@ -60,6 +62,10 @@ KXzFilter::~KXzFilter()
 
 void KXzFilter::init( int mode )
 {
+    if (d->isInitialized) {
+        terminate();
+    }
+  
     lzma_ret result;
     d->zStream.next_in = 0;
     d->zStream.avail_in = 0;
@@ -76,6 +82,7 @@ void KXzFilter::init( int mode )
     } else
         kWarning(7131) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
     d->mode = mode;
+    d->isInitialized = true;
 }
 
 int KXzFilter::mode() const

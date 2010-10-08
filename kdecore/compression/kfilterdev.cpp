@@ -96,6 +96,9 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 
 bool KFilterDev::open( QIODevice::OpenMode mode )
 {
+    if (isOpen()) {
+        return true;
+    }
     //kDebug(7005) << mode;
     if ( mode == QIODevice::ReadOnly )
     {

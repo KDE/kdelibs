@@ -39,7 +39,7 @@ class KGzipFilter::Private
 {
 public:
     Private()
-    : headerWritten(false), footerWritten(false), compressed(false), mode(0), crc(0)
+    : headerWritten(false), footerWritten(false), compressed(false), mode(0), crc(0), isInitialized(false)
     {
         zStream.zalloc = (alloc_func)0;
         zStream.zfree = (free_func)0;
@@ -52,6 +52,7 @@ public:
     bool compressed;
     int mode;
     ulong crc;
+    bool isInitialized;
 };
 
 KGzipFilter::KGzipFilter()
@@ -72,6 +73,9 @@ void KGzipFilter::init(int mode)
 
 void KGzipFilter::init(int mode, Flag flag)
 {
+    if (d->isInitialized) {
+        terminate();
+    }
     d->zStream.next_in = Z_NULL;
     d->zStream.avail_in = 0;
     if ( mode == QIODevice::ReadOnly )
@@ -97,6 +101,7 @@ void KGzipFilter::init(int mode, Flag flag)
     d->compressed = true;
     d->headerWritten = false;
     d->footerWritten = false;
+    d->isInitialized = true;
 }
 
 int KGzipFilter::mode() const
