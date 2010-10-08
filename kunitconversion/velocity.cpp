@@ -88,7 +88,7 @@ Velocity::Velocity() : UnitCategory(VelocityCategory)
       ki18nc("amount in units (real)", "Mach %1"),
       ki18ncp("amount in units (integer)", "Mach %1", "Mach %1")
     );
-    U(SpeedOfLight, 2.99792e+08,
+    U(SpeedOfLight, 2.99792458e+08,
       i18nc("velocity unit symbol", "c"),
       i18nc("unit description in lists", "speed of light"),
       i18nc("unit synonyms for matching user input", "speed of light;c"),
