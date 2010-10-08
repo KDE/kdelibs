@@ -204,11 +204,10 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     if (mPath.isEmpty())
         return true;
 
-    // According to the netscape spec both http://www.acme.com/foobar,
+    // According to the netscape spec http://www.acme.com/foobar,
     // http://www.acme.com/foo.bar and http://www.acme.com/foo/bar
-    // match http://www.acme.com/foo.
+    // should all match http://www.acme.com/foo...
     // We only match http://www.acme.com/foo/bar
-
     if( path.startsWith(mPath) &&
         (
          (path.length() == mPath.length() ) || 	// Paths are exact match
@@ -651,9 +650,9 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     const char *cookieStr = cookie_headers.constData();    
 
     QString defaultPath;
-    const int i = path.lastIndexOf('/');
-    if (i > 0)
-       defaultPath = path.left(i);
+    const int index = path.lastIndexOf('/');
+    if (index > 0)
+       defaultPath = path.left(index);
 
     KDateTime epoch;
     epoch.setTime_t(0);
