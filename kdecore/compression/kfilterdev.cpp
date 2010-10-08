@@ -97,7 +97,8 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 bool KFilterDev::open( QIODevice::OpenMode mode )
 {
     if (isOpen()) {
-        return true;
+        kWarning(7005) << "already open";
+        return true; // QFile returns false, but well, the device -is- open...
     }
     //kDebug(7005) << mode;
     if ( mode == QIODevice::ReadOnly )

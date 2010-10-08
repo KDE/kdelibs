@@ -101,16 +101,16 @@ int KBzip2Filter::mode() const
 
 void KBzip2Filter::terminate()
 {
-    if ( d->mode == QIODevice::ReadOnly )
-    {
+    if (d->mode == QIODevice::ReadOnly) {
         int result = bzDecompressEnd(&d->zStream);
         kDebug(7118) << "bzDecompressEnd returned " << result;
-    } else if ( d->mode == QIODevice::WriteOnly )
-    {
+    } else if (d->mode == QIODevice::WriteOnly) {
         int result = bzCompressEnd(&d->zStream);
         kDebug(7118) << "bzCompressEnd returned " << result;
-    } else
+    } else {
         kWarning(7118) << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+    }
+    d->isInitialized = false;
 }
 
 

@@ -92,11 +92,12 @@ int KXzFilter::mode() const
 
 void KXzFilter::terminate()
 {
-    if ( d->mode == QIODevice::ReadOnly || d->mode == QIODevice::WriteOnly )
-    {
+    if (d->mode == QIODevice::ReadOnly || d->mode == QIODevice::WriteOnly) {
         lzma_end(&d->zStream);
-    } else
+    } else {
         kWarning(7131) << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+    }
+    d->isInitialized = false;
 }
 
 

@@ -122,6 +122,7 @@ void KGzipFilter::terminate()
         if ( result != Z_OK )
             kDebug(7005) << "deflateEnd returned " << result;
     }
+    d->isInitialized = false;
 }
 
 
