@@ -181,9 +181,11 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
             if (itemU) {
                 kDebug(7004) << "Entry already in use:" << _url;
                 // if _reload is set, then we'll emit cached items and then updateDirectory.
+                if (lister->d->autoUpdate)
+                    itemU->incAutoUpdate();
             } else {
                 kDebug(7004) << "Entry in cache:" << _url;
-                itemFromCache->decAutoUpdate();
+                // In this code path, the itemsFromCache->decAutoUpdate + itemU->incAutoUpdate is optimized out
                 itemsInUse.insert(urlStr, itemFromCache);
                 itemU = itemFromCache;
             }
@@ -205,6 +207,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
             itemU = new DirItem(_url, resolved);
             itemsInUse.insert(urlStr, itemU);
+            if (lister->d->autoUpdate)
+                itemU->incAutoUpdate();
 
 //        // we have a limit of MAX_JOBS_PER_LISTER concurrently running jobs
 //        if ( lister->d->numJobs() >= MAX_JOBS_PER_LISTER )
@@ -262,10 +266,6 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
         printDebug();
 #endif
     }
-
-    // automatic updating of directories
-    if (lister->d->autoUpdate)
-        itemU->incAutoUpdate();
 
     return true;
 }
