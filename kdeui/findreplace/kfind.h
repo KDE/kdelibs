@@ -118,7 +118,8 @@ public:
         // Note that KReplaceDialog uses 256 and 512
         // User extensions can use boolean options above this value.
         MinimumUserOption = 65536 ///< user options start with this bit
-    };
+    };    
+    Q_DECLARE_FLAGS(SearchOptions, Options)
 
     /**
      * Only use this constructor if you don't use KFindDialog, or if
@@ -368,5 +369,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotFindNext() )
     Q_PRIVATE_SLOT( d, void _k_slotDialogClosed() )
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KFind::SearchOptions)
 
 #endif
