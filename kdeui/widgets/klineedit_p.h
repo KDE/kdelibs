@@ -186,6 +186,7 @@ public:
       m_overlap(0),
       m_sentinel(false)
   {
+      setParent(parent);
   }
 
   QStyle *style() const;
