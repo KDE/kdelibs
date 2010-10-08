@@ -1049,6 +1049,7 @@ install(FILES
   Plasma/DataEngine
   Plasma/DataEngineManager
   Plasma/DataEngineScript
+  Plasma/DeclarativeWidget
   Plasma/Delegate
   Plasma/Dialog
   Plasma/Extender
