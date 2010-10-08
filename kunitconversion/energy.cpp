@@ -23,6 +23,12 @@
 
 using namespace KUnitConversion;
 
+class PhotonWavelengthConv : public Complex
+{
+    double toDefault(double value) const { return (2.99792458e+08 * 6.62606896e-34) / (value * 1e-09); };
+    double fromDefault(double value) const { return ((2.99792458e+08 * 6.62606896e-34) / value) / 1e-09; };
+};
+
 Energy::Energy() : UnitCategory(EnergyCategory)
 {
     setName(i18n("Energy"));
@@ -203,6 +209,13 @@ Energy::Energy() : UnitCategory(EnergyCategory)
       i18nc("unit synonyms for matching user input", "kilocalorie;kilocalories;kcal"),
       ki18nc("amount in units (real)", "%1 kilocalories"),
       ki18ncp("amount in units (integer)", "%1 kilocalorie", "%1 kilocalories")
+    );
+    U(PhotonWavelength, new PhotonWavelengthConv(),
+      i18nc("energy unit symbol", "nm"),
+      i18nc("unit description in lists", "photon wavelength in nanometers"),
+      i18nc("unit synonyms for matching user input", "nm;photon wavelength"),
+      ki18nc("amount in units (real)", "%1 nanometers"),
+      ki18ncp("amount in units (integer)", "%1 nanometer", "%1 nanometers")
     );
 
     setMostCommonUnits(QList<int>() <<
