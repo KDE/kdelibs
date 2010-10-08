@@ -235,6 +235,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
                 emit lister->started(_url);
             }
+            //kDebug(7004) << "Entry now being listed by" << dirData.listersCurrentlyListing;
         }
     } else {
 
@@ -307,6 +308,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
     if (_emitCompleted && jobForUrl( urlStr ) == 0) {
 
         Q_ASSERT(!dirData.listersCurrentlyHolding.contains(lister));
+        //kDebug(7004) << "Moving from listing to holding, because emitCompleted is true and no job" << lister << urlStr;
         dirData.listersCurrentlyHolding.append( lister );
         dirData.listersCurrentlyListing.removeAll( lister );
 
@@ -361,7 +363,7 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
             // lister is listing url
             const QString url = dirit.key();
 
-            //kDebug(7004) << " found lister in list - for " << url;
+            //kDebug(7004) << " found lister" << lister << "in list - for" << url;
             stopLister(lister, url, dirData, silent);
             stopped = true;
         }
@@ -404,6 +406,7 @@ void KDirListerCache::stop(KDirLister *lister, const KUrl& _u, bool silent)
     KDirListerCacheDirectoryData& dirData = dirit.value();
     if ( dirData.listersCurrentlyListing.removeAll(lister) ) { // contains + removeAll in one go
 
+        //kDebug(7004) << " found lister" << lister << "in list - for" << urlStr;
         stopLister(lister, urlStr, dirData, silent);
 
         if ( lister->d->numJobs() == 0 ) {
@@ -412,6 +415,7 @@ void KDirListerCache::stop(KDirLister *lister, const KUrl& _u, bool silent)
             if (!silent) {
                 emit lister->canceled();
             }
+            //kDebug(7004) << "Entry now being listed by" << dirData.listersCurrentlyListing;
         }
     }
 }
@@ -587,6 +591,8 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     QList<KDirLister *> listers = dirData.listersCurrentlyListing;
     QList<KDirLister *> holders = dirData.listersCurrentlyHolding;
 
+    //kDebug(7004) << urlStr << "listers=" << listers << "holders=" << holders;
+
     // restart the job for _dir if it is running already
     bool killed = false;
     QWidget *window = 0;
@@ -615,9 +621,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
             }
         }
     }
-    //if (killed) {
-    //    kDebug(7004) << "Killed=" << killed;
-    //}
+    //kDebug(7004) << "Killed=" << killed;
 
     // we don't need to emit canceled signals since we only replaced the job,
     // the listing is continuing.
@@ -1181,6 +1185,7 @@ void KDirListerCache::slotResult( KJob *j )
   Q_ASSERT(dit != directoryData.end());
   KDirListerCacheDirectoryData& dirData = *dit;
   if ( dirData.listersCurrentlyListing.isEmpty() ) {
+    kError() << "OOOOPS, nothing in directoryData.listersCurrentlyListing for" << jobUrlStr;
     // We're about to assert; dump the current state...
 #ifndef NDEBUG
     printDebug();
@@ -1193,7 +1198,7 @@ void KDirListerCache::slotResult( KJob *j )
   // the signals to make sure it exists in KDirListerCache in case someone
   // calls listDir during the signal emission
   Q_ASSERT( dirData.listersCurrentlyHolding.isEmpty() );
-  dirData.moveListersWithoutCachedItemsJob();
+  dirData.moveListersWithoutCachedItemsJob(jobUrl);
 
   if ( job->error() )
   {
@@ -1578,7 +1583,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     KDirListerCacheDirectoryData& dirData = directoryData[jobUrlStr];
     // Collect the dirlisters which were listing the URL using that ListJob
     // plus those that were already holding that URL - they all get updated.
-    dirData.moveListersWithoutCachedItemsJob();
+    dirData.moveListersWithoutCachedItemsJob(jobUrl);
     QList<KDirLister *> listers = dirData.listersCurrentlyHolding;
     listers += dirData.listersCurrentlyListing;
 
@@ -2619,7 +2624,7 @@ void KDirLister::Private::redirect(const KUrl& oldUrl, const KUrl& newUrl, bool 
     emit m_parent->redirection( oldUrl, newUrl );
 }
 
-void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
+void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob(const KUrl& url)
 {
     // Move dirlisters from listersCurrentlyListing to listersCurrentlyHolding,
     // but not those that are still waiting on a CachedItemsJob...
@@ -2629,7 +2634,7 @@ void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
     QMutableListIterator<KDirLister *> lister_it(listersCurrentlyListing);
     while (lister_it.hasNext()) {
         KDirLister* kdl = lister_it.next();
-        if (!kdl->d->m_cachedItemsJob) {
+        if (!kdl->d->m_cachedItemsJob || kdl->d->m_cachedItemsJob->url() != url) {
             // OK, move this lister from "currently listing" to "currently holding".
 
             // Huh? The KDirLister was present twice in listersCurrentlyListing, or was in both lists?
@@ -2638,6 +2643,8 @@ void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
                 listersCurrentlyHolding.append(kdl);
             }
             lister_it.remove();
+        } else {
+            //kDebug(7004) << "Not moving" << kdl << "to listersCurrentlyHolding because it still has job" << kdl->d->m_cachedItemsJob;
         }
     }
 }
