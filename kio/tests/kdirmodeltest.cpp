@@ -25,6 +25,7 @@
 #include "kdirmodeltest.moc"
 #include <kdirmodel.h>
 #include <kdirlister.h>
+//TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"
 
 #include <qtest_kde.h>
 
@@ -76,9 +77,13 @@ void KDirModelTest::initTestCase()
 
 void KDirModelTest::recreateTestData()
 {
-    if (m_tempDir)
+    if (m_tempDir) {
         kDebug() << "Deleting old tempdir" << m_tempDir->name();
-    delete m_tempDir;
+        delete m_tempDir;
+        qApp->processEvents(); // process inotify events so they don't pollute us later on
+    }
+
+
     m_tempDir = new KTempDir;
     kDebug() << "new tmp dir:" << m_tempDir->name();
     // Create test data:
@@ -389,7 +394,11 @@ void KDirModelTest::testModifyFile()
     const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
 
+#if 1
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+#else
+    ModelSpy modelSpy(m_dirModel);
+#endif
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(exitLoop()) );
 
@@ -405,10 +414,15 @@ void KDirModelTest::testModifyFile()
     enterLoop();
 
     // If we come here, then dataChanged() was emitted - all good.
-    QCOMPARE(spyDataChanged.count(), 1);
-    QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
+#if 0
+    QCOMPARE(modelSpy.count(), 1);
+    const QVariantList dataChanged = modelSpy.first();
+#else
+    const QVariantList dataChanged = spyDataChanged[0];
+#endif
+    QModelIndex receivedIndex = dataChanged[0].value<QModelIndex>();
     COMPARE_INDEXES(receivedIndex, m_secondFileIndex);
-    receivedIndex = spyDataChanged[0][1].value<QModelIndex>();
+    receivedIndex = dataChanged[1].value<QModelIndex>();
     QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
@@ -651,59 +665,78 @@ void KDirModelTest::testChmodDirectory() // #53397
                 &m_eventLoop, SLOT(exitLoop()) );
 }
 
+enum {
+    NoFlag = 0,
+    NewDir = 1, // whether to re-create a new KTempDir completely, to avoid cached fileitems
+    ListFinalDir = 2, // whether to list the target dir at the same time, like k3b, for #193364
+    Recreate = 4
+    // flags, next item is 8!
+};
+
 void KDirModelTest::testExpandToUrl_data()
 {
-    QTest::addColumn<bool>("newdir"); // whether to re-create a new KTempDir completely, to avoid cached fileitems
+    QTest::addColumn<int>("flags"); // see enum above
     QTest::addColumn<QString>("expandToPath"); // relative path
     QTest::addColumn<QStringList>("expectedExpandSignals");
 
     QTest::newRow("the root, nothing to do")
-        << false << QString() << QStringList();
+        << int(NoFlag) << QString() << QStringList();
     QTest::newRow(".")
-        << false << "." << (QStringList());
+        << int(NoFlag) << "." << (QStringList());
     QTest::newRow("subdir")
-        << false << "subdir" << (QStringList()<<"subdir");
+        << int(NoFlag) << "subdir" << (QStringList()<<"subdir");
     QTest::newRow("subdir/.")
-        << false << "subdir/." << (QStringList()<<"subdir");
+        << int(NoFlag) << "subdir/." << (QStringList()<<"subdir");
 
     const QString subsubdir = "subdir/subsubdir";
     // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir.
     QTest::newRow("subdir/subsubdir")
-        << false << subsubdir << (QStringList()<<"subdir"<<subsubdir);
+        << int(NoFlag) << subsubdir << (QStringList()<<"subdir"<<subsubdir);
 
     // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir, list subsubdir.
     const QString subsubdirfile = subsubdir + "/testfile";
     QTest::newRow("subdir/subsubdir/testfile sync")
-        << false << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+        << int(NoFlag) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
 #ifndef Q_WS_WIN
     // Expand a symlink to a directory (#219547)
     const QString dirlink = m_tempDir->name() + "dirlink";
     createTestSymlink(dirlink, "/");
     QTest::newRow("dirlink")
-        << false << "dirlink/tmp" << (QStringList()<<"dirlink"<<"dirlink/tmp");
+        << int(NoFlag) << "dirlink/tmp" << (QStringList()<<"dirlink"<<"dirlink/tmp");
 #endif
 
     // Do a cold-cache test too, but nowadays it doesn't change anything anymore,
     // apart from testing different code paths inside KDirLister.
     QTest::newRow("subdir/subsubdir/testfile with reload")
-        << true << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+        << int(NewDir) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+
+    QTest::newRow("hold dest dir") // #193364
+        << int(NewDir|ListFinalDir|Recreate) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+
+    // Make sure the last test has the Recreate option set, for the subsequent test methods.
 }
 
 void KDirModelTest::testExpandToUrl()
 {
-    QFETCH(bool, newdir);
+    QFETCH(int, flags);
     QFETCH(QString, expandToPath); // relative
     QFETCH(QStringList, expectedExpandSignals);
 
-    if (newdir) {
+    if (flags & NewDir) {
         recreateTestData();
         // WARNING! m_dirIndex, m_fileIndex, m_secondFileIndex etc. are not valid anymore after this point!
 
     }
 
     const QString path = m_tempDir->name();
-    if (!m_dirModelForExpand || newdir) {
+    if (flags & ListFinalDir) {
+        // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
+        m_dirModel->dirLister()->openUrl(path + "subdir/subsubdir");
+        QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
+    }
+
+    if (!m_dirModelForExpand || (flags & NewDir)) {
         delete m_dirModelForExpand;
         m_dirModelForExpand = new KDirModel;
         connect(m_dirModelForExpand, SIGNAL(expand(QModelIndex)),
@@ -740,9 +773,15 @@ void KDirModelTest::testExpandToUrl()
         QVERIFY(m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid());
     }
 
-    // recreateTestData was called -> fill again, for the next tests
-    if (newdir)
+    if (flags & ListFinalDir) {
+        testUpdateParentAfterExpand();
+    }
+
+    if (flags & Recreate) {
+        // Clean up, for the next tests
+        recreateTestData();
         fillModel(false);
+    }
 }
 
 void KDirModelTest::slotExpand(const QModelIndex& index)
@@ -768,6 +807,18 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
 void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
 {
     m_rowsInsertedEmitted = true;
+}
+
+// This code is called by testExpandToUrl
+void KDirModelTest::testUpdateParentAfterExpand() // #193364
+{
+    const QString path = m_tempDir->name();
+    const QString file = path + "subdir/aNewFile";
+    kDebug() << "Creating" << file;
+    QVERIFY(!QFile::exists(file));
+    createTestFile(file);
+    //QSignalSpy spyRowsInserted(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QTest::kWaitForSignal(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
 }
 
 void KDirModelTest::testFilter()

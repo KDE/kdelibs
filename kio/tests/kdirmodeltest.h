@@ -84,6 +84,7 @@ private:
     void fillModel(bool reload, bool expectAllIndexes = true);
     void collectKnownIndexes();
     void testMoveDirectory(const QString& srcdir);
+    void testUpdateParentAfterExpand();
 
 private:
 #ifdef USE_QTESTEVENTLOOP

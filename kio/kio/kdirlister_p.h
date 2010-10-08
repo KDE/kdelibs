@@ -30,6 +30,7 @@
 #include <QtGui/QWidget>
 
 #include <kurl.h>
+#include <kdebug.h>
 #include <kio/global.h>
 #include <kdirwatch.h>
 
@@ -450,7 +451,7 @@ struct KDirListerCacheDirectoryData
     // Listers that are currently holding this url
     QList<KDirLister *> listersCurrentlyHolding;
 
-    void moveListersWithoutCachedItemsJob();
+    void moveListersWithoutCachedItemsJob(const KUrl& url);
 };
 
 //const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
