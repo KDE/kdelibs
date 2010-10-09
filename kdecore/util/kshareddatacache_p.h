@@ -284,7 +284,9 @@ static SharedLockId findBestSharedLock()
         pthread_mutex_t tempMutex;
         QSharedPointer<KSDCLock> tempLock(0);
         if (timeoutsSupported) {
+#ifdef KSDC_TIMEOUTS_SUPPORTED
             tempLock = QSharedPointer<KSDCLock>(new pthreadTimedLock(tempMutex));
+#endif
         }
         else {
             tempLock = QSharedPointer<KSDCLock>(new pthreadLock(tempMutex));
