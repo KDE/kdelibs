@@ -33,6 +33,7 @@
 
 #include <kselectaction.h>
 #include <kparts/textextension.h>
+#include <kparts/htmlextension.h>
 #include <kio/global.h>
 
 /**
@@ -186,6 +187,28 @@ public:
     virtual bool hasSelection() const;
     virtual QString selectedText(Format format) const;
     virtual QString completeText(Format format) const;
+
+    KHTMLPart* part() const;
+};
+
+/**
+ * @internal
+ * Implements the HtmlExtension interface
+ */
+class KHTMLHtmlExtension : public KParts::HtmlExtension,
+                           public KParts::SelectorInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(KParts::SelectorInterface)
+
+public:
+    KHTMLHtmlExtension(KHTMLPart* part);
+
+    virtual KUrl baseUrl() const;
+
+    // SelectorInterface
+    virtual Element querySelector(const QString& query) const;
+    virtual QList<Element> querySelectorAll(const QString& query) const;
 
     KHTMLPart* part() const;
 };

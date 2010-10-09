@@ -237,6 +237,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
   d->m_scriptableExtension = new KJS::KHTMLPartScriptable( this );
   new KHTMLTextExtension( this );
+  new KHTMLHtmlExtension( this );
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
 
@@ -2486,7 +2487,7 @@ const KHTMLSettings *KHTMLPart::settings() const
   return d->m_settings;
 }
 
-#ifndef KDE_NO_COMPAT
+#ifndef KDE_NO_COMPAT // KDE5: remove this ifndef, keep the method (renamed to baseUrl)
 KUrl KHTMLPart::baseURL() const
 {
   if ( !d->m_doc ) return KUrl();

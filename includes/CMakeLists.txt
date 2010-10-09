@@ -799,6 +799,7 @@ install( FILES
   KParts/GenericFactory
   KParts/GenericFactoryBase
   KParts/HistoryProvider
+  KParts/HtmlExtension
   KParts/LiveConnectExtension
   KParts/MainWindow
   KParts/OpenUrlEvent

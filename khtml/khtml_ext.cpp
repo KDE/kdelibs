@@ -35,6 +35,8 @@
 #include "dom/html_image.h"
 #include "dom/dom_string.h"
 #include "dom/html_document.h"
+#include "dom/dom_element.h"
+#include "xml/dom_elementimpl.h"
 #include <QtGui/QClipboard>
 #include <QtCore/QFileInfo>
 #include <QtGui/QMenu>
@@ -65,8 +67,6 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
-
-#include "dom/dom_element.h"
 
 #include "khtmlpart_p.h"
 
@@ -1090,6 +1090,61 @@ QString KHTMLTextExtension::completeText(Format format) const
         return part()->htmlDocument().body().innerHTML().string();
     }
     return QString();
+}
+
+////
+
+KHTMLHtmlExtension::KHTMLHtmlExtension(KHTMLPart* part)
+    : KParts::HtmlExtension(part)
+{
+}
+
+KHTMLPart* KHTMLHtmlExtension::part() const
+{
+    return static_cast<KHTMLPart*>(parent());
+}
+
+static KParts::SelectorInterface::Element convertDomElement(const DOM::ElementImpl* domElem)
+{
+    KParts::SelectorInterface::Element elem;
+    elem.setTagName(domElem->tagName().string());
+    const DOM::NamedAttrMapImpl* attrMap = domElem->attributes(true /*readonly*/);
+    if (attrMap) {
+        for (unsigned i = 0; i < attrMap->length(); ++i) {
+            const DOM::AttributeImpl& attr = attrMap->attributeAt(i);
+            elem.setAttribute(attr.localName().string(), attr.value().string());
+            // we could have a setAttributeNS too.
+        }
+    }
+    return elem;
+}
+
+KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QString& query) const
+{
+    int ec = 0; // exceptions are ignored
+    WTF::RefPtr<DOM::ElementImpl> element = part()->document().handle()->querySelector(query, ec);
+    return convertDomElement(element.get());
+}
+
+QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(const QString& query) const
+{
+    int ec = 0; // exceptions are ignored
+    WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);
+    QList<Element> result;
+    const unsigned long len = nodes->length();
+    result.reserve(len);
+    for (unsigned long i = 0; i < len; ++i) {
+        DOM::NodeImpl* node = nodes->item(i);
+        if (node->isElementNode()) { // should be always true
+            result.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
+        }
+    }
+    return result;
+}
+
+KUrl KHTMLHtmlExtension::baseUrl() const
+{
+    return part()->baseURL();
 }
 
 #include "khtml_ext.moc"
