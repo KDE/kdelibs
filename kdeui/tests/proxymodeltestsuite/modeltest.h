@@ -93,7 +93,7 @@ private:
   } status;
 
   struct Changing {
-    QModelIndex parent;
+    QPersistentModelIndex parent;
     int oldSize;
     QVariant last;
     QVariant next;
