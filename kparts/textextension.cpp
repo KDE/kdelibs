@@ -64,3 +64,8 @@ QString KParts::TextExtension::pageText(Format) const
 {
     return QString();
 }
+
+bool KParts::TextExtension::findText(const QString&, KFind::SearchOptions) const
+{
+    return false;
+}
