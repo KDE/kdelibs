@@ -303,6 +303,7 @@
                         <property key="isRewritable">true</property>
                         <property key="isBlank">false</property>
                         <property key="availableContent">data</property>
+                        <property key="mountpoint">/media/cdrom</property>
 
                         <property key="uuid">5011</property>
                         <property key="size">731047936</property>
@@ -339,7 +340,7 @@
                     <!-- ... with a DVD Video in it -->
                     <device udi="/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS">
                         <property key="name">SolidMan Begins</property>
-                        <property key="interfaces">Block,StorageVolume,OpticalDisc,StorageAccess</property>
+                        <property key="interfaces">Block,StorageVolume,OpticalDisc</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_reader</property>
 
                         <property key="discType">dvd_rom</property>
