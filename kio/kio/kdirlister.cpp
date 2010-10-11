@@ -1610,9 +1610,15 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     }
 
     DirItem *dir = itemsInUse.value(jobUrlStr, 0);
-    Q_ASSERT(dir);
-    dir->complete = true;
-
+    if (!dir) {
+        kError(7004) << "Internal error: itemsInUse did not contain" << jobUrlStr;
+#ifndef NDEBUG
+        printDebug();
+#endif
+        Q_ASSERT(dir);
+    } else {
+        dir->complete = true;
+    }
 
     // check if anyone wants the mimetypes immediately
     bool delayedMimeTypes = true;
