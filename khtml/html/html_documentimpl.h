@@ -64,7 +64,6 @@ public:
     HTMLCollectionImpl* all();
     HTMLCollectionImpl* scripts();
 
-    HTMLElementImpl *body();
     void setBody(HTMLElementImpl *_body, int& exceptioncode);
 
     virtual khtml::Tokenizer *createTokenizer();
@@ -72,6 +71,9 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
 
     virtual ElementImpl *createElement ( const DOMString &tagName, int* pExceptioncode );
+    
+    // HTML5
+    ElementImpl* activeElement() const;
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
 

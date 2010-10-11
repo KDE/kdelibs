@@ -53,7 +53,7 @@ namespace KJS {
            Images, Applets, Links, Forms, Layers, Anchors, Scripts, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName, GetSelection, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
-           Height, Width, Dir, Frames, CompatMode, DesignMode };
+           Height, Width, Dir, Frames, CompatMode, DesignMode, ActiveElement };
     DOM::HTMLDocumentImpl* impl() const { return static_cast<DOM::HTMLDocumentImpl*>( m_impl.get() ); }
   private:
     static JSValue *nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);

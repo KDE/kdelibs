@@ -187,6 +187,8 @@ const ClassInfo KJS::HTMLDocument::info =
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #NS4 extension
   layers		HTMLDocument::Layers		DontDelete|ReadOnly
+# HTML5
+  activeElement         HTMLDocument::ActiveElement     DontDelete|ReadOnly
 #potentially obsolete array properties
 # plugins
 # tags
@@ -392,6 +394,8 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
               == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
     case DesignMode:
         return jsString((doc.designMode() ? "on":"off"));
+    case ActiveElement:
+	return getDOMNode(exec, doc.activeElement());
     case BgColor:
       return jsString(body ? body->getAttribute(ATTR_BGCOLOR) : DOMString());
     case FgColor:
