@@ -1182,7 +1182,14 @@ void KDirListerCache::slotResult( KJob *j )
   kDebug(7004) << "finished listing" << jobUrl;
 
   DirectoryDataHash::iterator dit = directoryData.find(jobUrlStr);
-  Q_ASSERT(dit != directoryData.end());
+  if (dit == directoryData.end()) {
+    kError() << "Nothing found in directoryData for URL" << jobUrlStr;
+#ifndef NDEBUG
+    printDebug();
+#endif
+    Q_ASSERT(dit != directoryData.end());
+    return;
+  }
   KDirListerCacheDirectoryData& dirData = *dit;
   if ( dirData.listersCurrentlyListing.isEmpty() ) {
     kError() << "OOOOPS, nothing in directoryData.listersCurrentlyListing for" << jobUrlStr;
@@ -1190,8 +1197,8 @@ void KDirListerCache::slotResult( KJob *j )
 #ifndef NDEBUG
     printDebug();
 #endif
+    Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
   }
-  Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
   QList<KDirLister *> listers = dirData.listersCurrentlyListing;
 
   // move all listers to the holding list, do it before emitting
