@@ -182,6 +182,13 @@ Length::Length() : UnitCategory(LengthCategory)
       ki18nc("amount in units (real)", "%1 inches"),
       ki18ncp("amount in units (integer)", "%1 inch", "%1 inches")
     );
+    U(Thou, 0.0000254,
+      i18nc("length unit symbol", "thou"),
+      i18nc("unit description in lists", "thousandths of an inch"),
+      i18nc("unit synonyms for matching user input", "thou;mil;point;thousandth of an inch;thousandths of an inch"),
+      ki18nc("amount in units (real)", "%1 thousandths of an inch"),
+      ki18ncp("amount in units (integer)", "%1 thousandth of an inch", "%1 thousandths of an inch")
+    );
     U(Foot, 0.3048,
       i18nc("length unit symbol", "ft"),
       i18nc("unit description in lists", "feet"),

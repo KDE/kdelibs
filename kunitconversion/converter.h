@@ -45,7 +45,7 @@ enum UnitId {
     Yottameter = 2000, Zettameter, Exameter, Petameter, Terameter, Gigameter, Megameter,
     Kilometer, Hectometer, Decameter, Meter, Decimeter, Centimeter, Millimeter, Micrometer,
     Nanometer, Picometer, Femtometer, Attometer, Zeptometer, Yoctometer, Inch, Foot, Yard,
-    Mile, NauticalMile, LightYear, Parsec, AstronomicalUnit,
+    Mile, NauticalMile, LightYear, Parsec, AstronomicalUnit, Thou,
 
     // Volume
     CubicYottameter = 3000, CubicZettameter, CubicExameter, CubicPetameter, CubicTerameter,
