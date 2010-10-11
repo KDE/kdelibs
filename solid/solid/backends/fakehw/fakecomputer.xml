@@ -303,7 +303,7 @@
                         <property key="isRewritable">true</property>
                         <property key="isBlank">false</property>
                         <property key="availableContent">data</property>
-                        <property key="mountpoint">/media/cdrom</property>
+                        <property key="mountPoint">/media/cdrom</property>
 
                         <property key="uuid">5011</property>
                         <property key="size">731047936</property>
