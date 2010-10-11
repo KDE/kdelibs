@@ -113,10 +113,9 @@ QStringList KFilePlacesModelTest::placesUrls() const
 }
 
 #define CHECK_PLACES_URLS(urls)                                              \
-    const QStringList currentUrls = placesUrls();                            \
-    if (currentUrls != urls) {                                               \
+    if (placesUrls() != urls) {                                              \
         kDebug() << "Expected:" << urls;                                     \
-        kDebug() << "Got:" << currentUrls;                                   \
+        kDebug() << "Got:" << placesUrls();                                  \
         QCOMPARE(placesUrls(), urls);                                        \
     }                                                                        \
     for (int row = 0; row < urls.size(); ++row) {                            \
