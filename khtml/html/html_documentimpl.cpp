@@ -131,26 +131,6 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
                      URL().url(), fake_header, qlonglong(windowId));
 }
 
-
-
-HTMLElementImpl *HTMLDocumentImpl::body()
-{
-    NodeImpl *de = documentElement();
-    if (!de)
-        return 0;
-
-    // try to prefer a FRAMESET element over BODY
-    NodeImpl* body = 0;
-    for (NodeImpl* i = de->firstChild(); i; i = i->nextSibling()) {
-        if (i->id() == ID_FRAMESET)
-            return static_cast<HTMLElementImpl*>(i);
-
-        if (i->id() == ID_BODY)
-            body = i;
-    }
-    return static_cast<HTMLElementImpl *>(body);
-}
-
 void HTMLDocumentImpl::setBody(HTMLElementImpl *_body, int& exceptioncode)
 {
     HTMLElementImpl *b = body();
@@ -187,6 +167,15 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExcep
     }
 
     return createHTMLElement(name, hMode != XHtml);
+}
+
+ElementImpl* HTMLDocumentImpl::activeElement() const
+{
+    NodeImpl* fn = focusNode();
+    if (!fn || !fn->isElementNode())
+	return body();
+    else
+	return static_cast<ElementImpl*>(fn);
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()
