@@ -57,112 +57,115 @@ using namespace KIO;
 /** @internal */
 class RenameDialog::RenameDialogPrivate
 {
- public:
-  RenameDialogPrivate(){
-    bCancel = 0;
-    bRename = bSkip = bOverwrite = 0;
-    bResume = bSuggestNewName = 0;
-    bApplyAll = 0;
-    m_pLineEdit = 0;
-    m_srcPendingPreview = false;
-    m_destPendingPreview = false;
-    m_srcPreview = 0;
-    m_destPreview = 0;
-  }
-  void setRenameBoxText(const QString& fileName) {
-    // sets the text in file name line edit box, selecting the filename (but not the extension if there is one).
-    const QString extension = KMimeType::extractKnownExtension(fileName);
-    m_pLineEdit->setText(fileName);
-    if (!extension.isEmpty()) {
-        const int selectionLength = fileName.length() - extension.length() - 1;
-        m_pLineEdit->setSelection(0, selectionLength);
-    } else {
-        m_pLineEdit->selectAll();
+public:
+    RenameDialogPrivate() {
+        bCancel = 0;
+        bRename = bSkip = bOverwrite = 0;
+        bResume = bSuggestNewName = 0;
+        bApplyAll = 0;
+        m_pLineEdit = 0;
+        m_srcPendingPreview = false;
+        m_destPendingPreview = false;
+        m_srcPreview = 0;
+        m_destPreview = 0;
     }
-  }
-  KPushButton *bCancel;
-  QPushButton *bRename;
-  QPushButton *bSkip;
-  QPushButton *bOverwrite;
-  QPushButton *bResume;
-  QPushButton *bSuggestNewName;
-  QCheckBox *bApplyAll;
-  KLineEdit* m_pLineEdit;
-  KUrl src;
-  KUrl dest;
-  bool m_srcPendingPreview;
-  bool m_destPendingPreview;
-  QLabel* m_srcPreview;
-  QLabel* m_destPreview;
+
+    void setRenameBoxText(const QString& fileName) {
+        // sets the text in file name line edit box, selecting the filename (but not the extension if there is one).
+        const QString extension = KMimeType::extractKnownExtension(fileName);
+        m_pLineEdit->setText(fileName);
+
+        if (!extension.isEmpty()) {
+            const int selectionLength = fileName.length() - extension.length() - 1;
+            m_pLineEdit->setSelection(0, selectionLength);
+        } else {
+            m_pLineEdit->selectAll();
+        }
+    }
+
+    KPushButton *bCancel;
+    QPushButton *bRename;
+    QPushButton *bSkip;
+    QPushButton *bOverwrite;
+    QPushButton *bResume;
+    QPushButton *bSuggestNewName;
+    QCheckBox *bApplyAll;
+    KLineEdit* m_pLineEdit;
+    KUrl src;
+    KUrl dest;
+    bool m_srcPendingPreview;
+    bool m_destPendingPreview;
+    QLabel* m_srcPreview;
+    QLabel* m_destPreview;
 };
 
 RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
-                     const KUrl &_src, const KUrl &_dest,
-                     RenameDialog_Mode _mode,
-                     KIO::filesize_t sizeSrc,
-                     KIO::filesize_t sizeDest,
-                     time_t ctimeSrc,
-                     time_t ctimeDest,
-                     time_t mtimeSrc,
-                     time_t mtimeDest)
-  : QDialog ( parent ), d(new RenameDialogPrivate)
+                           const KUrl &_src, const KUrl &_dest,
+                           RenameDialog_Mode _mode,
+                           KIO::filesize_t sizeSrc,
+                           KIO::filesize_t sizeDest,
+                           time_t ctimeSrc,
+                           time_t ctimeDest,
+                           time_t mtimeSrc,
+                           time_t mtimeDest)
+        : QDialog(parent), d(new RenameDialogPrivate)
 {
-    setObjectName( "KIO::RenameDialog" );
+    setObjectName("KIO::RenameDialog");
 
     d->src = _src;
     d->dest = _dest;
 
-    setWindowTitle( _caption );
+    setWindowTitle(_caption);
 
-    d->bCancel = new KPushButton( KStandardGuiItem::cancel(), this );
+    d->bCancel = new KPushButton(KStandardGuiItem::cancel(), this);
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
 
     if (_mode & M_MULTI) {
         d->bApplyAll = new QCheckBox(i18n("Appl&y to All"), this);
         d->bApplyAll->setToolTip((_mode & M_ISDIR) ? i18n("When this is checked the button pressed will be applied to all subsequent folder conflicts for the remainder of the current job.\nUnless you press Skip you will still be prompted in case of a conflict with an existing file in the directory.")
-                                                      : i18n("When this is checked the button pressed will be applied to all subsequent conflicts for the remainder of the current job."));
+                                 : i18n("When this is checked the button pressed will be applied to all subsequent conflicts for the remainder of the current job."));
         connect(d->bApplyAll, SIGNAL(clicked()), this, SLOT(applyAllPressed()));
     }
 
-    if ( ! (_mode & M_NORENAME ) ) {
-        d->bRename = new QPushButton( i18n( "&Rename" ), this );
+    if (!(_mode & M_NORENAME)) {
+        d->bRename = new QPushButton(i18n("&Rename"), this);
         d->bRename->setEnabled(false);
-        d->bSuggestNewName = new QPushButton( i18n( "Suggest New &Name" ), this );
+        d->bSuggestNewName = new QPushButton(i18n("Suggest New &Name"), this);
         connect(d->bSuggestNewName, SIGNAL(clicked()), this, SLOT(suggestNewNamePressed()));
         connect(d->bRename, SIGNAL(clicked()), this, SLOT(renamePressed()));
     }
 
-    if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
-        d->bSkip = new QPushButton( i18n( "&Skip" ), this );
+    if ((_mode & M_MULTI) && (_mode & M_SKIP)) {
+        d->bSkip = new QPushButton(i18n("&Skip"), this);
         d->bSkip->setToolTip((_mode & M_ISDIR) ? i18n("Do not copy or move this folder, skip to the next item instead")
                              : i18n("Do not copy or move this file, skip to the next item instead"));
         connect(d->bSkip, SIGNAL(clicked()), this, SLOT(skipPressed()));
     }
 
-    if ( _mode & M_OVERWRITE ) {
+    if (_mode & M_OVERWRITE) {
         const QString text = (_mode & M_ISDIR) ? i18nc("Write files into an existing folder", "&Write Into") : i18n("&Overwrite");
         d->bOverwrite = new QPushButton(text, this);
         d->bOverwrite->setToolTip(i18n("Files and folders will be copied into the existing directory, alongside its existing contents.\nYou will be prompted again in case of a conflict with an existing file in the directory."));
         connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(overwritePressed()));
     }
 
-    if ( _mode & M_RESUME ) {
-        d->bResume = new QPushButton( i18n( "&Resume" ), this );
+    if (_mode & M_RESUME) {
+        d->bResume = new QPushButton(i18n("&Resume"), this);
         connect(d->bResume, SIGNAL(clicked()), this, SLOT(resumePressed()));
     }
 
-    QVBoxLayout* pLayout = new QVBoxLayout( this );
-    pLayout->addStrut( 360 );	// makes dlg at least that wide
+    QVBoxLayout* pLayout = new QVBoxLayout(this);
+    pLayout->addStrut(400);     // makes dlg at least that wide
 
     // User tries to overwrite a file with itself ?
-    if ( _mode & M_OVERWRITE_ITSELF ) {
-        QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Please enter a new file name:" ,  KStringHandler::csqueeze( d->src.pathOrUrl(),100 ) ), this );
+    if (_mode & M_OVERWRITE_ITSELF) {
+        QLabel *lb = new QLabel(i18n("This action would overwrite '%1' with itself.\n"
+                                     "Please enter a new file name:",
+                                     KStringHandler::csqueeze(d->src.pathOrUrl(), 100)), this);
+
         d->bRename->setText(i18n("C&ontinue"));
-        pLayout->addWidget( lb );
-    }
-    else if ( _mode & M_OVERWRITE ) {
+        pLayout->addWidget(lb);
+    } else if (_mode & M_OVERWRITE) {
         KFileItem srcItem;
         KFileItem destItem;
 
@@ -170,6 +173,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             srcItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->src);
         } else {
             UDSEntry srcUds;
+
             srcUds.insert(UDSEntry::UDS_NAME, d->src.fileName());
             srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc);
             srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc);
@@ -182,6 +186,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             destItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->dest);
         } else {
             UDSEntry destUds;
+
             destUds.insert(UDSEntry::UDS_NAME, d->dest.fileName());
             destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest);
             destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest);
@@ -190,26 +195,28 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             destItem = KFileItem(destUds, d->dest);
         }
 
-        d->m_srcPreview = createLabel(parent, QString());
-        d->m_destPreview = createLabel(parent, QString());
+        d->m_srcPreview = createLabel(parent, QString(), false);
+        d->m_destPreview = createLabel(parent, QString(), false);
 
         d->m_srcPreview->setMinimumHeight(KIconLoader::SizeEnormous);
         d->m_destPreview->setMinimumHeight(KIconLoader::SizeEnormous);
 
         d->m_srcPendingPreview = true;
         d->m_destPendingPreview = true;
+
         KIO::PreviewJob* srcJob = KIO::filePreview(KFileItemList() << srcItem,
-                                                   d->m_srcPreview->width(),
-                                                   d->m_srcPreview->height(),
-                                                   0,
-                                                   0,
-                                                   false /*don't scale*/);
+                                  d->m_srcPreview->width(),
+                                  d->m_srcPreview->height(),
+                                  0,
+                                  0,
+                                  false /*don't scale*/);
+
         KIO::PreviewJob* destJob = KIO::filePreview(KFileItemList() << destItem,
-                                                    d->m_destPreview->width(),
-                                                    d->m_destPreview->height(),
-                                                    0,
-                                                    0,
-                                                    false /*don't scale*/);
+                                   d->m_destPreview->width(),
+                                   d->m_destPreview->height(),
+                                   0,
+                                   0,
+                                   false /*don't scale*/);
 
         connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
                 this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));
@@ -220,7 +227,6 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         connect(destJob, SIGNAL(failed(const KFileItem&)),
                 this, SLOT(showDestIcon(const KFileItem&)));
 
-
         // widget
         QScrollArea* srcWidget = createContainerLayout(parent, srcItem, d->m_srcPreview);
         QScrollArea* destWidget = createContainerLayout(parent, destItem, d->m_destPreview);
@@ -229,34 +235,45 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         QGridLayout* gridLayout = new QGridLayout();
         pLayout->addLayout(gridLayout);
 
-        QString sentence1;
-        if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("This action will overwrite '%1' with a newer file '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
-        else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("This action will overwrite '%1' with a file of the same age '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
-        else
-            sentence1 = i18n("This action will overwrite '%1' with an older file '%2'.", d->dest.pathOrUrl(), d->src.pathOrUrl());
+        QLabel* titleLabel = new QLabel(i18n("This action will overwrite the destination."), this);
 
-        QLabel* titleLabel = new KSqueezedTextLabel( sentence1, this );
+        QLabel* srcTitle = createLabel(parent, i18n("Source"), true);
+        QLabel* destTitle = createLabel(parent, i18n("Destination"), true);
 
-        QLabel* srcTitle = createLabel(parent, i18n("Source"));
-        QLabel* destTitle = createLabel(parent, i18n("Destination"));
+        QLabel* srcInfo = createSqueezedLabel(parent, d->src.pathOrUrl());
+        QLabel* destInfo = createSqueezedLabel(parent, d->dest.pathOrUrl());
 
-        gridLayout->addWidget( titleLabel, 0, 0, 1, 2 ); // takes the complete first line
+        if (mtimeDest > mtimeSrc) {
+            QLabel* warningLabel = new QLabel(i18n("Warning, the destination is newer!"), this);
 
-        gridLayout->addWidget( srcTitle, 1, 0 );
-        gridLayout->addWidget( srcWidget, 2, 0 );
+            gridLayout->addWidget(titleLabel, 0, 0, 1, 2);    // takes the complete first line
+            gridLayout->addWidget(warningLabel, 1, 0, 1, 2);
+            gridLayout->setRowMinimumHeight(2, 15);    // spacer
 
-        gridLayout->addWidget( destTitle, 1, 1 );
-        gridLayout->addWidget( destWidget, 2, 1 );
+            gridLayout->addWidget(srcTitle, 3, 0);
+            gridLayout->addWidget(srcInfo, 4, 0);
+            gridLayout->addWidget(srcWidget, 5, 0);
 
-        gridLayout->setRowStretch(1, 2);
-    }
-    else
-    {
+            gridLayout->addWidget(destTitle, 3, 1);
+            gridLayout->addWidget(destInfo, 4, 1);
+            gridLayout->addWidget(destWidget, 5, 1);
+        } else {
+            gridLayout->addWidget(titleLabel, 0, 0, 1, 2);
+            gridLayout->setRowMinimumHeight(1, 15);
+
+            gridLayout->addWidget(srcTitle, 2, 0);
+            gridLayout->addWidget(srcInfo, 3, 0);
+            gridLayout->addWidget(srcWidget, 4, 0);
+
+            gridLayout->addWidget(destTitle, 2, 1);
+            gridLayout->addWidget(destInfo, 3, 1);
+            gridLayout->addWidget(destWidget, 4, 1);
+        }
+    } else {
         // This is the case where we don't want to allow overwriting, the existing
         // file must be preserved (e.g. when renaming).
         QString sentence1;
+
         if (mtimeDest < mtimeSrc)
             sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrUrl());
         else if (mtimeDest == mtimeSrc)
@@ -264,34 +281,47 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         else
             sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrUrl());
 
-        QLabel *lb = new KSqueezedTextLabel( sentence1, this );
+        QLabel *lb = new KSqueezedTextLabel(sentence1, this);
         pLayout->addWidget(lb);
     }
-    QHBoxLayout* layout2 = new QHBoxLayout();
-    pLayout->addLayout( layout2 );
 
-    d->m_pLineEdit = new KLineEdit( this );
-    layout2->addWidget( d->m_pLineEdit );
-    if ( d->bRename ) {
+    if ((_mode != M_OVERWRITE_ITSELF) && (_mode != M_NORENAME)) {
+        if (_mode == M_OVERWRITE) {
+            pLayout->addSpacing(15);    // spacer
+        }
+
+        QLabel *lb2 = new QLabel(i18n("Rename:"), this);
+        pLayout->addWidget(lb2);
+    }
+
+    QHBoxLayout* layout2 = new QHBoxLayout();
+    pLayout->addLayout(layout2);
+
+    d->m_pLineEdit = new KLineEdit(this);
+    layout2->addWidget(d->m_pLineEdit);
+
+    if (d->bRename) {
         const QString fileName = d->dest.fileName();
-        d->setRenameBoxText( KIO::decodeFileName( fileName ) );
+        d->setRenameBoxText(KIO::decodeFileName(fileName));
+
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
+
         d->m_pLineEdit->setFocus();
     } else {
         d->m_pLineEdit->hide();
     }
-    if ( d->bSuggestNewName )
-    {
-        layout2->addWidget( d->bSuggestNewName );
-        setTabOrder( d->m_pLineEdit, d->bSuggestNewName );
+
+    if (d->bSuggestNewName) {
+        layout2->addWidget(d->bSuggestNewName);
+        setTabOrder(d->m_pLineEdit, d->bSuggestNewName);
     }
 
-    KSeparator* separator = new KSeparator( this );
-    pLayout->addWidget( separator );
+    KSeparator* separator = new KSeparator(this);
+    pLayout->addWidget(separator);
 
     QHBoxLayout* layout = new QHBoxLayout();
-    pLayout->addLayout( layout );
+    pLayout->addLayout(layout);
 
     layout->addStretch(1);
 
@@ -299,76 +329,81 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         layout->addWidget(d->bApplyAll);
         setTabOrder(d->bApplyAll, d->bCancel);
     }
-    if ( d->bRename )
-    {
-        layout->addWidget( d->bRename );
-        setTabOrder( d->bRename, d->bCancel );
-    }
-    if ( d->bSkip )
-    {
-        layout->addWidget( d->bSkip );
-        setTabOrder( d->bSkip, d->bCancel );
-    }
-    if ( d->bOverwrite )
-    {
-        layout->addWidget( d->bOverwrite );
-        setTabOrder( d->bOverwrite, d->bCancel );
-    }
-    if ( d->bResume )
-    {
-        layout->addWidget( d->bResume );
-        setTabOrder( d->bResume, d->bCancel );
+
+    if (d->bRename) {
+        layout->addWidget(d->bRename);
+        setTabOrder(d->bRename, d->bCancel);
     }
 
-    d->bCancel->setDefault( true );
-    layout->addWidget( d->bCancel );
+    if (d->bSkip) {
+        layout->addWidget(d->bSkip);
+        setTabOrder(d->bSkip, d->bCancel);
+    }
 
-    resize( sizeHint() );
+    if (d->bOverwrite) {
+        layout->addWidget(d->bOverwrite);
+        setTabOrder(d->bOverwrite, d->bCancel);
+    }
+
+    if (d->bResume) {
+        layout->addWidget(d->bResume);
+        setTabOrder(d->bResume, d->bCancel);
+    }
+
+    d->bCancel->setDefault(true);
+    layout->addWidget(d->bCancel);
+
+    resize(sizeHint());
 }
 
 RenameDialog::~RenameDialog()
 {
-  delete d;
-  // no need to delete Pushbuttons,... qt will do this
+    delete d;
+    // no need to delete Pushbuttons,... qt will do this
 }
 
 void RenameDialog::enableRenameButton(const QString &newDest)
 {
-  if ( newDest != KIO::decodeFileName( d->dest.fileName() ) && !newDest.isEmpty() )
-  {
-    d->bRename->setEnabled( true );
-    d->bRename->setDefault( true );
-    if ( d->bOverwrite )
-        d->bOverwrite->setEnabled( false ); // prevent confusion (#83114)
-  }
-  else
-  {
-    d->bRename->setEnabled( false );
-    if ( d->bOverwrite )
-        d->bOverwrite->setEnabled( true );
-  }
+    if (newDest != KIO::decodeFileName(d->dest.fileName()) && !newDest.isEmpty()) {
+        d->bRename->setEnabled(true);
+        d->bRename->setDefault(true);
+
+        if (d->bOverwrite) {
+            d->bOverwrite->setEnabled(false);   // prevent confusion (#83114)
+        }
+    } else {
+        d->bRename->setEnabled(false);
+
+        if (d->bOverwrite) {
+            d->bOverwrite->setEnabled(true);
+        }
+    }
 }
 
 KUrl RenameDialog::newDestUrl()
 {
-  KUrl newDest( d->dest );
-  QString fileName = d->m_pLineEdit->text();
-  newDest.setFileName( KIO::encodeFileName( fileName ) );
-  return newDest;
+    KUrl newDest(d->dest);
+    QString fileName = d->m_pLineEdit->text();
+
+    newDest.setFileName(KIO::encodeFileName(fileName));
+
+    return newDest;
 }
 
 KUrl RenameDialog::autoDestUrl() const
 {
     KUrl newDest(d->dest);
     KUrl destDirectory(d->dest);
+
     destDirectory.setPath(destDirectory.directory());
     newDest.setFileName(suggestName(destDirectory, d->dest.fileName()));
+
     return newDest;
 }
 
 void RenameDialog::cancelPressed()
 {
-    done( R_CANCEL );
+    done(R_CANCEL);
 }
 
 // Rename
@@ -380,115 +415,116 @@ void RenameDialog::renamePressed()
 
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         done(R_AUTO_RENAME);
-    }
-    else {
+    } else {
         KUrl u = newDestUrl();
+
         if (!u.isValid()) {
             KMessageBox::error(this, i18n("Malformed URL\n%1" ,  u.url()));
             return;
         }
+
         done(R_RENAME);
     }
 }
 
 QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
 {
-  QString dotSuffix, suggestedName;
-  QString basename = oldName;
-  const QChar spacer(' ');
+    QString dotSuffix, suggestedName;
+    QString basename = oldName;
+    const QChar spacer(' ');
 
-  int index = basename.indexOf( '.' );
-  if ( index != -1 ) {
-    dotSuffix = basename.mid( index );
-    basename.truncate( index );
-  }
+    int index = basename.indexOf('.');
 
-  int pos = basename.lastIndexOf( spacer );
-  if(pos != -1 ){
-    QString tmp = basename.mid( pos+1 );
-    bool ok;
-    int number = tmp.toInt( &ok );
-    if ( !ok ) {// ok there is no number
-      suggestedName = basename + spacer + '1' + dotSuffix;
+    if (index != -1) {
+        dotSuffix = basename.mid(index);
+        basename.truncate(index);
     }
-    else {
-     // yes there's already a number behind the spacer so increment it by one
-      basename.replace( pos+1, tmp.length(), QString::number(number+1) );
-      suggestedName = basename + dotSuffix;
-    }
-  }
-  else // no spacer yet
-    suggestedName = basename + spacer + "1" + dotSuffix ;
 
-  // Check if suggested name already exists
-  bool exists = false;
-  // TODO: network transparency. However, using NetAccess from a modal dialog
-  // could be a problem, no? (given that it uses a modal widget itself....)
-  if ( baseURL.isLocalFile() )
-    exists = QFileInfo( baseURL.toLocalFile(KUrl::AddTrailingSlash) + suggestedName ).exists();
+    int pos = basename.lastIndexOf(spacer);
 
-  if ( !exists )
-    return suggestedName;
-  else // already exists -> recurse
-    return suggestName( baseURL, suggestedName );
+    if (pos != -1) {
+        QString tmp = basename.mid(pos + 1);
+        bool ok;
+        int number = tmp.toInt(&ok);
+
+        if (!ok) {  // ok there is no number
+            suggestedName = basename + spacer + '1' + dotSuffix;
+        } else {
+            // yes there's already a number behind the spacer so increment it by one
+            basename.replace(pos + 1, tmp.length(), QString::number(number + 1));
+            suggestedName = basename + dotSuffix;
+        }
+    } else // no spacer yet
+        suggestedName = basename + spacer + "1" + dotSuffix ;
+
+    // Check if suggested name already exists
+    bool exists = false;
+    // TODO: network transparency. However, using NetAccess from a modal dialog
+    // could be a problem, no? (given that it uses a modal widget itself....)
+    if (baseURL.isLocalFile())
+        exists = QFileInfo(baseURL.toLocalFile(KUrl::AddTrailingSlash) + suggestedName).exists();
+
+    if (!exists)
+        return suggestedName;
+    else // already exists -> recurse
+        return suggestName(baseURL, suggestedName);
 }
 
 // Propose button clicked
 void RenameDialog::suggestNewNamePressed()
 {
-  /* no name to play with */
-  if ( d->m_pLineEdit->text().isEmpty() )
-    return;
+    /* no name to play with */
+    if (d->m_pLineEdit->text().isEmpty())
+        return;
 
-  KUrl destDirectory( d->dest );
-  destDirectory.setPath( destDirectory.directory() );
-  d->setRenameBoxText( suggestName( destDirectory, d->m_pLineEdit->text() ) );
-  return;
+    KUrl destDirectory(d->dest);
+
+    destDirectory.setPath(destDirectory.directory());
+    d->setRenameBoxText(suggestName(destDirectory, d->m_pLineEdit->text()));
+
+    return;
 }
 
 void RenameDialog::skipPressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         done(R_AUTO_SKIP);
-    }
-    else {
+    } else {
         done(R_SKIP);
     }
 }
 
 void RenameDialog::autoSkipPressed()
 {
-  done( R_AUTO_SKIP );
+    done(R_AUTO_SKIP);
 }
 
 void RenameDialog::overwritePressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         done(R_OVERWRITE_ALL);
-    }
-    else {
+    } else {
         done(R_OVERWRITE);
     }
 }
 
 void RenameDialog::overwriteAllPressed()
 {
-  done( R_OVERWRITE_ALL );
+    done(R_OVERWRITE_ALL);
 }
 
 void RenameDialog::resumePressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         done(R_RESUME_ALL);
-    }
-    else {
+    } else {
         done(R_RESUME);
     }
 }
 
 void RenameDialog::resumeAllPressed()
 {
-  done( R_RESUME_ALL );
+    done(R_RESUME_ALL);
 }
 
 void RenameDialog::applyAllPressed()
@@ -500,16 +536,17 @@ void RenameDialog::applyAllPressed()
         if (d->bRename) {
             d->bRename->setEnabled(true);
         }
+
         if (d->bSuggestNewName) {
             d->bSuggestNewName->setEnabled(false);
         }
-    }
-    else {
+    } else {
         d->m_pLineEdit->setEnabled(true);
 
         if (d->bRename) {
             d->bRename->setEnabled(false);
         }
+
         if (d->bSuggestNewName) {
             d->bSuggestNewName->setEnabled(true);
         }
@@ -519,20 +556,21 @@ void RenameDialog::applyAllPressed()
 void RenameDialog::showSrcIcon(const KFileItem& fileitem)
 {
     // The preview job failed, show a standard file icon.
-    d->m_destPendingPreview = false;
-    d->m_destPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
+    d->m_srcPendingPreview = false;
+    d->m_srcPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
 }
 
 void RenameDialog::showDestIcon(const KFileItem& fileitem)
 {
     // The preview job failed, show a standard file icon.
-    d->m_srcPendingPreview = false;
-    d->m_srcPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
+    d->m_destPendingPreview = false;
+    d->m_destPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
 }
 
 void RenameDialog::showSrcPreview(const KFileItem& fileitem, const QPixmap& pixmap)
 {
     Q_UNUSED(fileitem);
+
     if (d->m_srcPendingPreview) {
         d->m_srcPreview->setPixmap(pixmap);
         d->m_srcPendingPreview = false;
@@ -542,6 +580,7 @@ void RenameDialog::showSrcPreview(const KFileItem& fileitem, const QPixmap& pixm
 void RenameDialog::showDestPreview(const KFileItem& fileitem, const QPixmap& pixmap)
 {
     Q_UNUSED(fileitem);
+
     if (d->m_destPendingPreview) {
         d->m_destPreview->setPixmap(pixmap);
         d->m_destPendingPreview = false;
@@ -557,7 +596,6 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
     KFileMetaDataWidget* metaWidget =  new KFileMetaDataWidget(this);
 
     metaWidget->setReadOnly(true);
-
     metaWidget->setItems(itemList);
 
     // Encapsulate the MetaDataWidgets inside a container with stretch at the bottom.
@@ -566,6 +604,7 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
 
     QWidget* widgetContainer = new QWidget(parent);
     QVBoxLayout* containerLayout = new QVBoxLayout(widgetContainer);
+
     containerLayout->setContentsMargins(0, 0, 0, 0);
     containerLayout->setSpacing(0);
     containerLayout->addWidget(preview);
@@ -573,6 +612,7 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
     containerLayout->addStretch(1);
 
     QScrollArea* metaDataArea = new QScrollArea(parent);
+
     metaDataArea->setWidget(widgetContainer);
     metaDataArea->setWidgetResizable(true);
     metaDataArea->setFrameShape(QFrame::NoFrame);
@@ -580,19 +620,29 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
     return metaDataArea;
 }
 
-QLabel* RenameDialog::createLabel(QWidget* parent, const QString& text)
+QLabel* RenameDialog::createLabel(QWidget* parent, const QString& text, bool containerTitle)
 {
     QLabel* label = new QLabel(parent);
 
-    QFont font = label->font();
-    font.setBold(true);
-    label->setFont(font);
+    if (containerTitle) {
+        QFont font = label->font();
+        font.setBold(true);
+        label->setFont(font);
+    }
 
     label->setAlignment(Qt::AlignHCenter);
-
     label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-
     label->setText(text);
+
+    return label;
+}
+
+KSqueezedTextLabel* RenameDialog::createSqueezedLabel(QWidget* parent, const QString& text)
+{
+    KSqueezedTextLabel* label = new KSqueezedTextLabel(text, parent);
+
+    label->setAlignment(Qt::AlignHCenter);
+    label->setFixedWidth(200);
 
     return label;
 }
