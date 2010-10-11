@@ -63,6 +63,7 @@ private Q_SLOTS:
     void testDeviceSetupTeardown();
 
 private:
+    QStringList placesUrls() const;
     QDBusInterface *fakeManager();
     QDBusInterface *fakeDevice(const QString &udi);
 
@@ -101,7 +102,23 @@ void KFilePlacesModelTest::cleanupTestCase()
     qDeleteAll(m_interfacesMap);
 }
 
+QStringList KFilePlacesModelTest::placesUrls() const
+{
+    QStringList urls;
+    for (int row = 0; row < m_places->rowCount(); ++row) {
+        QModelIndex index = m_places->index(row, 0);
+        urls << m_places->url(index).pathOrUrl();
+    }
+    return urls;
+}
+
 #define CHECK_PLACES_URLS(urls)                                              \
+    const QStringList currentUrls = placesUrls();                            \
+    if (currentUrls != urls) {                                               \
+        kDebug() << "Expected:" << urls;                                     \
+        kDebug() << "Got:" << currentUrls;                                   \
+        QCOMPARE(placesUrls(), urls);                                        \
+    }                                                                        \
     for (int row = 0; row < urls.size(); ++row) {                            \
         QModelIndex index = m_places->index(row, 0);                         \
                                                                              \
@@ -146,7 +163,7 @@ void KFilePlacesModelTest::testInitialState()
 
 void KFilePlacesModelTest::testInitialList()
 {
-    QList<QString> urls;
+    QStringList urls;
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/cdrom" << "/media/floppy0" << "/foreign" << "/media/XO-Y4";
 
@@ -155,7 +172,7 @@ void KFilePlacesModelTest::testInitialList()
 
 void KFilePlacesModelTest::testReparse()
 {
-    QList<QString> urls;
+    QStringList urls;
 
     // add item
 
@@ -310,7 +327,7 @@ void KFilePlacesModelTest::testMove()
     root.moveBookmark(trash, last);
     bookmarkManager->emitChanged(root);
 
-    QList<QString> urls;
+    QStringList urls;
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
          << "/media/cdrom" << "/media/floppy0" << "/foreign" << "/media/XO-Y4" << "trash:/";
 
@@ -377,7 +394,7 @@ void KFilePlacesModelTest::testDragAndDrop()
     QMimeData *mimeData = m_places->mimeData(indexes);
     QVERIFY(m_places->dropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex()));
 
-    QList<QString> urls;
+    QStringList urls;
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
          << "/media/cdrom" << "/media/floppy0" << "/foreign" << "/media/XO-Y4" << "trash:/";
     CHECK_PLACES_URLS(urls);
@@ -452,7 +469,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
 
     m_places->addPlace("Foo", KUrl("/home/foo"));
 
-    QList<QString> urls;
+    QStringList urls;
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/cdrom" << "/media/floppy0" << "/foreign" << "/media/XO-Y4" << "/home/foo";
 
@@ -557,7 +574,7 @@ void KFilePlacesModelTest::testDevicePlugging()
 
     fakeManager()->call("unplug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
-    QList<QString> urls;
+    QStringList urls;
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/cdrom" << "/media/floppy0" << "/foreign";
     CHECK_PLACES_URLS(urls);
