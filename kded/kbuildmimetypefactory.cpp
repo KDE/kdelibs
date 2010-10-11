@@ -101,16 +101,6 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
 void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 {
     KSycocaFactory::saveHeader(str);
-#if 0
-    // This header is read by old KMimeTypeFactory's constructor
-    // KDE5: remove
-    str << (qint32) 0; // m_fastPatternOffset
-    str << (qint32) 0; // old "other pattern offset"
-    str << (qint32) 0;
-    str << (qint32) 0; // m_highWeightPatternOffset
-    str << (qint32) 0; // m_lowWeightPatternOffset
-    str << (qint32) 0;
-#endif
 }
 
 void KBuildMimeTypeFactory::save(QDataStream &str)
@@ -126,4 +116,17 @@ void KBuildMimeTypeFactory::save(QDataStream &str)
 
     // Seek to end.
     str.device()->seek(endOfFactoryData);
+}
+
+void KBuildMimeTypeFactory::createFakeMimeType(const QString& name)
+{
+   const QString file = name; // hack
+   KSycocaEntry::Ptr entry = m_entryDict->value(file);
+   if (!entry) {
+       MimeTypeEntry* e = new MimeTypeEntry(file, name);
+       entry = e;
+   }
+
+   Q_ASSERT(entry && entry->isValid());
+   addEntry(entry);
 }

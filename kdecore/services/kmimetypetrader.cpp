@@ -59,7 +59,8 @@ static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
     KMimeTypeFactory *factory = KMimeTypeFactory::self();
     const int offset = factory->entryOffset(mime);
     if ( !offset ) {
-        kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
+        if (!mimeType.startsWith("x-scheme-handler/")) // don't warn for unknown scheme handler mimetypes
+            kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
         return lst; // empty
     }
 

@@ -21,6 +21,7 @@
 #include "kprotocolinfo_p.h"
 #include "kprotocolinfofactory.h"
 
+#include <kmimetypetrader.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kdebug.h>
@@ -301,13 +302,19 @@ bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
   return prot->m_determineMimetypeFromExtension;
 }
 
-QString KProtocolInfo::exec( const QString& _protocol )
+QString KProtocolInfo::exec(const QString& protocol)
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return QString();
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
+  if ( prot ) {
+      return prot->m_exec;
+  }
 
-  return prot->m_exec;
+  // Maybe it's "helper protocol", i.e. launches an app?
+  const KService::Ptr service = KMimeTypeTrader::self()->preferredService("x-scheme-handler/" + protocol);
+  if (service)
+      return service->exec();
+
+  return QString();
 }
 
 KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
@@ -419,10 +426,11 @@ bool KProtocolInfo::isHelperProtocol( const QString &protocol )
 {
   // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-  if ( !prot )
-    return false;
+  if ( prot )
+      return prot->m_isHelperProtocol;
 
-  return prot->m_isHelperProtocol;
+  const KService::Ptr service = KMimeTypeTrader::self()->preferredService("x-scheme-handler/" + protocol);
+  return !service.isNull();
 }
 
 bool KProtocolInfo::isKnownProtocol( const KUrl &url )
@@ -434,7 +442,7 @@ bool KProtocolInfo::isKnownProtocol( const QString &protocol )
 {
   // We call the findProtocol (const QString&) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-  return prot;
+  return prot || isHelperProtocol(protocol);
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

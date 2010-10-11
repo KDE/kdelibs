@@ -253,15 +253,19 @@ void KBuildServiceFactory::populateServiceTypes()
                 m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
             } else {
                 KMimeType::Ptr mime = KMimeType::mimeType(stName, KMimeType::ResolveAliases);
-                if (mime) {
-                    m_offerHash.addServiceOffer(stName, KServiceOffer(service, serviceTypeList[i].preference, 0, service->allowAsDefault()) );
-                } else {
-                    kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
-                    continue;
-                    // technically we could call addServiceOffer here, 'mime' isn't used. But it
-                    // would be useless, since the loops for writing out the offers iterate
-                    // over all known servicetypes and mimetypes. Unknown -> never written out.
+                if (!mime) {
+                    if (stName.startsWith("x-scheme-handler/")) {
+                        // Create those on demand
+                        m_mimeTypeFactory->createFakeMimeType(stName);
+                    } else {
+                        kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
+                        // technically we could call addServiceOffer here, 'mime' isn't used. But it
+                        // would be useless, since the loops for writing out the offers iterate
+                        // over all known servicetypes and mimetypes. Unknown -> never written out.
+                        continue;
+                    }
                 }
+                m_offerHash.addServiceOffer(stName, KServiceOffer(service, serviceTypeList[i].preference, 0, service->allowAsDefault()) );
             }
         }
     }
@@ -277,6 +281,9 @@ void KBuildServiceFactory::populateServiceTypes()
     // The loops look very much like the ones in saveOfferList obviously.
     int offersOffset = 0;
     const int offerEntrySize = sizeof( qint32 ) * 4; // four qint32s, see saveOfferList.
+
+    // TODO: idea: we could iterate over m_offerHash, and look up the servicetype or mimetype.
+    // Would that be faster than iterating over all servicetypes and mimetypes?
 
     KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->constBegin();
     const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->constEnd();

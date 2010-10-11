@@ -54,6 +54,8 @@ public:
 
   virtual MimeTypeEntry * createEntry( int ) const { assert(0); return 0L; }
 
+  void createFakeMimeType(const QString& name);
+
   /**
    * Write out mime type specific index files.
    */

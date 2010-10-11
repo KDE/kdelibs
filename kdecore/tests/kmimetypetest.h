@@ -58,6 +58,7 @@ private Q_SLOTS:
     void testExtractKnownExtension();
     void testParseMagicFile_data();
     void testParseMagicFile();
+    void testHelperProtocols();
 
     void testThreads();
 private:

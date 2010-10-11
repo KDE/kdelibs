@@ -66,7 +66,8 @@ KMimeType::List KMimeType::allMimeTypes()
     // This could be done faster...
     KMimeType::List lst;
     Q_FOREACH(const QString& mimeType, KMimeTypeFactory::self()->allMimeTypes()) {
-        lst.append(KMimeType::mimeType(mimeType));
+        if (!mimeType.startsWith("x-scheme-handler"))
+            lst.append(KMimeType::mimeType(mimeType));
     }
     return lst;
 }

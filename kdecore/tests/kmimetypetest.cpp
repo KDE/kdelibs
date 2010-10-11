@@ -892,4 +892,22 @@ void KMimeTypeTest::testThreads()
         f.waitForFinished();
 }
 
+void KMimeTypeTest::testHelperProtocols()
+{
+    QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
+    QCOMPARE(KProtocolInfo::exec("mailto"), QString::fromLatin1("kmailservice %u"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
+    QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
+
+    // To test that compat still works
+    if (KProtocolInfo::isKnownProtocol("tel")) {
+        QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
+    }
+}
+
 #include "kmimetypetest.moc"
