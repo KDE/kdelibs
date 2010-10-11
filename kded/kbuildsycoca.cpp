@@ -65,13 +65,13 @@ typedef QList<KSycocaEntry::List> KSycocaEntryListList;
 
 static quint32 newTimestamp = 0;
 
-static KBuildServiceFactory *g_bsf = 0;
-static KBuildServiceGroupFactory *g_bsgf = 0;
-static KSycocaFactory *g_factory = 0;
+static KBuildServiceFactory *g_serviceFactory = 0;
+static KBuildServiceGroupFactory *g_buildServiceGroupFactory = 0;
+static KSycocaFactory *g_currentFactory = 0;
 static KCTimeInfo *g_ctimeInfo = 0;
 static QHash<QString, quint32> *g_ctimeDict = 0;
 static QByteArray g_resource = 0;
-static KBSEntryDict *g_entryDict = 0;
+static KBSEntryDict *g_currentEntryDict = 0;
 static KBSEntryDict *g_serviceGroupEntryDict = 0;
 static KSycocaEntryListList *g_allEntries = 0;
 static QStringList *g_changeList = 0;
@@ -125,11 +125,11 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
       if (timeStamp && (timeStamp == oldTimestamp))
       {
          // Re-use old entry
-         if (g_factory == g_bsgf) // Strip .directory from service-group entries
+         if (g_currentFactory == g_buildServiceGroupFactory) // Strip .directory from service-group entries
          {
-            entry = g_entryDict->value(file.left(file.length()-10));
+            entry = g_currentEntryDict->value(file.left(file.length()-10));
          } else {
-            entry = g_entryDict->value(file);
+            entry = g_currentEntryDict->value(file);
          }
          // remove from g_ctimeDict; if g_ctimeDict is not empty
          // after all files have been processed, it means
@@ -151,12 +151,12 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    if (!entry)
    {
       // Create a new entry
-      entry = g_factory->createEntry( file, g_resource );
+      entry = g_currentFactory->createEntry( file, g_resource );
    }
    if ( entry && entry->isValid() )
    {
       if (addToFactory)
-         g_factory->addEntry(entry);
+         g_currentFactory->addEntry(entry);
       else
          g_tempStorage.append(entry);
       return entry;
@@ -195,9 +195,9 @@ bool KBuildSycoca::build()
             entryDict->insert( (*it)->entryPath(), *it );
          }
      }
-     if ((*factory) == g_bsf)
+     if ((*factory) == g_serviceFactory)
         serviceEntryDict = entryDict;
-     else if ((*factory) == g_bsgf)
+     else if ((*factory) == g_buildServiceGroupFactory)
         g_serviceGroupEntryDict = entryDict;
      entryDictList.append(entryDict);
   }
@@ -249,11 +249,11 @@ bool KBuildSycoca::build()
      const KSycocaFactoryList::const_iterator end = factories()->constEnd();
      for ( ; it != end; ++it, ++ed_it )
      {
-        g_factory = (*it);
+        g_currentFactory = (*it);
         // g_ctimeInfo gets created after the initial loop, so it has no entryDict.
-        g_entryDict = ed_it == ed_end ? 0 : *ed_it;
+        g_currentEntryDict = ed_it == ed_end ? 0 : *ed_it;
 	// For each resource the factory deals with
-        const KSycocaResourceList *list = g_factory->resourceList();
+        const KSycocaResourceList *list = g_currentFactory->resourceList();
         if (!list) continue;
 
         for( KSycocaResourceList::ConstIterator it2 = list->constBegin();
@@ -286,17 +286,17 @@ bool KBuildSycoca::build()
   if (result || bMenuTest)
   {
      g_resource = "apps";
-     g_factory = g_bsf;
-     g_entryDict = serviceEntryDict;
+     g_currentFactory = g_serviceFactory;
+     g_currentEntryDict = serviceEntryDict;
      g_changed = false;
 
-     g_vfolder = new VFolderMenu(g_bsf, this);
+     g_vfolder = new VFolderMenu(g_serviceFactory, this);
      if (!m_trackId.isEmpty())
         g_vfolder->setTrackId(m_trackId);
 
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     KServiceGroup::Ptr entry = g_bsgf->addNew("/", kdeMenu->directoryFile, KServiceGroup::Ptr(), false);
+     KServiceGroup::Ptr entry = g_buildServiceGroupFactory->addNew("/", kdeMenu->directoryFile, KServiceGroup::Ptr(), false);
      entry->setLayoutInfo(kdeMenu->layoutList);
      createMenu(QString(), QString(), kdeMenu);
 
@@ -352,7 +352,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      }
      g_ctimeInfo->addCTime(directoryFile, timeStamp);
 
-     entry = g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
+     entry = g_buildServiceGroupFactory->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      entry->setLayoutInfo(subMenu->layoutList);
      if (! (bMenuTest && entry->noDisplay()) )
         createMenu(caption + entry->caption() + '/', subName, subMenu);
@@ -370,7 +370,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      }
      else
      {
-        g_bsgf->addNewEntryTo( name, p );
+        g_buildServiceGroupFactory->addNewEntryTo( name, p );
      }
   }
 }
@@ -403,9 +403,9 @@ bool KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KBuildMimeTypeFactory *mtf = new KBuildMimeTypeFactory;
-  g_bsgf = new KBuildServiceGroupFactory();
-  g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
+  KBuildMimeTypeFactory* mimeTypeFactory = new KBuildMimeTypeFactory;
+  g_buildServiceGroupFactory = new KBuildServiceGroupFactory();
+  g_serviceFactory = new KBuildServiceFactory(stf, mimeTypeFactory, g_buildServiceGroupFactory);
   (void) new KBuildProtocolInfoFactory();
 
   if( build()) // Parse dirs

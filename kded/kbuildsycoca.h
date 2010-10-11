@@ -66,7 +66,7 @@ private:
 
     /**
      * Implementation of KBuildSycocaInterface
-     * Create service and add it to the servicefactory.
+     * Create service and return it. The caller must add it to the servicefactory.
      */
     /*! \reimp */ KService::Ptr createService(const QString& path);
 
