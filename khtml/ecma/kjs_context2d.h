@@ -103,6 +103,8 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
+    virtual JSObject* valueClone(Interpreter* targetCtx) const;
+
     virtual void mark();
   private:
     CanvasImageDataArray* data;

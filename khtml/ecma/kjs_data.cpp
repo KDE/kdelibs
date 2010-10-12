@@ -90,6 +90,12 @@ static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QS
     return jsUndefined();
 }
 
+JSValue* cloneData(ExecState* exec, JSValue* data)
+{
+    QSet<JSObject*> visited;
+    return cloneInternal(exec, exec->dynamicInterpreter(), data, visited);
+}
+
 class JSMessageData : public DOM::MessageEventImpl::Data {
 public:
     virtual DOM::MessageEventImpl::DataType messageDataType() const {
@@ -118,6 +124,33 @@ JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
         return static_cast<JSMessageData*>(data)->m_value.get();
     else
         return jsUndefined();
+}
+
+//------------------------------------------------------------------------------
+DelayedPostMessage::DelayedPostMessage(const QString& _targetOrigin, JSValue* _payload):
+    targetOrigin(_targetOrigin), payload(_payload)
+{}
+
+void DelayedPostMessage::mark()
+{
+    if (!payload->marked())
+        payload->mark();
+}
+
+bool DelayedPostMessage::execute(Window* w)
+{
+    KHTMLPart* part = qobject_cast<KHTMLPart*>(w->part());
+    DOM::DocumentImpl* doc = part ? static_cast<DOM::DocumentImpl*>(part->document().handle()) : 0;
+    kDebug(6070) << doc << targetOrigin;    
+    if (doc) {
+        // Verify destination.
+        if (targetOrigin != QLatin1String("*")) {
+            KUrl targetUrl(targetOrigin);
+            kDebug(6070) << doc->domain();
+        }
+    }
+
+    return true;
 }
 
 } // namespace KJS

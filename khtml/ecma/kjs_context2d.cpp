@@ -737,6 +737,11 @@ void CanvasImageData::mark()
         data->mark();
 }
 
+JSObject* CanvasImageData::valueClone(Interpreter* targetCtx) const
+{
+    return static_cast<JSObject*>(getWrapper<CanvasImageData>(targetCtx->globalExec(), impl()->clone()));
+}
+
 const ClassInfo CanvasImageDataArray::info = { "ImageDataArray", 0, 0, 0 };
 
 CanvasImageDataArray::CanvasImageDataArray(ExecState* exec, CanvasImageData* p) :

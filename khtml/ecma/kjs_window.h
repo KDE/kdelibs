@@ -147,7 +147,7 @@ namespace KJS {
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScreenTop, ScreenLeft, AToB, BToA, FrameElement, GetComputedStyle,
-           ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
+           ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, PostMessage, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Audio, Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
            XMLHttpRequest, XMLSerializer, DOMParser,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
@@ -186,17 +186,22 @@ namespace KJS {
 
     // updates window listeners.
     JSValue* getListener(ExecState *exec, int eventId) const;
-    void setListener(ExecState *exec, int eventId, JSValue* func);    
-  protected:
-    enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
-
+    void setListener(ExecState *exec, int eventId, JSValue* func);
+    
+    struct DelayedAction {
+      virtual void mark() {}; // mark any JS objects we use
+      virtual bool execute(Window*) = 0; // returns whether to continue or not
+      virtual ~DelayedAction() {};
+    };
+    
   private:
+    // Returns true if the particular method or property should be permitted
+    // to be accessed even across frames.
+    bool isCrossFrameAccessible(int token) const;
+  
     KParts::ReadOnlyPart* frameByIndex(unsigned index);
     static JSValue *framePartGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
     static JSValue *namedItemGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
-
-    struct DelayedAction;
-    friend struct DelayedAction;
 
     bool checkIsSafeScript( KParts::ReadOnlyPart* activePart ) const;
 
@@ -207,13 +212,7 @@ namespace KJS {
     Location *loc;
     DOM::EventImpl *m_evt;
 
-    struct DelayedAction {
-      DelayedAction() : actionId(NullAction) {} // for QValueList
-      DelayedAction( DelayedActionId id, QVariant p = QVariant() ) : actionId(id), param(p) {}
-      DelayedActionId actionId;
-      QVariant param; // just in case
-    };
-    QList<DelayedAction> m_delayed;
+    QList<DelayedAction*> m_delayed;
 
     struct SuppressedWindowInfo {
        SuppressedWindowInfo() {}  // for QValueList

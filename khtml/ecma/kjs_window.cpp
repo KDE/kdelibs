@@ -4,6 +4,7 @@
  *  Copyright (C) 2000-2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2006, 2008-2010  Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -21,6 +22,7 @@
  */
 
 #include "kjs_window.h"
+#include "kjs_data.h"
 
 #include <khtmlview.h>
 #include <khtml_part.h>
@@ -241,6 +243,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   scrollY       Window::ScrollY         DontDelete|ReadOnly
   moveBy	Window::MoveBy		DontDelete|Function 2
   moveTo	Window::MoveTo		DontDelete|Function 2
+  postMessage Window::PostMessage DontDelete|Function 2
   resizeBy	Window::ResizeBy	DontDelete|Function 2
   resizeTo	Window::ResizeTo	DontDelete|Function 2
   self		Window::Self		DontDelete|ReadOnly
@@ -410,6 +413,7 @@ Window::Window(khtml::ChildFrame *p)
 
 Window::~Window()
 {
+  qDeleteAll(m_delayed);
   delete winq;
 }
 
@@ -488,6 +492,8 @@ void Window::mark()
     loc->mark();
   if (winq)
     winq->mark();
+  foreach (DelayedAction* action, m_delayed)
+    action->mark();
 }
 
 UString Window::toString(ExecState *) const
@@ -495,140 +501,165 @@ UString Window::toString(ExecState *) const
   return "[object Window]";
 }
 
+bool Window::isCrossFrameAccessible(int token) const
+{
+    switch (token) {
+        case Closed:
+        case _Location: // No isSafeScript test here, we must be able to _set_ location.href (#49819)
+        case _Window:
+        case Self:
+        case Frames:
+        case Opener:
+        case Parent:
+        case Top:
+        case Alert:
+        case Confirm:
+        case Prompt:
+        case Open:
+        case Close:
+        case Focus:
+        case Blur:
+        case AToB:
+        case BToA:
+        case ValueOf:
+        case ToString:
+        case PostMessage:    
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
+    kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
-  // we want only limited operations on a closed window
-  if (m_frame.isNull() || m_frame->m_part.isNull()) {
+    // we want only limited operations on a closed window
+    if (m_frame.isNull() || m_frame->m_part.isNull()) {
+        const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
+        if (entry) {
+            switch (entry->value) {
+                case Closed:
+                case _Location:
+                case ValueOf:
+                case ToString:
+                    getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
+                    return true;
+                default:
+                    break;
+            }
+        }
+        slot.setUndefined(this);
+        return true;
+    }
+    
+    bool safe = isSafeScript(exec);
+
+    // Look for overrides first. 
+    JSValue **val = getDirectLocation(propertyName);
+    if (val) {
+        if (safe) {
+            fillDirectLocationSlot(slot, val);
+        } else {
+            // We may need to permit access to the property map cross-frame in 
+            // order to pick up cross-frame accessible functions that got
+            // cached as direct properties. 
+            const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
+            if (entry && isCrossFrameAccessible(entry->value))
+                fillDirectLocationSlot(slot, val);
+            else
+                slot.setUndefined(this); 
+        }
+        return true;      
+    }
+    
+    // The only stuff we permit XSS (besides cached things above) are
+    // a few of hashtable properties.
     const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
+    if (!safe && (!entry || !isCrossFrameAccessible(entry->value))) {
+        slot.setUndefined(this);
+        return true;
+    }
+    
+    // invariant: accesses below this point are permitted by the XSS policy
+    
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part.data());
+  
     if (entry) {
-      switch (entry->value) {
-      case Closed:
-      case _Location:
-      case ValueOf:
-      case ToString:
-	getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
-	return true;
-      default:
-	break;
-      }
-    }
-    slot.setUndefined(this);
-    return true;
-  }
+        // Things that work on any ReadOnlyPart first
+        switch(entry->value) {
+            case Closed:
+            case _Location:
+            case _Window:
+            case Self:
+                getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
+                return true;
+            default:
+                break;
+        }
+        
+        if (!part) {
+            slot.setUndefined(this);
+            return true;
+        }
 
-  // Look for overrides first
-  JSValue **val = getDirectLocation(propertyName);
-  if (val) {
-    if (isSafeScript(exec))
-      fillDirectLocationSlot(slot, val);
-    else
-      slot.setUndefined(this);
-    return true;
-  }
-
-  const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
-  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part.data());
-
-  // properties that work on all windows
-  if (entry) {
-    // ReadOnlyPart first
-
-    switch(entry->value) {
-    case Closed:
-    case _Location: // No isSafeScript test here, we must be able to _set_ location.href (#49819)
-    case _Window:
-    case Self:
-      getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
-      return true;
-    default:
-        break;
-    }
+        // KHTMLPart-specific next.
+        
+        // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
+        // if (navigate) to test for IE (unlikely).
+        if (entry->value == Navigate && exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
+            slot.setUndefined(this);
+            return true;
+        }
+        
+        
+        getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
+        return true;
+    } 
+    
     if (!part) {
+        // not a  KHTMLPart, so try to get plugin scripting stuff
+        if (pluginRootGet(exec, m_frame->m_scriptable.data(), propertyName, slot))
+            return true;
+
         slot.setUndefined(this);
         return true;
     }
 
-    // KHTMLPart next
-    switch(entry->value) {
-    case Frames:
-    case Opener:
-    case Parent:
-    case Top:
-    case Alert:
-    case Confirm:
-    case Prompt:
-    case Open:
-    case Close:
-    case Focus:
-    case Blur:
-    case AToB:
-    case BToA:
-    case ValueOf:
-    case ToString:
-      getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
-      return true;
-    default:
-      break;
-    }
-  } else if (!part) {
-    // not a  KHTMLPart
-    if (isSafeScript(exec) && pluginRootGet(exec, m_frame->m_scriptable.data(), propertyName, slot))
+    // Now do frame indexing.
+    KParts::ReadOnlyPart *rop = part->findFramePart( propertyName.qstring() );
+    if (rop) {
+        slot.setCustom(this, framePartGetter);
         return true;
-
-    slot.setUndefined(this);
-    return true;
-  }
-
-  // properties that only work on safe windows - we can handle them now..
-  if (isSafeScript(exec) &&  entry)
-  {
-    // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
-    // if (navigate) to test for IE (unlikely).
-    if (entry->value == Navigate && exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
-      slot.setUndefined(this);
-      return true;
     }
 
-    getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
-    return true;
-  }
-
-  KParts::ReadOnlyPart *rop = part->findFramePart( propertyName.qstring() );
-
-  if (rop) {
-    slot.setCustom(this, framePartGetter);
-    return true;
-  }
-
-  // allow window[1] or parent[1] etc. (#56983)
-  bool ok;
-  unsigned int i = propertyName.toArrayIndex(&ok);
-  if (ok && frameByIndex(i)) {
-    slot.setCustomIndex(this, i, indexGetterAdapter<Window>);
-    return true;
-  }
-
-  // allow shortcuts like 'Image1' instead of document.images.Image1
-  DOM::DocumentImpl *doc = part->xmlDocImpl();
-  if (isSafeScript(exec) && doc && doc->isHTMLDocument()) {
-    DOM::ElementMappingCache::ItemInfo* info = doc ->underDocNamedCache().get(propertyName.domString());
-    if (info || doc->getElementById(propertyName.domString())) {
-      slot.setCustom(this, namedItemGetter);
-      return true;
+    // allow window[1] or parent[1] etc. (#56983)
+    bool ok;
+    unsigned int i = propertyName.toArrayIndex(&ok);
+    if (ok && frameByIndex(i)) {
+        slot.setCustomIndex(this, i, indexGetterAdapter<Window>);
+        return true;
     }
-  }
 
-  // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
-  // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
+    // allow shortcuts like 'Image1' instead of document.images.Image1
+    DOM::DocumentImpl *doc = part->xmlDocImpl();
+    if (doc && doc->isHTMLDocument()) {
+        DOM::ElementMappingCache::ItemInfo* info = doc->underDocNamedCache().get(propertyName.domString());
+        if (info || doc->getElementById(propertyName.domString())) {
+            slot.setCustom(this, namedItemGetter);
+            return true;
+        }
+    }
+
+    // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
+    // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "WARNING: Window::get property not found: " << propertyName.qstring();
+    kDebug(6070) << "WARNING: Window::get property not found: " << propertyName.qstring();
 #endif
 
-  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
+    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)
@@ -1289,24 +1320,14 @@ void Window::closeNow()
 
 void Window::afterScriptExecution()
 {
-  DOM::DocumentImpl::updateDocumentsRendering();
-  const QList<DelayedAction> delayedActions = m_delayed;
-  m_delayed.clear();
-  QList<DelayedAction>::ConstIterator it = delayedActions.begin();
-  for ( ; it != delayedActions.end() ; ++it )
-  {
-    switch ((*it).actionId) {
-    case DelayedClose:
-      scheduleClose();
-      return; // stop here, in case of multiple actions
-    case DelayedGoHistory:
-      goHistory( (*it).param.toInt() );
-      break;
-    case NullAction:
-      // FIXME: anything needs to be done here?  This is warning anyways.
-      break;
-    };
-  }
+    DOM::DocumentImpl::updateDocumentsRendering();
+    const QList<DelayedAction*> delayedActions = m_delayed;
+    m_delayed.clear();
+    foreach(DelayedAction* act, delayedActions) {
+        if (!act->execute(this))
+            break; // done with them
+    }
+    qDeleteAll(delayedActions);
 }
 
 bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
@@ -1431,6 +1452,9 @@ void Window::clear( ExecState *exec )
 {
   Q_UNUSED(exec);
   delete winq;
+  qDeleteAll(m_delayed);
+  m_delayed.clear();
+  
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   clearProperties();
@@ -1493,9 +1517,22 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   }
 }
 
+class DelayedGoHistory: public Window::DelayedAction {
+public:
+    DelayedGoHistory(int _steps): steps(_steps)
+    {}
+
+    virtual bool execute(Window* win) {
+        win->goHistory(steps);
+        return true;
+    }
+private:
+    int steps;
+};
+
 void Window::delayedGoHistory( int steps )
 {
-    m_delayed.append( DelayedAction( DelayedGoHistory, steps ) );
+    m_delayed.append(new DelayedGoHistory(steps));
 }
 
 void Window::goHistory( int steps )
@@ -1802,6 +1839,16 @@ void Window::showSuppressedWindows()
   }
 }
 
+class DelayedClose: public Window::DelayedAction {
+public:
+    virtual bool execute(Window* win) {
+        win->scheduleClose();
+        return false;
+    }
+private:
+    int steps;
+};
+
 JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
@@ -1944,7 +1991,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         //kDebug() << "scheduling delayed close";
         // We'll close the window at the end of the script execution
         Window* w = const_cast<Window*>(window);
-        w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
+        w->m_delayed.append( new DelayedClose );
       } else {
         //kDebug() << "closing NOW";
         (const_cast<Window*>(window))->closeNow();
@@ -1992,6 +2039,26 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
            d[i].uc = (uchar) out[i];
        UString ret(d, out.size(), false /*no copy*/);
        return jsString(ret);
+  }
+  case Window::PostMessage: {
+        QString targetOrigin = args[1]->toString(exec).qstring();
+        KUrl    targetURL(targetOrigin);
+        kDebug(6070) << "postMessage targetting:" << targetOrigin;
+
+        // Make sure we get * or an absolute URL for target origin
+        if (targetOrigin != QLatin1String("*") &&
+            ! (targetURL.isValid() && !targetURL.isRelative() && !targetURL.isEmpty())) {
+            setDOMException(exec, DOM::DOMException::SYNTAX_ERR);
+            return jsUndefined();
+        }
+  
+        // Grab a snapshot of the data. Unfortunately it means we copy it
+        // twice, but it's simpler than having separate code for swizzling
+        // prototype pointers.
+        JSValue* payload = cloneData(exec, args[0]);
+
+        // Queue the actual action, for after script execution.
+        window->m_delayed.append(new DelayedPostMessage(targetOrigin, payload));
   }
 
   };
@@ -2275,8 +2342,7 @@ void WindowQObject::pauseTimers()
 
 void WindowQObject::resumeTimers()
 {
-    --pauseLevel;
-    if (pauseLevel == 0) {
+    if (pauseLevel == 1) {
         // Adjust all timers by the delay length, making sure there is a minimum
         // margin from current time, however, so we don't go stampeding off if
         // there is some unwanted recursion, etc.
@@ -2293,6 +2359,8 @@ void WindowQObject::resumeTimers()
         // of a pause..
         timerEvent(0);
     }
+    
+    --pauseLevel; // We do it afterwards so that timerEvent can know about us.
 }
 
 int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleShot)
@@ -2343,10 +2411,8 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-  foreach (ScheduledAction *action, scheduledActions)
-  {
-    action->mark();
-  }
+    foreach (ScheduledAction *action, scheduledActions)
+        action->mark();
 }
 
 void WindowQObject::timerEvent(QTimerEvent *)
@@ -2402,6 +2468,10 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   // Work out when next event is to occur
   setNextTimer();
+  
+  // unless we're inside a nested context, do post-script processing
+  if (!pauseLevel)
+    parent->afterScriptExecution();
 }
 
 DateTimeMS DateTimeMS::addMSecs(int s) const

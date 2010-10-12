@@ -19,9 +19,18 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "kjs_binding.h"
+#include "kjs_window.h"
 #include "xml/dom2_eventsimpl.h"
 
 namespace KJS {
+
+/*
+ Deep copy of data; no guarantees are made about the domain of the result;
+ just that it's distinct from the original. You're expected to use
+ encapsulateMessageEventData on the result to associate it with the
+ appropriate security domain.
+*/
+JSValue* cloneData(ExecState* exec, JSValue* data);
 
 /*
  Note: unlike other JS->DOM routines, this method is expected to cross security
@@ -37,6 +46,22 @@ DOM::MessageEventImpl::Data* encapsulateMessageEventData(ExecState* exec, Interp
  so it doesn't do any deep copying or the like
  */
 JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data);
+
+/*
+ Actually executes Window::PostMessage with given arguments;
+ targetOrigin is expected to have been sanity-checked already
+*/
+class DelayedPostMessage: public Window::DelayedAction
+{
+public:
+    DelayedPostMessage(const QString& _targetOrigin, JSValue* _payload);
+
+    virtual void mark();
+    virtual bool execute(Window*);
+private:
+    QString  targetOrigin;
+    JSValue* payload;
+};
 
 }
 

@@ -653,6 +653,14 @@ QRectF CanvasPatternImpl::clipForRepeat(const QPointF &origin, const QRectF &fil
 CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32_Premultiplied)
 {}
 
+CanvasImageDataImpl::CanvasImageDataImpl(const QImage& _data): data(_data)
+{}
+
+CanvasImageDataImpl* CanvasImageDataImpl::clone() const
+{
+    return new CanvasImageDataImpl(data);
+}
+
 unsigned CanvasImageDataImpl::width() const
 {
     return data.width();

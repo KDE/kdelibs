@@ -181,6 +181,8 @@ class CanvasImageDataImpl : public khtml::Shared<CanvasImageDataImpl>
 public:
     // Creates an uninitialized image..
     CanvasImageDataImpl(unsigned width, unsigned height);
+    CanvasImageDataImpl* clone() const;
+    
 
     unsigned width()  const;
     unsigned height() const;
@@ -188,6 +190,8 @@ public:
     void   setPixel(unsigned pixelNum, const QColor& val);
     void   setComponent(unsigned pixelNum, int component, int value);
     QImage data;
+private:
+    CanvasImageDataImpl(const QImage& _data);
 };
 
 class CanvasContext2DImpl : public khtml::Shared<CanvasContext2DImpl>
