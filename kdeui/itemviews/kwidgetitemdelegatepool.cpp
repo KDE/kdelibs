@@ -48,11 +48,11 @@
   @internal
 */
 //@cond PRIVATE
-class EventListener
+class KWidgetItemDelegateEventListener
     : public QObject
 {
 public:
-    EventListener(KWidgetItemDelegatePoolPrivate *poolPrivate, QObject *parent = 0)
+    KWidgetItemDelegateEventListener(KWidgetItemDelegatePoolPrivate *poolPrivate, QObject *parent = 0)
         : QObject(parent)
         , poolPrivate(poolPrivate)
     {
@@ -66,7 +66,7 @@ private:
 
 KWidgetItemDelegatePoolPrivate::KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d)
     : delegate(d)
-    , eventListener(new EventListener(this))
+    , eventListener(new KWidgetItemDelegateEventListener(this))
     , clearing(false)
 {
 }
@@ -160,7 +160,7 @@ void KWidgetItemDelegatePool::fullClear()
     d->widgetInIndex.clear();
 }
 
-bool EventListener::eventFilter(QObject *watched, QEvent *event)
+bool KWidgetItemDelegateEventListener::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *widget = static_cast<QWidget*>(watched);
 

@@ -82,7 +82,7 @@ private:
     KWidgetItemDelegatePoolPrivate *const d;
 };
 
-class EventListener;
+class KWidgetItemDelegateEventListener;
 
 /**
   * @internal
@@ -90,10 +90,11 @@ class EventListener;
 class KWidgetItemDelegatePoolPrivate
 {
 public:
+
     KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d);
 
     KWidgetItemDelegate *delegate;
-    EventListener *eventListener;
+    KWidgetItemDelegateEventListener *eventListener;
 
     QList<QList<QWidget*> > allocatedWidgets;
     QHash<QModelIndex, QList<QWidget*> > usedWidgets;

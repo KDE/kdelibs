@@ -148,7 +148,7 @@ protected:
 private:
     //@cond PRIVATE
     friend class KWidgetItemDelegatePool;
-    friend class EventListener;
+    friend class KWidgetItemDelegateEventListener;
     KWidgetItemDelegatePrivate *const d;
     Q_PRIVATE_SLOT(d, void _k_slotRowsInserted(const QModelIndex&,int,int))
     Q_PRIVATE_SLOT(d, void _k_slotRowsAboutToBeRemoved(const QModelIndex&,int,int))
