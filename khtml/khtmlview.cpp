@@ -2135,17 +2135,6 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
       case QEvent::DragLeave:
       case QEvent::Drop:
         return false;
-      case QEvent::Paint: {
-          QRect r = static_cast<QPaintEvent*>(e)->rect();
-          r = r.intersect( widget()->rect() );
-          if (r.isValid() && !r.isEmpty()) {
-              r.setX(r.x() +contentsX());
-              r.setY(r.y() +contentsY());
-              QPaintEvent pe(r);
-              paintEvent(&pe);
-          }
-          return true;
-      }
       default:
         break;
     }
