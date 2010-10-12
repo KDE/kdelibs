@@ -165,7 +165,7 @@ bool KWidgetItemDelegateEventListener::eventFilter(QObject *watched, QEvent *eve
     QWidget *widget = static_cast<QWidget*>(watched);
 
     if (event->type() == QEvent::Destroy && !poolPrivate->clearing) {
-        kWarning() << "User of KWidgetItemDelegate should not delete widgets created by createWidgets!";
+        kWarning() << "User of KWidgetItemDelegate should not delete widgets created by createItemWidgets!";
         // assume the application has kept a list of widgets and tries to delete them manually
         // they have been reparented to the view in any case, so no leaking occurs
         poolPrivate->widgetInIndex.remove(widget);
