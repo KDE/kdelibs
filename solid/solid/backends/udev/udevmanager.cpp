@@ -89,7 +89,7 @@ QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
                                           Solid::DeviceInterface::Type type)
 {
     // TODO: actually use the query parameters
-    return allDevices();
+    return QStringList();
 }
 
 QObject *UDevManager::createDevice(const QString &udi_)
