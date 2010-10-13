@@ -4,6 +4,13 @@ add_subdirectory( tests )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+    set(KBUILDSYCOCA_NO_KCRASH TRUE)
+endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kded.h)
+
+
 ########### next target ###############
 
 set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
@@ -46,11 +53,17 @@ set(kbuildsycoca_KDEINIT_SRCS
    vfolder_menu.cpp
    )
 
+if(KBUILDSYCOCA_NO_KCRASH)
+    set(KBUILDSYCOCA_MAIN_LIBS ${KDE4_KDECORE_LIBS})
+else(KBUILDSYCOCA_NO_KCRASH)
+    set(KBUILDSYCOCA_MAIN_LIBS ${KDE4_KDEUI_LIBS})
+endif(KBUILDSYCOCA_NO_KCRASH)
+
 
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca4 ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
+target_link_libraries(kdeinit_kbuildsycoca4 ${KBUILDSYCOCA_MAIN_LIBS} ${QT_QTXML_LIBRARY})
 
 install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

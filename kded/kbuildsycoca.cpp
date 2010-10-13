@@ -24,6 +24,7 @@
 #include "vfolder_menu.h"
 
 #include <config.h>
+#include <config-kded.h>
 
 #include <kservice.h>
 #include <kmimetype.h>
@@ -52,7 +53,9 @@
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#ifndef KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
+#endif
 #include <kmemfile.h>
 
 #include <stdlib.h>
@@ -644,9 +647,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    QCoreApplication k(argc, argv);
    KComponentData mainComponent(d);
 
+#ifndef KBUILDSYCOCA_NO_KCRASH
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(crashHandler);
    KCrash::setApplicationName(QString(appName));
+#endif
 
    // force generating of KLocale object. if not, the database will get
    // be translated
