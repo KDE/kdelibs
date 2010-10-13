@@ -40,13 +40,13 @@
 #include <QMimeData>
 #include <QtCore/QTextIStream>
 
-static KUrl getNewFileName( const KUrl &u, const QString& text, QWidget *widget )
+static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget )
 {
   bool ok;
   QString dialogText( text );
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
-  QString file = KInputDialog::getText( QString(), dialogText, QString(), &ok, widget );
+  QString file = KInputDialog::getText( QString(), dialogText, suggestedFileName, &ok, widget );
   if ( !ok )
      return KUrl();
 
@@ -112,6 +112,7 @@ static KIO::CopyJob* pasteDataAsyncTo( const KUrl& newUrl, const QByteArray& _da
 static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
                                      const QStringList& formats,
                                      const QString& text,
+                                     const QString& suggestedFileName,
                                      QWidget* widget,
                                      bool clipboard )
 {
@@ -129,7 +130,7 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
     if ( dialogText.isEmpty() )
         dialogText = i18n( "Filename for clipboard content:" );
     //using QString() instead of QString::null didn't compile (with gcc 3.2.3), because the ctor was mistaken as a function declaration, Alex //krazy:exclude=nullstrassign
-    KIO::PasteDialog dlg( QString::null, dialogText, QString(), formatLabels, widget, clipboard ); //krazy:exclude=nullstrassign
+    KIO::PasteDialog dlg( QString::null, dialogText, suggestedFileName, formatLabels, widget, clipboard ); //krazy:exclude=nullstrassign
 
     if ( dlg.exec() != KDialog::Accepted )
         return 0;
@@ -168,15 +169,18 @@ static QStringList extractFormats(const QMimeData* mimeData)
 {
     QStringList formats;
     const QStringList allFormats = mimeData->formats();
-    for (QStringList::const_iterator it = allFormats.constBegin(), end = allFormats.constEnd();
-         it != end; ++it) {
-        if ((*it) == QLatin1String("application/x-qiconlist")) // see QIconDrag
+    Q_FOREACH(const QString& format, allFormats) {
+        if (format == QLatin1String("application/x-qiconlist")) // see QIconDrag
             continue;
-        if ((*it) == QLatin1String("application/x-kde-cutselection")) // see KonqDrag
+        if (format == QLatin1String("application/x-kde-cutselection")) // see KonqDrag
             continue;
-        if (!(*it).contains(QLatin1Char('/'))) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+        if (format == QLatin1String("application/x-kde-suggestedfilename"))
             continue;
-        formats.append(*it);
+        if (format.startsWith(QLatin1String("x-kmail-drag/"))) // app-internal
+            continue;
+        if (!format.contains(QLatin1Char('/'))) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+            continue;
+        formats.append(format);
     }
     return formats;
 }
@@ -186,6 +190,8 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
                                     const QString& dialogText, QWidget* widget, bool clipboard )
 {
   QByteArray ba;
+
+  const QString suggestedFilename = QString::fromUtf8(mimeData->data("application/x-kde-suggestedfilename"));
 
   // Now check for plain text
   // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
@@ -201,7 +207,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
           return 0;
 
       if ( formats.size() > 1 ) {
-          return chooseAndPaste( destUrl, mimeData, formats, dialogText, widget, clipboard );
+          return chooseAndPaste(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard);
       }
       ba = mimeData->data( formats.first() );
   }
@@ -211,7 +217,13 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
     return 0;
   }
 
-  return pasteDataAsync( destUrl, ba, widget, dialogText );
+    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget);
+    if (newUrl.isEmpty())
+        return 0;
+
+    KIO::CopyJob* job = pasteDataAsyncTo(newUrl, ba);
+    job->ui()->setWindow(widget);
+    return job;
 }
 
 KIO_EXPORT bool KIO::canPasteMimeSource(const QMimeData* data)
@@ -235,7 +247,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
   // First check for URLs.
   const KUrl::List urls = KUrl::List::fromMimeData(mimeData, KUrl::List::PreferLocalUrls);
   if ( !urls.isEmpty() ) {
-    KIO::Job *res = 0;   
+    KIO::Job *res = 0;
     if ( move )
       res = KIO::move( urls, destUrl );
     else
@@ -256,8 +268,8 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
       QMimeData* mime = new QMimeData();
       newUrls.populateMimeData(mime);
       QApplication::clipboard()->setMimeData(mime);
-    }  
-      
+    }
+
     return res;
   }
   return pasteMimeSource( mimeData, destUrl, QString(), widget, true /*clipboard*/ );
@@ -284,7 +296,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
 
 KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget* widget )
 {
-    const KUrl newUrl = getNewFileName( u, QString(), widget );
+    const KUrl newUrl = getNewFileName( u, QString(), QString(), widget );
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAccess, we can do a synchronous call.
 
@@ -301,9 +313,10 @@ KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget*
 
 // KDE5 TODO: return a KIO::Job*, not a CopyJob*, in case we want to use file_move or a macro job...
 // But then the caller needs to know the destUrl too. Return a QPair?
+// KDE5: Inline in the only caller, and remove from public API; it's not used anywhere else anymore.
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, QWidget *widget, const QString& text )
 {
-    KUrl newUrl = getNewFileName( u, text, widget );
+    KUrl newUrl = getNewFileName( u, text, QString(), widget );
 
     if (newUrl.isEmpty())
        return 0;
