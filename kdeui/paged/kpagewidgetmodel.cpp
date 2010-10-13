@@ -388,8 +388,15 @@ void KPageWidgetModel::addPage( KPageWidgetItem *item )
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
+  // The row to be inserted
+  int row = d->rootItem->childCount();
+
+  beginInsertRows(QModelIndex(), row, row);
+
   PageItem *pageItem = new PageItem( item, d->rootItem );
   d->rootItem->appendChild( pageItem );
+
+  endInsertRows();
 
   emit layoutChanged();
 }
@@ -417,9 +424,20 @@ void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *ite
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
   PageItem *parent = beforePageItem->parent();
+  // The row to be inserted
+  int row = beforePageItem->row();
+
+  QModelIndex index;
+  if (parent != d_func()->rootItem) {
+      index = createIndex( parent->row(), 0, parent );
+  }
+
+  beginInsertRows(index, row, row);
 
   PageItem *newPageItem = new PageItem( item, parent );
-  parent->insertChild( beforePageItem->row(), newPageItem );
+  parent->insertChild( row, newPageItem );
+
+  endInsertRows();
 
   emit layoutChanged();
 }
@@ -446,8 +464,20 @@ void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *ite
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
+  // The row to be inserted
+  int row = parentPageItem->childCount();
+
+  QModelIndex index;
+  if (parentPageItem != d_func()->rootItem) {
+      index = createIndex( parentPageItem->row(), 0, parentPageItem );
+  }
+
+  beginInsertRows(index, row, row);
+
   PageItem *newPageItem = new PageItem( item, parentPageItem );
   parentPageItem->appendChild( newPageItem );
+
+  endInsertRows();
 
   emit layoutChanged();
 }
