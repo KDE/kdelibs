@@ -71,16 +71,22 @@ class KIO_EXPORT AccessManager : public QNetworkAccessManager
     Q_OBJECT
 public:
     /*!
-      Extensions to QNetworkRequest::Attribute enums.
-      @since 4.3.2
-    */
+     * Extensions to QNetworkRequest::Attribute enums.
+     * @since 4.3.2
+     */
     enum Attribute {
         MetaData = QNetworkRequest::User, /** < Used to send KIO MetaData back and forth. type: QVariant::Map. */
-        KioError /**< Used to send KIO error codes that cannot be mapped into QNetworkReply::NetworkError. type: QVariant::Int */
+        KioError, /**< Used to send KIO error codes that cannot be mapped into QNetworkReply::NetworkError. type: QVariant::Int */
     };
 
+    /**
+     * Constructor
+     */
     AccessManager(QObject *parent);
 
+    /**
+     * Destructor
+     */
     virtual ~AccessManager();
 
     /**
@@ -264,12 +270,31 @@ public:
      * @internal
      */
     bool setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url);
+    
+    /**
+     * Returns true if persistent caching of cookies is disabled.
+     * 
+     * @see setDisableCookieStorage
+     * @since 4.6
+     */
+    bool isCookieStorageDisabled() const;
+    
+    /**
+     * Prevent persistent storage of cookies.
+     * 
+     * Call this function if you do not want cookies to be stored locally for
+     * later access without disabling the cookiejar. All cookies will be discarded
+     * once the sessions that are using the cookie are done.
+     * 
+     * @since 4.6
+     */
+    void setDisableCookieStorage (bool disable);
 
 private:
     class CookieJarPrivate;
     CookieJarPrivate* const d;
 };
-
+  
 }
 
 }

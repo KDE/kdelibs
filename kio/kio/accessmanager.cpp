@@ -30,8 +30,10 @@
 #include <kio/scheduler.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
+#include <kprotocolinfo.h>
 
 #include <QtCore/QUrl>
+#include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
@@ -44,16 +46,25 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
+static bool isLocalRequest(const QUrl& url)
+{
+    const QString scheme (url.scheme());
+    return (KProtocolInfo::isKnownProtocol(scheme) && 
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
 namespace KIO {
 
 class AccessManager::AccessManagerPrivate
 {
 public:
-    AccessManagerPrivate():externalContentAllowed(true) {}
-    KIO::MetaData metaDataForRequest(QNetworkRequest request);
-    bool isRequestAllowed(const QUrl& url) const;
+    AccessManagerPrivate() 
+    : externalContentAllowed(true)
+    {}
 
-    bool externalContentAllowed;
+    KIO::MetaData metaDataForRequest(QNetworkRequest request);
+
+    bool externalContentAllowed;    
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
 };
@@ -63,10 +74,15 @@ namespace Integration {
 class CookieJar::CookieJarPrivate
 {
 public:
-  CookieJarPrivate(): windowId((WId)-1), enabled(true) {}
+  CookieJarPrivate()
+    : windowId((WId)-1), 
+      isEnabled(true),
+      isStorageDisabled(false)
+  {}
 
   WId windowId;
-  bool enabled;
+  bool isEnabled;
+  bool isStorageDisabled;
 };
 
 }
@@ -129,8 +145,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 {
     KIO::SimpleJob *kioJob = 0;
     const QUrl reqUrl (req.url());
-
-    if ( !d->isRequestAllowed(reqUrl) ) {
+    
+    if (!d->externalContentAllowed && !isLocalRequest(reqUrl)) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
@@ -252,15 +268,8 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     // Append per session meta data, if any...
     if (!sessionMetaData.isEmpty())
         metaData += sessionMetaData;
-
+    
     return metaData;
-}
-
-bool AccessManager::AccessManagerPrivate::isRequestAllowed(const QUrl& url) const
-{
-    const QString scheme (url.scheme());
-
-    return (externalContentAllowed || scheme == QL1S("file")  || scheme == QL1S("data"));
 }
 
 
@@ -310,10 +319,14 @@ WId CookieJar::windowId() const {
     return d->windowId;
 }
 
+bool CookieJar::isCookieStorageDisabled() const {
+   return d->isStorageDisabled;
+}
+
 QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
     QList<QNetworkCookie> cookieList;
 
-    if (d->enabled) {
+    if (d->isEnabled) {
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
         QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), (qlonglong)d->windowId);
 
@@ -337,12 +350,16 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
 }
 
 bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url) {
-    if (d->enabled) {
+    if (d->isEnabled) {
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-
         Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
             QByteArray cookieHeader ("Set-Cookie: ");
-            cookieHeader += cookie.toRawForm();
+	    if (d->isStorageDisabled && !cookie.isSessionCookie()) {
+                QNetworkCookie sessionCookie(cookie);
+                sessionCookie.setExpirationDate(QDateTime());
+                cookieHeader += sessionCookie.toRawForm();
+            } else
+                cookieHeader += cookie.toRawForm();
             kcookiejar.call("addCookies", url.toString(), cookieHeader, (qlonglong)d->windowId);
             //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
         }
@@ -353,14 +370,17 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
     return false;
 }
 
+void CookieJar::setDisableCookieStorage(bool disable) {
+    d->isStorageDisabled = disable;
+}
+
 void CookieJar::setWindowId(WId id) {
     d->windowId = id;
 }
 
 void CookieJar::reparseConfiguration() {
     KConfigGroup cfg = KSharedConfig::openConfig("kcookiejarrc", KConfig::NoGlobals)->group("Cookie Policy");
-    d->enabled = cfg.readEntry("Cookies", true);
+    d->isEnabled = cfg.readEntry("Cookies", true);
 }
-
 
 #include "accessmanager.moc"
