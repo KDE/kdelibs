@@ -20,6 +20,8 @@
 #ifndef KSHAREDDATACACHE_P_H
 #define KSHAREDDATACACHE_P_H
 
+#include <config.h> // HAVE_SYS_MMAN_H
+
 #include <QtCore/QSharedPointer>
 
 #include <unistd.h>
@@ -54,6 +56,9 @@
 #endif
 
 // BSD/Mac OS X compat
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
 #if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
 #define MAP_ANONYMOUS MAP_ANON
 #endif
