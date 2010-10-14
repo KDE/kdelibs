@@ -2,6 +2,7 @@ SET (ksecretservice_lib_SRCS
    jobqueue.cpp
    queuedjob.cpp
    secrettool.cpp
+   peer.cpp
 )
 
 KDE4_ADD_LIBRARY (ksecretservicelib STATIC ${ksecretservice_lib_SRCS})
