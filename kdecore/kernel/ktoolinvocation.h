@@ -178,6 +178,9 @@ public:
    * The returned object is owned by KApplication, do not delete it!
    */
   static OrgKdeKLauncherInterface *klauncher();
+  // KDE5: remove this from the public API. Make it kdelibs-private, and provide
+  // replacements for setLaunchEnv and for "making sure kdeinit/klauncher is running".
+  // (We could do the last two without waiting, of course).
 
   /**
    * Starts a service based on the (translated) name of the service.
