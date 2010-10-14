@@ -340,6 +340,7 @@ static SharedLockId findBestSharedLock()
 static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
 {
     switch(id) {
+#ifdef KSDC_THREAD_PROCESS_SHARED_SUPPORTED
     case LOCKTYPE_MUTEX:
 #ifdef KSDC_TIMEOUTS_SUPPORTED
         if (::sysconf(_SC_TIMEOUTS) >= 200112L) {
@@ -349,6 +350,7 @@ static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
         return new pthreadLock(lock.mutex);
 
     break;
+#endif
 
 #ifdef KSDC_SEMAPHORES_SUPPORTED
     case LOCKTYPE_SEMAPHORE:
