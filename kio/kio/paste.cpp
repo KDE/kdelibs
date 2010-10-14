@@ -41,13 +41,13 @@
 #include <qtextstream.h>
 #include <qvaluevector.h>
 
-static KURL getNewFileName( const KURL &u, const QString& text )
+static KURL getNewFileName( const KURL &u, const QString& text, const QString& suggestedFileName = QString::null )
 {
   bool ok;
   QString dialogText( text );
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
-  QString file = KInputDialog::getText( QString::null, dialogText, QString::null, &ok );
+  QString file = KInputDialog::getText( QString::null, dialogText, suggestedFileName, &ok );
   if ( !ok )
      return KURL();
 
@@ -97,6 +97,7 @@ static KIO::CopyJob* pasteDataAsyncTo( const KURL& new_url, const QByteArray& _d
 static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
                                      const QValueVector<QCString>& formats,
                                      const QString& text,
+                                     const QString& suggestedFileName,
                                      QWidget* widget,
                                      bool clipboard )
 {
@@ -113,7 +114,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     QString dialogText( text );
     if ( dialogText.isEmpty() )
         dialogText = i18n( "Filename for clipboard content:" );
-    KIO::PasteDialog dlg( QString::null, dialogText, QString::null, formatLabels, widget, clipboard );
+    KIO::PasteDialog dlg( QString::null, dialogText, suggestedFileName, formatLabels, widget, clipboard );
 
     if ( dlg.exec() != KDialogBase::Accepted )
         return 0;
@@ -166,6 +167,8 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
 {
   QByteArray ba;
 
+  const QString suggestedFileName = QString::fromUtf8(data->encodedData("application/x-kde-suggestedfilename"));
+
   // Now check for plain text
   // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
   QString text;
@@ -183,6 +186,10 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
               continue;
           if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
               continue;
+          if ( qstrcmp( fmt, "application/x-kde-suggestedfilename" ) == 0 )
+              continue;
+          if ( qstrncmp( fmt, "x-kmail-drag/", 13 ) == 0 ) // "startsWith"
+              continue;
           if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
               continue;
           formats.append( fmt );
@@ -192,7 +199,7 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
           return 0;
 
       if ( formats.size() > 1 ) {
-          return chooseAndPaste( dest_url, data, formats, dialogText, widget, clipboard );
+          return chooseAndPaste( dest_url, data, formats, dialogText, suggestedFileName, widget, clipboard );
       }
       ba = data->encodedData( formats.first() );
   }
@@ -202,7 +209,10 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
     return 0;
   }
 
-  return pasteDataAsync( dest_url, ba, dialogText );
+  KURL new_url = getNewFileName( dest_url, dialogText, suggestedFileName );
+  if (new_url.isEmpty())
+      return 0;
+  return pasteDataAsyncTo( new_url, ba );
 }
 #endif
 
