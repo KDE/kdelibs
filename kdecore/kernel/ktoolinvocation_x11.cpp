@@ -28,7 +28,6 @@
 
 #include <kconfiggroup.h>
 
-#include "klauncher_iface.h"
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kcodecs.h"
