@@ -50,6 +50,8 @@
 #include <netwm.h>
 #endif
 
+static bool sAllowEmbeddingInGraphicsView = false;
+
 void KDialogPrivate::setupLayout()
 {
     Q_Q(KDialog);
@@ -178,13 +180,13 @@ void KDialogPrivate::helpLinkClicked()
 }
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
-  : QDialog(parent, flags), d_ptr(new KDialogPrivate)
+  : QDialog(parent, sAllowEmbeddingInGraphicsView ? flags : flags | Qt::BypassGraphicsProxyWidget ), d_ptr(new KDialogPrivate)
 {
     d_ptr->init(this);
 }
 
 KDialog::KDialog(KDialogPrivate &dd, QWidget *parent, Qt::WFlags flags)
-    : QDialog(parent, flags), d_ptr(&dd)
+    : QDialog(parent, sAllowEmbeddingInGraphicsView ? flags : flags | Qt::BypassGraphicsProxyWidget), d_ptr(&dd)
 {
     d_ptr->init(this);
 }
@@ -1026,6 +1028,11 @@ void KDialog::saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFla
 
    config.writeEntry( QString::fromLatin1("Width %1").arg( desk.width() ), sizeToSave.width(), options );
    config.writeEntry( QString::fromLatin1("Height %1").arg( desk.height() ), sizeToSave.height(), options );
+}
+
+void KDialog::setAllowEmbeddingInGraphicsView( bool allowEmbedding )
+{
+  sAllowEmbeddingInGraphicsView = allowEmbedding;
 }
 
 
