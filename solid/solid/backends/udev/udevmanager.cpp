@@ -36,6 +36,8 @@ public:
     Private();
     ~Private();
 
+    bool isOfInterest(const UdevQt::Device &device);
+
     UdevQt::Client *const m_client;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 };
@@ -50,14 +52,21 @@ UDevManager::Private::~Private()
     delete m_client;
 }
 
+bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
+{
+    return device.driver() == "processor" ||
+           device.driver() == "video";
+}
+
 UDevManager::UDevManager(QObject *parent)
     : d(new Private)
 {
     d->m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
                              << Solid::DeviceInterface::Processor
+                             << Solid::DeviceInterface::AudioInterface
                              << Solid::DeviceInterface::Camera
                              << Solid::DeviceInterface::PortableMediaPlayer
-                             << Solid::DeviceInterface::Button;
+                             << Solid::DeviceInterface::Video;
 }
 
 UDevManager::~UDevManager()
@@ -80,7 +89,9 @@ QStringList UDevManager::allDevices()
     QStringList res;
     const UdevQt::DeviceList deviceList = d->m_client->allDevices();
     foreach (const UdevQt::Device &device, deviceList) {
-        res << udiPrefix() + device.sysfsPath();
+        if (d->isOfInterest(device)) {
+            res << udiPrefix() + device.sysfsPath();
+        }
     }
     return res;
 }
@@ -102,5 +113,9 @@ QObject *UDevManager::createDevice(const QString &udi_)
         return device;
     }
     const QString udi = udi_.right(udi_.size() - udiPrefix().size());
-    return new UDevDevice(d->m_client->deviceBySysfsPath(udi));
+    UdevQt::Device device = d->m_client->deviceBySysfsPath(udi);
+    if (d->isOfInterest(device)) {
+        return new UDevDevice(device);
+    }
+    return 0;
 }
