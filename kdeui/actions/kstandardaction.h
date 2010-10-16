@@ -528,8 +528,15 @@ namespace KStandardAction
 
   /**
    * Show/Hide the statusbar.
+   * @deprecated use showHideStatusbar instead.
    */
-  KDEUI_EXPORT KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
+  KDEUI_EXPORT_DEPRECATED KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
+
+  /**
+   * Show/Hide the statusbar.
+   * @since 4.6
+   */
+  KDEUI_EXPORT KDualAction *showHideStatusbar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Switch to/from full screen mode

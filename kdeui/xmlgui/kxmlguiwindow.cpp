@@ -52,6 +52,7 @@
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kdualaction.h>
 #include <kedittoolbar.h>
 #include <khelpmenu.h>
 #include <klocale.h>
@@ -61,12 +62,6 @@
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
-
-#if defined Q_WS_X11
-#include <qx11info_x11.h>
-#include <netwm.h>
-#include <kstartupinfo.h>
-#endif
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -86,7 +81,7 @@ public:
     QSize defaultSize;
 
     KDEPrivate::ToolBarHandler *toolBarHandler;
-    KToggleAction *showStatusBarAction;
+    KDualAction *showStatusBarAction;
     QPointer<KEditToolBar> toolBarEditor;
     KXMLGUIFactory *factory;
 };
@@ -326,16 +321,16 @@ bool KXmlGuiWindow::isStandardToolBarMenuEnabled() const
 void KXmlGuiWindow::createStandardStatusBarAction(){
     K_D(KXmlGuiWindow);
     if(!d->showStatusBarAction){
-        d->showStatusBarAction = KStandardAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
+        d->showStatusBarAction = KStandardAction::showHideStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
         KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
-        connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
-        d->showStatusBarAction->setChecked(sb->isHidden());
+        connect(d->showStatusBarAction, SIGNAL(activeChangedByUser(bool)), sb, SLOT(setVisible(bool)));
+        d->showStatusBarAction->setActive(sb->isHidden());
     } else {
         // If the language has changed, we'll need to grab the new text and whatsThis
-	KAction *tmpStatusBar = KStandardAction::showStatusbar(NULL, NULL, NULL);
-        d->showStatusBarAction->setText(tmpStatusBar->text());
-        d->showStatusBarAction->setWhatsThis(tmpStatusBar->whatsThis());
-	delete tmpStatusBar;
+        KDualAction *tmpStatusBar = KStandardAction::showHideStatusbar(NULL, NULL, NULL);
+        d->showStatusBarAction->setGuiItemForState(KDualAction::InactiveState, tmpStatusBar->guiItemForState(KDualAction::InactiveState));
+        d->showStatusBarAction->setGuiItemForState(KDualAction::ActiveState, tmpStatusBar->guiItemForState(KDualAction::ActiveState));
+        delete tmpStatusBar;
     }
 }
 
@@ -356,7 +351,7 @@ void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool for
     KMainWindow::applyMainWindowSettings(config, force);
     KStatusBar *sb = qFindChild<KStatusBar *>(this);
     if (sb && d->showStatusBarAction)
-        d->showStatusBarAction->setChecked(!sb->isHidden());
+        d->showStatusBarAction->setActive(!sb->isHidden());
 }
 
 // KDE5 TODO: change it to "using KXMLGUIBuilder::finalizeGUI;" in the header

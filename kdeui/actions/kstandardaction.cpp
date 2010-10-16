@@ -581,6 +581,29 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
   return ret;
 }
 
+KDualAction *showHideStatusbar(const QObject *recvr, const char *slot, QObject *parent)
+{
+  KDualAction *ret = new KDualAction(
+    i18n( "Show Statusbar" ),
+    i18n( "Hide Statusbar" ),
+    parent);
+  ret->setObjectName(name(ShowStatusbar));
+
+  ret->setWhatsThis( i18n( "Show Statusbar<br /><br />"
+                           "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
+
+  ret->setActive( true );
+
+  if ( recvr && slot )
+    QObject::connect( ret, SIGNAL( activeChangedByUser( bool ) ), recvr, slot );
+
+  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
+  if (collection)
+    collection->addAction(ret->objectName(), ret);
+
+  return ret;
+}
+
 KToggleFullScreenAction *fullScreen(const QObject *recvr, const char *slot, QWidget* window, QObject *parent)
 {
   KToggleFullScreenAction *ret;
