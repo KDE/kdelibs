@@ -25,19 +25,19 @@
 
 #include "peer.h"
 
-struct CreateCollectionInfo
+struct CollectionCreateInfo
 {
    const QString &m_label;
    bool  m_locked;
    const Peer* m_peer;
    
-   CreateCollectionInfo( const QString& label ) : 
+   CollectionCreateInfo( const QString& label ) : 
       m_label( label ), m_locked(false), m_peer(0)
    {
    }
 };
 
-struct CollectionDeleteJobInfo
+struct CollectionDeleteInfo
 {
    /**
      * The peer that requested the delete operation
