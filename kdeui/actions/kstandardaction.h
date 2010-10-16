@@ -28,6 +28,7 @@ class QStringList;
 class QWidget;
 class KAction;
 class KRecentFilesAction;
+class KDualAction;
 class KToggleAction;
 class KToggleFullScreenAction;
 
@@ -515,8 +516,15 @@ namespace KStandardAction
 
   /**
    * Show/Hide the menubar.
+   * @deprecated use showHideMenubar instead.
    */
-  KDEUI_EXPORT KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
+  KDEUI_EXPORT_DEPRECATED KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
+
+  /**
+   * Show/Hide the menubar.
+   * @since 4.6
+   */
+  KDEUI_EXPORT KDualAction *showHideMenubar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Show/Hide the statusbar.
