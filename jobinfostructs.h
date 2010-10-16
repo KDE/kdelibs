@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATECOLLECTIONINFO_H
-#define CREATECOLLECTIONINFO_H
+#ifndef JOBINFOSTRUCTS_H
+#define JOBINFOSTRUCTS_H
 
 #include <QtCore/QString>
 
-class Peer;
+#include "peer.h"
 
 struct CreateCollectionInfo
 {
@@ -37,4 +37,24 @@ struct CreateCollectionInfo
    }
 };
 
-#endif // CREATECOLLECTIONINFO_H
+struct CollectionDeleteJobInfo
+{
+   /**
+     * The peer that requested the delete operation
+     */
+   const Peer* m_peer;
+};
+
+struct ItemDeleteInfo
+{
+   /**
+    * The peer that initiated the delete operation
+    */
+   const Peer *m_peer;
+   ItemDeleteInfo( const Peer* peer ) : m_peer( peer )
+   {}
+};
+
+
+
+#endif // JOBINFOSTRUCTS_H
