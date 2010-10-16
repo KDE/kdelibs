@@ -160,7 +160,13 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     painter->drawPixmap(point, pm);
 
     if (option.state & QStyle::State_Selected) {
-        painter->setPen(option.palette.highlightedText().color());
+        QPalette::ColorGroup cg = QPalette::Active;
+        if (!(option.state & QStyle::State_Enabled)) {
+            cg = QPalette::Disabled;
+        } else if (!(option.state & QStyle::State_Active)) {
+            cg = QPalette::Inactive;
+        }
+        painter->setPen(option.palette.color(cg, QPalette::HighlightedText));
     }
 
     QRect rectText;
