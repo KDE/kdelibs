@@ -140,7 +140,7 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   KPageWidgetItem* item = d->addPageInternal(page, itemName, pixmapName, header);
   d->managerForPage[page] = new KConfigDialogManager(page, config);
   d->setupManagerConnections(d->managerForPage[page]);
-  
+
   if (d->shown)
   {
     // update the default button if the dialog is shown
@@ -180,12 +180,12 @@ void KConfigDialog::KConfigDialogPrivate::setupManagerConnections(KConfigDialogM
 }
 
 void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
-{	
+{
 	QMap<QWidget *, KConfigDialogManager *>::iterator j = d->managerForPage.begin();
 	while (j != d->managerForPage.end())
 	{
 		// there is a manager for this page, so remove it
-		if (item->widget()->isAncestorOf(j.key())) 
+		if (item->widget()->isAncestorOf(j.key()))
 		{
 			KConfigDialogManager* manager = j.value();
 			d->managerForPage.erase(j);
