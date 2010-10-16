@@ -524,16 +524,23 @@ QBrush KFileItemDelegate::Private::brush(const QVariant &value, const QStyleOpti
 
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
+    QPalette::ColorGroup cg = QPalette::Active;
+    if (!(option.state & QStyle::State_Enabled)) {
+        cg = QPalette::Disabled;
+    } else if (!(option.state & QStyle::State_Active)) {
+        cg = QPalette::Inactive;
+    }
+
     // Always use the highlight color for selected items
     if (option.state & QStyle::State_Selected)
-        return option.palette.brush(QPalette::HighlightedText);
+        return option.palette.brush(cg, QPalette::HighlightedText);
 
     // If the model provides its own foreground color/brush for this item
     const QVariant value = index.data(Qt::ForegroundRole);
     if (value.isValid())
         return brush(value, option);
 
-    return option.palette.brush(QPalette::Text);
+    return option.palette.brush(cg, QPalette::Text);
 }
 
 
