@@ -22,6 +22,8 @@
 #define JOBINFOSTRUCTS_H
 
 #include <QtCore/QString>
+#include <QtCore/QMap>
+#include <QtCrypto/QtCrypto>
 
 #include "peer.h"
 
@@ -43,6 +45,27 @@ struct CollectionDeleteInfo
      * The peer that requested the delete operation
      */
    const Peer* m_peer;
+   CollectionDeleteInfo( const Peer* peer ) : m_peer( peer )
+   {}
+};
+
+struct ItemCreateInfo
+{
+   const QString &m_label;
+   const QMap<QString, QString> &m_attributes;
+   const QCA::SecureArray &m_secret;
+   bool m_replace;
+   bool m_locked;
+   const Peer* m_peer;
+   ItemCreateInfo( const QString &label, 
+                   const QMap<QString, QString> &attributes,
+                   const QCA::SecureArray &secret,
+                   bool replace,
+                   bool locked,
+                   const Peer* peer) :
+      m_label(label), m_attributes(attributes), m_secret(secret), 
+      m_replace(replace), m_locked(locked), m_peer(peer)
+   {}
 };
 
 struct ItemDeleteInfo
