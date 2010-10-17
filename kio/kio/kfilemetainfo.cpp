@@ -575,14 +575,14 @@ bool KFileMetaInfo::applyChanges( const QString& path )
     KURL savedURL = url();
     d->url = KURL();
     d->url.setPath( path );
-    
+
     bool ret = p->writeInfo(*this);
-    
+
     d->url = savedURL;
     return ret;
 }
 
-KFilePlugin * const KFileMetaInfo::plugin() const
+KFilePlugin *KFileMetaInfo::plugin() const
 {
     assert(isValid());
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
@@ -1560,7 +1560,7 @@ KFileMimeTypeInfo::GroupInfo::GroupInfo( const QString& name,
 KFileMimeTypeInfo::GroupInfo::~GroupInfo()
 {
     delete m_variableItemInfo;
-} 
+}
 
 const KFileMimeTypeInfo::ItemInfo * KFileMimeTypeInfo::GroupInfo::itemInfo( const QString& key ) const
 {

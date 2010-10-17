@@ -1234,7 +1234,7 @@ protected:
      * @return a pointer to the plugin that belogs to this object's mimetype.
      *         It will be auto-loaded if it's currently not loaded
      **/
-    KFilePlugin * const plugin() const;
+    KFilePlugin *plugin() const;
 
     void ref();
     void deref();
