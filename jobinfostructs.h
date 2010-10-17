@@ -27,57 +27,73 @@
 
 #include "peer.h"
 
-struct CollectionCreateInfo
-{
-   const QString &m_label;
-   bool  m_locked;
-   const Peer* m_peer;
-   
-   CollectionCreateInfo( const QString& label ) : 
-      m_label( label ), m_locked(false), m_peer(0)
-   {
-   }
-};
-
-struct CollectionDeleteInfo
+struct JobBaseInfo
 {
    /**
      * The peer that requested the delete operation
      */
    const Peer* m_peer;
-   CollectionDeleteInfo( const Peer* peer ) : m_peer( peer )
+   JobBaseInfo( const Peer* peer ) : m_peer( peer ) {}
+};
+
+class BackendCollection;
+
+struct CollectionCreateInfo : public JobBaseInfo
+{
+   const QString &m_label;
+   bool  m_locked;
+   
+   CollectionCreateInfo( const QString& label, const Peer* peer ) : 
+      JobBaseInfo(peer), m_label( label ), m_locked(false)
+   {
+   }
+};
+
+struct CollectionDeleteInfo : public JobBaseInfo
+{
+   CollectionDeleteInfo( const Peer* peer ) : JobBaseInfo( peer )
    {}
 };
 
-struct ItemCreateInfo
+struct CollectionUnlockInfo : public JobBaseInfo
+{
+   BackendCollection *m_collection;
+   CollectionUnlockInfo( const Peer* peer ) : JobBaseInfo( peer )
+   {}
+};
+
+class BackendItem;
+
+struct ItemCreateInfo : public JobBaseInfo
 {
    const QString &m_label;
    const QMap<QString, QString> &m_attributes;
    const QCA::SecureArray &m_secret;
    bool m_replace;
    bool m_locked;
-   const Peer* m_peer;
    ItemCreateInfo( const QString &label, 
                    const QMap<QString, QString> &attributes,
                    const QCA::SecureArray &secret,
                    bool replace,
                    bool locked,
                    const Peer* peer) :
+      JobBaseInfo( peer ),
       m_label(label), m_attributes(attributes), m_secret(secret), 
-      m_replace(replace), m_locked(locked), m_peer(peer)
+      m_replace(replace), m_locked(locked)
    {}
 };
 
-struct ItemDeleteInfo
+struct ItemDeleteInfo : public JobBaseInfo
 {
-   /**
-    * The peer that initiated the delete operation
-    */
-   const Peer *m_peer;
-   ItemDeleteInfo( const Peer* peer ) : m_peer( peer )
+   ItemDeleteInfo( const Peer* peer ) : JobBaseInfo( peer )
    {}
 };
 
-
+struct ItemUnlockInfo : public JobBaseInfo
+{
+   mutable BackendItem *m_item; // item information may be added on the job path so let it be mutable
+   ItemUnlockInfo( const Peer *peer, BackendItem *item =0) : JobBaseInfo( peer ), m_item( item ) 
+   {}
+};
 
 #endif // JOBINFOSTRUCTS_H
