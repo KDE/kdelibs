@@ -3523,11 +3523,9 @@ void KateDocument::transform( KateView *v, const KTextEditor::Cursor &c,
       default:
       break;
     }
-    if ( s != old )
-    {
-      removeText( KTextEditor::Range(cursor, 1) );
-      insertText( cursor, s );
-    }
+
+    removeText( KTextEditor::Range(cursor, 1) );
+    insertText( cursor, s );
 
     editEnd();
   }
