@@ -24,9 +24,9 @@
 #include <QtGlobal>
 
 /**
- * Representation of a daemon peer, wich is typically a client application
+ * Representation of a daemon peer, wich is typically a client application.
  * Note that the client application firstly connect to the dbus deamon wich
- * forwards messages to ksecretservice daemon using another connection
+ * forwards messages to ksecretservice daemon using another connection.
  */
 class Peer
 {
