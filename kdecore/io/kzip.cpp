@@ -390,12 +390,12 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
 	    time_t mtime = transformFromMsDos( buffer+4 );
 
-	    qint64 compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
-	    			| (uchar)buffer[14] << 16 | (uchar)buffer[15] << 24;
-	    qint64 uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
-	    			| (uchar)buffer[18] << 16 | (uchar)buffer[19] << 24;
-	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
-	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
+            const qint64 compr_size = uint(uchar(buffer[12])) | uint(uchar(buffer[13])) << 8 |
+                                      uint(uchar(buffer[14])) << 16 | uint(uchar(buffer[15])) << 24;
+            const qint64 uncomp_size = uint(uchar(buffer[16])) | uint(uchar(buffer[17])) << 8 |
+                                      uint(uchar(buffer[18])) << 16 | uint(uchar(buffer[19])) << 24;
+            const int namelen = uint(uchar(buffer[20])) | uint(uchar(buffer[21])) << 8;
+            const int extralen = uint(uchar(buffer[22])) | uint(uchar(buffer[23])) << 8;
 
             /*
 	    kDebug(7040) << "general purpose bit flag: " << gpf;
