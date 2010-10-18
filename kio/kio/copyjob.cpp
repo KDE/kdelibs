@@ -414,8 +414,16 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
                 // Use <desturl>/<directory_copied> as destination, from now on
                 QString directory = srcurl.fileName();
                 const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
-                if (!sName.isEmpty() && KProtocolManager::fileNameUsedForCopying(srcurl) == KProtocolInfo::Name) {
-                    directory = sName;
+                KProtocolInfo::FileNameUsedForCopying fnu = KProtocolManager::fileNameUsedForCopying(srcurl);
+                if (fnu == KProtocolInfo::Name) {
+                    if (!sName.isEmpty())
+                        directory = sName;
+                } else if (fnu == KProtocolInfo::DisplayName) {
+                    const QString dispName = entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_NAME );
+                    if (!dispName.isEmpty())
+                        directory = dispName;
+                    else if (!sName.isEmpty())
+                        directory = sName;
                 }
                 m_currentDest.addPath( directory );
             }
@@ -543,7 +551,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
         m_totalSize += info.size;
 
     // recursive listing, displayName can be a/b/c/d
-    const QString displayName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+    const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
     const QString urlStr = entry.stringValue(KIO::UDSEntry::UDS_URL);
     KUrl url;
     if (!urlStr.isEmpty())
@@ -552,14 +560,14 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
     const bool isDir = entry.isDir();
     info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
 
-    if (displayName != QLatin1String("..") && displayName != QLatin1String(".")) {
+    if (fileName != QLatin1String("..") && fileName != QLatin1String(".")) {
         const bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
         if (!hasCustomURL) {
             // Make URL from displayName
             url = srcUrl;
             if (srcIsDir) { // Only if src is a directory. Otherwise uSource is fine as is
                 //kDebug(7007) << "adding path" << displayName;
-                url.addPath(displayName);
+                url.addPath(fileName);
             }
         }
         //kDebug(7007) << "displayName=" << displayName << "url=" << url;
@@ -577,11 +585,12 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
              (! (m_asMethod && state == STATE_STATING)))
         {
             QString destFileName;
+	    KProtocolInfo::FileNameUsedForCopying fnu = KProtocolManager::fileNameUsedForCopying(url);
             if (hasCustomURL &&
-                 KProtocolManager::fileNameUsedForCopying(url) == KProtocolInfo::FromUrl) {
+                 fnu == KProtocolInfo::FromUrl) {
                 //destFileName = url.fileName(); // Doesn't work for recursive listing
                 // Count the number of prefixes used by the recursive listjob
-                int numberOfSlashes = displayName.count('/'); // don't make this a find()!
+                int numberOfSlashes = fileName.count('/'); // don't make this a find()!
                 QString path = url.path();
                 int pos = 0;
                 for (int n = 0; n < numberOfSlashes + 1; ++n) {
@@ -595,8 +604,11 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
                     destFileName = path.mid(pos + 1);
                 }
 
-            } else { // destination filename taken from UDS_NAME
-                destFileName = displayName;
+            } else if ( fnu == KProtocolInfo::Name ) { // destination filename taken from UDS_NAME
+                destFileName = fileName;
+            } else { // from display name (with fallback to name)
+                const QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+                destFileName = displayName.isEmpty() ? fileName : displayName;
             }
 
             // Here we _really_ have to add some filename to the dest.

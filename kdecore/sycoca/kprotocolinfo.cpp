@@ -57,7 +57,12 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   d->canRenameFromFile = config.readEntry( "renameFromFile", false );
   d->canRenameToFile = config.readEntry( "renameToFile", false );
   d->canDeleteRecursive = config.readEntry( "deleteRecursive", false );
-  d->fileNameUsedForCopying = config.readEntry( "fileNameUsedForCopying", "FromURL" ) == "Name";
+  const QString fnu = config.readEntry( "fileNameUsedForCopying", "FromURL" );
+  d->fileNameUsedForCopying = FromUrl;
+  if (fnu == "Name")
+    d->fileNameUsedForCopying = Name;
+  else if (fnu == "DisplayName")
+    d->fileNameUsedForCopying = DisplayName;
 
   m_listing = config.readEntry( "listing", QStringList() );
   // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
@@ -172,7 +177,7 @@ KProtocolInfo::load( QDataStream& _str)
    d->canRenameFromFile = (i_canRenameFromFile != 0);
    d->canRenameToFile = (i_canRenameToFile != 0);
    d->canDeleteRecursive = (i_canDeleteRecursive != 0);
-   d->fileNameUsedForCopying = (i_fileNameUsedForCopying != 0);
+   d->fileNameUsedForCopying = FileNameUsedForCopying(i_fileNameUsedForCopying);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
 }
@@ -212,7 +217,7 @@ KProtocolInfoPrivate::save( QDataStream& _str)
    i_canRenameFromFile = canRenameFromFile ? 1 : 0;
    i_canRenameToFile = canRenameToFile ? 1 : 0;
    i_canDeleteRecursive = canDeleteRecursive ? 1 : 0;
-   i_fileNameUsedForCopying = fileNameUsedForCopying ? 1 : 0;
+   i_fileNameUsedForCopying = int(fileNameUsedForCopying);
    i_determineMimetypeFromExtension = q->m_determineMimetypeFromExtension ? 1 : 0;
    i_showPreviews = showPreviews ? 1 : 0;
   i_uriMode = 0;
@@ -409,7 +414,7 @@ bool KProtocolInfo::canDeleteRecursive() const
 KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() const
 {
     Q_D(const KProtocolInfo);
-  return d->fileNameUsedForCopying ? Name : FromUrl;
+    return d->fileNameUsedForCopying;
 }
 
 bool KProtocolInfo::isFilterProtocol( const KUrl &url )

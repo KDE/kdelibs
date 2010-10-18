@@ -322,7 +322,7 @@ public:
 
   virtual ~KProtocolInfo();
 
-  typedef enum { Name, FromUrl } FileNameUsedForCopying;
+  typedef enum { Name, FromUrl, DisplayName } FileNameUsedForCopying;
 
   /// @internal. Use KProtocolManager instead.
   bool supportsListing() const;

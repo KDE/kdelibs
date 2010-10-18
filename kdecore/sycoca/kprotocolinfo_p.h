@@ -54,7 +54,7 @@ public:
   bool canRenameFromFile : 1;
   bool canRenameToFile : 1;
   bool canDeleteRecursive : 1;
-  bool fileNameUsedForCopying : 1; // true if using UDS_NAME, false if using KUrl::fileName() [default]
+  KProtocolInfo::FileNameUsedForCopying fileNameUsedForCopying;
   //KUrl::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
