@@ -185,13 +185,13 @@ void QueryParserTest::testQueryParserDetectFilenamePattern_data()
     QTest::addColumn<Nepomuk::Query::Query>( "query" );
 
     QTest::newRow( "DetectFilenamePattern1" ) << QString( "*.mp3" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
-                                                                                              LiteralTerm( "^.*\\.mp3$" ),
+                                                                                              LiteralTerm( "^.*\\\\.mp3$" ),
                                                                                               ComparisonTerm::Regexp ) );
     QTest::newRow( "DetectFilenamePattern2" ) << QString( "hello?.txt" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
-                                                                                              LiteralTerm( "^hello.\\.txt$" ),
+                                                                                              LiteralTerm( "^hello.\\\\.txt$" ),
                                                                                               ComparisonTerm::Regexp ) );
     QTest::newRow( "DetectFilenamePattern3" ) << QString( "*.???" ) << Query( ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
-                                                                                              LiteralTerm( "^.*\\....$" ),
+                                                                                              LiteralTerm( "^.*\\\\....$" ),
                                                                                               ComparisonTerm::Regexp ) );
 }
 
