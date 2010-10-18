@@ -68,7 +68,7 @@ void QueryTest::testToSparql_data()
     QTest::newRow( "simple literal query" )
         << simpleLiteralQuery
         << QString::fromLatin1( "select distinct ?r max(?v5) as ?_n_f_t_m_s_ where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } "
-                                "UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } . } ORDER BY ASC ( ?_n_f_t_m_s_ )" )
+                                "UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } . } ORDER BY DESC ( ?_n_f_t_m_s_ )" )
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 
