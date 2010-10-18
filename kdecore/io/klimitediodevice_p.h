@@ -38,7 +38,7 @@ public:
      * @param start where to start reading (position in bytes)
      * @param length the length of the data to read (in bytes)
      */
-    KLimitedIODevice( QIODevice *dev, int start, int length );
+    KLimitedIODevice( QIODevice *dev, qint64 start, qint64 length );
     virtual ~KLimitedIODevice() {}
 
     virtual bool isSequential() const;
