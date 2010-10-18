@@ -18,7 +18,7 @@
 
 #include "klimitediodevice_p.h"
 
-KLimitedIODevice::KLimitedIODevice( QIODevice *dev, int start, int length )
+KLimitedIODevice::KLimitedIODevice( QIODevice *dev, qint64 start, qint64 length )
     : m_dev( dev ), m_start( start ), m_length( length )
 {
     //kDebug(7005) << "start=" << start << "length=" << length;
