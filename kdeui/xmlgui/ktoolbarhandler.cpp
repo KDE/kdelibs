@@ -31,6 +31,7 @@
 #include <ktoggletoolbaraction.h>
 #include <ktoolbar.h>
 #include <kxmlguifactory.h>
+#include <kdebug.h>
 #include <kstandardaction_p.h>
 
 namespace
@@ -246,6 +247,9 @@ void ToolBarHandler::setupActions()
   d->actions = builder.create();
 
   d->toolBars = builder.toolBars();
+
+  // We have no XML file associated with our action collection, so load settings from KConfig
+  actionCollection()->readSettings(); // #233712
 
   if ( KAuthorized::authorizeKAction( "options_show_toolbar" ) )
     plugActionList( actionListName, d->actions );
