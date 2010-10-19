@@ -3,9 +3,18 @@ macro_optional_find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 macro_log_feature(AVAHI_FOUND "Avahi" "For Linux and BSDs: a system which facilitates service discovery on a local network, based on the Zeroconf standard" "http://avahi.org" FALSE "" "Enables KDE applications access to multicast DNS/DNS-SD service discovery.")
 
-include_directories( ${KDE4_KDEUI_INCLUDES} )
+if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+   include_directories( ${KDE4_KDECORE_INCLUDES} )
+   set(KDNSSD_BASE_LIBS ${KDE4_KDECORE_LIBS})
+else(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+   include_directories( ${KDE4_KDEUI_INCLUDES} )
+   set(KDNSSD_BASE_LIBS ${KDE4_KDEUI_LIBS})
+endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+
+include(CreateKcfgFiles.cmake)
+
 set(kdnssd_LIB_SRCS  servicebase.cpp servicemodel.cpp domainmodel.cpp)
-kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
+kde4_add_kcfg_files(kdnssd_LIB_SRCS ${CMAKE_CURRENT_BINARY_DIR}/settings.kcfgc )
 
 if (HAVE_AVAHI) 
    include_directories( ${AVAHI_INCLUDE_DIR} )
@@ -58,9 +67,9 @@ kde4_add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
 
 # KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
 if (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
+  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
 else (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY})
+  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${QT_QTNETWORK_LIBRARY})
 endif (HAVE_DNSSD)
 
 target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
