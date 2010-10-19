@@ -18,6 +18,9 @@
  */
 
 #include "currency.h"
+
+#include "config-kunitconversion.h"
+
 #include "converter.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
@@ -27,7 +30,17 @@
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
+
+#ifndef KUNITCONVERSION_NO_SOLID
 #include <solid/networking.h>
+#endif
+
+#ifdef KUNITCONVERSION_NO_KIO
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+#endif
+
 #include <kcurrencycode.h>
 
 using namespace KUnitConversion;
@@ -519,8 +532,12 @@ Value Currency::convert(const Value& value, UnitPtr to)
     mutex.lock();
     QFileInfo info(m_cache);
     if (!info.exists() || info.lastModified().secsTo(QDateTime::currentDateTime()) > 86400) {
+#ifndef KUNITCONVERSION_NO_SOLID
         Solid::Networking::Status status = Solid::Networking::status();
         if (status == Solid::Networking::Connected || status == Solid::Networking::Unknown ) {
+#else
+        {
+#endif
             kDebug() << "Getting currency info from net:" << URL;
             // TODO: This crashes in runner. Threading issues??
             /*
@@ -532,9 +549,23 @@ Value Currency::convert(const Value& value, UnitPtr to)
             }
             */
             kDebug() << "Removed previous cache:" << QFile::remove(m_cache);
+#ifndef KUNITCONVERSION_NO_KIO
             if (KProcess::execute(QStringList() << "kioclient" << "copy" << "--noninteractive" << URL << m_cache) == 0) {
                 m_update = true;
             }
+#else
+            QNetworkAccessManager manager;
+            QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(URL)));
+            QFile cacheFile(m_cache);
+            cacheFile.open(QFile::WriteOnly);
+            while (!reply->error() && !reply->atEnd()) {
+                if (reply->bytesAvailable()>0
+                 || reply->waitForReadyRead(500)) {
+                    cacheFile.write(reply->readAll());
+                }
+            }
+            cacheFile.close();
+#endif
         }
     }
     mutex.unlock();
