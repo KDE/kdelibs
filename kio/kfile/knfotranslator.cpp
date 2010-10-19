@@ -25,6 +25,7 @@
 
 #include <config-nepomuk.h>
 #ifdef HAVE_NEPOMUK
+#define DISABLE_NEPOMUK_LEGACY
 #include "property.h"
 #endif
 
@@ -41,9 +42,11 @@ static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize", I18N_NOOP2_NOSTRIP("@label file content size", "Size") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#depends", I18N_NOOP2_NOSTRIP("@label file depends from", "Depends") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf", I18N_NOOP2_NOSTRIP("@label parent directory", "Part of") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#keyword", I18N_NOOP2_NOSTRIP("@label", "Keyword") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#lastModified", I18N_NOOP2_NOSTRIP("@label modified date of file", "Modified") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#mimeType", I18N_NOOP2_NOSTRIP("@label", "MIME Type") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent", I18N_NOOP2_NOSTRIP("@label", "Content") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#subject", I18N_NOOP2_NOSTRIP("@label", "Subject") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#title", I18N_NOOP2_NOSTRIP("@label music title", "Title") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", I18N_NOOP2_NOSTRIP("@label file URL", "Location") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nco#creator", I18N_NOOP2_NOSTRIP("@label", "Creator") },
@@ -76,6 +79,14 @@ static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#musicAlbum", I18N_NOOP2_NOSTRIP("@label music album", "Album") },
     { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#trackNumber", I18N_NOOP2_NOSTRIP("@label music track number", "Track") },
     { "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", I18N_NOOP2_NOSTRIP("@label file type", "Type") },
+    { "translation.fuzzy", I18N_NOOP2_NOSTRIP("@label Number of fuzzy translations", "Fuzzy Translations") },
+    { "translation.last_translator", I18N_NOOP2_NOSTRIP("@label Name of last translator", "Last Translator") },
+    { "translation.obsolete", I18N_NOOP2_NOSTRIP("@label Number of obsolete translations", "Obsolete Translations") },
+    { "translation.source_date", I18N_NOOP2_NOSTRIP("@label", "Translation Source Date") },
+    { "translation.total", I18N_NOOP2_NOSTRIP("@label Number of total translations", "Total Translations") },
+    { "translation.translated", I18N_NOOP2_NOSTRIP("@label Number of translated strings", "Translated") },
+    { "translation.translation_date", I18N_NOOP2_NOSTRIP("@label", "Translation Date") },
+    { "translation.untranslated", I18N_NOOP2_NOSTRIP("@label Number of untranslated strings" , "Untranslated") },
     { 0, 0, 0 } // mandatory last entry
 };
 
