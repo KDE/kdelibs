@@ -18,6 +18,9 @@
  **/
 
 #include "kdesktopfileactions.h"
+
+#include "config-kio.h"
+
 #include "krun.h"
 #include "kautomount.h"
 #include <kmessageboxwrapper.h>
@@ -31,6 +34,7 @@
 #include <klocale.h>
 #include "kservice.h"
 
+#ifndef KIO_NO_SOLID
 //Solid
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
@@ -40,6 +44,7 @@
 #include <solid/opticaldrive.h>
 #include <solid/opticaldisc.h>
 #include <solid/block.h>
+#endif
 
 enum BuiltinServiceType { ST_MOUNT = 0x0E1B05B0, ST_UNMOUNT = 0x0E1B05B1 }; // random numbers
 
@@ -176,6 +181,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
             offerMount = true;
         }
     }
+#ifndef KIO_NO_SOLID
     else { // url to device
         Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
         const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
@@ -196,6 +202,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
             offerMount = true;
         }
     }
+#endif
 
     if (offerMount) {
         KServiceAction mount("mount", i18n("Mount"), QString(), QString(), false);
@@ -325,6 +332,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
 #endif
             }
         }
+#ifndef KIO_NO_SOLID
         else { // path to device
             Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", path);
             const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
@@ -355,6 +363,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
                 kDebug(7000) << "Device" << path << "not found";
             }
         }
+#endif
     } else {
         kDebug() << action.name() << "first url's path=" << urls.first().path() << "exec=" << action.exec();
         KRun::run( action.exec(), urls, 0, action.text(), action.icon());

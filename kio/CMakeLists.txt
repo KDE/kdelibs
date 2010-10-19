@@ -1,5 +1,9 @@
 project(kio)
 
+if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+   set(KIO_NO_SOLID TRUE)
+endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
@@ -22,13 +26,18 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/nepomuk/types/    
    ${CMAKE_SOURCE_DIR}/nepomuk/ui/
    ${CMAKE_SOURCE_DIR}/nepomuk/query/
-   ${CMAKE_SOURCE_DIR}/solid
-   ${CMAKE_BINARY_DIR}/solid
    ${KDE4_KDECORE_INCLUDES}/
    ${STRIGI_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
 )
 
+if(NOT KIO_NO_SOLID)
+   include_directories(${CMAKE_BINARY_DIR}/solid/)
+   include_directories(${CMAKE_SOURCE_DIR}/solid/)
+   set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
+endif(NOT KIO_NO_SOLID)
+
+configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
@@ -88,7 +97,6 @@ set(kiocore_STAT_SRCS
   kio/krun.cpp
   kio/kscan.cpp
   kio/kshellcompletion.cpp
-  kio/kstatusbarofflineindicator.cpp
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
@@ -116,6 +124,13 @@ set(kiocore_STAT_SRCS
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
 )
+
+if(NOT KIO_NO_SOLID)
+  set(kiocore_STAT_SRCS
+    ${kiocore_STAT_SRCS}
+    kio/kstatusbarofflineindicator.cpp
+    )
+endif(NOT KIO_NO_SOLID)
 
 qt4_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
 
@@ -159,8 +174,6 @@ set(kbookmarks_STAT_SRCS
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kdevicelistitem.cpp
-  kfile/kdevicelistmodel.cpp
   kfile/kdiskfreespace.cpp
   kfile/kdiskfreespaceinfo.cpp
   kfile/kencodingfiledialog.cpp
@@ -185,6 +198,15 @@ set(kfile_STAT_SRCS
   kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
 )
+
+if(NOT KIO_NO_SOLID)
+  set(kfile_STAT_SRCS
+    ${kfile_STAT_SRCS}
+    kfile/kdevicelistitem.cpp
+    kfile/kdevicelistmodel.cpp
+    )
+endif(NOT KIO_NO_SOLID)
+
 if(HAVE_NEPOMUK)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
@@ -257,7 +279,7 @@ kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 if(HAVE_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(HAVE_NEPOMUK)
-target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES})
+target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)
@@ -370,14 +392,12 @@ install( FILES
   kio/ksambashare.h
   kio/kscan.h
   kio/kshellcompletion.h
-  kio/kstatusbarofflineindicator.h
   kio/kurifilter.h
   kio/kurlcompletion.h
   kio/kurlpixmapprovider.h
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
-  kfile/kdevicelistmodel.h
   kfile/kdiskfreespace.h
   kfile/kdiskfreespaceinfo.h
   kfile/kencodingfiledialog.h
@@ -408,6 +428,13 @@ install( FILES
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+if(NOT KIO_NO_SOLID)
+install( FILES
+  kfile/kdevicelistmodel.h
+  kio/kstatusbarofflineindicator.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+endif(NOT KIO_NO_SOLID)
 
 install(FILES
    kio/org.kde.KDirNotify.xml
