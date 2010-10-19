@@ -20,13 +20,8 @@
 
 #include "predicateproperties.h"
 
-#include <strigi/streamanalyzer.h>
-#include <strigi/analysisresult.h>
-#include <strigi/analyzerconfiguration.h>
-
 #include <QtCore/QStringList>
 
-using namespace Strigi;
 using namespace std;
 
 class PredicateProperties::Private : public QSharedData {
