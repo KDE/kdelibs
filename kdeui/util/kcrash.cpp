@@ -79,6 +79,8 @@ static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
 static char *s_autoRestartCommand = 0;
 static char *s_appPath = 0;
+static int s_autoRestartArgc = 0;
+static char **s_autoRestartCommandLine = 0;
 static char *s_drkonqiPath = 0;
 static KCrash::CrashFlags s_flags = 0;
 static bool s_launchDrKonqi = false;
@@ -164,6 +166,18 @@ KCrash::setApplicationPath(const QString& path)
         QByteArray cmd = QFile::encodeName(appExecutable.absoluteFilePath());
         s_autoRestartCommand = qstrdup(cmd.constData());
     }
+
+    QStringList args = KCmdLineArgs::allArguments();
+    args[0] = s_autoRestartCommand; // replace argv[0] with full path above
+    if (!args.contains("--nocrashhandler"))
+         args.insert(1, "--nocrashhandler");
+    delete[] s_autoRestartCommandLine;
+    s_autoRestartArgc = args.count();
+    s_autoRestartCommandLine = new char* [args.count() + 1];
+    for (int i = 0; i < args.count(); ++i) {
+        s_autoRestartCommandLine[i] = qstrdup(QFile::encodeName(args.at(i)).constData());
+    }
+    s_autoRestartCommandLine[args.count()] = 0;
 }
 
 void
@@ -291,8 +305,7 @@ KCrash::defaultCrashHandler (int sig)
         }
         if ((s_flags & AutoRestart) && s_autoRestartCommand) {
             sleep(1);
-            const char *restartArgv[3] = { s_autoRestartCommand, "--nocrashhandler", NULL };
-            startProcess(2, restartArgv, false);
+            startProcess(s_autoRestartArgc, const_cast<const char**>(s_autoRestartCommandLine), false);
         }
         crashRecursionCounter++;
     }
@@ -314,6 +327,11 @@ KCrash::defaultCrashHandler (int sig)
         fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %lld\n",
                 s_appName ? s_appName : "<unknown>" ,
                 s_appPath ? s_appPath : "<unknown>", QCoreApplication::applicationPid());
+        fprintf(stderr, "KCrash: Arguments: ");
+        for (int i = 0; s_autoRestartCommandLine[i]; ++i) {
+            fprintf(stderr, "%s ", s_autoRestartCommandLine[i]);
+        }
+        fprintf(stderr, "\n");
 #else
         fprintf(stderr, "KCrash: Application '%s' crashing...\n",
                 s_appName ? s_appName : "<unknown>");
