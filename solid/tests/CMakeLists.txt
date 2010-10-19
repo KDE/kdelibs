@@ -97,6 +97,6 @@ if(WIN32)
     set_target_properties( networkingclient PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
 endif(WIN32)
 
-target_link_libraries(networkingclient solid_static ${KDE4_KIO_LIBS})
+target_link_libraries(networkingclient solid_static ${KDE4_KDEUI_LIBS})
 ########### install files ###############
 

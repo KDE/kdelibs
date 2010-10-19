@@ -30,7 +30,6 @@
 #include <kiconloader.h>
 
 #include <solid/networking.h>
-#include <kstatusbarofflineindicator.h>
 
 #include "networkingclient.h"
 
@@ -62,7 +61,6 @@ TestClient::TestClient()
       m_status( AppDisconnected ), m_view( new QWidget( this ) )
 {
     ui.setupUi( m_view );
-    new KStatusBarOfflineIndicator( m_view );
 
     setCentralWidget(m_view);
 
