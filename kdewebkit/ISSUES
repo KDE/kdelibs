@@ -11,9 +11,8 @@ Known Issues [PENDING]:
     http://bugreports.qt.nokia.com/browse/QTWEBKIT-9
     http://webkit.org/b/34631.
 
-* [QtWebKit] Spell checking support. See
-
-* [QtWebKit] Missing Java applet support. See http://webkit.org/b/33044.
+* [QtWebKit] Spell checking support. 
+  See https://webkit.org/b/44114
 
 * [QtWebKit] No access to the input/control widgets making it very difficult to
   implement very useful features such as form completion like the one available
@@ -26,6 +25,9 @@ Known Issues [PENDING]:
 
 Known Issues [FIXED]:
 =========================
+* [QtWebKit] Missing Java applet support. [QtWebKit 2.1/Qt 4.8] ??
+  See http://webkit.org/b/33044.
+
 * [QtWebKit] Crash while browsing facebook. [QtWebKit 2.0/Qt 4.7]
   See http://webkit.org/b/35204.
 
