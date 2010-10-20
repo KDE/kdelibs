@@ -281,23 +281,39 @@ void KTcpSocketTest::states()
         qDebug("\nNow trying %s...", hosts[i % numHosts]);
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
         s->connectToHost(hosts[i % numHosts], 80);
+        bool skip = false;
+        KTcpSocket::State expectedState = KTcpSocket::ConnectingState;
+#if QT_VERSION > 0x040700
+        // Since Qt 4.6.3 the Qt-internal DNS cache returns a result (if cached) immediately
+        // but it was unreliable (when called from QTcpSocket) until 4.7.1
         if (i < numHosts) {
-            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::HostLookupState));
+            expectedState = KTcpSocket::HostLookupState;
         } else {
-            //since Qt 4.7 the Qt-internal DNS cache returns a result (if cached) immediately
-            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::ConnectingState));
+            expectedState = KTcpSocket::ConnectingState;
         }
+#elif QT_VERSION < 0x040603
+        // Previously there was no caching
+        expectedState = KTcpSocket::HostLookupState;
+#else   // 4.6.3 to 4.7.0: unreliable results, skip test
+        skip = true;
+        qDebug() << "Skipping test on state(), because DNS caching is unreliable in this Qt version";
+#endif
+        if (!skip)
+            QCOMPARE(stateToString(s->state()), stateToString(expectedState));
+        else { // let's make sure it's at least one of the two expected states
+            QVERIFY(stateToString(s->state()) == stateToString(KTcpSocket::HostLookupState) ||
+                    stateToString(s->state()) == stateToString(KTcpSocket::ConnectingState));
+
+        }
+
         //weave the host address into the HTTP request
         QByteArray request(requestProlog);
         request.append(hosts[i % numHosts]);
         request.append(requestEpilog);
         s->write(request);
 
-        if (i < numHosts) {
-            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::HostLookupState));
-        } else {
-            QCOMPARE(stateToString(s->state()), stateToString(KTcpSocket::ConnectingState));
-        }
+        if (!skip)
+            QCOMPARE(stateToString(s->state()), stateToString(expectedState));
 
         s->waitForBytesWritten(-1);
         QCOMPARE(s->state(), KTcpSocket::ConnectedState);
