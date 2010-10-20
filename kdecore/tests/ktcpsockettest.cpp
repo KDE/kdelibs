@@ -198,6 +198,26 @@ void Server::write()
     cleanupSocket();
 }
 
+static QString stateToString(KTcpSocket::State state)
+{
+    switch(state) {
+    case KTcpSocket::UnconnectedState:
+        return "UnconnectedState";
+    case KTcpSocket::HostLookupState:
+        return "HostLookupState";
+    case KTcpSocket::ConnectingState:
+        return "ConnectingState";
+    case KTcpSocket::ConnectedState:
+        return "ConnectedState";
+    case KTcpSocket::BoundState:
+        return "BoundState";
+    case KTcpSocket::ListeningState:
+        return "ListeningState";
+    case KTcpSocket::ClosingState:
+        return "ClosingState";
+    }
+    return "ERROR";
+}
 
 #define HTTPREQUEST QByteArray("GET / HTTP/1.1\nHost: www.example.com\n\n")
 
@@ -255,24 +275,45 @@ void KTcpSocketTest::states()
                              "Host: ");
     QByteArray requestEpilog("\r\n\r\n");
     //Test rapid connection and disconnection to different hosts
-    const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
-    for (int i = 0; i < 20; i++) {
+    static const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
+    static const int numHosts = 4;
+    for (int i = 0; i < numHosts * 5; i++) {
+        qDebug("\nNow trying %s...", hosts[i % numHosts]);
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
-        s->connectToHost(hosts[i % 4], 80);
-        QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        s->connectToHost(hosts[i % numHosts], 80);
+        bool skip = false;
+        KTcpSocket::State expectedState;
+#if QT_VERSION > 0x040700
+        // Since Qt 4.6.3 the Qt-internal DNS cache returns a result (if cached) immediately
+        // but it was unreliable (when called from QTcpSocket) until 4.7.1
+        if (i < numHosts) {
+            expectedState = KTcpSocket::HostLookupState;
+        } else {
+            expectedState = KTcpSocket::ConnectingState;
+        }
+#elif QT_VERSION < 0x040603
+        // Previously there was no caching
+        expectedState = KTcpSocket::HostLookupState;
+#else   // 4.6.3 to 4.7.0: unreliable results, skip test
+        skip = true;
+#endif
+        if (!skip)
+            QCOMPARE(stateToString(s->state()), stateToString(expectedState));
+
         //weave the host address into the HTTP request
         QByteArray request(requestProlog);
-        request.append(hosts[i % 4]);
+        request.append(hosts[i % numHosts]);
         request.append(requestEpilog);
-        qDebug("%s", hosts[i % 4]);
         s->write(request);
 
-        QCOMPARE(s->state(), KTcpSocket::HostLookupState);
+        if (!skip)
+            QCOMPARE(stateToString(s->state()), stateToString(expectedState));
+
         s->waitForBytesWritten(-1);
         QCOMPARE(s->state(), KTcpSocket::ConnectedState);
         s->waitForReadyRead(-1);
         QVERIFY(s->bytesAvailable() > 100);
-        if (i % 5) {
+        if (i % (numHosts + 1)) {
             s->readAll();
             QVERIFY(s->bytesAvailable() == 0);
         } else {
