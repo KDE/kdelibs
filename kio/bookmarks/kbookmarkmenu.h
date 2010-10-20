@@ -88,11 +88,17 @@ public:
    * openBookmark signal is not emitted, instead KRun is used to open the bookmark.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
+   *
+   * @todo KDE 5: give ownership of the bookmarkmenu to another qobject, e.g. parentMenu.
+   * Currently this is a QObject without a parent, use setParent to benefit from automatic deletion.
    */
   KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KMenu * parentMenu, KActionCollection *collec);
 
   /**
    * Creates a bookmark submenu
+   *
+   * @todo KDE 5: give ownership of the bookmarkmenu to another qobject, e.g. parentMenu.
+   * Currently this is a QObject without a parent, use setParent to benefit from automatic deletion.
    */
   KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner,
                  KMenu * parentMenu, const QString & parentAddress);
