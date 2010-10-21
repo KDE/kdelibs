@@ -1156,11 +1156,17 @@ void SharedMemory::removeEntry(uint index)
     IndexTableEntry *entriesIndex = indexTable();
 
     // Update page table first
-    uint firstPage = entriesIndex[index].firstPage;
-    if ((qint32)index != pageTableEntries[firstPage].index) {
+    pageID firstPage = entriesIndex[index].firstPage;
+    if (firstPage < 0 || firstPage >= pageTableSize()) {
+        kError(264) << "Removing" << index << "which is already marked as empty!";
+        return;
+    }
+
+    if (index != static_cast<uint>(pageTableEntries[firstPage].index)) {
         kError(264) << "Removing" << index << "will not work as it is assigned"
                     << "to page" << firstPage << "which is itself assigned to"
                     << "entry" << pageTableEntries[firstPage].index << "instead!";
+        return;
     }
 
     uint entriesToRemove = intCeil(entriesIndex[index].totalItemSize, cachePageSize());
