@@ -299,21 +299,14 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     const bool secureRequest = (_url.startsWith(QL1S("https://"), Qt::CaseInsensitive) ||
                                 _url.startsWith(QL1S("webdavs://"), Qt::CaseInsensitive));
     if (port == -1)
-    {
-      if (secureRequest)
-        port = 443;
-      else
-        port = 80;
-    }
+        port = (secureRequest ? 443 : 80);
 
     extractDomains(fqdn, domains);
 
     KHttpCookieList allCookies;
 
     QStringList::ConstIterator itEnd = domains.constEnd();
-    for(QStringList::ConstIterator it = domains.constBegin();
-        true;
-        ++it)
+    for (QStringList::ConstIterator it = domains.constBegin();;++it)
     {
        KHttpCookieList *cookieList = 0;
        if (it == itEnd)
@@ -338,79 +331,68 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           advice = cookieList->getAdvice();
 
        QMutableListIterator<KHttpCookie> cookieIt (*cookieList);
-       while (cookieIt.hasNext()) {
+       while (cookieIt.hasNext()) 
+       {
           KHttpCookie& cookie = cookieIt.next();
           // If the we are setup to automatically accept all session cookies and to
           // treat all cookies as session cookies or the current cookie is a session
           // cookie, then send the cookie back regardless of domain policy.
           if (advice == KCookieReject &&
               !(m_autoAcceptSessionCookies &&
-                (m_ignoreCookieExpirationDate || cookie.expireDate() == 0))) {
+                (m_ignoreCookieExpirationDate || cookie.expireDate() == 0)))
               continue;
-          }
 
           if (!cookie.match(fqdn, domains, path, port))
              continue;
 
-          if( cookie.isSecure() && !secureRequest ) {
+          if( cookie.isSecure() && !secureRequest )
              continue;
-          }
-
-          if( cookie.isHttpOnly() && useDOMFormat ) {
+          
+          if( cookie.isHttpOnly() && useDOMFormat )
              continue;
-          }
-
+          
           // Do not send expired cookies.
           if ( cookie.isExpired())
           {
-             // Note there is no need to actually delete the cookie here
-             // since the cookieserver will invoke ::saveCookieJar because
-             // of the state change below. This will then do the job of
-             // deleting the cookie for us.
+             // NOTE: there is no need to delete the cookie here because the
+             // cookieserver will invoke its saveCookieJar function as a result
+             // of the state change below. This will then result in the cookie
+             // being deleting at that point.
              m_cookiesChanged = true;
              continue;
           }
 
           if (windowId && (cookie.windowIds().indexOf(windowId) == -1))
-          {
              cookie.windowIds().append(windowId);
-          }
 
           if (it == itEnd) // Only needed when processing pending cookies
              removeDuplicateFromList(&allCookies, cookie);
 
           allCookies.append(cookie);
        }
+       
        if (it == itEnd)
           break; // Finished.
     }
 
-    int cookieCount = 0;
     int protVersion = 0;
-    Q_FOREACH(const KHttpCookie& cookie, allCookies) {
+    Q_FOREACH(const KHttpCookie& cookie, allCookies) {      
         if (cookie.protocolVersion() > protVersion)
             protVersion = cookie.protocolVersion();
     }
 
-    Q_FOREACH(const KHttpCookie& cookie, allCookies) {
-        if (useDOMFormat) {
-            if (cookieCount == 0) {
-                if (protVersion > 0)
-                    cookieStr += QL1S("$Version=") % QString::number(protVersion) % QL1S("; ");
-            }
-            else
-                cookieStr += QL1S("; ");
-            cookieStr += cookie.cookieStr(true);
-        } else {
-            if (cookieCount == 0) {
-                cookieStr += QL1S("Cookie: ");
-                if (protVersion > 0)
-                    cookieStr += QL1S("$Version=") % QString::number(protVersion) % QL1S("; ");
-            } else
-                cookieStr += QL1S("; ");
-            cookieStr += cookie.cookieStr(false);
-        }
-        cookieCount++;
+    if (!allCookies.isEmpty())
+    {
+        if (!useDOMFormat)
+            cookieStr = QL1S("Cookie: ");
+        
+        if (protVersion > 0)
+            cookieStr = cookieStr % QL1S("$Version=") % QString::number(protVersion) % QL1S("; ");
+          
+        Q_FOREACH(const KHttpCookie& cookie, allCookies)
+            cookieStr = cookieStr % cookie.cookieStr(useDOMFormat) % QL1S("; ");
+
+        cookieStr.truncate(cookieStr.length() - 2); // Remove the trailing ';'
     }
 
     return cookieStr;
@@ -1265,13 +1247,18 @@ bool KCookieJar::saveCookies(const QString &_filename)
         bool domainPrinted = false;
 
         KHttpCookieList *cookieList = m_cookieDomains.value(domain);
+        if (!cookieList)
+            continue;
+        
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
             if (cookie.isExpired()) {
                 // Delete expired cookies
                 cookieIterator.remove();
-            } else if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
+                continue;
+            }
+            if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
                 // Only save cookies that are not "session-only cookies"
                 if (!domainPrinted) {
                     domainPrinted = true;
