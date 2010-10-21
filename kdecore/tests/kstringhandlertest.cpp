@@ -120,14 +120,6 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("a", "v01 1", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("v01 1", "v01 a", Qt::CaseSensitive), -1);
 
-    // test for punctuation/space weal equivalence
-    QCOMPARE(KStringHandler::naturalCompare("Episode_24", "Episode 25", Qt::CaseInsensitive),-1);
-    QCOMPARE(KStringHandler::naturalCompare("Episode 24", "Episode_25", Qt::CaseInsensitive),-1);
-    QCOMPARE(KStringHandler::naturalCompare("Episode 24", "Episode_24", Qt::CaseInsensitive),-1);
-    QCOMPARE(KStringHandler::naturalCompare("Episode.25", "Episode 24", Qt::CaseInsensitive),1);
-    QCOMPARE(KStringHandler::naturalCompare("Episode 25", "Episode.24", Qt::CaseInsensitive),1);
-    QCOMPARE(KStringHandler::naturalCompare("Episode.25", "Episode 25", Qt::CaseInsensitive),1);
-
     // bug 237551
     QCOMPARE(KStringHandler::naturalCompare("sysvinit-2.86-i486-6.txt", "sysvinit-2.86-i486-6.txz", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("sysvinit-2.86-i486-6.txz", "sysvinit-2.86-i486-6.txz.asc", Qt::CaseSensitive), -1);
@@ -143,6 +135,14 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2008-10","Car and Driver Buyer's Guide 2010", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2008-10", "Car and Driver 2009-11", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2009-11", "Car and Driver 2010-05", Qt::CaseSensitive), -1);
+
+    // bug 237788
+    QCOMPARE(KStringHandler::naturalCompare(" ", ".", Qt::CaseInsensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare(".", "_", Qt::CaseInsensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare(" ", "_", Qt::CaseInsensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("abc.jpg", "abc1.jpg", Qt::CaseInsensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("abc1.jpg", "abc_a.jpg", Qt::CaseInsensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("abc.jpg", "abc_a.jpg", Qt::CaseInsensitive), -1);
 }
 
 void KStringHandlerTest::obscure()
