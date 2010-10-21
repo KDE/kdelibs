@@ -92,9 +92,10 @@ void KLinkItemSelectionModel::select(const QModelIndex &index, QItemSelectionMod
 }
 
 // QAbstractProxyModel::mapSelectionFromSource creates invalid ranges to we filter
-// those out manually in a loop. Hopefully fixed in Qt 4.7.1, so we ifdef it out.
+// those out manually in a loop. Hopefully fixed in Qt 4.7.2, so we ifdef it out.
 // http://qt.gitorious.org/qt/qt/merge_requests/2474
-#if QT_VERSION < 0x040701
+// http://qt.gitorious.org/qt/qt/merge_requests/831
+#if QT_VERSION < 0x040702
 #define RANGE_FIX_HACK
 #endif
 
