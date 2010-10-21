@@ -59,7 +59,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
       componentData(componentData_), configState(KConfigBase::NoAccess)
 {
-    sGlobalFileName = componentData.dirs()->saveLocation("config") + QLatin1String("kdeglobals");
+    sGlobalFileName = componentData.dirs()->saveLocation("config", QString(), false) + QLatin1String("kdeglobals");
 
     static int use_etc_kderc = -1;
     if (use_etc_kderc < 0)

@@ -19,6 +19,7 @@
 
 #include <qtest_kde.h>
 #include "kconfigtest.h"
+#include <ktempdir.h>
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include "kconfigtest.moc"
@@ -194,16 +195,9 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-  QDir local = QDir::homePath() + "/.kde-unit-test/share/config";
-
-  foreach(const QString &file, local.entryList(QDir::Files))
-    if(!local.remove(file))
-      qWarning("%s: removing failed", qPrintable( file ));
-
-  QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
-
-  local.cdUp();
-  local.rmpath("config");
+  const QString localConfig = QDir::homePath() + "/.kde-unit-test/share/config";
+  KTempDir::removeDir(localConfig);
+  QVERIFY(!QFile::exists(localConfig));
 }
 
 // ### TODO: call this, and test the state of things afterwards
@@ -1457,4 +1451,30 @@ void KConfigTest::testAnonymousConfig()
     QCOMPARE(general.readEntry("testKG"), QString()); // no kdeglobals merging
     general.writeEntry("Foo", "Bar");
     QCOMPARE(general.readEntry("Foo"), QString("Bar"));
+}
+
+void KConfigTest::testNoKdeHome()
+{
+    const QString kdeHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
+    setenv("KDEHOME", QFile::encodeName( kdeHome ), 1);
+    KTempDir::removeDir(kdeHome);
+    QVERIFY(!QFile::exists(kdeHome));
+
+    // Do what kde4-config does, and ensure kdehome doesn't get created (#233892)
+    KComponentData componentData("KConfigTest");
+    QVERIFY(!QFile::exists(kdeHome));
+    componentData.dirs();
+    QVERIFY(!QFile::exists(kdeHome));
+    componentData.config();
+    QVERIFY(!QFile::exists(kdeHome));
+
+    // Now try to actually save something, see if it works.
+    KConfigGroup group(componentData.config(), "Group");
+    group.writeEntry("Key", "Value");
+    group.sync();
+    QVERIFY(QFile::exists(kdeHome));
+    QVERIFY(QFile::exists(kdeHome + "/share/config/KConfigTestrc"));
+
+    // Cleanup
+    KTempDir::removeDir(kdeHome);
 }
