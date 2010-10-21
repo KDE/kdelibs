@@ -83,7 +83,7 @@ KCookieServer::KCookieServer(QObject* parent, const QList<QVariant>&)
    mAdvicePending = false;
    mTimer = new QTimer();
    mTimer->setSingleShot(true);
-   connect(mTimer, SIGNAL( timeout()), SLOT( slotSave()));
+   connect(mTimer, SIGNAL(timeout()), SLOT(slotSave()));
    mConfig = new KConfig("kcookiejarrc");
    mCookieJar->loadConfig( mConfig );
 
@@ -164,7 +164,7 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
     }
 }
 
-void KCookieServer::checkCookies( KHttpCookieList *cookieList)
+void KCookieServer::checkCookies(KHttpCookieList *cookieList)
 {
     KHttpCookieList *list;
 
@@ -182,11 +182,9 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
             mCookieJar->addCookie(cookie);
             cookieIterator.remove();
             break;
-
         case KCookieReject:
             cookieIterator.remove();
             break;
-
         default:
             break;
         }
@@ -375,27 +373,50 @@ KCookieServer::findDomains()
 // DBUS function
 QStringList
 KCookieServer::findCookies(const QList<int> &fields,
-                           const QString &domain,
+                           const QString &_domain,
                            const QString &fqdn,
                            const QString &path,
                            const QString &name)
 {
     QStringList result;
-    const bool allDomCookies = name.isEmpty();
-
-    const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
-    if (list && !list->isEmpty()) {
-        Q_FOREACH(const KHttpCookie& cookie, *list) {
-            if (!allDomCookies) {
-                if (cookieMatches(cookie, domain, fqdn, path, name)) {
-                    putCookie(result, cookie, fields);
-                    break;
-                }
-            } else {
-                putCookie(result, cookie, fields);
+    const bool allCookies = name.isEmpty();
+    const QStringList domainList = _domain.split(QLatin1Char(' '));
+    
+    if (allCookies)
+    {
+        Q_FOREACH(const QString& domain, domainList)
+        {
+            const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
+            if (!list) 
+                continue;
+            Q_FOREACH(const KHttpCookie& cookie, *list)
+            {
+                if (cookie.isExpired())
+                    continue;
+                putCookie(result, cookie, fields);              
             }
         }
     }
+    else
+    {
+        Q_FOREACH(const QString& domain, domainList)
+        {
+            const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
+            if (!list) 
+                continue;
+            Q_FOREACH(const KHttpCookie& cookie, *list)
+            {
+                if (cookie.isExpired())
+                    continue;
+                if (cookieMatches(cookie, domain, fqdn, path, name)) 
+                {
+                    putCookie(result, cookie, fields);
+                    break;
+                }
+            }
+        }
+    }
+    
     return result;
 }
 
