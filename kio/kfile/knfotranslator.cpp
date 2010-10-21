@@ -36,11 +36,13 @@ struct TranslationItem {
 };
 
 // TODO: a lot of NFOs are missing yet
-static const TranslationItem g_translations[] = {
+static const TranslationItem g_translations[] = {    
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#comment", I18N_NOOP2_NOSTRIP("@label", "Comment") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentCreated", I18N_NOOP2_NOSTRIP("@label creation date", "Created") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize", I18N_NOOP2_NOSTRIP("@label file content size", "Size") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#depends", I18N_NOOP2_NOSTRIP("@label file depends from", "Depends") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#generator", I18N_NOOP2_NOSTRIP("@label Software used to generate content", "Generator") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasLogicalPart", I18N_NOOP2_NOSTRIP("@label see http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasLogicalPart", "Has Logical Part") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf", I18N_NOOP2_NOSTRIP("@label parent directory", "Part of") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#keyword", I18N_NOOP2_NOSTRIP("@label", "Keyword") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#lastModified", I18N_NOOP2_NOSTRIP("@label modified date of file", "Modified") },
@@ -55,6 +57,7 @@ static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#characterCount", I18N_NOOP2_NOSTRIP("@label number of characters", "Characters") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#codec",  I18N_NOOP2_NOSTRIP("@label", "Codec") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#colorDepth", I18N_NOOP2_NOSTRIP("@label", "Color Depth") },
+    { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#duration", I18N_NOOP2_NOSTRIP("@label", "Duration") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName", I18N_NOOP2_NOSTRIP("@label", "Filename") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#height", I18N_NOOP2_NOSTRIP("@label", "Height") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#interlaceMode", I18N_NOOP2_NOSTRIP("@label", "Interlace Mode") },
@@ -77,6 +80,7 @@ static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#whiteBalance", I18N_NOOP2_NOSTRIP("@label EXIF", "White Balance") },
     { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#genre",  I18N_NOOP2_NOSTRIP("@label music genre", "Genre") },
     { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#musicAlbum", I18N_NOOP2_NOSTRIP("@label music album", "Album") },
+    { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#performer", I18N_NOOP2_NOSTRIP("@label", "Performer") },
     { "http://www.semanticdesktop.org/ontologies/2009/02/19/nmm#trackNumber", I18N_NOOP2_NOSTRIP("@label music track number", "Track") },
     { "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", I18N_NOOP2_NOSTRIP("@label file type", "Type") },
     { "translation.fuzzy", I18N_NOOP2_NOSTRIP("@label Number of fuzzy translations", "Fuzzy Translations") },
