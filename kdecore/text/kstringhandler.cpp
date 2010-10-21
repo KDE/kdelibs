@@ -332,8 +332,6 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         return 0;
     }
 
-    int lean = 0; // comparison of first ignored difference, to be used if all else is equal
-
     while (!currA->isNull() && !currB->isNull()) {
         const QChar* begSeqA = currA; // beginning of a new character sequence of a
         const QChar* begSeqB = currB;
@@ -377,12 +375,13 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         // find sequence of characters ending at the first non-character
         while ((currA->isPunct() || currA->isSpace()) && (currB->isPunct() || currB->isSpace())) {
             if (*currA != *currB) {
-                // accept difference in punctuation for now ('_' or '.' used instead of ' ').
-                if (lean == 0)
-                    lean = (*currA < *currB) ? -1 : +1;
+                return (*currA < *currB) ? -1 : +1;
             }
             ++currA;
             ++currB;
+            if (currA->isNull() || currB->isNull()) {
+                break;
+            }
         }
 
         // now some digits follow...
@@ -442,12 +441,10 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
                 isFirstRun = false;
             }
         }
-
-        continue;
     }
 
     if (currA->isNull() && currB->isNull()) {
-        return lean;
+        return 0;
     }
 
     return currA->isNull() ? -1 : + 1;
