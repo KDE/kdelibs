@@ -956,21 +956,21 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
       error( KIO::ERR_COULD_NOT_MOUNT, i18n("Could not find program \"mount\""));
       return;
     }
-    QByteArray buffer = mountProg + ' ';
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
     {
+        QByteArray buffer = mountProg + ' ';
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
-        if ( !_dev.isEmpty() && _point.isEmpty() && fstype_empty )
+        if ( !dev.isEmpty() && _point.isEmpty() && fstype_empty )
             buffer += dev;
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
-          if ( !_point.isEmpty() && _dev.isEmpty() && fstype_empty )
+          if ( !_point.isEmpty() && dev.isEmpty() && fstype_empty )
               buffer += point;
           else
             // mount giving device + mountpoint but no fstype
-            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype_empty )
+            if ( !_point.isEmpty() && !dev.isEmpty() && fstype_empty )
                 buffer += readonly + ' ' + dev + ' ' + point;
             else
               // mount giving device + mountpoint + fstype
