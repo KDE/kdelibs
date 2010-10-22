@@ -60,3 +60,26 @@ QByteArray KLocaleMacPrivate::systemCodeset() const
 {
     return QByteArray( "UTF-8" );
 }
+
+/*
+These functions are commented out for now until all required Date/Time functions are implemented
+to ensure consistent behaviour, i.e. all KDE format or all Mac format, not some invalid mixture
+
+QString KLocaleMacPrivate::macDateFormatterValue(CFStringRef key) const
+{
+    CFDateFormatterRef formatter = CFDateFormatterCreate(kCFAllocatorDefault, m_macLocale, kCFDateFormatterNoStyle, kCFDateFormatterNoStyle);
+    return QCFString::toQString(CFStringRef(CFDateFormatterCopyProperty(formatter, key)));
+}
+
+void KLocaleMacPrivate::initDayPeriods(const KConfigGroup &cg)
+{
+    QString amText = macDateFormatterValue(kCFDateFormatterAMSymbol);
+    QString pmText = macDateFormatterValue(kCFDateFormatterPMSymbol);
+
+    m_dayPeriods.clear();
+    m_dayPeriods.append(KDayPeriod("am", amText, amText, amText
+                                   QTime(0, 0, 0), QTime(11, 59, 59, 999), 0, 12));
+    m_dayPeriods.append(KDayPeriod("pm", pmText, pmText, pmText,
+                                   QTime(12, 0, 0), QTime(23, 59, 59, 999), 0, 12));
+}
+*/

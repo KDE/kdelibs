@@ -57,10 +57,10 @@ void KLocaleTimeFormatTest::initTestCase()
 
     // additional test-data (for (format|read)TimeTest)
     m_timeFormats["ampm"].timeFormat = "%I:%M:%S %p";
-    m_timeFormats["ampm"].exp[KLocale::TimeDefault] = "03:59:59 pm";
+    m_timeFormats["ampm"].exp[KLocale::TimeDefault] = "03:59:59 PM";
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutAmPm] = "03:59:59";
     m_timeFormats["ampm"].exp[KLocale::TimeDuration] = "15:59:59";
-    m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds] = "03:59 pm";
+    m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds] = "03:59 PM";
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "03:59";
     m_timeFormats["ampm"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15:59";
     m_timeFormats["ampm"].exp[KLocale::TimeFoldHours] = "959:59";
@@ -77,40 +77,40 @@ void KLocaleTimeFormatTest::initTestCase()
     m_timeFormats["24h"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampm2"].timeFormat = "%l:%M:%S %p";
-    m_timeFormats["ampm2"].exp[KLocale::TimeDefault] = "3:59:59 pm";
+    m_timeFormats["ampm2"].exp[KLocale::TimeDefault] = "3:59:59 PM";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutAmPm] = "3:59:59";
     m_timeFormats["ampm2"].exp[KLocale::TimeDuration] = "15:59:59";
-    m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds] = "3:59 pm";
+    m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds] = "3:59 PM";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3:59";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15:59";
     m_timeFormats["ampm2"].exp[KLocale::TimeFoldHours] = "959:59";
     m_timeFormats["ampm2"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ag"].timeFormat = "%I.%M.%S.%p";
-    m_timeFormats["ag"].exp[KLocale::TimeDefault] = "03.59.59.pm";
+    m_timeFormats["ag"].exp[KLocale::TimeDefault] = "03.59.59.PM";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutAmPm] = "03.59.59";
     m_timeFormats["ag"].exp[KLocale::TimeDuration] = "15.59.59";
-    m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds] = "03.59.pm";
+    m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds] = "03.59.PM";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "03.59";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15.59";
     m_timeFormats["ag"].exp[KLocale::TimeFoldHours] = "959.59";
     m_timeFormats["ag"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampre"].timeFormat = "%p %l-%M-%S";
-    m_timeFormats["ampre"].exp[KLocale::TimeDefault] = "pm 3-59-59";
+    m_timeFormats["ampre"].exp[KLocale::TimeDefault] = "PM 3-59-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutAmPm] = "3-59-59";
     m_timeFormats["ampre"].exp[KLocale::TimeDuration] = "15-59-59";
-    m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds] = "pm 3-59";
+    m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds] = "PM 3-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15-59";
     m_timeFormats["ampre"].exp[KLocale::TimeFoldHours] = "959-59";
     m_timeFormats["ampre"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeFoldHours] = "959";
 
     m_timeFormats["ampresep"].timeFormat = "%p-%l-%M-%S";
-    m_timeFormats["ampresep"].exp[KLocale::TimeDefault] = "pm-3-59-59";
+    m_timeFormats["ampresep"].exp[KLocale::TimeDefault] = "PM-3-59-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutAmPm] = "3-59-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeDuration] = "15-59-59";
-    m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds] = "pm-3-59";
+    m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds] = "PM-3-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeWithoutAmPm] = "3-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeWithoutSeconds | KLocale::TimeDuration] = "15-59";
     m_timeFormats["ampresep"].exp[KLocale::TimeFoldHours] = "959-59";

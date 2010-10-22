@@ -26,6 +26,7 @@
 class QMutex;
 
 class KCatalog;
+class KDayPeriod;
 
 // Used by both KLocale and KLocalizedString, since they call each other.
 QMutex* kLocaleMutex();
@@ -374,6 +375,13 @@ public:
      **  Date/Time settings   **
      ***************************/
 
+protected:
+
+    /**
+     * @internal initialises the Day Periods
+     */
+    virtual void initDayPeriods(const KConfigGroup &cg);
+
 public:
 
     /**
@@ -441,6 +449,24 @@ public:
      * The worker of the same-name KLocale API function.
      */
     virtual bool use12Clock() const;
+
+    /**
+     * @internal
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setDayPeriods(const QList<KDayPeriod> &dayPeriods);
+
+    /**
+     * @internal
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QList<KDayPeriod> dayPeriods() const;
+
+    /**
+     * @internal
+     * The worker of the same-name KLocale API function.
+     */
+    virtual KDayPeriod dayPeriodForTime(const QTime &time) const;
 
     /**
      * @internal Returns a string formatted to the current locale's conventions
@@ -1042,6 +1068,7 @@ private:
     QString           m_timeFormat;
     KLocale::DigitSet m_dateTimeDigitSet;
     bool              m_dateMonthNamePossessive;
+    mutable QList<KDayPeriod> m_dayPeriods;
 
     // Number settings
     int               m_decimalPlaces;

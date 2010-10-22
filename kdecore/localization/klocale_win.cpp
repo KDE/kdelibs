@@ -100,3 +100,21 @@ const QByteArray KLocaleWindowsPrivate::encoding()
     }
     return KLocalePrivate::encoding();
 }
+
+/*
+These functions are commented out for now until all required Date/Time functions are implemented
+to ensure consistent behaviour, i.e. all KDE format or all Windows format, not some invalid mixture
+
+void KLocaleMacPrivate::initDayPeriods(const KConfigGroup &cg)
+{
+    QString amText = windowsLocaleValue(LOCALE_S1159);
+    QString pmText = windowsLocaleValue(LOCALE_S2359);
+
+    m_dayPeriods.clear();
+    m_dayPeriods.append(KDayPeriod("am", amText, amText, amText
+                                   QTime(0, 0, 0), QTime(11, 59, 59, 999), 0, 12));
+    m_dayPeriods.append(KDayPeriod("pm", pmText, pmText, pmText,
+                                   QTime(12, 0, 0), QTime(23, 59, 59, 999), 0, 12));
+}
+
+*/

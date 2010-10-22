@@ -28,6 +28,7 @@
 #include "kdatetime.h"
 #include "ktimezone.h"
 #include "kcalendarsystem.h"
+#include "kdayperiod_p.h"
 #include "kdebug.h"
 
 KDateTimeFormatter::KDateTimeFormatter()
@@ -131,16 +132,6 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
     KLocale *englishLocale = new KLocale( *locale );
     englishLocale->setLanguage( QStringList("en_US") );
     KCalendarSystem *englishCalendar = KCalendarSystem::create( calendar->calendarType(), englishLocale );
-
-    // Set up AM/PM text, do translation here for now, later will come from KLocale
-    //QString amText = locale->amText();
-    //QString pmText = locale->pmText();
-    //QString amEnglishText = englishLocale->amText();
-    //QString pmEnglishText = englishLocale->pmText();
-    QString amText = i18nc( "Before noon abbreviation", "AM" );
-    QString pmText = i18nc( "After noon abbreviation", "PM" );
-    QString amEnglishText = "AM";
-    QString pmEnglishText = "PM";
 
     for ( int formatIndex = 0; formatIndex < toFormat.length(); ++formatIndex ) {
 
@@ -474,7 +465,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         if ( (timeOptions & KLocale::TimeDuration) == KLocale::TimeDuration ) {
                             componentInteger =  fromDateTime.time().hour();
                         } else {
-                            componentInteger =  ( ( fromDateTime.time().hour() + 11 ) % 12 ) + 1;
+                            componentInteger = locale->dayPeriodForTime( fromDateTime.time() ).hourInPeriod( fromDateTime.time() );
                         }
                         if ( thisChar == 'I' ) {
                             minWidth = 2;
@@ -526,17 +517,9 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     } else {
                         if ( modifierChar == ':' ) {
                             invalidModifier = false;
-                            if ( fromDateTime.time().hour() < 12 ) {
-                                componentString = amEnglishText;
-                            } else {
-                                componentString = pmEnglishText;
-                            }
+                            componentString = englishLocale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         } else {
-                            if ( fromDateTime.time().hour() < 12 ) {
-                                componentString = amText;
-                            } else {
-                                componentString = pmText;
-                            }
+                            componentString = locale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         }
                         if ( thisChar == 'P' ) {
                             componentString = componentString.toLower();

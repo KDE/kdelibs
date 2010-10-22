@@ -37,6 +37,7 @@ class QDateTime;
 class KDateTime;
 class KCalendarSystem;
 class KCurrencyCode;
+class KDayPeriod;
 
 class KLocalePrivate;
 
@@ -766,6 +767,20 @@ public:
     };
 
     /**
+     * @since 4.6
+     *
+     * Format used for individual Date/Time Components when converted to/from a string
+     * Largely equivalent to the UNICODE CLDR format width definitions 1..5
+     */
+    enum DateTimeComponentFormat {
+        ShortNumber,       /**< Number at its natural width, e.g. 2 for the 2nd*/
+        LongNumber,        /**< Number padded to a required width, e.g. 02 for the 2nd*/
+        NarrowName,        /**< Narrow text format, e.g. M for Monday */
+        ShortName,         /**< Short text format, e.g. Mon for Monday */
+        LongName           /**< Long text format, e.g. Monday for Monday */
+    };
+
+    /**
      * Format for date string.
      */
     enum DateFormat {
@@ -909,6 +924,48 @@ public:
      * @return If the user wants 12h clock
      */
     bool use12Clock() const;
+
+private:  // Initially private, may make public if really needed
+    /**
+     * @since 4.6
+     *
+     * Set the Day Periods to use in time formatting.
+     * This is usually AM/PM, but may be different depending on locale.
+     *
+     * @see dayPeriods
+     * @param dayPeriods A list of valid Day Periods
+     */
+    void setDayPeriods(const QList<KDayPeriod> &setdayPeriods);
+
+    /**
+     * @since 4.6
+     *
+     * Returns the current list of Day Periods
+     *
+     * @see setDayPeriods
+     */
+    QList<KDayPeriod> dayPeriods() const;
+
+    /**
+     * @since 4.6
+     *
+     * Returns the Day Period matching the time given
+     *
+     * @param time the time to return the day period for
+     * @return the Day Period for the given time
+     */
+    KDayPeriod dayPeriodForTime(const QTime &time) const;
+
+public:
+    /**
+     * @since 4.6
+     *
+     * Returns the Day Period matching the time given
+     *
+     * @param time the time to return the day period for
+     * @return the Day Period for the given time
+     */
+    QString dayPeriodText(const QTime &time, DateTimeComponentFormat format = ShortName) const;
 
     /**
      * Use this to determine which day is the first day of the week.
@@ -1824,6 +1881,8 @@ public:
 
 private:
     friend class KLocalePrivate;
+    friend class KLocaleTest;
+    friend class KDateTimeFormatter;
     KLocalePrivate * const d;
 };
 

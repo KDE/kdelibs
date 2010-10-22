@@ -60,6 +60,7 @@
 #include "kconfiggroup.h"
 #include "kcatalogname_p.h"
 #include "common_helpers_p.h"
+#include "kdayperiod_p.h"
 
 class KLocaleStaticData
 {
@@ -155,11 +156,12 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_weekDayOfPray = rhs.m_weekDayOfPray;
 
     // Date/Time settings
-   m_dateFormat = rhs.m_dateFormat;
-   m_dateFormatShort = rhs.m_dateFormatShort;
-   m_timeFormat = rhs.m_timeFormat;
-   m_dateTimeDigitSet = rhs.m_dateTimeDigitSet;
-   m_dateMonthNamePossessive = rhs.m_dateMonthNamePossessive;
+    m_dateFormat = rhs.m_dateFormat;
+    m_dateFormatShort = rhs.m_dateFormatShort;
+    m_timeFormat = rhs.m_timeFormat;
+    m_dateTimeDigitSet = rhs.m_dateTimeDigitSet;
+    m_dateMonthNamePossessive = rhs.m_dateMonthNamePossessive;
+    m_dayPeriods = rhs.m_dayPeriods;
 
     // Number settings
     m_decimalPlaces = rhs.m_decimalPlaces;
@@ -491,6 +493,32 @@ void KLocalePrivate::initFormat(KConfig *config)
 
     read3ConfigBoolEntry("NounDeclension", false, m_nounDeclension);
     read3ConfigBoolEntry("DateMonthNamePossessive", false, m_dateMonthNamePossessive);
+
+    initDayPeriods(cg);
+}
+
+void KLocalePrivate::initDayPeriods(const KConfigGroup &cg)
+{
+    // Prefer any l10n file value for country/language,
+    // otherwise default to language only value which will be filled in later when i18n available
+
+    //Day Period are stored in config as one QStringList entry per Day Period
+    //PeriodCode,LongName,ShortName,NarrowName,StartTime,EndTime,Offset,OffsetIfZero
+    //where start and end time are in the format HH:MM:SS.MMM
+
+    m_dayPeriods.clear();
+    QString periodKey = "DayPeriod1";
+    int i = 1;
+    while (cg.hasKey(periodKey)) {
+        QStringList period = cg.readEntry(periodKey, QStringList());
+        if (period.count() == 8) {
+            m_dayPeriods.append(KDayPeriod(period[0], period[1], period[2], period[3],
+                                           QTime::fromString(period[4]), QTime::fromString(period[5]),
+                                           period[6].toInt(), period[7].toInt()));
+        }
+        i = i + 1;
+        periodKey = QString("DayPeriod%1").arg(i);
+    }
 }
 
 bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
@@ -1932,8 +1960,8 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
     int hour = -1;
     int minute = -1;
     int second = -1;
-    bool g_12h = false;
-    bool pm = false;
+    bool useDayPeriod = false;
+    KDayPeriod dayPeriod = dayPeriodForTime(QTime(0,0,0));
     int strpos = 0;
     int formatpos = 0;
     bool error = false;
@@ -1949,7 +1977,7 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
         stripStringAndPreceedingSeparator(format, QLatin1String("%S"));
         second = 0; // seconds are always 0
     }
-    
+
     // if hours are folded, strip them from the timeFormat
     if (foldHours) {
         stripStringAndSucceedingSeparator(format, QLatin1String("%H"));
@@ -1997,74 +2025,48 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
         c = format.at(formatpos++);
         switch (c.unicode()) {
 
-        case 'p': {
-            QString s(i18n("pm").toLower());
-            int len = s.length();
-            if (str.mid(strpos, len) == s) {
-                pm = true;
-                strpos += len;
-            } else {
-                s = i18n("am").toLower();
-                len = s.length();
-                if (str.mid(strpos, len) == s) {
-                    pm = false;
+        case 'p': // Day Period, normally AM/PM
+        case 'P': // Lowercase Day Period, normally am/pm
+        {
+            error = true;
+            foreach (const KDayPeriod &testDayPeriod, dayPeriods()) {
+                QString dayPeriodText = testDayPeriod.periodName(KLocale::ShortName);
+                int len = dayPeriodText.length();
+                if (str.mid(strpos, len) == dayPeriodText.toLower()) {
+                    dayPeriod = testDayPeriod;
                     strpos += len;
-                } else {
-                    error = true;
+                    error = false;
+                    useDayPeriod = true;
+                    break;
                 }
-            }
-        }
-        break;
-
-        case 'k':
-        case 'H':
-            g_12h = false;
-            hour = readInt(str, strpos);
-            if (hour < 0 || hour > 23) {
-                error = true;
             }
             break;
+        }
 
-        case 'l':
-        case 'I':
-            if (isDuration) {
-                g_12h = false;
-                hour = readInt(str, strpos);
-                if (hour < 0 || hour > 23) {
-                    error = true;
-                }
-            } else {
-                g_12h = true;
-                hour = readInt(str, strpos);
-                if (hour < 1 || hour > 12) {
-                    error = true;
-                }
-            }
+        case 'k':  // 24h Hours Short Number
+        case 'H':  // 24h Hours Long Number
+            useDayPeriod = false;
+            hour = readInt(str, strpos);
+            break;
+
+        case 'l': // 12h Hours Short Number
+        case 'I': // 12h Hours Long Number
+            useDayPeriod = !isDuration;
+            hour = readInt(str, strpos);
             break;
 
         case 'M':
             minute = readInt(str, strpos);
             // minutes can be bigger than 59 if hours are folded
-            if (minute < 0 || (minute > 59 && !foldHours)) {
-                error = true;
-            } else if (foldHours) {
-                // if hours are folded, make sure minutes doesn't get bigger
-                // than 59.
+            if (foldHours) {
+                // if hours are folded, make sure minutes doesn't get bigger than 59.
                 hour = minute / 60;
                 minute = minute % 60;
-                // check if hour is <=23. everything else will not work
-                // using QTime.
-                if (hour > 23) {
-                    error = true;
-                }
             }
             break;
 
         case 'S':
             second = readInt(str, strpos);
-            if (second < 0 || second > 59) {
-                error = true;
-            }
             break;
         }
 
@@ -2072,23 +2074,18 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
         //       check for error!
     }
 
+    QTime returnTime;
     if (!error) {
-        if (g_12h) {
-            hour %= 12;
-            if (pm) {
-                hour += 12;
-            }
+        if (useDayPeriod) {
+            returnTime = dayPeriod.time(hour, minute, second);
+        } else {
+            returnTime = QTime(hour, minute, second);
         }
-        if (ok) {
-            *ok = true;
-        }
-        return QTime(hour, minute, second);
-    } else {
-        if (ok) {
-            *ok = false;
-        }
-        return QTime();
     }
+    if (ok) {
+        *ok = returnTime.isValid();
+    }
+    return returnTime;
 }
 
 QString KLocalePrivate::formatTime(const QTime &time, bool includeSecs, bool isDuration) const
@@ -2116,7 +2113,7 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
     if (excludeSecs) {
         stripStringAndPreceedingSeparator(rst, QLatin1String("%S"));
     }
-    
+
     // if hours should be folded, strip all hour symbols from the timeFormat
     if (foldHours) {
         stripStringAndSucceedingSeparator(rst, QLatin1String("%H"));
@@ -2157,7 +2154,7 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
                 if (isDuration) {
                     put_it_in(buffer, index, time.hour());
                 } else {
-                    put_it_in(buffer, index, (time.hour() + 11) % 12 + 1);
+                    put_it_in(buffer, index, dayPeriodForTime(time).hourInPeriod(time));
                 }
                 break;
             case 'M':
@@ -2171,11 +2168,12 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
                 put_it_in(buffer, index, time.second());
                 break;
             case 'k':
-                number = time.hour();
             case 'l':
                 // to share the code
-                if (rst.at(format_index).unicode() == 'l') {
-                    number = isDuration ? time.hour() : (time.hour() + 11) % 12 + 1;
+                if (!isDuration && rst.at(format_index).unicode() == 'l') {
+                    number = dayPeriodForTime(time).hourInPeriod(time);
+                } else {
+                    number = time.hour();
                 }
                 if (number / 10) {
                     buffer[index++] = number / 10 + '0';
@@ -2183,12 +2181,10 @@ QString KLocalePrivate::formatLocaleTime(const QTime &time, KLocale::TimeFormatO
                 buffer[index++] = number % 10 + '0';
                 break;
             case 'p':
-                if (time.hour() >= 12) {
-                    put_it_in(buffer, index, i18n("pm"));
-                } else {
-                    put_it_in(buffer, index, i18n("am"));
-                }
+            {
+                put_it_in(buffer, index, dayPeriodForTime(time).periodName(KLocale::ShortName));
                 break;
+            }
             default:
                 buffer[index++] = rst.at(format_index);
                 break;
@@ -2210,6 +2206,51 @@ bool KLocalePrivate::use12Clock() const
     } else {
         return false;
     }
+}
+
+void KLocalePrivate::setDayPeriods(const QList<KDayPeriod> &dayPeriods)
+{
+    if (dayPeriods.count() > 0) {
+        foreach (const KDayPeriod &dayPeriod, dayPeriods) {
+            if (!dayPeriod.isValid()) {
+                return;
+            }
+        }
+        m_dayPeriods = dayPeriods;
+    }
+}
+
+QList<KDayPeriod> KLocalePrivate::dayPeriods() const
+{
+    // If no Day Periods currently loaded then it means there were no country specific ones defined
+    // in the country l10n file, so default to standard AM/PM translations for the users language.
+    // Note we couldn't do this in initDayPeriods() as i18n isn't available until we have a
+    // valid loacle constructed.
+    if (m_dayPeriods.isEmpty()) {
+        m_dayPeriods.append(KDayPeriod("am",
+                                       i18nc( "Before Noon KLocale::LongName", "Ante Meridian" ),
+                                       i18nc( "Before Noon KLocale::ShortName", "AM" ),
+                                       i18nc( "Before Noon KLocale::NarrowName", "A" ),
+                                       QTime( 0, 0, 0 ), QTime( 11, 59, 59, 999 ), 0, 12 ));
+        m_dayPeriods.append(KDayPeriod("pm",
+                                       i18nc( "After Noon KLocale::LongName", "Post Meridian" ),
+                                       i18nc( "After Noon KLocale::ShortName", "PM" ),
+                                       i18nc( "After Noon KLocale::NarrowName", "P" ),
+                                       QTime( 12, 0, 0 ), QTime( 23, 59, 59, 999 ), 0, 12 ));
+    }
+    return m_dayPeriods;
+}
+
+KDayPeriod KLocalePrivate::dayPeriodForTime(const QTime &time) const
+{
+    if (time.isValid()) {
+        foreach (const KDayPeriod &dayPeriod, dayPeriods()) {
+            if (dayPeriod.isValid(time)) {
+                return dayPeriod;
+            }
+        }
+    }
+    return KDayPeriod();
 }
 
 QStringList KLocalePrivate::languageList() const
