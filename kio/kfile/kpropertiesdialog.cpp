@@ -2706,6 +2706,11 @@ public:
     {
     }
 
+    bool isMounted() const {
+        const QString dev = device->currentText();
+        return !dev.isEmpty() && KMountPoint::currentMountPoints().findByDevice(dev);
+    }
+
     QFrame *m_frame;
     QStringList mountpointlist;
     QLabel *m_freeSpaceText;
@@ -2875,8 +2880,7 @@ void KDevicePropsPlugin::updateInfo()
     d->m_freeSpaceLabel->hide();
     d->m_freeSpaceBar->hide();
 
-    if ( !d->mountpoint->text().isEmpty() )
-    {
+    if (!d->mountpoint->text().isEmpty() && d->isMounted()) {
         KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( d->mountpoint->text() );
         slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
     }
@@ -2915,7 +2919,7 @@ void KDevicePropsPlugin::slotFoundMountPoint( const QString&,
     d->m_freeSpaceText->show();
     d->m_freeSpaceLabel->show();
 
-    int percUsed = kibSize != 0 ? (100 - (int)(100.0 * kibAvail / kibSize)) : 100;
+    const int percUsed = kibSize != 0 ? (100 - (int)(100.0 * kibAvail / kibSize)) : 100;
 
     d->m_freeSpaceLabel->setText(
             i18nc("Available space out of total partition size (percent used)", "%1 free of %2 (%3% used)",
