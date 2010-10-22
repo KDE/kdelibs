@@ -742,21 +742,10 @@ QString KFileItem::mimeComment() const
 static QString iconFromDesktopFile(const QString& path)
 {
     KDesktopFile cfg( path );
-    const KConfigGroup group = cfg.desktopGroup();
     const QString icon = cfg.readIcon();
-    const QString type = cfg.readPath();
-
-    if ( cfg.hasDeviceType() )
-    {
-        const QString unmount_icon = group.readEntry( "UnmountIcon" );
-        const QString dev = cfg.readDevice();
-        if ( !icon.isEmpty() && !unmount_icon.isEmpty() && !dev.isEmpty() )
-        {
-            KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByDevice(dev);
-            if (!mountPoint) // not mounted?
-                return unmount_icon;
-        }
-    } else if ( cfg.hasLinkType() ) {
+    if ( cfg.hasLinkType() ) {
+        const KConfigGroup group = cfg.desktopGroup();
+        const QString type = cfg.readPath();
         const QString emptyIcon = group.readEntry( "EmptyIcon" );
         if ( !emptyIcon.isEmpty() ) {
             const QString u = cfg.readUrl();
@@ -852,6 +841,15 @@ QStringList KFileItem::overlays() const
         // which is untrusted.
         if ( group.hasKey( "Exec" ) && !KDesktopFile::isAuthorizedDesktopFile( localPath() ) ) {
             names.append( "emblem-important" );
+        }
+
+        if (cfg.hasDeviceType()) {
+            const QString dev = cfg.readDevice();
+            if (!dev.isEmpty()) {
+                KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByDevice(dev);
+                if (mountPoint) // mounted?
+                    names.append("emblem-mounted");
+            }
         }
     }
 
