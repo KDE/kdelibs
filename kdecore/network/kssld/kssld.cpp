@@ -46,7 +46,7 @@ class KSSLDPrivate
 {
 public:
     KSSLDPrivate()
-     : config("ksslcertificatemanager", KConfig::SimpleConfig)
+     : config(QString::fromLatin1("ksslcertificatemanager"), KConfig::SimpleConfig)
     {
         struct strErr {
             const char *str;
@@ -108,12 +108,12 @@ void KSSLD::setRule(const KSslCertificateRule &rule)
 
     QStringList sl;
 
-    QString dtString("ExpireUTC ");
+    QString dtString = QString::fromLatin1("ExpireUTC ");
     dtString.append(rule.expiryDateTime().toString(Qt::ISODate));
     sl.append(dtString);
 
     if (rule.isRejected()) {
-        sl.append("Reject");
+        sl.append(QString::fromLatin1("Reject"));
     } else {
         foreach (KSslError::Error e, rule.ignoredErrors())
             sl.append(d->sslErrorToString.value(e));
@@ -172,7 +172,7 @@ static QString normalizeSubdomains(const QString &hostName, int *namePartsCount)
     bool wasPrevDot = true; // -> allow no dot at the beginning and count first name part
     for (int i = 0; i < hostName.length(); i++) {
         QChar c = hostName.at(i);
-        if (c == '.') {
+        if (c == QLatin1Char('.')) {
             if (wasPrevDot || (i + 1 == hostName.length())) {
                 // consecutive dots or a dot at the end are forbidden
                 partsCount = 0;
@@ -188,7 +188,7 @@ static QString normalizeSubdomains(const QString &hostName, int *namePartsCount)
         }
         ret.append(c);
     }
-    
+
     *namePartsCount = partsCount;
     return ret;
 }
@@ -216,10 +216,10 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
         //   "tld" <- "*." and "site.tld" <- "*.tld" are not valid matches,
         //   "a.site.tld" <- "*.site.tld" is
         while (--needlePartsCount >= 2) {
-            const int dotIndex = needle.indexOf('.');
+            const int dotIndex = needle.indexOf(QLatin1Char('.'));
             Q_ASSERT(dotIndex > 0); // if this fails normalizeSubdomains() failed
             needle.remove(0, dotIndex - 1);
-            needle[0] = QChar('*');
+            needle[0] = QChar::fromLatin1('*');
             if (group.hasKey(needle)) {
                 foundHostName = true;
                 break;
@@ -227,7 +227,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
             needle.remove(0, 2);    // remove "*."
         }
     }
-    
+
     if (!foundHostName) {
         //Don't make a rule with the failed wildcard pattern - use the original hostname.
         return KSslCertificateRule(cert, hostName);
@@ -260,7 +260,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
     QList<KSslError::Error> ignoredErrors;
     bool isRejected = false;
     foreach (const QString &s, sl) {
-        if (s == "Reject") {
+        if (s == QLatin1String("Reject")) {
             isRejected = true;
             ignoredErrors.clear();
             break;
