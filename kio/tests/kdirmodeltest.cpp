@@ -96,6 +96,7 @@ void KDirModelTest::recreateTestData()
      * PATH/.hidden2
      * PATH/subdir
      * PATH/subdir/testfile
+     * PATH/subdir/testsymlink
      * PATH/subdir/subsubdir
      * PATH/subdir/subsubdir/testfile
      */
@@ -837,7 +838,28 @@ void KDirModelTest::testFilter()
     QCOMPARE(m_dirModel->rowCount(), 4); // 3 toplevel* files, one subdir
     QCOMPARE(m_dirModel->rowCount(m_dirIndex), 1); // the files get filtered out, the subdir remains
 
-    QCOMPARE(spyRowsRemoved.count(), 3); // once for every dir
+    // In the subdir, we can get rowsRemoved signals like (1,2) or (0,0)+(2,2),
+    // depending on the order of the files in the model.
+    // So QCOMPARE(spyRowsRemoved.count(), 3) is fragile, we rather need
+    // to sum up the removed rows per parent directory.
+    QMap<QString, int> rowsRemovedPerDir;
+    for (int i = 0; i < spyRowsRemoved.count(); ++i) {
+        const QVariantList args = spyRowsRemoved[i];
+        const QModelIndex parentIdx = args[0].value<QModelIndex>();
+        QString dirName;
+        if (parentIdx.isValid()) {
+            const KFileItem item = m_dirModel->itemForIndex(parentIdx);
+            dirName = item.name();
+        } else {
+            dirName = "root";
+        }
+        rowsRemovedPerDir[dirName] += args[2].toInt() - args[1].toInt() + 1;
+        //kDebug() << parentIdx << args[1].toInt() << args[2].toInt();
+    }
+    QCOMPARE(rowsRemovedPerDir.count(), 3); // once for every dir
+    QCOMPARE(rowsRemovedPerDir.value("root"     ), 1); // one from toplevel ('specialchars')
+    QCOMPARE(rowsRemovedPerDir.value("subdir"   ), 2); // two from subdir
+    QCOMPARE(rowsRemovedPerDir.value("subsubdir"), 1); // one from subsubdir
     QCOMPARE(spyItemsDeleted.count(), 3); // once for every dir
     QCOMPARE(spyItemsDeleted[0][0].value<KFileItemList>().count(), 1); // one from toplevel ('specialchars')
     QCOMPARE(spyItemsDeleted[1][0].value<KFileItemList>().count(), 2); // two from subdir
