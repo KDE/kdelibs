@@ -48,7 +48,7 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
 
     // Blacklisted characters + replacements
     QHash< QChar, QString > blacklist;
-    blacklist.insert(QChar('&'), "&amp;");
+    blacklist.insert(QChar::fromLatin1('&'), QString::fromLatin1("&amp;"));
 
     if (domain.contains("vendor")) {
         QHash< QChar, QString >::const_iterator blI;

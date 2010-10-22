@@ -55,6 +55,7 @@ void AuthBackend::setCapabilities(AuthBackend::Capabilities capabilities)
 
 bool AuthBackend::actionExists(const QString& action)
 {
+    Q_UNUSED(action);
     return false;
 }
 

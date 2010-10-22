@@ -24,6 +24,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+// Compiling this file with this flag is just crazy
+#undef QT_NO_CAST_FROM_ASCII
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -46,18 +49,18 @@ namespace
 static void parseArgs(const QStringList &args, QString &directory, QString &file1, QString &file2)
 {
     int fileCount = 0;
-    directory = '.';
+    directory = QChar::fromLatin1('.');
 
     for (int i = 1; i < args.count(); ++i) {
-        if (args.at(i) == "-d" ||  args.at(i) == "--directory") {
+        if (args.at(i) == QLatin1String("-d") ||  args.at(i) == QLatin1String("--directory")) {
             if (i + 1 > args.count()) {
                 cerr << args.at(i) << " needs an argument" << endl;
                 exit(1);
             }
             directory = args.at(++i);
-        } else if (args.at(i).startsWith("-d")) {
+        } else if (args.at(i).startsWith(QLatin1String("-d"))) {
             directory = args.at(i).mid(2);
-        } else if (args.at(i) == "--help" || args.at(i) == "-h") {
+        } else if (args.at(i) == QLatin1String("--help") || args.at(i) == QLatin1String("-h")) {
             cout << "Options:" << endl;
             cout << "  -L --license              Display software license" << endl;
             cout << "  -d, --directory <dir>     Directory to generate files in [.]" << endl;
@@ -67,7 +70,7 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
             cout << "      file.kcfg                 Input kcfg XML file" << endl;
             cout << "      file.kcfgc                Code generation options file" << endl;
             exit(0);
-        } else if (args.at(i) == "--license" || args.at(i) == "-L") {
+        } else if (args.at(i) == QLatin1String("--license") || args.at(i) == QLatin1String("-L")) {
             cout << "Copyright 2003 Cornelius Schumacher, Waldo Bastian, Zack Rusin," << endl;
             cout << "    Reinhold Kainhofer, Duncan Mac-Vicar P., Harald Fernengel" << endl;
             cout << "This program comes with ABSOLUTELY NO WARRANTY." << endl;
@@ -75,7 +78,7 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
             cout << "under the terms of the GNU Library Public License." << endl;
             cout << "For more information about these matters, see the file named COPYING." << endl;
             exit(0);
-        } else if (args.at(i).startsWith('-')) {
+        } else if (args.at(i).startsWith(QLatin1Char('-'))) {
             cerr << "Unknown option: " << args.at(i) << endl;
             exit(1);
         } else if (fileCount == 0) {
@@ -138,7 +141,7 @@ class CfgEntry
         Choices( const QList<Choice> &d, const QString &n, const QString &p )
              : prefix(p), choices(d), mName(n)
         {
-          int i = n.indexOf("::");
+          int i = n.indexOf(QLatin1String("::"));
           if (i >= 0)
             mExternalQual = n.left(i + 2);
         }
@@ -243,7 +246,7 @@ class CfgEntry
       {
         cerr << "  param name: "<< mParamName << endl;
         cerr << "  param type: "<< mParamType << endl;
-        cerr << "  paramvalues: " << mParamValues.join(":") << endl;
+        cerr << "  paramvalues: " << mParamValues.join(QChar::fromLatin1(':')) << endl;
       }
       cerr << "  default: " << mDefaultValue << endl;
       cerr << "  hidden: " << mHidden << endl;
@@ -289,7 +292,7 @@ static QString varName(const QString &n)
 {
   QString result;
   if ( !dpointer ) {
-    result = 'm'+n;
+    result = QChar::fromLatin1('m') + n;
     result[1] = result[1].toUpper();
   }
   else {
@@ -303,7 +306,7 @@ static QString varPath(const QString &n)
 {
   QString result;
   if ( dpointer ) {
-    result = "d->"+varName(n);
+    result = QString::fromLatin1("d->") + varName(n);
   }
   else {
     result = varName(n);
@@ -313,7 +316,7 @@ static QString varPath(const QString &n)
 
 static QString enumName(const QString &n)
 {
-  QString result = "Enum" + n;
+  QString result = QString::fromLatin1("Enum") + n;
   result[4] = result[4].toUpper();
   return result;
 }
@@ -323,7 +326,7 @@ static QString enumName(const QString &n, const CfgEntry::Choices &c)
   QString result = c.name();
   if ( result.isEmpty() )
   {
-    result = "Enum" + n;
+    result = QString::fromLatin1("Enum") + n;
     result[4] = result[4].toUpper();
   }
   return result;
@@ -334,9 +337,9 @@ static QString enumType(const CfgEntry *e, bool globalEnums)
   QString result = e->choices().name();
   if ( result.isEmpty() )
   {
-    result = "Enum" + e->name();
+    result = QString::fromLatin1("Enum") + e->name();
     if( !globalEnums )
-        result += "::type";
+        result += QString::fromLatin1("::type");
     result[4] = result[4].toUpper();
   }
   return result;
@@ -347,7 +350,7 @@ static QString enumTypeQualifier(const QString &n, const CfgEntry::Choices &c)
   QString result = c.name();
   if ( result.isEmpty() )
   {
-    result = "Enum" + n + "::";
+    result = QString::fromLatin1("Enum") + n + QString::fromLatin1("::");
     result[4] = result[4].toUpper();
   }
   else if ( c.external() )
@@ -359,21 +362,21 @@ static QString enumTypeQualifier(const QString &n, const CfgEntry::Choices &c)
 
 static QString setFunction(const QString &n, const QString &className = QString())
 {
-  QString result = "set"+n;
+  QString result = QString::fromLatin1("set") + n;
   result[3] = result[3].toUpper();
 
   if ( !className.isEmpty() )
-    result = className + "::" + result;
+    result = className + QString::fromLatin1("::") + result;
   return result;
 }
 
 static QString getDefaultFunction(const QString &n, const QString &className = QString())
 {
-  QString result = "default"+n+"Value";
+  QString result = QString::fromLatin1("default") +  n + QString::fromLatin1("Value");
   result[7] = result[7].toUpper();
 
   if ( !className.isEmpty() )
-    result = className + "::" + result;
+    result = className + QString::fromLatin1("::") + result;
   return result;
 }
 
@@ -383,25 +386,27 @@ static QString getFunction(const QString &n, const QString &className = QString(
   result[0] = result[0].toLower();
 
   if ( !className.isEmpty() )
-    result = className + "::" + result;
+    result = className + QString::fromLatin1("::") + result;
   return result;
 }
 
 
 static void addQuotes( QString &s )
 {
-  if ( !s.startsWith( '"' ) ) s.prepend( '"' );
-  if ( !s.endsWith( '"' ) ) s.append( '"' );
+  if ( !s.startsWith( QLatin1Char('"') ) )
+    s.prepend( QLatin1Char('"') );
+  if ( !s.endsWith( QLatin1Char('"') ) )
+    s.append( QLatin1Char('"') );
 }
 
 static QString quoteString( const QString &s )
 {
   QString r = s;
-  r.replace( '\\', "\\\\" );
-  r.replace( '\"', "\\\"" );
-  r.remove( '\r' );
-  r.replace( '\n', "\\n\"\n\"" );
-  return '\"' + r + '\"';
+  r.replace( QLatin1Char('\\'), QLatin1String("\\\\") );
+  r.replace( QLatin1Char('\"'), QLatin1String("\\\"") );
+  r.remove( QLatin1Char('\r') );
+  r.replace( QLatin1Char('\n'), QLatin1String("\\n\"\n\"") );
+  return QLatin1Char('\"') + r + QLatin1Char('\"');
 }
 
 static QString literalString( const QString &s )
@@ -411,9 +416,9 @@ static QString literalString( const QString &s )
      if (s[i].unicode() > 127) isAscii = false;
 
   if (isAscii)
-     return "QLatin1String( " + quoteString(s) + " )";
+     return QString::fromLatin1("QLatin1String( ") + quoteString(s) + QString::fromLatin1(" )");
   else
-     return "QString::fromUtf8( " + quoteString(s) + " )";
+     return QString::fromLatin1("QString::fromUtf8( ") + quoteString(s) + QString::fromLatin1(" )");
 }
 
 static QString dumpNode(const QDomNode &node)
@@ -424,13 +429,13 @@ static QString dumpNode(const QDomNode &node)
 
   msg = msg.simplified();
   if (msg.length() > 40)
-    return msg.left(37)+"...";
+    return msg.left(37) + QString::fromLatin1("...");
   return msg;
 }
 
 static QString filenameOnly(const QString& path)
 {
-   int i = path.lastIndexOf(QRegExp("[/\\]"));
+   int i = path.lastIndexOf(QRegExp(QLatin1String("[/\\]")));
    if (i >= 0)
       return path.mid(i+1);
    return path;
@@ -439,7 +444,7 @@ static QString filenameOnly(const QString& path)
 static QString signalEnumName(const QString &signalName)
 {
   QString result;
-  result = "signal" + signalName;
+  result = QString::fromLatin1("signal") + signalName;
   result[6] = result[6].toUpper();
 
   return result;
@@ -450,46 +455,46 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
                                const CfgEntry::Choices &choices,
                                QString &code )
 {
-    if ( type == "String" && !defaultValue.isEmpty() ) {
+    if ( type == QLatin1String("String") && !defaultValue.isEmpty() ) {
       defaultValue = literalString(defaultValue);
 
-    } else if ( type == "Path" && !defaultValue.isEmpty() ) {
+    } else if ( type == QLatin1String("Path") && !defaultValue.isEmpty() ) {
       defaultValue = literalString( defaultValue );
-    } else if ( type == "Url" && !defaultValue.isEmpty() ) {
-      defaultValue = "KUrl( " + literalString(defaultValue) + ')';
-    } else if ( ( type == "UrlList" || type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
+    } else if ( type == QLatin1String("Url") && !defaultValue.isEmpty() ) {
+      defaultValue = QString::fromLatin1("KUrl( ") + literalString(defaultValue) + QLatin1Char(')');
+    } else if ( ( type == QLatin1String("UrlList") || type == QLatin1String("StringList") || type == QLatin1String("PathList")) && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
          cpp << endl;
 
       cpp << "  QStringList default" << name << ";" << endl;
-      const QStringList defaults = defaultValue.split( ',' );
+      const QStringList defaults = defaultValue.split(QLatin1Char(','));
       QStringList::ConstIterator it;
       for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
         cpp << "  default" << name << ".append( ";
-        if( type == "UrlList" ) {
-          cpp << "KUrl(";       
+        if( type == QLatin1String("UrlList") ) {
+          cpp << "KUrl(";
         }
         cpp << "QString::fromUtf8( \"" << *it << "\" ) ";
-        if( type == "UrlList" ) {
+        if( type == QLatin1String("UrlList") ) {
           cpp << ") ";
         }
         cpp << ");" << endl;
       }
-      defaultValue = "default" + name;
+      defaultValue = QString::fromLatin1("default") + name;
 
-    } else if ( type == "Color" && !defaultValue.isEmpty() ) {
-      QRegExp colorRe("\\d+,\\s*\\d+,\\s*\\d+(,\\s*\\d+)?");
+    } else if ( type == QLatin1String("Color") && !defaultValue.isEmpty() ) {
+      QRegExp colorRe(QLatin1String("\\d+,\\s*\\d+,\\s*\\d+(,\\s*\\d+)?"));
       if (colorRe.exactMatch(defaultValue))
       {
-        defaultValue = "QColor( " + defaultValue + " )";
+        defaultValue = QLatin1String("QColor( ") + defaultValue + QLatin1String(" )");
       }
       else
       {
-        defaultValue = "QColor( \"" + defaultValue + "\" )";
+        defaultValue = QLatin1String("QColor( \"") + defaultValue + QLatin1String("\" )");
       }
 
-    } else if ( type == "Enum" ) {
+    } else if ( type == QLatin1String("Enum") ) {
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.choices.constBegin(); it != choices.choices.constEnd(); ++it ) {
         if ( (*it).name == defaultValue ) {
@@ -501,7 +506,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
         }
       }
 
-    } else if ( type == "IntList" ) {
+    } else if ( type == QLatin1String("IntList") ) {
       QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
          cpp << endl;
@@ -509,14 +514,14 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       cpp << "  QList<int> default" << name << ";" << endl;
       if (!defaultValue.isEmpty())
       {
-        const QStringList defaults = defaultValue.split( ',' );
+        const QStringList defaults = defaultValue.split( QLatin1Char(',') );
         QStringList::ConstIterator it;
         for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
           cpp << "  default" << name << ".append( " << *it << " );"
               << endl;
         }
       }
-      defaultValue = "default" + name;
+      defaultValue = QString::fromLatin1("default") + name;
     }
 }
 
@@ -1221,7 +1226,7 @@ QString indent(QString text, int spaces)
 
 // adds as many 'namespace foo {' lines to p_out as
 // there are namespaces in p_ns
-void beginNamespaces(const QString &p_ns, QTextStream &p_out) 
+void beginNamespaces(const QString &p_ns, QTextStream &p_out)
 {
   if ( !p_ns.isEmpty() ) {
     const QStringList nameSpaces = p_ns.split( "::" );
