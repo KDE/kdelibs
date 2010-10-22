@@ -24,9 +24,9 @@
 
 KDebugDBusIface::KDebugDBusIface()
 {
-    QDBusConnection::sessionBus().registerObject("/KDebug", this, QDBusConnection::ExportScriptableSlots);
-    QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.KDebug",
-                                "configChanged", this, SLOT(notifyKDebugConfigChanged()));
+    QDBusConnection::sessionBus().registerObject(QString::fromLatin1("/KDebug"), this, QDBusConnection::ExportScriptableSlots);
+    QDBusConnection::sessionBus().connect(QString(), QString(), QString::fromLatin1("org.kde.KDebug"),
+                                          QString::fromLatin1("configChanged"), this, SLOT(notifyKDebugConfigChanged()));
 }
 
 KDebugDBusIface::~KDebugDBusIface()

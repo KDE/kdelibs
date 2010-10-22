@@ -950,7 +950,7 @@ KSslCipher::KSslCipher(const QSslCipher &qsc)
     d->encryptionMethod = qsc.encryptionMethod();
     //Qt likes to append the number of bits (usedBits?) to the algorithm,
     //for example "AES(256)". We only want the pure algorithm name, though.
-    int parenIdx = d->encryptionMethod.indexOf('(');
+    int parenIdx = d->encryptionMethod.indexOf(QLatin1Char('('));
     if (parenIdx > 0)
         d->encryptionMethod.truncate(parenIdx);
     d->keyExchangeMethod = qsc.keyExchangeMethod();
@@ -1003,11 +1003,11 @@ QString KSslCipher::digestMethod() const
     //### This is not really backend neutral. It works for OpenSSL and
     //    for RFC compliant names, though.
     if (d->name.endsWith(QLatin1String("SHA")))
-        return "SHA-1";
+        return QString::fromLatin1("SHA-1");
     else if (d->name.endsWith(QLatin1String("MD5")))
-        return "MD5";
+        return QString::fromLatin1("MD5");
     else
-        return "";
+        return QString::fromLatin1(""); // ## probably QString() is enough
 }
 
 

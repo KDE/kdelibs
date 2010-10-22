@@ -180,10 +180,11 @@ KSystemTimeZones::KSystemTimeZones()
   : d(0)
 {
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "configChanged", this, SLOT(configChanged()));
-    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "zonetabChanged", this, SLOT(zonetabChanged(QString)));
+    const QString dbusIface = QString::fromLatin1(KTIMEZONED_DBUS_IFACE);
+    dbus.connect(QString(), QString(), dbusIface, QLatin1String("configChanged"), this, SLOT(configChanged()));
+    dbus.connect(QString(), QString(), dbusIface, QLatin1String("zonetabChanged"), this, SLOT(zonetabChanged(QString)));
     // No need to connect to definitionChanged() - see comments in zoneDefinitionChanged()
-    //dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
+    //dbus.connect(QString(), QString(), dbusIface, QLatin1String("definitionChanged"), this, SLOT(zoneDefinitionChanged(QString)));
 }
 
 KSystemTimeZones::~KSystemTimeZones()
@@ -296,10 +297,11 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         // A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
         // Ensure that the KDED time zones module has initialized. The call loads the module on demand.
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded"))
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.kded")))
             KToolInvocation::klauncher();   // this calls startKdeinit, and blocks until it returns
-        QDBusInterface *ktimezoned = new QDBusInterface("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
-        QDBusReply<void> reply = ktimezoned->call("initialize", false);
+        const QString dbusIface = QString::fromLatin1(KTIMEZONED_DBUS_IFACE);
+        QDBusInterface *ktimezoned = new QDBusInterface(QLatin1String("org.kde.kded"), QLatin1String("/modules/ktimezoned"), dbusIface);
+        QDBusReply<void> reply = ktimezoned->call(QLatin1String("initialize"), false);
         m_ktimezonedError = !reply.isValid();
         if (m_ktimezonedError)
             kError(161) << "KSystemTimeZones: ktimezoned initialize() D-Bus call failed: " << reply.error().message() << endl;
@@ -337,7 +339,7 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     m_zoneinfoDir   = group.readEntry("ZoneinfoDir");
     m_zonetab       = group.readEntry("Zonetab");
     m_localZoneName = group.readEntry("LocalZone");
-    if (m_zoneinfoDir.length() > 1 && m_zoneinfoDir.endsWith('/'))
+    if (m_zoneinfoDir.length() > 1 && m_zoneinfoDir.endsWith(QLatin1Char('/')))
         m_zoneinfoDir.truncate(m_zoneinfoDir.length() - 1);  // strip trailing '/'
     if (!init)
         setLocalZone();
@@ -347,25 +349,22 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
 void KSystemTimeZonesPrivate::setLocalZone()
 {
     QString filename;
-    if (m_localZoneName.startsWith('/'))
-    {
+    if (m_localZoneName.startsWith(QLatin1Char('/'))) {
         // The time zone is specified by a file outside the zoneinfo directory
         filename = m_localZoneName;
-    }
-    else
-    {
+    } else {
         // The zone name is either a known zone, or it's a relative file name
         // in zoneinfo directory which isn't in zone.tab.
         m_localZone = m_instance->zone(m_localZoneName);
         if (m_localZone.isValid())
             return;
         // It's a relative file name
-        filename = m_zoneinfoDir + '/' + m_localZoneName;
+        filename = m_zoneinfoDir + QLatin1Char('/') + m_localZoneName;
     }
 
     // Parse the specified time zone data file
     QString zonename = filename;
-    if (zonename.startsWith(m_zoneinfoDir + '/'))
+    if (zonename.startsWith(m_zoneinfoDir + QLatin1Char('/')))
         zonename = zonename.mid(m_zoneinfoDir.length() + 1);
     m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), zonename);
     if (m_localZone.isValid() && m_instance)
@@ -439,14 +438,14 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
     if (!f.open(QIODevice::ReadOnly))
         return;
     QTextStream str(&f);
-    QRegExp lineSeparator("[ \t]");
-    QRegExp ordinateSeparator("[+-]");
+    QRegExp lineSeparator(QLatin1String("[ \t]"));
+    QRegExp ordinateSeparator(QLatin1String("[+-]"));
     if (!m_source)
         m_source = new KSystemTimeZoneSource;
     while (!str.atEnd())
     {
         QString line = str.readLine();
-        if (line.isEmpty() || line[0] == '#')
+        if (line.isEmpty() || line[0] == QLatin1Char('#'))
             continue;
         QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
         int n = tokens.count();
@@ -457,7 +456,7 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
         }
 
         // Got three tokens. Now check for two ordinates plus first one is "".
-        int i = tokens[1].indexOf(QRegExp("[+-]"), 1);
+        int i = tokens[1].indexOf(ordinateSeparator, 1);
         if (i < 0)
         {
             kError(161) << "readZoneTab() " << tokens[2] << ": invalid coordinates: " << tokens[1] << endl;
@@ -468,12 +467,12 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
         float longitude = convertCoordinate(tokens[1].mid(i));
 
         // Add entry to list.
-        if (tokens[0] == "??")
-            tokens[0] = "";
+        if (tokens[0] == QLatin1String("??"))
+            tokens[0] = QString::fromLatin1("");
         // Solaris sets the empty Comments field to '-', making it not empty.
         // Clean it up.
-        if (n > 3  &&  tokens[3] == "-")
-            tokens[3] = "";
+        if (n > 3  && tokens[3] == QLatin1String("-"))
+            tokens[3] = QString::fromLatin1("");
         KSystemTimeZone tz(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
         if (update)
         {

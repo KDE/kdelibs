@@ -83,7 +83,7 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
     }
 
     if (!d->name.endsWith(QLatin1String(".desktop"))) {
-        d->name.append(".desktop");
+        d->name.append(QString::fromLatin1(".desktop"));
     }
 
     const QString path = KGlobal::dirs()->locate("autostart", d->name);
@@ -141,7 +141,7 @@ bool KAutostart::checkStartCondition() const
     if (condition.isEmpty())
         return true;
 
-    const QStringList list = condition.split(':');
+    const QStringList list = condition.split(QLatin1Char(':'));
     if (list.count() < 4) {
         return true;
     }
@@ -153,7 +153,7 @@ bool KAutostart::checkStartCondition() const
     KConfig config(list[0], KConfig::NoGlobals);
     KConfigGroup cg(&config, list[1]);
 
-    bool defaultValue = (list[3].toLower() == "true");
+    const bool defaultValue = (list[3].toLower() == QLatin1String("true"));
     return cg.readEntry(list[2], defaultValue);
 }
 
@@ -204,7 +204,7 @@ void KAutostart::setVisibleName(const QString &name)
 
 bool KAutostart::isServiceRegistered(const QString& entryName)
 {
-    return QFile::exists(KStandardDirs::locate("autostart", entryName + ".desktop"));
+    return QFile::exists(KStandardDirs::locate("autostart", entryName + QString::fromLatin1(".desktop")));
 }
 
 QString KAutostart::commandToCheck() const
@@ -250,14 +250,14 @@ KAutostart::StartPhase KAutostart::startPhase() const
 
 void KAutostart::setStartPhase(KAutostart::StartPhase phase)
 {
-    QByteArray data = "Applications";
+    QString data = QString::fromLatin1("Applications");
 
     switch (phase) {
         case BaseDesktop:
-            data = "BaseDesktop";
+            data = QString::fromLatin1("BaseDesktop");
             break;
         case DesktopServices:
-            data = "DesktopServices";
+            data = QString::fromLatin1("DesktopServices");
             break;
         case Applications: // This is the default
             break;

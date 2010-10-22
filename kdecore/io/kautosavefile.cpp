@@ -179,7 +179,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
 
     // contruct a KAutoSaveFile for each stale file
     foreach(const QString &file, files) {
-        if (file.endsWith(".lock"))
+        if (file.endsWith(QLatin1String(".lock")))
             continue;
         // sets managedFile
         asFile = new KAutoSaveFile(filename);
@@ -208,7 +208,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
 
     // contruct a KAutoSaveFile for each stale file
     foreach(QString file, files) { // krazy:exclude=foreach (no const& because modified below)
-        if (file.endsWith(".lock"))
+        if (file.endsWith(QLatin1String(".lock")))
             continue;
         const QString sep = file.right(3);
         file.chop(KAutoSaveFilePrivate::padding);

@@ -61,14 +61,15 @@ inline QString makeLibName( const QString &libname )
         return libname + ".dll";
     return libname;
 #else
-    int pos = libname.lastIndexOf('/');
+    int pos = libname.lastIndexOf(QLatin1Char('/'));
     if (pos < 0)
       pos = 0;
-    if (libname.indexOf('.', pos) < 0) {
+    if (libname.indexOf(QLatin1Char('.'), pos) < 0) {
         const char* const extList[] = { ".so", ".dylib", ".bundle", ".sl" };
         for (uint i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
-           if (QLibrary::isLibrary(libname + extList[i]))
-               return libname + extList[i];
+            const QString lib = libname + QString::fromLatin1(extList[i]);
+            if (QLibrary::isLibrary(lib))
+                return lib;
         }
     }
     return libname;
@@ -84,8 +85,8 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     // Convert name to a valid platform libname
     QString libname = makeLibName(name);
     QFileInfo fileinfo(name);
-    bool hasPrefix = fileinfo.fileName().startsWith("lib");
-    bool kdeinit = fileinfo.fileName().startsWith("libkdeinit4_");
+    bool hasPrefix = fileinfo.fileName().startsWith(QLatin1String("lib"));
+    bool kdeinit = fileinfo.fileName().startsWith(QLatin1String("libkdeinit4_"));
 
     if (hasPrefix && !kdeinit)
         kDebug(kLibraryDebugArea()) << "plugins should not have a 'lib' prefix:" << libname;
@@ -238,7 +239,7 @@ bool KPluginLoader::load()
             || (d->verificationData->KDEVersion > KDE_VERSION)
             || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000)))
         {
-            d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, d->verificationData->KDEVersionString);
+            d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, QString::fromLatin1(d->verificationData->KDEVersionString));
             lib.unload();
             unload();
             return false;

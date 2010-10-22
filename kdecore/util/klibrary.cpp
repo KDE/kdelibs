@@ -99,10 +99,10 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
     if(!factoryname.isEmpty()) {
         symname += factoryname;
     } else {
-        symname += QFileInfo(lib->fileName()).fileName().split('.').first().toLatin1();
+        symname += QFileInfo(lib->fileName()).fileName().split(QLatin1Char('.')).first().toLatin1();
     }
 
-    const QString hashKey = lib->fileName() + QLatin1Char(':') + QString::fromAscii(symname);
+    const QString hashKey = lib->fileName() + QLatin1Char(':') + QString::fromLatin1(symname);
     KPluginFactory *factory = s_createdKde3Factories->value(hashKey);
     if (factory) {
         return factory;

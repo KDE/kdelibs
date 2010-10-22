@@ -174,7 +174,7 @@ void KProcess::setEnv(const QString &name, const QString &value, bool overwrite)
         env.removeAll(QString::fromLatin1(DUMMYENV));
     }
     QString fname(name);
-    fname.append('=');
+    fname.append(QLatin1Char('='));
     for (QStringList::Iterator it = env.begin(); it != env.end(); ++it)
         if ((*it).startsWith(fname)) {
             if (overwrite) {
@@ -195,12 +195,12 @@ void KProcess::unsetEnv(const QString &name)
         env.removeAll(QString::fromLatin1(DUMMYENV));
     }
     QString fname(name);
-    fname.append('=');
+    fname.append(QLatin1Char('='));
     for (QStringList::Iterator it = env.begin(); it != env.end(); ++it)
         if ((*it).startsWith(fname)) {
             env.erase(it);
             if (env.isEmpty())
-                env.append(DUMMYENV);
+                env.append(QString::fromLatin1(DUMMYENV));
             setEnvironment(env);
             return;
         }
@@ -297,7 +297,7 @@ void KProcess::setShellCommand(const QString &cmd)
     d->prog = QString::fromLatin1("/bin/sh");
 # endif
 
-    d->args << "-c" << cmd;
+    d->args << QString::fromLatin1("-c") << cmd;
 #else // Q_OS_UNIX
     // KMacroExpander::expandMacrosShellQuote(), KShell::quoteArg() and
     // KShell::joinArgs() may generate these for security reasons.

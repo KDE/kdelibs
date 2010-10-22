@@ -49,7 +49,7 @@ KDEDModule::~KDEDModule()
 void KDEDModule::setModuleName( const QString& name )
 {
    d->moduleName = name;
-   QDBusObjectPath realPath( QString("/modules/") + d->moduleName);
+   QDBusObjectPath realPath( QString::fromLatin1("/modules/") + d->moduleName);
 
    if (realPath.path().isEmpty())
       {

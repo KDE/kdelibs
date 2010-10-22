@@ -583,7 +583,7 @@ KResolver::resolve(const QString& host, const QString& service, int flags,
 		  int families)
 {
   KResolver qres(host, service, QCoreApplication::instance());
-  qres.setObjectName("synchronous KResolver");
+  qres.setObjectName(QString::fromLatin1("synchronous KResolver"));
   qres.setFlags(flags);
   qres.setFamily(families);
   qres.start();
@@ -598,7 +598,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
   KResolver* qres = new KResolver(host, service, QCoreApplication::instance());
   QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)),
 		   userObj, userSlot);
-  qres->setObjectName("asynchronous KResolver");
+  qres->setObjectName(QString::fromLatin1("asynchronous KResolver"));
   qres->setFlags(flags);
   qres->setFamily(families);
   qres->d->deleteWhenDone = true; // this is the only difference from the example code
@@ -999,7 +999,7 @@ QString KResolver::localHostName()
     {
       // not fully qualified
       // must resolve
-      KResolverResults results = resolve(name, "0", CanonName);
+      KResolverResults results = resolve(QString::fromLocal8Bit(name), QString::fromLatin1("0"), CanonName);
       if (results.isEmpty())
 	// cannot find a valid hostname!
 	return QLatin1String("localhost");
@@ -1017,7 +1017,7 @@ static void KResolver_initIdnDomains()
     {
       QByteArray kde_use_idn = qgetenv("KDE_USE_IDN");
       if (!kde_use_idn.isEmpty())
-        KUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(':'));
+        KUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(QLatin1Char(':')));
       init = true;
     }
 }

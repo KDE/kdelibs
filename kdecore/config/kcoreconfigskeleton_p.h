@@ -28,7 +28,7 @@ class KCoreConfigSkeleton::Private
 {
 public:
   Private()
-    : mCurrentGroup( "No Group" ), mUseDefaults( false )
+    : mCurrentGroup( QLatin1String("No Group") ), mUseDefaults( false )
   {}
   ~Private()
   {

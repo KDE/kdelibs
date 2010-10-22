@@ -1690,6 +1690,11 @@ void KStandardDirs::addKDEDefaults()
     }
     else
     {
+
+        // TODO KDE5: make localKdeDir equal to localXdgDir (which is determined further below and
+        // defaults to ~/.config) + '/' + $KDECONFIG (which would default to e.g. "KDE")
+        // This would mean ~/.config/KDE/ by default, more xdg-compliant.
+
 #if defined(Q_WS_MACX)
         localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
 #elif defined(Q_WS_WIN)

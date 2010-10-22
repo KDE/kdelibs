@@ -53,12 +53,11 @@ KToolInvocation::~KToolInvocation()
 }
 
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
-                          ("org.kde.klauncher", "/KLauncher", QDBusConnection::sessionBus()))
+                          (QString::fromLatin1("org.kde.klauncher"), QString::fromLatin1("/KLauncher"), QDBusConnection::sessionBus()))
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ) )
-    {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher"))) {
         kDebug(180) << "klauncher not running... launching kdeinit";
         KToolInvocation::startKdeinit();
     }
@@ -105,7 +104,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     QByteArray s = startup_id;
     emit kapplication_hook(envs, s);
     msg << envs;
-    msg << QString(s);
+    msg << QString::fromLatin1(s);
 #else
     msg << QStringList();
     msg << QString();
@@ -258,25 +257,25 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         appname = QCoreApplication::instance()->applicationName();
     } else
         appname = _appname;
-    
+
     KService::Ptr service(KService::serviceByDesktopName(appname));
     if (service) {
         docPath = service->docPath();
     }
-    
+
     if (!docPath.isEmpty()) {
         url = KUrl(KUrl("help:/"), docPath);
     } else {
-        url = QString("help:/%1/index.html").arg(appname);
+        url = QString::fromLatin1("help:/%1/index.html").arg(appname);
     }
-    
+
     if (!anchor.isEmpty()) {
-        url.addQueryItem("anchor", anchor);
+        url.addQueryItem(QString::fromLatin1("anchor"), anchor);
     }
-    
+
     // launch a browser for URIs not handled by khelpcenter
     // (following KCMultiDialog::slotHelpClicked())
-    if (!(url.protocol() == "help" || url.protocol() == "man" || url.protocol() == "info")) {
+    if (!(url.protocol() == QLatin1String("help") || url.protocol() == QLatin1String("man") || url.protocol() == QLatin1String("info"))) {
         invokeBrowser(url.url());
         return;
     }
@@ -290,9 +289,9 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         QString error;
 #ifdef Q_WS_WIN
         // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (kdeinitExec( "khelpcenter", QStringList() << url.url(), &error, 0, startup_id ))
+        if (kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.url(), &error, 0, startup_id))
 #else
-        if (startServiceByDesktopName("khelpcenter", url.url(), &error, 0, 0, startup_id, false))
+        if (startServiceByDesktopName(QLatin1String("khelpcenter"), url.url(), &error, 0, 0, startup_id, false))
 #endif
         {
             KMessage::message(KMessage::Error,
@@ -309,7 +308,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                    QDBusConnection::sessionBus());
     }
 
-    iface->call("openUrl", url.url(), startup_id );
+    iface->call(QString::fromLatin1("openUrl"), url.url(), startup_id );
     delete iface;
 }
 
@@ -333,7 +332,8 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
     QString bcc;
     QString body;
 
-    const QStringList queries = mailtoURL.query().mid(1).split( '&');
+    const QStringList queries = mailtoURL.query().mid(1).split(QLatin1Char('&'));
+    const QChar comma = QChar::fromLatin1(',');
     QStringList attachURLs;
     for (QStringList::ConstIterator it = queries.begin(); it != queries.end(); ++it)
     {
@@ -342,10 +342,10 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
             subject = KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
         else
             if (q.startsWith(QLatin1String("cc=")))
-                cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
+                cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + comma + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
             else
                 if (q.startsWith(QLatin1String("bcc=")))
-                    bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + ',' + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
+                    bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + comma + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
                 else
                     if (q.startsWith(QLatin1String("body=")))
                         body = KUrl::fromPercentEncoding((*it).mid(5).toLatin1());
@@ -357,7 +357,7 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
                                 attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(11).toLatin1()));
                             else
                                 if (q.startsWith(QLatin1String("to=")))
-                                    address = address.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): address + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
+                                    address = address.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): address + comma + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
     }
 
     invokeMailer( address, cc, bcc, subject, body, QString(), attachURLs, startup_id );
@@ -366,10 +366,10 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
 void KToolInvocation::startKdeinit()
 {
   KComponentData inst( "startkdeinitlock" );
-  KLockFile lock( KStandardDirs::locateLocal( "tmp", "startkdeinitlock", inst ));
+  KLockFile lock( KStandardDirs::locateLocal("tmp", QString::fromLatin1("startkdeinitlock"), inst ));
   if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
      lock.lock();
-     if( QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ))
+     if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher")))
          return; // whoever held the lock has already started it
   }
   // Try to launch kdeinit.
@@ -382,7 +382,7 @@ void KToolInvocation::startKdeinit()
 //    qApp->setOverrideCursor( Qt::WaitCursor );
   QStringList args;
 #ifndef Q_WS_WIN
-  args += "--suicide";
+  args += QString::fromLatin1("--suicide");
 #endif
   QProcess::execute(srv, args);
 //  if ( gui )

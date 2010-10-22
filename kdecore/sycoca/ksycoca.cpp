@@ -108,11 +108,11 @@ KSycocaPrivate::KSycocaPrivate()
 }
 
 void KSycocaPrivate::setStrategyFromString(const QString& strategy) {
-    if (strategy == "mmap")
+    if (strategy == QLatin1String("mmap"))
         m_sycocaStrategy = StrategyMmap;
-    else if (strategy == "file")
+    else if (strategy == QLatin1String("file"))
         m_sycocaStrategy = StrategyFile;
-    else if (strategy == "sharedmem")
+    else if (strategy == QLatin1String("sharedmem"))
         m_sycocaStrategy = StrategyMemFile;
     else if (!strategy.isEmpty())
         kWarning(7011) << "Unknown sycoca strategy:" << strategy;
@@ -181,7 +181,8 @@ KSycoca::KSycoca()
   : d(new KSycocaPrivate)
 {
     QDBusConnection::sessionBus().connect(QString(), QString(),
-                                          "org.kde.KSycoca", "notifyDatabaseChanged",
+                                          QString::fromLatin1("org.kde.KSycoca"),
+                                          QString::fromLatin1("notifyDatabaseChanged"),
                                           this, SLOT(notifyDatabaseChanged(QStringList)));
 }
 
@@ -344,7 +345,7 @@ void KSycoca::addFactory( KSycocaFactory *factory )
 
 bool KSycoca::isChanged(const char *type)
 {
-    return self()->d->changeList.contains(type);
+    return self()->d->changeList.contains(QString::fromLatin1(type));
 }
 
 void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
@@ -411,7 +412,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
 
     // We can only use the installed ksycoca file if kdeinit+klauncher+kded are running,
     // since kded is what keeps the file uptodate.
-    const bool kdeinitRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.klauncher");
+    const bool kdeinitRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher"));
 
     // Check if new database already available
     if (kdeinitRunning && openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
@@ -430,7 +431,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
             // and since kdeinit4 only returns after kbuildsycoca4 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
-            if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
+            if (QProcess::execute(KStandardDirs::findExe(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
                 qWarning("ERROR: Running KSycoca failed.");
         }
 
@@ -523,14 +524,14 @@ quint32 KSycoca::updateSignature()
 
 QString KSycoca::absoluteFilePath(DatabaseType type)
 {
-   if (type == GlobalDatabase)
-      return KGlobal::dirs()->saveLocation("services") + KSYCOCA_FILENAME;
+    if (type == GlobalDatabase)
+        return KGlobal::dirs()->saveLocation("services") + QString::fromLatin1(KSYCOCA_FILENAME);
 
-   const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
-   if (ksycoca_env.isEmpty())
-      return KGlobal::dirs()->saveLocation("cache") + KSYCOCA_FILENAME;
-   else
-      return QFile::decodeName(ksycoca_env);
+    const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
+    if (ksycoca_env.isEmpty())
+        return KGlobal::dirs()->saveLocation("cache") + QString::fromLatin1(KSYCOCA_FILENAME);
+    else
+        return QFile::decodeName(ksycoca_env);
 }
 
 QString KSycoca::language()
@@ -556,7 +557,7 @@ void KSycoca::flagError()
     d->readError = true;
     if (s_autoRebuild) {
         // Rebuild the damned thing.
-        if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
+        if (QProcess::execute(KStandardDirs::findExe(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
             qWarning("ERROR: Running %s failed", KBUILDSYCOCA_EXENAME);
         // Old comment, maybe not true anymore:
         // Do not wait until the DBUS signal from kbuildsycoca here.

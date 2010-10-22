@@ -65,7 +65,7 @@ Loader::Loader()
     :d(new Private)
 {
     d->settings = new Settings(this);
-    KConfig config(DEFAULT_CONFIG_FILE);
+    KConfig config(QString::fromLatin1(DEFAULT_CONFIG_FILE));
     d->settings->restore(&config);
     loadPlugins();
 }
@@ -175,8 +175,8 @@ QString Loader::languageNameForCode(const QString &langCode) const
         { 0, 0 }
     };
 
-    minusPos = currentDictionary.indexOf("-");
-    underscorePos = currentDictionary.indexOf("_");
+    minusPos = currentDictionary.indexOf(QLatin1Char('-'));
+    underscorePos = currentDictionary.indexOf(QLatin1Char('_'));
     if (underscorePos != -1 && underscorePos <= 3) {
         cISOName = currentDictionary.mid(underscorePos + 1, 2);
         lISOName = currentDictionary.left(underscorePos);
@@ -203,8 +203,7 @@ QString Loader::languageNameForCode(const QString &langCode) const
     }
     if (!variantName.isEmpty()) {
         while (variantList[variantCount].variantShortName != 0)
-            if (variantList[ variantCount ].variantShortName ==
-                variantName)
+            if (QLatin1String(variantList[variantCount].variantShortName) == variantName)
                 break;
             else
                 variantCount++;
@@ -258,7 +257,7 @@ Settings* Loader::settings() const
 
 void Loader::loadPlugins()
 {
-    d->plugins = KServiceTypeTrader::self()->query("Sonnet/SpellClient");
+    d->plugins = KServiceTypeTrader::self()->query(QString::fromLatin1("Sonnet/SpellClient"));
 
     for (KService::List::const_iterator itr = d->plugins.constBegin();
          itr != d->plugins.constEnd(); ++itr ) {
