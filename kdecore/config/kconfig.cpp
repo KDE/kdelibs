@@ -210,7 +210,7 @@ QStringList KConfig::groupList() const
         const QByteArray group = entryMapIt.key().mGroup;
         if (entryMapIt.key().mKey.isNull() && !group.isEmpty() && group != "<default>" && group != "$Version") {
             QString groupname = QString::fromUtf8(group);
-            groups << groupname.left(groupname.indexOf('\x1d'));
+            groups << groupname.left(groupname.indexOf(QLatin1Char('\x1d')));
         }
     }
 
@@ -224,8 +224,8 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
 
     for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt)
         if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup)) {
-            QString groupname = QString::fromUtf8(entryMapIt.key().mGroup.mid(theGroup.length()));
-            groups << groupname.left(groupname.indexOf('\x1d'));
+            const QString groupname = QString::fromUtf8(entryMapIt.key().mGroup.mid(theGroup.length()));
+            groups << groupname.left(groupname.indexOf(QLatin1Char('\x1d')));
         }
 
     return groups.toList();
@@ -364,10 +364,10 @@ void KConfig::markAsClean()
 void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
     const KConfigGroup cg(this, "$Version");
-    const QString cfg_id = updateFile+':'+id;
+    const QString cfg_id = updateFile+QLatin1Char(':')+id;
     const QStringList ids = cg.readEntry("update_info", QStringList());
     if (!ids.contains(cfg_id)) {
-        KToolInvocation::kdeinitExecWait("kconf_update", QStringList() << "--check" << updateFile);
+        KToolInvocation::kdeinitExecWait(QString::fromLatin1("kconf_update"), QStringList() << QString::fromLatin1("--check") << updateFile);
         reparseConfiguration();
     }
 }
@@ -686,11 +686,12 @@ bool KConfig::isConfigWritable(bool warnUser)
 
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
         errorMsg += i18n("Please contact your system administrator.");
-        QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
+        QString cmdToExec = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
         if (!cmdToExec.isEmpty() && componentData().isValid())
         {
-            QProcess::execute(cmdToExec,QStringList() << "--title" << componentData().componentName()
-                    << "--msgbox" << errorMsg);
+            QProcess::execute(cmdToExec, QStringList()
+                              << QString::fromLatin1("--title") << componentData().componentName()
+                              << QString::fromLatin1("--msgbox") << errorMsg);
         }
     }
 
