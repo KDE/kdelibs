@@ -18,6 +18,7 @@
  */
 
 #include <QFontMetrics>
+#include <QX11Info>
 #include <qtest_kde.h>
 
 #include <kdebug.h>
@@ -29,6 +30,14 @@ class KWordWrap_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+#ifdef Q_WS_X11
+        QX11Info::setAppDpiX(0, 96);
+        QX11Info::setAppDpiY(0, 96);
+#endif
+    }
+
     void oldTruncationTest()
     {
         QFont font( "helvetica", 12 ); // let's hope we all have the same...
