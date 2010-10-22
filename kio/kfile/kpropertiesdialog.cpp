@@ -885,11 +885,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         iconButton->setFixedSize(bsize, bsize);
         iconButton->setIconSize(48);
         iconButton->setStrictIconSize(false);
-        // This works for everything except Device icons on unmounted devices
-        // So we have to really open .desktop files
-        QString iconStr = KMimeType::findByUrl( url, mode )->iconName( url );
-        if ( bDesktopFile && isLocal )
-        {
+        QString iconStr = KMimeType::findByUrl(url, mode)->iconName(url);
+        if (bDesktopFile && isLocal) {
             KDesktopFile config( url.path() );
             KConfigGroup group = config.desktopGroup();
             iconStr = group.readEntry( "Icon" );
@@ -897,8 +894,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Device );
             else
                 iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Application );
-        } else
+        } else {
             iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Place );
+        }
         iconButton->setIcon(iconStr);
         d->iconArea = iconButton;
         connect(iconButton, SIGNAL(iconChanged(QString)),
@@ -2717,7 +2715,6 @@ public:
     KComboBox* device;
     QLabel* mountpoint;
     QCheckBox* readonly;
-    KIconButton* unmounted;
 
     QStringList m_devicelist;
 };
@@ -2810,16 +2807,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
     KSeparator* sep = new KSeparator( Qt::Horizontal, d->m_frame);
     layout->addWidget(sep, 6, 0, 1, 2);
 
-    d->unmounted = new KIconButton( d->m_frame );
-    int bsize = 66 + 2 * d->unmounted->style()->pixelMetric(QStyle::PM_ButtonMargin);
-    d->unmounted->setFixedSize(bsize, bsize);
-    d->unmounted->setIconType(KIconLoader::Desktop, KIconLoader::Device);
-    layout->addWidget(d->unmounted, 7, 0);
-
-    label = new QLabel( i18n("Unmounted Icon"),  d->m_frame );
-    layout->addWidget(label, 7, 1);
-
-    layout->setRowStretch(8, 1);
+    layout->setRowStretch(7, 1);
 
     KUrl url = KIO::NetAccess::mostLocalUrl( _props->kurl(), _props );
     if (!url.isLocalFile()) {
@@ -2837,7 +2825,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
     QString deviceStr = config.readEntry( "Dev" );
     QString mountPointStr = config.readEntry( "MountPoint" );
     bool ro = config.readEntry( "ReadOnly", false );
-    QString unmountedStr = config.readEntry( "UnmountIcon" );
 
     fileSystem->setText(config.readEntry("FSType"));
 
@@ -2860,18 +2847,11 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
     d->readonly->setChecked( ro );
 
-    if ( unmountedStr.isEmpty() )
-        unmountedStr = KMimeType::defaultMimeTypePtr()->iconName(); // default icon
-
-    d->unmounted->setIcon( unmountedStr );
-
     connect( d->device, SIGNAL( activated( int ) ),
              this, SIGNAL( changed() ) );
     connect( d->device, SIGNAL( textChanged( const QString & ) ),
              this, SIGNAL( changed() ) );
     connect( d->readonly, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( d->unmounted, SIGNAL( iconChanged( const QString& ) ),
              this, SIGNAL( changed() ) );
 
     connect( d->device, SIGNAL( textChanged( const QString & ) ),
@@ -2990,9 +2970,6 @@ void KDevicePropsPlugin::applyChanges()
 
     config.writeEntry( "Dev", d->device->currentText() );
     config.writeEntry( "MountPoint", d->mountpoint->text() );
-
-    config.writeEntry( "UnmountIcon", d->unmounted->icon() );
-    kDebug(250) << "d->unmounted->icon() = " << d->unmounted->icon();
 
     config.writeEntry( "ReadOnly", d->readonly->isChecked() );
 
