@@ -18,6 +18,8 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include <auth/policy-gen/policy-gen.h>
 
 #include <cstdio>
