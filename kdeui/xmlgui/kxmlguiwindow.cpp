@@ -328,8 +328,8 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
     } else {
         // If the language has changed, we'll need to grab the new text and whatsThis
         KDualAction *tmpStatusBar = KStandardAction::showHideStatusbar(NULL, NULL, NULL);
-        d->showStatusBarAction->setGuiItemForState(KDualAction::InactiveState, tmpStatusBar->guiItemForState(KDualAction::InactiveState));
-        d->showStatusBarAction->setGuiItemForState(KDualAction::ActiveState, tmpStatusBar->guiItemForState(KDualAction::ActiveState));
+        d->showStatusBarAction->setInactiveGuiItem(tmpStatusBar->inactiveGuiItem());
+        d->showStatusBarAction->setActiveGuiItem(tmpStatusBar->activeGuiItem());
         delete tmpStatusBar;
     }
 }

@@ -32,8 +32,38 @@ public:
     void init(KDualAction *q_ptr);
     void updateFromCurrentState();
     KGuiItem& item(bool active) { return active ? items[1] : items[0]; }
-    KGuiItem& item(KDualAction::State state) { return state == KDualAction::ActiveState ? items[1] : items[0]; }
     void slotTriggered();
+
+    void updatedItem(bool active)
+    {
+        if (active == isActive) {
+            updateFromCurrentState();
+        }
+    }
+
+    void setGuiItem(bool active, const KGuiItem &_item)
+    {
+        item(active) = _item;
+        updatedItem(active);
+    }
+
+    void setIcon(bool active, const QIcon &icon)
+    {
+        item(active).setIcon(KIcon(icon));
+        updatedItem(active);
+    }
+
+    void setText(bool active, const QString &text)
+    {
+        item(active).setText(text);
+        updatedItem(active);
+    }
+
+    void setToolTip(bool active, const QString &toolTip)
+    {
+        item(active).setToolTip(toolTip);
+        updatedItem(active);
+    }
 };
 
 #endif /* KDUALACTION_P_H */

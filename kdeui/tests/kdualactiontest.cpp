@@ -39,10 +39,10 @@ private Q_SLOTS:
     void testSetGuiItem()
     {
         KDualAction action(0);
-        action.setGuiItemForState(KDualAction::InactiveState, KGuiItem(INACTIVE_TEXT));
-        action.setGuiItemForState(KDualAction::ActiveState, KGuiItem(ACTIVE_TEXT));
-        QCOMPARE(action.textForState(KDualAction::InactiveState), INACTIVE_TEXT);
-        QCOMPARE(action.textForState(KDualAction::ActiveState), ACTIVE_TEXT);
+        action.setInactiveGuiItem(KGuiItem(INACTIVE_TEXT));
+        action.setActiveGuiItem(KGuiItem(ACTIVE_TEXT));
+        QCOMPARE(action.inactiveText(), INACTIVE_TEXT);
+        QCOMPARE(action.activeText(), ACTIVE_TEXT);
         QCOMPARE(action.text(), INACTIVE_TEXT);
     }
 
@@ -50,11 +50,11 @@ private Q_SLOTS:
     {
         QIcon icon = KIcon("kde");
         KDualAction action(0);
-        QVERIFY(action.iconForState(KDualAction::InactiveState).isNull());
-        QVERIFY(action.iconForState(KDualAction::ActiveState).isNull());
+        QVERIFY(action.inactiveIcon().isNull());
+        QVERIFY(action.activeIcon().isNull());
         action.setIconForStates(icon);
-        QCOMPARE(action.iconForState(KDualAction::InactiveState), icon);
-        QCOMPARE(action.iconForState(KDualAction::ActiveState), icon);
+        QCOMPARE(action.inactiveIcon(), icon);
+        QCOMPARE(action.activeIcon(), icon);
     }
 
     void testSetActive()

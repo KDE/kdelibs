@@ -25,11 +25,6 @@
 
 #include "kdualaction_p.h"
 
-inline bool boolForState(KDualAction::State state)
-{
-    return state == KDualAction::ActiveState;
-}
-
 //---------------------------------------------------------------------
 // KDualActionPrivate
 //---------------------------------------------------------------------
@@ -85,62 +80,30 @@ KDualAction::~KDualAction()
     delete d;
 }
 
-void KDualAction::setGuiItemForState(KDualAction::State state, const KGuiItem &item)
-{
-    d->item(state) = item;
-    if (boolForState(state) == d->isActive) {
-        d->updateFromCurrentState();
-    }
-}
+void KDualAction::setActiveGuiItem(const KGuiItem &item)   { d->setGuiItem(true, item); }
+KGuiItem KDualAction::activeGuiItem() const                { return d->item(true); }
+void KDualAction::setInactiveGuiItem(const KGuiItem &item) { d->setGuiItem(false, item); }
+KGuiItem KDualAction::inactiveGuiItem() const              { return d->item(false); }
 
-KGuiItem KDualAction::guiItemForState(KDualAction::State state) const
-{
-    return d->item(state);
-}
+void KDualAction::setActiveIcon(const QIcon &icon)   { d->setIcon(true, icon); }
+QIcon KDualAction::activeIcon() const                { return d->item(true).icon(); }
+void KDualAction::setInactiveIcon(const QIcon &icon) { d->setIcon(false, icon); }
+QIcon KDualAction::inactiveIcon() const              { return d->item(false).icon(); }
 
-void KDualAction::setTextForState(KDualAction::State state, const QString &text)
-{
-    d->item(state).setText(text);
-    if (boolForState(state) == d->isActive) {
-        d->updateFromCurrentState();
-    }
-}
+void KDualAction::setActiveText(const QString &text)   { d->setText(true, text); }
+QString KDualAction::activeText() const                { return d->item(true).text(); }
+void KDualAction::setInactiveText(const QString &text) { d->setText(false, text); }
+QString KDualAction::inactiveText() const              { return d->item(false).text(); }
 
-QString KDualAction::textForState(KDualAction::State state) const
-{
-    return d->item(state).text();
-}
-
-void KDualAction::setIconForState(KDualAction::State state, const QIcon &icon)
-{
-    d->item(state).setIcon(KIcon(icon));
-    if (boolForState(state) == d->isActive) {
-        d->updateFromCurrentState();
-    }
-}
+void KDualAction::setActiveToolTip(const QString &toolTip)   { d->setToolTip(true, toolTip); }
+QString KDualAction::activeToolTip() const                   { return d->item(true).toolTip(); }
+void KDualAction::setInactiveToolTip(const QString &toolTip) { d->setToolTip(false, toolTip); }
+QString KDualAction::inactiveToolTip() const                 { return d->item(false).toolTip(); }
 
 void KDualAction::setIconForStates(const QIcon &icon)
 {
-    setIconForState(KDualAction::InactiveState, icon);
-    setIconForState(KDualAction::ActiveState, icon);
-}
-
-QIcon KDualAction::iconForState(KDualAction::State state) const
-{
-    return d->item(state).icon();
-}
-
-void KDualAction::setToolTipForState(KDualAction::State state, const QString &toolTip)
-{
-    d->item(state).setToolTip(toolTip);
-    if (boolForState(state) == d->isActive) {
-        d->updateFromCurrentState();
-    }
-}
-
-QString KDualAction::toolTipForState(KDualAction::State state) const
-{
-    return d->item(state).toolTip();
+    setInactiveIcon(icon);
+    setActiveIcon(icon);
 }
 
 void KDualAction::setAutoToggle(bool value)

@@ -80,49 +80,89 @@ public:
     ~KDualAction();
 
     /**
-     * Sets the icon, text and tooltip for the state with a KGuiItem.
+     * Sets the KGuiItem for the active state
      */
-    void setGuiItemForState(State state, const KGuiItem &item);
+    void setActiveGuiItem(const KGuiItem &);
 
     /**
-     * Gets the KGuiItem for the state.
+     * Gets the KGuiItem for the active state
      */
-    KGuiItem guiItemForState(State state) const;
+    KGuiItem activeGuiItem() const;
 
     /**
-     * Sets the text for the state.
+     * Sets the KGuiItem for the inactive state
      */
-    void setTextForState(State state, const QString &text);
+    void setInactiveGuiItem(const KGuiItem &);
 
     /**
-     * Gets the text for the state.
+     * Gets the KGuiItem for the inactive state
      */
-    QString textForState(State state) const;
+    KGuiItem inactiveGuiItem() const;
+
+    /**
+     * Sets the icon for the active state
+     */
+    void setActiveIcon(const QIcon &);
+
+    /**
+     * Gets the icon for the active state
+     */
+    QIcon activeIcon() const;
+
+    /**
+     * Sets the icon for the inactive state
+     */
+    void setInactiveIcon(const QIcon &);
+
+    /**
+     * Gets the icon for the inactive state
+     */
+    QIcon inactiveIcon() const;
+
+    /**
+     * Sets the text for the active state
+     */
+    void setActiveText(const QString &);
+
+    /**
+     * Gets the text for the active state
+     */
+    QString activeText() const;
+
+    /**
+     * Sets the text for the inactive state
+     */
+    void setInactiveText(const QString &);
+
+    /**
+     * Gets the text for the inactive state
+     */
+    QString inactiveText() const;
+
+    /**
+     * Sets the tooltip for the active state
+     */
+    void setActiveToolTip(const QString &);
+
+    /**
+     * Gets the tooltip for the active state
+     */
+    QString activeToolTip() const;
+
+    /**
+     * Sets the tooltip for the inactive state
+     */
+    void setInactiveToolTip(const QString &);
+
+    /**
+     * Gets the tooltip for the inactive state
+     */
+    QString inactiveToolTip() const;
 
     /**
      * Convenience method to set the icon for both active and inactive states.
      */
     void setIconForStates(const QIcon &icon);
-
-    /**
-     * Sets the icon for the state.
-     */
-    void setIconForState(State state, const QIcon &icon);
-
-    /**
-     * Gets the icon for the state.
-     */
-    QIcon iconForState(State) const;
-
-    /**
-     * Sets the tooltip for the state.
-     */
-    void setToolTipForState(State state, const QString &tip);
-
-    /**
-     * Gets the tooltip for the state.
-     */
-    QString toolTipForState(State state) const;
 
     /**
      * Returns the action state.
