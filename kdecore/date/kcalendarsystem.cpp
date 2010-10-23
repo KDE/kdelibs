@@ -907,6 +907,21 @@ QDate KCalendarSystemPrivate::lastDayOfYear( int year ) const
     return QDate::fromJulianDay( jd );
 }
 
+QDate KCalendarSystemPrivate::firstDayOfMonth( int year, int month ) const
+{
+    int jd;
+    q->dateToJulianDay( year, month, 1, jd );
+    return QDate::fromJulianDay( jd );
+}
+
+QDate KCalendarSystemPrivate::lastDayOfMonth( int year, int month ) const
+{
+    int jd;
+    q->dateToJulianDay( year, month, 1, jd );
+    jd = jd + daysInMonth( year, month ) - 1;
+    return QDate::fromJulianDay( jd );
+}
+
 const KLocale * KCalendarSystemPrivate::locale() const
 {
     if ( m_locale ) {
@@ -1569,7 +1584,9 @@ int KCalendarSystem::daysInMonth( const QDate &date ) const
     Q_D( const KCalendarSystem );
 
     if ( isValid( date ) ) {
-        return d->daysInMonth( year( date ), month( date ) );
+        int year, month;
+        getDate( date, &year, &month, 0 );
+        return d->daysInMonth( year, month );
     }
 
     return -1;
@@ -1697,6 +1714,106 @@ bool KCalendarSystem::isLeapYear( const QDate &date ) const
     }
 
     return false;
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::firstDayOfYear( int year ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, 1, 1 ) ) {
+        return d->firstDayOfYear( year );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::lastDayOfYear( int year ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, 1, 1 ) ) {
+        return d->lastDayOfYear( year );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::firstDayOfYear( const QDate &date ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( date ) ) {
+        return d->firstDayOfYear( year( date ) );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::lastDayOfYear( const QDate &date ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( date ) ) {
+        return d->lastDayOfYear( year( date ) );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::firstDayOfMonth( int year, int month ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, month, 1 ) ) {
+        return d->firstDayOfMonth( year, month );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::lastDayOfMonth( int year, int month ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( year, month, 1 ) ) {
+        return d->lastDayOfMonth( year, month );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::firstDayOfMonth( const QDate &date ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( date ) ) {
+        int year, month;
+        getDate( date, &year, &month, 0 );
+        return d->firstDayOfMonth( year, month );
+    }
+
+    return QDate();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QDate KCalendarSystem::lastDayOfMonth( const QDate &date ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( isValid( date ) ) {
+        int year, month;
+        getDate( date, &year, &month, 0 );
+        return d->lastDayOfMonth( year, month );
+    }
+
+    return QDate();
 }
 
 QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) const

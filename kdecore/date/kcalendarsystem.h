@@ -26,10 +26,9 @@
 #include "klocale.h"  // needed for enums
 
 #include <QtCore/QStringList>
+#include <QtCore/QDate>
 
 class KCalendarSystemPrivate;
-
-class QDate;
 
 /**
  * KCalendarSystem abstract base class, provides support for local Calendar Systems in KDE
@@ -611,6 +610,94 @@ public:
      * @return @c true if the date falls in a leap year, @c false otherwise
      */
     virtual bool isLeapYear( const QDate &date ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the first day of the year
+     *
+     * @param date The year to return the date for
+     * @return The first day of the year
+     */
+    QDate firstDayOfYear( int year ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the last day of the year
+     *
+     * @param date The year to return the date for
+     * @return The last day of the year
+     */
+    QDate lastDayOfYear( int year ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the first day of the year
+     *
+     * @param date The year to return the date for, defaults to today
+     * @return The first day of the year
+     */
+    QDate firstDayOfYear( const QDate &date = QDate::currentDate() ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the last day of the year
+     *
+     * @param date The year to return the date for, defaults to today
+     * @return The last day of the year
+     */
+    QDate lastDayOfYear( const QDate &date = QDate::currentDate() ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the first day of the month
+     *
+     * @param date The month to return the date for, defaults to today
+     * @return The first day of the month
+     */
+    QDate firstDayOfMonth( int year, int month ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the last day of the month
+     *
+     * @param date The month to return the date for, defaults to today
+     * @return The last day of the month
+     */
+    QDate lastDayOfMonth( int year, int month ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the first day of the month
+     *
+     * @param date The month to return the date for, defaults to today
+     * @return The first day of the month
+     */
+    QDate firstDayOfMonth( const QDate &date = QDate::currentDate() ) const;
+
+    //KDE5 Make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a QDate containing the last day of the month
+     *
+     * @param date The month to return the date for, defaults to today
+     * @return The last day of the month
+     */
+    QDate lastDayOfMonth( const QDate &date = QDate::currentDate() ) const;
 
     /**
      * Gets specific calendar type month name for a given month number

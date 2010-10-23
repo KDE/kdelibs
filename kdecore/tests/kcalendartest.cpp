@@ -996,6 +996,21 @@ void KCalendarTest::compareMonthDifference( const KCalendarSystem *calendar,
     }
 }
 
+void KCalendarTest::testFirstLast()
+{
+    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    QDate testDate = QDate( 2010, 6, 15 );
+
+    QCOMPARE( calendar->firstDayOfYear( testDate ),  QDate( 2010,  1, 1 ) );
+    QCOMPARE( calendar->lastDayOfYear( testDate ),   QDate( 2010, 12, 31 ) );
+    QCOMPARE( calendar->firstDayOfYear( 2010 ),      QDate( 2010,  1,  1 ) );
+    QCOMPARE( calendar->lastDayOfYear( 2010 ),       QDate( 2010, 12, 31 ) );
+    QCOMPARE( calendar->firstDayOfMonth( testDate ), QDate( 2010,  6,  1 ) );
+    QCOMPARE( calendar->lastDayOfMonth( testDate ),  QDate( 2010,  6, 30 ) );
+    QCOMPARE( calendar->firstDayOfMonth( 2010, 6 ),  QDate( 2010,  6,  1 ) );
+    QCOMPARE( calendar->lastDayOfMonth( 2010, 6 ),   QDate( 2010,  6, 30 ) );
+}
+
 void KCalendarTest::testEra()
 {
     KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( "gregorian" ) );

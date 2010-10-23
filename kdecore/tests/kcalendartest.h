@@ -65,6 +65,7 @@ private Q_SLOTS:
     void testIsoWeekDate();
     void testDayOfYearDate();
     void testDateDifference();
+    void testFirstLast();
     void testEra();
     void testGregorian();
     void testHebrew();

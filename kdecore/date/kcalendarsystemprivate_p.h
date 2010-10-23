@@ -89,6 +89,8 @@ public:
     QString simpleDateString( const QString &str ) const;
     QDate firstDayOfYear( int year ) const;
     QDate lastDayOfYear( int year ) const;
+    QDate firstDayOfMonth( int year, int month ) const;
+    QDate lastDayOfMonth( int year, int month ) const;
     const KLocale *locale() const;
     KCalendarEra era( const QDate &eraDate ) const;
     KCalendarEra era( const QString &eraName, int yearInEra ) const;
@@ -97,7 +99,6 @@ public:
     void addEra( const QChar &direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
                  const QString &name, const QString &shortName, const QString &format );
     KSharedConfig::Ptr config();
-
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;
