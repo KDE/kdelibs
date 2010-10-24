@@ -27,7 +27,6 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 KDECORE_UNIT_TESTS(
  karchivetest
  kdirwatch_unittest
- klocaletest
  klocaletimeformattest
  klocalizedstringtest
  kmountpointtest
@@ -92,10 +91,17 @@ KDECORE_EXECUTABLE_TESTS(
  startserviceby
 )
 
+########### klocaletest ###############
+
+# compile into the test since it's not exported
+set(klocaletest_SRCS klocaletest.cpp ../date/kdayperiod.cpp)
+kde4_add_unit_test(klocaletest ${klocaletest_SRCS})
+target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+
 ########### kdatetimeformattertest ###############
 
-# compile kdatetimeformatter.cpp into the test since it's not exported
-set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter)
+# compile KDateTimeFormatter and KDayPeriod into the test since it's not exported
+set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 

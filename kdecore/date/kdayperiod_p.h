@@ -51,7 +51,7 @@ class KDayPeriodPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KDayPeriod
+class KDayPeriod
 {
 public:
     /**
