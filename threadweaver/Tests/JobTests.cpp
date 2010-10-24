@@ -423,6 +423,15 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     QVERIFY( sequence.length() == NumberOfBits );
 }
 
+void JobTests::DequeSuspendedSequence()
+{
+    ThreadWeaver::Weaver weaver;
+    weaver.suspend();
+    weaver.enqueue(new ThreadWeaver::JobSequence(this) );
+    weaver.dequeue();
+    // don't crash
+}
+
 QTEST_MAIN ( JobTests )
 
 #include "JobTests.moc"

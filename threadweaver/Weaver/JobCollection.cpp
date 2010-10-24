@@ -187,7 +187,10 @@ void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
     {
         dequeueElements();
 
-        d->elements->at( 0 )->aboutToBeDequeued( weaver );
+        if ( !d->elements->isEmpty() )
+        {
+            d->elements->at( 0 )->aboutToBeDequeued( weaver );
+        }
     }
 
     d->weaver = 0;
