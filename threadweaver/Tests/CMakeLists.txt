@@ -7,13 +7,11 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 ########### next target ###############
 
-## TODO: re-enable and fix this test!
+set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
 
-#set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
+kde4_add_unit_test(ThreadWeaverJobTests ${JobTests_SRCS})
 
-#kde4_add_unit_test(ThreadWeaverJobTests ${JobTests_SRCS})
-
-#target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} threadweaver)
 
 ########### next target ###############
 

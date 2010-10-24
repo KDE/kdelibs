@@ -44,11 +44,13 @@ private Q_SLOTS:
 //     in the right order, and the order is randomized.
     void MassiveJobSequenceTest();
 
+    /* TODO: reenable
     void SimpleRecursiveSequencesTest();
 
     void SequenceOfSequencesTest();
 
     void QueueAndStopTest();
+    */
 
     void ResourceRestrictionPolicyBasicsTest ();
 
