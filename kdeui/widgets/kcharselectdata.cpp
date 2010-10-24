@@ -821,8 +821,8 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
         quint32 seeAlsoOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 22);
 
         for (int j = 0;  j < seeAlsoCount;  j++) {
-            quint16 unicode = qFromLittleEndian<quint16> (udata + seeAlsoOffset);
-            appendToIndex(&i, unicode, QString::number(unicode, 16));
+            quint16 seeAlso = qFromLittleEndian<quint16> (udata + seeAlsoOffset);
+            appendToIndex(&i, unicode, formatCode(seeAlso, 4, QString()));
             equivOffset += strlen(data + equivOffset) + 1;
         }
     }
