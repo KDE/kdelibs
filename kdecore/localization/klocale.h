@@ -1211,6 +1211,26 @@ public:
     QString country() const;
 
     /**
+     * @since 4.6
+     *
+     * Returns the Country Division Code of the Country where the user lives.
+     * When no value is set, then the Country Code will be returned.
+     *
+     * The returned code complies with the ISO 3166-2 standard.
+     * See http://en.wikipedia.org/wiki/ISO_3166-2 for details.
+     *
+     * Note that unlike country() this method will return the correct case,
+     * i.e. normally uppercase..
+     *
+     * In KDE 4.6 it is the apps responsibility to obtain a translation for the
+     * code, translation and other services will be priovided in KDE 4.7.
+     *
+     * @return the Country Division Code for the user
+     * @see setCountryDivisionCode
+     */
+    QString countryDivisionCode() const;
+
+    /**
      * Returns the language codes selected by user, ordered by decreasing
      * priority.
      *
@@ -1790,6 +1810,23 @@ public:
      * @return @c true on success, @c false on failure
      */
     bool setCountry(const QString & country, KConfig *config);
+
+    /**
+     * @since 4.6
+     *
+     * Sets the Country Division Code of the Country where the user lives.
+     *
+     * The code must comply with the ISO 3166-2 standard.
+     * See http://en.wikipedia.org/wiki/ISO_3166-2 for details.
+     *
+     * In KDE 4.6 it is the apps responsibility to validate the input,
+     * full validation and other services will be provided in KDE 4.7.
+     *
+     * @param countryDivision the Country Division Code for the user
+     * @return @c true on success, @c false on failure
+     * @see countryDivisionCode
+     */
+    bool setCountryDivisionCode(const QString & countryDivision);
 
     /**
      * Changes the current language. The current language will be left

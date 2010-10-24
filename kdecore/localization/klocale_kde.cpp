@@ -132,6 +132,7 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
 
     // Country settings
     m_country = rhs.m_country;
+    m_countryDivisionCode = rhs.m_countryDivisionCode;
 
     // Language settings
     m_language = rhs.m_language;
@@ -421,6 +422,9 @@ void KLocalePrivate::initFormat(KConfig *config)
         save = (type)entry.readEntry(key, int(default)); \
         save = (type)cg.readEntry(key, int(save));
 
+    // Country settings
+    readConfigEntry("CountryDivisionCode", QString(), m_countryDivisionCode);
+
     // Numeric formats
     readConfigNumEntry("DecimalPlaces", 2, m_decimalPlaces, int);
 
@@ -539,6 +543,12 @@ bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
     }
 
     initFormat(config);
+    return true;
+}
+
+bool KLocalePrivate::setCountryDivisionCode(const QString &countryDivisionCode)
+{
+    m_countryDivisionCode = countryDivisionCode;
     return true;
 }
 
@@ -687,6 +697,15 @@ QString KLocalePrivate::language() const
 QString KLocalePrivate::country() const
 {
     return m_country;
+}
+
+QString KLocalePrivate::countryDivisionCode() const
+{
+    if (m_countryDivisionCode.isEmpty()) {
+        return country().toUpper();
+    } else {
+        return m_countryDivisionCode;
+    }
 }
 
 KCurrencyCode *KLocalePrivate::currency()

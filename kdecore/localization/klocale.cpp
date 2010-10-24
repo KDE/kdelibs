@@ -77,6 +77,11 @@ bool KLocale::setCountry(const QString &country, KConfig *config)
     return d->setCountry(country, config);
 }
 
+bool KLocale::setCountryDivisionCode(const QString &countryDivisionCode)
+{
+    return d->setCountryDivisionCode(countryDivisionCode);
+}
+
 bool KLocale::setLanguage(const QString &language, KConfig *config)
 {
     return d->setLanguage(language, config);
@@ -111,6 +116,11 @@ QString KLocale::language() const
 QString KLocale::country() const
 {
     return d->country();
+}
+
+QString KLocale::countryDivisionCode() const
+{
+    return d->countryDivisionCode();
 }
 
 KCurrencyCode *KLocale::currency() const

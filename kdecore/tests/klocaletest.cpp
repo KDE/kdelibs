@@ -489,6 +489,14 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( locale.dayPeriodForTime( QTime( 21, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T3" ) );
 }
 
+void KLocaleTest::testCountryDivision()
+{
+    KLocale locale(*KGlobal::locale());
+    QCOMPARE( locale.countryDivisionCode(), locale.country().toUpper() );
+    QVERIFY( locale.setCountryDivisionCode( "US-NY" ) );
+    QCOMPARE( locale.countryDivisionCode(), QString( "US-NY" ) );
+}
+
 void
 KLocaleTest::prettyFormatDuration()
 {

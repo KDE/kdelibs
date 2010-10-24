@@ -134,6 +134,18 @@ public:
      */
     virtual QString countryCodeToName(const QString &country) const;
 
+    /**
+     * @internal Sets the Country Division Code
+     * The worker of the same-name KLocale API function.
+     */
+    bool setCountryDivisionCode(const QString & countryDivision);
+
+    /**
+     * @internal Returns the Country Division Code
+     * The worker of the same-name KLocale API function.
+     */
+    QString countryDivisionCode() const;
+
     /**************************
      **  Language settings   **
      **************************/
@@ -1039,6 +1051,7 @@ public:
 private:
     // Country settings
     QString m_country;
+    QString m_countryDivisionCode;
 
     // Language settings
     QString      m_language;
