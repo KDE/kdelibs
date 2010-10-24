@@ -31,6 +31,7 @@
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
+#include <libexslt/exslt.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -112,6 +113,8 @@ int main(int argc, char **argv) {
         args->usage();
         return ( 1 );
     }
+
+    exsltRegisterAll();
 
     // Need to set SRCDIR before calling fillInstance
     QString srcdir;

@@ -22,6 +22,7 @@
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
+#include <libexslt/exslt.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +60,8 @@ int main(int argc, char **argv) {
         qCritical() << "checkFile failed in " << customizationCatalog;
         return ( 2 );
     }
+
+    exsltRegisterAll();
 
     QByteArray catalogs;
     catalogs += customizationCatalog.toUtf8();

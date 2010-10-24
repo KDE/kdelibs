@@ -30,6 +30,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
+#include <libexslt/exslt.h>
 
 extern "C"
 {
@@ -50,6 +51,7 @@ extern "C"
         LIBXML_TEST_VERSION
         xmlSubstituteEntitiesDefault(1);
         xmlLoadExtDtdDefaultValue = 1;
+        exsltRegisterAll();
 
         HelpProtocol slave( true, argv[2], argv[3] );
         slave.dispatchLoop();
