@@ -17,13 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <khtml_export.h>
+#include "khtmlimage.h"
 
-// Defined in libkhtml
-extern "C"  KDE_EXPORT void* init_khtmlimagefactory();
-
-// The real entry point for khtmlimagepart
-extern "C"  KDE_EXPORT void* init_khtmlimagepart() {
-    return init_khtmlimagefactory();
-}
-
+K_EXPORT_PLUGIN( KHTMLImageFactory )

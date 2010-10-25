@@ -37,10 +37,6 @@
 #include <kvbox.h>
 #include <kactioncollection.h>
 
-// Export init_khtmlimagefactory. This way we don't have to export the whole class
-// just for khtmlimagepart. See khtmlimage_init.cpp
-K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory, KHTMLImageFactory )
-
 KComponentData *KHTMLImageFactory::s_componentData = 0;
 
 KHTMLImageFactory::KHTMLImageFactory()
@@ -53,16 +49,19 @@ KHTMLImageFactory::~KHTMLImageFactory()
     delete s_componentData;
 }
 
-KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget,
-                                                   QObject *parent,
-                                                   const char *className, const QStringList &args )
+QObject * KHTMLImageFactory::create(const char* iface,
+                                    QWidget *parentWidget,
+                                    QObject *parent,
+                                    const QVariantList& args,
+                                    const QString &keyword)
 {
-  KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
-    if ( strcmp( className, "Browser/View" ) == 0 ) // old hack
+    Q_UNUSED(keyword);
+    KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
+    if (strcmp( iface, "Browser/View" ) == 0) // old hack, now unused - KDE5: remove
         prof = KHTMLPart::BrowserViewGUI;
     if (args.contains("Browser/View"))
         prof = KHTMLPart::BrowserViewGUI;
-  return new KHTMLImage( parentWidget, parent, prof );
+    return new KHTMLImage( parentWidget, parent, prof );
 }
 
 KHTMLImage::KHTMLImage( QWidget *parentWidget,
@@ -80,7 +79,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
 
     // We do not want our subpart to be destroyed when its widget is,
     // since that may cause all KHTMLParts to die when we're dealing
-    // with 
+    // with
     m_khtml->setAutoDeletePart( false );
 
     connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );

@@ -37,17 +37,20 @@ namespace khtml
 
 /**
  * @internal
+ * (Only exported for khtmlimage_init.cpp, i.e. the part)
  */
-class KHTMLImageFactory : public KParts::Factory
+class KHTML_EXPORT KHTMLImageFactory : public KPluginFactory
 {
     Q_OBJECT
 public:
     KHTMLImageFactory();
     virtual ~KHTMLImageFactory();
 
-    virtual KParts::Part *createPartObject( QWidget *parentWidget,
-                                            QObject *parent,
-                                            const char *className, const QStringList &args );
+    virtual QObject *create(const char* iface,
+                            QWidget *parentWidget,
+                            QObject *parent,
+                            const QVariantList& args,
+                            const QString &keyword);
 
     static const KComponentData &componentData() { return *s_componentData; }
 
