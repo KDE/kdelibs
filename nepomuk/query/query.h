@@ -490,7 +490,7 @@ namespace Nepomuk {
              *
              * \since 4.6
              *
-             * \sa Query::optimized()
+             * \sa Term::optimized()
              */
             Query optimized() const;
 
