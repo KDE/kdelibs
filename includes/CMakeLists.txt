@@ -1040,6 +1040,7 @@ install(FILES
   Nepomuk/Vocabulary/NFO
   Nepomuk/Vocabulary/NCAL
   Nepomuk/Vocabulary/NCO
+  Nepomuk/Vocabulary/NMO
   Nepomuk/Vocabulary/NMM
   Nepomuk/Vocabulary/PIMO
   Nepomuk/Vocabulary/TMO
