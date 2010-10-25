@@ -25,6 +25,9 @@ void TestBase::initTestCase()
 {
     m_tmpDir = new KTempDir();
     const Soprano::Backend* backend = Soprano::PluginManager::instance()->discoverBackendByName("virtuoso");
+    if( !backend ) {
+        QSKIP( "Unable to load Virtuoso backend, skipping test.", SkipAll );
+    }
     m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, m_tmpDir->name() ));
     Nepomuk::ResourceManager::instance()->setOverrideMainModel( m_model );
 }
