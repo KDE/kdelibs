@@ -55,6 +55,8 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     m_selectedText->setCheckable(true);
     m_regExp = m_incMenu->addAction(i18n("Regular e&xpression"));
     m_regExp->setCheckable(true);
+    m_findLinksOnly = m_incMenu->addAction(i18n("Find &links only"));
+    m_findLinksOnly->setCheckable(true);
 
     m_atEnd = false;
 
@@ -72,6 +74,7 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     connect( m_wholeWordsOnly, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
     connect( m_fromCursor, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
     connect( m_regExp, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
+    connect( m_findLinksOnly, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
 
     m_find->setFocus();
 }
@@ -95,6 +98,8 @@ long KHTMLFindBar::options() const
         options |= KFind::SelectedText;
     if (d->m_regExp->isChecked())
         options |= KFind::RegularExpression;
+    if (d->m_findLinksOnly->isChecked())
+        options |= KHTMLPart::FindLinksOnly;
     return options | KHTMLPart::FindNoPopups /* | KFind::FindIncremental */;
 }
 
@@ -189,6 +194,7 @@ void KHTMLFindBar::setOptions(long options)
     d->m_fromCursor->setChecked((d->m_enabled & KFind::FromCursor) && (options & KFind::FromCursor));
     d->m_selectedText->setChecked((d->m_enabled & KFind::SelectedText) && (options & KFind::SelectedText));
     d->m_regExp->setChecked((d->m_enabled & KFind::RegularExpression) && (options & KFind::RegularExpression));
+    d->m_regExp->setChecked((d->m_enabled & KHTMLPart::FindLinksOnly) && (options & KHTMLPart::FindLinksOnly));
 }
 
 void KHTMLFindBar::setFoundMatch( bool match )

@@ -122,6 +122,7 @@ private:
     QAction *m_fromCursor;
     QAction *m_selectedText;
     QAction *m_regExp;
+    QAction *m_findLinksOnly;
     QString m_prevPattern;
     bool m_atEnd;
 };
