@@ -33,7 +33,7 @@
 
 KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     KHTMLViewBarWidget( true, parent ),
-    m_enabled( KFind::WholeWordsOnly | KFind::FromCursor | KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression )
+    m_enabled( KFind::WholeWordsOnly | KFind::FromCursor | KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression | KHTMLPart::FindLinksOnly )
 {
     setupUi( centralWidget() );
 

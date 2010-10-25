@@ -400,18 +400,21 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                        "Find the previous occurrence of the text that you "
                                        "have found using the <b>Find Text</b> function.</qt>" ) );
 
+  // These two actions aren't visible in the menus, but exist for the (configurable) shortcut
   d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
   d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
+  d->m_paFindAheadText->setHelpText(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
   connect( d->m_paFindAheadText, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadText()) );
 
   d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), this );
   actionCollection()->addAction( "findAheadLink", d->m_paFindAheadLinks );
-  d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
+  // The issue is that it sets the (sticky) option FindLinksOnly, so
+  // if you trigger this shortcut once by mistake, Esc and Ctrl+F will still have the option set.
+  // Better let advanced users configure a shortcut for this advanced option
+  //d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
+  d->m_paFindAheadLinks->setHelpText(i18n("This shortcut shows the find bar, and sets the option \"Find links only\"."));
   connect( d->m_paFindAheadLinks, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadLink() ) );
-
-  d->m_paFindAheadText->setEnabled( false );
-  d->m_paFindAheadLinks->setEnabled( false );
 
   if ( parentPart() )
   {
@@ -3000,42 +3003,27 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindAheadText()
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-  KParts::ReadOnlyPart *part = currentFrame();
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(currentFrame());
   if (!part)
     return;
-  if (!part->inherits("KHTMLPart") )
-  {
-      kError(6000) << "part is a" << part->metaObject()->className() << ", can't do a search into it";
-      return;
-  }
-  static_cast<KHTMLPart *>( part )->view()->startFindAhead( false );
-#endif // KHTML_NO_TYPE_AHEAD_FIND
+  part->findText();
+  KHTMLFindBar* findBar = part->d->m_find.findBar();
+  findBar->setOptions(findBar->options() & ~FindLinksOnly);
 }
 
 void KHTMLPart::slotFindAheadLink()
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-  KParts::ReadOnlyPart *part = currentFrame();
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(currentFrame());
   if (!part)
     return;
-  if (!part->inherits("KHTMLPart") )
-  {
-      kError(6000) << "part is a" << part->metaObject()->className() << ", can't do a search into it";
-      return;
-  }
-  static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
-#endif // KHTML_NO_TYPE_AHEAD_FIND
+  part->findText();
+  KHTMLFindBar* findBar = part->d->m_find.findBar();
+  findBar->setOptions(findBar->options() | FindLinksOnly);
 }
 
-void KHTMLPart::enableFindAheadActions( bool enable )
+void KHTMLPart::enableFindAheadActions( bool )
 {
-  // only the topmost one has shortcuts
-  KHTMLPart* p = this;
-  while( p->parentPart())
-    p = p->parentPart();
-  p->d->m_paFindAheadText->setEnabled( enable );
-  p->d->m_paFindAheadLinks->setEnabled( enable );
+  // ### remove me
 }
 
 void KHTMLPart::slotFindDialogDestroyed()

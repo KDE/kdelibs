@@ -119,7 +119,7 @@ namespace KJS {
     class ScheduledAction;
     class DOMSelection;
     class DOMSelectionProtoFunc;
-    class KHTMLPartScriptable;    
+    class KHTMLPartScriptable;
 }
 
 namespace KParts
@@ -256,7 +256,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
-  Q_PROPERTY( DNSPrefetch dnsPrefetch READ dnsPrefetch WRITE setDNSPrefetch )  
+  Q_PROPERTY( DNSPrefetch dnsPrefetch READ dnsPrefetch WRITE setDNSPrefetch )
 
   /*
    *
@@ -283,7 +283,7 @@ public:
        DNSPrefetchEnabled,
        DNSPrefetchOnlyWWWAndSLD
   };
-                           
+
   /**
    * Constructs a new KHTMLPart.
    *
@@ -525,9 +525,9 @@ public:
    * DNS prefetch support.
    * Not calling this function is the only way to let the default settings apply.
    *
-   * @note This setting has no effect if @ref setOnlyLocalReferences() mode is enabled. 
+   * @note This setting has no effect if @ref setOnlyLocalReferences() mode is enabled.
    *
-   * @param pmode the mode to set. See @ref DNSPrefetch enum for explanation of values. 
+   * @param pmode the mode to set. See @ref DNSPrefetch enum for explanation of values.
    *
    * @since 4.2
    */
@@ -1448,7 +1448,7 @@ private Q_SLOTS:
   void slotDebugRenderTree();
 
   void slotDebugFrameTree();
-  
+
   /**
    * @internal
    */
@@ -1748,7 +1748,7 @@ private:
    * always the same.
    * The sequence is reset in clear().
    */
-  QString requestFrameName();  
+  QString requestFrameName();
 
   // Requests loading of a frame or iframe element
   bool loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
@@ -1771,7 +1771,7 @@ private:
 
   // This method does the loading inside a ChildFrame once we know what mimetype to
   // load it as
-  bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );  
+  bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
 
   // helper for reporting ChildFrame load failure
   void childLoadFailure( khtml::ChildFrame *child );
@@ -1791,7 +1791,7 @@ private:
   // Helper for executing javascript: or about: protocols
   bool navigateLocalProtocol( khtml::ChildFrame *child, KParts::ReadOnlyPart *part,
                               const KUrl& url );
-  
+
 
   DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node, bool svg = false );
 

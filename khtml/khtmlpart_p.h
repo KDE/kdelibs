@@ -178,7 +178,7 @@ public:
             m_bDNSPrefetch = part->d->m_bDNSPrefetch;
             m_bDNSPrefetchIsDefault = part->d->m_bDNSPrefetchIsDefault;
             m_onlyLocalReferences = part->d->m_onlyLocalReferences;
-            m_forcePermitLocalImages = part->d->m_forcePermitLocalImages;            
+            m_forcePermitLocalImages = part->d->m_forcePermitLocalImages;
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
             m_caretMode = part->d->m_caretMode;
@@ -304,7 +304,7 @@ public:
   bool m_bLoadEventEmitted;
   bool m_haveEncoding;
   bool m_onlyLocalReferences;
-  bool m_forcePermitLocalImages;  
+  bool m_forcePermitLocalImages;
   bool m_redirectLockHistory;
 
   KUrl m_workingURL;
@@ -417,7 +417,7 @@ public:
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
 
   time_t m_userStyleSheetLastModified;
-  
+
   QSet<QString> m_lookedupHosts;
   static bool s_dnsInitialised;
 

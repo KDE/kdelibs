@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="5">
+<kpartgui name="khtmlpart" version="6">
 <MenuBar>
  <Menu name="edit"><text>&amp;Edit</text>
   <Action name="selectAll" />
@@ -7,8 +7,6 @@
   <Action name="find" />
   <Action name="findNext" />
   <Action name="findPrevious" />
-  <Action name="findAheadText" />
-  <Action name="findAheadLink" />
  </Menu>
 </MenuBar>
 <ActionProperties>
