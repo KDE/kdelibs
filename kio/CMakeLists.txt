@@ -82,6 +82,7 @@ set(kiocore_STAT_SRCS
   kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
   kio/kfileitem.cpp
+  kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
@@ -313,6 +314,7 @@ install( FILES
  renamedialogplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
  kio/kfilewrite.desktop
+ kio/kfileitemactionplugin.desktop
  kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
@@ -376,6 +378,7 @@ install( FILES
   kio/kemailsettings.h
   kio/kfileitem.h
   kio/kfileitemlistproperties.h
+  kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
   kio/kfileitemdelegate.h
   kio/kfilemetainfo.h

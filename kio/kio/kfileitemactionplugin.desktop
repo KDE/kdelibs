@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KFileItemAction/Plugin
+Comment=Plugin for the KIO file item context menu
