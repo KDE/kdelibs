@@ -59,7 +59,8 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 }
 
 UDevManager::UDevManager(QObject *parent)
-    : d(new Private)
+    : Solid::Ifaces::DeviceManager(parent),
+      d(new Private)
 {
     d->m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
                              << Solid::DeviceInterface::Processor
@@ -99,6 +100,8 @@ QStringList UDevManager::allDevices()
 QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
                                           Solid::DeviceInterface::Type type)
 {
+    Q_UNUSED(parentUdi)
+    Q_UNUSED(type)
     // TODO: actually use the query parameters
     return QStringList();
 }
