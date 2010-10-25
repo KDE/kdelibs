@@ -35,6 +35,7 @@
 class QStringList;
 class KAboutData;
 class KConfigDialogManager;
+class KCoreConfigSkeleton;
 class KConfigSkeleton;
 class KCModulePrivate;
 class KComponentData;
@@ -205,7 +206,7 @@ public:
    * @return a list of @ref KConfigDialogManager's in use, if any.
    */
   QList<KConfigDialogManager*> configs() const;
-  
+
   /**
    * Tell if the module's save() method requires authorization to be executed.
    *
@@ -225,7 +226,7 @@ public:
    * @param needsAuth Tells if the module's save() method requires authorization to be executed.
    */
   void setNeedsAuthorization(bool needsAuth);
-  
+
   /**
    * Returns the value previously set with setNeedsAuthorization(). By default it's @c false.
    *
@@ -244,12 +245,12 @@ public:
    * Returns the value set by setExportText();
    */
   QString exportText() const;
-  
+
   /**
-   * Sets the export QString value, used for exporting data. 
+   * Sets the export QString value, used for exporting data.
    */
   void setExportText(const QString &);
-  
+
 public Q_SLOTS:
   /**
    * Load the configuration data into the module.
@@ -301,6 +302,17 @@ public Q_SLOTS:
   virtual void defaults();
 
 protected:
+  /**
+   * Adds a KCoreConfigskeleton @p config to watch the widget @p widget
+   *
+   * This function is useful if you need to handle multiple configuration files.
+   *
+   * @return a pointer to the KCoreConfigDialogManager in use
+   * @param config the KCoreConfigSkeleton to use
+   * @param widget the widget to watch
+   */
+  KConfigDialogManager* addConfig( KCoreConfigSkeleton *config, QWidget* widget );
+
   /**
    * Adds a KConfigskeleton @p config to watch the widget @p widget
    *
@@ -364,12 +376,12 @@ protected Q_SLOTS:
    * settings are compared and a corresponding changed() signal is emitted
    */
    void widgetChanged();
-   
+
   /**
    * The status of the auth action, if one, has changed
    */
    void authStatusChanged(int);
-   
+
 protected:
 
   /**

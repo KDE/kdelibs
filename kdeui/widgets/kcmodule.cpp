@@ -125,6 +125,15 @@ void KCModule::setButtons( Buttons buttons )
     d->_buttons = buttons;
 }
 
+KConfigDialogManager* KCModule::addConfig( KCoreConfigSkeleton *config, QWidget* widget )
+{
+    KConfigDialogManager* manager = new KConfigDialogManager( widget, config );
+    manager->setObjectName( objectName() );
+    connect( manager, SIGNAL( widgetModified() ), SLOT( widgetChanged() ));
+    d->managers.append( manager );
+    return manager;
+}
+
 KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
 {
     KConfigDialogManager* manager = new KConfigDialogManager( widget, config );

@@ -26,6 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 
+class KCoreConfigSkeleton;
 class KConfigSkeleton;
 class KConfigSkeletonItem;
 class QWidget;
@@ -113,6 +114,13 @@ Q_SIGNALS:
 
 
 public:
+
+  /**
+   * Constructor.
+   * @param parent  Dialog widget to manage
+   * @param conf Object that contains settings
+   */
+   KConfigDialogManager(QWidget *parent, KCoreConfigSkeleton *conf);
 
   /**
    * Constructor.

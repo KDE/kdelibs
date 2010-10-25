@@ -53,7 +53,7 @@ public:
   /**
   * KConfigSkeleton object used to store settings
    */
-  KConfigSkeleton *m_conf;
+  KCoreConfigSkeleton *m_conf;
 
   /**
   * Dialog being managed
@@ -65,6 +65,14 @@ public:
   bool insideGroupBox : 1;
   bool trackChanges : 1;
 };
+
+KConfigDialogManager::KConfigDialogManager(QWidget *parent, KCoreConfigSkeleton *conf)
+ : QObject(parent), d(new Private(this))
+{
+  d->m_conf = conf;
+  d->m_dialog = parent;
+  init(true);
+}
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf)
  : QObject(parent), d(new Private(this))
