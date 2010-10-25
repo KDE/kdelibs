@@ -1024,6 +1024,18 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
 install(FILES
+  Nepomuk/Utils/FacetWidget
+  Nepomuk/Utils/SearchWidget
+  Nepomuk/Utils/ResourceModel
+  Nepomuk/Utils/SimpleResourceModel
+  Nepomuk/Utils/Facet
+  Nepomuk/Utils/SimpleFacet
+  Nepomuk/Utils/DynamicResourceFacet
+  Nepomuk/Utils/ProxyFacet
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Utils COMPONENT Devel)
+
+
+install(FILES
   Nepomuk/Vocabulary/NIE
   Nepomuk/Vocabulary/NFO
   Nepomuk/Vocabulary/NCAL

@@ -1,16 +1,23 @@
 /*
- *
- * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
- *
- * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
- */
+   This file is part of the Nepomuk KDE project.
+   Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) version 3, or any
+   later version accepted by the membership of KDE e.V. (or its
+   successor approved by the membership of KDE e.V.), which shall
+   act as a proxy defined in Section 6 of version 3 of the license.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 /** \mainpage The Nepomuk Meta Data Library
@@ -24,8 +31,12 @@ Overview |
 </b></p>
 
 This is the KDE Meta Data library (not to confuse with KFileMetaData). It consists of
-three parts: the main resource handling centered around Nepomuk::Resource, the handling of
-ontologies via classes in the Nepomuk::Types namespace, and the desktop Nepomuk::Query API.
+the following parts:
+\li The main resource handling centered around Nepomuk::Resource
+\li The handling of ontologies via classes in the Nepomuk::Types namespace
+\li The desktop Nepomuk::Query API
+\li \ref nepomuk_facets
+\li Several utility methods and classes
 
 
 \section overview The General Idea
@@ -549,8 +560,64 @@ Nepomuk::Query::ComparisonTerm mtime
 */
 
 /** \namespace Nepomuk::Utils
-\brief The %Utils namespace contains utility and convenience methods that help the application developer with
+\brief The %Utils namespace contains utility and convenience methods and classes that help the application developer with
 using %Nepomuk.
+An essential part of the %Utils is the \ref nepomuk_facets which allows developers to easily integrate a filter-based
+search interface into their applications.
+*/
+
+
+/** \defgroup nepomuk_facets The Facet API
+\brief A set of classes which allow for easy filter-based search interfaces.
+
+The Facet API which was introduced in KDE SC 4.6 provides a set of classes that allow the integration of a filter-based
+search interface into applications. It consists of the abstract Nepomuk::Utils::Facet class which has to be subclassed to implement
+a facet of a query and a convenient GUI element Nepomuk::Utils::FacetWidget which provides all the necessary user interaction.
+
+If Nepomuk::Utils::FacetWidget does not suit the particular use case in an application Nepomuk::Utils::FacetModel is provided
+as a more advanced approach to handling facets. If even that is too constrained one can always handle the facets manually.
+
+For convenience Nepomuk::Utils::SimpleFacet and Nepomuk::Utils::DynamicResourceFacet as well as a set of static factory methods in
+Nepomuk::Utils::Facet are provided to make facet creation as simple as possible.
+
+\section nepomuk_facet_examples Facet Examples
+
+Nepomuk::Utils::ProxyFacet comes with a nice feature which allows to set a condition for the facet (Nepomuk::Utils::ProxyFacet::setFacetCondition()).
+The condition is a simple query term and means that the facet will not provide any choices unless the condition is met.
+This is best illustrated with a small example:
+
+Imagine a facet that filters on image sizes:
+
+\code
+Nepomuk::Utils::SimpleFacet* imageSizeFacet = new Nepomuk::Utils::SimpleFacet();
+imageSizeFacet->addTerm( i18n("Small"), Vocabulary::NFO::width() <= Nepomuk::Query::LiteralTerm(300));
+imageSizeFacet->addTerm( i18n("Medium"), (Vocabulary::NFO::width() > Nepomuk::Query::LiteralTerm(300)) &&
+                                         (Vocabulary::NFO::width() <= Nepomuk::Query::LiteralTerm(800)));
+imageSizeFacet->addTerm( i18n("Large"), Vocabulary::NFO::width() > Nepomuk::Query::LiteralTerm(800));
+\endcode
+
+So far so good. However, this facet does only make sense for images. Thus, we want the choices to be hidden when the query
+shows other kinds of resources. What is the width of a project or an event? The solution is the facet condition:
+
+\code
+Nepomuk::Utils::ProxyFacet* proxy = new Nepomuk::Utils::ProxyFacet();
+proxy->setSourceFacet(imageSizeFacet);
+proxy->setFacetCondition(Nepomuk::Query::ResourceTypeTerm(Vocabulary::NFO::Image()));
+\endcode
+
+Now the proxy facet will only show any choices if the query contains the condition term, ie. if only images are queried.
+Be aware though that this feature does only work if the client uses Nepomuk::Utils::Facet::setClientQuery().
+
+The same approach could be used to filter a Nepomuk::Utils::DynamicResourceFacet which filters on artists only when looking
+for audio files.
+
+\note
+The \e Vocabulary namespace can be generated via the \em onto2vocabularyclass tool provided by \em %Soprano. The best way to do
+that is through the provided cmake macro:
+\code
+soprano_add_ontology(my_SRC ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig "NFO" "Nepomuk::Vocabulary" "trig")
+\endcode
+Here both \em %Soprano and \em SharedDesktopOntologies have been found through the cmake macros provided by the packages and kdelibs.
 */
 
 // DOXYGEN_SET_RECURSIVE = NO
@@ -568,6 +635,9 @@ using %Nepomuk.
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/types/entitymanager.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/ui/tagcheckbox.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/ui/kblocklayout.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/utils/searchlineedit.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/utils/facetfiltermodel.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/utils/facetdelegate.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/core/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/types/*_p.h
 // DOXYGEN_SET_EXCLUDE_PATTERNS += @topdir@/nepomuk/ui/*_p.h
