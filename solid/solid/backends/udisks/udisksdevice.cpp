@@ -532,7 +532,7 @@ QString UDisksDevice::icon() const
         bool isPartition = property( "DeviceIsPartition" ).toBool();
         if ( isPartition )      // this is a slave device, we need to return its parent's icon
         {
-            UDisksDevice * parent;
+            UDisksDevice* parent = 0;
             if ( !parentUdi().isEmpty() )
                 parent = new UDisksDevice( parentUdi() );
 
@@ -691,7 +691,7 @@ QMap<QString, QVariant> UDisksDevice::allProperties() const
     QList<QVariant> arguments;
     arguments << m_device->interface();
     message.setArguments(arguments);
-
+    
     QDBusMessage reply = m_device->connection().call(message);
 
     if (reply.type() != QDBusMessage::ReplyMessage)
