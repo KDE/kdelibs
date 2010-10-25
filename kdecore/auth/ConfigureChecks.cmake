@@ -8,35 +8,34 @@ set(KAUTH_BACKEND ${KDE4_AUTH_BACKEND_NAME})
 
 ## Check if the user did not specify a backend to be built. If that is the case,
 ## we check what is the best backend to build on this system.
-## 4.4: We leave polkit-0.9 having more priority over polkit-1. This will change from 4.5 on
 if(NOT KAUTH_BACKEND)
     # Look for the most appropriate backend
     message(STATUS "No backend for KAuth was explicitly specified: probing system to find the best one available")
     if (APPLE)
         set (KAUTH_BACKEND "OSX")
     elseif (UNIX)
-        macro_optional_find_package(PolkitQt)
+        macro_optional_find_package(PolkitQt-1)
 
-        if (POLKITQT_FOUND)
-            set (KAUTH_BACKEND "PolkitQt")
-            macro_log_feature(POLKITQT_FOUND "PolkitQt" "Qt Wrapper around Policykit" "http://api.kde.org/polkit-qt"
-                              FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using PolicyKit < 0.90), hence to enable some workspace functionalities")
-        else (POLKITQT_FOUND)
-            macro_optional_find_package(PolkitQt-1)
+        if (POLKITQT-1_FOUND)
+            set (KAUTH_BACKEND "PolkitQt-1")
+            macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
+                              FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using polkit-1), hence to enable some workspace functionalities")
+        else (POLKITQT-1_FOUND)
+            macro_optional_find_package(PolkitQt)
 
-            if (POLKITQT-1_FOUND)
-                set (KAUTH_BACKEND "PolkitQt-1")
-                macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
-                                  FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using polkit-1), hence to enable some workspace functionalities")
-            else (POLKITQT-1_FOUND)
-                # Nothing was found: notify and log the missing features
+            if (POLKITQT_FOUND)
+                set (KAUTH_BACKEND "PolkitQt")
                 macro_log_feature(POLKITQT_FOUND "PolkitQt" "Qt Wrapper around Policykit" "http://api.kde.org/polkit-qt"
                                   FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using PolicyKit < 0.90), hence to enable some workspace functionalities")
+            else (POLKITQT_FOUND)
+                # Nothing was found: notify and log the missing features
                 macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Qt Wrapper around polkit-1" "http://techbase.kde.org/Polkit-Qt-1"
                                   FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using polkit-1), hence to enable some workspace functionalities")
+                macro_log_feature(POLKITQT_FOUND "PolkitQt" "Qt Wrapper around Policykit" "http://api.kde.org/polkit-qt"
+                                  FALSE "" "STRONGLY RECOMMENDED: Needed to make KAuth work (using PolicyKit < 0.90), hence to enable some workspace functionalities")
                 set (KAUTH_BACKEND "Fake")
-            endif (POLKITQT-1_FOUND)
-        endif (POLKITQT_FOUND)
+            endif (POLKITQT_FOUND)
+        endif (POLKITQT-1_FOUND)
     else(UNIX)
         set (KAUTH_BACKEND "Fake")
     endif(APPLE)
