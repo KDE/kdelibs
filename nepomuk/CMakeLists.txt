@@ -89,11 +89,16 @@ set(nepomuk_LIB_SRCS
 #  ${nepomuk_query_SRCS}
 )
 
-soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nco.trig" "NCO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/ncal.trig" "NCAL" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nco.trig" "NCO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nmm.trig" "NMM" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nexif.trig" "NEXIF" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig" "PIMO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/tmo.trig" "TMO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
+soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/ndo.trig" "NDO" "Nepomuk::Vocabulary" "trig" VISIBILITY "nepomuk")
 
 kde4_add_library(nepomuk ${LIBRARY_TYPE} ${nepomuk_LIB_SRCS})
 
@@ -147,6 +152,17 @@ install(FILES
   ui/ktagdisplaywidget.h
   ui/nepomukmassupdatejob.h
   ui/tagwidget.h
+  # Vocabularies
+  ${CMAKE_CURRENT_BINARY_DIR}/nie.h
+  ${CMAKE_CURRENT_BINARY_DIR}/nfo.h
+  ${CMAKE_CURRENT_BINARY_DIR}/ncal.h
+  ${CMAKE_CURRENT_BINARY_DIR}/nco.h
+  ${CMAKE_CURRENT_BINARY_DIR}/nmm.h
+  ${CMAKE_CURRENT_BINARY_DIR}/pimo.h
+  ${CMAKE_CURRENT_BINARY_DIR}/tmo.h
+  ${CMAKE_CURRENT_BINARY_DIR}/nuao.h
+  ${CMAKE_CURRENT_BINARY_DIR}/ndo.h
+
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 

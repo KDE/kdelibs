@@ -1,13 +1,12 @@
 project(nepomuk_utils)
 
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+)
+
 set(nepomukutils_SRCS
   utils.cpp
 )
-
-soprano_add_ontology(nepomukutils_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukutils_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukutils_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukutils_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/ndo.trig" "NDO" "Nepomuk::Vocabulary" "trig")
 
 kde4_add_library(nepomukutils ${LIBRARY_TYPE} ${nepomukutils_SRCS})
 

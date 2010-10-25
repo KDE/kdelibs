@@ -1024,6 +1024,19 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
 install(FILES
+  Nepomuk/Vocabulary/NIE
+  Nepomuk/Vocabulary/NFO
+  Nepomuk/Vocabulary/NCAL
+  Nepomuk/Vocabulary/NCO
+  Nepomuk/Vocabulary/NMM
+  Nepomuk/Vocabulary/PIMO
+  Nepomuk/Vocabulary/TMO
+  Nepomuk/Vocabulary/NUAO
+  Nepomuk/Vocabulary/NDO
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Vocabulary COMPONENT Devel)
+
+
+install(FILES
   Plasma/AbstractDialogManager
   Plasma/AbstractRunner
   Plasma/AbstractToolBox

@@ -353,7 +353,7 @@ Restrict the search to files-only (Vocabulary namespace generated via
 using \p ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig):
 
 \code
-Nepomuk::Query::Term folderTerm = Nepomuk::Query::ResourceTypeTerm( Vocabulary::NFO::Folder() );
+Nepomuk::Query::Term folderTerm = Nepomuk::Query::ResourceTypeTerm( Nepomuk::Vocabulary::NFO::Folder() );
 Nepomuk::Query::Term noFolderTerm = Nepomuk::Query::NegationTerm::negateTerm(folderTerm);
 fileQuery.setTerm( Nepomuk::Query::AndTerm( fileQuery.term(), noFolderTerm ) );
 \endcode
@@ -373,17 +373,17 @@ KIO will use the \p nepomuksearch:/ slave to list search results as file entries
 
 Match all EmailAddress instances with a specific email address:
 \code
-Nepomuk::Query::ComparisonTerm email( Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
+Nepomuk::Query::ComparisonTerm email( Nepomuk::Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
 \endcode
 
 Match all nco:PersonContact instances:
 \code
-Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+Nepomuk::Query::ResourceTypeTerm type( Nepomuk::Vocabulary::NCO::PersonContact() );
 \endcode
 
 Match all person contacts with a specific email address:
 \code
-Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
+Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Nepomuk::Vocabulary::NCO::hasEmailAddress(), email ) );
 \endcode
 */
 
@@ -475,6 +475,18 @@ target_link_libraries(foobar
 \brief The %Types namespace contains all classes used to handle ontology entities such as classes and properties.
 */
 
+/** \namespace Nepomuk::Vocabulary
+\brief The %Vocabulary namespace contains the most commonly used classes and methods used to easily access the vocabularies.
+
+If the vocabulary you are looking for is not present, it can be created using the \em onto2vocabularyclass tool provided by \em %Soprano. The best way to do that is through the provided cmake macro:
+
+\code
+soprano_add_ontology(my_SRC ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig "NFO" "Nepomuk::Vocabulary" "trig")
+\endcode
+ 
+Here both \em %Soprano and \em SharedDesktopOntologies have been found through the cmake macros provided by the packages and kdelibs.
+*/
+
 /** \namespace Nepomuk::Query
 
 \brief The %Query namespace contains all classes that make up the Nepomuk %Query API.
@@ -501,13 +513,13 @@ following:
 
 \code
 // match all EmailAddress instances with a specific email address:
-Nepomuk::Query::ComparisonTerm email( Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
+Nepomuk::Query::ComparisonTerm email( Nepomuk::Vocabulary::NCO::emailAddress(), Soprano::LiteralValue( "trueg@kde.org" ) );
 
 // match all nco:PersonContact instances
-Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+Nepomuk::Query::ResourceTypeTerm type( Nepomuk::Vocabulary::NCO::PersonContact() );
 
 // match all person contacts with a specific email address
-Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Vocabulary::NCO::hasEmailAddress(), email ) );
+Nepomuk::Query::AndTerm( type, Nepomuk::Query::ComparisonTerm( Nepomuk::Vocabulary::NCO::hasEmailAddress(), email ) );
 \endcode
 
 \subsection nepomuk_fancy_query_operators Fancy Operators
@@ -517,13 +529,13 @@ written as:
 
 \code
 // match all EmailAddress instances with a specific email address:
-Nepomuk::Query::ComparisonTerm email = Vocabulary::NCO::emailAddress() == Soprano::LiteralValue( "trueg@kde.org" );
+Nepomuk::Query::ComparisonTerm email = Nepomuk::Vocabulary::NCO::emailAddress() == Soprano::LiteralValue( "trueg@kde.org" );
 
 // match all nco:PersonContact instances
-Nepomuk::Query::ResourceTypeTerm type( Vocabulary::NCO::PersonContact() );
+Nepomuk::Query::ResourceTypeTerm type( Nepomuk::Vocabulary::NCO::PersonContact() );
 
 // match all person contacts with a specific email address
-Nepomuk::Query::AndTerm = type && ( Vocabulary::NCO::hasEmailAddress() == email );
+Nepomuk::Query::AndTerm = type && ( Nepomuk::Vocabulary::NCO::hasEmailAddress() == email );
 \endcode
 
 Furthermore literal comparisons can now be written as:

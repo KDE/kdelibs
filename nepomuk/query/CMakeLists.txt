@@ -9,6 +9,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../core
   ${CMAKE_CURRENT_SOURCE_DIR}/../types
+  ${CMAKE_CURRENT_BINARY_DIR}/..
 )
 
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
@@ -37,13 +38,6 @@ set(nepomukquery_SRC
   queryserializer.cpp
   standardqueries.cpp
 )
-
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig" "NIE" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nfo.trig" "NFO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nuao.trig" "NUAO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nco.trig" "NCO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nmo.trig" "NMO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(nepomukquery_SRC "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/tmo.trig" "TMO" "Nepomuk::Vocabulary" "trig")
 
 set_source_files_properties(
   org.kde.nepomuk.QueryService.xml
