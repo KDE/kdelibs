@@ -78,8 +78,8 @@ Polkit1Backend::~Polkit1Backend()
 void Polkit1Backend::updateCachedActions(const PolkitQt1::ActionDescription::List& actions)
 {
     m_knownActions.clear();
-    foreach (PolkitQt1::ActionDescription *action, actions) {
-        m_knownActions << action->actionId();
+    foreach (const PolkitQt1::ActionDescription& action, actions) {
+        m_knownActions << action.actionId();
     }
     m_flyingActions = false;
 }
@@ -99,7 +99,7 @@ void Polkit1Backend::setupAction(const QString &action)
 Action::AuthStatus Polkit1Backend::actionStatus(const QString &action)
 {
     PolkitQt1::UnixProcessSubject subject(QCoreApplication::applicationPid());
-    PolkitQt1::Authority::Result r = PolkitQt1::Authority::instance()->checkAuthorizationSync(action, &subject,
+    PolkitQt1::Authority::Result r = PolkitQt1::Authority::instance()->checkAuthorizationSync(action, subject,
                                                                                               PolkitQt1::Authority::None);
     switch (r) {
     case PolkitQt1::Authority::Yes:
@@ -134,7 +134,7 @@ bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray caller
     PolkitResultEventLoop e;
     connect(authority, SIGNAL(checkAuthorizationFinished(PolkitQt1::Authority::Result)),
             &e, SLOT(requestQuit(PolkitQt1::Authority::Result)));
-    authority->checkAuthorization(action, &subject, PolkitQt1::Authority::AllowUserInteraction);
+    authority->checkAuthorization(action, subject, PolkitQt1::Authority::AllowUserInteraction);
     e.exec();
 
     switch (e.result()) {
