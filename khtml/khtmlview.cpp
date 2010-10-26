@@ -256,9 +256,6 @@ public:
         scheduledLayoutCounter = 0;
         updateRegion = QRegion();
         m_dialogsAllowed = true;
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-        typeAheadActivated = false;
-#endif // KHTML_NO_TYPE_AHEAD_FIND
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
 
@@ -418,12 +415,6 @@ public:
     QTimer smoothScrollTimer;
     QTime smoothScrollStopwatch;
     QHash<void*, QWidget*> visibleWidgets;
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    QString findString;
-    QTimer timer;
-    bool findLinksOnly;
-    bool typeAheadActivated;
-#endif // KHTML_NO_TYPE_AHEAD_FIND
     bool accessKeysEnabled;
     bool accessKeysActivated;
     bool accessKeysPreActivate;
@@ -563,10 +554,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
 
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
-#endif // KHTML_NO_TYPE_AHEAD_FIND
-
     init();
     widget()->setMouseTracking(true);
 }
@@ -631,10 +618,6 @@ void KHTMLView::resizeContentsToViewport()
 // called by KHTMLPart::clear()
 void KHTMLView::clear()
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    if( d->typeAheadActivated )
-        findTimeout();
-#endif
     if (d->accessKeysEnabled && d->accessKeysActivated)
         accessKeysTimeout();
     viewport()->unsetCursor();
@@ -1688,49 +1671,6 @@ bool KHTMLView::dispatchKeyEventHelper( QKeyEvent *_ke, bool keypress )
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-	if(d->typeAheadActivated)
-	{
-		// type-ahead find aka find-as-you-type
-		if(_ke->key() == Qt::Key_Backspace)
-		{
-			d->findString = d->findString.left(d->findString.length() - 1);
-
-			if(!d->findString.isEmpty())
-			{
-				findAhead(false);
-			}
-			else
-			{
-				findTimeout();
-			}
-
-			d->timer.setSingleShot(true);
-			d->timer.start(3000);
-			_ke->accept();
-			return;
-		}
-		else if(_ke->key() == Qt::Key_Escape)
-		{
-			findTimeout();
-
-			_ke->accept();
-			return;
-		}
-		else if(_ke->key() == Qt::Key_Space || !_ke->text().trimmed().isEmpty())
-		{
-			d->findString += _ke->text();
-
-			findAhead(true);
-
-			d->timer.setSingleShot(true);
-			d->timer.start(3000);
-			_ke->accept();
-			return;
-		}
-	}
-#endif // KHTML_NO_TYPE_AHEAD_FIND
-
     // If CTRL was hit, be prepared for access keys
     if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && !(_ke->modifiers() & ~Qt::ControlModifier) && !d->accessKeysActivated)
     {
@@ -1879,96 +1819,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     _ke->accept();
 }
 
-void KHTMLView::findTimeout()
-{
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-	d->typeAheadActivated = false;
-	d->findString = "";
-	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
-	m_part->enableFindAheadActions( true );
-#endif // KHTML_NO_TYPE_AHEAD_FIND
-}
-
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-void KHTMLView::startFindAhead( bool linksOnly )
-{
-	if( linksOnly )
-	{
-		d->findLinksOnly = true;
-		m_part->setStatusBarText(i18n("Starting -- find links as you type"),
-		                         KHTMLPart::BarDefaultText);
-	}
-	else
-	{
-		d->findLinksOnly = false;
-		m_part->setStatusBarText(i18n("Starting -- find text as you type"),
-		                         KHTMLPart::BarDefaultText);
-	}
-
-	m_part->findTextBegin();
-	d->typeAheadActivated = true;
-        // disable, so that the shortcut ( / or ' by default ) doesn't interfere
-	m_part->enableFindAheadActions( false );
-	d->timer.setSingleShot(true);
-	d->timer.start(3000);
-}
-
-void KHTMLView::findAhead(bool increase)
-{
-	QString status;
-	QString text = d->findString.toLower();
-
-	if(d->findLinksOnly)
-	{
-		m_part->findText(d->findString, KHTMLPart::FindNoPopups |
-		                 KHTMLPart::FindLinksOnly, this);
-		if(m_part->findTextNext())
-		{
-			status = i18n("Link found: \"%1\".", Qt::escape(text));
-		}
-		else
-		{
-			if(increase) KNotification::beep();
-			status = i18n("Link not found: \"%1\".", Qt::escape(text));
-		}
-	}
-	else
-	{
-		m_part->findText(d->findString, KHTMLPart::FindNoPopups, this);
-		if(m_part->findTextNext())
-		{
-			status = i18n("Text found: \"%1\".", Qt::escape(text));
-		}
-		else
-		{
-			if(increase) KNotification::beep();
-			status = i18n("Text not found: \"%1\".", Qt::escape(text));
-		}
-	}
-
-	// Note: we need to escape -twice-: the above just escape for i18n, now we need to do it for Qt, too.
-	m_part->setStatusBarText(Qt::escape(status), KHTMLPart::BarDefaultText);
-}
-
-void KHTMLView::updateFindAheadTimeout()
-{
-    if( d->typeAheadActivated ) {
-        d->timer.setSingleShot( true );
-        d->timer.start( 3000 );
-    }
-}
-
-#endif // KHTML_NO_TYPE_AHEAD_FIND
-
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    if(d->typeAheadActivated) {
-        _ke->accept();
-        return;
-    }
-#endif
-
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
     if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && !(_ke->modifiers() & Qt::ShiftModifier))
@@ -3872,10 +3724,6 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
     DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    if (!fn || m_part->isCaretMode())
-        m_part->enableFindAheadActions( true );
-#endif
     if (fn && fn->renderer() && fn->renderer()->isWidget() &&
         (e->reason() != Qt::MouseFocusReason) &&
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget())
@@ -3890,15 +3738,6 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
         m_part->stopAutoScroll();
         m_part->setSelectionVisible(false);
     }
-
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    if(d->typeAheadActivated)
-    {
-        findTimeout();
-    }
-    if (m_part)
-        m_part->enableFindAheadActions( false );
-#endif // KHTML_NO_TYPE_AHEAD_FIND
 
     if ( d->cursorIconWidget )
         d->cursorIconWidget->hide();
@@ -4033,7 +3872,7 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
     // old or minimum speed
     int ddx = qMax(d->steps ? abs(d->dx)/d->steps : 0,3);
     int ddy = qMax(d->steps ? abs(d->dy)/d->steps : 0,3);
-    
+
     // full scroll is remaining scroll plus new scroll
     d->dx = d->dx + dx;
     d->dy = d->dy + dy;
@@ -4086,7 +3925,7 @@ void KHTMLView::scrollTick() {
         scroll_y += ddy;
         d->steps--;
     }
-    
+
     d->shouldSmoothScroll = false;
     scrollContentsBy(scroll_x, scroll_y);
 

@@ -385,7 +385,6 @@ protected Q_SLOTS:
 
 private Q_SLOTS:
     void tripleClickTimeout();
-    void findTimeout();
     void accessKeysTimeout();
     void scrollTick();
 
@@ -491,12 +490,6 @@ private:
 
     void updateScrollBars();
     void setupSmoothScrolling(int dx, int dy);
-
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    void findAhead(bool increase);
-    void updateFindAheadTimeout();
-    void startFindAhead( bool linksOnly );
-#endif // KHTML_NO_TYPE_AHEAD_FIND
 
     /**
      * Returns the current caret policy when the view is not focused.

@@ -202,7 +202,7 @@ void KHTMLFind::activate()
 
   if (m_parent)
     d->m_findDialog  = m_parent->findBar();
-  else 
+  else
   {
     // Now show the dialog in which the user can choose options.
     d->m_findDialog = new KHTMLFindBar( m_part->widget() );
@@ -295,12 +295,11 @@ bool KHTMLFind::findTextNext( bool reverse )
       return false;
 
     // It also means the user is trying to match a previous pattern, so try and
-    // restore the last saved pattern.    
+    // restore the last saved pattern.
     if (!m_parent && (!d->m_findDialog || !d->m_findDialog->restoreLastPatternFromHistory()))
          return false;
   }
 
-  m_part->view()->updateFindAheadTimeout();
   long options = 0;
   if ( d->m_findDialog ) // 0 when we close the dialog
   {
@@ -354,7 +353,7 @@ bool KHTMLFind::findTextNext( bool reverse )
     qSwap( d->m_findNodeEnd, d->m_findNodeStart );
     qSwap( d->m_findPosEnd, d->m_findPosStart );
     qSwap( d->m_findNode, d->m_findNodePrevious );
-  
+
     // d->m_findNode now point at the end of the last searched line - advance one node
     khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
     khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
@@ -453,8 +452,8 @@ bool KHTMLFind::findTextNext( bool reverse )
             lastNode = obj->element();
             break;
           }
-          
-        }          
+
+        }
         else if ( obj->isBR() )
           s = '\n';
         else if ( !obj->isInline() && !str.isEmpty() )
