@@ -92,6 +92,7 @@ public:
     {
 // causes a weird crash in KWord at least, so let Qt delete it for us.
 //        delete completionBox;
+        delete style.data();
     }
 
     void _k_slotSettingsChanged(int category)
