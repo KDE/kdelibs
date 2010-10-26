@@ -346,8 +346,11 @@ static QString extractUntil(const QString &str, QChar term, int &pos, const char
 }
 
 // As above, but also handles quotes..
-static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
+// pos is set to -1 on parse error
+static QString extractMaybeQuotedUntil(const QString &str, int &pos)
 {
+    const QChar term = QLatin1Char(';');
+
     skipLWS(str, pos);
 
     // Are we quoted?
@@ -373,8 +376,13 @@ static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
         }
 
         // Skip until term..
-        while (pos < str.length() && (str[pos] != term))
+        while (pos < str.length() && (str[pos] != term)) {
+            if( (str[pos] != QLatin1Char(' ')) && (str[pos] != QLatin1Char('\t')) ) {
+              pos = -1;
+              return QString();
+            }
             ++pos;
+        }
 
         if (pos < str.length()) // Stopped due to finding term
             ++pos;
@@ -402,7 +410,13 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         QString key = extractUntil(disposition, QLatin1Char('='), pos, attrSpecials).toLower();
 
         if( key.isEmpty() ) {
-            extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
+            extractMaybeQuotedUntil(disposition, pos);
+            // parse error in this key: do not parse more, but add up
+            // everything we already got
+            if( pos == -1 ) {
+                kDebug(7113) << "parse error, abort parsing";
+                break;
+            }
             continue;
         }
 
@@ -411,16 +425,25 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         if( key.endsWith(QLatin1Char('*')) )
             val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials).toLower();
         else
-            val = extractMaybeQuotedUntil(disposition, QLatin1Char(';'), pos);
+            val = extractMaybeQuotedUntil(disposition, pos);
 
-        if( val.isEmpty() )
+        if( val.isEmpty() ) {
+            if( pos == -1 ) {
+                kDebug(7113) << "parse error, abort parsing";
+                break;
+            }
             continue;
+        }
 
         if( spos == key.length() - 1 ) {
             key.chop(1);
             encparams.insert(key, val);
         } else if( spos >= 0 ) {
             contparams.insert(key, val);
+        } else if( parameters.contains(key) ) {
+            kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
+            parameters.remove(key);
+            return parameters;
         } else {
             parameters.insert(key, val);
         }
@@ -468,8 +491,11 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
 
         i = contparams.erase(i);
 
-        if( parameters.contains(key) )
-            continue;
+        if( parameters.contains(key) ) {
+            kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
+            parameters.remove(key);
+            return parameters;
+        }
 
         key.chop(1);
         if (hasencoding) {
@@ -512,8 +538,14 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
                 val.clear();
         }
 
-        if( !val.isEmpty() )
+        if( !val.isEmpty() ) {
+            if( parameters.contains(i.key()) ) {
+              kDebug(7113) << "duplicate key" << i.key() << "found, ignoring everything more";
+              parameters.remove( i.key() );
+              return parameters;
+            }
             parameters.insert( i.key(), val );
+        }
     }
 
     const QLatin1String fn("filename");

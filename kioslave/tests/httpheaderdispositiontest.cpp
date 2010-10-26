@@ -144,7 +144,19 @@ static const struct {
 // "wrong" element ordering and encoding
     { "attachment; filename*1=\"html\"; filename*0*=us-ascii''foo.",
       "type\tattachment\n"
-      "filename\tfoo.html" }
+      "filename\tfoo.html" },
+// duplicate filename, both should be ignored and parsing should stop
+    { "attachment; filename=foo; filename=bar; foo=bar",
+      "type\tattachment" },
+// garbage after closing quote, parsing should stop there
+    {  "attachment; filename*=''foo; bar=\"f\"oo; baz=foo",
+       "type\tattachment\n"
+       "filename\tfoo" },
+// trailing whitespace should be ignored
+    {  "attachment; filename=\"foo\" ; bar=baz",
+       "type\tattachment\n"
+       "filename\tfoo\n"
+       "bar\tbaz" }
 };
 
 #if 0
