@@ -319,6 +319,7 @@ DateRangeSelectionWidget::DateRangeSelectionWidget( QWidget* parent )
 
 DateRangeSelectionWidget::~DateRangeSelectionWidget()
 {
+    delete d;
 }
 
 
