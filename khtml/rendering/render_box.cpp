@@ -229,13 +229,13 @@ void RenderBox::detach()
 void RenderBox::detachRemainingChildren()
 {
     while (firstChild()) {
-#ifdef APPLE_CHANGES
-        if (firstChild()->isListMarker() || (firstChild()->style()->styleType() == RenderStyle::FIRST_LETTER && !firstChild()->isText()))
-            firstChild()->remove();  // List markers are owned by their enclosing list and so don't get destroyed by this container. Similarly, first letters are destroyed by their remaining text fragment.
-        else
-#endif
-        {
-        // Destroy any (most likely anonymous) children remaining in the render tree
+        if (firstChild()->style()->styleType() == RenderStyle::FIRST_LETTER && !firstChild()->isText()) {
+             // First letters are destroyed by their remaining text fragment.
+             // We have to remove their references to parent here, however, 
+             // since it may be destroyed once we get to them
+            firstChild()->remove(); 
+        } else {
+	    // Destroy any (most likely anonymous) children remaining in the render tree
             if (firstChild()->element())
                 firstChild()->element()->setRenderer(0);
             firstChild()->detach();
