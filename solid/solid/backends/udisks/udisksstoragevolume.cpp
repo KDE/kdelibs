@@ -34,8 +34,8 @@ UDisksStorageVolume::~UDisksStorageVolume()
 
 QString UDisksStorageVolume::encryptedContainerUdi() const
 {
-    if ( m_device->property( "DeviceIsLuks" ).toBool() )
-        return m_device->property( "LuksHolder" ).toString();
+    if ( m_device->property( "DeviceIsLuksCleartext" ).toBool() )
+        return m_device->property( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
 
     return QString();
 }
@@ -93,6 +93,5 @@ Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const
 bool UDisksStorageVolume::isIgnored() const
 {
     return m_device->property( "DevicePresentationHide" ).toBool()
-        || (!m_device->property("DriveCanDetach").toBool()
-         && m_device->property("LuksCleartextUnlockedByUid").toInt()==0);
+            || (!m_device->property("DriveCanDetach").toBool() && m_device->property("LuksCleartextUnlockedByUid").toInt()==0);
 }
