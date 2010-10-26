@@ -111,6 +111,8 @@ void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
 
 void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const QString & oldOwner, const QString & newOwner )
 {
+    Q_UNUSED(name)
+    Q_UNUSED(oldOwner)
     if ( newOwner.isEmpty() ) {
         // kded quit on us
         netStatus = Solid::Networking::Unknown;
