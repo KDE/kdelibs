@@ -85,7 +85,8 @@ static QString formatByteSize(double size)
 }
 
 UDisksDevice::UDisksDevice(const QString &udi)
-    : m_udi(udi)
+    : Solid::Ifaces::Device()
+    , m_udi(udi)
 {
     QString realUdi = m_udi;
     if (realUdi.endsWith(":media")) {
@@ -95,7 +96,8 @@ UDisksDevice::UDisksDevice(const QString &udi)
                                   UD_DBUS_INTERFACE_DISKS_DEVICE,
                                   QDBusConnection::systemBus());
 
-    connect(m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
+    // NOTE: There is no such signal, QDBusAbstractInterface::Changed()
+    //connect(m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
 }
 
 UDisksDevice::~UDisksDevice()

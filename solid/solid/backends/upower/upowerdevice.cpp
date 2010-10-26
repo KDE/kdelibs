@@ -42,7 +42,8 @@ UPowerDevice::UPowerDevice(const QString &udi)
                QDBusConnection::systemBus()),
     m_udi(udi)
 {
-    connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
+    // NOTE: There is no such signal, QDBusAbstractInterface::Changed()
+    //connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
 }
 
 UPowerDevice::~UPowerDevice()
