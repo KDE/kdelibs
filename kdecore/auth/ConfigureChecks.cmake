@@ -14,7 +14,7 @@ if(NOT KAUTH_BACKEND)
     if (APPLE)
         set (KAUTH_BACKEND "OSX")
     elseif (UNIX)
-        macro_optional_find_package(PolkitQt-1)
+        macro_optional_find_package(PolkitQt-1 0.98.1)
 
         if (POLKITQT-1_FOUND)
             set (KAUTH_BACKEND "PolkitQt-1")
