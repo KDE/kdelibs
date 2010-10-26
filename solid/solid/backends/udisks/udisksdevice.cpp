@@ -96,8 +96,8 @@ UDisksDevice::UDisksDevice(const QString &udi)
                                   UD_DBUS_INTERFACE_DISKS_DEVICE,
                                   QDBusConnection::systemBus());
 
-    // NOTE: There is no such signal, QDBusAbstractInterface::Changed()
-    //connect(m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
+    if (m_device->isValid())
+        connect(m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
 }
 
 UDisksDevice::~UDisksDevice()
