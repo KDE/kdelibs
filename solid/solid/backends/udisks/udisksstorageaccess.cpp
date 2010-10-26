@@ -58,7 +58,7 @@ void UDisksStorageAccess::connectDBusSignals()
 bool UDisksStorageAccess::isAccessible() const
 {
     return m_device->property("DeviceIsMounted").toBool()
-        || m_device->property("DeviceIsLuks").toBool();
+            || m_device->property("DeviceIsLuksCleartext").toBool();
 }
 
 QString UDisksStorageAccess::filePath() const
@@ -72,8 +72,7 @@ QString UDisksStorageAccess::filePath() const
 bool UDisksStorageAccess::isIgnored() const
 {
     return m_device->property( "DevicePresentationHide" ).toBool()
-        || (!m_device->property("DriveCanDetach").toBool()
-         && m_device->property("LuksCleartextUnlockedByUid").toInt()==0);
+            || (!m_device->property("DriveCanDetach").toBool() && m_device->property("LuksCleartextUnlockedByUid").toInt()==0);
 }
 
 bool UDisksStorageAccess::setup()
