@@ -11,8 +11,11 @@
 <surname><!--Your last name--></surname>
 </personname>
 <email><!--Your email address--></email></author>
-<date><!--Date when this manpage was written, in the ISO 8601 format
-'yyyy-mm-dd'--></date>
+<!--Date when this manpage was written, in the ISO 8601 format 'yyyy-mm-dd'-->
+<date>2010-10-27</date>
+<!--version information of the application and kde this documentation is valid for.
+either 'xx.yy.zz (&kde; x.y)' or '&kde; x.y'-->
+<releaseinfo>&kde; 4.5</releaseinfo>
 <productname>K Desktop Environment</productname>
 </refentryinfo>
 
