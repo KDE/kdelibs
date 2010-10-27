@@ -844,11 +844,12 @@ public:
 
     virtual void removeSuperfluousAnonymousBlockChild( RenderObject* ) {}
 
+    // Unregisters from parent but does not destroy
+    void remove();
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
     virtual QRect viewRect() const;
-    void remove();
     void setDetached() { m_attached = false; }
     void invalidateVerticalPosition();
     bool attemptDirectLayerTranslation();
