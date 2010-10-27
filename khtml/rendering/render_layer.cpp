@@ -920,10 +920,17 @@ void RenderLayer::checkScrollbarsAfterLayout()
         m_hBar->setEnabled(needHorizontalBar);
     if (hasOvf && m_object->style()->overflowY() == OSCROLL)
         m_vBar->setEnabled(needVerticalBar);
-
+        
+    // Sometimes we originally had a scrolling overflow, but it got changed to 
+    // hidden/visible. 
+    bool deadScrollX = m_hBar && !m_object->scrollsOverflowX();
+    bool deadScrollY = m_vBar && !m_object->scrollsOverflowY();
+        
     // overflow:auto may need to lay out again if scrollbars got added/removed.
+    // Also remove now useless scrollbars for non-scrollable overflows
     bool scrollbarsChanged = (hasOvf && m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
-                          || (hasOvf && m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar);
+                          || (hasOvf && m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar)
+                          || deadScrollX || deadScrollY;
     if (scrollbarsChanged && !m_inScrollbarRelayout) {
         if (m_object->style()->overflowX() == OAUTO) {
             showScrollbar(Qt::Horizontal, needHorizontalBar);
@@ -939,6 +946,16 @@ void RenderLayer::checkScrollbarsAfterLayout()
             else
                 resetYOffset();
         }
+        
+        if (deadScrollX) {
+            showScrollbar(Qt::Horizontal, false);
+            resetXOffset();
+        }
+            
+        if (deadScrollY) {
+            showScrollbar(Qt::Vertical, false);
+            resetYOffset();
+        }
 
         m_object->setNeedsLayout(true);
         m_inScrollbarRelayout = true;
@@ -949,7 +966,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
         m_inScrollbarRelayout = false;
 	return;
     }
-
+    
     m_inScrollbarRelayout = false;
 
     // Set up the range (and page step/line step).
@@ -2009,3 +2026,4 @@ void Marquee::timerEvent(QTimerEvent* /*evt*/)
 }
 
 #include "render_layer.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;
