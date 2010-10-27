@@ -286,9 +286,9 @@ static void skipLWS(const QString &str, int &pos)
 }
 
 // keep the common ending, this allows the compiler to join them
-static const char typeSpecials[] =  "*'%()<>@,;:\\\"/[]?=";
-static const char attrSpecials[] =   "'%()<>@,;:\\\"/[]?=";
-static const char valueSpecials[] =    "()<>@,;:\\\"/[]?=";
+static const char typeSpecials[] =  "{}*'%()<>@,;:\\\"/[]?=";
+static const char attrSpecials[] =     "'%()<>@,;:\\\"/[]?=";
+static const char valueSpecials[] =      "()<>@,;:\\\"/[]?=";
 
 static bool specialChar(const QChar &ch, const char *specials)
 {
@@ -403,21 +403,20 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
     QMap<QString, QString> contparams;   // all parameters that contain continuations
     QMap<QString, QString> encparams;    // all parameters that have character encoding
 
-    if( !strDisposition.isEmpty() )
-        parameters.insert(QLatin1String("type"), strDisposition);
+    // the type is invalid, the complete header is junk
+    if( strDisposition.isEmpty() )
+        return parameters;
+
+    parameters.insert(QLatin1String("type"), strDisposition);
 
     while (pos < disposition.length()) {
         QString key = extractUntil(disposition, QLatin1Char('='), pos, attrSpecials).toLower();
 
         if( key.isEmpty() ) {
-            extractMaybeQuotedUntil(disposition, pos);
             // parse error in this key: do not parse more, but add up
             // everything we already got
-            if( pos == -1 ) {
-                kDebug(7113) << "parse error, abort parsing";
-                break;
-            }
-            continue;
+            kDebug(7113) << "parse error, abort parsing";
+            break;
         }
 
         int spos = key.indexOf(QLatin1Char('*'));
@@ -491,16 +490,16 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
 
         i = contparams.erase(i);
 
-        if( parameters.contains(key) ) {
-            kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
-            parameters.remove(key);
-            return parameters;
-        }
-
         key.chop(1);
         if (hasencoding) {
             encparams.insert(key, val);
         } else {
+            if( parameters.contains(key) ) {
+                kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
+                parameters.remove(key);
+                return parameters;
+            }
+
             parameters.insert(key, val);
         }
     }
@@ -539,11 +538,6 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         }
 
         if( !val.isEmpty() ) {
-            if( parameters.contains(i.key()) ) {
-              kDebug(7113) << "duplicate key" << i.key() << "found, ignoring everything more";
-              parameters.remove( i.key() );
-              return parameters;
-            }
             parameters.insert( i.key(), val );
         }
     }

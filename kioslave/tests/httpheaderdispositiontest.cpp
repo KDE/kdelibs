@@ -35,7 +35,11 @@ static void runTest(const char *header, const char *result)
 {
     QMap<QString, QString> parameters = contentDispositionParser(header);
 
-    foreach (const QByteArray &ba, QByteArray(result).split('\n')) {
+    QList<QByteArray> results = QByteArray(result).split('\n');
+    if (strlen(result) == 0)
+        results.clear();
+
+    foreach (const QByteArray &ba, results) {
         QList<QByteArray> values = ba.split('\t');
         const QString key(values.takeFirst());
 
@@ -47,7 +51,7 @@ static void runTest(const char *header, const char *result)
         QCOMPARE(parameters[key], QString::fromUtf8(val.constData(), val.length()));
     }
 
-    QCOMPARE(parameters.count(), QByteArray(result).split('\n').count());
+    QCOMPARE(parameters.count(), results.count());
 }
 
 static const struct {
@@ -156,14 +160,40 @@ static const struct {
     {  "attachment; filename=\"foo\" ; bar=baz",
        "type\tattachment\n"
        "filename\tfoo\n"
-       "bar\tbaz" }
+       "bar\tbaz" },
+// invalid syntax for type
+    {  "filename=foo.html",
+       "" },
+// invalid syntax for type
+    {  "inline{; filename=\"foo\"",
+       "" },
+// invalid syntax for type
+    {  "foo bar; filename=\"foo\"",
+       "" },
+// invalid syntax for type
+    {  "foo\tbar; filename=\"foo\"",
+       "" },
+// invalid syntax
+    {  "inline; attachment; filename=foo.html",
+       "type\tinline" },
+// invalid syntax
+    {  "attachment; inline; filename=foo.html",
+       "type\tattachment" },
+// specification bug in RfC 2616, legal through RfC 2183 and draft-ietf-httpbis-content-disp
+    { "attachment; filename=foo.html",
+      "type\tattachment\n"
+      "filename\tfoo.html" },
+// specifying both param and param* is allowed, param* should be taken
+    { "attachment; filename=foo.html;filename*=UTF-8''foo-%c3%a4-%e2%82%ac.html",
+      "type\tattachment\n"
+      "filename\tfoo-ä-€.html" },
+// specifying both param and param* is allowed, param* should be taken
+    { "attachment; filename*=UTF-8''foo-%c3%a4-%e2%82%ac.html; filename=foo.html",
+      "type\tattachment\n"
+      "filename\tfoo-ä-€.html" }
 };
 
 #if 0
-// if we go strict this should not have filename
-{ "attachment; filename=foo.html",
-"type\tattachment\n"
-"filename\tfoo.html" },
 // deactivated for now: failing due to missing implementation
 {"attachment; filename=\"foo-&#xc3;&#xa4;.html\"",
 "type\tattachment\n"
