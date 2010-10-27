@@ -91,7 +91,7 @@ public:
     QDomDocument shortcutSchemeDoc(KXMLGUIClient *client);
     void applyShortcutScheme(KXMLGUIClient *client, const QList<QAction*>& actions, const QDomDocument& scheme);
     void refreshActionProperties(KXMLGUIClient *client, const QList<QAction*>& actions, const QDomDocument& doc);
-    void saveDefaultActionProperties(KXMLGUIClient *client);
+    void saveDefaultActionProperties(const QList<QAction*>& actions);
 
     ContainerNode *m_rootNode;
 
@@ -264,7 +264,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     }
 
     // load shortcut schemes, user-defined shortcuts and other action properties
-    d->saveDefaultActionProperties(client);
+    d->saveDefaultActionProperties(client->actionCollection()->actions());
     if (!doc.isNull())
         d->refreshActionProperties(client, client->actionCollection()->actions(), doc);
 
@@ -357,33 +357,29 @@ void KXMLGUIFactoryPrivate::refreshActionProperties(KXMLGUIClient *client, const
         applyActionProperties( actionPropElement );
 }
 
-void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
+void KXMLGUIFactoryPrivate::saveDefaultActionProperties(const QList<QAction *>& actions)
 {
     // This method is called every time the user activated a new
     // kxmlguiclient. We only want to execute the following code only once in
     // the lifetime of an action.
-    foreach (QAction *action, client->actionCollection()->actions())
-    {
+    foreach (QAction *action, actions) {
         // Skip actions we have seen already.
         if (action->property("_k_DefaultShortcut").isValid()) continue;
 
-        if (KAction* kaction = qobject_cast<KAction*>(action))
-        {
+        if (KAction* kaction = qobject_cast<KAction*>(action)) {
             // Check if the default shortcut is set
             KShortcut defaultShortcut = kaction->shortcut(KAction::DefaultShortcut);
             KShortcut activeShortcut  = kaction->shortcut(KAction::ActiveShortcut);
+            //kDebug() << kaction->objectName() << "default=" << defaultShortcut.toString() << "active=" << activeShortcut.toString();
 
             // Check if we have an empty default shortcut and an non empty
             // custom shortcut. This should only happen if a developer called
             // QAction::setShortcut on an KAction. Print out a warning and
             // correct the mistake
-            if ((!activeShortcut.isEmpty()) && defaultShortcut.isEmpty())
-            {
+            if ((!activeShortcut.isEmpty()) && defaultShortcut.isEmpty()) {
                 kError(240) << "Shortcut for KAction " << kaction->objectName() << kaction->text() << "set with QShortcut::setShortcut()! See KAction documentation.";
                 kaction->setProperty("_k_DefaultShortcut", activeShortcut);
-            }
-            else
-            {
+            } else {
                 kaction->setProperty("_k_DefaultShortcut", defaultShortcut);
             }
         }
@@ -571,6 +567,7 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
     d->m_rootNode->plugActionList( *d );
 
     // Load shortcuts for these new actions
+    d->saveDefaultActionProperties(actionList);
     d->refreshActionProperties(client, actionList, client->domDocument());
 
     d->BuildState::reset();

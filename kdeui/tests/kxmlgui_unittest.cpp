@@ -590,7 +590,7 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
         "</gui>";
 
     TestGuiClient client(xml);
-    client.createActions(QStringList() << "view_add_to_new_group" << "action1");
+    client.createActions(QStringList() << "view_add_to_new_group");
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
@@ -608,9 +608,13 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
 
     kDebug() << "Now plugging the actionlist";
 
+    KAction* action1 = new KAction(this);
+    action1->setObjectName("action1");
+    action1->setShortcut(KShortcut("Ctrl+2"));
     QList<QAction*> actionList;
-    actionList << client.actionCollection()->action("action1");
+    actionList << action1;
     client.plugActionList("view_groups_list", actionList);
+    QCOMPARE(action1->shortcut().toString(), QString("Ctrl+2"));
 
     //debugActions(menu->actions());
     checkActions(menu->actions(), QStringList()
@@ -817,7 +821,6 @@ void KXmlGui_UnitTest::testTopLevelSeparator() {
         "</gui>";
 
     TestXmlGuiWindow mainWindow(xml);
-    mainWindow.setAutoSaveSettings(false);
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
@@ -841,7 +844,6 @@ void KXmlGui_UnitTest::testMenuNames()
         "</gui>";
 
     TestXmlGuiWindow mainWindow(xml);
-    mainWindow.setAutoSaveSettings(false);
     mainWindow.createGUI();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
@@ -855,7 +857,6 @@ void KXmlGui_UnitTest::testMenuNames()
 void KXmlGui_UnitTest::testMenusNoXmlFile()
 {
     TestXmlGuiWindow mainWindow;
-    mainWindow.setAutoSaveSettings(false);
     mainWindow.createGUIBad();
 
     checkActions(mainWindow.menuBar()->actions(), QStringList()
@@ -930,7 +931,6 @@ void KXmlGui_UnitTest::testClientDestruction() { // #170806
     TestXmlGuiWindow mainWindow(xml);
     TestGuiClient* client = new TestGuiClient(xml);
     mainWindow.insertChildClient(client);
-    mainWindow.setAutoSaveSettings(false);
     mainWindow.createGUI();
 
     QVERIFY(mainWindow.factory()->clients().contains(client));
