@@ -20,16 +20,19 @@
 #ifndef KPARTS_HTMLEXTENSION_H
 #define KPARTS_HTMLEXTENSION_H
 
-#include <QSharedDataPointer>
+#include <QtCore/QSharedDataPointer>
 #include <QtCore/QObject>
-#include <kurl.h>
+
 #include <kparts/kparts_export.h>
+
+class KUrl;
 
 namespace KParts
 {
 
 class ReadOnlyPart;
 class HtmlExtensionPrivate;
+class SelectorInterfacePrivate;
 
 /**
  * @short an extension for KParts to provide HTML-related features
@@ -69,25 +72,64 @@ private:
  * const QList<SelectorInterface::Element> elements = selectorInterface->querySelectorAll("head > link[rel=\"alternate\"]");
  * </code>
  */
-class SelectorInterface
+class KPARTS_EXPORT SelectorInterface
 {
 public:
     class ElementPrivate;
     class Element;
 
-    virtual ~SelectorInterface() {}
     /**
-     * Returns the first (in document order) element in this fragment
-     * matching the given CSS selector @p query.
+     * Query methods.
      */
-    virtual Element querySelector(const QString& query) const = 0;
+    enum QueryMethod {
+        EntireContent = 0x01,          /*!< Query the entire content. */
+        SelectedContent = 0x02         /*!< Query only the user selected content, if any. */
+    };
+    Q_DECLARE_FLAGS(QueryMethods, QueryMethod)
+
+    /**
+     * Destructor
+     */
+    virtual ~SelectorInterface() {}
+
+    /**
+     * Returns the supported query methods.
+     * 
+     * By default only quering the entire content is supported.
+     * 
+     * @see QueryMethod
+     */
+    virtual QueryMethods supportedQueryMethods() const;
+
+    /**
+     * Returns the first (in document order) element in this fragment matching
+     * the given CSS selector @p query and querying method @p method.
+     * 
+     * Note that since the returned item is static snapshot, i.e. not live, it
+     * will not be updated when the document changes.
+     * 
+     * If the quering method specified by @p method is not supported or cannot be
+     * handled, then a null element is returned.
+     * 
+     * @see supportedQueryMethods
+     * @see QueryMethod
+     */
+    virtual Element querySelector(const QString& query, QueryMethod method) const = 0;
+
     /**
      * Returns all (in document order) elements in this fragment matching the
-     * given CSS selector @p query. Note that the returned list is
-     * static and not live, and will not be updated when the document
-     * changes
+     * given CSS selector @p query and querying method @p method.
+     * 
+     * Note that since the returned list is static snapshot, i.e. not live, it 
+     * will not be updated when the document changes.
+     * 
+     * If the quering method specified by @p method is not supported or cannot be
+     * handled, then an empty list is returned.
+     * 
+     * @see supportedQueryMethods
+     * @see QueryMethod
      */
-    virtual QList<Element> querySelectorAll(const QString& query) const = 0;
+    virtual QList<Element> querySelectorAll(const QString& query, QueryMethod method) const = 0;
 
     class KPARTS_EXPORT Element {
     public:
@@ -95,23 +137,32 @@ public:
          * Constructor
          */
         Element();
+
         /**
          * Copy constructor
          */
         Element(const Element& other);
+
         /**
          * Destructor
          */
         ~Element();
 
         /**
+         * Returns true if the element is null ; otherwise returns false.
+         */
+        bool isNull() const;
+
+        /**
          * Sets the tag name of this element.
          */
         void setTagName(const QString& tag);
+
         /**
          * Returns the tag name of this element.
          */
         QString tagName() const;
+
         /**
          * Adds an attribute with the given name and value.
          * If an attribute with the same name exists, its value is replaced by value.
@@ -127,6 +178,11 @@ public:
          * Returns the attribute with the given name. If the attribute does not exist, defaultValue is returned.
          */
         QString attribute(const QString& name, const QString& defaultValue = QString()) const;
+
+        /**
+         * Returns true if the attribute with the given @p name exists.
+         */
+        bool hasAttribute(const QString& name) const;
 
         // No namespace support yet, could be added with attributeNS, setAttributeNS
 
@@ -151,7 +207,6 @@ public:
     private:
         QSharedDataPointer<ElementPrivate> d;
     };
-
 };
 
 } // namespace KParts
@@ -160,6 +215,8 @@ inline void qSwap( KParts::SelectorInterface::Element & lhs, KParts::SelectorInt
 {
     lhs.swap( rhs );
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KParts::SelectorInterface::QueryMethods)
 
 Q_DECLARE_TYPEINFO(KParts::SelectorInterface::Element, Q_MOVABLE_TYPE);
 

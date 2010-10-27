@@ -18,8 +18,11 @@
  */
 
 #include "htmlextension.h"
-#include <kglobal.h>
+
 #include "part.h"
+
+#include <kglobal.h>
+
 
 using namespace KParts;
 
@@ -35,6 +38,11 @@ KParts::HtmlExtension::~HtmlExtension()
 HtmlExtension * KParts::HtmlExtension::childObject( QObject *obj )
 {
     return KGlobal::findDirectChild<KParts::HtmlExtension *>(obj);
+}
+
+SelectorInterface::QueryMethods SelectorInterface::supportedQueryMethods() const
+{
+    return EntireContent;
 }
 
 class SelectorInterface::ElementPrivate : public QSharedData
@@ -56,6 +64,11 @@ SelectorInterface::Element::Element(const SelectorInterface::Element& other)
 
 SelectorInterface::Element::~Element()
 {
+}
+
+bool SelectorInterface::Element::isNull() const
+{
+    return d->tag.isNull();
 }
 
 void SelectorInterface::Element::setTagName(const QString& tag)
@@ -81,4 +94,9 @@ QStringList SelectorInterface::Element::attributeNames() const
 QString SelectorInterface::Element::attribute(const QString& name, const QString& defaultValue) const
 {
     return d->attributes.value(name, defaultValue);
+}
+
+bool SelectorInterface::Element::hasAttribute(const QString& name) const
+{
+    return d->attributes.contains(name);
 }
