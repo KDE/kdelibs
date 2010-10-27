@@ -1119,25 +1119,43 @@ static KParts::SelectorInterface::Element convertDomElement(const DOM::ElementIm
     return elem;
 }
 
-KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QString& query) const
+KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QString& query, KParts::SelectorInterface::QueryMethod method) const
 {
-    int ec = 0; // exceptions are ignored
-    WTF::RefPtr<DOM::ElementImpl> element = part()->document().handle()->querySelector(query, ec);
-    return convertDomElement(element.get());
+    switch (method) {
+    case KParts::SelectorInterface::EntireContent: {
+        int ec = 0; // exceptions are ignored
+        WTF::RefPtr<DOM::ElementImpl> element = part()->document().handle()->querySelector(query, ec);
+        return convertDomElement(element.get());
+    }    
+    case KParts::SelectorInterface::SelectedContent:
+        // TODO: Implement support for querying only the selected portion of the content...
+    default:
+        break;
+    }        
+    return KParts::SelectorInterface::Element();    
 }
 
-QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(const QString& query) const
+QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(const QString& query, KParts::SelectorInterface::QueryMethod method) const
 {
-    int ec = 0; // exceptions are ignored
-    WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);
-    QList<Element> result;
-    const unsigned long len = nodes->length();
-    result.reserve(len);
-    for (unsigned long i = 0; i < len; ++i) {
-        DOM::NodeImpl* node = nodes->item(i);
-        if (node->isElementNode()) { // should be always true
-            result.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
+    QList<KParts::SelectorInterface::Element> result;
+    switch (method) {
+    case KParts::SelectorInterface::EntireContent: {
+        int ec = 0; // exceptions are ignored
+        WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);    
+        const unsigned long len = nodes->length();
+        result.reserve(len);
+        for (unsigned long i = 0; i < len; ++i) {
+            DOM::NodeImpl* node = nodes->item(i);
+            if (node->isElementNode()) { // should be always true
+                result.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
+            }
         }
+        break;
+    }
+    case KParts::SelectorInterface::SelectedContent:
+        // TODO: Implement support for querying only the selected portion of the content...
+    default:
+        break;
     }
     return result;
 }
