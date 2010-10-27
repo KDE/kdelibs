@@ -55,7 +55,21 @@ public:
      */
     static HtmlExtension *childObject( QObject *obj );
 
+    /**
+     * Returns the current base url of the part that implements this extension.
+     *
+     * This function is mostly used to resolve any relative URLs that might be
+     * returned when querying the part for URLs or links.
+     */
     virtual KUrl baseUrl() const = 0;
+
+    /**
+     * Returns true if portions of the content in part that implements
+     * this extension are selected.
+     *
+     * By default this function returns false.
+     */
+    virtual bool hasSelection() const;
 
 private:
     // for future extensions
@@ -82,8 +96,9 @@ public:
      * Query methods.
      */
     enum QueryMethod {
-        EntireContent = 0x01,          /*!< Query the entire content. */
-        SelectedContent = 0x02         /*!< Query only the user selected content, if any. */
+        None = 0x00,                   /*!< Quering is not possible. */
+        EntireContent = 0x01,          /*!< Query or can query the entire content. */
+        SelectedContent = 0x02         /*!< Query or can query only the user selected content, if any. */
     };
     Q_DECLARE_FLAGS(QueryMethods, QueryMethod)
 

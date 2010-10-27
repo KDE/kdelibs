@@ -35,6 +35,11 @@ KParts::HtmlExtension::~HtmlExtension()
 {
 }
 
+bool HtmlExtension::hasSelection() const
+{
+    return false;
+}
+
 HtmlExtension * KParts::HtmlExtension::childObject( QObject *obj )
 {
     return KGlobal::findDirectChild<KParts::HtmlExtension *>(obj);
