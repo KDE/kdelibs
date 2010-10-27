@@ -161,6 +161,7 @@ install( FILES
   KDirSortFilterProxyModel
   KDirSelectDialog
   KDirWatch
+  KDualAction
   KFilePreviewGenerator
   KFilePlacesView
   KFileWidget
