@@ -23,8 +23,8 @@
 </affiliation>
 </author>
 
-<date>2008-11-12</date>
-<releaseinfo>0.01.01</releaseinfo>
+<date>2010-10-28</date>
+<releaseinfo>&kde; 4.5</releaseinfo>
 
 </refentryinfo>
 
@@ -55,27 +55,187 @@
 <refsect1>
 <title>Description</title>
 
-<para>
-<command>kded4</command> is responsible for creating the sycoca file, i.e. the binary 
-cache of servicetypes, mimetypes, and services for a particular user.
+<para><command>kded4</command> is responsible for creating the sycoca file, i.e. the binary cache of servicetypes, mimetypes, and services for a particular user.
 </para>
-<para>
-It monitors the directories containing .desktop files.
-When a file is added/removed, it waits 5 seconds (in case of series of
-updates), and then launches <command>kbuildsycoca4</command>.
+<para>It monitors the directories containing .desktop files. When a file is added/removed, it waits 5 seconds (in case of a series of updates), and then launches <command>kbuildsycoca4</command> to update the sycoca.
 </para>
-<!--
-<para>
-It is also responsible for launching the kded modules
+<para>It checks newly installed update files, i.e. the *.upd files used to update configuration files of users when the configuration file formats changes. <command>kconf_update</command> is launched to do the updates.
 </para>
--->
+<para>When the hostname changes, it will make the necessary changes to the KDE environment and X-server to allow continued proper operation, launching <command>kdontchangethehostname</command> to do the changes.
+</para>
+<para>Those tasks are also performed always at kded4 start to ensure that the user configuration is up to date.
+</para>
+<para>It is also responsible for launching the on-demand kded4 modules and init enabled kded4 modules like:
+<variablelist>
+<varlistentry>
+<term><option>Konqueror Browser Preloader</option></term>
+<listitem><para>Reduces Konqueror startup time.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Directory Watcher</option></term>
+<listitem><para>Monitors directories for changes.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Hardware Detection</option></term>
+<listitem><para>Provides a user interface for hardware events.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>SSL Certificate Policy</option></term>
+<listitem><para>Provides the user configured SSL certificate policy to applications.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Network Proxy Configuration</option></term>
+<listitem><para>Automatic proxy configuration.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Password Caching</option></term>
+<listitem><para>Temporary password caching, for example: so that a webpage with HTTP
+authentication doesn't ask for your password for every link and every image in the page.
+These passwords are forgotten when exiting KDE (unlike <command>KWallet</command>)</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Sound Policy</option></term>
+<listitem><para>Provides the sound system policy to applications.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Favicons</option></term>
+<listitem><para>Stores website icons.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Display Management</option></term>
+<listitem><para>Manages displays and video outputs.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Cookie jar</option></term>
+<listitem><para>Stores network cookies.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Network Watcher</option></term>
+<listitem><para>Keeps track of the network and updates directory listings of the <application>network:/</application> KIO slave.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Subversion Module</option></term>
+<listitem><para>Provides various subversion actions to filemanager and other software.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>Network Status</option></term>
+<listitem><para>Tracks status of network interfaces and provides notifications for applications using the network.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Write Daemon</option></term>
+<listitem><para>Watches the messages from local users sent with <replaceable>write</replaceable>(1) or <replaceable>wall</replaceable>(1).</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Notification area watcher</option></term>
+<listitem><para>Keeps track of applications that want to use the D-Bus based notification area.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>KMixD</option></term>
+<listitem><para>KMixD Mixer Service</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Systemtray daemon</option></term>
+<listitem><para>Keeps track of applications that want to use the D-Bus based system tray.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Keyboard Daemon</option></term>
+<listitem><para>Keeps track of keyboard changes (new keyboard, changed layout)</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Remote URL Change Notifier</option></term>
+<listitem>
+<para>Provides change notifications for network folders</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Activity Manager</option></term>
+<listitem><para>The Nepomuk activities manager backend</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Display Management change monitor</option></term>
+<listitem><para>Notifies how the display has been rotated (where available)</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Free Space Notifier</option></term>
+<listitem><para>Warns when running out of space in your home folder.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Removable Device Automounter</option></term>
+<listitem><para>Automatically mounts devices as needed.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Nepomuk Search Module</option></term>
+<listitem><para>Helper module for KIO to ensure automatic updates of Nepomuk search listings.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Power Management</option></term>
+<listitem><para>Battery, Display and CPU power management and notifications.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>K Remote Control Daemon</option></term>
+<listitem><para>Manages the Remote Control commands received</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Status Notifier Manager</option></term>
+<listitem><para>Manages services that provide status notifier user interfaces.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>DNS-SD Service Discovery Monitor</option></term>
+<listitem><para>Monitors the network for DNS-SD services.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Drive Ejector</option></term>
+<listitem><para>Automatically unmounts and releases drives when their eject button is pushed.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Time zone</option></term>
+<listitem><para>Provides access to the system's time zones for applications.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>Input Actions</option></term>
+<listitem><para>Input Actions service performing configured actions on key presses.</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</para>
+
+ <para>The init modules can be enabled/disabled using <command>systemsettings</command>, in System Administration > Startup and Shutdown > Service Manager.</para>
+
 </refsect1>
 
-<refsect1>
-<title>Generic Options</title>
-<para>
-<variablelist>
-
+<refsect1><title>Generic Options</title>
+<!--<para>--><variablelist>
 <varlistentry>
 <term><option>--author</option></term>
 <listitem>
@@ -101,8 +261,6 @@ It is also responsible for launching the kded modules
 <term><option>--help-kde</option></term>
 <listitem>
 <para>Show KDE specific options.</para>
-
-
 </listitem>
 </varlistentry>
 
@@ -128,7 +286,7 @@ It is also responsible for launching the kded modules
 </varlistentry>
 
 </variablelist>
-</para>
+<!--</para>-->
 </refsect1>
 
 <refsect1>
@@ -149,8 +307,7 @@ It is also responsible for launching the kded modules
 
 <refsect1>
 <title>Usage</title>
-<para>If <command>kded4</command> is called without parameters and is already running, 
-it shows the message:
+<para>If <command>kded4</command> is called without parameters and is already running, it shows the message:
 <screen>KDE Daemon (kded) already running.</screen>
 </para>
 <para>
