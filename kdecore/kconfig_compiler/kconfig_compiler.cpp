@@ -98,14 +98,74 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
     }
 }
 
-bool globalEnums;
-bool useEnumTypes;
-bool itemAccessors;
-bool dpointer;
 QStringList allNames;
 QRegExp *validNameRegexp;
 QString This;
 QString Const;
+
+/**
+   Configuration Compiler Configuration
+*/
+class CfgConfig
+{
+public:
+  CfgConfig( const QString &codegenFilename )
+  {
+    // Configure the compiler with some settings
+    QSettings codegenConfig(codegenFilename, QSettings::IniFormat);
+
+    nameSpace = codegenConfig.value("NameSpace").toString();
+    className = codegenConfig.value("ClassName").toString();
+    if ( className.isEmpty() ) {
+      cerr << "Class name missing" << endl;
+      exit(1);
+    }
+    inherits = codegenConfig.value("Inherits").toString();
+    if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
+    visibility = codegenConfig.value("Visibility").toString();
+    if ( !visibility.isEmpty() ) visibility += ' ';
+    forceStringFilename = codegenConfig.value("ForceStringFilename", false).toBool();
+    singleton = codegenConfig.value("Singleton", false).toBool();
+    staticAccessors = singleton;
+    customAddons = codegenConfig.value("CustomAdditions", false).toBool();
+    memberVariables = codegenConfig.value("MemberVariables").toString();
+    dpointer = (memberVariables == "dpointer");
+    headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
+    sourceIncludes = codegenConfig.value("SourceIncludeFiles", QStringList()).toStringList();
+    mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
+    allMutators = ((mutators.count() == 1) && (mutators.at(0).toLower() == "true"));
+    itemAccessors = codegenConfig.value("ItemAccessors", false).toBool();
+    setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
+    defaultGetters = codegenConfig.value("DefaultValueGetters", QStringList()).toStringList();
+    allDefaultGetters = (defaultGetters.count() == 1) && (defaultGetters.at(0).toLower() == "true");
+    globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
+    useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
+  }
+
+public:
+  // These are read from the .kcfgc configuration file
+  QString nameSpace;     // The namespace for the class to be generated
+  QString className;     // The class name to be generated
+  QString inherits;      // The class the generated class inherits (if empty, from KConfigSkeleton)
+  QString visibility;
+  bool forceStringFilename;
+  bool singleton;        // The class will be a singleton
+  bool staticAccessors;  // provide or not static accessors
+  bool customAddons;
+  QString memberVariables;
+  QStringList headerIncludes;
+  QStringList sourceIncludes;
+  QStringList mutators;
+  QStringList defaultGetters;
+  bool allMutators;
+  bool setUserTexts;
+  bool allDefaultGetters;
+  bool dpointer;
+  bool globalEnums;
+  bool useEnumTypes;
+  bool itemAccessors;
+};
+
 
 struct SignalArguments
 {
@@ -145,11 +205,11 @@ class CfgEntry
           if (i >= 0)
             mExternalQual = n.left(i + 2);
         }
-	QString prefix;
+        QString prefix;
         QList<Choice> choices;
-	const QString& name() const  { return mName; }
-	const QString& externalQualifier() const  { return mExternalQual; }
-	bool external() const  { return !mExternalQual.isEmpty(); }
+        const QString& name() const  { return mName; }
+        const QString& externalQualifier() const  { return mExternalQual; }
+        bool external() const  { return !mExternalQual.isEmpty(); }
       private:
         QString mName;
         QString mExternalQual;
@@ -288,10 +348,10 @@ public:
 // returns the name of an member variable
 // use itemPath to know the full path
 // like using d-> in case of dpointer
-static QString varName(const QString &n)
+static QString varName(const QString &n, const CfgConfig &cfg)
 {
   QString result;
-  if ( !dpointer ) {
+  if ( !cfg.dpointer ) {
     result = QChar::fromLatin1('m') + n;
     result[1] = result[1].toUpper();
   }
@@ -302,14 +362,14 @@ static QString varName(const QString &n)
   return result;
 }
 
-static QString varPath(const QString &n)
+static QString varPath(const QString &n, const CfgConfig &cfg)
 {
   QString result;
-  if ( dpointer ) {
-    result = QString::fromLatin1("d->") + varName(n);
+  if ( cfg.dpointer ) {
+    result = "d->"+varName(n, cfg);
   }
   else {
-    result = varName(n);
+    result = varName(n, cfg);
   }
   return result;
 }
@@ -453,7 +513,7 @@ static QString signalEnumName(const QString &signalName)
 static void preProcessDefault( QString &defaultValue, const QString &name,
                                const QString &type,
                                const CfgEntry::Choices &choices,
-                               QString &code )
+                               QString &code, const CfgConfig &cfg )
 {
     if ( type == QLatin1String("String") && !defaultValue.isEmpty() ) {
       defaultValue = literalString(defaultValue);
@@ -472,7 +532,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       QStringList::ConstIterator it;
       for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
         cpp << "  default" << name << ".append( ";
-        if( type == QLatin1String("UrlList") ) {
+        if( type == "UrlList" ) {
           cpp << "KUrl(";
         }
         cpp << "QString::fromUtf8( \"" << *it << "\" ) ";
@@ -498,7 +558,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.choices.constBegin(); it != choices.choices.constEnd(); ++it ) {
         if ( (*it).name == defaultValue ) {
-          if ( globalEnums && choices.name().isEmpty() )
+          if ( cfg.globalEnums && choices.name().isEmpty() )
             defaultValue.prepend( choices.prefix );
           else
             defaultValue.prepend( enumTypeQualifier(name, choices) + choices.prefix );
@@ -526,7 +586,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
 }
 
 
-CfgEntry *parseEntry( const QString &group, const QDomElement &element )
+CfgEntry *parseEntry( const QString &group, const QDomElement &element, const CfgConfig &cfg )
 {
   bool defaultCode = false;
   QString type = element.attribute( "type" );
@@ -748,7 +808,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         QString tmpDefaultValue = e.text();
 
         if (e.attribute( "code" ) != "true")
-           preProcessDefault(tmpDefaultValue, name, type, choices, code);
+           preProcessDefault(tmpDefaultValue, name, type, choices, code, cfg);
 
         paramDefaultValues[i] = tmpDefaultValue;
       }
@@ -778,7 +838,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   if (!defaultCode)
   {
-    preProcessDefault(defaultValue, name, type, choices, code);
+    preProcessDefault(defaultValue, name, type, choices, code, cfg);
   }
 
   CfgEntry *result = new CfgEntry( group, type, key, name, context, label, toolTip, whatsThis,
@@ -912,9 +972,9 @@ QString itemType( const QString &type )
   return t;
 }
 
-static QString itemDeclaration(const CfgEntry *e)
+static QString itemDeclaration(const CfgEntry *e, const CfgConfig &cfg)
 {
-  if (itemAccessors)
+  if (cfg.itemAccessors)
      return QString();
 
   QString fCap = e->name();
@@ -928,12 +988,12 @@ static QString itemDeclaration(const CfgEntry *e)
 // returns the name of an item variable
 // use itemPath to know the full path
 // like using d-> in case of dpointer
-static QString itemVar(const CfgEntry *e)
+static QString itemVar(const CfgEntry *e, const CfgConfig &cfg)
 {
   QString result;
-  if (itemAccessors)
+  if (cfg.itemAccessors)
   {
-    if ( !dpointer )
+    if ( !cfg.dpointer )
     {
       result = 'm' + e->name() + "Item";
       result[1] = result[1].toUpper();
@@ -952,23 +1012,23 @@ static QString itemVar(const CfgEntry *e)
   return result;
 }
 
-static QString itemPath(const CfgEntry *e)
+static QString itemPath(const CfgEntry *e, const CfgConfig &cfg)
 {
   QString result;
-  if ( dpointer ) {
-    result = "d->"+itemVar(e);
+  if ( cfg.dpointer ) {
+    result = "d->"+itemVar(e, cfg);
   }
   else {
-    result = itemVar(e);
+    result = itemVar(e, cfg);
   }
   return result;
 }
 
 QString newItem( const QString &type, const QString &name, const QString &key,
-                 const QString &defaultValue, const QString &param = QString())
+                 const QString &defaultValue, const CfgConfig &cfg, const QString &param = QString())
 {
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
-              "( currentGroup(), " + key + ", " + varPath( name ) + param;
+              "( currentGroup(), " + key + ", " + varPath( name, cfg ) + param;
   if ( type == "Enum" ) t += ", values" + name;
   if ( !defaultValue.isEmpty() ) {
     t += ", ";
@@ -1024,10 +1084,10 @@ QString paramString(const QString &group, const QList<Param> &parameters)
 }
 
 /* int i is the value of the parameter */
-QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i=QString() )
+QString userTextsFunctions( CfgEntry *e, const CfgConfig &cfg, QString itemVarStr=QString(), QString i=QString() )
 {
   QString txt;
-  if (itemVarStr.isNull()) itemVarStr=itemPath(e);
+  if (itemVarStr.isNull()) itemVarStr=itemPath(e, cfg);
   if ( !e->label().isEmpty() ) {
     txt += "  " + itemVarStr + "->setLabel( ";
     if ( !e->context().isEmpty() )
@@ -1070,18 +1130,18 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i
 // returns the member accesor implementation
 // which should go in the h file if inline
 // or the cpp file if not inline
-QString memberAccessorBody( CfgEntry *e, bool globalEnums )
+QString memberAccessorBody( CfgEntry *e, bool globalEnums, const CfgConfig &cfg )
 {
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
     QString n = e->name();
     QString t = e->type();
-    bool useEnumType = useEnumTypes && t == "Enum";
+    bool useEnumType = cfg.useEnumTypes && t == "Enum";
 
     out << "return ";
     if (useEnumType)
       out << "static_cast<" << enumType(e, globalEnums) << ">(";
-    out << This << varPath(n);
+    out << This << varPath(n, cfg);
     if (!e->param().isEmpty())
       out << "[i]";
     if (useEnumType)
@@ -1094,7 +1154,7 @@ QString memberAccessorBody( CfgEntry *e, bool globalEnums )
 // returns the member mutator implementation
 // which should go in the h file if inline
 // or the cpp file if not inline
-QString memberMutatorBody( CfgEntry *e )
+QString memberMutatorBody( CfgEntry *e, const CfgConfig &cfg )
 {
   QString result;
   QTextStream out(&result, QIODevice::WriteOnly);
@@ -1132,7 +1192,7 @@ QString memberMutatorBody( CfgEntry *e )
     if ( e->paramType() == "Enum" ) {
       out << "QLatin1String( ";
 
-      if (globalEnums)
+      if (cfg.globalEnums)
         out << enumName(e->param()) << "ToString[i]";
       else
         out << enumName(e->param()) << "::enumToString[i]";
@@ -1150,14 +1210,14 @@ QString memberMutatorBody( CfgEntry *e )
     out << n << "\" )";
   }
   out << " ))" << (!e->signalList().empty() ? " {" : "") << endl;
-  out << "  " << This << varPath(n);
+  out << "  " << This << varPath(n, cfg);
   if (!e->param().isEmpty())
     out << "[i]";
   out << " = v;" << endl;
 
   if ( !e->signalList().empty() ) {
     foreach(const Signal &signal, e->signalList()) {
-      out << "  " << This << varPath("settingsChanged") << " |= " << signalEnumName(signal.name) << ";" << endl;
+      out << "  " << This << varPath("settingsChanged", cfg) << " |= " << signalEnumName(signal.name) << ";" << endl;
     }
     out << "}" << endl;
   }
@@ -1194,12 +1254,12 @@ QString memberGetDefaultBody( CfgEntry *e )
 // returns the item accesor implementation
 // which should go in the h file if inline
 // or the cpp file if not inline
-QString itemAccessorBody( CfgEntry *e )
+QString itemAccessorBody( CfgEntry *e, const CfgConfig &cfg )
 {
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
 
-    out << "return " << itemPath(e);
+    out << "return " << itemPath(e, cfg);
     if (!e->param().isEmpty()) out << "[i]";
     out << ";" << endl;
 
@@ -1274,33 +1334,7 @@ int main( int argc, char **argv )
   QString baseName = QFileInfo(codegenFilename).fileName();
   baseName = baseName.left(baseName.length() - 6);
 
-  QSettings codegenConfig(codegenFilename, QSettings::IniFormat);
-
-  QString nameSpace = codegenConfig.value("NameSpace").toString();
-  QString className = codegenConfig.value("ClassName").toString();
-  QString inherits = codegenConfig.value("Inherits").toString();
-  QString visibility = codegenConfig.value("Visibility").toString();
-  if (!visibility.isEmpty()) visibility+=' ';
-  bool forceStringFilename = codegenConfig.value("ForceStringFilename", false).toBool();
-  bool singleton = codegenConfig.value("Singleton", false).toBool();
-  bool staticAccessors = singleton;
-  //bool useDPointer = codegenConfig.readEntry("DPointer", false);
-  bool customAddons = codegenConfig.value("CustomAdditions", false).toBool();
-  QString memberVariables = codegenConfig.value("MemberVariables").toString();
-  const QStringList headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
-  const QStringList sourceIncludes = codegenConfig.value("SourceIncludeFiles", QStringList()).toStringList();
-  const QStringList mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
-  bool allMutators = false;
-  if ((mutators.count() == 1) && (mutators.at(0).toLower() == "true"))
-     allMutators = true;
-  itemAccessors = codegenConfig.value("ItemAccessors", false).toBool();
-  bool setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
-  const QStringList defaultGetters = codegenConfig.value("DefaultValueGetters", QStringList()).toStringList();
-  bool allDefaultGetters = (defaultGetters.count() == 1) && (defaultGetters.at(0).toLower() == "true");
-  globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
-  useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
-
-  dpointer = (memberVariables == "dpointer");
+  CfgConfig cfg = CfgConfig( codegenFilename );
 
   QFile input( inputFilename );
 
@@ -1360,7 +1394,7 @@ int main( int argc, char **argv )
       }
       for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() != "entry" ) continue;
-        CfgEntry *entry = parseEntry( group, e2 );
+        CfgEntry *entry = parseEntry( group, e2, cfg );
         if ( entry ) entries.append( entry );
         else {
           cerr << "Can not parse entry." << endl;
@@ -1396,14 +1430,12 @@ int main( int argc, char **argv )
     }
   }
 
-  if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
-
-  if ( className.isEmpty() ) {
+  if ( cfg.className.isEmpty() ) {
     cerr << "Class name missing" << endl;
     return 1;
   }
 
-  if ( singleton && !parameters.isEmpty() ) {
+  if ( cfg.singleton && !parameters.isEmpty() ) {
     cerr << "Singleton class can not have parameters" << endl;
     return 1;
   }
@@ -1442,23 +1474,23 @@ int main( int argc, char **argv )
   h << "// This file is generated by kconfig_compiler from " << QFileInfo(inputFilename).fileName() << "." << endl;
   h << "// All changes you do to this file will be lost." << endl;
 
-  h << "#ifndef " << ( !nameSpace.isEmpty() ? QString(nameSpace).replace( "::", "_" ).toUpper() + '_' : "" )
-    << className.toUpper() << "_H" << endl;
-  h << "#define " << ( !nameSpace.isEmpty() ? QString(nameSpace).replace( "::", "_" ).toUpper() + '_' : "" )
-    << className.toUpper() << "_H" << endl << endl;
+  h << "#ifndef " << ( !cfg.nameSpace.isEmpty() ? QString(cfg.nameSpace).replace( "::", "_" ).toUpper() + '_' : "" )
+    << cfg.className.toUpper() << "_H" << endl;
+  h << "#define " << ( !cfg.nameSpace.isEmpty() ? QString(cfg.nameSpace).replace( "::", "_" ).toUpper() + '_' : "" )
+    << cfg.className.toUpper() << "_H" << endl << endl;
 
   // Includes
   QStringList::ConstIterator it;
-  for( it = headerIncludes.constBegin(); it != headerIncludes.constEnd(); ++it ) {
+  for( it = cfg.headerIncludes.constBegin(); it != cfg.headerIncludes.constEnd(); ++it ) {
     if ( (*it).startsWith('"') )
       h << "#include " << *it << endl;
     else
       h << "#include <" << *it << ">" << endl;
   }
 
-  if ( headerIncludes.count() > 0 ) h << endl;
+  if ( cfg.headerIncludes.count() > 0 ) h << endl;
 
-  if ( !singleton && parameters.isEmpty() )
+  if ( !cfg.singleton && parameters.isEmpty() )
     h << "#include <kglobal.h>" << endl;
 
   h << "#include <kconfigskeleton.h>" << endl;
@@ -1472,14 +1504,14 @@ int main( int argc, char **argv )
       h << "#include <" << *it << ">" << endl;
   }
 
-  beginNamespaces(nameSpace, h);
+  beginNamespaces(cfg.nameSpace, h);
 
   // Private class declaration
-  if ( dpointer )
-    h << "class " << className << "Private;" << endl << endl;
+  if ( cfg.dpointer )
+    h << "class " << cfg.className << "Private;" << endl << endl;
 
   // Class declaration header
-  h << "class " << visibility << className << " : public " << inherits << endl;
+  h << "class " << cfg.visibility << cfg.className << " : public " << cfg.inherits << endl;
 
   h << "{" << endl;
   // Add Q_OBJECT macro if the config need signals.
@@ -1499,7 +1531,7 @@ int main( int argc, char **argv )
         values.append( choices.prefix + (*itChoice).name );
       }
       if ( choices.name().isEmpty() ) {
-        if ( globalEnums ) {
+        if ( cfg.globalEnums ) {
           h << "    enum " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << " { " << values.join( ", " ) << " };" << endl;
         } else {
           // Create an automatically named enum
@@ -1516,13 +1548,13 @@ int main( int argc, char **argv )
     }
     const QStringList values = (*itEntry)->paramValues();
     if ( !values.isEmpty() ) {
-      if ( globalEnums ) {
+      if ( cfg.globalEnums ) {
         // ### FIXME!!
         // make the following string table an index-based string search!
         // ###
         h << "    enum " << enumName( (*itEntry)->param() ) << " { " << values.join( ", " ) << " };" << endl;
         h << "    static const char* const " << enumName( (*itEntry)->param() ) << "ToString[];" << endl;
-        cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
+        cppPreamble += "const char* const " + cfg.className + "::" + enumName( (*itEntry)->param() ) +
            "ToString[] = { \"" + values.join( "\", \"" ) + "\" };\n";
       } else {
         h << "    class " << enumName( (*itEntry)->param() ) << endl;
@@ -1531,7 +1563,7 @@ int main( int argc, char **argv )
         h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "      static const char* const enumToString[];" << endl;
         h << "    };" << endl;
-        cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
+        cppPreamble += "const char* const " + cfg.className + "::" + enumName( (*itEntry)->param() ) +
            "::enumToString[] = { \"" + values.join( "\", \"" ) + "\" };\n";
       }
     }
@@ -1555,11 +1587,11 @@ int main( int argc, char **argv )
   }
   h << endl;
   // Constructor or singleton accessor
-  if ( !singleton ) {
-    h << "    " << className << "(";
+  if ( !cfg.singleton ) {
+    h << "    " << cfg.className << "(";
     if (cfgFileNameArg)
     {
-        if(forceStringFilename)
+        if(cfg.forceStringFilename)
             h << " const QString &cfgfilename"
                 << (parameters.isEmpty() ? " = QString()" : ", ");
         else
@@ -1575,7 +1607,7 @@ int main( int argc, char **argv )
     }
     h << " );" << endl;
   } else {
-    h << "    static " << className << " *self();" << endl;
+    h << "    static " << cfg.className << " *self();" << endl;
     if (cfgFileNameArg)
     {
       h << "    static void instance(const QString& cfgfilename);" << endl;
@@ -1583,10 +1615,10 @@ int main( int argc, char **argv )
   }
 
   // Destructor
-  h << "    ~" << className << "();" << endl << endl;
+  h << "    ~" << cfg.className << "();" << endl << endl;
 
   // global variables
-  if (staticAccessors)
+  if (cfg.staticAccessors)
     This = "self()->";
   else
     Const = " const";
@@ -1596,27 +1628,27 @@ int main( int argc, char **argv )
     QString t = (*itEntry)->type();
 
     // Manipulator
-    if (allMutators || mutators.contains(n))
+    if (cfg.allMutators || cfg.mutators.contains(n))
     {
       h << "    /**" << endl;
       h << "      Set " << (*itEntry)->label() << endl;
       h << "    */" << endl;
-      if (staticAccessors)
+      if (cfg.staticAccessors)
         h << "    static" << endl;
       h << "    void " << setFunction(n) << "( ";
       if (!(*itEntry)->param().isEmpty())
         h << cppType((*itEntry)->paramType()) << " i, ";
-      if (useEnumTypes && t == "Enum")
-        h << enumType(*itEntry, globalEnums);
+      if (cfg.useEnumTypes && t == "Enum")
+        h << enumType(*itEntry, cfg.globalEnums);
       else
         h << param( t );
       h << " v )";
       // function body inline only if not using dpointer
       // for BC mode
-      if ( !dpointer )
+      if ( !cfg.dpointer )
       {
         h << endl << "    {" << endl;
-        h << indent(memberMutatorBody(*itEntry), 6 );
+        h << indent(memberMutatorBody(*itEntry, cfg), 6 );
         h << "    }" << endl;
       }
       else
@@ -1629,11 +1661,11 @@ int main( int argc, char **argv )
     h << "    /**" << endl;
     h << "      Get " << (*itEntry)->label() << endl;
     h << "    */" << endl;
-    if (staticAccessors)
+    if (cfg.staticAccessors)
       h << "    static" << endl;
     h << "    ";
-    if (useEnumTypes && t == "Enum")
-      h << enumType(*itEntry, globalEnums);
+    if (cfg.useEnumTypes && t == "Enum")
+      h << enumType(*itEntry, cfg.globalEnums);
     else
       h << cppType(t);
     h << " " << getFunction(n) << "(";
@@ -1642,10 +1674,10 @@ int main( int argc, char **argv )
     h << ")" << Const;
     // function body inline only if not using dpointer
     // for BC mode
-    if ( !dpointer )
+    if ( !cfg.dpointer )
     {
        h << endl << "    {" << endl;
-      h << indent(memberAccessorBody(*itEntry, globalEnums), 6 );
+      h << indent(memberAccessorBody(*itEntry, cfg.globalEnums, cfg), 6 );
        h << "    }" << endl;
     }
     else
@@ -1654,16 +1686,16 @@ int main( int argc, char **argv )
     }
 
     // Default value Accessor
-    if ((allDefaultGetters || defaultGetters.contains(n)) && !(*itEntry)->defaultValue().isEmpty()) {
+    if ((cfg.allDefaultGetters || cfg.defaultGetters.contains(n)) && !(*itEntry)->defaultValue().isEmpty()) {
       h << endl;
       h << "    /**" << endl;
       h << "      Get " << (*itEntry)->label() << " default value" << endl;
       h << "    */" << endl;
-      if (staticAccessors)
+      if (cfg.staticAccessors)
         h << "    static" << endl;
       h << "    ";
-      if (useEnumTypes && t == "Enum")
-        h << enumType(*itEntry, globalEnums);
+      if (cfg.useEnumTypes && t == "Enum")
+        h << enumType(*itEntry, cfg.globalEnums);
       else
         h << cppType(t);
       h << " " << getDefaultFunction(n) << "(";
@@ -1672,20 +1704,20 @@ int main( int argc, char **argv )
       h << ")" << Const << endl;
       h << "    {" << endl;
       h << "        return ";
-      if (useEnumTypes && t == "Enum")
-        h << "static_cast<" << enumType(*itEntry, globalEnums) << ">(";
+      if (cfg.useEnumTypes && t == "Enum")
+        h << "static_cast<" << enumType(*itEntry, cfg.globalEnums) << ">(";
       h << getDefaultFunction(n) << "_helper(";
       if ( !(*itEntry)->param().isEmpty() )
           h << " i ";
       h << ")";
-      if (useEnumTypes && t == "Enum")
+      if (cfg.useEnumTypes && t == "Enum")
         h << ")";
       h << ";" << endl;
       h << "    }" << endl;
     }
 
     // Item accessor
-    if ( itemAccessors ) {
+    if ( cfg.itemAccessors ) {
       h << endl;
       h << "    /**" << endl;
       h << "      Get Item object corresponding to " << n << "()"
@@ -1697,10 +1729,10 @@ int main( int argc, char **argv )
         h << " " << cppType((*itEntry)->paramType()) << " i ";
       }
       h << ")";
-      if (! dpointer )
+      if ( !cfg.dpointer )
       {
         h << endl << "    {" << endl;
-        h << indent( itemAccessorBody((*itEntry)), 6);
+        h << indent( itemAccessorBody((*itEntry), cfg), 6);
         h << "    }" << endl;
       }
       else
@@ -1729,10 +1761,10 @@ int main( int argc, char **argv )
       for ( it = signal.arguments.constBegin(); it != itEnd; ) {
         SignalArguments argument = *it;
         QString type = param(argument.type);
-        if ( useEnumTypes && argument.type == "Enum" ) {
+        if ( cfg.useEnumTypes && argument.type == "Enum" ) {
           for ( int i = 0, end = entries.count(); i < end; ++i ) {
             if ( entries[i]->name() == argument.variableName ) {
-              type = enumType(entries[i], globalEnums);
+              type = enumType(entries[i], cfg.globalEnums);
               break;
             }
           }
@@ -1750,12 +1782,12 @@ int main( int argc, char **argv )
   h << "  protected:" << endl;
 
   // Private constructor for singleton
-  if ( singleton ) {
-    h << "    " << className << "(";
+  if ( cfg.singleton ) {
+    h << "    " << cfg.className << "(";
     if ( cfgFileNameArg )
       h << "const QString& arg";
     h << ");" << endl;
-    h << "    friend class " << className << "Helper;" << endl << endl;
+    h << "    friend class " << cfg.className << "Helper;" << endl << endl;
   }
 
   if ( hasSignals ) {
@@ -1763,8 +1795,8 @@ int main( int argc, char **argv )
   }
 
   // Member variables
-  if ( !memberVariables.isEmpty() && memberVariables != "private" && memberVariables != "dpointer") {
-    h << "  " << memberVariables << ":" << endl;
+  if ( !cfg.memberVariables.isEmpty() && cfg.memberVariables != "private" && cfg.memberVariables != "dpointer") {
+    h << "  " << cfg.memberVariables << ":" << endl;
   }
 
   // Class Parameters
@@ -1774,7 +1806,7 @@ int main( int argc, char **argv )
      h << "    " << cppType((*it).type) << " mParam" << (*it).name << ";" << endl;
   }
 
-  if ( memberVariables != "dpointer" )
+  if ( cfg.memberVariables != "dpointer" )
   {
     QString group;
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
@@ -1783,17 +1815,17 @@ int main( int argc, char **argv )
         h << endl;
         h << "    // " << group << endl;
       }
-      h << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name() );
+      h << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name(), cfg );
       if ( !(*itEntry)->param().isEmpty() )
       {
         h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
       }
       h << ";" << endl;
 
-      if ( allDefaultGetters || defaultGetters.contains((*itEntry)->name()) )
+      if ( cfg.allDefaultGetters || cfg.defaultGetters.contains((*itEntry)->name()) )
       {
         h << "    ";
-        if (staticAccessors)
+        if (cfg.staticAccessors)
           h << "static ";
         h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
         if ( !(*itEntry)->param().isEmpty() )
@@ -1803,15 +1835,15 @@ int main( int argc, char **argv )
     }
 
     h << endl << "  private:" << endl;
-    if ( itemAccessors ) {
+    if ( cfg.itemAccessors ) {
        for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
-        h << "    Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
+        h << "    Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry, cfg );
         if ( !(*itEntry)->param().isEmpty() ) h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         h << ";" << endl;
       }
     }
     if ( hasSignals )
-     h << "    uint " << varName("settingsChanged") << ";" << endl;
+     h << "    uint " << varName("settingsChanged", cfg) << ";" << endl;
 
   }
   else
@@ -1819,9 +1851,9 @@ int main( int argc, char **argv )
     // use a private class for both member variables and items
     h << "  private:" << endl;
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
-      if ( allDefaultGetters || defaultGetters.contains((*itEntry)->name()) ) {
+      if ( cfg.allDefaultGetters || cfg.defaultGetters.contains((*itEntry)->name()) ) {
         h << "    ";
-        if (staticAccessors)
+        if (cfg.staticAccessors)
           h << "static ";
         h << cppType((*itEntry)->type()) << " " << getDefaultFunction((*itEntry)->name()) << "_helper(";
         if ( !(*itEntry)->param().isEmpty() )
@@ -1829,10 +1861,10 @@ int main( int argc, char **argv )
         h << ")" << Const << ";" << endl;
       }
     }
-    h << "    " + className + "Private *d;" << endl;
+    h << "    " + cfg.className + "Private *d;" << endl;
   }
 
-  if (customAddons)
+  if (cfg.customAddons)
   {
      h << "    // Include custom additions" << endl;
      h << "    #include \"" << filenameOnly(baseName) << "_addons.h\"" <<endl;
@@ -1840,7 +1872,7 @@ int main( int argc, char **argv )
 
   h << "};" << endl << endl;
 
-  endNamespaces(nameSpace, h);
+  endNamespaces(cfg.nameSpace, h);
 
   h << "#endif" << endl << endl;
 
@@ -1862,33 +1894,33 @@ int main( int argc, char **argv )
 
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
-  for( it = sourceIncludes.constBegin(); it != sourceIncludes.constEnd(); ++it ) {
+  for( it = cfg.sourceIncludes.constBegin(); it != cfg.sourceIncludes.constEnd(); ++it ) {
     if ( (*it).startsWith('"') )
       cpp << "#include " << *it << endl;
     else
       cpp << "#include <" << *it << ">" << endl;
   }
 
-  if ( sourceIncludes.count() > 0 ) cpp << endl;
+  if ( cfg.sourceIncludes.count() > 0 ) cpp << endl;
 
-  if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
+  if ( cfg.setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
 
   // Header required by singleton implementation
-  if ( singleton )
+  if ( cfg.singleton )
     cpp << "#include <kglobal.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
-  if ( singleton && cfgFileNameArg )
+  if ( cfg.singleton && cfgFileNameArg )
     cpp << "#include <kdebug.h>" << endl << endl;
 
-  if ( !nameSpace.isEmpty() )
-    cpp << "using namespace " << nameSpace << ";" << endl << endl;
+  if ( !cfg.nameSpace.isEmpty() )
+    cpp << "using namespace " << cfg.nameSpace << ";" << endl << endl;
 
   QString group;
 
   // private class implementation
-  if ( dpointer )
+  if ( cfg.dpointer )
   {
-    beginNamespaces(nameSpace, cpp);
-    cpp << "class " << className << "Private" << endl;
+    beginNamespaces(cfg.nameSpace, cpp);
+    cpp << "class " << cfg.className << "Private" << endl;
     cpp << "{" << endl;
     cpp << "  public:" << endl;
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
@@ -1897,7 +1929,7 @@ int main( int argc, char **argv )
         cpp << endl;
         cpp << "    // " << group << endl;
       }
-      cpp << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name() );
+      cpp << "    " << cppType( (*itEntry)->type() ) << " " << varName( (*itEntry)->name(), cfg );
       if ( !(*itEntry)->param().isEmpty() )
       {
         cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
@@ -1906,54 +1938,54 @@ int main( int argc, char **argv )
     }
     cpp << endl << "    // items" << endl;
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
-      cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
+      cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry, cfg );
       if ( !(*itEntry)->param().isEmpty() ) cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         cpp << ";" << endl;
     }
     if ( hasSignals ) {
-      cpp << "    uint " << varName("settingsChanged") << ";" << endl;
+      cpp << "    uint " << varName("settingsChanged", cfg) << ";" << endl;
     }
 
     cpp << "};" << endl << endl;
-    endNamespaces(nameSpace, cpp);
+    endNamespaces(cfg.nameSpace, cpp);
   }
 
   // Singleton implementation
-  if ( singleton ) {
-    beginNamespaces(nameSpace, cpp);
-    cpp << "class " << className << "Helper" << endl;
+  if ( cfg.singleton ) {
+    beginNamespaces(cfg.nameSpace, cpp);
+    cpp << "class " << cfg.className << "Helper" << endl;
     cpp << '{' << endl;
     cpp << "  public:" << endl;
-    cpp << "    " << className << "Helper() : q(0) {}" << endl;
-    cpp << "    ~" << className << "Helper() { delete q; }" << endl;
-    cpp << "    " << className << " *q;" << endl;
+    cpp << "    " << cfg.className << "Helper() : q(0) {}" << endl;
+    cpp << "    ~" << cfg.className << "Helper() { delete q; }" << endl;
+    cpp << "    " << cfg.className << " *q;" << endl;
     cpp << "};" << endl;
-    endNamespaces(nameSpace, cpp);
-    cpp << "K_GLOBAL_STATIC(" << className << "Helper, s_global" << className << ")" << endl;
+    endNamespaces(cfg.nameSpace, cpp);
+    cpp << "K_GLOBAL_STATIC(" << cfg.className << "Helper, s_global" << cfg.className << ")" << endl;
 
-    cpp << className << " *" << className << "::self()" << endl;
+    cpp << cfg.className << " *" << cfg.className << "::self()" << endl;
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
-      cpp << "  if (!s_global" << className << "->q)" << endl;
-      cpp << "     kFatal() << \"you need to call " << className << "::instance before using\";" << endl;
+      cpp << "  if (!s_global" << cfg.className << "->q)" << endl;
+      cpp << "     kFatal() << \"you need to call " << cfg.className << "::instance before using\";" << endl;
     } else {
-      cpp << "  if (!s_global" << className << "->q) {" << endl;
-      cpp << "    new " << className << ';' << endl;
-      cpp << "    s_global" << className << "->q->readConfig();" << endl;
+      cpp << "  if (!s_global" << cfg.className << "->q) {" << endl;
+      cpp << "    new " << cfg.className << ';' << endl;
+      cpp << "    s_global" << cfg.className << "->q->readConfig();" << endl;
       cpp << "  }" << endl << endl;
     }
-    cpp << "  return s_global" << className << "->q;" << endl;
+    cpp << "  return s_global" << cfg.className << "->q;" << endl;
     cpp << "}" << endl << endl;
 
     if ( cfgFileNameArg ) {
-      cpp << "void " << className << "::instance(const QString& cfgfilename)" << endl;
+      cpp << "void " << cfg.className << "::instance(const QString& cfgfilename)" << endl;
       cpp << "{" << endl;
-      cpp << "  if (s_global" << className << "->q) {" << endl;
-      cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\";" << endl;
+      cpp << "  if (s_global" << cfg.className << "->q) {" << endl;
+      cpp << "     kDebug() << \"" << cfg.className << "::instance called after the first use - ignoring\";" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
-      cpp << "  new " << className << "(cfgfilename);" << endl;
-      cpp << "  s_global" << className << "->q->readConfig();" << endl;
+      cpp << "  new " << cfg.className << "(cfgfilename);" << endl;
+      cpp << "  s_global" << cfg.className << "->q->readConfig();" << endl;
       cpp << "}" << endl << endl;
     }
   }
@@ -1962,9 +1994,9 @@ int main( int argc, char **argv )
     cpp << cppPreamble << endl;
 
   // Constructor
-  cpp << className << "::" << className << "( ";
+  cpp << cfg.className << "::" << cfg.className << "( ";
   if ( cfgFileNameArg ) {
-    if ( !singleton && ! forceStringFilename)
+    if ( !cfg.singleton && ! cfg.forceStringFilename)
       cpp << " KSharedConfig::Ptr config";
     else
       cpp << " const QString& config";
@@ -1980,7 +2012,7 @@ int main( int argc, char **argv )
   }
   cpp << " )" << endl;
 
-  cpp << "  : " << inherits << "(";
+  cpp << "  : " << cfg.inherits << "(";
   if ( !cfgFileName.isEmpty() ) cpp << " QLatin1String( \"" << cfgFileName << "\" ";
   if ( cfgFileNameArg ) cpp << " config ";
   if ( !cfgFileName.isEmpty() ) cpp << ") ";
@@ -1993,22 +2025,22 @@ int main( int argc, char **argv )
      cpp << "  , mParam" << (*it).name << "(" << (*it).name << ")" << endl;
   }
 
-  if ( hasSignals && !dpointer )
-    cpp << "  , " << varName("settingsChanged") << "(0)" << endl;
+  if ( hasSignals && !cfg.dpointer )
+    cpp << "  , " << varName("settingsChanged", cfg) << "(0)" << endl;
 
   cpp << "{" << endl;
 
-  if (dpointer)
+  if (cfg.dpointer)
   {
-    cpp << "  d = new " + className + "Private;" << endl;
+    cpp << "  d = new " + cfg.className + "Private;" << endl;
     if (hasSignals)
-      cpp << "  " << varPath("settingsChanged") << " = 0;" << endl;
+      cpp << "  " << varPath("settingsChanged", cfg) << " = 0;" << endl;
   }
   // Needed in case the singleton class is used as baseclass for
   // another singleton.
-  if (singleton) {
-    cpp << "  Q_ASSERT(!s_global" << className << "->q);" << endl;
-    cpp << "  s_global" << className << "->q = this;" << endl;
+  if (cfg.singleton) {
+    cpp << "  Q_ASSERT(!s_global" << cfg.className << "->q);" << endl;
+    cpp << "  s_global" << cfg.className << "->q = this;" << endl;
   }
 
   group.clear();
@@ -2033,7 +2065,7 @@ int main( int argc, char **argv )
         cpp << "  {" << endl;
         cpp << "    KConfigSkeleton::ItemEnum::Choice2 choice;" << endl;
         cpp << "    choice.name = QLatin1String(\"" << (*it).name << "\");" << endl;
-        if ( setUserTexts ) {
+        if ( cfg.setUserTexts ) {
           if ( !(*it).label.isEmpty() ) {
             cpp << "    choice.label = ";
             if ( !(*it).context.isEmpty() )
@@ -2064,24 +2096,24 @@ int main( int argc, char **argv )
       }
     }
 
-    if (!dpointer)
-      cpp << itemDeclaration( *itEntry );
+    if (!cfg.dpointer)
+      cpp << itemDeclaration( *itEntry, cfg );
 
     if ( (*itEntry)->param().isEmpty() )
     {
       // Normal case
-      cpp << "  " << itemPath( *itEntry ) << " = "
-          << newItem( (*itEntry)->type(), (*itEntry)->name(), key, (*itEntry)->defaultValue() ) << endl;
+      cpp << "  " << itemPath( *itEntry, cfg ) << " = "
+          << newItem( (*itEntry)->type(), (*itEntry)->name(), key, (*itEntry)->defaultValue(), cfg ) << endl;
 
       if ( !(*itEntry)->minValue().isEmpty() )
-        cpp << "  " << itemPath( *itEntry ) << "->setMinValue(" << (*itEntry)->minValue() << ");" << endl;
+        cpp << "  " << itemPath( *itEntry, cfg ) << "->setMinValue(" << (*itEntry)->minValue() << ");" << endl;
       if ( !(*itEntry)->maxValue().isEmpty() )
-        cpp << "  " << itemPath( *itEntry ) << "->setMaxValue(" << (*itEntry)->maxValue() << ");" << endl;
+        cpp << "  " << itemPath( *itEntry, cfg ) << "->setMaxValue(" << (*itEntry)->maxValue() << ");" << endl;
 
-      if ( setUserTexts )
-        cpp << userTextsFunctions( (*itEntry) );
+      if ( cfg.setUserTexts )
+        cpp << userTextsFunctions( (*itEntry), cfg );
 
-      cpp << "  addItem( " << itemPath( *itEntry );
+      cpp << "  addItem( " << itemPath( *itEntry, cfg );
       QString quotedName = (*itEntry)->name();
       addQuotes( quotedName );
       if ( quotedName != key ) cpp << ", QLatin1String( \"" << (*itEntry)->name() << "\" )";
@@ -2093,7 +2125,7 @@ int main( int argc, char **argv )
       for(int i = 0; i <= (*itEntry)->paramMax(); i++)
       {
         QString defaultStr;
-        QString itemVarStr(itemPath( *itEntry )+QString("[%1]").arg(i));
+        QString itemVarStr(itemPath( *itEntry, cfg )+QString("[%1]").arg(i));
 
         if ( !(*itEntry)->paramDefaultValue(i).isEmpty() )
           defaultStr = (*itEntry)->paramDefaultValue(i);
@@ -2103,11 +2135,11 @@ int main( int argc, char **argv )
           defaultStr = defaultValue( (*itEntry)->type() );
 
         cpp << "  " << itemVarStr << " = "
-            << newItem( (*itEntry)->type(), (*itEntry)->name(), paramString(key, *itEntry, i), defaultStr, QString("[%1]").arg(i) )
+            << newItem( (*itEntry)->type(), (*itEntry)->name(), paramString(key, *itEntry, i), defaultStr,cfg,  QString("[%1]").arg(i) )
             << endl;
 
-        if ( setUserTexts )
-          cpp << userTextsFunctions( *itEntry, itemVarStr, (*itEntry)->paramName() );
+        if ( cfg.setUserTexts )
+          cpp << userTextsFunctions( *itEntry, cfg, itemVarStr, (*itEntry)->paramName() );
 
         // Make mutators for enum parameters work by adding them with $(..) replaced by the
         // param name. The check for isImmutable in the set* functions doesn't have the param
@@ -2125,7 +2157,7 @@ int main( int argc, char **argv )
 
   cpp << "}" << endl << endl;
 
-  if (dpointer)
+  if (cfg.dpointer)
   {
     // setters and getters go in Cpp if in dpointer mode
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
@@ -2133,52 +2165,52 @@ int main( int argc, char **argv )
       QString t = (*itEntry)->type();
 
       // Manipulator
-      if (allMutators || mutators.contains(n))
+      if (cfg.allMutators || cfg.mutators.contains(n))
       {
-        cpp << "void " << setFunction(n, className) << "( ";
+        cpp << "void " << setFunction(n, cfg.className) << "( ";
         if ( !(*itEntry)->param().isEmpty() )
           cpp << cppType( (*itEntry)->paramType() ) << " i, ";
-        if (useEnumTypes && t == "Enum")
-          cpp << enumType(*itEntry, globalEnums);
+        if (cfg.useEnumTypes && t == "Enum")
+          cpp << enumType(*itEntry, cfg.globalEnums);
         else
           cpp << param( t );
         cpp << " v )" << endl;
         // function body inline only if not using dpointer
         // for BC mode
         cpp << "{" << endl;
-        cpp << indent(memberMutatorBody( *itEntry ), 6);
+        cpp << indent(memberMutatorBody( *itEntry, cfg ), 6);
         cpp << "}" << endl << endl;
       }
 
       // Accessor
-      if (useEnumTypes && t == "Enum")
-        cpp << enumType(*itEntry, globalEnums);
+      if (cfg.useEnumTypes && t == "Enum")
+        cpp << enumType(*itEntry, cfg.globalEnums);
       else
         cpp << cppType(t);
-      cpp << " " << getFunction(n, className) << "(";
+      cpp << " " << getFunction(n, cfg.className) << "(";
       if ( !(*itEntry)->param().isEmpty() )
         cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
       cpp << ")" << Const << endl;
       // function body inline only if not using dpointer
       // for BC mode
       cpp << "{" << endl;
-      cpp << indent(memberAccessorBody( *itEntry, globalEnums ), 2);
+      cpp << indent(memberAccessorBody( *itEntry, cfg.globalEnums, cfg ), 2);
       cpp << "}" << endl << endl;
 
       // Default value Accessor -- written by the loop below
 
       // Item accessor
-      if ( itemAccessors )
+      if ( cfg.itemAccessors )
       {
         cpp << endl;
         cpp << "KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *"
-          << getFunction( n, className ) << "Item(";
+          << getFunction( n, cfg.className ) << "Item(";
         if ( !(*itEntry)->param().isEmpty() ) {
           cpp << " " << cppType( (*itEntry)->paramType() ) << " i ";
         }
         cpp << ")" << endl;
         cpp << "{" << endl;
-        cpp << indent(itemAccessorBody( *itEntry ), 2);
+        cpp << indent(itemAccessorBody( *itEntry, cfg ), 2);
         cpp << "}" << endl;
       }
 
@@ -2192,8 +2224,8 @@ int main( int argc, char **argv )
     QString t = (*itEntry)->type();
 
     // Default value Accessor, as "helper" function
-    if (( allDefaultGetters || defaultGetters.contains(n) ) && !(*itEntry)->defaultValue().isEmpty() ) {
-      cpp << cppType(t) << " " << getDefaultFunction(n, className) << "_helper(";
+    if (( cfg.allDefaultGetters || cfg.defaultGetters.contains(n) ) && !(*itEntry)->defaultValue().isEmpty() ) {
+      cpp << cppType(t) << " " << getDefaultFunction(n, cfg.className) << "_helper(";
       if ( !(*itEntry)->param().isEmpty() )
         cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
       cpp << ")" << Const << endl;
@@ -2204,38 +2236,38 @@ int main( int argc, char **argv )
   }
 
   // Destructor
-  cpp << className << "::~" << className << "()" << endl;
+  cpp << cfg.className << "::~" << cfg.className << "()" << endl;
   cpp << "{" << endl;
-  if ( singleton ) {
-    if ( dpointer )
+  if ( cfg.singleton ) {
+    if ( cfg.dpointer )
       cpp << "  delete d;" << endl;
-    cpp << "  if (!s_global" << className << ".isDestroyed()) {" << endl;
-    cpp << "    s_global" << className << "->q = 0;" << endl;
+    cpp << "  if (!s_global" << cfg.className << ".isDestroyed()) {" << endl;
+    cpp << "    s_global" << cfg.className << "->q = 0;" << endl;
     cpp << "  }" << endl;
   }
   cpp << "}" << endl << endl;
 
   if ( hasSignals ) {
-    cpp << "void " << className << "::" << "usrWriteConfig()" << endl;
+    cpp << "void " << cfg.className << "::" << "usrWriteConfig()" << endl;
     cpp << "{" << endl;
-    cpp << "  " << inherits << "::usrWriteConfig();" << endl << endl;
+    cpp << "  " << cfg.inherits << "::usrWriteConfig();" << endl << endl;
     foreach(const Signal &signal, signalList) {
-      cpp << "  if ( " << varPath("settingsChanged") << " & " << signalEnumName(signal.name) << " ) " << endl;
+      cpp << "  if ( " << varPath("settingsChanged", cfg) << " & " << signalEnumName(signal.name) << " ) " << endl;
       cpp << "    emit " << signal.name << "(";
       QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
       for ( it = signal.arguments.constBegin(); it != itEnd; ) {
         SignalArguments argument = *it;
         bool cast = false;
-        if ( useEnumTypes && argument.type == "Enum" ) {
+        if ( cfg.useEnumTypes && argument.type == "Enum" ) {
           for ( int i = 0, end = entries.count(); i < end; ++i ) {
             if ( entries[i]->name() == argument.variableName ) {
-              cpp << "static_cast<" << enumType(entries[i], globalEnums) << ">(";
+              cpp << "static_cast<" << enumType(entries[i], cfg.globalEnums) << ">(";
               cast = true;
               break;
             }
           }
         }
-        cpp << varPath(argument.variableName);
+        cpp << varPath(argument.variableName, cfg);
         if ( cast )
           cpp << ")";
         if ( ++it != itEnd )
@@ -2243,7 +2275,7 @@ int main( int argc, char **argv )
       }
       cpp << ");" << endl << endl;
     }
-    cpp << "  " << varPath("settingsChanged") << " = 0;" << endl;
+    cpp << "  " << varPath("settingsChanged", cfg) << " = 0;" << endl;
     cpp << "}" << endl;
   }
 
