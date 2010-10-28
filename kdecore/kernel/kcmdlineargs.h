@@ -76,7 +76,12 @@ class KDECORE_EXPORT KCmdLineOptions
      * possibly a default value. These will print out when <i>myapp --help</i>
      * is called on the command line.
      *
-     * Note that if the option name begins with "no" that you will need to test
+     * Note that a long option can only have one short (single character) alias
+     *
+     * @since 4.6 Note that the following does not apply to options that begin
+     * with "no" and expect a parameter, like "nooption4" in the example bellow.
+     *
+     * Note that if the option name begin with "no" that you will need to test
      * for the name without the "no" and the result will be the inverse of what
      * is specified. i.e. if "nofoo" is the name of the option and
      * <i>myapp --nofoo</i> is called:
@@ -96,7 +101,7 @@ class KDECORE_EXPORT KCmdLineOptions
      *  options.add("nooption2", ki18n("A long binary option, on by default"));
      *  options.add(":", ki18n("Extra options:"));
      *  options.add("option3 \<file>", ki18n("A long option which takes an argument"));
-     *  options.add("option4 \<speed>", ki18n("A long option which takes an argument, defaulting to 9600"), "9600");
+     *  options.add("nooption4 \<speed>", ki18n("A long option which takes an argument, defaulting to 9600"), "9600");
      *  options.add("d").add("option5", ki18n("A long option which has a short option as alias"));
      *  options.add("e").add("nooption6", ki18n("Another long option with an alias"));
      *  options.add("f").add("option7 \<speed>", ki18n("'--option7 speed' is the same as '-f speed'"));

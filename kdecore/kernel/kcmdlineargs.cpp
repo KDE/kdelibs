@@ -672,7 +672,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QByteArray &opt,
          opt_name = opt_name.mid(1);
          result = 4;
       }
-      if (opt_name.startsWith("no")) // krazy:exclude=strings
+      if (opt_name.startsWith("no") && !opt_name.contains('<')) // krazy:exclude=strings
       {
          opt_name = opt_name.mid(2);
          inverse = true;
@@ -698,7 +698,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QByteArray &opt,
                   nextOption = nextOption.left(p);
                if (nextOption.startsWith('!'))
                   nextOption = nextOption.mid(1);
-               if (nextOption.startsWith("no")) // krazy:exclude=strings
+               if (nextOption.startsWith("no") && !nextOption.contains('<')) // krazy:exclude=strings
                {
                   nextOption = nextOption.mid(2);
                   enabled = !enabled;
@@ -936,8 +936,20 @@ KCmdLineArgsStatic::parseAllArgs()
          } else {
            if (option.startsWith("no")) // krazy:exclude=strings
            {
-              option = option.mid(2);
-              enabled = false;
+              bool noHasParameter=false;
+              foreach(const QByteArray& name, appOptions->d->options.d->names)
+              {
+                 if (name.contains(option + QByteArray(" ")) && name.contains('<'))
+                 {
+                    noHasParameter=true;
+                    break;
+                  }
+              }
+              if (!noHasParameter)
+              {
+                 option = option.mid(2);
+                 enabled = false;
+              }
            }
            s->findOption(orig, option, i, enabled, inOptions);
          }
