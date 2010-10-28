@@ -68,8 +68,7 @@ private:
     QString batteryTechnology() const;
     mutable QDBusInterface m_device;
     QString m_udi;
-    mutable QMap<QString,QVariant> m_cache;
-    mutable QSet<QString> m_invalidKeys;
+    mutable QVariantMap m_cache;
 
     void checkCache(const QString &key) const;
 };

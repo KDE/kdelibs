@@ -33,8 +33,9 @@
 #include <solid/device.h>
 
 #include <QtCore/QStringList>
-#include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
+#include <QtCore/QMetaObject>
+#include <QtCore/QMetaProperty>
 
 using namespace Solid::Backends::UDisks;
 
@@ -102,7 +103,7 @@ UDisksDevice::UDisksDevice(const QString &udi)
 
 UDisksDevice::~UDisksDevice()
 {
-
+    delete m_device;
 }
 
 QObject* UDisksDevice::createDeviceInterface(const Solid::DeviceInterface::Type& type)
@@ -153,17 +154,17 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
                 return m_udi.endsWith(":media");
             } else {
                 return property("DeviceIsPartition").toBool()
-                    || property("IdUsage").toString()=="filesystem";
+                        || property("IdUsage").toString()=="filesystem";
             }
 
         case Solid::DeviceInterface::StorageAccess:
             if (property("DeviceIsOpticalDisc").toBool()) {
                 return property("IdUsage").toString()=="filesystem"
-                    && m_udi.endsWith(":media");
+                        && m_udi.endsWith(":media");
 
             } else {
                 return property("IdUsage").toString()=="filesystem"
-                    || property("IdUsage").toString()=="crypto";
+                        || property("IdUsage").toString()=="crypto";
             }
 
         case Solid::DeviceInterface::StorageDrive:
@@ -661,7 +662,7 @@ void UDisksDevice::checkCache(const QString &key) const
     if (m_cache.isEmpty()) // recreate the cache
         allProperties();
 
-    if (m_cache.contains(key) && !m_invalidKeys.contains(key))
+    if (m_cache.contains(key))
         return;
 
     QVariant reply = m_device->property(key.toUtf8());
@@ -671,8 +672,6 @@ void UDisksDevice::checkCache(const QString &key) const
     } else {
         m_cache[key] = QVariant();
     }
-
-    m_invalidKeys.remove(key);
 }
 
 QVariant UDisksDevice::property(const QString &key) const
@@ -689,20 +688,11 @@ bool UDisksDevice::propertyExists(const QString &key) const
 
 QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(m_device->service(), m_device->path(), QLatin1String("org.freedesktop.DBus.Properties"), QLatin1String("GetAll"));
-    QList<QVariant> arguments;
-    arguments << m_device->interface();
-    message.setArguments(arguments);
-    
-    QDBusMessage reply = m_device->connection().call(message);
-
-    if (reply.type() != QDBusMessage::ReplyMessage)
-    {
-        qWarning() << Q_FUNC_INFO << "error:" << reply;
-        return QVariantMap();
+    const QMetaObject* metaObject = m_device->metaObject();
+    for(int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i) {
+        QString name = QString::fromUtf8(metaObject->property(i).name());
+        m_cache.insert(name, m_device->property(name.toUtf8()));
     }
-
-    m_cache = QDBusReply<QVariantMap>(reply).value();
 
     return m_cache;
 }

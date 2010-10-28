@@ -25,7 +25,7 @@
 #define UD_DBUS_SERVICE                 "org.freedesktop.UDisks"
 #define UD_DBUS_PATH                    "/org/freedesktop/UDisks"
 #define UD_DBUS_INTERFACE_DISKS         "org.freedesktop.UDisks"
-#define UD_DBUS_INTERFACE_DISKS_DEVICE  UD_DBUS_INTERFACE_DISKS ".Device"
+#define UD_DBUS_INTERFACE_DISKS_DEVICE  "org.freedesktop.UDisks.Device"
 #define UD_UDI_DISKS_PREFIX             "/org/freedesktop/UDisks"
 
 #endif // SOLID_BACKENDS_UDISKS_H

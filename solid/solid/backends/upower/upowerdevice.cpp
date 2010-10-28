@@ -30,8 +30,9 @@
 #include <solid/device.h>
 
 #include <QtCore/QStringList>
-#include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
+#include <QtCore/QMetaObject>
+#include <QtCore/QMetaProperty>
 
 using namespace Solid::Backends::UPower;
 
@@ -40,7 +41,7 @@ UPowerDevice::UPowerDevice(const QString &udi)
                udi,
                UP_DBUS_INTERFACE_DEVICE,
                QDBusConnection::systemBus()),
-    m_udi(udi)
+    Solid::Ifaces::Device(), m_udi(udi)
 {
     if (m_device.isValid())
         connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
@@ -171,7 +172,7 @@ void UPowerDevice::checkCache(const QString &key) const
     if (m_cache.isEmpty()) // recreate the cache
         allProperties();
 
-    if (m_cache.contains(key) && !m_invalidKeys.contains(key))
+    if (m_cache.contains(key))
         return;
 
     QVariant reply = m_device.property(key.toUtf8());
@@ -181,8 +182,6 @@ void UPowerDevice::checkCache(const QString &key) const
     } else {
         m_cache[key] = QVariant();
     }
-
-    m_invalidKeys.remove(key);
 }
 
 QVariant UPowerDevice::property(const QString &key) const
@@ -199,20 +198,11 @@ bool UPowerDevice::propertyExists(const QString &key) const
 
 QMap<QString, QVariant> UPowerDevice::allProperties() const
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(m_device.service(), m_device.path(), QLatin1String("org.freedesktop.DBus.Properties"), QLatin1String("GetAll"));
-    QList<QVariant> arguments;
-    arguments << m_device.interface();
-    message.setArguments(arguments);
-
-    QDBusMessage reply = m_device.connection().call(message);
-
-    if (reply.type() != QDBusMessage::ReplyMessage)
-    {
-        qWarning() << Q_FUNC_INFO << "error:" << reply;
-        return QVariantMap();
+    const QMetaObject* metaObject = m_device.metaObject();
+    for(int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i) {
+        QString name = QString::fromUtf8(metaObject->property(i).name());
+        m_cache.insert(name, m_device.property(name.toUtf8()));
     }
-
-    m_cache = QDBusReply<QVariantMap>(reply).value();
 
     return m_cache;
 }
