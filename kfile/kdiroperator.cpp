@@ -232,9 +232,7 @@ public:
     void _k_slotCanceled();
     void _k_slotRedirected(const KUrl&);
     void _k_slotProperties();
-    void _k_slotPressed(const QModelIndex&);
     void _k_slotActivated(const QModelIndex&);
-    void _k_slotDoubleClicked(const QModelIndex&);
     void _k_slotSelectionChanged();
     void _k_openContextMenu(const QPoint&);
     void _k_triggerPreview(const QModelIndex&);
@@ -285,7 +283,6 @@ public:
     KUrl previewUrl;
     int previewWidth;
 
-    bool leftButtonPressed;
     bool dirHighlighting;
     bool onlyDoubleClickSelectsFiles;
     QString lastURL; // used for highlighting a directory on cdUp
@@ -325,7 +322,6 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     preview(0),
     previewUrl(),
     previewWidth(0),
-    leftButtonPressed(false),
     dirHighlighting(false),
     onlyDoubleClickSelectsFiles(!KGlobalSettings::singleClick()),
     progressDelayTimer(0),
@@ -1594,10 +1590,6 @@ void KDirOperator::setView(QAbstractItemView *view)
 
     connect(d->itemView, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_slotActivated(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(doubleClicked(const QModelIndex&)),
-            this, SLOT(_k_slotDoubleClicked(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(pressed(const QModelIndex&)),
-            this, SLOT(_k_slotPressed(const QModelIndex&)));
     connect(d->itemView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(_k_openContextMenu(const QPoint&)));
     connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
@@ -2007,7 +1999,7 @@ void KDirOperator::setupActions()
 
     d->newFileMenu = new KNewFileMenu(d->actionCollection, "new", this);
     connect(d->newFileMenu, SIGNAL(directoryCreated(KUrl)), this, SLOT(_k_slotDirectoryCreated(KUrl)));
-    
+
     d->actionCollection->addAssociatedWidget(this);
     foreach (QAction* action, d->actionCollection->actions())
       action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -2357,16 +2349,6 @@ void KDirOperator::Private::_k_slotProperties()
     }
 }
 
-void KDirOperator::Private::_k_slotPressed(const QModelIndex&)
-{
-    // Remember whether the left mouse button has been pressed, to prevent
-    // that a right-click on an item opens an item (see _k_slotDoubleClicked() and
-    // _k_openContextMenu()).
-    const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
-    leftButtonPressed = (QApplication::mouseButtons() & Qt::LeftButton) &&
-                        !(modifiers & Qt::ShiftModifier) && !(modifiers & Qt::ControlModifier);
-}
-
 void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
 {
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
@@ -2374,25 +2356,6 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
 
     const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
     if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier))
-        return;
-
-    if (item.isDir()) {
-        parent->selectDir(item);
-    } else {
-        parent->selectFile(item);
-    }
-}
-
-void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
-{
-    if (!leftButtonPressed) {
-        return;
-    }
-
-    const QModelIndex dirIndex = proxyModel->mapToSource(index);
-    KFileItem item = dirModel->itemForIndex(dirIndex);
-
-    if (item.isNull())
         return;
 
     if (item.isDir()) {
@@ -2425,8 +2388,6 @@ void KDirOperator::Private::_k_slotSelectionChanged()
 
 void KDirOperator::Private::_k_openContextMenu(const QPoint& pos)
 {
-    leftButtonPressed = false;
-
     const QModelIndex proxyIndex = itemView->indexAt(pos);
     const QModelIndex dirIndex = proxyModel->mapToSource(proxyIndex);
     KFileItem item = dirModel->itemForIndex(dirIndex);

@@ -186,7 +186,6 @@ public:
     void _k_zoomInIconsSize();
     void _k_slotIconSizeSliderMoved(int);
     void _k_slotIconSizeChanged(int);
-    void _k_slotViewDoubleClicked(const QModelIndex&);
 
     void addToRecentDocuments();
 
@@ -1741,8 +1740,6 @@ void KFileWidget::showEvent(QShowEvent* event)
         d->ops->setView( KFile::Default );
         d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
-
-        connect(d->ops->view(), SIGNAL(doubleClicked(QModelIndex)), this, SLOT(_k_slotViewDoubleClicked(QModelIndex)));
     }
     d->ops->clearHistory();
 
@@ -2056,14 +2053,6 @@ void KFileWidgetPrivate::_k_slotIconSizeSliderMoved(int _value)
     global.ry() += iconSizeSlider->height() / 2;
     QHelpEvent toolTipEvent(QEvent::ToolTip, QPoint(0, 0), iconSizeSlider->mapToGlobal(global));
     QApplication::sendEvent(iconSizeSlider, &toolTipEvent);
-}
-
-void KFileWidgetPrivate::_k_slotViewDoubleClicked(const QModelIndex &index)
-{
-    if (!index.isValid()) {
-        return;
-    }
-    q->slotOk();
 }
 
 static QString getExtensionFromPatternList(const QStringList &patternList)

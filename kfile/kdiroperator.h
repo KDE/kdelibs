@@ -182,21 +182,21 @@ public:
      * @returns the current mime filter.
      */
     QStringList mimeFilter() const;
-    
+
     /**
      * Only show the files in a given set of mimetypes.
      * This is useful in specialized applications (while file managers, on
-     * the other hand, want to show all mimetypes). Internally uses 
+     * the other hand, want to show all mimetypes). Internally uses
      * KNewFileMenu::setSupportedMimeTypes
-     * 
+     *
      * Example:
      * \code
      * QStringList mimeTypes;
      * mimeTypes << "text/html" << "inode/directory";
      * dirOperator->setNewFileMenuSupportedMimeTypes(mimeTypes);
      * \endcode
-     * 
-     * Note: If the list is empty, all options will be shown. Otherwise, 
+     *
+     * Note: If the list is empty, all options will be shown. Otherwise,
      * without the mimetype inode/directory, only file options will be shown.
      *
      * @see KNewFileMenu::setSupportedMimeTypes
@@ -469,6 +469,8 @@ public:
      * This toggles between double/single click file and directory selection mode.
      * When argument is true, files and directories are highlighted with single click and
      * selected (executed) with double click.
+     *
+     * NOTE: this is not implemented in KDE 4 yet
      *
      * The default follows the signle/double click system setting.
      */
@@ -908,9 +910,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotCanceled() )
     Q_PRIVATE_SLOT( d, void _k_slotRedirected(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_slotProperties() )
-    Q_PRIVATE_SLOT( d, void _k_slotPressed(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotActivated(const QModelIndex&) )
-    Q_PRIVATE_SLOT( d, void _k_slotDoubleClicked(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
     Q_PRIVATE_SLOT( d, void _k_openContextMenu(const QPoint&) )
     Q_PRIVATE_SLOT( d, void _k_triggerPreview(const QModelIndex&) )
