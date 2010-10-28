@@ -131,7 +131,7 @@ class KCMUTILS_EXPORT KCModuleContainer : public KCModule
 		/**
 		 * Enables/disables the Admin Mode button, as appropriate.
 		 */
-		void tabSwitched( QWidget * module );
+		void tabSwitched(int);
 
 		void moduleChanged(KCModuleProxy *proxy);
 

@@ -85,7 +85,7 @@ void KCModuleContainer::init()
 	d->topLayout->setObjectName( "topLayout" );
 	d->tabWidget = new KTabWidget(this);
 	d->tabWidget->setObjectName( "tabWidget");
-	connect( d->tabWidget, SIGNAL( currentChanged( QWidget* ) ), SLOT( tabSwitched( QWidget* ) ));
+	connect( d->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabSwitched(int)));
 	d->topLayout->addWidget( d->tabWidget );
 
 	if ( !d->modules.isEmpty() )
@@ -130,9 +130,9 @@ void KCModuleContainer::addModule( const QString& module )
 	setButtons( buttons() | proxy->realModule()->buttons() );
 }
 
-void KCModuleContainer::tabSwitched( QWidget * module )
+void KCModuleContainer::tabSwitched(int index)
 {
-	KCModuleProxy* mod = (KCModuleProxy *) module;
+	KCModuleProxy* mod = static_cast<KCModuleProxy *>(d->tabWidget->widget(index));
 	setQuickHelp( mod->quickHelp() );
 	setAboutData( mod->aboutData() );
 }
