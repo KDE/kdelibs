@@ -1260,7 +1260,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         // reduce its use count. If it reduces to zero then eliminate it and
         // use its old spot.
 
-        if (cullCollisions && (indices[position].lastUsedTime - ::time(0)) > 60) {
+        if (cullCollisions && (::time(0) - indices[position].lastUsedTime) > 60) {
             indices[position].useCount >>= 1;
             if (indices[position].useCount == 0) {
                 kDebug(264) << "Overwriting existing old cached entry due to collision.";
