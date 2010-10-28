@@ -65,13 +65,15 @@ class KCModuleContainer::KCModuleContainerPrivate
 // KComponentData objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-	: KCModule( KGlobal::mainComponent(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',' ) ))
+    : KCModule( KGlobal::mainComponent(), parent ),
+      d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',', QString::SkipEmptyParts ) ))
 {
 	init();
 }
 
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
-	: KCModule( KGlobal::mainComponent(), parent ), d( new KCModuleContainerPrivate( mods ) )
+    : KCModule( KGlobal::mainComponent(), parent ),
+      d( new KCModuleContainerPrivate( mods ) )
 {
 	init();
 }
