@@ -6,6 +6,9 @@
  * modify it under the terms of the GNU Library General Public
  * License version 2 as published by the Free Software Foundation.
  *
+ * This library includes "MurmurHash" code from Austin Appleby, which is
+ * placed in the public domain. See http://sites.google.com/site/murmurhash/
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -38,30 +41,122 @@
 #include <sys/mman.h>
 #include <stdlib.h>
 
+//-----------------------------------------------------------------------------
+// MurmurHashAligned, by Austin Appleby
+// (Released to the public domain, or licensed under the MIT license where
+// software may not be released to the public domain. See
+// http://sites.google.com/site/murmurhash/)
+
+// Same algorithm as MurmurHash, but only does aligned reads - should be safer
+// on certain platforms.
+static unsigned int MurmurHashAligned(const void *key, int len, unsigned int seed)
+{
+    const unsigned int m = 0xc6a4a793;
+    const int r = 16;
+
+    const unsigned char * data = reinterpret_cast<const unsigned char *>(key);
+
+    unsigned int h = seed ^ (len * m);
+
+    int align = reinterpret_cast<quintptr>(data) & 3;
+
+    if(align & (len >= 4))
+    {
+        // Pre-load the temp registers
+
+        unsigned int t = 0, d = 0;
+
+        switch(align)
+        {
+            case 1: t |= data[2] << 16;
+            case 2: t |= data[1] << 8;
+            case 3: t |= data[0];
+        }
+
+        t <<= (8 * align);
+
+        data += 4-align;
+        len -= 4-align;
+
+        int sl = 8 * (4-align);
+        int sr = 8 * align;
+
+        // Mix
+
+        while(len >= 4)
+        {
+            d = *reinterpret_cast<const unsigned int *>(data);
+            t = (t >> sr) | (d << sl);
+            h += t;
+            h *= m;
+            h ^= h >> r;
+            t = d;
+
+            data += 4;
+            len -= 4;
+        }
+
+        // Handle leftover data in temp registers
+
+        int pack = len < align ? len : align;
+
+        d = 0;
+
+        switch(pack)
+        {
+        case 3: d |= data[2] << 16;
+        case 2: d |= data[1] << 8;
+        case 1: d |= data[0];
+        case 0: h += (t >> sr) | (d << sl);
+                h *= m;
+                h ^= h >> r;
+        }
+
+        data += pack;
+        len -= pack;
+    }
+    else
+    {
+        while(len >= 4)
+        {
+            h += *reinterpret_cast<const unsigned int *>(data);
+            h *= m;
+            h ^= h >> r;
+
+            data += 4;
+            len -= 4;
+        }
+    }
+
+    //----------
+    // Handle tail bytes
+
+    switch(len)
+    {
+    case 3: h += data[2] << 16;
+    case 2: h += data[1] << 8;
+    case 1: h += data[0];
+            h *= m;
+            h ^= h >> r;
+    };
+
+    h *= m;
+    h ^= h >> 10;
+    h *= m;
+    h ^= h >> 17;
+
+    return h;
+}
+
 /**
  * This is the hash function used for our data to hopefully make the
  * hashing used to place the QByteArrays as efficient as possible.
- *
- * The algorithm is in the public domain, by Glenn Fowler, Phong Vo, and Landon
- * Curt Noll, implemented by myself (mpyne).
  */
-static quint32 fnvHash32(const QByteArray &buffer)
+static quint32 generateHash(const QByteArray &buffer)
 {
-    static const quint32 FNVPrime = 16777619;
-    static const quint32 FNVOffsetBasis = 2166136261;
-
-    // uchar for correct arithmetic below
-    const uchar *base = reinterpret_cast<const uchar *>(buffer.constData());
-    quint32 result = FNVOffsetBasis;
-    int count = buffer.length();
-
-    while (count-- > 0) {
-        result *= FNVPrime;
-        result ^= *base;
-        base++;
-    }
-
-    return result;
+    // The final constant is the "seed" for MurmurHash. Do *not* change it
+    // without incrementing the cache version.
+    return MurmurHashAligned(buffer.data(), buffer.size(), 0xF0F00F0F);
 }
 
 // Alignment concerns become a big deal when we're dealing with shared memory,
@@ -213,7 +308,7 @@ struct SharedMemory
      * e.g. the next version bump will be from 4 to 8, then 12, etc.
      */
     enum {
-        PIXMAP_CACHE_VERSION = 8,
+        PIXMAP_CACHE_VERSION = 12,
         MINIMUM_CACHE_SIZE = 4096
     };
 
@@ -234,6 +329,11 @@ struct SharedMemory
     // pages determine the page table size and (indirectly) the index table
     // size.
     QAtomicInt pageSize;
+
+    // This variable is added to reserve space for later cache timestamping
+    // support. The idea is this variable will be updated when the cache is
+    // written to, to allow clients to detect a changed cache quickly.
+    QAtomicInt cacheTimestamp;
 
     /**
      * Converts the given average item size into an appropriate page size.
@@ -574,7 +674,7 @@ struct SharedMemory
      */
     qint32 findNamedEntry(const QByteArray &key) const
     {
-        uint keyHash = fnvHash32(key);
+        uint keyHash = generateHash(key);
         uint position = keyHash % indexTableSize();
         int probeNumber = 1; // See insert() for description
 
@@ -786,7 +886,7 @@ struct SharedMemory
 
     uint fileNameHash(const QByteArray &utf8FileName) const
     {
-        return fnvHash32(utf8FileName) % indexTableSize();
+        return generateHash(utf8FileName) % indexTableSize();
     }
 
     void clear()
@@ -1222,7 +1322,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
     }
 
     QByteArray encodedKey = key.toUtf8();
-    uint keyHash = fnvHash32(encodedKey);
+    uint keyHash = generateHash(encodedKey);
     uint position = keyHash % d->shm->indexTableSize();
 
     // See if we're overwriting an existing entry.
