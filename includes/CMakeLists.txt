@@ -796,6 +796,7 @@ install( FILES
   KParts/DockMainWindow3
   KParts/Event
   KParts/Factory
+  KParts/FileInfoExtension
   KParts/GUIActivateEvent
   KParts/GenericFactory
   KParts/GenericFactoryBase
