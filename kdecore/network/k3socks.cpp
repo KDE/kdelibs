@@ -88,14 +88,14 @@ class KSocksTable {
   virtual ~KSocksTable();
 
    // The name of each symbol and it's SOCKS replacement
-   QMap<SymbolKeys,QString>  symbols;
+   QMap<SymbolKeys,QByteArray>  symbols;
    // The name of this library
    QString                   myname;
    bool                      hasWorkingAsyncConnect;
 };
 
 
-KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
+KSocksTable::KSocksTable() : myname(QString::fromLatin1("Unknown")), hasWorkingAsyncConnect(true) {
 }
 
 KSocksTable::~KSocksTable() {
@@ -208,8 +208,8 @@ public:
 
     static int debugArea() { static int s_area = KDebug::registerArea("kdecore (KSocks)"); return s_area; }
 
-    QStringList _libNames;
-    QStringList _libPaths;
+    QList<QByteArray> _libNames;
+    QList<QByteArray> _libPaths;
     bool _useSocks;
     bool _hasSocks;
     KLibrary* _socksLib;
@@ -296,8 +296,9 @@ KSocks::KSocks(const KConfigGroup *config)
                               it != newlibs.end();
                               ++it) {
       QString thisone = *it;
-      if (thisone[thisone.length()-1] != '/') thisone += '/';
-      d->_libPaths << thisone;
+      if (thisone[thisone.length()-1] != QLatin1Char('/'))
+          thisone += QLatin1Char('/');
+      d->_libPaths << QFile::encodeName(thisone);
       kDebug(d->debugArea()) << "KSocks added a new library path: " << thisone;
    }
 
@@ -326,13 +327,13 @@ KSocks::KSocks(const KConfigGroup *config)
          d->_socksLib = 0L;
       }
    } else              // leave this here   "else for {}"
-   for (QStringList::Iterator pit  = d->_libPaths.begin();
-                              !d->_hasSocks && pit != d->_libPaths.end();
+   for (QList<QByteArray>::const_iterator pit  = d->_libPaths.constBegin();
+                              !d->_hasSocks && pit != d->_libPaths.constEnd();
                               ++pit)
-   for (QStringList::Iterator it  = d->_libNames.begin();
-                              it != d->_libNames.end();
+   for (QList<QByteArray>::const_iterator it  = d->_libNames.constBegin();
+                              it != d->_libNames.constEnd();
                               ++it) {
-      d->_socksLib = ll->library(*pit + *it);
+      d->_socksLib = ll->library(QString::fromLatin1(*pit + *it));
       if (d->_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
             d-> _socksLib->resolveFunction("S5LogShowThreadIDS") != 0L) {  // NEC SOCKS
@@ -357,67 +358,67 @@ KSocks::KSocks(const KConfigGroup *config)
 
    // Load in all the symbols
    if (d->_st) {
-      for (QMap<SymbolKeys,QString>::Iterator it  = d->_st->symbols.begin();
+      for (QMap<SymbolKeys,QByteArray>::Iterator it  = d->_st->symbols.begin();
                                               it != d->_st->symbols.end();
                                               ++it) {
          switch(it.key()) {
          case S_SOCKSinit:
            F_SOCKSinit = (int (*)(char *))
-                         d->_socksLib->resolveFunction(it.value().toLatin1());
+                         d->_socksLib->resolveFunction(it.value());
           break;
          case S_connect:
            F_connect = (int (*)(int, const struct sockaddr *, kde_socklen_t))
-                       d->_socksLib->resolveFunction(it.value().toLatin1());
+                       d->_socksLib->resolveFunction(it.value());
           break;
          case S_read:
            F_read = (signed long int (*)(int, void *, unsigned long int))
-                    d->_socksLib->resolveFunction(it.value().toLatin1());
+                    d->_socksLib->resolveFunction(it.value());
           break;
          case S_write:
            F_write = (signed long int (*)(int, const void *, unsigned long int))
-                     d->_socksLib->resolveFunction(it.value().toLatin1());
+                     d->_socksLib->resolveFunction(it.value());
           break;
          case S_recvfrom:
            F_recvfrom = (int (*)(int, void *, unsigned long int, int,
                                  struct sockaddr *, kde_socklen_t *))
-                        d->_socksLib->resolveFunction(it.value().toLatin1());
+                        d->_socksLib->resolveFunction(it.value());
           break;
          case S_sendto:
            F_sendto = (int (*)(int, const void *, unsigned long int, int,
                                const struct sockaddr *, kde_socklen_t))
-                      d->_socksLib->resolveFunction(it.value().toLatin1());
+                      d->_socksLib->resolveFunction(it.value());
           break;
          case S_recv:
            F_recv = (int (*)(int, void *, unsigned long int, int))
-                    d->_socksLib->resolveFunction(it.value().toLatin1());
+                    d->_socksLib->resolveFunction(it.value());
           break;
          case S_send:
            F_send = (int (*)(int, const void *, unsigned long int, int))
-                    d->_socksLib->resolveFunction(it.value().toLatin1());
+                    d->_socksLib->resolveFunction(it.value());
           break;
          case S_getsockname:
            F_getsockname = (int (*)(int, struct sockaddr *, kde_socklen_t *))
-                           d->_socksLib->resolveFunction(it.value().toLatin1());
+                           d->_socksLib->resolveFunction(it.value());
           break;
          case S_getpeername:
            F_getpeername = (int (*)(int, struct sockaddr *, kde_socklen_t *))
-                           d->_socksLib->resolveFunction(it.value().toLatin1());
+                           d->_socksLib->resolveFunction(it.value());
           break;
          case S_accept:
            F_accept = (int (*)(int, struct sockaddr *, kde_socklen_t *))
-                      d->_socksLib->resolveFunction(it.value().toLatin1());
+                      d->_socksLib->resolveFunction(it.value());
           break;
          case S_select:
            F_select = (int (*)(int, fd_set *, fd_set *, fd_set *, struct timeval *))
-                      d->_socksLib->resolveFunction(it.value().toLatin1());
+                      d->_socksLib->resolveFunction(it.value());
           break;
          case S_listen:
            F_listen = (int (*)(int, int))
-                      d->_socksLib->resolveFunction(it.value().toLatin1());
+                      d->_socksLib->resolveFunction(it.value());
           break;
          case S_bind:
            F_bind = (int (*)(int, const struct sockaddr *, kde_socklen_t))
-                    d->_socksLib->resolveFunction(it.value().toLatin1());
+                    d->_socksLib->resolveFunction(it.value());
           break;
          default:
           kDebug(d->debugArea()) << "KSocks got a symbol it doesn't know about!";
