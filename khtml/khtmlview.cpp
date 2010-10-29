@@ -246,7 +246,9 @@ public:
         hasFrameset = false;
         complete = false;
         firstLayoutPending = true;
+#ifdef SPEED_DEBUG
         firstRepaintPending = true;
+#endif
         needsFullRepaint = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
@@ -400,7 +402,9 @@ public:
     bool hasFrameset                              :1;
     bool complete				:1;
     bool firstLayoutPending			:1;
+#ifdef SPEED_DEBUG
     bool firstRepaintPending                    :1;
+#endif
     bool layoutSchedulingEnabled		:1;
     bool needsFullRepaint			:1;
     bool painting				:1;
@@ -932,9 +936,9 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     if (d->firstRepaintPending && !m_part->parentPart()) {
         kDebug(6080) << "FIRST PAINT:" << m_part->d->m_parsetime.elapsed();
     }
+    d->firstRepaintPending = false;
 #endif
     d->painting = false;
-    d->firstRepaintPending = false;
 }
 
 void KHTMLView::setMarginWidth(int w)
@@ -3231,7 +3235,9 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     if(!m_part->xmlDocImpl()) return;
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
+#ifdef SPEED_DEBUG
     d->firstRepaintPending = false;
+#endif
 
     QPaintDevice* opd = m_part->xmlDocImpl()->paintDevice();
     m_part->xmlDocImpl()->setPaintDevice(p->device());
@@ -3279,7 +3285,9 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 
 void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
 {
+#ifdef SPEED_DEBUG
     d->firstRepaintPending = false;
+#endif
     QRect clip(off.x()+r.x(), off.y()+r.y(),r.width(),r.height());
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(clip, palette().brush(QPalette::Active, QPalette::Base));
