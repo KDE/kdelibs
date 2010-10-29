@@ -47,7 +47,7 @@ HtmlExtension * KParts::HtmlExtension::childObject( QObject *obj )
 
 SelectorInterface::QueryMethods SelectorInterface::supportedQueryMethods() const
 {
-    return EntireContent;
+    return KParts::SelectorInterface::None;
 }
 
 class SelectorInterface::ElementPrivate : public QSharedData

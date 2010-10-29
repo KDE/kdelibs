@@ -110,7 +110,7 @@ public:
     /**
      * Returns the supported query methods.
      * 
-     * By default only quering the entire content is supported.
+     * By default this function returns None.
      * 
      * @see QueryMethod
      */
