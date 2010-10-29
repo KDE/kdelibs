@@ -1134,9 +1134,13 @@ KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QStri
 {
     KParts::SelectorInterface::Element element;
 
+    // If the specified method is None, return an empty list...
+    if (method == KParts::SelectorInterface::None)
+        return element;
+
     if (!(supportedQueryMethods() & method))
         return element;
-    
+
     switch (method) {
     case KParts::SelectorInterface::EntireContent: {
         int ec = 0; // exceptions are ignored
@@ -1157,8 +1161,13 @@ QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(c
 {
     QList<KParts::SelectorInterface::Element> elements;
 
+    // If the specified method is None, return an empty list...
+    if (method == KParts::SelectorInterface::None)
+        return elements;
+
+    // If the specified method is not supported, return an empty list...
     if (!(supportedQueryMethods() & method))
-        return elements;    
+        return elements;
 
     switch (method) {
     case KParts::SelectorInterface::EntireContent: {
