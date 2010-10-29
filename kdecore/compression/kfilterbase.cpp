@@ -121,20 +121,20 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 #endif
     const KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
     if (mime) {
-        if (mime->is("application/x-gzip")) {
+        if (mime->is(QString::fromLatin1("application/x-gzip"))) {
             return new KGzipFilter;
         }
 #ifdef HAVE_BZIP2_SUPPORT
-        if (mime->is("application/x-bzip")) {
+        if (mime->is(QString::fromLatin1("application/x-bzip"))) {
             return new KBzip2Filter;
         }
 #endif
 #ifdef HAVE_XZ_SUPPORT
-        if (mime->is("application/x-lzma")) {
+        if (mime->is(QString::fromLatin1("application/x-lzma"))) {
             return new KXzFilter;
         }
 
-        if (mime->is("application/x-xz")) {
+        if (mime->is(QString::fromLatin1("application/x-xz"))) {
             return new KXzFilter;
         }
 #endif

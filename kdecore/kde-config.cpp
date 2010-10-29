@@ -56,7 +56,7 @@ static void printResult(const QString &s)
 static QString readXdg( const char* type )
 {
     QProcess proc;
-    proc.start( "xdg-user-dir", QStringList() << type );
+    proc.start( QString::fromLatin1("xdg-user-dir"), QStringList() << QString::fromLatin1(type) );
     if (!proc.waitForStarted() || !proc.waitForFinished())
         return QString();
     return QString::fromLocal8Bit( proc.readAll()).trimmed();
@@ -98,21 +98,21 @@ int main(int argc, char **argv)
 
     if (args->isSet("prefix"))
     {
-        printResult(KDEDIR);
+        printResult(QFile::decodeName(KDEDIR));
         return 0;
     }
 
     if (args->isSet("exec-prefix"))
     {
-        printResult(EXEC_INSTALL_PREFIX);
+        printResult(QFile::decodeName(EXEC_INSTALL_PREFIX));
         return 0;
     }
 
     if (args->isSet("libsuffix"))
     {
-        QString tmp(KDELIBSUFF);
-        tmp.remove('"');
-        printResult(tmp.toLocal8Bit());
+        QString tmp(QFile::decodeName(KDELIBSUFF));
+        tmp.remove(QLatin1Char('"'));
+        printResult(tmp);
         return 0;
     }
 
@@ -170,13 +170,13 @@ int main(int argc, char **argv)
         Q_FOREACH(const QString &type, types)
         {
             int index = 0;
-            while (helptexts[index] && type != helptexts[index]) {
+            while (helptexts[index] && type != QLatin1String(helptexts[index])) {
                 index += 2;
             }
             if (helptexts[index]) {
-                printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).toLocal8Bit().data());
+                printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).toLocal8Bit().constData());
             } else {
-                printf("%s", i18n("%1 - unknown type\n", type).toLocal8Bit().data());
+                printf("%s", i18n("%1 - unknown type\n", type).toLocal8Bit().constData());
             }
         }
         return 0;
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
             return result.isEmpty() ? 1 : 0;
         }
 
-        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(KPATH_SEPARATOR)));
+        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(QChar::fromLatin1(KPATH_SEPARATOR))));
         return 0;
     }
 
@@ -202,34 +202,34 @@ int main(int argc, char **argv)
     if (!type.isEmpty())
     {
         //code duplicated with KGlobalSettings::initPath()
-        if ( type == "desktop" )
+        if (type == QLatin1String("desktop"))
         { // QDesktopServices is QtGui :-/
             QString path = readXdg( "DESKTOP" );
             if (path.isEmpty())
                 path = QDir::homePath() + QLatin1String("/Desktop");
-            path=QDir::cleanPath( path );
-            if ( !path.endsWith('/') )
+            path = QDir::cleanPath(path);
+            if (!path.endsWith(QLatin1Char('/')))
               path.append(QLatin1Char('/'));
             printResult(path);
         }
-        else if ( type == "autostart" )
+        else if (type == QLatin1String("autostart"))
         {
             KConfigGroup g( KGlobal::config(), "Paths" );
-            QString path=QDir::homePath() + "/Autostart/";
-            path=g.readPathEntry( "Autostart", path);
-            path=QDir::cleanPath( path );
-            if ( !path.endsWith('/') )
-              path.append(QLatin1Char('/'));
+            QString path = QDir::homePath() + QLatin1String("/Autostart/");
+            path = g.readPathEntry( "Autostart", path);
+            path = QDir::cleanPath( path );
+            if (!path.endsWith(QLatin1Char('/')))
+              path.append(QLatin1Char(QLatin1Char('/')));
             printResult(path);
 
         }
-        else if ( type == "document" )
+        else if (type == QLatin1String("document"))
         {
             QString path = readXdg( "DOCUMENTS" );
             if ( path.isEmpty())
                 path = QDir::homePath() + QLatin1String("/Documents");
-            path=QDir::cleanPath( path );
-            if ( !path.endsWith('/') )
+            path = QDir::cleanPath( path );
+            if (!path.endsWith(QLatin1Char('/')))
               path.append(QLatin1Char('/'));
             printResult(path);
         }
