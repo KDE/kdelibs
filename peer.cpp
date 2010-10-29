@@ -110,6 +110,6 @@ QString Peer::exePath() const
       return QString();
    } else {
       // TODO: add a watch an trigger signal when the peer process ends
-      QFile::symLinkTarget(QString("%1/exe").arg(procFileName()));
+      return QFile::symLinkTarget(QString("%1/exe").arg(procFileName()));
    }
 }
