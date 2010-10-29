@@ -256,6 +256,14 @@ namespace Nepomuk {
              */
             void close();
 
+            /**
+             * \return \p true if all results have been listed (ie. finishedListing() has
+             * been emitted), close() has been called, or no query was started.
+             *
+             * \since 4.6
+             */
+            bool isListingFinished() const;
+
         Q_SIGNALS:
             /**
              * Emitted for new search results. This signal is emitted both
@@ -271,15 +279,38 @@ namespace Nepomuk {
             void entriesRemoved( const QList<QUrl>& entries );
 
             /**
+             * The number of results that are reported via newEntries() before the
+             * finishedListing() signal.
+             *
+             * Emitted once the count of the results is available. This might
+             * happen before the first result is emitted, in between the results, or
+             * in rare cases it could even happen after all results have been reported.
+             *
+             * Also be aware that no count will be provided when using sparqlQuery()
+             *
+             * Other than totalResultCount() this signal does take query limit and offset
+             * into account.
+             *
+             * \since 4.6
+             */
+            void resultCount( int count );
+
+            /**
+             * The total number of results the query would provide without any limit
+             * or offset.
+             *
              * Emitted once the total count of the results is available. This might
              * happen before the first result is emitted, in between the results, or
              * in rare cases it could even happen after all results have been reported.
              *
              * Also be aware that no count will be provided when using sparqlQuery()
              *
+             * Other than totalResultCount() this signal does \em not take query limit and offset
+             * into account.
+             *
              * \since 4.6
              */
-            void totalCount( int count );
+            void totalResultCount( int count );
 
             /**
              * Emitted when the initial listing has been finished, ie. if all

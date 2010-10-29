@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
  */
 
-#ifndef _NEPOMUK_FILE_QUERY_QUERY_H_
-#define _NEPOMUK_FILE_QUERY_QUERY_H_
+#ifndef _NEPOMUK_QUERY_FILE_QUERY_H_
+#define _NEPOMUK_QUERY_FILE_QUERY_H_
 
 #include "query.h"
 #include "nepomukquery_export.h"
@@ -89,11 +89,11 @@ namespace Nepomuk {
              * \param recursive If \p true subfolders of \p folder will be searched, too.
              *
              * \sa setIncludeFolders, includeFolders, addExcludeFolder
-             * 
+             *
              * \since 4.6
              */
             void addIncludeFolder( const KUrl& folder, bool recursive );
-            
+
             /**
              * \overload
              *
@@ -105,14 +105,14 @@ namespace Nepomuk {
 
             /**
              * \overload
-             * 
+             *
              * \param folders A hash of the folders to include in the search and
              * their recursive flag.
              *
              * \since 4.6
              */
             void setIncludeFolders( const QHash<KUrl, bool>& folders );
-            
+
             /**
              * The list of include folders set via addIncludeFolder() and
              * setIncludeFolders().
@@ -130,7 +130,7 @@ namespace Nepomuk {
              * \since 4.6
              */
             QHash<KUrl, bool> allIncludeFolders() const;
-            
+
             /**
              * Add a folder to exclude from the search. If exclude folders are set the query
              * will be restricted to files that are not in that folder and its subfolders.

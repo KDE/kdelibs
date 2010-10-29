@@ -18,7 +18,10 @@
     <signal name="entriesRemoved">
       <arg name="entries" type="as" />
     </signal>
-    <signal name="totalCount">
+    <signal name="resultCount">
+      <arg name="count" type="i" />
+    </signal>
+    <signal name="totalResultCount">
       <arg name="count" type="i" />
     </signal>
     <signal name="finishedListing" />

@@ -93,6 +93,7 @@ public:
         : queryServiceInterface( 0 ),
           queryInterface( 0 ),
           dbusConnection( DBusConnectionPool::threadConnection() ),
+          m_queryActive( false ),
           loop( 0 ) {
     }
 
@@ -107,6 +108,7 @@ public:
 
     QDBusConnection dbusConnection;
 
+    bool m_queryActive;
     QEventLoop* loop;
 };
 
@@ -123,6 +125,7 @@ void Nepomuk::Query::QueryServiceClient::Private::_k_entriesRemoved( const QStri
 
 void Nepomuk::Query::QueryServiceClient::Private::_k_finishedListing()
 {
+    m_queryActive = false;
     emit q->finishedListing();
     if( loop ) {
         q->close();
@@ -133,13 +136,16 @@ void Nepomuk::Query::QueryServiceClient::Private::_k_finishedListing()
 bool Nepomuk::Query::QueryServiceClient::Private::handleQueryReply( QDBusReply<QDBusObjectPath> r )
 {
     if ( r.isValid() ) {
+        m_queryActive = true;
         queryInterface = new org::kde::nepomuk::Query( queryServiceInterface->service(),
                                                        r.value().path(),
                                                        dbusConnection  );
         connect( queryInterface, SIGNAL( newEntries( QList<Nepomuk::Query::Result> ) ),
                  q, SIGNAL( newEntries( QList<Nepomuk::Query::Result> ) ) );
-        connect( queryInterface, SIGNAL( totalCount(int) ),
-                 q, SIGNAL( totalCount(int) ) );
+        connect( queryInterface, SIGNAL( resultCount(int) ),
+                 q, SIGNAL( resultCount(int) ) );
+        connect( queryInterface, SIGNAL( totalResultCount(int) ),
+                 q, SIGNAL( totalResultCount(int) ) );
         connect( queryInterface, SIGNAL( entriesRemoved( QStringList ) ),
                  q, SLOT( _k_entriesRemoved( QStringList ) ) );
         connect( queryInterface, SIGNAL( finishedListing() ),
@@ -341,9 +347,16 @@ void Nepomuk::Query::QueryServiceClient::close()
         d->queryInterface->close();
         delete d->queryInterface;
         d->queryInterface = 0;
+        d->m_queryActive = false;
         if( d->loop )
             d->loop->exit();
     }
+}
+
+
+bool Nepomuk::Query::QueryServiceClient::isListingFinished() const
+{
+    return !d->m_queryActive;
 }
 
 
