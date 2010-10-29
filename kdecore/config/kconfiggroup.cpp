@@ -200,7 +200,9 @@ static QList<qreal> asRealList(const QByteArray& string)
 
 static QString errString( const char * pKey, const QByteArray & value, const QVariant & aDefault ) {
     return QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
-            .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
+        .arg(QString::fromLatin1(pKey))
+        .arg(QString::fromLatin1(QVariant::typeToName(aDefault.type())))
+        .arg(QString::fromLatin1(value));
 }
 
 static QString formatError( int expected, int got ) {
@@ -381,13 +383,13 @@ QString KConfigGroupPrivate::expandString(const QString& value)
     QString aValue = value;
 
     // check for environment variables and make necessary translations
-    int nDollarPos = aValue.indexOf( '$' );
+    int nDollarPos = aValue.indexOf( QLatin1Char('$') );
     while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
         // there is at least one $
-        if( aValue[nDollarPos+1] == '(' ) {
+        if( aValue[nDollarPos+1] == QLatin1Char('(') ) {
             int nEndPos = nDollarPos+1;
             // the next character is not $
-            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=')') )
+            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=QLatin1Char(')')) )
                 nEndPos++;
             nEndPos++;
             QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
@@ -396,7 +398,7 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             QByteArray oldpath = qgetenv( "PATH" );
             QByteArray newpath;
             if (KGlobal::hasMainComponent()) {
-                newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+                newpath = QFile::encodeName(KGlobal::dirs()->resourceDirs("exe").join(QChar::fromLatin1(KPATH_SEPARATOR)));
                 if (!newpath.isEmpty() && !oldpath.isEmpty())
                     newpath += KPATH_SEPARATOR;
             }
@@ -414,12 +416,12 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             setenv( "PATH", oldpath, 1/*overwrite*/ );
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
             nDollarPos += result.length();
-        } else if( aValue[nDollarPos+1] != '$' ) {
+        } else if( aValue[nDollarPos+1] != QLatin1Char('$') ) {
             int nEndPos = nDollarPos+1;
             // the next character is not $
             QString aVarName;
-            if ( aValue[nEndPos]=='{' ) {
-                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!='}') )
+            if ( aValue[nEndPos] == QLatin1Char('{') ) {
+                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos] != QLatin1Char('}')) )
                     nEndPos++;
                 nEndPos++;
                 aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
@@ -427,7 +429,7 @@ QString KConfigGroupPrivate::expandString(const QString& value)
                 while ( nEndPos <= aValue.length() &&
                         (aValue[nEndPos].isNumber() ||
                         aValue[nEndPos].isLetter() ||
-                        aValue[nEndPos]=='_' ) )
+                        aValue[nEndPos] == QLatin1Char('_') ) )
                     nEndPos++;
                 aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
             }
@@ -455,7 +457,7 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             aValue.remove( nDollarPos, 1 );
             nDollarPos++;
         }
-        nDollarPos = aValue.indexOf( '$', nDollarPos );
+        nDollarPos = aValue.indexOf( QLatin1Char('$'), nDollarPos );
     }
 
     return aValue;
@@ -477,7 +479,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
 
    int len = homeDir.length();
    // replace by "$HOME" if possible
-   if (len && (path.length() == len || path[len] == '/')) {
+   if (len && (path.length() == len || path[len] == QLatin1Char('/'))) {
         path.replace(0, len, QString::fromLatin1("$HOME"));
         return true;
    } else
@@ -490,7 +492,7 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
        return path;
 
    // only "our" $HOME should be interpreted
-   path.replace('$', "$$");
+   path.replace(QLatin1Char('$'), QLatin1String("$$"));
 
    bool startsWithFile = path.startsWith(QLatin1String("file:"), Qt::CaseInsensitive);
 
@@ -504,7 +506,7 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
        path.remove(0,5); // strip leading "file:/" off the string
 
    // keep only one single '/' at the beginning - needed for cleanHomeDirPath()
-   while (path[0] == '/' && path[1] == '/')
+   while (path[0] == QLatin1Char('/') && path[1] == QLatin1Char('/'))
        path.remove(0,1);
 
    // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
@@ -521,7 +523,7 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
    }
 
    if (startsWithFile)
-      path.prepend( "file://" );
+      path.prepend(QString::fromLatin1("file://"));
 
    return path;
 }
@@ -689,7 +691,7 @@ QMap<QString, QString> KConfigGroup::entryMap() const
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::entryMap", "accessing an invalid group");
 
-    return config()->entryMap(d->fullName());
+    return config()->entryMap(QString::fromUtf8(d->fullName()));
 }
 
 KConfig* KConfigGroup::config()
@@ -846,9 +848,9 @@ QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& a
         if (quoted) {
             val += data[p];
             quoted = false;
-        } else if (data[p] == '\\') {
+        } else if (data[p] == QLatin1Char('\\')) {
             quoted = true;
-        } else if (data[p] == ';') {
+        } else if (data[p] == QLatin1Char(';')) {
             value.append(val);
             val.clear();
             val.reserve(data.size() - p);
@@ -916,12 +918,12 @@ void KConfigGroup::writeEntry(const QString &key, const char *value, WriteConfig
     Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
     Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
-    writeEntry(key.toUtf8().constData(), QVariant(value), pFlags);
+    writeEntry(key.toUtf8().constData(), QVariant(QString::fromLatin1(value)), pFlags);
 }
 
 void KConfigGroup::writeEntry(const char *key, const char *value, WriteConfigFlags pFlags)
 {
-    writeEntry(key, QVariant(value), pFlags);
+    writeEntry(key, QVariant(QString::fromLatin1(value)), pFlags);
 }
 
 void KConfigGroup::writeEntry( const char* key, const QByteArray& value,
@@ -1149,9 +1151,9 @@ void KConfigGroup::writeXdgListEntry(const char *key, const QStringList &list, W
     const QStringList::ConstIterator end = list.constEnd();
     for (; it != end; ++it) {
         QString val(*it);
-        val.replace('\\', "\\\\").replace(';', "\\;");
+        val.replace(QLatin1Char('\\'), QLatin1String("\\\\")).replace(QLatin1Char(';'), QLatin1String("\\;"));
         value += val;
-        value += ';';
+        value += QLatin1Char(';');
     }
 
     writeEntry(key, value, flags);

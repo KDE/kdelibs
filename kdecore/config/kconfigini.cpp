@@ -46,7 +46,7 @@ extern bool kde_kiosk_exception;
 
 QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 {
-    return QString("KConfigIni: In file %2, line %1: ")
+    return QString::fromLatin1("KConfigIni: In file %2, line %1: ")
             .arg(line).arg(file.fileName());
 }
 
@@ -89,7 +89,7 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
     bool groupSkip = false;
 
     int lineNo = 0;
-    // on systems using \r\n as end of line, \r will be taken care of by 
+    // on systems using \r\n as end of line, \r will be taken care of by
     // trim() below
     QByteArray buffer = file.readAll();
     BufferFragment contents(buffer.data(), buffer.size());
@@ -230,9 +230,9 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                             goto next_line; // skip this entry if we're not merging
                     }
                 }
-            } 
+            }
 
-            if (!(entryOptions & KEntryMap::EntryRawKey)) 
+            if (!(entryOptions & KEntryMap::EntryRawKey))
                 printableToString(&aKey, file, lineNo);
 
             if (options&ParseGlobal)
@@ -693,7 +693,7 @@ char KConfigIniBackend::charFromHex(const char *str, const QFile& file, int line
 
 void KConfigIniBackend::printableToString(BufferFragment* aString, const QFile& file, int line)
 {
-    if (aString->isEmpty() || aString->indexOf('\\')==-1) 
+    if (aString->isEmpty() || aString->indexOf('\\')==-1)
         return;
     aString->trim();
     int l = aString->length();
@@ -739,7 +739,7 @@ void KConfigIniBackend::printableToString(BufferFragment* aString, const QFile& 
                 default:
                     *r = '\\';
                     qWarning() << warningProlog(file, line)
-                            << QString("Invalid escape sequence \"\\%1\".").arg(str[i]);
+                               << QString::fromLatin1("Invalid escape sequence \"\\%1\".").arg(str[i]);
             }
         }
     }

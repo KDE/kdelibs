@@ -80,7 +80,7 @@ KConfigGroup KDesktopFile::desktopGroup() const
 QString KDesktopFile::locateLocal(const QString &path)
 {
   QString local;
-  if (path.endsWith(".directory"))
+  if (path.endsWith(QLatin1String(".directory")))
   {
     local = path;
     if (!QDir::isRelativePath(local))
@@ -102,7 +102,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       {
         // Hm, that didn't work...
         // What now? Use filename only and hope for the best.
-        local = path.mid(path.lastIndexOf('/')+1);
+        local = path.mid(path.lastIndexOf(QLatin1Char('/'))+1);
       }
       local = KStandardDirs::locateLocal("xdgdata-dirs", local);
     }
@@ -121,7 +121,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       if (!QDir::isRelativePath(local))
       {
         // What now? Use filename only and hope for the best.
-        local = path.mid(path.lastIndexOf('/')+1);
+        local = path.mid(path.lastIndexOf(QLatin1Char('/'))+1);
       }
       local = KStandardDirs::locateLocal("xdgdata-apps", local);
     }
@@ -140,7 +140,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   // Explicitly forbid desktop files if Kiosk does not allow.  There
   // may be other reasons that desktop files are forbidden so keep
   // checking otherwise.
-  if (!KAuthorized::authorize("run_desktop_files")) {
+  if (!KAuthorized::authorize(QLatin1String("run_desktop_files"))) {
      kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
      return false;
   }
@@ -294,11 +294,11 @@ bool KDesktopFile::tryExec() const
       // Environment PATH may contain filenames in 8bit locale specified
       // encoding (Like a filenames).
       const QStringList dirs = QFile::decodeName(qgetenv("PATH"))
-        .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
+        .split(QLatin1Char(KPATH_SEPARATOR), QString::SkipEmptyParts);
       QStringList::ConstIterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
-        QString fName = *it + KDIR_SEPARATOR + te;
+        QString fName = *it + QLatin1Char(KDIR_SEPARATOR) + te;
         if (KDE::access(fName, X_OK) == 0)
         {
           match = true;
@@ -330,8 +330,8 @@ bool KDesktopFile::tryExec() const
       if (user.isEmpty())
         user = QString::fromLocal8Bit(qgetenv("ADMIN_ACCOUNT"));
       if (user.isEmpty())
-        user = "root";
-      if (!KAuthorized::authorize("user/"+user))
+        user = QString::fromLatin1("root");
+      if (!KAuthorized::authorize(QString::fromLatin1("user/")+user))
         return false;
   }
 
@@ -394,11 +394,11 @@ bool KDesktopFile::noDisplay() const
         return true;
     }
     if (d->desktopGroup.hasKey("OnlyShowIn")) {
-        if (!d->desktopGroup.readXdgListEntry("OnlyShowIn").contains("KDE"))
+        if (!d->desktopGroup.readXdgListEntry("OnlyShowIn").contains(QLatin1String("KDE")))
             return true;
     }
     if (d->desktopGroup.hasKey("NotShowIn")) {
-        if (d->desktopGroup.readXdgListEntry("NotShowIn").contains("KDE"))
+        if (d->desktopGroup.readXdgListEntry("NotShowIn").contains(QLatin1String("KDE")))
             return true;
     }
     return false;
