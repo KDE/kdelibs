@@ -21,7 +21,6 @@
 
 #include "udisksopticaldrive.h"
 #include "udisks.h"
-#include "udisksstorageaccess.h"
 #include "udisksdevice.h"
 
 using namespace Solid::Backends::UDisks;
@@ -53,21 +52,13 @@ bool UDisksOpticalDrive::eject()
     QDBusConnection c = QDBusConnection::systemBus();
 
     QString path = m_device->udi();
-    if (path.endsWith(":media"))
-        path.chop(6);
 
     // check if the device is mounted and call umount if needed
-    if (m_device->queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
+    if (m_device->property("DeviceIsMounted").toBool())
     {
-        const UDisks::UDisksStorageAccess accessIface(const_cast<UDisksDevice *>(m_device));
-        if (accessIface.isAccessible())
-        {   
-            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
-
-            msg << QStringList();   // options, unused now
-
-            c.call(msg, QDBus::NoBlock);
-        }
+        QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
+        msg << QStringList();   // options, unused now
+        c.call(msg, QDBus::NoBlock);
     }
 
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
