@@ -119,6 +119,12 @@ public:
 
 #ifdef HAVE_NEPOMUK
     QList<KUrl> sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const;
+
+    /**
+     * @return True, if at least one of the file items \a m_fileItems has
+     *         a valid Nepomuk URI.
+     */
+    bool hasNepomukUris() const;
 #endif
 
     bool m_sizeVisible;
@@ -353,6 +359,12 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
     m_removeOutdatedRowsTimer->stop();
 
 #ifdef HAVE_NEPOMUK
+    if (!hasNepomukUris()) {
+        removeOutdatedRows();
+        emit q->metaDataRequestFinished(m_fileItems);
+        return;
+    }
+
     updateFileItemRowsVisibility();
 
     // Show the remaining meta information as text. The number
@@ -482,6 +494,16 @@ QList<KUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<KUrl, Nepomuk::
     }
 
     return list;
+}
+
+bool KFileMetaDataWidget::Private::hasNepomukUris() const
+{
+    foreach (const KFileItem& fileItem, m_fileItems) {
+        if (fileItem.nepomukUri().isValid()) {
+            return true;
+        }
+    }
+    return false;
 }
 #endif
 
