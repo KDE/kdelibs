@@ -1099,9 +1099,20 @@ KHTMLHtmlExtension::KHTMLHtmlExtension(KHTMLPart* part)
 {
 }
 
-KHTMLPart* KHTMLHtmlExtension::part() const
+KUrl KHTMLHtmlExtension::baseUrl() const
 {
-    return static_cast<KHTMLPart*>(parent());
+    return part()->baseURL();
+}
+
+bool KHTMLHtmlExtension::hasSelection() const
+{
+    return KParts::HtmlExtension::hasSelection();
+}
+
+KParts::SelectorInterface::QueryMethods KHTMLHtmlExtension::supportedQueryMethods() const
+{
+    // TODO: Add support for selected content (SelectedContent)
+    return KParts::SelectorInterface::EntireContent;
 }
 
 static KParts::SelectorInterface::Element convertDomElement(const DOM::ElementImpl* domElem)
@@ -1121,48 +1132,60 @@ static KParts::SelectorInterface::Element convertDomElement(const DOM::ElementIm
 
 KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QString& query, KParts::SelectorInterface::QueryMethod method) const
 {
+    KParts::SelectorInterface::Element element;
+
+    if (!(supportedQueryMethods() & method))
+        return element;
+    
     switch (method) {
     case KParts::SelectorInterface::EntireContent: {
         int ec = 0; // exceptions are ignored
-        WTF::RefPtr<DOM::ElementImpl> element = part()->document().handle()->querySelector(query, ec);
-        return convertDomElement(element.get());
+        WTF::RefPtr<DOM::ElementImpl> domElem = part()->document().handle()->querySelector(query, ec);
+        element = convertDomElement(domElem.get());
+        break;
     }    
     case KParts::SelectorInterface::SelectedContent:
-        // TODO: Implement support for querying only the selected portion of the content...
+        // TODO: Implement support for selected content...
     default:
         break;
-    }        
-    return KParts::SelectorInterface::Element();    
+    }
+
+    return element;
 }
 
 QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(const QString& query, KParts::SelectorInterface::QueryMethod method) const
 {
-    QList<KParts::SelectorInterface::Element> result;
+    QList<KParts::SelectorInterface::Element> elements;
+
+    if (!(supportedQueryMethods() & method))
+        return elements;    
+
     switch (method) {
     case KParts::SelectorInterface::EntireContent: {
         int ec = 0; // exceptions are ignored
         WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);    
         const unsigned long len = nodes->length();
-        result.reserve(len);
+        elements.reserve(len);
         for (unsigned long i = 0; i < len; ++i) {
             DOM::NodeImpl* node = nodes->item(i);
             if (node->isElementNode()) { // should be always true
-                result.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
+                elements.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
             }
         }
         break;
     }
     case KParts::SelectorInterface::SelectedContent:
-        // TODO: Implement support for querying only the selected portion of the content...
+        // TODO: Implement support for selected content...
     default:
         break;
     }
-    return result;
+
+    return elements;
 }
 
-KUrl KHTMLHtmlExtension::baseUrl() const
+KHTMLPart* KHTMLHtmlExtension::part() const
 {
-    return part()->baseURL();
+    return static_cast<KHTMLPart*>(parent());
 }
 
 #include "khtml_ext.moc"

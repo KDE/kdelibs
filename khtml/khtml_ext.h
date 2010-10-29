@@ -204,11 +204,14 @@ class KHTMLHtmlExtension : public KParts::HtmlExtension,
 public:
     KHTMLHtmlExtension(KHTMLPart* part);
 
+    // HtmlExtension
     virtual KUrl baseUrl() const;
+    virtual bool hasSelection() const;
 
     // SelectorInterface
-    virtual Element querySelector(const QString& query, KParts::SelectorInterface::QueryMethod method) const;
-    virtual QList<Element> querySelectorAll(const QString& query, KParts::SelectorInterface::QueryMethod method) const;
+    virtual QueryMethods supportedQueryMethods() const;
+    virtual Element querySelector(const QString& query, QueryMethod method) const;
+    virtual QList<Element> querySelectorAll(const QString& query, QueryMethod method) const;
 
     KHTMLPart* part() const;
 };
