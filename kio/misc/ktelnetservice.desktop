@@ -2,7 +2,7 @@
 Type=Application
 Exec=ktelnetservice %u
 Icon=utilities-terminal
-MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh
+MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh;
 
 X-DocPath=kioslave/telnet/index.html
 NoDisplay=true
