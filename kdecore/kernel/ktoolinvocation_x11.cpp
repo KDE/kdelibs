@@ -144,12 +144,12 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     if (!isMainThreadActive())
         return;
 
-    KConfig config("emaildefaults");
+    KConfig config(QString::fromLatin1("emaildefaults"));
     KConfigGroup defaultsGrp(&config, "Defaults");
 
     QString group = defaultsGrp.readEntry("Profile","Default");
 
-    KConfigGroup profileGrp(&config, QString("PROFILE_%1").arg(group) );
+    KConfigGroup profileGrp(&config, QString::fromLatin1("PROFILE_%1").arg(group) );
     QString command = profileGrp.readPathEntry("EmailClient", QString());
 
     QString to, cc, bcc;
@@ -162,35 +162,35 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
             KUrl url;
             url.setProtocol(QLatin1String("mailto"));
             url.setPath(_to);
-            to = url.toEncoded();
+            to = QString::fromLatin1(url.toEncoded());
         }
         if ( !_cc.isEmpty() )
         {
             KUrl url;
             url.setProtocol(QLatin1String("mailto"));
             url.setPath(_cc);
-            cc = url.toEncoded();
+            cc = QString::fromLatin1(url.toEncoded());
         }
         if ( !_bcc.isEmpty() )
         {
             KUrl url;
             url.setProtocol(QLatin1String("mailto"));
             url.setPath(_bcc);
-            bcc = url.toEncoded();
+            bcc = QString::fromLatin1(url.toEncoded());
         }
     } else {
         to = _to;
         cc = _cc;
         bcc = _bcc;
-        if( !command.contains( '%' ))
-            command += " %u";
+        if( !command.contains( QLatin1Char('%') ))
+            command += QLatin1String(" %u");
     }
 
     if (profileGrp.readEntry("TerminalClient", false))
     {
         KConfigGroup confGroup( KGlobal::config(), "General" );
-        QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", "konsole");
-        command = preferredTerminal + " -e " + command;
+        QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
+        command = preferredTerminal + QString::fromLatin1(" -e ") + command;
     }
 
     QStringList cmdTokens = KShell::splitArgs(command);
@@ -204,47 +204,47 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         url.setPath( tos.first() );
         tos.erase( tos.begin() );
         for (QStringList::ConstIterator it = tos.constBegin(); it != tos.constEnd(); ++it)
-            url.addQueryItem("to",*it);
+            url.addQueryItem(QString::fromLatin1("to"), *it);
         //qry.append( "to=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     }
     const QStringList ccs = splitEmailAddressList( cc );
     for (QStringList::ConstIterator it = ccs.constBegin(); it != ccs.constEnd(); ++it)
-        url.addQueryItem("cc",*it);
+        url.addQueryItem(QString::fromLatin1("cc"), *it);
     //qry.append( "cc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     const QStringList bccs = splitEmailAddressList( bcc );
     for (QStringList::ConstIterator it = bccs.constBegin(); it != bccs.constEnd(); ++it)
-        url.addQueryItem("bcc",*it);
+        url.addQueryItem(QString::fromLatin1("bcc"), *it);
     //qry.append( "bcc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
-        url.addQueryItem("attach",*it);
+        url.addQueryItem(QString::fromLatin1("attach"), *it);
     //qry.append( "attach=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     if (!subject.isEmpty())
-        url.addQueryItem("subject",subject);
+        url.addQueryItem(QString::fromLatin1("subject"), subject);
     //qry.append( "subject=" + QLatin1String(KUrl::toPercentEncoding( subject ) ));
     if (!body.isEmpty())
-        url.addQueryItem("body",body);
+        url.addQueryItem(QString::fromLatin1("body"), body);
     //qry.append( "body=" + QLatin1String(KUrl::toPercentEncoding( body ) ));
     //url.setQuery( qry.join( "&" ) );
 
     if ( ! (to.isEmpty() && (!url.hasQuery())) )
-        url.setProtocol("mailto");
+        url.setProtocol(QString::fromLatin1("mailto"));
 
     QHash<QChar, QString> keyMap;
-    keyMap.insert('t', to);
-    keyMap.insert('s', subject);
-    keyMap.insert('c', cc);
-    keyMap.insert('b', bcc);
-    keyMap.insert('B', body);
-    keyMap.insert('u', url.url());
+    keyMap.insert(QLatin1Char('t'), to);
+    keyMap.insert(QLatin1Char('s'), subject);
+    keyMap.insert(QLatin1Char('c'), cc);
+    keyMap.insert(QLatin1Char('b'), bcc);
+    keyMap.insert(QLatin1Char('B'), body);
+    keyMap.insert(QLatin1Char('u'), url.url());
 
-    QString attachlist = attachURLs.join(",");
-    attachlist.prepend('\'');
-    attachlist.append('\'');
-    keyMap.insert('A', attachlist);
+    QString attachlist = attachURLs.join(QString::fromLatin1(","));
+    attachlist.prepend(QLatin1Char('\''));
+    attachlist.append(QLatin1Char('\''));
+    keyMap.insert(QLatin1Char('A'), attachlist);
 
     for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); )
     {
-        if (*it == "%A")
+        if (*it == QLatin1String("%A"))
         {
             if (it == cmdTokens.begin()) // better safe than sorry ...
                 continue;
@@ -305,7 +305,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
     QString exe; // the binary we are going to launch.
 
-    const QString xdg_open = KStandardDirs::findExe("xdg-open");
+    const QString xdg_open = KStandardDirs::findExe(QString::fromLatin1("xdg-open"));
     if (qgetenv("KDE_FULL_SESSION").isEmpty()) {
         exe = xdg_open;
     }
@@ -316,7 +316,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
         const QString browserApp = config.readPathEntry("BrowserApplication", QString());
         if (!browserApp.isEmpty()) {
             exe = browserApp;
-            if (exe.startsWith('!')) {
+            if (exe.startsWith(QLatin1Char('!'))) {
                 exe = exe.mid(1); // Literal command
                 QStringList cmdTokens = KShell::splitArgs(exe);
                 exe = cmdTokens.takeFirst();
@@ -337,10 +337,10 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
                 }
             }
         } else {
-            const QString kfmclient = KStandardDirs::findExe("kfmclient");
+            const QString kfmclient = KStandardDirs::findExe(QString::fromLatin1("kfmclient"));
             if (!kfmclient.isEmpty()) {
                 exe = kfmclient;
-                args.prepend("openURL");
+                args.prepend(QLatin1String("openURL"));
             } else {
                 exe = xdg_open;
             }
@@ -348,7 +348,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     }
 
     if (exe.isEmpty()) {
-        exe = "kde-open"; // it's from kdebase-runtime, it has to be there.
+        exe = QString::fromLatin1("kde-open"); // it's from kdebase-runtime, it has to be there.
     }
 
     kDebug(180) << "Using" << exe << "to open" << url;
@@ -370,23 +370,23 @@ void KToolInvocation::invokeTerminal(const QString &command,
     }
 
     KConfigGroup confGroup( KGlobal::config(), "General" );
-    QString exec = confGroup.readPathEntry("TerminalApplication", "konsole");
+    QString exec = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
 
     if (!command.isEmpty()) {
-        if (exec == "konsole") {
-            exec += " --noclose";
-        } else if (exec == "xterm") {
-            exec += " -hold";
+        if (exec == QLatin1String("konsole")) {
+            exec += QString::fromLatin1(" --noclose");
+        } else if (exec == QLatin1String("xterm")) {
+            exec += QString::fromLatin1(" -hold");
         }
 
-        exec += " -e " + command;
+        exec += QString::fromLatin1(" -e ") + command;
     }
 
     QStringList cmdTokens = KShell::splitArgs(exec);
     QString cmd = cmdTokens.takeFirst();
 
-    if (exec == "konsole" && !workdir.isEmpty()) {
-        cmdTokens << "--workdir";
+    if (exec == QLatin1String("konsole") && !workdir.isEmpty()) {
+        cmdTokens << QString::fromLatin1("--workdir");
         cmdTokens << workdir;
         // For other terminals like xterm, we'll simply change the working
         // directory before launching them, see below.

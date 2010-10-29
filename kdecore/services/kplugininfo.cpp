@@ -122,16 +122,16 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     d->name = service->name();
     d->comment = service->comment();
     d->icon = service->icon();
-    d->author = service->property( "X-KDE-PluginInfo-Author" ).toString();
-    d->email = service->property( "X-KDE-PluginInfo-Email" ).toString();
-    d->pluginName = service->property( "X-KDE-PluginInfo-Name" ).toString();
-    d->version = service->property( "X-KDE-PluginInfo-Version" ).toString();
-    d->website = service->property( "X-KDE-PluginInfo-Website" ).toString();
-    d->category = service->property( "X-KDE-PluginInfo-Category" ).toString();
-    d->license = service->property( "X-KDE-PluginInfo-License" ).toString();
+    d->author = service->property( QLatin1String("X-KDE-PluginInfo-Author") ).toString();
+    d->email = service->property( QLatin1String("X-KDE-PluginInfo-Email") ).toString();
+    d->pluginName = service->property( QLatin1String("X-KDE-PluginInfo-Name") ).toString();
+    d->version = service->property( QLatin1String("X-KDE-PluginInfo-Version") ).toString();
+    d->website = service->property( QLatin1String("X-KDE-PluginInfo-Website") ).toString();
+    d->category = service->property( QLatin1String("X-KDE-PluginInfo-Category") ).toString();
+    d->license = service->property( QLatin1String("X-KDE-PluginInfo-License") ).toString();
     d->dependencies =
-        service->property( "X-KDE-PluginInfo-Depends" ).toStringList();
-    QVariant tmp = service->property( "X-KDE-PluginInfo-EnabledByDefault" );
+        service->property( QLatin1String("X-KDE-PluginInfo-Depends") ).toStringList();
+    QVariant tmp = service->property( QLatin1String("X-KDE-PluginInfo-EnabledByDefault") );
     d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
 }
 
@@ -219,9 +219,9 @@ QList<KPluginInfo> KPluginInfo::fromFiles(const QStringList &files, const KConfi
 
 QList<KPluginInfo> KPluginInfo::fromKPartsInstanceName(const QString &name, const KConfigGroup &config)
 {
-    QStringList files = KGlobal::dirs()->findAllResources( "data",
-                                                           name + "/kpartplugins/*.desktop",
-                                                           KStandardDirs::Recursive );
+    const QStringList files = KGlobal::dirs()->findAllResources(
+        "data", name + QString::fromLatin1("/kpartplugins/*.desktop"),
+        KStandardDirs::Recursive );
     return fromFiles(files, config);
 }
 
@@ -341,10 +341,9 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     KPLUGININFO_ISVALID_ASSERTION;
     if ( !d->kcmservicesCached )
     {
-        d->kcmservices = KServiceTypeTrader::self()->query( "KCModule", '\'' + d->pluginName +
-            "' in [X-KDE-ParentComponents]" );
-        kDebug( d->debugArea() ) << "found " << d->kcmservices.count() << " offers for " <<
-            d->pluginName << endl;
+        d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + d->pluginName +
+            QString::fromLatin1("' in [X-KDE-ParentComponents]") );
+        kDebug(d->debugArea()) << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
 
         d->kcmservicesCached = true;
     }
@@ -378,13 +377,13 @@ void KPluginInfo::save(KConfigGroup config)
     KPLUGININFO_ISVALID_ASSERTION;
     //kDebug( d->debugArea() ) ;
     if (config.isValid()) {
-        config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
+        config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
             kWarning( d->debugArea() ) << "no KConfigGroup, cannot save";
             return;
         }
-        d->config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
+        d->config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
     }
 }
 
@@ -393,13 +392,13 @@ void KPluginInfo::load(const KConfigGroup &config)
     KPLUGININFO_ISVALID_ASSERTION;
     //kDebug( d->debugArea() ) ;
     if (config.isValid()) {
-        setPluginEnabled(config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
+        setPluginEnabled(config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
             kWarning( d->debugArea() ) << "no KConfigGroup, cannot load";
             return;
         }
-        setPluginEnabled(d->config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
+        setPluginEnabled(d->config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     }
 }
 

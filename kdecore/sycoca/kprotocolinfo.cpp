@@ -59,14 +59,14 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   d->canDeleteRecursive = config.readEntry( "deleteRecursive", false );
   const QString fnu = config.readEntry( "fileNameUsedForCopying", "FromURL" );
   d->fileNameUsedForCopying = FromUrl;
-  if (fnu == "Name")
+  if (fnu == QLatin1String("Name"))
     d->fileNameUsedForCopying = Name;
-  else if (fnu == "DisplayName")
+  else if (fnu == QLatin1String("DisplayName"))
     d->fileNameUsedForCopying = DisplayName;
 
   m_listing = config.readEntry( "listing", QStringList() );
   // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
-  if ( m_listing.count() == 1 && m_listing.first() == "false" )
+  if ( m_listing.count() == 1 && m_listing.first() == QLatin1String("false") )
     m_listing.clear();
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
@@ -78,17 +78,17 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   d->maxSlavesPerHost = config.readEntry( "maxInstancesPerHost", 0);
 
   QString tmp = config.readEntry( "input" );
-  if ( tmp == "filesystem" )
+  if ( tmp == QLatin1String("filesystem") )
     m_inputType = KProtocolInfo::T_FILESYSTEM;
-  else if ( tmp == "stream" )
+  else if ( tmp == QLatin1String("stream") )
     m_inputType = KProtocolInfo::T_STREAM;
   else
     m_inputType = KProtocolInfo::T_NONE;
 
   tmp = config.readEntry( "output" );
-  if ( tmp == "filesystem" )
+  if ( tmp == QLatin1String("filesystem") )
     m_outputType = KProtocolInfo::T_FILESYSTEM;
-  else if ( tmp == "stream" )
+  else if ( tmp == QLatin1String("stream") )
     m_outputType = KProtocolInfo::T_STREAM;
   else
     m_outputType = KProtocolInfo::T_NONE;
@@ -97,7 +97,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   if (d->docPath.isEmpty())
     d->docPath = config.readPathEntry( "DocPath", QString() );
   d->protClass = config.readEntry( "Class" ).toLower();
-  if (d->protClass[0] != ':')
+  if (d->protClass[0] != QLatin1Char(':'))
      d->protClass.prepend(QLatin1Char(':'));
 
   const QStringList extraNames = config.readEntry( "ExtraNames", QStringList() );
@@ -110,7 +110,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
       d->extraFields.append( ExtraField( *it, static_cast<ExtraField::Type>(type) ) );
   }
 
-  d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == ":local" );
+  d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == QLatin1String(":local") );
 
   d->capabilities = config.readEntry( "Capabilities", QStringList() );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
@@ -277,7 +277,7 @@ QString KProtocolInfo::config( const QString& _protocol )
   if ( !prot )
     return QString();
 
-  return QString("kio_%1rc").arg(prot->m_config);
+  return QString::fromLatin1("kio_%1rc").arg(prot->m_config);
 }
 
 int KProtocolInfo::maxSlaves( const QString& _protocol )
@@ -315,7 +315,7 @@ QString KProtocolInfo::exec(const QString& protocol)
   }
 
   // Maybe it's "helper protocol", i.e. launches an app?
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService("x-scheme-handler/" + protocol);
+  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
   if (service)
       return service->exec();
 
@@ -434,7 +434,7 @@ bool KProtocolInfo::isHelperProtocol( const QString &protocol )
   if ( prot )
       return prot->m_isHelperProtocol;
 
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService("x-scheme-handler/" + protocol);
+  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
   return !service.isNull();
 }
 

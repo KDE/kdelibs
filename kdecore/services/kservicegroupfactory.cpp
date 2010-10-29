@@ -113,12 +113,12 @@ KServiceGroup* KServiceGroupFactory::createGroup(int offset, bool deep) const
         break;
 
      default:
-        kError(7011) << QString("KServiceGroupFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
+        kError(7011) << "KServiceGroupFactory: unexpected object entry in KSycoca database (type = " << int(type) << ")";
         return 0;
    }
    if (!newEntry->isValid())
    {
-      kError(7011) << "KServiceGroupFactory: corrupt object in KSycoca database!\n" << endl;
+      kError(7011) << "KServiceGroupFactory: corrupt object in KSycoca database!";
       delete newEntry;
       newEntry = 0;
    }

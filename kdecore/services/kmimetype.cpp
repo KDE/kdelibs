@@ -56,9 +56,9 @@ void KMimeType::checkEssentialMimeTypes()
     KMimeTypeRepository::self()->checkEssentialMimeTypes();
 }
 
-KMimeType::Ptr KMimeType::mimeType( const QString& _name, FindByNameOption options )
+KMimeType::Ptr KMimeType::mimeType(const QString& name, FindByNameOption options)
 {
-    return KMimeTypeRepository::self()->findMimeTypeByName( _name, options );
+    return KMimeTypeRepository::self()->findMimeTypeByName(name, options);
 }
 
 KMimeType::List KMimeType::allMimeTypes()
@@ -66,7 +66,7 @@ KMimeType::List KMimeType::allMimeTypes()
     // This could be done faster...
     KMimeType::List lst;
     Q_FOREACH(const QString& mimeType, KMimeTypeFactory::self()->allMimeTypes()) {
-        if (!mimeType.startsWith("x-scheme-handler"))
+        if (!mimeType.startsWith(QLatin1String("x-scheme-handler")))
             lst.append(KMimeType::mimeType(mimeType));
     }
     return lst;
@@ -105,16 +105,16 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
                 return KMimeType::mimeType( "inode/directory-locked" );
         }
 #endif
-        return KMimeType::mimeType( "inode/directory" );
+        return KMimeType::mimeType( QLatin1String("inode/directory") );
     }
     if ( S_ISCHR( mode ) )
-        return KMimeType::mimeType( "inode/chardevice" );
+        return KMimeType::mimeType( QLatin1String("inode/chardevice") );
     if ( S_ISBLK( mode ) )
-        return KMimeType::mimeType( "inode/blockdevice" );
+        return KMimeType::mimeType( QLatin1String("inode/blockdevice") );
     if ( S_ISFIFO( mode ) )
-        return KMimeType::mimeType( "inode/fifo" );
+        return KMimeType::mimeType( QLatin1String("inode/fifo") );
     if ( S_ISSOCK( mode ) )
-        return KMimeType::mimeType( "inode/socket" );
+        return KMimeType::mimeType( QLatin1String("inode/socket") );
 #ifdef Q_OS_WIN
     // FIXME: distinguish between mounted & unmounted
     int size = path.size();
@@ -124,26 +124,26 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
         unsigned int type = GetDriveTypeW( (LPCWSTR) path.utf16() );
         switch( type ) {
             case DRIVE_REMOVABLE:
-                return KMimeType::mimeType( "media/floppy_mounted" );
+                return KMimeType::mimeType( QLatin1String("media/floppy_mounted") );
             case DRIVE_FIXED:
-                return KMimeType::mimeType( "media/hdd_mounted" );
+                return KMimeType::mimeType( QLatin1String("media/hdd_mounted") );
             case DRIVE_REMOTE:
-                return KMimeType::mimeType( "media/smb_mounted" );
+                return KMimeType::mimeType( QLatin1String("media/smb_mounted") );
             case DRIVE_CDROM:
-                return KMimeType::mimeType( "media/cdrom_mounted" );
+                return KMimeType::mimeType( QLatin1String("media/cdrom_mounted") );
             case DRIVE_RAMDISK:
-                return KMimeType::mimeType( "media/hdd_mounted" );
+                return KMimeType::mimeType( QLatin1String("media/hdd_mounted") );
             default:
                 break;
         };
 #else
-        return KMimeType::mimeType( "media/hdd_mounted" );
+        return KMimeType::mimeType( QLatin1String("media/hdd_mounted") );
 #endif
     }
 #endif
     // remote executable file? stop here (otherwise findFromContent can do that better for local files)
     if ( !is_local_file && S_ISREG( mode ) && ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
-        return KMimeType::mimeType( "application/x-executable" );
+        return KMimeType::mimeType( QLatin1String("application/x-executable") );
 
     return KMimeType::Ptr();
 }
@@ -197,7 +197,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     // First try to find out by looking at the filename (if there's one)
     const QString fileName( _url.fileName() );
     QStringList mimeList;
-    if ( !fileName.isEmpty() && !path.endsWith( '/' ) ) {
+    if ( !fileName.isEmpty() && !path.endsWith( QLatin1Char('/') ) ) {
         // and if we can trust it (e.g. don't trust *.pl over HTTP, could be anything)
         if ( is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
              KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) ) {
@@ -276,7 +276,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
         if (mime)
             return mime;
     }
-    if ( path.endsWith( '/' ) || path.isEmpty() ) {
+    if ( path.endsWith( QLatin1Char('/') ) || path.isEmpty() ) {
         // We have no filename at all. Maybe the protocol has a setting for
         // which mimetype this means (e.g. directory).
         // For HTTP (def==defaultMimeType()) we don't assume anything,
@@ -421,9 +421,9 @@ void KMimeTypePrivate::save( QDataStream& _str )
 
 QVariant KMimeTypePrivate::property( const QString& _name ) const
 {
-    if ( _name == "Patterns" )
+    if ( _name == QLatin1String("Patterns") )
         return QVariant( m_lstPatterns );
-    if ( _name == "Icon" )
+    if ( _name == QLatin1String("Icon") )
         return QVariant( iconName(KUrl()) );
 
     return KServiceTypePrivate::property( _name );
@@ -432,8 +432,8 @@ QVariant KMimeTypePrivate::property( const QString& _name ) const
 QStringList KMimeTypePrivate::propertyNames() const
 {
     QStringList res = KServiceTypePrivate::propertyNames();
-    res.append( "Patterns" );
-    res.append( "Icon" );
+    res.append( QString::fromLatin1("Patterns") );
+    res.append( QString::fromLatin1("Icon") );
     return res;
 }
 
@@ -485,8 +485,10 @@ QString KMimeType::favIconForUrl( const KUrl& url )
          || !useFavIcons )
         return QString();
 
-    QDBusInterface kded( "org.kde.kded", "/modules/favicons", "org.kde.FavIcon" );
-    QDBusReply<QString> result = kded.call( "iconForUrl", url.url() );
+    QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
+                         QString::fromLatin1("/modules/favicons"),
+                         QString::fromLatin1("org.kde.FavIcon") );
+    QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
     return result;              // default is QString()
 }
 
@@ -588,7 +590,7 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
 
     m_xmlDataLoaded = true;
 
-    const QString file = m_strName + ".xml";
+    const QString file = m_strName + QLatin1String(".xml");
     const QStringList mimeFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", file);
     if (mimeFiles.isEmpty()) {
         kWarning() << "No file found for" << file << ", even though the file appeared in a directory listing.";
@@ -616,7 +618,7 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
             if (xml.name() != "mime-type") {
                 continue;
             }
-            const QString name = xml.attributes().value("type").toString();
+            const QString name = xml.attributes().value(QLatin1String("type")).toString();
             if (name.isEmpty())
                 continue;
             if (name != m_strName) {
@@ -630,10 +632,10 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
                         xml.skipCurrentElement();
                         continue;
                     }
-                    QString lang = xml.attributes().value("xml:lang").toString();
+                    QString lang = xml.attributes().value(QLatin1String("xml:lang")).toString();
                     const QString text = xml.readElementText();
                     if (lang.isEmpty()) {
-                        lang = "en_US";
+                        lang = QLatin1String("en_US");
                     }
                     if (lang == preferredLanguage) {
                         comment = text;
@@ -642,13 +644,13 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
                     }
                     continue; // we called readElementText, so we're at the EndElement already.
                 } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
-                    m_iconName = xml.attributes().value("name").toString();
+                    m_iconName = xml.attributes().value(QLatin1String("name")).toString();
                 } else if (tag == "glob-deleteall") { // as written out by shared-mime-info >= 0.70
                     mainPattern.clear();
                     m_lstPatterns.clear();
                 } else if (tag == "glob") { // as written out by shared-mime-info >= 0.70
-                    const QString pattern = xml.attributes().value("pattern").toString();
-                    if (mainPattern.isEmpty() && pattern.startsWith('*')) {
+                    const QString pattern = xml.attributes().value(QLatin1String("pattern")).toString();
+                    if (mainPattern.isEmpty() && pattern.startsWith(QLatin1Char('*'))) {
                         mainPattern = pattern;
                     }
                     if (!m_lstPatterns.contains(pattern))
@@ -669,7 +671,7 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
                 comment = comm;
                 break;
             }
-            const int pos = lang.indexOf('_');
+            const int pos = lang.indexOf(QLatin1Char('_'));
             if (pos != -1) {
                 // "pt_BR" not found? try just "pt"
                 const QString shortLang = lang.left(pos);
@@ -756,7 +758,7 @@ QString KMimeType::mainExtension() const
         // or *.JP*G or *.JP?
         if (pattern.startsWith(QLatin1String("*.")) &&
             pattern.length() > 2 &&
-            pattern.indexOf('*', 2) < 0 && pattern.indexOf('?', 2) < 0) {
+            pattern.indexOf(QLatin1Char('*'), 2) < 0 && pattern.indexOf(QLatin1Char('?'), 2) < 0) {
             return pattern.mid(1);
         }
     }

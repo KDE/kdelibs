@@ -65,7 +65,7 @@ KServiceTypePrivate::init( KDesktopFile *config )
     QString sDerived = desktopGroup.readEntry( "X-KDE-Derived" );
     m_bDerived = !sDerived.isEmpty();
     if ( m_bDerived )
-        m_mapProps.insert( "X-KDE-Derived", sDerived );
+        m_mapProps.insert( QString::fromLatin1("X-KDE-Derived"), sDerived );
 
     const QStringList tmpList = config->groupList();
     QStringList::const_iterator gIt = tmpList.begin();
@@ -110,7 +110,7 @@ KServiceTypePrivate::load( QDataStream& _str )
     QString dummy;
     _str >> m_strName >> dummy >> m_strComment >> m_mapProps >> m_mapPropDefs
          >> b >> m_serviceOffersOffset;
-    m_bDerived = m_mapProps.contains("X-KDE-Derived");
+    m_bDerived = m_mapProps.contains(QString::fromLatin1("X-KDE-Derived"));
 }
 
 void
@@ -130,7 +130,7 @@ KServiceType::~KServiceType()
 
 QString KServiceType::parentServiceType() const
 {
-    const QVariant v = property("X-KDE-Derived");
+    const QVariant v = property(QString::fromLatin1("X-KDE-Derived"));
     return v.toString();
 }
 
@@ -155,9 +155,9 @@ KServiceTypePrivate::property( const QString& _name ) const
 {
     QVariant v;
 
-    if ( _name == "Name" )
+    if ( _name == QLatin1String("Name") )
         v = QVariant( m_strName );
-    else if ( _name == "Comment" )
+    else if ( _name == QLatin1String("Comment") )
         v = QVariant( m_strComment );
     else
         v = m_mapProps.value( _name );
@@ -169,8 +169,8 @@ QStringList
 KServiceTypePrivate::propertyNames() const
 {
     QStringList res = m_mapProps.keys();
-    res.append( "Name" );
-    res.append( "Comment" );
+    res.append( QString::fromLatin1("Name") );
+    res.append( QString::fromLatin1("Comment") );
     return res;
 }
 

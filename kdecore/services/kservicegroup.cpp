@@ -43,7 +43,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 
     QString cfg = configFile;
     if (cfg.isEmpty())
-        cfg = _relpath + ".directory";
+        cfg = _relpath + QLatin1String(".directory");
 
     d->load(cfg);
 }
@@ -71,12 +71,12 @@ void KServiceGroupPrivate::load(const QString &cfg)
      m_strCaption = path;
      if (m_strCaption.endsWith(QLatin1Char('/')))
         m_strCaption = m_strCaption.left(m_strCaption.length()-1);
-     int i = m_strCaption.lastIndexOf('/');
+     int i = m_strCaption.lastIndexOf(QLatin1Char('/'));
      if (i > 0)
         m_strCaption = m_strCaption.mid(i+1);
   }
   if (m_strIcon.isEmpty())
-     m_strIcon = "folder";
+     m_strIcon = QString::fromLatin1("folder");
 }
 
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
@@ -210,7 +210,7 @@ void KServiceGroup::setAllowInline(bool _b)
 bool KServiceGroup::noDisplay() const
 {
     Q_D(const KServiceGroup);
-  return d->m_bNoDisplay || d->m_strCaption.startsWith('.');
+  return d->m_bNoDisplay || d->m_strCaption.startsWith(QLatin1Char('.'));
 }
 
 QStringList KServiceGroup::suppressGenericNames() const
@@ -406,9 +406,9 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         if (p->isType(KST_KServiceGroup))
           name = static_cast<KServiceGroup *>(p.data())->caption();
         else if (sortByGenericName)
-          name = static_cast<KService *>(p.data())->genericName() + ' ' + p->name();
+          name = static_cast<KService *>(p.data())->genericName() + QLatin1Char(' ') + p->name();
         else
-          name = p->name() + ' ' + static_cast<KService *>(p.data())->genericName();
+          name = p->name() + QLatin1Char(' ') + static_cast<KService *>(p.data())->genericName();
 
         const QByteArray nameStr = name.toLocal8Bit();
 
@@ -441,22 +441,22 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
 
     if (sortOrder.isEmpty())
     {
-       sortOrder << ":M";
-       sortOrder << ":F";
-       sortOrder << ":OIH IL[4]"; //just inline header
+       sortOrder << QString::fromLatin1(":M");
+       sortOrder << QString::fromLatin1(":F");
+       sortOrder << QString::fromLatin1(":OIH IL[4]"); //just inline header
     }
 
     QString rp = path;
-    if(rp == "/") rp.clear();
+    if(rp == QLatin1String("/")) rp.clear();
 
     // Iterate through the sort spec list.
     // If an entry gets mentioned explicitly, we remove it from the sorted list
     Q_FOREACH (const QString &item, sortOrder)
     {
         if (item.isEmpty()) continue;
-        if (item[0] == '/')
+        if (item[0] == QLatin1Char('/'))
         {
-          QString groupPath = rp + item.mid(1) + '/';
+          QString groupPath = rp + item.mid(1) + QLatin1Char('/');
            // Remove entry from sorted list of services.
           for(KSortableList<KServiceGroup::SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
           {
@@ -468,7 +468,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
              }
           }
         }
-        else if (item[0] != ':')
+        else if (item[0] != QLatin1Char(':'))
         {
            // Remove entry from sorted list of services.
            // TODO: Remove item from sortOrder-list if not found
@@ -494,20 +494,20 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
     {
         const QString &item = *it;
         if (item.isEmpty()) continue;
-        if (item[0] == ':')
+        if (item[0] == QLatin1Char(':'))
         {
           // Special condition...
-          if (item == ":S")
+          if (item == QLatin1String(":S"))
           {
              if (allowSeparators)
                 needSeparator = true;
           }
-          else if ( item.contains( ":O" ) )
+          else if ( item.contains( QLatin1String(":O") ) )
           {
               //todo parse attribute:
               QString tmp(  item );
-              tmp = tmp.remove(":O");
-              QStringList optionAttribute = tmp.split(' ', QString::SkipEmptyParts);
+              tmp = tmp.remove(QLatin1String(":O"));
+              QStringList optionAttribute = tmp.split(QLatin1Char(' '), QString::SkipEmptyParts);
               if ( optionAttribute.isEmpty() )
                   optionAttribute.append( tmp );
               bool showEmptyMenu = false;
@@ -531,7 +531,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
               }
 
           }
-          else if (item == ":M")
+          else if (item == QLatin1String(":M"))
           {
             // Add sorted list of sub-menus
             for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = glist.constBegin(); it2 != glist.constEnd(); ++it2)
@@ -539,7 +539,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
               addItem(sorted, (*it2).value(), needSeparator);
             }
           }
-          else if (item == ":F")
+          else if (item == QLatin1String(":F"))
           {
             // Add sorted list of services
             for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = slist.constBegin(); it2 != slist.constEnd(); ++it2)
@@ -547,7 +547,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
               addItem(sorted, (*it2).value(), needSeparator);
             }
           }
-          else if (item == ":A")
+          else if (item == QLatin1String(":A"))
           {
             // Add sorted lists of services and submenus
             KSortableList<KServiceGroup::SPtr,QByteArray>::Iterator it_s = slist.begin();
@@ -585,9 +585,9 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
             }
           }
         }
-        else if (item[0] == '/')
+        else if (item[0] == QLatin1Char('/'))
         {
-            QString groupPath = rp + item.mid(1) + '/';
+            QString groupPath = rp + item.mid(1) + QLatin1Char('/');
 
             for (KServiceGroup::List::ConstIterator it2(group->d_func()->m_serviceList.constBegin());
                  it2 != group->d_func()->m_serviceList.constEnd(); ++it2)
@@ -606,8 +606,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
                         if ( nextItem.startsWith( QLatin1String(":O") ) )
                         {
                             QString tmp( nextItem );
-                            tmp = tmp.remove(":O");
-                            QStringList optionAttribute = tmp.split(' ', QString::SkipEmptyParts);
+                            tmp = tmp.remove(QLatin1String(":O"));
+                            QStringList optionAttribute = tmp.split(QLatin1Char(' '), QString::SkipEmptyParts);
                             if ( optionAttribute.isEmpty() )
                                 optionAttribute.append( tmp );
                             bool bShowEmptyMenu = false;
@@ -657,27 +657,27 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
 
 void KServiceGroupPrivate::parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias , int &inlineValue )
 {
-    if( item == "ME") //menu empty
+    if( item == QLatin1String("ME")) //menu empty
         showEmptyMenu=true;
-    else if ( item == "NME") //not menu empty
+    else if ( item == QLatin1String("NME")) //not menu empty
         showEmptyMenu=false;
-    else if( item == "I") //inline menu !
+    else if( item == QLatin1String("I")) //inline menu !
         showInline = true;
-    else if ( item == "NI") //not inline menu!
+    else if ( item == QLatin1String("NI")) //not inline menu!
         showInline = false;
-    else if( item == "IH") //inline  header!
+    else if( item == QLatin1String("IH")) //inline  header!
         showInlineHeader= true;
-    else if ( item == "NIH") //not inline  header!
+    else if ( item == QLatin1String("NIH")) //not inline  header!
         showInlineHeader = false;
-    else if( item == "IA") //inline alias!
+    else if( item == QLatin1String("IA")) //inline alias!
         showInlineAlias = true;
-    else if (  item == "NIA") //not inline alias!
+    else if (  item == QLatin1String("NIA")) //not inline alias!
         showInlineAlias = false;
-    else if( ( item ).contains( "IL" )) //inline limite!
+    else if( ( item ).contains( QLatin1String("IL") )) //inline limite!
     {
         QString tmp( item );
-        tmp = tmp.remove( "IL[" );
-        tmp = tmp.remove( ']' );
+        tmp = tmp.remove( QLatin1String("IL[") );
+        tmp = tmp.remove( QLatin1Char(']') );
         bool ok;
         int _inlineValue = tmp.toInt(&ok);
         if ( !ok ) //error
@@ -709,7 +709,7 @@ KServiceGroup::baseGroup( const QString & _baseGroupName )
 KServiceGroup::Ptr
 KServiceGroup::root()
 {
-   return KServiceGroupFactory::self()->findGroupByDesktopPath("/", true);
+   return KServiceGroupFactory::self()->findGroupByDesktopPath(QString::fromLatin1("/"), true);
 }
 
 KServiceGroup::Ptr
@@ -722,7 +722,7 @@ KServiceGroup::group(const QString &relPath)
 KServiceGroup::Ptr
 KServiceGroup::childGroup(const QString &parent)
 {
-   return KServiceGroupFactory::self()->findGroupByDesktopPath("#parent#"+parent, true);
+   return KServiceGroupFactory::self()->findGroupByDesktopPath(QString::fromLatin1("#parent#")+parent, true);
 }
 
 QString KServiceGroup::baseGroupName() const
@@ -755,7 +755,7 @@ class KServiceSeparatorPrivate : public KSycocaEntryPrivate
 };
 
 KServiceSeparator::KServiceSeparator( )
-    : KSycocaEntry(*new KServiceSeparatorPrivate("separator"))
+    : KSycocaEntry(*new KServiceSeparatorPrivate(QString::fromLatin1("separator")))
 {
 }
 

@@ -33,7 +33,7 @@ KMimeGlobsFileParser::KMimeGlobsFileParser()
 
 KMimeGlobsFileParser::AllGlobs KMimeGlobsFileParser::parseGlobs()
 {
-    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
+    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QString::fromLatin1("globs"));
     //kDebug() << globFiles;
     return parseGlobs(globFiles);
 }
@@ -54,7 +54,7 @@ KMimeGlobsFileParser::AllGlobs KMimeGlobsFileParser::parseGlobFiles(const QStrin
     while (globIter.hasPrevious()) { // global first, then local
         Format format = OldGlobs;
         QString fileName = globIter.previous();
-        QString fileNamev2 = fileName + '2'; // NOTE: this relies on u-m-d always generating the old globs file
+        QString fileNamev2 = fileName + QLatin1Char('2'); // NOTE: this relies on u-m-d always generating the old globs file
         if (QFile::exists(fileNamev2)) {
             fileName = fileNamev2;
             format = Globs2WithWeight;
@@ -107,7 +107,7 @@ bool KMimeGlobsFileParser::parseGlobFile(QIODevice* file, Format format, AllGlob
             pattern = fields[1];
         }
         Q_ASSERT(!pattern.isEmpty());
-        Q_ASSERT(!pattern.contains(':'));
+        Q_ASSERT(!pattern.contains(QLatin1Char(':')));
 
         //kDebug() << " got:" << mimeTypeName << pattern;
 
@@ -202,7 +202,7 @@ KMimeGlobsFileParser::PatternsMap KMimeGlobsFileParser::AllGlobs::patternsMap() 
     const QHash<QString, QStringList>::const_iterator end = m_fastPatterns.end();
     for (; it != end; ++it) {
         Q_FOREACH(const QString& mime, it.value())
-            patMap[mime].append("*." + it.key());
+            patMap[mime].append(QString::fromLatin1("*.") + it.key());
     }
 
     Q_FOREACH(const Glob& glob, m_highWeightGlobs)

@@ -74,7 +74,7 @@ void KServiceTypeProfiles::ensureParsed()
     // See writeServiceTypeProfile for a description of the file format.
     // ### Since this new format names groups after servicetypes maybe we can even
     // avoid doing any init upfront, and just look up the group when asked...
-    KConfig configFile( "servicetype_profilerc", KConfig::NoGlobals );
+    KConfig configFile( QString::fromLatin1("servicetype_profilerc"), KConfig::NoGlobals );
     const QStringList tmpList = configFile.groupList();
     for (QStringList::const_iterator aIt = tmpList.begin();
          aIt != tmpList.end(); ++aIt) {
@@ -88,10 +88,10 @@ void KServiceTypeProfiles::ensureParsed()
         }
 
         for ( int i = 0; i < count; ++i ) {
-            const QString num = QString::number(i);
-            const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
+            const QString num = QString::fromLatin1("Entry") + QString::number(i);
+            const QString serviceId = config.readEntry( num + QLatin1String("_Service"), QString() );
             Q_ASSERT(!serviceId.isEmpty());
-            const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
+            const int pref = config.readEntry( num + QLatin1String("_Preference"), 0 );
             //kDebug(7014) << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
             p->addService( serviceId, pref );
         }
@@ -187,7 +187,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
      * Entry2_Preference=0
      */
 
-    KConfig configFile( "servicetype_profilerc", KConfig::SimpleConfig);
+    KConfig configFile( QString::fromLatin1("servicetype_profilerc"), KConfig::SimpleConfig);
     configFile.deleteGroup( serviceType );
 
     KConfigGroup config(&configFile, serviceType );
@@ -197,17 +197,17 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
     int i = 0;
     for( ; servit != services.end(); ++servit, ++i ) {
         if (!servit->isNull()) {
-            const QString num = QString::number(i);
-            config.writeEntry( "Entry" + num + "_Service", (*servit)->storageId() );
-            config.writeEntry( "Entry" + num + "_Preference", count - i );
+            const QString num = QString::fromLatin1("Entry") + QString::number(i);
+            config.writeEntry( num + QLatin1String("_Service"), (*servit)->storageId() );
+            config.writeEntry( num + QLatin1String("_Preference"), count - i );
         }
     }
     servit = disabledServices.begin();
     for( ; servit != disabledServices.end(); ++servit, ++i ) {
         if (!servit->isNull()) {
-            const QString num = QString::number(i);
-            config.writeEntry( "Entry" + num + "_Service", (*servit)->storageId() );
-            config.writeEntry( "Entry" + num + "_Preference", 0 );
+            const QString num = QString::fromLatin1("Entry") + QString::number(i);
+            config.writeEntry( num + QLatin1String("_Service"), (*servit)->storageId() );
+            config.writeEntry( num + QLatin1String("_Preference"), 0 );
         }
     }
     configFile.sync();
@@ -218,7 +218,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
 
 void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
 {
-    KConfig config( "servicetype_profilerc", KConfig::SimpleConfig );
+    KConfig config(QString::fromLatin1("servicetype_profilerc"), KConfig::SimpleConfig);
     config.deleteGroup( serviceType );
     config.sync();
 

@@ -45,7 +45,7 @@ KServiceFactory::KServiceFactory()
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
         Q_ASSERT(str);
-        if (!str) 
+        if (!str)
             return;
         // Read Header
         qint32 i;
@@ -180,14 +180,12 @@ KService* KServiceFactory::createEntry(int offset) const
     case KST_KService:
         newEntry = new KService(*str, offset);
         break;
-
     default:
-        kError(7011) << QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
+        kError(7011) << "KServiceFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
         return 0;
     }
-    if (!newEntry->isValid())
-    {
-        kError(7011) << "KServiceFactory: corrupt object in KSycoca database!\n" << endl;
+    if (!newEntry->isValid()) {
+        kError(7011) << "KServiceFactory: corrupt object in KSycoca database!";
         delete newEntry;
         newEntry = 0;
     }
