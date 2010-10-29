@@ -39,6 +39,9 @@ private Q_SLOTS:
     void testMimeTypeBrokenLink();
     void testMimeTypeDoesNotExist();
 
+private:
+    QString m_sh;
+
 };
 
 

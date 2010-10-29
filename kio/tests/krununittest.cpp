@@ -35,6 +35,10 @@ void KRunUnitTest::initTestCase()
     // testProcessDesktopExec works only if your terminal application is set to "x-term"
     KConfigGroup cg(KGlobal::config(), "General");
     cg.writeEntry("TerminalApplication", "x-term");
+
+    // determine the full path of sh
+    m_sh = KStandardDirs::findExe("sh");
+    if (m_sh.isEmpty()) m_sh = "/bin/sh";
 }
 
 void KRunUnitTest::testBinaryName_data()
@@ -92,9 +96,6 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
 
 void KRunUnitTest::testProcessDesktopExec()
 {
-    QString sh = KStandardDirs::findExe("sh");
-    if (sh.isEmpty()) sh = "/bin/sh";
-
     KUrl::List l0;
     static const char
         * const execs[] = { "Exec=date -u", "Exec=echo $PWD" },
@@ -117,7 +118,7 @@ void KRunUnitTest::testProcessDesktopExec()
                 QString exe;
                 if (pt == 4 || pt == 5)
                     exe = KStandardDirs::findExe("kdesu");
-                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", sh);
+                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", m_sh);
                 checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }
@@ -168,7 +169,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     QTest::newRow("%F l1 tempfile") << "kdeinit4 %F" << l1 << true << kioexec + " --tempfiles 'kdeinit4 %F' file:///tmp";
 
     QTest::newRow("sh -c kdeinit4 %F") << "sh -c \"kdeinit4 \"'\\\"'\"%F\"'\\\"'"
-                                   << l1 << false << "/bin/sh -c 'kdeinit4 \\\"/tmp\\\"'";
+                                   << l1 << false << m_sh + " -c 'kdeinit4 \\\"/tmp\\\"'";
 
     QTest::newRow("kmailservice %u l1") << "kmailservice %u" << l1 << false << kmailservice + " /tmp";
     QTest::newRow("kmailservice %u l4") << "kmailservice %u" << l4 << false << kmailservice + " http://login:password@www.kde.org";
