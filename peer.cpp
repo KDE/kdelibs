@@ -20,38 +20,96 @@
 
 #include "peer.h"
 
-#include <QFile>
+#include <QtCore/QFile>
+#include <QtCore/QSharedData>
 
 #include <kdebug.h>
 
-Peer::Peer( uint pid ) :
-   m_pid( pid )
+class PeerData : public QSharedData
 {
+public:
+   PeerData() : m_valid(false), m_pid(0) {}
+   PeerData(const PeerData &other) : QSharedData(other), m_pid(other.m_pid) {}
+   ~PeerData() {}
+   
+   // designates whether this Peer is valid as it's not certain that
+   // a pid of 0 can always denote an invalid peer.
+   bool m_valid;
+   
+   // peer process pid
+   uint m_pid;
+};
+
+Peer::Peer() : d(new PeerData)
+{
+}
+
+Peer::Peer(const Peer &other) : d(other.d)
+{
+}
+
+Peer &Peer::operator=(const Peer &other)
+{
+   d = other.d;
+   return *this;
+}
+
+Peer::Peer(uint pid) : d(new PeerData)
+{
+   d->m_valid = true;
+   d->m_pid = pid;
+   
    kDebug() << "Peer " << pid;
    kDebug() << "   cmdLine = " << cmdLine();
    kDebug() << "   exePath = " << exePath();
 }
 
-QString Peer::procFileName() const
+Peer::~Peer()
 {
-   return QString("/proc/%1").arg( m_pid );
 }
 
-QString Peer::cmdLine() const
+QString Peer::procFileName() const
 {
-   QFile procFile( QString("%s/cmd").arg( procFileName() ) );
-   return procFile.readLine();
+   Q_ASSERT(d->m_valid);
+   return QString("/proc/%1").arg(d->m_pid);
+}
+
+QByteArray Peer::cmdLine() const
+{
+   if (!d->m_valid) {
+      return QByteArray();
+   } else {
+      QFile procFile(QString("%1/cmd").arg(procFileName()));
+      if (!procFile.open(QIODevice::ReadOnly | QIODevice::Text) ||
+          procFile.atEnd()) {
+         // file doesn't exist or is empty
+         return QByteArray();
+      } else {
+         return procFile.readLine();
+      }
+   }
+}
+
+bool Peer::isValid() const
+{
+   return d->m_valid;
 }
 
 bool Peer::isStillRunning() const
 {
-   QFile procFile( procFileName() );
-   return procFile.exists();
+   if (!d->m_valid) {
+      return false;
+   } else {
+      return QFile::exists(procFileName());
+   }
 }
 
 QString Peer::exePath() const 
 {
-   QFile procFile( QString("%s/exe").arg( procFileName() )) ;
-   // TODO: add a watch an trigger signal when the peer process ends
-   return procFile.symLinkTarget();
+   if (!d->m_valid) {
+      return QString();
+   } else {
+      // TODO: add a watch an trigger signal when the peer process ends
+      QFile::symLinkTarget(QString("%1/exe").arg(procFileName()));
+   }
 }

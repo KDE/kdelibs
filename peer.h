@@ -21,7 +21,10 @@
 #ifndef DEAMON_PEER_H
 #define DEAMON_PEER_H
 
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
+#include <QtCore/QSharedDataPointer>
+
+class PeerData;
 
 /**
  * Representation of a daemon peer, wich is typically a client application.
@@ -31,7 +34,30 @@
 class Peer
 {
 public:
-   Peer( uint pid );
+   /**
+    * Construct an invalid (non-existant) Peer.
+    */
+   Peer();
+   
+   /**
+    * Copy constructor.
+    */
+   Peer(const Peer &other);
+   
+   /**
+    * Copy operator.
+    */
+   Peer &operator=(const Peer &other);
+   
+   /**
+    * Construct a valid Peer representing the process with the given pid.
+    */
+   explicit Peer(uint pid);
+   
+   /**
+    * Destructor.
+    */
+   ~Peer();
    
    /**
     * Get the running state of the peer process
@@ -46,19 +72,24 @@ public:
    /**
     * Get the command line used to launch the running process
     */
-   QString cmdLine() const;
+   QByteArray cmdLine() const;
+   
+   /**
+    * Check if the peer is valid. An invalid peer identifies test applications
+    * or requests sent in-process.
+    */
+   bool isValid() const;
    
 private:
    /**
     * Helper method witch returns the /proc/pid path for the
-    * peer process
+    * peer process.
+    * 
+    * @note Must only be called on valid peers.
     */
    QString procFileName() const;
    
-   /**
-    * Peer process PID
-    */
-   uint  m_pid;
+   QSharedDataPointer<PeerData> d;
 };
 
 #endif // DEAMON_PEER_H
