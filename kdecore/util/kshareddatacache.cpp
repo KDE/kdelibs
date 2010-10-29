@@ -411,6 +411,7 @@ struct SharedMemory
         cacheSize = _cacheSize;
         pageSize = _pageSize;
         version = PIXMAP_CACHE_VERSION;
+        cacheTimestamp = static_cast<unsigned>(::time(0));
 
         clearInternalTables();
 
@@ -1554,4 +1555,25 @@ KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 void KSharedDataCache::setEvictionPolicy(EvictionPolicy newPolicy)
 {
     d->shm->evictionPolicy.fetchAndStoreRelease(static_cast<int>(newPolicy));
+}
+
+unsigned KSharedDataCache::timestamp() const
+{
+    if (d->shm) {
+        return static_cast<unsigned>(d->shm->cacheTimestamp.fetchAndAddRelease(0));
+    }
+
+    return 0;
+}
+
+void KSharedDataCache::setTimestamp(unsigned newTimestamp)
+{
+    if (d->shm) {
+        int currentValue = d->shm->cacheTimestamp;
+        while (!d->shm->cacheTimestamp.testAndSetAcquire(currentValue,
+                    static_cast<int>(newTimestamp)))
+        {
+            currentValue = d->shm->cacheTimestamp;
+        }
+    }
 }

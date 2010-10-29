@@ -170,6 +170,50 @@ public:
      */
     unsigned freeSize() const;
 
+    /**
+     * @return The shared timestamp of the cache. The interpretation of the
+     *         timestamp returned is up to the application. KSharedDataCache
+     *         will initialize the timestamp to the time returned by @c time(2)
+     *         on cache creation, but KSharedDataCache will not touch the
+     *         timestamp again.
+     * @see setTimestamp()
+     * @since 4.6
+     */
+    unsigned timestamp() const;
+
+    /**
+     * Sets the shared timestamp of the cache. Timestamping is supported to
+     * allow applications to more effectively "version" the data stored in the
+     * cache. However, the timestamp is shared with <em>all</em> applications
+     * using the cache so you should always be prepared for invalid
+     * timestamps.
+     *
+     * When the cache is first created (note that this is different from
+     * attaching to an existing shared cache on disk), the cache timestamp is
+     * initialized to the time returned by @c time(2). KSharedDataCache will
+     * not update the timestamp again, it is only updated through this method.
+     *
+     * Example:
+     * @code
+     * QImage loadCachedImage(const QString &key)
+     * {
+     *     // Check timestamp
+     *     if (m_sharedCache->timestamp() < m_currentThemeTimestamp) {
+     *         // Cache is stale, clean it out.
+     *         m_sharedCache->clear();
+     *         m_sharedCache->setTimestamp(m_currentThemeTimestamp);
+     *     }
+     *
+     *     // Check cache and load image as usual...
+     * }
+     * @endcode
+     *
+     * @param newTimestamp The new timestamp to mark the shared cache with.
+     * @see timestamp()
+     * @since 4.6
+     */
+    void setTimestamp(unsigned newTimestamp);
+
 private:
     class Private;
     Private *d;
