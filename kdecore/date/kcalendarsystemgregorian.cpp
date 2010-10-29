@@ -74,7 +74,7 @@ void KCalendarSystemGregorianPrivate::initDefaultEraList()
 {
     QString name, shortName, format;
 
-    KConfigGroup cg( config(), QString( "KCalendarSystem %1" ).arg( q->calendarType() ) );
+    KConfigGroup cg( config(), QString::fromLatin1( "KCalendarSystem %1" ).arg( q->calendarType() ) );
     m_useCommonEra = cg.readEntry( "UseCommonEra", false );
 
     if ( m_useCommonEra ) {

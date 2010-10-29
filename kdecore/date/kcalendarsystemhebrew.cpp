@@ -375,7 +375,7 @@ int KCalendarSystemHebrewPrivate::latestValidYear() const
 
 int KCalendarSystemHebrewPrivate::integerFromString( const QString &inputString, int maxLength, int &readLength ) const
 {
-    if ( locale()->language() == "he" ) {
+    if ( locale()->language() == QLatin1String("he") ) {
 
         // Hebrew numbers are composed of combinations of normal letters which have a numeric value.
         // This is a non-positional system, the numeric values are simply added together, however
@@ -419,8 +419,8 @@ int KCalendarSystemHebrewPrivate::integerFromString( const QString &inputString,
             if ( position + 1 < stringLength ) {
                 nextChar = string[position + 1];
                 // Ignore any geresh or gershayim chars, we don't bother checking they are in the right place
-                if ( nextChar == '\'' ||  nextChar == QChar( 0x05F3 ) ||   // geresh
-                     nextChar == '\"' ||  nextChar == QChar( 0x05F4 ) ) {  // gershayim
+                if ( nextChar == QLatin1Char('\'') ||  nextChar == QChar( 0x05F3 ) ||   // geresh
+                     nextChar == QLatin1Char('\"') ||  nextChar == QChar( 0x05F4 ) ) {  // gershayim
                     string.remove( position + 1, 1 );
                     stringLength = string.length();
                     if ( position + 1 < stringLength ) {
@@ -511,7 +511,7 @@ QString KCalendarSystemHebrewPrivate::stringFromInteger( int number, int padWidt
 
 QString KCalendarSystemHebrewPrivate::stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const
 {
-    if ( locale()->language() == "he" ) {
+    if ( locale()->language() == QLatin1String("he") ) {
 
         // Hebrew numbers are composed of combinations of normal letters which have a numeric value.
         // This is a non-positional system, the numeric values are simply added together, however
@@ -589,14 +589,14 @@ QString KCalendarSystemHebrewPrivate::stringFromInteger( int number, int padWidt
 
         // When used in a string with mixed names and numbers the numbers need special chars to
         // distinguish them from words composed of the same letters.
-        // Single digit numbers are followed by a geresh symbol ׳ (Unicode = 0x05F3), but we use
+        // Single digit numbers are followed by a geresh symbol ? (Unicode = 0x05F3), but we use
         // single quote for convenience.
-        // Multiple digit numbers have a gershayim symbol ״ (Unicode = 0x05F4) as second-to-last
+        // Multiple digit numbers have a gershayim symbol ? (Unicode = 0x05F4) as second-to-last
         // char, but we use double quote for convenience.
         if ( result.length() == 1 ) {
-            result += '\'';
+            result += QLatin1Char('\'');
         } else {
-            result.insert( result.length() - 1, '\"' );
+            result.insert( result.length() - 1, QLatin1Char('\"') );
         }
 
         return result;

@@ -198,8 +198,8 @@ KCalendarSystemPrivate::~KCalendarSystemPrivate()
 // This method MUST be re-implemented in any new Calendar System
 void KCalendarSystemPrivate::initDefaultEraList()
 {
-    addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), "Before KDE", "BK", "%Ey %EC" );
-    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), "Anno KDE", "AK", "%Ey %EC" );
+    addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), QLatin1String("Before KDE"), QLatin1String("BK"), QLatin1String("%Ey %EC") );
+    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), QLatin1String("Anno KDE"), QLatin1String("AK"), QLatin1String("%Ey %EC") );
 }
 
 // Dummy version using Gregorian as an example
@@ -520,7 +520,7 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
 
         QChar fmtChar = fmt.at( fmtpos++ );
 
-        if ( fmtChar != '%' ) {
+        if ( fmtChar != QLatin1Char('%') ) {
 
             if ( fmtChar.isSpace() && str.at(strpos).isSpace() ) {
                 strpos++;
@@ -540,7 +540,7 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
             }
 
             fmtChar = fmt.at( fmtpos++ );
-            if ( fmtChar == 'E' ) {
+            if ( fmtChar == QLatin1Char('E') ) {
                 modifierChar = fmtChar;
                 fmtChar = fmt.at( fmtpos++ );
             }
@@ -623,8 +623,8 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                     break;
                 case 'Y': // Year Number Long
                 case 'y': // Year Number Short
-                    if ( modifierChar == 'E' ) {  // Year In Era
-                        if ( fmtChar == 'y' ) {
+                    if ( modifierChar == QLatin1Char('E') ) {  // Year In Era
+                        if ( fmtChar == QLatin1Char('y') ) {
                             ey = q->yearStringToInteger( str.mid( strpos ), readLength );
                             strpos += readLength;
                             error = readLength <= 0;
@@ -656,7 +656,7 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                         strpos += readLength;
                         // JPL are we sure about this? Do users really want 99 = 2099 or 1999? Should we use a Y2K style range?
                         // Using 2000 only valid for Gregorian, Hebrew should be 5000, etc.
-                        if ( fmtChar == 'y' && yy >= 0 && yy < 100 ) {
+                        if ( fmtChar == QLatin1Char('y') && yy >= 0 && yy < 100 ) {
                             yy += 2000; // QDate assumes 19xx by default, but this isn't what users want...
                         }
                         error = readLength <= 0;
@@ -667,7 +667,7 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                     break;
                 case 'C': // Era
                     error = true;
-                    if ( modifierChar == 'E' ) {
+                    if ( modifierChar == QLatin1Char('E') ) {
                         j = m_eraList->count() -1; // Start with the most recent
                         while ( error && j >= 0  ) {
                             shortName = m_eraList->at( j ).shortName().toLower();
@@ -822,7 +822,7 @@ QString KCalendarSystemPrivate::stringFromInteger( int number, int padWidth, QCh
 // Utility to convert an integer into the correct display string form
 QString KCalendarSystemPrivate::stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const
 {
-    if ( padChar == '\0' || padWidth == 0 ) {
+    if ( padChar == QLatin1Char('\0') || padWidth == 0 ) {
         return q->locale()->convertDigits( QString::number( number ), digitSet );
     } else {
         return q->locale()->convertDigits( QString::number( number ).rightJustified( padWidth, padChar ), digitSet );
@@ -885,7 +885,7 @@ QString KCalendarSystemPrivate::simpleDateString( const QString &str ) const
         if ( str.at(i).isLetterOrNumber() ) {
             newStr.append( str.at(i) );
         } else {
-            newStr.append( ' ' );
+            newStr.append( QLatin1Char(' ') );
         }
     }
     newStr.simplified();
@@ -968,21 +968,21 @@ void KCalendarSystemPrivate::initialiseEraList( const QString & calendarType )
 void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
 {
     m_eraList->clear();
-    KConfigGroup cg( config(), QString( "KCalendarSystem %1" ).arg( calendarType ) );
+    KConfigGroup cg( config(), QString::fromLatin1( "KCalendarSystem %1" ).arg( calendarType ) );
     if ( cg.exists() ) {
         int eraCount = cg.readEntry( "EraCount", 0 );
         for ( int i = 1; i <= eraCount; ++i ) {
-            QString eraEntry = cg.readEntry( QString( "Era%1" ).arg( i ), QString() );
+            QString eraEntry = cg.readEntry( QString::fromLatin1( "Era%1" ).arg( i ), QString() );
             if ( !eraEntry.isEmpty() ) {
                 // Based on LC_TIME, but different!
                 // Includes long and short names, uses ISO fomat dates
                 // e.g. +:1:0001-01-01:9999-12-31:Anno Domini:AD:%EC %Ey
-                QChar direction = eraEntry.section( ':', 0, 0 ).at( 0 );
+                QChar direction = eraEntry.section( QLatin1Char(':'), 0, 0 ).at( 0 );
                 QDate startDate, endDate;
                 int startYear;
-                QString buffer = eraEntry.section( ':', 2, 2 );
+                QString buffer = eraEntry.section( QLatin1Char(':'), 2, 2 );
                 if ( buffer.isEmpty() ) {
-                    if ( direction == '-' ) {
+                    if ( direction == QLatin1Char('-') ) {
                         startDate = q->latestValidDate();
                     } else {
                         startDate = q->earliestValidDate();
@@ -993,12 +993,12 @@ void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
                 if ( q->isValid( startDate ) ) {
                     startYear = q->year( startDate );
                 } else {
-                    startYear = eraEntry.section( ':', 1, 1 ).toInt(); //Use offset
+                    startYear = eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(); //Use offset
                 }
 
-                buffer = eraEntry.section( ':', 3, 3 );
+                buffer = eraEntry.section( QLatin1Char(':'), 3, 3 );
                 if ( buffer.isEmpty() ) {
-                    if ( direction == '-' ) {
+                    if ( direction == QLatin1Char('-') ) {
                         endDate = q->earliestValidDate();
                     } else {
                         endDate = q->latestValidDate();
@@ -1006,15 +1006,15 @@ void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
                 } else {
                     endDate = q->readDate( buffer, KLocale::IsoFormat );
                 }
-                addEra( direction, eraEntry.section( ':', 1, 1 ).toInt(),
-                        startDate, startYear, endDate, eraEntry.section( ':', 4, 4 ),
-                        eraEntry.section( ':', 5, 5 ), eraEntry.section( ':', 6 ) );
+                addEra( direction.toLatin1(), eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(),
+                        startDate, startYear, endDate, eraEntry.section( QLatin1Char(':'), 4, 4 ),
+                        eraEntry.section( QLatin1Char(':'), 5, 5 ), eraEntry.section( QLatin1Char(':'), 6 ) );
             }
         }
     }
 }
 
-void KCalendarSystemPrivate::addEra( const QChar &direction, int offset,
+void KCalendarSystemPrivate::addEra( char direction, int offset,
                                      const QDate &startDate, int startYear, const QDate &endDate,
                                      const QString &name, const QString &shortName,
                                      const QString &format )
@@ -1022,7 +1022,7 @@ void KCalendarSystemPrivate::addEra( const QChar &direction, int offset,
     KCalendarEra newEra;
 
     newEra.m_sequence = m_eraList->count() + 1;
-    if ( direction == QChar('-') ) {
+    if ( direction == '-' ) {
         newEra.m_direction = -1;
     } else {
         newEra.m_direction = 1;
@@ -1839,27 +1839,27 @@ QString KCalendarSystem::weekDayName( const QDate &date, WeekDayNameFormat forma
 QString KCalendarSystem::yearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%y" );
+        return formatDate( date, QLatin1String("%y") );
     } else {
-        return formatDate( date, "%Y" );
+        return formatDate( date, QLatin1String("%Y") );
     }
 }
 
 QString KCalendarSystem::monthString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%n" );
+        return formatDate( date, QLatin1String("%n") );
     } else {
-        return formatDate( date, "%m" );
+        return formatDate( date, QLatin1String("%m") );
     }
 }
 
 QString KCalendarSystem::dayString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%e" );
+        return formatDate( date, QLatin1String("%e") );
     } else {
-        return formatDate( date, "%d" );
+        return formatDate( date, QLatin1String("%d") );
     }
 }
 
@@ -1867,9 +1867,9 @@ QString KCalendarSystem::dayString( const QDate &date, StringFormat format ) con
 QString KCalendarSystem::yearInEraString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%Ey" );
+        return formatDate( date, QLatin1String("%Ey") );
     } else {
-        return formatDate( date, "%4Ey" );
+        return formatDate( date, QLatin1String("%4Ey") );
     }
 }
 
@@ -1877,25 +1877,25 @@ QString KCalendarSystem::yearInEraString( const QDate &date, StringFormat format
 QString KCalendarSystem::dayOfYearString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%-j" );
+        return formatDate( date, QLatin1String("%-j") );
     } else {
-        return formatDate( date, "%j" );
+        return formatDate( date, QLatin1String("%j") );
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::dayOfWeekString( const QDate &date ) const
 {
-    return formatDate( date, "%-u" );
+    return formatDate( date, QLatin1String("%-u") );
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weekNumberString( const QDate &date, StringFormat format ) const
 {
     if ( format == ShortFormat ) {
-        return formatDate( date, "%-V" );
+        return formatDate( date, QLatin1String("%-V") );
     } else {
-        return formatDate( date, "%V" );
+        return formatDate( date, QLatin1String("%V") );
     }
 }
 
@@ -1905,9 +1905,9 @@ QString KCalendarSystem::monthsInYearString( const QDate &date, StringFormat for
     Q_D( const KCalendarSystem );
 
     if ( format == ShortFormat ) {
-        return d->stringFromInteger( monthsInYear( date ), 0, '0' );
+        return d->stringFromInteger( monthsInYear( date ), 0, QLatin1Char('0') );
     } else {
-        return d->stringFromInteger( monthsInYear( date ), 2, '0' );
+        return d->stringFromInteger( monthsInYear( date ), 2, QLatin1Char('0') );
     }
 }
 
@@ -1917,9 +1917,9 @@ QString KCalendarSystem::weeksInYearString( const QDate &date, StringFormat form
     Q_D( const KCalendarSystem );
 
     if ( format == ShortFormat ) {
-        return d->stringFromInteger( weeksInYear( date ), 0, '0' );
+        return d->stringFromInteger( weeksInYear( date ), 0, QLatin1Char('0') );
     } else {
-        return d->stringFromInteger( weeksInYear( date ), 2, '0' );
+        return d->stringFromInteger( weeksInYear( date ), 2, QLatin1Char('0') );
     }
 }
 
@@ -1929,9 +1929,9 @@ QString KCalendarSystem::daysInYearString( const QDate &date, StringFormat forma
     Q_D( const KCalendarSystem );
 
     if ( format == ShortFormat ) {
-        return d->stringFromInteger( daysInYear( date ), 0, '0' );
+        return d->stringFromInteger( daysInYear( date ), 0, QLatin1Char('0') );
     } else {
-        return d->stringFromInteger( daysInYear( date ), 3, '0' );
+        return d->stringFromInteger( daysInYear( date ), 3, QLatin1Char('0') );
     }
 }
 
@@ -1941,9 +1941,9 @@ QString KCalendarSystem::daysInMonthString( const QDate &date, StringFormat form
     Q_D( const KCalendarSystem );
 
     if ( format == ShortFormat ) {
-        return d->stringFromInteger( daysInMonth( date ), 0, '0' );
+        return d->stringFromInteger( daysInMonth( date ), 0, QLatin1Char('0') );
     } else {
-        return d->stringFromInteger( daysInMonth( date ), 2, '0' );
+        return d->stringFromInteger( daysInMonth( date ), 2, QLatin1Char('0') );
     }
 }
 
@@ -2015,11 +2015,11 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, KLocale::DateFormat 
     case KLocale::FancyLongDate:
         return formatDate( fromDate, locale()->dateFormat() );
     case KLocale::IsoDate:
-        return formatDate( fromDate, "%Y-%m-%d" );
+        return formatDate( fromDate, QLatin1String("%Y-%m-%d") );
     case KLocale::IsoWeekDate:
-        return formatDate( fromDate, "%Y-W%V-%u" );
+        return formatDate( fromDate, QLatin1String("%Y-W%V-%u") );
     case KLocale::IsoOrdinalDate:
-        return formatDate( fromDate, "%Y-%j" );
+        return formatDate( fromDate, QLatin1String("%Y-%j") );
     case KLocale::ShortDate:
     case KLocale::FancyShortDate:
     default:
@@ -2077,11 +2077,11 @@ QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flag
     } else if ( flags & KLocale::NormalFormat ) {
         return readDate( str, locale()->dateFormat(), ok );
     } else if ( flags & KLocale::IsoFormat ) {
-        return readDate( str, "%Y-%m-%d", ok );
+        return readDate( str, QLatin1String("%Y-%m-%d"), ok );
     } else if ( flags & KLocale::IsoWeekFormat ) {
-        return readDate( str, "%Y-W%V-%u", ok );
+        return readDate( str, QLatin1String("%Y-W%V-%u"), ok );
     } else if ( flags & KLocale::IsoOrdinalFormat ) {
-        return readDate( str, "%Y-%j", ok );
+        return readDate( str, QLatin1String("%Y-%j"), ok );
     }
     return d->invalidDate();
 }

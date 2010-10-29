@@ -110,7 +110,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
     QString result;  // Output string
 
     int padWidth = 0;     // The width to pad numbers to
-    QChar padChar = '0';  // The char to use when padding numbers
+    QChar padChar = QLatin1Char('0');  // The char to use when padding numbers
     QChar signChar;       // The sign to use when formatting numbers
     QChar caseChar;       // The case modifier to use
 
@@ -130,44 +130,44 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
 
     // Set up an English locale and calendar for use with ':' modifier which forces English names
     KLocale *englishLocale = new KLocale( *locale );
-    englishLocale->setLanguage( QStringList("en_US") );
+    englishLocale->setLanguage( QStringList() << QString::fromLatin1("en_US") );
     KCalendarSystem *englishCalendar = KCalendarSystem::create( calendar->calendarType(), englishLocale );
 
     for ( int formatIndex = 0; formatIndex < toFormat.length(); ++formatIndex ) {
 
-        thisChar = toFormat.at( formatIndex ).unicode();
+        thisChar = toFormat.at( formatIndex );
 
         if ( !escape ) {
 
-            if ( thisChar == '%' ) {
+            if ( thisChar == QLatin1Char('%') ) {
                 escape = true;
                 escapeIndex = formatIndex;
             } else {
                 result.append( toFormat.at( formatIndex ) );
             }
 
-        } else if ( !escapeMod && !escapeWidth && thisChar == '-' ) { // no padding
+        } else if ( !escapeMod && !escapeWidth && thisChar == QLatin1Char('-') ) { // no padding
 
             padChar = QChar();
             escapePad = true;
 
-        } else if ( !escapeMod && !escapeWidth && thisChar == '_' ) { // space padding
+        } else if ( !escapeMod && !escapeWidth && thisChar == QLatin1Char('_') ) { // space padding
 
-            padChar = ' ';
+            padChar = QLatin1Char(' ');
             escapePad = true;
 
-        } else if ( !escapeMod && !escapeWidth && thisChar == '0' ) { // 0 padding
+        } else if ( !escapeMod && !escapeWidth && thisChar == QLatin1Char('0') ) { // 0 padding
 
-            padChar = '0';
+            padChar = QLatin1Char('0');
             escapePad = true;
 
-        } else if ( !escapeMod && !escapeWidth && ( thisChar == '^' || thisChar == '#' ) ) { // Change case
+        } else if ( !escapeMod && !escapeWidth && ( thisChar == QLatin1Char('^') || thisChar == QLatin1Char('#') ) ) { // Change case
 
             caseChar = thisChar;
 
         } else if ( !escapeMod &&
-                    ( ( !escapeWidth && thisChar >= '1' && thisChar <= '9' ) ||
-                      ( escapeWidth && thisChar >= '0' && thisChar <= '9' ) ) ) { // Change width
+                    ( ( !escapeWidth && thisChar >= QLatin1Char('1') && thisChar <= QLatin1Char('9') ) ||
+                      ( escapeWidth && thisChar >= QLatin1Char('0') && thisChar <= QLatin1Char('9') ) ) ) { // Change width
 
             if ( escapeWidth ) {
                 padWidth = padWidth * 10;
@@ -175,11 +175,11 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
             padWidth = padWidth + QString( thisChar ).toInt();
             escapeWidth = true;
 
-        } else if ( !escapeMod && ( thisChar == 'E' || thisChar == 'O' || thisChar == ':' ) ) { // Set modifier
+        } else if ( !escapeMod && ( thisChar == QLatin1Char('E') || thisChar == QLatin1Char('O') || thisChar == QLatin1Char(':') ) ) { // Set modifier
 
             escapeMod = true;
             modifierChar = thisChar;
-            if ( thisChar == ':' ) {
+            if ( thisChar == QLatin1Char(':') ) {
                 invalidModifier = true;
             }
 
@@ -199,7 +199,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
             QChar thisChar = toFormat.at( formatIndex ).unicode();
             switch ( thisChar.unicode() ) {
                 case '%':  //Literal %
-                    if ( modifierChar != ':' ) {  // E and O mods are ignored if not used, but : is treated as literal
+                    if ( modifierChar != QLatin1Char(':') ) {  // E and O mods are ignored if not used, but : is treated as literal
                         componentString = QLatin1Char('%');
                         if ( !escapePad ) {
                             padChar = QChar();
@@ -207,56 +207,56 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     }
                     break;
                 case 't':  //Tab
-                    if ( modifierChar != ':' ) {
-                        componentString = "\t";
+                    if ( modifierChar != QLatin1Char(':') ) {
+                        componentString = QString::fromLatin1("\t");
                         if ( !escapePad ) {
                             padChar = QChar();
                         }
                     }
                     break;
                 case 'Y':
-                    if ( modifierChar == 'E' ) {  //Era Year, default no pad to 0 places no sign
+                    if ( modifierChar == QLatin1Char('E') ) {  //Era Year, default no pad to 0 places no sign
                         if ( !escapePad ) {
-                            padChar = ' ';
+                            padChar = QLatin1Char(' ');
                         }
                         componentString = calendar->eraYear( fromDateTime.date() );
-                    } else if ( modifierChar != ':' ) {  //Long year numeric, default 0 pad to 4 places with sign
+                    } else if ( modifierChar != QLatin1Char(':') ) {  //Long year numeric, default 0 pad to 4 places with sign
                         componentInteger = qAbs( year );
                         minWidth = 4;
                         if ( year < 0 ) {
-                            signChar = '-';
+                            signChar = QLatin1Char('-');
                         }
                     }
                     break;
                 case 'C':
-                    if ( modifierChar == 'E' ) {  //Era name, default no pad to 0 places no sign
+                    if ( modifierChar == QLatin1Char('E') ) {  //Era name, default no pad to 0 places no sign
                         if ( !escapePad ) {
-                            padChar = ' ';
+                            padChar = QLatin1Char(' ');
                         }
                         componentString = calendar->eraName( fromDateTime.date() );
-                    } else if ( modifierChar != ':' ) {  //Century numeric, default 0 pad to 2 places with sign
+                    } else if ( modifierChar != QLatin1Char(':') ) {  //Century numeric, default 0 pad to 2 places with sign
                         componentInteger =  qAbs( year ) / 100 ;
                         minWidth = 2;
                         if ( year < 0 ) {
-                            signChar = '-';
+                            signChar = QLatin1Char('-');
                         }
                     }
                     break;
                 case 'y':
-                    if ( modifierChar == 'E' ) {  //Year in Era number, default 0 pad to 1 places no sign
+                    if ( modifierChar == QLatin1Char('E') ) {  //Year in Era number, default 0 pad to 1 places no sign
                         componentInteger =  calendar->yearInEra( fromDateTime.date() );
                         minWidth = 1;
-                    } else if ( modifierChar != ':' ) {  //Short year numeric, default 0 pad to 2 places with sign
+                    } else if ( modifierChar != QLatin1Char(':') ) {  //Short year numeric, default 0 pad to 2 places with sign
                         componentInteger =  qAbs( year ) % 100;
                         minWidth = 2;
                         if ( year < 0 ) {
-                            signChar = '-';
+                            signChar = QLatin1Char('-');
                         }
                     }
                     break;
                 case 'm':  // Month numeric
                     componentInteger =  month;
-                    if ( modifierChar == ':' ) {  //Short month numeric, default no pad to 1 places no sign
+                    if ( modifierChar == QLatin1Char(':') ) {  //Short month numeric, default no pad to 1 places no sign
                         minWidth = 1;
                         if ( !escapePad ) {
                             padChar = QChar();
@@ -270,7 +270,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'n':
                     //PosixFormat %n is newline
                     //KdeFormat %n is short month numeric
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         if ( formatStandard == KLocale::KdeFormat ) {
                             //Copy what %e does, no padding by default
                             //Short month numeric, default no pad to 1 places no sign
@@ -280,12 +280,12 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                                 padChar = QChar();
                             }
                         } else {  // formatStandard == KLocale::PosixFormat
-                            componentString = '\n';
+                            componentString = QLatin1Char('\n');
                         }
                     }
                     break;
                 case 'd':  //Long day numeric, default 0 pad to 2 places no sign
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger =  day;
                         minWidth = 2;
                     }
@@ -293,7 +293,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'e':  //Short day numeric, default no sign
                     //PosixFormat %e is space pad to 2 places
                     //KdeFormat %e is no pad to 1 place
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger =  day;
                         if ( formatStandard == KLocale::KdeFormat ) {
                             minWidth = 1;
@@ -303,21 +303,21 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         } else {  // formatStandard == KLocale::PosixFormat
                             minWidth = 2;
                             if ( !escapePad ) {
-                                padChar = ' ';
+                                padChar = QLatin1Char(' ');
                             }
                         }
                     }
                     break;
                 case 'B':  //Long month name, default space pad to 0 places no sign
                     if ( locale->dateMonthNamePossessive() ) {
-                        if ( modifierChar == ':' ) {
+                        if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             componentString = englishCalendar->monthName( month, year, KCalendarSystem::LongNamePossessive );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::LongNamePossessive );
                         }
                     } else {
-                        if ( modifierChar == ':' ) {
+                        if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             componentString = englishCalendar->monthName( month, year, KCalendarSystem::LongName );
                         } else {
@@ -325,20 +325,20 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         }
                     }
                     if ( !escapePad ) {
-                        padChar = ' ';
+                        padChar = QLatin1Char(' ');
                     }
                     break;
                 case 'h':  //Short month name, default space pad to 0 places no sign
                 case 'b':  //Short month name, default space pad to 0 places no sign
                     if ( locale->dateMonthNamePossessive() ) {
-                        if ( modifierChar == ':' ) {
+                        if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             componentString = englishCalendar->monthName( month, year, KCalendarSystem::ShortNamePossessive );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::ShortNamePossessive );
                         }
                     } else {
-                        if ( modifierChar == ':' ) {
+                        if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             componentString = englishCalendar->monthName( month, year, KCalendarSystem::ShortName );
                         } else {
@@ -346,77 +346,77 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         }
                     }
                     if ( !escapePad ) {
-                        padChar = ' ';
+                        padChar = QLatin1Char(' ');
                     }
                     break;
                 case 'A':  //Long weekday name, default space pad to 0 places no sign
-                    if ( modifierChar == ':' ) {
+                    if ( modifierChar == QLatin1Char(':') ) {
                         invalidModifier = false;
                         componentString = englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::LongDayName );
                     } else {
                         componentString = calendar->weekDayName( fromDateTime.date(), KCalendarSystem::LongDayName );
                     }
                     if ( !escapePad ) {
-                        padChar = ' ';
+                        padChar = QLatin1Char(' ');
                     }
                     break;
                 case 'a':  //Short weekday name, default space pad to 0 places no sign
-                    if ( modifierChar == ':' ) {
+                    if ( modifierChar == QLatin1Char(':') ) {
                         invalidModifier = false;
                         componentString = englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::ShortDayName );
                     } else {
                         componentString = calendar->weekDayName( fromDateTime.date(), KCalendarSystem::ShortDayName );
                     }
                     if ( !escapePad ) {
-                        padChar = ' ';
+                        padChar = QLatin1Char(' ');
                     }
                     break;
                 case 'j':  //Long day of year numeric, default 0 pad to 3 places no sign
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger = calendar->dayOfYear( fromDateTime.date() );
                         minWidth = 3;
                     }
                     break;
                 case 'V':  //Long ISO week of year numeric, default 0 pad to 2 places no sign
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger = calendar->weekNumber( fromDateTime.date() );
                         minWidth = 2;
                     }
                     break;
                 case 'G':  //Long year of ISO week of year numeric, default 0 pad to 4 places with sign
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         calendar->weekNumber( fromDateTime.date(), &isoWeekYear );
                         calendar->setDate( yearDate, isoWeekYear, 1, 1 );
                         componentInteger = qAbs( isoWeekYear );
                         minWidth = 4;
                         if ( isoWeekYear < 0 ) {
-                            signChar = '-';
+                            signChar = QLatin1Char('-');
                         }
                     }
                     break;
                 case 'g':  //Short year of ISO week of year numeric, default 0 pad to 2 places with sign
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         calendar->weekNumber( fromDateTime.date(), &isoWeekYear );
                         calendar->setDate( yearDate, isoWeekYear, 1, 1 );
                         componentInteger = qAbs( isoWeekYear ) % 100;
                         minWidth = 2;
                         if ( isoWeekYear < 0 ) {
-                            signChar = '-';
+                            signChar = QLatin1Char('-');
                         }
                     }
                     break;
                 case 'u':
-                    if ( modifierChar == ':' ) {  // TZ UTC offset hours
+                    if ( modifierChar == QLatin1Char(':') ) {  // TZ UTC offset hours
                         invalidModifier = false;
                         KDateTime::SpecType timeSpecType = fromDateTime.timeType();
                         if ( timeSpecType == KDateTime::UTC || timeSpecType == KDateTime::TimeZone ||
                              timeSpecType == KDateTime::OffsetFromUTC ) {
                             componentInteger = fromDateTime.utcOffset() / 3600;
                             if ( componentInteger >= 0 ) {
-                                signChar = '+';
+                                signChar = QLatin1Char('+');
                             } else {
                                 componentInteger = -componentInteger;
-                                signChar = '-';
+                                signChar = QLatin1Char('-');
                             }
                             minWidth = 2;
                         }
@@ -426,23 +426,23 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     }
                     break;
                 case 'D':  // US short date format, ignore any overrides
-                    if ( modifierChar != ':' ) {
-                        componentString = formatDateTimePosix( fromDateTime, "%m/%d/%y", timeOptions, calendar, locale, digitSet, formatStandard );
+                    if ( modifierChar != QLatin1Char(':') ) {
+                        componentString = formatDateTimePosix( fromDateTime, QString::fromLatin1("%m/%d/%y"), timeOptions, calendar, locale, digitSet, formatStandard );
                         padWidth = 0;
                         padChar = QChar();
                         caseChar = QChar();
                     }
                     break;
                 case 'F':  // Full or ISO short date format, ignore any overrides
-                    if ( modifierChar != ':' ) {
-                        componentString = formatDateTimePosix( fromDateTime, "%Y-%m-%d", timeOptions, calendar, locale, digitSet, formatStandard );
+                    if ( modifierChar != QLatin1Char(':') ) {
+                        componentString = formatDateTimePosix( fromDateTime, QString::fromLatin1("%Y-%m-%d"), timeOptions, calendar, locale, digitSet, formatStandard );
                         padWidth = 0;
                         padChar = QChar();
                         caseChar = QChar();
                     }
                     break;
                 case 'x':  // Locale short date format, ignore any overrides
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentString = formatDateTimePosix( fromDateTime, locale->dateFormatShort(), timeOptions, calendar, locale, digitSet, formatStandard );
                         padWidth = 0;
                         padChar = QChar();
@@ -451,7 +451,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     break;
                 case 'H':  // Long 24 hour
                 case 'k':  // Short 24 hour
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger =  fromDateTime.time().hour();
                         minWidth = 1;
                         if ( !escapePad ) {
@@ -461,13 +461,13 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     break;
                 case 'I':  // Long 12 hour
                 case 'l':  // Short 12 hour
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         if ( (timeOptions & KLocale::TimeDuration) == KLocale::TimeDuration ) {
                             componentInteger =  fromDateTime.time().hour();
                         } else {
                             componentInteger = locale->dayPeriodForTime( fromDateTime.time() ).hourInPeriod( fromDateTime.time() );
                         }
-                        if ( thisChar == 'I' ) {
+                        if ( thisChar == QLatin1Char('I') ) {
                             minWidth = 2;
                         } else {
                             minWidth = 1;
@@ -478,7 +478,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     }
                     break;
                 case 'M':   // Long minutes
-                    if ( modifierChar != ':' ) {
+                    if ( modifierChar != QLatin1Char(':') ) {
                         componentInteger = fromDateTime.time().minute();
                         minWidth = 2;
                     }
@@ -489,9 +489,9 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         //do strip the preceeding/following punctuation
                     } else {
                         componentInteger = fromDateTime.time().second();
-                        if ( modifierChar == ':' ) {  // Only if not 00 seconds
+                        if ( modifierChar == QLatin1Char(':') ) {  // Only if not 00 seconds
                             if ( componentInteger > 0 || fromDateTime.time().msec() > 0 ) {
-                                result.append( ':' );
+                                result.append( QLatin1Char(':') );
                                 minWidth = 2;
                             }
                         } else {
@@ -500,7 +500,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     }
                     break;
                 case 's':
-                    if ( modifierChar == ':' ) {  // Milliseconds
+                    if ( modifierChar == QLatin1Char(':') ) {  // Milliseconds
                         invalidModifier = false;
                         componentInteger = fromDateTime.time().msec();
                         minWidth = 3;
@@ -515,13 +515,13 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     if ( (timeOptions & KLocale::TimeWithoutAmPm) == KLocale::TimeWithoutAmPm ) {
                         //do strip the preceeding/following punctuation
                     } else {
-                        if ( modifierChar == ':' ) {
+                        if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             componentString = englishLocale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         } else {
                             componentString = locale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         }
-                        if ( thisChar == 'P' ) {
+                        if ( thisChar == QLatin1Char('P') ) {
                             componentString = componentString.toLower();
                         }
                     }
@@ -531,30 +531,30 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     timeSpecType = fromDateTime.timeType();
                     if ( timeSpecType == KDateTime::UTC || timeSpecType == KDateTime::TimeZone ||
                          timeSpecType == KDateTime::OffsetFromUTC ) {
-                        if ( modifierChar == ':' ) {  // TZ UTC offset hours & minutes with colon
+                        if ( modifierChar == QLatin1Char(':') ) {  // TZ UTC offset hours & minutes with colon
                             int offsetInSeconds = fromDateTime.utcOffset();
                             if ( offsetInSeconds >= 0 ) {
-                                signChar = '+';
+                                signChar = QLatin1Char('+');
                             } else {
                                 offsetInSeconds = -offsetInSeconds;
-                                signChar = '-';
+                                signChar = QLatin1Char('-');
                             }
                             int offsetHours = offsetInSeconds / 3600;
                             int offsetMinutes = ( offsetInSeconds / 60 ) % 60;
                             //int offsetSeconds = offsetInSeconds % 60;
-                            QString hourComponent = stringFromInteger( offsetHours, 2, '0', signChar, digitSet, locale );
-                            QString minuteComponent = stringFromInteger( offsetMinutes, 2, '0', QChar(), digitSet, locale );
-                            componentString = hourComponent + ':' + minuteComponent;
+                            QString hourComponent = stringFromInteger( offsetHours, 2, QLatin1Char('0'), signChar, digitSet, locale );
+                            QString minuteComponent = stringFromInteger( offsetMinutes, 2, QLatin1Char('0'), QChar(), digitSet, locale );
+                            componentString = hourComponent + QLatin1Char(':') + minuteComponent;
                             minWidth = 0;
                             padChar = QChar();
                             padWidth = 0;
                         } else {  // TZ UTC offset hours & minutes
                             componentInteger = fromDateTime.utcOffset() / 60;
                             if ( componentInteger >= 0 ) {
-                                signChar = '+';
+                                signChar = QLatin1Char('+');
                             } else {
                                 componentInteger = -componentInteger;
-                                signChar = '-';
+                                signChar = QLatin1Char('-');
                             }
                             minWidth = 4;
                         }
@@ -566,8 +566,8 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     if ( timeSpecType == KDateTime::UTC || timeSpecType == KDateTime::TimeZone ) {
                         KTimeZone tz = fromDateTime.timeZone();
                         if ( tz.isValid() ) {
-                            if ( modifierChar == ':' ) {  // TZ full name
-                                componentString = tz.abbreviation( fromDateTime.toUtc().dateTime() );
+                            if ( modifierChar == QLatin1Char(':') ) {  // TZ full name
+                                componentString = QString::fromLatin1(tz.abbreviation(fromDateTime.toUtc().dateTime()));
                             } else {  // TZ abbreviated name
                                 componentString = tz.name();
                             }
@@ -589,9 +589,9 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     componentString = componentString.rightJustified( padWidth, padChar );
                 }
 
-                if ( caseChar == '^' ) {
+                if ( caseChar == QLatin1Char('^') ) {
                     componentString = componentString.toUpper();
-                } else if ( caseChar == '#' ) {
+                } else if ( caseChar == QLatin1Char('#') ) {
                     componentString = componentString.toUpper(); // JPL ???
                 }
             }
@@ -600,7 +600,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
 
             escape = false;
             escapePad = false;
-            padChar = '0';
+            padChar = QLatin1Char('0');
             escapeMod = false;
             invalidModifier = false;
             invalidComponent = false;
@@ -633,7 +633,7 @@ QString KDateTimeFormatter::formatDateTimeUnicode( const KDateTime &fromDateTime
     QString format;
     QChar status(QLatin1Char('0'));
 
-    for (int i = 0; i < (int)toFormat.length(); ++i) {
+    for (int i = 0; i < toFormat.length(); ++i) {
         if (toFormat.at(i) == quote) {
             if (status == quote) {
                 if (i > 0 && toFormat.at(i - 1) == quote)
@@ -760,7 +760,7 @@ if ( padChar == QChar() && signChar == QChar() ) {
             result = locale->convertDigits( QString::number( number ).prepend( signChar ), digitSet );
         }
     } else if ( signChar != QChar() ) {  // If sign required
-        if ( padChar == '0' ) { // If zero-padded, zero considered part of the number, so pad the number then prepend the sign
+        if ( padChar == QLatin1Char('0') ) { // If zero-padded, zero considered part of the number, so pad the number then prepend the sign
 //kDebug() << "    zero pad with sign";
             result = locale->convertDigits( QString::number( number ).rightJustified( padWidth, padChar ).prepend( signChar ), digitSet );
         } else { // If space-padded space not considered part of the number, so prepend the sign and then pad the number

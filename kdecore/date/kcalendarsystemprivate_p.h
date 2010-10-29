@@ -96,7 +96,7 @@ public:
     KCalendarEra era( const QString &eraName, int yearInEra ) const;
     void initialiseEraList( const QString & calendarType );
     void loadGlobalEraList( const QString & calendarType );
-    void addEra( const QChar &direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
+    void addEra( char direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
                  const QString &name, const QString &shortName, const QString &format );
     KSharedConfig::Ptr config();
 

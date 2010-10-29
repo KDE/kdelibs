@@ -1532,16 +1532,16 @@ QString KDateTime::toString(const QString &format) const
             switch (ch)
             {
                 case 'A':     // week day name in English
-                    result += longDay[d->date().dayOfWeek() - 1];
+                    result += QLatin1String(longDay[d->date().dayOfWeek() - 1]);
                     break;
                 case 'a':     // week day name in English, short
-                    result += shortDay[d->date().dayOfWeek() - 1];
+                    result += QLatin1String(shortDay[d->date().dayOfWeek() - 1]);
                     break;
                 case 'B':     // month name in English
-                    result += longMonth[d->date().month() - 1];
+                    result += QLatin1String(longMonth[d->date().month() - 1]);
                     break;
                 case 'b':     // month name in English, short
-                    result += shortMonth[d->date().month() - 1];
+                    result += QLatin1String(shortMonth[d->date().month() - 1]);
                     break;
                 case 'm':     // month, 1 - 12
                     num = d->date().month();
@@ -1595,7 +1595,7 @@ QString KDateTime::toString(const QString &format) const
                 if (num < 0)
                 {
                     num = -num;
-                    result += '-';
+                    result += QLatin1Char('-');
                 }
                 result += s.sprintf((numLength == 2 ? "%02d" : "%04d"), num);
             }
@@ -1635,7 +1635,7 @@ QString KDateTime::toString(const QString &format) const
                         }
                         case TZAbbrev:     // time zone abbreviation
                             if (tz.isValid()  &&  d->specType != OffsetFromUTC)
-                                result += tz.abbreviation(d->toUtc());
+                                result += QString::fromLatin1(tz.abbreviation(d->toUtc()));
                             break;
                         case TZName:       // time zone name
                             if (tz.isValid()  &&  d->specType != OffsetFromUTC)
@@ -1665,7 +1665,7 @@ QString KDateTime::toString(TimeFormat format) const
     switch (format)
     {
         case RFCDateDay:
-            result += shortDay[d->date().dayOfWeek() - 1];
+            result += QString::fromLatin1(shortDay[d->date().dayOfWeek() - 1]);
             result += QLatin1String(", ");
             // fall through to RFCDate
         case RFCDate:
@@ -1774,7 +1774,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             int nmin   = 8;
             int nsec   = 9;
             // Also accept obsolete form "Weekday, DD-Mon-YY HH:MM:SS ±hhmm"
-            QRegExp rx("^(?:([A-Z][a-z]+),\\s*)?(\\d{1,2})(\\s+|-)([^-\\s]+)(\\s+|-)(\\d{2,4})\\s+(\\d\\d):(\\d\\d)(?::(\\d\\d))?\\s+(\\S+)$");
+            QRegExp rx(QString::fromLatin1("^(?:([A-Z][a-z]+),\\s*)?(\\d{1,2})(\\s+|-)([^-\\s]+)(\\s+|-)(\\d{2,4})\\s+(\\d\\d):(\\d\\d)(?::(\\d\\d))?\\s+(\\S+)$"));
             QStringList parts;
             if (!str.indexOf(rx))
             {
@@ -1788,7 +1788,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             else
             {
                 // Check for the obsolete form "Wdy Mon DD HH:MM:SS YYYY"
-                rx = QRegExp("^([A-Z][a-z]+)\\s+(\\S+)\\s+(\\d\\d)\\s+(\\d\\d):(\\d\\d):(\\d\\d)\\s+(\\d\\d\\d\\d)$");
+                rx = QRegExp(QString::fromLatin1("^([A-Z][a-z]+)\\s+(\\S+)\\s+(\\d\\d)\\s+(\\d\\d):(\\d\\d):(\\d\\d)\\s+(\\d\\d\\d\\d)$"));
                 if (str.indexOf(rx))
                     break;
                 nyear  = 7;
@@ -1818,14 +1818,14 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             if (leapSecond)
                 second = 59;   // apparently a leap second - validate below, once time zone is known
             int month = 0;
-            for ( ;  month < 12  &&  parts[nmonth] != shortMonth[month];  ++month) ;
+            for ( ;  month < 12  && parts[nmonth] != QLatin1String(shortMonth[month]);  ++month) ;
             int dayOfWeek = -1;
             if (!parts[nwday].isEmpty())
             {
                 // Look up the weekday name
-                while (++dayOfWeek < 7  &&  shortDay[dayOfWeek] != parts[nwday]) ;
+                while (++dayOfWeek < 7  && QLatin1String(shortDay[dayOfWeek]) != parts[nwday]) ;
                 if (dayOfWeek >= 7)
-                    for (dayOfWeek = 0;  dayOfWeek < 7  &&  longDay[dayOfWeek] != parts[nwday];  ++dayOfWeek) ;
+                    for (dayOfWeek = 0;  dayOfWeek < 7  &&  QLatin1String(longDay[dayOfWeek]) != parts[nwday];  ++dayOfWeek) ;
             }
             if (month >= 12 || dayOfWeek >= 7
             ||  (dayOfWeek < 0  &&  format == RFCDateDay))
@@ -1842,7 +1842,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             bool negOffset = false;
             if (parts.count() > 10)
             {
-                rx = QRegExp("^([+-])(\\d\\d)(\\d\\d)$");
+                rx = QRegExp(QString::fromLatin1("^([+-])(\\d\\d)(\\d\\d)$"));
                 if (!parts[10].indexOf(rx))
                 {
                     // It's a UTC offset ±hhmm
@@ -1934,26 +1934,26 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
              */
             bool dateOnly = false;
             // Check first for the extended format of ISO 8601
-            QRegExp rx("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$");
+            QRegExp rx(QString::fromLatin1("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$"));
             if (str.indexOf(rx))
             {
                 // It's not the extended format - check for the basic format
-                rx = QRegExp("^([+-])?(\\d{4,})(\\d{4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
+                rx = QRegExp(QString::fromLatin1("^([+-])?(\\d{4,})(\\d{4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$"));
                 if (str.indexOf(rx))
                 {
-                    rx = QRegExp("^([+-])?(\\d{4})(\\d{3})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
+                    rx = QRegExp(QString::fromLatin1("^([+-])?(\\d{4})(\\d{3})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$"));
                     if (str.indexOf(rx))
                     {
                         // Check for date-only formats
                         dateOnly = true;
-                        rx = QRegExp("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)$");
+                        rx = QRegExp(QString::fromLatin1("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)$"));
                         if (str.indexOf(rx))
                         {
                             // It's not the extended format - check for the basic format
-                            rx = QRegExp("^([+-])?(\\d{4,})(\\d{4})$");
+                            rx = QRegExp(QString::fromLatin1("^([+-])?(\\d{4,})(\\d{4})$"));
                             if (str.indexOf(rx))
                             {
-                                rx = QRegExp("^([+-])?(\\d{4})(\\d{3})$");
+                                rx = QRegExp(QString::fromLatin1("^([+-])?(\\d{4})(\\d{3})$"));
                                 if (str.indexOf(rx))
                                     break;
                             }
@@ -2097,7 +2097,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
         case QtTextDate:    // format is Wdy Mth DD [hh:mm:ss] YYYY [±hhmm]
         {
             int offset = 0;
-            QRegExp rx("^(\\S+\\s+\\S+\\s+\\d\\d\\s+(\\d\\d:\\d\\d:\\d\\d\\s+)?\\d\\d\\d\\d)\\s*(.*)$");
+            QRegExp rx(QString::fromLatin1("^(\\S+\\s+\\S+\\s+\\d\\d\\s+(\\d\\d:\\d\\d:\\d\\d\\s+)?\\d\\d\\d\\d)\\s*(.*)$"));
             if (str.indexOf(rx) < 0)
                 break;
             QStringList parts = rx.capturedTexts();
@@ -2127,7 +2127,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                     return KDateTime(qdt.date(), qdt.time(), KDateTimePrivate::fromStringDefault());
                 }
             }
-            rx = QRegExp("([+-])([\\d][\\d])(?::?([\\d][\\d]))?$");
+            rx = QRegExp(QString::fromLatin1("([+-])([\\d][\\d])(?::?([\\d][\\d]))?$"));
             if (parts[3].indexOf(rx) < 0)
                 break;
 
@@ -2574,7 +2574,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     if (str[s] != QLatin1Char('.'))
                     {
                         // If no locale, try comma, it is preferred by ISO8601 as the decimal point symbol
-                        QString dpt = locale == 0 ? "," : locale->decimalSymbol();
+                        QString dpt = locale == 0 ? QString::fromLatin1(",") : locale->decimalSymbol();
                         if (!str.mid(s).startsWith(dpt))
                             return QDateTime();
                         s += dpt.length() - 1;
@@ -2933,7 +2933,7 @@ int findString_internal(const QString &string, const char *array, int count, int
 {
     for (int i = 0;  i < count;  ++i)
     {
-        if (string.startsWith(array + i * disp, Qt::CaseInsensitive))
+        if (string.startsWith(QLatin1String(array + i * disp), Qt::CaseInsensitive))
         {
             offset += qstrlen(array + i * disp);
             return i;
