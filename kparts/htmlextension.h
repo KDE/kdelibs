@@ -59,12 +59,12 @@ public:
      * Returns the current base url of the part that implements this extension.
      *
      * This function is mostly used to resolve any relative URLs that might be
-     * returned when querying the part for URLs or links.
+     * returned when querying the part for links.
      */
     virtual KUrl baseUrl() const = 0;
 
     /**
-     * Returns true if portions of the content in part that implements
+     * Returns true if portions of the content in the part that implements
      * this extension are selected.
      *
      * By default this function returns false.
