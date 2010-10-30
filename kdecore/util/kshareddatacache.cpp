@@ -1545,8 +1545,7 @@ unsigned KSharedDataCache::freeSize() const
 KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 {
     if (d->shm) {
-        int policy(d->shm->evictionPolicy);
-        return static_cast<EvictionPolicy>(policy);
+        return static_cast<EvictionPolicy>(d->shm->evictionPolicy.fetchAndAddAcquire(0));
     }
 
     return NoEvictionPreference;
@@ -1554,13 +1553,15 @@ KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 
 void KSharedDataCache::setEvictionPolicy(EvictionPolicy newPolicy)
 {
-    d->shm->evictionPolicy.fetchAndStoreRelease(static_cast<int>(newPolicy));
+    if (d->shm) {
+        d->shm->evictionPolicy.fetchAndStoreRelease(static_cast<int>(newPolicy));
+    }
 }
 
 unsigned KSharedDataCache::timestamp() const
 {
     if (d->shm) {
-        return static_cast<unsigned>(d->shm->cacheTimestamp.fetchAndAddRelease(0));
+        return static_cast<unsigned>(d->shm->cacheTimestamp.fetchAndAddAcquire(0));
     }
 
     return 0;
@@ -1569,15 +1570,6 @@ unsigned KSharedDataCache::timestamp() const
 void KSharedDataCache::setTimestamp(unsigned newTimestamp)
 {
     if (d->shm) {
-        int currentValue = d->shm->cacheTimestamp;
-
-        // Loop in case a different process atomically changes the currentValue
-        // before we call testAndSetAcquire so that this process will still
-        // win. :)
-        while (!d->shm->cacheTimestamp.testAndSetAcquire(currentValue,
-                    static_cast<int>(newTimestamp)))
-        {
-            currentValue = d->shm->cacheTimestamp;
-        }
+        d->shm->cacheTimestamp.fetchAndStoreRelease(static_cast<int>(newTimestamp));
     }
 }
