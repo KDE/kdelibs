@@ -138,7 +138,6 @@ public:
             int whiteCounter = 0, blackCounter = 0;
 #endif // NDEBUG
             while (!line.isEmpty()) {
-                QChar firstChar = line.at(0);
                 /** white list lines start with "@@" */
                 if (line.startsWith(QLatin1String("@@")))
                 {
@@ -147,9 +146,7 @@ public:
 #endif // NDEBUG
                     adWhiteList.addFilter(line);
                 }
-                /** ignore special lines starting with "[", "!", "&", or "#" or contain "#"
-                    (those features are not supported by KHTML's AdBlock */
-                else if (firstChar != QLatin1Char('[') && firstChar != QLatin1Char('!') && firstChar != QLatin1Char('&') && firstChar != QLatin1Char('#') && !line.contains(QLatin1Char('#')))
+                else
                 {
 #ifndef NDEBUG
                     ++blackCounter;

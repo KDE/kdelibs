@@ -31,11 +31,39 @@
 
 namespace khtml {
 
+// We only want a subset of features of wildcards -- just the 
+// star, so we escape the rest before passing to QRegExp. 
+// The \ is escaped due to a QRegExp bug.
+// ### we really should rather parse it ourselves, in order to 
+// handle adblock-special things like | and ^ properly.
+static QRegExp fromAdBlockWildcard(const QString& wcStr) {
+    QRegExp rx;
+    rx.setPatternSyntax(QRegExp::Wildcard);
+
+    QString out;
+    for (int p = 0; p < wcStr.length(); ++p) {
+        QChar c = wcStr[p];
+        if (c == QLatin1Char('?'))
+            out += QLatin1String("[?]");
+        else if (c == QLatin1Char('['))
+            out += QLatin1String("[[]");
+        else if (c == QLatin1Char('\\'))
+            out += QLatin1String("[\\]");
+        else
+            out += c;
+    }
+    
+    rx.setPattern(out);
+    return rx;
+}
+
 void FilterSet::addFilter(const QString& filterStr)
 {
     QString filter = filterStr;
 
-    if (filter.startsWith(QLatin1Char('!')))
+    /** ignore special lines starting with "[", "!", "&", or "#" or contain "#" (comments or features are not supported by KHTML's AdBlock */
+    QChar firstChar = filter.at(0);
+    if (firstChar == QLatin1Char('[') || firstChar == QLatin1Char('!') || firstChar == QLatin1Char('&') || firstChar == QLatin1Char('#') || filter.contains(QLatin1Char('#')))
         return;
 
     // Strip leading @@
@@ -86,29 +114,16 @@ void FilterSet::addFilter(const QString& filterStr)
         // Now, do we still have any wildcard stuff left?
         if (filter.contains("*"))
         {
-//             qDebug() << "W:" << filter;
             // check if we can use RK first (and then check full RE for the rest) for better performance
             int aPos = filter.indexOf('*');
             if (aPos < 0)
                 aPos = filter.length();
-            int qPos = filter.indexOf('?');
-            if (qPos < 0)
-                qPos = filter.length();
-            int pos = qMin(aPos, qPos);
-            if (pos > 7) {
-                QRegExp rx;
-
-                rx.setPatternSyntax(QRegExp::Wildcard);
-                // Pad the final r.e. with * so we can check for an exact match
-                rx.setPattern(filter.mid(pos) + QLatin1Char('*'));
-
-                stringFiltersMatcher.addWildedString(filter.mid(0, pos), rx);
-
+            if (aPos > 7) {
+                QRegExp rx = fromAdBlockWildcard(filter.mid(aPos) + QLatin1Char('*'));
+                // We pad the final r.e. with * so we can check for an exact match
+                stringFiltersMatcher.addWildedString(filter.mid(0, aPos), rx);
             } else {
-                QRegExp rx;
-
-                rx.setPatternSyntax(QRegExp::Wildcard);
-                rx.setPattern(filter);
+                QRegExp rx = fromAdBlockWildcard(filter);
                 reFilters.append(rx);
             }
         }
