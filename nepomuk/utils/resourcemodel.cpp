@@ -39,6 +39,9 @@
 #include <Soprano/Vocabulary/NAO>
 
 
+Q_DECLARE_METATYPE(Nepomuk::Types::Class)
+
+
 class Nepomuk::Utils::ResourceModel::Private
 {
 public:
@@ -68,15 +71,22 @@ QModelIndex Nepomuk::Utils::ResourceModel::parent( const QModelIndex& child ) co
 int Nepomuk::Utils::ResourceModel::columnCount( const QModelIndex& parent ) const
 {
     Q_UNUSED(parent);
-    return 1;
+    return ResourceModelColumnCount;
 }
 
 
 QVariant Nepomuk::Utils::ResourceModel::data( const QModelIndex& index, int role ) const
 {
     Nepomuk::Resource res = resourceForIndex( index );
+    if( !res.isValid() ) {
+        return QVariant();
+    }
 
-    if( res.isValid() ) {
+    //
+    // Part 1: column specific data
+    //
+    switch( index.column() ) {
+    case ResourceColumn:
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
@@ -99,31 +109,76 @@ QVariant Nepomuk::Utils::ResourceModel::data( const QModelIndex& index, int role
         case Qt::ToolTipRole:
             return KUrl( res.resourceUri() ).prettyUrl();
 
-        case KCategorizedSortFilterProxyModel::CategorySortRole:
-            // FIXME: sort files before other stuff and so on
-
-        case KCategorizedSortFilterProxyModel::CategoryDisplayRole: {
-            Q_ASSERT( !res.resourceType().isEmpty() );
-            Nepomuk::Types::Class c( res.resourceType() );
-            QString cat = c.label();
-            if ( cat.isEmpty() ) {
-                cat = c.name();
-            }
-            if ( c.uri() == Soprano::Vocabulary::RDFS::Resource() || cat.isEmpty() ) {
-                cat = i18n( "Miscellaneous" );
-            }
-
-            return cat;
         }
 
-        case ResourceRole:
-            return QVariant::fromValue( res );
+    case ResourceTypeColumn:
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            return Types::Class( res.resourceType() ).label();
 
-        case ResourceCreationDate:
-            return res.property( Soprano::Vocabulary::NAO::created() ).toDateTime();
+        case Qt::DecorationRole: {
+            QIcon icon = Types::Class(res.resourceType()).icon();
+            if( !icon.isNull() )
+                return icon;
+            else
+                return QVariant();
+        }
+
+        case Qt::ToolTipRole:
+            return KUrl(res.resourceType()).prettyUrl();
         }
     }
+
+
+    //
+    // Part 2: column-independant data
+    //
+    switch( role ) {
+    case KCategorizedSortFilterProxyModel::CategorySortRole:
+        // FIXME: sort files before other stuff and so on
+
+    case KCategorizedSortFilterProxyModel::CategoryDisplayRole: {
+        Q_ASSERT( !res.resourceType().isEmpty() );
+        Nepomuk::Types::Class c( res.resourceType() );
+        QString cat = c.label();
+        if ( cat.isEmpty() ) {
+            cat = c.name();
+        }
+        if ( c.uri() == Soprano::Vocabulary::RDFS::Resource() || cat.isEmpty() ) {
+            cat = i18n( "Miscellaneous" );
+        }
+
+        return cat;
+    }
+
+    case ResourceRole:
+        return QVariant::fromValue( res );
+
+    case ResourceTypeRole:
+        return QVariant::fromValue( Nepomuk::Types::Class(res.resourceType()) );
+
+    case ResourceCreationDateRole:
+        return res.property( Soprano::Vocabulary::NAO::created() ).toDateTime();
+    }
+
+    // fallback
     return QVariant();
+}
+
+
+QVariant Nepomuk::Utils::ResourceModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if( role == Qt::DisplayRole ) {
+        switch( section ) {
+        case ResourceColumn:
+            return i18n("Resource");
+        case ResourceTypeColumn:
+            return i18n("Resource Type");
+        }
+    }
+
+    return QAbstractItemModel::headerData(section, orientation, role);
 }
 
 
@@ -163,7 +218,13 @@ QStringList Nepomuk::Utils::ResourceModel::mimeTypes() const
 {
     return( QStringList()
             << QLatin1String( "application/x-nepomuk-resource-uri" )
-            << KUrl::List::mimeDataTypes() );
+           << KUrl::List::mimeDataTypes() );
+}
+
+
+bool Nepomuk::Utils::ResourceModel::setData( const QModelIndex& index, const QVariant& value, int role )
+{
+    return QAbstractItemModel::setData(index, value, role);
 }
 
 #include "resourcemodel.moc"

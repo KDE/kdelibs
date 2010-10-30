@@ -92,7 +92,7 @@ int Nepomuk::Utils::SimpleResourceModel::rowCount( const QModelIndex& parent ) c
 
 QModelIndex Nepomuk::Utils::SimpleResourceModel::index( int row, int column, const QModelIndex& parent ) const
 {
-    if ( row < rowCount( parent ) && column == 0 ) {
+    if ( !parent.isValid() && row < d->resources.count() ) {
         return createIndex( row, column, 0 );
     }
     else {

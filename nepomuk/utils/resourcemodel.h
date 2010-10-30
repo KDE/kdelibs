@@ -70,18 +70,39 @@ namespace Nepomuk {
             virtual ~ResourceModel();
 
             /**
+             * The columns supported by ResourceModel are identified
+             * by this enumeration.
+             */
+            enum ResourceModelColumns {
+                /// The first column displays the label of the resource and its icon
+                ResourceColumn = 0,
+
+                /// The second column displays the resource's type
+                ResourceTypeColumn = 1,
+
+                /// The number of columns
+                ResourceModelColumnCount = 2
+            };
+
+            /**
              * Custom roles that can be accessed for example in delegates.
              */
             enum ResourceRoles {
                 /**
-                 * The resource itself.
+                 * The resource itself, provided as a Nepomuk::Resource instance.
                  */
                 ResourceRole = 7766897,
 
                 /**
+                 * The type of the resource, provided as a Nepomuk::Types::Class
+                 * instance.
+                 */
+                ResourceTypeRole = 687585,
+
+                /**
                  * The creation date of the resource.
                  */
-                ResourceCreationDate = 7766898
+                ResourceCreationDateRole = 7766898
             };
 
             /**
@@ -107,8 +128,8 @@ namespace Nepomuk {
             virtual QModelIndex parent( const QModelIndex& child ) const;
 
             /**
-             * The default implementation returns 1 as the default implementation of data()
-             * does only return values for the first column.
+             * The default implementation returns 2 with the first column representing the resource
+             * itself and the second one showing the type.
              */
             virtual int columnCount( const QModelIndex& parent ) const;
 
@@ -116,27 +137,35 @@ namespace Nepomuk {
              * Handles most roles typically used in applications like Qt::DisplayRole, Qt::ToolTipRole,
              * and Qt::DecorationRole. Additionally KCategorizedSortFilterProxyModel roles are supported
              * categorizing by resource types.
-             *
-             * Only the first column is supported.
              */
             virtual QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const;
 
             /**
+             * Provides header data for the supported columns.
+             */
+            virtual QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+
+            /**
              * Reimplemented to support dragging of resources out of the model.
              */
-            Qt::ItemFlags flags( const QModelIndex& index ) const;
+            virtual Qt::ItemFlags flags( const QModelIndex& index ) const;
 
             /**
              * Stores the resource URIs via KUrl::List::populateMimeData() and as a specific
              * "application/x-nepomuk-resource-uri" mime type to indicate that these are URIs
              * corresponding to actual %Nepomuk resources.
              */
-            QMimeData* mimeData( const QModelIndexList& indexes ) const;
+            virtual QMimeData* mimeData( const QModelIndexList& indexes ) const;
 
             /**
              * \return The KUrl mime types and "application/x-nepomuk-resource-uri".
              */
-            QStringList mimeTypes() const;
+            virtual QStringList mimeTypes() const;
+
+            /**
+             * Provided for future extensions.
+             */
+            virtual bool setData( const QModelIndex& index, const QVariant& value, int role );
 
         private:
             class Private;
