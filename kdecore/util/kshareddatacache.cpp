@@ -1570,6 +1570,10 @@ void KSharedDataCache::setTimestamp(unsigned newTimestamp)
 {
     if (d->shm) {
         int currentValue = d->shm->cacheTimestamp;
+
+        // Loop in case a different process atomically changes the currentValue
+        // before we call testAndSetAcquire so that this process will still
+        // win. :)
         while (!d->shm->cacheTimestamp.testAndSetAcquire(currentValue,
                     static_cast<int>(newTimestamp)))
         {
