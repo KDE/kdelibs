@@ -35,27 +35,27 @@ class JobQueuePrivate;
 class JobQueue
 {
 public:
-   /**
-    * Constructor.
-    */
-   JobQueue();
-   
-   /**
-    * Destructor.
-    */
-   virtual ~JobQueue();
-   
-   /**
-    * Enqueue a job for processing.
-    *
-    * @param job the job to enqueue
-    * @param inFront true to enqueue the job in front so it is the next
-    *                job to be processed
-    */
-   void enqueue(QueuedJob *job, bool inFront = false);
-   
+    /**
+     * Constructor.
+     */
+    JobQueue();
+
+    /**
+     * Destructor.
+     */
+    virtual ~JobQueue();
+
+    /**
+     * Enqueue a job for processing.
+     *
+     * @param job the job to enqueue
+     * @param inFront true to enqueue the job in front so it is the next
+     *                job to be processed
+     */
+    void enqueue(QueuedJob *job, bool inFront = false);
+
 private:
-   JobQueuePrivate *d;
+    JobQueuePrivate *d;
 };
 
 #endif // JOBQUEUE_H

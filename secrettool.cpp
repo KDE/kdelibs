@@ -25,5 +25,5 @@
 
 QString createId()
 {
-   return QUuid::createUuid().toString().remove(QRegExp("[\\{\\}-]"));
+    return QUuid::createUuid().toString().remove(QRegExp("[\\{\\}-]"));
 }

@@ -34,62 +34,62 @@ class PeerData;
 class Peer
 {
 public:
-   /**
-    * Construct an invalid (non-existant) Peer.
-    */
-   Peer();
-   
-   /**
-    * Copy constructor.
-    */
-   Peer(const Peer &other);
-   
-   /**
-    * Copy operator.
-    */
-   Peer &operator=(const Peer &other);
-   
-   /**
-    * Construct a valid Peer representing the process with the given pid.
-    */
-   explicit Peer(uint pid);
-   
-   /**
-    * Destructor.
-    */
-   ~Peer();
-   
-   /**
-    * Get the running state of the peer process
-    */
-   bool isStillRunning() const;
-   
-   /**
-    * Get the executable path of the running process
-    */
-   QString exePath() const;
-   
-   /**
-    * Get the command line used to launch the running process
-    */
-   QByteArray cmdLine() const;
-   
-   /**
-    * Check if the peer is valid. An invalid peer identifies test applications
-    * or requests sent in-process.
-    */
-   bool isValid() const;
-   
+    /**
+     * Construct an invalid (non-existant) Peer.
+     */
+    Peer();
+
+    /**
+     * Copy constructor.
+     */
+    Peer(const Peer &other);
+
+    /**
+     * Copy operator.
+     */
+    Peer &operator=(const Peer &other);
+
+    /**
+     * Construct a valid Peer representing the process with the given pid.
+     */
+    explicit Peer(uint pid);
+
+    /**
+     * Destructor.
+     */
+    ~Peer();
+
+    /**
+     * Get the running state of the peer process
+     */
+    bool isStillRunning() const;
+
+    /**
+     * Get the executable path of the running process
+     */
+    QString exePath() const;
+
+    /**
+     * Get the command line used to launch the running process
+     */
+    QByteArray cmdLine() const;
+
+    /**
+     * Check if the peer is valid. An invalid peer identifies test applications
+     * or requests sent in-process.
+     */
+    bool isValid() const;
+
 private:
-   /**
-    * Helper method witch returns the /proc/pid path for the
-    * peer process.
-    * 
-    * @note Must only be called on valid peers.
-    */
-   QString procFileName() const;
-   
-   QSharedDataPointer<PeerData> d;
+    /**
+     * Helper method witch returns the /proc/pid path for the
+     * peer process.
+     *
+     * @note Must only be called on valid peers.
+     */
+    QString procFileName() const;
+
+    QSharedDataPointer<PeerData> d;
 };
 
 #endif // DEAMON_PEER_H

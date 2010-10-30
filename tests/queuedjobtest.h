@@ -28,35 +28,35 @@ class JobQueue;
 
 class TestJob : public QueuedJob
 {
-   Q_OBJECT
-   
+    Q_OBJECT
+
 public:
-   TestJob(JobQueue *queue);
-   virtual ~TestJob();
-   virtual bool isImmediate() const;
-   virtual void exec();
-   virtual void start();
-   
+    TestJob(JobQueue *queue);
+    virtual ~TestJob();
+    virtual bool isImmediate() const;
+    virtual void exec();
+    virtual void start();
+
 protected Q_SLOTS:
-   void doWork();
+    void doWork();
 };
 
 class QueuedJobTest : public QObject
 {
-   Q_OBJECT
-    
+    Q_OBJECT
+
 private Q_SLOTS:
-   void initTestCase();
-    
-   void testSync();
-   void testAsync();
-   void testAsyncOrder();
-   void testAsyncOrderInFront();
-   
-   void cleanupTestCase();
-    
+    void initTestCase();
+
+    void testSync();
+    void testAsync();
+    void testAsyncOrder();
+    void testAsyncOrderInFront();
+
+    void cleanupTestCase();
+
 private:
-   JobQueue *m_queue;
+    JobQueue *m_queue;
 };
 
 #endif // QUEUEDJOBTEST_H

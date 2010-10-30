@@ -33,44 +33,44 @@ class QueuedJob;
  */
 class JobQueuePrivate : public QObject
 {
-   Q_OBJECT
+    Q_OBJECT
 
 public:
-   /**
-    * Constructor.
-    */
-   JobQueuePrivate();
-   
-   /**
-    * Destructor.
-    */
-   ~JobQueuePrivate();
-   
-   /**
-    * Enqueue a job for processing.
-    *
-    * @param job the job to enqueue
-    * @param inFront true to enqueue the job in front so it is the next
-    *                job to be processed
-    */
-   void enqueue(QueuedJob *job, bool inFront);
+    /**
+     * Constructor.
+     */
+    JobQueuePrivate();
+
+    /**
+     * Destructor.
+     */
+    ~JobQueuePrivate();
+
+    /**
+     * Enqueue a job for processing.
+     *
+     * @param job the job to enqueue
+     * @param inFront true to enqueue the job in front so it is the next
+     *                job to be processed
+     */
+    void enqueue(QueuedJob *job, bool inFront);
 
 private Q_SLOTS:
-   /**
-    * Start processing jobs.
-    */
-   void process();
-   
-   /**
-    * Used to receive result() signals of the current QueuedJob.
-    *
-    * @param job the job that sends its result
-    */
-   void jobFinished(QueuedJob *job);
-   
+    /**
+     * Start processing jobs.
+     */
+    void process();
+
+    /**
+     * Used to receive result() signals of the current QueuedJob.
+     *
+     * @param job the job that sends its result
+     */
+    void jobFinished(QueuedJob *job);
+
 private:
-   QQueue<QPointer<QueuedJob> > m_jobs;
-   QPointer<QueuedJob> m_currentJob;
+    QQueue<QPointer<QueuedJob> > m_jobs;
+    QPointer<QueuedJob> m_currentJob;
 };
 
 #endif // JOBQUEUE_P_H

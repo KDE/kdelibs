@@ -24,52 +24,52 @@
 class QueuedJobPrivate
 {
 public:
-   JobQueue *m_queue;
-   bool m_finished;
-   bool m_enqueued;
+    JobQueue *m_queue;
+    bool m_finished;
+    bool m_enqueued;
 };
 
 QueuedJob::QueuedJob(JobQueue *queue)
- : d(new QueuedJobPrivate)
+    : d(new QueuedJobPrivate)
 {
-   Q_ASSERT(queue);
-   
-   d->m_queue = queue;
-   d->m_finished = false;
-   d->m_enqueued = false;
+    Q_ASSERT(queue);
+
+    d->m_queue = queue;
+    d->m_finished = false;
+    d->m_enqueued = false;
 }
 
 QueuedJob::~QueuedJob()
 {
-   delete d;
+    delete d;
 }
 
 bool QueuedJob::isImmediate() const
 {
-   return false;
+    return false;
 }
 
 bool QueuedJob::isFinished() const
 {
-   return d->m_finished;
+    return d->m_finished;
 }
 
 void QueuedJob::enqueue(bool inFront)
 {
-   // if the job has already been finished or enqueued, handle this
-   // gracefully.
-   if (d->m_enqueued || d->m_finished) {
-      return;
-   }
-   d->m_queue->enqueue(this, inFront);
-   d->m_enqueued = true;
+    // if the job has already been finished or enqueued, handle this
+    // gracefully.
+    if(d->m_enqueued || d->m_finished) {
+        return;
+    }
+    d->m_queue->enqueue(this, inFront);
+    d->m_enqueued = true;
 }
 
 void QueuedJob::emitResult()
 {
-   d->m_finished = true;
-   emit result(this);
-   deleteLater();
+    d->m_finished = true;
+    emit result(this);
+    deleteLater();
 }
 
 #include "queuedjob.moc"
