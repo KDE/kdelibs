@@ -19,8 +19,8 @@
  */
 
 #include "jobqueue.h"
-#include "queuedjob.h"
 #include "jobqueue_p.h"
+#include "queuedjob.h"
 
 #include <QtCore/QTimer>
 

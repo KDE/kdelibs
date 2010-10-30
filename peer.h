@@ -27,15 +27,15 @@
 class PeerData;
 
 /**
- * Representation of a daemon peer, wich is typically a client application.
- * Note that the client application firstly connect to the dbus deamon wich
+ * Representation of a daemon peer, which is typically a client application.
+ * Note that the client application firstly connect to the dbus daemon which
  * forwards messages to ksecretservice daemon using another connection.
  */
 class Peer
 {
 public:
     /**
-     * Construct an invalid (non-existant) Peer.
+     * Construct an invalid (non-existent) Peer.
      */
     Peer();
 

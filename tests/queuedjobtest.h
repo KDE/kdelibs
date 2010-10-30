@@ -21,7 +21,7 @@
 #ifndef QUEUEDJOBTEST_H
 #define QUEUEDJOBTEST_H
 
-#include <QtTest>
+#include <QtTest/QtTest>
 #include <queuedjob.h>
 
 class JobQueue;
