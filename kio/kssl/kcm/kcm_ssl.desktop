@@ -9,6 +9,7 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=network-and-connectivity
 
 Name=SSL Preferences
+Name[ca]=Preferències SSL
 Name[de]=SSL-Einstellungen
 Name[en_GB]=SSL Preferences
 Name[es]=Preferencias de SSL
@@ -30,6 +31,7 @@ Name[wa]=Preferinces SSL
 Name[x-test]=xxSSL Preferencesxx
 Name[zh_TW]=SSL 喜好設定
 Comment=SSL Versions and Certificates
+Comment[ca]=Versions i certificats SSL
 Comment[de]=SSL-Versionen und -Zertifikate
 Comment[en_GB]=SSL Versions and Certificates
 Comment[es]=Versiones y certificados SSL
