@@ -68,6 +68,7 @@ private:
     QList<Nepomuk::Tag> m_tags;
     QListWidget* m_tagsList;
     QListWidgetItem* m_newTagItem;
+    QListWidgetItem* m_autoCheckedItem;
     QListWidgetItem* m_deleteCandidate;
     KLineEdit* m_newTagEdit;
 

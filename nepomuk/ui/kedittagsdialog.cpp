@@ -39,6 +39,7 @@ KEditTagsDialog::KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
     m_tags(tags),
     m_tagsList(0),
     m_newTagItem(0),
+    m_autoCheckedItem(0),
     m_deleteCandidate(0),
     m_newTagEdit(0),
     m_deleteButtonTimer(0)
@@ -151,36 +152,24 @@ void KEditTagsDialog::slotTextEdited(const QString& text)
     const QString tagText = text.simplified();
     if (tagText.isEmpty()) {
         removeNewTagItem();
-
-        for (int j = 0; j < m_tagsList->count(); j++)
-        {
-            QListWidgetItem *entry = m_tagsList->item(j);
-            entry->setHidden(false);
-        }
-
         return;
-    }
- 
-    QSet<QListWidgetItem*> matchedEntries = m_tagsList->findItems(tagText, Qt::MatchContains).toSet();
-    for (int j = 0; j < m_tagsList->count(); j++)
-    {
-        QListWidgetItem *entry = m_tagsList->item(j);
-        if(matchedEntries.contains(entry))
-            entry->setHidden(false);
-        else
-            entry->setHidden(true);
-    }
-    
+    }   
     
     // Check whether the new tag already exists. If this
     // is the case, remove the new tag item.
     const int count = m_tagsList->count();
     for (int i = 0; i < count; ++i) {
-        const QListWidgetItem* item = m_tagsList->item(i);
+        QListWidgetItem* item = m_tagsList->item(i);
         const bool remove = (item->text() == tagText) &&
                             ((m_newTagItem == 0) || (m_newTagItem != item));
         if (remove) {
             m_tagsList->scrollToItem(item);
+            if (item->checkState() == Qt::Unchecked) {
+                item->setCheckState(Qt::Checked);
+                // Remember the checked item, so that it can be unchecked
+                // again if the user changes the tag-text.
+                m_autoCheckedItem = item;
+            }
             removeNewTagItem();
             return;
         }
@@ -190,8 +179,14 @@ void KEditTagsDialog::slotTextEdited(const QString& text)
     if (m_newTagItem == 0) {
         m_newTagItem = new QListWidgetItem(tagText, m_tagsList);
     } else {
-        m_newTagItem->setText(tagText);
+        m_newTagItem->setText(tagText);    
     }
+
+    if (m_autoCheckedItem != 0) {
+        m_autoCheckedItem->setCheckState(Qt::Unchecked);
+        m_autoCheckedItem = 0;
+    }
+
     m_newTagItem->setData(Qt::UserRole, tagText);
     m_newTagItem->setCheckState(Qt::Checked);
     m_tagsList->scrollToItem(m_newTagItem);
