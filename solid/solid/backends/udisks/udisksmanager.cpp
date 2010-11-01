@@ -56,8 +56,6 @@ UDisksManager::UDisksManager(QObject *parent)
                 this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
         connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
                 this, SLOT(slotDeviceChanged(QDBusObjectPath)));
-
-        m_deviceCache = allDevices(); // prefill the cache
     }
 }
 
