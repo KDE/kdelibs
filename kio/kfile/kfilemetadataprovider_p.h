@@ -104,25 +104,16 @@ public:
     virtual QHash<KUrl, Nepomuk::Variant> data() const;
 
     /**
-     * @return Pointer to the custom value-widget that should be used
-     *         to show the meta data represented by \p metaDataUri. If 0
-     *         is returned, the meta data will be shown inside a label
-     *         as fallback. If no custom value widget is used for the
-     *         given URI, the base implementation must be invoked.
+     * @return Factory method that returns a widget that should be used
+     *         to show the meta data represented by \p metaDataUri. If
+     *         no custom value widget is used for the given URI, the base
+     *         implementation must be invoked. Per default an instance
+     *         of QLabel will be returned.
      */
-    virtual QWidget* valueWidget(const KUrl& metaDataUri) const;
-
-    /**
-     * Sets the value of a custom value-widget to \p value. If the meta data
-     * represented by \p metaDataUri is not shown by a custom value-widget (see
-     * KMetaDataWidget::valueWidget()), then the base implementation must be
-     * invoked.
-     * @return True, if a custom value-widget is available, where the value got applied.
-     */
-    virtual bool setValue(const KUrl& metaDataUri, const Nepomuk::Variant& value);
+    virtual QWidget* createValueWidget(const KUrl& metaDataUri,
+                                       const Nepomuk::Variant& value,
+                                       QWidget* parent) const;
 #endif
-
-    virtual bool eventFilter(QObject* watched, QEvent* event);
 
     /**
      * Is invoked when the readonly state has been changed by

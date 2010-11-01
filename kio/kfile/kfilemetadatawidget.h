@@ -82,15 +82,11 @@ Q_SIGNALS:
      */
     void metaDataRequestFinished(const KFileItemList& items);
 
-protected:
-    virtual bool event(QEvent* event);
-
 private:
     class Private;
     Private* d;
 
     Q_PRIVATE_SLOT(d, void slotLoadingFinished())
-    Q_PRIVATE_SLOT(d, void removeOutdatedRows())
     Q_PRIVATE_SLOT(d, void slotLinkActivated(QString))
     Q_PRIVATE_SLOT(d, void slotDataChangeStarted())
     Q_PRIVATE_SLOT(d, void slotDataChangeFinished())

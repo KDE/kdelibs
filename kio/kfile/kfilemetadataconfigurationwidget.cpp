@@ -48,7 +48,6 @@ public:
 
     void init();
     void loadMetaData();
-    void addFixedMetaData();
     void addItem(const KUrl& uri);
 
     /**
@@ -91,15 +90,9 @@ KFileMetaDataConfigurationWidget::Private::~Private()
 void KFileMetaDataConfigurationWidget::Private::loadMetaData()
 {
 #ifdef HAVE_NEPOMUK
-    if ((m_provider != 0) && !m_fileItems.isEmpty()) {
-        m_provider->setItems(m_fileItems);
-        connect(m_provider, SIGNAL(loadingFinished()),
-                q, SLOT(slotLoadingFinished()));
-    } else {
-        addFixedMetaData();
-    }
-#else
-    addFixedMetaData();
+    m_provider->setItems(m_fileItems);
+    connect(m_provider, SIGNAL(loadingFinished()),
+            q, SLOT(slotLoadingFinished()));
 #endif
 }
 
@@ -156,32 +149,7 @@ void KFileMetaDataConfigurationWidget::Private::slotLoadingFinished()
         addItem(it.key());
         ++it;
     }
-    
-    addFixedMetaData();
 #endif
-}
-
-void KFileMetaDataConfigurationWidget::Private::addFixedMetaData()
-{
-    KConfig config("kmetainformationrc", KConfig::NoGlobals);
-    KConfigGroup settings = config.group("Show");
-
-    typedef QPair<QString, QString> FixedItem;
-    QList<FixedItem> fixedItems;
-    fixedItems.append(FixedItem("kfileitem#type", i18nc("@item::inlistbox", "Type")));
-    fixedItems.append(FixedItem("kfileitem#size", i18nc("@item::inlistbox", "Size")));
-    fixedItems.append(FixedItem("kfileitem#modified", i18nc("@item::inlistbox", "Modified")));
-    fixedItems.append(FixedItem("kfileitem#owner", i18nc("@item::inlistbox", "Owner")));
-    fixedItems.append(FixedItem("kfileitem#permissions", i18nc("@item::inlistbox", "Permissions")));
-
-    foreach (const FixedItem& fixedItem, fixedItems) {
-        const QString key = fixedItem.first;
-        const QString label = fixedItem.second;
-        QListWidgetItem* item = new QListWidgetItem(label, m_metaDataList);
-        item->setData(Qt::UserRole, key);
-        const bool show = settings.readEntry(key, true);
-        item->setCheckState(show ? Qt::Checked : Qt::Unchecked);
-    }   
 }
 
 KFileMetaDataConfigurationWidget::KFileMetaDataConfigurationWidget(QWidget* parent) :
