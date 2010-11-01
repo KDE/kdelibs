@@ -62,6 +62,7 @@ protected Q_SLOTS:
 
 private:
   Q_DECLARE_PRIVATE(KIdentityProxyModel)
+  Q_DISABLE_COPY(KIdentityProxyModel)
 
   Q_PRIVATE_SLOT(d_func(), void _k_sourceRowsAboutToBeInserted(QModelIndex,int,int))
   Q_PRIVATE_SLOT(d_func(), void _k_sourceRowsInserted(QModelIndex,int,int))
