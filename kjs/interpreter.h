@@ -459,6 +459,9 @@ private:
 
     unsigned m_startTimeoutCheckCount;
     unsigned m_pauseTimeoutCheckCount;
+    
+    // Helper for setting constructors, making sure their function names are OK
+    void putNamedConstructor(const char* name, JSObject* value);
 
     ProtectedPtr<JSObject> m_Object;
     ProtectedPtr<JSObject> m_Function;
