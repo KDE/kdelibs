@@ -5,6 +5,7 @@ include(SopranoAddOntology)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=300000)
+add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
