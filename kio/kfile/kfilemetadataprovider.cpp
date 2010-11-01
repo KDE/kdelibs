@@ -44,6 +44,28 @@
 #include <QEvent>
 #include <QLabel>
 
+namespace {
+    static QString plainText(const QString& richText)
+    {
+        QString plainText;
+        plainText.reserve(richText.length());
+
+        bool skip = false;
+        for (int i = 0; i < richText.length(); ++i) {
+            const QChar c = richText.at(i);
+            if (c == QLatin1Char('<')) {
+                skip = true;
+            } else if (c == QLatin1Char('>')) {
+                skip = false;
+            } else if (!skip) {
+                plainText.append(c);
+            }
+        }
+
+        return plainText;
+    }
+};
+
 // The default size hint of QLabel tries to return a square size.
 // This does not work well in combination with layouts that use
 // heightForWidth(): In this case it is possible that the content
@@ -55,9 +77,6 @@ class ValueWidget : public QLabel
 public:
     explicit ValueWidget(QWidget* parent = 0);
     virtual QSize sizeHint() const;
-
-private:
-    QString plainText() const;
 };
 
 ValueWidget::ValueWidget(QWidget* parent) :
@@ -72,29 +91,10 @@ QSize ValueWidget::sizeHint() const
     // that would be sufficient. However this method is not accessible, so
     // as workaround the tags from a richtext are removed manually here to
     // have a proper size hint.
-    return metrics.size(Qt::TextSingleLine, plainText());
+    return metrics.size(Qt::TextSingleLine, plainText(text()));
 }
 
-QString ValueWidget::plainText() const
-{
-    QString plainText;
-    const QString richText = text();
-    plainText.reserve(richText.length());
 
-    bool skip = false;
-    for (int i = 0; i < richText.length(); ++i) {
-        const QChar c = richText.at(i);
-        if (c == QLatin1Char('<')) {
-            skip = true;
-        } else if (c == QLatin1Char('>')) {
-            skip = false;
-        } else if (!skip) {
-            plainText.append(c);
-        }
-    }
-
-    return plainText;
-}
 
 class KFileMetaDataProvider::Private
 {
@@ -123,7 +123,7 @@ public:
     QList<Nepomuk::Resource> resourceList() const;   
     QWidget* createRatingWidget(int rating, QWidget* parent);
     QWidget* createTagWidget(const QList<Nepomuk::Tag>& tags, QWidget* parent);
-    QWidget* createm_commentWidget(const QString& comment, QWidget* parent);
+    QWidget* createCommentWidget(const QString& comment, QWidget* parent);
 #endif
     QWidget* createValueWidget(const QString& value, QWidget* parent);
 
@@ -312,6 +312,9 @@ QWidget* KFileMetaDataProvider::Private::createTagWidget(const QList<Nepomuk::Ta
     Nepomuk::TagWidget* tagWidget = new Nepomuk::TagWidget(parent);
     tagWidget->setModeFlags(Nepomuk::TagWidget::MiniMode);
     tagWidget->setSelectedTags(tags);
+    tagWidget->setModeFlags(m_readOnly
+                            ? Nepomuk::TagWidget::MiniMode | Nepomuk::TagWidget::ReadOnly
+                            : Nepomuk::TagWidget::MiniMode);
 
     connect(tagWidget, SIGNAL(selectionChanged(QList<Nepomuk::Tag>)),
             q, SLOT(slotTagsChanged(QList<Nepomuk::Tag>)));
@@ -323,10 +326,11 @@ QWidget* KFileMetaDataProvider::Private::createTagWidget(const QList<Nepomuk::Ta
     return tagWidget;
 }
 
-QWidget* KFileMetaDataProvider::Private::createm_commentWidget(const QString& comment, QWidget* parent)
+QWidget* KFileMetaDataProvider::Private::createCommentWidget(const QString& comment, QWidget* parent)
 {
     KCommentWidget* commentWidget = new KCommentWidget(parent);
     commentWidget->setText(comment);
+    commentWidget->setReadOnly(m_readOnly);
 
     connect(commentWidget, SIGNAL(commentChanged(const QString&)),
             q, SLOT(slotCommentChanged(const QString&)));
@@ -342,7 +346,7 @@ QWidget* KFileMetaDataProvider::Private::createValueWidget(const QString& value,
     ValueWidget* valueWidget = new ValueWidget(parent);
     valueWidget->setWordWrap(true);
     valueWidget->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    valueWidget->setText(value);
+    valueWidget->setText(m_readOnly ? plainText(value) : value);
     return valueWidget;
 }
 
@@ -458,12 +462,6 @@ void KFileMetaDataProvider::setReadOnly(bool readOnly)
 
 #ifdef HAVE_NEPOMUK
         if (!d->m_tagWidget.isNull()) {
-            Nepomuk::TagWidget::ModeFlags flags = d->m_tagWidget.data()->modeFlags();
-            if (readOnly) {
-                flags |= Nepomuk::TagWidget::ReadOnly;
-            } else {
-                flags &= ~Nepomuk::TagWidget::ReadOnly;
-            }
             d->m_tagWidget.data()->setModeFlags(readOnly
                                                 ? Nepomuk::TagWidget::MiniMode | Nepomuk::TagWidget::ReadOnly
                                                 : Nepomuk::TagWidget::MiniMode);
@@ -509,7 +507,7 @@ QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
 
             widget = d->createTagWidget(tags, parent);
         } else if (uri == QLatin1String("kfileitem#comment")) {
-            widget = d->createm_commentWidget(value.toString(), parent);
+            widget = d->createCommentWidget(value.toString(), parent);
         }
     }
 
