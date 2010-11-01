@@ -146,7 +146,7 @@ QVariant Nepomuk::Utils::ResourceModel::data( const QModelIndex& index, int role
             cat = c.name();
         }
         if ( c.uri() == Soprano::Vocabulary::RDFS::Resource() || cat.isEmpty() ) {
-            cat = i18n( "Miscellaneous" );
+            cat = i18nc( "@title KCategorizedSortFilterProxyModel grouping for all Nepomukj resources that are of type rdfs:Resource", "Miscellaneous" );
         }
 
         return cat;
@@ -172,9 +172,9 @@ QVariant Nepomuk::Utils::ResourceModel::headerData(int section, Qt::Orientation 
     if( role == Qt::DisplayRole ) {
         switch( section ) {
         case ResourceColumn:
-            return i18n("Resource");
+            return i18nc("@title:column The Nepomuk resource label and icon", "Resource");
         case ResourceTypeColumn:
-            return i18n("Resource Type");
+            return i18nc("@title:column The Nepomuk resource's RDF type", "Resource Type");
         }
     }
 
