@@ -343,6 +343,14 @@ JSGlobalObject* Interpreter::globalObject() const
   return m_globalObject;
 }
 
+void Interpreter::putNamedConstructor(const char* name, JSObject* value)
+{
+    assert(value->implementsCall());
+    Identifier i(name);
+    m_globalObject->put(&m_globalExec, i, value, DontEnum);
+    static_cast<InternalFunctionImp*>(value)->setFunctionName(i);
+}
+
 void Interpreter::initGlobalObject()
 {
     FunctionPrototype *funcProto = new FunctionPrototype(&m_globalExec);
@@ -401,21 +409,21 @@ void Interpreter::initGlobalObject()
     // ECMA 15.3.4.1
     funcProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Function, DontEnum);
 
-    m_globalObject->put(&m_globalExec, "Object", m_Object, DontEnum);
-    m_globalObject->put(&m_globalExec, "Function", m_Function, DontEnum);
-    m_globalObject->put(&m_globalExec, "Array", m_Array, DontEnum);
-    m_globalObject->put(&m_globalExec, "Boolean", m_Boolean, DontEnum);
-    m_globalObject->put(&m_globalExec, "String", m_String, DontEnum);
-    m_globalObject->put(&m_globalExec, "Number", m_Number, DontEnum);
-    m_globalObject->put(&m_globalExec, "Date", m_Date, DontEnum);
-    m_globalObject->put(&m_globalExec, "RegExp", m_RegExp, DontEnum);
-    m_globalObject->put(&m_globalExec, "Error", m_Error, DontEnum);
-    m_globalObject->put(&m_globalExec, "EvalError",m_EvalError, DontEnum);
-    m_globalObject->put(&m_globalExec, "RangeError",m_RangeError, DontEnum);
-    m_globalObject->put(&m_globalExec, "ReferenceError",m_ReferenceError, DontEnum);
-    m_globalObject->put(&m_globalExec, "SyntaxError",m_SyntaxError, DontEnum);
-    m_globalObject->put(&m_globalExec, "TypeError",m_TypeError, DontEnum);
-    m_globalObject->put(&m_globalExec, "URIError",m_UriError, DontEnum);
+    putNamedConstructor("Object", m_Object);
+    putNamedConstructor("Function", m_Function);
+    putNamedConstructor("Array", m_Array);
+    putNamedConstructor("Boolean", m_Boolean);
+    putNamedConstructor("String", m_String);
+    putNamedConstructor("Number", m_Number);
+    putNamedConstructor("Date", m_Date);
+    putNamedConstructor("RegExp", m_RegExp);
+    putNamedConstructor("Error", m_Error);
+    putNamedConstructor("EvalError",m_EvalError);
+    putNamedConstructor("RangeError",m_RangeError);
+    putNamedConstructor("ReferenceError",m_ReferenceError);
+    putNamedConstructor("SyntaxError",m_SyntaxError);
+    putNamedConstructor("TypeError",m_TypeError);
+    putNamedConstructor("URIError",m_UriError);
     
     // Set the constructorPropertyName property of all builtin constructors
     objProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Object, DontEnum | DontDelete | ReadOnly);
