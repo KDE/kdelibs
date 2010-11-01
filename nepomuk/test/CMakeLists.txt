@@ -48,10 +48,9 @@ set(resourcetest_SRCS resourcetest.cpp)
 kde4_add_unit_test(resourcetest TESTNAME nepomuk-resourcetest ${resourcetest_SRCS})
 target_link_libraries(resourcetest
   nepomuk_testbase
-  ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTTEST_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBS}
   ${SOPRANO_LIBRARIES}
   kdecore)
 
@@ -61,20 +60,12 @@ target_link_libraries(resourcetest
 # --------------------------------------------
 kde4_add_executable(ratingpaintertestapp TEST ratingpaintertestapp.cpp ratingpaintertestwidget.cpp)
 target_link_libraries(ratingpaintertestapp
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${KDE4_KDECORE_LIBS}
-  ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   nepomuk
   )
 
 kde4_add_executable(tagwidgetapp TEST tagwidgetapp.cpp tagwidgettest.cpp)
 target_link_libraries(tagwidgetapp
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${KDE4_KDECORE_LIBS}
-  ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   nepomuk
   )
@@ -87,6 +78,8 @@ target_link_libraries(simplefacettest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  nepomuk
+  nepomukquery
   nepomukutils
 )
 
@@ -95,6 +88,8 @@ target_link_libraries(dynamicresourcefacettest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  nepomuk
+  nepomukquery
   nepomukutils
 )
 
@@ -103,6 +98,8 @@ target_link_libraries(proxyfacettest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  nepomuk
+  nepomukquery
   nepomukutils
 )
 
@@ -111,5 +108,7 @@ target_link_libraries(facetmodeltest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  nepomuk
+  nepomukquery
   nepomukutils
 )
