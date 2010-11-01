@@ -703,3 +703,11 @@ void UDisksDevice::slotChanged()
     m_cache.clear();
     emit changed();
 }
+
+bool UDisksDevice::isDeviceBlacklisted() const
+{
+    return property("DevicePresentationHide").toBool() || property("DevicePresentationNopolicy").toBool() ||
+            property("DeviceMountPaths").toStringList().contains("/boot") ||
+            property("IdLabel").toString() == "System Reserved" ||
+            property("IdUsage").toString().isEmpty();
+}

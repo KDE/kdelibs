@@ -57,6 +57,8 @@ public:
     bool propertyExists(const QString &key) const;
     QMap<QString, QVariant> allProperties() const;
 
+
+    bool isDeviceBlacklisted() const;
 Q_SIGNALS:
     void changed();
 

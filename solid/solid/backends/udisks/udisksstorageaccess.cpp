@@ -71,10 +71,7 @@ QString UDisksStorageAccess::filePath() const
 
 bool UDisksStorageAccess::isIgnored() const
 {
-    return m_device->property( "DevicePresentationHide" ).toBool()
-            || (!m_device->property("DriveCanDetach").toBool()
-                && m_device->property("LuksCleartextUnlockedByUid").toInt()==0
-                && !m_device->property("DeviceIsOpticalDisc").toBool());
+    return m_device->isDeviceBlacklisted();
 }
 
 bool UDisksStorageAccess::setup()
