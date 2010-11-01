@@ -145,7 +145,7 @@ namespace {
         // we can only do query term globbing for strings longer than 3 chars
         //
         if( !hadQuotes && globbing && s.length() > 3 && !s.endsWith('*') && !s.endsWith('?') )
-            return s + '*';
+            return QString(s + '*');
         else
             return s;
     }
