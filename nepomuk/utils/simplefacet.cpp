@@ -85,7 +85,7 @@ Nepomuk::Utils::Facet::SelectionMode Nepomuk::Utils::SimpleFacet::selectionMode(
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::SimpleFacet::term() const
+Nepomuk::Query::Term Nepomuk::Utils::SimpleFacet::queryTerm() const
 {
     if( d->m_terms.isEmpty() ||
         d->m_selectedFacets.isEmpty() ) {
@@ -98,14 +98,14 @@ Nepomuk::Query::Term Nepomuk::Utils::SimpleFacet::term() const
             Q_FOREACH( int i, d->m_selectedFacets ) {
                 andTerm.addSubTerm( termAt(i) );
             }
-            return andTerm;
+            return andTerm.optimized();
         }
         case MatchAny: {
             OrTerm orTerm;
             Q_FOREACH( int i, d->m_selectedFacets ) {
                 orTerm.addSubTerm( termAt(i) );
             }
-            return orTerm;
+            return orTerm.optimized();
         }
         case MatchOne:
             return termAt( *d->m_selectedFacets.constBegin() );
@@ -146,7 +146,7 @@ void Nepomuk::Utils::SimpleFacet::clear()
     d->m_terms.clear();
     d->m_titles.clear();
     d->m_selectedFacets.clear();
-    setTermChanged();
+    setQueryTermChanged();
 }
 
 
@@ -183,7 +183,7 @@ void Nepomuk::Utils::SimpleFacet::setSelected( int index, bool selected )
         d->m_selectedFacets.remove(index);
     }
     setSelectionChanged();
-    setTermChanged();
+    setQueryTermChanged();
 }
 
 
@@ -193,7 +193,7 @@ void Nepomuk::Utils::SimpleFacet::clearSelection()
     if( selectionMode() == MatchOne )
         d->m_selectedFacets.insert(0);
     setSelectionChanged();
-    setTermChanged();
+    setQueryTermChanged();
 }
 
 
@@ -210,7 +210,7 @@ bool Nepomuk::Utils::SimpleFacet::selectFromTerm( const Nepomuk::Query::Term& te
     // 2. an OrTerm may be a set of terms in a MatchOne facet
     // 3. an AndTerm may be a set of terms in a MatchAll facet
     if( ( term.isOrTerm() &&
-          selectionMode() == MatchOne ) ||
+          selectionMode() == MatchAny ) ||
         ( term.isAndTerm() &&
           selectionMode() == MatchAll ) ) {
 
@@ -250,8 +250,9 @@ bool Nepomuk::Utils::SimpleFacet::selectFromTerm( const Nepomuk::Query::Term& te
             }
         }
 
-        Q_FOREACH( int i, selectedTerms )
-            setSelected( i );
+        d->m_selectedFacets = selectedTerms;
+        setSelectionChanged();
+        setQueryTermChanged();
 
         return true;
     }

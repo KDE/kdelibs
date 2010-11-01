@@ -79,7 +79,7 @@ namespace Nepomuk {
             /**
              * The query term forwarded and optionally filtered from the sourceModel().
              */
-            virtual Nepomuk::Query::Term term() const;
+            virtual Nepomuk::Query::Term queryTerm() const;
 
             /**
              * \return The number of terms forwarded from the sourceFacet().
@@ -100,7 +100,7 @@ namespace Nepomuk {
             /**
              * The facet condition set via setFacetCondition()
              */
-            Query::Term facetCondition() const;
+            Nepomuk::Query::Term facetCondition() const;
 
         public Q_SLOTS:
             /**
@@ -117,7 +117,7 @@ namespace Nepomuk {
              * \endcode
              * since filtering by image size does only make sense if only images are selected.
              */
-            void setFacetCondition( const Query::Term& term );
+            void setFacetCondition( const Nepomuk::Query::Term& queryTerm );
 
             /**
              * Clear the selection. If selectionMode() is MatchOne the first
@@ -136,7 +136,7 @@ namespace Nepomuk {
              *
              * \sa Facet::selectFromTerm()
              */
-            bool selectFromTerm( const Nepomuk::Query::Term& term );
+            bool selectFromTerm( const Nepomuk::Query::Term& queryTerm );
 
         protected:
             /**

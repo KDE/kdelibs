@@ -55,7 +55,7 @@ namespace Nepomuk {
             /**
              * Create a new empty facet.
              */
-            SimpleFacet( QObject* parent );
+            SimpleFacet( QObject* parent = 0 );
 
             /**
              * Destructor
@@ -67,7 +67,7 @@ namespace Nepomuk {
              * selectionMode() this is either a single Term, a combination
              * through Query::AndTerm, or a combination through Query::OrTerm.
              */
-            Query::Term term() const;
+            Query::Term queryTerm() const;
 
             /**
              * Set the selection mode to use in this facet. The default is MatchOne.
@@ -114,14 +114,14 @@ namespace Nepomuk {
              * addTerm(KGuiItem(text), term);
              * \endcode
              */
-            void addTerm( const QString& text, const Nepomuk::Query::Term& term );
+            void addTerm( const QString& text, const Nepomuk::Query::Term& queryTerm );
 
             /**
              * Add a new term.
              * \param item The gui item used to present the choice to the user.
              * \param term The query term which represents this choice.
              */
-            void addTerm( const KGuiItem& item, const Nepomuk::Query::Term& term );
+            void addTerm( const KGuiItem& item, const Nepomuk::Query::Term& queryTerm );
 
             /**
              * Clear the selection. If selectionMode() is MatchOne the first
@@ -140,7 +140,7 @@ namespace Nepomuk {
              *
              * \sa Facet::selectFromTerm()
              */
-            bool selectFromTerm( const Nepomuk::Query::Term& term );
+            bool selectFromTerm( const Nepomuk::Query::Term& queryTerm );
 
         private:
             class Private;

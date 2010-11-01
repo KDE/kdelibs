@@ -24,6 +24,7 @@
 
 #include "query.h"
 #include "term.h"
+#include "nepomukutils_export.h"
 
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QList>
@@ -45,13 +46,25 @@ namespace Nepomuk {
          *
          * Facets are added via setFacets() and addFacet().
          *
+         * The FacetModel can be used to create and augment queries using the queryTerm()
+         * method and connecting to the queryTermChanged() signal. In addition %FacetModel
+         * provides the extractFacetsFromTerm() method which \em converts a query into
+         * facet selections. This is very convinient if the query comes from another source
+         * like a query bookmark or another application.
+         *
+         * An improved user experience can be created by setting the final query used to
+         * list the results via setClientQuery(). This allows the %FacetModel to filter
+         * the available choices, hiding those that do not make sense with the current
+         * result set or even showing facets that did not make sense before (compare the
+         * ProxyFacet example in \ref nepomuk_facet_examples).
+         *
          * Typically one would use FacetWidget instead of creating ones own FacetModel.
          *
          * \author Sebastian Trueg <trueg@kde.org>
          *
          * \since 4.6
          */
-        class FacetModel : public QAbstractItemModel
+        class NEPOMUKUTILS_EXPORT FacetModel : public QAbstractItemModel
         {
             Q_OBJECT
 
@@ -140,6 +153,15 @@ namespace Nepomuk {
              * Facets supported by this model will be extracted from \p term and configured
              * accordingly in the model.
              *
+             * Be aware that this method is not related to setClientQuery(). It is intended to
+             * split up a query in order to represent it graphically.
+             *
+             * Typically a client would call this method and then try to handle the returned
+             * rest query in another way like converting it into a desktop user query string
+             * that can be shown in a search line edit. Another idea would be to use custom
+             * filters or a simple warning for the user that additional conditions are in place
+             * that could not be "translated" into facets.
+             *
              * \return The rest term after facets have been extracted.
              */
             Nepomuk::Query::Term extractFacetsFromTerm( const Nepomuk::Query::Term& term );
@@ -148,6 +170,13 @@ namespace Nepomuk {
              * Can be used to set the full query the client is using (this includes facets
              * created through this model). It allows the facet system to disable certain
              * choices that would not change the result set or do not make sense otherwise.
+             *
+             * Be aware that this method is not related to extractFacetsFromTerm(). It is merely
+             * intended to improve the overall user experienceby filtering the facet choices
+             * depending on the current query.
+             *
+             * Typically a client would call both extractFacetsFromTerm() and setClientQuery()
+             * seperately. However, they will often be called with the same query/term.
              *
              * \sa Facet::setClientQuery()
              */
@@ -166,6 +195,12 @@ namespace Nepomuk {
             void setFacets( const QList<Nepomuk::Utils::Facet*>& facets );
 
             /**
+             * Convenience method that clears the selection on all facets.
+             * \sa Facet::clearSelection()
+             */
+            void clearSelection();
+
+            /**
              * Remove all facets from the model.
              */
             void clear();
@@ -175,12 +210,13 @@ namespace Nepomuk {
              * Emitted whenever the facets change, i.e. when the user changes the selection
              * or it is changed programmatically via extractFacetsFromQuery()
              */
-            void facetsChanged();
+            void queryTermChanged( const Nepomuk::Query::Term& term );
 
         private:
             class Private;
             Private* const d;
 
+            Q_PRIVATE_SLOT( d, void _k_queryTermChanged() )
             Q_PRIVATE_SLOT( d, void _k_facetSelectionChanged( Nepomuk::Utils::Facet* ) )
             Q_PRIVATE_SLOT( d, void _k_facetLayoutChanged( Nepomuk::Utils::Facet* ) )
         };

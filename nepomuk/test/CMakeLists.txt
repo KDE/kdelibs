@@ -7,6 +7,7 @@ include_directories(
 )
 
 add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
+add_definitions(-DBUILDING_NEPOMUK_TESTS)
 
 # Query tests
 # --------------------------------------------
@@ -77,3 +78,38 @@ target_link_libraries(tagwidgetapp
   ${KDE4_KIO_LIBS}
   nepomuk
   )
+
+
+# Facet tests
+# -----------------------------------
+kde4_add_unit_test(simplefacettest TESTNAME nepomuk-simplefacettest simplefacettest.cpp)
+target_link_libraries(simplefacettest
+  ${QT_QTTEST_LIBRARY}
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS}
+  nepomukutils
+)
+
+kde4_add_unit_test(dynamicresourcefacettest TESTNAME nepomuk-dynamicresourcefacettest dynamicresourcefacettest.cpp)
+target_link_libraries(dynamicresourcefacettest
+  ${QT_QTTEST_LIBRARY}
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS}
+  nepomukutils
+)
+
+kde4_add_unit_test(proxyfacettest TESTNAME nepomuk-proxyfacettest proxyfacettest.cpp)
+target_link_libraries(proxyfacettest
+  ${QT_QTTEST_LIBRARY}
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS}
+  nepomukutils
+)
+
+kde4_add_unit_test(facetmodeltest TESTNAME nepomuk-facetmodeltest facetmodeltest.cpp)
+target_link_libraries(facetmodeltest
+  ${QT_QTTEST_LIBRARY}
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS}
+  nepomukutils
+)

@@ -127,7 +127,7 @@ namespace Nepomuk {
              * uses an AndTerm or an OrTerm to combine all its terms in MatchAll or MatchAny
              * mode while it returns the one selected term in MatchOne mode.
              */
-            virtual Query::Term term() const = 0;
+            virtual Query::Term queryTerm() const = 0;
 
             /**
              * The number of choices this facet provides.
@@ -235,10 +235,15 @@ namespace Nepomuk {
              * added via SimpleFacet::addTerm() to \p term. Depending on the selectionMode()
              * it also checks for AndTerm or OrTerm.
              *
+             * \warning Implementations of this method should \em never reset the selection
+             * before handling \p term. Instead the method should work similar to setSelected(),
+             * ie. in MatchAll or MatchAny facets calling it multiple times should select
+             * multiple choices.
+             *
              * \return \p true if all of \p term could be used to select choices in
              * this term, \p false otherwise.
              */
-            virtual bool selectFromTerm( const Nepomuk::Query::Term& term ) = 0;
+            virtual bool selectFromTerm( const Nepomuk::Query::Term& queryTerm ) = 0;
 
             /**
              * The FacetModel will set this to the final query that has been constructed
@@ -255,8 +260,11 @@ namespace Nepomuk {
              * has changed.
              *
              * Subclasses should call setTermChanged() instead of emitting this signal manually.
+             *
+             * Be aware that in most situations queryTermChanged() and selectionChanged() will
+             * have to be emitted at the same time.
              */
-            void termChanged( Nepomuk::Utils::Facet* facet, const Nepomuk::Query::Term& term );
+            void queryTermChanged( Nepomuk::Utils::Facet* facet, const Nepomuk::Query::Term& queryTerm );
 
             /**
              * Emitted when the layout of the facet changed, ie. one of count(), guitItem(), or
@@ -270,6 +278,9 @@ namespace Nepomuk {
              * Emitted when the selection changed - normally triggered by a call to setSelected().
              *
              * Subclasses should call setSelectionChanged() instead of emitting this signal manually.
+             *
+             * Be aware that in most situations queryTermChanged() and selectionChanged() will
+             * have to be emitted at the same time.
              */
             void selectionChanged( Nepomuk::Utils::Facet* facet );
 
@@ -277,7 +288,7 @@ namespace Nepomuk {
             /**
              * Subclasses should call this method instead of emitting termChanged() manually.
              */
-            void setTermChanged();
+            void setQueryTermChanged();
 
             /**
              * Subclasses should call this method instead of emitting layoutChanged() manually.

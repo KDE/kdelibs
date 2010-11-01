@@ -42,6 +42,14 @@ namespace Nepomuk {
          *
          * \brief A widget providing a list of facets to add filters to a query.
          *
+         * The basic usage of FacetWidget is rather simple: create a new instance,
+         * add facets to it through the addFacet() method, connect to the queryTermChanged()
+         * signal, and wait for the user to change the filters.
+         *
+         * More sophisticated usage involves extractFacetsFromTerm() or setClientQuery().
+         * For more details see the documentation of FacetModel which provides a similar
+         * API since FacetWidget is using it internally.
+         *
          * \author Oszkar Ambrus <aoszkar@gmail.com>, Sebastian Trueg <trueg@kde.org>
          *
          * \since 4.6
@@ -73,6 +81,8 @@ namespace Nepomuk {
              * Facets supported by this widget will be extracted from \p term and configured
              * accordingly.
              *
+             * \sa FacetModel::extractFacetsFromTerm()
+             *
              * \return The rest term after facets have been extracted.
              */
             Nepomuk::Query::Term extractFacetsFromTerm( const Nepomuk::Query::Term& term );
@@ -86,6 +96,8 @@ namespace Nepomuk {
              * Can be used to set the full query the client is using (this includes facets
              * created through this widget). It allows the facet system to disable certain
              * choices that would not change the result set or do not make sense otherwise.
+             *
+             * \sa FacetModel::setClientQuery()
              */
             void setClientQuery( const Nepomuk::Query::Query& query );
 
@@ -112,7 +124,7 @@ namespace Nepomuk {
              * Emitted whenever the facets change, i.e. when the user changes the selection
              * or it is changed programmatically via extractFacetsFromQuery()
              */
-            void facetsChanged();
+            void queryTermChanged( const Nepomuk::Query::Term& term );
 
         private:
             class Private;

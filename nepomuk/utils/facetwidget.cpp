@@ -59,7 +59,8 @@ Nepomuk::Utils::FacetWidget::FacetWidget( QWidget *parent )
       d( new Private() )
 {
     d->m_facetModel = new Nepomuk::Utils::FacetModel( this );
-    connect( d->m_facetModel, SIGNAL( facetsChanged() ), this, SIGNAL( facetsChanged() ) );
+    connect( d->m_facetModel, SIGNAL( queryTermChanged(Nepomuk::Query::Term) ),
+             this, SIGNAL( queryTermChanged(Nepomuk::Query::Term) ) );
 
     d->m_facetView = new QListView( this );
     d->m_facetView->setItemDelegate( new FacetDelegate( d->m_facetView ) );
@@ -69,7 +70,7 @@ Nepomuk::Utils::FacetWidget::FacetWidget( QWidget *parent )
 
     FacetFilterModel* facetFilterModel = new FacetFilterModel( this );
     facetFilterModel->setSourceModel( d->m_facetModel );
-    connect( d->m_facetModel, SIGNAL(facetsChanged()), facetFilterModel, SLOT(invalidate()));
+    connect( d->m_facetModel, SIGNAL(queryTermChanged()), facetFilterModel, SLOT(invalidate()));
     connect( d->m_facetModel, SIGNAL(modelReset()), facetFilterModel, SLOT(invalidate()));
 
     KDescendantsProxyModel* proxy = new KDescendantsProxyModel( this );

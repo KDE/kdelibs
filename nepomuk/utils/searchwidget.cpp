@@ -109,7 +109,7 @@ Nepomuk::Utils::SearchWidget::SearchWidget(QWidget *parent)
 
     //facets widget
     d->m_facetWidget = new Nepomuk::Utils::FacetWidget(this);
-    connect(d->m_facetWidget, SIGNAL(facetsChanged()), this, SLOT(_k_queryComponentChanged()));
+    connect(d->m_facetWidget, SIGNAL(queryTermChanged()), this, SLOT(_k_queryComponentChanged()));
 
     //layout and config
     QGridLayout* layout = new QGridLayout( this );

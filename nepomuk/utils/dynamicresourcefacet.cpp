@@ -20,6 +20,7 @@
 */
 
 #include "dynamicresourcefacet.h"
+#include "dynamicresourcefacet_p.h"
 
 #include "andterm.h"
 #include "orterm.h"
@@ -43,50 +44,6 @@
 #include <QtCore/QSet>
 
 
-class Nepomuk::Utils::DynamicResourceFacet::Private
-{
-public:
-    Private()
-        : m_selectionMode(Facet::MatchOne),
-          m_maxRows( 5 ),
-          m_haveMore( false ) {
-    }
-
-    Types::Class resourceType() const {
-        if ( m_resourceType.isValid() )
-            return m_resourceType;
-        else
-            return m_property.range();
-    }
-
-    void rebuild( bool clearSelection = true );
-    void addResource( const Nepomuk::Resource& res );
-
-    void _k_newEntries( const QList<Nepomuk::Query::Result>& );
-    void _k_populateFinished();
-
-    Query::QueryServiceClient m_queryClient;
-
-    Facet::SelectionMode m_selectionMode;
-    Types::Property m_property;
-    Types::Class m_resourceType;
-    int m_maxRows;
-    bool m_haveMore;
-
-    /// The query which the client is currently using and which we use
-    /// to select a subset of resources that make sense
-    Query::Query m_currentQuery;
-
-    // list of resources built by rebuild()
-    QList<Resource> m_resources;
-
-    QSet<Resource> m_selectedResources;
-
-    DynamicResourceFacet* q;
-};
-
-
-
 void Nepomuk::Utils::DynamicResourceFacet::Private::rebuild( bool clearSelection )
 {
     kDebug() << clearSelection;
@@ -98,6 +55,12 @@ void Nepomuk::Utils::DynamicResourceFacet::Private::rebuild( bool clearSelection
 
     Query::Query query = q->resourceQuery( m_currentQuery );
     query.setLimit( m_maxRows+1 );
+    startQuery( query );
+}
+
+
+void Nepomuk::Utils::DynamicResourceFacet::Private::startQuery( const Query::Query& query )
+{
     m_queryClient.query( query );
 }
 
@@ -121,6 +84,9 @@ void Nepomuk::Utils::DynamicResourceFacet::Private::_k_newEntries( const QList<N
         }
         else {
             m_resources.append( result.resource() );
+            if( m_selectionMode == Facet::MatchOne &&
+                m_selectedResources.isEmpty() )
+                m_selectedResources << m_resources.first();
         }
     }
     q->setLayoutChanged();
@@ -174,7 +140,7 @@ Nepomuk::Utils::Facet::SelectionMode Nepomuk::Utils::DynamicResourceFacet::selec
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::DynamicResourceFacet::term() const
+Nepomuk::Query::Term Nepomuk::Utils::DynamicResourceFacet::queryTerm() const
 {
     if( d->m_resources.isEmpty() ||
         d->m_selectedResources.isEmpty() ) {
@@ -187,14 +153,14 @@ Nepomuk::Query::Term Nepomuk::Utils::DynamicResourceFacet::term() const
             Q_FOREACH( const Resource& res, d->m_selectedResources ) {
                 andTerm.addSubTerm( termForResource( res ) );
             }
-            return andTerm;
+            return andTerm.optimized();
         }
         case MatchAny: {
             Query::OrTerm orTerm;
             Q_FOREACH( const Resource& res, d->m_selectedResources ) {
                 orTerm.addSubTerm( termForResource(res) );
             }
-            return orTerm;
+            return orTerm.optimized();
         }
         case MatchOne:
             return termForResource( *d->m_selectedResources.begin() );
@@ -287,8 +253,13 @@ KGuiItem Nepomuk::Utils::DynamicResourceFacet::guiItem( int index ) const
 
 void Nepomuk::Utils::DynamicResourceFacet::setSelected( const Resource& res, bool selected )
 {
-    if ( d->m_resources.contains( res ) ) {
-        setSelected( d->m_resources.indexOf( res ), selected );
+    if( res.hasType( d->resourceType() ) ) {
+        if( selected ) {
+            d->addResource(res);
+        }
+        if ( d->m_resources.contains( res ) ) {
+            setSelected( d->m_resources.indexOf( res ), selected );
+        }
     }
 }
 
@@ -330,7 +301,7 @@ void Nepomuk::Utils::DynamicResourceFacet::setSelected( int index, bool selected
         }
     }
     setSelectionChanged();
-    setTermChanged();
+    setQueryTermChanged();
 }
 
 
@@ -340,17 +311,40 @@ void Nepomuk::Utils::DynamicResourceFacet::clearSelection()
     if( selectionMode() == MatchOne && !d->m_resources.isEmpty() )
         d->m_selectedResources.insert(d->m_resources.first());
     setSelectionChanged();
-    setTermChanged();
+    setQueryTermChanged();
 }
 
 
 bool Nepomuk::Utils::DynamicResourceFacet::selectFromTerm( const Nepomuk::Query::Term& term )
 {
-    if ( term.isComparisonTerm() &&
-         term.toComparisonTerm().subTerm().isResourceTerm() &&
-         term.toComparisonTerm().subTerm().toResourceTerm().resource().hasType( d->resourceType() ) ) {
-        d->addResource( term.toComparisonTerm().subTerm().toResourceTerm().resource() );
-        setSelected( term.toComparisonTerm().subTerm().toResourceTerm().resource() );
+    if( selectionMode() == MatchOne ) {
+        Resource res = resourceForTerm(term);
+        if( res.isValid() ) {
+            setSelected( res );
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else if( ( term.isAndTerm() && selectionMode() == MatchAll ) ||
+             ( term.isOrTerm() && selectionMode() == MatchAny ) ) {
+        QList<Resource> resources;
+
+        // first check if all of the terms are usable
+        const QList<Query::Term> subTerms = term.isAndTerm() ? term.toAndTerm().subTerms() : term.toOrTerm().subTerms();
+        Q_FOREACH( const Query::Term& subTerm, subTerms ) {
+            Resource res = resourceForTerm(subTerm);
+            if( res.isValid() )
+                resources << res;
+            else
+                return false;
+        }
+
+        // all terms are in facet usable
+        Q_FOREACH( const Resource& res, resources ) {
+            setSelected( res );
+        }
         return true;
     }
     else {
@@ -389,9 +383,32 @@ Nepomuk::Query::Term Nepomuk::Utils::DynamicResourceFacet::termForResource( cons
 }
 
 
+Nepomuk::Resource Nepomuk::Utils::DynamicResourceFacet::resourceForTerm( const Nepomuk::Query::Term& term ) const
+{
+    if( term.isComparisonTerm() &&
+        term.toComparisonTerm().property() == d->m_property &&
+        term.toComparisonTerm().subTerm().isResourceTerm() &&
+        term.toComparisonTerm().subTerm().toResourceTerm().resource().hasType( d->resourceType() ) ) {
+        return term.toComparisonTerm().subTerm().toResourceTerm().resource();
+    }
+    else {
+        return Resource();
+    }
+}
+
+
 QList<Nepomuk::Resource> Nepomuk::Utils::DynamicResourceFacet::getMoreResources() const
 {
     return SearchWidget::searchResources( 0, resourceQuery( d->m_currentQuery ), SearchWidget::NoConfigFlags );
+}
+
+
+Nepomuk::Resource Nepomuk::Utils::DynamicResourceFacet::resourceAt(int i) const
+{
+    if( i < d->m_resources.count() )
+        return d->m_resources[i];
+    else
+        return Resource();
 }
 
 #include "dynamicresourcefacet.moc"

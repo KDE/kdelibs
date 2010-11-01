@@ -81,7 +81,7 @@ void Nepomuk::Utils::ProxyFacet::Private::updateConditionStatus()
     if( newFacetConditionMet != m_facetConditionMet ) {
         m_facetConditionMet = newFacetConditionMet;
         q->setLayoutChanged();
-        q->setTermChanged();
+        q->setQueryTermChanged();
     }
 
     if( !m_facetConditionMet ) {
@@ -112,8 +112,8 @@ void Nepomuk::Utils::ProxyFacet::setSourceFacet( Facet* source )
 
     d->m_sourceFacet = source;
     if( d->m_sourceFacet ) {
-        connect(d->m_sourceFacet, SIGNAL(termChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)),
-                this, SIGNAL(termChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)));
+        connect(d->m_sourceFacet, SIGNAL(queryTermChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)),
+                this, SIGNAL(queryTermChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)));
         connect(d->m_sourceFacet, SIGNAL(selectionChanged(Nepomuk::Utils::Facet*)),
                 this, SIGNAL(selectionChanged(Nepomuk::Utils::Facet*)));
         connect(d->m_sourceFacet, SIGNAL(layoutChanged(Nepomuk::Utils::Facet*)),
@@ -121,7 +121,7 @@ void Nepomuk::Utils::ProxyFacet::setSourceFacet( Facet* source )
     }
 
     setLayoutChanged();
-    setTermChanged();
+    setQueryTermChanged();
     setSelectionChanged();
 }
 
@@ -138,9 +138,9 @@ Nepomuk::Utils::Facet::SelectionMode Nepomuk::Utils::ProxyFacet::selectionMode()
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::ProxyFacet::term() const
+Nepomuk::Query::Term Nepomuk::Utils::ProxyFacet::queryTerm() const
 {
-    return facetConditionMet() && d->m_sourceFacet ? d->m_sourceFacet->term() : Query::Term();
+    return facetConditionMet() && d->m_sourceFacet ? d->m_sourceFacet->queryTerm() : Query::Term();
 }
 
 
@@ -198,7 +198,7 @@ void Nepomuk::Utils::ProxyFacet::handleClientQueryChange()
 }
 
 
-void Nepomuk::Utils::ProxyFacet::setFacetCondition( const Query::Term& term )
+void Nepomuk::Utils::ProxyFacet::setFacetCondition( const Nepomuk::Query::Term& term )
 {
     d->m_facetCondition = term;
     d->updateConditionStatus();

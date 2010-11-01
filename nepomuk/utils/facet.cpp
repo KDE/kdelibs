@@ -83,9 +83,9 @@ KGuiItem Nepomuk::Utils::Facet::guiItem( int index ) const
 }
 
 
-void Nepomuk::Utils::Facet::setTermChanged()
+void Nepomuk::Utils::Facet::setQueryTermChanged()
 {
-    emit termChanged( this, term() );
+    emit queryTermChanged( this, queryTerm() );
 }
 
 

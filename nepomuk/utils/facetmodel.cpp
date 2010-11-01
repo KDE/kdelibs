@@ -59,11 +59,14 @@ class Nepomuk::Utils::FacetModel::Private
 public:
     QList<Facet*> m_facets;
 
+    bool m_blockQueryTermChangedSignal;
+
     void addFacet( Facet* facet );
     QModelIndex parentIndexForFacet( Facet* facet ) const;
 
     void handleFacetsChanged();
 
+    void _k_queryTermChanged();
     void _k_facetSelectionChanged( Nepomuk::Utils::Facet* facet );
     void _k_facetLayoutChanged( Nepomuk::Utils::Facet* );
 
@@ -73,6 +76,8 @@ public:
 
 void Nepomuk::Utils::FacetModel::Private::addFacet( Facet* facet )
 {
+    q->connect(facet, SIGNAL(queryTermChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)),
+               SLOT(_k_queryTermChanged()) );
     q->connect(facet, SIGNAL(selectionChanged(Nepomuk::Utils::Facet*)),
                SLOT(_k_facetSelectionChanged(Nepomuk::Utils::Facet*)) );
     q->connect(facet, SIGNAL(layoutChanged(Nepomuk::Utils::Facet*)),
@@ -90,8 +95,16 @@ QModelIndex Nepomuk::Utils::FacetModel::Private::parentIndexForFacet( Facet* fac
 
 void Nepomuk::Utils::FacetModel::Private::handleFacetsChanged()
 {
-    emit q->facetsChanged();
+    if( !m_blockQueryTermChangedSignal )
+        emit q->queryTermChanged( q->queryTerm() );
 }
+
+
+void Nepomuk::Utils::FacetModel::Private::_k_queryTermChanged()
+{
+    handleFacetsChanged();
+}
+
 
 void Nepomuk::Utils::FacetModel::Private::_k_facetSelectionChanged( Nepomuk::Utils::Facet* facet )
 {
@@ -99,7 +112,6 @@ void Nepomuk::Utils::FacetModel::Private::_k_facetSelectionChanged( Nepomuk::Uti
     QModelIndex parent = parentIndexForFacet( facet );
     if( facet->count() )
         emit q->dataChanged( q->index( 0, 0, parent ), q->index( q->rowCount(parent)-1, 0, parent ) );
-    handleFacetsChanged();
 }
 
 
@@ -115,11 +127,13 @@ Nepomuk::Utils::FacetModel::FacetModel( QObject* parent )
       d(new Private() )
 {
     d->q = this;
+    d->m_blockQueryTermChangedSignal = false;
 }
 
 
 Nepomuk::Utils::FacetModel::~FacetModel()
 {
+    qDeleteAll( d->m_facets );
     delete d;
 }
 
@@ -261,6 +275,17 @@ void Nepomuk::Utils::FacetModel::setFacets( const QList<Facet*>& facets )
 }
 
 
+void Nepomuk::Utils::FacetModel::clearSelection()
+{
+    d->m_blockQueryTermChangedSignal = true;
+    Q_FOREACH( Facet* facet, d->m_facets ) {
+        facet->clearSelection();
+    }
+    d->m_blockQueryTermChangedSignal = false;
+    d->handleFacetsChanged();
+}
+
+
 void Nepomuk::Utils::FacetModel::clear()
 {
     qDeleteAll(d->m_facets);
@@ -279,7 +304,7 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::queryTerm() const
 {
     AndTerm term;
     Q_FOREACH( Facet* facet, d->m_facets ) {
-        term.addSubTerm( facet->term() );
+        term.addSubTerm( facet->queryTerm() );
     }
     return term.optimized();
 }
@@ -292,6 +317,10 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Te
     if ( term == queryTerm() )
         return Term();
 
+    // we do not want to emit any queryTermChanged() signal during this method
+    // as it would confuse client code
+    // ================================
+    d->m_blockQueryTermChangedSignal = true;
 
     // reset all facets in the model
     // ================================
@@ -318,19 +347,25 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Te
     // now go into an AndTerm and check each sub term for facet
     // ================================
     if( restTerm.isAndTerm() ) {
+        // we need to cache the facets since we cannot use MatchOne facets more than once
+        QList<Facet*> facets = d->m_facets;
+
         AndTerm restAndTerm;
         foreach( const Term& term, restTerm.toAndTerm().subTerms() ) {
             bool termFound = false;
 
-            // FIXME: we cannot use an exclusive facet twice!
-            //        Example: we have an exclusive facet that can handle both term A and B
-            //                 we now call selectFromTerm(A) and selectFromTerm(B)
-            //                 both return true but only the latter is the one that sticks.
-            //                 thus, we implicitely drop A from the query!
-
-            Q_FOREACH( Facet* f, d->m_facets ) {
+            Q_FOREACH( Facet* f, facets ) {
                 if( f->selectFromTerm( term ) ) {
                     termFound = true;
+                    // we can only use MatchAll facets more than once
+                    // Example: we have an exclusive facet that can handle both term A and B
+                    //          we now call selectFromTerm(A) and selectFromTerm(B)
+                    //          both return true but only the latter is the one that sticks.
+                    //          thus, we implicitely drop A from the query!
+                    // None-exclusive facets are not a problem as they simply add to their
+                    // existing selection.
+                    if( f->selectionMode() != Facet::MatchAll )
+                        facets.removeAll(f);
                     break;
                 }
             }
@@ -342,6 +377,12 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Te
 
         restTerm = restAndTerm;
     }
+
+    // done with the facet selection
+    // ================================
+    d->m_blockQueryTermChangedSignal = false;
+
+    d->handleFacetsChanged();
 
     return restTerm.optimized();
 }

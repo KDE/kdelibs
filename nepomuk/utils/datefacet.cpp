@@ -216,7 +216,7 @@ Nepomuk::Utils::DateFacet::~DateFacet()
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::DateFacet::term() const
+Nepomuk::Query::Term Nepomuk::Utils::DateFacet::queryTerm() const
 {
     return createDateRangeTerm( d->dateRangeCandidateToDateRange( d->m_currentRange ) );
 }
@@ -265,7 +265,7 @@ Nepomuk::Utils::DateFacet::DateRangeCandidates Nepomuk::Utils::DateFacet::dateRa
 void Nepomuk::Utils::DateFacet::clearSelection()
 {
     d->m_currentRange = d->m_ranges.isEmpty() ? NoDateRange : d->m_ranges.first();
-    setTermChanged();
+    setQueryTermChanged();
     setSelectionChanged();
 }
 
@@ -284,7 +284,7 @@ void Nepomuk::Utils::DateFacet::setSelected( int index, bool selected )
              index < d->m_ranges.count() ) {
         kDebug() << d->m_ranges[index] << d->dateRangeCandidateToDateRange(d->m_ranges[index]);
         d->m_currentRange = d->m_ranges[index];
-        setTermChanged();
+        setQueryTermChanged();
         setSelectionChanged();
     }
 

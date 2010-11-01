@@ -64,7 +64,7 @@ namespace Nepomuk {
              * Creates a new date facet which contains the DefaultRanges
              * date range candidates as choices.
              */
-            DateFacet( QObject* parent );
+            DateFacet( QObject* parent = 0 );
 
             /**
              * Destructor
@@ -75,7 +75,7 @@ namespace Nepomuk {
              * Creates a query term for the currently selected date range.
              * This method makes use of createDateRangeTerm().
              */
-            Query::Term term() const;
+            Query::Term queryTerm() const;
 
             /**
              * The selection mode in the date facet is fixed to MatchOne, ie.
@@ -173,7 +173,7 @@ namespace Nepomuk {
              * \return \p true if \p term could be handled and the current range
              * has been changed accordingly, \p false otherwise.
              */
-            bool selectFromTerm( const Nepomuk::Query::Term& term );
+            bool selectFromTerm( const Nepomuk::Query::Term& queryTerm );
 
         protected:
             /**
@@ -198,7 +198,7 @@ namespace Nepomuk {
              * The default implementation can handle query terms created via
              * Nepomuk::Utils::dateRangeQuery().
              */
-            virtual DateRange extractDateRange( const Query::Term& term ) const;
+            virtual DateRange extractDateRange( const Query::Term& queryTerm ) const;
 
             /**
              * Retrieve a custom date range typically from the user. The default implementation

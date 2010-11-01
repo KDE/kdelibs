@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -19,30 +19,20 @@
    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _NEPOMUK_QTEST_QUERY_TO_STRING_H_
-#define _NEPOMUK_QTEST_QUERY_TO_STRING_H_
+#ifndef PROXYFACETTEST_H
+#define PROXYFACETTEST_H
 
-#include "query.h"
-#include "term.h"
-#include "class.h"
+#include <QObject>
 
-#include <QtTest>
+class ProxyFacetTest : public QObject
+{
+    Q_OBJECT
 
-namespace QTest {
-    template<>
-    char* toString(const Nepomuk::Query::Query& query) {
-        return qstrdup( query.toString().toUtf8().data() );
-    }
+private slots:
+    void initTestCase();
+    void testForward();
+    void testSignals();
+    void testFacetCondition();
+};
 
-    template<>
-    char* toString(const Nepomuk::Query::Term& term) {
-        return qstrdup( term.toString().toUtf8().data() );
-    }
-
-    template<>
-    char* toString(const Nepomuk::Types::Class& e) {
-        return qstrdup( e.uri().toString().toUtf8().data() );
-    }
-}
-
-#endif
+#endif // PROXYFACETTEST_H
