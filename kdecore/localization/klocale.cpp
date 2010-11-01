@@ -225,6 +225,11 @@ public:
      */
     static QString formatSingleDuration(DurationType durationType, int n);
 
+    /**
+     * @internal Returns a list of all available countries
+     */
+    QStringList allCountriesList() const;
+
     // Numbers and money
     QString decimalSymbol;
     QString thousandsSeparator;
@@ -401,9 +406,22 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
     KConfigGroup cg(config, "Locale");
 
     // Set the country as specified by the KDE config or use default,
-    // do not consider environment variables.
+    // If the user has set a default, then always use that.
+    // If not, then use QLocale magic to determine a good default.
+    // QLocale attempts to find the system country, in Windows and Mac
+    // this uses the provided system api, under *nix platforms it uses
+    // the various locale environemnt variables and CLDR to try determine a
+    // sensible default.
+    // If QLocale fails, then fallback to C
     if (country.isEmpty()) {
         country = cg.readEntry("Country");
+    }
+    if (country.isEmpty()) {
+        QString systemCountry, s1, s2, s3;
+        KLocale::splitLocale( QLocale::system().name(), s1, systemCountry, s2, s3 );
+        if ( !systemCountry.isEmpty() && allCountriesList().contains( systemCountry, Qt::CaseInsensitive ) ) {
+            country =  systemCountry.toLower();
+        }
     }
     if (country.isEmpty()) {
         country = KLocale::defaultCountry();
@@ -2727,7 +2745,7 @@ QString KLocale::languageCodeToName(const QString &language) const
     return cg.readEntry("Name");
 }
 
-QStringList KLocale::allCountriesList() const
+QStringList KLocalePrivate::allCountriesList() const
 {
     QStringList countries;
     const QStringList paths = KGlobal::dirs()->findAllResources("locale", "l10n/*/entry.desktop");
@@ -2738,6 +2756,11 @@ QStringList KLocale::allCountriesList() const
         }
     }
     return countries;
+}
+
+QStringList KLocale::allCountriesList() const
+{
+    return d->allCountriesList();
 }
 
 QString KLocale::countryCodeToName(const QString &country) const
