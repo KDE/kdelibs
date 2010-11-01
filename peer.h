@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEAMON_PEER_H
-#define DEAMON_PEER_H
+#ifndef DAEMON_PEER_H
+#define DAEMON_PEER_H
 
 #include <QtCore/QtGlobal>
 #include <QtCore/QSharedDataPointer>
@@ -92,5 +92,5 @@ private:
     QSharedDataPointer<PeerData> d;
 };
 
-#endif // DEAMON_PEER_H
+#endif // DAEMON_PEER_H
 
