@@ -146,7 +146,7 @@ KIdentityProxyModel::~KIdentityProxyModel()
 int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
-      return 0;
+        return 0;
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->columnCount(mapToSource(parent));
 }
@@ -157,7 +157,7 @@ int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
     if (!sourceModel())
-      return false;
+        return false;
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->dropMimeData(data, action, row, column, mapToSource(parent));
 }
@@ -168,10 +168,10 @@ bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction act
 QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!sourceModel())
-      return QModelIndex();
+        return QModelIndex();
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     if (!hasIndex(row, column, parent))
-      return QModelIndex();
+        return QModelIndex();
     const QModelIndex sourceParent = mapToSource(parent);
     const QModelIndex sourceIndex = sourceModel()->index(row, column, sourceParent);
     Q_ASSERT(sourceIndex.isValid());
@@ -184,7 +184,7 @@ QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& p
 bool KIdentityProxyModel::insertColumns(int column, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
-      return false;
+        return false;
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->insertColumns(column, count, mapToSource(parent));
 }
@@ -195,7 +195,7 @@ bool KIdentityProxyModel::insertColumns(int column, int count, const QModelIndex
 bool KIdentityProxyModel::insertRows(int row, int count, const QModelIndex& parent)
 {
     if (!sourceModel())
-      return false;
+        return false;
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
     return sourceModel()->insertRows(row, count, mapToSource(parent));
 }
@@ -220,12 +220,11 @@ QItemSelection KIdentityProxyModel::mapSelectionFromSource(const QItemSelection&
     QItemSelection proxySelection;
 
     if (!sourceModel())
-      return proxySelection;
+        return proxySelection;
 
     QItemSelection::const_iterator it = selection.constBegin();
     const QItemSelection::const_iterator end = selection.constEnd();
-    for ( ; it != end; ++it)
-    {
+    for ( ; it != end; ++it) {
         Q_ASSERT(it->model() == sourceModel());
         const QItemSelectionRange range(mapFromSource(it->topLeft()), mapFromSource(it->bottomRight()));
         proxySelection.append(range);
@@ -246,8 +245,7 @@ QItemSelection KIdentityProxyModel::mapSelectionToSource(const QItemSelection& s
 
     QItemSelection::const_iterator it = selection.constBegin();
     const QItemSelection::const_iterator end = selection.constEnd();
-    for ( ; it != end; ++it)
-    {
+    for ( ; it != end; ++it) {
         Q_ASSERT(it->model() == this);
         const QItemSelectionRange range(mapToSource(it->topLeft()), mapToSource(it->bottomRight()));
         sourceSelection.append(range);
@@ -296,7 +294,7 @@ QModelIndexList KIdentityProxyModel::match(const QModelIndex& start, int role, c
     const QModelIndexList::const_iterator end = sourceList.constEnd();
     QModelIndexList proxyList;
     for ( ; it != end; ++it)
-      proxyList.append(mapFromSource(*it));
+        proxyList.append(mapFromSource(*it));
     return proxyList;
 }
 
@@ -527,37 +525,37 @@ void KIdentityProxyModelPrivate::_k_sourceHeaderDataChanged(Qt::Orientation orie
 
 void KIdentityProxyModelPrivate::_k_sourceLayoutAboutToBeChanged()
 {
-  if (ignoreNextLayoutAboutToBeChanged)
-    return;
+    if (ignoreNextLayoutAboutToBeChanged)
+        return;
 
-  Q_Q(KIdentityProxyModel);
+    Q_Q(KIdentityProxyModel);
 
-  foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
-      proxyIndexes << proxyPersistentIndex;
-      Q_ASSERT(proxyPersistentIndex.isValid());
-      const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
-      Q_ASSERT(srcPersistentIndex.isValid());
-      layoutChangePersistentIndexes << srcPersistentIndex;
-  }
+    Q_FOREACH(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
+        proxyIndexes << proxyPersistentIndex;
+        Q_ASSERT(proxyPersistentIndex.isValid());
+        const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
+        Q_ASSERT(srcPersistentIndex.isValid());
+        layoutChangePersistentIndexes << srcPersistentIndex;
+    }
 
-  q->layoutAboutToBeChanged();
+    q->layoutAboutToBeChanged();
 }
 
 void KIdentityProxyModelPrivate::_k_sourceLayoutChanged()
 {
-  if (ignoreNextLayoutChanged)
-    return;
+    if (ignoreNextLayoutChanged)
+        return;
 
-  Q_Q(KIdentityProxyModel);
+    Q_Q(KIdentityProxyModel);
 
-  for (int i = 0; i < proxyIndexes.size(); ++i) {
-      q->changePersistentIndex(proxyIndexes.at(i), q->mapFromSource(layoutChangePersistentIndexes.at(i)));
-  }
+    for (int i = 0; i < proxyIndexes.size(); ++i) {
+        q->changePersistentIndex(proxyIndexes.at(i), q->mapFromSource(layoutChangePersistentIndexes.at(i)));
+    }
 
-  layoutChangePersistentIndexes.clear();
-  proxyIndexes.clear();
+    layoutChangePersistentIndexes.clear();
+    proxyIndexes.clear();
 
-  q->layoutChanged();
+    q->layoutChanged();
 }
 
 
@@ -578,7 +576,7 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
     if (q->persistentIndexList().isEmpty())
         return;
 
-    foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
+    Q_FOREACH(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
         const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
         Q_ASSERT(proxyPersistentIndex.isValid());
         Q_ASSERT(srcPersistentIndex.isValid());
@@ -599,8 +597,7 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelInd
     ignoreNextLayoutChanged = true;
 
     QModelIndexList oldList, newList;
-    for( int i = 0; i < layoutChangePersistentIndexes.size(); ++i)
-    {
+    for( int i = 0; i < layoutChangePersistentIndexes.size(); ++i) {
       const QModelIndex srcIdx = layoutChangePersistentIndexes.at(i);
       const QModelIndex oldProxyIdx = proxyIndexes.at(i);
       oldList << oldProxyIdx;
@@ -631,7 +628,7 @@ void KIdentityProxyModelPrivate::_k_sourceModelReset()
 void KIdentityProxyModelPrivate::_k_sourceModelDestroyed()
 {
     Q_Q(KIdentityProxyModel);
-//    q->endResetModel();
+//   q->endResetModel();
 }
 
 void KIdentityProxyModelPrivate::_k_sourceRowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
