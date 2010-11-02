@@ -89,7 +89,7 @@ void ProxyFacetTest::testSignals()
     pf.setSourceFacet(&f);
 
     QSignalSpy selectionSpy(&pf, SIGNAL(selectionChanged(Nepomuk::Utils::Facet*)));
-    QSignalSpy termChangedSpy(&pf, SIGNAL(termChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)));
+    QSignalSpy termChangedSpy(&pf, SIGNAL(queryTermChanged(Nepomuk::Utils::Facet*,Nepomuk::Query::Term)));
 
     pf.setSelected(1);
     QCOMPARE(selectionSpy.count(), 1);
