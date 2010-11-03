@@ -46,7 +46,7 @@ class KUser::Private : public KShared
             {
                 servername = NULL;
             }
-            
+
             if (NetUserGetInfo((LPCWSTR) servername, (LPCWSTR) name.utf16(), 11, (LPBYTE *) &userInfo) != NERR_Success) {
                 goto error;
             }
@@ -61,7 +61,7 @@ class KUser::Private : public KShared
                 SID_NAME_USE nameuse;
                 DWORD cchReferencedDomainName = 0;
                 WCHAR* referencedDomainName = NULL;
-                
+
                 // the following line definitely fails:
                 // both the sizes for sid and for referencedDomainName are Null
                 // the needed sizes are set in size and cchReferencedDomainName
@@ -102,7 +102,7 @@ class KUser::Private : public KShared
                 NetApiBufferFree(userInfo);
                 userInfo = 0;
             }
-            if (servername) 
+            if (servername)
             {
                 NetApiBufferFree(servername);
                 servername = 0;
@@ -189,10 +189,12 @@ QString KUser::loginName() const
     return (d->userInfo ? QString::fromUtf16((ushort *) d->userInfo->usri11_name) : QString());
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KUser::fullName() const
 {
     return (d->userInfo ? QString::fromUtf16((ushort *) d->userInfo->usri11_full_name) : QString());
 }
+#endif
 
 QString KUser::homeDir() const
 {
@@ -256,7 +258,7 @@ K_UID KUser::uid() const
 
 QVariant KUser::property(UserProperty which) const
 {
-    if (which == FullName) 
+    if (which == FullName)
         return QVariant(d->userInfo ? QString::fromUtf16((ushort *) d->userInfo->usri11_full_name) : QString());
 
     return QVariant();

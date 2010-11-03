@@ -27,7 +27,7 @@
 
 /**
  * \class KSortableItem ksortablelist.h <KSortableItem>
- * 
+ *
  * KSortableItem is a QPair that provides several operators
  * for sorting.
  * @see KSortableList
@@ -120,7 +120,9 @@ public:
      * @return the first value (the key)
      * @deprecated use key()
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED Key index() const { return this->first; }
+#endif
     /**
      * @return the first value.
      */
@@ -130,7 +132,7 @@ public:
 
 /**
  * \class KSortableList ksortablelist.h <KSortableList>
- * 
+ *
  * KSortableList is a QList which associates a key with each item in the list.
  * This key is used for sorting when calling sort().
  *

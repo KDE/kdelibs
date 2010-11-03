@@ -46,7 +46,7 @@ struct group;
 
 /**
  * \class KUser kuser.h <KUser>
- * 
+ *
  * @short Represents a user on your system
  *
  * This class represents a user on your system. You can either get
@@ -176,7 +176,9 @@ public:
    * @return the full name of the user or QString() if user is invalid
    * @deprecated use property(KUser::FullName) instead
    */
+#ifndef KDE_NO_DEPRECATED
   KDE_DEPRECATED QString fullName() const;
+#endif
 
   /**
    * The path to the user's home directory.
@@ -247,7 +249,7 @@ private:
 
 /**
  * \class KUserGroup kuser.h <KUserGroup>
- * 
+ *
  * @short Represents a group on your system
  *
  * This class represents a group on your system. You can either get

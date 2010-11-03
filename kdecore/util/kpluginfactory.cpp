@@ -40,6 +40,7 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
     factorycleanup->add(this);
 }
 
+#ifndef KDE_NO_DEPRECATED
 KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate)
 {
@@ -49,6 +50,7 @@ KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
 
     factorycleanup->add(this);
 }
+#endif
 
 KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate)
@@ -60,6 +62,7 @@ KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
     factorycleanup->add(this);
 }
 
+#ifndef KDE_NO_DEPRECATED
 KPluginFactory::KPluginFactory(QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate())
 {
@@ -67,6 +70,7 @@ KPluginFactory::KPluginFactory(QObject *parent)
     d->q_ptr = this;
     factorycleanup->add(this);
 }
+#endif
 
 KPluginFactory::KPluginFactory(KPluginFactoryPrivate &d, QObject *parent)
     : QObject(parent), d_ptr(&d)
@@ -131,6 +135,7 @@ void KPluginFactory::registerPlugin(const QString &keyword, const QMetaObject *m
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 QObject *KPluginFactory::createObject(QObject *parent, const char *className, const QStringList &args)
 {
     Q_UNUSED(parent);
@@ -138,7 +143,9 @@ QObject *KPluginFactory::createObject(QObject *parent, const char *className, co
     Q_UNUSED(args);
     return 0;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 KParts::Part *KPluginFactory::createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args)
 {
     Q_UNUSED(parent);
@@ -147,6 +154,7 @@ KParts::Part *KPluginFactory::createPartObject(QWidget *parentWidget, QObject *p
     Q_UNUSED(args);
     return 0;
 }
+#endif
 
 QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword)
 {
@@ -159,6 +167,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         setupTranslations();
     }
 
+#ifndef KDE_NO_DEPRECATED
     if (keyword.isEmpty()) {
 
         // kde3-kparts compatibility, remove in kde5
@@ -178,6 +187,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
             return obj;
         }
     }
+#endif
 
     const QList<KPluginFactoryPrivate::Plugin> candidates(d->createInstanceHash.values(keyword));
     // for !keyword.isEmpty() candidates.count() is 0 or 1

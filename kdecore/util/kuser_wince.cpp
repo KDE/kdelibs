@@ -87,10 +87,12 @@ QString KUser::loginName() const
     return QString("default");
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KUser::fullName() const
 {
     return QString("default");
 }
+#endif
 
 QString KUser::homeDir() const
 {
