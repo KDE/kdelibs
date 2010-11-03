@@ -60,7 +60,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
 
     QLabel* descriptionLabel  = new QLabel(i18nc("@label::textbox",
                                                  "Configure which data should "
-                                                 "be shown"));
+                                                 "be shown:"));
     descriptionLabel->setWordWrap(true);
 
     KFileMetaDataConfigurationWidget* configWidget = new KFileMetaDataConfigurationWidget();
