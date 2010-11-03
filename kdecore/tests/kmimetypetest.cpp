@@ -736,6 +736,15 @@ void KMimeTypeTest::testPatterns()
     QStringList expectedPatterns = patterns.split(';');
     expectedPatterns.sort();
     QStringList mimePatterns = mime->patterns();
+
+    if (mimeType == "application/vnd.oasis.opendocument.text" && mimePatterns.contains("*.fodt")) {
+        QSKIP("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
+    }
+
+    if (mimeType == "application/vnd.oasis.opendocument.presentation" && mimePatterns.contains("*.fodp")) {
+        QSKIP("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
+    }
+
     // shared-mime-info 0.30 adds *,v to text/plain, let's add it from this test so that it works
     // with older versions too.
     if (mimeType == "text/plain" && !mimePatterns.contains("*,v"))
