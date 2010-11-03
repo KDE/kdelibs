@@ -59,7 +59,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     dialog->setDefaultButton(KDialog::Ok);
 
     QLabel* descriptionLabel  = new QLabel(i18nc("@label::textbox",
-                                                 "Configure which data should "
+                                                 "Select which data should "
                                                  "be shown:"));
     descriptionLabel->setWordWrap(true);
 
