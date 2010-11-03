@@ -458,7 +458,7 @@ static QString defaultUserAgentFromPreferredService()
   KService::Ptr service = KMimeTypeTrader::self()->preferredService(QL1S("text/html"),
                                                       QL1S("KParts/ReadOnlyPart"));
   if (service && service->showInKDE())
-    agentStr = service->property(QL1S("X-KDE-Default-UserAgent-String"),
+    agentStr = service->property(QL1S("X-KDE-Default-UserAgent"),
                                  QVariant::String).toString();
   return agentStr;
 }
