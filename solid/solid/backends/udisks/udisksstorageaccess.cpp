@@ -55,16 +55,33 @@ void UDisksStorageAccess::connectDBusSignals()
                              SLOT(slotTeardownDone(int, const QString&)));
 }
 
+bool UDisksStorageAccess::isLuksDevice() const
+{
+    return m_device->property("DeviceIsLuks").toBool();
+}
+
 bool UDisksStorageAccess::isAccessible() const
 {
-    return m_device->property("DeviceIsMounted").toBool()
-            || m_device->property("DeviceIsLuksCleartext").toBool();
+    if (isLuksDevice()) { // check if the cleartext slave is mounted
+        UDisksDevice holderDevice(m_device->property("LuksHolder").value<QDBusObjectPath>().path());
+        return holderDevice.property("DeviceIsMounted").toBool();
+    }
+
+    return m_device->property("DeviceIsMounted").toBool();
 }
 
 QString UDisksStorageAccess::filePath() const
 {
-    if (!isAccessible() || m_device->property("DeviceIsLuks").toBool())
+    if (!isAccessible())
         return QString();
+
+    if (isLuksDevice()) {  // encrypted (and unlocked) device
+        QString path = m_device->property("LuksHolder").value<QDBusObjectPath>().path();
+        if (path.isEmpty() || path == "/")
+            return QString();
+        UDisksDevice holderDevice(path);
+        return holderDevice.property("DeviceMountPaths").toStringList().first();
+    }
 
     return m_device->property("DeviceMountPaths").toStringList().first(); // FIXME Solid doesn't support multiple mount points
 }
@@ -94,10 +111,7 @@ bool UDisksStorageAccess::teardown()
     m_teardownInProgress = true;
     m_device->broadcastActionRequested("teardown");
 
-    if (m_device->property("IdUsage").toString() == "crypto")
-        return callCryptoTeardown();
-    else
-        return unmount();
+    return unmount();
 }
 
 void UDisksStorageAccess::slotChanged()
@@ -121,11 +135,18 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
     Q_UNUSED(reply);
     if (m_setupInProgress)
     {
+        if (isLuksDevice() && !isAccessible())  // unlocked device, now mount it
+            mount();
+
         m_setupInProgress = false;
         m_device->broadcastActionDone("setup");
+        slotChanged();
     }
     else if (m_teardownInProgress)
     {
+        if (isLuksDevice()) //unlocked device, lock it
+            callCryptoTeardown();
+
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown");
 
@@ -150,6 +171,7 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
 
             QProcess::startDetached( program, args );
         }
+        slotChanged();
     }
 }
 
@@ -160,12 +182,15 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
         m_setupInProgress = false;
         m_device->broadcastActionDone("setup", Solid::UnauthorizedOperation,
                                       error.name()+": "+error.message());
+
+        slotChanged();
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown", Solid::UnauthorizedOperation,
                                       error.name()+": "+error.message());
+        slotChanged();
     }
 }
 
@@ -199,10 +224,16 @@ bool UDisksStorageAccess::mount()
     if (path.endsWith(":media")) {
         path.chop(6);
     }
+    QString fstype;
+
+    if (isLuksDevice()) { // mount options for the cleartext volume
+        path = m_device->property("LuksHolder").value<QDBusObjectPath>().path();
+        UDisksDevice holderDevice(path);
+        fstype = holderDevice.property("IdType").toString();
+    }
 
     QDBusConnection c = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemMount");
-    QString fstype;
 
     if (m_device->property("IdUsage").toString() == "filesystem")
         fstype = m_device->property("IdType").toString();
@@ -220,6 +251,10 @@ bool UDisksStorageAccess::unmount()
     QString path = m_device->udi();
     if (path.endsWith(":media")) {
         path.chop(6);
+    }
+
+    if (isLuksDevice()) { // unmount options for the cleartext volume
+        path = m_device->property("LuksHolder").value<QDBusObjectPath>().path();
     }
 
     QDBusConnection c = QDBusConnection::systemBus();

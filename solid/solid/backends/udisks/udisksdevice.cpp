@@ -648,7 +648,10 @@ QString UDisksDevice::parentUdi() const
     if (m_udi.endsWith(QLatin1String(":media"))) {
         QString result = m_udi;
         return result.remove(":media");
-    } else {
+    }
+    else if ( m_device->property( "DeviceIsLuksCleartext" ).toBool() )
+        return m_device->property( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
+    else {
         QString parent = property("PartitionSlave").value<QDBusObjectPath>().path();
         if (parent.isEmpty() || parent=="/") {
             parent = UD_UDI_DISKS_PREFIX;

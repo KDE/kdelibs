@@ -72,6 +72,9 @@ private Q_SLOTS:
     void slotTeardownDone(int error, const QString &errorString);
 
 private:
+    /// @return true if this device is luks and unlocked
+    bool isLuksDevice() const;
+
     void updateCache();
 
     bool mount();
