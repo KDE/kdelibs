@@ -150,6 +150,7 @@ void KCModule::setNeedsAuthorization(bool needsAuth)
         d->_authAction = new KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
         d->_needsAuthorization = d->_authAction->isValid();
         d->_authAction->setHelperID("org.kde.kcontrol." + d->_about->appName());
+        d->_authAction->setParentWidget(this);
         connect(d->_authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
         authStatusChanged(d->_authAction->status());

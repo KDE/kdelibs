@@ -44,6 +44,7 @@ public:
     Polkit1Backend();
     virtual ~Polkit1Backend();
     virtual void setupAction(const QString&);
+    virtual void preAuthAction(const QString& action, QWidget* parent);
     virtual Action::AuthStatus authorizeAction(const QString&);
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;

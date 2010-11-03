@@ -38,13 +38,15 @@ public:
         NoCapability = 0,
         AuthorizeFromClientCapability = 1,
         AuthorizeFromHelperCapability = 2,
-        CheckActionExistenceCapability = 4
+        CheckActionExistenceCapability = 4,
+        PreAuthActionCapability = 8
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
     AuthBackend();
     virtual ~AuthBackend();
     virtual void setupAction(const QString &action) = 0;
+    virtual void preAuthAction(const QString &action, QWidget *parent);
     virtual Action::AuthStatus authorizeAction(const QString &action) = 0;
     virtual Action::AuthStatus actionStatus(const QString &action) = 0;
     virtual QByteArray callerID() const = 0;

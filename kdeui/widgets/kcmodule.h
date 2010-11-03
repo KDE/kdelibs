@@ -208,7 +208,7 @@ public:
   QList<KConfigDialogManager*> configs() const;
 
   /**
-   * Tell if the module's save() method requires authorization to be executed.
+   * @brief Set if the module's save() method requires authorization to be executed.
    *
    * The module can set this property to @c true if it requires authorization.
    * It will still have to execute the action itself using the KAuth library, so
@@ -216,9 +216,8 @@ public:
    * using this and/or the setAuthAction() method will ensure that hosting
    * applications like System Settings or kcmshell behave correctly.
    *
-   * Called with @c true, if no action has been previously set using setAuthAction(),
-   * this method will set the action to a default value of "org.kde.kcontrol.name.save" where
-   * "name" is the aboutData()->appName() return value. This default action won't be set if
+   * Called with @c true, this method will set the action to  "org.kde.kcontrol.name.save" where
+   * "name" is aboutData()->appName() return value. This default action won't be set if
    * the aboutData() object is not valid.
    *
    * Note that called with @c false, this method will reset the action name set with setAuthAction().

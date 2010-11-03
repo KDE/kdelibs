@@ -20,9 +20,8 @@
 
 #include "kauthaction.h"
 
-#include <QDebug>
-#include <QPluginLoader>
 #include <QRegExp>
+#include <QWidget>
 
 #include "BackendsManager.h"
 #include "kauthactionwatcher.h"
@@ -33,7 +32,7 @@ namespace KAuth
 class Action::Private
 {
 public:
-    Private() : valid(false), async(false) {}
+    Private() : valid(false), async(false), parent(0) {}
 
     QString name;
     QString details;
@@ -41,6 +40,7 @@ public:
     QVariantMap args;
     bool valid;
     bool async;
+    QWidget *parent;
 };
 
 // Constructors
@@ -161,11 +161,27 @@ void Action::setHelperID(const QString &id)
     d->helperId = id;
 }
 
+void Action::setParentWidget(QWidget* parent)
+{
+    d->parent = parent;
+}
+
+QWidget* Action::parentWidget() const
+{
+    return d->parent;
+}
+
+
 // Authorizaton methods
 Action::AuthStatus Action::authorize() const
 {
     if (!isValid()) {
         return Action::Invalid;
+    }
+
+    // If there is any pre auth action, let's perform it
+    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+        BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
     }
 
     // Let's check capabilities
@@ -200,6 +216,10 @@ Action::AuthStatus Action::earlyAuthorize() const
         // Let's check what to do
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
             // In this case we can actually try an authorization
+            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+                BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
+            }
+
             return BackendsManager::authBackend()->authorizeAction(d->name);
         } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
             // In this case, just throw out Authorized, as the auth will take place later
@@ -225,13 +245,22 @@ Action::AuthStatus Action::status() const
 }
 
 // Execution methods
-bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperID)
+bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId)
+{
+    return executeActions(actions, deniedActions, helperId, 0);
+}
+
+bool Action::executeActions(const QList< Action >& actions, QList< Action >* deniedActions, const QString& helperId, QWidget* parent)
 {
     QList<QPair<QString, QVariantMap> > list;
 
     foreach(const Action &a, actions) {
         // Save us an additional step
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+                BackendsManager::authBackend()->preAuthAction(a.name(), parent);
+            }
+
             AuthStatus s = BackendsManager::authBackend()->authorizeAction(a.name());
 
             if (s == Authorized) {
@@ -251,7 +280,7 @@ bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedA
         return false;
     }
 
-    return BackendsManager::helperProxy()->executeActions(list, helperID);
+    return BackendsManager::helperProxy()->executeActions(list, helperId);
 }
 
 bool Action::executesAsync() const
@@ -281,6 +310,9 @@ ActionReply Action::execute(const QString &helperID) const
 
     // What to do?
     if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+            BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
+        }
         // Authorize from here
         AuthStatus s = BackendsManager::authBackend()->authorizeAction(d->name);
 
@@ -325,6 +357,11 @@ ActionReply Action::execute(const QString &helperID) const
             ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
     } else {
         if (hasHelper()) {
+            // Perform the pre auth here
+            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+                BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
+            }
+
             return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
         } else {
             return ActionReply::SuccessReply;

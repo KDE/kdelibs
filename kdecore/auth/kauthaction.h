@@ -440,6 +440,18 @@ public:
     static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId);
 
     /**
+     * Convenience overload. This overload lets you specify, in addition, a QWidget which will be used as the
+     * authentication dialog's parent.
+     *
+     * @since 4.6
+     *
+     * @see executeActions
+     * @see setParentWidget
+     */
+    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId,
+                               QWidget *parent);
+
+    /**
      * @brief Ask the helper to stop executing an action
      *
      * This method sends a request to the helper asking to stop the execution of an action. It is only
@@ -462,6 +474,31 @@ public:
      * use the same helperID used for the execution call (either passed as a parameter or set as default with setHelperID() )
      */
     void stop(const QString &helperID);
+
+    /**
+     * @brief Sets a parent widget for the authentication dialog
+     *
+     * This function is used for explicitely setting a parent window for an eventual authentication dialog required when
+     * authorization is triggered. Some backends, in fact, (like polkit-1) need to have a parent explicitely set for displaying
+     * the dialog correctly.
+     *
+     * @note If you are using KAuth through one of KDE's GUI components (KPushButton, KCModule...) you do not need and should not
+     *       call this function, as it is already done by the component itself.
+     *
+     * @since 4.6
+     *
+     * @param parent A QWidget which will be used as the dialog's parent
+     */
+    void setParentWidget(QWidget *parent);
+
+    /**
+     * @brief Returns the parent widget for the authentication dialog for this action
+     *
+     * @since 4.6
+     *
+     * @returns A QWidget which will is being used as the dialog's parent
+     */
+    QWidget *parentWidget() const;
 };
 
 } // namespace Auth

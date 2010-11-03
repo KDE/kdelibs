@@ -347,6 +347,10 @@ void KPushButton::setAuthAction(KAuth::Action *action)
 
     if (action != 0) {
         d->authAction = action;
+
+        // Set the parent widget
+        d->authAction->setParentWidget(this);
+
         connect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
         d->authStatusChanged(d->authAction->status());

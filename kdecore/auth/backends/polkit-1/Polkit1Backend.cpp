@@ -25,6 +25,14 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimer>
 
+#include <QtGui/QApplication>
+#include <QtGui/QWidget>
+
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusConnectionInterface>
+
+#include <kdebug.h>
+
 #include <PolkitQt1/Authority>
 #include <PolkitQt1/Subject>
 
@@ -55,7 +63,7 @@ Polkit1Backend::Polkit1Backend()
     : AuthBackend()
     , m_flyingActions(false)
 {
-    setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability);
+    setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability | PreAuthActionCapability);
 
     // Setup useful signals
     connect(PolkitQt1::Authority::instance(), SIGNAL(configChanged()),
@@ -66,13 +74,51 @@ Polkit1Backend::Polkit1Backend()
             this, SLOT(updateCachedActions(PolkitQt1::ActionDescription::List)));
 
     // Cache existing action IDs as soon as possible
-    PolkitQt1::Authority::instance()->enumerateActions();
     m_flyingActions = true;
+    PolkitQt1::Authority::instance()->enumerateActions();
 }
 
 Polkit1Backend::~Polkit1Backend()
 {
 
+}
+
+void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
+{
+    kDebug();
+    // If a parent was not specified, skip this
+    if (!parent) {
+        kDebug() << "Parent widget does not exist, skipping";
+        return;
+    }
+
+    // Are we running our KDE auth agent?
+    if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Polkit1AuthAgent")) {
+        // Check if we actually are entitled to use GUI capabilities
+        if (qApp == 0 || QApplication::type() == QApplication::Tty) {
+            kDebug() << "Not streaming parent as we are on a TTY application";
+        }
+
+        // Retrieve the dialog root window Id
+        qulonglong wId = parent->effectiveWinId();
+
+        // Send it over the bus to our agent
+        QDBusMessage methodCall =
+                QDBusMessage::createMethodCall("org.kde.Polkit1AuthAgent", "/org/kde/Polkit1AuthAgent", "org.kde.Polkit1AuthAgent",
+                                               "setWIdForAction");
+
+        methodCall << action;
+        methodCall << wId;
+
+        QDBusPendingCall call = QDBusConnection::sessionBus().asyncCall(methodCall);
+        call.waitForFinished();
+
+        if (call.isError()) {
+            kWarning() << "ERROR while streaming the parent!!" << call.error();
+        }
+    } else {
+        kDebug() << "KDE polkit agent appears too old or not registered on the bus";
+    }
 }
 
 void Polkit1Backend::updateCachedActions(const PolkitQt1::ActionDescription::List& actions)
