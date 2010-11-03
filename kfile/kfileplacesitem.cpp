@@ -35,7 +35,7 @@
 KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
                                  const QString &address,
                                  const QString &udi)
-    : m_manager(manager), m_lister(0), m_folderIsEmpty(true), m_text()
+    : m_manager(manager), m_lister(0), m_folderIsEmpty(true), m_device(udi)
 {
     setBookmark(m_manager->findByAddress(address));
 
@@ -51,11 +51,12 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
                     this, SLOT(onListerCompleted()));
             m_lister->openUrl(m_bookmark.url());
         }
-    } else if (!udi.isEmpty()) {
-        Solid::Device dev(udi);
-        Solid::StorageAccess *access = dev.as<Solid::StorageAccess>();
-        if (access!=0) {
-            connect(access, SIGNAL(accessibilityChanged(bool, const QString &)),
+    } else if (!udi.isEmpty() && m_device.isValid()) {
+        m_access = m_device.as<Solid::StorageAccess>();
+        m_volume = m_device.as<Solid::StorageVolume>();
+        m_disc = m_device.as<Solid::OpticalDisc>();
+        if (m_access) {
+            connect(m_access, SIGNAL(accessibilityChanged(bool, const QString &)),
                     this, SLOT(onAccessibilityChanged()));
         }
     }
