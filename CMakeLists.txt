@@ -34,6 +34,10 @@ option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
 
+if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+   set(KDE_NO_DEPRECATED TRUE)
+endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+
 ################# now find all used packages #################
 
 set (QT_MIN_VERSION "4.7.0")
