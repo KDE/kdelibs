@@ -878,7 +878,9 @@ public:
    * ignore trailing '/' characters.
    * @deprecated Use equals() instead.
    */
+#ifndef KDE_NO_DEPRECATED
   KDE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
+#endif
 
 
   /**
@@ -994,7 +996,9 @@ public:
    * Since KDE4 you can pass both urls and paths to the KUrl constructors.
    * Use KUrl(text) instead.
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
+#endif
 
   /**
    * Creates a KUrl from a string, using the standard conventions for mime data
@@ -1033,9 +1037,11 @@ public:
    * returns a QByteArray and not a QString. Which makes sense since
    * everything is 7 bit (ascii) after being percent-encoded.
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED QString encode_string(const QString &str) {
     return QString::fromLatin1( QUrl::toPercentEncoding( str ).constData() ); //krazy:exclude=qclasses
   }
+#endif
 
   /**
    * Convert unicoded string to local encoding and use %-style
@@ -1048,9 +1054,11 @@ public:
    * everything is 7 bit (ascii) after being percent-encoded.
    *
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
       return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ).constData() ); //krazy:exclude=qclasses
   }
+#endif
 
   /**
    * Decode %-style encoding and convert from local encoding to unicode.
@@ -1062,9 +1070,11 @@ public:
    * everything is 7 bit (ascii) when being percent-encoded.
    *
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED QString decode_string(const QString &str) {
       return QUrl::fromPercentEncoding( str.toLatin1() ); //krazy:exclude=qclasses
   }
+#endif
 
 
   /**
@@ -1141,7 +1151,9 @@ Q_DECLARE_METATYPE(KUrl::List)
  * That means no malformed URL equals anything else.
  * @deprecated use KUrl(_url1).equals(KUrl(_url2)) instead.
  */
+#ifndef KDE_NO_DEPRECATED
 KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
+#endif
 
 /**
  * \relates KUrl
@@ -1155,7 +1167,9 @@ KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url
  * @param options a set of KUrl::EqualsOption flags
  * @deprecated use KUrl(_url1).equals(KUrl(_url2), options) instead.
  */
+#ifndef KDE_NO_DEPRECATED
 KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
+#endif
 
 KDECORE_EXPORT uint qHash(const KUrl& kurl);
 
