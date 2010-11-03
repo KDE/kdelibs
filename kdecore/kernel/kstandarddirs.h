@@ -38,7 +38,7 @@ class KConfig;
  * so applications and the end user don't have to.
  *
  * Applications should always refer to a file with a resource type.
- * The application should leave it up to e.g. 
+ * The application should leave it up to e.g.
  * KStandardDirs::findResource("apps", "Home.desktop")
  * to return the desired path <tt>/opt/kde/share/applnk/Home.desktop</tt>
  * or ::locate("data", "kgame/background.jpg") to return
@@ -53,7 +53,7 @@ class KConfig;
  * @c share/doc/HTML and @c share/doc/kde/HTML.
  * The search algorithm tries to locate the file under each prefix-suffix
  * combination.
- * 
+ *
  * It is also possible to register
  * absolute paths that KStandardDirs looks up after not finding anything
  * in the former steps. They can be useful if the user wants to provide
@@ -250,8 +250,10 @@ public:
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool addResourceType( const char *type,
                                          const QString& relativename, bool priority = true );
+#endif
 
     /**
      * Adds suffixes for types.
@@ -324,7 +326,7 @@ public:
      * @code
      * QString iconfilename=KGlobal::dirs()->findResource("icon",QString("oxygen/22x22/apps/ktip.png"));
      * @endcode
-     * 
+     *
      * @param type The type of the wanted resource
      * @param filename A relative filename of the resource.
      *
@@ -647,7 +649,9 @@ public:
      * @see locate()
      * @see locateLocal()
      */
+#ifndef KDE_NO_DEPRECATED
     static KDE_DEPRECATED QString kde_default(const char *type);
+#endif
 
     /**
      * @internal (for use by sycoca only)

@@ -60,7 +60,7 @@
 #include <basetyps.h>
 #endif
 #ifdef Q_WS_WIN64
-// FIXME: did not find a reliable way to fix with kdewin mingw header 
+// FIXME: did not find a reliable way to fix with kdewin mingw header
 #define interface struct
 #endif
 #include <shlobj.h>
@@ -382,12 +382,14 @@ QString KStandardDirs::kfsstnd_xdg_data_prefixes()
     return d->xdgdata_prefixes.join(QString(QChar(KPATH_SEPARATOR)));
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KStandardDirs::addResourceType( const char *type,
                                      const QString& relativename,
                                      bool priority )
 {
     return addResourceType( type, 0, relativename, priority);
 }
+#endif
 
 bool KStandardDirs::addResourceType( const char *type,
                                      const char *basetype,
@@ -1448,10 +1450,12 @@ static int tokenize( QStringList& tokens, const QString& str,
     return tokens.count();
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KStandardDirs::kde_default(const char *type)
 {
     return QString('%') + type + '/';
 }
+#endif
 
 QString KStandardDirs::saveLocation(const char *type,
                                     const QString& suffix,
@@ -1705,7 +1709,7 @@ void KStandardDirs::addKDEDefaults()
         } else {
 #endif
           localKdeDir =  QDir::homePath() + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
-#ifndef _WIN32_WCE  
+#ifndef _WIN32_WCE
         }
 #endif
 #else
