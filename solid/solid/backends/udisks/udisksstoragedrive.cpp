@@ -48,7 +48,8 @@ bool UDisksStorageDrive::isHotpluggable() const
 
 bool UDisksStorageDrive::isRemovable() const
 {
-    return m_device->property("DeviceIsRemovable").toBool();
+    return m_device->property("DeviceIsRemovable").toBool() ||
+            !m_device->property( "DeviceIsSystemInternal" ).toBool();
 }
 
 Solid::StorageDrive::DriveType UDisksStorageDrive::driveType() const
