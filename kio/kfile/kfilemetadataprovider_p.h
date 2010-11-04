@@ -115,12 +115,6 @@ public:
                                        QWidget* parent) const;
 #endif
 
-    /**
-     * Is invoked when the readonly state has been changed by
-     * KFileMetaDataProvider::setReadOnly().
-     */
-    virtual void readOnlyChanged(bool readOnly);
-
 Q_SIGNALS:
     /**
      * Is emitted after the loading triggered by KFileMetaDataProvider::setItems()

@@ -457,22 +457,7 @@ KFileItemList KFileMetaDataProvider::items() const
 
 void KFileMetaDataProvider::setReadOnly(bool readOnly)
 {
-    if (readOnly != d->m_readOnly) {
-        d->m_readOnly = readOnly;
-
-#ifdef HAVE_NEPOMUK
-        if (!d->m_tagWidget.isNull()) {
-            d->m_tagWidget.data()->setModeFlags(readOnly
-                                                ? Nepomuk::TagWidget::MiniMode | Nepomuk::TagWidget::ReadOnly
-                                                : Nepomuk::TagWidget::MiniMode);
-        }
-        if (!d->m_commentWidget.isNull()) {
-            d->m_commentWidget.data()->setReadOnly(readOnly);
-        }
-#endif
-
-        readOnlyChanged(readOnly);
-    }
+    d->m_readOnly = readOnly;
 }
 
 bool KFileMetaDataProvider::isReadOnly() const
@@ -521,10 +506,5 @@ QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
     return widget;
 }
 #endif
-
-void KFileMetaDataProvider::readOnlyChanged(bool readOnly)
-{
-    Q_UNUSED(readOnly);
-}
 
 #include "kfilemetadataprovider_p.moc"
