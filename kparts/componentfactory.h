@@ -23,7 +23,9 @@
 #include <kparts/factory.h>
 #include <kparts/part.h>
 #include <kservicetypetrader.h>
+#ifndef KDE_NO_DEPRECATED
 #include <klibloader.h>
+#endif
 #include <kmimetypetrader.h>
 
 namespace KParts
@@ -49,6 +51,7 @@ namespace KParts
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
+#ifndef KDE_NO_DEPRECATED
         template <class T>
         KDE_DEPRECATED T *createPartInstanceFromFactory( KParts::Factory *factory,
                                           QWidget *parentWidget = 0,
@@ -65,9 +68,12 @@ namespace KParts
                 delete object;
             return result;
         }
+#endif
+
         /*
          * @deprecated use KPluginFactory::create instead
          */
+#ifndef KDE_NO_DEPRECATED
         template <class T>
         KDE_DEPRECATED T *createPartInstanceFromLibrary( const char *libraryName,
                                           QWidget *parentWidget = 0,
@@ -108,10 +114,12 @@ namespace KParts
             }
             return res;
         }
+#endif
 
         /**
          * @deprecated use KService::createInstance instead
          */
+#ifndef KDE_NO_DEPRECATED
         template <class T>
         KDE_DEPRECATED T *createPartInstanceFromService( const KService::Ptr &service,
                                           QWidget *parentWidget = 0,
@@ -130,7 +138,9 @@ namespace KParts
             return createPartInstanceFromLibrary<T>( library.toLocal8Bit().data(), parentWidget,
                                                      parent, args, error );
         }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
         template <class T, class ServiceIterator>
         KDE_DEPRECATED T *createPartInstanceFromServices( ServiceIterator begin,
                                            ServiceIterator end,
@@ -158,6 +168,7 @@ namespace KParts
             return 0;
 
         }
+#endif
 
         /**
          * This method creates and returns a KParts part from a serviceType (e.g. a mimetype).
@@ -187,8 +198,9 @@ namespace KParts
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
+#ifndef KDE_NO_DEPRECATED
         template <class T>
-        T *createPartInstanceFromQuery( const QString &mimeType,
+        KDE_DEPRECATED T *createPartInstanceFromQuery( const QString &mimeType,
                                         const QString &constraint,
                                         QWidget *parentWidget = 0,
                                         QObject *parent = 0,
@@ -207,7 +219,7 @@ namespace KParts
                                                       parentWidget,
                                                       parent, args, error );
         }
-
+#endif // KDE_NO_DEPRECATED
     }
 }
 
