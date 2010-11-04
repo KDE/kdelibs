@@ -166,7 +166,9 @@ namespace Nepomuk {
         /**
          * \deprecated use Resource( const QString&, const QUrl& )
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED Resource( const QString& pathOrIdentifier, const QString& type );
+#endif
 
         /**
          * Creates a new Resource object.
@@ -238,7 +240,9 @@ namespace Nepomuk {
          *
          * \deprecated use resourceUri() instead
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QString uri() const;
+#endif
 
         /**
          * The URI of the resource, uniquely identifying it. This URI in most
@@ -269,7 +273,9 @@ namespace Nepomuk {
          *
          * \deprecated use resourceType instead
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QString type() const;
+#endif
 
         /**
          * The main type of the resource. Nepomuk tries hard to make this
@@ -323,7 +329,9 @@ namespace Nepomuk {
         /**
          * \deprecated Use properties()
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QHash<QString, Variant> allProperties() const;
+#endif
 
         /**
          * \return A list of all defined properties
@@ -350,7 +358,9 @@ namespace Nepomuk {
         /**
          * \deprecated use hasProperty( const QUrl& ) const
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED bool hasProperty( const QString& uri ) const;
+#endif
 
         /**
          * Retrieve the value of property \a uri. If the property is not defined for
@@ -363,7 +373,9 @@ namespace Nepomuk {
         /**
          * \deprecated use property( const QUrl& ) const
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED Variant property( const QString& uri ) const;
+#endif
 
         /**
          * Set a property of the resource.
@@ -386,7 +398,9 @@ namespace Nepomuk {
         /**
          * \deprecated use setProperty( const QUrl& )
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void setProperty( const QString& uri, const Variant& value );
+#endif
 
         /**
          * Remove property \a uri from this resource object.
@@ -408,7 +422,9 @@ namespace Nepomuk {
         /**
          * \deprecated use removeProperty( const QUrl& )
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void removeProperty( const QString& uri );
+#endif
 
         /**
          * Remove this resource completely.

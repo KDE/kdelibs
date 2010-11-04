@@ -57,7 +57,7 @@ namespace Nepomuk {
     }
 }
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 #include "ontology.h"
 namespace Nepomuk {
 
@@ -72,5 +72,6 @@ namespace Nepomuk {
         QHash<QUrl, const Property*> properties;
     };
 }
+#endif
 
 #endif

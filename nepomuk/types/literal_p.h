@@ -37,7 +37,7 @@ class Nepomuk::Types::Literal::Private : public QSharedData
     QVariant::Type dataType;  
 };
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 class Nepomuk::Literal::Private : public QSharedData
 {
  public:
@@ -48,5 +48,6 @@ class Nepomuk::Literal::Private : public QSharedData
     QUrl dataTypeUri;
     QVariant::Type dataType;  
 };
+#endif
 
 #endif

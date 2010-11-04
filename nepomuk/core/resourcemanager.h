@@ -110,7 +110,9 @@ namespace Nepomuk {
          * \return The Resource representing the data at \a uri or an invalid Resource object if the local
          * NEPOMUK RDF store does not contain an object with URI \a uri.
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED Resource createResourceFromUri( const QString& uri );
+#endif
 
         /**
          * Remove the resource denoted by \a uri completely.
@@ -146,7 +148,9 @@ namespace Nepomuk {
         /**
          * \deprecated Use allResourcesOfType( const QString& type )
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QList<Resource> allResourcesOfType( const QString& type );
+#endif
 
         /**
          * Retrieve a list of all resources that have property \a uri defined with a value of \a v.
@@ -168,7 +172,9 @@ namespace Nepomuk {
         /**
          * \deprecated Use allResourcesWithProperty( const QString& type )
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
+#endif
 
         /**
          * %ResourceManager caches resource locally so subsequent access is faster.
@@ -184,7 +190,9 @@ namespace Nepomuk {
          * Generates a unique URI that is not used in the store yet. This method ca be used to
          * generate URIs for virtual types such as Tag.
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QString generateUniqueUri();
+#endif
 
         /**
          * Generates a unique URI that is not used in the store yet. This method can be used to

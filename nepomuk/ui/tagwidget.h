@@ -75,7 +75,9 @@ namespace Nepomuk {
         /**
          * \deprecated use selectedTags() instead
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED QList<Tag> assignedTags() const;
+#endif
 
         /**
          * The list of selected tags.
@@ -182,7 +184,9 @@ namespace Nepomuk {
         /**
          * \deprecated use setSelectedTags() instead
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void setAssignedTags( const QList<Nepomuk::Tag>& tags );
+#endif
 
         /**
          * Set the list of selected tags. In case resources have been

@@ -339,10 +339,12 @@ bool Nepomuk::ResourceManager::initialized() const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 Nepomuk::Resource Nepomuk::ResourceManager::createResourceFromUri( const QString& uri )
 {
     return Resource( uri, QUrl() );
 }
+#endif
 
 void Nepomuk::ResourceManager::removeResource( const QString& uri )
 {
@@ -357,10 +359,12 @@ void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QString& type )
 {
     return allResourcesOfType( QUrl(type) );
 }
+#endif
 
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUrl& type )
@@ -412,10 +416,12 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResources()
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v )
 {
     return allResourcesWithProperty( QUrl(uri), v );
 }
+#endif
 
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QUrl& uri, const Variant& v )
@@ -454,10 +460,12 @@ void Nepomuk::ResourceManager::clearCache()
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QString Nepomuk::ResourceManager::generateUniqueUri()
 {
     return generateUniqueUri( QString() ).toString();
 }
+#endif
 
 
 QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )

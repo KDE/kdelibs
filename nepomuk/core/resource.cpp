@@ -85,12 +85,14 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManag
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
 }
+#endif
 
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
@@ -154,10 +156,12 @@ Nepomuk::ResourceManager* Nepomuk::Resource::manager() const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QString Nepomuk::Resource::uri() const
 {
     return resourceUri().toString();
 }
+#endif
 
 
 QUrl Nepomuk::Resource::resourceUri() const
@@ -172,10 +176,12 @@ QUrl Nepomuk::Resource::resourceUri() const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QString Nepomuk::Resource::type() const
 {
     return resourceType().toString();
 }
+#endif
 
 
 QUrl Nepomuk::Resource::resourceType() const
@@ -227,6 +233,7 @@ QHash<QUrl, Nepomuk::Variant> Nepomuk::Resource::properties() const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 {
     QHash<QString, Nepomuk::Variant> pl;
@@ -238,6 +245,7 @@ QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
     }
     return pl;
 }
+#endif
 
 
 bool Nepomuk::Resource::hasProperty( const QUrl& uri ) const
@@ -254,16 +262,20 @@ bool Nepomuk::Resource::hasProperty( const Types::Property& p, const Variant& v 
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 bool Nepomuk::Resource::hasProperty( const QString& uri ) const
 {
     return hasProperty( QUrl( uri ) );
 }
+#endif
 
 
+#ifndef KDE_NO_DEPRECATED
 Nepomuk::Variant Nepomuk::Resource::property( const QString& uri ) const
 {
     return property( QUrl( uri ) );
 }
+#endif
 
 
 Nepomuk::Variant Nepomuk::Resource::property( const QUrl& uri ) const
@@ -273,10 +285,12 @@ Nepomuk::Variant Nepomuk::Resource::property( const QUrl& uri ) const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant& value )
 {
     setProperty( QUrl( uri ), value );
 }
+#endif
 
 
 void Nepomuk::Resource::addProperty( const QUrl& uri, const Variant& value )
@@ -294,10 +308,12 @@ void Nepomuk::Resource::setProperty( const QUrl& uri, const Nepomuk::Variant& va
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 void Nepomuk::Resource::removeProperty( const QString& uri )
 {
     removeProperty( QUrl( uri ) );
 }
+#endif
 
 
 void Nepomuk::Resource::removeProperty( const QUrl& uri )

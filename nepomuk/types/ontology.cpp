@@ -224,7 +224,7 @@ Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByLabel( const QS
 }
 
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 // Start of code for deprecated Ontology
 // -------------------------------------
 #include "global.h"
@@ -358,3 +358,6 @@ const Nepomuk::Ontology* Nepomuk::Ontology::load( const QUrl& uri )
     // load the ontology in the cache
     return OntologyManager::instance()->getOntology( uri );
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY
+

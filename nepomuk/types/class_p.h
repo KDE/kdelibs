@@ -65,7 +65,7 @@ namespace Nepomuk {
     }
 }
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 namespace Nepomuk {
 
     class Property;
@@ -80,5 +80,6 @@ namespace Nepomuk {
         QList<const Nepomuk::Class*> children;
     };
 }
+#endif
 
 #endif

@@ -127,7 +127,7 @@ bool Nepomuk::Types::Literal::isValid() const
 }
 
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 
 Nepomuk::Literal::Literal()
 {
@@ -179,3 +179,6 @@ QVariant::Type Nepomuk::Literal::dataType() const
 {
     return d->dataType;
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY
+

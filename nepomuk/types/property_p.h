@@ -58,7 +58,7 @@ namespace Nepomuk {
 }
 
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 namespace Nepomuk {
 
     class Class;
@@ -90,5 +90,6 @@ namespace Nepomuk {
 	    int cardinality;
     };
 }
+#endif
 
 #endif

@@ -517,7 +517,7 @@ bool Nepomuk::Types::Class::isSubClassOf( const Class& other ) const
 
 
 
-
+#ifndef DISABLE_NEPOMUK_LEGACY
 // Start of code for deprecated Class
 // ----------------------------------
 
@@ -660,3 +660,6 @@ const Nepomuk::Class* Nepomuk::Class::load( const QUrl& uri )
         return 0;
     }
 }
+
+#endif DISABLE_NEPOMUK_LEGACY
+

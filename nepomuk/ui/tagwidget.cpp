@@ -98,7 +98,7 @@ void Nepomuk::TagWidgetPrivate::buildTagHash( const QList<Tag>& tags )
         if ( (m_flags&TagWidget::ReadOnly) && !tags.isEmpty() ) {
             return;
         }
-        
+
         m_showAllLinkLabel = new QLabel( q );
         m_flowLayout->addWidget( m_showAllLinkLabel );
         if( m_flags&TagWidget::ReadOnly ) {
@@ -274,10 +274,12 @@ QList<Nepomuk::Resource> Nepomuk::TagWidget::taggedResources() const
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QList<Nepomuk::Tag> Nepomuk::TagWidget::assignedTags() const
 {
     return selectedTags();
 }
+#endif
 
 
 QList<Nepomuk::Tag> Nepomuk::TagWidget::selectedTags() const
@@ -334,10 +336,12 @@ void Nepomuk::TagWidget::setTaggedResources( const QList<Resource>& resources )
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 void Nepomuk::TagWidget::setAssignedTags( const QList<Tag>& tags )
 {
     setSelectedTags( tags );
 }
+#endif
 
 
 void Nepomuk::TagWidget::setSelectedTags( const QList<Nepomuk::Tag>& tags )
