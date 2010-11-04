@@ -27,7 +27,6 @@
 #define khtml_wallet_p_h
 
 #include <kcursor.h>
-#include <klibloader.h>
 #include <kxmlguifactory.h>
 #include <kaction.h>
 #include <kparts/partmanager.h>
