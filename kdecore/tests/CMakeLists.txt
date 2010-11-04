@@ -45,7 +45,6 @@ KDECORE_UNIT_TESTS(
  kentrymaptest
  kconfigtest
  kurlmimetest
- klibloadertest
  klockfiletest
  ktempdirtest
  ksharedptrtest
@@ -70,6 +69,12 @@ KDECORE_UNIT_TESTS(
  kencodingdetectortest
  qcoreapptest
 )
+
+if(NOT KDE_NO_DEPRECATED)
+ KDECORE_UNIT_TESTS(
+  klibloadertest
+ )
+endif(NOT KDE_NO_DEPRECATED)
 
 if(UNIX)
  KDECORE_UNIT_TESTS(
@@ -141,6 +146,7 @@ target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
 
 ########### module for klibloadertest ###############
 
+if(NOT KDE_NO_DEPRECATED)
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
 kde4_add_plugin(klibloadertestmodule ${klibloadertestmodule_PART_SRCS})
@@ -148,6 +154,7 @@ kde4_add_plugin(klibloadertestmodule ${klibloadertestmodule_PART_SRCS})
 target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
+endif(NOT KDE_NO_DEPRECATED)
 
 ########### module for klibloadertest4 ###############
 
@@ -162,3 +169,4 @@ target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 
 endif (NOT WIN32)
+
