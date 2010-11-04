@@ -131,17 +131,17 @@ void KSSLSettings::load() {
 	m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", false);
 	m_bWarnOnMixed = cfg.readEntry("OnMixed", true);
 
-	cfg.changeGroup("Validation");
+	cfg = KConfigGroup(m_cfg, "Validation");
 	m_bWarnSelfSigned = cfg.readEntry("WarnSelfSigned", true);
 	m_bWarnExpired = cfg.readEntry("WarnExpired", true);
 	m_bWarnRevoked = cfg.readEntry("WarnRevoked", true);
 
-	cfg.changeGroup("EGD");
+	cfg = KConfigGroup(m_cfg, "EGD");
 	d->m_bUseEGD = cfg.readEntry("UseEGD", false);
 	d->m_bUseEFile = cfg.readEntry("UseEFile", false);
 	d->m_EGDPath = cfg.readPathEntry("EGDPath", QString());
 
-	cfg.changeGroup("Auth");
+	cfg = KConfigGroup(m_cfg, "Auth");
 	d->m_bSendX509 = ("send" == cfg.readEntry("AuthMethod", ""));
 	d->m_bPromptX509 = ("prompt" == cfg.readEntry("AuthMethod", ""));
 
@@ -174,12 +174,12 @@ void KSSLSettings::save() {
 	cfg.writeEntry("OnUnencrypted", m_bWarnOnUnencrypted);
 	cfg.writeEntry("OnMixed", m_bWarnOnMixed);
 
-	cfg.changeGroup("Validation");
+	cfg = KConfigGroup(m_cfg, "Validation");
 	cfg.writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
 	cfg.writeEntry("WarnExpired", m_bWarnExpired);
 	cfg.writeEntry("WarnRevoked", m_bWarnRevoked);
 
-	cfg.changeGroup("EGD");
+	cfg = KConfigGroup(m_cfg, "EGD");
 	cfg.writeEntry("UseEGD", d->m_bUseEGD);
 	cfg.writeEntry("UseEFile", d->m_bUseEFile);
 	cfg.writePathEntry("EGDPath", d->m_EGDPath);
