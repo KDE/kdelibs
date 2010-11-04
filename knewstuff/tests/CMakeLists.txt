@@ -14,7 +14,7 @@ set(CMAKE_SKIP_RPATH TRUE)
 
 
 #author test
-
+if(NOT KDE_NO_DEPRECATED)
 set(knewstuffauthortest_SRCS
     knewstuffauthortest.cpp
 )
@@ -36,6 +36,7 @@ set(testTranslatable_SRCS
 )
 kde4_add_unit_test(testTranslatable ${testTranslatable_SRCS})
 target_link_libraries(testTranslatable ${KDE4_KDECORE_LIBS} knewstuff2 ${QT_QTTEST_LIBRARY})
+endif(NOT KDE_NO_DEPRECATED)
 
 ##########################
 
