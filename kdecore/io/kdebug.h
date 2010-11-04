@@ -25,6 +25,7 @@
 #include <kdecore_export.h>
 
 #include <QtCore/QDebug>
+#include <QtCore/QTime>
 
 /**
  * \addtogroup kdebug Debug message generators
@@ -34,6 +35,10 @@
  * QT_NO_DEBUG when compiling your source. If QT_NO_DEBUG is defined then debug
  * messages are not printed by default but can still be enabled by runtime
  * configuration, e.g. via kdebugdialog or by editing kdebugrc.
+ *
+ * You can also control what you see: process name, area name, method name,
+ * file and line number, timestamp, etc. using environment variables.
+ * See http://techbase.kde.org/SysAdmin/Environment_Variables#KDE_DEBUG_NOPROCESSINFO
  */
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)
@@ -242,6 +247,7 @@ class KDebug                    //krazy= ?
     int line;
     QtMsgType level;
 public:
+    class Block;
     explicit inline KDebug(QtMsgType type, const char *f = 0, int l = -1, const char *info = 0)
         : file(f), funcinfo(info), line(l), level(type)
         {
@@ -291,6 +297,7 @@ public:
      * in other files (with a better name for the function of course).
      */
     static KDECORE_EXPORT int registerArea(const QByteArray& areaName, bool enabled = true);
+
 private:
     WrongSyntax operator()(const char*) {return WrongSyntax();} // error! Use kDebug() << "..." or kWarning() << "..." instead.
 };
@@ -313,6 +320,50 @@ private:
 #else
 # define kWarning    while (false) kWarning
 #endif
+
+
+/**
+ * @class KDebug::Block
+ * @short Use this to label sections of your code
+ * @since 4.6
+ *
+ * Usage:
+ * <code>
+ *     void function()
+ *     {
+ *         KDebug::Block myBlock( "section" );
+ *
+ *         debug() << "output1" << endl;
+ *         debug() << "output2" << endl;
+ *     }
+ * </code>
+ *
+ * Will output:
+ *
+ *     app: BEGIN: section
+ *     app:  [prefix] output1
+ *     app:  [prefix] output2
+ *     app: END: section - Took 0.1s
+ *
+ * Alternatively, use the KDEBUG_BLOCK macro, for automatic naming.
+ */
+class KDECORE_EXPORT KDebug::Block
+{
+public:
+    Block(const char* label, int area = KDE_DEFAULT_DEBUG_AREA);
+    ~Block();
+
+private:
+    QTime m_startTime;
+    const char *m_label;
+    int m_area;
+    int m_color;
+    class Private;
+    Private* const d;
+};
+
+/// Convenience macro for making a standard KDebug::Block
+#define KDEBUG_BLOCK KDebug::Block uniquelyNamedStackAllocatedStandardBlock(Q_FUNC_INFO);
 
 /** @} */
 

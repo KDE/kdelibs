@@ -78,6 +78,19 @@ public:
     uglypmf func_uglypmf(uglypmf = 0) { kDebug(); return 0; }
     QMap<QString, uglypmf> func_uglypmf2() { kDebug(); return QMap<QString, uglypmf>(); }
 
+    void testBlock()
+    {
+        KDEBUG_BLOCK
+        func_int();
+        testNestedBlock();
+    }
+
+    void testNestedBlock()
+    {
+        KDEBUG_BLOCK
+        func_void();
+    }
+
 public:
     TestClass1()
         {
@@ -275,6 +288,9 @@ void testKDebug()
         using namespace N;
         func6();
     }
+
+    TestClass1 c1;
+    c1.testBlock();
 }
 
 // Concurrency testing, based on code from bug 133026
