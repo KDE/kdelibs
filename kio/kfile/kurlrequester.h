@@ -19,11 +19,16 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
-#include <keditlistbox.h>
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
 #include <khbox.h>
+
+#ifndef KDE_NO_DEPRECATED
+#include <keditlistbox.h>
+#else
+#include <keditlistwidget.h>
+#endif
 
 class KComboBox;
 class KFileDialog;
@@ -97,7 +102,7 @@ public:
      * @since 4.3
      */
     KUrl startDir() const;
-    
+
     /**
      * @returns the current text in the lineedit or combobox.
      * This does not do the URL expansion that url() does, it's only provided
@@ -182,7 +187,11 @@ public:
      * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
      * \endcode
      */
+#ifndef KDE_NO_DEPRECATED
     const KEditListBox::CustomEditor &customEditor();
+#else
+    const KEditListWidget::CustomEditor &customEditor();
+#endif
 
     /**
      * @returns the message set with setClickMessage
@@ -214,14 +223,14 @@ public Q_SLOTS:
      * Sets the url in the lineedit to @p url.
      */
     void setUrl( const KUrl& url );
-    
+
     /**
      * Sets the start dir @p startDir.
      * The start dir is only used when the URL isn't set.
      * @since 4.3
      */
     void setStartDir( const KUrl& startDir );
-    
+
     /**
      * Sets the url in the lineedit to @p KUrl::fromPath(path).
      * This is only for local paths; do not pass a url here.
@@ -230,7 +239,9 @@ public Q_SLOTS:
      *
      * @deprecated Use setUrl(KUrl(path)) instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setPath(const QString& path);
+#endif
 
     /**
      * Sets the current text in the lineedit or combobox.
