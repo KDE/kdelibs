@@ -181,6 +181,7 @@ public:
      * Deprecated to reflect Qt api changes
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
     { insertUrl( index < 0 ? count() : index, url ); }
     KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
@@ -189,6 +190,7 @@ public:
     { changeUrl( index, url ); }
     KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
     { changeUrl( index, QIcon(pixmap), url ); }
+#endif
 
 	/**
      * Sets @p url into the edit field of the combobox. It uses
@@ -288,7 +290,9 @@ public:
     * @param showMenu If @p true, show the context menu.
     * @deprecated use setContextMenuPolicy
     */
+#ifndef KDE_NO_DEPRECATED
     virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
+#endif
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
@@ -513,7 +517,7 @@ protected:
                          bool destroyOldWindow = true );
 
     virtual void wheelEvent( QWheelEvent *ev );
-    
+
     virtual QSize minimumSizeHint() const;
 
 private Q_SLOTS:

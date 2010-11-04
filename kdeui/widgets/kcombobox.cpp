@@ -79,7 +79,9 @@ void KComboBox::init()
 
     // Enable context menu by default if widget
     // is editable.
-    setContextMenuEnabled( true );
+    if (lineEdit()) {
+        lineEdit()->setContextMenuPolicy( Qt::DefaultContextMenu );
+    }
 }
 
 
@@ -124,11 +126,13 @@ bool KComboBox::autoCompletion() const
     return completionMode() == KGlobalSettings::CompletionAuto;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
     if( d->klineEdit )
         d->klineEdit->setContextMenuEnabled( showMenu );
 }
+#endif
 
 
 void KComboBox::setUrlDropsEnabled( bool enable )
