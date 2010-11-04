@@ -42,6 +42,7 @@ set(nepomuk_core_SRCS
 
 if(NOT KDE_NO_DEPRECATED)
   set(nepomuk_core_SRCS
+    ${nepomuk_core_SRCS}
     core/tools.cpp
   )
 endif(NOT KDE_NO_DEPRECATED)
@@ -68,6 +69,7 @@ set(nepomuk_types_SRCS
 
 if(NOT KDE_NO_DEPRECATED)
   set(nepomuk_types_SRCS
+    ${nepomuk_types_SRCS}
     types/desktopontologyloader.cpp
     types/fileontologyloader.cpp
     types/global.cpp
