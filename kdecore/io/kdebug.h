@@ -362,8 +362,24 @@ private:
     Private* const d;
 };
 
-/// Convenience macro for making a standard KDebug::Block
+/**
+ * Convenience macro for making a standard KDebug::Block
+ */
 #define KDEBUG_BLOCK KDebug::Block uniquelyNamedStackAllocatedStandardBlock(Q_FUNC_INFO);
+
+/**
+ * Convenience macro, use this to remind yourself to finish the implementation of a function
+ * The function name will appear in the output (unless $KDE_DEBUG_NOMETHODNAME is set)
+ * @since 4.6
+ */
+#define KWARNING_NOTIMPLEMENTED kWarning() << "NOT-IMPLEMENTED";
+
+/**
+ * Convenience macro, use this to alert other developers to stop using a function
+ * The function name will appear in the output (unless $KDE_DEBUG_NOMETHODNAME is set)
+ * @since 4.6
+ */
+#define KWARNING_DEPRECATED kWarning() << "DEPRECATED";
 
 /** @} */
 

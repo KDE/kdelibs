@@ -42,7 +42,7 @@ class TestClass1
 public:
     enum Something { foo };
 
-    void func_void() { kDebug(); }
+    void func_void() { KWARNING_NOTIMPLEMENTED }
     int func_int() { kDebug(); return 0; }
     unsigned func_unsigned() { kDebug(); return 0; }
     long func_long() { kDebug(); return 0; }
@@ -89,6 +89,12 @@ public:
     {
         KDEBUG_BLOCK
         func_void();
+        deprecatedMethod();
+    }
+
+    void deprecatedMethod()
+    {
+        KWARNING_DEPRECATED
     }
 
 public:
