@@ -141,15 +141,15 @@ void ResourceTest::testProperties()
         QCOMPARE( r1.property( QUrl("http://nepomuk.test.org/date" ) ).toDate(), QDate::currentDate() );
         QCOMPARE( r1.property( QUrl("http://nepomuk.test.org/Resource" ) ).toResource(), r2 );
 
-        QHash<QString, Variant> allProps = r1.allProperties();
+        QHash<QUrl, Variant> allProps = r1.properties();
         QCOMPARE( allProps.count(), 10 ); // properties + type + identifier + modification date
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/int" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool1" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool2" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/double" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/string" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/date" ) );
-        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/Resource" ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/int") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/bool1") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/bool2") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/double") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/string") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/date") ) );
+        QVERIFY( allProps.keys().contains( QUrl("http://nepomuk.test.org/Resource") ) );
     }
 }
 
