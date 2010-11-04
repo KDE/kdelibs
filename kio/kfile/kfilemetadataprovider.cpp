@@ -64,7 +64,7 @@ namespace {
 
         return plainText;
     }
-};
+}
 
 // The default size hint of QLabel tries to return a square size.
 // This does not work well in combination with layouts that use
