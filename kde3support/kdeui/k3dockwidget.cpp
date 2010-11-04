@@ -2823,7 +2823,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   // they must be restored before e.g. tabgroups are restored
   foreach( const QString &oname, nameList )
   {
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString type = cg.readEntry( oname + ":type", QString() );
     obj = 0L;
 
@@ -2833,7 +2833,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
       obj->applyToWidget( 0L );
       obj->setGeometry(r);
 
-      cg.changeGroup( group );
+      cg = KConfigGroup( c, group );
       obj->setTabPageLabel(cg.readEntry( oname + ":tabCaption", QString() ));
       obj->setToolTipString(cg.readEntry( oname + ":tabToolTip", QString() ));
       if ( cg.readEntry( oname + ":visible",QVariant(false) ).toBool() ){
@@ -2859,7 +2859,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   // secondly, after the common dockwidgets, restore the groups and tabgroups
   foreach( const QString &oname, nameList )
   {
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString type = cg.readEntry( oname + ":type", QString() );
     obj = 0L;
 
@@ -2892,7 +2892,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
         }
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.toLatin1().constData() );
-          cg.changeGroup( group );
+          cg = KConfigGroup( c, group );
           if (tab)
             tab->showPage( tab->page( cg.readEntry( oname+":curTab",0 ) ) );
         }
@@ -2910,13 +2910,13 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   // iterate them again and link the toplevel ones of them with their corresponding dockwidget for the dockback action
   foreach( const QString &oname, nameList )
   {
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString type = cg.readEntry( oname + ":type", QString() );
     obj = 0L;
 
     if ( type == "NULL_DOCK" || cg.readEntry( oname + ":parent", QString() ) == "___null___" ){
       obj = getDockWidgetFromName( oname );
-      cg.changeGroup( group );
+      cg = KConfigGroup( c, group );
       QString name = cg.readEntry( oname + ":dockBackTo", QString() );
       if (!name.isEmpty()) {
           obj->setFormerBrotherDockWidget(getDockWidgetFromName( name ));
@@ -2928,7 +2928,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   if ( main->inherits("K3DockMainWindow") ){
     K3DockMainWindow* dmain = (K3DockMainWindow*)main;
 
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString mv = cg.readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       K3DockWidget* mvd  = getDockWidgetFromName( mv );
@@ -2936,14 +2936,14 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
       mvd->show();
       dmain->setView( mvd );
     }
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString md = cg.readEntry( "Main:dock" );
     if ( !md.isEmpty() && getDockWidgetFromName( md ) ){
       K3DockWidget* mvd  = getDockWidgetFromName( md );
       dmain->setMainDockWidget( mvd );
     }
   } else {
-    cg.changeGroup( group );
+    cg = KConfigGroup( c, group );
     QString mv = cg.readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       K3DockWidget* mvd  = getDockWidgetFromName( mv );
@@ -2958,7 +2958,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
     finishReadDockConfig(); // remove empty dockwidgets
   }
 
-  cg.changeGroup( group );
+  cg = KConfigGroup( c, group );
 
   QRect mr = cg.readEntry("Main:Geometry", QRect());
 

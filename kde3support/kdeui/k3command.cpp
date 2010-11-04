@@ -373,7 +373,7 @@ K3UndoRedoAction::K3UndoRedoAction( Type type, KActionCollection* actionCollecti
 
     connect( d->commandHistory, SIGNAL(commandHistoryChanged()), this, SLOT(slotCommandHistoryChanged()) );
     slotCommandHistoryChanged();
-    actionCollection->addAction(KStandardAction::stdName(type == Undo ? KStandardAction::Undo : KStandardAction::Redo),
+    actionCollection->addAction(KStandardAction::name(type == Undo ? KStandardAction::Undo : KStandardAction::Redo),
                                 this);
 }
 
