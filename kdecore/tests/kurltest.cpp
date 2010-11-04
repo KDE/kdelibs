@@ -147,6 +147,15 @@ void KUrlTest::testQUrl()
   QUrl url2( "file:///c:/home/dfaure/my#%2f" );
   QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#%2f" ) );
 #endif
+
+  // Show how toString() is confusing
+  QUrl url3 = QUrl::fromLocalFile( "/home/dfaure/hash#file" );
+  QCOMPARE( url3.toString(), QString( "file:///home/dfaure/hash#file" ) ); // ouch
+  QString url3Str = url3.toString();
+  QUrl url4(url3Str);
+  QCOMPARE( url4.toString(), url3Str );
+  QVERIFY( url3 != url4 ); // unexpected, huh?
+  //QCOMPARE( QString::fromLatin1(url4.toEncoded()), QString::fromLatin1(url3.toEncoded()) ); // fails
 }
 
 
