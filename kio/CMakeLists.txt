@@ -92,7 +92,6 @@ set(kiocore_STAT_SRCS
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kmimetyperesolver.cpp
   kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
   kio/krun.cpp
@@ -103,7 +102,6 @@ set(kiocore_STAT_SRCS
   kio/kurlpixmapprovider.cpp
   kio/metainfojob.cpp
   kio/netaccess.cpp
-  kio/passworddialog.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
@@ -125,6 +123,14 @@ set(kiocore_STAT_SRCS
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
 )
+
+if(NOT KDE_NO_DEPRECATED)
+  set(kiocore_STAT_SRCS
+    ${kiocore_STAT_SRCS}
+    kio/kmimetyperesolver.cpp
+    kio/passworddialog.cpp
+    )
+endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT KIO_NO_SOLID)
   set(kiocore_STAT_SRCS
@@ -164,7 +170,6 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkmanageradaptor.cc
   bookmarks/kbookmarkmenu.cc
   bookmarks/konqbookmarkmenu.cc
-  bookmarks/kbookmarkimporter_crash.cc
   bookmarks/kbookmarkimporter_opera.cc
   bookmarks/kbookmarkimporter_ie.cc
   bookmarks/kbookmarkimporter_ns.cc
@@ -172,10 +177,16 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkdialog.cc
 )
 
+if(NOT KDE_NO_DEPRECATED)
+  set(kbookmarks_STAT_SRCS
+    ${kbookmarks_STAT_SRCS}
+    bookmarks/kbookmarkimporter_crash.cc
+    )
+endif(NOT KDE_NO_DEPRECATED)
+
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kdiskfreespace.cpp
   kfile/kdiskfreespaceinfo.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
@@ -203,6 +214,7 @@ set(kfile_STAT_SRCS
 if(NOT KIO_NO_SOLID)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
+    kfile/kdiskfreespace.cpp
     kfile/kdevicelistitem.cpp
     kfile/kdevicelistmodel.cpp
     )
@@ -328,7 +340,6 @@ install(  FILES
   kio/slaveconfig.h
   kio/sessiondata.h
   kio/global.h
-  kio/passworddialog.h
   kio/netaccess.h
   kio/job.h
   kio/scheduler.h
@@ -387,7 +398,6 @@ install( FILES
   kio/kfilewriteplugin.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/kmimetyperesolver.h
   kio/knfsshare.h
   kio/kprotocolmanager.h
   kio/kremoteencoding.h
@@ -401,7 +411,6 @@ install( FILES
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
-  kfile/kdiskfreespace.h
   kfile/kdiskfreespaceinfo.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
@@ -423,7 +432,6 @@ install( FILES
   bookmarks/kbookmarkimporter.h
   bookmarks/kbookmarkmanager.h
   bookmarks/kbookmarkmenu.h
-  bookmarks/kbookmarkimporter_crash.h
   bookmarks/kbookmarkimporter_opera.h
   bookmarks/kbookmarkimporter_ie.h
   bookmarks/kbookmarkimporter_ns.h
@@ -431,6 +439,15 @@ install( FILES
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+if(NOT KDE_NO_DEPRECATED)
+install( FILES
+  bookmarks/kbookmarkimporter_crash.h
+  kfile/kdiskfreespace.h
+  kio/kmimetyperesolver.h
+  kio/passworddialog.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT KIO_NO_SOLID)
 install( FILES
