@@ -42,6 +42,7 @@
 #include <ktemporaryfile.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
+#include <klibrary.h>
 
 #include "dataprotocol.h"
 #include "kservice.h"
@@ -51,6 +52,8 @@
 #include <kprotocolinfo.h>
 
 #include "slaveinterface_p.h"
+
+extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
 
 using namespace KIO;
 
@@ -443,7 +446,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           delete slave;
           return 0;
        }
-       QString lib_path = KLibLoader::findLibrary(_name);
+       QString lib_path = ::findLibrary(_name, KGlobal::mainComponent());
        if (lib_path.isEmpty())
        {
           error_text = i18n("Can not find io-slave for protocol '%1'.", protocol);
