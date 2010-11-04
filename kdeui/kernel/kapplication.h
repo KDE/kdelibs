@@ -256,7 +256,9 @@ public:
    * @return A new filename for auto-saving.
    * @deprecated use KTemporaryFile, KSaveFile or KAutoSaveFile instead
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED QString tempSaveName( const QString& pFilename );
+#endif
 
   /**
    * Check whether  an auto-save file exists for the document you want to

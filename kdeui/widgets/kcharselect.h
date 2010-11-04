@@ -107,9 +107,11 @@ public:
                     Control)
 
     /** @deprecated */
+#ifndef KDE_NO_DEPRECATED
     KDE_CONSTRUCTOR_DEPRECATED explicit KCharSelect(
             QWidget *parent,
             const Controls controls = AllGuiElements);
+#endif
 
     /**
      * Constructor. @p controls can be used to show a custom set of widgets.

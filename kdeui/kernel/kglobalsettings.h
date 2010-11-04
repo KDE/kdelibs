@@ -159,7 +159,9 @@ public:
      * @return the key that pops up context menus.
      * @deprecated Simply reimplement QWidget::contextMenuEvent() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     static KDE_DEPRECATED int contextMenuKey ();
+#endif
 
     /**
      * Returns the KDE setting for context menus.
@@ -442,7 +444,7 @@ public:
      * @return Returns true if user wants to show icons.
      */
     static bool showIconsOnPushButtons();
-    
+
     /**
      * Returns true, if user visible strings should be sorted in a natural way:
      * image 1.jpg
@@ -456,7 +458,7 @@ public:
      * image 2.jpg
      *
      * @since 4.4
-     */     
+     */
     static bool naturalSorting();
 
     enum GraphicEffect {
@@ -651,7 +653,7 @@ Q_SIGNALS:
      * Emitted by BlockShortcuts
      */
     void blockShortcuts(int data);
-    
+
     /**
      * Emitted when the natural sorting has been changed.
      * @since 4.4

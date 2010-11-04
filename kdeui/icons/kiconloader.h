@@ -291,8 +291,10 @@ public:
      *
      * @deprecated use KIcon instead, which uses the iconloader internally
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QIcon loadIconSet(const QString& name, KIconLoader::Group group, int size = 0,
                                      bool canReturnNull = false);
+#endif
 
     /**
      * Returns the path of an icon.
@@ -472,7 +474,9 @@ KDEUI_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
+#ifndef KDE_NO_DEPRECATED
 KDEUI_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0);
+#endif
 
 /**
  * \relates KIconLoader
@@ -486,7 +490,9 @@ KDEUI_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=KIconLoa
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
+#ifndef KDE_NO_DEPRECATED
 KDEUI_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
+#endif
 
 /**
  * \relates KIconLoader
@@ -500,7 +506,9 @@ KDEUI_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
  * Load a small icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
+#ifndef KDE_NO_DEPRECATED
 KDEUI_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
+#endif
 
 /**
  * \relates KIconLoader
@@ -514,7 +522,9 @@ KDEUI_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
  * Load a main toolbar icon, and apply the effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
+#ifndef KDE_NO_DEPRECATED
 KDEUI_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0);
+#endif
 
 /**
  * \relates KIconLoader
@@ -527,7 +537,9 @@ KDEUI_EXPORT QPixmap UserIcon(const QString& name, int state=KIconLoader::Defaul
  * Load a user icon, and apply the effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
+#ifndef KDE_NO_DEPRECATED
 KDEUI_EXPORT_DEPRECATED QIcon UserIconSet(const QString& name);
+#endif
 
 /**
  * \relates KIconLoader

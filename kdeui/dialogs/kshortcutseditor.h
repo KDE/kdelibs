@@ -164,7 +164,7 @@ public:
      * Write the current settings to the \p config object.
      *
      * This does not initialize the \p config object. It adds the
-     * configuration. 
+     * configuration.
      *
      * @note this will not save the global configuration! globalaccel holds
      * that part of the configuration.
@@ -184,7 +184,9 @@ public:
      *
      * @param config Config object
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void exportConfiguration( KConfig *config) const;
+#endif
     void exportConfiguration( KConfigBase *config) const;
 
     /**
@@ -195,7 +197,9 @@ public:
      *
      * @param config Config object
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void importConfiguration( KConfig *config);
+#endif
     void importConfiguration( KConfigBase *config);
 
 
@@ -215,7 +219,7 @@ public Q_SLOTS:
 	 * Set all shortcuts to their default values (bindings).
 	 **/
 	void allDefault();
-        
+
         /**
          * Opens a printing dialog to print all the shortcuts
          */

@@ -187,25 +187,33 @@ KRuler::~KRuler()
   delete d;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void
 KRuler::setMinValue(int value)
 {
   setMinimum(value);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 int
 KRuler::minValue() const
 { return minimum(); }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void
 KRuler::setMaxValue(int value)
 {
   setMaximum(value);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 int
 KRuler::maxValue() const
 { return maximum(); }
+#endif
 
 void
 KRuler::setTinyMarkDistance(int dist)

@@ -122,8 +122,10 @@ protected:
      *          widgets of a certain index to be updated your model has to emit dataChanged() on the
      *          indexes that want to be updated.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                      const QPersistentModelIndex &index) const;
+#endif
 
     /**
      * Sets the list of event @p types that a @p widget will block.

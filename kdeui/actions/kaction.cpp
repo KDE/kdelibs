@@ -286,16 +286,19 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   }
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KAction::globalShortcutAllowed() const
 {
   return d->globalShortcutEnabled;
 }
+#endif
 
 bool KAction::isGlobalShortcutEnabled() const
 {
   return d->globalShortcutEnabled;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* load */ )
 {
   if (allowed) {
@@ -304,6 +307,7 @@ void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* l
       forgetGlobalShortcut();
   }
 }
+#endif
 
 void KAction::forgetGlobalShortcut()
 {
@@ -397,7 +401,7 @@ void KAction::setAuthAction(KAuth::Action *action)
     if (d->authAction == action) {
         return;
     }
-  
+
     if (d->authAction) {
         disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));

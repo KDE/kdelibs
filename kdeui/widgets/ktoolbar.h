@@ -133,14 +133,18 @@ public:
      * @param enable If false, then the context menu will be disabled
      * @deprecated use setContextMenuPolicy
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setContextMenuEnabled( bool enable = true );
+#endif
 
     /**
      * Returns the context menu enabled flag
      * @return true if the context menu is disabled
      * @deprecated use contextMenuPolicy
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool contextMenuEnabled() const;
+#endif
 
     /**
      * Save the toolbar settings to group @p configGroup in @p config.

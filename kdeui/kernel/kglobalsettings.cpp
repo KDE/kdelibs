@@ -284,6 +284,7 @@ bool KGlobalSettings::showContextMenusOnPress ()
     return g.readEntry("ShowOnPress", true);
 }
 
+#ifndef KDE_NO_DEPRECATED
 int KGlobalSettings::contextMenuKey ()
 {
     KConfigGroup g(KGlobal::config(), "Shortcuts");
@@ -311,6 +312,7 @@ int KGlobalSettings::contextMenuKey ()
 
     return QKeySequence::fromString(s)[0];
 }
+#endif
 
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTitleColor()

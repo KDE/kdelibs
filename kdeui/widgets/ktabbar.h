@@ -59,14 +59,18 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * dragging tabs out of the KTabBar (e.g., dragging the tab
      * URL from Konqueror to another application)!
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setTabReorderingEnabled( bool enable );
+#endif
 
     /**
      * Returns whether tab reordering is enabled.
      *
      * @deprecated Use QTabBar::isMovable() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool isTabReorderingEnabled() const;
+#endif
 
     /**
      * If enabled, a close button is shown above the tab icon.
@@ -76,10 +80,14 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setHoverCloseButton( bool );
+#endif
 
     /** @deprecated Use QTabBar::tabsClosable() instead. */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool hoverCloseButton() const;
+#endif
 
     /**
      * If enabled, the close button cannot get clicked until a
@@ -88,10 +96,14 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setHoverCloseButtonDelayed( bool );
+#endif
 
     /** @deprecated Use QTabBar::tabsClosable() instead. */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool hoverCloseButtonDelayed() const;
+#endif
 
     /**
      * If enabled, a close button is available for each tab. The
@@ -102,7 +114,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setCloseButtonEnabled( bool );
+#endif
 
     /**
      * Returns true if the close button is shown on tabs.
@@ -111,7 +125,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::tabsClosable() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool isCloseButtonEnabled() const;
+#endif
 
     /**
      * Sets the 'activate previous tab on close' feature enabled
@@ -120,7 +136,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::setSelectionBehaviorOnRemove() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setTabCloseActivatePrevious( bool );
+#endif
 
     /**
      * Returns whether the 'activate previous tab on close' feature
@@ -128,7 +146,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      *
      * @deprecated Use QTabBar::selectionBehaviorOnRemove() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool tabCloseActivatePrevious() const;
+#endif
 
     /**
      * Selects the tab which has a tab header at
@@ -150,7 +170,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      */
     void emptyAreaContextMenu( const QPoint& globalPos );
     /** @deprecated use tabDoubleClicked(int) and newTabRequest() instead. */
+#ifndef KDE_NO_DEPRECATED
     QT_MOC_COMPAT void mouseDoubleClick( int );
+#endif
     /**
      * A double left mouse button click was performed over the tab with the @param index.
      * The signal is emitted on the second press of the mouse button, before the release.
@@ -175,7 +197,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      */
     void moveTab( int, int );
     /** @deprecated Use QTabBar::tabCloseRequested(int) instead. */
+#ifndef KDE_NO_DEPRECATED
     QT_MOC_COMPAT void closeRequest( int );
+#endif
 #ifndef QT_NO_WHEELEVENT
     void wheelDelta( int );
 #endif
@@ -199,9 +223,13 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
 
   protected Q_SLOTS:
     /** @deprecated */
+#ifndef KDE_NO_DEPRECATED
     QT_MOC_COMPAT void closeButtonClicked();
+#endif
     /** @deprecated */
+#ifndef KDE_NO_DEPRECATED
     QT_MOC_COMPAT void enableCloseButton();
+#endif
     virtual void activateDragSwitchTab();
 
   protected:

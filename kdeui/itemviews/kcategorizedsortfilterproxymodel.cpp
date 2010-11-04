@@ -94,11 +94,13 @@ bool KCategorizedSortFilterProxyModel::sortCategoriesByNaturalComparison() const
     return d->sortCategoriesByNaturalComparison;
 }
 
+#ifndef KDE_NO_DEPRECATED
 int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a,
                                                      const QString &b)
 {
     return KStringHandler::naturalCompare(a, b);
 }
+#endif
 
 bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {

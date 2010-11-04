@@ -384,11 +384,13 @@ void KKeySequenceWidget::setClearButtonShown(bool show)
     d->clearButton->setVisible(show);
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList) // deprecated
 {
     d->checkList = checkList;
     Q_ASSERT(d->checkActionCollections.isEmpty()); // don't call this method if you call setCheckActionCollections!
 }
+#endif
 
 void KKeySequenceWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
 {

@@ -161,6 +161,7 @@ KIcon KGuiItem::icon( ) const
 }
 
 // deprecated
+#ifndef KDE_NO_DEPRECATED
 QIcon KGuiItem::iconSet( KIconLoader::Group group, int size ) const
 {
     if (d->m_hasIcon && KGlobal::mainComponent().isValid()) {
@@ -173,6 +174,7 @@ QIcon KGuiItem::iconSet( KIconLoader::Group group, int size ) const
     } else
         return QIcon();
 }
+#endif
 
 QString KGuiItem::iconName() const
 {

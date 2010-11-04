@@ -58,6 +58,7 @@ KXErrorHandler::KXErrorHandler( Display* dpy )
     addHandler();
     }
 
+#ifndef KDE_NO_DEPRECATED
 KXErrorHandler::KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy )
     :   user_handler1( handler ),
         user_handler2( NULL ),
@@ -66,6 +67,7 @@ KXErrorHandler::KXErrorHandler( bool (*handler)( int request, int error_code, un
     {
     addHandler();
     }
+#endif
 
 KXErrorHandler::KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy )
     :   user_handler1( NULL ),

@@ -110,7 +110,9 @@ public:
         // KDE5: remove userTextChanged signal, textEdited does the same...
         if (!completionRunning && (txt != userText)) {
             userText = txt;
+#ifndef KDE_NO_DEPRECATED
             emit q->userTextChanged(txt);
+#endif
         }
     }
 
@@ -121,7 +123,9 @@ public:
         if (!completionRunning && (txt != userText)) {
             userText = txt;
             q->setModified(true);
+#ifndef KDE_NO_DEPRECATED
             emit q->userTextChanged(txt);
+#endif
             emit q->textEdited(txt);
             emit q->textChanged(txt);
         }
@@ -1808,15 +1812,19 @@ void KLineEdit::setClickMessage( const QString &msg )
     update();
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KLineEdit::setContextMenuEnabled( bool showMenu )
 {
     QLineEdit::setContextMenuPolicy( showMenu ? Qt::DefaultContextMenu : Qt::NoContextMenu );
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KLineEdit::isContextMenuEnabled() const
 {
     return  ( contextMenuPolicy() == Qt::DefaultContextMenu );
 }
+#endif
 
 void KLineEdit::setPasswordMode(bool b)
 {

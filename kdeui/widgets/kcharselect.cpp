@@ -73,7 +73,7 @@ public:
 
     enum { MaxHistoryItems = 100 };
 
-    KCharSelectPrivate(KCharSelect *q) 
+    KCharSelectPrivate(KCharSelect *q)
         : q(q)
           ,searchLine(0)
           ,searchMode(false)
@@ -300,11 +300,13 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
 /* Class: KCharSelect                                             */
 /******************************************************************/
 
+#ifndef KDE_NO_DEPRECATED
 KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         : QWidget(parent), d(new KCharSelectPrivate(this))
 {
     init(controls, NULL);
 }
+#endif
 
 KCharSelect::KCharSelect(
         QWidget *parent

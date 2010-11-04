@@ -60,10 +60,12 @@ KToolBarPopupAction::~KToolBarPopupAction()
   delete menu();
 }
 
+#ifndef KDE_NO_DEPRECATED
 KMenu* KToolBarPopupAction::popupMenu() const
 {
   return qobject_cast<KMenu*>( menu() );
 }
+#endif
 
 QWidget * KToolBarPopupAction::createWidget( QWidget * _parent )
 {

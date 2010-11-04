@@ -111,7 +111,9 @@ public:
       * @deprecated
       * Use KStringHandler::naturalCompare() instead.
       */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
+#endif
 
 protected:
     /**

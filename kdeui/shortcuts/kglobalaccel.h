@@ -166,14 +166,18 @@ public:
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool isEnabled() const;
+#endif
 
     /**
      * No effect.
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setEnabled(bool enabled);
+#endif
 
     /**
      * Set the KComponentData for which to manipulate shortcuts. This is for exceptional
@@ -191,7 +195,9 @@ public:
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
+#endif
 
     /**
      * Return the unique and common names of all main components that have global shortcuts.
@@ -199,28 +205,36 @@ public:
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QList<QStringList> allMainComponents();
+#endif
 
     /**
      * @see getGlobalShortcutsByComponent
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
+#endif
 
     /**
      * @see getGlobalShortcutsByKey
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
+#endif
 
     /**
      * @see promptStealShortcutSystemwide below
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
+#endif
 
 private:
 

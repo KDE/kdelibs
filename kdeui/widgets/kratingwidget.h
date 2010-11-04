@@ -127,7 +127,9 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
     /**
      * \deprecated use setRating( int rating )
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setRating( unsigned int rating );
+#endif
 
     /**
      * Set the maximum allowed rating value. The default is 10 which means
@@ -139,7 +141,9 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
     /**
      * \deprecated use setMaxRating( int max )
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setMaxRating( unsigned int max );
+#endif
 
     /**
      * If half steps are enabled (the default) then
@@ -150,7 +154,9 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
     /**
      * \deprecated Use setHalfStepsEnabled
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setOnlyPaintFullSteps( bool );
+#endif
 
     /**
      * Set the spacing between the pixmaps. The default is 0.
@@ -184,7 +190,9 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      *
      * \deprecated use setCustomPixmap
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setPixmap( const QPixmap& );
+#endif
 
     /**
      * Set the recommended size of the pixmaps. This is

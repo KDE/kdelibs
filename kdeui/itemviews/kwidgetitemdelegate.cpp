@@ -190,6 +190,7 @@ QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
     return d->itemView->indexAt(pos);
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
@@ -197,6 +198,7 @@ void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionView
     Q_UNUSED(option);
     Q_UNUSED(index);
 }
+#endif
 
 //@cond PRIVATE
 bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)

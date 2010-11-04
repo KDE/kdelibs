@@ -92,7 +92,9 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *event )
   if(tab == -1) {
     emit newTabRequest();
   } else {
+#ifndef KDE_NO_DEPRECATED
     emit mouseDoubleClick( tab ); //deprecated
+#endif
     emit tabDoubleClicked( tab );
   }
 
@@ -180,16 +182,20 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::closeButtonClicked()
 {
   // deprecated
 }
+#endif
 
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::enableCloseButton()
 {
   // deprecated
 }
+#endif
 
 
 void KTabBar::activateDragSwitchTab()
@@ -343,60 +349,80 @@ void KTabBar::wheelEvent( QWheelEvent *event )
 }
 #endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KTabBar::isTabReorderingEnabled() const
 {
   return d->mTabReorderingEnabled;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::setTabReorderingEnabled( bool on )
 {
   d->mTabReorderingEnabled = on;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KTabBar::tabCloseActivatePrevious() const
 {
   return selectionBehaviorOnRemove() == QTabBar::SelectPreviousTab;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::setTabCloseActivatePrevious( bool on )
 {
   setSelectionBehaviorOnRemove(on ? QTabBar::SelectPreviousTab : QTabBar::SelectRightTab);
 }
+#endif
 
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::setHoverCloseButton( bool button )
 {
   // deprecated
   setTabsClosable(button);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KTabBar::hoverCloseButton() const
 {
   // deprecated
   return tabsClosable();
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::setHoverCloseButtonDelayed( bool delayed )
 {
   // deprecated
   Q_UNUSED( delayed );
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KTabBar::hoverCloseButtonDelayed() const
 {
   // deprecated
   return false;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KTabBar::setCloseButtonEnabled( bool enable )
 {
   QTabBar::setTabsClosable(enable);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KTabBar::isCloseButtonEnabled() const
 {
   return QTabBar::tabsClosable();
 }
+#endif
 
 void KTabBar::tabLayoutChange()
 {

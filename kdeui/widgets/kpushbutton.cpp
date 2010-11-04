@@ -258,10 +258,12 @@ void KPushButton::setIcon( const KIcon &icon )
         QPushButton::setIcon( QIcon() );
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KPushButton::setIcon( const QIcon &qicon )
 {
     d->item.setIcon(KIcon(qicon));
 }
+#endif
 
 void KPushButton::setDragEnabled( bool enable )
 {
@@ -373,7 +375,7 @@ void KPushButton::paintEvent( QPaintEvent * )
     QStylePainter p(this);
     QStyleOptionButton option;
     initStyleOption(&option);
-    
+
     if (d->delayedMenu)
         option.features |= QStyleOptionButton::HasMenu;
 

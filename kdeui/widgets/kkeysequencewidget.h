@@ -54,7 +54,7 @@ class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 
 	Q_FLAGS(ShortcutTypes)
 
-	Q_PROPERTY( 
+	Q_PROPERTY(
 			bool multiKeyShortcutsAllowed
 			READ multiKeyShortcutsAllowed
 			WRITE setMultiKeyShortcutsAllowed )
@@ -232,7 +232,9 @@ public:
      * in which action collection to call the writeSettings method after stealing
      * a shortcut from an action.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
+#endif
 
 	/**
 	 * If the component using this widget supports shortcuts contexts, it has

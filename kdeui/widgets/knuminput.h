@@ -58,8 +58,10 @@ public:
      * @param parent parent widget
      * \deprecated - use the version without the below parameter instead
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_CONSTRUCTOR_DEPRECATED KNumInput(QWidget *parent, KNumInput* below);
-    
+#endif
+
     /**
      * Destructor
      */
@@ -115,7 +117,7 @@ protected:
      * @internal
      */
     QSlider *slider() const;
-      
+
     /**
      * Call this function whenever you change something in the geometry
      * of your KNumInput child.
@@ -136,7 +138,7 @@ protected:
 private:
     friend class KNumInputPrivate;
     KNumInputPrivate * const d;
-    
+
     Q_DISABLE_COPY(KNumInput)
 };
 
@@ -215,10 +217,12 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
-     * 
+     *
      * \deprecated use the version without the below parameter instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_CONSTRUCTOR_DEPRECATED KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
+#endif
 
     /**
      * Destructor
@@ -271,7 +275,9 @@ public:
     /**
      * @deprecated Use the other setRange function and setSliderEnabled instead
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setRange(int min, int max, int singleStep, bool slider);
+#endif
 
     /**
       * @param enabled Show the slider
@@ -324,7 +330,7 @@ public:
      * @return the minimum size necessary to show the control
      */
     virtual QSize minimumSizeHint() const;
-    
+
 public Q_SLOTS:
     /**
      * Sets the value of the control.
@@ -398,7 +404,7 @@ protected:
      * @internal
      */
     QSpinBox *spinBox() const;
-      
+
     virtual void doLayout();
     void resizeEvent ( QResizeEvent * );
 
@@ -409,7 +415,7 @@ private:
     class KIntNumInputPrivate;
     friend class KIntNumInputPrivate;
     KIntNumInputPrivate * const d;
-    
+
     Q_DISABLE_COPY(KIntNumInput)
 };
 
@@ -504,9 +510,11 @@ public:
      *
      * \deprecated use the version without below instead
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_CONSTRUCTOR_DEPRECATED KDoubleNumInput(KNumInput* below,
 		    double lower, double upper, double value, QWidget *parent=0,double singleStep=0.02,
 		    int precision=2);
+#endif
 
     /**
      * @return the current value.
@@ -583,7 +591,9 @@ public:
      */
     void setDecimals(int decimals);
 
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setPrecision(int precision) { setDecimals(precision); }
+#endif
 
     /**
      * @return the reference point for relativeValue calculation
@@ -782,7 +792,7 @@ private:
     class KIntSpinBoxPrivate;
     friend class KIntSpinBoxPrivate;
     KIntSpinBoxPrivate *const d;
-    
+
     Q_DISABLE_COPY(KIntSpinBox)
     Q_PRIVATE_SLOT(d, void updateSuffix(int))
 };

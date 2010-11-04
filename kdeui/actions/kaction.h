@@ -220,7 +220,9 @@ class KDEUI_EXPORT KAction : public QWidgetAction
   Q_PROPERTY( KShortcut shortcut READ shortcut WRITE setShortcut )
   Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
   Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
+#ifndef KDE_NO_DEPRECATED
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
+#endif
   Q_PROPERTY( bool globalShortcutEnabled READ isGlobalShortcutEnabled )
   Q_FLAGS( ShortcutType )
 
@@ -425,7 +427,9 @@ public:
      * Defaults to false.
      * Use isGlobalShortcutEnabled() instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool globalShortcutAllowed() const;
+#endif
 
     /**
      * Indicate whether the programmer and/or user may define a global shortcut for this action.
@@ -435,7 +439,9 @@ public:
      * \param loading if Autoloading, assign to this action the global shortcut it has previously had
      *                if any.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
+#endif
 
     /**
      * Returns true if this action is enabled to have a global shortcut.

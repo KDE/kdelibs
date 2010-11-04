@@ -152,7 +152,9 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //krazy:
     friend class KLineEditStyle;
 
     Q_OBJECT
+#ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
+#endif
     Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool squeezedTextEnabled READ isSqueezedTextEnabled WRITE setSqueezedTextEnabled )
@@ -221,13 +223,17 @@ public:
     * @param showMenu If @p true, show the context menu.
     * @deprecated use setContextMenuPolicy
     */
+#ifndef KDE_NO_DEPRECATED
     virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
+#endif
 
     /**
      * Returns @p true when the context menu is enabled.
      * @deprecated use contextMenuPolicy
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool isContextMenuEnabled() const;
+#endif
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
@@ -408,7 +414,9 @@ Q_SIGNALS:
      * (by typing or accepting autocompletion), without side effects from
      * suggested autocompletion either. userTextChanged isn't needed anymore.
      */
+#ifndef KDE_NO_DEPRECATED
     QT_MOC_COMPAT void userTextChanged( const QString & );
+#endif
 
     /**
      * Emitted when the text rotation key-bindings are pressed.

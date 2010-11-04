@@ -60,7 +60,9 @@ public:
     QString plainText() const;
 
     /// @deprecated use icon() instead
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
+#endif
 
     KIcon icon( ) const;
 
@@ -69,7 +71,7 @@ public:
     QString whatsThis() const;
     bool isEnabled() const;
     bool hasIcon() const;
-#ifndef KDE_NO_COMPAT
+#if !defined(KDE_NO_COMPAT) && !defined(KDE_NO_DEPRECATED)
     KDE_DEPRECATED bool hasIconSet() const { return hasIcon(); }
 #endif
 

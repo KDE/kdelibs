@@ -104,11 +104,13 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
   return button;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KActionMenu::remove( KAction* cmd )
 {
   if ( cmd )
     menu()->removeAction(cmd);
 }
+#endif
 
 void KActionMenu::addAction( QAction * action )
 {

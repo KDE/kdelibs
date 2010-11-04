@@ -38,7 +38,7 @@ class KMenu;
  * that has more detail in a toolbar than in a menu (e.g. tool chooser
  * with "Other" leading to a dialog...).
  *
- * In contrast to KActionMenu, this action is a \e simple menuitem when plugged 
+ * In contrast to KActionMenu, this action is a \e simple menuitem when plugged
  * into a menu, and has a popup only in a toolbar.
  *
  * Use cases include Back/Forward, and Undo/Redo. Simple click is what's most commonly
@@ -76,7 +76,9 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction
      *
      * \deprecated use menu() instead
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED KMenu *popupMenu() const;
+#endif
 
     /**
      * Returns true if this action creates a delayed popup menu

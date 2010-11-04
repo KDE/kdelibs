@@ -1018,6 +1018,7 @@ void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 QString KApplication::tempSaveName( const QString& pFilename )
 {
   QString aFilename;
@@ -1047,6 +1048,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
   return aFilename;
 }
+#endif
 
 
 QString KApplication::checkRecoverFile( const QString& pFilename,

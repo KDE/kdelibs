@@ -189,7 +189,9 @@ namespace KStandardAction
   KDEUI_EXPORT const char* name( StandardAction id );
 
   /// @deprecated use name()
+#ifndef KDE_NO_DEPRECATED
   inline KDE_DEPRECATED const char* stdName(StandardAction act_enum) { return name( act_enum ); }
+#endif
 
   /**
    * Returns a list of all standard names. Used by KAccelManager
@@ -518,7 +520,9 @@ namespace KStandardAction
    * Show/Hide the menubar.
    * @deprecated use showHideMenubar instead.
    */
+#ifndef KDE_NO_DEPRECATED
   KDEUI_EXPORT_DEPRECATED KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
+#endif
 
   /**
    * Show/Hide the menubar.
@@ -530,7 +534,9 @@ namespace KStandardAction
    * Show/Hide the statusbar.
    * @deprecated use showHideStatusbar instead.
    */
+#ifndef KDE_NO_DEPRECATED
   KDEUI_EXPORT_DEPRECATED KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
+#endif
 
   /**
    * Show/Hide the statusbar.
