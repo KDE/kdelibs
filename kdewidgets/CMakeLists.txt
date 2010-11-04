@@ -65,7 +65,7 @@ if(QT_QTDESIGNER_FOUND)
 
     set(kdedeprecated_PART_SRCS
        classpreviews.cpp
-       ${CMAKE_CURRENT_BINARY_DIR}/kdewidgetsdeprecated.cpp
+       ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
     )
 
     qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
