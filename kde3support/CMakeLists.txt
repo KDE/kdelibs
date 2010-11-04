@@ -54,11 +54,16 @@ set(kde3support_LIB_SRCS
   kdeui/k3panelmenu.cpp
   kio/k3bookmarkdrag.cpp
   kio/kfile/k3fileview.cpp
-  kio/kfile/k3filetreeview.cpp
-  kio/kfile/k3filetreeviewitem.cpp
-  kio/kfile/kfiletreebranch.cpp
   kparts/dockmainwindow3.cpp
 )
+
+if (NOT KDE_NO_DEPRECATED)
+   set(kde3support_LIB_SRCS ${kde3support_LIB_SRCS}
+      kio/kfile/kfiletreebranch.cpp
+      kio/kfile/k3filetreeview.cpp
+      kio/kfile/k3filetreeviewitem.cpp
+   )
+endif (NOT KDE_NO_DEPRECATED)
 
 if (UNIX)
    set(kde3support_LIB_SRCS ${kde3support_LIB_SRCS}
@@ -130,15 +135,20 @@ install( FILES
   kio/kfile/kfilesharedlg.h
   kio/kfile/kpropsdlg.h
   kio/kfile/k3fileview.h
-  kio/kfile/k3filetreeview.h
-  kio/kfile/k3filetreeviewitem.h
-  kio/kfile/kfiletreebranch.h
   kparts/dockmainwindow3.h
   kdeui/kactivelabel.h
   kdeui/kstdaccel.h
   kdeui/kstdaction.h
   kdeui/kstdguiitem.h
   DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+
+if(NOT KDE_NO_DEPRECATED)
+   install( FILES
+      kio/kfile/kfiletreebranch.h
+      kio/kfile/k3filetreeview.h
+      kio/kfile/k3filetreeviewitem.h
+      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+endif(NOT KDE_NO_DEPRECATED)
 
 if (UNIX)
    install( FILES
