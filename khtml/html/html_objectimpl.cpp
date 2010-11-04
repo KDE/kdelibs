@@ -509,6 +509,12 @@ void HTMLObjectBaseElementImpl::computeContent()
         KHTMLPart* p = document()->part();
         if (!p || !p->javaEnabled())
             newRenderAlternative = true;
+    } else {    
+        // Similarly for plugins.
+        KHTMLPart* p = document()->part();
+
+        if (!p || !p->pluginsEnabled())
+            newRenderAlternative = true;
     }
 
     // If there is no <embed> (here or as a child), and we don't have a type + url to go on,
@@ -740,11 +746,6 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLEmbedElementImpl::attach()
 {
-    KHTMLPart* p = document()->part();
-
-    if (!p || !p->pluginsEnabled())
-        m_renderAlternative = true;
-
     if (parentNode()->id() == ID_OBJECT)
         NodeBaseImpl::attach();
     else
@@ -827,11 +828,6 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 
 void HTMLObjectElementImpl::attach()
 {
-    KHTMLPart* p = document()->part();
-
-    if (!p || !p->pluginsEnabled())
-        m_renderAlternative = true;
-
     HTMLObjectBaseElementImpl::attach();
 }
 
@@ -861,3 +857,4 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
 }
 
 #include "html_objectimpl.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
