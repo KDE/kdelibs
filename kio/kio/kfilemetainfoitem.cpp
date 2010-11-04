@@ -31,7 +31,11 @@ KFileMetaInfoItem::KFileMetaInfoItem(const KFileMetaInfoItem& item) : d(item.d) 
 KFileMetaInfoItem::KFileMetaInfoItem(const QString& pp,
                                      const QVariant& v, KFileWritePlugin* w, bool e)
     : d(new KFileMetaInfoItemPrivate()) {
+#ifndef KDE_NO_DEPRECATED
+    d->pp = pp;
+#else
     d->pp = QUrl(pp);
+#endif
     d->value = v;
     d->writer = w;
     d->embedded = e;
