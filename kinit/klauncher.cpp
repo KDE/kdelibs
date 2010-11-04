@@ -42,7 +42,6 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kde_file.h>
-#include <klibloader.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
@@ -729,7 +728,9 @@ KLauncher::start_service_by_name(const QString &serviceName, const QStringList &
 {
    KService::Ptr service;
    // Find service
+#ifndef KDE_NO_DEPRECATED
    service = KService::serviceByName(serviceName);
+#endif
    if (!service)
    {
       requestResult.result = ENOENT;
@@ -1075,6 +1076,7 @@ KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
     return 0;
 }
 
+extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
 
 pid_t
 KLauncher::requestSlave(const QString &protocol,
@@ -1156,7 +1158,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (mSlaveValgrind == arg1)
     {
-       arg_list.prepend(KLibLoader::findLibrary(name));
+       arg_list.prepend(::findLibrary(name, KGlobal::mainComponent()));
        arg_list.prepend(KStandardDirs::locate("exe", QString::fromLatin1("kioslave")));
        name = QString::fromLatin1("valgrind");
        if (!mSlaveValgrindSkin.isEmpty()) {

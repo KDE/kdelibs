@@ -59,7 +59,6 @@
 #include <kglobalsettings.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <klibloader.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -465,6 +464,8 @@ static void reset_oom_protect() {
 }
 #endif
 
+extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
+
 static pid_t launch(int argc, const char *_name, const char *args,
                     const char *cwd=0, int envc=0, const char *envs=0,
                     bool reset_env = false,
@@ -481,9 +482,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
         name = _name;
         lib = QFile::decodeName(name);
         exec = name;
-        libpath = KLibLoader::findLibrary( QLatin1String("libkdeinit4_") + lib, *s_instance);
+        libpath = ::findLibrary( QLatin1String("libkdeinit4_") + lib, *s_instance);
         if( libpath.isEmpty())
-            libpath = KLibLoader::findLibrary(lib, *s_instance);
+            libpath = ::findLibrary(lib, *s_instance);
         execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
     } else {
         name = _name;
