@@ -590,6 +590,7 @@ void KConfigTest::testChangeGroup()
     KConfigGroup sc3(&sc, "Hello");
     QCOMPARE(sc3.name(), QString("Hello"));
     KConfigGroup newGroup(sc3);
+#ifndef KDE_NO_DEPRECATED
     newGroup.changeGroup("FooBar"); // deprecated!
     QCOMPARE(newGroup.name(), QString("FooBar"));
     QCOMPARE(sc3.name(), QString("Hello")); // unchanged
@@ -598,15 +599,18 @@ void KConfigTest::testChangeGroup()
     newGroup.writeEntry("InFooBar", "FB");
     QCOMPARE(KConfigGroup(&sc, "FooBar").entryMap().value("InFooBar"), QString("FB"));
     QCOMPARE(KConfigGroup(&sc, "Hello").entryMap().value("InFooBar"), QString());
+#endif
 
     KConfigGroup rootGroup(sc.group(""));
     QCOMPARE(rootGroup.name(), QString("<default>"));
     KConfigGroup sc32(rootGroup.group("Hello"));
     QCOMPARE(sc32.name(), QString("Hello"));
     KConfigGroup newGroup2(sc32);
+#ifndef KDE_NO_DEPRECATED
     newGroup2.changeGroup("FooBar"); // deprecated!
     QCOMPARE(newGroup2.name(), QString("FooBar"));
     QCOMPARE(sc32.name(), QString("Hello")); // unchanged
+#endif
 }
 
 void KConfigTest::testDelete()

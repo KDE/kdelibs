@@ -1313,8 +1313,10 @@ void KUrlTest::testComparisons()
 
   QString ucmp1 = "ftp://ftp.de.kde.org/dir";
   QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
+#ifndef KDE_NO_DEPRECATED
   QVERIFY(!urlcmp(ucmp1, ucmp2));
   QVERIFY(urlcmp(ucmp1, ucmp2, KUrl::CompareWithoutTrailingSlash)); //only slash difference, ignore_trailing
+#endif
 
   {
       KUrl u1(ucmp1);
@@ -1328,9 +1330,11 @@ void KUrlTest::testComparisons()
   {
       QString str1 = QString::fromLatin1( "ftp://ftp.de.kde.org" );
       QString str2 = QString::fromLatin1( "ftp://ftp.de.kde.org/" );
+#ifndef KDE_NO_DEPRECATED
       QVERIFY(!urlcmp(str1, str2));
       QVERIFY(!urlcmp(str1, str2, KUrl::CompareWithoutTrailingSlash)); // empty path != '/'
       QVERIFY(urlcmp(str1, str2, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath));
+#endif
       KUrl u1(str1);
       KUrl u2(str2);
       QVERIFY(!u1.equals(u2));
@@ -1339,6 +1343,7 @@ void KUrlTest::testComparisons()
   }
 
   QString ucmp3 = "ftp://ftp.de.kde.org/dir/#";
+#ifndef KDE_NO_DEPRECATED
   QVERIFY( !urlcmp(ucmp2,ucmp3) ); // (only hash difference)
   QVERIFY( urlcmp(ucmp2,ucmp3,KUrl::CompareWithoutFragment) ); // (only hash difference, ignore_ref)
   QVERIFY( urlcmp(ucmp2,ucmp3,KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) ); // (slash and hash difference, ignore_trailing, ignore_ref)
@@ -1348,6 +1353,7 @@ void KUrlTest::testComparisons()
   QVERIFY( !urlcmp("",ucmp1,KUrl::CompareWithoutFragment) ); // (empty, not empty)
   QVERIFY( !urlcmp("file",ucmp1) ); // (malformed, not empty)
   QVERIFY( !urlcmp("file",ucmp1,KUrl::CompareWithoutFragment) ); // (malformed, not empty)
+#endif
 
   KUrl ftpUrl( "ftp://ftp.de.kde.org" );
   QCOMPARE( ftpUrl.path(), QString());
