@@ -24,6 +24,9 @@
 #include "kserviceaction.h"
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#ifndef KDE_NO_DEPRECATED
+#include <klibloader.h>
+#endif
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
