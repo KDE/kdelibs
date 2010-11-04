@@ -7,6 +7,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=300000)
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 
+if(KDE_NO_DEPRECATED)
+   add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
+endif(KDE_NO_DEPRECATED)
+
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/core
@@ -26,7 +31,6 @@ set(nepomuk_core_SRCS
   core/resourcemanager.cpp
   core/resourcefiltermodel.cpp
   core/nepomukmainmodel.cpp
-  core/tools.cpp
   core/dbusconnectionpool.cpp
   core/resource.cpp
   core/thing.cpp
@@ -35,6 +39,12 @@ set(nepomuk_core_SRCS
   core/nepomukservice.cpp
   core/graphwrapper.cpp
 )
+
+if(NOT KDE_NO_DEPRECATED)
+  set(nepomuk_core_SRCS
+    core/tools.cpp
+  )
+endif(NOT KDE_NO_DEPRECATED)
 
 set(nepomuk_ui_SRCS
   ui/ktagcloudwidget.cpp
@@ -53,14 +63,19 @@ set(nepomuk_types_SRCS
   types/class.cpp
   types/property.cpp
   types/literal.cpp
-  types/ontologyloader.cpp
-  types/ontologymanager.cpp
-  types/nepomukontologyloader.cpp
-  types/fileontologyloader.cpp
-  types/desktopontologyloader.cpp
-  types/global.cpp
   types/entitymanager.cpp
 )
+
+if(NOT KDE_NO_DEPRECATED)
+  set(nepomuk_types_SRCS
+    types/desktopontologyloader.cpp
+    types/fileontologyloader.cpp
+    types/global.cpp
+    types/nepomukontologyloader.cpp
+    types/ontologyloader.cpp
+    types/ontologymanager.cpp
+  )
+endif(NOT KDE_NO_DEPRECATED)
 
 set(nepomuk_query_SRCS
   query/term.cpp
@@ -132,7 +147,6 @@ install(FILES
   nepomuk_export.h
   core/variant.h
   core/resourcemanager.h
-  core/tools.h
   core/nepomukservice.h
   core/resource.h
   core/thing.h
@@ -143,12 +157,6 @@ install(FILES
   types/property.h
   types/ontology.h
   types/literal.h
-  types/ontologymanager.h
-  types/ontologyloader.h
-  types/nepomukontologyloader.h
-  types/fileontologyloader.h
-  types/desktopontologyloader.h
-  types/global.h
   ui/ktagcloudwidget.h
   ui/kmetadatatagcloud.h
   ui/kmetadatatagwidget.h
@@ -168,6 +176,19 @@ install(FILES
 
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
+
+if(NOT KDE_NO_DEPRECATED)
+  install(FILES
+    core/tools.h
+    types/desktopontologyloader.h
+    types/fileontologyloader.h
+    types/global.h
+    types/nepomukontologyloader.h
+    types/ontologyloader.h
+    types/ontologymanager.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
+  )
+endif(NOT KDE_NO_DEPRECATED)
 
 add_subdirectory(rcgen)
 add_subdirectory(query)
