@@ -475,16 +475,20 @@ void HTMLInputElement::setReadOnly( bool _readOnly )
 }
 
 /* The next two are provided for backwards compatibility. */
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLInputElement::size() const
 {
     if(!impl) return DOMString();
     return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SIZE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLInputElement::setSize( const DOMString &value )
 {
     if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SIZE, value);
 }
+#endif
 
 long HTMLInputElement::getSize() const
 {
@@ -849,7 +853,7 @@ HTMLFormElement HTMLSelectElement::form() const
 HTMLCollection HTMLSelectElement::options() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(((HTMLSelectElementImpl*)impl)->options()); 
+    return HTMLCollection(((HTMLSelectElementImpl*)impl)->options());
 }
 
 bool HTMLSelectElement::disabled() const

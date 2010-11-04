@@ -409,11 +409,13 @@ unsigned long Node::index() const
     return impl->nodeIndex();
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString Node::toHTML()
 {
     if (!impl) return QString();
     return impl->toString().string();
 }
+#endif
 
 void Node::applyChanges()
 {
@@ -421,12 +423,14 @@ void Node::applyChanges()
     impl->recalcStyle( NodeImpl::Inherit );
 }
 
+#ifndef KDE_NO_DEPRECATED
 void Node::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int dummy;
     impl->getCaret(offset, false, _x, _y, dummy, height);
 }
+#endif
 
 QRect Node::getRect()
 {

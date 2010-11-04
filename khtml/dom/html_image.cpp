@@ -220,17 +220,21 @@ void HTMLImageElement::setAlt( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALT, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 long HTMLImageElement::border() const
 {
     if(!impl) return 0;
     // ### return value in pixels
     return static_cast<HTMLImageElementImpl*>(impl)->getAttribute(ATTR_BORDER).toInt();
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLImageElement::setBorder( long value )
 {
     if (impl) static_cast<HTMLImageElementImpl*>(impl)->setAttribute(ATTR_BORDER, QString::number(value));
 }
+#endif
 
 DOMString HTMLImageElement::getBorder() const
 {

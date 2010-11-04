@@ -105,12 +105,16 @@ public:
     /**
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED DOMString size() const;
+#endif
 
     /**
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setSize( const DOMString & );
+#endif
 };
 
 // --------------------------------------------------------------------------

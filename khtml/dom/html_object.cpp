@@ -123,16 +123,20 @@ void HTMLAppletElement::setHeight( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLAppletElement::hspace() const
 {
     if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLAppletElement::setHspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
+#endif
 
 long HTMLAppletElement::getHspace() const
 {
@@ -167,16 +171,20 @@ void HTMLAppletElement::setObject( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_OBJECT, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLAppletElement::vspace() const
 {
     if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLAppletElement::setVspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
+#endif
 
 long HTMLAppletElement::getVspace() const
 {
@@ -342,16 +350,20 @@ void HTMLObjectElement::setHeight( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HEIGHT, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLObjectElement::hspace() const
 {
     if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLObjectElement::setHspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
+#endif
 
 long HTMLObjectElement::getHspace() const
 {
@@ -422,16 +434,20 @@ void HTMLObjectElement::setUseMap( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_USEMAP, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLObjectElement::vspace() const
 {
     if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLObjectElement::setVspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
+#endif
 
 long HTMLObjectElement::getVspace() const
 {

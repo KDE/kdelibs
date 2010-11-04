@@ -76,16 +76,20 @@ void HTMLBaseFontElement::setFace( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_FACE, value);
 }
 
+#ifndef KDE_NO_DEPRECATED
 DOMString HTMLBaseFontElement::size() const
 {
     if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void HTMLBaseFontElement::setSize( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
 }
+#endif
 
 long HTMLBaseFontElement::getSize() const
 {

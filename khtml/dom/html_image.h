@@ -256,12 +256,16 @@ public:
     /**
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED long border() const;
+#endif
 
     /**
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setBorder( long );
+#endif
 
     /**
      * Override height. See the <a
