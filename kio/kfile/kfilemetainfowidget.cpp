@@ -260,9 +260,11 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
         //sb->setValidator(m_validator);
     }
 
+#ifndef KDE_NO_DEPRECATED
     // make sure that an uint cannot be set to a value < 0
     if (d->m_item.properties().type() == QVariant::UInt)
         sb->setMinimum(qMax(sb->minimum(), 0));
+#endif
 
     connect(sb, SIGNAL(valueChanged(int)), this, SLOT(slotChanged(int)));
     return sb;
@@ -303,6 +305,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         return b;
     }
 
+#ifndef KDE_NO_DEPRECATED
     if (d->m_item.properties().attributes() & PredicateProperties::MultiLine) {
         KTextEdit *edit = new KTextEdit( this );
         edit->setAcceptRichText(false);
@@ -314,6 +317,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
             reparentValidator(edit, d->m_validator);
         return edit;
     }
+#endif
 
     KLineEdit* e = new KLineEdit(d->m_item.value().toString(), this);
     if (d->m_validator) {
