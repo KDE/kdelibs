@@ -198,7 +198,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapsequencewidget.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
- widgets/karrowbutton.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcapacitybar.cpp
@@ -211,7 +210,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatetable.cpp
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
- widgets/keditlistbox.cpp
  widgets/keditlistwidget.cpp
  widgets/kfadewidgeteffect.cpp
  widgets/khbox.cpp
@@ -262,6 +260,14 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguiversionhandler.cpp
 )
+
+if(NOT KDE_NO_DEPRECATED)
+set(kdeui_LIB_SRCS
+ ${kdeui_LIB_SRCS}
+ widgets/karrowbutton.cpp
+ widgets/keditlistbox.cpp
+)
+endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT WINCE)
 set(kdeui_LIB_SRCS
@@ -579,7 +585,6 @@ install( FILES
  util/kpixmapsequencewidget.h
  widgets/kactionselector.h
  widgets/kanimatedbutton.h
- widgets/karrowbutton.h
  widgets/kdatepicker.h
  widgets/kcapacitybar.h
  widgets/kcmodule.h
@@ -591,7 +596,6 @@ install( FILES
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
  widgets/kdialogbuttonbox.h
- widgets/keditlistbox.h
  widgets/keditlistwidget.h
  widgets/kfadewidgeteffect.h
  widgets/khbox.h
@@ -639,6 +643,13 @@ install( FILES
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+
+if(NOT KDE_NO_DEPRECATED)
+install(FILES
+ widgets/karrowbutton.h
+ widgets/keditlistbox.h
+ DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+endif(NOT KDE_NO_DEPRECATED)
 
 # KDE 5 remove this
 install(FILES
