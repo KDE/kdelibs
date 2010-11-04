@@ -28,7 +28,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QFileInfo>
 
-#include <klibloader.h>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -146,7 +145,7 @@ void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, 
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
-     
+
      if ( library.isEmpty() || hasPlugin( parent, library ) )
        continue;
 
@@ -169,6 +168,7 @@ void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos 
 }
 
 // static, deprecated
+#ifndef KDE_NO_DEPRECATED
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 {
     Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
@@ -177,12 +177,15 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     plugin->d->m_library = libname;
     return plugin;
 }
+#endif
 
 // static, deprecated
+#ifndef KDE_NO_DEPRECATED
 Plugin* Plugin::loadPlugin( QObject * parent, const QByteArray &libname )
 {
     return loadPlugin( parent, libname.data() );
 }
+#endif
 
 Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
 {
@@ -192,7 +195,14 @@ Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname, const QString &keyword )
 {
-    Plugin* plugin = KLibLoader::createInstance<Plugin>( keyword, libname, parent );
+    KPluginLoader loader( libname );
+    KPluginFactory* factory = loader.factory();
+
+    if (!factory) {
+        return 0;
+    }
+
+    Plugin* plugin = factory->create<Plugin>( keyword, parent );
     if ( !plugin )
         return 0;
     plugin->d->m_library = libname;

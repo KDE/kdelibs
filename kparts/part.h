@@ -683,12 +683,16 @@ protected:
     /**
      * @internal
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool isLocalFileTemporary() const;
+#endif
 
     /**
      * @internal
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setLocalFileTemporary( bool temp );
+#endif
 
     /**
      * Sets the url associated with this part.

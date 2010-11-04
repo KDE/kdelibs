@@ -330,6 +330,7 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
 }
 
 //static, deprecated
+#ifndef KDE_NO_DEPRECATED
 BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
     Q_UNUSED(offer);
@@ -340,8 +341,10 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
         : BrowserOpenOrSaveQuestion::Open ? Open
         : Cancel;
 }
+#endif
 
 //static, deprecated
+#ifndef KDE_NO_DEPRECATED
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
     BrowserOpenOrSaveQuestion question(0, url, mimeType);
@@ -351,6 +354,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
         : BrowserOpenOrSaveQuestion::Embed ? Open
         : Cancel;
 }
+#endif
 
 // Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )

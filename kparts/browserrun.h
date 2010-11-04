@@ -91,7 +91,9 @@ namespace KParts {
          *  const BrowserOpenOrSaveQuestion::Result res = dlg.askOpenOrSave();
          * @endcode
          */
+#ifndef KDE_NO_DEPRECATED
         static KDE_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
+#endif
 
         enum AskEmbedOrSaveFlags { InlineDisposition = 0, AttachmentDisposition = 1 };
         /**
@@ -109,7 +111,9 @@ namespace KParts {
          *  // Important: returns Embed now, not Open!
          * @endcode
          */
+#ifndef KDE_NO_DEPRECATED
         static KDE_DEPRECATED AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
+#endif
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KUrl & url, const QString & suggestedFileName );

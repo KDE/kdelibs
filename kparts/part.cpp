@@ -492,19 +492,23 @@ void ReadOnlyPart::setLocalFilePath( const QString &localFilePath )
     d->m_file = localFilePath;
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool ReadOnlyPart::isLocalFileTemporary() const
 {
     Q_D(const ReadOnlyPart);
 
     return d->m_bTemp;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void ReadOnlyPart::setLocalFileTemporary( bool temp )
 {
     Q_D(ReadOnlyPart);
 
     d->m_bTemp = temp;
 }
+#endif
 
 void ReadOnlyPart::setProgressInfoEnabled( bool show )
 {
