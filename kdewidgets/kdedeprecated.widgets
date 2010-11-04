@@ -1,0 +1,15 @@
+[Global]
+PluginName=KDE3SupportWidgets
+Includes=kcomponentdata.h,classpreviews.h,ktimezone.h
+Init=new KComponentData("kdewidgets");
+
+[KArrowButton]
+IncludeFile=karrowbutton.h
+ToolTip=Draws a button which shows an arrow pointing into a certain direction.
+Group=Buttons (KDE)
+ConstructorArgs=(parent,Qt::UpArrow)
+
+[KEditListBox]
+ToolTip=Fullfeatured edit box with buttons (KDE)
+Group=Views (KDE)
+
