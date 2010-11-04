@@ -62,10 +62,12 @@ void KGlobalShortcutTest::setupTest(QString id)
 
     // Ensure that the previous test did cleanup correctly
     KGlobalAccel *kga = KGlobalAccel::self();
+#ifndef KDE_NO_DEPRECATED
     QList<QStringList> components = kga->allMainComponents();
     QStringList componentId;
     componentId << "qttest" << QString() << "KDE Test Program" << QString();
     // QVERIFY(!components.contains(componentId));
+#endif
 
     m_actionA = new KAction("Text For Action A", this);
     m_actionA->setObjectName("Action A:" + id);
@@ -106,11 +108,26 @@ void KGlobalShortcutTest::testFindActionByKey()
     // Skip this. The above testcase hasn't changed the actions
     setupTest("testFindActionByKey");
 
-    QStringList actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceB);
-    QStringList actionIdA; actionIdA << "qttest" << "Action A:testFindActionByKey" << "KDE Test Program" << "Text For Action A";
-    QCOMPARE(actionId, actionIdA);
-    actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceA);
-    QCOMPARE(actionId, actionIdA);
+    QList<KGlobalShortcutInfo> actionId = KGlobalAccel::self()->getGlobalShortcutsByKey(sequenceB);
+    QCOMPARE(actionId.size(), 1);
+
+    QString actionIdAComponentUniqueName("qttest");
+    QString actionIdAUniqueName("Action A:testFindActionByKey");
+    QString actionIdAComponentFriendlyName("KDE Test Program");
+    QString actionIdAFriendlyName("Text For Action A");
+
+    QCOMPARE(actionId.first().componentUniqueName(), actionIdAComponentUniqueName);
+    QCOMPARE(actionId.first().uniqueName(), actionIdAUniqueName);
+    QCOMPARE(actionId.first().componentFriendlyName(), actionIdAComponentFriendlyName);
+    QCOMPARE(actionId.first().friendlyName(), actionIdAFriendlyName);
+
+    actionId = KGlobalAccel::self()->getGlobalShortcutsByKey(sequenceA);
+    QCOMPARE(actionId.size(), 1);
+
+    QCOMPARE(actionId.first().componentUniqueName(), actionIdAComponentUniqueName);
+    QCOMPARE(actionId.first().uniqueName(), actionIdAUniqueName);
+    QCOMPARE(actionId.first().componentFriendlyName(), actionIdAComponentFriendlyName);
+    QCOMPARE(actionId.first().friendlyName(), actionIdAFriendlyName);
 }
 
 void KGlobalShortcutTest::testChangeShortcut()
@@ -207,12 +224,15 @@ void KGlobalShortcutTest::testListActions()
 
     // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
     KGlobalAccel *kga = KGlobalAccel::self();
+#ifndef KDE_NO_DEPRECATED
     QList<QStringList> components = kga->allMainComponents();
     //qDebug() << components;
     QStringList componentId;
     componentId << "qttest" << QString() << "KDE Test Program" << QString();
     QVERIFY(components.contains(componentId));
+#endif
 
+#ifndef KDE_NO_DEPRECATED
     QList<QStringList> actions = kga->allActionsForComponent(componentId);
     QVERIFY(!actions.isEmpty());
     QStringList actionIdA; actionIdA << "qttest" << "Action A:testListActions" << "KDE Test Program" << "Text For Action A";
@@ -220,6 +240,7 @@ void KGlobalShortcutTest::testListActions()
     //qDebug() << actions;
     QVERIFY(actions.contains(actionIdA));
     QVERIFY(actions.contains(actionIdB));
+#endif
 }
 
 void KGlobalShortcutTest::testComponentAssignment()
@@ -309,6 +330,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     action->forgetGlobalShortcut();
     delete coll.takeAction(action);
 
+#ifndef KDE_NO_DEPRECATED
     // activate overrideMainComponentData, it's not revokable currently!
     // overrideMainComponentData only overrides the component if the action
     // gets a real global shortcut!
@@ -337,6 +359,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     action->forgetGlobalShortcut();
     // Actions that were created by the KActionCollection::addAction have the
     // collections as parent. Ensure action is not deleted.
+#endif
 }
 
 void KGlobalShortcutTest::testNotification()
@@ -376,10 +399,12 @@ void KGlobalShortcutTest::testForgetGlobalShortcut()
     sleep(1);
 
     KGlobalAccel *kga = KGlobalAccel::self();
+#ifndef KDE_NO_DEPRECATED
     QList<QStringList> components = kga->allMainComponents();
     QStringList componentId;
     componentId << "qttest" << QString() << "KDE Test Program" << QString();
     QVERIFY(!components.contains(componentId));
+#endif
 }
 
 

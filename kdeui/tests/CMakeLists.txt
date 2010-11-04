@@ -97,7 +97,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdebugtest_gui
   kdialogbuttonboxtest
   kdialogtest
-  keditlistboxtest
   kfontdialogtest
   kglobalsettingsclient # helper program for kglobalsettingstest
   khboxtest
@@ -145,6 +144,11 @@ KDEUI_EXECUTABLE_TESTS(
   kpixmapsequenceoverlaypaintertest
 )
 
+if (NOT KDE_NO_DEPRECATED)
+KDEUI_EXECUTABLE_TESTS(
+  keditlistboxtest
+)
+endif (NOT KDE_NO_DEPRECATED)
 
 if (Q_WS_X11)
 

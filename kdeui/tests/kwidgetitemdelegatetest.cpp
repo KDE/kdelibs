@@ -165,8 +165,6 @@ public:
         }
 
         painter->restore();
-
-        paintWidgets(painter, option, index);
     }
 
     QList<QWidget*> createItemWidgets() const

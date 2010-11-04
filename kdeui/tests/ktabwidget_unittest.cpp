@@ -161,7 +161,7 @@ public:
 void KTabWidget_UnitTest::testMiddleClickTabReordering()
 {
     MyTabWidget tabWidget;
-    tabWidget.setTabReorderingEnabled(true);
+    tabWidget.setMovable(true);
 
     QWidget* w0 = new QWidget;
     QWidget* w1 = new QWidget;

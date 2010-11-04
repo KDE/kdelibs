@@ -23,7 +23,6 @@
 
 QTEST_KDEMAIN( KApplication_UnitTest, GUI )
 
-#include <klibloader.h>
 #include <kstandarddirs.h>
 #include <QtGui/QClipboard>
 #include <QtGui/QApplication>

@@ -58,11 +58,13 @@ int main()
             {
             KXErrorHandler handle2( dpy );
             XGetWindowAttributes(dpy, w, &attr);
+#ifndef KDE_NO_DEPRECATED
                 {
                 KXErrorHandler handle3( handler3, dpy );
                 XSetInputFocus( dpy, w, RevertToParent, CurrentTime );
                 cout << "WAS3:" << handle3.error( /*false*/ true ) << endl;
                 }
+#endif
             cout << "WAS2:" << handle2.error( false ) << endl;
             }
 //        XSync( dpy, False );

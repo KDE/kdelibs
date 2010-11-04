@@ -38,7 +38,7 @@ Test::Test( QWidget* parent )
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( initiateDrag( QWidget * )), SLOT(initiateDrag( QWidget * )));
   connect( mWidget, SIGNAL( movedTab( int, int )), SLOT(movedTab( int, int )));
-  mWidget->setTabReorderingEnabled( true );
+  mWidget->setMovable( true );
 
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid );
@@ -263,7 +263,7 @@ void Test::toggleTabShape(bool state)
 
 void Test::toggleCloseButtons(bool state)
 {
-  mWidget->setHoverCloseButton( state );
+  mWidget->setTabsClosable( state );
 }
 
 void Test::contextMenu(QWidget *w, const QPoint &p)
