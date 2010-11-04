@@ -22,7 +22,8 @@
 #define KFILEMETAINFOITEM_P_H
 
 #include "kurl.h"
-#include "predicateproperties.h"
+
+#include <nepomuk/types/property.h>
 
 #include <QtCore/QHash>
 #include <QtCore/QSharedData>
@@ -32,7 +33,7 @@ class KFileWritePlugin;
 class KFileMetaInfoItemPrivate : public QSharedData {
 public:
     KFileMetaInfoItemPrivate() : writer(0) {}
-    PredicateProperties pp;
+    Nepomuk::Types::Property pp;
     KUrl propertyUri;
     QVariant value;
     KFileWritePlugin* writer;

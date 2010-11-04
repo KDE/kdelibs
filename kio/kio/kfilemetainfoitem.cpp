@@ -2,7 +2,7 @@
 
    Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
                  2010 Sebastian Trueg <trueg@kde.org>
-                 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License (LGPL) as published by the Free Software Foundation; either
@@ -31,7 +31,7 @@ KFileMetaInfoItem::KFileMetaInfoItem(const KFileMetaInfoItem& item) : d(item.d) 
 KFileMetaInfoItem::KFileMetaInfoItem(const QString& pp,
                                      const QVariant& v, KFileWritePlugin* w, bool e)
     : d(new KFileMetaInfoItemPrivate()) {
-    d->pp = pp;
+    d->pp = QUrl(pp);
     d->value = v;
     d->writer = w;
     d->embedded = e;
@@ -86,10 +86,12 @@ KFileMetaInfoItem::isSkipped() const {
     // ########## TODO implement (vandenoever)
     return false;
 }
+#ifndef KDE_NO_DEPRECATED
 const PredicateProperties&
 KFileMetaInfoItem::properties() const {
     return d->pp;
 }
+#endif
 bool
 KFileMetaInfoItem::isEditable() const {
     return d->writer != 0;
