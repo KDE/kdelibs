@@ -39,17 +39,17 @@ void KUrlNavigatorTest::testHistorySizeAndIndex()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
 
-    m_navigator->setUrl(KUrl("A"));
+    m_navigator->setLocationUrl(KUrl("A"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
 
-    m_navigator->setUrl(KUrl("B"));
+    m_navigator->setLocationUrl(KUrl("B"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 2);
 
-    m_navigator->setUrl(KUrl("C"));
+    m_navigator->setLocationUrl(KUrl("C"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
@@ -108,7 +108,7 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
 
-    m_navigator->setUrl(KUrl("D"));
+    m_navigator->setLocationUrl(KUrl("D"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
@@ -118,11 +118,11 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setUrl(KUrl("E"));
+    m_navigator->setLocationUrl(KUrl("E"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setUrl(KUrl("F"));
+    m_navigator->setLocationUrl(KUrl("F"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 5);
 
@@ -133,18 +133,18 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 2);
     QCOMPARE(m_navigator->historySize(), 5);
 
-    m_navigator->setUrl(KUrl("G"));
+    m_navigator->setLocationUrl(KUrl("G"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
     // insert same URL as the current history index
-    m_navigator->setUrl(KUrl("G"));
+    m_navigator->setLocationUrl(KUrl("G"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
     // insert same URL with a trailing slash as the current history index
-    m_navigator->setUrl(KUrl("G/"));
+    m_navigator->setLocationUrl(KUrl("G/"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
@@ -154,7 +154,7 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setUrl(KUrl("C"));
+    m_navigator->setLocationUrl(KUrl("C"));
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 }
