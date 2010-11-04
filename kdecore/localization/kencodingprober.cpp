@@ -49,7 +49,7 @@ public:
         *   and have to use some Stastics methods.
         * for single-byte encodings (most western encodings), nsSBCSGroupProber is ok,
         *   because encoding state machine can detect many such encodings.
-        */ 
+        */
 
         delete prober;
 
@@ -195,10 +195,12 @@ KEncodingProber::ProberState KEncodingProber::state() const
 }
 
 //DEPRECATED, do *not* use
+#ifndef KDE_NO_DEPRECATED
 const char* KEncodingProber::encodingName() const
 {
     return qstrdup(encoding().constData());
 }
+#endif
 
 QByteArray KEncodingProber::encoding() const
 {

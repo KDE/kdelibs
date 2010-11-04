@@ -640,6 +640,7 @@ QStringList KCharsets::availableEncodingNames() const
     return available;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KCharsets::languageForEncoding( const QString &encoding ) const
 {
     const char* lang = kcharsets_array_search( (const char*)language_for_encoding_string,
@@ -650,6 +651,7 @@ QString KCharsets::languageForEncoding( const QString &encoding ) const
     else
         return i18nc( "@item Text character set", "Other" );
 }
+#endif
 
 QString KCharsets::descriptionForEncoding( const QString& encoding ) const
 {

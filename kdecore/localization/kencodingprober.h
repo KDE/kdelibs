@@ -95,7 +95,7 @@ public:
         Unicode,
         WesternEuropean
     };
-    
+
     /**
      * Default ProberType is Universal(detect all possibe encodings)
      */
@@ -129,7 +129,9 @@ public:
      * @warning The returned string is allocated with strdup, so some memory is leaked with every call.
      * @deprecated Use encoding() instead, which returns a QByteArray.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED const char* encodingName() const;
+#endif
 
     /**
      * @returns a QByteArray with the name of the best encoding it has guessed so far
@@ -138,13 +140,13 @@ public:
     QByteArray encoding() const;
 
     /**
-     * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99), not very reliable for single byte encodings 
+     * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99), not very reliable for single byte encodings
      */
     float confidence() const;
-    
+
     ProberType proberType() const;
 
-    /** 
+    /**
      * change current prober's ProberType and reset the prober
      */
     void setProberType(ProberType proberType);
@@ -153,12 +155,12 @@ public:
      * @return the ProberType for lang (eg. proberTypeForName("Chinese Simplified") will return KEncodingProber::ChineseSimplified
      */
     static ProberType proberTypeForName(const QString& lang);
-    
+
     /**
      * map ProberType to language string
      */
     static QString nameForProberType(ProberType proberType);
-    
+
 private:
     KEncodingProberPrivate* const d;
 };
