@@ -27,11 +27,11 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
+#include <klibrary.h>
 #include <kpluginloader.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <klibloader.h>
 
 using namespace KCModuleLoader;
 
@@ -86,10 +86,11 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
         foreach (const QString &arg, args) {
             args2 << arg;
         }
-        KCModule *module = KService::createInstance<KCModule>(mod.service(), parent, args2, &error);
+        KCModule *module = mod.service()->createInstance<KCModule>(parent, args2, &error);
         if (module) {
             return module;
         }
+#ifndef KDE_NO_DEPRECATED
         // might be using K_EXPORT_COMPONENT_FACTORY
         int error2 = 0;
         module = KService::createInstance<KCModule>(mod.service(), parent, args, &error2);
@@ -98,22 +99,23 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
             return module;
         }
         error += KLibLoader::errorString(error2);
+#endif
 //#ifndef NDEBUG
         {
             // get the create_ function
-            KLibrary *lib = KLibLoader::self()->library(mod.library());
-            if (lib) {
+            KLibrary lib(mod.library());
+            if (lib.load()) {
                 KCModule *(*create)(QWidget *, const char *);
                 QByteArray factorymethod("create_");
                 factorymethod += mod.handle().toLatin1();
-                create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib->resolveFunction(factorymethod));
+                create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib.resolveFunction(factorymethod));
                 if (create) {
                     return create(parent, mod.handle().toLatin1());
                     kFatal(1208) << "This module still uses a custom factory method (" << factorymethod << "). This is not supported anymore. Please fix the module.";
                 } else {
                     kWarning(1208) << "This module has no valid entry symbol at all. The reason could be that it's still using K_EXPORT_COMPONENT_FACTORY with a custom X-KDE-FactoryName which is not supported anymore";
                 }
-                lib->unload();
+                lib.unload();
             }
         }
 //#endif // NDEBUG
@@ -137,15 +139,11 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
 void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 {
   // get the library loader instance
-  KLibLoader *loader = KLibLoader::self();
-
-  // try to unload the library
-  QString libname("lib%1");
-  loader->unloadLibrary(libname.arg(mod.library()));
-
-  loader->unloadLibrary(mod.library());
+  KPluginLoader loader(mod.library());
+  loader.unload();
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KCModuleLoader::showLastLoaderError(QWidget *parent)
 {
   KMessageBox::detailedError(parent,
@@ -158,6 +156,7 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
        KLibLoader::self()->lastErrorMessage()));
 
 }
+#endif
 
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent )

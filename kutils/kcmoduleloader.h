@@ -2,9 +2,9 @@
   Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
   Copyright (c) 2002-2003 Daniel Molkentin <molkentin@kde.org>
   Copyright (c) 2006 Matthias Kretz <kretz@kde.org>
-  
+
   This file is part of the KDE project
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License version 2, as published by the Free Software Foundation.
@@ -30,12 +30,12 @@ class QWidget;
 /**
  * @short Loads a KControl Module.
  *
- * KCModuleLoader tries in several ways 
- * to locate and load a KCModule. If loading fails a 
+ * KCModuleLoader tries in several ways
+ * to locate and load a KCModule. If loading fails a
  * zero pointer is returned. \n
- * It is very unlikely KCModuleLoader is what you want 
+ * It is very unlikely KCModuleLoader is what you want
  * and @ref KCModuleProxy suits your needs.
- * 
+ *
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @author Frans Englich <frans.englich@telia.com>
  * @internal
@@ -46,21 +46,21 @@ namespace KCModuleLoader
      * Determines the way errors are reported
      */
     enum ErrorReporting {
-      /** 
-       * no error reporting is done 
+      /**
+       * no error reporting is done
        * */
       None = 0,
       /**
-       * the error report is shown instead of the 
-       * KCModule that should have * been loaded 
+       * the error report is shown instead of the
+       * KCModule that should have * been loaded
        */
       Inline = 1,
-      /** 
-       * shows a dialog with the error report 
+      /**
+       * shows a dialog with the error report
        */
       Dialog = 2,
-      /** 
-       * does both Inline and Dialog 
+      /**
+       * does both Inline and Dialog
        */
       Both = 3
     };
@@ -99,7 +99,9 @@ namespace KCModuleLoader
      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
      * message box like this function did.
      */
+#ifndef KDE_NO_DEPRECATED
     KCMUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
+#endif
 
     /**
      * Returns a KCModule containing the messages @p report and @p text.
