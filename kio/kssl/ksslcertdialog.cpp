@@ -94,9 +94,11 @@ KSSLCertDialog::~KSSLCertDialog() {
 }
 
 
+#ifndef KDE_NO_DEPRECATED
 void KSSLCertDialog::setup(QStringList certs, bool saveChecked, bool sendChecked) {
 	setupDialog(certs, saveChecked, sendChecked);
 }
+#endif
 
 void KSSLCertDialog::setupDialog(const QStringList& certs, bool saveChecked, bool sendChecked) {
   _save->setChecked(saveChecked);

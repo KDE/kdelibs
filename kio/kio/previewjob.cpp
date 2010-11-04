@@ -648,10 +648,12 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
                           scale, save, enabledPlugins);
 }
 
+#ifndef KDE_NO_DEPRECATED
 KIO::filesize_t PreviewJob::maximumFileSize()
 {
     KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
     return cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
 }
+#endif
 
 #include "previewjob.moc"

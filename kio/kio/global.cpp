@@ -91,6 +91,7 @@ KIO_EXPORT QString KIO::convertSeconds( unsigned int seconds )
     return timeStr;
 }
 
+#ifndef KDE_NO_DEPRECATED
 KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   QTime remainingTime;
@@ -113,13 +114,14 @@ KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesi
 
   return remainingTime;
 }
+#endif
 
 KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
     if ( files == 0 && dirs == 0 && items == 0 ) {
         return i18np( "%1 Item", "%1 Items", 0 );
     }
-    
+
     QString summary;
     const QString foldersText = i18np( "1 Folder", "%1 Folders", dirs );
     const QString filesText = i18np( "1 File", "%1 Files", files );
@@ -132,12 +134,12 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     } else if ( dirs > 0 ) {
         summary = foldersText;
     }
-    
+
     if ( items > dirs + files ) {
         const QString itemsText = i18np( "%1 Item", "%1 Items", items );
         summary = summary.isEmpty() ? itemsText : i18nc( "items: folders, files (size)", "%1: %2", itemsText, summary );
     }
-    
+
     return summary;
 }
 
@@ -1257,7 +1259,7 @@ KIO::MetaData::MetaData(const QMap<QString,QVariant>& map)
 KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaData )
 {
   QMapIterator<QString,QVariant> it (metaData);
-  
+
   while(it.hasNext()) {
      it.next();
      insert(it.key(), it.value().toString());
@@ -1276,7 +1278,7 @@ QVariant KIO::MetaData::toVariant() const
 {
   QMap<QString, QVariant> map;
   QMapIterator <QString,QString> it (*this);
- 
+
  while (it.hasNext()) {
    it.next();
    map.insert(it.key(), it.value());

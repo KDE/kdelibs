@@ -242,6 +242,7 @@ void JobPrivate::slotSpeed( KJob*, unsigned long speed )
 
 //Job::errorString is implemented in global.cpp
 
+#ifndef KDE_NO_DEPRECATED
 void Job::showErrorDialog( QWidget *parent )
 {
     if ( ui() )
@@ -254,6 +255,7 @@ void Job::showErrorDialog( QWidget *parent )
         kError() << errorString();
     }
 }
+#endif
 
 bool Job::isInteractive() const
 {
@@ -825,10 +827,12 @@ StatJob::~StatJob()
 {
 }
 
+#ifndef KDE_NO_DEPRECATED
 void StatJob::setSide( bool source )
 {
     d_func()->m_bSource = source;
 }
+#endif
 
 void StatJob::setSide( StatSide side )
 {
@@ -943,6 +947,7 @@ StatJob *KIO::mostLocalUrl(const KUrl& url, JobFlags flags)
     return job;
 }
 
+#ifndef KDE_NO_DEPRECATED
 StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFlags flags )
 {
     //kDebug(7007) << "stat" << url;
@@ -952,6 +957,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFla
     job->setDetails( details );
     return job;
 }
+#endif
 
 StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int details, JobFlags flags )
 {
@@ -998,7 +1004,7 @@ void TransferJob::slotData( const QByteArray &_data)
     }
     // shut up the warning, HACK: downside is that it changes the meaning of the variable
     d->m_isMimetypeEmitted = true;
-    
+
     if (d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error()) {
         emit data(this, _data);
     }
@@ -1137,6 +1143,7 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
     d->m_extraFlags &= ~JobPrivate::EF_TransferJobNeedData;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void TransferJob::setReportDataSent(bool enabled)
 {
     Q_D(TransferJob);
@@ -1145,11 +1152,14 @@ void TransferJob::setReportDataSent(bool enabled)
     else
        d->m_extraFlags &= ~JobPrivate::EF_TransferJobDataSent;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool TransferJob::reportDataSent() const
 {
     return (d_func()->m_extraFlags & JobPrivate::EF_TransferJobDataSent);
 }
+#endif
 
 QString TransferJob::mimetype() const
 {

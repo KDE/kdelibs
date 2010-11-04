@@ -175,7 +175,9 @@ namespace KIO {
          * @deprecated you should use job->ui()->setWindow(parent)
          *             and job->ui()->showErrorMessage() instead
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
+#endif
 
         /**
          * Returns whether the user should be asked about things when the job
@@ -464,7 +466,9 @@ namespace KIO {
          * (e.g. with FTP).
          * @param source true for "source" mode, false for "dest" mode
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void setSide( bool source );
+#endif
 
         /**
          * Selects the level of @p details we want.
@@ -593,7 +597,9 @@ namespace KIO {
          * @deprecated not needed, this is false for KIO::get and true for KIO::put,
          *             automatically since KDE-4.2.1
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void setReportDataSent(bool enabled);
+#endif
 
         /**
          *  Returns whether the job reports the amount of data that has been
@@ -602,7 +608,9 @@ namespace KIO {
          * @deprecated not needed, this is false for KIO::get and true for KIO::put,
          *             automatically since KDE-4.2.1 (and not useful as public API)
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED bool reportDataSent() const;
+#endif
 
         /**
          * Call this in the slot connected to result,

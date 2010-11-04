@@ -961,7 +961,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
     const KUrl jobUrl = job->url();
     QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
     while (it.hasNext()) {
-        it.next();        
+        it.next();
         if (it.key().startsWith(QLatin1String("{internal~currenthost}"), Qt::CaseInsensitive)) {
             SlaveConfig::self()->setConfigData(jobUrl.protocol(), jobUrl.host(), it.key().mid(22), it.value());
         } else if (it.key().startsWith(QLatin1String("{internal~allhosts}"), Qt::CaseInsensitive)) {
@@ -984,7 +984,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
                 QListIterator<Slave*> it (queue->allSlaves());
                 while (it.hasNext()) {
                     Slave* runningSlave = it.next();
-                    if (slave->host() == runningSlave->host()) {                        
+                    if (slave->host() == runningSlave->host()) {
                         slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxy, jobUrl));
                         kDebug(7006) << "Updated configuration of" << slave->protocol()
                                      << "ioslave, pid=" << slave->slave_pid();

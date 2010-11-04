@@ -68,7 +68,9 @@ public:
 	 *  @param sendChecked send the checked item to the remote host
 	 *  @deprecated
 	 */
+#ifndef KDE_NO_DEPRECATED
 	KDE_DEPRECATED void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
+#endif
 
 	/**
 	 *  Setup the dialog. Call this before you display the dialog.

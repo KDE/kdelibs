@@ -653,7 +653,9 @@ public:
      * @since 4.5
      * @deprecated Use @ref KUriFilterSearchProvider instead. See @ref setSearchProviders;
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED typedef QHash<QString, QPair<QString, QString> > ProviderInfoList;
+#endif
 
     /**
      * Constructs a filter plugin with a given name
@@ -725,7 +727,9 @@ protected:
      * @since 4.5
      * @deprecated Use @ref setSearchProviders instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setPreferredSearchProviders(KUriFilterData& data, const ProviderInfoList& providers) const;
+#endif
 
     /**
      * Sets the information about the search @p providers in @p data.
@@ -945,7 +949,9 @@ public:
      * @since 4.5
      * @deprecated Use filterSearchUri(KUriFilterData&, SearchFilterTypes) instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool filterSearchUri(KUriFilterData &data);
+#endif
 
     /**
      * Filter @p data using the criteria specified by @p types.

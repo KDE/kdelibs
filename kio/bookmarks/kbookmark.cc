@@ -179,10 +179,12 @@ KBookmark KBookmarkGroup::createNewSeparator()
     return KBookmark(sepElem);
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KBookmarkGroup::moveItem( const KBookmark & bookmark, const KBookmark & after )
 {
     return moveBookmark(bookmark, after);
 }
+#endif
 
 bool KBookmarkGroup::moveBookmark( const KBookmark & item, const KBookmark & after )
 {
@@ -703,12 +705,14 @@ QStringList KBookmark::List::mimeDataTypes()
     return QStringList()<<("application/x-xbel")<<KUrl::List::mimeDataTypes();
 }
 
+#ifndef KDE_NO_DEPRECATED
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
 {
     QDomDocument doc;
     kWarning(7043) << "Deprecated method called, with wrong lifetime of QDomDocument, will probably crash";
     return fromMimeData(mimeData, doc);
 }
+#endif
 
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDocument& doc )
 {

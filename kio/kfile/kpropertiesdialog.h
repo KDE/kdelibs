@@ -368,7 +368,9 @@ public:
    * @return true if the file is a local, regular, readable, desktop file
    * @deprecated use KFileItem::isDesktopFile
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED bool isDesktopFile( const KFileItem& _item );
+#endif
 
   void setDirty( bool b );
   bool isDirty() const;

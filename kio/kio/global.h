@@ -108,7 +108,9 @@ namespace KIO
    * @param  speed          speed in bytes per second
    * @return calculated remaining time
    */
+#ifndef KDE_NO_DEPRECATED
   KIO_EXPORT_DEPRECATED QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
+#endif
 
   /**
    * Helper for showing information about a set of files and directories

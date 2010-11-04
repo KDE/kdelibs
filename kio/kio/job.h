@@ -225,8 +225,10 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
+#ifndef KDE_NO_DEPRECATED
     KIO_EXPORT_DEPRECATED StatJob * stat( const KUrl& url, bool sideIsSource,
                                           short int details, JobFlags flags = DefaultFlags );
+#endif
 
     /**
      * Get (a.k.a. read).

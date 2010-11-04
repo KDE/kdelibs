@@ -89,10 +89,10 @@ QIODeviceInputStream::fillBuffer ( char* start, int32_t space )
         max = space;
     else
         max = qMin(qint64(space), qMax(max-m_read,qint64(0)));
-    
+
     // read into the buffer
     int32_t nwritten = in.read ( start, max );
-    
+
     // check the file stream status
     if ( nwritten < 0 ) {
         m_error = "Could not read from QIODevice.";
@@ -211,7 +211,7 @@ class KFileMetaInfoPrivate : public QSharedData
 public:
     QHash<QString, KFileMetaInfoItem> items;
     KUrl m_url;
-    
+
     void init ( QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything );
     void initWriters ( const KUrl& /*file*/ );
     void operator= ( const KFileMetaInfoPrivate& k ) {
@@ -226,13 +226,13 @@ public:
     KFileMetaInfoAnalysisConfiguration( KFileMetaInfo::WhatFlags indexDetail )
     : m_indexDetail(indexDetail) {
     }
-    
+
     int64_t maximalStreamReadLength ( const Strigi::AnalysisResult& ar ) {
         if(ar.depth() > 0)
             return 0; // ignore all data that has a depth > 0, i.e. files in archives
         else if(m_indexDetail == KFileMetaInfo::Everything)
             return -1;
-        else 
+        else
             return 65536; // do not read the whole file - this is used for on-the-fly analysis
     }
 
@@ -243,7 +243,7 @@ private:
 void KFileMetaInfoPrivate::init ( QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w )
 {
     m_url = url;
-    
+
     // get data from Strigi
     KFileMetaInfoAnalysisConfiguration c( w );
     Strigi::StreamAnalyzer indexer ( c );
@@ -381,15 +381,19 @@ QStringList KFileMetaInfo::supportedKeys() const
     return QStringList();
 }
 
+#ifndef KDE_NO_DEPRECATED
 KFileMetaInfoGroupList KFileMetaInfo::preferredGroups() const
 {
     return KFileMetaInfoGroupList();
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 KFileMetaInfoGroupList KFileMetaInfo::supportedGroups() const
 {
     return KFileMetaInfoGroupList();
 }
+#endif
 
 KFileMetaInfoItemList KFileMetaInfoGroup::items() const
 {

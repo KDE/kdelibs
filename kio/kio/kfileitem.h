@@ -301,7 +301,9 @@ public:
      * @see timeString()
      */
     KDateTime time( FileTimes which ) const;
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED time_t time( unsigned int which ) const;
+#endif
 
     /**
      * Requests the modification, access or creation time as a string, depending
@@ -311,7 +313,9 @@ public:
      * @see time
      */
     QString timeString( FileTimes which = ModificationTime ) const;
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QString timeString( unsigned int which) const;
+#endif
 
     /**
      * Returns true if the file is a local file.
@@ -433,7 +437,9 @@ public:
      * mostly makes sense for file managers only.
      * KDirModel has setDropsAllowed for similar (but configurable) logic.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool acceptsDrops() const;
+#endif
 
     /**
      * Let's "KRun" this file !
@@ -527,7 +533,9 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setExtraData( const void *key, void *value );
+#endif
 
     /**
      * Retrieves the extra data with the given @p key.
@@ -538,7 +546,9 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED const void * extraData( const void *key ) const;
+#endif
 
     /**
      * Removes the extra data associated with an item via @p key.
@@ -546,7 +556,9 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void removeExtraData( const void *key );
+#endif
 
     /**
      * Sets the metainfo of this item to @p info.
@@ -570,7 +582,9 @@ public:
     /**
      * @deprecated simply use '='
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void assign( const KFileItem & item );
+#endif
 
     /**
      * Reinitialize KFileItem with a new UDSEntry.
@@ -591,9 +605,11 @@ public:
      * @deprecated why not just create another KFileItem and use operator=,
      * now that it's a value class?
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
                                      bool delayedMimeTypes = false,
                                      bool urlIsDirectory = false );
+#endif
 
     /**
      * Tries to give a local URL for this file item if possible.

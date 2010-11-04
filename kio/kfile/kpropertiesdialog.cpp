@@ -113,7 +113,6 @@ extern "C" {
 #include <klineedit.h>
 #include <kseparator.h>
 #include <ksqueezedtextlabel.h>
-#include <klibloader.h>
 #include <kmimetypetrader.h>
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
@@ -641,10 +640,12 @@ KPropertiesDialogPlugin::~KPropertiesDialogPlugin()
     delete d;
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KPropertiesDialogPlugin::isDesktopFile( const KFileItem& _item )
 {
     return _item.isDesktopFile();
 }
+#endif
 
 void KPropertiesDialogPlugin::setDirty( bool b )
 {

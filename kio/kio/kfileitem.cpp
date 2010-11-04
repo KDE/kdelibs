@@ -189,7 +189,9 @@ public:
     // For special case like link to dirs over FTP
     QString m_guessedMimeType;
     mutable QString m_access;
+#ifndef KDE_NO_DEPRECATED
     QMap<const void*, void*> m_extra; // DEPRECATED
+#endif
     mutable KFileMetaInfo m_metaInfo;
 
     enum { NumFlags = KFileItem::CreationTime + 1 };
@@ -606,6 +608,7 @@ KDateTime KFileItem::time( FileTimes which ) const
     return d->time(which);
 }
 
+#ifndef KDE_NO_DEPRECATED
 time_t KFileItem::time( unsigned int which ) const
 {
     switch (which) {
@@ -618,6 +621,7 @@ time_t KFileItem::time( unsigned int which ) const
         return d->time(ModificationTime).toTime_t();
     }
 }
+#endif
 
 QString KFileItem::user() const
 {
@@ -1013,6 +1017,7 @@ bool KFileItem::isFile() const
     return !isDir();
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KFileItem::acceptsDrops() const
 {
     // A directory ?
@@ -1033,6 +1038,7 @@ bool KFileItem::acceptsDrops() const
 
     return false;
 }
+#endif
 
 QString KFileItem::getStatusBarInfo() const
 {
@@ -1159,6 +1165,7 @@ bool KFileItem::operator!=(const KFileItem& other) const
     return d != other.d;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
                              bool _delayedMimeTypes, bool _urlIsDirectory )
 {
@@ -1184,12 +1191,14 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->readUDSEntry( _urlIsDirectory );
     d->init();
 }
+#endif
 
 KFileItem::operator QVariant() const
 {
     return qVariantFromValue(*this);
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KFileItem::setExtraData( const void *key, void *value )
 {
     if ( !key )
@@ -1197,16 +1206,21 @@ void KFileItem::setExtraData( const void *key, void *value )
 
     d->m_extra.insert( key, value ); // replaces the value of key if already there
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 const void * KFileItem::extraData( const void *key ) const
 {
     return d->m_extra.value( key, 0 );
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KFileItem::removeExtraData( const void *key )
 {
     d->m_extra.remove( key );
 }
+#endif
 
 QString KFileItem::permissionsString() const
 {
@@ -1222,6 +1236,7 @@ QString KFileItem::timeString( FileTimes which ) const
     return KGlobal::locale()->formatDateTime( d->time(which) );
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KFileItem::timeString( unsigned int which ) const
 {
     switch (which) {
@@ -1234,6 +1249,7 @@ QString KFileItem::timeString( unsigned int which ) const
         return timeString(ModificationTime);
     }
 }
+#endif
 
 void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
 {
@@ -1251,10 +1267,12 @@ KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
     return d->m_metaInfo;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KFileItem::assign( const KFileItem & item )
 {
     *this = item;
 }
+#endif
 
 KUrl KFileItem::mostLocalUrl(bool &local) const
 {

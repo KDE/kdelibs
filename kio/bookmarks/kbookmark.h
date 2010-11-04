@@ -76,7 +76,9 @@ public:
          * is already deleted, do not use ownerDocument()
          * @deprecated use fromMimeData(mimeData, doc), to avoid crashes
          */
+#ifndef KDE_NO_DEPRECATED
         static KDE_DEPRECATED KBookmark::List fromMimeData( const QMimeData *mimeData );
+#endif
 
         /**
          * Extract a list of bookmarks from the contents of @p mimeData.
@@ -419,7 +421,9 @@ public:
      */
     bool moveBookmark( const KBookmark & bookmark, const KBookmark & after);
 
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool moveItem( const KBookmark & item, const KBookmark & after );
+#endif
 
     /**
      * Delete a bookmark - it has to be one of our children !
