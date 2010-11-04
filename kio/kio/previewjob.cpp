@@ -180,12 +180,11 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        if (enabledPlugins.isEmpty() || enabledPlugins.contains((*it)->desktopEntryName()))
-    {
-        const QStringList mimeTypes = (*it)->serviceTypes();
-        for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
-            mimeMap.insert(*mt, *it);
-    }
+        if (enabledPlugins.isEmpty() || enabledPlugins.contains((*it)->desktopEntryName())) {
+            const QStringList mimeTypes = (*it)->serviceTypes();
+            for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
+                mimeMap.insert(*mt, *it);
+        }
     }
 
     // Look for images and store the items in our todo list :)
