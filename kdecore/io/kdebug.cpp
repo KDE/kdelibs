@@ -868,7 +868,7 @@ KDebug::Block::~Block()
 {
     const double duration = (double)m_startTime.elapsed() / (double)1000.0;
     kDebug_data->mutex.lock();
-    kDebug_data->m_indentString.truncate(kDebug_data->m_indentString.length() - 2);
+    kDebug_data->m_indentString.chop(2);
     kDebug_data->mutex.unlock();
 
     // Print timing information, and a special message (DELAY) if the method took longer than 5s
