@@ -36,8 +36,9 @@ using namespace std;
 #include <QtCore/QMetaEnum>
 
 #include <kdebug.h>
-#include <klibloader.h>
 #include <kglobal.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <kstandarddirs.h>
 
 #include "tester.h"
