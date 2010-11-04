@@ -96,10 +96,14 @@ void KFileItemTest::testDoesNotExist()
 void KFileItemTest::testDetach()
 {
     KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
+#ifndef KDE_NO_DEPRECATED
     fileItem.setExtraData(this, this);
     QCOMPARE(fileItem.extraData(this), (const void*)this);
+#endif
     KFileItem fileItem2(fileItem);
+#ifndef KDE_NO_DEPRECATED
     QCOMPARE(fileItem2.extraData(this), (const void*)this);
+#endif
     QVERIFY(fileItem == fileItem2);
     fileItem2.mark();
     QVERIFY(fileItem2.isMarked());

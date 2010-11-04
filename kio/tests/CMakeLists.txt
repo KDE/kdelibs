@@ -37,7 +37,6 @@ KIO_EXECUTABLE_TESTS(
   kruntest
   kioslavetest
   speed
-  kiopassdlgtest
   kscantest
   kdirlistertest_gui
   previewtest
@@ -56,6 +55,12 @@ KIO_EXECUTABLE_TESTS(
   kicondialogtest
   kfiledialogtest
 )
+
+if(NOT KDE_NO_DEPRECATED)
+KIO_EXECUTABLE_TESTS(
+  kiopassdlgtest
+)
+endif(NOT KDE_NO_DEPRECATED)
 
 ########### kfstest ###############
 

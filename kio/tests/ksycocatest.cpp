@@ -62,8 +62,11 @@ int main(int argc, char *argv[])
    else
        qDebug( "not found" );
 
+   KService::Ptr se;
+
+#ifndef KDE_NO_DEPRECATED
    qDebug("Trying to look for Desktop Pager");
-   KService::Ptr se = KService::serviceByName("Desktop Pager");
+   se = KService::serviceByName("Desktop Pager");
    if ( se )
    {
      qDebug("Found it !");
@@ -73,6 +76,7 @@ int main(int argc, char *argv[])
    {
      qDebug("Not found !");
    }
+#endif
 
    qDebug("Trying to look for kpager");
    se = KService::serviceByDesktopName("kpager");

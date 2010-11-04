@@ -79,7 +79,9 @@ int main (int argc, char **argv)
   treeView->setUniformRowHeights(true); // makes visualRect() much faster
   treeView->resize(500, 500);
   treeView->show();
+#ifndef KDE_NO_DEPRECATED
   new KMimeTypeResolver(treeView, dirmodel);
+#endif
   treeView->setItemDelegate( new KFileItemDelegate(treeView) );
 #endif
 
@@ -88,8 +90,10 @@ int main (int argc, char **argv)
   listView->setModel(dirmodel);
   listView->setUniformItemSizes(true); // true in list mode, not in icon mode.
   listView->show();
+#ifndef KDE_NO_DEPRECATED
   new KMimeTypeResolver(listView, dirmodel);
   listView->setItemDelegate( new KFileItemDelegate(listView) );
+#endif
 #endif
 
 #if 1
@@ -98,7 +102,9 @@ int main (int argc, char **argv)
   iconView->setSelectionMode(QListView::ExtendedSelection);
   iconView->setViewMode(QListView::IconMode);
   iconView->show();
+#ifndef KDE_NO_DEPRECATED
   new KMimeTypeResolver(iconView, dirmodel);
+#endif
   iconView->setItemDelegate( new KFileItemDelegate(iconView) );
 #endif
 
