@@ -39,6 +39,7 @@ target_link_libraries(testTranslatable ${KDE4_KDECORE_LIBS} knewstuff2 ${QT_QTTE
 
 ##########################
 
+if(NOT KDE_NO_DEPRECATED)
 set(knewstuff2_test_SRCS
    knewstuff2_test.cpp
 )
@@ -47,9 +48,11 @@ kde4_add_executable(knewstuff2_test TEST ${knewstuff2_test_SRCS})
 
 target_link_libraries(knewstuff2_test ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} knewstuff2)
 #install(FILES knewstuff2_test.knsrc DESTINATION ${CONFIG_INSTALL_DIR})
+endif(NOT KDE_NO_DEPRECATED)
 
 ##########################
  
+if(NOT KDE_NO_DEPRECATED)
 set(knewstuff2_download_SRCS
    knewstuff2_download.cpp
 )
@@ -57,9 +60,11 @@ set(knewstuff2_download_SRCS
 kde4_add_executable(knewstuff2_download TEST ${knewstuff2_download_SRCS})
 
 target_link_libraries(knewstuff2_download ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTGUI_LIBRARY} knewstuff2)
+endif(NOT KDE_NO_DEPRECATED)
 
 ##########################
  
+if(NOT KDE_NO_DEPRECATED)
 set(knewstuff2_standard_SRCS
    knewstuff2_standard.cpp
 )
@@ -67,9 +72,11 @@ set(knewstuff2_standard_SRCS
 kde4_add_executable(knewstuff2_standard TEST ${knewstuff2_standard_SRCS})
 
 target_link_libraries(knewstuff2_standard ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTGUI_LIBRARY} knewstuff2)
+endif(NOT KDE_NO_DEPRECATED)
 
 ##########################
  
+if(NOT KDE_NO_DEPRECATED)
 set(knewstuff2_cache_SRCS
    knewstuff2_cache.cpp
 )
@@ -77,9 +84,11 @@ set(knewstuff2_cache_SRCS
 kde4_add_executable(knewstuff2_cache TEST ${knewstuff2_cache_SRCS})
 
 target_link_libraries(knewstuff2_cache ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTGUI_LIBRARY} knewstuff2)
+endif(NOT KDE_NO_DEPRECATED)
 
 ##########################
 
+if(NOT KDE_NO_DEPRECATED)
 set(kdxspreview_SRCS
    kdxspreview.cpp
    kdxsview.cpp
@@ -92,4 +101,5 @@ set(kdxspreview_SRCS
 
 #target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} knewstuff2)
 #install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
+endif(NOT KDE_NO_DEPRECATED)
 
