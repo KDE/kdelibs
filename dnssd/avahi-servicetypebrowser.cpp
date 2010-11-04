@@ -49,7 +49,7 @@ void ServiceTypeBrowser::startBrowse()
 	d->m_started=true;
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	QDBusReply<QDBusObjectPath> rep=s.ServiceTypeBrowserNew(-1, -1, d->m_domain, 0);
-	
+
 	if (!rep.isValid()) return;
 	org::freedesktop::Avahi::ServiceTypeBrowser *b=new org::freedesktop::Avahi::ServiceTypeBrowser("org.freedesktop.Avahi",rep.value().path(),
 	    QDBusConnection::systemBus());
@@ -89,10 +89,12 @@ QStringList ServiceTypeBrowser::serviceTypes() const
 	return d->m_servicetypes;
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool ServiceTypeBrowser::isRunning() const
 {
 	return d->m_started;
 }
+#endif
 
 
 }

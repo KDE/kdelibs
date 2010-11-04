@@ -94,7 +94,9 @@ public:
 	 * This method is unnecessary, since it is safe to call startBrowse()
 	 * multiple times.
 	 */
+#ifndef KDE_NO_DEPRECATED
 	KDE_DEPRECATED bool isRunning() const;
+#endif
 
 Q_SIGNALS:
 	/**

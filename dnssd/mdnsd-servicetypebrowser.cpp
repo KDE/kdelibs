@@ -50,22 +50,24 @@ void ServiceTypeBrowser::startBrowse()
 }
 
 //@todo: remove on Monday
+#ifndef KDE_NO_DEPRECATED
 bool ServiceTypeBrowser::isRunning() const
 {
 	return false;
 }
+#endif
 
 void ServiceTypeBrowserPrivate::newService(DNSSD::RemoteService::Ptr srv)
 {
     QString type=srv->serviceName()+'.'+srv->type();
     m_servicetypes+=type;
     emit m_parent->serviceTypeAdded(type);
-}    
+}
 
 void ServiceTypeBrowserPrivate::removeService(DNSSD::RemoteService::Ptr srv)
 {
     QString type=srv->serviceName()+'.'+srv->type();
-    m_servicetypes.removeAll(type);    
+    m_servicetypes.removeAll(type);
     emit m_parent->serviceTypeRemoved(type);
 }
 
