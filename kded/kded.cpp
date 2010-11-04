@@ -40,6 +40,11 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#ifndef KDE_NO_DEPRECATED
+#include <klibloader.h>
+#else
+#include <klibrary.h>
+#endif
 #include <klocale.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -369,6 +374,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
             if (factoryName.isEmpty())
                 factoryName = s->library();
             factoryName = "create_" + factoryName;
+#ifndef KDE_NO_DEPRECATED
             KLibrary* lib = KLibLoader::self()->library(libname);
             KDEDModule* (*create)();
             if (lib) {
@@ -376,6 +382,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
                 if (create)
                     module = create();
             }
+#endif
             if (!module) {
                 kWarning() << "Could not load library" << libname << ". ["
                            << loader.errorString() << "]";

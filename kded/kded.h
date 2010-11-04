@@ -31,7 +31,6 @@
 #include <ksycoca.h>
 #include <ksycocatype.h>
 #include <kdedmodule.h>
-#include <klibloader.h>
 #include <kservice.h>
 
 class QDBusServiceWatcher;
