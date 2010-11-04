@@ -23,7 +23,11 @@
 
 #include "kurl.h"
 
+#ifndef KDE_NO_DEPRECATED
+#include <predicateproperties.h>
+#else
 #include <nepomuk/types/property.h>
+#endif
 
 #include <QtCore/QHash>
 #include <QtCore/QSharedData>
@@ -33,7 +37,11 @@ class KFileWritePlugin;
 class KFileMetaInfoItemPrivate : public QSharedData {
 public:
     KFileMetaInfoItemPrivate() : writer(0) {}
+#ifndef KDE_NO_DEPRECATED
+    PredicateProperties pp;
+#else
     Nepomuk::Types::Property pp;
+#endif
     KUrl propertyUri;
     QVariant value;
     KFileWritePlugin* writer;
