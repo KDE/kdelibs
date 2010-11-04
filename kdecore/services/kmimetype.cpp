@@ -498,6 +498,7 @@ QString KMimeType::comment( const KUrl &url) const
     return d->comment(url);
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KMimeType::parentMimeType() const
 {
     const QStringList parents = parentMimeTypes();
@@ -505,6 +506,7 @@ QString KMimeType::parentMimeType() const
         return parents.first();
     return QString();
 }
+#endif
 
 bool KMimeTypePrivate::inherits(const QString& mime) const
 {

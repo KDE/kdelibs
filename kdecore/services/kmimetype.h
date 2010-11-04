@@ -328,7 +328,9 @@ public:
      * which is actually part of the shared-mime-info standard.
      * Use is(), parentMimeTypes(), or allParentMimeTypes() instead of parentMimeType()
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QString parentMimeType() const;
+#endif
 
     /**
      * If this mimetype is a subclass of one or more other mimetypes,

@@ -24,7 +24,6 @@
 #include "kserviceaction.h"
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <klibloader.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
@@ -101,7 +100,9 @@ public:
      * @return the type of the service ("Application" or "Service")
      * @deprecated use isApplication()
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QString type() const;
+#endif
 
     /**
      * Returns the executable.
@@ -166,7 +167,9 @@ public:
      * @return the path of the service's desktop file,
      *         or QString() if not set
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QString desktopEntryPath() const;
+#endif
 
     /**
      * Returns the filename of the service desktop entry without any
@@ -289,7 +292,9 @@ public:
      * @return true if the mime type you specified is supported, otherwise false.
      * @deprecated, use hasMimeType(QString)
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+#endif
 
     /**
      * Checks whether the service supports this mime type
@@ -419,7 +424,9 @@ public:
      * @em Very @em important: Don't store the result in a KService* !
      * @deprecated there is never a good reason to use this method.
      */
+#ifndef KDE_NO_DEPRECATED
     static Ptr serviceByName( const QString& _name ); // KDE5: remove
+#endif
 
     /**
      * Find a service based on its path as returned by entryPath().
@@ -554,17 +561,20 @@ public:
     /**
      * @deprecated Use the non-static service->createInstance<T>(parent, args, &error)
      */
+#ifndef KDE_NO_DEPRECATED
     template <class T>
     static KDE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         return service->createInstance<T>(parent, args, error);
     }
+#endif
 
     /**
      * @deprecated Use the non-static service->createInstance<T>(parent, args, &error)
      * where args is a QVariantList rather than a QStringList
      */
+#ifndef KDE_NO_DEPRECATED
     template <class T>
     static KDE_DEPRECATED T *createInstance( const KService::Ptr &service,
                               QObject *parent,
@@ -580,6 +590,7 @@ public:
 
         return KLibLoader::createInstance<T>( library, parent, args, error );
     }
+#endif
 
     /**
      * This template allows to create a component from a list of services,
@@ -596,6 +607,7 @@ public:
      * @return A pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type.
      */
+#ifndef KDE_NO_DEPRECATED
     template <class T, class ServiceIterator>
     static KDE_DEPRECATED T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
@@ -616,7 +628,9 @@ public:
         }
         return 0;
     }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
     template <class T, class ServiceIterator>
     static KDE_DEPRECATED T *createInstance( ServiceIterator begin, ServiceIterator end,
                               QObject *parent,
@@ -636,6 +650,7 @@ public:
             *error = KLibLoader::ErrNoServiceFound;
         return 0;
     }
+#endif
 
 protected:
     friend class KMimeAssociations;

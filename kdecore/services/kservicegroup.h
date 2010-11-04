@@ -211,7 +211,7 @@ public:
       SortByGenericName = 0x8 /*< sort by GenericName+Name instead of Name+GenericName */
     };
     Q_DECLARE_FLAGS(EntriesOptions, EntriesOption)
- 
+
     /**
      * subgroups for this service group
      */
@@ -249,7 +249,9 @@ public:
    * @deprecated Use a servicetype and a proper trader query instead, for a better
    * way of finding related services.
    */
+#ifndef KDE_NO_DEPRECATED
   static KDE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
+#endif
 
   /**
    * Returns the root service group.

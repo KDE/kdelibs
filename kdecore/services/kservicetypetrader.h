@@ -99,7 +99,7 @@ public:
      *                    get all services of the given @p servicetype
      *
      * @return A list of services that satisfy the query
-     * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language 
+     * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language
      */
     KService::List query( const QString& servicetype,
                           const QString& constraint = QString() ) const;
@@ -176,7 +176,7 @@ public:
      */
     template <class T>
     static T *createInstanceFromQuery(const QString &serviceType,
-            QWidget *parentWidget, QObject *parent, const QString &constraint = QString(), 
+            QWidget *parentWidget, QObject *parent, const QString &constraint = QString(),
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         const KService::List offers = self()->query(serviceType, constraint);
@@ -188,7 +188,7 @@ public:
                 return component;
             }
         }
-        if (error) 
+        if (error)
             *error = i18n("No service matching the requirements was found");
         return 0;
     }
@@ -198,6 +198,7 @@ public:
      * createInstanceFromQuery(const QString&, const QString&, QObject*, const QVariantList&, QString*)
      * instead
      */
+#ifndef KDE_NO_DEPRECATED
     template <class T>
     static KDE_DEPRECATED T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
             QObject *parent, const QStringList &args, int *error = 0)
@@ -212,6 +213,7 @@ public:
 
         return KService::createInstance<T>(offers.begin(), offers.end(), parent, args, error);
     }
+#endif
 
 
     /**

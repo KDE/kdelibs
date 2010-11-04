@@ -72,7 +72,9 @@ public:
      * For instance inode/directory.desktop, or kpart.desktop
      * @return the path of the desktop file
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QString desktopEntryPath() const;
+#endif
 
     /**
      * Checks whether this service type inherits another one.
