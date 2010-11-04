@@ -23,7 +23,7 @@
 #include <khtml_export.h>
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
-#include <kparts/factory.h>
+#include <kpluginfactory.h>
 
 namespace KJS
 {
@@ -44,14 +44,15 @@ public:
 
 Q_DECLARE_INTERFACE(ScriptingInterface, "org.kde.khtml.ScriptingInterface")
 
-class KHTMLAdaptorPartFactory : public KParts::Factory {
+class KHTMLAdaptorPartFactory : public KPluginFactory {
     Q_OBJECT
 public:
     KHTMLAdaptorPartFactory ();
-    virtual KParts::Part *createPartObject(QWidget *wparent,
-                                           QObject *parent,
-                                           const char *className,
-                                           const QStringList &args);
+    virtual QObject *create(const char *iface,
+                            QWidget *wparent,
+                            QObject *parent,
+                            const QVariantList &args,
+                            const QString &keyword);
 };
 
 class AdaptorView : public KParts::ReadOnlyPart,

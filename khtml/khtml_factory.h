@@ -23,16 +23,20 @@
 
 #include <khtml_export.h>
 
-#include <kparts/factory.h>
+#include <kpluginfactory.h>
 
-class KHTMLFactory : public KParts::Factory
+class KHTML_EXPORT KHTMLFactory : public KPluginFactory
 {
     Q_OBJECT
 public:
     KHTMLFactory();
     virtual ~KHTMLFactory();
 
-    virtual KParts::Part *createPartObject( QWidget *parentWidget, QObject *parent, const char *className, const QStringList &args );
+    virtual QObject *create(const char* iface,
+                            QWidget *parentWidget,
+                            QObject *parent,
+                            const QVariantList &args,
+                            const QString &keyword);
 };
 
 #endif

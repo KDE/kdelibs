@@ -23,6 +23,7 @@
 #include "kjavaappletwidget.h"
 #include "kjavaappletserver.h"
 
+#include <algorithm>
 #include <stdio.h>
 
 #ifdef KDE_USE_FINAL
@@ -38,7 +39,6 @@
 
 #include <kapplication.h>
 #include <kauthorized.h>
-#include <klibloader.h>
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kstatusbar.h>
@@ -48,7 +48,7 @@
 #include <kio/authinfo.h>
 
 
-K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory)
+K_EXPORT_PLUGIN( KJavaAppletViewerFactory )
 
 KComponentData *KJavaAppletViewerFactory::s_componentData = 0;
 KIconLoader *KJavaAppletViewerFactory::s_iconLoader = 0;
@@ -63,10 +63,15 @@ KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
     delete s_componentData;
 }
 
-KParts::Part *KJavaAppletViewerFactory::createPartObject
-  (QWidget *wparent,
-   QObject *parent, const char *, const QStringList & args) {
-    return new KJavaAppletViewer (wparent, parent, args);
+QString variant2StringHelper(const QVariant &variant) {
+    return variant.toString();
+}
+
+QObject *KJavaAppletViewerFactory::create(const char *, QWidget *wparent, QObject *parent,
+                                          const QVariantList & args, const QString &) {
+    QStringList argsStrings;
+    std::transform(args.begin(), args.end(), argsStrings.begin(), variant2StringHelper);
+    return new KJavaAppletViewer (wparent, parent, argsStrings);
 }
 
 //-----------------------------------------------------------------------------

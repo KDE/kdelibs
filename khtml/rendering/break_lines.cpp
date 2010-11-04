@@ -1,5 +1,5 @@
 #include <break_lines.h>
-#include <klibloader.h>
+#include <klibrary.h>
 #include <QtCore/QTextCodec>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +37,7 @@ namespace khtml {
             free(wbrpos);
             free(isbreakable);
             if (library) library->unload();
+            delete library;
         }
         const QChar *string;
         int *wbrpos;
@@ -63,20 +64,18 @@ namespace khtml {
 
 #ifndef HAVE_LIBTHAI
 
-	KLibrary *lib = 0;
+	KLibrary *lib = new KLibrary( QLatin1String("libthai") );
 
         /* load libthai dynamically */
 	if (( !th_brk ) && thaiCodec  ) {
 	    printf("Try to load libthai dynamically...\n");
-            KLibLoader *loader = KLibLoader::self();
-            lib = loader->library(QLatin1String("libthai"));
-            if ( lib )
+            if ( lib->load() )
                 th_brk = (th_brk_def) lib->resolveFunction("th_brk");
             if ( !th_brk ) {
                 // indication that loading failed and we shouldn't try to load again
 		printf("Error, can't load libthai...\n");
                 thaiCodec = 0;
-                if (lib)
+                if (lib->isLoaded())
                     lib->unload();
             }
         }

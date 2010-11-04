@@ -29,15 +29,15 @@
 #include <ktemporaryfile.h>
 #include <kmessagebox.h>
 #include <kmimetypetrader.h>
-#include <kparts/genericfactory.h>
+#include <kpluginfactory.h>
 #include <khtml_part.h>
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <QtCore/QTimer>
 #include <kvbox.h>
 
-typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
-K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
+K_PLUGIN_FACTORY(KMultiPartFactory, registerPlugin<KMultiPart>();)
+K_EXPORT_PLUGIN(KMultiPartFactory)
 
 //#define DEBUG_PARSING
 
@@ -96,7 +96,7 @@ Data for the second and last object.
 
 
 KMultiPart::KMultiPart( QWidget *parentWidget,
-                        QObject *parent, const QStringList& )
+                        QObject *parent, const QVariantList& )
     : KParts::ReadOnlyPart( parent )
 {
     m_filter = 0L;

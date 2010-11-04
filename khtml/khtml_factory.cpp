@@ -35,10 +35,15 @@ KHTMLFactory::~KHTMLFactory()
     KHTMLGlobal::finalCheck();
 }
 
-KParts::Part * KHTMLFactory::createPartObject( QWidget *parentWidget, QObject *parent, const char *className, const QStringList &args )
+QObject * KHTMLFactory::create( const char *iface,
+                                QWidget *parentWidget,
+                                QObject *parent,
+                                const QVariantList &args,
+                                const QString &keyword )
 {
+    Q_UNUSED( keyword );
     KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
-    if ( strcmp(className, "Browser/View") == 0 ) // old hack
+    if ( strcmp(iface, "Browser/View") == 0 ) // old hack
         prof = KHTMLPart::BrowserViewGUI;
     if (args.contains("Browser/View"))
         prof = KHTMLPart::BrowserViewGUI;
@@ -46,9 +51,6 @@ KParts::Part * KHTMLFactory::createPartObject( QWidget *parentWidget, QObject *p
     return new KHTMLPart( parentWidget, parent, prof );
 }
 
-extern "C" KDE_EXPORT void *init_libkhtmlpart()
-{
-    return new KHTMLFactory;
-}
+K_EXPORT_PLUGIN( KHTMLFactory )
 
 #include "khtml_factory.moc"

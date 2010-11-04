@@ -47,18 +47,25 @@ KJS::JSObject* AdaptorView::scriptObject()
     return new KJS::JSObject();
 }
 
-K_EXPORT_COMPONENT_FACTORY (khtmladaptorpart, KHTMLAdaptorPartFactory)
+K_EXPORT_PLUGIN(KHTMLAdaptorPartFactory)
 
 KHTMLAdaptorPartFactory::KHTMLAdaptorPartFactory()
 {
 }
 
-KParts::Part* KHTMLAdaptorPartFactory::createPartObject(QWidget* wparent,
-                                                        QObject* parent,
-                                                        const char* /*className*/,
-                                                        const QStringList& args)
+
+QString variant2StringHelper(const QVariant &variant)
 {
-    return new AdaptorView(wparent, parent, args);
+    return variant.toString();
+}
+
+QObject* KHTMLAdaptorPartFactory::create(const char* /*iface*/,
+                                         QWidget* wparent,
+                                         QObject *parent,
+                                         const QVariantList &/*args*/,
+                                         const QString& /*keyword*/)
+{
+    return new AdaptorView(wparent, parent, QStringList());
 }
 
 #include "moc_khtmladaptorpart.cpp"

@@ -26,7 +26,7 @@
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
-#include <kparts/factory.h>
+#include <kpluginfactory.h>
 #include <kdialog.h>
 #include <kurl.h>
 #include <QtCore/QObject>
@@ -116,15 +116,13 @@ private:
     bool m_closed;
 };
 
-class KJavaAppletViewerFactory : public KParts::Factory {
+class KJavaAppletViewerFactory : public KPluginFactory {
     Q_OBJECT
 public:
     KJavaAppletViewerFactory ();
     virtual ~KJavaAppletViewerFactory ();
-    virtual KParts::Part *createPartObject
-        (QWidget *wparent,
-         QObject *parent,
-         const char *className, const QStringList &args);
+    virtual QObject *create(const char *, QWidget *wparent, QObject *parent,
+                            const QVariantList & args, const QString &);
     static const KComponentData &componentData() { return *s_componentData; }
     static KIconLoader * iconLoader () { return s_iconLoader; }
 private:
