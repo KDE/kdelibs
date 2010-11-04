@@ -599,7 +599,9 @@ public:
     qint64 mMin;
     qint64 mMax;
   };
+#ifndef KDE_NO_DEPRECATED
   typedef KDE_DEPRECATED ItemLongLong ItemInt64;
+#endif
 
   /**
    * Class for handling enums.
@@ -730,7 +732,9 @@ public:
     quint64 mMin;
     quint64 mMax;
   };
+#ifndef KDE_NO_DEPRECATED
   typedef KDE_DEPRECATED ItemULongLong ItemUInt64;
+#endif
 
   /**
    * Class for handling a floating point preference item.
@@ -1171,9 +1175,11 @@ public:
    * @deprecated
    * Use addItemLongLong().
    */
+#ifndef KDE_NO_DEPRECATED
   KDE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
                           qint64 defaultValue = 0,
                           const QString & key = QString());
+#endif
 
   /**
    * Register an item of type quint64
@@ -1194,9 +1200,11 @@ public:
    * @deprecated
    * Use addItemULongLong().
    */
+#ifndef KDE_NO_DEPRECATED
   KDE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
                             const QString & key = QString());
+#endif
 
   /**
    * Register an item of type double.

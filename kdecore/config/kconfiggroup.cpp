@@ -651,19 +651,23 @@ void KConfigGroup::deleteGroup(WriteConfigFlags flags)
     config()->deleteGroup(d->fullName(), flags);
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KConfigGroup::changeGroup( const QString &group )
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
     d.detach();
     d->mName = group.toUtf8();
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KConfigGroup::changeGroup( const char *group )
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
     d.detach();
     d->mName = group;
 }
+#endif
 
 QString KConfigGroup::name() const
 {

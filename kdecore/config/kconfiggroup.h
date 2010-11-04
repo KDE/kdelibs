@@ -149,14 +149,18 @@ public:
      * @deprecated
      * Create another KConfigGroup from the parent of this group instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void changeGroup(const QString &group);
+#endif
     /**
      * Overload for changeGroup(const QString&)
      *
      * @deprecated
      * Create another KConfigGroup from the parent of this group instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void changeGroup(const char *group);
+#endif
 
     /**
      * Copies the entries in this group to another configuration object

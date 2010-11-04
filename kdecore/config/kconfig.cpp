@@ -612,17 +612,21 @@ bool KConfig::isGroupImmutableImpl(const QByteArray& aGroup) const
     return isImmutable() || d->entryMap.getEntryOption(aGroup, 0, 0, KEntryMap::EntryImmutable);
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KConfig::setForceGlobal(bool b)
 {
     Q_D(KConfig);
     d->bForceGlobal = b;
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 bool KConfig::forceGlobal() const
 {
     Q_D(const KConfig);
     return d->bForceGlobal;
 }
+#endif
 
 KConfigGroup KConfig::groupImpl(const QByteArray &group)
 {

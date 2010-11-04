@@ -115,7 +115,7 @@ public:
      *
      * @note You probably want to use KSharedConfig::openConfig instead.
      *
-     * @param file         the name of the file. If an empty string is passed in 
+     * @param file         the name of the file. If an empty string is passed in
      *                     and SimpleConfig is passed in for the OpenFlags, then an in-memory
      *                     KConfig object is created which will not write out to file nor which
      *                     requires any file in the filesystem at all.
@@ -346,7 +346,9 @@ public:
      * @param force true to force writing to kdeglobals
      * @see forceGlobal
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setForceGlobal(bool force);
+#endif
     /**
      * @deprecated
      *
@@ -356,7 +358,9 @@ public:
      * @see setForceGlobal
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool forceGlobal() const;
+#endif
     /// @}
 
     /// @reimp
