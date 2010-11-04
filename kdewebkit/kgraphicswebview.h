@@ -99,7 +99,9 @@ Q_SIGNALS:
      * @param url   url generated from the selection clipboard content.
      * @deprecated  use selectionClipboardUrlPasted(KUrl, bool) instead.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void selectionClipboardUrlPasted(const KUrl &url);
+#endif
 
     /**
      * This signal is emitted when a url from the selection clipboard is pasted
