@@ -23,6 +23,8 @@
 
 #include <QtGui/QWidget>
 
+#include <kpluginloader.h>
+#include <klibrary.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kcomponentdata.h>
@@ -31,7 +33,7 @@
 using namespace KParts;
 
 Factory::Factory( QObject *parent )
-: KLibFactory( parent )
+: KLibFactory( 0, 0, parent )
 {
 }
 
@@ -54,10 +56,9 @@ KComponentData Factory::partComponentData()
 
 KComponentData Factory::partComponentDataFromLibrary( const QString &libraryName )
 {
-    KLibrary *library = KLibLoader::self()->library( libraryName );
-    if ( !library )
-        return KComponentData();
-    KLibFactory *factory = library->factory();
+    KPluginLoader loader( libraryName );
+
+    KLibFactory *factory = loader.factory();
     if ( !factory )
         return KComponentData();
     KParts::Factory *pfactory = dynamic_cast<KParts::Factory *>( factory );
