@@ -1862,29 +1862,29 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 
     // these settings are global settings; ALL instances of the file dialog
     // should reflect them
-    configGroup.config()->setForceGlobal(true);
+    KConfig config("kdeglobals");
+    KConfigGroup group(&config, configGroup.name());
 
     KUrlComboBox *pathCombo = urlNavigator->editor();
-    configGroup.writePathEntry( RecentURLs, pathCombo->urls() );
-    //saveDialogSize( configGroup, KConfigGroup::Persistent | KConfigGroup::Global );
-    configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
-    configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
+    group.writePathEntry( RecentURLs, pathCombo->urls() );
+    //saveDialogSize( group, KConfigGroup::Persistent | KConfigGroup::Global );
+    group.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
+    group.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
 
     const bool showSpeedbar = placesDock && !placesDock->isHidden();
-    configGroup.writeEntry( ShowSpeedbar, showSpeedbar );
+    group.writeEntry( ShowSpeedbar, showSpeedbar );
     if (showSpeedbar) {
         const QList<int> sizes = placesViewSplitter->sizes();
         Q_ASSERT( sizes.count() > 0 );
-        configGroup.writeEntry( SpeedbarWidth, sizes[0] );
+        group.writeEntry( SpeedbarWidth, sizes[0] );
     }
 
-    configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
-    configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
-    configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
-    configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
+    group.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
+    group.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
+    group.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
+    group.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
 
-    ops->writeConfig(configGroup);
-    configGroup.config()->setForceGlobal(false);
+    ops->writeConfig(group);
 }
 
 
