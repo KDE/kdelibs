@@ -1,9 +1,9 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
    Copyright (C) 2006 Dirk Mueller <mueller@kde.org>
    Copyright (C) 2007 Flavio Castelli <flavio.castelli@gmail.com>
    Copyright (C) 2008 Rafal Rzepecki <divided.mind@gmail.com>
+   Copyright (C) 2010 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -304,7 +304,7 @@ void KDirWatchPrivate::inotifyEventReceived()
             e->wd = -1;
             e->m_ctime = invalid_ctime;
             emitEvent(e, Deleted, e->path);
-            // Add entry to parent dir to notice if the file gets recreated
+            // Add entry to parent dir to notice if the entry gets recreated
             addEntry(0, e->parentDirectory(), e, true /*isDir*/);
           }
           if ( event->mask & IN_IGNORED ) {
@@ -320,23 +320,12 @@ void KDirWatchPrivate::inotifyEventReceived()
               kDebug(7001) << *e;
             }
 
-            if (sub_entry /*&& sub_entry->isDir*/) {
-              removeEntry(0, e, sub_entry);
-              //KDE_struct_stat stat_buf;
-              //QByteArray tpath = QFile::encodeName(path);
-              //KDE_stat(tpath, &stat_buf);
-
-              //sub_entry->isDir = S_ISDIR(stat_buf.st_mode);
-              //sub_entry->m_ctime = stat_buf.st_ctime;
-              //sub_entry->m_status = Normal;
-              //sub_entry->m_nlink = stat_buf.st_nlink;
-
-              if(!useINotify(sub_entry))
-                useStat(sub_entry);
+            // The code below is very similar to the one in checkFAMEvent...
+            if (sub_entry) {
+              // We were waiting for this new file/dir to be created
               sub_entry->dirty = true;
-            }
-            else if ((e->isDir) && (!e->m_clients.empty())) {
-
+              rescan_timer.start(0); // process this asap, to start watching that dir
+            } else if (e->isDir && !e->m_clients.empty()) {
               bool isDir = false;
               const QList<Client *> clients = e->clientsForFileOrDir(tpath, &isDir);
               Q_FOREACH(Client *client, clients) {
@@ -352,6 +341,9 @@ void KDirWatchPrivate::inotifyEventReceived()
                 kDebug(7001).nospace() << clients.count() << " instance(s) monitoring the new "
                                        << (isDir ? "dir " : "file ") << tpath;
               }
+              e->m_pendingFileChanges.append(e->path);
+              if (!rescan_timer.isActive())
+                  rescan_timer.start(m_PollInterval); // singleshot
             }
           }
           if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
@@ -1232,7 +1224,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     stat_buf.st_ctime = stat_buf.st_mtime;
 #endif
 
-#if 0 // for debugging the if() below
+#if 1 // for debugging the if() below
     if (s_verboseDebug) {
       struct tm* tmp = localtime(&e->m_ctime);
       char outstr[200];
@@ -1245,7 +1237,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 #endif
 
     if ( (e->m_ctime != invalid_ctime) &&
-          ((stat_buf.st_ctime != e->m_ctime) ||
+          ((qMax(stat_buf.st_ctime, stat_buf.st_mtime) != e->m_ctime) ||
           (stat_buf.st_nlink != (nlink_t) e->m_nlink))
 #if defined( HAVE_QFILESYSTEMWATCHER )
           // we trust QFSW to get it right, the ctime comparisons above
@@ -1254,7 +1246,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
         ||(e->m_mode == QFSWatchMode )
 #endif
     ) {
-      e->m_ctime = stat_buf.st_ctime;
+      e->m_ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
       e->m_nlink = stat_buf.st_nlink;
       return Changed;
     }
@@ -1400,6 +1392,8 @@ void KDirWatchPrivate::slotRescan()
     if (!entry->isValid()) continue;
 
     const int ev = scanEntry(entry);
+    if (s_verboseDebug)
+      kDebug(7001) << "scanEntry for" << entry->path << "says" << ev;
 
 #ifdef HAVE_SYS_INOTIFY_H
     if (entry->m_mode == INotifyMode) {
@@ -1418,13 +1412,26 @@ void KDirWatchPrivate::slotRescan()
         }
       }
     }
+#endif
+    if (entry->m_mode == FAMMode) {
+      if (ev == Created) {
+        // TODO move this into a common method
+        if (!useFAM(entry)) {
+#ifdef HAVE_SYS_INOTIFY_H
+          if (!useINotify(entry))
+#endif
+            useStat(entry);
+        }
+      }
+    }
 
     if (entry->isDir) {
       // Report and clear the the list of files that have changed in this directory.
       // Remove duplicates by changing to set and back again:
       // we don't really care about preserving the order of the
       // original changes.
-      QList<QString> pendingFileChanges = entry->m_pendingFileChanges.toSet().toList();
+      QStringList pendingFileChanges = entry->m_pendingFileChanges;
+      pendingFileChanges.removeDuplicates();
       Q_FOREACH(const QString &changedFilename, pendingFileChanges) {
         if (s_verboseDebug) {
           kDebug(7001) << "processing pending file change for" << changedFilename;
@@ -1433,7 +1440,6 @@ void KDirWatchPrivate::slotRescan()
       }
       entry->m_pendingFileChanges.clear();
     }
-#endif
 
     if ( ev != NoChange ) {
       emitEvent(entry, ev);
@@ -1522,8 +1528,8 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
   // Entry* e = static_cast<Entry*>(fe->userdata);
 
-#if 0 // #88538
-  kDebug(7001)  << "Processing FAM event ("
+  if (s_verboseDebug) { // don't enable this except when debugging, see #88538
+    kDebug(7001)  << "Processing FAM event ("
                 << ((fe->code == FAMChanged) ? "FAMChanged" :
                     (fe->code == FAMDeleted) ? "FAMDeleted" :
                     (fe->code == FAMStartExecuting) ? "FAMStartExecuting" :
@@ -1533,9 +1539,9 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
                     (fe->code == FAMAcknowledge) ? "FAMAcknowledge" :
                     (fe->code == FAMExists) ? "FAMExists" :
                     (fe->code == FAMEndExist) ? "FAMEndExist" : "Unknown Code")
-                << ", " << fe->filename
-                << ", Req " << FAMREQUEST_GETREQNUM(&(fe->fr)) << ")";
-#endif
+                  << ", " << fe->filename
+                  << ", Req " << FAMREQUEST_GETREQNUM(&(fe->fr)) << ") e=" << e;
+  }
 
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
@@ -1553,23 +1559,25 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   if (!rescan_timer.isActive())
     rescan_timer.start(m_PollInterval); // singleshot
 
-  // needed FAM control actions on FAM events
-  if (e->isDir)
-    switch (fe->code)
-    {
-      case FAMDeleted:
-       // file absolute: watched dir
-        if (!QDir::isRelativePath(QFile::decodeName(fe->filename)))
-        {
-          // a watched directory was deleted
-
-          e->m_status = NonExistent;
+    // needed FAM control actions on FAM events
+    switch (fe->code) {
+    case FAMDeleted:
+        // fe->filename is an absolute path when a watched file-or-dir is deleted
+        if (!QDir::isRelativePath(QFile::decodeName(fe->filename))) {
           FAMCancelMonitor(&fc, &(e->fr) ); // needed ?
           kDebug(7001)  << "Cancelled FAMReq"
                         << FAMREQUEST_GETREQNUM(&(e->fr))
                         << "for" << e->path;
-          // Scan parent for a new creation
-          addEntry(0, e->parentDirectory(), e, true);
+          e->m_status = NonExistent;
+          e->m_ctime = invalid_ctime;
+          emitEvent(e, Deleted, e->path);
+          // Add entry to parent dir to notice if the entry gets recreated
+          addEntry(0, e->parentDirectory(), e, true /*isDir*/);
+        } else {
+            // A file in this directory has been removed, and wasn't explicitely watched.
+            // We could still inform clients, like inotify does? But stat can't.
+            // For now we just marked e dirty and slotRescan will emit the dir as dirty.
+            //kDebug(7001) << "Got FAMDeleted for" << QFile::decodeName(fe->filename) << "in" << e->path << ". Absolute path -> NOOP!";
         }
         break;
 
@@ -1577,18 +1585,14 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // check for creation of a directory we have to watch
         QString tpath(e->path + QLatin1Char('/') + QFile::decodeName(fe->filename));
 
+        // This code is very similar to the one in inotifyEventReceived...
         Entry* sub_entry = e->findSubEntry(tpath);
-        if (sub_entry && sub_entry->isDir) {
-          removeEntry(0, e, sub_entry);
-          sub_entry->m_status = Normal;
-          if (!useFAM(sub_entry)) {
-#ifdef HAVE_SYS_INOTIFY_H
-            if (!useINotify(sub_entry ))
-#endif
-              useStat(sub_entry);
-          }
-        }
-        else if ((sub_entry == 0) && (!e->m_clients.empty())) {
+        if (sub_entry /*&& sub_entry->isDir*/) {
+          // We were waiting for this new file/dir to be created
+          emitEvent(sub_entry, Created);
+          sub_entry->dirty = true;
+          rescan_timer.start(0); // process this asap, to start watching that dir
+        } else if (e->isDir && !e->m_clients.empty()) {
           bool isDir = false;
           const QList<Client *> clients = e->clientsForFileOrDir(tpath, &isDir);
           Q_FOREACH(Client *client, clients) {
@@ -1599,10 +1603,8 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           if (!clients.isEmpty()) {
             emitEvent(e, Created, tpath);
 
-            QString msg(QString::number(clients.count()));
-            msg += QString::fromLatin1(" instance/s monitoring the new ");
-            msg += QString::fromLatin1(isDir ? "dir " : "file ") + tpath;
-            kDebug(7001) << msg;
+            kDebug(7001).nospace() << clients.count() << " instance(s) monitoring the new "
+                                   << (isDir ? "dir " : "file ") << tpath;
           }
         }
       }
@@ -1878,5 +1880,3 @@ KDirWatch::Method KDirWatch::internalMethod()
 #include "kdirwatch_p.moc"
 
 //sven
-
-// vim: sw=2 ts=8 et
