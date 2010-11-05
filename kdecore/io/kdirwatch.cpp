@@ -75,6 +75,7 @@
 // set this to true for much more verbose debug output
 static const bool s_verboseDebug = false;
 
+// The KDirWatchPrivate instance is refcounted, and deleted by the last KDirWatch instance
 static KDirWatchPrivate* dwp_self = 0;
 static KDirWatchPrivate* createPrivate() {
   if (!dwp_self)
@@ -236,7 +237,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   kDebug(7001) << "Available methods: " << availableMethods << "preferred=" << methodToString(m_preferredMethod);
 }
 
-/* This is called on app exit (K_GLOBAL_STATIC) */
+// This is called on app exit (when K_GLOBAL_STATIC deletes KDirWatch::self)
 KDirWatchPrivate::~KDirWatchPrivate()
 {
   timer.stop();
