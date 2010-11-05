@@ -858,29 +858,35 @@ int KDebug::registerArea(const QByteArray& areaName, bool enabled)
 KDebug::Block::Block(const char* label, int area)
     : m_label(label), m_area(area), d(0)
 {
-    m_startTime.start();
-    kDebug(area) << "BEGIN:" << label;
-    QMutexLocker locker(&kDebug_data->mutex);
-    kDebug_data->m_indentString += QLatin1String("  ");
+    if (hasNullOutputQtDebugMsg(area)) {
+        m_label = 0; // remember, for the dtor
+    } else {
+        m_startTime.start();
+        kDebug(area) << "BEGIN:" << label;
+        QMutexLocker locker(&kDebug_data->mutex);
+        kDebug_data->m_indentString += QLatin1String("  ");
+    }
 }
 
 KDebug::Block::~Block()
 {
-    const double duration = (double)m_startTime.elapsed() / (double)1000.0;
-    kDebug_data->mutex.lock();
-    kDebug_data->m_indentString.chop(2);
-    kDebug_data->mutex.unlock();
+    if (m_label) {
+        const double duration = (double)m_startTime.elapsed() / (double)1000.0;
+        kDebug_data->mutex.lock();
+        kDebug_data->m_indentString.chop(2);
+        kDebug_data->mutex.unlock();
 
-    // Print timing information, and a special message (DELAY) if the method took longer than 5s
-    if (duration < 5.0) {
-        kDebug(m_area)
-            << "END__:"
-            << m_label
-            << QString::fromLatin1("[Took: %3s]").arg(QString::number(duration, 'g', 2) );
-    } else {
-        kDebug(m_area)
-            << "END__:"
-            << m_label
-            << QString::fromLatin1("[DELAY Took (quite long) %3s]").arg(QString::number(duration, 'g', 2));
+        // Print timing information, and a special message (DELAY) if the method took longer than 5s
+        if (duration < 5.0) {
+            kDebug(m_area)
+                << "END__:"
+                << m_label
+                << QString::fromLatin1("[Took: %3s]").arg(QString::number(duration, 'g', 2) );
+        } else {
+            kDebug(m_area)
+                << "END__:"
+                << m_label
+                << QString::fromLatin1("[DELAY Took (quite long) %3s]").arg(QString::number(duration, 'g', 2));
+        }
     }
 }
