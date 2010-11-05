@@ -313,14 +313,21 @@ void KDirWatch_UnitTest::touch1000Files()
     watch.addDir(m_path);
     watch.startScan();
 
-    const int fileCount = 1000;
+    waitUntilMTimeChange(m_path);
+
+    const int fileCount = 100;
     for (int i = 0; i < fileCount; ++i) {
         createFile(i);
     }
 
     QList<QVariantList> spy = waitForDirtySignal(watch, fileCount);
-    QVERIFY(spy.count() >= fileCount);
-    qDebug() << spy.count();
+    if (watch.internalMethod() == KDirWatch::INotify) {
+        QVERIFY(spy.count() >= fileCount);
+        qDebug() << spy.count();
+    } else {
+        // More stupid backends just see one mtime change on the directory
+        QVERIFY(spy.count() >= 1);
+    }
 
     for (int i = 0; i < fileCount; ++i) {
         removeFile(i);
