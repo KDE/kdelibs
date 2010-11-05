@@ -102,6 +102,25 @@ static KDirWatch::Method methodFromString(const QString& method) {
   }
 }
 
+#ifndef NDEBUG
+static const char* methodToString(KDirWatch::Method method)
+{
+    switch (method) {
+    case KDirWatch::FAM:
+        return "FAM";
+    case KDirWatch::INotify:
+        return "INotify";
+    case KDirWatch::DNotify:
+        return "DNotify";
+    case KDirWatch::Stat:
+        return "Stat";
+    case KDirWatch::QFSWatch:
+        return "QFSWatch";
+    default:
+        return "ERROR!";
+    }
+}
+#endif
 
 //
 // Class KDirWatchPrivate (singleton)
@@ -212,11 +231,9 @@ KDirWatchPrivate::KDirWatchPrivate()
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER
   availableMethods << "QFileSystemWatcher";
-  fsWatcher = new KFileSystemWatcher();
-  connect(fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fswEventReceived(QString)));
-  connect(fsWatcher, SIGNAL(fileChanged(QString)),      this, SLOT(fswEventReceived(QString)));
+  fsWatcher = 0;
 #endif
-  kDebug(7001) << "Available methods: " << availableMethods;
+  kDebug(7001) << "Available methods: " << availableMethods << "preferred=" << methodToString(m_preferredMethod);
 }
 
 /* This is called on app exit (K_GLOBAL_STATIC) */
@@ -676,6 +693,12 @@ bool KDirWatchPrivate::useQFSWatch(Entry* e)
     return true;
   }
 
+  kDebug(7001) << "fsWatcher->addPath" << e->path;
+  if (!fsWatcher) {
+      fsWatcher = new KFileSystemWatcher();
+      connect(fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fswEventReceived(QString)));
+      connect(fsWatcher, SIGNAL(fileChanged(QString)),      this, SLOT(fswEventReceived(QString)));
+  }
   fsWatcher->addPath( e->path );
   return true;
 }
@@ -861,6 +884,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     }
   }
 
+  addWatch(e);
+}
+
+void KDirWatchPrivate::addWatch(Entry* e)
+{
   // If the watch is on a network filesystem use the nfsPreferredMethod as the
   // default, otherwise use preferredMethod as the default, if the methods are
   // the same we can skip the mountpoint check
@@ -980,7 +1008,7 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
 #endif
 
 #ifdef HAVE_QFILESYSTEMWATCHER
-  if (e->m_mode == QFSWatchMode) {
+  if (e->m_mode == QFSWatchMode && fsWatcher) {
     fsWatcher->removePath(e->path);
   }
 #endif
@@ -1236,14 +1264,14 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     }
 #endif
 
-    if ( (e->m_ctime != invalid_ctime) &&
+    if ( ((e->m_ctime != invalid_ctime) &&
           ((qMax(stat_buf.st_ctime, stat_buf.st_mtime) != e->m_ctime) ||
-          (stat_buf.st_nlink != (nlink_t) e->m_nlink))
+          (stat_buf.st_nlink != (nlink_t) e->m_nlink)))
 #if defined( HAVE_QFILESYSTEMWATCHER )
           // we trust QFSW to get it right, the ctime comparisons above
           // fail for example when adding files to directories on Windows
           // which doesn't change the mtime of the directory
-        ||(e->m_mode == QFSWatchMode )
+        || (e->m_mode == QFSWatchMode)
 #endif
     ) {
       e->m_ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
@@ -1395,8 +1423,9 @@ void KDirWatchPrivate::slotRescan()
     if (s_verboseDebug)
       kDebug(7001) << "scanEntry for" << entry->path << "says" << ev;
 
+    switch(entry->m_mode) {
 #ifdef HAVE_SYS_INOTIFY_H
-    if (entry->m_mode == INotifyMode) {
+    case INotifyMode:
       if ( ev == Deleted ) {
         if (s_verboseDebug)
           kDebug(7001) << "scanEntry says" << entry->path << "was deleted";
@@ -1406,23 +1435,20 @@ void KDirWatchPrivate::slotRescan()
           kDebug(7001) << "scanEntry says" << entry->path << "was created. wd=" << entry->wd;
         if (entry->wd < 0) {
           cList.append(entry);
-          if (!useINotify(entry)) {
-            useStat(entry);
-          }
+          addWatch(entry);
         }
       }
-    }
+      break;
 #endif
-    if (entry->m_mode == FAMMode) {
+    case FAMMode:
+    case QFSWatchMode:
       if (ev == Created) {
-        // TODO move this into a common method
-        if (!useFAM(entry)) {
-#ifdef HAVE_SYS_INOTIFY_H
-          if (!useINotify(entry))
-#endif
-            useStat(entry);
-        }
+        addWatch(entry);
       }
+      break;
+    default:
+        // dunno about StatMode...
+        break;
     }
 
     if (entry->isDir) {
@@ -1487,15 +1513,12 @@ void KDirWatchPrivate::famEventReceived()
       use_fam = false;
       delete sn; sn = 0;
 
-      // Replace all FAMMode entries with DNotify/Stat
-      EntryMap::Iterator it;
-      it = m_mapEntries.begin();
+      // Replace all FAMMode entries with INotify/Stat
+      EntryMap::Iterator it = m_mapEntries.begin();
       for( ; it != m_mapEntries.end(); ++it )
         if ((*it).m_mode == FAMMode && (*it).m_clients.count()>0) {
-#ifdef HAVE_SYS_INOTIFY_H
-          if (useINotify( &(*it) )) continue;
-#endif
-          useStat( &(*it) );
+            Entry* e = &(*it);
+            addWatch(e);
         }
     }
     else
@@ -1664,6 +1687,8 @@ void KDirWatchPrivate::statistics()
 // Slot for QFileSystemWatcher
 void KDirWatchPrivate::fswEventReceived(const QString &path)
 {
+  if (s_verboseDebug)
+    kDebug(7001) << path;
   EntryMap::Iterator it;
   it = m_mapEntries.find(path);
   if(it != m_mapEntries.end()) {
@@ -1696,11 +1721,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
         //QByteArray tpath = QFile::encodeName(path);
         //KDE_stat(tpath, &stat_buf);
 
-        if(!useQFSWatch(sub_entry))
-#ifdef HAVE_SYS_INOTIFY_H
-          if(!useINotify(sub_entry))
-#endif
-            useStat(sub_entry);
+        addWatch(sub_entry);
         fswEventReceived(sub_entry->path);
       }
     }

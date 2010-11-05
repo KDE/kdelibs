@@ -102,7 +102,7 @@ private:
   QHash<QString,QFileSystemWatcher*> m_paths;
 };
 #else
-typedef KFileSystemWatcher QFileSystemWatcher;
+typedef QFileSystemWatcher KFileSystemWatcher;
 #endif
 #endif
 
@@ -200,6 +200,7 @@ public:
   void removeEntries(KDirWatch*);
   void statistics();
 
+  void addWatch(Entry* entry);
   Entry* entry(const QString&);
   int scanEntry(Entry* e);
   void emitEvent(const Entry* e, int event, const QString &fileName = QString());
