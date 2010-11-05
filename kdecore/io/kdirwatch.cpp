@@ -1870,15 +1870,7 @@ void KDirWatch::setDeleted( const QString & _file )
 
 KDirWatch::Method KDirWatch::internalMethod()
 {
-#ifdef HAVE_FAM
-  if (d->use_fam)
-    return KDirWatch::FAM;
-#endif
-#ifdef HAVE_SYS_INOTIFY_H
-  if (d->supports_inotify)
-    return KDirWatch::INotify;
-#endif
-  return KDirWatch::Stat;
+  return d->m_preferredMethod;
 }
 
 
