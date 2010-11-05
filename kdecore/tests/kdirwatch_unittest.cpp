@@ -47,14 +47,16 @@ public:
 
         // Speed up the test by making the kdirwatch timer (to compress changes) faster
         KConfigGroup config(KGlobal::config(), "DirWatch");
-        if (qgetenv("KDIRWATCHTEST_USE_FAM").toInt()) {
-            m_slow = true;
-            config.writeEntry("PreferredMethod", "Fam"); // FOR TESTING
+        const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
+        if (!testMethod.isEmpty()) {
+            config.writeEntry("PreferredMethod", testMethod);
         } else {
-            m_slow = false;
             config.deleteEntry("PreferredMethod");
         }
         config.writeEntry("PollInterval", 50);
+
+        KDirWatch foo;
+        m_slow = (foo.internalMethod() != KDirWatch::INotify);
     }
 
 private Q_SLOTS: // test methods
@@ -307,10 +309,6 @@ void KDirWatch_UnitTest::touchOneFile() // watch a dir, create a file in it
 
 void KDirWatch_UnitTest::touch1000Files()
 {
-    // DO NOT COMMIT
-    kError() << "DISABLED";
-    return;
-
     KDirWatch watch;
     watch.addDir(m_path);
     watch.startScan();
