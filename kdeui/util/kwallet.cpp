@@ -138,12 +138,12 @@ private:
 
 K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
-static const QString s_kwalletdServiceName("org.kde.kwalletd");
+static const char s_kwalletdServiceName[] = "org.kde.kwalletd";
 
 Wallet::Wallet(int handle, const QString& name)
     : QObject(0L), d(new WalletPrivate(this, handle, name))
 {
-    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(s_kwalletdServiceName, QDBusConnection::sessionBus(),
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(QString::fromLatin1(s_kwalletdServiceName), QDBusConnection::sessionBus(),
                                                            QDBusServiceWatcher::WatchForUnregistration, this);
     connect(watcher, SIGNAL(serviceUnregistered(QString)),
             this, SLOT(walletServiceUnregistered()));
@@ -764,7 +764,7 @@ void Wallet::virtual_hook(int, void*) {
 }
 
 KWalletDLauncher::KWalletDLauncher()
-    : m_wallet(s_kwalletdServiceName, "/modules/kwalletd", QDBusConnection::sessionBus()),
+    : m_wallet(QString::fromLatin1(s_kwalletdServiceName), "/modules/kwalletd", QDBusConnection::sessionBus()),
       m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
 {
 }
@@ -776,7 +776,7 @@ KWalletDLauncher::~KWalletDLauncher()
 org::kde::KWallet &KWalletDLauncher::getInterface()
 {
     // check if kwalletd is already running
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(s_kwalletdServiceName))
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName)))
     {
         // not running! check if it is enabled.
         bool walletEnabled = m_cgroup.readEntry("Enabled", true);
@@ -790,7 +790,7 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
             }
 
             if
-                (!QDBusConnection::sessionBus().interface()->isServiceRegistered(s_kwalletdServiceName)) {
+                (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName))) {
                 kDebug(285) << "The kwalletd service is still not registered";
             } else {
                 kDebug(285) << "The kwalletd service has been registered";
