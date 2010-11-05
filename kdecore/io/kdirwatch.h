@@ -49,15 +49,17 @@ class KDirWatchPrivate;
   * and restarted. The whole class can be stopped and restarted.
   * Directories and files can be added/removed from the list in any state.
   *
-  * The implementation uses the FAM service when available;
-  * if FAM is not available, the INOTIFY functionality is used on LINUX.
+  * The implementation uses the INOTIFY functionality on LINUX.
+  * Otherwise the FAM service is used, when available.
   * As a last resort, a regular polling for change of modification times
   * is done; the polling interval is a global config option:
   * DirWatch/PollInterval and DirWatch/NFSPollInterval for NFS mounted
   * directories.
+  * The choice of implementation can be adjusted by the user, with the key
+  * [DirWatch] PreferredMethod={Fam|Stat|QFSWatch|inotify}
   *
   * @see self()
-  * @author Sven Radej <sven@lisa.exp.univie.ac.at>
+  * @author Sven Radej (in 1998)
   */
 class KDECORE_EXPORT KDirWatch : public QObject
 {
@@ -82,7 +84,7 @@ class KDECORE_EXPORT KDirWatch : public QObject
     * is added.
     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
     */
-   KDirWatch (QObject* parent = 0);
+   KDirWatch(QObject* parent = 0);
 
    /**
     * Destructor.
@@ -216,12 +218,12 @@ class KDECORE_EXPORT KDirWatch : public QObject
     */
    static void statistics(); // TODO implement a QDebug operator for KDirWatch instead.
 
-   enum Method { FAM, INotify, DNotify, Stat };
+   enum Method { FAM, INotify, DNotify /*now unused*/, Stat, QFSWatch };
    /**
     * Returns the preferred internal method to
     * watch for changes.
     */
-   Method internalMethod();
+   Method internalMethod(); // TODO KDE5: make const
 
    /**
     * The KDirWatch instance usually globally used in an application.
@@ -278,13 +280,13 @@ public Q_SLOTS:
     * The new ctime is set before the signal is emitted.
     * @param path the path of the file or directory
     */
-   void dirty (const QString &path);
+   void dirty(const QString &path);
 
    /**
     * Emitted when a file or directory is created.
     * @param path the path of the file or directory
     */
-   void created (const QString &path );
+   void created(const QString &path);
 
    /**
     * Emitted when a file or directory is deleted.
@@ -292,7 +294,7 @@ public Q_SLOTS:
     * The object is still watched for new creation.
     * @param path the path of the file or directory
     */
-   void deleted (const QString &path );
+   void deleted(const QString &path);
 
  private:
    KDirWatchPrivate *const d;

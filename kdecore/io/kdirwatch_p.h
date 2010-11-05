@@ -119,8 +119,6 @@ public:
   enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
 
 
-  enum WatchMethod { Stat, Fam, INotify, QFSWatch };
-
   struct Client {
     KDirWatch* instance;
     int count;
@@ -223,7 +221,7 @@ public:
   QTimer timer;
   EntryMap m_mapEntries;
 
-  WatchMethod m_preferredMethod, m_nfsPreferredMethod;
+  KDirWatch::Method m_preferredMethod, m_nfsPreferredMethod;
   int freq;
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;

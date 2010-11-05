@@ -83,21 +83,21 @@ static KDirWatchPrivate* createPrivate() {
 }
 
 
-// Convert a string into a WatchMethod
-static KDirWatchPrivate::WatchMethod methodFromString(const QString& method) {
+// Convert a string into a watch Method
+static KDirWatch::Method methodFromString(const QString& method) {
   if (method == QLatin1String("Fam")) {
-    return KDirWatchPrivate::Fam;
+    return KDirWatch::FAM;
   } else if (method == QLatin1String("Stat")) {
-    return KDirWatchPrivate::Stat;
+    return KDirWatch::Stat;
   } else if (method == QLatin1String("QFSWatch")) {
-    return KDirWatchPrivate::QFSWatch;
+    return KDirWatch::QFSWatch;
   } else {
 #ifdef Q_OS_WIN
-    return KDirWatchPrivate::QFSWatch;
+    return KDirWatch::QFSWatch;
 #elif defined(Q_OS_FREEBSD)
-    return KDirWatchPrivate::Stat;
+    return KDirWatch::Stat;
 #else
-    return KDirWatchPrivate::INotify;
+    return KDirWatch::INotify;
 #endif
   }
 }
@@ -845,7 +845,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     }
 
 #if defined(HAVE_SYS_INOTIFY_H)
-    if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == INotify)  )
+    if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == KDirWatch::INotify)  )
     {
         //kDebug(7001) << "Ignoring WatchFiles directive - this is implicit with inotify";
         // Placing a watch on individual files is redundant with inotify
@@ -877,7 +877,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // cannot detect changes made by other machines. However as a default inotify
   // is fine, since the most common case is a NFS-mounted home, where all changes
   // are made locally. #177892.
-  WatchMethod preferredMethod = m_preferredMethod;
+  KDirWatch::Method preferredMethod = m_preferredMethod;
   if (m_nfsPreferredMethod != m_preferredMethod) {
     KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByPath(e->path);
     if (mountPoint && mountPoint->probablySlow()) {
@@ -889,16 +889,16 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   bool entryAdded = false;
   switch (preferredMethod) {
 #if defined(HAVE_FAM)
-  case Fam: entryAdded = useFAM(e); break;
+    case KDirWatch::FAM: entryAdded = useFAM(e); break;
 #endif
 #if defined(HAVE_SYS_INOTIFY_H)
-  case INotify: entryAdded = useINotify(e); break;
+    case KDirWatch::INotify: entryAdded = useINotify(e); break;
 #endif
 #if defined(HAVE_QFILESYSTEMWATCHER)
-  case QFSWatch: entryAdded = useQFSWatch(e); break;
+    case KDirWatch::QFSWatch: entryAdded = useQFSWatch(e); break;
 #endif
-  case Stat: entryAdded = useStat(e); break;
-  default: break;
+    case KDirWatch::Stat: entryAdded = useStat(e); break;
+    default: break;
   }
 
   // Failing that try in order INotify, FAM, QFSWatch, Stat
