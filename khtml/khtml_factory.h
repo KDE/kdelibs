@@ -25,7 +25,7 @@
 
 #include <kpluginfactory.h>
 
-class KHTML_EXPORT KHTMLFactory : public KPluginFactory
+class KHTMLFactory : public KPluginFactory
 {
     Q_OBJECT
 public:
