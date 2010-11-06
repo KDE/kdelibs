@@ -321,6 +321,7 @@ private:
 # define kWarning    while (false) kWarning
 #endif
 
+#ifndef KDE_NO_DEBUG_OUTPUT
 
 /**
  * @class KDebug::Block
@@ -365,7 +366,20 @@ private:
 /**
  * Convenience macro for making a standard KDebug::Block
  */
-#define KDEBUG_BLOCK KDebug::Block uniquelyNamedStackAllocatedStandardBlock(Q_FUNC_INFO);
+#define KDEBUG_BLOCK KDebug::Block _kDebugBlock(Q_FUNC_INFO);
+
+#else
+
+class KDECORE_EXPORT KDebug::Block
+{
+public:
+    Block(const char*, int = KDE_DEFAULT_DEBUG_AREA) {}
+    ~Block() {}
+};
+
+#define KDEBUG_BLOCK
+
+#endif
 
 /**
  * Convenience macro, use this to remind yourself to finish the implementation of a function
