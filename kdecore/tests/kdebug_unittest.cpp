@@ -147,6 +147,10 @@ void KDebugTest::testDisableArea()
     kClearDebugConfig();
     kDebug(180) << "TEST DEBUG 180 - SHOULD NOT APPEAR";
     kDebug(0) << "TEST DEBUG 0 - SHOULD NOT APPEAR";
+    {
+        KDebug::Block block("SHOULD NOT APPEAR");
+        kDebug(0) << "msg inside the block, should not appear";
+    }
     QVERIFY(!QFile::exists("kdebug.dbg"));
 
     // Re-enable debug, for further tests
