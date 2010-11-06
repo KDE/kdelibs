@@ -332,13 +332,6 @@ int SuProcess::ConverseSU(const char *password)
             }
             //////////////////////////////////////////////////////////////////////////
             case HandleStub:
-                if (!line.isEmpty ()) {
-                    // if we read anything but the stub response, we assume it's
-                    // sorry, wrong password.
-                    // FIXME in reality, this may be lack of permission to
-                    // execute kdesu_stub via sudo.
-                    return notauthorized;
-                }
                 break;
             //////////////////////////////////////////////////////////////////////////
         } // end switch
