@@ -1440,6 +1440,7 @@ void KDirWatchPrivate::slotRescan()
       break;
     }
 
+#ifdef HAVE_SYS_INOTIFY_H
     if (entry->isDir) {
       // Report and clear the the list of files that have changed in this directory.
       // Remove duplicates by changing to set and back again:
@@ -1455,6 +1456,7 @@ void KDirWatchPrivate::slotRescan()
       }
       entry->m_pendingFileChanges.clear();
     }
+#endif
 
     if ( ev != NoChange ) {
       emitEvent(entry, ev);
