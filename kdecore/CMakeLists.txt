@@ -15,11 +15,6 @@ macro_bool_to_01(FAM_FOUND HAVE_FAM)
 
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
-if(WIN32)
- # currently for win32 only, since it doesn't support watching files that don't exist yet
- option(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
- macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
-endif(WIN32)
 
 # Generate io/config-kdirwatch.h
 include(io/ConfigureChecks.cmake)

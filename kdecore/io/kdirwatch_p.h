@@ -30,6 +30,10 @@
 #include "io/config-kdirwatch.h"
 #include "kdirwatch.h"
 
+#ifndef QT_NO_FILESYSTEMWATCHER
+#define HAVE_QFILESYSTEMWATCHER
+#endif
+
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QMap>
