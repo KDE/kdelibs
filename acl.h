@@ -25,7 +25,7 @@
 * Application permissions stored inside the backend file
 */
 enum ApplicationPermission {
-    PermissionUndefined = -1, /// invalid value used to detect code inconsistencies
+    PermissionUndefined = -1, /// permission net yet set for this application
     PermissionAsk = 0,   /// ask every time
     PermissionDeny = 1,  /// deny every time
     PermissionAllow = 2  /// always allow
