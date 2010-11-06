@@ -73,7 +73,7 @@
 #include <sys/utsname.h>
 
 // set this to true for much more verbose debug output
-static const bool s_verboseDebug = true;
+static const bool s_verboseDebug = false;
 
 // The KDirWatchPrivate instance is refcounted, and deleted by the last KDirWatch instance
 static KDirWatchPrivate* dwp_self = 0;
