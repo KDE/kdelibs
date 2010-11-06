@@ -160,9 +160,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
             break;
         }
-        default:
-            //kDebug( 7044 ) << "Unknown operation";
-            return 0;
+        case DeleteOperation: {
+            kioJob = KIO::file_delete(reqUrl, KIO::HideProgressInfo);
+            break;
+        }
+        default: {
+            // Defer to QNAM for operations that cannot be handled by KIO, 
+            // e.g. CustomOperation,
+            return QNetworkAccessManager::createRequest(op, req, outgoingData);            
+        }
     }
 
     kioJob->setRedirectionHandlingEnabled(false);
