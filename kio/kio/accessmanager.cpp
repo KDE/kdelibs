@@ -182,8 +182,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         default: {
-            // For operations we cannot support through KIO, e.g. CustomOpetions,
-            // we let QNetworkAccessManager handle it instead of returning a NULL.
+            // Defer to QNAM for operations that cannot be handled by KIO, 
+            // e.g. CustomOperation,
             return QNetworkAccessManager::createRequest(op, req, outgoingData);            
         }
     }
