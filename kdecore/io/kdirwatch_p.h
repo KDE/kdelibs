@@ -60,7 +60,7 @@ class QSocketNotifier;
 #endif
 
 #include <sys/time.h>
-#include <sys/param.h>
+#include <sys/param.h> // ino_t
 #include <ctime>
 
 
@@ -136,6 +136,8 @@ public:
     time_t m_ctime;
     // the last observed link count
     int m_nlink;
+    // last observed inode
+    ino_t m_ino;
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;
@@ -201,6 +203,7 @@ public:
   void statistics();
 
   void addWatch(Entry* entry);
+  void removeWatch(Entry* entry);
   Entry* entry(const QString&);
   int scanEntry(Entry* e);
   void emitEvent(const Entry* e, int event, const QString &fileName = QString());
