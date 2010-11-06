@@ -33,6 +33,7 @@
 #include <kprotocolinfo.h>
 
 #include <QtCore/QUrl>
+#include <QtCore/QStringBuilder>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -176,9 +177,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
             break;
         }
-        default:
-            //kDebug( 7044 ) << "Unknown operation";
-            return 0;
+        case DeleteOperation: {
+            kioJob = KIO::file_delete(reqUrl, KIO::HideProgressInfo);
+            break;
+        }
+        default: {
+            // For operations we cannot support through KIO, e.g. CustomOpetions,
+            // we let QNetworkAccessManager handle it instead of returning a NULL.
+            return QNetworkAccessManager::createRequest(op, req, outgoingData);            
+        }
     }
 
     kioJob->setRedirectionHandlingEnabled(false);
@@ -199,10 +206,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
     if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
-        QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+        const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
           kioJob->addMetaData(QL1S("content-type"),
-                              QString::fromLatin1("Content-Type: %1").arg(header.toString()));
+                              (QL1S("Content-Type: ") % header.toString()));
         else
           kioJob->addMetaData(QL1S("content-type"),
                               QL1S("Content-Type: application/x-www-form-urlencoded"));
@@ -252,7 +259,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     Q_FOREACH(const QByteArray &key, request.rawHeaderList()) {
         const QByteArray value = request.rawHeader(key);
         if (value.length())
-            customHeaders << (key + ": " + value);
+            customHeaders << (key % QL1S(": ") % value);
     }
 
     if (!customHeaders.isEmpty())
@@ -354,7 +361,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
         Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
             QByteArray cookieHeader ("Set-Cookie: ");
-	    if (d->isStorageDisabled && !cookie.isSessionCookie()) {
+            if (d->isStorageDisabled && !cookie.isSessionCookie()) {
                 QNetworkCookie sessionCookie(cookie);
                 sessionCookie.setExpirationDate(QDateTime());
                 cookieHeader += sessionCookie.toRawForm();
