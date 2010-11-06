@@ -697,14 +697,34 @@ void KLocale::setCalendar(const QString &calendarType)
     d->setCalendar(calendarType);
 }
 
+void KLocale::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
+{
+    d->setCalendarSystem(calendarSystem);
+}
+
 QString KLocale::calendarType() const
 {
     return d->calendarType();
 }
 
+KLocale::CalendarSystem KLocale::calendarSystem() const
+{
+    return d->calendarSystem();
+}
+
 const KCalendarSystem * KLocale::calendar() const
 {
     return d->calendar();
+}
+
+void KLocale::setWeekNumberSystem(KLocale::WeekNumberSystem weekNumberSystem)
+{
+    d->setWeekNumberSystem(weekNumberSystem);
+}
+
+KLocale::WeekNumberSystem KLocale::weekNumberSystem()
+{
+    return d->weekNumberSystem();
 }
 
 KLocale::KLocale(const KLocale &rhs)

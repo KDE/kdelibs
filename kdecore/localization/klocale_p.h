@@ -315,6 +315,18 @@ public:
      **   Calendar settings   **
      ***************************/
 
+protected:
+
+    /**
+     * @internal Converts a CalendarType into a CalendarSystem
+     */
+    virtual KLocale::CalendarSystem calendarTypeToCalendarSystem(const QString &calendarType) const;
+
+    /**
+     * @internal Converts a CalendarSystem into a CalendarType
+     */
+    virtual QString calendarSystemToCalendarType(KLocale::CalendarSystem) const;
+
 public:
 
     /**
@@ -324,16 +336,40 @@ public:
     virtual void setCalendar(const QString &calendarType);
 
     /**
+     * @internal Sets the current calendar system to the calendar specified.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual void setCalendarSystem(KLocale::CalendarSystem);
+
+    /**
      * @internal Returns the name of the calendar system that is currently being used by the system.
      * The worker of the same-name KLocale API function.
      */
     virtual QString calendarType() const;
 
     /**
+     * @internal Returns the type of the calendar system that is currently being used by the system.
+     * The worker of the same-name KLocale API function.
+     */
+    KLocale::CalendarSystem calendarSystem() const;
+
+    /**
      * @internal Returns a pointer to the calendar system object.
      * The worker of the same-name KLocale API function.
      */
     virtual const KCalendarSystem *calendar();
+
+    /**
+     * @internal Sets the Week Number System to use
+     * The worker of the same-name KLocale API function.
+     */
+    void setWeekNumberSystem(KLocale::WeekNumberSystem weekNumberSystem);
+
+    /**
+     * @internal Returns the Week Number System used
+     * The worker of the same-name KLocale API function.
+     */
+    KLocale::WeekNumberSystem weekNumberSystem();
 
     /**
      * @internal Changes how KLocale defines the first day in week.
@@ -1068,8 +1104,9 @@ private:
     bool                m_useTranscript;        // indicates if scripted messages are to be executed
 
     // Calendar settings
-    QString          m_calendarType;
+    KLocale::CalendarSystem m_calendarSystem;
     KCalendarSystem *m_calendar;
+    KLocale::WeekNumberSystem m_weekNumberSystem;
     int              m_weekStartDay;
     int              m_workingWeekStartDay;
     int              m_workingWeekEndDay;

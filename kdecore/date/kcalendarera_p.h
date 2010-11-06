@@ -23,6 +23,8 @@
 #include <QtCore/QString>
 #include <QtCore/QDate>
 
+#include "klocale.h"
+
 class KCalendarSystemPrivate;
 
 /**
@@ -49,8 +51,7 @@ public:
     int sequence() const;
     QDate startDate() const;
     QDate endDate() const;
-    QString name() const;
-    QString shortName() const;
+    QString name(KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
     QString format() const;
     int direction() const;
     int offset() const;
@@ -66,7 +67,7 @@ private:
     QDate m_startDate;
     int m_startYear;
     QDate m_endDate;
-    QString m_name;
+    QString m_longName;
     QString m_shortName;
     QString m_format;
     int m_direction;

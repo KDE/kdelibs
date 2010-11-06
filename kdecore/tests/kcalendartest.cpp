@@ -8,6 +8,7 @@
 
 #include "qtest_kde.h"
 #include "kcalendarsystem.h"
+#include "klocalizeddate.h"
 #include "kglobal.h"
 #include "kdebug.h"
 #include "kstandarddirs.h"
@@ -20,44 +21,116 @@ QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME( KCalendarTest, "kdecalendarsystems" /*so 
 void KCalendarTest::testTypes()
 {
     const KCalendarSystem *calendar;
+    calendar = KCalendarSystem::create( "coptic" );
+    QCOMPARE( calendar->calendarType(), QString("coptic") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::CopticCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( "ethiopian" );
+    QCOMPARE( calendar->calendarType(), QString("ethiopian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::EthiopianCalendar );
+    delete calendar;
     calendar = KCalendarSystem::create( "gregorian" );
     QCOMPARE( calendar->calendarType(), QString("gregorian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::QDateCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "gregorian-proleptic" );
     QCOMPARE( calendar->calendarType(), QString("gregorian-proleptic") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::GregorianCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "hebrew" );
     QCOMPARE( calendar->calendarType(), QString("hebrew") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::HebrewCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "hijri" );
     QCOMPARE( calendar->calendarType(), QString("hijri") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::IslamicCivilCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "indian-national" );
     QCOMPARE( calendar->calendarType(), QString("indian-national") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::IndianNationalCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "jalali" );
     QCOMPARE( calendar->calendarType(), QString("jalali") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JalaliCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "japanese" );
     QCOMPARE( calendar->calendarType(), QString("japanese") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JapaneseCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "julian" );
     QCOMPARE( calendar->calendarType(), QString("julian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JulianCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "minguo" );
     QCOMPARE( calendar->calendarType(), QString("minguo") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::MinguoCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "thai" );
     QCOMPARE( calendar->calendarType(), QString("thai") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::ThaiCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( "invalid" );
     QCOMPARE( calendar->calendarType(), QString("gregorian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::QDateCalendar );
     delete calendar;
     calendar = KCalendarSystem::create( QString() );
     QCOMPARE( calendar->calendarType(), QString("gregorian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::QDateCalendar );
+    delete calendar;
+
+    calendar = KCalendarSystem::create( KLocale::QDateCalendar );
+    QCOMPARE( calendar->calendarType(), QString("gregorian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::QDateCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::CopticCalendar );
+    QCOMPARE( calendar->calendarType(), QString("coptic") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::CopticCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::EthiopianCalendar );
+    QCOMPARE( calendar->calendarType(), QString("ethiopian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::EthiopianCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::GregorianCalendar );
+    QCOMPARE( calendar->calendarType(), QString("gregorian-proleptic") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::GregorianCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::HebrewCalendar );
+    QCOMPARE( calendar->calendarType(), QString("hebrew") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::HebrewCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
+    QCOMPARE( calendar->calendarType(), QString("hijri") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::IslamicCivilCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::IndianNationalCalendar );
+    QCOMPARE( calendar->calendarType(), QString("indian-national") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::IndianNationalCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::JalaliCalendar );
+    QCOMPARE( calendar->calendarType(), QString("jalali") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JalaliCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::JapaneseCalendar );
+    QCOMPARE( calendar->calendarType(), QString("japanese") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JapaneseCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::JulianCalendar );
+    QCOMPARE( calendar->calendarType(), QString("julian") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::JulianCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::MinguoCalendar );
+    QCOMPARE( calendar->calendarType(), QString("minguo") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::MinguoCalendar );
+    delete calendar;
+    calendar = KCalendarSystem::create( KLocale::ThaiCalendar );
+    QCOMPARE( calendar->calendarType(), QString("thai") );
+    QCOMPARE( calendar->calendarSystem(), KLocale::ThaiCalendar );
     delete calendar;
 
     QStringList lst = KCalendarSystem::calendarSystems();
+    QCOMPARE( lst.count(), 11 );
+    QVERIFY( lst.contains( "coptic" ) );
+    QVERIFY( lst.contains( "ethiopian" ) );
     QVERIFY( lst.contains( "gregorian" ) );
     QVERIFY( lst.contains( "hebrew" ) );
     QVERIFY( lst.contains( "hijri" ) );
@@ -68,57 +141,54 @@ void KCalendarTest::testTypes()
     QVERIFY( lst.contains( "minguo" ) );
     QVERIFY( lst.contains( "thai" ) );
 
+    QList<KLocale::CalendarSystem> list = KCalendarSystem::calendarSystemsList();
+    QCOMPARE( list.count(), 12 );
+    QVERIFY( list.contains( KLocale::QDateCalendar ) );
+    QVERIFY( list.contains( KLocale::CopticCalendar ) );
+    QVERIFY( list.contains( KLocale::EthiopianCalendar ) );
+    QVERIFY( list.contains( KLocale::GregorianCalendar ) );
+    QVERIFY( list.contains( KLocale::HebrewCalendar ) );
+    QVERIFY( list.contains( KLocale::IslamicCivilCalendar ) );
+    QVERIFY( list.contains( KLocale::IndianNationalCalendar ) );
+    QVERIFY( list.contains( KLocale::JalaliCalendar ) );
+    QVERIFY( list.contains( KLocale::JapaneseCalendar ) );
+    QVERIFY( list.contains( KLocale::JulianCalendar ) );
+    QVERIFY( list.contains( KLocale::MinguoCalendar ) );
+    QVERIFY( list.contains( KLocale::ThaiCalendar ) );
+
+    QCOMPARE( KCalendarSystem::calendarLabel( "coptic" ),              QString( "Coptic" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( "ethiopian" ),           QString( "Ethiopian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian" ),           QString( "Gregorian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian-proleptic" ), QString( "Gregorian (Proleptic)" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "hebrew" ),              QString( "Hebrew" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( "hijri" ),               QString( "Hijri" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( "hijri" ),               QString( "Islamic Civil / Hijri" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "indian-national" ),     QString( "Indian National" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "jalali" ),              QString( "Jalali" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "japanese" ),            QString( "Japanese" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "julian" ),              QString( "Julian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "minguo" ),              QString( "Taiwanese" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "thai" ),                QString( "Thai" ) );
-}
 
-void KCalendarTest::testLocale()
-{
-    KGlobal::locale()->setCalendar( "gregorian" );
-    const KCalendarSystem *calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "gregorian"  ) );
-    KGlobal::locale()->setCalendar( "gregorian-proleptic");
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "gregorian-proleptic" ) );
-    KGlobal::locale()->setCalendar( "hebrew" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "hebrew" ) );
-    KGlobal::locale()->setCalendar( "hijri" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "hijri" ) );
-    KGlobal::locale()->setCalendar( "indian-national" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "indian-national" ) );
-    KGlobal::locale()->setCalendar( "jalali" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "jalali" ) );
-    KGlobal::locale()->setCalendar( "japanese" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "japanese" ) );
-    KGlobal::locale()->setCalendar( "julian" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "julian" ) );
-    KGlobal::locale()->setCalendar( "minguo" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "minguo" ) );
-    KGlobal::locale()->setCalendar( "thai" );
-    calendar = KGlobal::locale()->calendar();
-    QCOMPARE( calendar->calendarType(), QString( "thai" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::QDateCalendar ),          QString( "Gregorian" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::CopticCalendar ),         QString( "Coptic" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::EthiopianCalendar ),      QString( "Ethiopian" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::GregorianCalendar ),      QString( "Gregorian (Proleptic)" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::HebrewCalendar ),         QString( "Hebrew" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar ),   QString( "Islamic Civil / Hijri" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::IndianNationalCalendar ), QString( "Indian National" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::JalaliCalendar ),         QString( "Jalali" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::JapaneseCalendar ),       QString( "Japanese" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::JulianCalendar ),         QString( "Julian" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::MinguoCalendar ),         QString( "Taiwanese" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::ThaiCalendar ),           QString( "Thai" ) );
+
 }
 
 void KCalendarTest::testFormatDate()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
     locale->setDateFormatShort( "%y-%m-%d" );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
 
     //Test default settings
     QDate testDate( 2005, 10, 20 );
@@ -414,7 +484,7 @@ void KCalendarTest::testFormatUnicode()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
     locale->setDateFormatShort( "%y-%m-%d" );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
 
     QDate testDate( 2005, 10, 20 );
     compareFormatUnicode( calendar, testDate, "yyyy" );
@@ -452,7 +522,7 @@ void KCalendarTest::testReadDate()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
     locale->setDateFormatShort( "%y-%m-%d" );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
     int currentYear = QDate::currentDate().year();
 
     //Test default settings
@@ -615,7 +685,7 @@ void KCalendarTest::testStrings( KLocale::DigitSet testDigitSet )
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
     locale->setDigitSet( testDigitSet );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
 
     //Test default settings
     QDate testDate( 2005, 1, 3 );
@@ -684,7 +754,7 @@ void KCalendarTest::testStrings( KLocale::DigitSet testDigitSet )
 void KCalendarTest::testIsoWeekDate()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
 
     int earliestValidYear = calendar->year( calendar->earliestValidDate() );
     int latestValidYear = calendar->year( calendar->latestValidDate() );
@@ -785,7 +855,7 @@ void KCalendarTest::testHebrewStrings()
     locale->setLanguage(QStringList() << "he");
     locale->insertCatalog("kdecalendarsystems");
     locale->setDateFormat( "%d %B %Y" );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::HebrewCalendar, locale );
     if ( locale->language() == "he" ) {
         QDate testDate;
         QString yearString, monthString, dayString, testString, resultString;
@@ -822,7 +892,7 @@ QDate KCalendarTest::setIsoWeekDate( const KCalendarSystem * calendar, int year,
 void KCalendarTest::testDayOfYearDate()
 {
     KLocale *locale = new KLocale( *KGlobal::locale() );
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian", locale );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
 
     int earliestValidYear = calendar->year( calendar->earliestValidDate() );
     int latestValidYear = calendar->year( calendar->latestValidDate() );
@@ -870,7 +940,7 @@ QDate KCalendarTest::setDayOfYearDate( const KCalendarSystem * calendar, int yea
 
 void KCalendarTest::testDateDifference()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     QDate testDate1, testDate2;
 
     // Date Difference
@@ -998,7 +1068,7 @@ void KCalendarTest::compareMonthDifference( const KCalendarSystem *calendar,
 
 void KCalendarTest::testFirstLast()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     QDate testDate = QDate( 2010, 6, 15 );
 
     QCOMPARE( calendar->firstDayOfYear( testDate ),  QDate( 2010,  1, 1 ) );
@@ -1017,7 +1087,7 @@ void KCalendarTest::testEra()
     cg.deleteGroup( KConfigGroup::Normal );
     cg.deleteGroup( KConfigGroup::Global );
 
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
     int earliestValidYear = calendar->year( calendar->earliestValidDate() );
     int latestValidYear = calendar->year( calendar->latestValidDate() );
@@ -1100,7 +1170,7 @@ QDate KCalendarTest::setEraDate( const KCalendarSystem * calendar, const QString
 
 void KCalendarTest::testGregorian()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     QDate testDate( 2005, 9, 10 );
 
     QCOMPARE( calendar->dayOfYear( testDate ), 253 );
@@ -1130,7 +1200,7 @@ void KCalendarTest::testGregorian()
 
 void KCalendarTest::testHebrew()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::HebrewCalendar );
     QDate testDate( 2005, 9, 10 ); // 5756-13-06
     QCOMPARE( calendar->dayOfYear( testDate ), 360 );
 
@@ -1163,7 +1233,7 @@ void KCalendarTest::testHebrew()
 
 void KCalendarTest::testHijri()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hijri" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
 
     QDate testDate( 2008, 12, 29 ); //1430-01-01, jd 2454830, not leap
     QCOMPARE( calendar->year(testDate), 1430 );
@@ -1236,7 +1306,7 @@ void KCalendarTest::testHijri()
 
 void KCalendarTest::testIndianNational()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "indian-national" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IndianNationalCalendar );
     QDate testDate( 2005, 9, 10 );
 
     calendar->setYMD( testDate, 2000, 1, 1 );
@@ -1269,10 +1339,9 @@ void KCalendarTest::testIndianNational()
 
 void KCalendarTest::testGregorianBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
-    QCOMPARE( calendar->calendarType(), QString( "gregorian" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "gregorian" ) ), QString( "Gregorian" ) );
+    testCalendarSystemType( calendar, KLocale::QDateCalendar, "gregorian", "Gregorian" );
 
     QCOMPARE( calendar->epoch(), QDate( 1, 1, 1 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate( -4712, 1, 1 ) );
@@ -1319,7 +1388,7 @@ void KCalendarTest::testGregorianBasic()
 
 void KCalendarTest::testGregorianYmd()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     testYmd( calendar, 2007, 1, 1, QDate( 2007, 1, 1 ).toJulianDay() );
     delete calendar;
 }
@@ -1330,7 +1399,7 @@ void KCalendarTest::testGregorianSpecialCases()
     cg.deleteGroup( KConfigGroup::Normal );
     cg.deleteGroup( KConfigGroup::Global );
 
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
     testEraDate( calendar, QDate( 2010,  1,  1 ), 2010, "2010", "2010", "AD", "Anno Domini" );
     testEraDate( calendar, QDate(   -5,  1,  1 ),    5, "5",    "0005", "BC", "Before Christ" );
@@ -1355,10 +1424,9 @@ void KCalendarTest::testGregorianSpecialCases()
 
 void KCalendarTest::testGregorianProlepticBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "gregorian-proleptic" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::GregorianCalendar );
 
-    QCOMPARE( calendar->calendarType(), QString( "gregorian-proleptic" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "gregorian-proleptic" ) ), QString( "Gregorian (Proleptic)" ) );
+    testCalendarSystemType( calendar, KLocale::GregorianCalendar, "gregorian-proleptic", "Gregorian (Proleptic)" );
 
     QCOMPARE( calendar->epoch(), QDate::fromJulianDay( 1721426 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate::fromJulianDay( 38 ) );
@@ -1408,11 +1476,11 @@ void KCalendarTest::testGregorianProlepticBasic()
 
 void KCalendarTest::testHebrewBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::HebrewCalendar );
     QDate testDate;
 
-    QCOMPARE( calendar->calendarType(), QString( "hebrew" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "hebrew" ) ), QString( "Hebrew" ) );
+    testCalendarSystemType( calendar, KLocale::HebrewCalendar, "hebrew", "Hebrew" );
+
     testEpoch( calendar,                1,  1,  1,  347998 );
     testEarliestValidDate( calendar, 5344,  1,  1, 2299498 );
     testLatestValidDate(   calendar, 8119, 13, 29, 3313431 );
@@ -1460,7 +1528,7 @@ void KCalendarTest::testHebrewBasic()
 
 void KCalendarTest::testHebrewYmd()
 {
-//    const KCalendarSystem *calendar = KCalendarSystem::create( "hebrew" );
+//    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::HebrewCalendar );
 //    testYmd( calendar, 2007, 1, 1, QDate( 2007, 1, 1 ).toJulianDay() );
 //    delete calendar;
 }
@@ -1489,11 +1557,10 @@ void KCalendarTest::testHebrewCompare()
 
 void KCalendarTest::testHijriBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hijri" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
     QDate testDate;
 
-    QCOMPARE( calendar->calendarType(), QString( "hijri" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "hijri" ) ), QString( "Hijri" ) );
+    testCalendarSystemType( calendar, KLocale::IslamicCivilCalendar, "hijri", "Islamic Civil / Hijri" );
 
     QCOMPARE( calendar->epoch(), QDate( 622, 7, 16 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate( 622, 7, 16 ) );
@@ -1540,7 +1607,7 @@ void KCalendarTest::testHijriBasic()
 
 void KCalendarTest::testHijriYmd()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "hijri" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
     testYmd( calendar, 1426, 8, 6, QDate( 2005, 9, 10 ).toJulianDay() );
     delete calendar;
 }
@@ -1550,11 +1617,10 @@ void KCalendarTest::testHijriYmd()
 
 void KCalendarTest::testJalaliBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "jalali" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JalaliCalendar );
     QDate testDate;
 
-    QCOMPARE( calendar->calendarType(), QString( "jalali" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "jalali" ) ), QString( "Jalali" ) );
+    testCalendarSystemType( calendar, KLocale::JalaliCalendar, "jalali", "Jalali" );
 
     //Birashk argorithm only good between AP 1244-01-01 to 1530-12-29 (AD 1865 to 2152)
     QCOMPARE( calendar->epoch(), QDate( 622, 3, 19 ) );
@@ -1606,14 +1672,14 @@ void KCalendarTest::testJalaliBasic()
 
 void KCalendarTest::testJalaliYmd()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( QString("jalali") );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JalaliCalendar );
     testYmd( calendar, 1384, 6, 9, QDate( 2005, 8, 31 ).toJulianDay() );
     delete calendar;
 }
 
 void KCalendarTest::testJapanese()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "japanese" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JapaneseCalendar );
     QDate testDate( 2005, 9, 10 );
 
     QCOMPARE( calendar->dayOfYear( testDate ), 253 );
@@ -1643,11 +1709,10 @@ void KCalendarTest::testJapanese()
 
 void KCalendarTest::testJapaneseBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "japanese" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JapaneseCalendar );
     QDate testDate;
 
-    QCOMPARE( calendar->calendarType(), QString( "japanese" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "japanese" ) ), QString( "Japanese" ) );
+    testCalendarSystemType( calendar, KLocale::JapaneseCalendar, "japanese", "Japanese" );
 
     QCOMPARE( calendar->epoch(), QDate::fromJulianDay( 1721426 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate::fromJulianDay( 1721426 ) );
@@ -1692,14 +1757,14 @@ void KCalendarTest::testJapaneseBasic()
 
 void KCalendarTest::testJapaneseYmd()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "japanese" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JapaneseCalendar );
     testYmd( calendar, 2007, 1, 1, QDate( 2007, 1, 1 ).toJulianDay() );
     delete calendar;
 }
 
 void KCalendarTest::testJapaneseSpecialCases()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "japanese" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::JapaneseCalendar );
 
     // Test Japanese Eras
     // Heisei > 1        1990-01-01 onwards
@@ -1742,10 +1807,9 @@ void KCalendarTest::testJapaneseSpecialCases()
 
 void KCalendarTest::testMinguoBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "minguo" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::MinguoCalendar );
 
-    QCOMPARE( calendar->calendarType(), QString( "minguo" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "minguo" ) ), QString( "Taiwanese" ) );
+    testCalendarSystemType( calendar, KLocale::MinguoCalendar, "minguo", "Taiwanese" );
 
     QCOMPARE( calendar->epoch(), QDate( 1912, 1, 1 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate( 1912, 1, 1 ) );
@@ -1792,10 +1856,9 @@ void KCalendarTest::testMinguoBasic()
 
 void KCalendarTest::testThaiBasic()
 {
-    const KCalendarSystem *calendar = KCalendarSystem::create( "thai" );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::ThaiCalendar );
 
-    QCOMPARE( calendar->calendarType(), QString( "thai" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( QString( "thai" ) ), QString( "Thai" ) );
+    testCalendarSystemType( calendar, KLocale::ThaiCalendar, "thai", "Thai" );
 
     QCOMPARE( calendar->epoch(), QDate( -544, 1, 7 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate( -544, 1, 7 ) );
@@ -1841,6 +1904,16 @@ void KCalendarTest::testThaiBasic()
 
 
 // generic test functions, call from calendar system specific ones
+void KCalendarTest::testCalendarSystemType( const KCalendarSystem *calendar,
+                                            KLocale::CalendarSystem system,
+                                            const QString &type, const QString &label )
+{
+    QCOMPARE( calendar->calendarType(),                 type );
+    QCOMPARE( calendar->calendarSystem(),               system );
+    QCOMPARE( calendar->calendarLabel(),                label );
+    QCOMPARE( KCalendarSystem::calendarLabel( type ),   label );
+    QCOMPARE( KCalendarSystem::calendarLabel( system ), label );
+}
 
 // Simply tests valid ranges of ymd values, testYmd covers all other dates
 void KCalendarTest::testValid( const KCalendarSystem *calendar, int lowInvalidYear, int highInvalidYear,
@@ -2409,3 +2482,199 @@ void KCalendarTest::testQDateIsLeapYear()
     delete calendar;
 }
 
+void KCalendarTest::testKLocalizedDate()
+{
+    KGlobal::locale()->setDateFormatShort( "%y-%m-%d" );
+    const KCalendarSystem *calendar = KGlobal::locale()->calendar();
+
+    // Set up a bunch of KLocalizedDates and QDates that should be equal
+    QDate testQDate( 2010, 1, 1 );
+    KLocalizedDate testKLocalizedDate( testQDate );
+
+    // Test KLocalizedDate output calls not in KCalendarSystem
+    QCOMPARE( KLocalizedDate().isNull(),        true );
+    QCOMPARE( KLocalizedDate().isValid(),       false );
+    QCOMPARE( testKLocalizedDate.isNull(),      testQDate.isNull() );
+    QCOMPARE( testKLocalizedDate.date(),        testQDate );
+    QCOMPARE( testKLocalizedDate.toJulianDay(), testQDate.toJulianDay() );
+    testKLocalizedDate.setDate( QDate( 2010, 6, 1 ) );
+    testQDate.setDate( 2010, 6, 1 );
+    QCOMPARE( testKLocalizedDate.date(),        testQDate );
+
+    // Test static KLocalizedDate methods
+    QCOMPARE( KLocalizedDate::currentDate().date(),           QDate::currentDate() );
+    QCOMPARE( KLocalizedDate::fromDate( testQDate ).date(),   testQDate );
+    QCOMPARE( KLocalizedDate::fromJulianDay( 100000 ).date(), QDate::fromJulianDay( 100000 ) );
+
+    // Compare KLocalizedDate output to KCalendarSystem output calls
+    QCOMPARE( testKLocalizedDate.isValid(),                     calendar->isValid( testQDate ) );
+    QCOMPARE( testKLocalizedDate.year(),                        calendar->year( testQDate ) );
+    QCOMPARE( testKLocalizedDate.month(),                       calendar->month( testQDate ) );
+    QCOMPARE( testKLocalizedDate.day(),                         calendar->day( testQDate ) );
+    QCOMPARE( testKLocalizedDate.eraName(),                     calendar->eraName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.eraYear(),                     calendar->eraYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.yearInEra(),                   calendar->yearInEra( testQDate ) );
+    QCOMPARE( testKLocalizedDate.addYears( 5 ).date(),          calendar->addYears( testQDate, 5 ) );
+    QCOMPARE( testKLocalizedDate.addMonths( 5 ).date(),         calendar->addMonths( testQDate, 5 ) );
+    QCOMPARE( testKLocalizedDate.addDays( 5 ).date(),           calendar->addDays( testQDate, 5 ) );
+    QCOMPARE( testKLocalizedDate.monthsInYear(),                calendar->monthsInYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.weeksInYear(),                 calendar->weeksInYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.daysInYear(),                  calendar->daysInYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.daysInMonth(),                 calendar->daysInMonth( testQDate ) );
+    QCOMPARE( testKLocalizedDate.daysInWeek(),                  calendar->daysInWeek( testQDate ) );
+    QCOMPARE( testKLocalizedDate.dayOfYear(),                   calendar->dayOfYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.dayOfWeek(),                   calendar->dayOfWeek( testQDate ) );
+    QCOMPARE( testKLocalizedDate.week(),                        calendar->weekNumber( testQDate ) );
+    QCOMPARE( testKLocalizedDate.isLeapYear(),                  calendar->isLeapYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.firstDayOfYear().date(),       calendar->firstDayOfYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.lastDayOfYear().date(),        calendar->lastDayOfYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.firstDayOfMonth().date(),      calendar->firstDayOfMonth( testQDate ) );
+    QCOMPARE( testKLocalizedDate.lastDayOfMonth().date(),       calendar->lastDayOfMonth( testQDate ) );
+
+    QCOMPARE( testKLocalizedDate.week(KLocale::IsoWeekNumber),        calendar->weekNumber( testQDate ) );
+    QCOMPARE( testKLocalizedDate.weeksInYear(KLocale::IsoWeekNumber), calendar->weeksInYear( testQDate ) );
+
+    // Compare KLocalizedDate setDate to KCalendarSystem setDate
+    testKLocalizedDate.setDate( 2010, 3, 1 );
+    calendar->setDate( testQDate, 2010, 3, 1 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.setDate( 2010, 100 );
+    calendar->setDate( testQDate, 2010, 100 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.setDate( "AD", 2010, 9, 1 );
+    calendar->setDate( testQDate, "AD", 2010, 9, 1 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.setDate( KLocale::IsoWeekNumber, 2010, 15, 1 );
+    calendar->setDateIsoWeek( testQDate, 2010, 15, 1 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.setCurrentDate();
+    testQDate = QDate::currentDate();
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+
+    // Compare KLocalizedDate getDate to KCalendarSystem getDate
+    int ky, km, kd, qy, qm, qd;
+    testKLocalizedDate.getDate( &ky, &km, &kd );
+    calendar->getDate( testQDate, &qy, &qm, &qd );
+    QCOMPARE( ky, qy );
+    QCOMPARE( km, qm );
+    QCOMPARE( kd, qd );
+
+    // Compare KLocalizedDate format/read to KCalendarSystem format
+    QCOMPARE( testKLocalizedDate.formatDate(),           calendar->formatDate( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate("%d-%m-%y"), calendar->formatDate( testQDate, "%d-%m-%y" ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Year),              calendar->yearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::YearName),          calendar->yearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Month),             calendar->monthString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::MonthName),         calendar->monthName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Day),               calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayName),           calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::JulianDay),         QString::number( testQDate.toJulianDay() ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::EraName),           calendar->eraName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::EraYear),           calendar->eraYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::YearInEra),         calendar->yearInEraString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfYear),         calendar->dayOfYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfYearName),     calendar->dayOfYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfWeek),         calendar->dayOfWeekString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfWeekName),     calendar->weekDayName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Week),              calendar->weekNumberString( testQDate ) );
+    int weekYear;
+    QDate weekDate;
+    calendar->weekNumber( testQDate, &weekYear );
+    calendar->setDate( weekDate, weekYear, 1, 1);
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::WeekYear),          calendar->yearString( weekDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::MonthsInYear),      calendar->monthsInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::WeeksInYear),       calendar->weeksInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInYear),        calendar->daysInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInMonth),       calendar->daysInMonthString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInWeek),        calendar->daysInWeekString( testQDate ) );
+
+    // Compare KLocalizedDate format/read to KCalendarSystem read
+    QCOMPARE( testKLocalizedDate.readDate( "2010-01-01" ).date(),                        calendar->readDate( "2010-01-01" ) );
+    QCOMPARE( testKLocalizedDate.readDate( "2010-01-01", KLocale::NormalFormat ).date(), calendar->readDate( "2010-01-01", KLocale::NormalFormat ) );
+    QCOMPARE( testKLocalizedDate.readDate( "2010-01-01", "%y-%m-%d" ).date(),            calendar->readDate( "2010-01-01", "%y-%m-%d" ) );
+
+    // Test new addOn methods
+    testKLocalizedDate.addYearsTo( 5 );
+    testQDate = calendar->addYears( testQDate, 5 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.addMonthsTo( 5 );
+    testQDate = calendar->addMonths( testQDate, 5 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+    testKLocalizedDate.addDaysTo( 5 );
+    testQDate = calendar->addDays( testQDate, 5 );
+    QCOMPARE( testKLocalizedDate.date(), testQDate );
+
+    // Set up some dates for comparisons
+    QDate lowQDate( 2000, 1, 1 );
+    KLocalizedDate lowKLocalizedDate( lowQDate );
+    QDate highQDate( 2010, 1, 1 );
+    KLocalizedDate highKLocalizedDate( highQDate );
+
+    // Compare the difference methods
+    int kdy, kdm, kdd, kdir, qdy, qdm, qdd, qdir;
+    lowKLocalizedDate.dateDifference( highKLocalizedDate, &kdy, &kdm, &kdd, &kdir );
+    calendar->dateDifference( lowKLocalizedDate.date(), highKLocalizedDate.date(), &qdy, &qdm, &qdd, &qdir );
+    QCOMPARE( kdy, qdy );
+    QCOMPARE( kdm, qdm );
+    QCOMPARE( kdd, qdd );
+    QCOMPARE( kdir, qdir );
+    lowKLocalizedDate.dateDifference( highQDate, &kdy, &kdm, &kdd, &kdir );
+    calendar->dateDifference( lowKLocalizedDate.date(), highQDate, &qdy, &qdm, &qdd, &qdir );
+    QCOMPARE( kdy, qdy );
+    QCOMPARE( kdm, qdm );
+    QCOMPARE( kdd, qdd );
+    QCOMPARE( kdir, qdir );
+    QCOMPARE( lowKLocalizedDate.yearsDifference( highKLocalizedDate ),  calendar->yearsDifference( lowQDate, highQDate ) );
+    QCOMPARE( lowKLocalizedDate.yearsDifference( highQDate ),  calendar->yearsDifference( lowQDate, highQDate ) );
+    QCOMPARE( lowKLocalizedDate.monthsDifference( highKLocalizedDate ), calendar->monthsDifference( lowQDate, highQDate ) );
+    QCOMPARE( lowKLocalizedDate.monthsDifference( highQDate ), calendar->monthsDifference( lowQDate, highQDate ) );
+    QCOMPARE( lowKLocalizedDate.daysDifference( highKLocalizedDate ),   calendar->daysDifference( lowQDate, highQDate ) );
+    QCOMPARE( lowKLocalizedDate.daysDifference( highQDate ),   calendar->daysDifference( lowQDate, highQDate ) );
+
+    // Test new operators
+    QCOMPARE( lowKLocalizedDate == lowKLocalizedDate,   true );
+    QCOMPARE( lowKLocalizedDate == highKLocalizedDate,  false );
+    QCOMPARE( lowKLocalizedDate == lowQDate,   true );
+    QCOMPARE( lowKLocalizedDate == highQDate,  false );
+    QCOMPARE( lowKLocalizedDate != lowKLocalizedDate,   false );
+    QCOMPARE( lowKLocalizedDate != highKLocalizedDate,  true );
+    QCOMPARE( lowKLocalizedDate != lowQDate,   false );
+    QCOMPARE( lowKLocalizedDate != highQDate,  true );
+    QCOMPARE( highKLocalizedDate < lowKLocalizedDate,   false );
+    QCOMPARE( lowKLocalizedDate  < highKLocalizedDate,  true );
+    QCOMPARE( highKLocalizedDate < lowQDate,   false );
+    QCOMPARE( lowKLocalizedDate  < highQDate,  true );
+    QCOMPARE( highKLocalizedDate <= lowKLocalizedDate,  false );
+    QCOMPARE( lowKLocalizedDate  <= lowKLocalizedDate,  true );
+    QCOMPARE( lowKLocalizedDate  <= highKLocalizedDate, true );
+    QCOMPARE( highKLocalizedDate <= lowQDate,  false );
+    QCOMPARE( lowKLocalizedDate  <= lowQDate,  true );
+    QCOMPARE( lowKLocalizedDate  <= highQDate, true );
+    QCOMPARE( highKLocalizedDate > lowKLocalizedDate,   true );
+    QCOMPARE( lowKLocalizedDate  > highKLocalizedDate,  false );
+    QCOMPARE( highKLocalizedDate > lowQDate,   true );
+    QCOMPARE( lowKLocalizedDate  > highQDate,  false );
+    QCOMPARE( highKLocalizedDate >= lowKLocalizedDate,  true );
+    QCOMPARE( lowKLocalizedDate  >= lowKLocalizedDate,  true );
+    QCOMPARE( lowKLocalizedDate  >= highKLocalizedDate, false );
+    QCOMPARE( highKLocalizedDate >= lowQDate,  true );
+    QCOMPARE( lowKLocalizedDate  >= lowQDate,  true );
+    QCOMPARE( lowKLocalizedDate  >= highQDate, false );
+
+    // Test changing Calendar System
+    KCalendarSystem *hijri = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
+    testKLocalizedDate.setCalendarSystem( KLocale::IslamicCivilCalendar );
+    QCOMPARE( testKLocalizedDate.year(), hijri->year( testQDate ) );
+
+    // Test copy of calendar object
+    if (true) {
+        KLocalizedDate test2 = testKLocalizedDate;
+        test2.day();
+    }
+    testKLocalizedDate.day();
+
+    KLocalizedDate newOne = testKLocalizedDate.currentDate();
+    kDebug() << newOne;
+    newOne = KLocalizedDate::currentDate();
+    kDebug() << newOne;
+}

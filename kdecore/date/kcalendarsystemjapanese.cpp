@@ -32,6 +32,7 @@ public:
     explicit KCalendarSystemJapanesePrivate( KCalendarSystemJapanese *q );
     virtual ~KCalendarSystemJapanesePrivate();
 
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual int earliestValidYear() const;
 };
@@ -45,6 +46,11 @@ KCalendarSystemJapanesePrivate::KCalendarSystemJapanesePrivate( KCalendarSystemJ
 
 KCalendarSystemJapanesePrivate::~KCalendarSystemJapanesePrivate()
 {
+}
+
+KLocale::CalendarSystem KCalendarSystemJapanesePrivate::calendarSystem() const
+{
+    return KLocale::JapaneseCalendar;
 }
 
 void KCalendarSystemJapanesePrivate::initDefaultEraList()

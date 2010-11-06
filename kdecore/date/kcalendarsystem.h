@@ -65,7 +65,10 @@ public:
          LongDayName                  /**< Long name format, e.g. "Friday" */
     };
 
+    //KDE5 remove
     /**
+     * @deprecated use create(KLocale::CalendarSystem, KLocale) instead
+     *
      * Creates specific calendar type
      *
      * @param calType string identification of the specific calendar type
@@ -76,7 +79,12 @@ public:
     static KCalendarSystem *create( const QString & calType = QLatin1String( "gregorian" ),
                                      const KLocale * locale = 0 );
 
+    //KDE5 remove
     /**
+     * @deprecated use create(KLocale::CalendarSystem, KSharedConfig, KLocale) instead
+     *
+     * @since 4.5
+     *
      * Creates specific calendar type
      *
      * @param calType string identification of the specific calendar type to be constructed
@@ -89,7 +97,38 @@ public:
     static KCalendarSystem *create( const QString & calType, KSharedConfig::Ptr config,
                                     const KLocale * locale = 0 );
 
+    //KDE5 add default value to calendarSystem
     /**
+     * @since 4.6
+     *
+     * Creates a KCalendarSystem object for the required Calendar System
+     *
+     * @param calendarSystem the Calendar System to create, defaults to QDate compatible
+     * @param locale locale to use for translations. The global locale is used if null.
+     * @return a KCalendarSystem object
+     */
+    static KCalendarSystem *create( KLocale::CalendarSystem calendarSystem,
+                                    const KLocale *locale = 0 );
+
+    /**
+     * @since 4.6
+     *
+     * Creates a KCalendarSystem object for the required Calendar System
+     *
+     * @param calendarSystem the Calendar System to create
+     * @param config a configuration file with a 'KCalendarSystem %calendarType' group detailing
+     *               locale-related preferences (such as era options).  The global config is used
+                     if null.
+     * @param locale locale to use for translations. The global locale is used if null.
+     * @return a KCalendarSystem object
+     */
+    static KCalendarSystem *create( KLocale::CalendarSystem calendarSystem, KSharedConfig::Ptr config,
+                                    const KLocale *locale = 0 );
+
+    //KDE5 remove
+    /**
+     * @deprecated use calendarSystemsList() instead
+     *
      * Gets a list of names of supported calendar systems.
      *
      * @return list of names
@@ -97,6 +136,18 @@ public:
     static QStringList calendarSystems();
 
     /**
+     * @since 4.6
+     *
+     * Returns the list of currently supported Calendar Systems
+     *
+     * @return list of Calendar Systems
+     */
+    static QList<KLocale::CalendarSystem> calendarSystemsList();
+
+    //KDE5 remove
+    /**
+     * @deprecated use calendarLabel( KLocale::CalendarSystem ) instead
+     *
      * Returns a typographically correct and translated label to display for
      * the calendar system type.  Use with calendarSystems() to neatly
      * format labels to display on combo widget of available calendar systems.
@@ -106,6 +157,20 @@ public:
      * @return label for calendar
      */
     static QString calendarLabel( const QString &calendarType );
+
+    /**
+     * @since 4.6
+     *
+     * Returns a localized label to display for the required Calendar System type.
+     *
+     * Use with calendarSystemsList() to populate selction lists of available
+     * calendar systems.
+     *
+     * @param calendarType the specific calendar type to return the label for
+     *
+     * @return label for calendar
+     */
+    static QString calendarLabel( KLocale::CalendarSystem calendarSystem );
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.
@@ -130,11 +195,33 @@ public:
     virtual ~KCalendarSystem();
 
     /**
+     * @deprecated use calendarSystem() instead
+     *
      * Returns the calendar system type.
      *
      * @return type of calendar system
      */
     virtual QString calendarType() const = 0;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns the Calendar System type of the KCalendarSystem object
+     *
+     * @return type of calendar system
+     */
+    KLocale::CalendarSystem calendarSystem() const;
+
+    //KDE5 make virtual?
+    /**
+     * @since 4.6
+     *
+     * Returns a localized label to display for the current Calendar System type.
+     *
+     * @return localized label for this Calendar System
+     */
+    QString calendarLabel() const;
 
     /**
      * Returns a QDate holding the epoch of the calendar system.  Usually YMD
@@ -1076,6 +1163,26 @@ public:
     QString formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
                         KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat ) const;
 
+    //KDE5 Make virtual
+    /**
+     * @since 4.6
+     *
+     * Returns a Date Component as a localized string in the requested format.
+     *
+     * For example for 2010-01-01 the KLocale::Month with en_US Locale and Gregorian calendar may return:
+     *   KLocale::ShortNumber = "1"
+     *   KLocale::LongNumber  = "01"
+     *   KLocale::NarrowName  = "J"
+     *   KLocale::ShortName   = "Jan"
+     *   KLocale::LongName    = "January"
+     *
+     * @param date The date to format
+     * @param component The date component to return
+     * @param format The format to return the @p component in
+     * @return The localized string form of the date component
+     */
+    QString formatDateComponent(const QDate &date, KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
+
     /**
      * Converts a localized date string to a QDate.
      * The bool pointed by @p ok will be @c false if the date entered was invalid.
@@ -1304,7 +1411,7 @@ protected:
      * @see KCalendarSystem::weekStartDay
      * @see KLocale::weekStartDay
      * @see KCalendarSystem::readDate
-     * @see KLoacle::readDate
+     * @see KLocale::readDate
      *
      * @return locale to use
      */
@@ -1366,6 +1473,8 @@ private:
     friend class KCalendarSystemJulian;
     friend class KCalendarSystemMinguo;
     friend class KCalendarSystemThai;
+    friend class KLocalizedDate;
+    friend class KLocalizedDatePrivate;
 
     Q_DISABLE_COPY( KCalendarSystem )
     KCalendarSystemPrivate * const d_ptr; // KDE5 make protected

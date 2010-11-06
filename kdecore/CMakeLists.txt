@@ -197,6 +197,7 @@ set(kdecore_LIB_SRCS
    date/kdatetime.cpp
    date/kdatetimeformatter.cpp
    date/kdayperiod.cpp
+   date/klocalizeddate.cpp
    date/ktimezone.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
@@ -531,6 +532,7 @@ install( FILES
    config/kcoreconfigskeleton.h
    date/kcalendarsystem.h
    date/kdatetime.h
+   date/klocalizeddate.h
    date/ksystemtimezone.h
    date/ktimezone.h
    date/ktzfiletimezone.h

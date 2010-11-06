@@ -15,6 +15,9 @@ class KCalendarTest : public QObject
     Q_OBJECT
 
 protected:
+    void testCalendarSystemType( const KCalendarSystem *calendar,
+                                 KLocale::CalendarSystem system,
+                                 const QString &type, const QString &label );
     void testValid( const KCalendarSystem *calendar, int lowInvalidYear, int highInvalidYear,
                     int highInvalidMonth, int highInvalidDay, const QDate &invalidDate );
     void testEpoch( const KCalendarSystem *calendar, int y, int m, int d, int jd );
@@ -56,7 +59,6 @@ protected:
 
 private Q_SLOTS:
     void testTypes();
-    void testLocale();
     void testFormatDate();
     void testFormatUnicode();
     void testReadDate();
@@ -97,6 +99,7 @@ private Q_SLOTS:
     void testQDateDayOfYear();
     void testQDateDayOfWeek();
     void testQDateIsLeapYear();
+    void testKLocalizedDate();
 };
 
 #endif

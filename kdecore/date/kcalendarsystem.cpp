@@ -130,56 +130,145 @@ QStringList KCalendarSystem::calendarSystems()
 QString KCalendarSystem::calendarLabel( const QString &calendarType )
 {
     if ( calendarType == "coptic" ) {
-        return ki18nc( "@item Calendar system", "Coptic" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::CopticCalendar );
     }
 
     if ( calendarType == "ethiopian" ) {
-        return ki18nc( "@item Calendar system", "Ethiopian" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::EthiopianCalendar );
     }
 
     if ( calendarType == "gregorian" ) {
-        return ki18nc( "@item Calendar system", "Gregorian" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::QDateCalendar );
     }
 
     if ( calendarType == "gregorian-proleptic" ) {
-        return ki18nc( "@item Calendar system", "Gregorian (Proleptic)" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::GregorianCalendar );
     }
 
     if ( calendarType == "hebrew" ) {
-        return ki18nc( "@item Calendar system", "Hebrew" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::HebrewCalendar );
     }
 
     if ( calendarType == "hijri" ) {
-        return ki18nc("@item Calendar system", "Hijri").toString( KGlobal::locale());
+        return KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar );
     }
 
     if ( calendarType == "indian-national" ) {
-        return ki18nc("@item Calendar system", "Indian National").toString( KGlobal::locale());
+        return KCalendarSystem::calendarLabel( KLocale::IndianNationalCalendar );
     }
 
     if ( calendarType == "jalali" ) {
-        return ki18nc( "@item Calendar system", "Jalali" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::JalaliCalendar );
     }
 
     if ( calendarType == "japanese" ) {
-        return ki18nc( "@item Calendar system", "Japanese" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::JapaneseCalendar );
     }
 
     if ( calendarType == "julian" ) {
-        return ki18nc( "@item Calendar system", "Julian" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::JulianCalendar );
     }
 
     if ( calendarType == "minguo" ) {
-        return ki18nc( "@item Calendar system", "Taiwanese" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::MinguoCalendar );
     }
 
     if ( calendarType == "thai" ) {
-        return ki18nc( "@item Calendar system", "Thai" ).toString( KGlobal::locale() );
+        return KCalendarSystem::calendarLabel( KLocale::ThaiCalendar );
     }
 
     return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
 }
 
+KCalendarSystem *KCalendarSystem::create( KLocale::CalendarSystem calendarSystem, const KLocale *locale )
+{
+    return create( calendarSystem, KSharedConfig::Ptr(), locale );
+}
+
+KCalendarSystem *KCalendarSystem::create( KLocale::CalendarSystem calendarSystem, KSharedConfig::Ptr config,
+                                          const KLocale *locale )
+{
+    switch ( calendarSystem ) {
+    case KLocale::QDateCalendar:
+        return new KCalendarSystemGregorian( config, locale );
+    case KLocale::CopticCalendar:
+        return new KCalendarSystemCoptic( config, locale );
+    case KLocale::EthiopianCalendar:
+        return new KCalendarSystemEthiopian( config, locale );
+    case KLocale::GregorianCalendar:
+        return new KCalendarSystemGregorianProleptic( config, locale );
+    case KLocale::HebrewCalendar:
+        return new KCalendarSystemHebrew( config, locale );
+    case KLocale::IslamicCivilCalendar:
+        return new KCalendarSystemHijri( config, locale );
+    case KLocale::IndianNationalCalendar:
+        return new KCalendarSystemIndianNational( config, locale );
+    case KLocale::JalaliCalendar:
+        return new KCalendarSystemJalali( config, locale );
+    case KLocale::JapaneseCalendar:
+        return new KCalendarSystemJapanese( config, locale );
+    case KLocale::JulianCalendar:
+        return new KCalendarSystemJulian( config, locale );
+    case KLocale::MinguoCalendar:
+        return new KCalendarSystemMinguo( config, locale );
+    case KLocale::ThaiCalendar:
+        return new KCalendarSystemThai( config, locale );
+    default:
+        return new KCalendarSystemGregorian( config, locale );
+    }
+}
+
+QList<KLocale::CalendarSystem> KCalendarSystem::calendarSystemsList()
+{
+    QList<KLocale::CalendarSystem> list;
+
+    list.append( KLocale::QDateCalendar );
+    list.append( KLocale::CopticCalendar );
+    list.append( KLocale::EthiopianCalendar );
+    list.append( KLocale::GregorianCalendar );
+    list.append( KLocale::HebrewCalendar );
+    list.append( KLocale::IslamicCivilCalendar );
+    list.append( KLocale::IndianNationalCalendar );
+    list.append( KLocale::JalaliCalendar );
+    list.append( KLocale::JapaneseCalendar );
+    list.append( KLocale::JulianCalendar );
+    list.append( KLocale::MinguoCalendar );
+    list.append( KLocale::ThaiCalendar );
+
+    return list;
+}
+
+QString KCalendarSystem::calendarLabel( KLocale::CalendarSystem calendarSystem )
+{
+    switch ( calendarSystem ) {
+    case KLocale::QDateCalendar:
+        return ki18nc( "@item Calendar system", "Gregorian" ).toString( KGlobal::locale() );
+    case KLocale::CopticCalendar:
+        return ki18nc( "@item Calendar system", "Coptic" ).toString( KGlobal::locale() );
+    case KLocale::EthiopianCalendar:
+        return ki18nc( "@item Calendar system", "Ethiopian" ).toString( KGlobal::locale() );
+    case KLocale::GregorianCalendar:
+        return ki18nc( "@item Calendar system", "Gregorian (Proleptic)" ).toString( KGlobal::locale() );
+    case KLocale::HebrewCalendar:
+        return ki18nc( "@item Calendar system", "Hebrew" ).toString( KGlobal::locale() );
+    case KLocale::IslamicCivilCalendar:
+        return ki18nc( "@item Calendar system", "Islamic / Hijri (Civil)" ).toString( KGlobal::locale());
+    case KLocale::IndianNationalCalendar:
+        return ki18nc( "@item Calendar system", "Indian National" ).toString( KGlobal::locale());
+    case KLocale::JalaliCalendar:
+        return ki18nc( "@item Calendar system", "Jalali" ).toString( KGlobal::locale() );
+    case KLocale::JapaneseCalendar:
+        return ki18nc( "@item Calendar system", "Japanese" ).toString( KGlobal::locale() );
+    case KLocale::JulianCalendar:
+        return ki18nc( "@item Calendar system", "Julian" ).toString( KGlobal::locale() );
+    case KLocale::MinguoCalendar:
+        return ki18nc( "@item Calendar system", "Taiwanese" ).toString( KGlobal::locale() );
+    case KLocale::ThaiCalendar:
+        return ki18nc( "@item Calendar system", "Thai" ).toString( KGlobal::locale() );
+    }
+
+    return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
+}
 
 // Shared d pointer base class definitions
 
@@ -191,6 +280,13 @@ KCalendarSystemPrivate::KCalendarSystemPrivate( KCalendarSystem *q_ptr ): q( q_p
 KCalendarSystemPrivate::~KCalendarSystemPrivate()
 {
     delete m_eraList;
+}
+
+// Dummy version using Gregorian as an example
+// This method MUST be re-implemented in any new Calendar System
+KLocale::CalendarSystem KCalendarSystemPrivate::calendarSystem() const
+{
+    return KLocale::QDateCalendar;
 }
 
 // Dummy version as an example, remember to translate (see Gregorian for example)
@@ -670,8 +766,8 @@ DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputStrin
                     if ( modifierChar == QLatin1Char('E') ) {
                         j = m_eraList->count() -1; // Start with the most recent
                         while ( error && j >= 0  ) {
-                            shortName = m_eraList->at( j ).shortName().toLower();
-                            longName = m_eraList->at( j ).name().toLower();
+                            shortName = m_eraList->at( j ).name(KLocale::ShortName).toLower();
+                            longName = m_eraList->at( j ).name(KLocale::LongName).toLower();
                             if ( str.mid( strpos, longName.length() ) == longName ) {
                                 strpos += longName.length();
                                 ee = longName;
@@ -947,8 +1043,8 @@ KCalendarEra KCalendarSystemPrivate::era( const QString &eraName, int yearInEra 
 
     for ( int i = m_eraList->count() - 1; i >= 0; --i ) {
         KCalendarEra era = m_eraList->at( i );
-        if ( era.name().toLower() == eraName.toLower() ||
-             era.shortName().toLower() == eraName.toLower() ) {
+        if ( era.name(KLocale::LongName).toLower() == eraName.toLower() ||
+             era.name(KLocale::ShortName).toLower() == eraName.toLower() ) {
             return era;
         }
     }
@@ -1031,7 +1127,7 @@ void KCalendarSystemPrivate::addEra( char direction, int offset,
     newEra.m_startDate = startDate;
     newEra.m_startYear = startYear;
     newEra.m_endDate = endDate;
-    newEra.m_name = name;
+    newEra.m_longName = name;
     newEra.m_shortName = shortName;
     newEra.m_format = format;
 
@@ -1072,6 +1168,20 @@ KCalendarSystem::KCalendarSystem( KCalendarSystemPrivate &dd, const KSharedConfi
 KCalendarSystem::~KCalendarSystem()
 {
     delete d_ptr;
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+KLocale::CalendarSystem KCalendarSystem::calendarSystem() const
+{
+    Q_D( const KCalendarSystem );
+
+    return d->calendarSystem();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QString KCalendarSystem::calendarLabel() const 
+{
+    return KCalendarSystem::calendarLabel( calendarSystem() );
 }
 
 // Dummy version using Gregorian as an example
@@ -1338,9 +1448,9 @@ QString KCalendarSystem::eraName( const QDate &date, StringFormat format ) const
 
     if ( isValid( date ) ) {
         if ( format == LongFormat ) {
-            return d->era( date ).name();
+            return d->era( date ).name( KLocale::LongName );
         } else {
-            return d->era( date ).shortName();
+            return d->era( date ).name( KLocale::ShortName );
         }
     }
 
@@ -2045,6 +2155,224 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 
     KDateTimeFormatter formatter;
     return formatter.formatDate( fromDate, toFormat, this, locale(), digitSet, formatStandard );
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QString KCalendarSystem::formatDateComponent(const QDate &date, KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format) const
+{
+    Q_D( const KCalendarSystem );
+
+    switch ( component ) {
+    case KLocale::Year:
+    case KLocale::YearName:
+        switch ( format ) {
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+            return yearString(date, KCalendarSystem::ShortFormat);
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return yearString(date, KCalendarSystem::LongFormat);
+        }
+    case KLocale::Month:
+        switch ( format ) {
+        case KLocale::LongName:
+            return monthName(date, KCalendarSystem::LongName);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+            return monthName(date, KCalendarSystem::ShortName);
+        case KLocale::LongNumber:
+            return monthString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return monthString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::MonthName:
+        switch ( format ) {
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+            return monthName(date, KCalendarSystem::ShortName);
+        case KLocale::LongName:
+        case KLocale::LongNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return monthName(date, KCalendarSystem::LongName);
+        }
+    case KLocale::Day:
+    case KLocale::DayName:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return dayString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return dayString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::JulianDay:
+        return d->stringFromInteger( date.toJulianDay(), 0 );
+    case KLocale::EraName:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return eraName(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return eraName(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::EraYear:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return eraYear(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return eraYear(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::YearInEra:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return yearInEraString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return yearInEraString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::DayOfYear:
+    case KLocale::DayOfYearName:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return dayOfYearString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return dayOfYearString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::DayOfWeek:
+        switch (format) {
+        case KLocale::LongName:
+            return weekDayName(date, KCalendarSystem::LongDayName);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+            return weekDayName(date, KCalendarSystem::ShortDayName);
+        case KLocale::LongNumber:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return dayOfWeekString(date);
+        }
+    case KLocale::DayOfWeekName:
+        switch ( format ) {
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+            return weekDayName(date, KCalendarSystem::ShortDayName);
+        case KLocale::LongName:
+        case KLocale::LongNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return weekDayName(date, KCalendarSystem::LongDayName);
+        }
+    case KLocale::Week:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return weekNumberString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return weekNumberString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::WeekYear:
+    {
+        int weekYear;
+        QDate yearDate;
+        weekNumber( date, &weekYear );
+        setDate( yearDate, weekYear, 1, 1 );
+        return formatDateComponent( yearDate, KLocale::Year, format );
+    }
+    case KLocale::MonthsInYear:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return monthsInYearString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return monthsInYearString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::WeeksInYear:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return weeksInYearString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return weeksInYearString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::DaysInYear:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return daysInYearString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return daysInYearString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::DaysInMonth:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+            return daysInMonthString(date, KCalendarSystem::LongFormat);
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return daysInMonthString(date, KCalendarSystem::ShortFormat);
+        }
+    case KLocale::DaysInWeek:
+        switch (format) {
+        case KLocale::LongNumber:
+        case KLocale::LongName:
+        case KLocale::ShortName:
+        case KLocale::NarrowName:
+        case KLocale::ShortNumber:
+        case KLocale::DefaultComponentFormat:
+        default:
+            return daysInWeekString(date);
+        }
+    default:
+        return QString();
+    }
 }
 
 QDate KCalendarSystem::readDate( const QString &str, bool *ok ) const

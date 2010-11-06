@@ -755,6 +755,56 @@ public:
      */
     bool nounDeclension() const;
 
+    //KDE5 move to KDateTime namespace
+    /**
+     * @since 4.6
+     *
+     * Available Calendar Systems
+     *
+     * @see setCalendarSystem()
+     * @see calendarSystem()
+     */
+    enum CalendarSystem {
+        QDateCalendar = 1, /**< KDE Default, hybrid of Gregorian and Julian as used by QDate */
+        //BahaiCalendar = 2, /**< Baha'i Calendar */
+        //BuddhistLunarCalendar = 3, /**< Buddhist Lunar Calendar*/
+        //ChineseCalendar = 4, /**< Chinese Calendar */
+        CopticCalendar = 5, /**< Coptic Calendar as used Coptic Church and some parts of Egypt */
+        EthiopianCalendar = 6, /**< Ethiopian Calendar, aka Ethiopic Calendar */
+        //EthiopianAmeteAlemCalendar = 7, /**< Ethiopian Amete Alem version, aka Ethiopic Amete Alem */
+        GregorianCalendar = 8, /**< Gregorian Calendar, pure proleptic implementation */
+        HebrewCalendar = 9, /**< Hebrew Calendar, aka Jewish Calendar */
+        //HinduCalendar = 10, /**< Hindu Lunar Calendar */
+        //IslamicLunarCalendar = 11, /**< Islamic Lunar Calendar */
+        IslamicCivilCalendar = 12, /**< Islamic Civil Calendar, aka Hijri, not the Lunar Calendar */
+        //IslamicUmAlQuraCalendar = 13, /**< Islamic Lunar Calendar, Um Al Qura varient used in Saudi Arabia */
+        IndianNationalCalendar = 14, /**< Indian National Calendar, not the Lunar Calendar */
+        //Iso8601Calendar = 15, /**< ISO 8601 Standard Calendar */
+        JalaliCalendar = 16, /**< Jalali Calendar, aka Persian or Iranian, also used in Afganistan */
+        //JalaliBirashkCalendar = 17, /**< Jalali Calendar, Birashk Algorythm variant */
+        //Jalali33YearCalendar = 18, /**< Jalali Calendar, 33 Year cycle variant */
+        JapaneseCalendar= 19, /**< Japanese Calendar, Gregorian calculation using Japanese Era (Nengô) */
+        //JucheCalendar = 20, /**< Juche Calendar, used in North Korea */
+        JulianCalendar = 21, /**< Julian Calendar, as used in Orthodox Churches */
+        MinguoCalendar= 22, /**< Minguo Calendar, aka ROC, Republic of China or Taiwanese */
+        ThaiCalendar = 23 /**< Thai Calendar, aka Buddhist or Thai Buddhist */
+    };
+
+    //KDE5 move to KDateTime namespace
+    /**
+     * @since 4.6
+     *
+     * System used for Week Numbers
+     *
+     * @see setWeekNumberSystem()
+     * @see weekNumberSystem()
+     */
+    enum WeekNumberSystem {
+         IsoWeekNumber     /**< ISO Week Number */
+         //UsaWeek         /**< USA Week Number */
+    };
+
+    //KDE5 move to KDateTime namespace
     /**
      * @since 4.4
      *
@@ -766,20 +816,90 @@ public:
          UnicodeFormat     /**< UNICODE Standard (Qt/Java/OSX/Windows) */
     };
 
+    //KDE5 move to KDateTime namespace
+    /**
+     * @since 4.6
+     *
+     * Mode to use when parsing a Date Time input string
+     */
+    enum DateTimeParseMode {
+         LiberalParsing   /**< Parse Date/Time liberally.  So long as the
+                               input string contains at least a reconizable
+                               month and day the input will be accepted. */
+         //ModerateParsing, /**< Parse Date/Time with modeate tolerance.
+         //                      The date components in the format must all
+         //                      occur in the input and in the same order,
+         //                      but the spacing and the componants themselves
+         //                      may vary from the strict format. */
+         //StrictParsing    /**< Parse Date/Time strictly to the format. */
+    };
+
+    //KDE5 move to KDateTime namespace
+    /**
+     * @since 4.6
+     *
+     * The various Components that make up a Date / Time
+     * In the future the Components may be combined as flags for dynamic
+     * generation of Date Formats.
+     *
+     * @see KCalendarSystem
+     * @see KLocalizedDate
+     * @see DateTimeComponentFormat
+     */
+    enum DateTimeComponent {
+        Year          = 0x1,        /**< The Year portion of a date, may be number or name */
+        YearName      = 0x2,        /**< The Year Name portion of a date */
+        Month         = 0x4,        /**< The Month portion of a date, may be number or name */
+        MonthName     = 0x8,        /**< The Month Name portion of a date */
+        Day           = 0x10,       /**< The Day portion of a date, may be number or name */
+        DayName       = 0x20,       /**< The Day Name portion of a date */
+        JulianDay     = 0x40,       /**< The Julian Day of a date */
+        EraName       = 0x80,       /**< The Era Name portion of a date */
+        EraYear       = 0x100,      /**< The Era and Year portion of a date */
+        YearInEra     = 0x200,      /**< The Year In Era portion of a date */
+        DayOfYear     = 0x400,      /**< The Day Of Year portion of a date, may be number or name */
+        DayOfYearName = 0x800,      /**< The Day Of Year Name portion of a date */
+        DayOfWeek     = 0x1000,     /**< The Day Of Week / Weekday portion of a date, may be number or name */
+        DayOfWeekName = 0x2000,     /**< The Day Of Week Name / Weekday Name portion of a date */
+        Week          = 0x4000,     /**< The Week Number portion of a date */
+        WeekYear      = 0x8000,     /**< The Week Year portion of a date */
+        MonthsInYear  = 0x10000,    /**< The Months In Year portion of a date */
+        WeeksInYear   = 0x20000,    /**< The Weeks In Year portion of a date */
+        DaysInYear    = 0x40000,    /**< The Days In Year portion of a date */
+        DaysInMonth   = 0x80000,    /**< The Days In Month portion of a date */
+        DaysInWeek    = 0x100000,   /**< The Days In Week portion of a date */
+        Hour          = 0x200000,   /**< The Hours portion of a date */
+        Minute        = 0x400000,   /**< The Minutes portion of a date */
+        Second        = 0x800000,   /**< The Seconds portion of a date */
+        Millisecond   = 0x1000000,  /**< The Milliseconds portion of a date */
+        DayPeriod     = 0x2000000,  /**< The Day Period portion of a date, e.g. AM/PM */
+        DayPeriodHour = 0x4000000,  /**< The Day Period Hour portion of a date */
+        Timezone      = 0x8000000,  /**< The Time Zone portion of a date, may be offset or name */
+        TimezoneName  = 0x10000000, /**< The Time Zone Name portion of a date */
+        UnixTime      = 0x20000000, /**< The UNIX Time portion of a date */
+    };
+    Q_DECLARE_FLAGS(DateTimeComponents, DateTimeComponent)
+
+    //KDE5 move to KDateTime namespace
     /**
      * @since 4.6
      *
      * Format used for individual Date/Time Components when converted to/from a string
      * Largely equivalent to the UNICODE CLDR format width definitions 1..5
+     *
+     * @see DateTimeComponentFormat
      */
     enum DateTimeComponentFormat {
-        ShortNumber,       /**< Number at its natural width, e.g. 2 for the 2nd*/
-        LongNumber,        /**< Number padded to a required width, e.g. 02 for the 2nd*/
-        NarrowName,        /**< Narrow text format, e.g. M for Monday */
-        ShortName,         /**< Short text format, e.g. Mon for Monday */
-        LongName           /**< Long text format, e.g. Monday for Monday */
+        DefaultComponentFormat = -1, /**< The system locale default for the componant */
+        ShortNumber = 0,             /**< Number at its natural width, e.g. 2 for the 2nd*/
+        LongNumber,                  /**< Number padded to a required width, e.g. 02 for the 2nd*/
+        //OrdinalNumber                /**< Ordinal number format, e.g. "2nd" for the 2nd */
+        NarrowName = 3,              /**< Narrow text format, e.g. M for Monday */
+        ShortName,                   /**< Short text format, e.g. Mon for Monday */
+        LongName                     /**< Long text format, e.g. Monday for Monday */
     };
 
+    //KDE5 move to KDateTime namespace
     /**
      * Format for date string.
      */
@@ -797,6 +917,7 @@ public:
         IsoOrdinalDate    /**< ISO-8601 Ordinal Date format YYYY-DDD, e.g. 2009-001 */
     };
 
+    //KDE5 move to KDateTime namespace
     /**
      * Returns a string formatted to the current locale's conventions
      * regarding dates.
@@ -808,6 +929,7 @@ public:
      */
     QString formatDate(const QDate &date, DateFormat format = LongDate) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * Returns a string formatted to the current locale's conventions
      * regarding both date and time.
@@ -822,6 +944,7 @@ public:
     QString formatDateTime(const QDateTime &dateTime, DateFormat format = ShortDate,
                            bool includeSecs = false) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * Options for formatting date-time values.
      */
@@ -831,6 +954,7 @@ public:
     };
     Q_DECLARE_FLAGS(DateTimeFormatOptions, DateTimeFormatOption)
 
+    //KDE5 move to KDateTime namespace
     /**
      * Returns a string formatted to the current locale's conventions
      * regarding both date and time.
@@ -868,6 +992,7 @@ public:
      */
     QString formatTime(const QTime &pTime, bool includeSecs = false, bool isDuration = false) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * @since 4.4
      *
@@ -894,6 +1019,7 @@ public:
     };
     Q_DECLARE_FLAGS(TimeFormatOptions, TimeFormatOption)
 
+    //KDE5 move to KDateTime namespace
     /**
      * @since 4.4
      *
@@ -965,7 +1091,7 @@ public:
      * @param time the time to return the day period for
      * @return the Day Period for the given time
      */
-    QString dayPeriodText(const QTime &time, DateTimeComponentFormat format = ShortName) const;
+    QString dayPeriodText(const QTime &time, DateTimeComponentFormat format = DefaultComponentFormat) const;
 
     /**
      * Use this to determine which day is the first day of the week.
@@ -1005,22 +1131,77 @@ public:
      */
     const KCalendarSystem * calendar() const;
 
+    //KDE5 remove
     /**
+     * @deprecated use calendarSystem() instead
+     *
      * Returns the name of the calendar system that is currently being
      * used by the system.
      *
+     * @see calendarSystem()
      * @return the name of the calendar system
      */
     QString calendarType() const;
 
     /**
-     * Changes the current calendar system to the calendar specified.
-     * Currently "gregorian" and "hijri" are supported. If the calendar
-     * system specified is not found, gregorian will be used.
+     * @since 4.6
      *
+     * Returns the type of Calendar System used in this Locale
+     *
+     * @see KLocale::CalendarSystem
+     * @see KCalendarSystem
+     * @return the type of Calendar System
+     */
+    KLocale::CalendarSystem calendarSystem() const;
+
+    //KDE5 remove
+    /**
+     * @deprecated use setCalendarSystem() instead
+     *
+     * Changes the current calendar system to the calendar specified.
+     * If the calendar system specified is not found, gregorian will be used.
+     *
+     * @see setCalendarSystem()
      * @param calendarType the name of the calendar type
      */
     void setCalendar(const QString & calendarType);
+
+    /**
+     * @since 4.6
+     *
+     * Sets the type of Calendar System to use in this Locale
+     *
+     * @see KLocale::CalendarSystem
+     * @see KCalendarSystem
+     * @param calendarSystem the Calendar System to use
+     */
+    void setCalendarSystem(KLocale::CalendarSystem calendarSystem);
+
+    /**
+     * @since 4.6
+     *
+     * Sets the type of Week Number System to use in this Locale
+     *
+     * Currently only ISO Weeks are supported.
+     *
+     * @see Klocale::WeekNumberSystem
+     * @see weekNumberSystem()
+     * @param weekNumberSystem the Week Number System to use
+     */
+    void setWeekNumberSystem(KLocale::WeekNumberSystem weekNumberSystem);
+
+    /**
+     * @since 4.6
+     *
+     * Returns the type of Week Number System used in this Locale
+     *
+     * Currently only ISO Weeks are supported.
+     *
+     * @see Klocale::WeekNumberSystem
+     * @see setWeekNumberSystem()
+     * @returns the Week Number System used
+     */
+    KLocale::WeekNumberSystem weekNumberSystem();
 
     /**
      * Converts a localized monetary string to a double.
@@ -1044,6 +1225,7 @@ public:
      */
     double readNumber(const QString &numStr, bool * ok = 0) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * Converts a localized date string to a QDate.  This method will try all
      * ReadDateFlag formats in preferred order to read a valid date.
@@ -1059,6 +1241,7 @@ public:
      */
     QDate readDate(const QString &str, bool* ok = 0) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * Converts a localized date string to a QDate, using the specified format.
      * You will usually not want to use this method.
@@ -1066,6 +1249,7 @@ public:
      */
     QDate readDate(const QString &intstr, const QString &fmt, bool* ok = 0) const;
 
+    //KDE5 move to KDateTime namespace
     /**
      * Flags for readDate()
      */
@@ -1082,6 +1266,7 @@ public:
                                            ISO Week date format (YYYY-DDD) */
     };
 
+    //KDE5 move to KDateTime namespace
     /**
      * Converts a localized date string to a QDate.
      * This method is stricter than readDate(str,&ok): it will only accept
@@ -1924,6 +2109,7 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::DateTimeFormatOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::DateTimeComponents)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::TimeFormatOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::TimeProcessingOptions)
 

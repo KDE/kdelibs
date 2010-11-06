@@ -243,6 +243,7 @@ public:
     virtual ~KCalendarSystemHebrewPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
@@ -272,6 +273,11 @@ KCalendarSystemHebrewPrivate::KCalendarSystemHebrewPrivate( KCalendarSystemHebre
 
 KCalendarSystemHebrewPrivate::~KCalendarSystemHebrewPrivate()
 {
+}
+
+KLocale::CalendarSystem KCalendarSystemHebrewPrivate::calendarSystem() const
+{
+    return KLocale::HebrewCalendar;
 }
 
 void KCalendarSystemHebrewPrivate::initDefaultEraList()

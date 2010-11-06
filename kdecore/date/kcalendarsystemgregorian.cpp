@@ -41,6 +41,7 @@ public:
     virtual ~KCalendarSystemGregorianPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
@@ -68,6 +69,11 @@ KCalendarSystemGregorianPrivate::KCalendarSystemGregorianPrivate( KCalendarSyste
 
 KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
 {
+}
+
+KLocale::CalendarSystem KCalendarSystemGregorianPrivate::calendarSystem() const
+{
+    return KLocale::QDateCalendar;
 }
 
 void KCalendarSystemGregorianPrivate::initDefaultEraList()

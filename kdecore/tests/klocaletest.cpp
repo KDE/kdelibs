@@ -489,6 +489,107 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( locale.dayPeriodForTime( QTime( 21, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T3" ) );
 }
 
+void KLocaleTest::testCalendarSystemType()
+{
+    KLocale locale(*KGlobal::locale());
+
+    locale.setCalendar("coptic");
+    QCOMPARE( locale.calendarSystem(), KLocale::CopticCalendar);
+    QCOMPARE( locale.calendarType(),   QString("coptic") );
+
+    locale.setCalendar("ethiopian");
+    QCOMPARE( locale.calendarSystem(), KLocale::EthiopianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("ethiopian") );
+
+    locale.setCalendar("gregorian-proleptic");
+    QCOMPARE( locale.calendarSystem(), KLocale::GregorianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("gregorian-proleptic") );
+
+    locale.setCalendar("hebrew");
+    QCOMPARE( locale.calendarSystem(), KLocale::HebrewCalendar);
+    QCOMPARE( locale.calendarType(),   QString("hebrew") );
+
+    locale.setCalendar("hijri");
+    QCOMPARE( locale.calendarSystem(), KLocale::IslamicCivilCalendar);
+    QCOMPARE( locale.calendarType(),   QString("hijri") );
+
+    locale.setCalendar("indian-national");
+    QCOMPARE( locale.calendarSystem(), KLocale::IndianNationalCalendar);
+    QCOMPARE( locale.calendarType(),   QString("indian-national") );
+
+    locale.setCalendar("jalali");
+    QCOMPARE( locale.calendarSystem(), KLocale::JalaliCalendar);
+    QCOMPARE( locale.calendarType(),   QString("jalali") );
+
+    locale.setCalendar("japanese");
+    QCOMPARE( locale.calendarSystem(), KLocale::JapaneseCalendar);
+    QCOMPARE( locale.calendarType(),   QString("japanese") );
+
+    locale.setCalendar("julian");
+    QCOMPARE( locale.calendarSystem(), KLocale::JulianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("julian") );
+
+    locale.setCalendar("minguo");
+    QCOMPARE( locale.calendarSystem(), KLocale::MinguoCalendar);
+    QCOMPARE( locale.calendarType(),   QString("minguo") );
+
+    locale.setCalendar("thai");
+    QCOMPARE( locale.calendarSystem(), KLocale::ThaiCalendar);
+    QCOMPARE( locale.calendarType(),   QString("thai") );
+
+    locale.setCalendar("gregorian");
+    QCOMPARE( locale.calendarSystem(), KLocale::QDateCalendar);
+    QCOMPARE( locale.calendarType(),   QString("gregorian") );
+
+    locale.setCalendarSystem(KLocale::CopticCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::CopticCalendar);
+    QCOMPARE( locale.calendarType(),   QString("coptic") );
+
+    locale.setCalendarSystem(KLocale::EthiopianCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::EthiopianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("ethiopian") );
+
+    locale.setCalendarSystem(KLocale::GregorianCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::GregorianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("gregorian-proleptic") );
+
+    locale.setCalendarSystem(KLocale::HebrewCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::HebrewCalendar);
+    QCOMPARE( locale.calendarType(),   QString("hebrew") );
+
+    locale.setCalendarSystem(KLocale::IslamicCivilCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::IslamicCivilCalendar);
+    QCOMPARE( locale.calendarType(),   QString("hijri") );
+
+    locale.setCalendarSystem(KLocale::IndianNationalCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::IndianNationalCalendar);
+    QCOMPARE( locale.calendarType(),   QString("indian-national") );
+
+    locale.setCalendarSystem(KLocale::JalaliCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::JalaliCalendar);
+    QCOMPARE( locale.calendarType(),   QString("jalali") );
+
+    locale.setCalendarSystem(KLocale::JapaneseCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::JapaneseCalendar);
+    QCOMPARE( locale.calendarType(),   QString("japanese") );
+
+    locale.setCalendarSystem(KLocale::JulianCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::JulianCalendar);
+    QCOMPARE( locale.calendarType(),   QString("julian") );
+
+    locale.setCalendarSystem(KLocale::MinguoCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::MinguoCalendar);
+    QCOMPARE( locale.calendarType(),   QString("minguo") );
+
+    locale.setCalendarSystem(KLocale::ThaiCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::ThaiCalendar);
+    QCOMPARE( locale.calendarType(),   QString("thai") );
+
+    locale.setCalendarSystem(KLocale::QDateCalendar);
+    QCOMPARE( locale.calendarSystem(), KLocale::QDateCalendar);
+    QCOMPARE( locale.calendarType(),   QString("gregorian") );
+}
+
 void KLocaleTest::testCountryDivision()
 {
     KLocale locale(*KGlobal::locale());

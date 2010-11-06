@@ -32,6 +32,7 @@ public:
     virtual ~KCalendarSystemGregorianProlepticPrivate();
 
     // Virtual methods each calendar system must re-implement
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;

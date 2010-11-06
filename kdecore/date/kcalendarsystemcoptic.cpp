@@ -38,6 +38,11 @@ KCalendarSystemCopticPrivate::~KCalendarSystemCopticPrivate()
 {
 }
 
+KLocale::CalendarSystem KCalendarSystemCopticPrivate::calendarSystem() const
+{
+    return KLocale::CopticCalendar;
+}
+
 void KCalendarSystemCopticPrivate::initDefaultEraList()
 {
     QString name, shortName, format;

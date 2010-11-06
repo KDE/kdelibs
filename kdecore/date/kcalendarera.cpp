@@ -22,7 +22,6 @@
 #include "kcalendarsystemprivate_p.h"
 
 #include "kdebug.h"
-#include "klocale.h"
 
 #include <QtCore/QDate>
 
@@ -38,7 +37,7 @@ bool KCalendarEra::isValid() const
 {
     return m_startDate.isValid() &&
            m_startDate.isValid() &&
-           !m_name.isEmpty() &&
+           !m_longName.isEmpty() &&
            !m_shortName.isEmpty() &&
            !m_format.isEmpty();
 }
@@ -53,14 +52,13 @@ QDate KCalendarEra::endDate() const
     return m_endDate;
 }
 
-QString KCalendarEra::name() const
+QString KCalendarEra::name(KLocale::DateTimeComponentFormat format) const
 {
-    return m_name;
-}
-
-QString KCalendarEra::shortName() const
-{
-    return m_shortName;
+    if (format == KLocale::LongName) {
+        return m_longName;
+    } else {
+        return m_shortName;
+    }
 }
 
 QString KCalendarEra::format() const

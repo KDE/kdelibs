@@ -32,6 +32,7 @@ public:
     explicit KCalendarSystemMinguoPrivate( KCalendarSystemMinguo *q );
     virtual ~KCalendarSystemMinguoPrivate();
 
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual bool isLeapYear( int year ) const;
     virtual int earliestValidYear() const;
@@ -46,6 +47,11 @@ KCalendarSystemMinguoPrivate::KCalendarSystemMinguoPrivate( KCalendarSystemMingu
 
 KCalendarSystemMinguoPrivate::~KCalendarSystemMinguoPrivate()
 {
+}
+
+KLocale::CalendarSystem KCalendarSystemMinguoPrivate::calendarSystem() const
+{
+    return KLocale::MinguoCalendar;
 }
 
 void KCalendarSystemMinguoPrivate::initDefaultEraList()

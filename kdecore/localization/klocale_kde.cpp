@@ -149,7 +149,7 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_useTranscript = rhs.m_useTranscript;
 
     // Calendar settings
-    m_calendarType = rhs.m_calendarType;
+    m_calendarSystem = rhs.m_calendarSystem;
     m_calendar = 0;
     m_weekStartDay = rhs.m_weekStartDay;
     m_workingWeekStartDay = rhs.m_workingWeekStartDay;
@@ -480,9 +480,9 @@ void KLocalePrivate::initFormat(KConfig *config)
     readConfigNumEntry("PageSize", QPrinter::A4, m_pageSize, QPrinter::PageSize);
 #endif
     readConfigNumEntry("MeasureSystem", KLocale::Metric, m_measureSystem, KLocale::MeasureSystem);
-    readConfigEntry("CalendarSystem", "gregorian", m_calendarType);
-    delete m_calendar;
-    m_calendar = 0; // ### HPB Is this the correct place?
+    QString calendarType;
+    readConfigEntry("CalendarSystem", "gregorian", calendarType);
+    setCalendar(calendarType);
 
     readConfigEntry("Transcript", true, m_useTranscript);
 
@@ -2717,26 +2717,109 @@ QString KLocalePrivate::countryCodeToName(const QString &country) const
     return countryName;
 }
 
+KLocale::CalendarSystem KLocalePrivate::calendarTypeToCalendarSystem(const QString &calendarType) const
+{
+    if (calendarType == "coptic") {
+        return KLocale::CopticCalendar;
+    } else if (calendarType == "ethiopian") {
+        return KLocale::EthiopianCalendar;
+    } else if (calendarType == "gregorian") {
+        return KLocale::QDateCalendar;
+    } else if (calendarType == "gregorian-proleptic") {
+        return KLocale::GregorianCalendar;
+    } else if (calendarType == "hebrew") {
+        return KLocale::HebrewCalendar;
+    } else if (calendarType == "hijri") {
+        return KLocale::IslamicCivilCalendar;
+    } else if (calendarType == "indian-national") {
+        return KLocale::IndianNationalCalendar;
+    } else if (calendarType == "jalali") {
+        return KLocale::JalaliCalendar;
+    } else if (calendarType == "japanese") {
+        return KLocale::JapaneseCalendar;
+    } else if (calendarType == "julian") {
+        return KLocale::JulianCalendar;
+    } else if (calendarType == "minguo") {
+        return KLocale::MinguoCalendar;
+    } else if (calendarType == "thai") {
+        return KLocale::ThaiCalendar;
+    } else {
+        return KLocale::QDateCalendar;
+    }
+}
+
+QString KLocalePrivate::calendarSystemToCalendarType(KLocale::CalendarSystem calendarSystem) const
+{
+    switch (calendarSystem) {
+    case KLocale::QDateCalendar:
+        return "gregorian";
+    case KLocale::CopticCalendar:
+        return "coptic";
+    case KLocale::EthiopianCalendar:
+        return "ethiopian";
+    case KLocale::GregorianCalendar:
+        return "gregorian-proleptic";
+    case KLocale::HebrewCalendar:
+        return "hebrew";
+    case KLocale::IslamicCivilCalendar:
+        return "hijri";
+    case KLocale::IndianNationalCalendar:
+        return "indian-national";
+    case KLocale::JalaliCalendar:
+        return "jalali";
+    case KLocale::JapaneseCalendar:
+        return "japanese";
+    case KLocale::JulianCalendar:
+        return "julian";
+    case KLocale::MinguoCalendar:
+        return "minguo";
+    case KLocale::ThaiCalendar:
+        return "thai";
+    default:
+        return "gregorian";
+    }
+}
+
 void KLocalePrivate::setCalendar(const QString &calendarType)
 {
-    m_calendarType = calendarType;
+    setCalendarSystem(calendarTypeToCalendarSystem(calendarType));
+}
+
+void KLocalePrivate::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
+{
+    m_calendarSystem = calendarSystem;
     delete m_calendar;
     m_calendar = 0;
 }
 
 QString KLocalePrivate::calendarType() const
 {
-    return m_calendarType;
+    return calendarSystemToCalendarType(m_calendarSystem);
+}
+
+KLocale::CalendarSystem KLocalePrivate::calendarSystem() const
+{
+    return m_calendarSystem;
 }
 
 const KCalendarSystem * KLocalePrivate::calendar()
 {
     // Check if it's the correct calendar?!?
     if (!m_calendar) {
-        m_calendar = KCalendarSystem::create(m_calendarType, q);
+        m_calendar = KCalendarSystem::create(m_calendarSystem, q);
     }
 
     return m_calendar;
+}
+
+void KLocalePrivate::setWeekNumberSystem(KLocale::WeekNumberSystem weekNumberSystem)
+{
+    m_weekNumberSystem = weekNumberSystem;
+}
+
+KLocale::WeekNumberSystem KLocalePrivate::weekNumberSystem()
+{
+    return m_weekNumberSystem;
 }
 
 void KLocalePrivate::copyCatalogsTo(KLocale *locale)

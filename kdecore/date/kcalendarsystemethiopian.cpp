@@ -38,8 +38,14 @@ public:
     {
     }
 
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
 };
+
+KLocale::CalendarSystem KCalendarSystemEthiopianPrivate::calendarSystem() const
+{
+    return KLocale::EthiopianCalendar;
+}
 
 void KCalendarSystemEthiopianPrivate::initDefaultEraList()
 {

@@ -32,6 +32,7 @@ public:
     explicit KCalendarSystemThaiPrivate( KCalendarSystemThai *q );
     virtual ~KCalendarSystemThaiPrivate();
 
+    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void initDefaultEraList();
     virtual bool isLeapYear( int year ) const;
     virtual bool hasYearZero() const;
@@ -47,6 +48,11 @@ KCalendarSystemThaiPrivate::KCalendarSystemThaiPrivate( KCalendarSystemThai *q )
 
 KCalendarSystemThaiPrivate::~KCalendarSystemThaiPrivate()
 {
+}
+
+KLocale::CalendarSystem KCalendarSystemThaiPrivate::calendarSystem() const
+{
+    return KLocale::ThaiCalendar;
 }
 
 void KCalendarSystemThaiPrivate::initDefaultEraList()

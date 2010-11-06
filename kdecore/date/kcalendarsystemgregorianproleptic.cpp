@@ -42,6 +42,11 @@ KCalendarSystemGregorianProlepticPrivate::~KCalendarSystemGregorianProlepticPriv
 {
 }
 
+KLocale::CalendarSystem KCalendarSystemGregorianProlepticPrivate::calendarSystem() const
+{
+    return KLocale::GregorianCalendar;
+}
+
 // Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
 void KCalendarSystemGregorianProlepticPrivate::initDefaultEraList()
