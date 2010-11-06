@@ -294,21 +294,11 @@ int SuProcess::ConverseSU(const char *password)
                 {
                     if (password == 0L)
                         return killme;
-                    if (!checkPid(m_Pid))
-                    {
-                        kError(kdesuDebugArea()) << "su has exited while waiting for pwd." << endl;
+                    if (WaitSlave())
                         return error;
-                    }
-                    if ((WaitSlave() == 0) && checkPid(m_Pid))
-                    {
-                        write(fd(), password, strlen(password));
-                        write(fd(), "\n", 1);
-                        state=CheckStar;
-                    }
-                    else
-                    {
-                        return error;
-                    }
+                    write(fd(), password, strlen(password));
+                    write(fd(), "\n", 1);
+                    state = CheckStar;
                 }
                 break;
             }

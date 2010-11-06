@@ -385,6 +385,7 @@ int PtyProcess::WaitSlave()
     {
         if (!checkPid(m_Pid))
         {
+            kError(kdesuDebugArea()) << "process has exited while waiting for password.";
             return -1;
         }
         if (!d->m_pPTY->tcGetAttr(&tio))
