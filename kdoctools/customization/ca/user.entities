@@ -6,18 +6,18 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
-<!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace; -->
+<!ENTITY BDR	"botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
+<!ENTITY BER	"botó <mousebutton>esquerre</mousebutton> del ratolí"><!-- English: &LMB; -->
+<!ENTITY BMR	"botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
 <!ENTITY cdrom	"<hardware>unitat lectora de CD-ROM</hardware>">
+<!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
+<!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: &infocenter; -->
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY ppp	"<acronym>ppp</acronym>"><!-- English: &dpi; -->
-<!ENTITY pex	"<abbrev>p. ex.</abbrev>"><!-- English: &eg; -->
-<!ENTITY Intro	"<keycap>Retorn</keycap>"><!-- English: &Enter; -->
+<!ENTITY ead	"<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc	"<abbrev>etc.</abbrev>">
-<!ENTITY PMF	"<acronym>PMF</acronym>"><!-- English: &FAQ; -->
-<!ENTITY ead	"<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
-<!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: &infocenter; -->
-<!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
+<!ENTITY IGU	"<acronym>IGU</acronym>"><!-- English: &GUI; -->
+<!ENTITY Intro	"<keycap>Retorn</keycap>"><!-- English: &Enter; -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>Les icones del &kde;</title></objectinfo>
@@ -27,16 +27,16 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu	"Menú <guimenu>K</guimenu>">
-<!ENTITY BER	"botó <mousebutton>esquerre</mousebutton> del ratolí"><!-- English: &LMB; -->
-<!ENTITY BMR	"botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
-<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
-<!ENTITY BDR	"botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
 <!ENTITY Maj	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
-<!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
-<!ENTITY Tab	"<keycap>Tabulador</keycap>">
-<!ENTITY IGU	"<acronym>IGU</acronym>"><!-- English: &GUI; -->
 <!ENTITY partman "<application>Gestor de particions del KDE</application>"> <!-- English: &partman; (KDE Partition Manager)-->
+<!ENTITY pex	"<abbrev>p. ex.</abbrev>"><!-- English: &eg; -->
+<!ENTITY PMF	"<acronym>PMF</acronym>"><!-- English: &FAQ; -->
+<!ENTITY ppp	"<acronym>ppp</acronym>"><!-- English: &dpi; -->
+<!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace; -->
+<!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
+<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
 <!ENTITY systemsettings	"<application>Arranjament del sistema</application>"> <!-- English: &systemsettings; -->
+<!ENTITY Tab	"<keycap>Tabulador</keycap>">
 
 <!-- ROLES OF TRANSLATORS -->
 <!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>bella5@teleline.es</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
