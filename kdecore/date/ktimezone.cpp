@@ -341,20 +341,21 @@ KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
     refCount(1)
 {
     // Detect duff values.
-    if ( latitude > 90 || latitude < -90 )
+    if (latitude > 90 || latitude < -90)
         latitude = KTimeZone::UNKNOWN;
-    if ( longitude > 180 || longitude < -180 )
+    if (longitude > 180 || longitude < -180)
         longitude = KTimeZone::UNKNOWN;
 }
 
 KTimeZonePrivate::KTimeZonePrivate(const KTimeZonePrivate &rhs)
-    : QSharedData(rhs),
-      source(rhs.source),
-      name(rhs.name),
-      countryCode(rhs.countryCode),
-      comment(rhs.comment),
-      latitude(rhs.latitude),
-      longitude(rhs.longitude)
+  : QSharedData(rhs),
+    source(rhs.source),
+    name(rhs.name),
+    countryCode(rhs.countryCode),
+    comment(rhs.comment),
+    latitude(rhs.latitude),
+    longitude(rhs.longitude),
+    refCount(1)
 {
     if (rhs.data)
         data = rhs.data->clone();
@@ -375,6 +376,7 @@ KTimeZonePrivate &KTimeZonePrivate::operator=(const KTimeZonePrivate &rhs)
         data = rhs.data->clone();
     else
         data = 0;
+    // refCount is unchanged
     return *this;
 }
 
@@ -645,7 +647,7 @@ QList<KTimeZone::Transition> KTimeZone::transitions(const QDateTime &start, cons
 }
 
 const KTimeZone::Transition *KTimeZone::transition(const QDateTime &dt, const Transition **secondTransition,
-                                                   bool *validTime ) const
+                                                   bool *validTime) const
 {
     if (!data(true))
         return 0;
