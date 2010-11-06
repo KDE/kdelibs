@@ -83,6 +83,10 @@ static KDirWatchPrivate* createPrivate() {
   return dwp_self;
 }
 
+// Should we default to QFSWatch?
+// Pro: supports kqueue on BSD (pending MR 2425), supports symbian etc.
+// Con: does not support FAM, i.e. breaks with NFS mounts on linux where it only uses inotify
+//  -> nfsPreferredMethod could default to fam [fallbacks to stat], actually...
 
 // Convert a string into a watch Method
 static KDirWatch::Method methodFromString(const QString& method) {
@@ -234,7 +238,9 @@ KDirWatchPrivate::KDirWatchPrivate()
   availableMethods << "QFileSystemWatcher";
   fsWatcher = 0;
 #endif
+#ifndef NDEBUG
   kDebug(7001) << "Available methods: " << availableMethods << "preferred=" << methodToString(m_preferredMethod);
+#endif
 }
 
 // This is called on app exit (when K_GLOBAL_STATIC deletes KDirWatch::self)
