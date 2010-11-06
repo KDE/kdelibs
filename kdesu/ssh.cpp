@@ -217,7 +217,8 @@ int SshProcess::ConverseSsh(const char *password, int check)
                     d->m_Prompt = line;
                     return SshNeedsPassword;
                 }
-                WaitSlave();
+                if (WaitSlave())
+                    return -1;
                 write(fd(), password, strlen(password));
                 write(fd(), "\n", 1);
                 state++;
