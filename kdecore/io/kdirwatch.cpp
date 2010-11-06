@@ -83,11 +83,6 @@ static KDirWatchPrivate* createPrivate() {
   return dwp_self;
 }
 
-// Should we default to QFSWatch?
-// Pro: supports kqueue on BSD (pending MR 2425), supports symbian etc.
-// Con: does not support FAM, i.e. breaks with NFS mounts on linux where it only uses inotify
-//  -> nfsPreferredMethod could default to fam [fallbacks to stat], actually...
-
 // Convert a string into a watch Method
 static KDirWatch::Method methodFromString(const QString& method) {
   if (method == QLatin1String("Fam")) {
@@ -97,12 +92,11 @@ static KDirWatch::Method methodFromString(const QString& method) {
   } else if (method == QLatin1String("QFSWatch")) {
     return KDirWatch::QFSWatch;
   } else {
-#ifdef Q_OS_WIN
-    return KDirWatch::QFSWatch;
-#elif defined(Q_OS_FREEBSD)
-    return KDirWatch::Stat;
-#else
+#ifdef Q_OS_LINUX
+    // inotify supports delete+recreate+modify, which QFSWatch doesn't support
     return KDirWatch::INotify;
+#else
+    return KDirWatch::QFSWatch;
 #endif
   }
 }
@@ -112,7 +106,7 @@ static const char* methodToString(KDirWatch::Method method)
 {
     switch (method) {
     case KDirWatch::FAM:
-        return "FAM";
+        return "Fam";
     case KDirWatch::INotify:
         return "INotify";
     case KDirWatch::DNotify:
@@ -175,7 +169,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_preferredMethod = methodFromString(method);
 
   // The nfs method defaults to the normal (local) method
-  m_nfsPreferredMethod = methodFromString(config.readEntry("nfsPreferredMethod", method));
+  m_nfsPreferredMethod = methodFromString(config.readEntry("nfsPreferredMethod", "Fam"));
 
   QList<QByteArray> availableMethods;
 
