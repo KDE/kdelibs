@@ -350,7 +350,9 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const KUrl &reso
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
-    authStr += info.entityBody;
+    md.reset();
+    md.update(info.entityBody);
+    authStr += md.hexDigest();
   }
   md.reset();
   md.update( authStr );
