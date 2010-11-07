@@ -8,6 +8,7 @@ for dir in $msh; do
   fi
 done
 fgrep -v "/tests" dirs > dirs.new && mv dirs.new dirs
+fgrep -v "/test/" dirs > dirs.new && mv dirs.new dirs
 # Include ./kdeui/colors/ explicitly to extract color dialog strings. It is
 # otherwise excluded, since it has a local Messages.sh to extract color names.
 echo "./kdeui/colors/" >> dirs
