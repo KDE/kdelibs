@@ -445,8 +445,11 @@ install( FILES
   bookmarks/kbookmarkimporter_crash.h
   kfile/kdiskfreespace.h
   kio/kmimetyperesolver.h
-  kio/passworddialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+install( FILES
+  kio/passworddialog.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT KIO_NO_SOLID)
