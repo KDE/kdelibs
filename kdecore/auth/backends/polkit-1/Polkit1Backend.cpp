@@ -93,7 +93,7 @@ void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
     }
 
     // Are we running our KDE auth agent?
-    if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Polkit1AuthAgent")) {
+    if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.Polkit1AuthAgent"))) {
         // Check if we actually are entitled to use GUI capabilities
         if (qApp == 0 || QApplication::type() == QApplication::Tty) {
             kDebug() << "Not streaming parent as we are on a TTY application";
@@ -104,8 +104,8 @@ void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
 
         // Send it over the bus to our agent
         QDBusMessage methodCall =
-                QDBusMessage::createMethodCall("org.kde.Polkit1AuthAgent", "/org/kde/Polkit1AuthAgent", "org.kde.Polkit1AuthAgent",
-                                               "setWIdForAction");
+                QDBusMessage::createMethodCall(QLatin1String("org.kde.Polkit1AuthAgent"), QLatin1String("/org/kde/Polkit1AuthAgent"), QLatin1String("org.kde.Polkit1AuthAgent"),
+                                               QLatin1String("setWIdForAction"));
 
         methodCall << action;
         methodCall << wId;

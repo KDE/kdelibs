@@ -48,7 +48,7 @@ set(kdecore_OPTIONAL_SRCS)
 # same for optional libs
 set(kdecore_OPTIONAL_LIBS)
 
-# TODO add_definitions(-DQT_NO_CAST_FROM_ASCII)
+add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(WIN32)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KDEWIN_LIBRARIES})
