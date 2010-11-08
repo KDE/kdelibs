@@ -32,6 +32,8 @@ namespace Nepomuk {
     class Resource;
 
     namespace Utils {
+        class FacetWidget;
+
         /**
          * \class SearchWidget searchwidget.h Nepomuk/Utils/SearchWidget
          *
@@ -127,6 +129,13 @@ namespace Nepomuk {
             QList<Resource> selectedResources() const;
 
             /**
+             * The facet widget that is used internally. By default a predefined set of facets
+             * is used. This method can be used to access the FacetWidget in order to change its
+             * configuration.
+             */
+            FacetWidget* facetWidget() const;
+
+            /**
              * Creates a dialog embedding a SearchWidget that allows the user to select one resource from the
              * result set.
              *
@@ -151,18 +160,13 @@ namespace Nepomuk {
         public Q_SLOTS:
             /**
              * Set the query currently configured in the widget. Parts that cannot be converted into
-             * facets or a user desktop query string are set as the baseQuery().
+             * facets or a user desktop query string are returned.
              *
-             * \sa setQueryTerm()
+             * \param query The query that the widget should represent after the call.
+             *
+             * \return The rest query which could not be converted into facets and a desktop query.
              */
-            void setQuery( const Nepomuk::Query::Query& query );
-
-            /**
-             * Set the user changable part of the currently configured query to \p term.
-             * Contrary to setQuery() this will not change the baseQuery() but return the
-             * part of \p term that cannot be converted into facets or a user desktop query string.
-             */
-            Nepomuk::Query::Term setQueryTerm( const Nepomuk::Query::Term& term );
+            Nepomuk::Query::Query setQuery( const Nepomuk::Query::Query& query );
 
             /**
              * Set the base query. The base query is the fixed part of the query
@@ -170,6 +174,10 @@ namespace Nepomuk {
              * searched set of resources.
              *
              * Be default the base query is empty, ie. an invalid Query.
+             *
+             * \param query The new base query.
+             *
+             * Be aware that setting the base query will reset widget's query components.
              */
             void setBaseQuery( const Nepomuk::Query::Query& query );
 

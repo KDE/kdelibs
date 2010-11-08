@@ -28,6 +28,8 @@
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
 #include "literalterm.h"
+#include "proxyfacet.h"
+#include "nfo.h"
 
 #include <Soprano/Vocabulary/NAO>
 
@@ -53,17 +55,17 @@ void FacetModelTest::testExtractFacetsFromTermWithVaryingSelectionMode()
 
     // in MatchOne mode only one term should be extracted
     f->setSelectionMode(Facet::MatchOne);
-    QCOMPARE( model.extractFacetsFromTerm(term1 && term2), term2 );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 && term2)), Query(term2) );
     QCOMPARE( model.queryTerm(), term1 );
 
     // in MatchAll mode both terms should be extracted
     f->setSelectionMode(Facet::MatchAll);
-    QCOMPARE( model.extractFacetsFromTerm(term1 && term2), Term() );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 && term2)), Query() );
     QCOMPARE( model.queryTerm(), term1 && term2 );
 
     // in MatchAny mode no term should be extracted
     f->setSelectionMode(Facet::MatchAny);
-    QCOMPARE( model.extractFacetsFromTerm(term1 && term2), term2 );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 && term2)), Query(term2) );
     QCOMPARE( model.queryTerm(), term1 );
 
 
@@ -72,17 +74,17 @@ void FacetModelTest::testExtractFacetsFromTermWithVaryingSelectionMode()
 
     // in MatchOne mode no term should be selected
     f->setSelectionMode(Facet::MatchOne);
-    QCOMPARE( model.extractFacetsFromTerm(term1 || term2), term1 || term2 );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 || term2)), Query(term1 || term2) );
     QCOMPARE( model.queryTerm(), term1 );
 
     // in MatchAll mode no term should be extracted
     f->setSelectionMode(Facet::MatchAll);
-    QCOMPARE( model.extractFacetsFromTerm(term1 || term2), term1 || term2 );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 || term2)), Query(term1 || term2) );
     QCOMPARE( model.queryTerm(), Term() );
 
     // in MatchAny mode both terms should be extracted
     f->setSelectionMode(Facet::MatchAny);
-    QCOMPARE( model.extractFacetsFromTerm(term1 || term2), Term() );
+    QCOMPARE( model.extractFacetsFromQuery(Query(term1 || term2)), Query() );
     QCOMPARE( model.queryTerm(), term1 || term2 );
 }
 
@@ -119,7 +121,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     Term testTerm = f1->termAt(1) && f2->termAt(0) && f3->termAt(0);
     Term restTerm;
     Term queryTerm = testTerm;
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -127,7 +129,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f2->termAt(0) && f2->termAt(1) && f3->termAt(0);
     restTerm = Term();
     queryTerm = testTerm;
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -135,7 +137,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f1->termAt(1) && f2->termAt(0) && f3->termAt(0) && f3->termAt(1);
     restTerm = f3->termAt(1);
     queryTerm = f1->termAt(1) && f2->termAt(0) && f3->termAt(0);
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -143,7 +145,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f1->termAt(1) && f2->termAt(0) && ( f3->termAt(0) || f3->termAt(1) );
     restTerm = Term();
     queryTerm = testTerm;
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -151,7 +153,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f3->termAt(0) || f3->termAt(1) || f3->termAt(2);
     restTerm = Term();
     queryTerm = testTerm;
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -159,7 +161,7 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f3->termAt(0) || f3->termAt(1) || f3->termAt(2) || f1->termAt(1);
     restTerm = testTerm;
     queryTerm = Term();
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 
@@ -167,7 +169,45 @@ void FacetModelTest::testExtractFacetsFromTermWithMultipleFacets()
     testTerm = f3->termAt(0) && f3->termAt(1);
     restTerm = f3->termAt(1);
     queryTerm = f3->termAt(0);
-    QCOMPARE( model.extractFacetsFromTerm(testTerm), restTerm );
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
+    QCOMPARE( model.queryTerm(), queryTerm );
+    QCOMPARE( model.queryTerm() && restTerm, testTerm );
+}
+
+
+void FacetModelTest::testExtractFacetsFromTermWithProxyFacet()
+{
+    FacetModel model;
+
+    SimpleFacet* f1 = new SimpleFacet;
+    f1->setSelectionMode(Facet::MatchAny);
+    f1->addTerm( QLatin1String("t1"), ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()) );
+    f1->addTerm( QLatin1String("t2"), ResourceTypeTerm(Nepomuk::Vocabulary::NFO::FileDataObject()) );
+    model.addFacet(f1);
+
+    SimpleFacet* f2 = new SimpleFacet;
+    f2->setSelectionMode(Facet::MatchAny);
+    f2->addTerm( QLatin1String("t1"), ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Image()) );
+    f2->addTerm( QLatin1String("t2"), ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Document()) );
+
+    ProxyFacet* f2p = new ProxyFacet;
+    f2p->setSourceFacet(f2);
+    f2p->setFacetCondition(f1->termAt(1));
+    model.addFacet(f2p);
+
+    model.clearSelection();
+    Term testTerm = f1->termAt(0) && f2->termAt(0);
+    Term restTerm = f2->termAt(0);
+    Term queryTerm = f1->termAt(0);
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
+    QCOMPARE( model.queryTerm(), queryTerm );
+    QCOMPARE( model.queryTerm() && restTerm, testTerm );
+
+    model.clearSelection();
+    testTerm = f1->termAt(1) && f2->termAt(0);
+    restTerm = Term();
+    queryTerm = testTerm;
+    QCOMPARE( model.extractFacetsFromQuery(Query(testTerm)), Query(restTerm) );
     QCOMPARE( model.queryTerm(), queryTerm );
     QCOMPARE( model.queryTerm() && restTerm, testTerm );
 }

@@ -70,7 +70,7 @@ Nepomuk::Utils::FacetWidget::FacetWidget( QWidget *parent )
 
     FacetFilterModel* facetFilterModel = new FacetFilterModel( this );
     facetFilterModel->setSourceModel( d->m_facetModel );
-    connect( d->m_facetModel, SIGNAL(queryTermChanged()), facetFilterModel, SLOT(invalidate()));
+    connect( d->m_facetModel, SIGNAL(queryTermChanged(Nepomuk::Query::Term)), facetFilterModel, SLOT(invalidate()));
     connect( d->m_facetModel, SIGNAL(modelReset()), facetFilterModel, SLOT(invalidate()));
 
     KDescendantsProxyModel* proxy = new KDescendantsProxyModel( this );
@@ -93,9 +93,9 @@ QList<Nepomuk::Utils::Facet*> Nepomuk::Utils::FacetWidget::facets() const
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::FacetWidget::extractFacetsFromTerm( const Nepomuk::Query::Term& term )
+Nepomuk::Query::Query Nepomuk::Utils::FacetWidget::extractFacetsFromQuery( const Nepomuk::Query::Query& query )
 {
-    return d->m_facetModel->extractFacetsFromTerm( term );
+    return d->m_facetModel->extractFacetsFromQuery( query );
 }
 
 

@@ -150,11 +150,14 @@ namespace Nepomuk {
              * Extract as many facets from a query as possible. This method is not able to handle all
              * kinds of queries but works well on queries created via queryTerm().
              *
-             * Facets supported by this model will be extracted from \p term and configured
+             * Facets supported by this model will be extracted from \p query and configured
              * accordingly in the model.
              *
              * Be aware that this method is not related to setClientQuery(). It is intended to
-             * split up a query in order to represent it graphically.
+             * split up a query in order to represent it graphically. It will, however change the
+             * client query in order to achieve the best possible term extraction. Thus, one would typically
+             * call setClientQuery after calling this method if \p query does not already contain
+             * the full client query.
              *
              * Typically a client would call this method and then try to handle the returned
              * rest query in another way like converting it into a desktop user query string
@@ -162,9 +165,9 @@ namespace Nepomuk {
              * filters or a simple warning for the user that additional conditions are in place
              * that could not be "translated" into facets.
              *
-             * \return The rest term after facets have been extracted.
+             * \return The rest query after facets have been extracted.
              */
-            Nepomuk::Query::Term extractFacetsFromTerm( const Nepomuk::Query::Term& term );
+            Nepomuk::Query::Query extractFacetsFromQuery( const Nepomuk::Query::Query& query );
 
             /**
              * Can be used to set the full query the client is using (this includes facets

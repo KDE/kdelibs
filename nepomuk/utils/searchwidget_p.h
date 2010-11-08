@@ -47,6 +47,9 @@ public:
         : m_inQueryComponentChanged( false ) {
     }
 
+    /// creates the default set of facets
+    void setupFacetWidget();
+
     /**
      * Get the current query.
      * \param withBaseQuery If \p true the base query is included, otherwise it is not included.
@@ -64,12 +67,15 @@ public:
     Nepomuk::Utils::FacetWidget *m_facetWidget;
 
     Nepomuk::Query::QueryServiceClient m_queryClient;
+    Nepomuk::Query::Query m_currentQuery;
 
     Nepomuk::Query::Query m_baseQuery;
 
     SearchWidget::ConfigFlags m_configFlags;
 
     bool m_inQueryComponentChanged;
+
+    SearchWidget* q;
 };
 
 #endif // RESOURCESEARCHWIDGET_P_H

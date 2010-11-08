@@ -25,10 +25,13 @@
 #include "searchlineedit.h"
 #include "facetwidget.h"
 #include "simpleresourcemodel.h"
+#include "proxyfacet.h"
+#include "simplefacet.h"
 
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QListView>
+#include <QtGui/QSplitter>
 #include <QtCore/QList>
 
 #include "kdebug.h"
@@ -43,8 +46,12 @@
 #include "literalterm.h"
 #include "comparisonterm.h"
 #include "resourceterm.h"
+#include "resourcetypeterm.h"
 #include "queryserviceclient.h"
 #include "resource.h"
+#include "filequery.h"
+#include "negationterm.h"
+#include "nfo.h"
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Vocabulary/NAO>
@@ -52,16 +59,61 @@
 Q_DECLARE_METATYPE(Nepomuk::Resource)
 
 
+void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::setupFacetWidget()
+{
+    m_facetWidget->clear();
+
+    // 1. File vs. Non-file
+    // This one is MatchAny to allow no selection. But selecting both does not make any sense.
+    // Thus, it needs a proxy to hide the non-selected parts
+    SimpleFacet* metaTypeFacet = new SimpleFacet(m_facetWidget);
+    metaTypeFacet->addTerm(i18nc("@option:check Search filter: only show files", "Files"),
+                           Query::ResourceTypeTerm(Vocabulary::NFO::FileDataObject()));
+    metaTypeFacet->addTerm(i18nc("@option:check Search filter: show anything but files", "Other"),
+                           Query::NegationTerm::negateTerm(Query::ResourceTypeTerm(Vocabulary::NFO::FileDataObject())));
+    metaTypeFacet->setSelectionMode(Facet::MatchAny);
+    m_facetWidget->addFacet(metaTypeFacet);
+
+    Facet* fileTypeFacet = Facet::createFileTypeFacet(m_facetWidget);
+    ProxyFacet* fileTypeProxyFacet = new ProxyFacet(m_facetWidget);
+    fileTypeProxyFacet->setSourceFacet(fileTypeFacet);
+    fileTypeProxyFacet->setFacetCondition(metaTypeFacet->termAt(0));
+    m_facetWidget->addFacet(fileTypeProxyFacet);
+
+    Facet* typeFacet = Facet::createTypeFacet(m_facetWidget);
+    ProxyFacet* typeProxyFacet = new ProxyFacet(m_facetWidget);
+    typeProxyFacet->setSourceFacet(typeFacet);
+    typeProxyFacet->setFacetCondition(metaTypeFacet->termAt(1));
+    m_facetWidget->addFacet(typeProxyFacet);
+
+    // 2. the rest which is not very interesting yet
+    m_facetWidget->addFacet(Facet::createDateFacet(m_facetWidget));
+    m_facetWidget->addFacet(Facet::createPriorityFacet(m_facetWidget));
+    m_facetWidget->addFacet(Facet::createTagFacet(m_facetWidget));
+}
+
+
 void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::_k_queryComponentChanged()
 {
     if ( !m_inQueryComponentChanged ) {
         m_inQueryComponentChanged = true;
         const Query::Query query = currentQuery();
-        m_resourceModel->clear();
-        // TODO: show busy indicator
-        m_queryClient.query(query);
-        m_facetWidget->setClientQuery(query);
+        if( query != m_currentQuery ) {
+            m_resourceModel->clear();
+            // TODO: show busy indicator
+            kDebug() << query;
+            m_queryClient.close();
+            if( query.isValid() ) {
+                m_queryClient.query(query);
+            }
+            m_facetWidget->setClientQuery(query);
+            m_currentQuery = query;
+        }
         m_inQueryComponentChanged = false;
+    }
+    else {
+        // we need to handle all component changes since one may trigger another
+        QMetaObject::invokeMethod(q, "_k_queryComponentChanged", Qt::QueuedConnection);
     }
 }
 
@@ -75,8 +127,10 @@ void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::_k_listingFinished()
 Nepomuk::Query::Query Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::currentQuery( bool withBaseQuery ) const
 {
     Query::Query query;
-    if( withBaseQuery )
+    if( withBaseQuery ) {
+        kDebug() << "************ baseQuery:  " << m_baseQuery;
         query = m_baseQuery;
+    }
 
     Query::Term facetTerm = m_facetWidget->queryTerm();
     Query::Term userQueryTerm = m_queryEdit->query().term();
@@ -93,30 +147,36 @@ Nepomuk::Utils::SearchWidget::SearchWidget(QWidget *parent)
       d_ptr(new SearchWidgetPrivate())
 {
     Q_D(SearchWidget);
+    d->q = this;
 
     //query editor widget
     d->m_queryEdit = new SearchLineEdit(this);
     d->m_queryButton = new KPushButton(i18n("Search"), this);
-    connect(d->m_queryEdit, SIGNAL(queryChanged(QString)), this, SLOT(_k_queryComponentChanged()));
+    connect(d->m_queryEdit, SIGNAL(queryChanged(Nepomuk::Query::Query)), this, SLOT(_k_queryComponentChanged()));
     connect(d->m_queryButton, SIGNAL(clicked()), this, SLOT(_k_queryComponentChanged()));
 
     //item widget
     d->m_itemWidget = new QListView(this);
-    connect(d->m_itemWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SIGNAL(selectionChanged()));
-
     d->m_resourceModel = new Utils::SimpleResourceModel(this);
     d->m_itemWidget->setModel(d->m_resourceModel);
+    connect(d->m_itemWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SIGNAL(selectionChanged()));
 
     //facets widget
     d->m_facetWidget = new Nepomuk::Utils::FacetWidget(this);
-    connect(d->m_facetWidget, SIGNAL(queryTermChanged()), this, SLOT(_k_queryComponentChanged()));
+    d->setupFacetWidget();
+    connect(d->m_facetWidget, SIGNAL(queryTermChanged(Nepomuk::Query::Term)), this, SLOT(_k_queryComponentChanged()));
 
     //layout and config
+    QSplitter* facetSplitter = new QSplitter(this);
+    facetSplitter->addWidget(d->m_itemWidget);
+    facetSplitter->addWidget(d->m_facetWidget);
+
     QGridLayout* layout = new QGridLayout( this );
+    layout->setMargin(0);
     layout->addWidget( d->m_queryEdit, 0, 0 );
     layout->addWidget( d->m_queryButton, 0, 1 );
-    layout->addWidget( d->m_itemWidget, 1, 0, 1, 2 );
-    layout->addWidget( d->m_facetWidget, 0, 2, 2, 1 );
+    layout->addWidget( facetSplitter, 1, 0, 1, 2 );
+    layout->setRowStretch(1,1);
 
     // query client setup
     connect( &d->m_queryClient, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
@@ -162,26 +222,17 @@ QAbstractItemView::SelectionMode Nepomuk::Utils::SearchWidget::selectionMode () 
     return d->m_itemWidget->selectionMode();
 }
 
-void Nepomuk::Utils::SearchWidget::setQuery(const Nepomuk::Query::Query &query)
-{
-    Query::Query restQuery( query );
-    restQuery.setTerm( setQueryTerm( query.term() ) );
-    setBaseQuery( restQuery );
-}
-
-Nepomuk::Query::Term Nepomuk::Utils::SearchWidget::setQueryTerm( const Nepomuk::Query::Term& term )
+Nepomuk::Query::Query Nepomuk::Utils::SearchWidget::setQuery( const Nepomuk::Query::Query &query )
 {
     Q_D(SearchWidget);
 
-    Query::Term restTerm( term);
-
     // try to extract as much as possible from the query as facets
-    restTerm = d->m_facetWidget->extractFacetsFromTerm( restTerm );
+    Query::Query restQuery = d->m_facetWidget->extractFacetsFromQuery( query );
 
     // try to get the rest into the line edit
-    restTerm = d->m_queryEdit->extractUsableTerms( restTerm );
+    restQuery.setTerm( d->m_queryEdit->extractUsableTerms( restQuery.term() ) );
 
-    return restTerm;
+    return restQuery;
 }
 
 void Nepomuk::Utils::SearchWidget::setBaseQuery( const Query::Query& query )
@@ -218,6 +269,14 @@ QList<Nepomuk::Resource> Nepomuk::Utils::SearchWidget::selectedResources() const
     }
     return resourceList;
 }
+
+
+Nepomuk::Utils::FacetWidget* Nepomuk::Utils::SearchWidget::facetWidget() const
+{
+    Q_D(const SearchWidget);
+    return d->m_facetWidget;
+}
+
 
 // static
 Nepomuk::Resource Nepomuk::Utils::SearchWidget::searchResource( QWidget* parent,

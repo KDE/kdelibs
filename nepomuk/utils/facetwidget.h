@@ -85,7 +85,7 @@ namespace Nepomuk {
              *
              * \return The rest term after facets have been extracted.
              */
-            Nepomuk::Query::Term extractFacetsFromTerm( const Nepomuk::Query::Term& term );
+            Nepomuk::Query::Query extractFacetsFromQuery( const Nepomuk::Query::Query& query );
 
             /**
              * @returns the query term composed by the facets

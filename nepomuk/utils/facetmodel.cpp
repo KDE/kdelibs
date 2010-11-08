@@ -29,6 +29,7 @@
 
 #include <Soprano/Vocabulary/NAO>
 
+#include "query.h"
 #include "andterm.h"
 #include "orterm.h"
 #include "comparisonterm.h"
@@ -310,12 +311,12 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::queryTerm() const
 }
 
 
-Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Term& term )
+Nepomuk::Query::Query Nepomuk::Utils::FacetModel::extractFacetsFromQuery( const Nepomuk::Query::Query& query )
 {
-    // safety net to revent endless loops
+    // safety net to prevent endless loops
     // ===============================
-    if ( term == queryTerm() )
-        return Term();
+    if ( query.term() == queryTerm() )
+        return Query::Query();
 
     // we do not want to emit any queryTermChanged() signal during this method
     // as it would confuse client code
@@ -330,7 +331,14 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Te
 
     // we extract all facets we can find and leave the rest in the query
     // ================================
-    Term restTerm = term.optimized();
+    Query::Query restQuery = query.optimized();
+    Term restTerm = restQuery.term();
+
+    // Step one is to use the term in question as the client query for all facets
+    // this is necessary since otherwise facets like ProxyFacet will ignore all
+    // calls to selectFromTerm(). The client query can later be reset by the client.
+    // it is not wrong but may be only part of the actual client query.
+    setClientQuery( restQuery );
 
     // first we check if the main term is already a facet term
     // (this way we can also handle facets that use AndTerms)
@@ -384,7 +392,8 @@ Nepomuk::Query::Term Nepomuk::Utils::FacetModel::extractFacetsFromTerm( const Te
 
     d->handleFacetsChanged();
 
-    return restTerm.optimized();
+    restQuery.setTerm(restTerm);
+    return restQuery.optimized();
 }
 
 

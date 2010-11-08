@@ -31,6 +31,7 @@ class FacetModelTest : public QObject
 private slots:
     void testExtractFacetsFromTermWithVaryingSelectionMode();
     void testExtractFacetsFromTermWithMultipleFacets();
+    void testExtractFacetsFromTermWithProxyFacet();
 };
 
 #endif // FACETMODELTEST_H
