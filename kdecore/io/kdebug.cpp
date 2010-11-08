@@ -544,7 +544,9 @@ struct KDebugPrivate
             s << areaName.constData();
         }
 
-        s << m_indentString.toLatin1().constData();
+        if (m_indentString.hasLocalData()) {
+            s << m_indentString.localData()->toLatin1().constData();
+        }
 
         if (printFileLine) {
             s << ' ' << file << ':' << line << ' ';
@@ -676,9 +678,9 @@ struct KDebugPrivate
     Cache cache;
     bool m_disableAll;
     int m_nullOutputYesNoCache[8];
-    QString m_indentString;
 
     KNoDebugStream devnull;
+    QThreadStorage<QString*> m_indentString;
     QThreadStorage<KSyslogDebugStream*> syslogwriter;
     QThreadStorage<KFileDebugStream*> filewriter;
     QThreadStorage<KMessageBoxDebugStream*> messageboxwriter;
@@ -863,8 +865,13 @@ KDebug::Block::Block(const char* label, int area)
     } else {
         m_startTime.start();
         kDebug(area) << "BEGIN:" << label;
-        QMutexLocker locker(&kDebug_data->mutex);
-        kDebug_data->m_indentString += QLatin1String("  ");
+
+        // The indent string is per thread
+        QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
+        if (!indentString.hasLocalData()) {
+            indentString.setLocalData(new QString);
+        }
+        *(indentString.localData()) += QLatin1String("  ");
     }
 }
 
@@ -872,21 +879,20 @@ KDebug::Block::~Block()
 {
     if (m_label) {
         const double duration = (double)m_startTime.elapsed() / (double)1000.0;
-        kDebug_data->mutex.lock();
-        kDebug_data->m_indentString.chop(2);
-        kDebug_data->mutex.unlock();
+        QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
+        indentString.localData()->chop(2);
 
         // Print timing information, and a special message (DELAY) if the method took longer than 5s
         if (duration < 5.0) {
             kDebug(m_area)
                 << "END__:"
                 << m_label
-                << QString::fromLatin1("[Took: %3s]").arg(QString::number(duration, 'g', 2) );
+                << qPrintable(QString::fromLatin1("[Took: %3s]").arg(QString::number(duration, 'g', 2)));
         } else {
             kDebug(m_area)
                 << "END__:"
                 << m_label
-                << QString::fromLatin1("[DELAY Took (quite long) %3s]").arg(QString::number(duration, 'g', 2));
+                << qPrintable(QString::fromLatin1("[DELAY Took (quite long) %3s]").arg(QString::number(duration, 'g', 2)));
         }
     }
 }

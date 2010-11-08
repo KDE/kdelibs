@@ -88,8 +88,15 @@ void KDebugTest::compareLines(const QList<QByteArray>& expectedLines, const char
     QCOMPARE(lines.count(), expectedLines.count());
     QVERIFY(lines[0].endsWith("\n"));
     for (int i = 0; i < lines.count(); ++i) {
-        //qDebug() << "line" << i << ":" << lines[i] << expectedLines[i];
-        QVERIFY(lines[i].endsWith(expectedLines[i]));
+        QByteArray line = lines[i];
+        if (expectedLines[i].contains("[...]")) {
+            const int pos = line.indexOf('[');
+            QVERIFY(pos >= 0);
+            line.truncate(pos);
+            line.append("[...]\n");
+        }
+        //qDebug() << "line" << i << ":" << line << expectedLines[i];
+        QVERIFY(line.endsWith(expectedLines[i]));
     }
 }
 
@@ -125,6 +132,12 @@ void KDebugTest::testDebugToFile()
     kDebug(0) << "TEST DEBUG with newline" << endl << "newline";
     TestClass tc;
     kDebug(0) << "Re-entrance test" << tc << "[ok]";
+    {
+        KDebug::Block block("block 1");
+        {
+            KDebug::Block block("block 2");
+        }
+    }
     QVERIFY(QFile::exists("kdebug.dbg"));
     QList<QByteArray> expected;
     expected << "/kdecore (kdelibs) KDebugTest::testDebugToFile: TEST DEBUG 180\n";
@@ -134,6 +147,10 @@ void KDebugTest::testDebugToFile()
     expected << "newline\n";
     expected << "/kdecore (kdelibs) TestClass::getSomething: Nested kDebug call\n";
     expected << "Re-entrance test \"TestClass\" after the call [ok]\n";
+    expected << "BEGIN: block 1\n";
+    expected << "BEGIN: block 2\n";
+    expected << "END__: block 2 [...]\n";
+    expected << "END__: block 1 [...]\n";
     compareLines(expected);
 }
 
@@ -243,6 +260,7 @@ class KDebugThreadTester
 public:
     void doDebugs()
     {
+        KDEBUG_BLOCK
         for (int i = 0; i < 10; ++i)
             kDebug() << "A kdebug statement in a thread:" << i;
     }
@@ -264,17 +282,22 @@ void KDebugTest::testMultipleThreads()
 
     QVERIFY(QFile::exists("kdebug.dbg"));
 
+    //QFile f("kdebug.dbg"); f.open(QIODevice::ReadOnly);
+    //qDebug() << QString::fromLatin1(f.readAll());
+
     // We have no guarantee that the debug lines are issued one after the other.
     // The \n comes from the destruction of the temp kDebug, and that's not mutexed,
     // so we can get msg1 + msg2 + \n + \n.
     // So this test is basically only good for running in helgrind.
+
 #if 0
     // Check that the lines are whole
     QList<QByteArray> lines = readLines();
     Q_FOREACH(const QByteArray& line, lines) {
-        //qDebug() << line;
-        QCOMPARE(line.count("doDebugs: A kdebug statement in a thread:"), 1);
+        qDebug() << line;
+        QCOMPARE(line.count("doDebugs"), 1);
         QCOMPARE(line.count('\n'), 1);
+        QVERIFY(!line.startsWith("   ")); // more than 2 spaces? indentString messed up
     }
 #endif
 }
