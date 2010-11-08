@@ -312,7 +312,7 @@ namespace {
     Query::QueryFlags parseFlags( const QString& s )
     {
         Query::QueryFlags flags = Query::NoQueryFlags;
-        QStringList sl = s.split( QLatin1String("|") );
+        QStringList sl = s.split( QLatin1String("|"), QString::SkipEmptyParts );
         Q_FOREACH( const QString& sf, sl ) {
             if( sf == QLatin1String("NoResultRestrictions") )
                 flags |= Query::NoResultRestrictions;
