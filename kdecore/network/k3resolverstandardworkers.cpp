@@ -68,7 +68,7 @@ static bool hasIPv6()
 #ifdef Q_WS_WIN
   extern void KNetwork_initSocket();
   KNetwork_initSocket();
-#endif 
+#endif
 #ifdef AF_INET6
   if (!qgetenv("KDE_NO_IPV6").isEmpty())
     return false;
@@ -111,7 +111,7 @@ void KBlacklistWorker::init()
 void KBlacklistWorker::loadBlacklist()
 {
   QMutexLocker locker(&blacklistMutex);
-  QStringList filelist = KGlobal::dirs()->findAllResources("config", "ipv6blacklist");
+  QStringList filelist = KGlobal::dirs()->findAllResources("config", QLatin1String("ipv6blacklist"));
 
   QStringList::ConstIterator it = filelist.constBegin(),
     end = filelist.constEnd();
@@ -133,8 +133,8 @@ void KBlacklistWorker::loadBlacklist()
 	  // make sure there are no surrounding whitespaces
 	  // and that it starts with .
 	  line = line.trimmed();
-	  if (line[0] != '.')
-	    line.prepend(QChar( '.') );
+	  if (line[0] != QLatin1Char('.'))
+	    line.prepend(QLatin1Char('.'));
 
 	  blacklist.append(line.toLower());
 	}
@@ -564,8 +564,8 @@ bool KStandardWorker::sanityCheck()
   if (!nodeName().isEmpty())
     {
       QString node = nodeName();
-      if (node.indexOf('%') != -1)
-	node.truncate(node.indexOf('%'));
+      if (node.indexOf(QLatin1Char('%')) != -1)
+	node.truncate(node.indexOf(QLatin1Char('%')));
 
       if (node.isEmpty() || node == QLatin1String("*") ||
 	  node == QLatin1String("localhost"))
@@ -601,7 +601,7 @@ bool KStandardWorker::resolveScopeId()
 {
   // we must test the original name, not the encoded one
   scopeid = 0;
-  int pos = nodeName().lastIndexOf('%');
+  int pos = nodeName().lastIndexOf(QLatin1Char('%'));
   if (pos == -1)
     return true;
 
@@ -691,10 +691,10 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
   if (pathname.isEmpty())
     return KResolver::NoName;;	// no path?
 
-  if (pathname[0] != '/')
+  if (pathname[0] != QLatin1Char('/'))
     // non absolute pathname
     // put it in /tmp
-    pathname.prepend("/tmp/");
+    pathname.prepend(QLatin1String("/tmp/"));
 
   //  qDebug("QNoResolveWorker::addUnix(): adding Unix socket for %s", pathname.toLocal8Bit().data());
   KUnixSocketAddress sa(pathname);

@@ -157,7 +157,7 @@ QString KUser::homeDir() const {
 
 QString KUser::faceIconPath() const
 {
-    QString pathToFaceIcon(homeDir() + QDir::separator() + ".face.icon");
+    QString pathToFaceIcon(homeDir() + QDir::separator() + QLatin1String(".face.icon"));
 
     if (QFile::exists(pathToFaceIcon)) {
         return pathToFaceIcon;

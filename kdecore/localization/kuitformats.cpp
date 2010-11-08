@@ -29,7 +29,7 @@
 QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
                                  const QHash<QString, QString> &keydict)
 {
-    static QRegExp delRx("[+-]");
+    static QRegExp delRx(QLatin1String("[+-]"));
 
     int p = delRx.indexIn(shstr); // find delimiter
 
@@ -50,7 +50,7 @@ QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
             keys[i] = keydict.contains(nkey) ? keydict[nkey] : keys[i].trimmed();
         }
         else {
-            keys[i] = keydict["f%1"].arg(nkey.mid(1));
+            keys[i] = keydict[QLatin1String("f%1")].arg(nkey.mid(1));
         }
     }
     return keys.join(delim);
@@ -59,7 +59,7 @@ QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
 QString KuitFormats::toInterfacePath (const QString &inpstr,
                                       const QString &delim)
 {
-    static QRegExp delRx("\\||->");
+    static QRegExp delRx(QLatin1String("\\||->"));
 
     int p = delRx.indexIn(inpstr); // find delimiter
     if (p < 0) { // single-element path, no delimiter found

@@ -46,7 +46,7 @@ static QString shortenMessage (const QString &str)
     if (str.length() <= maxlen)
         return str;
     else
-        return str.left(maxlen).append("...");
+        return str.left(maxlen).append(QLatin1String("..."));
 }
 
 typedef qulonglong pluraln;
@@ -120,13 +120,13 @@ class KLocalizedStringPrivateStatics
     QHash<QString, KuitSemantics*> formatters;
 
     KLocalizedStringPrivateStatics () :
-        theFence("|/|"),
-        startInterp("$["),
-        endInterp("]"),
-        scriptPlchar('%'),
-        scriptVachar('^'),
+        theFence(QLatin1String("|/|")),
+        startInterp(QLatin1String("$[")),
+        endInterp(QLatin1String("]")),
+        scriptPlchar(QLatin1Char('%')),
+        scriptVachar(QLatin1Char('^')),
 
-        scriptDir("LC_SCRIPTS"),
+        scriptDir(QLatin1String("LC_SCRIPTS")),
         scriptModules(),
         scriptModulesToLoad(),
 
@@ -222,7 +222,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
     {
         kDebug(173) << "Trying to convert empty KLocalizedString to QString.";
         #ifndef NDEBUG
-        return QString("(I18N_EMPTY_MESSAGE)");
+        return QString::fromLatin1("(I18N_EMPTY_MESSAGE)");
         #else
         return QString();
         #endif
@@ -230,7 +230,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
 
     // Check whether plural argument has been supplied, if message has plural.
     if (!plural.isEmpty() && !numberSet)
-        kDebug(173) << QString("Plural argument to message {%1} not supplied before conversion.")
+        kDebug(173) << QString::fromLatin1("Plural argument to message {%1} not supplied before conversion.")
                               .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
@@ -253,7 +253,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
         ctry = locale->country();
     } else {
         lang = KLocale::defaultLanguage();
-        ctry = 'C';
+        ctry = QLatin1Char('C');
         rawtrans = selectForEnglish();
     }
 
@@ -276,7 +276,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
             if (KGlobal::hasMainComponent())
                 loadTranscript();
             else
-                kDebug(173) << QString("Scripted message {%1} before transcript engine can be loaded.")
+                kDebug(173) << QString::fromLatin1("Scripted message {%1} before transcript engine can be loaded.")
                                       .arg(shortenMessage(trans));
         }
     }
@@ -289,7 +289,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
     {
         // The msgstr starts with the script fence, no ordinary translation.
         // This is not allowed, consider message not translated.
-        kDebug(173) << QString("Scripted message {%1} without ordinary translation, discarded.")
+        kDebug(173) << QString::fromLatin1("Scripted message {%1} without ordinary translation, discarded.")
                                .arg(shortenMessage(trans)) ;
         trans = selectForEnglish();
     }
@@ -297,7 +297,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
     // Substitute placeholders in ordinary translation.
     QString final = substituteSimple(trans);
     // Post-format ordinary translation.
-    final = postFormat(final, lang, ctxt);
+    final = postFormat(final, lang, QString::fromLatin1(ctxt));
 
     // If there is also a scripted translation.
     if (!strans.isEmpty()) {
@@ -307,7 +307,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
 
         // If any translation produced and no fallback requested.
         if (!sfinal.isEmpty() && !fallback) {
-            final = postFormat(sfinal, lang, ctxt);
+            final = postFormat(sfinal, lang, QString::fromLatin1(ctxt));
         }
     }
 
@@ -422,11 +422,11 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
         // too little arguments
         {
             // put back the placeholder
-            final.append('%' + QString::number(plords.at(i) + 1));
+            final.append(QLatin1Char('%') + QString::number(plords.at(i) + 1));
             #ifndef NDEBUG
             if (!partial)
                 // spoof the message
-                final.append("(I18N_ARGUMENT_MISSING)");
+                final.append(QLatin1String("(I18N_ARGUMENT_MISSING)"));
             #endif
         }
         else
@@ -444,22 +444,22 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
             if (!ords.at(i))
             {
                 gaps = true;
-                kDebug(173) << QString("Placeholder %%1 skipped in message {%2}.")
+                kDebug(173) << QString::fromLatin1("Placeholder %%1 skipped in message {%2}.")
                                       .arg(QString::number(i + 1), shortenMessage(trans));
             }
         // If no gaps, check for mismatch between number of unique placeholders and
         // actually supplied arguments.
         if (!gaps && ords.size() != args.size())
-            kDebug(173) << QString("%1 instead of %2 arguments to message {%3} supplied before conversion.")
+            kDebug(173) << QString::fromLatin1("%1 instead of %2 arguments to message {%3} supplied before conversion.")
                                   .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans));
 
         // Some spoofs.
         if (gaps)
-            final.append("(I18N_GAPS_IN_PLACEHOLDER_SEQUENCE)");
+            final.append(QLatin1String("(I18N_GAPS_IN_PLACEHOLDER_SEQUENCE)"));
         if (ords.size() < args.size())
-            final.append("(I18N_EXCESS_ARGUMENTS_SUPPLIED)");
+            final.append(QLatin1String("(I18N_EXCESS_ARGUMENTS_SUPPLIED)"));
         if (!plural.isEmpty() && !numberSet)
-            final.append("(I18N_PLURAL_ARGUMENT_MISSING)");
+            final.append(QLatin1String("(I18N_PLURAL_ARGUMENT_MISSING)"));
     }
     #endif
 
@@ -572,7 +572,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             ++tpos;
         }
         if (tpos == slen) {
-            kDebug(173) << QString("Unclosed interpolation {%1} in message {%2}.")
+            kDebug(173) << QString::fromLatin1("Unclosed interpolation {%1} in message {%2}.")
                                   .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
             return -1;
         }
@@ -592,18 +592,18 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
         while (   !strans[tpos].isSpace()
                && strans.mid(tpos, ielen) != s->endInterp)
         {
-            if (strans[tpos] == '\'') { // quoted segment
+            if (strans[tpos] == QLatin1Char('\'')) { // quoted segment
                 QString seg;
                 ++tpos; // skip opening quote
                 // Find closing quote.
-                while (tpos < slen && strans[tpos] != '\'') {
-                    if (strans[tpos] == '\\')
+                while (tpos < slen && strans[tpos] != QLatin1Char('\'')) {
+                    if (strans[tpos] == QLatin1Char('\\'))
                         ++tpos; // escape next character
                     seg.append(strans[tpos]);
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    kDebug(173) << QString("Unclosed quote in interpolation {%1} in message {%2}.")
+                    kDebug(173) << QString::fromLatin1("Unclosed quote in interpolation {%1} in message {%2}.")
                                         .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
@@ -631,17 +631,17 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                 QString seg;
                 // Find whitespace, quote, opening or closing sequence.
                 while (   tpos < slen
-                       && !strans[tpos].isSpace() && strans[tpos] != '\''
+                       && !strans[tpos].isSpace() && strans[tpos] != QLatin1Char('\'')
                        && strans.mid(tpos, islen) != s->startInterp
                        && strans.mid(tpos, ielen) != s->endInterp)
                 {
-                    if (strans[tpos] == '\\')
+                    if (strans[tpos] == QLatin1Char('\\'))
                         ++tpos; // escape next character
                     seg.append(strans[tpos]);
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    kDebug(173) << QString("Non-terminated interpolation {%1} in message {%2}.")
+                    kDebug(173) << QString::fromLatin1("Non-terminated interpolation {%1} in message {%2}.")
                                         .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
@@ -668,7 +668,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             iargs.append(vref);
         }
         else {
-            iargs.append(segs.join(""));
+            iargs.append(segs.join(QString()));
         }
     }
     tpos += ielen; // skip to first character after closing sequence
@@ -695,7 +695,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     if (!scriptError.isEmpty()) { // problem with evaluation
         fallback = true; // also signal fallback
         if (!scriptError.isEmpty()) {
-            kDebug(173) << QString("Interpolation {%1} in {%2} failed: %3")
+            kDebug(173) << QString::fromLatin1("Interpolation {%1} in {%2} failed: %3")
                                   .arg(strans.mid(pos, tpos - pos), shortenMessage(strans), scriptError);
         }
     }
@@ -763,7 +763,7 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     // If the evaluation went wrong.
     if (!scriptError.isEmpty())
     {
-        kDebug(173) << QString("Post call {%1} for message {%2} failed: %3")
+        kDebug(173) << QString::fromLatin1("Post call {%1} for message {%2} failed: %3")
                               .arg(pcall, shortenMessage(msgid), scriptError);
         return QString();
     }
@@ -777,12 +777,12 @@ static QString wrapNum (const QString &tag, const QString &numstr,
     QString optag;
     if (fieldWidth != 0) {
         QString fillString = KuitSemantics::escape(fillChar);
-        optag = QString("<%1 width='%2' fill='%3'>")
+        optag = QString::fromLatin1("<%1 width='%2' fill='%3'>")
                        .arg(tag, QString::number(fieldWidth), fillString);
     } else {
-        optag = QString("<%1>").arg(tag);
+        optag = QString::fromLatin1("<%1>").arg(tag);
     }
-    QString cltag = QString("</%1>").arg(tag);
+    QString cltag = QString::fromLatin1("</%1>").arg(tag);
     return optag + numstr + cltag;
 }
 
@@ -795,7 +795,7 @@ KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -810,7 +810,7 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
@@ -825,7 +825,7 @@ KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -840,7 +840,7 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
@@ -855,7 +855,7 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<intn>(a));
     return kls;
@@ -870,7 +870,7 @@ KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
         kls.d->numberSet = true;
         kls.d->numberOrd = d->args.size();
     }
-    kls.d->args.append(wrapNum(KUIT_NUMINTG, QString::number(a, base),
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMINTG), QString::number(a, base),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<uintn>(a));
     return kls;
@@ -881,7 +881,7 @@ KLocalizedString KLocalizedString::subs (double a, int fieldWidth,
                                          const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(wrapNum(KUIT_NUMREAL,
+    kls.d->args.append(wrapNum(QString::fromLatin1(KUIT_NUMREAL),
                                QString::number(a, format, precision),
                                fieldWidth, fillChar));
     kls.d->vals.append(static_cast<realn>(a));
@@ -892,7 +892,7 @@ KLocalizedString KLocalizedString::subs (QChar a, int fieldWidth,
                                          const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
+    kls.d->args.append(QString::fromLatin1("%1").arg(a, fieldWidth, fillChar));
     kls.d->vals.append(QString(a));
     return kls;
 }
@@ -905,7 +905,7 @@ KLocalizedString KLocalizedString::subs (const QString &a, int fieldWidth,
     // Do not try to auto-escape non-rich-text alike arguments;
     // breaks compatibility with 4.0. Perhaps for KDE 5?
     // Perhaps bad idea alltogether (too much surprise)?
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
+    kls.d->args.append(QString::fromLatin1("%1").arg(a, fieldWidth, fillChar));
     kls.d->vals.append(a);
     return kls;
 }
@@ -994,8 +994,8 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
             const KCatalogName &cat(catalogs[i]);
 
             // Assemble module's relative path.
-            QString modrpath =   lang + '/' + s->scriptDir + '/'
-                            + cat.name + '/' + cat.name + ".js";
+            QString modrpath =   lang + QLatin1Char('/') + s->scriptDir + QLatin1Char('/')
+                            + cat.name + QLatin1Char('/') + cat.name + QLatin1String(".js");
 
             // Try to find this module.
             QString modapath = KStandardDirs::locate("locale", modrpath);

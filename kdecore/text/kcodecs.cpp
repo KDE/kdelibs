@@ -698,39 +698,37 @@ QString KCodecs::decodeRFC2047String(const QString &msg)
     QString encodedText;
     QString decodedText;
     int encEnd=0;
-    if(!msg.startsWith(QLatin1String("=?")) || (encEnd=msg.lastIndexOf("?="))==-1)
+    if(!msg.startsWith(QLatin1String("=?")) || (encEnd=msg.lastIndexOf(QLatin1String("?=")))==-1)
         return msg;
 
     notEncodedText=msg.mid(encEnd+2);
     encodedText=msg.left(encEnd);
     encodedText=encodedText.mid(2,encodedText.length()-2);
-    int questionMark=encodedText.indexOf('?');
+    int questionMark=encodedText.indexOf(QLatin1Char('?'));
     if (questionMark==-1)
         return msg;
     charset=encodedText.left(questionMark).toLower();
     encoding=encodedText.at(questionMark+1).toLower();
-    if (encoding!='b' && encoding!='q')
+    if (encoding != QLatin1Char('b') && encoding != QLatin1Char('q'))
         return msg;
     encodedText=encodedText.mid(questionMark+3);
-    if(charset.indexOf(' ')!=-1 && encodedText.indexOf(' ')!=-1)
+    if(charset.indexOf(QLatin1Char(' '))!=-1 && encodedText.indexOf(QLatin1Char(' '))!=-1)
         return msg;
-    QByteArray tmpIn;
     QByteArray tmpOut;
-    tmpIn = encodedText.toLocal8Bit();
-    if(encoding=='q')
-        tmpOut=KCodecs::quotedPrintableDecode(tmpIn);
+    QByteArray tmpIn = encodedText.toLocal8Bit();
+    if(encoding == QLatin1Char('q'))
+        tmpOut = KCodecs::quotedPrintableDecode(tmpIn);
     else
-        tmpOut=KCodecs::base64Decode(tmpIn);
-    if(charset!="us-ascii")
-    {
+        tmpOut = KCodecs::base64Decode(tmpIn);
+    if (charset != QLatin1String("us-ascii")) {
         QTextCodec *codec = QTextCodec::codecForName(charset.toLocal8Bit());
         if(!codec)
             return msg;
-        decodedText=codec->toUnicode(tmpOut);
-        decodedText=decodedText.replace('_',' ');
+        decodedText = codec->toUnicode(tmpOut);
+        decodedText = decodedText.replace(QLatin1Char('_'), QLatin1Char(' '));
+    } else {
+        decodedText = QString::fromLocal8Bit(tmpOut.replace('_', ' '));
     }
-    else
-        decodedText=tmpOut.replace('_',' ');
 
     return decodedText + notEncodedText;
 }

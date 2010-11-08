@@ -16,8 +16,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define QT_NO_CAST_FROM_ASCII
-
 #include "kcmdlineargs.h"
 #include <kdebug.h>
 

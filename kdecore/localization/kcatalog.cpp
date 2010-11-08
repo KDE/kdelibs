@@ -156,17 +156,17 @@ QString KCatalog::catalogLocaleDir( const QString &name,
 
 QString KCatalog::name() const
 {
-  return d->name;
+  return QFile::decodeName(d->name);
 }
 
 QString KCatalog::language() const
 {
-  return d->language;
+  return QFile::decodeName(d->language);
 }
 
 QString KCatalog::localeDir() const
 {
-  return d->localeDir;
+  return QFile::decodeName(d->localeDir);
 }
 
 void KCatalogPrivate::setupGettextEnv ()

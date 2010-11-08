@@ -135,7 +135,7 @@ bool KIpAddress::setAddress(const QString& address)
   m_version = 0;
 
   // try to guess the address version
-  if (address.indexOf(':') != -1)
+  if (address.indexOf(QLatin1Char(':')) != -1)
     {
 #ifdef AF_INET6
       // guessing IPv6
@@ -568,7 +568,7 @@ QString KSocketAddress::nodeName() const
 #ifdef AF_INET6
     case AF_INET6:
 
-      QString scopeid("%");
+      QString scopeid(QLatin1Char('%'));
       if (d->addr.generic->sa_family == AF_INET6 && d->addr.in6->sin6_scope_id)
 	scopeid += QString::number(d->addr.in6->sin6_scope_id);
       else

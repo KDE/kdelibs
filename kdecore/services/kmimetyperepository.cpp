@@ -55,13 +55,13 @@ KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMi
         name = canonicalName(name);
     }
 
-    const QString filename = name + ".xml";
+    const QString filename = name + QLatin1String(".xml");
 
     if (KStandardDirs::locate("xdgdata-mime", filename).isEmpty()) {
         return KMimeType::Ptr(); // Not found
     }
 
-    if (name == "inode/directory")
+    if (name == QLatin1String("inode/directory"))
         return KMimeType::Ptr(new KFolderMimeType(filename, name, QString() /*comment*/));
     else
         return KMimeType::Ptr(new KMimeType(filename, name, QString() /*comment*/));
@@ -70,7 +70,7 @@ KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMi
 bool KMimeTypeRepository::checkMimeTypes()
 {
     // check if there are mimetypes
-    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
+    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("globs"));
     return !globFiles.isEmpty();
 }
 
@@ -196,7 +196,7 @@ QStringList KMimeTypeRepository::findFromFileName(const QString &fileName, QStri
 
         // Now use the "fast patterns" dict, for simple *.foo patterns with weight 50
         // (which is most of them, so this optimization is definitely worth it)
-        const int lastDot = fileName.lastIndexOf('.');
+        const int lastDot = fileName.lastIndexOf(QLatin1Char('.'));
         if (lastDot != -1) { // if no '.', skip the extension lookup
             const int ext_len = fileName.length() - lastDot - 1;
             const QString simpleExtension = fileName.right( ext_len ).toLower();
@@ -225,7 +225,7 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
     if (deviceSize == 0) {
         if (accuracy)
             *accuracy = 100;
-        return findMimeTypeByName("application/x-zerosize");
+        return findMimeTypeByName(QLatin1String("application/x-zerosize"));
     }
 
     m_mutex.lockForWrite();
@@ -252,7 +252,7 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
     if (!KMimeType::isBufferBinaryData(beginning)) {
         if (accuracy)
             *accuracy = 5;
-        return findMimeTypeByName("text/plain");
+        return findMimeTypeByName(QLatin1String("text/plain"));
     }
     if (accuracy)
         *accuracy = 0;
@@ -261,16 +261,16 @@ KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accu
 
 static QString fallbackParent(const QString& mimeTypeName)
 {
-    const QString myGroup = mimeTypeName.left(mimeTypeName.indexOf('/'));
+    const QString myGroup = mimeTypeName.left(mimeTypeName.indexOf(QLatin1Char('/')));
     // All text/* types are subclasses of text/plain.
-    if (myGroup == "text" && mimeTypeName != "text/plain")
-        return "text/plain";
+    if (myGroup == QLatin1String("text") && mimeTypeName != QLatin1String("text/plain"))
+        return QLatin1String("text/plain");
     // All real-file mimetypes implicitly derive from application/octet-stream
-    if (myGroup != "inode" &&
+    if (myGroup != QLatin1String("inode") &&
         // kde extensions
-        myGroup != "all" && myGroup != "fonts" && myGroup != "print" && myGroup != "uri"
-        && mimeTypeName != "application/octet-stream") {
-        return "application/octet-stream";
+        myGroup != QLatin1String("all") && myGroup != QLatin1String("fonts") && myGroup != QLatin1String("print") && myGroup != QLatin1String("uri")
+        && mimeTypeName != QLatin1String("application/octet-stream")) {
+        return QLatin1String("application/octet-stream");
     }
     return QString();
 }
@@ -282,7 +282,7 @@ QStringList KMimeTypeRepository::parents(const QString& mime)
         m_parentsMapLoaded = true;
         Q_ASSERT(m_parents.isEmpty());
 
-        const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
+        const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("subclasses"));
         //kDebug() << subclassFiles;
         Q_FOREACH(const QString& fileName, subclassFiles) {
 
@@ -293,9 +293,9 @@ QStringList KMimeTypeRepository::parents(const QString& mime)
                 stream.setCodec("ISO 8859-1");
                 while (!stream.atEnd()) {
                     const QString line = stream.readLine();
-                    if (line.isEmpty() || line[0] == '#')
+                    if (line.isEmpty() || line[0] == QLatin1Char('#'))
                         continue;
-                    const int pos = line.indexOf(' ');
+                    const int pos = line.indexOf(QLatin1Char(' '));
                     if (pos == -1) // syntax error
                         continue;
                     const QString derivedTypeName = line.left(pos);
@@ -335,7 +335,7 @@ static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule
 // Caller must hold m_mutex
 void KMimeTypeRepository::parseMagic()
 {
-    const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "magic");
+    const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("magic"));
     //kDebug() << magicFiles;
     QListIterator<QString> magicIter( magicFiles );
     magicIter.toBack();
@@ -397,8 +397,8 @@ QList<KMimeMagicRule> KMimeTypeRepository::parseMagicFile(QIODevice* file, const
                 break; // done
 
             // Parse new section
-            const QString line = file->readLine();
-            const int pos = line.indexOf(':');
+            const QString line = QString::fromLatin1(file->readLine());
+            const int pos = line.indexOf(QLatin1Char(':'));
             if (pos == -1) { // syntax error
                 kWarning(servicesDebugArea()) << "Syntax error in " << mimeTypeName
                                << " ':' not present in section name" << endl;
@@ -537,7 +537,7 @@ const KMimeTypeRepository::AliasesMap& KMimeTypeRepository::aliases()
     if (!m_aliasFilesParsed) {
         m_aliasFilesParsed = true;
 
-        const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
+        const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("aliases"));
         Q_FOREACH(const QString& fileName, aliasFiles) {
             QFile qfile(fileName);
             //kDebug(7021) << "Now parsing" << fileName;
@@ -546,9 +546,9 @@ const KMimeTypeRepository::AliasesMap& KMimeTypeRepository::aliases()
                 stream.setCodec("ISO 8859-1");
                 while (!stream.atEnd()) {
                     const QString line = stream.readLine();
-                    if (line.isEmpty() || line[0] == '#')
+                    if (line.isEmpty() || line[0] == QLatin1Char('#'))
                         continue;
-                    const int pos = line.indexOf(' ');
+                    const int pos = line.indexOf(QLatin1Char(' '));
                     if (pos == -1) // syntax error
                         continue;
                     const QString aliasTypeName = line.left(pos);
@@ -594,7 +594,7 @@ QStringList KMimeTypeRepository::patternsForMimetype(const QString& mimeType)
 static void errorMissingMimeTypes( const QStringList& _types )
 {
     KMessage::message( KMessage::Error, i18np( "Could not find mime type <resource>%2</resource>",
-                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
+                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join(QLatin1String("</resource>\n<resource>")) ) );
 }
 
 void KMimeTypeRepository::checkEssentialMimeTypes()
@@ -618,26 +618,26 @@ void KMimeTypeRepository::checkEssentialMimeTypes()
 
     QStringList missingMimeTypes;
 
-    if (!KMimeType::mimeType("inode/directory"))
-        missingMimeTypes.append("inode/directory");
+    if (!KMimeType::mimeType(QLatin1String("inode/directory")))
+        missingMimeTypes.append(QLatin1String("inode/directory"));
 #ifndef Q_OS_WIN
-    //if (!KMimeType::mimeType("inode/directory-locked"))
-    //  missingMimeTypes.append("inode/directory-locked");
-    if (!KMimeType::mimeType("inode/blockdevice"))
-        missingMimeTypes.append("inode/blockdevice");
-    if (!KMimeType::mimeType("inode/chardevice"))
-        missingMimeTypes.append("inode/chardevice");
-    if (!KMimeType::mimeType("inode/socket"))
-        missingMimeTypes.append("inode/socket");
-    if (!KMimeType::mimeType("inode/fifo"))
-        missingMimeTypes.append("inode/fifo");
+    //if (!KMimeType::mimeType(QLatin1String("inode/directory-locked")))
+    //  missingMimeTypes.append(QLatin1String("inode/directory-locked"));
+    if (!KMimeType::mimeType(QLatin1String("inode/blockdevice")))
+        missingMimeTypes.append(QLatin1String("inode/blockdevice"));
+    if (!KMimeType::mimeType(QLatin1String("inode/chardevice")))
+        missingMimeTypes.append(QLatin1String("inode/chardevice"));
+    if (!KMimeType::mimeType(QLatin1String("inode/socket")))
+        missingMimeTypes.append(QLatin1String("inode/socket"));
+    if (!KMimeType::mimeType(QLatin1String("inode/fifo")))
+        missingMimeTypes.append(QLatin1String("inode/fifo"));
 #endif
-    if (!KMimeType::mimeType("application/x-shellscript"))
-        missingMimeTypes.append("application/x-shellscript");
-    if (!KMimeType::mimeType("application/x-executable"))
-        missingMimeTypes.append("application/x-executable");
-    if (!KMimeType::mimeType("application/x-desktop"))
-        missingMimeTypes.append("application/x-desktop");
+    if (!KMimeType::mimeType(QLatin1String("application/x-shellscript")))
+        missingMimeTypes.append(QLatin1String("application/x-shellscript"));
+    if (!KMimeType::mimeType(QLatin1String("application/x-executable")))
+        missingMimeTypes.append(QLatin1String("application/x-executable"));
+    if (!KMimeType::mimeType(QLatin1String("application/x-desktop")))
+        missingMimeTypes.append(QLatin1String("application/x-desktop"));
 
     if (!missingMimeTypes.isEmpty())
         errorMissingMimeTypes(missingMimeTypes);
@@ -654,8 +654,8 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
         } else {
             const QString defaultMimeType = KMimeType::defaultMimeType();
             errorMissingMimeTypes(QStringList(defaultMimeType));
-            const QString pathDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+".xml";
-            m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, "mime");
+            const QString pathDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+QLatin1String(".xml");
+            m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, QLatin1String("mime"));
         }
     }
     return m_defaultMimeType;

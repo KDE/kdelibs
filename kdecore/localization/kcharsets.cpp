@@ -527,13 +527,13 @@ QChar KCharsets::fromEntity(const QString &str)
         return QChar::Null;
 
     int pos = 0;
-    if(str[pos] == '&') pos++;
+    if(str[pos] == QLatin1Char('&')) pos++;
 
     // Check for '&#000' or '&#x0000' sequence
-    if (str[pos] == '#' && str.length()-pos > 1) {
+    if (str[pos] == QLatin1Char('#') && str.length()-pos > 1) {
         bool ok;
         pos++;
-        if (str[pos] == 'x' || str[pos] == 'X') {
+        if (str[pos] == QLatin1Char('x') || str[pos] == QLatin1Char('X')) {
             pos++;
             // '&#x0000', hexadecimal character reference
             const QString tmp( str.mid( pos ) );
@@ -596,13 +596,13 @@ QString KCharsets::resolveEntities( const QString &input )
     for ( ; p < end; ++p ) {
         const QChar ch = *p;
 
-        if ( ch == '&' ) {
+        if ( ch == QLatin1Char('&') ) {
             ampersand = p;
             scanForSemicolon = true;
             continue;
         }
 
-        if ( ch != ';' || scanForSemicolon == false )
+        if ( ch != QLatin1Char(';') || scanForSemicolon == false )
             continue;
 
         assert( ampersand );
@@ -667,14 +667,14 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
 {
-    const int left = descriptiveName.lastIndexOf( '(' );
+    const int left = descriptiveName.lastIndexOf( QLatin1Char('(') );
 
     if (left<0) // No parenthesis, so assume it is a normal encoding name
 	return descriptiveName.trimmed();
 
     QString name(descriptiveName.mid(left+1));
 
-    const int right = name.lastIndexOf( ')' );
+    const int right = name.lastIndexOf( QLatin1Char(')') );
 
     if (right<0)
         return name;
@@ -721,7 +721,7 @@ QList<QStringList> KCharsets::encodingsByScript() const
 
 QTextCodec* KCharsets::codecForName(const QString &n) const
 {
-    if ( n == "gb2312" || n == "gbk" )
+    if ( n == QLatin1String("gb2312") || n == QLatin1String("gbk") )
         return QTextCodec::codecForName( "gb18030" );
     const QByteArray name( n.toLatin1() );
     QTextCodec* codec = codecForNameOrNull( name );
@@ -733,8 +733,7 @@ QTextCodec* KCharsets::codecForName(const QString &n) const
 
 QTextCodec* KCharsets::codecForName(const QString &n, bool &ok) const
 {
-    if ( n == "gb2312" || n == "gbk" )
-    {
+    if (n == QLatin1String("gb2312") || n == QLatin1String("gbk")) {
         ok = true;
         return QTextCodec::codecForName( "gb18030" );
     }

@@ -160,8 +160,8 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
 				      "Host: \r\n"
 				      "\r\n");
       QString node2 = node;
-      if (node.contains(':'))
-	node2 = '[' + node + ']';
+      if (node.contains(QLatin1Char(':')))
+	node2 = QLatin1Char('[') + node + QLatin1Char(']');
 
       d->request = request.arg(node2).arg(service).toLatin1();
     }

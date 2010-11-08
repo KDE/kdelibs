@@ -729,9 +729,9 @@ bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource 
         if(enc=="visual")
             enc="iso8859-8";
         bool b;
-        codec = KGlobal::charsets()->codecForName(enc, b);
+        codec = KGlobal::charsets()->codecForName(QLatin1String(enc), b);
         if (!b)
-        return false;
+            return false;
     }
 
     if (d->m_codec->mibEnum()==codec->mibEnum())
@@ -1047,8 +1047,8 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 // skip whitespace before encoding itself
                 while (pos < (int)str.length() && str[pos] <= ' ')
                     ++pos;
-                
-                // there may also be an opening quote, if this is a charset= and not 
+
+                // there may also be an opening quote, if this is a charset= and not
                 // a http-equiv.
                 if (pos < (int)str.length() && str[pos] == '"')
                     ++pos;

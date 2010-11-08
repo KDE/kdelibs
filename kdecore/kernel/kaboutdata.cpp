@@ -206,7 +206,7 @@ KAboutLicense::text() const
 {
     QString result;
 
-    const QString lineFeed( "\n\n" );
+    const QString lineFeed = QString::fromLatin1( "\n\n" );
 
     if (d->_aboutData && !d->_aboutData->copyrightStatement().isEmpty()) {
         result = d->_aboutData->copyrightStatement() + lineFeed;
@@ -221,31 +221,31 @@ KAboutLicense::text() const
         break;
     case KAboutData::License_GPL_V2:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/GPL_V2");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/GPL_V2"));
         break;
     case KAboutData::License_LGPL_V2:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/LGPL_V2");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/LGPL_V2"));
         break;
     case KAboutData::License_BSD:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/BSD");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/BSD"));
         break;
     case KAboutData::License_Artistic:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/ARTISTIC");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/ARTISTIC"));
         break;
     case KAboutData::License_QPL_V1_0:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/QPL_V1.0");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/QPL_V1.0"));
         break;
     case KAboutData::License_GPL_V3:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/GPL_V3");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/GPL_V3"));
         break;
     case KAboutData::License_LGPL_V3:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", "LICENSES/LGPL_V3");
+        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/LGPL_V3"));
         break;
     case KAboutData::License_Custom:
         if (!d->_licenseText.isEmpty()) {
@@ -348,7 +348,7 @@ KAboutLicense::byKeyword(const QString &rawKeyword)
 {
     // Setup keyword->enum dictionary on first call.
     // Use normalized keywords, by the algorithm below.
-    static QHash<QString, KAboutData::LicenseKey> ldict;
+    static QHash<QByteArray, KAboutData::LicenseKey> ldict;
     if (ldict.isEmpty()) {
         ldict.insert("gpl", KAboutData::License_GPL);
         ldict.insert("gplv2", KAboutData::License_GPL_V2);
@@ -370,10 +370,10 @@ KAboutLicense::byKeyword(const QString &rawKeyword)
     // Normalize keyword.
     QString keyword = rawKeyword;
     keyword = keyword.toLower();
-    keyword.remove(' ');
-    keyword.remove('.');
+    keyword.remove(QLatin1Char(' '));
+    keyword.remove(QLatin1Char('.'));
 
-    KAboutData::LicenseKey license = ldict.value(keyword,
+    KAboutData::LicenseKey license = ldict.value(keyword.toLatin1(),
                                                  KAboutData::License_Custom);
     return KAboutLicense(license, 0);
 }
@@ -385,10 +385,10 @@ public:
     Private()
         : customAuthorTextEnabled(false)
         {}
-    QString _appName;
+    QByteArray _appName;
     KLocalizedString _programName;
     KLocalizedString _shortDescription;
-    QString _catalogName;
+    QByteArray _catalogName;
     KLocalizedString _copyrightStatement;
     KLocalizedString _otherText;
     QString _homepageAddress;
@@ -426,7 +426,7 @@ KAboutData::KAboutData( const QByteArray &_appName,
                       )
   : d(new Private)
 {
-    d->_appName = QString::fromUtf8(_appName);
+    d->_appName = _appName;
     int p = d->_appName.indexOf('/');
     if (p >= 0) {
         d->_appName = d->_appName.mid(p + 1);
@@ -441,23 +441,23 @@ KAboutData::KAboutData( const QByteArray &_appName,
     d->_licenseList.append(KAboutLicense(licenseType,this));
     d->_copyrightStatement = _copyrightStatement;
     d->_otherText = text;
-    d->_homepageAddress = homePageAddress;
+    d->_homepageAddress = QString::fromLatin1(homePageAddress);
     d->_bugEmailAddress = bugsEmailAddress;
 
-    if (d->_homepageAddress.contains("http://")) {
-        int dot = d->_homepageAddress.indexOf('.');
+    if (d->_homepageAddress.contains(QLatin1String("http://"))) {
+        const int dot = d->_homepageAddress.indexOf(QLatin1Char('.'));
         if (dot >= 0) {
             d->organizationDomain = d->_homepageAddress.mid(dot + 1);
-            int slash = d->organizationDomain.indexOf('/');
+            const int slash = d->organizationDomain.indexOf(QLatin1Char('/'));
             if (slash >= 0)
                 d->organizationDomain.truncate(slash);
         }
         else {
-            d->organizationDomain = "kde.org";
+            d->organizationDomain = QString::fromLatin1("kde.org");
         }
     }
     else {
-        d->organizationDomain = "kde.org";
+        d->organizationDomain = QString::fromLatin1("kde.org");
     }
 }
 
@@ -564,7 +564,7 @@ KAboutData::addLicenseTextFile( const QString &pathToFile )
 KAboutData &
 KAboutData::setAppName( const QByteArray &_appName )
 {
-  d->_appName = QString::fromUtf8(_appName);
+  d->_appName = _appName;
   return *this;
 }
 
@@ -634,7 +634,7 @@ KAboutData::setOtherText( const KLocalizedString &_otherText )
 KAboutData &
 KAboutData::setHomepage( const QByteArray &_homepage )
 {
-  d->_homepageAddress = QString::fromUtf8(_homepage);
+  d->_homepageAddress = QString::fromLatin1(_homepage);
   return *this;
 }
 
@@ -648,7 +648,7 @@ KAboutData::setBugAddress( const QByteArray &_bugAddress )
 KAboutData &
 KAboutData::setOrganizationDomain( const QByteArray &domain )
 {
-  d->organizationDomain = QString::fromUtf8(domain);
+  d->organizationDomain = QString::fromLatin1(domain);
   return *this;
 }
 
@@ -662,7 +662,7 @@ KAboutData::setProductName( const QByteArray &_productName )
 QString
 KAboutData::appName() const
 {
-   return d->_appName;
+  return QString::fromUtf8(d->_appName);
 }
 
 QString
@@ -755,9 +755,9 @@ QString
 KAboutData::catalogName() const
 {
    if (!d->_catalogName.isEmpty())
-      return d->_catalogName;
+     return QString::fromUtf8(d->_catalogName);
    // Fallback to appname for catalog name if empty.
-   return d->_appName;
+   return QString::fromUtf8(d->_appName);
 }
 
 QString
@@ -808,7 +808,7 @@ QList<KAboutPerson>
 KAboutData::translators() const
 {
     QList<KAboutPerson> personList;
-    
+
     KLocale *tmpLocale = NULL;
     if (KGlobal::locale()) {
         // There could be many catalogs loaded into the global locale,
@@ -840,12 +840,12 @@ KAboutData::translators() const
     if ( translatorName.isEmpty() || translatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
 
-    const QStringList nameList ( translatorName.split( ',' ) );
+    const QStringList nameList(translatorName.split(QString(QLatin1Char(','))));
 
     QStringList emailList;
     if( !translatorEmail.isEmpty() && translatorEmail != QString::fromUtf8( EMAIL_OF_TRANSLATORS ) )
     {
-       emailList = translatorEmail.split( ',', QString::KeepEmptyParts );
+       emailList = translatorEmail.split(QString(QLatin1Char(',')), QString::KeepEmptyParts);
     }
 
     QStringList::const_iterator nit;

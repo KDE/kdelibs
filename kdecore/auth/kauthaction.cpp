@@ -110,7 +110,7 @@ void Action::setName(const QString &name)
         d->valid = BackendsManager::authBackend()->actionExists(name);
     } else {
         // Otherwise, check through a regexp
-        QRegExp exp("[0-z]+(\\.[0-z]+)*");
+        QRegExp exp(QLatin1String("[0-z]+(\\.[0-z]+)*"));
         d->valid = exp.exactMatch(name);
     }
 }

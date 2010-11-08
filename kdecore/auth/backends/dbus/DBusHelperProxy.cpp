@@ -47,7 +47,7 @@ static void debugMessageReceived(int t, const QString &message);
 void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
 {
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "stopAction");
+    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("stopAction"));
 
     QList<QVariant> args;
     args << action;
@@ -65,12 +65,12 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     QDBusConnection::systemBus().interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
+    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         return false;
     }
 
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performActions");
+    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("performActions"));
 
     QList<QVariant> args;
     args << blob << BackendsManager::authBackend()->callerID();
@@ -97,15 +97,15 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     QDBusConnection::systemBus().interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, "/", "org.kde.auth", "remoteSignal", this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
+    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         ActionReply errorReply = ActionReply::DBusErrorReply;
-        errorReply.setErrorDescription(i18n("DBus Backend error: connection to helper failed. %1", 
+        errorReply.setErrorDescription(i18n("DBus Backend error: connection to helper failed. %1",
                                             QDBusConnection::systemBus().lastError().message()));
         return errorReply;
     }
 
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "performAction");
+    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("performAction"));
 
     QList<QVariant> args;
     args << action << BackendsManager::authBackend()->callerID() << blob;
@@ -157,7 +157,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
     QDBusConnection::systemBus().interface()->startService(helperID);
 
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, "/", "org.kde.auth", "authorizeAction");
+    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("authorizeAction"));
 
     QList<QVariant> args;
     args << action << BackendsManager::authBackend()->callerID();
@@ -190,7 +190,7 @@ bool DBusHelperProxy::initHelper(const QString &name)
         return false;
     }
 
-    if (!QDBusConnection::systemBus().registerObject("/", this)) {
+    if (!QDBusConnection::systemBus().registerObject(QLatin1String("/"), this)) {
         return false;
     }
 
@@ -299,11 +299,11 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
         QString slotname = action;
-        if (slotname.startsWith(m_name + '.')) {
+        if (slotname.startsWith(m_name + QLatin1Char('.'))) {
             slotname = slotname.right(slotname.length() - m_name.length() - 1);
         }
 
-        slotname.replace('.', '_');
+        slotname.replace(QLatin1Char('.'), QLatin1Char('_'));
 
         bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection,
                                                  Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
@@ -358,7 +358,7 @@ void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
-    stream << level << QString(msg);
+    stream << level << QString::fromLocal8Bit(msg);
 
     emit remoteSignal(DebugMessage, m_currentAction, blob);
 }

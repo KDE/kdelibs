@@ -270,7 +270,7 @@ bool KCurrencyCode::isValid() const
 
 bool KCurrencyCode::isValid( const QString &isoCurrencyCode, CurrencyStatusFlags currencyStatusFlags )
 {
-    KCurrencyCode test = KCurrencyCode( isoCurrencyCode, "us_EN" );
+    KCurrencyCode test = KCurrencyCode( isoCurrencyCode, QLatin1String("us_EN") );
     return test.isValid() && ( currencyStatusFlags & test.status() );
 }
 
@@ -278,7 +278,7 @@ QStringList KCurrencyCode::allCurrencyCodesList( KCurrencyCode::CurrencyStatusFl
 {
     QStringList currencyCodes;
 
-    const QStringList paths = KGlobal::dirs()->findAllResources( "locale", "currency/*.desktop" );
+    const QStringList paths = KGlobal::dirs()->findAllResources( "locale", QLatin1String("currency/*.desktop") );
 
     foreach( const QString &path, paths )
     {

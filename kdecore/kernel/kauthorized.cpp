@@ -48,18 +48,18 @@ class URLActionRule
   public:
 #define checkExactMatch(s, b) \
         if (s.isEmpty()) b = true; \
-        else if (s[s.length()-1] == '!') \
+        else if (s[s.length()-1] == QLatin1Char('!')) \
         { b = false; s.truncate(s.length()-1); } \
         else b = true;
 #define checkStartWildCard(s, b) \
         if (s.isEmpty()) b = true; \
-        else if (s[0] == '*') \
+        else if (s[0] == QLatin1Char('*')) \
         { b = true; s = s.mid(1); } \
         else b = false;
 #define checkEqual(s, b) \
-        b = (s == "=");
+        b = (s == QString::fromLatin1("="));
 
-     URLActionRule(const QString &act,
+     URLActionRule(const QByteArray &act,
                    const QString &bProt, const QString &bHost, const QString &bPath,
                    const QString &dProt, const QString &dHost, const QString &dPath,
                    bool perm)
@@ -163,7 +163,7 @@ class URLActionRule
         return true;
      }
 
-     QString action;
+     QByteArray action;
      QString baseProt;
      QString baseHost;
      QString basePath;
@@ -271,58 +271,58 @@ static void initUrlActionRestrictions()
 //  d->urlActionRestrictions.append(
 //	URLActionRule("list", Any, Any, Any, "file", Any, QDir::homePath(), true));
   d->urlActionRestrictions.append(
-	URLActionRule("link", Any, Any, Any, ":internet", Any, Any, true));
+	URLActionRule("link", Any, Any, Any, QLatin1String(":internet"), Any, Any, true));
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", Any, Any, Any, ":internet", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, QLatin1String(":internet"), Any, Any, true));
 
   // We allow redirections to file: but not from internet protocols, redirecting to file:
   // is very popular among io-slaves and we don't want to break them
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", Any, Any, Any, "file", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, QLatin1String("file"), Any, Any, true));
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", ":internet", Any, Any, "file", Any, Any, false));
+	URLActionRule("redirect", QLatin1String(":internet"), Any, Any, QLatin1String("file"), Any, Any, false));
 
   // local protocols may redirect everywhere
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", ":local", Any, Any, Any, Any, Any, true));
+	URLActionRule("redirect", QLatin1String(":local"), Any, Any, Any, Any, Any, true));
 
   // Anyone may redirect to about:
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", Any, Any, Any, "about", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, QLatin1String("about"), Any, Any, true));
 
   // Anyone may redirect to itself, cq. within it's own group
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, QLatin1String("="), Any, Any, true));
 
   d->urlActionRestrictions.append(
-	URLActionRule("redirect", "about", Any, Any, Any, Any, Any, true));
+	URLActionRule("redirect", QLatin1String("about"), Any, Any, Any, Any, Any, true));
 
 
   KConfigGroup cg(KGlobal::config(), "KDE URL Restrictions");
   int count = cg.readEntry("rule_count", 0);
-  QString keyFormat = QString("rule_%1");
+  QString keyFormat = QString::fromLatin1("rule_%1");
   for(int i = 1; i <= count; i++)
   {
     QString key = keyFormat.arg(i);
     const QStringList rule = cg.readEntry(key, QStringList());
     if (rule.count() != 8)
       continue;
-    QString action = rule[0];
+    const QByteArray action = rule[0].toLatin1();
     QString refProt = rule[1];
     QString refHost = rule[2];
     QString refPath = rule[3];
     QString urlProt = rule[4];
     QString urlHost = rule[5];
     QString urlPath = rule[6];
-    bool bEnabled   = (rule[7].toLower() == "true");
+    bool bEnabled   = (rule[7].toLower() == QLatin1String("true"));
 
     if (refPath.startsWith(QLatin1String("$HOME")))
        refPath.replace(0, 5, QDir::homePath());
-    else if (refPath.startsWith('~'))
+    else if (refPath.startsWith(QLatin1Char('~')))
        refPath.replace(0, 1, QDir::homePath());
     if (urlPath.startsWith(QLatin1String("$HOME")))
        urlPath.replace(0, 5, QDir::homePath());
-    else if (urlPath.startsWith('~'))
+    else if (urlPath.startsWith(QLatin1Char('~')))
        urlPath.replace(0, 1, QDir::homePath());
 
     if (refPath.startsWith(QLatin1String("$TMP")))
@@ -343,7 +343,7 @@ void KAuthorized::allowUrlAction(const QString &action, const KUrl &_baseURL, co
      return;
 
   d->urlActionRestrictions.append( URLActionRule
-      ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(KUrl::RemoveTrailingSlash),
+      ( action.toLatin1(), _baseURL.protocol(), _baseURL.host(), _baseURL.path(KUrl::RemoveTrailingSlash),
         _destURL.protocol(), _destURL.host(), _destURL.path(KUrl::RemoveTrailingSlash), true));
 }
 
@@ -369,7 +369,7 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const KUrl &_baseURL
 
   foreach(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
-         (action == rule.action) &&
+         (action == QLatin1String(rule.action)) &&
          rule.baseMatch(baseURL, baseClass) &&
          rule.destMatch(destURL, destClass, baseURL, baseClass))
      {

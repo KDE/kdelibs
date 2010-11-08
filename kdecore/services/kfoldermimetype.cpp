@@ -83,8 +83,8 @@ QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
     return KMimeTypePrivate::iconName( _url );
   }
 
-  KUrl u( _url );
-  u.addPath( ".directory" );
+  KUrl u(_url);
+  u.addPath(QString::fromLatin1(".directory"));
 
   QString icon;
   // using KStandardDirs as this one checks for path being
@@ -131,8 +131,8 @@ QString KFolderMimeTypePrivate::comment( const KUrl& _url ) const
     if ( _url.isEmpty() || !_url.isLocalFile() )
         return KMimeTypePrivate::comment( _url );
 
-    KUrl u( _url );
-    u.addPath( ".directory" );
+    KUrl u(_url);
+    u.addPath(QString::fromLatin1(".directory"));
 
     const KDesktopFile cfg( u.toLocalFile() );
     QString comment = cfg.readComment();

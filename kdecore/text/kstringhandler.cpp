@@ -41,11 +41,11 @@ QString KStringHandler::capwords( const QString &text )
     }
 
     const QString strippedText = text.trimmed();
-    const QStringList words = capwords( strippedText.split(' '));
-
+    const QString space = QString(QLatin1Char(' '));
+    const QStringList words = capwords(strippedText.split(space));
 
     QString result = text;
-    result.replace( strippedText, words.join( " " ) );
+    result.replace(strippedText, words.join(space));
     return result;
 }
 
@@ -63,7 +63,7 @@ QString KStringHandler::lsqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen) {
     int part = maxlen-3;
-    return QString("..." + str.right(part));
+    return QString::fromLatin1("...") + str.right(part);
   }
   else return str;
 }
@@ -71,8 +71,8 @@ QString KStringHandler::lsqueeze( const QString & str, int maxlen )
 QString KStringHandler::csqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen && maxlen > 3) {
-    int part = (maxlen-3)/2;
-    return QString(str.left(part) + "..." + str.right(part));
+    const int part = (maxlen-3)/2;
+    return str.left(part) + QLatin1String("...") + str.right(part);
   }
   else return str;
 }
@@ -81,7 +81,7 @@ QString KStringHandler::rsqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen) {
     int part = maxlen-3;
-    return QString(str.left(part) + "...");
+    return str.left(part) + QLatin1String("...");
   }
   else return str;
 }
@@ -164,7 +164,7 @@ QStringList KStringHandler::perlSplit(const QRegExp & sep, const QString & s, in
 
 QString KStringHandler::tagUrls( const QString& text )
 {
-    /*static*/ QRegExp urlEx("(www\\.(?!\\.)|(fish|(f|ht)tp(|s))://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+\\%\\$]+[\\d\\w/]");
+    /*static*/ QRegExp urlEx(QLatin1String("(www\\.(?!\\.)|(fish|(f|ht)tp(|s))://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+\\%\\$]+[\\d\\w/]"));
 
     QString richText( text );
     int urlPos = 0, urlLen;
@@ -178,7 +178,7 @@ QString KStringHandler::tagUrls( const QString& text )
             continue;
         }
         // Don't use QString::arg since %01, %20, etc could be in the string
-        QString anchor = "<a href=\"" + href + "\">" + href + "</a>";
+        QString anchor = QString::fromLatin1("<a href=\"") + href + QLatin1String("\">") + href + QLatin1String("</a>");
         richText.replace( urlPos, urlLen, anchor );
 
 
@@ -385,7 +385,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         }
 
         // now some digits follow...
-        if ((*currA == '0') || (*currB == '0')) {
+        if ((*currA == QLatin1Char('0')) || (*currB == QLatin1Char('0'))) {
             // one digit-sequence starts with 0 -> assume we are in a fraction part
             // do left aligned comparison (numbers are considered left aligned)
             while (1) {
