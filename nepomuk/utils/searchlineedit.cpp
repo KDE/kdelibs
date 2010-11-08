@@ -70,6 +70,8 @@ Nepomuk::Utils::SearchLineEdit::SearchLineEdit(QWidget *parent)
     d->q = this;
 
     d->m_lineEdit = new KLineEdit( this );
+    d->m_lineEdit->setClearButtonShown(true);
+    d->m_lineEdit->setClickMessage(i18n("Enter Search Terms..."));
     QHBoxLayout* lay = new QHBoxLayout( this );
     lay->setMargin(0);
     lay->addWidget( d->m_lineEdit );
@@ -113,7 +115,7 @@ Nepomuk::Query::Term Nepomuk::Utils::SearchLineEdit::extractUsableTerms( const N
         QStringList searchTerms;
         foreach( const Nepomuk::Query::Term& subTerm, restTerm.toAndTerm().subTerms() ) {
             if(subTerm.isLiteralTerm()) {
-                searchTerms << subTerm.toString();
+                searchTerms << subTerm.toLiteralTerm().value().toString();
             }
             else {
                 restTerm = restTerm && subTerm;
@@ -130,7 +132,7 @@ Nepomuk::Query::Term Nepomuk::Utils::SearchLineEdit::extractUsableTerms( const N
         OrTerm restOrTerm;
         foreach( const Nepomuk::Query::Term& subTerm, restTerm.toAndTerm().subTerms() ) {
             if(subTerm.isLiteralTerm()) {
-                searchTerms << subTerm.toString();
+                searchTerms << subTerm.toLiteralTerm().value().toString();
             }
             else {
                 restOrTerm.addSubTerm(subTerm);
