@@ -132,11 +132,12 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createFileTypeFacet( QObject* pare
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Document()) );
 
     // need to check the mimetype as well since strigi is still not perfect
-    facetTypes->addTerm( i18nc("option:check A filter on file type - media files", "Media"),
+    facetTypes->addTerm( i18nc("option:check A filter on file type - audio files", "Audio"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Audio()) ||
-                         ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Video()) ||
-                         ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), LiteralTerm(QLatin1String("video"))) ||
                          ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), LiteralTerm(QLatin1String("audio"))) );
+    facetTypes->addTerm( i18nc("option:check A filter on file type - media video", "Video"),
+                         ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Video()) ||
+                         ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), LiteralTerm(QLatin1String("video"))) );
 
     facetTypes->addTerm( i18nc("option:check A filter on file type", "Images"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Image()) );
