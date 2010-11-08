@@ -114,8 +114,9 @@ public:
      * This function will set the parent of the KWebWallet object passed to
      * itself so that the wallet is deleted when this object is deleted. If
      * you do not want that to happen, you should change the wallet's parent
-     * after calling this function. To disable wallet intgreation, call this
-     * function with its parameter set to NULL.
+     * after calling this function.
+     *
+     * To disable wallet intgreation, call this function with a NULL argument. 
      *
      * @see KWebWallet
      */
