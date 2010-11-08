@@ -135,9 +135,6 @@ public:
 
 
 Q_SIGNALS:
-    /** @reimp */
-    void readyRead();
-
     /**
      * Emitted when EOF is read from the PTY.
      *
