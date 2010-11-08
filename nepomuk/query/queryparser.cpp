@@ -203,8 +203,10 @@ namespace {
                         return newTerm;
                     }
                     else {
+                        // we only use a max of 4 properties, otherwise the queries get too big
                         Nepomuk::Query::OrTerm orTerm;
-                        foreach( const Nepomuk::Types::Property& property, properties ) {
+                        for( int i = 0; i < qMax(properties.count(), 4); ++i ) {
+                            const Nepomuk::Types::Property& property = properties[i];
                             Nepomuk::Query::ComparisonTerm t( newTerm );
                             t.setProperty( property );
                             orTerm.addSubTerm( t );
