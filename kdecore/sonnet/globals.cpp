@@ -86,8 +86,8 @@ QString detectLanguage(const QString &sentence)
 QString defaultLanguageName()
 {
   Loader *loader = Loader::openLoader();
-  std::auto_ptr<KConfig> config(new KConfig("sonnetrc"));
-  loader->settings()->restore(config.get());
+  KConfig config(QString::fromLatin1("sonnetrc"));
+  loader->settings()->restore(&config);
 
   return loader->languageNameForCode(loader->settings()->defaultLanguage());
 }

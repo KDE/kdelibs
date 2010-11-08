@@ -190,7 +190,7 @@ bool Settings::ignore( const QString& word )
 void Settings::readIgnoreList(KConfig *config)
 {
     const KConfigGroup conf(config, "Spelling");
-    const QString ignoreEntry = QString( "ignore_%1" ).arg(d->defaultLanguage);
+    const QString ignoreEntry = QString::fromLatin1( "ignore_%1" ).arg(d->defaultLanguage);
     const QStringList ignores = conf.readEntry(ignoreEntry, QStringList());
     setQuietIgnoreList(ignores);
 }
@@ -214,12 +214,11 @@ void Settings::save(KConfig *config)
     conf.writeEntry("skipRunTogether", d->skipRunTogether);
     conf.writeEntry("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
     conf.writeEntry("checkerEnabledByDefault", d->checkerEnabledByDefault);
-    QString defaultLanguage = QString( "ignore_%1" ).arg(d->defaultLanguage);
+    QString defaultLanguage = QString::fromLatin1( "ignore_%1" ).arg(d->defaultLanguage);
     if(conf.hasKey(defaultLanguage) && d->ignore.isEmpty())
       conf.deleteEntry(defaultLanguage);
     else if(!d->ignore.isEmpty())
-      conf.writeEntry(QString( "ignore_%1" ).arg(d->defaultLanguage),
-                    d->ignore.keys() );
+        conf.writeEntry(defaultLanguage, d->ignore.keys());
 
     conf.sync();
 }

@@ -235,17 +235,17 @@ QString Filter::context() const
     QString buffer = m_buffer;
     Word word = wordAtPosition( m_finder.position() );
     buffer = buffer.replace( word.start, word.word.length(),
-                             QString( "<b>%1</b>" ).arg( word.word ) );
+                             QString::fromLatin1( "<b>%1</b>" ).arg( word.word ) );
 
     QString context;
     if ( begin )
-        context = QString( "%1...")
+        context = QString::fromLatin1("%1...")
                   .arg( buffer.mid(  0, len ) );
     else
-        context = QString( "...%1..." )
+        context = QString::fromLatin1("...%1...")
                   .arg( buffer.mid(  m_finder.position() - 20, len ) );
 
-    context.replace( '\n', ' ' );
+    context.replace( QLatin1Char('\n'), QLatin1Char(' ') );
 
     return context;
 }
@@ -261,9 +261,9 @@ bool Filter::trySkipLinks() const
 
     int length = m_buffer.length();
     //URL - if so skip
-    if ( currentChar == ':'
+    if ( currentChar == QLatin1Char(':')
          && (currentPosition+1 < length)
-         && (m_buffer.at( ++currentPosition ) == '/' || ( currentPosition + 1 ) >= length ) ) {
+         && (m_buffer.at( ++currentPosition ) == QLatin1Char('/') || ( currentPosition + 1 ) >= length ) ) {
         //in both cases url is considered finished at the first whitespace occurrence
         //TODO hey, "http://en.wikipedia.org/wiki/Main Page" --Nick Shaforostoff
         while ( !m_buffer.at( currentPosition++ ).isSpace() && currentPosition < length )
@@ -273,7 +273,7 @@ bool Filter::trySkipLinks() const
     }
 
     //Email - if so skip
-    if ( currentChar == '@') {
+    if ( currentChar == QLatin1Char('@')) {
         while ( ++currentPosition < length && !m_buffer.at( currentPosition ).isSpace() )
             ;
         m_finder.setPosition(currentPosition);

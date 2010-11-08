@@ -274,8 +274,8 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
     QMap<QString, QString> langs;
 
     foreach(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)
-        tag = tag.mid(0, tag.indexOf('-'));
-        int underscorePos = tag.indexOf('_');
+        tag = tag.mid(0, tag.indexOf(QLatin1Char('-')));
+        int underscorePos = tag.indexOf(QLatin1Char('_'));
         QString cIsoName, lIsoName;
 	if (underscorePos != -1 && underscorePos <= 3) {
             cIsoName = tag.mid(underscorePos + 1, 2);
@@ -287,12 +287,11 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
         QString description;
 
         if (!cIsoName.isEmpty())
-            description= QString("%1 (%2)")
+            description= QString::fromLatin1("%1 (%2)")
                          .arg(KGlobal::locale()->languageCodeToName(lIsoName))
                          .arg(KGlobal::locale()->countryCodeToName(cIsoName));
         else
-            description= QString("%1")
-                         .arg(KGlobal::locale()->languageCodeToName(lIsoName));
+            description= KGlobal::locale()->languageCodeToName(lIsoName);
         //qDebug()<<"Dict is "<<tag<<" ( "<<loc.name()<<")"<<", descr = "<<description;
         langs.insert(description, tag);
     }
