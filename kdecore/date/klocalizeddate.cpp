@@ -616,7 +616,7 @@ QDataStream &operator>>(QDataStream &in, KLocalizedDate &date)
 
 QDebug operator<<(QDebug dbg, const KLocalizedDate &date)
 {
-    if (date.calendar()->calendarType() == "gregorian") {
+    if (date.calendar()->calendarType() == QLatin1String("gregorian")) {
         dbg.nospace() << "KLocalizedDate(" << date.formatDate(KLocale::IsoDate) << ", "
                       << date.calendar()->calendarLabel() << ')';
     } else {

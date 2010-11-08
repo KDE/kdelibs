@@ -52,51 +52,51 @@ KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLo
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, KSharedConfig::Ptr config,
                                           const KLocale *locale )
 {
-    if ( calendarType == "coptic" ) {
+    if ( calendarType == QLatin1String("coptic") ) {
         return new KCalendarSystemCoptic( config, locale );
     }
 
-    if ( calendarType == "ethiopian" ) {
+    if ( calendarType == QLatin1String("ethiopian") ) {
         return new KCalendarSystemEthiopian( config, locale );
     }
 
-    if ( calendarType == "gregorian" ) {
+    if ( calendarType == QLatin1String("gregorian") ) {
         return new KCalendarSystemGregorian( config, locale );
     }
 
-    if ( calendarType == "gregorian-proleptic" ) {
+    if ( calendarType == QLatin1String("gregorian-proleptic") ) {
         return new KCalendarSystemGregorianProleptic( config, locale );
     }
 
-    if ( calendarType == "hebrew" ) {
+    if ( calendarType == QLatin1String("hebrew") ) {
         return new KCalendarSystemHebrew( config, locale );
     }
 
-    if ( calendarType == "hijri" ) {
+    if ( calendarType == QLatin1String("hijri") ) {
         return new KCalendarSystemHijri( config, locale );
     }
 
-    if ( calendarType == "indian-national" ) {
+    if ( calendarType == QLatin1String("indian-national") ) {
         return new KCalendarSystemIndianNational( config, locale );
     }
 
-    if ( calendarType == "jalali" ) {
+    if ( calendarType == QLatin1String("jalali") ) {
         return new KCalendarSystemJalali( config, locale );
     }
 
-    if ( calendarType == "japanese" ) {
+    if ( calendarType == QLatin1String("japanese") ) {
         return new KCalendarSystemJapanese( config, locale );
     }
 
-    if ( calendarType == "julian" ) {
+    if ( calendarType == QLatin1String("julian") ) {
         return new KCalendarSystemJulian( config, locale );
     }
 
-    if ( calendarType == "minguo" ) {
+    if ( calendarType == QLatin1String("minguo") ) {
         return new KCalendarSystemMinguo( config, locale );
     }
 
-    if ( calendarType == "thai" ) {
+    if ( calendarType == QLatin1String("thai") ) {
         return new KCalendarSystemThai( config, locale );
     }
 
@@ -108,72 +108,72 @@ QStringList KCalendarSystem::calendarSystems()
 {
     QStringList lst;
 
-    lst.append( "coptic" );
-    lst.append( "ethiopian" );
-    lst.append( "gregorian" );
+    lst.append( QLatin1String("coptic") );
+    lst.append( QLatin1String("ethiopian") );
+    lst.append( QLatin1String("gregorian") );
     //Do not return in list as we don't want used unless the client absolutely knows what they are doing
     //This is to prevent interop issues with the "gregorian" being a hybrid Julian/Gregorian, and to prevent
     //double listing of Gregorian confusing users about which to use.
-    //lst.append( "gregorian-proleptic" );
-    lst.append( "hebrew" );
-    lst.append( "hijri" );
-    lst.append( "indian-national" );
-    lst.append( "jalali" );
-    lst.append( "japanese" );
-    lst.append( "julian" );
-    lst.append( "minguo" );
-    lst.append( "thai" );
+    //lst.append( QLatin1String("gregorian-proleptic") );
+    lst.append( QLatin1String("hebrew") );
+    lst.append( QLatin1String("hijri") );
+    lst.append( QLatin1String("indian-national") );
+    lst.append( QLatin1String("jalali") );
+    lst.append( QLatin1String("japanese") );
+    lst.append( QLatin1String("julian") );
+    lst.append( QLatin1String("minguo") );
+    lst.append( QLatin1String("thai") );
 
     return lst;
 }
 
 QString KCalendarSystem::calendarLabel( const QString &calendarType )
 {
-    if ( calendarType == "coptic" ) {
+    if ( calendarType == QLatin1String("coptic") ) {
         return KCalendarSystem::calendarLabel( KLocale::CopticCalendar );
     }
 
-    if ( calendarType == "ethiopian" ) {
+    if ( calendarType == QLatin1String("ethiopian") ) {
         return KCalendarSystem::calendarLabel( KLocale::EthiopianCalendar );
     }
 
-    if ( calendarType == "gregorian" ) {
+    if ( calendarType == QLatin1String("gregorian") ) {
         return KCalendarSystem::calendarLabel( KLocale::QDateCalendar );
     }
 
-    if ( calendarType == "gregorian-proleptic" ) {
+    if ( calendarType == QLatin1String("gregorian-proleptic") ) {
         return KCalendarSystem::calendarLabel( KLocale::GregorianCalendar );
     }
 
-    if ( calendarType == "hebrew" ) {
+    if ( calendarType == QLatin1String("hebrew") ) {
         return KCalendarSystem::calendarLabel( KLocale::HebrewCalendar );
     }
 
-    if ( calendarType == "hijri" ) {
+    if ( calendarType == QLatin1String("hijri") ) {
         return KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar );
     }
 
-    if ( calendarType == "indian-national" ) {
+    if ( calendarType == QLatin1String("indian-national") ) {
         return KCalendarSystem::calendarLabel( KLocale::IndianNationalCalendar );
     }
 
-    if ( calendarType == "jalali" ) {
+    if ( calendarType == QLatin1String("jalali") ) {
         return KCalendarSystem::calendarLabel( KLocale::JalaliCalendar );
     }
 
-    if ( calendarType == "japanese" ) {
+    if ( calendarType == QLatin1String("japanese") ) {
         return KCalendarSystem::calendarLabel( KLocale::JapaneseCalendar );
     }
 
-    if ( calendarType == "julian" ) {
+    if ( calendarType == QLatin1String("julian") ) {
         return KCalendarSystem::calendarLabel( KLocale::JulianCalendar );
     }
 
-    if ( calendarType == "minguo" ) {
+    if ( calendarType == QLatin1String("minguo") ) {
         return KCalendarSystem::calendarLabel( KLocale::MinguoCalendar );
     }
 
-    if ( calendarType == "thai" ) {
+    if ( calendarType == QLatin1String("thai") ) {
         return KCalendarSystem::calendarLabel( KLocale::ThaiCalendar );
     }
 
@@ -1179,7 +1179,7 @@ KLocale::CalendarSystem KCalendarSystem::calendarSystem() const
 }
 
 // NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::calendarLabel() const 
+QString KCalendarSystem::calendarLabel() const
 {
     return KCalendarSystem::calendarLabel( calendarSystem() );
 }

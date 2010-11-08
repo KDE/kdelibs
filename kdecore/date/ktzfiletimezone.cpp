@@ -141,7 +141,7 @@ public:
 KTzfileTimeZoneSource::KTzfileTimeZoneSource(const QString &location)
   : d(new KTzfileTimeZoneSourcePrivate(location))
 {
-    if (location.length() > 1  &&  location.endsWith('/'))
+    if (location.length() > 1  &&  location.endsWith(QLatin1Char('/')))
         d->location.chop(1);
 }
 
@@ -163,12 +163,12 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     quint8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
     QString path = zone.name();
-    if (!path.startsWith('/'))
+    if (!path.startsWith(QLatin1Char('/')))
     {
         if (d->location == QLatin1String("/"))
             path.prepend(d->location);
         else
-            path = d->location + '/' + path;
+            path = d->location + QLatin1Char('/') + path;
     }
     QFile f(path);
     if (!f.open(QIODevice::ReadOnly))
