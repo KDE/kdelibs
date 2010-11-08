@@ -305,7 +305,7 @@ void KPageTabbedView::currentPageChanged( int index )
 
   QModelIndex modelIndex = model()->index( index, 0 );
 
-  selectionModel()->setCurrentIndex( modelIndex, QItemSelectionModel::Select );
+  selectionModel()->setCurrentIndex( modelIndex, QItemSelectionModel::ClearAndSelect );
 }
 
 void KPageTabbedView::layoutChanged()
