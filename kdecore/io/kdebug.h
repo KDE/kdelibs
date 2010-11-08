@@ -25,7 +25,7 @@
 #include <kdecore_export.h>
 
 #include <QtCore/QDebug>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 
 /**
  * \addtogroup kdebug Debug message generators
@@ -355,7 +355,7 @@ public:
     ~Block();
 
 private:
-    QTime m_startTime;
+    QElapsedTimer m_startTime;
     const char *m_label;
     int m_area;
     int m_color;

@@ -878,7 +878,7 @@ KDebug::Block::Block(const char* label, int area)
 KDebug::Block::~Block()
 {
     if (m_label) {
-        const double duration = (double)m_startTime.elapsed() / (double)1000.0;
+        const double duration = m_startTime.elapsed() / 1000.0;
         QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
         indentString.localData()->chop(2);
 
