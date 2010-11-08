@@ -114,6 +114,7 @@ QString Solid::DeviceInterface::typeDescription(Type type)
 }
 
 Solid::DeviceInterfacePrivate::DeviceInterfacePrivate()
+    : m_devicePrivate(0)
 {
 
 }
@@ -131,6 +132,16 @@ QObject *Solid::DeviceInterfacePrivate::backendObject() const
 void Solid::DeviceInterfacePrivate::setBackendObject(QObject *object)
 {
     m_backendObject = object;
+}
+
+Solid::DevicePrivate* Solid::DeviceInterfacePrivate::devicePrivate() const
+{
+    return m_devicePrivate;
+}
+
+void Solid::DeviceInterfacePrivate::setDevicePrivate(DevicePrivate *devicePrivate)
+{
+    m_devicePrivate = devicePrivate;
 }
 
 #include "deviceinterface.moc"

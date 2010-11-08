@@ -33,9 +33,12 @@ namespace Solid
 
         QObject *backendObject() const;
         void setBackendObject(QObject *object);
+        DevicePrivate *devicePrivate() const;
+        void setDevicePrivate(DevicePrivate *devicePrivate);
 
     private:
         QWeakPointer<QObject> m_backendObject;
+        DevicePrivate* m_devicePrivate;
     };
 }
 

@@ -247,6 +247,7 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
         {
             // Lie on the constness since we're simply doing caching here
             const_cast<Device *>(this)->d->setInterface(type, iface);
+            iface->d_ptr->setDevicePrivate(d.data());
         }
 
         return iface;
