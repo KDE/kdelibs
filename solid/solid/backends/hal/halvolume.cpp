@@ -37,7 +37,7 @@ Volume::~Volume()
 
 bool Volume::isIgnored() const
 {
-    HalDevice lock("/org/freedesktop/Hal/devices/computer");
+    static HalDevice lock("/org/freedesktop/Hal/devices/computer");
     bool isLocked = lock.property("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
 
     if (m_device->property("volume.ignore").toBool() || isLocked ){
