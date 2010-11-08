@@ -313,9 +313,9 @@ UString WrapScriptableObject::toString(ExecState*) const
     }
 
     if (type == FunctionRef) {
-        return "[function ImportedScriptable:" + iface + "/" + field + "]";
+        return QString(QLatin1String("[function ImportedScriptable:") + iface + QLatin1Char('/') + field + QLatin1Char(']'));
     } else {
-        return "[object ImportedScriptable:" + iface + "]";
+        return QString(QLatin1String("[object ImportedScriptable:") + iface + QLatin1Char(']'));
     }
 }
 

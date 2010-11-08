@@ -46,6 +46,7 @@
 #include <QtWebKit/QWebView>
 
 #define QL1S(x)  QLatin1String(x)
+#define QL1C(x)  QLatin1Char(x)
 
 static bool excludedMimeType(const QString &type)
 {
@@ -100,7 +101,7 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     const int count = argumentNames.count();
 
     for (int i = 0; i < count; ++i) {
-        arguments << argumentNames.at(i) + "=\"" + argumentValues.at(i) + '\"';
+        arguments << QString(argumentNames.at(i) + QL1S("=\"") + argumentValues.at(i) + QL1C('\"'));
     }
 
     QString mimeType (_mimeType.trimmed());
