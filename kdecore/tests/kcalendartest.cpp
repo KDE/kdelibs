@@ -161,7 +161,7 @@ void KCalendarTest::testTypes()
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian" ),           QString( "Gregorian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "gregorian-proleptic" ), QString( "Gregorian (Proleptic)" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "hebrew" ),              QString( "Hebrew" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( "hijri" ),               QString( "Islamic Civil / Hijri" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( "hijri" ),               QString( "Islamic / Hijri (Civil)" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "indian-national" ),     QString( "Indian National" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "jalali" ),              QString( "Jalali" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( "japanese" ),            QString( "Japanese" ) );
@@ -174,7 +174,7 @@ void KCalendarTest::testTypes()
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::EthiopianCalendar ),      QString( "Ethiopian" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::GregorianCalendar ),      QString( "Gregorian (Proleptic)" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::HebrewCalendar ),         QString( "Hebrew" ) );
-    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar ),   QString( "Islamic Civil / Hijri" ) );
+    QCOMPARE( KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar ),   QString( "Islamic / Hijri (Civil)" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::IndianNationalCalendar ), QString( "Indian National" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::JalaliCalendar ),         QString( "Jalali" ) );
     QCOMPARE( KCalendarSystem::calendarLabel( KLocale::JapaneseCalendar ),       QString( "Japanese" ) );
@@ -1560,7 +1560,7 @@ void KCalendarTest::testHijriBasic()
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
     QDate testDate;
 
-    testCalendarSystemType( calendar, KLocale::IslamicCivilCalendar, "hijri", "Islamic Civil / Hijri" );
+    testCalendarSystemType( calendar, KLocale::IslamicCivilCalendar, "hijri", "Islamic / Hijri (Civil)" );
 
     QCOMPARE( calendar->epoch(), QDate( 622, 7, 16 ) );
     QCOMPARE( calendar->earliestValidDate(), QDate( 622, 7, 16 ) );
