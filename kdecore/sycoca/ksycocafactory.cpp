@@ -20,7 +20,7 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
-#include "ksycocadict.h"
+#include "ksycocadict_p.h"
 
 #include <config.h>
 #include <kdebug.h>

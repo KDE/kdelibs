@@ -22,7 +22,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <ksycoca.h>
-#include <ksycocadict.h>
+#include <ksycocadict_p.h>
 
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KProtocolInfoFactory>, kProtocolInfoFactoryInstance)
 

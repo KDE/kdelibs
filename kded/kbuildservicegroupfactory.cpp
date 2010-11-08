@@ -18,7 +18,7 @@
 
 #include "kbuildservicegroupfactory.h"
 #include "ksycoca.h"
-#include "ksycocadict.h"
+#include "ksycocadict_p.h"
 #include "kresourcelist.h"
 #include <kservicegroup_p.h>
 

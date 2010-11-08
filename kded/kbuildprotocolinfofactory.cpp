@@ -18,7 +18,7 @@
 
 #include "kbuildprotocolinfofactory.h"
 #include "ksycoca.h"
-#include "ksycocadict.h"
+#include "ksycocadict_p.h"
 #include "kresourcelist.h"
 
 #include <kglobal.h>

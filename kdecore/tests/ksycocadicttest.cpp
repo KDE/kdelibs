@@ -20,7 +20,7 @@
 #include <ksycoca.h>
 #include <QBuffer>
 #include <kservicetype.h>
-#include <ksycocadict.h>
+#include <ksycocadict_p.h>
 #include <kdebug.h>
 #include "qtest_kde.h"
 

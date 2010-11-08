@@ -22,7 +22,7 @@
 #include "kbuildmimetypefactory.h"
 #include "kmimetyperepository_p.h"
 #include "ksycoca.h"
-#include "ksycocadict.h"
+#include "ksycocadict_p.h"
 #include "kresourcelist.h"
 #include "kdesktopfile.h"
 

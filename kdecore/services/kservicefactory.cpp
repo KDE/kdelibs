@@ -19,7 +19,7 @@
 #include "kservicefactory.h"
 #include "ksycoca.h"
 #include "ksycocatype.h"
-#include "ksycocadict.h"
+#include "ksycocadict_p.h"
 #include "kservice.h"
 
 #include <klocale.h>

@@ -19,7 +19,7 @@
 
 #include "kmimetypefactory.h"
 #include <ksycoca.h>
-#include <ksycocadict.h>
+#include <ksycocadict_p.h>
 #include <kdebug.h>
 
 extern int servicesDebugArea();
