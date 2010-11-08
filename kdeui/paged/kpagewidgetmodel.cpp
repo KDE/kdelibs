@@ -495,6 +495,8 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
     return;
   }
 
+  emit layoutAboutToBeChanged();
+
     disconnect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     disconnect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
@@ -511,6 +513,8 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   delete pageItem;
 
   endRemoveRows();
+
+  emit layoutChanged();
 }
 
 KPageWidgetItem *KPageWidgetModel::item(const QModelIndex &index) const
