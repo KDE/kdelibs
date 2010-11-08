@@ -37,6 +37,7 @@
 #include <QVariant>
 #include <QStringList>
 #include <QList>
+#include <QDir>
 #include <QHash>
 #include <QPair>
 #include <QSet>
@@ -212,33 +213,33 @@ class Scriptface : public JSObject
 // ----------------------------------------------------------------------
 // Custom debug output (kdebug not available)
 #define DBGP "KTranscript: "
-void dbgout (const QString &str) {
+void dbgout (const char*str) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", str.toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", str);
     #else
     Q_UNUSED(str);
     #endif
 }
 template <typename T1>
-void dbgout (const QString &str, const T1 &a1) {
+void dbgout (const char* str, const T1 &a1) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", str.arg(a1).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1);
     #endif
 }
 template <typename T1, typename T2>
-void dbgout (const QString &str, const T1 &a1, const T2 &a2) {
+void dbgout (const char* str, const T1 &a1, const T2 &a2) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", str.arg(a1).arg(a2).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).arg(a2).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1); Q_UNUSED(a2);
     #endif
 }
 template <typename T1, typename T2, typename T3>
-void dbgout (const QString &str, const T1 &a1, const T2 &a2, const T3 &a3) {
+void dbgout (const char* str, const T1 &a1, const T2 &a2, const T3 &a3) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", str.arg(a1).arg(a2).arg(a3).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).arg(a2).arg(a3).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1); Q_UNUSED(a2); Q_UNUSED(a3);
     #endif
@@ -268,12 +269,12 @@ QString expt2str (ExecState *exec)
         && expt->getObject()->hasProperty(exec, "message"))
     {
         JSValue *msg = expt->getObject()->get(exec, "message");
-        return QString("Error: %1").arg(msg->getString().qstring());
+        return QString::fromLatin1("Error: %1").arg(msg->getString().qstring());
     }
     else
     {
         QString strexpt = exec->exception()->toString(exec).qstring();
-        return QString("Caught exception: %1").arg(strexpt);
+        return QString::fromLatin1("Caught exception: %1").arg(strexpt);
     }
 }
 
@@ -285,7 +286,7 @@ int countLines (const QString &s, int p)
     int n = 1;
     int len = s.length();
     for (int i = 0; i < p && i < len; ++i) {
-        if (s[i] == '\n') {
+        if (s[i] == QLatin1Char('\n')) {
             ++n;
         }
     }
@@ -338,18 +339,18 @@ QString trimSmart (const QString &raw)
     int len = raw.length();
 
     int is = 0;
-    while (is < len && raw[is].isSpace() && raw[is] != '\n') {
+    while (is < len && raw[is].isSpace() && raw[is] != QLatin1Char('\n')) {
         ++is;
     }
-    if (is >= len || raw[is] != '\n') {
+    if (is >= len || raw[is] != QLatin1Char('\n')) {
         is = -1;
     }
 
     int ie = len - 1;
-    while (ie >= 0 && raw[ie].isSpace() && raw[ie] != '\n') {
+    while (ie >= 0 && raw[ie].isSpace() && raw[ie] != QLatin1Char('\n')) {
         --ie;
     }
-    if (ie < 0 || raw[ie] != '\n') {
+    if (ie < 0 || raw[ie] != QLatin1Char('\n')) {
         ie = len;
     }
 
@@ -393,7 +394,7 @@ TsConfig readConfig (const QString &fname)
         int p1, p2;
 
         // Remove comment from the line.
-        p1 = line.indexOf('#');
+        p1 = line.indexOf(QLatin1Char('#'));
         if (p1 >= 0) {
             line = line.left(p1);
         }
@@ -402,10 +403,10 @@ TsConfig readConfig (const QString &fname)
             continue;
         }
 
-        if (line[0] == '[') {
+        if (line[0] == QLatin1Char('[')) {
             // Group switch.
             p1 = 0;
-            p2 = line.indexOf(']', p1 + 1);
+            p2 = line.indexOf(QLatin1Char(']'), p1 + 1);
             if (p2 < 0) {
                 continue;
             }
@@ -417,7 +418,7 @@ TsConfig readConfig (const QString &fname)
             }
         } else {
             // Field.
-            p1 = line.indexOf('=');
+            p1 = line.indexOf(QLatin1Char('='));
             if (p1 < 0) {
                 continue;
             }
@@ -450,9 +451,7 @@ extern "C"
 KTranscriptImp::KTranscriptImp ()
 {
     // Load user configuration.
-    QString homeDir = qgetenv("HOME");
-    QString tsConfigFile = ".transcriptrc";
-    QString tsConfigPath = homeDir + '/' + tsConfigFile;
+    const QString tsConfigPath = QDir::homePath() + QLatin1Char('/') + QLatin1String(".transcriptrc");
     config = readConfig(tsConfigPath);
 }
 
@@ -540,7 +539,7 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
     QString funcName = argv[0].toString();
     if (!sface->funcs.contains(funcName))
     {
-        error = QString("Unregistered call to '%1'.").arg(funcName);
+        error = QString::fromLatin1("Unregistered call to '%1'.").arg(funcName);
         return QString();
     }
     JSObject *func = sface->funcs[funcName];
@@ -581,7 +580,7 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
         // Accept only strings.
         {
             QString strval = val->toString(exec).qstring();
-            error = QString("Non-string return value: %1").arg(strval);
+            error = QString::fromLatin1("Non-string return value: %1").arg(strval);
             return QString();
         }
     }
@@ -625,17 +624,17 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
 
         // Setup current module path for loading submodules.
         // (sort of closure over invocations of loadf)
-        int posls = mpath.lastIndexOf('/');
+        int posls = mpath.lastIndexOf(QLatin1Char('/'));
         if (posls < 1)
         {
-            modErrors.append(QString("Funny module path '%1', skipping.")
+            modErrors.append(QString::fromLatin1("Funny module path '%1', skipping.")
                                     .arg(mpath));
             continue;
         }
         currentModulePath = mpath.left(posls);
         QString fname = mpath.mid(posls + 1);
         // Scriptface::loadf() wants no extension on the filename
-        fname = fname.left(fname.lastIndexOf('.'));
+        fname = fname.left(fname.lastIndexOf(QLatin1Char('.')));
 
         // Load the module.
         ExecState *exec = m_sface[mlang]->jsi->globalExec();
@@ -656,7 +655,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
     currentModulePath.clear();
 
     foreach (const QString &merr, modErrors)
-        error.append(merr + '\n');
+        error.append(merr + QLatin1Char('\n'));
 }
 
 KJS_QT_UNICODE_IMPL
@@ -845,12 +844,12 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
     for (int i = 0; i < fnames.size(); ++i)
     {
         QString qfname = fnames[i]->getString().qstring();
-        QString qfpath = globalKTI->currentModulePath + '/' + qfname + ".js";
+        QString qfpath = globalKTI->currentModulePath + QLatin1Char('/') + qfname + QLatin1String(".js");
 
         QFile file(qfpath);
         if (!file.open(QIODevice::ReadOnly))
             return throwError(exec, GeneralError,
-                              QString(SPREF"load: cannot read file '%1'")\
+                              QString::fromLatin1(SPREF"load: cannot read file '%1'") \
                                      .arg(qfpath));
 
         QTextStream stream(&file);
@@ -875,7 +874,7 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
             }
 
             return throwError(exec, TypeError,
-                              QString("at %1:%2: %3")
+                              QString::fromLatin1("at %1:%2: %3")
                                      .arg(qfpath, line, msg));
         }
         dbgout("Loaded module: %1", qfpath);
@@ -903,8 +902,8 @@ JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
     fvals[qname] = fval;
 
     // Register values to keep GC from collecting them. Is this needed?
-    put(exec, Identifier(QString("#:f<%1>").arg(qname)), func, Internal);
-    put(exec, Identifier(QString("#:o<%1>").arg(qname)), fval, Internal);
+    put(exec, Identifier(QString::fromLatin1("#:f<%1>").arg(qname)), func, Internal);
+    put(exec, Identifier(QString::fromLatin1("#:o<%1>").arg(qname)), fval, Internal);
 
     // Set current module path as module path for this call,
     // in case it contains load subcalls.
@@ -938,7 +937,7 @@ JSValue *Scriptface::acallf (ExecState *exec, const List &argv)
     QString callname = argv[0]->getString().qstring();
     if (!funcs.contains(callname)) {
         return throwError(exec, EvalError,
-                          QString(SPREF"acall: unregistered call to '%1'").arg(callname));
+                          QString::fromLatin1(SPREF"acall: unregistered call to '%1'").arg(callname));
     }
     JSObject *func = funcs[callname];
     JSValue *fval = fvals[callname];
@@ -982,8 +981,8 @@ JSValue *Scriptface::setcallForallf (ExecState *exec, JSValue *name,
     fvals[qname] = fval;
 
     // Register values to keep GC from collecting them. Is this needed?
-    put(exec, Identifier(QString("#:fall<%1>").arg(qname)), func, Internal);
-    put(exec, Identifier(QString("#:oall<%1>").arg(qname)), fval, Internal);
+    put(exec, Identifier(QString::fromLatin1("#:fall<%1>").arg(qname)), func, Internal);
+    put(exec, Identifier(QString::fromLatin1("#:oall<%1>").arg(qname)), fval, Internal);
 
     // Set current module path as module path for this call,
     // in case it contains load subcalls.
@@ -1065,7 +1064,7 @@ JSValue *Scriptface::msgidf (ExecState *exec)
 JSValue *Scriptface::msgkeyf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return jsString(QString(*msgctxt + '|' + *msgid));
+    return jsString(*msgctxt + QLatin1Char('|') + *msgid);
 }
 
 JSValue *Scriptface::msgstrff (ExecState *exec)
@@ -1082,7 +1081,7 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
 
     QString qstr = str->getString().qstring();
 
-    dbgout("(JS) " + qstr);
+    dbgout("(JS) %1", qstr);
 
     return jsUndefined();
 }
@@ -1121,20 +1120,20 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
     for (int i = 0; i < fnames.size(); ++i)
     {
         QString qfname = fnames[i]->getString().qstring();
-        QString qfpath_base = globalKTI->currentModulePath + '/' + qfname;
+        QString qfpath_base = globalKTI->currentModulePath + QLatin1Char('/') + qfname;
 
         // Determine which kind of map is available.
         // Give preference to compiled map.
-        QString qfpath = qfpath_base + ".pmapc";
+        QString qfpath = qfpath_base + QLatin1String(".pmapc");
         bool haveCompiled = true;
         QFile file_check(qfpath);
         if (!file_check.open(QIODevice::ReadOnly)) {
             haveCompiled = false;
-            qfpath = qfpath_base + ".pmap";
+            qfpath = qfpath_base + QLatin1String(".pmap");
             QFile file_check(qfpath);
             if (!file_check.open(QIODevice::ReadOnly)) {
                 return throwError(exec, GeneralError,
-                              QString(SPREF"loadProps: cannot read map '%1'")
+                                  QString::fromLatin1(SPREF"loadProps: cannot read map '%1'")
                                      .arg(qfpath_base));
             }
         }
@@ -1211,8 +1210,8 @@ JSValue *Scriptface::setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, 
 
 static QString toCaseFirst (const QString &qstr, int qnalt, bool toupper)
 {
-    static const QString head("~@");
-    static const int hlen = head.length();
+    static const QLatin1String head("~@");
+    static const int hlen = 2; //head.length()
 
     // If the first letter is found within an alternatives directive,
     // change case of the first letter in each of the alternatives.
@@ -1349,9 +1348,9 @@ JSValue *Scriptface::getConfBoolf (ExecState *exec,
 
     static QStringList falsities;
     if (falsities.isEmpty()) {
-        falsities.append(QString('0'));
-        falsities.append(QString("no"));
-        falsities.append(QString("false"));
+        falsities.append(QString(QLatin1Char('0')));
+        falsities.append(QString::fromLatin1("no"));
+        falsities.append(QString::fromLatin1("false"));
     }
 
     if (dval->isNull()) {
@@ -1405,7 +1404,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
 {
     QFile file(fpath);
     if (!file.open(QIODevice::ReadOnly)) {
-        return QString(SPREF"loadProps_text: cannot read file '%1'")
+        return QString::fromLatin1(SPREF"loadProps_text: cannot read file '%1'")
                       .arg(fpath);
     }
     QTextStream stream(&file);
@@ -1433,15 +1432,15 @@ QString Scriptface::loadProps_text (const QString &fpath)
                 if (i >= slen) goto END_PROP_PARSE;
             }
             if (i + 1 >= slen) {
-                return QString(SPREF"loadProps_text: unexpected end "
+                return QString::fromLatin1(SPREF"loadProps_text: unexpected end "
                                "of file in %1").arg(fpath);
             }
-            if (s[i] != '#') {
+            if (s[i] != QLatin1Char('#')) {
                 // Separator characters for this entry.
                 key_sep = s[i];
                 prop_sep = s[i + 1];
                 if (key_sep.isLetter() || prop_sep.isLetter()) {
-                    return  QString(SPREF"loadProps_text: separator "
+                    return  QString::fromLatin1(SPREF"loadProps_text: separator "
                                     "characters must not be letters at %1:%2")
                                    .arg(fpath).arg(countLines(s, i));
                 }
@@ -1456,7 +1455,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
             }
             else {
                 // This is a comment, skip to EOL, don't change state.
-                while (s[i] != '\n') {
+                while (s[i] != QLatin1Char('\n')) {
                     ++i;
                     if (i >= slen) goto END_PROP_PARSE;
                 }
@@ -1490,7 +1489,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
                 else {
                     // End of entry.
                     if (ekeys.size() < 1) {
-                        return QString(SPREF"loadProps_text: no entry key "
+                        return QString::fromLatin1(SPREF"loadProps_text: no entry key "
                                        "for entry ending at %1:%2")
                                        .arg(fpath).arg(countLines(s, i));
                     }
@@ -1513,7 +1512,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
                 ++i;
                 if (i >= slen) goto END_PROP_PARSE;
                 if (s[i] == key_sep) {
-                    return QString(SPREF"loadProps_text: property separator "
+                    return QString::fromLatin1(SPREF"loadProps_text: property separator "
                                    "inside property value at %1:%2")
                                   .arg(fpath).arg(countLines(s, i));
                 }
@@ -1526,13 +1525,13 @@ QString Scriptface::loadProps_text (const QString &fpath)
             state = s_nextKey;
         }
         else {
-            return QString(SPREF"loadProps: internal error 10 at %1:%2")
+            return QString::fromLatin1(SPREF"loadProps: internal error 10 at %1:%2")
                           .arg(fpath).arg(countLines(s, i));
         }
 
         // To avoid infinite looping and stepping out.
         if (i == i_checkpoint || i >= slen) {
-            return QString(SPREF"loadProps: internal error 20 at %1:%2")
+            return QString::fromLatin1(SPREF"loadProps: internal error 20 at %1:%2")
                           .arg(fpath).arg(countLines(s, i));
         }
     }
@@ -1540,7 +1539,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
     END_PROP_PARSE:
 
     if (state != s_nextEntry) {
-        return QString(SPREF"loadProps: unexpected end of file in %1")
+        return QString::fromLatin1(SPREF"loadProps: unexpected end of file in %1")
                       .arg(fpath);
     }
 
@@ -1600,7 +1599,7 @@ QString Scriptface::loadProps_bin (const QString &fpath)
 {
     QFile file(fpath);
     if (!file.open(QIODevice::ReadOnly)) {
-        return QString(SPREF"loadProps: cannot read file '%1'")
+        return QString::fromLatin1(SPREF"loadProps: cannot read file '%1'")
                       .arg(fpath);
     }
     // Collect header.
@@ -1615,7 +1614,7 @@ QString Scriptface::loadProps_bin (const QString &fpath)
         return loadProps_bin_01(fpath);
     }
     else {
-        return QString(SPREF"loadProps: unknown version of compiled map '%1'")
+        return QString::fromLatin1(SPREF"loadProps: unknown version of compiled map '%1'")
                       .arg(fpath);
     }
 }
@@ -1624,7 +1623,7 @@ QString Scriptface::loadProps_bin_00 (const QString &fpath)
 {
     QFile file(fpath);
     if (!file.open(QIODevice::ReadOnly)) {
-        return QString(SPREF"loadProps: cannot read file '%1'")
+        return QString::fromLatin1(SPREF"loadProps: cannot read file '%1'")
                       .arg(fpath);
     }
     QByteArray fctmp = file.readAll();
@@ -1681,7 +1680,7 @@ QString Scriptface::loadProps_bin_00 (const QString &fpath)
     END_PROP_PARSE:
 
     if (pos < 0) {
-        return QString(SPREF"loadProps: corrupt compiled map '%1'")
+        return QString::fromLatin1(SPREF"loadProps: corrupt compiled map '%1'")
                       .arg(fpath);
     }
 
@@ -1692,7 +1691,7 @@ QString Scriptface::loadProps_bin_01 (const QString &fpath)
 {
     QFile *file = new QFile(fpath);
     if (!file->open(QIODevice::ReadOnly)) {
-        return QString(SPREF"loadProps: cannot read file '%1'")
+        return QString::fromLatin1(SPREF"loadProps: cannot read file '%1'")
                       .arg(fpath);
     }
 
@@ -1705,7 +1704,7 @@ QString Scriptface::loadProps_bin_01 (const QString &fpath)
     QByteArray head = fstr.left(8);
     pos += 8;
     if (head != "TSPMAP01") {
-        return QString(SPREF"loadProps: corrupt compiled map '%1'")
+        return QString::fromLatin1(SPREF"loadProps: corrupt compiled map '%1'")
                       .arg(fpath);
     }
     quint32 numekeys = bin_read_int(fstr, fstr.size(), pos);

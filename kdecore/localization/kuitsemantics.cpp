@@ -36,6 +36,8 @@
 #include <kuitformats_p.h>
 #include <klocale.h>
 
+#define QL1S(x)   QLatin1String(x)
+
 // Truncates string, for output of long messages.
 // (But don't truncate too much otherwise it's impossible to determine
 // which message is faulty if many messages start with the same beginning).
@@ -45,7 +47,7 @@ static QString shorten (const QString &str)
     if (str.length() <= maxlen)
         return str;
     else
-        return str.left(maxlen).append("...");
+        return str.left(maxlen).append(QLatin1String("..."));
 }
 
 // -----------------------------------------------------------------------------
@@ -140,8 +142,8 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     // A "lax" version of the DTD.
     #undef SETUP_TAG
     #define SETUP_TAG(tag, name, atts, subs) do { \
-        knownTags[name] = Kuit::Tag::tag; \
-        tagNames[Kuit::Tag::tag] = name; \
+        knownTags.insert(QString::fromLatin1(name), Kuit::Tag::tag); \
+        tagNames.insert(Kuit::Tag::tag, QString::fromLatin1(name));  \
         { \
             using namespace Kuit::Att; \
             tagAtts[Kuit::Tag::tag] << atts; \
@@ -193,7 +195,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     // Setup known attribute names.
     #undef SETUP_ATT
     #define SETUP_ATT(att, name) do { \
-        knownAtts[name] = Kuit::Att::att; \
+        knownAtts.insert(QString::fromLatin1(name), Kuit::Att::att); \
     } while (0)
     SETUP_ATT(Ctx, "ctx");
     SETUP_ATT(Url, "url");
@@ -208,7 +210,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     // Setup known format names.
     #undef SETUP_FMT
     #define SETUP_FMT(fmt, name) do { \
-        knownFmts[name] = Kuit::Fmt::fmt; \
+        knownFmts.insert(QString::fromLatin1(name), Kuit::Fmt::fmt);  \
     } while (0)
     SETUP_FMT(Plain, "plain");
     SETUP_FMT(Rich, "rich");
@@ -217,7 +219,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     // Setup known role names, their default format and subcues.
     #undef SETUP_ROL
     #define SETUP_ROL(rol, name, fmt, cues) do { \
-        knownRols[name] = Kuit::Rol::rol; \
+        knownRols.insert(QString::fromLatin1(name), Kuit::Rol::rol); \
         defFmts[Kuit::Rol::rol][Kuit::Cue::None] = Kuit::Fmt::fmt; \
         { \
             using namespace Kuit::Cue; \
@@ -251,7 +253,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     // Setup known subcue names.
     #undef SETUP_CUE
     #define SETUP_CUE(cue, name) do { \
-        knownCues[name] = Kuit::Cue::cue; \
+        knownCues.insert(QString::fromLatin1(name), Kuit::Cue::cue); \
     } while (0)
     SETUP_CUE(Button, "button");
     SETUP_CUE(Inmenu, "inmenu");
@@ -282,21 +284,21 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_CUE(Shell, "shell");
 
     // Collect all Qt's rich text engine HTML tags, for some checks later.
-    qtHtmlTagNames << "a" << "address" << "b" << "big" << "blockquote"
-                   << "body" << "br" << "center" << "cita" << "code"
-                   << "dd" << "dfn" << "div" << "dl" << "dt" << "em"
-                   << "font" << "h1" << "h2" << "h3" << "h4" << "h5"
-                   << "h6" << "head" << "hr" << "html" << "i" << "img"
-                   << "kbd" << "meta" << "li" << "nobr" << "ol" << "p"
-                   << "pre" << "qt" << "s" << "samp" << "small" << "span"
-                   << "strong" << "sup" << "sub" << "table" << "tbody"
-                   << "td" << "tfoot" << "th" << "thead" << "title"
-                   << "tr" << "tt" << "u" << "ul" << "var";
+    qtHtmlTagNames << QL1S("a") << QL1S("address") << QL1S("b") << QL1S("big") << QL1S("blockquote")
+                   << QL1S("body") << QL1S("br") << QL1S("center") << QL1S("cita") << QL1S("code")
+                   << QL1S("dd") << QL1S("dfn") << QL1S("div") << QL1S("dl") << QL1S("dt") << QL1S("em")
+                   << QL1S("font") << QL1S("h1") << QL1S("h2") << QL1S("h3") << QL1S("h4") << QL1S("h5")
+                   << QL1S("h6") << QL1S("head") << QL1S("hr") << QL1S("html") << QL1S("i") << QL1S("img")
+                   << QL1S("kbd") << QL1S("meta") << QL1S("li") << QL1S("nobr") << QL1S("ol") << QL1S("p")
+                   << QL1S("pre") << QL1S("qt") << QL1S("s") << QL1S("samp") << QL1S("small") << QL1S("span")
+                   << QL1S("strong") << QL1S("sup") << QL1S("sub") << QL1S("table") << QL1S("tbody")
+                   << QL1S("td") << QL1S("tfoot") << QL1S("th") << QL1S("thead") << QL1S("title")
+                   << QL1S("tr") << QL1S("tt") << QL1S("u") << QL1S("ul") << QL1S("var");
 
     // Tags that format with number of leading newlines.
     #undef SETUP_TAG_NL
     #define SETUP_TAG_NL(tag, nlead) do { \
-        leadingNewlines[Kuit::Tag::tag] = nlead; \
+        leadingNewlines.insert(Kuit::Tag::tag, nlead); \
     } while (0)
     SETUP_TAG_NL(Title, 2);
     SETUP_TAG_NL(Subtitle, 2);
@@ -306,16 +308,16 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG_NL(Item, 1);
 
     // Known XML entities, direct/inverse mapping.
-    xmlEntities["lt"] = '<';
-    xmlEntities["gt"] = '>';
-    xmlEntities["amp"] = '&';
-    xmlEntities["apos"] = '\'';
-    xmlEntities["quot"] = '"';
-    xmlEntitiesInverse[QString('<')] = "lt";
-    xmlEntitiesInverse[QString('>')] = "gt";
-    xmlEntitiesInverse[QString('&')] = "amp";
-    xmlEntitiesInverse[QString('\'')] = "apos";
-    xmlEntitiesInverse[QString('"')] = "quot";
+    xmlEntities[QString::fromLatin1("lt")] = QString(QLatin1Char('<'));
+    xmlEntities[QString::fromLatin1("gt")] = QString(QLatin1Char('>'));
+    xmlEntities[QString::fromLatin1("amp")] = QString(QLatin1Char('&'));
+    xmlEntities[QString::fromLatin1("apos")] = QString(QLatin1Char('\''));
+    xmlEntities[QString::fromLatin1("quot")] = QString(QLatin1Char('"'));
+    xmlEntitiesInverse[QString(QLatin1Char('<'))] = QString::fromLatin1("lt");
+    xmlEntitiesInverse[QString(QLatin1Char('>'))] = QString::fromLatin1("gt");
+    xmlEntitiesInverse[QString(QLatin1Char('&'))] = QString::fromLatin1("amp");
+    xmlEntitiesInverse[QString(QLatin1Char('\''))] = QString::fromLatin1("apos");
+    xmlEntitiesInverse[QString(QLatin1Char('"'))] = QString::fromLatin1("quot");
 }
 
 K_GLOBAL_STATIC(KuitSemanticsStaticData, semanticsStaticData)
@@ -432,7 +434,7 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
     // Also, pattern/transformation strings are "metastrings", not
     // fully proper i18n strings on their own.
 
-    m_metaCat = new KCatalog("kdelibs4", lang);
+    m_metaCat = new KCatalog(QString::fromLatin1("kdelibs4"), lang);
 
     // Get formatting patterns for all tag/att/fmt combinations.
     setFormattingPatterns();
@@ -448,7 +450,7 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
 QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
 {
     if (m_metaCat == NULL) {
-        return QString(id);
+        return QString::fromLatin1(id);
     }
     return m_metaCat->translate(ctxt, id);
 }
@@ -798,7 +800,7 @@ void KuitSemanticsPrivate::setTextTransformData ()
     #undef SET_KEYNAME
     #define SET_KEYNAME(rawname) do { \
         /* Normalize key, trim and all lower-case. */ \
-        QString normname = QString(rawname).trimmed().toLower(); \
+        QString normname = QString::fromLatin1(rawname).trimmed().toLower();  \
         m_keyNames[normname] = metaTr("keyboard-key-name", rawname); \
     } while (0)
 
@@ -857,7 +859,7 @@ QString KuitSemanticsPrivate::format (const QString &text,
     Kuit::FmtVar fmtExplicit = formatFromContextMarker(ctxt, text);
 
     // Quick check: are there any tags at all?
-    if (text.indexOf('<') < 0) {
+    if (text.indexOf(QLatin1Char('<')) < 0) {
         return finalizeVisualText(text, fmtExplicit);
     }
 
@@ -910,19 +912,19 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     QString fmtname;
     QString cuename;
     QString ctxmark = ctxmark_.trimmed();
-    if (ctxmark.startsWith('@')) { // found context marker
-        static QRegExp wsRx("\\s");
+    if (ctxmark.startsWith(QLatin1Char('@'))) { // found context marker
+        static QRegExp wsRx(QString::fromLatin1("\\s"));
         ctxmark = ctxmark.mid(1, wsRx.indexIn(ctxmark) - 1);
 
         // Possible visual format.
-        int pfmt = ctxmark.indexOf('/');
+        int pfmt = ctxmark.indexOf(QLatin1Char('/'));
         if (pfmt >= 0) {
             fmtname = ctxmark.mid(pfmt + 1);
             ctxmark = ctxmark.left(pfmt);
         }
 
         // Possible interface subcue.
-        int pcue = ctxmark.indexOf(':');
+        int pcue = ctxmark.indexOf(QLatin1Char(':'));
         if (pcue >= 0) {
             cuename = ctxmark.mid(pcue + 1);
             ctxmark = ctxmark.left(pcue);
@@ -946,7 +948,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown role
         rol = Kuit::Rol::None;
         if (!rolname.isEmpty()) {
-            kDebug(173) << QString("Unknown semantic role '@%1' in "
+            kDebug(173) << QString::fromLatin1("Unknown semantic role '@%1' in "
                                    "context marker for message {%2}.")
                                   .arg(rolname, shorten(text));
         }
@@ -960,7 +962,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown or not given subcue
         cue = Kuit::Cue::None;
         if (!cuename.isEmpty()) {
-            kDebug(173) << QString("Unknown interface subcue ':%1' in "
+            kDebug(173) << QString::fromLatin1("Unknown interface subcue ':%1' in "
                                    "context marker for message {%2}.")
                                   .arg(cuename, shorten(text));
         }
@@ -988,7 +990,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
         }
 
         if (!fmtname.isEmpty()) {
-            kDebug(173) << QString("Unknown visual format '/%1' in "
+            kDebug(173) << QString::fromLatin1("Unknown visual format '/%1' in "
                                    "context marker for message {%2}.")
                                   .arg(fmtname, shorten(text));
         }
@@ -1000,7 +1002,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
 Kuit::FmtVar KuitSemanticsPrivate::formatFromTags (const QString &text)
 {
     KuitSemanticsStaticData *s = semanticsStaticData;
-    static QRegExp staticTagRx("<\\s*(\\w+)[^>]*>");
+    static QRegExp staticTagRx(QString::fromLatin1("<\\s*(\\w+)[^>]*>"));
 
     QRegExp tagRx = staticTagRx; // for thread-safety
     int p = tagRx.indexIn(text);
@@ -1022,7 +1024,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     // Unless the text opens either with TopLong or TopShort tags,
     // make a guess: if it opens with one of Title, Subtitle, Para,
     // consider it TopLong, otherwise TopShort.
-    static QRegExp opensWithTagRx("^\\s*<\\s*(\\w+)[^>]*>");
+    static QRegExp opensWithTagRx(QString::fromLatin1("^\\s*<\\s*(\\w+)[^>]*>"));
     bool explicitTopTag = false;
 
     QString text = text_;
@@ -1032,7 +1034,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     if (p >= 0) {
         QString fullmatch = opensWithTagRx.capturedTexts().at(0);
         QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
-        if (tagname == "qt" || tagname == "html") {
+        if (tagname == QLatin1String("qt") || tagname == QLatin1String("html")) {
             // Kill the tag and see if there is another one following,
             // for primary check below.
             text = text.mid(fullmatch.length());
@@ -1069,9 +1071,9 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
 
     // Wrap text with top tag if not explicitly given.
     if (!explicitTopTag) {
-        return   '<' + s->tagNames[toptag] + '>'
+        return QLatin1Char('<') + s->tagNames[toptag] + QLatin1Char('>')
                + text_ // original text, not the one possibly stripped above
-               + "</" + s->tagNames[toptag] + '>';
+               + QLatin1String("</") + s->tagNames[toptag] + QLatin1Char('>');
     }
     else {
         return text;
@@ -1090,15 +1092,15 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     // but do not touch & which forms an XML entity as it is.
     QString original = text_;
     QString text;
-    int p = original.indexOf('&');
+    int p = original.indexOf(QLatin1Char('&'));
     while (p >= 0) {
         text.append(original.mid(0, p + 1));
         original.remove(0, p + 1);
-        static QRegExp restRx("^("ENTITY_SUBRX");");
+        static QRegExp restRx(QString::fromLatin1("^("ENTITY_SUBRX");"));
         if (original.indexOf(restRx) != 0) { // not an entity
-            text.append("amp;");
+            text.append(QLatin1String("amp;"));
         }
-        p = original.indexOf('&');
+        p = original.indexOf(QLatin1Char('&'));
     }
     text.append(original);
 
@@ -1128,7 +1130,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
 
             // Collect data about this element.
             OpenEl oel = parseOpenEl(xml, etag, text);
-            if (oel.name == "qt" || oel.name == "html") {
+            if (oel.name == QLatin1String("qt") || oel.name == QLatin1String("html")) {
                 hadQtTag = true;
             }
             if (s->qtHtmlTagNames.contains(oel.name)) {
@@ -1179,8 +1181,8 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             QString ntext;
             foreach (const QChar &c, text) {
                 if (s->xmlEntitiesInverse.contains(c)) {
-                    QString entname = s->xmlEntitiesInverse[c];
-                    ntext += '&' + entname + ';';
+                    const QString entname = s->xmlEntitiesInverse[c];
+                    ntext += QLatin1Char('&') + entname + QLatin1Char(';');
                 } else {
                     ntext += c;
                 }
@@ -1190,7 +1192,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
 
     if (xml.hasError()) {
-        kDebug(173) << QString("Markup error in message {%1}: %2. Last tag parsed: %3")
+        kDebug(173) << QString::fromLatin1("Markup error in message {%1}: %2. Last tag parsed: %3")
                               .arg(shorten(text), xml.errorString(), lastElementName.toString());
         return QString();
     }
@@ -1218,8 +1220,8 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     foreach (const QXmlStreamAttribute &xatt, xml.attributes()) {
         attnams += xatt.name().toString().toLower();
         attvals += xatt.value().toString();
-        QChar qc = attvals.last().indexOf('\'') < 0 ? '\'' : '"';
-        oel.astr += ' ' + attnams.last() + '=' + qc + attvals.last() + qc;
+        QChar qc = attvals.last().indexOf(QLatin1Char('\'')) < 0 ? QLatin1Char('\'') : QLatin1Char('"');
+        oel.astr += QLatin1Char(' ') + attnams.last() + QLatin1Char('=') + qc + attvals.last() + qc;
     }
 
     if (s->knownTags.contains(oel.name)) { // known KUIT element
@@ -1232,7 +1234,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         else {
             oel.handling = OpenEl::Dropout;
-            kDebug(173) << QString("Tag '%1' cannot be subtag of '%2' "
+            kDebug(173) << QString::fromLatin1("Tag '%1' cannot be subtag of '%2' "
                                    "in message {%3}.")
                                   .arg(s->tagNames[oel.tag], s->tagNames[etag],
                                        shorten(text));
@@ -1248,28 +1250,28 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
                     oel.avals[att] = attvals[i];
                 }
                 else {
-                    kDebug(173) << QString("Attribute '%1' cannot be used in "
+                    kDebug(173) << QString::fromLatin1("Attribute '%1' cannot be used in "
                                            "tag '%2' in message {%3}.")
                                           .arg(attnams[i], oel.name,
                                                shorten(text));
                 }
             }
             else {
-                kDebug(173) << QString("Unknown semantic tag attribute '%1' "
+                kDebug(173) << QString::fromLatin1("Unknown semantic tag attribute '%1' "
                                        "in message {%2}.")
                                       .arg(attnams[i], shorten(text));
             }
         }
         oel.akey = attSetKey(attset);
     }
-    else if (oel.name == "qt" || oel.name == "html") {
+    else if (oel.name == QLatin1String("qt") || oel.name == QLatin1String("html")) {
         // Drop qt/html tags (gets added in the end).
         oel.handling = OpenEl::Dropout;
     }
     else { // other element, leave it in verbatim
         oel.handling = OpenEl::Ignored;
         if (!s->qtHtmlTagNames.contains(oel.name)) {
-            kDebug(173) << QString("Tag '%1' is neither semantic nor HTML in "
+            kDebug(173) << QString::fromLatin1("Tag '%1' is neither semantic nor HTML in "
                                    "message {%3}.")
                                   .arg(oel.name, shorten(text));
         }
@@ -1282,7 +1284,7 @@ QString KuitSemanticsPrivate::visualPattern (Kuit::TagVar tag, int akey,
                                              Kuit::FmtVar fmt) const
 {
     // Default pattern: simple substitution.
-    QString pattern("%1");
+    QString pattern = QString::fromLatin1("%1");
 
     // See if there is a pattern specifically for this element.
     if (   m_patterns.contains(tag)
@@ -1345,7 +1347,7 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
             // The required extra newlines.
             QString strle;
             if (numle < s->leadingNewlines[oel.tag]) {
-                strle = QString(s->leadingNewlines[oel.tag] - numle, '\n');
+                strle = QString(s->leadingNewlines[oel.tag] - numle, QLatin1Char('\n'));
             }
             ftext = strle + ftext;
         }
@@ -1353,14 +1355,14 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
         return ftext;
     }
     else if (oel.handling == OpenEl::Ignored) {
-        if (oel.name == "br" || oel.name == "hr") {
+        if (oel.name == QLatin1String("br") || oel.name == QLatin1String("hr")) {
             // Close these tags in-place (just for looks).
-            return '<' + oel.name + "/>";
+            return QLatin1Char('<') + oel.name + QLatin1String("/>");
         }
         else {
-            return   '<' + oel.name + oel.astr + '>'
+            return   QLatin1Char('<') + oel.name + oel.astr + QLatin1Char('>')
                    + oel.formattedText
-                   + "</" + oel.name + '>';
+                   + QLatin1String("</") + oel.name + QLatin1Char('>');
         }
     }
     else { // oel.handling == OpenEl::Dropout
@@ -1374,12 +1376,12 @@ void KuitSemanticsPrivate::countWrappingNewlines (const QString &text,
     int len = text.length();
     // Number of newlines at start of text.
     numle = 0;
-    while (numle < len && text[numle] == '\n') {
+    while (numle < len && text[numle] == QLatin1Char('\n')) {
         ++numle;
     }
     // Number of newlines at end of text.
     numtr = 0;
-    while (numtr < len && text[len - numtr - 1] == '\n') {
+    while (numtr < len && text[len - numtr - 1] == QLatin1Char('\n')) {
         ++numtr;
     }
 }
@@ -1394,10 +1396,10 @@ QString KuitSemanticsPrivate::modifyTagText (const QString &text,
     if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
         && numctx < 1)
     {
-        int fieldWidth = avals.value(Kuit::Att::Width, QString('0')).toInt();
-        QString fillStr = avals.value(Kuit::Att::Fill, QString(' '));
-        QChar fillChar = !fillStr.isEmpty() ? fillStr[0] : QChar(' ');
-        return QString("%1").arg(KGlobal::locale()->formatNumber(text, false),
+        int fieldWidth = avals.value(Kuit::Att::Width, QString(QLatin1Char('0'))).toInt();
+        const QString fillStr = avals.value(Kuit::Att::Fill, QString(QLatin1Char(' ')));
+        const QChar fillChar = !fillStr.isEmpty() ? fillStr[0] : QChar::fromLatin1(' ');
+        return QString::fromLatin1("%1").arg(KGlobal::locale()->formatNumber(text, false),
                                  fieldWidth, fillChar);
     }
     else if (tag == Kuit::Tag::Filename) {
@@ -1427,7 +1429,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
     // and no HTML tag encountered.
     if (fmt != Kuit::Fmt::Rich && !hadAnyHtmlTag)
     {
-        static QRegExp staticEntRx("&("ENTITY_SUBRX");");
+        static QRegExp staticEntRx(QLatin1String("&("ENTITY_SUBRX");"));
         // We have to have a local copy here, otherwise this function
         // will not be thread safe because QRegExp is not thread safe.
         QRegExp entRx = staticEntRx;
@@ -1437,10 +1439,10 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
             QString ent = entRx.capturedTexts().at(1);
             plain.append(text.mid(0, p));
             text.remove(0, p + ent.length() + 2);
-            if (ent.startsWith('#')) { // numeric character entity
+            if (ent.startsWith(QLatin1Char('#'))) { // numeric character entity
                 QChar c;
                 bool ok;
-                if (ent[1] == 'x') {
+                if (ent[1] == QLatin1Char('x')) {
                     c = QChar(ent.mid(2).toInt(&ok, 16));
                 } else {
                     c = QChar(ent.mid(1).toInt(&ok, 10));
@@ -1448,13 +1450,13 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
                 if (ok) {
                     plain.append(c);
                 } else { // unknown Unicode point, leave as is
-                    plain.append('&' + ent + ';');
+                    plain.append(QLatin1Char('&') + ent + QLatin1Char(';'));
                 }
             }
             else if (s->xmlEntities.contains(ent)) { // known entity
                 plain.append(s->xmlEntities[ent]);
             } else { // unknown entity, just leave as is
-                plain.append('&' + ent + ';');
+                plain.append(QLatin1Char('&') + ent + QLatin1Char(';'));
             }
             p = entRx.indexIn(text);
         }
@@ -1464,7 +1466,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
 
     // Add top rich tag if format explicitly rich or such tag encountered.
     if (fmt == Kuit::Fmt::Rich || hadQtTag) {
-        text = "<html>" + text + "</html>";
+        text = QString::fromLatin1("<html>") + text + QLatin1String("</html>");
     }
 
     return text;
@@ -1481,7 +1483,7 @@ QString KuitSemanticsPrivate::salvageMarkup (const QString &text_,
     // Resolve KUIT tags simple-mindedly.
 
     // - tags with content
-    static QRegExp staticWrapRx("(<\\s*(\\w+)\\b([^>]*)>)(.*)(<\\s*/\\s*\\2\\s*>)");
+    static QRegExp staticWrapRx(QLatin1String("(<\\s*(\\w+)\\b([^>]*)>)(.*)(<\\s*/\\s*\\2\\s*>)"));
     QRegExp wrapRx = staticWrapRx; // for thread-safety
     wrapRx.setMinimal(true);
     pos = 0;
@@ -1510,7 +1512,7 @@ QString KuitSemanticsPrivate::salvageMarkup (const QString &text_,
     text = ntext;
 
     // - content-less tags
-    static QRegExp staticNowrRx("<\\s*(\\w+)\\b([^>]*)/\\s*>");
+    static QRegExp staticNowrRx(QLatin1String("<\\s*(\\w+)\\b([^>]*)/\\s*>"));
     QRegExp nowrRx = staticNowrRx; // for thread-safety
     nowrRx.setMinimal(true);
     pos = 0;
@@ -1561,23 +1563,23 @@ bool KuitSemantics::mightBeRichText (const QString &text)
     KuitSemanticsStaticData *s = semanticsStaticData;
 
     // Check by appearance of a valid XML entity at first ampersand.
-    int p1 = text.indexOf('&');
+    int p1 = text.indexOf(QLatin1Char('&'));
     if (p1 >= 0) {
         p1 += 1;
-        int p2 = text.indexOf(';', p1);
+        int p2 = text.indexOf(QLatin1Char(';'), p1);
         return (p2 > p1 && s->xmlEntities.contains(text.mid(p1, p2 - p1)));
     }
 
     // Check by appearance of a valid Qt rich-text tag at first less-than.
     int tlen = text.length();
-    p1 = text.indexOf('<');
+    p1 = text.indexOf(QLatin1Char('<'));
     if (p1 >= 0) {
         p1 += 1;
         // Also allow first tag to be closing tag,
         // e.g. in case the text is pieced up with list.join("</foo><foo>")
         bool closing = false;
-        while (p1 < tlen && (text[p1].isSpace() || text[p1] == '/')) {
-            if (text[p1] == '/') {
+        while (p1 < tlen && (text[p1].isSpace() || text[p1] == QLatin1Char('/'))) {
+            if (text[p1] == QLatin1Char('/')) {
                 if (!closing) {
                     closing = true;
                 } else {
@@ -1588,7 +1590,7 @@ bool KuitSemantics::mightBeRichText (const QString &text)
         }
         for (int p2 = p1; p2 < tlen; ++p2) {
             QChar c = text[p2];
-            if (c == '>' || (!closing && c == '/') || c.isSpace()) {
+            if (c == QLatin1Char('>') || (!closing && c == QLatin1Char('/')) || c.isSpace()) {
                 return s->qtHtmlTagNames.contains(text.mid(p1, p2 - p1));
             } else if (!c.isLetter()) {
                 return false;
@@ -1607,16 +1609,16 @@ QString KuitSemantics::escape (const QString &text)
     ntext.reserve(tlen);
     for (int i = 0; i < tlen; ++i) {
         QChar c = text[i];
-        if (c == '&') {
-            ntext += "&amp;";
-        } else if (c == '<') {
-            ntext += "&lt;";
-        } else if (c == '>') {
-            ntext += "&gt;";
-        } else if (c == '\'') {
-            ntext += "&apos;";
-        } else if (c == '"') {
-            ntext += "&quot;";
+        if (c == QLatin1Char('&')) {
+            ntext += QLatin1String("&amp;");
+        } else if (c == QLatin1Char('<')) {
+            ntext += QLatin1String("&lt;");
+        } else if (c == QLatin1Char('>')) {
+            ntext += QLatin1String("&gt;");
+        } else if (c == QLatin1Char('\'')) {
+            ntext += QLatin1String("&apos;");
+        } else if (c == QLatin1Char('"')) {
+            ntext += QLatin1String("&quot;");
         } else {
             ntext += c;
         }
