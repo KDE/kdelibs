@@ -81,7 +81,7 @@ QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& res
 const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Result& result )
 {
     //
-    // Signature: (sda{s(isss)})
+    // Signature: (sda{s(isss)}s)
     //
 
     arg.beginStructure();

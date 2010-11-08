@@ -21,9 +21,6 @@
     <signal name="resultCount">
       <arg name="count" type="i" />
     </signal>
-    <signal name="totalResultCount">
-      <arg name="count" type="i" />
-    </signal>
     <signal name="finishedListing" />
   </interface>
 </node>

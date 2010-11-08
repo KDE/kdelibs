@@ -264,6 +264,14 @@ namespace Nepomuk {
              */
             bool isListingFinished() const;
 
+            /**
+             * The last error message which has been emitted via error() or an
+             * empty string if there was no error.
+             *
+             * \since 4.6
+             */
+            QString errorMessage() const;
+
         Q_SIGNALS:
             /**
              * Emitted for new search results. This signal is emitted both
@@ -288,36 +296,29 @@ namespace Nepomuk {
              *
              * Also be aware that no count will be provided when using sparqlQuery()
              *
-             * Other than totalResultCount() this signal does take query limit and offset
-             * into account.
-             *
              * \since 4.6
              */
             void resultCount( int count );
 
             /**
-             * The total number of results the query would provide without any limit
-             * or offset.
-             *
-             * Emitted once the total count of the results is available. This might
-             * happen before the first result is emitted, in between the results, or
-             * in rare cases it could even happen after all results have been reported.
-             *
-             * Also be aware that no count will be provided when using sparqlQuery()
-             *
-             * Other than totalResultCount() this signal does \em not take query limit and offset
-             * into account.
-             *
-             * \since 4.6
-             */
-            void totalResultCount( int count );
-
-            /**
              * Emitted when the initial listing has been finished, ie. if all
              * results have been reported via newEntries. If no further updates
              * are necessary the client should be closed now.
+             *
+             * In case of an error this signal is not emitted.
+             *
+             * \sa error()
              */
             void finishedListing();
+
+            /**
+             * Emitted when an error occurs. This typically happens in case the query
+             * service is not running or does not respond. No further signals will be
+             * emitted after this one.
+             *
+             * \since 4.6
+             */
+            void error( const QString& errorMessage );
 
         private:
             class Private;
@@ -325,6 +326,7 @@ namespace Nepomuk {
 
             Q_PRIVATE_SLOT( d, void _k_entriesRemoved( const QStringList& ) )
             Q_PRIVATE_SLOT( d, void _k_finishedListing() )
+            Q_PRIVATE_SLOT( d, void _k_handleQueryReply(QDBusPendingCallWatcher*) )
         };
     }
 }
