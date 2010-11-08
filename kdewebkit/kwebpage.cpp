@@ -104,7 +104,10 @@ static bool downloadResource (const KUrl& srcUrl, const KIO::MetaData& metaData 
 class KWebPage::KWebPagePrivate
 {
 public:
+    KWebPagePrivate() : inPrivateBrowsingMode(false) {}
+    
     QPointer<KWebWallet> wallet;
+    bool inPrivateBrowsingMode;
 };
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
@@ -191,7 +194,7 @@ void KWebPage::setAllowExternalContent(bool allow)
 {
     KIO::AccessManager *manager = qobject_cast<KIO::AccessManager*>(networkAccessManager());
     if (manager)
-        manager->setExternalContentAllowed(allow);
+      manager->setExternalContentAllowed(allow);
 }
 
 void KWebPage::setWallet(KWebWallet* wallet)
@@ -316,21 +319,45 @@ QString KWebPage::userAgentForUrl(const QUrl& _url) const
     return userAgent;
 }
 
+static void setDisableCookieJarStorage(QNetworkAccessManager* manager, bool status)
+{
+    if (manager) {
+        KIO::Integration::CookieJar *cookieJar = manager ? qobject_cast<KIO::Integration::CookieJar*>(manager->cookieJar()) : 0;
+        if (cookieJar) {
+            kDebug(800) << "Store cookies ?" << status;
+            cookieJar->setDisableCookieStorage(status);
+        }
+    }
+}
+
 bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
     kDebug(800) << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
 
-    if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted) {
+    if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted)
         d->wallet->saveFormData(frame);
+    
+    // Make sure nothing is cached when private browsing mode is enabled...
+    if (settings()->testAttribute(QWebSettings::PrivateBrowsingEnabled)) {
+        if (!d->inPrivateBrowsingMode) {
+            setDisableCookieJarStorage(networkAccessManager(), true);
+            setSessionMetaData(QL1S("no-cache"), QL1S("true"));
+            d->inPrivateBrowsingMode = true;
+        }
+    } else  {
+        if (d->inPrivateBrowsingMode) {
+            setDisableCookieJarStorage(networkAccessManager(), false);
+            removeSessionMetaData(QL1S("no-cache"));
+            d->inPrivateBrowsingMode = false;
+        }
     }
 
     /*
         If the navigation request is from the main frame, set the cross-domain
         meta-data value to the current url for proper integration with KCookieJar...
       */
-    if (frame == mainFrame() && type != QWebPage::NavigationTypeReload) {
+    if (frame == mainFrame() && type != QWebPage::NavigationTypeReload)
         setSessionMetaData(QL1S("cross-domain"), request.url().toString());
-    }
 
     return QWebPage::acceptNavigationRequest(frame, request, type);
 }
