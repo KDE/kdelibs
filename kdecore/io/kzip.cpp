@@ -661,15 +661,14 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 
             QString entryName;
 
-            if ( name.endsWith( '/' ) ) // Entries with a trailing slash are directories
-            {
+            if (name.endsWith(QLatin1Char('/'))) { // Entries with a trailing slash are directories
                 isdir = true;
                 name = name.left( name.length() - 1 );
                 if (os_madeby != 3) access = S_IFDIR | 0755;
 		else Q_ASSERT(access & S_IFDIR);
             }
 
-            int pos = name.lastIndexOf( '/' );
+            int pos = name.lastIndexOf(QLatin1Char('/'));
             if ( pos == -1 )
                 entryName = name;
             else
@@ -982,8 +981,8 @@ bool KZip::doWriteDir( const QString &name, const QString &user, const QString &
     // when file entries have paths in them.
     // However, to support empty directories, we must create a dummy file entry which ends with '/'.
     QString dirName = name;
-    if (!name.endsWith("/"))
-        dirName = dirName.append('/');
+    if (!name.endsWith(QLatin1Char('/')))
+        dirName = dirName.append(QLatin1Char('/'));
     return writeFile(dirName, user, group, 0, 0, perm, atime, mtime, ctime);
 }
 
@@ -1032,9 +1031,8 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     // Find or create parent dir
     KArchiveDirectory* parentDir = rootDir();
     QString fileName( name );
-    int i = name.lastIndexOf( '/' );
-    if ( i != -1 )
-    {
+    int i = name.lastIndexOf(QLatin1Char('/'));
+    if (i != -1) {
         QString dir = name.left( i );
         fileName = name.mid( i + 1 );
         //kDebug(7040) << "ensuring" << dir << "exists. fileName=" << fileName;
@@ -1146,7 +1144,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         return true;
     }
 
-    d->m_currentDev = KFilterDev::device( device(), "application/x-gzip", false );
+    d->m_currentDev = KFilterDev::device( device(), QString::fromLatin1("application/x-gzip"), false );
     Q_ASSERT( d->m_currentDev );
     if ( !d->m_currentDev ) {
         return false; // ouch
@@ -1367,7 +1365,7 @@ QIODevice* KZipFileEntry::createDevice() const
     if ( encoding() == 8 )
     {
         // On top of that, create a device that uncompresses the zlib data
-        QIODevice* filterDev = KFilterDev::device( limitedDev, "application/x-gzip" );
+        QIODevice* filterDev = KFilterDev::device( limitedDev, QString::fromLatin1("application/x-gzip") );
         if ( !filterDev )
             return 0L; // ouch
         static_cast<KFilterDev *>(filterDev)->setSkipHeaders(); // Just zlib, not gzip

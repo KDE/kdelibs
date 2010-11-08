@@ -73,7 +73,7 @@ static void internalMessageFallback(KMessage::MessageType messageType, const QSt
     QString message;
 
     if( !caption.isEmpty() )
-        message += '(' + caption + ')';
+        message += QLatin1Char('(') + caption + QLatin1Char(')');
 
     message += prefix + text;
 

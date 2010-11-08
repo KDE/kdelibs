@@ -160,32 +160,32 @@ static QString devNameFromOptions(const QStringList &options)
         if( (*it).startsWith(QLatin1String("dev=")))
             return (*it).mid(4);
     }
-    return QString("none");
+    return QString::fromLatin1("none");
 }
 
 void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNeeded)
 {
-    if (mountType == "supermount") {
+    if (mountType == QLatin1String("supermount")) {
         mountedFrom = devNameFromOptions(mountOptions);
     }
 
     if (mountedFrom.startsWith(QLatin1String("UUID="))) {
         const QString uuid = mountedFrom.mid(5);
-        const QString potentialDevice = QFile::symLinkTarget("/dev/disk/by-uuid/" + uuid);
+        const QString potentialDevice = QFile::symLinkTarget(QString::fromLatin1("/dev/disk/by-uuid/") + uuid);
         if (QFile::exists(potentialDevice)) {
             mountedFrom = potentialDevice;
         }
     }
     if (mountedFrom.startsWith(QLatin1String("LABEL="))) {
         const QString label = mountedFrom.mid(6);
-        const QString potentialDevice = QFile::symLinkTarget("/dev/disk/by-label/" + label);
+        const QString potentialDevice = QFile::symLinkTarget(QString::fromLatin1("/dev/disk/by-label/") + label);
         if (QFile::exists(potentialDevice)) {
             mountedFrom = potentialDevice;
         }
     }
 
     if (infoNeeded & NeedRealDeviceName) {
-        if (mountedFrom.startsWith('/'))
+        if (mountedFrom.startsWith(QLatin1Char('/')))
             device = KStandardDirs::realFilePath(mountedFrom);
     }
     // TODO: Strip trailing '/' ?
@@ -194,7 +194,7 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
 void KMountPoint::Private::finalizeCurrentMountPoint(DetailsNeededFlags infoNeeded)
 {
     if (infoNeeded & NeedRealDeviceName) {
-        if (mountedFrom.startsWith('/'))
+        if (mountedFrom.startsWith(QLatin1Char('/')))
             device = KStandardDirs::realFilePath(mountedFrom);
     }
 }
@@ -223,10 +223,10 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
 
       //Devices using supermount have their device names in the mount options
       //instead of the device field. That's why we need to read the mount options
-      if (infoNeeded & NeedMountOptions || (mp->d->mountType == "supermount"))
+      if (infoNeeded & NeedMountOptions || (mp->d->mountType == QLatin1String("supermount")))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
-         mp->d->mountOptions = options.split( ',' );
+         mp->d->mountOptions = options.split( QLatin1Char(',') );
       }
 
       mp->d->finalizePossibleMountPoint(infoNeeded);
@@ -409,12 +409,12 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
             result.append(mp);
         }
     }
-    
+
 #elif defined(_WIN32_WCE)
 	Ptr mp(new KMountPoint);
     mp->d->mountPoint = QString("/");
     result.append(mp);
-	
+
 #else
    STRUCT_SETMNTENT mnttab;
    if ((mnttab = SETMNTENT(MNTTAB, "r")) == 0)
@@ -431,10 +431,10 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 
       //Devices using supermount have their device names in the mount options
       //instead of the device field. That's why we need to read the mount options
-      if (infoNeeded & NeedMountOptions || (mp->d->mountType == "supermount"))
+      if (infoNeeded & NeedMountOptions || (mp->d->mountType == QLatin1String("supermount")))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
-         mp->d->mountOptions = options.split( ',' );
+         mp->d->mountOptions = options.split( QLatin1Char(',') );
       }
       mp->d->finalizeCurrentMountPoint(infoNeeded);
 
@@ -513,8 +513,8 @@ KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
 
 bool KMountPoint::probablySlow() const
 {
-    bool nfs = d->mountType == "nfs";
-    bool autofs = d->mountType == "autofs" || d->mountType == "subfs";
+    bool nfs = d->mountType == QLatin1String("nfs");
+    bool autofs = d->mountType == QLatin1String("autofs") || d->mountType == QLatin1String("subfs");
     //bool pid = d->mountPoint.contains(":(pid");
     // The "pid" thing was in kde3's KIO::probably_slow_mounted, with obscure logic
     // (looks like it used state from the previous line or something...)
@@ -528,7 +528,7 @@ bool KMountPoint::probablySlow() const
 
 bool KMountPoint::testFileSystemFlag(FileSystemFlag flag) const
 {
-    const bool isMsDos = ( d->mountType == "msdos" || d->mountType == "fat" || d->mountType == "vfat" );
+    const bool isMsDos = ( d->mountType == QLatin1String("msdos") || d->mountType == QLatin1String("fat") || d->mountType == QLatin1String("vfat") );
     switch (flag)  {
     case SupportsChmod:
     case SupportsChown:

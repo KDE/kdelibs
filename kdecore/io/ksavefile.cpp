@@ -44,7 +44,7 @@ class KSaveFile::Private
 public:
     QString realFileName; //The name of the end-result file
     QString tempFileName; //The name of the temp file we are using
-    
+
     QFile::FileError error;
     QString errorString;
     bool wasFinalized;
@@ -105,13 +105,13 @@ bool KSaveFile::open(OpenMode flags)
     //Create our temporary file
     QTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
-    tempFile.setFileTemplate(d->realFileName + "XXXXXX.new");
+    tempFile.setFileTemplate(d->realFileName + QLatin1String("XXXXXX.new"));
     if (!tempFile.open()) {
         d->error=QFile::OpenError;
         d->errorString=i18n("Unable to open temporary file.");
         return false;
     }
-    
+
     // if we're overwriting an existing file, ensure temp file's
     // permissions are the same as existing file so the existing
     // file's permissions are preserved. this will succeed completely
@@ -147,7 +147,7 @@ bool KSaveFile::open(OpenMode flags)
 void KSaveFile::setFileName(const QString &filename)
 {
     d->realFileName = filename;
-    
+
     // make absolute if needed
     if ( QDir::isRelativePath( filename ) ) {
         d->realFileName = QDir::current().absoluteFilePath( filename );
@@ -185,7 +185,7 @@ QString KSaveFile::fileName() const
 void KSaveFile::abort()
 {
     close();
-    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work. 
+    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
     d->wasFinalized = true;
 }
 
@@ -221,7 +221,7 @@ bool KSaveFile::finalize()
 #endif
 
         close();
-        
+
         if( error() != NoError ) {
             QFile::remove(d->tempFileName);
         }
@@ -259,9 +259,9 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
     QString extension = g.readEntry( "Extension", "~" );
     QString message = g.readEntry( "Message", "Automated KDE Commit" );
     int maxnum = g.readEntry( "MaxBackups", 10 );
-    if ( type.toLower() == "numbered" ) {
+    if ( type.toLower() == QLatin1String("numbered") ) {
         return( numberedBackupFile( qFilename, backupDir, extension, maxnum ) );
-    } else if ( type.toLower() == "rcs" ) {
+    } else if ( type.toLower() == QLatin1String("rcs") ) {
         return( rcsBackupFile( qFilename, backupDir, message ) );
     } else {
         return( simpleBackupFile( qFilename, backupDir, extension ) );
@@ -273,10 +273,10 @@ bool KSaveFile::simpleBackupFile( const QString& qFilename,
                                   const QString& backupExtension )
 {
     QString backupFileName = qFilename + backupExtension;
-    
+
     if ( !backupDir.isEmpty() ) {
         QFileInfo fileInfo ( qFilename );
-        backupFileName = backupDir + '/' + fileInfo.fileName() + backupExtension;
+        backupFileName = backupDir + QLatin1Char('/') + fileInfo.fileName() + backupExtension;
     }
 
 //    kDebug(180) << "KSaveFile copying " << qFilename << " to " << backupFileName;
@@ -289,7 +289,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
                                const QString& backupMessage )
 {
     QFileInfo fileInfo ( qFilename );
-    
+
     QString qBackupFilename;
     if ( backupDir.isEmpty() ) {
         qBackupFilename = qFilename;
@@ -306,20 +306,20 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
         if ( !QFile::copy(qFilename, backupDir + fileInfo.fileName()) ) {
             return false;
         }
-        fileInfo.setFile(backupDir + '/' + fileInfo.fileName());
+        fileInfo.setFile(backupDir + QLatin1Char('/') + fileInfo.fileName());
     }
-    
-    QString cipath = KStandardDirs::findExe("ci");
-    QString copath = KStandardDirs::findExe("co");
-    QString rcspath = KStandardDirs::findExe("rcs");
+
+    QString cipath = KStandardDirs::findExe(QString::fromLatin1("ci"));
+    QString copath = KStandardDirs::findExe(QString::fromLatin1("co"));
+    QString rcspath = KStandardDirs::findExe(QString::fromLatin1("rcs"));
     if ( cipath.isEmpty() || copath.isEmpty() || rcspath.isEmpty() )
         return false;
-    
+
     // Check in the file unlocked with 'ci'
     QProcess ci;
     if ( !backupDir.isEmpty() )
         ci.setWorkingDirectory( backupDir );
-    ci.start( cipath, QStringList() << "-u" << fileInfo.filePath() );
+    ci.start( cipath, QStringList() << QString::fromLatin1("-u") << fileInfo.filePath() );
     if ( !ci.waitForStarted() )
         return false;
     ci.write( backupMessage.toLatin1() );
@@ -332,7 +332,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QProcess rcs;
     if ( !backupDir.isEmpty() )
         rcs.setWorkingDirectory( backupDir );
-    rcs.start( rcspath, QStringList() << "-U" << qBackupFilename );
+    rcs.start( rcspath, QStringList() << QString::fromLatin1("-U") << qBackupFilename );
     if ( !rcs.waitForFinished() )
         return false;
 
@@ -357,20 +357,20 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
                                     const uint maxBackups )
 {
     QFileInfo fileInfo ( qFilename );
-    
+
     // The backup file name template.
     QString sTemplate;
     if ( backupDir.isEmpty() ) {
-        sTemplate = qFilename + ".%1" + backupExtension;
+        sTemplate = qFilename + QLatin1String(".%1") + backupExtension;
     } else {
-        sTemplate = backupDir + '/' + fileInfo.fileName() + ".%1" + backupExtension;
+        sTemplate = backupDir + QLatin1Char('/') + fileInfo.fileName() + QLatin1String(".%1") + backupExtension;
     }
 
     // First, search backupDir for numbered backup files to remove.
     // Remove all with number 'maxBackups' and greater.
     QDir d = backupDir.isEmpty() ? fileInfo.dir() : backupDir;
     d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
-    const QStringList nameFilters = QStringList( fileInfo.fileName() + ".*" + backupExtension );
+    const QStringList nameFilters = QStringList( fileInfo.fileName() + QLatin1String(".*") + backupExtension );
     d.setNameFilters( nameFilters );
     d.setSorting( QDir::Name );
 
@@ -381,7 +381,7 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
             QString sTemp = fi.fileName();
             sTemp.truncate( fi.fileName().length()-backupExtension.length() );
             // compute the backup number
-            int idex = sTemp.lastIndexOf( '.' );
+            int idex = sTemp.lastIndexOf( QLatin1Char('.') );
             if ( idex > 0 ) {
                 bool ok;
                 uint num = sTemp.mid( idex+1 ).toUInt( &ok );

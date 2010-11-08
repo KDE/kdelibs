@@ -161,8 +161,9 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         name.replace( '/', QByteArray() );
         kDebug(7042) << "Filename: " << name << " Size: " << size;
 
-        KArchiveEntry* entry;
-        entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->pos(), size);
+        KArchiveEntry* entry = new KArchiveFile(this, QString::fromLocal8Bit(name), mode, date,
+                                                /*uid*/ QString(), /*gid*/ QString(), /*symlink*/ QString(),
+                                                dev->pos(), size);
         rootDir()->addEntry(entry); // Ar files don't support directories, so everything in root
 
         dev->seek( dev->pos() + size ); // Skip contents

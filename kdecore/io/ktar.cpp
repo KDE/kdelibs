@@ -106,22 +106,22 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
 
         kDebug(7041) << mode << mime->name();
 
-        if (mime->is("application/x-compressed-tar") || mime->is(application_gzip)) {
+        if (mime->is(QString::fromLatin1("application/x-compressed-tar")) || mime->is(QString::fromLatin1(application_gzip))) {
             // gzipped tar file (with possibly invalid file name), ask for gzip filter
-            d->mimetype = application_gzip;
-        } else if (mime->is("application/x-bzip-compressed-tar") || mime->is(application_bzip)) {
+            d->mimetype = QString::fromLatin1(application_gzip);
+        } else if (mime->is(QString::fromLatin1("application/x-bzip-compressed-tar")) || mime->is(QString::fromLatin1(application_bzip))) {
             // bzipped2 tar file (with possibly invalid file name), ask for bz2 filter
-            d->mimetype = application_bzip;
-        } else if (mime->is("application/x-lzma-compressed-tar") || mime->is(application_lzma)) {
+            d->mimetype = QString::fromLatin1(application_bzip);
+        } else if (mime->is(QString::fromLatin1("application/x-lzma-compressed-tar")) || mime->is(QString::fromLatin1(application_lzma))) {
             // lzma compressed tar file (with possibly invalid file name), ask for xz filter
-            d->mimetype = application_lzma;
-        } else if (mime->is("application/x-xz-compressed-tar") || mime->is(application_xz)) {
+            d->mimetype = QString::fromLatin1(application_lzma);
+        } else if (mime->is(QString::fromLatin1("application/x-xz-compressed-tar")) || mime->is(QString::fromLatin1(application_xz))) {
             // xz compressed tar file (with possibly invalid name), ask for xz filter
-            d->mimetype = application_xz;
+            d->mimetype = QString::fromLatin1(application_xz);
         }
     }
 
-    if (d->mimetype == "application/x-tar") {
+    if (d->mimetype == QLatin1String("application/x-tar")) {
         return KArchive::createDevice(mode);
     } else if (mode == QIODevice::WriteOnly) {
         if (!KArchive::createDevice(mode))
@@ -147,8 +147,8 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
 
         Q_ASSERT(!d->tmpFile);
         d->tmpFile = new KTemporaryFile();
-        d->tmpFile->setPrefix("ktar-");
-        d->tmpFile->setSuffix(".tar");
+        d->tmpFile->setPrefix(QLatin1String("ktar-"));
+        d->tmpFile->setSuffix(QLatin1String(".tar"));
         d->tmpFile->open();
         kDebug(7041) << "creating tempfile:" << d->tmpFile->fileName();
 
@@ -285,7 +285,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     kDebug( 7041 ) << "filling tmpFile of mimetype" << mimetype;
 
     bool forced = false;
-    if ( application_gzip == mimetype || application_bzip == mimetype )
+    if ( QLatin1String(application_gzip) == mimetype || QLatin1String(application_bzip) == mimetype )
         forced = true;
 
     QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
@@ -369,7 +369,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 name.truncate( name.length() - 1 );
             }
 
-            int pos = name.lastIndexOf( '/' );
+            int pos = name.lastIndexOf( QLatin1Char('/') );
             QString nm = ( pos == -1 ) ? name : name.mid( pos + 1 );
 
             // read access
@@ -380,8 +380,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             int access = (int)strtol( p, &dummy, 8 );
 
             // read user and group
-            QString user( buffer + 0x109 );
-            QString group( buffer + 0x129 );
+            QString user = QString::fromLocal8Bit( buffer + 0x109 );
+            QString group = QString::fromLocal8Bit( buffer + 0x129 );
 
             // read time
             buffer[ 0x93 ] = 0;
@@ -452,8 +452,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
 
             if ( pos == -1 )
             {
-                if ( nm == "." ) // special case
-                {
+                if (nm == QLatin1String(".")) { // special case
                     Q_ASSERT( isdir );
                     if ( isdir )
                         setRootDir( static_cast<KArchiveDirectory *>( e ) );
@@ -494,8 +493,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
     kDebug(7041) << fileName << " " << mimetype;
 
     bool forced = false;
-    if ( application_gzip == mimetype || application_bzip == mimetype ||
-         application_lzma == mimetype || application_xz == mimetype )
+    if (QLatin1String(application_gzip) == mimetype || QLatin1String(application_bzip) == mimetype ||
+        QLatin1String(application_lzma) == mimetype || QLatin1String(application_xz) == mimetype)
         forced = true;
 
     // #### TODO this should use KSaveFile to avoid problems on disk full

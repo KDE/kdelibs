@@ -44,7 +44,7 @@ KTemporaryFile::KTemporaryFile(const KComponentData &componentData)
     : d(new KTemporaryFilePrivate(componentData))
 {
     QString temp(d->defaultPrefix());
-    setFileTemplate(temp + "XXXXXX.tmp");
+    setFileTemplate(temp + QLatin1String("XXXXXX.tmp"));
 }
 
 KTemporaryFile::~KTemporaryFile()
@@ -55,24 +55,24 @@ KTemporaryFile::~KTemporaryFile()
 void KTemporaryFile::setPrefix(const QString &prefix)
 {
     QString oldTemplate = fileTemplate();
-    QString suffix = oldTemplate.mid(oldTemplate.lastIndexOf("XXXXXX")+6);
+    QString suffix = oldTemplate.mid(oldTemplate.lastIndexOf(QLatin1String("XXXXXX"))+6);
     QString newPrefix = prefix;
 
     if ( newPrefix.isEmpty() ) {
         newPrefix = d->defaultPrefix();
     } else {
         if ( !QDir::isAbsolutePath(newPrefix) ) {
-            newPrefix.prepend ( KStandardDirs::locateLocal("tmp", "") );
+            newPrefix.prepend(KGlobal::dirs()->saveLocation("tmp"));
         }
     }
 
-    setFileTemplate(newPrefix + "XXXXXX" + suffix);
+    setFileTemplate(newPrefix + QLatin1String("XXXXXX") + suffix);
 }
 
 void KTemporaryFile::setSuffix(const QString &suffix)
 {
     QString oldTemplate = fileTemplate();
-    QString prefix = oldTemplate.left(oldTemplate.indexOf("XXXXXX"));
+    QString prefix = oldTemplate.left(oldTemplate.indexOf(QLatin1String("XXXXXX")));
 
-    setFileTemplate(prefix + "XXXXXX" + suffix);
+    setFileTemplate(prefix + QLatin1String("XXXXXX") + suffix);
 }

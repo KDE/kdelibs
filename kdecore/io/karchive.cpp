@@ -299,11 +299,11 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     const QStringList files = dir.entryList();
     for ( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
     {
-        if ( *it != "." && *it != ".." )
+        if ( *it != QLatin1String(".") && *it != QLatin1String("..") )
         {
-            QString fileName = path + '/' + *it;
+            QString fileName = path + QLatin1Char('/') + *it;
 //            kDebug() << "storing " << fileName;
-            QString dest = destName.isEmpty() ? *it : (destName + '/' + *it);
+            QString dest = destName.isEmpty() ? *it : (destName + QLatin1Char('/') + *it);
             QFileInfo fileInfo( fileName );
 
             if ( fileInfo.isFile() || fileInfo.isSymLink() )
@@ -406,7 +406,7 @@ KArchiveDirectory * KArchive::rootDir()
 KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 {
     //kDebug() << path;
-    if ( path.isEmpty() || path == "/" || path == "." ) // root dir => found
+    if ( path.isEmpty() || path == QLatin1String("/") || path == QLatin1String(".") ) // root dir => found
     {
         //kDebug() << "returning rootdir";
         return rootDir();
@@ -429,7 +429,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     }
 
     // Otherwise go up and try again
-    int pos = path.lastIndexOf( '/' );
+    int pos = path.lastIndexOf( QLatin1Char('/') );
     KArchiveDirectory * parent;
     QString dirname;
     if ( pos == -1 ) // no more slash => create in root dir
@@ -661,7 +661,7 @@ bool KArchiveFile::isFile() const
 
 void KArchiveFile::copyTo(const QString& dest) const
 {
-  QFile f( dest + '/'  + name() );
+  QFile f( dest + QLatin1Char('/')  + name() );
   if ( f.open( QIODevice::ReadWrite | QIODevice::Truncate ) )
   {
       QIODevice* inputDev = createDevice();
@@ -721,13 +721,13 @@ QStringList KArchiveDirectory::entries() const
 const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
 {
     QString name = QDir::cleanPath(_name);
-  int pos = name.indexOf( '/' );
+    int pos = name.indexOf( QLatin1Char('/') );
   if ( pos == 0 ) // ouch absolute path (see also KArchive::findOrCreate)
   {
     if (name.length()>1)
     {
       name = name.mid( 1 ); // remove leading slash
-      pos = name.indexOf( '/' ); // look again
+      pos = name.indexOf( QLatin1Char('/') ); // look again
     }
     else // "/"
       return this;
@@ -736,7 +736,7 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
   if ( pos != -1 && pos == name.length()-1 )
   {
     name = name.left( pos );
-    pos = name.indexOf( '/' ); // look again
+    pos = name.indexOf( QLatin1Char('/') ); // look again
   }
   if ( pos != -1 )
   {
@@ -797,7 +797,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       const KArchiveEntry* curEntry = curDir->entry(*it);
       if (!curEntry->symLinkTarget().isEmpty()) {
-          const QString linkName = curDirName+'/'+curEntry->name();
+          const QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
 #ifdef Q_OS_UNIX
           if (!::symlink(curEntry->symLinkTarget().toLocal8Bit(), linkName.toLocal8Bit())) {
               kDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
@@ -818,7 +818,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
               const KArchiveDirectory *ad = dynamic_cast<const KArchiveDirectory*>( curEntry );
               if (ad) {
                   dirStack.push( ad );
-                  dirNameStack.push( curDirName + '/' + curEntry->name() );
+                  dirNameStack.push( curDirName + QLatin1Char('/') + curEntry->name() );
               }
           }
       }

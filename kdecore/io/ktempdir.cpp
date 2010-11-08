@@ -123,7 +123,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
    // got a return value != 0
    QByteArray realNameStr(realName);
-   d->tmpName = QFile::decodeName(realNameStr)+'/';
+   d->tmpName = QFile::decodeName(realNameStr)+QLatin1Char('/');
    kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
 	        << endl;
 
