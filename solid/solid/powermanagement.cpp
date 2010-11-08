@@ -31,6 +31,9 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
     : managerIface("org.freedesktop.PowerManagement",
                    "/org/freedesktop/PowerManagement",
                    QDBusConnection::sessionBus()),
+      policyAgentIface("org.kde.Solid.PowerManagement.PolicyAgent",
+                       "/org/kde/Solid/PowerManagement/PolicyAgent",
+                       QDBusConnection::sessionBus()),
       inhibitIface("org.freedesktop.PowerManagement.Inhibit",
                    "/org/freedesktop/PowerManagement/Inhibit",
                    QDBusConnection::sessionBus())
@@ -92,8 +95,15 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
 
 int Solid::PowerManagement::beginSuppressingSleep(const QString &reason)
 {
-    QDBusReply<uint> reply = globalPowerManager->inhibitIface.Inhibit(
-        QCoreApplication::applicationName(), reason);
+    QDBusReply<uint> reply;
+    if (globalPowerManager->policyAgentIface.isValid()) {
+        reply = globalPowerManager->policyAgentIface.AddInhibition(
+            (uint)PowerManagementPrivate::InterruptSession,
+            QCoreApplication::applicationName(), reason);
+    } else {
+        // Fallback to the fd.o Inhibit interface
+        reply = globalPowerManager->inhibitIface.Inhibit(QCoreApplication::applicationName(), reason);
+    }
 
     if (reply.isValid())
         return reply;
@@ -103,7 +113,39 @@ int Solid::PowerManagement::beginSuppressingSleep(const QString &reason)
 
 bool Solid::PowerManagement::stopSuppressingSleep(int cookie)
 {
-    return globalPowerManager->inhibitIface.UnInhibit(cookie).isValid();
+    if (globalPowerManager->policyAgentIface.isValid()) {
+        return globalPowerManager->policyAgentIface.ReleaseInhibition(cookie).isValid();
+    } else {
+        // Fallback to the fd.o Inhibit interface
+        return globalPowerManager->inhibitIface.UnInhibit(cookie).isValid();
+    }
+}
+
+int Solid::PowerManagement::beginSuppressingScreenPowerManagement(const QString& reason)
+{
+    if (globalPowerManager->policyAgentIface.isValid()) {
+        QDBusReply<uint> reply = globalPowerManager->policyAgentIface.AddInhibition(
+            (uint)PowerManagementPrivate::ChangeScreenSettings,
+            QCoreApplication::applicationName(), reason);
+
+        if (reply.isValid())
+            return reply;
+        else
+            return -1;
+    } else {
+        // No way to fallback on something, hence return failure
+        return -1;
+    }
+}
+
+bool Solid::PowerManagement::stopSuppressingScreenPowerManagement(int cookie)
+{
+    if (globalPowerManager->policyAgentIface.isValid()) {
+        return globalPowerManager->policyAgentIface.ReleaseInhibition(cookie).isValid();
+    } else {
+        // No way to fallback on something, hence return failure
+        return false;
+    }
 }
 
 Solid::PowerManagement::Notifier *Solid::PowerManagement::notifier()

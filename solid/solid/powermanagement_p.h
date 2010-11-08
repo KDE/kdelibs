@@ -23,8 +23,9 @@
 
 #include "powermanagement.h"
 
-#include "powermanagementinterface.h"
 #include "inhibitinterface.h"
+#include "powermanagementinterface.h"
+#include "policyagentinterface.h"
 
 namespace Solid
 {
@@ -32,6 +33,13 @@ namespace Solid
     {
         Q_OBJECT
     public:
+        enum RequiredPolicy {
+            None = 0,
+            InterruptSession = 1,
+            ChangeProfile = 2,
+            ChangeScreenSettings = 4
+        };
+
         PowerManagementPrivate();
         ~PowerManagementPrivate();
 
@@ -42,6 +50,7 @@ namespace Solid
 
     public:
         OrgFreedesktopPowerManagementInterface managerIface;
+        OrgKdeSolidPowerManagementPolicyAgentInterface policyAgentIface;
         OrgFreedesktopPowerManagementInhibitInterface inhibitIface;
 
         bool powerSaveStatus;

@@ -98,6 +98,30 @@ namespace Solid
          */
         SOLID_EXPORT bool stopSuppressingSleep(int cookie);
 
+        /**
+         * Tell the power management subsystem to suppress automatic screen power management until
+         * further notice.
+         *
+         * @param reason Give a reason for not allowing screen power management, to be used in giving user feedback
+         * about why a screen power management event was prevented
+         * @return a 'cookie' value representing the suppression request.  Used by the power manager to
+         * track the application's outstanding suppression requests.  Returns -1 if the request was
+         * denied.
+         *
+         * @since 4.6
+         */
+        SOLID_EXPORT int beginSuppressingScreenPowerManagement(const QString &reason = QString());
+
+        /**
+         * Tell the power management that a particular screen power management suppression is no longer needed.  When
+         * no more suppressions are active, the system will be free to handle screen power management automatically
+         * @param cookie The cookie acquired when requesting screen power management suppression
+         * @return true if the suppression was stopped, false if an invalid cookie was given
+         *
+         * @since 4.6
+         */
+        SOLID_EXPORT bool stopSuppressingScreenPowerManagement(int cookie);
+
         class SOLID_EXPORT Notifier : public QObject
         {
             Q_OBJECT

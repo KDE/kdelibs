@@ -296,10 +296,12 @@ endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
                              org.freedesktop.PowerManagement.Inhibit.xml
+                             org.kde.Solid.PowerManagement.PolicyAgent.xml
                              PROPERTIES NO_NAMESPACE TRUE)
 
 qt4_add_dbus_interfaces(solid_LIB_SRCS org.freedesktop.PowerManagement.xml
-                        org.freedesktop.PowerManagement.Inhibit.xml )
+                        org.freedesktop.PowerManagement.Inhibit.xml
+                        org.kde.Solid.PowerManagement.PolicyAgent.xml)
 
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
                        org_kde_solid_networking_client)
@@ -341,6 +343,7 @@ set_target_properties(solid PROPERTIES
 install(TARGETS solid EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.kde.Solid.PowerManagement.PolicyAgent.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.freedesktop.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.freedesktop.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
