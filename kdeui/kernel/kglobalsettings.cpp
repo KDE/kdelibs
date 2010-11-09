@@ -1118,6 +1118,8 @@ void KGlobalSettings::Private::propagateQtSettings()
     QApplication::setStartDragDistance(num);
     num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
+    bool showIcons = cg.readEntry("ShowIconsInMenuItems", !QApplication::testAttribute(Qt::AA_DontShowIconsInMenus));
+    QApplication::setAttribute(Qt::AA_DontShowIconsInMenus, !showIcons);
 
     // KDE5: this seems fairly pointless
     emit q->settingsChanged(SETTINGS_QT);
