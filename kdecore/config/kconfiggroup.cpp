@@ -436,7 +436,7 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             QString env;
             if (!aVarName.isEmpty()) {
 #ifdef Q_OS_WIN
-                if (aVarName == "HOME")
+                if (aVarName == QLatin1String("HOME"))
                     env = QDir::homePath();
                 else
 #endif

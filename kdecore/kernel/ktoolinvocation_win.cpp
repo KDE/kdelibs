@@ -56,16 +56,16 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
 {
-  KUrl url("mailto:"+_to);
-  url.setQuery(QString::fromLatin1("?subject=")+subject);
-  url.addQueryItem(QString::fromLatin1("cc"), _cc);
-  url.addQueryItem(QString::fromLatin1("bcc"), _bcc);
-  url.addQueryItem(QString::fromLatin1("body"), body);
+  KUrl url(QLatin1String("mailto:")+_to);
+  url.setQuery(QLatin1String("?subject=")+subject);
+  url.addQueryItem(QLatin1String("cc"), _cc);
+  url.addQueryItem(QLatin1String("bcc"), _bcc);
+  url.addQueryItem(QLatin1String("body"), body);
   foreach (const QString& attachURL, attachURLs)
-    url.addQueryItem(QString::fromLatin1("attach"), QLatin1String( KUrl::toPercentEncoding(attachURL) ));
+    url.addQueryItem(QLatin1String("attach"), QLatin1String( KUrl::toPercentEncoding(attachURL) ));
 
 #ifndef _WIN32_WCE
-   QString sOpen = QString::fromLatin1( "open" );
+   QString sOpen = QLatin1String( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);
 #else
     SHELLEXECUTEINFO cShellExecuteInfo = {0};

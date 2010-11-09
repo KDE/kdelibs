@@ -198,7 +198,7 @@ QString KUser::fullName() const
 
 QString KUser::homeDir() const
 {
-	return QDir::fromNativeSeparators(qgetenv("USERPROFILE"));
+	return QDir::fromNativeSeparators(QString::fromLocal8Bit(qgetenv("USERPROFILE")));
 }
 
 QString KUser::faceIconPath() const
@@ -342,7 +342,7 @@ KUserGroup::KUserGroup(const QString &_name)
 }
 
 KUserGroup::KUserGroup(const char *_name)
-    : d(new Private(QString(_name)))
+    : d(new Private(QLatin1String(_name)))
 {
 }
 

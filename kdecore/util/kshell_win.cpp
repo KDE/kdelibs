@@ -93,14 +93,14 @@ QStringList KShell::splitArgs(const QString &_args, Options flags, Errors *err)
 
     if (flags & AbortOnMeta) {
         args.remove(PERCENT_ESCAPE);
-        if (args.indexOf('%') >= 0) {
+        if (args.indexOf(QLatin1Char('%')) >= 0) {
             if (err)
                 *err = FoundMeta;
             return QStringList();
         }
 
         args = _args;
-        args.replace(PERCENT_ESCAPE, "%");
+        args.replace(PERCENT_ESCAPE, QLatin1String("%"));
 
         if (!args.isEmpty() && args[0].unicode() == '@')
             args.remove(0, 1);
@@ -213,7 +213,7 @@ QString KShell::quoteArgInternal(const QString &arg, bool _inquote)
             ret.append(arg[p]);
         }
     }
-    ret.replace('%', PERCENT_ESCAPE);
+    ret.replace(QLatin1Char('%'), PERCENT_ESCAPE);
     if (bslashes) {
         // Ensure that we don't have directly trailing backslashes,
         // so concatenating with another string won't cause surprises.
@@ -248,7 +248,7 @@ QString KShell::quoteArg(const QString &arg)
     // Note that the remaining string is not quoted.
     QString ret(arg);
     ret.replace(QRegExp(QLatin1String("(\\\\*)\"")), QLatin1String("\\1\\1\\^\""));
-    ret.replace('%', PERCENT_ESCAPE);
+    ret.replace(QLatin1Char('%'), PERCENT_ESCAPE);
     return ret;
 }
 

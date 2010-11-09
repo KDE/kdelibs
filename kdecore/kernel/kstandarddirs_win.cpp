@@ -64,13 +64,13 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("icon", type) == 0)
                 return share() + QLatin1String("icons/");
             if (strcmp("include", type) == 0)
-                return prefix() + "include";
+                return prefix() + QLatin1String("include/");
             break;
         case 'l':
             if (strcmp("lib", type) == 0)
-                return prefix() + QString::fromLatin1("lib" KDELIBSUFF "/");
+                return prefix() + QLatin1String("lib" KDELIBSUFF "/");
             if (strcmp("libexec", type) == 0)
-                return prefix() + QString::fromLatin1("lib" KDELIBSUFF "/kde4/libexec/");
+                return prefix() + QLatin1String("lib" KDELIBSUFF "/kde4/libexec/");
             if (strcmp("locale", type) == 0)
                 return share() + QLatin1String("locale/");
             break;

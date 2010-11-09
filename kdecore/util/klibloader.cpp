@@ -65,16 +65,16 @@ extern QString findLibrary(const QString &name, const KComponentData &cData);
 // removes "lib" prefix, if present
 QString fixLibPrefix(const QString& libname)
 {
-    int pos = libname.lastIndexOf( '/' );
+    int pos = libname.lastIndexOf( QLatin1Char('/') );
     if ( pos >= 0 )
     {
         QString file = libname.mid( pos + 1 );
         QString path = libname.left( pos );
-        if( !file.startsWith( "lib" ) )
+        if( !file.startsWith( QLatin1String("lib") ) )
             return libname;
-        return path + '/' + file.mid( 3 );
+        return path + QLatin1Char('/') + file.mid( 3 );
     }
-    if( !libname.startsWith( "lib" ) )
+    if( !libname.startsWith( QLatin1String("lib") ) )
         return libname;
     return libname.mid( 3 );
 }

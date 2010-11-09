@@ -57,8 +57,8 @@ protected:
 inline QString makeLibName( const QString &libname )
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
-    if (!libname.endsWith(".dll"))
-        return libname + ".dll";
+    if (!libname.endsWith(QLatin1String(".dll")))
+        return libname + QLatin1String(".dll");
     return libname;
 #else
     int pos = libname.lastIndexOf(QLatin1Char('/'));

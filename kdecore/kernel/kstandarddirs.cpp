@@ -577,7 +577,7 @@ bool KStandardDirs::exists(const QString &fullPath)
     // access() and stat() give a stupid error message to the user
     // if the path is not accessible at all (e.g. no disk in A:/ and
     // we do stat("A:/.directory")
-    if (fullPath.endsWith('/'))
+    if (fullPath.endsWith(QLatin1Char('/')))
         return QDir(fullPath).exists();
     return QFileInfo(fullPath).exists();
 #else
@@ -627,7 +627,9 @@ static void lookupDirectory(const QString& path, const QString &relPart,
                 bool bIsDir = ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );
                 if ( recursive ) {
                     if ( bIsDir ) {
-                        lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, unique);
+                        lookupDirectory(pathfn + QLatin1Char('/'),
+                                        relPart + fn + QLatin1Char('/'),
+                                        regexp, list, relList, recursive, unique);
                     }
                     if (!regexp.exactMatch(fn))
                         continue; // No match
@@ -773,7 +775,8 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
                 if ( !pathExp.exactMatch(fn) )
                     continue; // No match
                 if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
-                    lookupPrefix(prefix + fn + '/', rest, relPart + fn + '/',
+                    lookupPrefix(prefix + fn + QLatin1Char('/'),
+                                 rest, relPart + fn + QLatin1Char('/'),
                                  regexp, list, relList, recursive, unique);
             }
         } while( FindNextFile( hFile, &findData ) != 0 );
@@ -939,7 +942,7 @@ KStandardDirs::realFilePath(const QString &filename)
     }
     if (len == 0)
         return QString();
-    return QString::fromUtf16((const unsigned short*)buf.data()).replace('\\','/').toLower();
+    return QString::fromUtf16((const unsigned short*)buf.data()).replace(QLatin1Char('\\'),QLatin1Char('/')).toLower();
 #else
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
@@ -961,6 +964,8 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
     hostname[0] = 0;
     gethostname(hostname, 255);
     const QString localkdedir = m_prefixes.first();
+    // this will not work on windows when localkdedir contains
+    // characters not encodeable in the current locale
     QByteArray dir = QFile::encodeName(localkdedir);
     dir += type;
     dir += '-';
@@ -995,8 +1000,8 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
 #ifdef Q_WS_WIN
     if (relink)
     {
-        if (!makeDir(dir, 0700))
-            fprintf(stderr, "failed to create \"%s\"", qPrintable(dir));
+        if (!makeDir(QFile::decodeName(dir), 0700))
+            fprintf(stderr, "failed to create \"%s\"", dir.constData());
         else
             result = readlink(dir.constData(), link, 1023);
     }
@@ -1199,11 +1204,14 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
 #ifdef Q_OS_WIN
 static QStringList executableExtensions()
 {
-    QStringList ret = QString::fromLocal8Bit(qgetenv("PATHEXT")).split(';');
-    if (!ret.contains(".exe", Qt::CaseInsensitive)) {
+    QStringList ret = QString::fromLocal8Bit(qgetenv("PATHEXT")).split(QLatin1Char(';'));
+    if (!ret.contains(QLatin1String(".exe"), Qt::CaseInsensitive)) {
         // If %PATHEXT% does not contain .exe, it is either empty, malformed, or distorted in ways that we cannot support, anyway.
         ret.clear();
-        ret << ".exe" << ".com" << ".bat" << ".cmd";
+        ret << QLatin1String(".exe")
+            << QLatin1String(".com")
+            << QLatin1String(".bat")
+            << QLatin1String(".cmd");
     }
     return ret;
 }
@@ -1310,7 +1318,7 @@ QString KStandardDirs::findExe( const QString& appname,
 
 #ifdef Q_OS_WIN
     QStringList executable_extensions = executableExtensions();
-    if (!executable_extensions.contains(appname.section('.', -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
+    if (!executable_extensions.contains(appname.section(QLatin1Char('.'), -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
         QString found_exe;
         foreach (const QString& extension, executable_extensions) {
             found_exe = findExe(appname + extension, pstr, options);
@@ -1376,7 +1384,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 {
 #ifdef Q_OS_WIN
     QStringList executable_extensions = executableExtensions();
-    if (!executable_extensions.contains(appname.section('.', -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
+    if (!executable_extensions.contains(appname.section(QLatin1Char('.'), -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
         int total = 0;
         foreach (const QString& extension, executable_extensions) {
             total += findAllExe (list, appname + extension, pstr, options);

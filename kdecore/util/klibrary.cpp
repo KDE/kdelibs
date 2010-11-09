@@ -46,19 +46,19 @@ KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cD
       libname = name;
       QString file, path;
 
-      int pos = libname.lastIndexOf( '/' );
+      int pos = libname.lastIndexOf( QLatin1Char('/') );
       if ( pos >= 0 )
       {
         file = libname.mid( pos + 1 );
         path = libname.left( pos );
-        libname = path + '/' + file.mid( 3 );
+        libname = path + QLatin1Char('/') + file.mid( 3 );
       }
       else
       {
         file = libname;
         libname = file.mid( 3 );
       }
-      if( !file.startsWith( "lib" ) )
+      if( !file.startsWith( QLatin1String("lib") ) )
           return file;
 
       libname = findLibraryInternal(libname, cData);

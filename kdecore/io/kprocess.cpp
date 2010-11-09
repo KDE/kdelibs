@@ -301,21 +301,21 @@ void KProcess::setShellCommand(const QString &cmd)
 #else // Q_OS_UNIX
     // KMacroExpander::expandMacrosShellQuote(), KShell::quoteArg() and
     // KShell::joinArgs() may generate these for security reasons.
-    setEnv(PERCENT_VARIABLE, "%");
+    setEnv(PERCENT_VARIABLE, QLatin1String("%"));
 
     //see also TrollTechTaskTracker entry 88373.
-    d->prog = KStandardDirs::findExe("kcmdwrapper");
+    d->prog = KStandardDirs::findExe(QLatin1String("kcmdwrapper"));
 
 #ifndef _WIN32_WCE
     UINT size;
     WCHAR sysdir[MAX_PATH + 1];
     size = GetSystemDirectoryW(sysdir, MAX_PATH + 1);
     QString cmdexe = QString::fromUtf16((const ushort *) sysdir, size);
-    cmdexe.append("\\cmd.exe");
+    cmdexe.append(QLatin1String("\\cmd.exe"));
 
     d->args << cmdexe << cmd;
 #else
-    d->args << "\\windows\\cmd.exe" << cmd;
+    d->args << QLatin1String("\\windows\\cmd.exe") << cmd;
 #endif
 #endif
 }

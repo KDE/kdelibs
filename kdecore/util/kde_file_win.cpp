@@ -185,7 +185,7 @@ namespace KDE
     struct __stat64 s64;
 #endif
     const int len = path.length();
-    if ( (len==2 || len==3) && path[1]==':' && path[0].isLetter() ) {
+    if ( (len==2 || len==3) && path[1]==QLatin1Char(':') && path[0].isLetter() ) {
     	/* 1) */
         QString newPath(path);
     	if (len==2)

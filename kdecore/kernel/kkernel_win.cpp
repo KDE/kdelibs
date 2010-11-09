@@ -250,7 +250,7 @@ QByteArray getWin32LocaleName()
     bool ok;
     QString localeNumber = getWin32RegistryValue ( HKEY_CURRENT_USER,
                            QLatin1String("Control Panel\\International"),
-                           "Locale", &ok );
+                           QLatin1String("Locale"), &ok );
     if ( !ok )
         return QByteArray();
     QString localeName = getWin32RegistryValue ( HKEY_LOCAL_MACHINE,

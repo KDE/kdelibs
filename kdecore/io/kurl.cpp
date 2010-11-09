@@ -134,7 +134,7 @@ static QString removeSlashOrFilePrefix(const QString& str)
 {
   // FIXME this should maybe be replaced with some (faster?)/nicer logic
   const int len = str.length();
-  if (str[0]=='f') {
+  if (str[0]==QLatin1Char('f')) {
     if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) )
          && IS_DRIVE_OR_DOUBLESLASH(str[8].isLetter(), str[8], str[9], QLatin1Char(':'), QLatin1Char('/')) )
       return QUrl::fromPercentEncoding( str.toLatin1() ).mid(8);
@@ -398,7 +398,7 @@ KUrl::KUrl( const QString &str )
     if ( !pathToSet.isEmpty() ) {
       // we have a prefix indicating this is a local URL
       // remember the possible query using _setEncodedUrl(), then set up the correct path without query protocol part
-      int index = pathToSet.lastIndexOf('?');
+      int index = pathToSet.lastIndexOf(QLatin1Char('?'));
       if (index == -1)
         setPath( pathToSet );
       else {
@@ -422,15 +422,15 @@ KUrl::KUrl( const char * str )
 #ifdef Q_WS_WIN
   // true if @a c is letter
   #define IS_LETTER(c) \
-    ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+    ((c >= QLatin1Char('A') && c <= QLatin1Char('Z')) || (c >= QLatin1Char('a') && c <= QLatin1Char('z')))
 
   // like IS_DRIVE_OR_DOUBLESLASH, but slash is prepended
   #define IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 \
-    ( str[0] == '/' && IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(str[1]), str[1], str[2], ':', '/') )
+    ( QLatin1Char(str[0]) == QLatin1Char('/') && IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(QLatin1Char(str[1])), QLatin1Char(str[1]), QLatin1Char(str[2]), QLatin1Char(':'), QLatin1Char('/')) )
 
   // like IS_DRIVE_OR_DOUBLESLASH, with characters == str[0] and str[1]
   #define IS_DRIVE_OR_DOUBLESLASH_0 \
-    ( IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(str[0]), str[0], str[1], ':', '/') )
+    ( IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(QLatin1Char(str[0])), QLatin1Char(str[0]), QLatin1Char(str[1]), QLatin1Char(':'), QLatin1Char('/')) )
 
 #if defined(DEBUG_KURL)
   kDebug(kurlDebugArea()) << "KUrl::KUrl " << " " << str;

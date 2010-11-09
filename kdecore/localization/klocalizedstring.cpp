@@ -73,7 +73,7 @@ class KLocalizedStringPrivate
     QString toString (const KLocale *locale, const QString &catalogName) const;
     QString selectForEnglish () const;
     QString substituteSimple (const QString &trans,
-                              const QChar &plchar = '%',
+                              const QChar &plchar = QLatin1Char('%'),
                               bool partial = false) const;
     QString postFormat (const QString &text,
                         const QString &lang,

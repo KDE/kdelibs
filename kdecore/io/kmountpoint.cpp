@@ -235,7 +235,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
    }
    ENDMNTENT(fstab);
 #else
-   QFile f(FSTAB);
+   QFile f(QLatin1String(FSTAB));
    if ( !f.open(QIODevice::ReadOnly) )
       return result;
 
@@ -245,11 +245,11 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
    while (! t.atEnd())
    {
       s=t.readLine().simplified();
-      if ( s.isEmpty() || (s[0] == '#'))
+      if ( s.isEmpty() || (s[0] == QLatin1Char('#')))
           continue;
 
       // not empty or commented out by '#'
-      const QStringList item = s.split( ' ');
+      const QStringList item = s.split(QLatin1Char(' '));
 
 #ifdef _OS_SOLARIS_
       if (item.count() < 5)
@@ -273,7 +273,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
 
       if (infoNeeded & NeedMountOptions)
       {
-         mp->d->mountOptions = options.split( ',');
+         mp->d->mountOptions = options.split(QLatin1Char(','));
       }
 
       mp->d->finalizePossibleMountPoint(infoNeeded);
@@ -405,7 +405,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
         if(bits & (1 << i))
         {
             Ptr mp(new KMountPoint);
-            mp->d->mountPoint = QString(QChar('A' + i) + QString(":/"));
+            mp->d->mountPoint = QString(QLatin1Char('A' + i) + QLatin1String(":/"));
             result.append(mp);
         }
     }

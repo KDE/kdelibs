@@ -87,7 +87,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    (void) KRandom::random();
 
 #ifdef Q_WS_WIN
-   const QString nme = directoryPrefix + "XXXXXX";
+   const QString nme = directoryPrefix + QLatin1String("XXXXXX");
    const QString realName = mkdtemp_QString(nme);
    if(realName.isEmpty())
    {
@@ -99,7 +99,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    }
 
    // got a return value != 0
-   d->tmpName = realName + '/';
+   d->tmpName = realName + QLatin1Char('/');
    kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
 	        << endl;
    mode_t umsk = KGlobal::umask();
@@ -268,7 +268,7 @@ bool KTempDir::removeDir( const QString& path )
     memcpy( name.data(), path.utf16(), path.length() * sizeof(WCHAR) );
     name[path.length()     ] = 0;
     name[path.length() + 1 ] = 0;
-    if(path.endsWith('/') || path.endsWith('\\'))
+    if(path.endsWith(QLatin1Char('/')) || path.endsWith(QLatin1Char('\\')))
       name[path.length() - 1 ] = 0;
     SHFILEOPSTRUCTW fileOp;
     memset(&fileOp, 0, sizeof(SHFILEOPSTRUCTW) );
