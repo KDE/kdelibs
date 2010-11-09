@@ -964,15 +964,10 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
     hostname[0] = 0;
     gethostname(hostname, 255);
     const QString localkdedir = m_prefixes.first();
-    // this will not work on windows when localkdedir contains
-    // characters not encodeable in the current locale
-    QByteArray dir = QFile::encodeName(localkdedir);
-    dir += type;
-    dir += '-';
-    dir += hostname;
+    QString dir = localkdedir + QString::fromLatin1(type) + QLatin1Char('-') + QString::fromLocal8Bit(hostname);
     char link[1024];
     link[1023] = 0;
-    int result = readlink(dir.constData(), link, 1023);
+    int result = readlink(QFile::encodeName(dir).constData(), link, 1023);
     bool relink = (result == -1) && (errno == ENOENT);
     if (result > 0)
     {
@@ -1000,10 +995,10 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
 #ifdef Q_WS_WIN
     if (relink)
     {
-        if (!makeDir(QFile::decodeName(dir), 0700))
-            fprintf(stderr, "failed to create \"%s\"", dir.constData());
+        if (!makeDir(dir, 0700))
+            fprintf(stderr, "failed to create \"%s\"", qPrintable(dir));
         else
-            result = readlink(dir.constData(), link, 1023);
+            result = readlink(QFile::encodeName(dir).constData(), link, 1023);
     }
 #else //UNIX
     if (relink)
@@ -1016,19 +1011,19 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
             if (system(QFile::encodeName(srv) + ' ' + type) == -1) {
                 fprintf(stderr, "Error: unable to launch lnusertemp command" );
             }
-            result = readlink(dir.constData(), link, 1023);
+            result = readlink(QFile::encodeName(dir).constData(), link, 1023);
         }
     }
     if (result > 0)
     {
         link[result] = 0;
         if (link[0] == '/')
-            dir = link;
+            dir = QFile::decodeName(link);
         else
-            dir = QFile::encodeName(QDir::cleanPath(QFile::decodeName(dir + const_cast<const char *>(link))));
+            dir = QDir::cleanPath(dir + QFile::decodeName(link));
     }
 #endif
-    q->addResourceDir(type, QFile::decodeName(dir + '/'), false);
+    q->addResourceDir(type, dir + QLatin1Char('/'), false);
 }
 
 QStringList KStandardDirs::resourceDirs(const char *type) const
