@@ -320,7 +320,7 @@ public:
     float   latitude;
     float   longitude;
     mutable KTimeZoneData *data;
-    int refCount;
+    int refCount; // holds the number of KTimeZoneBackend instances using the KTimeZonePrivate instance as a d-pointer.
 
 private:
     static KTimeZoneSource *mUtcSource;
@@ -365,6 +365,8 @@ KTimeZonePrivate::KTimeZonePrivate(const KTimeZonePrivate &rhs)
 
 KTimeZonePrivate &KTimeZonePrivate::operator=(const KTimeZonePrivate &rhs)
 {
+    // Changing the contents of a KTimeZonePrivate instance by means of operator=() doesn't affect how
+    // many references to it are held.
     source      = rhs.source;
     name        = rhs.name;
     countryCode = rhs.countryCode;
