@@ -56,8 +56,6 @@ UDisksManager::UDisksManager(QObject *parent)
                 this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
         connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
                 this, SLOT(slotDeviceChanged(QDBusObjectPath)));
-
-        m_deviceCache = allDevices(); // prefill the cache
     }
 }
 
@@ -77,7 +75,7 @@ QObject* UDisksManager::createDevice(const QString& udi)
 
         return root;
 
-    } else if (m_deviceCache.contains(udi)) {
+    } else if (deviceCache().contains(udi)) {
         return new UDisksDevice(udi);
 
     } else {
@@ -91,7 +89,7 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
 
     if (!parentUdi.isEmpty())
     {
-        foreach (const QString & udi, m_deviceCache)
+        foreach (const QString &udi, deviceCache())
         {
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
@@ -102,7 +100,7 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     }
     else if (type != Solid::DeviceInterface::Unknown)
     {
-        foreach (const QString & udi, m_deviceCache)
+        foreach (const QString &udi, deviceCache())
         {
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type))
@@ -111,20 +109,19 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
 
         return result;
     }
-    else
-        return m_deviceCache;
+
+    return deviceCache();
 }
 
 QStringList UDisksManager::allDevices()
 {
     m_knownDrivesWithMedia.clear();
+    m_deviceCache.clear();
+    m_deviceCache << udiPrefix();
 
-    QStringList result;
-    result << udiPrefix();
-
-    foreach(const QString & udi, allDevicesInternal())
+    foreach(const QString &udi, allDevicesInternal())
     {
-        result.append(udi);
+        m_deviceCache.append(udi);
 
         UDisksDevice device(udi);
         if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) // forge a special (separate) device for optical discs
@@ -133,14 +130,12 @@ QStringList UDisksManager::allDevices()
             {
                 if (!m_knownDrivesWithMedia.contains(udi))
                     m_knownDrivesWithMedia.append(udi);
-                result.append(udi + ":media");
+                m_deviceCache.append(udi + ":media");
             }
         }
     }
 
-    m_deviceCache = result; // set the cache
-
-    return result;
+    return m_deviceCache;
 }
 
 QStringList UDisksManager::allDevicesInternal()
@@ -153,7 +148,7 @@ QStringList UDisksManager::allDevicesInternal()
     }
 
     QStringList retList;
-    foreach (const QDBusObjectPath &path, reply.value()) {
+    foreach(const QDBusObjectPath &path, reply.value()) {
         retList << path.path();
     }
 
@@ -216,5 +211,14 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
         }
     }
 }
+
+const QStringList &Solid::Backends::UDisks::UDisksManager::deviceCache()
+{
+    if (m_deviceCache.isEmpty())
+        allDevices();
+
+    return m_deviceCache;
+}
+
 
 #include "backends/udisks/udisksmanager.moc"

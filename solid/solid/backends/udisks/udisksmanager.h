@@ -55,6 +55,7 @@ private Q_SLOTS:
     void slotDeviceChanged(const QDBusObjectPath &opath);
 
 private:
+    const QStringList &deviceCache();
     QStringList allDevicesInternal();
     QStringList m_knownDrivesWithMedia;  // list of known optical drives which contain a media
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;

@@ -692,8 +692,9 @@ bool UDisksDevice::propertyExists(const QString &key) const
 QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
     const QMetaObject* metaObject = m_device->metaObject();
-    for(int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i) {
-        QString name = QString::fromUtf8(metaObject->property(i).name());
+    const int count = metaObject->propertyCount();
+    for(int i = metaObject->propertyOffset(); i < count; ++i) {
+        const QString name = QString::fromUtf8(metaObject->property(i).name());
         m_cache.insert(name, m_device->property(name.toUtf8()));
     }
 
