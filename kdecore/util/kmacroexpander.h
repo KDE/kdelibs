@@ -300,7 +300,7 @@ namespace KMacroExpander {
      * // s is now "% Title: /tmp/myfile.txt:My File";
      * \endcode
      */
-    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QString> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QString> &map, QChar c = QLatin1Char('%') );
 
     /**
      * Perform safe macro expansion (substitution) on a string for use

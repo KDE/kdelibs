@@ -76,7 +76,7 @@ public:
     // Virtual methods to re-implement if special number/string conversion needed
     // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
     virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
-    virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
+    virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = QLatin1Char('0') ) const;
     virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;
 
     // Utility functions
