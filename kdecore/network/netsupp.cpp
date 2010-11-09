@@ -399,13 +399,6 @@ static int inet_lookup(const char *name, int portnum, int protonum,
     }
 # endif
 
-  q = (addrinfo*)malloc(sizeof(*q));
-  if (q == NULL)
-    {
-      freeaddrinfo(p);
-      return EAI_MEMORY;
-    }
-
   h = gethostbyname(name);
   if (h == NULL)
     {
@@ -430,6 +423,13 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 	  // EH!?
 	  return EAI_FAIL;
 	}
+    }
+
+  q = (addrinfo*)malloc(sizeof(*q));
+  if (q == NULL)
+    {
+      freeaddrinfo(p);
+      return EAI_MEMORY;
     }
 
   // convert the hostent to addrinfo
