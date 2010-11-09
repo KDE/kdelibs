@@ -210,6 +210,12 @@ public:
     virtual QStringList allLanguagesList();
 
     /**
+     * @internal Returns a list of all installed KDE languages.
+     * The worker of the same-name KLocale API function.
+     */
+    virtual QStringList allLanguagesInstalledList();
+
+    /**
      * @internal Returns the name of the internal language.
      * The worker of the same-name KLocale API function.
      */

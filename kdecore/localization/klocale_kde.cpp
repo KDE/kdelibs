@@ -2682,6 +2682,18 @@ QStringList KLocalePrivate::allLanguagesList()
     return m_languages->groupList();
 }
 
+QStringList KLocalePrivate::allLanguagesInstalledList()
+{
+    QStringList languages;
+    QStringList paths = KGlobal::dirs()->findAllResources("locale", QLatin1String("*/entry.desktop"));
+    foreach (const QString &path, paths) {
+        QString part = path.left(path.length() - 14);
+        languages.append(part.mid(part.lastIndexOf(QLatin1Char('/')) + 1));
+    }
+    languages.sort();
+    return languages;
+}
+
 QString KLocalePrivate::languageCodeToName(const QString &language)
 {
     if (!m_languages) {

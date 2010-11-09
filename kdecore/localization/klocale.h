@@ -1848,6 +1848,18 @@ public:
     QStringList allLanguagesList() const;
 
     /**
+     * Provides list of all installed KDE Language Translations.
+     *
+     * Use languageCodeToName(language) to get human readable, localized
+     * language names.
+     *
+     * @return list of all installed language codes
+     *
+     * @see languageCodeToName
+     */
+    QStringList allLanguagesInstalledList() const;
+
+    /**
      * Convert a known language code to a human readable, localized form.
      * If an unknown language code is supplied, empty string is returned;
      * this will never happen if the code has been obtained by one of the
@@ -1861,6 +1873,7 @@ public:
      * @see language
      * @see languageList
      * @see allLanguagesList
+     * @see allLanguagesInstalledList
      */
     QString languageCodeToName(const QString &language) const;
 

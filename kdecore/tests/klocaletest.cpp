@@ -40,6 +40,11 @@ KLocaleTest::initTestCase()
     KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
 }
 
+void KLocaleTest::languages()
+{
+    kDebug() << KGlobal::locale()->allLanguagesInstalledList();
+}
+
 void
 KLocaleTest::formatNumbers()
 {

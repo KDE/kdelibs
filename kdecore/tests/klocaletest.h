@@ -26,7 +26,8 @@ class KLocaleTest : public QObject
 	Q_OBJECT
 private Q_SLOTS:
 	void initTestCase();
-	void formatNumbers();
+    void languages();
+    void formatNumbers();
 	void formatNumberStrings();
 	void readNumber();
 	void formatDate();

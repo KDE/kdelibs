@@ -677,6 +677,11 @@ QStringList KLocale::allLanguagesList() const
     return d->allLanguagesList();
 }
 
+QStringList KLocale::allLanguagesInstalledList() const
+{
+    return d->allLanguagesInstalledList();
+}
+
 QString KLocale::languageCodeToName(const QString &language) const
 {
     return d->languageCodeToName(language);
