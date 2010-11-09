@@ -520,9 +520,7 @@ namespace KStandardAction
    * Show/Hide the menubar.
    * @deprecated use showHideMenubar instead.
    */
-#ifndef KDE_NO_DEPRECATED
-  KDEUI_EXPORT_DEPRECATED KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
-#endif
+  KDEUI_EXPORT KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Show/Hide the menubar.
@@ -534,9 +532,7 @@ namespace KStandardAction
    * Show/Hide the statusbar.
    * @deprecated use showHideStatusbar instead.
    */
-#ifndef KDE_NO_DEPRECATED
-  KDEUI_EXPORT_DEPRECATED KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
-#endif
+  KDEUI_EXPORT KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Show/Hide the statusbar.
