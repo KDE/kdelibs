@@ -979,7 +979,7 @@ static QString itemDeclaration(const CfgEntry *e, const CfgConfig &cfg)
 
   QString fCap = e->name();
   fCap[0] = fCap[0].toUpper();
-  return "  KConfigSkeleton::Item"+itemType( e->type() ) +
+  return "  "+cfg.inherits+"::Item"+itemType( e->type() ) +
          "  *item" + fCap +
          ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString()) +
          ";\n";
@@ -1027,7 +1027,7 @@ static QString itemPath(const CfgEntry *e, const CfgConfig &cfg)
 QString newItem( const QString &type, const QString &name, const QString &key,
                  const QString &defaultValue, const CfgConfig &cfg, const QString &param = QString())
 {
-  QString t = "new KConfigSkeleton::Item" + itemType( type ) +
+  QString t = "new "+cfg.inherits+"::Item" + itemType( type ) +
               "( currentGroup(), " + key + ", " + varPath( name, cfg ) + param;
   if ( type == "Enum" ) t += ", values" + name;
   if ( !defaultValue.isEmpty() ) {
@@ -1493,7 +1493,12 @@ int main( int argc, char **argv )
   if ( !cfg.singleton && parameters.isEmpty() )
     h << "#include <kglobal.h>" << endl;
 
-  h << "#include <kconfigskeleton.h>" << endl;
+  if ( cfg.inherits=="KCoreConfigSkeleton" ) {
+    h << "#include <kcoreconfigskeleton.h>" << endl;
+  } else {
+    h << "#include <kconfigskeleton.h>" << endl;
+  }
+
   h << "#include <kdebug.h>" << endl << endl;
 
   // Includes
@@ -1938,7 +1943,7 @@ int main( int argc, char **argv )
     }
     cpp << endl << "    // items" << endl;
     for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
-      cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry, cfg );
+      cpp << "    "+cfg.inherits+"::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry, cfg );
       if ( !(*itEntry)->param().isEmpty() ) cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         cpp << ";" << endl;
     }
@@ -2057,13 +2062,13 @@ int main( int argc, char **argv )
       cpp << (*itEntry)->code() << endl;
     }
     if ( (*itEntry)->type() == "Enum" ) {
-      cpp << "  QList<KConfigSkeleton::ItemEnum::Choice2> values"
+      cpp << "  QList<"+cfg.inherits+"::ItemEnum::Choice2> values"
           << (*itEntry)->name() << ";" << endl;
       const QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.constBegin(); it != choices.constEnd(); ++it ) {
         cpp << "  {" << endl;
-        cpp << "    KConfigSkeleton::ItemEnum::Choice2 choice;" << endl;
+        cpp << "    "+cfg.inherits+"::ItemEnum::Choice2 choice;" << endl;
         cpp << "    choice.name = QLatin1String(\"" << (*it).name << "\");" << endl;
         if ( cfg.setUserTexts ) {
           if ( !(*it).label.isEmpty() ) {
@@ -2203,7 +2208,7 @@ int main( int argc, char **argv )
       if ( cfg.itemAccessors )
       {
         cpp << endl;
-        cpp << "KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *"
+        cpp << cfg.inherits+"::Item" << itemType( (*itEntry)->type() ) << " *"
           << getFunction( n, cfg.className ) << "Item(";
         if ( !(*itEntry)->param().isEmpty() ) {
           cpp << " " << cppType( (*itEntry)->paramType() ) << " i ";
