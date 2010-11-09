@@ -39,7 +39,7 @@ public:
     }
 
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
 };
 
 KLocale::CalendarSystem KCalendarSystemEthiopianPrivate::calendarSystem() const
@@ -47,7 +47,7 @@ KLocale::CalendarSystem KCalendarSystemEthiopianPrivate::calendarSystem() const
     return KLocale::EthiopianCalendar;
 }
 
-void KCalendarSystemEthiopianPrivate::initDefaultEraList()
+void KCalendarSystemEthiopianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Incarnation Era, Amätä Mehrät, "Year of Mercy".
@@ -62,14 +62,14 @@ KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KLocale *locale )
                         : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), KSharedConfig::Ptr(), locale ),
                           dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( const KSharedConfig::Ptr config, const KLocale *locale )
                         : KCalendarSystemCoptic( *new KCalendarSystemEthiopianPrivate( this ), config, locale ),
                           dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPrivate &dd,
@@ -77,7 +77,7 @@ KCalendarSystemEthiopian::KCalendarSystemEthiopian( KCalendarSystemEthiopianPriv
                      : KCalendarSystemCoptic( dd, config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemEthiopian::~KCalendarSystemEthiopian()

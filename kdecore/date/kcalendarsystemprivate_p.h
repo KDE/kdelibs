@@ -53,7 +53,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -75,9 +75,6 @@ public:
 
     // Virtual methods to re-implement if special number/string conversion needed
     // Currently only Hebrew needs special conversion, rest use KLocale DigitSet
-    virtual DateComponents parseDatePosix( const QString &inputString, const QString &formatString,
-                                           KLocale::DateTimeFormatStandard standard ) const;
-    virtual DateComponents parseDateUnicode( const QString &inputString, const QString &formatString ) const;
     virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
     virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = '0' ) const;
     virtual QString stringFromInteger( int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet ) const;
@@ -93,19 +90,24 @@ public:
     QDate firstDayOfMonth( int year, int month ) const;
     QDate lastDayOfMonth( int year, int month ) const;
     const KLocale *locale() const;
-    KCalendarEra era( const QDate &eraDate ) const;
-    KCalendarEra era( const QString &eraName, int yearInEra ) const;
-    void initialiseEraList( const QString & calendarType );
-    void loadGlobalEraList( const QString & calendarType );
+    void loadEraList( const KConfigGroup & cg );
     void addEra( char direction, int offset, const QDate &startDate, int startYear, const QDate &endDate,
                  const QString &name, const QString &shortName, const QString &format );
+    QList<KCalendarEra> *eraList() const;
+    KCalendarEra era( const QDate &eraDate ) const;
+    KCalendarEra era( const QString &eraName, int yearInEra ) const;
+    int shortYearWindowStartYear() const;
+    int applyShortYearWindow( int inputYear ) const;
+    void loadShortYearWindowStartYear( const KConfigGroup & cg );
     KSharedConfig::Ptr config();
+    void loadConfig( const QString & calendarType );
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;
     const KLocale *m_locale;
     KSharedConfig::Ptr m_config;
     QList<KCalendarEra> *m_eraList;
+    int m_shortYearWindowStartYear;
 };
 
 #endif // KCALENDARSYSTEMPRIVATE_H

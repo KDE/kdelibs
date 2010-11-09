@@ -36,7 +36,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -70,7 +70,7 @@ KLocale::CalendarSystem KCalendarSystemIndianNationalPrivate::calendarSystem() c
     return KLocale::IndianNationalCalendar;
 }
 
-void KCalendarSystemIndianNationalPrivate::initDefaultEraList()
+void KCalendarSystemIndianNationalPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Saka Era
@@ -159,14 +159,14 @@ KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KLocale *loc
                              : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), KSharedConfig::Ptr(), locale ),
                                dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( const KSharedConfig::Ptr config, const KLocale *locale )
                              : KCalendarSystem( *new KCalendarSystemIndianNationalPrivate( this ), config, locale ),
                                dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemIndianNationalPrivate &dd,
@@ -175,7 +175,7 @@ KCalendarSystemIndianNational::KCalendarSystemIndianNational( KCalendarSystemInd
                              : KCalendarSystem( dd, config, locale ),
                                dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemIndianNational::~KCalendarSystemIndianNational()

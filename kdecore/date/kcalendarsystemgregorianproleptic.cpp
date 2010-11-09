@@ -49,7 +49,7 @@ KLocale::CalendarSystem KCalendarSystemGregorianProlepticPrivate::calendarSystem
 
 // Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
-void KCalendarSystemGregorianProlepticPrivate::initDefaultEraList()
+void KCalendarSystemGregorianProlepticPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -166,7 +166,7 @@ KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KLoc
                                  : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), KSharedConfig::Ptr(), locale ),
                                  dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KSharedConfig::Ptr config,
@@ -174,7 +174,7 @@ KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( const KSha
                                  : KCalendarSystem( *new KCalendarSystemGregorianProlepticPrivate( this ), config, locale ),
                                    dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarSystemGregorianProlepticPrivate &dd,
@@ -183,7 +183,7 @@ KCalendarSystemGregorianProleptic::KCalendarSystemGregorianProleptic( KCalendarS
                                  : KCalendarSystem( dd, config, locale ),
                                    dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorianProleptic::~KCalendarSystemGregorianProleptic()

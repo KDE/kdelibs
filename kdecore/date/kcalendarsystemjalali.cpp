@@ -41,7 +41,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -71,7 +71,7 @@ KLocale::CalendarSystem KCalendarSystemJalaliPrivate::calendarSystem() const
     return KLocale::JalaliCalendar;
 }
 
-void KCalendarSystemJalaliPrivate::initDefaultEraList()
+void KCalendarSystemJalaliPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Islamic Era (Hijri), Anno Persico.
@@ -179,14 +179,14 @@ KCalendarSystemJalali::KCalendarSystemJalali( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali( const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd,
@@ -194,7 +194,7 @@ KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd,
                      : KCalendarSystem( dd, config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJalali::~KCalendarSystemJalali()

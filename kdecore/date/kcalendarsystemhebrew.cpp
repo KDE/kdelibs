@@ -244,7 +244,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -280,7 +280,7 @@ KLocale::CalendarSystem KCalendarSystemHebrewPrivate::calendarSystem() const
     return KLocale::HebrewCalendar;
 }
 
-void KCalendarSystemHebrewPrivate::initDefaultEraList()
+void KCalendarSystemHebrewPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Jewish Era, Anno Mundi, "Year of the World".
@@ -632,14 +632,14 @@ KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd,
@@ -647,7 +647,7 @@ KCalendarSystemHebrew::KCalendarSystemHebrew( KCalendarSystemHebrewPrivate &dd,
                      : KCalendarSystem( dd, config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHebrew::~KCalendarSystemHebrew()

@@ -37,7 +37,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -69,7 +69,7 @@ KLocale::CalendarSystem KCalendarSystemJulianPrivate::calendarSystem() const
     return KLocale::JulianCalendar;
 }
 
-void KCalendarSystemJulianPrivate::initDefaultEraList()
+void KCalendarSystemJulianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -182,14 +182,14 @@ KCalendarSystemJulian::KCalendarSystemJulian( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJulian::KCalendarSystemJulian( const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemJulianPrivate( this ), config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd,
@@ -197,7 +197,7 @@ KCalendarSystemJulian::KCalendarSystemJulian( KCalendarSystemJulianPrivate &dd,
                      : KCalendarSystem( dd, config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJulian::~KCalendarSystemJulian()

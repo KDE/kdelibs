@@ -33,7 +33,7 @@ public:
     virtual ~KCalendarSystemJapanesePrivate();
 
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int earliestValidYear() const;
 };
 
@@ -53,7 +53,7 @@ KLocale::CalendarSystem KCalendarSystemJapanesePrivate::calendarSystem() const
     return KLocale::JapaneseCalendar;
 }
 
-void KCalendarSystemJapanesePrivate::initDefaultEraList()
+void KCalendarSystemJapanesePrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -103,20 +103,20 @@ int KCalendarSystemJapanesePrivate::earliestValidYear() const
 KCalendarSystemJapanese::KCalendarSystemJapanese( const KLocale *locale )
                        : KCalendarSystemGregorianProleptic( *new KCalendarSystemJapanesePrivate( this ), KSharedConfig::Ptr(), locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJapanese::KCalendarSystemJapanese( const KSharedConfig::Ptr config, const KLocale *locale )
                        : KCalendarSystemGregorianProleptic( *new KCalendarSystemJapanesePrivate( this ), config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJapanese::KCalendarSystemJapanese( KCalendarSystemJapanesePrivate &dd,
                                                   const KSharedConfig::Ptr config, const KLocale *locale )
                        : KCalendarSystemGregorianProleptic( dd, config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemJapanese::~KCalendarSystemJapanese()

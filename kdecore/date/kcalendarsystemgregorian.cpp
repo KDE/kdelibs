@@ -42,7 +42,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -76,7 +76,7 @@ KLocale::CalendarSystem KCalendarSystemGregorianPrivate::calendarSystem() const
     return KLocale::QDateCalendar;
 }
 
-void KCalendarSystemGregorianPrivate::initDefaultEraList()
+void KCalendarSystemGregorianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -167,21 +167,21 @@ KCalendarSystemGregorian::KCalendarSystemGregorian( const KLocale *locale )
                         : KCalendarSystem( *new KCalendarSystemGregorianPrivate( this ), KSharedConfig::Ptr(), locale ),
                           dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorian::KCalendarSystemGregorian( const KSharedConfig::Ptr config, const KLocale *locale )
                         : KCalendarSystem( *new KCalendarSystemGregorianPrivate( this ), config, locale ),
                           dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorian::KCalendarSystemGregorian( KCalendarSystemGregorianPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale )
                         : KCalendarSystem( dd, config, locale ),
                           dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemGregorian::~KCalendarSystemGregorian()

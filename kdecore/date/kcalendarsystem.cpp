@@ -30,6 +30,7 @@
 
 #include "kdatetime.h"
 #include "kdatetimeformatter_p.h"
+#include "kdatetimeparser_p.h"
 #include "kcalendarera_p.h"
 #include "kcalendarsystemcoptic_p.h"
 #include "kcalendarsystemethiopian_p.h"
@@ -273,7 +274,8 @@ QString KCalendarSystem::calendarLabel( KLocale::CalendarSystem calendarSystem )
 // Shared d pointer base class definitions
 
 KCalendarSystemPrivate::KCalendarSystemPrivate( KCalendarSystem *q_ptr ): q( q_ptr ),
-                                                                          m_eraList( 0 )
+                                                                          m_eraList( 0 ),
+                                                                          m_shortYearWindowStartYear( 2000 )
 {
 }
 
@@ -292,7 +294,7 @@ KLocale::CalendarSystem KCalendarSystemPrivate::calendarSystem() const
 // Dummy version as an example, remember to translate (see Gregorian for example)
 // Add the Era's in chronological order, from earliest to latest
 // This method MUST be re-implemented in any new Calendar System
-void KCalendarSystemPrivate::initDefaultEraList()
+void KCalendarSystemPrivate::loadDefaultEraList()
 {
     addEra( '-', 1, q->epoch().addDays( -1 ), -1, q->earliestValidDate(), QLatin1String("Before KDE"), QLatin1String("BK"), QLatin1String("%Ey %EC") );
     addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), QLatin1String("Anno KDE"), QLatin1String("AK"), QLatin1String("%Ey %EC") );
@@ -591,290 +593,6 @@ int KCalendarSystemPrivate::monthsDifference( const QDate &fromDate, const QDate
     }
 }
 
-// Reimplement if special string handling required
-// Parse an input string to match a POSIX date format string and return any components found
-DateComponents KCalendarSystemPrivate::parseDatePosix( const QString &inputString, const QString &formatString,
-                                                       KLocale::DateTimeFormatStandard standard  ) const
-{
-    QString str = inputString.simplified().toLower();
-    QString fmt = formatString.simplified();
-    int dd = -1;
-    int mm = -1;
-    int yy = 0;
-    bool parsedYear = false;
-    int ey = -1;
-    QString ee;
-    int dayInYear = -1;
-    int isoWeekNumber = -1;
-    int dayOfIsoWeek = -1;
-    int strpos = 0;
-    int fmtpos = 0;
-    int readLength; // Temporary variable used when reading input
-    bool error = false;
-
-    while ( fmt.length() > fmtpos && str.length() > strpos && !error ) {
-
-        QChar fmtChar = fmt.at( fmtpos++ );
-
-        if ( fmtChar != QLatin1Char('%') ) {
-
-            if ( fmtChar.isSpace() && str.at(strpos).isSpace() ) {
-                strpos++;
-            } else if ( fmtChar.toLower() == str.at(strpos) ) {
-                strpos++;
-            } else {
-                error = true;
-            }
-
-        } else {
-            int j;
-            QString shortName, longName;
-            QChar modifierChar;
-            // remove space at the beginning
-            if ( str.length() > strpos && str.at( strpos ).isSpace() ) {
-                strpos++;
-            }
-
-            fmtChar = fmt.at( fmtpos++ );
-            if ( fmtChar == QLatin1Char('E') ) {
-                modifierChar = fmtChar;
-                fmtChar = fmt.at( fmtpos++ );
-            }
-
-            switch ( fmtChar.unicode() )
-            {
-                case 'a':  // Weekday Name Short
-                case 'A':  // Weekday Name Long
-                    error = true;
-                    j = 1;
-                    while ( error && j <= maxDaysInWeek() ) {
-                        shortName = q->weekDayName( j, KCalendarSystem::ShortDayName ).toLower();
-                        longName = q->weekDayName( j, KCalendarSystem::LongDayName ).toLower();
-                        if ( str.mid( strpos, longName.length() ) == longName ) {
-                            strpos += longName.length();
-                            error = false;
-                        } else if ( str.mid( strpos, shortName.length() ) == shortName ) {
-                            strpos += shortName.length();
-                            error = false;
-                        }
-                        ++j;
-                    }
-                    break;
-                case 'b':  // Month Name Short
-                case 'h':  // Month Name Short
-                case 'B':  // Month Name Long
-                    error = true;
-                    j = 1;
-                    while ( error && j <= maxMonthsInYear() ) {
-                        // This may be a problem in calendar systems with variable number of months
-                        // in the year and/or names of months that change depending on the year, e.g
-                        // Hebrew.  We really need to know the correct year first, but we may not have
-                        // read it yet and will be using the current year instead
-                        int monthYear;
-                        if ( parsedYear ) {
-                            monthYear = yy;
-                        } else {
-                            monthYear = q->year( QDate::currentDate() );
-                        }
-                        if ( q->locale()->dateMonthNamePossessive() ) {
-                            shortName = q->monthName( j, yy, KCalendarSystem::ShortNamePossessive ).toLower();
-                            longName = q->monthName( j, yy, KCalendarSystem::LongNamePossessive ).toLower();
-                        } else {
-                            shortName = q->monthName( j, yy, KCalendarSystem::ShortName ).toLower();
-                            longName = q->monthName( j, yy, KCalendarSystem::LongName ).toLower();
-                        }
-                        if ( str.mid( strpos, longName.length() ) == longName ) {
-                            mm = j;
-                            strpos += longName.length();
-                            error = false;
-                        } else if ( str.mid( strpos, shortName.length() ) == shortName ) {
-                            mm = j;
-                            strpos += shortName.length();
-                            error = false;
-                        }
-                        ++j;
-                    }
-                    break;
-                case 'd': // Day Number Long
-                case 'e': // Day Number Short
-                    dd = q->dayStringToInteger( str.mid( strpos ), readLength );
-                    strpos += readLength;
-                    error = readLength <= 0;
-                    break;
-                case 'n':
-                    // PosixFormat %n is Newline
-                    // KdeFormat %n is Month Number Short
-                    if ( standard == KLocale::KdeFormat ) {
-                        mm = q->monthStringToInteger( str.mid( strpos ), readLength );
-                        strpos += readLength;
-                        error = readLength <= 0;
-                    }
-                    // standard == KLocale::PosixFormat
-                    // all whitespace already 'eaten', no action required
-                    break;
-                case 'm': // Month Number Long
-                    mm = q->monthStringToInteger( str.mid( strpos ), readLength );
-                    strpos += readLength;
-                    error = readLength <= 0;
-                    break;
-                case 'Y': // Year Number Long
-                case 'y': // Year Number Short
-                    if ( modifierChar == QLatin1Char('E') ) {  // Year In Era
-                        if ( fmtChar == QLatin1Char('y') ) {
-                            ey = q->yearStringToInteger( str.mid( strpos ), readLength );
-                            strpos += readLength;
-                            error = readLength <= 0;
-                        } else {
-                            error = true;
-                            j = m_eraList->count() -1; // Start with the most recent
-                            while ( error && j >= 0  ) {
-                                QString subFormat = m_eraList->at( j ).format();
-                                QString subInput = str.mid( strpos );
-                                DateComponents subResult = parseDatePosix( subInput, subFormat, standard );
-                                if ( !subResult.error ) {
-                                    if ( subResult.parsedYear ) {
-                                        yy = subResult.year;
-                                        parsedYear = true;
-                                        error = false;
-                                        strpos += subResult.inputPosition;
-                                    } else if ( !subResult.eraName.isEmpty() && subResult.yearInEra >= 0 ) {
-                                        ee = subResult.eraName;
-                                        ey = subResult.yearInEra;
-                                        error = false;
-                                        strpos += subResult.inputPosition;
-                                    }
-                                }
-                                --j;
-                            }
-                        }
-                    } else {
-                        yy = q->yearStringToInteger( str.mid( strpos ), readLength );
-                        strpos += readLength;
-                        // JPL are we sure about this? Do users really want 99 = 2099 or 1999? Should we use a Y2K style range?
-                        // Using 2000 only valid for Gregorian, Hebrew should be 5000, etc.
-                        if ( fmtChar == QLatin1Char('y') && yy >= 0 && yy < 100 ) {
-                            yy += 2000; // QDate assumes 19xx by default, but this isn't what users want...
-                        }
-                        error = readLength <= 0;
-                        if ( !error ) {
-                            parsedYear = true;
-                        }
-                    }
-                    break;
-                case 'C': // Era
-                    error = true;
-                    if ( modifierChar == QLatin1Char('E') ) {
-                        j = m_eraList->count() -1; // Start with the most recent
-                        while ( error && j >= 0  ) {
-                            shortName = m_eraList->at( j ).name(KLocale::ShortName).toLower();
-                            longName = m_eraList->at( j ).name(KLocale::LongName).toLower();
-                            if ( str.mid( strpos, longName.length() ) == longName ) {
-                                strpos += longName.length();
-                                ee = longName;
-                                error = false;
-                            } else if ( str.mid( strpos, shortName.length() ) == shortName ) {
-                                strpos += shortName.length();
-                                ee = shortName;
-                                error = false;
-                            }
-                            --j;
-                        }
-                    }
-                    break;
-                case 'j': // Day Of Year Number
-                    dayInYear = integerFromString( str.mid( strpos ), 3, readLength );
-                    strpos += readLength;
-                    error = readLength <= 0;
-                    break;
-                case 'V': // ISO Week Number
-                    isoWeekNumber = integerFromString( str.mid( strpos ), 2, readLength );
-                    strpos += readLength;
-                    error = readLength <= 0;
-                    break;
-                case 'u': // ISO Day Of Week
-                    dayOfIsoWeek = integerFromString( str.mid( strpos ), 1, readLength );
-                    strpos += readLength;
-                    error = readLength <= 0;
-                    break;
-            }
-        }
-    }
-
-    DateComponents result;
-    result.error = error;
-    result.inputPosition = strpos;
-    result.formatPosition = fmtpos;
-    if ( error ) {
-        result.day = -1;
-        result.month = -1;
-        result.year = 0;
-        result.parsedYear = false;
-        result.eraName.clear();
-        result.yearInEra = -1;
-        result.dayInYear = -1;
-        result.isoWeekNumber = -1;
-        result.dayOfIsoWeek = -1;
-    } else {
-        result.day = dd;
-        result.month = mm;
-        result.year = yy;
-        result.parsedYear = parsedYear;
-        result.eraName = ee;
-        result.yearInEra = ey;
-        result.dayInYear = dayInYear;
-        result.isoWeekNumber = isoWeekNumber;
-        result.dayOfIsoWeek = dayOfIsoWeek;
-    }
-    return result;
-}
-
-// Reimplement if special string handling required
-// Parse an input string to match a UNICODE date format string and return any components found
-DateComponents KCalendarSystemPrivate::parseDateUnicode( const QString &inputString, const QString &formatString ) const
-{
-    QString str = inputString.simplified().toLower();
-    QString fmt = formatString.simplified();
-    int dd = -1;
-    int mm = -1;
-    int yy = 0;
-    bool parsedYear = false;
-    int ey = -1;
-    QString ee;
-    int dayInYear = -1;
-    int isoWeekNumber = -1;
-    int dayOfIsoWeek = -1;
-    int strpos = 0;
-    int fmtpos = 0;
-    bool error = false;
-
-    DateComponents result;
-    result.error = error;
-    result.inputPosition = strpos;
-    result.formatPosition = fmtpos;
-    if ( error ) {
-        result.day = -1;
-        result.month = -1;
-        result.year = 0;
-        result.parsedYear = false;
-        result.eraName.clear();
-        result.yearInEra = -1;
-        result.dayInYear = -1;
-        result.isoWeekNumber = -1;
-        result.dayOfIsoWeek = -1;
-    } else {
-        result.day = dd;
-        result.month = mm;
-        result.year = yy;
-        result.parsedYear = parsedYear;
-        result.eraName = ee;
-        result.yearInEra = ey;
-        result.dayInYear = dayInYear;
-        result.isoWeekNumber = isoWeekNumber;
-        result.dayOfIsoWeek = dayOfIsoWeek;
-    }
-    return result;
-}
-
 // Reimplement if special string to integer handling required, e.g. Hebrew.
 // Peel a number off the front of a string which may have other trailing chars after the number
 // Stop either at either maxLength, eos, or first non-digit char
@@ -1027,6 +745,11 @@ const KLocale * KCalendarSystemPrivate::locale() const
     }
 }
 
+QList<KCalendarEra> *KCalendarSystemPrivate::eraList() const
+{
+    return m_eraList;
+}
+
 KCalendarEra KCalendarSystemPrivate::era( const QDate &eraDate ) const
 {
     for ( int i = m_eraList->count() -1; i >= 0; --i ) {
@@ -1051,20 +774,10 @@ KCalendarEra KCalendarSystemPrivate::era( const QString &eraName, int yearInEra 
     return KCalendarEra();
 }
 
-void KCalendarSystemPrivate::initialiseEraList( const QString & calendarType )
+void KCalendarSystemPrivate::loadEraList( const KConfigGroup & cg )
 {
     delete m_eraList;
     m_eraList = new QList<KCalendarEra>;
-    loadGlobalEraList( calendarType );
-    if ( m_eraList->isEmpty() ) {
-        initDefaultEraList();
-    }
-}
-
-void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
-{
-    m_eraList->clear();
-    KConfigGroup cg( config(), QString::fromLatin1( "KCalendarSystem %1" ).arg( calendarType ) );
     if ( cg.exists() ) {
         int eraCount = cg.readEntry( "EraCount", 0 );
         for ( int i = 1; i <= eraCount; ++i ) {
@@ -1108,6 +821,10 @@ void KCalendarSystemPrivate::loadGlobalEraList( const QString & calendarType )
             }
         }
     }
+
+    if ( m_eraList->isEmpty() ) {
+        loadDefaultEraList();
+    }
 }
 
 void KCalendarSystemPrivate::addEra( char direction, int offset,
@@ -1134,6 +851,37 @@ void KCalendarSystemPrivate::addEra( char direction, int offset,
     m_eraList->append( newEra );
 }
 
+int KCalendarSystemPrivate::shortYearWindowStartYear() const
+{
+    return m_shortYearWindowStartYear;
+}
+
+int KCalendarSystemPrivate::applyShortYearWindow( int inputYear ) const
+{
+    if ( inputYear >= 0 && inputYear <= 99 ) {
+        int shortStartYear = m_shortYearWindowStartYear % 100;
+        int yearOffset = m_shortYearWindowStartYear - shortStartYear;
+        if ( inputYear >= shortStartYear ) {
+            return inputYear + yearOffset;
+        } else {
+            return inputYear + yearOffset + 100;
+        }
+    } else {
+        return inputYear;
+    }
+}
+
+void KCalendarSystemPrivate::loadShortYearWindowStartYear( const KConfigGroup & cg )
+{
+    // Default to 2000 for backwards compatability
+    // as that's the old readDate() default value
+    int startYear = 2000;
+    if ( cg.exists() ) {
+        startYear = cg.readEntry( "ShortYearWindowStartYear", 2000 );
+    }
+    m_shortYearWindowStartYear = startYear;
+}
+
 KSharedConfig::Ptr KCalendarSystemPrivate::config()
 {
     if ( m_config == KSharedConfig::Ptr() ) {
@@ -1141,6 +889,13 @@ KSharedConfig::Ptr KCalendarSystemPrivate::config()
     } else {
         return m_config;
     }
+}
+
+void KCalendarSystemPrivate::loadConfig( const QString & calendarType )
+{
+    KConfigGroup cg( config(), QString::fromLatin1( "KCalendarSystem %1" ).arg( calendarType ) );
+    loadEraList( cg );
+    loadShortYearWindowStartYear( cg );
 }
 
 
@@ -1480,6 +1235,30 @@ int KCalendarSystem::yearInEra( const QDate &date ) const
     }
 
     return -1;
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+QList<KCalendarEra> *KCalendarSystem::eraList() const
+{
+    Q_D( const KCalendarSystem );
+
+    return d->eraList();
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+KCalendarEra KCalendarSystem::era( const QDate &eraDate ) const
+{
+    Q_D( const KCalendarSystem );
+
+    return d->era( eraDate );
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+KCalendarEra KCalendarSystem::era( const QString &eraName, int yearInEra ) const
+{
+    Q_D( const KCalendarSystem );
+
+    return d->era( eraName, yearInEra );
 }
 
 QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
@@ -2423,51 +2202,28 @@ QDate KCalendarSystem::readDate( const QString &inputString, const QString &form
 QDate KCalendarSystem::readDate( const QString &inputString, const QString &formatString, bool *ok,
                                  KLocale::DateTimeFormatStandard formatStandard ) const
 {
+    KDateTimeParser parser;
+    QDate resultDate = parser.parseDate( inputString, formatString, this, locale(), locale()->dateTimeDigitSet(), formatStandard );
+    if (ok) {
+        *ok = resultDate.isValid();
+    }
+    return resultDate;
+}
+
+// NOT VIRTUAL - If override needed use shared-d
+int KCalendarSystem::shortYearWindowStartYear() const
+{
     Q_D( const KCalendarSystem );
 
-    DateComponents result;
-    if ( formatStandard == KLocale::UnicodeFormat ) {
-        result = d->parseDateUnicode( inputString, formatString );
-    } else {
-        result = d->parseDatePosix( inputString, formatString, formatStandard );
-    }
+    return d->shortYearWindowStartYear();
+}
 
-    QDate resultDate = d->invalidDate();
-    bool resultStatus = false;
+// NOT VIRTUAL - If override needed use shared-d
+int KCalendarSystem::applyShortYearWindow( int inputYear ) const
+{
+    Q_D( const KCalendarSystem );
 
-    if ( !result.error &&
-         formatString.simplified().length() <= result.formatPosition &&
-         inputString.simplified().length() <= result.inputPosition ) {
-
-        // If there were no parsing errors, and we have reached the end of both the input and
-        // format strings, then see if we have a valid date based on the components parsed
-
-        // If we haven't parsed a year component, then assume this year
-        if ( !result.parsedYear ) {
-            result.year = year( QDate::currentDate() );
-        }
-
-        if ( ( !result.eraName.isEmpty() || result.yearInEra > -1 ) && result.month > 0 && result.day > 0 ) {
-            // Have parsed Era components as well as month and day components
-            resultStatus = setDate( resultDate, result.eraName, result.yearInEra, result.month, result.day );
-        } else if ( result.month > 0 && result.day > 0 ) {
-            // Have parsed month and day components
-            resultStatus = setDate( resultDate, result.year, result.month, result.day );
-        } else if ( result.dayInYear > 0 ) {
-            // Have parsed Day In Year component
-            resultStatus = setDate( resultDate, result.year, result.dayInYear );
-        } else if ( result.isoWeekNumber > 0 && result.dayOfIsoWeek > 0 ) {
-            // Have parsed ISO Week components
-            resultStatus = setDateIsoWeek( resultDate, result.year, result.isoWeekNumber, result.dayOfIsoWeek );
-        }
-
-    }
-
-    if (ok) {
-        *ok = resultStatus;
-    }
-
-    return resultDate;
+    return d->applyShortYearWindow( inputYear );
 }
 
 int KCalendarSystem::weekStartDay() const

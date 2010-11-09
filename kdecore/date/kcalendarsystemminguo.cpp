@@ -33,7 +33,7 @@ public:
     virtual ~KCalendarSystemMinguoPrivate();
 
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual bool isLeapYear( int year ) const;
     virtual int earliestValidYear() const;
 };
@@ -54,7 +54,7 @@ KLocale::CalendarSystem KCalendarSystemMinguoPrivate::calendarSystem() const
     return KLocale::MinguoCalendar;
 }
 
-void KCalendarSystemMinguoPrivate::initDefaultEraList()
+void KCalendarSystemMinguoPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -78,20 +78,20 @@ int KCalendarSystemMinguoPrivate::earliestValidYear() const
 KCalendarSystemMinguo::KCalendarSystemMinguo( const KLocale *locale )
                      : KCalendarSystemGregorianProleptic( *new KCalendarSystemMinguoPrivate( this ), KSharedConfig::Ptr(), locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemMinguo::KCalendarSystemMinguo( const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystemGregorianProleptic( *new KCalendarSystemMinguoPrivate( this ), config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemMinguo::KCalendarSystemMinguo( KCalendarSystemMinguoPrivate &dd,
                                               const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystemGregorianProleptic( dd, config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemMinguo::~KCalendarSystemMinguo()

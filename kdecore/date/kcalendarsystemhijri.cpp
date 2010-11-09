@@ -33,7 +33,7 @@ public:
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual int monthsInYear( int year ) const;
     virtual int daysInMonth( int year, int month ) const;
     virtual int daysInYear( int year ) const;
@@ -63,7 +63,7 @@ KLocale::CalendarSystem KCalendarSystemHijriPrivate::calendarSystem() const
     return KLocale::IslamicCivilCalendar;
 }
 
-void KCalendarSystemHijriPrivate::initDefaultEraList()
+void KCalendarSystemHijriPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Islamic Era, Anno Hegirae, "Year of the Hijra".
@@ -173,14 +173,14 @@ KCalendarSystemHijri::KCalendarSystemHijri( const KLocale *locale )
                     : KCalendarSystem( *new KCalendarSystemHijriPrivate( this ), KSharedConfig::Ptr(), locale ),
                       dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri( const KSharedConfig::Ptr config, const KLocale *locale )
                     : KCalendarSystem( *new KCalendarSystemHijriPrivate( this ), config, locale ),
                       dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri( KCalendarSystemHijriPrivate &dd,
@@ -188,7 +188,7 @@ KCalendarSystemHijri::KCalendarSystemHijri( KCalendarSystemHijriPrivate &dd,
                     : KCalendarSystem( dd, config, locale ),
                       dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemHijri::~KCalendarSystemHijri()

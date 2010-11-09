@@ -42,7 +42,7 @@ public:
                                 const QString &toFormat,
                                 const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
                                 const KLocale *locale = KGlobal::locale(),
-                                KLocale::DigitSet digitSet = KLocale::ArabicDigits,
+                                KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
                                 KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
 
     virtual QString formatTime( const QTime &fromTime,
@@ -50,7 +50,7 @@ public:
                                 KLocale::TimeFormatOptions timeOptions = 0,
                                 const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
                                 const KLocale *locale = KGlobal::locale(),
-                                KLocale::DigitSet digitSet = KLocale::ArabicDigits,
+                                KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
                                 KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
 
     virtual QString formatDateTime( const KDateTime &fromDateTime,
@@ -58,7 +58,7 @@ public:
                                     KLocale::TimeFormatOptions timeOptions = 0,
                                     const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
                                     const KLocale *locale = KGlobal::locale(),
-                                    KLocale::DigitSet digitSet = KLocale::ArabicDigits,
+                                    KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
                                     KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
 
 private:

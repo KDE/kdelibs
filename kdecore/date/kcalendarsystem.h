@@ -29,6 +29,7 @@
 #include <QtCore/QDate>
 
 class KCalendarSystemPrivate;
+class KCalendarEra;
 
 /**
  * KCalendarSystem abstract base class, provides support for local Calendar Systems in KDE
@@ -1299,6 +1300,57 @@ public:
     QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok,
                     KLocale::DateTimeFormatStandard formatStandard ) const;
 
+    //KDE5 Make virtual
+    /**
+     * @since 4.6
+     *
+     * Returns the Short Year Window Start Year for the current Calendar System.
+     *
+     * Use this function to get the Start Year for the Short Year Window to be
+     * applied when 2 digit years are entered for a Short Year input format,
+     * e.g. if the Short Year Window Start Year is 1930, then the input Short
+     * Year value of 40 is interpreted as 1940 and the input Short Year value
+     * of 10 is interpreted as 2010.
+     *
+     * The Short Year Window is only ever applied when reading the Short Year
+     * format and not the Long Year format, i.e. KLocale::ShortFormat or '%y'
+     * only and not KLocale::LongFormat or '%Y'.
+     *
+     * The Start Year 0 effectively means not to use a Short Year Window
+     *
+     * Each Calendar System requires a different Short Year Window as they have
+     * different epochs. The Gregorian Short Year Window usually pivots around
+     * the year 2000, whereas the Hebrew Short Year Window usually pivots around
+     * the year 5000.
+     *
+     * This value must always be used when evaluating user input Short Year
+     * strings.
+     *
+     * @see KLocale::shortYearWindowStartYear
+     * @see KLocale::applyShortYearWindow
+     * @return the short year window start year
+     */
+    int shortYearWindowStartYear() const;
+
+    //KDE5 Make virtual
+    /**
+     * @since 4.6
+     *
+     * Returns the Year Number after applying the Year Window.
+     *
+     * If the @p inputYear is between 0 and 99, then apply the Year Window and
+     * return the calculated Year Number.
+     *
+     * If the @p inputYear is not between 0 and 99, then the original Year Number
+     * is returned.
+     *
+     * @see KLocale::setYearWindowOffset
+     * @see KLocale::yearWindowOffset
+     * @param inputYear the year number to apply the year window to
+     * @return the year number after applying the year window
+     */
+    int applyShortYearWindow( int inputYear ) const;
+
     /**
      * Use this to determine which day is the first day of the week.
      *
@@ -1475,6 +1527,12 @@ private:
     friend class KCalendarSystemThai;
     friend class KLocalizedDate;
     friend class KLocalizedDatePrivate;
+    friend class KDateTimeParser;
+
+    // Era functions needed by friends, may be made public later if needed in KCM
+    QList<KCalendarEra> *eraList() const;
+    KCalendarEra era( const QDate &eraDate ) const;
+    KCalendarEra era( const QString &eraName, int yearInEra ) const;
 
     Q_DISABLE_COPY( KCalendarSystem )
     KCalendarSystemPrivate * const d_ptr; // KDE5 make protected

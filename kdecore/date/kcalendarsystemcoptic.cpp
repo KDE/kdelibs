@@ -43,7 +43,7 @@ KLocale::CalendarSystem KCalendarSystemCopticPrivate::calendarSystem() const
     return KLocale::CopticCalendar;
 }
 
-void KCalendarSystemCopticPrivate::initDefaultEraList()
+void KCalendarSystemCopticPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // AM for Anno Martyrum or "Year of the Martyrs"
@@ -135,14 +135,14 @@ KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic( const KSharedConfig::Ptr config, const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd,
@@ -150,7 +150,7 @@ KCalendarSystemCoptic::KCalendarSystemCoptic( KCalendarSystemCopticPrivate &dd,
                      : KCalendarSystem( dd, config, locale ),
                        dont_use( 0 )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemCoptic::~KCalendarSystemCoptic()

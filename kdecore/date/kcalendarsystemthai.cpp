@@ -33,7 +33,7 @@ public:
     virtual ~KCalendarSystemThaiPrivate();
 
     virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void initDefaultEraList();
+    virtual void loadDefaultEraList();
     virtual bool isLeapYear( int year ) const;
     virtual bool hasYearZero() const;
     virtual int earliestValidYear() const;
@@ -55,7 +55,7 @@ KLocale::CalendarSystem KCalendarSystemThaiPrivate::calendarSystem() const
     return KLocale::ThaiCalendar;
 }
 
-void KCalendarSystemThaiPrivate::initDefaultEraList()
+void KCalendarSystemThaiPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -84,20 +84,20 @@ int KCalendarSystemThaiPrivate::earliestValidYear() const
 KCalendarSystemThai::KCalendarSystemThai( const KLocale *locale )
                    : KCalendarSystemGregorianProleptic( *new KCalendarSystemThaiPrivate( this ), KSharedConfig::Ptr(), locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemThai::KCalendarSystemThai( const KSharedConfig::Ptr config, const KLocale *locale )
                    : KCalendarSystemGregorianProleptic( *new KCalendarSystemThaiPrivate( this ), config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemThai::KCalendarSystemThai( KCalendarSystemThaiPrivate &dd,
                                           const KSharedConfig::Ptr config, const KLocale *locale )
                    : KCalendarSystemGregorianProleptic( dd, config, locale )
 {
-    d_ptr->initialiseEraList( calendarType() );
+    d_ptr->loadConfig( calendarType() );
 }
 
 KCalendarSystemThai::~KCalendarSystemThai()
