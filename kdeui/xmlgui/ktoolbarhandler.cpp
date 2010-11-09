@@ -24,7 +24,6 @@
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kauthorized.h>
-#include <kdualaction.h>
 #include <kguiitem.h>
 #include <klocale.h>
 #include <kxmlguiwindow.h>
@@ -47,35 +46,6 @@ namespace
     "    </Menu>"
     "</MenuBar>"
     "</kpartgui>";
-
-  class ToolBarVisibilitySpy : public QObject
-  {
-    public:
-      ToolBarVisibilitySpy(KToolBar *bar, KDualAction *action)
-      : QObject(action)
-      , m_action(action)
-      {
-        bar->installEventFilter(this);
-      }
-
-    protected:
-      bool eventFilter(QObject *, QEvent *event)
-      {
-        switch (event->type()) {
-          case QEvent::Hide:
-            m_action->setActive(false);
-            break;
-          case QEvent::Show:
-            m_action->setActive(true);
-            break;
-          default:
-            break;
-        }
-        return false;
-      }
-    private:
-      KDualAction *m_action;
-  };
 
   class BarActionBuilder
   {
@@ -112,25 +82,18 @@ namespace
         if ( !m_needsRebuild )
           return actions;
 
-        if ( m_toolBars.count() == 0 )
-          return actions;
-
-        if ( m_toolBars.count() == 1 ) {
-          KToolBar *toolBar = m_toolBars.first();
-          KDualAction *action = new KDualAction(i18n("Show Toolbar"), i18n("Hide Toolbar"), m_actionCollection);
-          new ToolBarVisibilitySpy(toolBar, action);
-
-          QObject::connect(action, SIGNAL(activeChangedByUser(bool)), toolBar, SLOT(setVisible(bool)));
-          KMainWindow *mw = qobject_cast<KMainWindow *>(toolBar->mainWindow());
-          if (mw)
-            QObject::connect(action, SIGNAL(activeChangedByUser(bool)), mw, SLOT(setSettingsDirty()));
-
-          m_actionCollection->addAction(toolBar->objectName(), action);
-          actions.append(action);
-          return actions;
-        }
         foreach ( KToolBar* bar, m_toolBars )
           handleToolBar( bar );
+
+        if ( m_toolBarActions.count() == 0 )
+          return actions;
+
+        if ( m_toolBarActions.count() == 1 ) {
+          const KStandardAction::KStandardActionInfo* pInfo = KStandardAction::infoPtr(KStandardAction::ShowToolbar);
+          KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.first() );
+          action->setText( i18n( pInfo->psLabel ) );
+          return m_toolBarActions;
+        }
 
         KActionMenu *menuAction = new KActionMenu(i18n( "Toolbars Shown" ), m_actionCollection);
         m_actionCollection->addAction("toolbars_submenu_action", menuAction);
