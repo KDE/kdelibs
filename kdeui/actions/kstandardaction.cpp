@@ -511,7 +511,6 @@ KAction *selectAll( QObject* parent )
   return buildAutomaticAction( parent, SelectAll, SLOT( selectAll() ) );
 }
 
-#ifndef KDE_NO_DEPRECATED
 KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent)
 {
   KToggleAction *ret = new KToggleAction(i18n( "Show &Menubar" ), parent);
@@ -534,7 +533,6 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
 
   return ret;
 }
-#endif
 
 KDualAction *showHideMenubar(const QObject *recvr, const char *slot, QObject *parent)
 {
@@ -563,7 +561,6 @@ KDualAction *showHideMenubar(const QObject *recvr, const char *slot, QObject *pa
   return ret;
 }
 
-#ifndef KDE_NO_DEPRECATED
 KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent)
 {
   KToggleAction *ret = new KToggleAction(i18n( "Show St&atusbar" ), parent);
@@ -583,7 +580,6 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
 
   return ret;
 }
-#endif
 
 KDualAction *showHideStatusbar(const QObject *recvr, const char *slot, QObject *parent)
 {
