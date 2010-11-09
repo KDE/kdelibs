@@ -304,9 +304,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     extractDomains(fqdn, domains);
 
     KHttpCookieList allCookies;
-
-    QStringList::ConstIterator itEnd = domains.constEnd();
-    for (QStringList::ConstIterator it = domains.constBegin();;++it)
+    for (QStringList::ConstIterator it = domains.constBegin(), itEnd = domains.constEnd();;++it)
     {
        KHttpCookieList *cookieList = 0;
        if (it == itEnd)
@@ -376,7 +374,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     }
 
     int protVersion = 0;
-    Q_FOREACH(const KHttpCookie& cookie, allCookies) {      
+    Q_FOREACH(const KHttpCookie& cookie, allCookies) {
         if (cookie.protocolVersion() > protVersion)
             protVersion = cookie.protocolVersion();
     }
@@ -912,10 +910,11 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
     // that cookies of type hostname == cookie-domainname
     // are properly removed and/or updated as necessary!
     extractDomains( cookie.host(), domains );
+
     QStringListIterator it (domains);
     while (it.hasNext())
     {
-        const QString key = it.next();
+        const QString& key = it.next();
         KHttpCookieList* list;
 
         if (key.isNull())
@@ -994,9 +993,8 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
 
     KCookieAdvice advice = KCookieDunno;
     QStringListIterator it (domains);
-
     while(advice == KCookieDunno && it.hasNext()) {
-       const QString domain = it.next();
+       const QString& domain = it.next();
        if (domain.startsWith('.') || cookie.host() == domain) {
               KHttpCookieList *cookieList = m_cookieDomains.value(domain);
           if (cookieList)
@@ -1152,18 +1150,15 @@ void KCookieJar::eatSessionCookies( long windowId )
 {
     if (!windowId)
         return;
-
-    QStringList::const_iterator it=m_domainList.constBegin();
-    for ( ; it != m_domainList.constEnd(); ++it )
-        eatSessionCookies( *it, windowId, false );
+    
+    Q_FOREACH(const QString& domain, m_domainList)
+        eatSessionCookies( domain, windowId, false );
 }
 
 void KCookieJar::eatAllCookies()
 {
-    Q_FOREACH(const QString& domain, m_domainList) {
-        // This might remove domain from m_domainList!
-        eatCookiesForDomain(domain);
-    }
+    Q_FOREACH(const QString& domain, m_domainList)
+        eatCookiesForDomain(domain);    // This might remove domain from m_domainList!
 }
 
 void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
@@ -1243,7 +1238,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
     QStringListIterator it(m_domainList);
     while (it.hasNext())
     {
-        const QString &domain = it.next();
+        const QString& domain = it.next();
         bool domainPrinted = false;
 
         KHttpCookieList *cookieList = m_cookieDomains.value(domain);
@@ -1465,7 +1460,7 @@ void KCookieJar::saveConfig(KConfig *_config)
     QStringListIterator it (m_domainList);    
     while (it.hasNext())
     {
-         const QString &domain = it.next();
+         const QString& domain = it.next();
          KCookieAdvice advice = getDomainAdvice( domain);
          if (advice != KCookieDunno)
          {
@@ -1501,25 +1496,19 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     m_globalAdvice = strToAdvice(policyGroup.readEntry("CookieGlobalAdvice", QString(QL1S("Accept"))));
 
     // Reset current domain settings first.
-    //  (must make a copy because setDomainAdvice() might delete the domain from m_domainList inside the for loop)
-    const QStringList domains = m_domainList;
-    Q_FOREACH( const QString &domain, domains )
-    {
-         setDomainAdvice(domain, KCookieDunno);
-    }
+    Q_FOREACH( const QString &domain, m_domainList )
+        setDomainAdvice(domain, KCookieDunno);
 
     // Now apply the domain settings read from config file...
-    for ( QStringList::const_iterator it=domainSettings.begin();
-          it != domainSettings.end(); )
+    for (QStringList::ConstIterator it = domainSettings.constBegin(), itEnd = domainSettings.constEnd();
+         it != itEnd; ++it)
     {
-        const QString &value = *it++;
-
-        int sepPos = value.lastIndexOf(':');
-
+        const QString& value = *it;
+        const int sepPos = value.lastIndexOf(':');
         if (sepPos <= 0)
           continue;
-
-        QString domain(value.left(sepPos));
+        
+        const QString domain(value.left(sepPos));
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice(domain, advice);
     }
