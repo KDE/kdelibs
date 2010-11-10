@@ -7,6 +7,7 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/kdecore/sonnet
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
+ ${LIBATTICA_INCLUDE_DIR}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${CMAKE_CURRENT_SOURCE_DIR}/config
@@ -374,7 +375,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})
+target_link_libraries(kdeui ${LIBATTICA_LIBRARIES} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
@@ -474,6 +475,7 @@ install( FILES
  colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
+ dialogs/kaboutapplicationpersonlistmodel_p.cpp
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h

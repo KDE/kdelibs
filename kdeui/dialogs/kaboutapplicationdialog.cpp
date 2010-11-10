@@ -22,20 +22,21 @@
 
 #include "kaboutapplicationdialog.h"
 
-#include <QLabel>
-#include <QLayout>
-#include <QPushButton>
-#include <QScrollBar>
-#include <QTabWidget>
+#include "kdeui/icons/kiconloader.h"
+#include "kdeui/kernel/kapplication.h"
+#include "kdeui/kernel/kglobalsettings.h"
+#include "kdeui/widgets/ktextbrowser.h"
+#include "kdeui/widgets/ktitlewidget.h"
 
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kiconloader.h>
-#include <klocale.h>
-#include <ktextbrowser.h>
-#include <ktitlewidget.h>
+#include <kdecore/kernel/kaboutdata.h>
+#include <kdecore/kernel/kglobal.h>
+#include <kdecore/localization/klocale.h>
+
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QScrollBar>
+#include <QtGui/QTabWidget>
 
 class KAboutApplicationDialog::Private
 {
@@ -47,7 +48,7 @@ public:
 
     void init( const KAboutData *aboutData, Options opt );
 
-    void _k_showLicense( const QString &number );
+    void _k_showLicense( const QString &number );  //private slot
 
     KAboutApplicationDialog *q;
 

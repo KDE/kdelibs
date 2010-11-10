@@ -22,7 +22,7 @@
 #ifndef KABOUT_APPLICATION_DIALOG_H
 #define KABOUT_APPLICATION_DIALOG_H
 
-#include <kdialog.h>
+#include "kdialog.h"
 
 #include <QtCore/QFlags>
 
