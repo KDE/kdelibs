@@ -1064,7 +1064,7 @@ JSValue *Scriptface::msgidf (ExecState *exec)
 JSValue *Scriptface::msgkeyf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return jsString(*msgctxt + QLatin1Char('|') + *msgid);
+    return jsString(QString(*msgctxt + QLatin1Char('|') + *msgid));
 }
 
 JSValue *Scriptface::msgstrff (ExecState *exec)
