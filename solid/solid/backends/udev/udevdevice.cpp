@@ -77,13 +77,24 @@ QString UDevDevice::icon() const
 
 QStringList UDevDevice::emblems() const
 {
-    // TODO
     return QStringList();
 }
 
 QString UDevDevice::description() const
 {
-    // TODO
+    if (parentUdi().isEmpty()) {
+        return QObject::tr("Computer");
+    }
+
+    if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        return QObject::tr("Processor");
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return QObject::tr("Camera");
+    } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+        // TODO: check out special cases like iPod
+        return QObject::tr("Portable Media Player"); // FIXME: not sure what HAL was returning since I can't check it
+    }
+
     return QString();
 }
 
