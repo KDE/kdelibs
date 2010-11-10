@@ -23,6 +23,10 @@
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/storagedrive.h>
+#include "predicate.h"
+#include "storageaccess.h"
+#include "device.h"
+#include "device_p.h"
 
 Solid::StorageDrive::StorageDrive(QObject *backendObject)
     : DeviceInterface(*new StorageDrivePrivate(), backendObject)
@@ -68,6 +72,22 @@ qulonglong Solid::StorageDrive::size() const
 {
     Q_D(const StorageDrive);
     return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, size());
+}
+
+bool Solid::StorageDrive::isInUse() const
+{
+    Q_D(const StorageDrive);
+    Predicate p(DeviceInterface::StorageAccess);
+    QList<Device> devices = Device::listFromQuery(p, d->devicePrivate()->udi());
+
+    bool inUse = false;
+    foreach (const Device &dev, devices)	{
+        if (dev.is<Solid::StorageAccess>()) {
+            const Solid::StorageAccess* access = dev.as<Solid::StorageAccess>();
+            inUse |= (access->isAccessible());
+        }
+    }
+    return inUse;
 }
 
 #include "storagedrive.moc"

@@ -44,6 +44,7 @@ namespace Solid
         Q_PROPERTY(DriveType driveType READ driveType)
         Q_PROPERTY(bool removable READ isRemovable)
         Q_PROPERTY(bool hotpluggable READ isHotpluggable)
+        Q_PROPERTY(bool inUse READ isInUse)
         Q_PROPERTY(qulonglong size READ size)
         Q_DECLARE_PRIVATE(StorageDrive)
         friend class Device;
@@ -145,6 +146,15 @@ namespace Solid
         * @return the size of this drive
         */
        qulonglong size() const;
+
+       /**
+        * Indicates if the storage device is currently in use
+        * i.e. if at least one child storage access is
+        * mounted
+        *
+        * @return true if at least one child storage access is mounted
+        */
+       bool isInUse() const;
 
     protected:
         /**
