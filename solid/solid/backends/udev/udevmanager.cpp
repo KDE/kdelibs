@@ -25,7 +25,6 @@
 #include "../shared/rootdevice.h"
 
 #include <QtCore/QSet>
-#include <QtCore/QDebug>
 
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
