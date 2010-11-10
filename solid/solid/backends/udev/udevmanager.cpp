@@ -62,6 +62,9 @@ UDevManager::UDevManager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
       d(new Private)
 {
+    connect(d->m_client, SIGNAL(deviceAdded(UdevQt::Device)), this, SLOT(slotDeviceAdded(UdevQt::Device)));
+    connect(d->m_client, SIGNAL(deviceRemoved(UdevQt::Device)), this, SLOT(slotDeviceRemoved(UdevQt::Device)));
+
     d->m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
                              << Solid::DeviceInterface::Processor
                              << Solid::DeviceInterface::AudioInterface
@@ -121,4 +124,14 @@ QObject *UDevManager::createDevice(const QString &udi_)
         return new UDevDevice(device);
     }
     return 0;
+}
+
+void UDevManager::slotDeviceAdded(const UdevQt::Device &device)
+{
+    emit deviceAdded(udiPrefix() + device.sysfsPath());
+}
+
+void UDevManager::slotDeviceRemoved(const UdevQt::Device &device)
+{
+    emit deviceRemoved(udiPrefix() + device.sysfsPath());
 }
