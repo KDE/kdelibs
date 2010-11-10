@@ -629,8 +629,11 @@ install(FILES
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
+   util/kgenericfactory.h
+   util/kgenericfactory.tcc
    util/klauncher_iface.h
    util/klibrary.h
+   util/klibloader.h
    util/kmacroexpander.h
    util/kexportplugin.h
    util/kpluginfactory.h
@@ -650,15 +653,6 @@ install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-
-if (NOT KDE_NO_DEPRECATED)
-   install(FILES
-      util/kgenericfactory.h
-      util/kgenericfactory.tcc
-      util/klibloader.h
-      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
-   )
-endif (NOT KDE_NO_DEPRECATED)
 
 install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)

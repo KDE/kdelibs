@@ -30,6 +30,8 @@
 #include "kpluginloader.h"
 #include "klibrary.h"
 
+#ifndef KDE_NO_DEPRECATED
+
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { KDE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
 
@@ -292,4 +294,5 @@ private:
     KLibLoader();
 };
 
+#endif
 #endif

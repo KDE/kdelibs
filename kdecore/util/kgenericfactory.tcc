@@ -46,6 +46,7 @@ namespace KParts
     class Part;
 }
 
+#ifndef KDE_NO_DEPRECATED
 namespace KDEPrivate
 {
     template <class Base>
@@ -273,6 +274,4 @@ namespace KDEPrivate
 
 #endif
 
-/*
- * vim: et sw=4
- */
+#endif

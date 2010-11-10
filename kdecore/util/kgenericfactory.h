@@ -29,6 +29,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+#ifndef KDE_NO_DEPRECATED
+
 /* @internal */
 template <class T>
 class KGenericFactoryBase : public KPluginFactory
@@ -352,10 +354,7 @@ protected:
     }
 };
 
-/*
- * vim: et sw=4
- */
-
+#endif
 #endif
 
 
