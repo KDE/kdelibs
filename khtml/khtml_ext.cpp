@@ -1106,13 +1106,12 @@ KUrl KHTMLHtmlExtension::baseUrl() const
 
 bool KHTMLHtmlExtension::hasSelection() const
 {
-    return KParts::HtmlExtension::hasSelection();
+    return part()->hasSelection();
 }
 
 KParts::SelectorInterface::QueryMethods KHTMLHtmlExtension::supportedQueryMethods() const
 {
-    // TODO: Add support for selected content (SelectedContent)
-    return KParts::SelectorInterface::EntireContent;
+    return (KParts::SelectorInterface::SelectedContent | KParts::SelectorInterface::EntireContent);
 }
 
 static KParts::SelectorInterface::Element convertDomElement(const DOM::ElementImpl* domElem)
@@ -1149,7 +1148,11 @@ KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QStri
         break;
     }    
     case KParts::SelectorInterface::SelectedContent:
-        // TODO: Implement support for selected content...
+        if (part()->hasSelection()) {
+            DOM::Element domElem = part()->selection().cloneContents().querySelector(query);
+            element = convertDomElement(static_cast<DOM::ElementImpl*>(domElem.handle()));
+        }
+        break;        
     default:
         break;
     }
@@ -1184,7 +1187,16 @@ QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(c
         break;
     }
     case KParts::SelectorInterface::SelectedContent:
-        // TODO: Implement support for selected content...
+        if (part()->hasSelection()) {
+            DOM::NodeList nodes = part()->selection().cloneContents().querySelectorAll(query);
+            const unsigned long len = nodes.length();
+            for (unsigned long i = 0; i < len; ++i) {
+                DOM::NodeImpl* node = nodes.item(i).handle();
+                if (node->isElementNode())
+                    elements.append(convertDomElement(static_cast<DOM::ElementImpl*>(node)));
+            }
+        }
+        break;
     default:
         break;
     }
