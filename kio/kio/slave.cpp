@@ -53,8 +53,6 @@
 
 #include "slaveinterface_p.h"
 
-extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
-
 using namespace KIO;
 
 #define SLAVE_CONNECTION_TIMEOUT_MIN	   2
@@ -446,7 +444,8 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           delete slave;
           return 0;
        }
-       QString lib_path = ::findLibrary(_name, KGlobal::mainComponent());
+       KLibrary lib(_name, KGlobal::mainComponent());
+       QString lib_path = lib.fileName();
        if (lib_path.isEmpty())
        {
           error_text = i18n("Can not find io-slave for protocol '%1'.", protocol);

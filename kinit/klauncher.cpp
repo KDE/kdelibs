@@ -42,6 +42,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kde_file.h>
+#include <klibrary.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
@@ -1076,8 +1077,6 @@ KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
     return 0;
 }
 
-extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
-
 pid_t
 KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
@@ -1156,9 +1155,9 @@ KLauncher::requestSlave(const QString &protocol,
        request_header.arg_length = 0;
        write(kdeinitSocket, &request_header, sizeof(request_header));
     }
-    if (mSlaveValgrind == arg1)
-    {
-       arg_list.prepend(::findLibrary(name, KGlobal::mainComponent()));
+    if (mSlaveValgrind == arg1) {
+       KLibrary lib(name, KGlobal::mainComponent());
+       arg_list.prepend(lib.fileName());
        arg_list.prepend(KStandardDirs::locate("exe", QString::fromLatin1("kioslave")));
        name = QString::fromLatin1("valgrind");
        if (!mSlaveValgrindSkin.isEmpty()) {

@@ -54,6 +54,7 @@
 #include <QtCore/QRegExp>
 #include <QtGui/QFont>
 #include <kcomponentdata.h>
+#include <klibrary.h>
 #include <kdemacros.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
@@ -464,8 +465,6 @@ static void reset_oom_protect() {
 }
 #endif
 
-extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
-
 static pid_t launch(int argc, const char *_name, const char *args,
                     const char *cwd=0, int envc=0, const char *envs=0,
                     bool reset_env = false,
@@ -482,9 +481,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
         name = _name;
         lib = QFile::decodeName(name);
         exec = name;
-        libpath = ::findLibrary( QLatin1String("libkdeinit4_") + lib, *s_instance);
-        if( libpath.isEmpty())
-            libpath = ::findLibrary(lib, *s_instance);
+        KLibrary klib(QLatin1String("libkdeinit4_") + lib, *s_instance );
+        libpath = klib.fileName();
+        if( libpath.isEmpty()) {
+            KLibrary klib(lib, *s_instance);
+            libpath = klib.fileName();
+        }
         execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
     } else {
         name = _name;
