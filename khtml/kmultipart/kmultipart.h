@@ -23,7 +23,6 @@
 #include <httpfilter/httpfilter.h>
 
 #include <kparts/part.h>
-#include <kparts/factory.h>
 #include <kparts/browserextension.h>
 #include <kaboutdata.h>
 #include <QtCore/QDate>

@@ -21,7 +21,7 @@
 #define __khtmlimage_h__
 
 #include "khtml_part.h"
-#include <kparts/factory.h>
+#include <kpluginfactory.h>
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
 
