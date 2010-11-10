@@ -31,17 +31,17 @@ Test8b::Test8b(  )
   s_globalTest8b->q = this;
   setCurrentGroup( QLatin1String( "Group8b1" ) );
 
-  KConfigSkeleton::ItemUInt  *itemSomething;
-  itemSomething = new KConfigSkeleton::ItemUInt( currentGroup(), QLatin1String( "Something" ), mSomething, 60 );
+  Test8a::ItemUInt  *itemSomething;
+  itemSomething = new Test8a::ItemUInt( currentGroup(), QLatin1String( "Something" ), mSomething, 60 );
   addItem( itemSomething, QLatin1String( "Something" ) );
 
   setCurrentGroup( QLatin1String( "Group8b2" ) );
 
-  KConfigSkeleton::ItemBool  *itemFooBoo;
-  itemFooBoo = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "FooBoo" ), mFooBoo, false );
+  Test8a::ItemBool  *itemFooBoo;
+  itemFooBoo = new Test8a::ItemBool( currentGroup(), QLatin1String( "FooBoo" ), mFooBoo, false );
   addItem( itemFooBoo, QLatin1String( "FooBoo" ) );
-  KConfigSkeleton::ItemUInt  *itemPort;
-  itemPort = new KConfigSkeleton::ItemUInt( currentGroup(), QLatin1String( "Port" ), mPort, 1000 );
+  Test8a::ItemUInt  *itemPort;
+  itemPort = new Test8a::ItemUInt( currentGroup(), QLatin1String( "Port" ), mPort, 1000 );
   addItem( itemPort, QLatin1String( "Port" ) );
 }
 
