@@ -31,6 +31,7 @@
 
 #include <QtCore/QAbstractListModel>
 #include <QtGui/QPixmap>
+#include <QtNetwork/QNetworkReply>
 
 namespace KDEPrivate
 {
@@ -57,8 +58,10 @@ public:
 
 private Q_SLOTS:
     void onProvidersLoaded();
+#ifdef HAVE_ATTICA
     void onPersonJobFinished( Attica::BaseJob *job );
     void onAvatarJobFinished( QNetworkReply *reply );
+#endif //HAVE_ATTICA
 
 private:    
     QList< KAboutPerson > m_personList;
