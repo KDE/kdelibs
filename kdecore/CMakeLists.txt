@@ -349,7 +349,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
-   util/klibloader.cpp
    util/klibrary.cpp
    util/kmacroexpander.cpp
    util/kpluginfactory.cpp
@@ -360,6 +359,12 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
+
+if(NOT KDE_NO_DEPRECATED)
+    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
+       util/klibloader.cpp
+    )
+endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
@@ -624,10 +629,7 @@ install(FILES
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
-   util/kgenericfactory.h
-   util/kgenericfactory.tcc
    util/klauncher_iface.h
-   util/klibloader.h
    util/klibrary.h
    util/kmacroexpander.h
    util/kexportplugin.h
@@ -648,6 +650,15 @@ install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+if (NOT KDE_NO_DEPRECATED)
+   install(FILES
+      util/kgenericfactory.h
+      util/kgenericfactory.tcc
+      util/klibloader.h
+      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+   )
+endif (NOT KDE_NO_DEPRECATED)
 
 install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
