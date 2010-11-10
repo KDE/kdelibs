@@ -3,6 +3,7 @@
  * Copyright (C) 2000 Espen Sand (espen@kde.org)
  * Copyright (C) 2006 Nicolas GOUTTE <goutte@kde.org>
  * Copyright (C) 2008 Friedrich W. H. Kossebau <kossebau@kde.org>
+ * Copyright (C) 2010 Téo Mrnjavac <teo@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -59,6 +60,7 @@ public:
    KLocalizedString _task;
    QString _emailAddress;
    QString _webAddress;
+   QString _ocsUsername;
 
    QString _nameNoop;
 };
@@ -73,6 +75,20 @@ KAboutPerson::KAboutPerson( const KLocalizedString &_name,
    d->_task = _task;
    d->_emailAddress = QString::fromUtf8(_emailAddress);
    d->_webAddress = QString::fromUtf8(_webAddress);
+}
+
+KAboutPerson::KAboutPerson( const KLocalizedString &_name,
+                            const KLocalizedString &_task,
+                            const QByteArray &_emailAddress,
+                            const QByteArray &_webAddress,
+                            const QByteArray &_ocsUsername )
+  : d(new Private)
+{
+   d->_name = _name;
+   d->_task = _task;
+   d->_emailAddress = QString::fromUtf8(_emailAddress);
+   d->_webAddress = QString::fromUtf8(_webAddress);
+   d->_ocsUsername = QString::fromUtf8( _ocsUsername );
 }
 
 KAboutPerson::KAboutPerson( const QString &_name, const QString &_email )
@@ -121,6 +137,11 @@ KAboutPerson::webAddress() const
    return d->_webAddress;
 }
 
+QString
+KAboutPerson::ocsUsername() const
+{
+    return d->_ocsUsername;
+}
 
 KAboutPerson&
 KAboutPerson::operator=(const KAboutPerson& other)
@@ -404,6 +425,8 @@ public:
     bool customAuthorTextEnabled;
 
     QString organizationDomain;
+    QString _ocsProviderId;
+    QString _ocsProviderFile;
 
     // Everything dr.konqi needs, we store as utf-8, so we
     // can just give it a pointer, w/o any allocations.
@@ -503,12 +526,34 @@ KAboutData::addAuthor( const KLocalizedString &name,
 }
 
 KAboutData &
+KAboutData::addAuthor( const KLocalizedString &name,
+                       const KLocalizedString &task,
+                       const QByteArray &emailAddress,
+                       const QByteArray &webAddress,
+                       const QByteArray &ocsUsername )
+{
+  d->_authorList.append(KAboutPerson(name,task,emailAddress,webAddress,ocsUsername));
+  return *this;
+}
+
+KAboutData &
 KAboutData::addCredit( const KLocalizedString &name,
                        const KLocalizedString &task,
                        const QByteArray &emailAddress,
                        const QByteArray &webAddress )
 {
   d->_creditList.append(KAboutPerson(name,task,emailAddress,webAddress));
+  return *this;
+}
+
+KAboutData &
+KAboutData::addCredit( const KLocalizedString &name,
+                       const KLocalizedString &task,
+                       const QByteArray &emailAddress,
+                       const QByteArray &webAddress,
+                       const QByteArray &ocsUsername )
+{
+  d->_creditList.append(KAboutPerson(name,task,emailAddress,webAddress,ocsUsername));
   return *this;
 }
 
@@ -574,6 +619,14 @@ KAboutData::setProgramName( const KLocalizedString &_programName )
   d->_programName = _programName;
   translateInternalProgramName();
   return *this;
+}
+
+KAboutData &
+KAboutData::setOcsProvider(const QByteArray &_ocsProviderId, const QByteArray &_ocsProviderFile )
+{
+    d->_ocsProviderId = QString::fromUtf8( _ocsProviderId );
+    d->_ocsProviderFile = QString::fromUtf8( _ocsProviderFile );
+    return *this;
 }
 
 KAboutData &
@@ -726,6 +779,18 @@ KAboutData::setProgramLogo(const QVariant& image)
 {
     d->programLogo = image ;
     return *this;
+}
+
+QString
+        KAboutData::ocsProviderId() const
+{
+    return d->_ocsProviderId;
+}
+
+QString
+        KAboutData::ocsProviderFile() const
+{
+    return d->_ocsProviderFile;
 }
 
 QString
