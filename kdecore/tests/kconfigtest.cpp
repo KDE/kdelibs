@@ -78,6 +78,11 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 
 void KConfigTest::initTestCase()
 {
+  // Use a different directory for the config files created by this test,
+  // so that cleanupTestCase doesn't delete kdebugrc
+  // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtest/"
+  KGlobal::dirs()->addResourceType("config", 0, "kconfigtest");
+
   // to make sure all files from a previous failed run are deleted
   cleanupTestCase();
 
@@ -195,7 +200,7 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-  const QString localConfig = QDir::homePath() + "/.kde-unit-test/share/config";
+  const QString localConfig = KGlobal::dirs()->saveLocation("config");
   KTempDir::removeDir(localConfig);
   QVERIFY(!QFile::exists(localConfig));
 }
