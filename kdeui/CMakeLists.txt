@@ -1,5 +1,9 @@
-
 project(kdeui)
+
+set(KDEUI_NO_ATTICA FALSE)
+if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+    set(KDEUI_NO_ATTICA TRUE)
+endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
@@ -7,7 +11,6 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/kdecore/sonnet
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
- ${LIBATTICA_INCLUDE_DIR}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${CMAKE_CURRENT_SOURCE_DIR}/config
@@ -28,6 +31,19 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${DBUSMENUQT_INCLUDE_DIR}
+)
+
+if(NOT KDEUI_NO_ATTICA)
+   include_directories( ${LIBATTICA_INCLUDE_DIR} )
+   set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${LIBATTICA_LIBRARIES} )
+   set(HAVE_ATTICA TRUE)
+endif(NOT KDEUI_NO_ATTICA)
+
+macro_bool_to_01(HAVE_ATTICA)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/kaboutapplicationconfigattica_p.h.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
 )
 
 add_subdirectory( about )
@@ -80,7 +96,8 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
- dialogs/kaboutapplicationpersonlistmodel_p.cpp
+ dialogs/kaboutapplicationpersonmodel_p.cpp
+ dialogs/kaboutapplicationpersonlistdelegate_p.cpp
  dialogs/kaboutapplicationpersonlistview_p.cpp
  dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
@@ -283,6 +300,8 @@ set(kdeui_LIB_SRCS
 )
 endif(NOT WINCE)
 
+
+
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
@@ -377,7 +396,8 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui ${LIBATTICA_LIBRARIES} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})
+target_link_libraries(kdeui ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
@@ -439,6 +459,7 @@ install( FILES
  dialogs/kdeprint_nup4.png
  dialogs/kdeprint_nupother.png
  dialogs/ktip-bulb.png
+ dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 
 install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect )

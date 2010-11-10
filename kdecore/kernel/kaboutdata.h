@@ -2,7 +2,7 @@
  * This file is part of the KDE Libraries
  * Copyright (C) 2000 Espen Sand (espen@kde.org)
  * Copyright (C) 2008 Friedrich W. H. Kossebau <kossebau@kde.org>
- * Copyright (C) 2010 Téo Mrnjavac <teo@kde.org>
+ * Copyright (C) 2010 Teo Mrnjavac <teo@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -345,7 +345,7 @@ class KDECORE_EXPORT KAboutData
                            const KLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
-                           const QByteArray &ocsUsername );
+                           const QByteArray &ocsUsername ); //KDE5: merge with addAuthor
 
     /**
      * Defines a person that deserves credit.
@@ -403,7 +403,7 @@ class KDECORE_EXPORT KAboutData
                            const KLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
-                           const QByteArray &ocsUsername );
+                           const QByteArray &ocsUsername ); //KDE5: merge with addCredit
 
     /**
      * @brief Sets the name(s) of the translator(s) of the GUI.
@@ -523,22 +523,18 @@ class KDECORE_EXPORT KAboutData
     KAboutData &setProgramLogo(const QVariant& image);
 
     /**
-     * Specifies an Open Collaboration Services provider.
+     * Specifies an Open Collaboration Services provider by URL.
+     * A provider file must be available for the chosen provider.
      *
-     * Use this if you need to override the default provider or load
-     * a custom provider file different from the default one that
-     * comes with KDE.
+     * Use this if you need to override the default provider.
      *
      * If this method is not used, all the KAboutPerson OCS usernames
      * will be used with the openDesktop.org entry from the default
-     * provider file, and if a provider file is not specified the
-     * provider ID must be present in the default provider file.
+     * provider file.
      *
-     * @param providerId The provider ID as defined in the provider file.
-     * @param providerFile The path of the custom provider file to load
-     *        for use with the defined providerId.
+     * @param providerUrl The provider URL as defined in the provider file.
      */
-    KAboutData &setOcsProvider( const QByteArray &providerId, const QByteArray &providerFile = QByteArray() );
+    KAboutData &setOcsProvider( const QByteArray &providerUrl );
 
     /**
      * Defines the program version string.
@@ -712,17 +708,10 @@ class KDECORE_EXPORT KAboutData
     QVariant programLogo() const;
 
     /**
-     * Returns the chosen Open Collaboration Services provider ID.
-     * @return the provider ID.
+     * Returns the chosen Open Collaboration Services provider URL.
+     * @return the provider URL.
      */
-    QString ocsProviderId() const;
-
-    /**
-     * Returns the location of an Open Collaboration Services
-     * provider file which contains the needed provider ID.
-     * @return the provider file location.
-     */
-    QString ocsProviderFile() const;
+    QString ocsProviderUrl() const;
 
     /**
      * Returns the program's version.

@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2007 Urs Wolfer <uwolfer at kde.org>
    Copyright (C) 2008 Friedrich W. H. Kossebau <kossebau@kde.org>
+   Copyright (C) 2010 Teo Mrnjavac <teo@kde.org>
 
    Parts of this class have been take from the KAboutApplication class, which was
    Copyright (C) 2000 Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
@@ -22,8 +23,9 @@
 
 #include "kaboutapplicationdialog.h"
 
-#include "kaboutapplicationpersonlistmodel_p.h"
+#include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
+#include "kaboutapplicationpersonlistdelegate_p.h"
 #include "kdeui/icons/kiconloader.h"
 #include "kdeui/kernel/kapplication.h"
 #include "kdeui/kernel/kglobalsettings.h"
@@ -50,22 +52,11 @@ public:
 
     void init( const KAboutData *aboutData, Options opt );
 
-    void _k_showLicense( const QString &number );  //private slot
+    void _k_showLicense( const QString &number );
 
     KAboutApplicationDialog *q;
 
     const KAboutData *aboutData;
-
-private:
-    //Authors:
-    QWidget *m_authorWidget;
-    KDEPrivate::KAboutApplicationPersonListModel *m_authorModel;
-    KDEPrivate::KAboutApplicationPersonListView *m_authorView;
-    //Credits:
-    QWidget *m_creditWidget;
-    KDEPrivate::KAboutApplicationPersonListModel *m_creditModel;
-    KDEPrivate::KAboutApplicationPersonListView *m_creditView;
-
 };
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
@@ -181,30 +172,25 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     //And here we go, authors page...
     const int authorCount = aboutData->authors().count();
-    if (authorCount)
-    {
-        m_authorWidget = new QWidget( q );
-        QVBoxLayout *authorLayout = new QVBoxLayout( m_authorWidget );
+    if (authorCount) {
+        QWidget *authorWidget = new QWidget( q );
+        QVBoxLayout *authorLayout = new QVBoxLayout( authorWidget );
         authorLayout->setMargin( 0 );
 
-        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty())
-        {
-            QLabel *bugsLabel = new QLabel( m_authorWidget );
+        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty()) {
+            QLabel *bugsLabel = new QLabel( authorWidget );
             bugsLabel->setContentsMargins( 4, 2, 0, 4 );
-            if (!aboutData->customAuthorTextEnabled())
-            {
+            if (!aboutData->customAuthorTextEnabled()) {
                 if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
                     bugsLabel->setText( i18n("Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n") );
-                else
-                {
-                    if(aboutData->authors().count() == 1 && (aboutData->authors().first().emailAddress() == aboutData->bugAddress()))
-                    {
+                else {
+                    if( ( aboutData->authors().count() == 1 ) &&
+                        ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) ) {
                         bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
                                               aboutData->authors().first().emailAddress(),
                                               aboutData->authors().first().emailAddress() ) );
                     }
-                    else
-                    {
+                    else {
                         bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
                                               aboutData->bugAddress(), aboutData->bugAddress()));
                     }
@@ -216,64 +202,88 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
             authorLayout->addWidget( bugsLabel );
         }
 
-        m_authorModel = new KDEPrivate::KAboutApplicationPersonListModel( aboutData->authors(), m_authorWidget );
-        m_authorView = new KDEPrivate::KAboutApplicationPersonListView( m_authorWidget );
-        m_authorView->setModel( m_authorModel );
-        m_authorView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-        authorLayout->addWidget( m_authorView );
+        KDEPrivate::KAboutApplicationPersonModel *authorModel =
+                new KDEPrivate::KAboutApplicationPersonModel( aboutData->authors(),
+                                                              aboutData->ocsProviderUrl(),
+                                                              authorWidget );
+
+        KDEPrivate::KAboutApplicationPersonListView *authorView =
+                new KDEPrivate::KAboutApplicationPersonListView( authorWidget );
+
+        KDEPrivate::KAboutApplicationPersonListDelegate *authorDelegate =
+                new KDEPrivate::KAboutApplicationPersonListDelegate( authorView, authorView );
+
+        authorView->setModel( authorModel );
+        authorView->setItemDelegate( authorDelegate );
+        authorView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+        authorLayout->addWidget( authorView );
 
         QString authorPageTitle = QString( ( authorCount == 1 ) ? i18n("A&uthor") : i18n("A&uthors") );
-        tabWidget->addTab( m_authorWidget, authorPageTitle );
+        tabWidget->addTab( authorWidget, authorPageTitle );
     }
 
     //And credits page...
     const int creditsCount = aboutData->credits().count();
     if (creditsCount) {
-        QString creditsPageText;
+        QWidget *creditWidget = new QWidget( q );
+        QVBoxLayout *creditLayout = new QVBoxLayout( creditWidget );
+        creditLayout->setMargin( 0 );
 
-        const QList<KAboutPerson> lst = aboutData->credits();
-        for (int i = 0; i < lst.size(); ++i) {
-            QString pname = i18nc("@item Contributor name in about dialog.", "%1", lst.at(i).name());
-            creditsPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(pname);
-            if (!lst.at(i).emailAddress().isEmpty())
-                creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg(lst.at(i).emailAddress());
-            if (!lst.at(i).webAddress().isEmpty())
-                creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
-            if (!lst.at(i).task().isEmpty())
-                creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            if (i < lst.size() - 1)
-                creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
-        }
+        KDEPrivate::KAboutApplicationPersonModel *creditModel =
+                new KDEPrivate::KAboutApplicationPersonModel( aboutData->credits(),
+                                                              aboutData->ocsProviderUrl(),
+                                                              creditWidget );
 
-        KTextBrowser *creditsTextBrowser = new KTextBrowser;
-        creditsTextBrowser->setFrameStyle(QFrame::NoFrame);
-        creditsTextBrowser->setPalette(transparentBackgroundPalette);
-        creditsTextBrowser->setHtml(creditsPageText);
-        tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
+        KDEPrivate::KAboutApplicationPersonListView *creditView =
+                new KDEPrivate::KAboutApplicationPersonListView( creditWidget );
+
+        KDEPrivate::KAboutApplicationPersonListDelegate *creditDelegate =
+                new KDEPrivate::KAboutApplicationPersonListDelegate( creditView, creditView );
+
+        creditView->setModel( creditModel );
+        creditView->setItemDelegate( creditDelegate );
+        creditView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+        creditLayout->addWidget( creditView );
+
+        tabWidget->addTab( creditWidget, i18n("&Thanks To"));
     }
 
     //Finally, the optional translators page...
     if ( !( opt & HideTranslators ) ) {
-        const QList<KAboutPerson> translatorList = aboutData->translators();
+        const int translatorsCount = aboutData->translators().count();
+        if( translatorsCount ) {
+            QWidget *translatorWidget = new QWidget( q );
+            QVBoxLayout *translatorLayout = new QVBoxLayout( translatorWidget );
+            translatorLayout->setMargin( 0 );
 
-        if(translatorList.count() > 0) {
-            QString translatorPageText;
+            KDEPrivate::KAboutApplicationPersonModel *translatorModel =
+                    new KDEPrivate::KAboutApplicationPersonModel( aboutData->translators(),
+                                                                  aboutData->ocsProviderUrl(),
+                                                                  translatorWidget );
 
-            QList<KAboutPerson>::ConstIterator it;
-            for(it = translatorList.begin(); it != translatorList.end(); ++it) {
-                translatorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg((*it).name());
-                if (!(*it).emailAddress().isEmpty())
-                    translatorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
-                translatorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+            KDEPrivate::KAboutApplicationPersonListView *translatorView =
+                    new KDEPrivate::KAboutApplicationPersonListView( translatorWidget );
+
+            KDEPrivate::KAboutApplicationPersonListDelegate *translatorDelegate =
+                    new KDEPrivate::KAboutApplicationPersonListDelegate( translatorView, translatorView );
+
+            translatorView->setModel( translatorModel );
+            translatorView->setItemDelegate( translatorDelegate );
+            translatorView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+            translatorLayout->addWidget( translatorView );
+
+            QString aboutTranslationTeam = KAboutData::aboutTranslationTeam();
+            if( !aboutTranslationTeam.isEmpty() ) {
+                QLabel *translationTeamLabel = new QLabel( translatorWidget );
+                translationTeamLabel->setContentsMargins( 4, 2, 4, 4 );
+                translationTeamLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
+                translationTeamLabel->setWordWrap( true );
+                translationTeamLabel->setText( aboutTranslationTeam );
+                translatorLayout->addWidget( translationTeamLabel );
+                //TODO: this could be displayed as a view item to save space
             }
 
-            translatorPageText += KAboutData::aboutTranslationTeam();
-
-            KTextBrowser *translatorTextBrowser = new KTextBrowser;
-            translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
-            translatorTextBrowser->setPalette(transparentBackgroundPalette);
-            translatorTextBrowser->setHtml(translatorPageText);
-            tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
+            tabWidget->addTab( translatorWidget, i18n("T&ranslation"));
         }
     }
 
