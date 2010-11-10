@@ -96,8 +96,9 @@ public:
     QStringList m_prefixes;
 
     // Directory dictionaries
-    QMap<QByteArray, QStringList> m_absolutes;
-    QMap<QByteArray, QStringList> m_relatives;
+    QMap<QByteArray, QStringList> m_absolutes; // For each resource type, the list of absolute paths, from most local (most priority) to most global
+    QMap<QByteArray, QStringList> m_relatives; // Same with relative paths
+    // The search path is "all relative paths" < "all absolute paths", from most priority to least priority.
 
     // Caches (protected by mutex in const methods, cf ctor docu)
     QMap<QByteArray, QStringList> m_dircache;
@@ -413,7 +414,9 @@ bool KStandardDirs::addResourceType( const char *type,
             rels.prepend(copy);
         else
             rels.append(copy);
-        d->m_dircache.remove(type); // clean the cache
+        // clean the caches
+        d->m_dircache.remove(type);
+        d->m_savelocations.remove(type);
         return true;
     }
     return false;
@@ -436,7 +439,9 @@ bool KStandardDirs::addResourceDir( const char *type,
             paths.prepend(copy);
         else
             paths.append(copy);
-        d->m_dircache.remove(type); // clean the cache
+        // clean the caches
+        d->m_dircache.remove(type);
+        d->m_savelocations.remove(type);
         return true;
     }
     return false;
@@ -1481,7 +1486,7 @@ QString KStandardDirs::saveLocation(const char *type,
         }
         if (!dirs.isEmpty())
         {
-            path = dirs.last();
+            path = dirs.first();
 
             if (path.startsWith(QLatin1Char('%'))) {
                 // grab the "data" from "%data/apps"
@@ -1505,8 +1510,9 @@ QString KStandardDirs::saveLocation(const char *type,
             dirs = d->m_absolutes.value(type);
             if (dirs.isEmpty()) {
                 qFatal("KStandardDirs: The resource type %s is not registered", type);
+            } else {
+                path = realPath(dirs.first());
             }
-            path = realPath(dirs.last());
         }
 
         d->m_savelocations.insert(type, path.endsWith(QLatin1Char('/')) ? path : path + QLatin1Char('/'));
@@ -2030,8 +2036,10 @@ bool KStandardDirs::addCustomized(KConfig *config)
             if (!cg.readEntry(key, true))
             {
                 d->m_restrictionsActive = true;
-                d->m_restrictions.insert(key.toLatin1(), true);
-                d->m_dircache.remove(key.toLatin1());
+                const QByteArray cKey = key.toLatin1();
+                d->m_restrictions.insert(cKey, true);
+                d->m_dircache.remove(cKey);
+                d->m_savelocations.remove(cKey);
             }
         }
     }

@@ -66,6 +66,17 @@ void KStandarddirsTest::testAppData()
     QCOMPARE_PATHS( fooAppData, m_kdehome + "/share/apps/foo/" );
 }
 
+void KStandarddirsTest::testChangeSaveLocation()
+{
+    KComponentData cData("changeSave");
+    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_kdehome + "/share/config/");
+    // Can we change the save location?
+    const QString newSaveLoc = m_kdehome + "/newconfigdir/";
+    //cData.dirs()->addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
+    cData.dirs()->addResourceType("config", 0, "newconfigdir");
+    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), newSaveLoc);
+}
+
 static bool isKdelibsInstalled()
 {
     // If there's only one dir, it's the local one (~/.kde-unit-test/share/apps/),

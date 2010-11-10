@@ -29,9 +29,10 @@ private Q_SLOTS:
     void testLocateLocal();
     void testSaveLocation();
     void testAppData();
+    void testChangeSaveLocation();
     void testFindResource();
     void testFindAllResources();
-    void testFindAllResourcesNewDir();    
+    void testFindAllResourcesNewDir();
     void testFindDirs();
     void testFindResourceDir();
     void testFindExe();
