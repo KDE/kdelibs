@@ -59,7 +59,19 @@ QString UDevDevice::product() const
 
 QString UDevDevice::icon() const
 {
-    QString iconName = "folder-remote"; // TODO: CHANGE ICON
+    if (parentUdi().isEmpty()) {
+        return "computer";
+    }
+
+    if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        return "cpu";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return "camera-photo";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+        // TODO: check out special cases like iPod
+        return "multimedia-player";
+    }
+
     return QString();
 }
 
