@@ -37,11 +37,12 @@
 using namespace Solid::Backends::UPower;
 
 UPowerDevice::UPowerDevice(const QString &udi)
-    : m_device(UP_DBUS_SERVICE,
+    : Solid::Ifaces::Device()
+    , m_device(UP_DBUS_SERVICE,
                udi,
                UP_DBUS_INTERFACE_DEVICE,
-               QDBusConnection::systemBus()),
-    Solid::Ifaces::Device(), m_udi(udi)
+               QDBusConnection::systemBus())
+    , m_udi(udi)
 {
     if (m_device.isValid())
         connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
