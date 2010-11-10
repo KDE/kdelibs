@@ -21,7 +21,6 @@
 #include "kfilewidget.h"
 #include "kdirselectdialog.h"
 
-#include <kgenericfactory.h>
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(KFileModuleFactory, registerPlugin<KFileModule>();)
