@@ -23,6 +23,7 @@
 #include "udevgenericinterface.h"
 #include "udevprocessor.h"
 #include "udevcamera.h"
+#include "udevportablemediaplayer.h"
 
 using namespace Solid::Backends::UDev;
 
@@ -86,6 +87,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::Camera:
         return !property("ID_GPHOTO2").toString().isEmpty();
 
+    case Solid::DeviceInterface::PortableMediaPlayer:
+        return false; // TODO: check what determines a portable media player
+
     default:
         return false;
     }
@@ -106,6 +110,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::Camera:
         return new Camera(this);
+
+    case Solid::DeviceInterface::PortableMediaPlayer:
+        return new PortableMediaPlayer(this);
 
     default:
         qFatal("Shouldn't happen");
