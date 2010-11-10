@@ -291,6 +291,7 @@ KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
    d(new KKeySequenceWidgetPrivate(this))
 {
     d->init();
+    setFocusProxy( d->keyButton );
     connect(d->keyButton, SIGNAL(clicked()), this, SLOT(captureKeySequence()));
     connect(d->clearButton, SIGNAL(clicked()), this, SLOT(clearKeySequence()));
     connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
