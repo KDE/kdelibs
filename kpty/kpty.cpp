@@ -3,6 +3,8 @@
    This file is part of the KDE libraries
    Copyright (C) 2002 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2002-2003,2007-2008 Oswald Buddenhagen <ossi@kde.org>
+   Copyright (C) 2010 KDE e.V. <kde-ev-board@kde.org>
+     Author Adriaan de Groot <groot@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -110,7 +112,7 @@ extern "C" {
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
 # define _tcgetattr(fd, ttmode) ioctl(fd, TIOCGETA, (char *)ttmode)
 #else
-# if defined(_HPUX_SOURCE) || defined(__Lynx__) || defined (__CYGWIN__)
+# if defined(_HPUX_SOURCE) || defined(__Lynx__) || defined (__CYGWIN__) || defined(__sun)
 #  define _tcgetattr(fd, ttmode) tcgetattr(fd, ttmode)
 # else
 #  define _tcgetattr(fd, ttmode) ioctl(fd, TCGETS, (char *)ttmode)
@@ -120,7 +122,7 @@ extern "C" {
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
 # define _tcsetattr(fd, ttmode) ioctl(fd, TIOCSETA, (char *)ttmode)
 #else
-# if defined(_HPUX_SOURCE) || defined(__CYGWIN__)
+# if defined(_HPUX_SOURCE) || defined(__CYGWIN__) || defined(__sun)
 #  define _tcsetattr(fd, ttmode) tcsetattr(fd, TCSANOW, ttmode)
 # else
 #  define _tcsetattr(fd, ttmode) ioctl(fd, TCSETS, (char *)ttmode)
@@ -349,9 +351,18 @@ bool KPty::open()
   }
 
 #if (defined(__svr4__) || defined(__sgi__) || defined(Q_OS_SOLARIS))
-  // Solaris
-  ioctl(d->slaveFd, I_PUSH, "ptem");
-  ioctl(d->slaveFd, I_PUSH, "ldterm");
+  // Solaris uses STREAMS for terminal handling. It is possible
+  // for the pty handling modules to be left off the stream; in that
+  // case push them on. ioctl(fd, I_FIND, ...) is documented to return
+  // 1 if the module is on the stream already.
+  {
+    static const char *pt = "ptem";
+    static const char *ld = "ldterm";
+    if (ioctl(d->slaveFd, I_FIND, pt) == 0)
+      ioctl(d->slaveFd, I_PUSH, pt);
+    if (ioctl(d->slaveFd, I_FIND, ld) == 0)
+      ioctl(d->slaveFd, I_PUSH, ld);
+  }
 #endif
 
 #endif /* HAVE_OPENPTY */
@@ -632,13 +643,13 @@ void KPty::logout()
 #endif
 }
 
-// XXX Supposedly, tc[gs]etattr do not work with the master on Solaris.
-// Please verify.
-
 bool KPty::tcGetAttr(struct ::termios *ttmode) const
 {
     Q_D(const KPty);
 
+#ifdef Q_OS_SOLARIS
+    if (_tcgetattr(d->slaveFd, ttmode) == 0) return true;
+#endif
     return _tcgetattr(d->masterFd, ttmode) == 0;
 }
 
@@ -646,6 +657,9 @@ bool KPty::tcSetAttr(struct ::termios *ttmode)
 {
     Q_D(KPty);
 
+#ifdef Q_OS_SOLARIS
+    if (_tcsetattr(d->slaveFd, ttmode) == 0) return true;
+#endif
     return _tcsetattr(d->masterFd, ttmode) == 0;
 }
 

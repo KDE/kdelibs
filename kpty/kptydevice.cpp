@@ -2,6 +2,8 @@
 
    This file is part of the KDE libraries
    Copyright (C) 2007 Oswald Buddenhagen <ossi@kde.org>
+   Copyright (C) 2010 KDE e.V. <kde-ev-board@kde.org>
+     Author Adriaan de Groot <groot@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -300,7 +302,21 @@ bool KPtyDevicePrivate::_k_canRead()
 #endif
 
         char *ptr = readBuffer.reserve(available);
-        NO_INTR(readBytes, read(q->masterFd(), ptr, available));
+#ifdef Q_OS_SOLARIS
+        // Even if available > 0, it is possible for read()
+        // to return 0 on Solaris, due to 0-byte writes in the stream.
+        // Ignore them and keep reading until we hit *some* data.
+        // In Solaris it is possible to have 15 bytes available
+        // and to (say) get 0, 0, 6, 0 and 9 bytes in subsequent reads.
+        // Because the stream is set to O_NONBLOCK in finishOpen(),
+        // an EOF read will return -1.
+        readBytes = 0;
+        while (!readBytes)
+#endif
+        // Useless block braces except in Solaris
+        {
+          NO_INTR(readBytes, read(q->masterFd(), ptr, available));
+        }
         if (readBytes < 0) {
             readBuffer.unreserve(available);
             q->setErrorString(i18n("Error reading from PTY"));
