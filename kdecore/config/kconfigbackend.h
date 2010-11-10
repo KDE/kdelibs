@@ -28,7 +28,13 @@
 
 #include <kdecore_export.h>
 #include <kconfigbase.h>
+#include <kdebug.h>
+#ifndef KDE_NO_DEPRECATED
 #include <kgenericfactory.h>
+#endif
+#include <klocale.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <ksharedptr.h>
 
 class KEntryMap;
