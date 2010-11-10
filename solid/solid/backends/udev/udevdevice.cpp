@@ -21,6 +21,7 @@
 #include "udevdevice.h"
 
 #include "udevgenericinterface.h"
+#include "udevprocessor.h"
 #include "udevcamera.h"
 
 using namespace Solid::Backends::UDev;
@@ -57,7 +58,7 @@ QString UDevDevice::product() const
 
 QString UDevDevice::icon() const
 {
-    // TODO
+    QString iconName = "folder-remote"; // TODO: CHANGE ICON
     return QString();
 }
 
@@ -79,6 +80,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::GenericInterface:
         return true;
 
+    case Solid::DeviceInterface::Processor:
+        return property("DRIVER").toString() == "processor";
+
     case Solid::DeviceInterface::Camera:
         return !property("ID_GPHOTO2").toString().isEmpty();
 
@@ -96,6 +100,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     switch (type) {
     case Solid::DeviceInterface::GenericInterface:
         return new GenericInterface(this);
+
+    case Solid::DeviceInterface::Processor:
+        return new Processor(this);
 
     case Solid::DeviceInterface::Camera:
         return new Camera(this);
