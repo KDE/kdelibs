@@ -26,7 +26,7 @@ namespace KDEPrivate
 {
 
 KAboutApplicationPersonListModel::KAboutApplicationPersonListModel( const QList< KAboutPerson > &personList,
-                                                                    QObject *parent = 0 )
+                                                                    QObject *parent )
     : QAbstractListModel( parent )
     , m_personList( personList )
 {
@@ -35,7 +35,7 @@ KAboutApplicationPersonListModel::KAboutApplicationPersonListModel( const QList<
 }
 
 int
-KAboutApplicationPersonListModel::rowCount( const QModelIndex &parent = QModelIndex() ) const
+KAboutApplicationPersonListModel::rowCount( const QModelIndex &parent ) const
 {
     Q_UNUSED( parent )
     return m_personList.count();
@@ -60,7 +60,6 @@ KAboutApplicationPersonListModel::data( const QModelIndex &index, int role ) con
     }
     else
     {
-        kDebug()<<"ERROR: index FUBAR";
         return QVariant();
     }
 

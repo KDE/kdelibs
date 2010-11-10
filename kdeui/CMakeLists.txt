@@ -80,6 +80,8 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
+ dialogs/kaboutapplicationpersonlistmodel_p.cpp
+ dialogs/kaboutapplicationpersonlistview_p.cpp
  dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
@@ -475,7 +477,6 @@ install( FILES
  colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
- dialogs/kaboutapplicationpersonlistmodel_p.cpp
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h

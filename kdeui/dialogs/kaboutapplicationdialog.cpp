@@ -22,6 +22,8 @@
 
 #include "kaboutapplicationdialog.h"
 
+#include "kaboutapplicationpersonlistmodel_p.h"
+#include "kaboutapplicationpersonlistview_p.h"
 #include "kdeui/icons/kiconloader.h"
 #include "kdeui/kernel/kapplication.h"
 #include "kdeui/kernel/kglobalsettings.h"
@@ -53,6 +55,17 @@ public:
     KAboutApplicationDialog *q;
 
     const KAboutData *aboutData;
+
+private:
+    //Authors:
+    QWidget *m_authorWidget;
+    KDEPrivate::KAboutApplicationPersonListModel *m_authorModel;
+    KDEPrivate::KAboutApplicationPersonListView *m_authorView;
+    //Credits:
+    QWidget *m_creditWidget;
+    KDEPrivate::KAboutApplicationPersonListModel *m_creditModel;
+    KDEPrivate::KAboutApplicationPersonListView *m_creditView;
+
 };
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
@@ -90,6 +103,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     q->setDefaultButton(KDialog::Close);
     q->setModal(false);
 
+    //Set up the title widget...
     KTitleWidget *titleWidget = new KTitleWidget(q);
 
     QIcon windowIcon;
@@ -112,9 +126,11 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
                                    "<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE Development Platform %3</html>",
                                    aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
 
+    //Then the tab bar...
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
 
+    //Set up the first page...
     QString aboutPageText = aboutData->shortDescription() + '\n';
 
     if (!aboutData->otherText().isEmpty())
@@ -158,59 +174,59 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     tabWidget->addTab(aboutWidget, i18n("&About"));
 
+    //Palette needed at least for translators...
     QPalette transparentBackgroundPalette;
     transparentBackgroundPalette.setColor(QPalette::Base, Qt::transparent);
     transparentBackgroundPalette.setColor(QPalette::Text, transparentBackgroundPalette.color(QPalette::WindowText));
 
+    //And here we go, authors page...
     const int authorCount = aboutData->authors().count();
-    if (authorCount) {
-        QString authorPageText;
+    if (authorCount)
+    {
+        m_authorWidget = new QWidget( q );
+        QVBoxLayout *authorLayout = new QVBoxLayout( m_authorWidget );
+        authorLayout->setMargin( 0 );
 
-        QString authorPageTitle = authorCount == 1 ? i18n("A&uthor") : i18n("A&uthors");
-
-        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty()) {
-            if (!aboutData->customAuthorTextEnabled()) {
+        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty())
+        {
+            QLabel *bugsLabel = new QLabel( m_authorWidget );
+            bugsLabel->setContentsMargins( 4, 2, 0, 4 );
+            if (!aboutData->customAuthorTextEnabled())
+            {
                 if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
-                    authorPageText = i18n("Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n");
-                else {
-                    if(aboutData->authors().count() == 1 && (aboutData->authors().first().emailAddress() == aboutData->bugAddress())) {
-                        authorPageText = i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
+                    bugsLabel->setText( i18n("Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n") );
+                else
+                {
+                    if(aboutData->authors().count() == 1 && (aboutData->authors().first().emailAddress() == aboutData->bugAddress()))
+                    {
+                        bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
                                               aboutData->authors().first().emailAddress(),
-                                              aboutData->authors().first().emailAddress());
+                                              aboutData->authors().first().emailAddress() ) );
                     }
-                    else {
-                        authorPageText = i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
-                                              aboutData->bugAddress(), aboutData->bugAddress());
+                    else
+                    {
+                        bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
+                                              aboutData->bugAddress(), aboutData->bugAddress()));
                     }
                 }
             }
             else
-                authorPageText = aboutData->customAuthorRichText();
+                bugsLabel->setText( aboutData->customAuthorRichText() );
+            bugsLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
+            authorLayout->addWidget( bugsLabel );
         }
 
-        authorPageText += "<br />";
+        m_authorModel = new KDEPrivate::KAboutApplicationPersonListModel( aboutData->authors(), m_authorWidget );
+        m_authorView = new KDEPrivate::KAboutApplicationPersonListView( m_authorWidget );
+        m_authorView->setModel( m_authorModel );
+        m_authorView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+        authorLayout->addWidget( m_authorView );
 
-        const QList<KAboutPerson> lst = aboutData->authors();
-        for (int i = 0; i < lst.size(); ++i) {
-            QString pname = i18nc("@item Author name in about dialog", "%1", lst.at(i).name());
-            authorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(pname);
-            if (!lst.at(i).emailAddress().isEmpty())
-                authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg(lst.at(i).emailAddress());
-            if (!lst.at(i).webAddress().isEmpty())
-                authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
-            if (!lst.at(i).task().isEmpty())
-                authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            if (i < lst.size() - 1)
-                authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
-        }
-
-        KTextBrowser *authorTextBrowser = new KTextBrowser;
-        authorTextBrowser->setFrameStyle(QFrame::NoFrame);
-        authorTextBrowser->setPalette(transparentBackgroundPalette);
-        authorTextBrowser->setHtml(authorPageText);
-        tabWidget->addTab(authorTextBrowser, authorPageTitle);
+        QString authorPageTitle = QString( ( authorCount == 1 ) ? i18n("A&uthor") : i18n("A&uthors") );
+        tabWidget->addTab( m_authorWidget, authorPageTitle );
     }
 
+    //And credits page...
     const int creditsCount = aboutData->credits().count();
     if (creditsCount) {
         QString creditsPageText;
@@ -236,6 +252,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
 
+    //Finally, the optional translators page...
     if ( !( opt & HideTranslators ) ) {
         const QList<KAboutPerson> translatorList = aboutData->translators();
 
@@ -260,6 +277,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
         }
     }
 
+    //And we jam everything together in a layout...
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(titleWidget);
     mainLayout->addWidget(tabWidget);
