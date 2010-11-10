@@ -114,7 +114,7 @@ QObject *UDevManager::createDevice(const QString &udi_)
         RootDevice *const device = new RootDevice(UDEV_UDI_PREFIX);
         device->setProduct(tr("Devices"));
         device->setDescription(tr("Devices declared in your system"));
-        device->setIcon("folder-remote"); // TODO: CHANGE ICON
+        device->setIcon("computer");
         return device;
     }
     const QString udi = udi_.right(udi_.size() - udiPrefix().size());
