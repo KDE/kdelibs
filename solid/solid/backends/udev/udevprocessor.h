@@ -46,7 +46,6 @@ public:
     virtual bool canChangeFrequency() const;
     virtual Solid::Processor::InstructionSets instructionSets() const;
 };
-
 }
 }
 }
