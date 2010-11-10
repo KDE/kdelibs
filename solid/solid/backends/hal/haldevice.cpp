@@ -172,7 +172,13 @@ QString HalDevice::parentUdi() const
 
 QString HalDevice::vendor() const
 {
-    return property("info.vendor").toString();
+    const QString category = property("info.category").toString();
+
+    if (category == QLatin1String("battery")) {
+        return property("battery.vendor").toString();
+    } else {
+        return property("info.vendor").toString();
+    }
 }
 
 QString HalDevice::product() const
