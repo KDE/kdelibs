@@ -106,8 +106,8 @@ void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
         m_providerName = m_provider.name();
 
         int i = 0;
-        for( QList< KAboutApplicationPersonProfile >::const_iterator it = m_profileList.begin();
-             it != m_profileList.end(); ++it ) {
+        for( QList< KAboutApplicationPersonProfile >::const_iterator it = m_profileList.constBegin();
+             it != m_profileList.constEnd(); ++it ) {
             KAboutApplicationPersonProfile profile = *it;
             if( !profile.ocsUsername().isEmpty() ) {
                 Attica::ItemJob< Attica::Person > *job = m_provider.requestPerson( profile.ocsUsername() );
