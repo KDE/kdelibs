@@ -60,8 +60,18 @@ private Q_SLOTS:
     void slotEjectRequested();
     void slotEjectDone(int error, const QString &errorString);
 
+    void slotChanged();
+
 private:
+    void initReadWriteSpeeds() const;
+
     bool m_ejectInProgress;
+
+    // read/write speeds
+    mutable int m_readSpeed;
+    mutable int m_writeSpeed;
+    mutable QList<int> m_writeSpeeds;
+    mutable bool m_speedsInit;
 };
 
 }

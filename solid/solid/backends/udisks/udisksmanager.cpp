@@ -212,7 +212,7 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
     }
 }
 
-const QStringList &Solid::Backends::UDisks::UDisksManager::deviceCache()
+const QStringList &UDisksManager::deviceCache()
 {
     if (m_deviceCache.isEmpty())
         allDevices();

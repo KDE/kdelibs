@@ -19,14 +19,26 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#include <QtCore/QFile>
+#include <QtCore/QDebug>
+
 #include "udisksopticaldrive.h"
 #include "udisks.h"
 #include "udisksdevice.h"
+#include "linux_dvd_rw_utils.c"
 
 using namespace Solid::Backends::UDisks;
 
 UDisksOpticalDrive::UDisksOpticalDrive(UDisksDevice *device)
-    : UDisksStorageDrive(device), m_ejectInProgress(false)
+    : UDisksStorageDrive(device), m_ejectInProgress(false), m_readSpeed(0), m_writeSpeed(0), m_speedsInit(false)
 {
   // TODO: ...
 /*    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
@@ -35,6 +47,7 @@ UDisksOpticalDrive::UDisksOpticalDrive(UDisksDevice *device)
                              SLOT(slotEjectRequested()),
                              SLOT(slotEjectDone(int, const QString&)));
 
+    connect(m_device, SIGNAL(changed()), this, SLOT(slotChanged()));
 }
 
 UDisksOpticalDrive::~UDisksOpticalDrive()
@@ -91,22 +104,55 @@ void UDisksOpticalDrive::slotEjectDone(int error, const QString &errorString)
     emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
-QList< int > UDisksOpticalDrive::writeSpeeds() const
+void UDisksOpticalDrive::initReadWriteSpeeds() const
 {
-    // FIXME unsupported in DK
-    return QList<int>();
+    int read_speed, write_speed;
+    char *write_speeds = 0;
+    QByteArray device_file = QFile::encodeName(m_device->property("DeviceFile").toString());
+
+    //qDebug("Doing open (\"%s\", O_RDONLY | O_NONBLOCK)", device_file.constData());
+    int fd = open(device_file, O_RDONLY | O_NONBLOCK);
+    if (fd < 0) {
+        qWarning("Cannot open %s: %s", device_file.constData(), strerror (errno));
+        return;
+    }
+
+    if (get_read_write_speed(fd, &read_speed, &write_speed, &write_speeds) >= 0) {
+        m_readSpeed = read_speed;
+        m_writeSpeed = write_speed;
+
+        QStringList list = QString::fromLatin1(write_speeds).split(',', QString::SkipEmptyParts);
+        foreach (const QString & speed, list)
+            m_writeSpeeds.append(speed.toInt());
+
+        free(write_speeds);
+
+        m_speedsInit = true;
+    }
+
+    close(fd);
+}
+
+QList<int> UDisksOpticalDrive::writeSpeeds() const
+{
+    if (!m_speedsInit)
+        initReadWriteSpeeds();
+    //qDebug() << "solid write speeds:" << m_writeSpeeds;
+    return m_writeSpeeds;
 }
 
 int UDisksOpticalDrive::writeSpeed() const
 {
-    // FIXME unsupported in DK
-    return 0;
+    if (!m_speedsInit)
+        initReadWriteSpeeds();
+    return m_writeSpeed;
 }
 
 int UDisksOpticalDrive::readSpeed() const
 {
-    // FIXME unsupported in DK
-    return 0;
+    if (!m_speedsInit)
+        initReadWriteSpeeds();
+    return m_readSpeed;
 }
 
 Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
@@ -145,4 +191,9 @@ Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
     }
 
     return supported;
+}
+
+void UDisksOpticalDrive::slotChanged()
+{
+    m_speedsInit = false; // reset the read/write speeds, changes eg. with an inserted media
 }
