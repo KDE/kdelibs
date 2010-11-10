@@ -1133,8 +1133,9 @@ KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QStri
 {
     KParts::SelectorInterface::Element element;
 
-    // If the specified method is None, return an empty list...
-    if (method == KParts::SelectorInterface::None)
+    // If the specified method is None, return an empty list; similarly
+    // if the document is null, which may be possible in case of an error
+    if (method == KParts::SelectorInterface::None || part()->document().isNull())
         return element;
 
     if (!(supportedQueryMethods() & method))
@@ -1164,8 +1165,9 @@ QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(c
 {
     QList<KParts::SelectorInterface::Element> elements;
 
-    // If the specified method is None, return an empty list...
-    if (method == KParts::SelectorInterface::None)
+    // If the specified method is None, return an empty list; similarly
+    // if the document is null, which may be possible in case of an error
+    if (method == KParts::SelectorInterface::None || part()->document().isNull())
         return elements;
 
     // If the specified method is not supported, return an empty list...
