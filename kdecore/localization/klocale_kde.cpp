@@ -104,8 +104,8 @@ QDebug operator<<(QDebug debug, const KCatalogName &cn)
 KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *config,
                                const QString &language, const QString &country )
                : q(q_ptr),
-                 m_country(country),
-                 m_language(language),
+                 m_country(country.toLower()),
+                 m_language(language.toLower()),
                  m_languages(0),
                  m_catalogName(catalog),
                  m_calendar(0),
@@ -2682,7 +2682,7 @@ QStringList KLocalePrivate::allLanguagesList()
     return m_languages->groupList();
 }
 
-QStringList KLocalePrivate::allLanguagesInstalledList()
+QStringList KLocalePrivate::installedLanguages()
 {
     QStringList languages;
     QStringList paths = KGlobal::dirs()->findAllResources("locale", QLatin1String("*/entry.desktop"));

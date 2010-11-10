@@ -98,8 +98,8 @@ public:
      * country of this locale.
      *
      * @param catalog  the name of the main language file
-     * @param language the language for the locale
-     * @param country  the country for the locale
+     * @param language the ISO Language Code for the locale, e.g. "en" for English
+     * @param country  the ISO Country Code for the locale, e.g. "us" for USA
      * @param config   a configuration file with a Locale group detailing
      *                 locale-related preferences (such as date and time
      *                 formatting options)
@@ -1844,10 +1844,13 @@ public:
      * @return list of all language codes
      *
      * @see languageCodeToName
+     * @see installedLanguages
      */
     QStringList allLanguagesList() const;
 
     /**
+     * @since 4.6
+     *
      * Provides list of all installed KDE Language Translations.
      *
      * Use languageCodeToName(language) to get human readable, localized
@@ -1857,7 +1860,7 @@ public:
      *
      * @see languageCodeToName
      */
-    QStringList allLanguagesInstalledList() const;
+    QStringList installedLanguages() const;
 
     /**
      * Convert a known language code to a human readable, localized form.
@@ -1873,7 +1876,7 @@ public:
      * @see language
      * @see languageList
      * @see allLanguagesList
-     * @see allLanguagesInstalledList
+     * @see installedLanguages
      */
     QString languageCodeToName(const QString &language) const;
 

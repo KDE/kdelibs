@@ -213,7 +213,7 @@ public:
      * @internal Returns a list of all installed KDE languages.
      * The worker of the same-name KLocale API function.
      */
-    virtual QStringList allLanguagesInstalledList();
+    virtual QStringList installedLanguages();
 
     /**
      * @internal Returns the name of the internal language.
