@@ -27,8 +27,8 @@
 #include "knfotranslator_p.h"
 #include <klocale.h>
 
-#include <config-nepomuk.h>
-#ifdef HAVE_NEPOMUK
+#include <config-kio.h>
+#ifndef KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include <resource.h>
     #include <resourcemanager.h>
@@ -89,7 +89,7 @@ KFileMetaDataConfigurationWidget::Private::~Private()
 
 void KFileMetaDataConfigurationWidget::Private::loadMetaData()
 {
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
     m_provider->setItems(m_fileItems);
     connect(m_provider, SIGNAL(loadingFinished()),
             q, SLOT(slotLoadingFinished()));
@@ -138,7 +138,7 @@ void KFileMetaDataConfigurationWidget::Private::addItem(const KUrl& uri)
 
 void KFileMetaDataConfigurationWidget::Private::slotLoadingFinished()
 {
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
     // Get all meta information labels that are available for
     // the currently shown file item and add them to the list.
     Q_ASSERT(m_provider != 0);

@@ -1,13 +1,29 @@
-project(kio)
+PROject(kio)
 
 if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
    set(KIO_NO_SOLID TRUE)
+   set(KIO_NO_NEPOMUK TRUE)
 endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
+
+if(NOT HAVE_NEPOMUK)
+   set(KIO_NO_NEPOMUK TRUE)
+endif(NOT HAVE_NEPOMUK)
+
 
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif(OPENSSL_FOUND)
+
+if(NOT KIO_NO_NEPOMUK)
+    include_directories(
+       ${CMAKE_SOURCE_DIR}/nepomuk/
+       ${CMAKE_SOURCE_DIR}/nepomuk/core/
+       ${CMAKE_SOURCE_DIR}/nepomuk/types/    
+       ${CMAKE_SOURCE_DIR}/nepomuk/ui/
+       ${CMAKE_SOURCE_DIR}/nepomuk/query/
+    )
+endif(NOT KIO_NO_NEPOMUK)
 
 # This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
 include_directories(
@@ -21,15 +37,11 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${KDE4_KDEUI_INCLUDES}
-   ${CMAKE_SOURCE_DIR}/nepomuk/
-   ${CMAKE_SOURCE_DIR}/nepomuk/core/
-   ${CMAKE_SOURCE_DIR}/nepomuk/types/    
-   ${CMAKE_SOURCE_DIR}/nepomuk/ui/
-   ${CMAKE_SOURCE_DIR}/nepomuk/query/
    ${KDE4_KDECORE_INCLUDES}/
    ${STRIGI_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
 )
+
 
 if(NOT KIO_NO_SOLID)
    include_directories(${CMAKE_BINARY_DIR}/solid/)
@@ -220,13 +232,13 @@ if(NOT KIO_NO_SOLID)
     )
 endif(NOT KIO_NO_SOLID)
 
-if(HAVE_NEPOMUK)
+if(NOT KIO_NO_NEPOMUK)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
     kfile/kcommentwidget.cpp
     kfile/kloadfilemetadatathread.cpp
     )
-endif(HAVE_NEPOMUK)
+endif(NOT KIO_NO_NEPOMUK)
 
 if(NOT WIN32)
   set(kfile_STAT_SRCS
@@ -289,9 +301,9 @@ install(FILES kssl/ksslcertificatemanager.upd
 
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 
-if(HAVE_NEPOMUK)
+if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
-endif(HAVE_NEPOMUK)
+endif(NOT KIO_NO_NEPOMUK)
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 

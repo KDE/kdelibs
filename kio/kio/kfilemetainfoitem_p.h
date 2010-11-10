@@ -22,11 +22,14 @@
 #define KFILEMETAINFOITEM_P_H
 
 #include "kurl.h"
+#include <config-kio.h>
 
 #ifndef KDE_NO_DEPRECATED
 #include <predicateproperties.h>
 #else
+#ifndef KIO_NO_NEPOMUK
 #include <nepomuk/types/property.h>
+#endif
 #endif
 
 #include <QtCore/QHash>
@@ -40,7 +43,9 @@ public:
 #ifndef KDE_NO_DEPRECATED
     PredicateProperties pp;
 #else
+#ifndef KIO_NO_NEPOMUK
     Nepomuk::Types::Property pp;
+#endif
 #endif
     KUrl propertyUri;
     QVariant value;

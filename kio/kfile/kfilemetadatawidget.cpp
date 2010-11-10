@@ -34,8 +34,8 @@
 #include <QString>
 #include <QTimer>
 
-#include <config-nepomuk.h>
-#ifdef HAVE_NEPOMUK
+#include <config-kio.h>
+#ifndef KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
 
     #include <property.h>
@@ -79,7 +79,7 @@ public:
     void slotDataChangeStarted();
     void slotDataChangeFinished();
 
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
     QList<KUrl> sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const;
 
     /**
@@ -184,7 +184,7 @@ void KFileMetaDataWidget::Private::deleteRows()
 
 void KFileMetaDataWidget::Private::slotLoadingFinished()
 {
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
     deleteRows();
 
     if (!hasNepomukUris()) {
@@ -272,7 +272,7 @@ void KFileMetaDataWidget::Private::slotDataChangeFinished()
     q->setEnabled(true);
 }
 
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
 QList<KUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const
 {
     // Create a map, where the translated label prefixed with the

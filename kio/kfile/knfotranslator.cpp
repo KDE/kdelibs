@@ -23,8 +23,8 @@
 
 #include <kurl.h>
 
-#include <config-nepomuk.h>
-#ifdef HAVE_NEPOMUK
+#include <config-kio.h>
+#ifndef KIO_NO_NEPOMUK
 #define DISABLE_NEPOMUK_LEGACY
 #include "property.h"
 #endif
@@ -114,7 +114,7 @@ QString KNfoTranslator::translation(const KUrl& uri) const
     }
 
     // fallback if the URI is not translated
-#ifdef HAVE_NEPOMUK
+#ifndef KIO_NO_NEPOMUK
     const QString label = Nepomuk::Types::Property(uri).label();
 #else
     QString label;
