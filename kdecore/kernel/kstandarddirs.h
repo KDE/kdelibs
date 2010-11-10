@@ -248,7 +248,7 @@ public:
      * otherwise after
      * @return true if successful, false otherwise.
      *
-     * @deprecated
+     * @deprecated, use addResourceType(type, 0, relativename, priority)
      */
 #ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED bool addResourceType( const char *type,
