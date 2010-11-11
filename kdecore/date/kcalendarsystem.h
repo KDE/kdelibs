@@ -24,6 +24,7 @@
 
 #include <kdecore_export.h>
 #include "klocale.h"  // needed for enums
+#include "kglobal.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QDate>
@@ -168,10 +169,10 @@ public:
      * calendar systems.
      *
      * @param calendarType the specific calendar type to return the label for
-     *
+     * @param locale the locale to use for the label, defaults to global
      * @return label for calendar
      */
-    static QString calendarLabel( KLocale::CalendarSystem calendarSystem );
+    static QString calendarLabel( KLocale::CalendarSystem calendarSystem, const KLocale *locale = KGlobal::locale() );
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.
