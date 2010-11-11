@@ -122,9 +122,12 @@ void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
 #endif //HAVE_ATTICA
 }
 
-#ifdef HAVE_ATTICA
 void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )   //SLOT
 {
+#ifndef HAVE_ATTICA
+    Q_UNUSED( job )
+#endif //HAVE_ATTICA
+#ifdef HAVE_ATTICA
     Attica::ItemJob< Attica::Person > *personJob =
         static_cast< Attica::ItemJob< Attica::Person > * >( job );
     if( personJob->metadata().error() == Attica::Metadata::NoError ) {
@@ -206,10 +209,15 @@ void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )  
     }
     else
         kDebug() << "Could not fetch OCS person info.";
+#endif //HAVE_ATTICA
 }
 
 void KAboutApplicationPersonModel::onAvatarJobFinished( QNetworkReply *reply )  //SLOT
 {
+#ifndef HAVE_ATTICA
+    Q_UNUSED( reply )
+#endif //HAVE_ATTICA
+#ifdef HAVE_ATTICA
     QNetworkAccessManager *manager = reply->manager();
     int personProfileListIndex = manager->property( "personProfile" ).toInt();
 
@@ -232,8 +240,8 @@ void KAboutApplicationPersonModel::onAvatarJobFinished( QNetworkReply *reply )  
 
     emit dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
     emit layoutChanged();
-}
 #endif //HAVE_ATTICA
+}
 
 KAboutApplicationPersonProfileOcsLink::Type KAboutApplicationPersonProfileOcsLink::typeFromAttica( const QString &atticaType )
 {

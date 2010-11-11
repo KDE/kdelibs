@@ -33,6 +33,11 @@
 #include <QtGui/QPixmap>
 #include <QtNetwork/QNetworkReply>
 
+// Forward declarations to make Attica-related members work
+namespace Attica {
+class BaseJob;
+}
+
 namespace KDEPrivate
 {
 
@@ -58,10 +63,8 @@ public:
 
 private Q_SLOTS:
     void onProvidersLoaded();
-#ifdef HAVE_ATTICA
     void onPersonJobFinished( Attica::BaseJob *job );
     void onAvatarJobFinished( QNetworkReply *reply );
-#endif //HAVE_ATTICA
 
 private:    
     QList< KAboutPerson > m_personList;
