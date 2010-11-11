@@ -23,6 +23,7 @@
 #include "simplefacet.h"
 #include "dynamicresourcefacet.h"
 #include "datefacet.h"
+#include "typefacet.h"
 
 #include <Soprano/Vocabulary/NAO>
 
@@ -128,18 +129,18 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createFileTypeFacet( QObject* pare
 {
     SimpleFacet* facetTypes = new SimpleFacet( parent );
     facetTypes->setSelectionMode( Facet::MatchAny );
-    facetTypes->addTerm( i18nc("option:check A filter on file type", "Documents"),
+    facetTypes->addTerm( i18nc("@option:check A filter on file type", "Documents"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Document()) );
 
     // need to check the mimetype as well since strigi is still not perfect
-    facetTypes->addTerm( i18nc("option:check A filter on file type - audio files", "Audio"),
+    facetTypes->addTerm( i18nc("@option:check A filter on file type - audio files", "Audio"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Audio()) ||
                          ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), LiteralTerm(QLatin1String("audio"))) );
-    facetTypes->addTerm( i18nc("option:check A filter on file type - media video", "Video"),
+    facetTypes->addTerm( i18nc("@option:check A filter on file type - media video", "Video"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Video()) ||
                          ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), LiteralTerm(QLatin1String("video"))) );
 
-    facetTypes->addTerm( i18nc("option:check A filter on file type", "Images"),
+    facetTypes->addTerm( i18nc("@option:check A filter on file type", "Images"),
                          ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Image()) );
     return facetTypes;
 }
@@ -148,19 +149,7 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createFileTypeFacet( QObject* pare
 // static
 Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createTypeFacet( QObject* parent )
 {
-    SimpleFacet* facetTypes = new SimpleFacet( parent );
-    facetTypes->setSelectionMode( Facet::MatchAny );
-    facetTypes->addTerm(i18nc("option:check A filter on resource type", "Files"),
-                        ResourceTypeTerm(Nepomuk::Vocabulary::NFO::FileDataObject()) );
-    facetTypes->addTerm(i18nc("option:check A filter on resource type", "Contacts"),
-                        ResourceTypeTerm(Nepomuk::Vocabulary::NCO::Contact()));
-    facetTypes->addTerm(i18nc("option:check A filter on resource type", "Emails"),
-                        ResourceTypeTerm(Nepomuk::Vocabulary::NMO::Email()));
-    facetTypes->addTerm(i18nc("option:check A filter on resource type", "Tasks"),
-                        ResourceTypeTerm(Nepomuk::Vocabulary::TMO::Task()));
-    facetTypes->addTerm(i18nc("option:check A filter on resource type", "Tags"),
-                        ResourceTypeTerm(Soprano::Vocabulary::NAO::Tag()));
-    return facetTypes;
+    return new TypeFacet( parent );
 }
 
 
@@ -187,10 +176,10 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createPriorityFacet( QObject* pare
 {
     SimpleFacet* priorityFacet = new SimpleFacet( parent );
     priorityFacet->setSelectionMode(Facet::MatchOne);
-    priorityFacet->addTerm( i18nc("option:radio A filter on prioritizing/sorting a selection of resources", "No priority"), Term() );
-    priorityFacet->addTerm( i18nc("option:radio A filter on prioritizing/sorting a selection of resources", "Last modified"), standardQuery( LastModifiedFilesQuery ).term() );
-    priorityFacet->addTerm( i18nc("option:radio A filter on prioritizing/sorting a selection of resources", "Most important"), standardQuery( MostImportantResourcesQuery ).term() );
-    priorityFacet->addTerm( i18nc("option:radio A filter on prioritizing/sorting a selection of resources", "Never opened"), standardQuery( NeverOpenedFilesQuery ).term() );
+    priorityFacet->addTerm( i18nc("@option:radio A filter on prioritizing/sorting a selection of resources", "No priority"), Term() );
+    priorityFacet->addTerm( i18nc("@option:radio A filter on prioritizing/sorting a selection of resources", "Last modified"), standardQuery( LastModifiedFilesQuery ).term() );
+    priorityFacet->addTerm( i18nc("@option:radio A filter on prioritizing/sorting a selection of resources", "Most important"), standardQuery( MostImportantResourcesQuery ).term() );
+    priorityFacet->addTerm( i18nc("@option:radio A filter on prioritizing/sorting a selection of resources", "Never opened"), standardQuery( NeverOpenedFilesQuery ).term() );
     return priorityFacet;
 }
 
@@ -200,12 +189,12 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createRatingFacet( QObject* parent
 {
     SimpleFacet* facet = new SimpleFacet(parent);
     facet->setSelectionMode(Facet::MatchOne);
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "Any Rating"), Term() );
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "1 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 1.5 ) );
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "2 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 3.5 ) );
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "3 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 5.5 ) );
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "4 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 7.5 ) );
-    facet->addTerm( i18nc("option:radio A filter on the rating of a resource", "Max Rating"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 9.5 ) );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "Any Rating"), Term() );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "1 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 1.5 ) );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "2 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 3.5 ) );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "3 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 5.5 ) );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "4 or more"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 7.5 ) );
+    facet->addTerm( i18nc("@option:radio A filter on the rating of a resource", "Max Rating"), Soprano::Vocabulary::NAO::numericRating() >= LiteralTerm( 9.5 ) );
     return facet;
 }
 

@@ -18,6 +18,7 @@ set(nepomukutils_SRCS
   simplefacet.cpp
   dynamicresourcefacet.cpp
   datefacet.cpp
+  typefacet.cpp
   proxyfacet.cpp
 
   daterange.cpp

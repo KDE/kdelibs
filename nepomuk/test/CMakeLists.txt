@@ -112,3 +112,14 @@ target_link_libraries(facetmodeltest
   nepomukquery
   nepomukutils
 )
+
+kde4_add_unit_test(typefacettest TESTNAME nepomuk-typefacettest typefacettest.cpp)
+target_link_libraries(typefacettest
+  ${QT_QTTEST_LIBRARY}
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS}
+  nepomuk
+  nepomukquery
+  nepomukutils
+)
+

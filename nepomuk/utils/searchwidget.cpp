@@ -62,31 +62,7 @@ Q_DECLARE_METATYPE(Nepomuk::Resource)
 void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::setupFacetWidget()
 {
     m_facetWidget->clear();
-
-    // 1. File vs. Non-file
-    // This one is MatchAny to allow no selection. But selecting both does not make any sense.
-    // Thus, it needs a proxy to hide the non-selected parts
-    SimpleFacet* metaTypeFacet = new SimpleFacet(m_facetWidget);
-    metaTypeFacet->addTerm(i18nc("@option:check Search filter: only show files", "Files"),
-                           Query::ResourceTypeTerm(Vocabulary::NFO::FileDataObject()));
-    metaTypeFacet->addTerm(i18nc("@option:check Search filter: show anything but files", "Other"),
-                           Query::NegationTerm::negateTerm(Query::ResourceTypeTerm(Vocabulary::NFO::FileDataObject())));
-    metaTypeFacet->setSelectionMode(Facet::MatchAny);
-    m_facetWidget->addFacet(metaTypeFacet);
-
-    Facet* fileTypeFacet = Facet::createFileTypeFacet(m_facetWidget);
-    ProxyFacet* fileTypeProxyFacet = new ProxyFacet(m_facetWidget);
-    fileTypeProxyFacet->setSourceFacet(fileTypeFacet);
-    fileTypeProxyFacet->setFacetCondition(metaTypeFacet->termAt(0));
-    m_facetWidget->addFacet(fileTypeProxyFacet);
-
-    Facet* typeFacet = Facet::createTypeFacet(m_facetWidget);
-    ProxyFacet* typeProxyFacet = new ProxyFacet(m_facetWidget);
-    typeProxyFacet->setSourceFacet(typeFacet);
-    typeProxyFacet->setFacetCondition(metaTypeFacet->termAt(1));
-    m_facetWidget->addFacet(typeProxyFacet);
-
-    // 2. the rest which is not very interesting yet
+    m_facetWidget->addFacet(Facet::createTypeFacet(m_facetWidget));
     m_facetWidget->addFacet(Facet::createDateFacet(m_facetWidget));
     m_facetWidget->addFacet(Facet::createPriorityFacet(m_facetWidget));
     m_facetWidget->addFacet(Facet::createTagFacet(m_facetWidget));
