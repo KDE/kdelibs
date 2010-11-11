@@ -1269,6 +1269,13 @@ public:
     const char* clientMachine() const;
 
     /**
+     * returns a comma-separated list of the activities the window is associated with.
+     * FIXME this might be better as a NETRArray ?
+     * @since 4.6
+     */
+    const char* activities() const;
+
+    /**
        Places the window frame geometry in frame, and the application window
        geometry in window.  Both geometries are relative to the root window.
 

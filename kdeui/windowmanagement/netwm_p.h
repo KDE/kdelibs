@@ -154,6 +154,8 @@ struct NETWinInfoPrivate {
     NETFullscreenMonitors fullscreen_monitors;
     bool has_net_support;
 
+    char *activities;
+
     int ref;
 };
 

@@ -96,6 +96,7 @@ static Atom kde_net_wm_window_type_override   = 0;
 static Atom kde_net_wm_window_type_topmenu    = 0;
 static Atom kde_net_wm_temporary_rules        = 0;
 static Atom kde_net_wm_frame_overlap          = 0;
+static Atom kde_net_wm_activities             = 0;
 
 // application protocols
 static Atom wm_protocols = 0;
@@ -233,6 +234,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 	delete [] p->startup_id;
 	delete [] p->class_class;
 	delete [] p->class_name;
+    delete [] p->activities;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
@@ -252,7 +254,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 86;
+static const int netAtomCount = 87;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -349,7 +351,8 @@ static void create_netwm_atoms(Display *d) {
 	    "WM_STATE",
 	    "WM_PROTOCOLS",
 
-            "_NET_WM_FULL_PLACEMENT"
+            "_NET_WM_FULL_PLACEMENT",
+            "_KDE_NET_WM_ACTIVITIES"
 	    };
 
     Atom atoms[netAtomCount], *atomsp[netAtomCount] =
@@ -447,7 +450,8 @@ static void create_netwm_atoms(Display *d) {
 	    &xa_wm_state,
 	    &wm_protocols,
 
-            &net_wm_full_placement
+            &net_wm_full_placement,
+            &kde_net_wm_activities,
 	    };
 
     assert( !netwm_atoms_created );
@@ -1284,6 +1288,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2FullPlacement)
 	atoms[pnum++] = net_wm_full_placement;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2Activities)
+    atoms[pnum++] = kde_net_wm_activities;
+
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
     XChangeProperty(p->display, p->root, net_supporting_wm_check, XA_WINDOW, 32,
@@ -1518,6 +1525,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
     else if( atom == net_wm_full_placement )
         p->properties[ PROTOCOLS2 ] |= WM2FullPlacement;
+
+    else if( atom == kde_net_wm_activities )
+        p->properties[ PROTOCOLS2 ] |= WM2Activities;
 }
 
 void NETRootInfo::setActiveWindow(Window window) {
@@ -2767,6 +2777,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
     p->icon_sizes = NULL;
+    p->activities = (char *) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2829,6 +2840,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
     p->icon_sizes = NULL;
+    p->activities = (char *) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -3849,6 +3861,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
                 dirty2 |= WM2WindowRole;
             else if (pe.xproperty.atom == XA_WM_CLIENT_MACHINE)
                 dirty2 |= WM2ClientMachine;
+        else if (pe.xproperty.atom == kde_net_wm_activities)
+        dirty2 |= WM2Activities;
 	    else {
 
 #ifdef    NETWMDEBUG
@@ -4310,6 +4324,22 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         }
     }
 
+    if (dirty2 & WM2Activities) {
+        delete[] p->activities;
+        p->activities = NULL;
+        if (XGetWindowProperty(p->display, p->window, kde_net_wm_activities, 0l,
+            MAX_PROP_SIZE, False, XA_STRING, &type_ret,
+            &format_ret, &nitems_ret, &unused, &data_ret)
+            == Success) {
+            if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+                p->activities = nstrndup((const char *) data_ret, nitems_ret);
+            }
+
+            if( data_ret )
+                XFree(data_ret);
+        }
+    }
+
     if (dirty & WMPid) {
 	p->pid = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
@@ -4625,6 +4655,10 @@ const char* NETWinInfo::windowRole() const {
 
 const char* NETWinInfo::clientMachine() const {
     return p->client_machine;
+}
+
+const char* NETWinInfo::activities() const {
+    return p->activities;
 }
 
 Bool NETWinInfo::handledIcons() const {
