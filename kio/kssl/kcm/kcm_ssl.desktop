@@ -30,6 +30,7 @@ Name[tr]=SSL Tercihleri
 Name[uk]=Параметри SSL
 Name[wa]=Preferinces SSL
 Name[x-test]=xxSSL Preferencesxx
+Name[zh_CN]=SSL 首选项
 Name[zh_TW]=SSL 喜好設定
 Comment=SSL Versions and Certificates
 Comment[ca]=Versions i certificats SSL
@@ -52,6 +53,7 @@ Comment[tr]=SSL Sürümleri ve Sertifikaları
 Comment[uk]=Версія і сертифікати SSL
 Comment[wa]=Modêyes eyet acertineures SSL
 Comment[x-test]=xxSSL Versions and Certificatesxx
+Comment[zh_CN]=SSL 版本和证书
 Comment[zh_TW]=SSL 版本與憑證
 
 X-KDE-Keywords=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS
