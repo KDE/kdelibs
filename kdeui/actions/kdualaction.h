@@ -62,10 +62,6 @@ class KDEUI_EXPORT KDualAction : public KAction
 {
     Q_OBJECT
 public:
-    enum State {
-        InactiveState,
-        ActiveState
-    };
     /**
      * Constructs a KDualAction with the specified parent. Texts must be set
      * with setTextForState() or setGuiItemForState().
