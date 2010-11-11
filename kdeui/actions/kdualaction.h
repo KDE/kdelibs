@@ -28,25 +28,21 @@ class KDualActionPrivate;
 /**
  * @short An action which can alternate between two texts/icons when triggered.
  *
- * KDualAction should be used when you want to create an action which will
- * return to its original state when triggered again but which should not be
- * rendered as a checkable widget because it is more appropriate to change the
- * text/icon of the action instead.
- *
- * The most common example of use are actions to show/hide a UI element: it is
- * more intuitive to create an action whose text is "Show Foo" when Foo is
- * hidden before changing to "Hide Foo" when Foo is made visible than creating
- * a checkable "Show Foo" action.
+ * KDualAction should be used when you want to create an action which alternate
+ * between two states when triggered but which should not be rendered as a
+ * checkable widget because it is more appropriate to change the text and icon
+ * of the action instead.
  *
  * You should use KDualAction to implement this kind of actions instead of
- * KToggleAction because KToggleAction is rendered as a checkable widget: if
- * you use KToggleAction to implement the previous example, "Show Foo" will be
- * unchecked and "Hide Foo" will be checked.
+ * KToggleAction because KToggleAction is rendered as a checkable widget: this
+ * means one of your state will have a checkbox in a menu and will be
+ * represented as a sunken button in a toolbar.
  *
  * Porting from KToggleAction to KDualAction:
  *
  * 1. If you used the KToggleAction constructor which accepts the action text,
- * adjust the constructor: KDualAction accepts both inactive and active text.
+ * adjust the constructor: KDualAction constructor accepts both inactive and
+ * active text.
  *
  * 2. Replace connections to the checked(bool) signal with a connection to the
  * activeChanged(bool) (or activeChangedByUser(bool))
@@ -54,8 +50,9 @@ class KDualActionPrivate;
  * 3. Replace calls to setChecked()/isChecked() with setActive()/isActive()
  *
  * 4. Replace calls to setCheckedState(guiItem) with
- * setGuiItemForState(KDualAction::ActiveState, guiItem)
+ * setActiveGuiItem(guiItem)
  *
+ * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.6
  */
 class KDEUI_EXPORT KDualAction : public KAction
@@ -162,18 +159,19 @@ public:
 
     /**
      * Returns the action state.
+     * The action is inactive by default.
      */
     bool isActive() const;
 
     /**
      * Defines whether the current action should automatically be changed when
-     * the user triggers this action. The default value is true.
+     * the user triggers this action.
      */
     void setAutoToggle(bool);
 
     /**
      * Returns whether the current action will automatically be changed when
-     * the user triggers this action.
+     * the user triggers this action. The default value is true.
      */
     bool autoToggle() const;
 
