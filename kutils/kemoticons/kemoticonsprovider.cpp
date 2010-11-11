@@ -142,9 +142,6 @@ void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList
         e.picPath = path;
         p.load(path);
 
-	//kdewebkit needs to this line, but it breaks in tooltip which doesn't support it...
-	//e.picHTMLCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(escaped).arg(KUrl(path).url()).arg(p.width()).arg(p.height());
-
         e.picHTMLCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(escaped).arg(path).arg(p.width()).arg(p.height());
 
         e.matchTextEscaped = escaped;
