@@ -688,7 +688,7 @@ void KUriFilter::loadPlugins()
         KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
         if (plugin) {
             const QString& pluginName = plugin->objectName();
-            Q_ASSERT( !pluginName.isEmpty() )
+            Q_ASSERT( !pluginName.isEmpty() );
             d->plugins.insert(pluginName, plugin );
             // Needed to ensure the order of filtering is honored since
             // items are ordered arbitarily in a QHash and QMap always
