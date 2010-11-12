@@ -127,8 +127,10 @@ JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
 }
 
 //------------------------------------------------------------------------------
-DelayedPostMessage::DelayedPostMessage(const QString& _targetOrigin, JSValue* _payload):
-    targetOrigin(_targetOrigin), payload(_payload)
+DelayedPostMessage::DelayedPostMessage(const QString& _sourceOrigin, 
+                                       const QString& _targetOrigin, 
+                                       JSValue* _payload):
+    sourceOrigin(_sourceOrigin), targetOrigin(_targetOrigin), payload(_payload)
 {}
 
 void DelayedPostMessage::mark()
@@ -144,9 +146,16 @@ bool DelayedPostMessage::execute(Window* w)
     kDebug(6070) << doc << targetOrigin;    
     if (doc) {
         // Verify destination.
-        if (targetOrigin != QLatin1String("*")) {
+        bool safe = false;
+        if (targetOrigin == QLatin1String("*")) {
+            safe = true;
+        } else {
             KUrl targetUrl(targetOrigin);
-            kDebug(6070) << doc->domain();
+            kDebug(6070) << doc->origin()->toString();
+        }
+        
+        if (safe) {
+        
         }
     }
 

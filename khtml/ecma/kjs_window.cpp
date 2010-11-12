@@ -1361,17 +1361,17 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
     kDebug(6070) << "Window::isSafeScript: active part has no document!";
     return false;
   }
-  DOM::DOMString actDomain = actDocument->domain();
-  DOM::DOMString thisDomain = thisDocument->domain();
+  khtml::SecurityOrigin* actDomain  = actDocument->origin();
+  khtml::SecurityOrigin* thisDomain = thisDocument->origin();
 
-  if ( actDomain == thisDomain ) {
+  if ( actDomain->canAccess( thisDomain ) ) {
 #ifdef KJS_VERBOSE
     //kDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'";
 #endif
     return true;
   }
 
-  kDebug(6070) << "WARNING: JavaScript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'";
+  kDebug(6070) << "WARNING: JavaScript: access denied for current frame '" << actDomain->toString() << "' to frame '" << thisDomain->toString() << "'";
   // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
@@ -1807,7 +1807,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
         khtmlpart->end();
         if ( p->docImpl() ) {
           //kDebug(6070) << "Setting domain to " << p->docImpl()->domain().string();
-          khtmlpart->docImpl()->setDomain( p->docImpl()->domain());
+          khtmlpart->docImpl()->setOrigin( p->docImpl()->origin());
           khtmlpart->docImpl()->setBaseURL( p->docImpl()->baseURL() );
         }
       }
@@ -2041,6 +2041,13 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
        return jsString(ret);
   }
   case Window::PostMessage: {
+        // Get our own origin.
+        if (!part->xmlDocImpl()) {
+            setDOMException(exec, DOM::DOMException::SECURITY_ERR);
+            return jsUndefined();
+        }
+        
+        QString sourceOrigin = part->xmlDocImpl()->origin()->toString();
         QString targetOrigin = args[1]->toString(exec).qstring();
         KUrl    targetURL(targetOrigin);
         kDebug(6070) << "postMessage targetting:" << targetOrigin;
@@ -2058,7 +2065,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSValue* payload = cloneData(exec, args[0]);
 
         // Queue the actual action, for after script execution.
-        window->m_delayed.append(new DelayedPostMessage(targetOrigin, payload));
+        window->m_delayed.append(new DelayedPostMessage(sourceOrigin, targetOrigin, payload));
   }
 
   };

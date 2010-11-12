@@ -372,6 +372,7 @@ set(khtmlcss_STAT_SRCS
 # khtml/xml/Makefile.am: khtmlxml
 
 set(khtmlxml_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/xml/security_origin.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_docimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodeimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodelistimpl.cpp

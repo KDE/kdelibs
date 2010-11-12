@@ -99,7 +99,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             }
 
             KUrl fullURL = document()->completeURL(parsedURL.string());
-            if (document()->URL().host() != fullURL.host() || document()->URL().port() != fullURL.port())
+            if (document()->origin()->taintsCanvas(fullURL))
                 unsafe = true;
         }
     }

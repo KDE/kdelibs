@@ -31,6 +31,7 @@
 #include "xml/dom_nodelistimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_traversalimpl.h"
+#include "xml/security_origin.h"
 #include "misc/shared.h"
 #include "misc/loader.h"
 #include "misc/seed.h"
@@ -559,8 +560,13 @@ public:
     // Returns 0 if this is the top level document.
     HTMLPartContainerElementImpl *ownerElement() const;
 
+    khtml::SecurityOrigin* origin() const;
+    void setOrigin(khtml::SecurityOrigin*);
+    
+    // These represent JS operations on domain strings, rather than full-blown origins.
+    // (so no port, protocol, etc.)
+    void setDomain( const DOMString &newDomain ); 
     DOMString domain() const;
-    void setDomain( const DOMString &newDomain ); // not part of the DOM
 
     bool isURLAllowed(const QString& url) const;
 
@@ -721,7 +727,8 @@ protected:
     SharedPtr<khtml::RenderArena> m_renderArena;
 private:
     JSEditor *m_jsEditor;
-    mutable DOMString m_domain;
+    mutable RefPtr<khtml::SecurityOrigin> m_origin;
+
     int m_selfOnlyRefCount;
 public:
     // Nodes belonging to this document hold "self-only" references -

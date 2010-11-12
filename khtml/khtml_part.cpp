@@ -5039,12 +5039,13 @@ void KHTMLPart::slotChildDocCreated()
 
 void KHTMLPartPrivate::propagateInitialDomainTo(KHTMLPart* kid)
 {
-  // This method is used to propagate our domain information for
-  // child frames, potentially widening to have less periods, and also
-  // to provide a domain for about: or JavaScript: URLs altogether.
-  // Note that DocumentImpl:;setDomain does the checking.
-  if ( m_doc && kid->d->m_doc )
-    kid->d->m_doc->setDomain( m_doc->domain() );
+    // This method is used to propagate our domain information for
+    // child frames, to provide a domain for about: or JavaScript: URLs 
+    if ( m_doc && kid->d->m_doc ) {
+        DocumentImpl* kidDoc = kid->d->m_doc;
+        if ( kidDoc->origin()->isEmpty() )
+            kidDoc->setOrigin( m_doc->origin() );
+    }
 }
 
 void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
@@ -5144,17 +5145,13 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 #endif
     return false; // we are empty?
   }
-
+  
   // now compare the domains
   if (callingHtmlPart && callingHtmlPart->xmlDocImpl() && xmlDocImpl())  {
-    DOM::DOMString actDomain = callingHtmlPart->xmlDocImpl()->domain();
-    DOM::DOMString destDomain = xmlDocImpl()->domain();
+    khtml::SecurityOrigin* actDomain = callingHtmlPart->xmlDocImpl()->origin();
+    khtml::SecurityOrigin* destDomain = xmlDocImpl()->origin();
 
-#ifdef DEBUG_FINDFRAME
-    kDebug(6050) << "actDomain =" << actDomain.string() << "destDomain =" << destDomain.string();
-#endif
-
-    if (actDomain == destDomain)
+    if (actDomain->canAccess(destDomain))
       return true;
   }
 #ifdef DEBUG_FINDFRAME
@@ -5170,7 +5167,7 @@ KHTMLPart *
 KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame )
 {
 #ifdef DEBUG_FINDFRAME
-  kDebug(6050) << this << "URL =" << url() << "name =" << name() << "findFrameParent(" << f << ")";
+  kDebug(6050) << this << "URL =" << url() << "name =" << objectName() << "findFrameParent(" << f << ")";
 #endif
   // Check access
   KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);

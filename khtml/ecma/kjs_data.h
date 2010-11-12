@@ -54,11 +54,12 @@ JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
 class DelayedPostMessage: public Window::DelayedAction
 {
 public:
-    DelayedPostMessage(const QString& _targetOrigin, JSValue* _payload);
+    DelayedPostMessage(const QString& _sourceOrigin, const QString& _targetOrigin, JSValue* _payload);
 
     virtual void mark();
     virtual bool execute(Window*);
 private:
+    QString  sourceOrigin;
     QString  targetOrigin;
     JSValue* payload;
 };
