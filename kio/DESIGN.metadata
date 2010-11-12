@@ -138,6 +138,9 @@ HTTP-Headers		string	The HTTP headers, concatenated, \n delimited (set by http)
 
 CustomHTTPHeader	string	Custom HTTP headers to add to the request (read by http)
 
+CustomHTTPMethod        string  Overrides the method string sent by kio_http 
+                                without changing the behavior (read by http)
+
 UseProxy		string	URL representing the proxy settings (read by http)
 
 PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy

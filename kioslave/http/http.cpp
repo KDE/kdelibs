@@ -242,9 +242,12 @@ static bool isHttpProxy(const KUrl &u)
     return isValidProxy(u) && u.protocol() == QLatin1String("http");
 }
 
-static QByteArray methodString(HTTP_METHOD m)
+QByteArray HTTPProtocol::HTTPRequest::methodString() const
 {
-    switch(m) {
+    if (!methodStringOverride.isEmpty())
+	return (methodStringOverride + QLatin1Char(' ')).toLatin1();
+
+    switch(method) {
     case HTTP_GET:
         return "GET ";
     case HTTP_PUT:
@@ -279,6 +282,8 @@ static QByteArray methodString(HTTP_METHOD m)
         return "UNSUBSCRIBE ";
     case DAV_POLL:
         return "POLL ";
+    case DAV_NOTIFY:
+        return "NOTIFY ";
     case DAV_REPORT:
         return "REPORT ";
     default:
@@ -440,6 +445,8 @@ void HTTPProtocol::resetSessionSettings()
   m_strCacheDir = config()->readPathEntry("CacheDir", QString());
   m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.windowId = config()->readEntry("window-id");
+  
+  m_request.methodStringOverride = metaData(QLatin1String("CustomHTTPMethod"));
 
   kDebug(7113) << "Window Id =" << m_request.windowId;
   kDebug(7113) << "ssl_was_in_use =" << metaData(QLatin1String("ssl_was_in_use"));
@@ -1253,7 +1260,7 @@ void HTTPProtocol::get( const KUrl& url )
   resetSessionSettings();
 
   m_request.method = HTTP_GET;
-
+  
   QString tmp(metaData(QLatin1String("cache")));
   if (!tmp.isEmpty())
     m_request.cacheTag.policy = parseCacheControl(tmp);
@@ -2219,7 +2226,7 @@ bool HTTPProtocol::sendQuery()
   bool hasDavData = false;
 
   {
-    header = QString::fromLatin1(methodString(m_request.method));
+    header = QString::fromLatin1(m_request.methodString());
     QString davHeader;
 
     // Fill in some values depending on the HTTP method to guide further processing
@@ -3273,7 +3280,7 @@ endParsing:
                     kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
 
                     // remove trailing space from the method string, or digest auth will fail
-                    (*auth)->setChallenge(bestOffer, authinfo.url, methodString(m_request.method));
+                    (*auth)->setChallenge(bestOffer, authinfo.url, m_request.methodString());
 
                     QString username;
                     QString password;
@@ -4928,7 +4935,7 @@ QString HTTPProtocol::authenticationHeader()
                 m_wwwAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_wwwAuth) {
                     kDebug(7113) << "Creating WWW authentcation object from cached info";
-                    m_wwwAuth->setChallenge(cachedChallenge, m_request.url, methodString(m_request.method));
+                    m_wwwAuth->setChallenge(cachedChallenge, m_request.url, m_request.methodString());
                     m_wwwAuth->generateResponse(authinfo.username, authinfo.password);
                 }
             }
@@ -4951,7 +4958,7 @@ QString HTTPProtocol::authenticationHeader()
                 m_proxyAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_proxyAuth) {
                     kDebug(7113) << "Creating Proxy authentcation object from cached info";
-                    m_proxyAuth->setChallenge(cachedChallenge, m_request.proxyUrl, methodString(m_request.method));
+                    m_proxyAuth->setChallenge(cachedChallenge, m_request.proxyUrl, m_request.methodString());
                     m_proxyAuth->generateResponse(authinfo.username, authinfo.password);
                 }
             }

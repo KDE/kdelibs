@@ -136,6 +136,8 @@ public:
       preferErrorPage = false;
       useCookieJar = false;
     }
+    
+    QByteArray methodString() const;
 
     KUrl url;
     QString encoded_hostname; //### can be calculated on-the-fly
@@ -144,6 +146,7 @@ public:
     int keepAliveTimeout;   // Timeout in seconds.
 
     KIO::HTTP_METHOD method;
+    QString methodStringOverride;     // Overrides method if non-empty.
     KIO::filesize_t offset;
     KIO::filesize_t endoffset;
     QString windowId;                 // Window Id this request is related to.
