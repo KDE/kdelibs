@@ -24,6 +24,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
 
+#include <Soprano/Version>
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/NRL>
@@ -99,9 +100,11 @@ bool Nepomuk::Types::EntityPrivate::load()
             icon = KIcon( value.toString() );
         }
 
+#if SOPRANO_IS_VERSION(2,5,62)
         else if ( property == Soprano::Vocabulary::NAO::userVisible() ) {
             userVisible = value.literal().toBool();
         }
+#endif
 
         else {
             addProperty( property, value );
