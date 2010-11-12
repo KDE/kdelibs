@@ -574,6 +574,9 @@ public:
         plugins.clear();
     }
     QHash<QString, KUriFilterPlugin *> plugins;
+    // NOTE: DO NOT REMOVE this variable! Read the
+    // comments in KUriFilter::loadPlugins to understand why...
+    QStringList pluginNames; 
 };
 
 KUriFilter *KUriFilter::self()
@@ -599,15 +602,15 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
 
     // If no specific filters were requested, iterate through all the plugins.
     // Otherwise, only use available filters.
-    if( filters.isEmpty() ) {
-        QHashIterator<QString, KUriFilterPlugin *> it (d->plugins);
+    if( filters.isEmpty() ) {        
+        QStringListIterator it (d->pluginNames);
         while (it.hasNext()) {
-            it.next();
-            if ( it.value()->filterUri( data ) )
+            KUriFilterPlugin* plugin = d->plugins.value(it.next());
+            if (plugin &&  plugin->filterUri( data ))
                 filtered = true;
         }
     } else {
-        QListIterator<QString> it (filters);
+        QStringListIterator it (filters);
         while (it.hasNext()) {
             KUriFilterPlugin* plugin = d->plugins.value(it.next());
             if (plugin &&  plugin->filterUri( data ))
@@ -659,11 +662,11 @@ bool KUriFilter::filterSearchUri(KUriFilterData &data, SearchFilterTypes types)
 {
     QStringList filters;
 
-    if (types & NormalTextFilter)
-        filters << "kuriikwsfilter";
-
     if (types & WebShortcutFilter)
         filters << "kurisearchfilter";
+    
+    if (types & NormalTextFilter)
+        filters << "kuriikwsfilter";
 
     return filterUri(data, filters);
 }
@@ -671,24 +674,28 @@ bool KUriFilter::filterSearchUri(KUriFilterData &data, SearchFilterTypes types)
 
 QStringList KUriFilter::pluginNames() const
 {
-    return d->plugins.keys();
+    return d->pluginNames;
 }
 
 void KUriFilter::loadPlugins()
 {
     const KService::List offers = KServiceTypeTrader::self()->query( "KUriFilter/Plugin" );
 
+    // NOTE: Plugin priority is determined by the InitialPreference entry in
+    // the .desktop files, so the trader result is already sorted and should
+    // not be manually sorted.    
     Q_FOREACH (const KService::Ptr &ptr, offers) {
         KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
         if (plugin) {
-            Q_ASSERT( !plugin->objectName().isEmpty() );
-            d->plugins.insert(plugin->objectName(), plugin );
+            const QString& pluginName = plugin->objectName();
+            Q_ASSERT( !pluginName.isEmpty() )
+            d->plugins.insert(pluginName, plugin );
+            // Needed to ensure the order of filtering is honored since
+            // items are ordered arbitarily in a QHash and QMap always
+            // sorts by keys. Both undesired behavior.
+            d->pluginNames << pluginName;
         }
     }
-
-    // NOTE: Plugin priority is determined by the InitialPreference entry in
-    // the .desktop files, so the trader result is already sorted and should
-    // not be manually sorted.
 }
 
 #include "kurifilter.moc"
