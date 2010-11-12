@@ -235,8 +235,8 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotStepAnimation( int fram
 
     imageLabel->setPixmap(pm);
 
-    m_pmCurrentOpacity = qMax(m_pmCurrentOpacity - 0.4, qreal(0.0));
-    m_pmTransitionOpacity = qMin(m_pmTransitionOpacity + 0.4, qreal(1.0));
+    m_pmCurrentOpacity = qMax(m_pmCurrentOpacity - 0.4, 0.0);
+    m_pmTransitionOpacity = qMin(m_pmTransitionOpacity + 0.4, 1.0);
 }
 
 void KImageFilePreview::KImageFilePreviewPrivate::_k_slotFinished()
