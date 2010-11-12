@@ -127,6 +127,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     label->resize( widgetsRect.width(), option.fontMetrics.height() * labelRows + margin );
     label->setContentsMargins( 0, 0, 0, 0 );
     label->setAlignment( Qt::AlignBottom | Qt::AlignLeft );
+    label->setForegroundRole( QPalette::WindowText );
 
     label->setText( text );
 
