@@ -30,7 +30,7 @@
 
 #include <wtf/RefPtr.h>
 
-#include <KProtocolInfo>
+#include <kprotocolinfo.h>
 
 namespace khtml {
 
