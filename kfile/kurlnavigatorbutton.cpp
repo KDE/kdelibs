@@ -107,6 +107,7 @@ void KUrlNavigatorButton::setActiveSubDirectory(const QString& subDir)
 
     // We use a different (bold) font on active, so the size hint changes
     updateGeometry();
+    update();
 }
 
 QString KUrlNavigatorButton::activeSubDirectory() const
