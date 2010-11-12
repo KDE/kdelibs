@@ -276,9 +276,6 @@ void KUrlNavigator::Private::initialize(const KUrl& url)
 
     q->setLayoutDirection(Qt::LeftToRight);
 
-    const QFont font = KGlobalSettings::generalFont();
-    q->setFont(font);
-
     const int minHeight = m_pathBox->sizeHint().height();
     q->setMinimumHeight(minHeight);
 

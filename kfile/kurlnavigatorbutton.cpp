@@ -105,11 +105,8 @@ void KUrlNavigatorButton::setActiveSubDirectory(const QString& subDir)
 {
     m_subDir = subDir;
 
-    QFont adjustedFont(font());
-    adjustedFont.setBold(m_subDir.isEmpty());
-    setFont(adjustedFont);
-
-    update();
+    // We use a different (bold) font on active, so the size hint changes
+    updateGeometry();
 }
 
 QString KUrlNavigatorButton::activeSubDirectory() const
@@ -119,9 +116,11 @@ QString KUrlNavigatorButton::activeSubDirectory() const
 
 QSize KUrlNavigatorButton::sizeHint() const
 {
+    QFont adjustedFont(font());
+    adjustedFont.setBold(m_subDir.isEmpty());
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
-    const int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
+    const int width = QFontMetrics(adjustedFont).width(text()) + arrowWidth() + 4 * BorderWidth;
     return QSize(width, KUrlNavigatorButtonBase::sizeHint().height());
 }
 
@@ -130,6 +129,10 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     Q_UNUSED(event);
 
     QPainter painter(this);
+
+    QFont adjustedFont(font());
+    adjustedFont.setBold(m_subDir.isEmpty());
+    painter.setFont(adjustedFont);
 
     int buttonWidth  = width();
     int preferredWidth = sizeHint().width();
@@ -538,8 +541,9 @@ bool KUrlNavigatorButton::isTextClipped() const
         availableWidth -= arrowWidth() - BorderWidth;
     }
 
-    QFontMetrics fontMetrics(font());
-    return fontMetrics.width(text()) >= availableWidth;
+    QFont adjustedFont(font());
+    adjustedFont.setBold(m_subDir.isEmpty());
+    return QFontMetrics(adjustedFont).width(text()) >= availableWidth;
 }
 
 void KUrlNavigatorButton::updateMinimumWidth()
