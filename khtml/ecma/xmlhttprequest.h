@@ -133,7 +133,7 @@ namespace KJS {
     QPointer<DOM::DocumentImpl> doc;
 
     KUrl url;
-    QString method;
+    QString m_method;
     bool async;
     HTTPHeaderMap m_requestHeaders;
     QString m_mimeTypeOverride;
@@ -146,6 +146,10 @@ namespace KJS {
     JSEventListener *onLoadListener;
 
     KEncodingDetector *decoder;
+    bool              binaryMode; // just byte-expand data,
+                                  // don't pass it through the decoder.
+    void clearDecoder();
+                                  
     QString encoding;
     QString responseHeaders;
 

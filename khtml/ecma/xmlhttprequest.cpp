@@ -28,6 +28,7 @@
 #include "dom/dom_exception.h"
 #include "dom/dom_string.h"
 #include "misc/loader.h"
+#include "misc/translator.h"
 #include "html/html_documentimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
@@ -40,12 +41,8 @@
 #include <QtCore/QHash>
 #include <kdebug.h>
 
-#ifdef APPLE_CHANGES
-#include "KWQLoader.h"
-#else
 #include <kio/netaccess.h>
 using KIO::NetAccess;
-#endif
 
 using namespace KJS;
 using namespace DOM;
@@ -317,6 +314,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
     onReadyStateChangeListener(0),
     onLoadListener(0),
     decoder(0),
+    binaryMode(false),
     response(QString::fromLatin1("")),
     createdDocument(false),
     aborted(false)
@@ -327,7 +325,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
 
 XMLHttpRequest::~XMLHttpRequest()
 {
-  if (job && method.toUpper() != QLatin1String("POST")) {
+  if (job && m_method != QLatin1String("POST")) {
         job->kill();
         job = 0;
   }
@@ -347,7 +345,7 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
   // exist anymore. Match that, though being paranoid about post
   // (And don't emit any events w/o a doc, if we're kept alive otherwise).
   if (!doc) {
-    if (job && method.toUpper() != QLatin1String("POST")) {
+    if (job && m_method != QLatin1String("POST")) {
       job->kill();
       job = 0;
     }
@@ -406,6 +404,23 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KUrl& _url) const
   return false;
 }
 
+// Methods we're to recognize per the XHR spec (3.6.1, #3).
+// We map it to whether the method should be permitted or not (#4)
+static const IDTranslator<QByteArray, bool, const char*>::Info methodsTable[] = {
+    {"CONNECT", false},
+    {"DELETE", true}, 
+    {"GET", true},
+    {"HEAD", true},
+    {"OPTIONS", true},
+    {"POST", true},
+    {"PUT", true},
+    {"TRACE", false},
+    {"TRACK", false},
+    {0, false}
+};
+
+MAKE_TRANSLATOR(methodsLookup, QByteArray, bool, const char*, methodsTable)
+
 void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async, int& ec)
 {
   abort();
@@ -423,7 +438,24 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async,
     return;
   }
 
-  method = _method.toLower();
+  // ### potentially raise a SYNTAX_ERR 
+
+  // Lookup if the method is well-known, and if so check if it's OK
+  QByteArray methodNormalized = _method.toUpper().toUtf8();
+  if (methodsLookup()->hasLeft(methodNormalized)) {
+      if (methodsLookup()->toRight(methodNormalized)) {
+          // OK, replace with the canonical version...
+          m_method = _method.toUpper();
+      } else {
+          // Scary stuff like CONNECT
+          ec = DOMException::SECURITY_ERR;
+          return;
+      }
+  } else {
+      // Unknown -> pass through unchanged
+      m_method = _method;
+  }
+  
   url = _url;
   async = _async;
 
@@ -445,12 +477,14 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
   if (!protocol.startsWith(QLatin1String("http")) &&
       !protocol.startsWith(QLatin1String("webdav")))
   {
-    ec = DOMException::INVALID_ACCESS_ERR;
-    abort();
-    return;
+      ec = DOMException::INVALID_ACCESS_ERR;
+      abort();
+      return;
   }
 
-  if (method == "post") {
+  // We need to use a POST-like setup even for non-post whenever we 
+  // have a payload.
+  if (m_method == QLatin1String("POST") || !_body.isEmpty()) {
 
     // FIXME: determine post encoding correctly by looking in headers
     // for charset.
@@ -466,6 +500,9 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
   else {
     job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
   }
+  
+  // Regardless of job type, make sure the method is set
+  job->addMetaData("CustomHTTPMethod", m_method);
 
   if (!m_requestHeaders.isEmpty()) {
     QString rh;
@@ -534,15 +571,21 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 #endif
 }
 
+void XMLHttpRequest::clearDecoder()
+{
+    delete decoder;
+    decoder = 0;
+    binaryMode = false;
+}
+
 void XMLHttpRequest::abort()
 {
   if (job) {
     job->kill();
     job = 0;
   }
-  delete decoder;
-  decoder = 0;
   aborted = true;
+  clearDecoder();
   changeState(XHRS_Uninitialized);
 }
 
@@ -746,8 +789,7 @@ void XMLHttpRequest::slotFinished(KJob *)
   job = 0;
   changeState(XHRS_Loaded);
 
-  delete decoder;
-  decoder = 0;
+  clearDecoder();
 }
 
 void XMLHttpRequest::slotRedirection(KIO::Job*, const KUrl& url)
@@ -792,7 +834,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   int len = (int)_data.size();
 #endif
 
-  if ( decoder == NULL ) {
+  if ( !decoder && !binaryMode ) {
     if (!m_mimeTypeOverride.isEmpty())
         encoding = encodingFromContentType(m_mimeTypeOverride);
 
@@ -806,23 +848,31 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
       }
     }
 
-    decoder = new KEncodingDetector;
-
-    if (!encoding.isEmpty())
-      decoder->setEncoding(encoding.toLatin1().constData(), KEncodingDetector::EncodingFromHTTPHeader);
-    else
-      decoder->setEncoding("UTF-8", KEncodingDetector::DefaultEncoding);
+    if (encoding == QLatin1String("x-user-defined")) {
+      binaryMode = true;
+    } else {
+      decoder = new KEncodingDetector;
+      if (!encoding.isEmpty())
+        decoder->setEncoding(encoding.toLatin1().constData(), KEncodingDetector::EncodingFromHTTPHeader);
+      else
+        decoder->setEncoding("UTF-8", KEncodingDetector::DefaultEncoding);
+    }
   }
+  
   if (len == 0)
     return;
 
   if (len == -1)
     len = strlen(data);
 
-  QString decoded = decoder->decodeWithBuffering(data, len);
-
+  QString decoded;
+  if (binaryMode)
+    decoded = QString::fromLatin1(data, len);
+  else
+    decoded = decoder->decodeWithBuffering(data, len);
+    
   response += decoded;
-
+  
   if (!aborted) {
     changeState(XHRS_Receiving);
   }
@@ -892,21 +942,20 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
   case XMLHttpRequest::Send:
     {
       QString body;
-      if (args.size() >= 1) {
-        DOM::NodeImpl* docNode = toNode(args[0]);
-        if (docNode && docNode->isDocumentNode()) {
-          DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
-
-          try {
-            body = doc->toString().string();
-            // FIXME: also need to set content type, including encoding!
-
-          } catch(DOM::DOMException&) {
-            return throwError(exec, GeneralError, "Exception serializing document");
+      if (!args[0]->isUndefinedOrNull() 
+            // make sure we don't marshal "undefined" or such; 
+          && request->m_method != QLatin1String("GET") 
+          && request->m_method != QLatin1String("HEAD")) {
+            // ... or methods that don't have payload
+            
+          DOM::NodeImpl* docNode = toNode(args[0]);
+          if (docNode && docNode->isDocumentNode()) {
+              DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
+              body = doc->toString().string();
+              // FIXME: also need to set content type, including encoding!
+          } else {
+              body = args[0]->toString(exec).qstring();
           }
-        } else {
-          body = args[0]->toString(exec).qstring();
-        }
       }
 
       request->send(body, ec);
@@ -943,3 +992,4 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
 } // end namespace
 
 #include "xmlhttprequest.moc"
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;
