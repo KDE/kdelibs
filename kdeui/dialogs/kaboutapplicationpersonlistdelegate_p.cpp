@@ -118,11 +118,22 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     label->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 
     QString text;
-    text += "<b>" + profile.name() +"</b>";
-    text += profile.task().isEmpty() ? "" : "<br><i>" + profile.task() + "</i>";
-    text += profile.location().isEmpty() ? "" : "<br>" + profile.location();
+    text += QLatin1String("<b>");
+    text += profile.name();
+    text += QLatin1String("</b>");
+    
+    if (!profile.task().isEmpty()) {
+      text += QLatin1String("<br><i>");
+      text += profile.task();
+      text += QLatin1String("</i>");
+    }
+    
+    if (!profile.location().isEmpty()) {
+        text +=  QLatin1String("<br>");
+        text += profile.location();
+    }
 
-    int labelRows = text.count( "<br>" ) + 1;
+    int labelRows = text.count( QLatin1String("<br>") ) + 1;
     label->move( widgetsRect.left(), widgetsRect.top() );
     label->resize( widgetsRect.width(), option.fontMetrics.height() * labelRows + margin );
     label->setContentsMargins( 0, 0, 0, 0 );
@@ -139,7 +150,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     KAction *action;
     action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
     action->setToolTip( profile.email() );
-    action->setData( QString( "mailto:" + profile.email() ) );
+    action->setData( QString( QLatin1String("mailto:") + profile.email() ) );
     action->setVisible( true );
     if( !profile.homepage().isEmpty() ) {
         action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
