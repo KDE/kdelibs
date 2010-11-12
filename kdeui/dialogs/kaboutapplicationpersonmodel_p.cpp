@@ -68,15 +68,15 @@ int KAboutApplicationPersonModel::rowCount( const QModelIndex &parent ) const
 QVariant KAboutApplicationPersonModel::data( const QModelIndex &index, int role ) const
 {
     if( !index.isValid() ) {
-        kDebug()<<"ERROR: invalid index";
+        kWarning()<<"ERROR: invalid index";
         return QVariant();
     }
     if( index.row() >= rowCount() ) {
-        kDebug()<<"ERROR: index out of bounds";
+        kWarning()<<"ERROR: index out of bounds";
         return QVariant();
     }
     if( role == Qt::DisplayRole ) {
-        kDebug() << "Spitting data for name " << m_profileList.at( index.row() ).name();
+//        kDebug() << "Spitting data for name " << m_profileList.at( index.row() ).name();
         QVariant var;
         var.setValue( m_profileList.at( index.row() ) );
         return var;
@@ -114,9 +114,10 @@ void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
                 connect( job, SIGNAL( finished( Attica::BaseJob * ) ),
                          this, SLOT( onPersonJobFinished( Attica::BaseJob * ) ) );
 
-                job->setProperty( "personProfile", i++ );
+                job->setProperty( "personProfile", i );
                 job->start();
             }
+            ++i;
         }
     }
 #endif //HAVE_ATTICA
