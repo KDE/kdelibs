@@ -2065,7 +2065,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSValue* payload = cloneData(exec, args[0]);
 
         // Queue the actual action, for after script execution.
-        window->m_delayed.append(new DelayedPostMessage(sourceOrigin, targetOrigin, payload));
+        window->m_delayed.append(new DelayedPostMessage(part, sourceOrigin, targetOrigin, payload));
   }
 
   };

@@ -30,6 +30,7 @@
 #include "xml/dom2_viewsimpl.h"
 #include "misc/idstring.h"
 #include <QDateTime>
+#include <QWeakPointer>
 
 #undef FOCUS_EVENT //for win32
 
@@ -222,6 +223,7 @@ public:
     virtual bool isMutationEvent() const;
     virtual bool isTextInputEvent() const;
     virtual bool isKeyboardEvent() const;
+    virtual bool isMessageEvent() const;
     bool isKeyRelatedEvent() const { return isTextInputEvent() || isKeyboardEvent(); }
 
     bool propagationStopped() const { return m_propagationStopped; }
@@ -592,7 +594,7 @@ public:
 
     RefPtr<Data> data() const { return m_data; }
     DOMString  origin() const { return m_origin; }
-    KHTMLPart* source() const { return m_source; }
+    KHTMLPart* source() const { return m_source.data(); }
     DOMString  lastEventId() const { return m_lastEventId; }
 
     MessageEventImpl();
@@ -604,11 +606,12 @@ public:
                           const DOMString& originArg,
                           const DOMString& lastEventIdArg,
                           KHTMLPart* sourceArg); // no message ports yet.
+    virtual bool isMessageEvent() const;
 private:
     RefPtr<Data> m_data;
     DOMString    m_origin;
     DOMString    m_lastEventId;
-    KHTMLPart*   m_source;
+    QWeakPointer<KHTMLPart>  m_source;
 };
 
 } //namespace

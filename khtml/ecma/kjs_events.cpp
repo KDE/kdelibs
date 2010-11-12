@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2006, 2009, 2010 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -380,6 +381,8 @@ JSValue *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
       ret = new DOMUIEvent(exec, static_cast<DOM::UIEventImpl*>(ei));
     else if (ei->isMutationEvent())
       ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEventImpl*>(ei));
+    else if (ei->isMessageEvent())
+      ret = new DOMMessageEvent(exec, static_cast<DOM::MessageEventImpl*>(ei));
     else
       ret = new DOMEvent(exec, ei);
 
@@ -1057,7 +1060,10 @@ JSValue *DOMMessageEvent::getValueProperty(ExecState *exec, int token) const
   case LastEventId:
     return jsString(event.lastEventId());
   case Source: 
-    return Window::retrieve(event.source());
+    if (KHTMLPart* p = event.source())
+	return Window::retrieve(p);
+    else
+	return jsNull();
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMMessageEvent::getValueProperty : " << token;
     return 0;

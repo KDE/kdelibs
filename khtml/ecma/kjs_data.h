@@ -22,6 +22,10 @@
 #include "kjs_window.h"
 #include "xml/dom2_eventsimpl.h"
 
+class KHTMLPart;
+
+#include <QWeakPointer>
+
 namespace KJS {
 
 /*
@@ -54,7 +58,7 @@ JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
 class DelayedPostMessage: public Window::DelayedAction
 {
 public:
-    DelayedPostMessage(const QString& _sourceOrigin, const QString& _targetOrigin, JSValue* _payload);
+    DelayedPostMessage(KHTMLPart* source, const QString& _sourceOrigin, const QString& _targetOrigin, JSValue* _payload);
 
     virtual void mark();
     virtual bool execute(Window*);
@@ -62,6 +66,7 @@ private:
     QString  sourceOrigin;
     QString  targetOrigin;
     JSValue* payload;
+    QWeakPointer<KHTMLPart> source;
 };
 
 }

@@ -16,12 +16,15 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+#include "khtml_part.h"
 #include "kjs_data.h"
 #include <dom/dom_exception.h>
-
 #include <kjs/array_instance.h>
 
 #include <QSet>
+
+using namespace DOM;
+using namespace khtml;
 
 namespace KJS {
 
@@ -127,10 +130,11 @@ JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
 }
 
 //------------------------------------------------------------------------------
-DelayedPostMessage::DelayedPostMessage(const QString& _sourceOrigin, 
+DelayedPostMessage::DelayedPostMessage(KHTMLPart* _source,
+                                       const QString& _sourceOrigin, 
                                        const QString& _targetOrigin, 
                                        JSValue* _payload):
-    sourceOrigin(_sourceOrigin), targetOrigin(_targetOrigin), payload(_payload)
+    source(_source), sourceOrigin(_sourceOrigin), targetOrigin(_targetOrigin), payload(_payload)
 {}
 
 void DelayedPostMessage::mark()
@@ -143,19 +147,39 @@ bool DelayedPostMessage::execute(Window* w)
 {
     KHTMLPart* part = qobject_cast<KHTMLPart*>(w->part());
     DOM::DocumentImpl* doc = part ? static_cast<DOM::DocumentImpl*>(part->document().handle()) : 0;
-    kDebug(6070) << doc << targetOrigin;    
-    if (doc) {
+    KJSProxy* js = part ? KJSProxy::proxy(part) : 0;
+    
+    kDebug(6070) << doc << js << sourceOrigin << targetOrigin;
+    if (doc && js) {
         // Verify destination.
         bool safe = false;
         if (targetOrigin == QLatin1String("*")) {
             safe = true;
         } else {
-            KUrl targetUrl(targetOrigin);
-            kDebug(6070) << doc->origin()->toString();
+            RefPtr<SecurityOrigin> targetCtx = 
+                    SecurityOrigin::createFromString(targetOrigin);
+            safe = doc->origin()->isSameSchemeHostPort(targetCtx.get());
         }
         
         if (safe) {
-        
+            RefPtr<MessageEventImpl> msg = new MessageEventImpl();
+            
+            DOM::MessageEventImpl::Data* data = 
+                encapsulateMessageEventData(js->interpreter()->globalExec(), 
+                                            js->interpreter(), payload);
+            
+            msg->initMessageEvent("message",
+                                  false, false, // doesn't bubble or cancel
+                                  data,
+                                  sourceOrigin,
+                                  DOMString(), // lastEventId -- not here
+                                  source.data()); 
+            doc->dispatchWindowEvent(msg.get());
+        } else {
+            kWarning(6070) << "PostMessage XSS check failed;" 
+                           << "target mask:" << targetOrigin 
+                           << "actual:" << doc->origin()->toString()
+                           << "source:" << sourceOrigin;
         }
     }
 

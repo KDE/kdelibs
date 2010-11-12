@@ -303,6 +303,7 @@ public:
     // Window events are special in that they're only dispatched on Window, and not
     // the current node.
     void dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    void dispatchWindowEvent(EventImpl* evt);
     
     void dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
     void dispatchUIEvent(int _id, int detail = 0);

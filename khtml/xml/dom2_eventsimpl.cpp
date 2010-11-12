@@ -33,6 +33,7 @@
 #include "misc/translator.h"
 #include <rendering/render_layer.h>
 #include <khtmlview.h>
+#include <khtml_part.h>
 
 #include <QtGui/QActionEvent>
 #include <kdebug.h>
@@ -400,6 +401,11 @@ bool EventImpl::isTextInputEvent() const
 }
 
 bool EventImpl::isKeyboardEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isMessageEvent() const
 {
     return false;
 }
@@ -1046,8 +1052,14 @@ bool MutationEventImpl::isMutationEvent() const
 
 // -----------------------------------------------------------------------------
 
-MessageEventImpl::MessageEventImpl(): m_source(0)
+MessageEventImpl::MessageEventImpl()
 {}
+
+
+bool MessageEventImpl::isMessageEvent() const
+{
+    return true;
+}
 
 void MessageEventImpl::initMessageEvent(const DOMString& typeArg,
                                         bool  canBubbleArg,

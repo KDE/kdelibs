@@ -523,18 +523,25 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
     return ret;
 }
 
+
 void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
+{
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    dispatchWindowEvent(evt);
+}
+
+void NodeImpl::dispatchWindowEvent(EventImpl* evt)
 {
     DocumentImpl *doc = document();
     doc->ref();
     
     int exceptioncode = 0;
-    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    
     evt->setTarget( doc->windowEventTarget() );
     evt->ref();
     dispatchGenericEvent( evt, exceptioncode );
 
-    if (_id == EventImpl::LOAD_EVENT) {
+    if (evt->id() == EventImpl::LOAD_EVENT) {
         // Trigger Load Event on the enclosing frame if there is one
         DOM::HTMLPartContainerElementImpl* elt = doc->ownerElement();
         if (elt)
