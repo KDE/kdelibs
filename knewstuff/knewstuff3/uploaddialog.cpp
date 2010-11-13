@@ -704,7 +704,7 @@ void UploadDialog::Private::doUpload(const QString& index, const KUrl& path)
 
     QString fileName = QFileInfo(path.toLocalFile()).fileName();
 
-    Attica::PostJob* job;
+    Attica::PostJob* job = 0;
     if (index.isEmpty()) {
         job = currentProvider().setDownloadFile(contentId, fileName, fileContents);
         q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_fileUploadFinished(Attica::BaseJob*)));
@@ -718,8 +718,8 @@ void UploadDialog::Private::doUpload(const QString& index, const KUrl& path)
         job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
         q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_preview3UploadFinished(Attica::BaseJob*)));
     }
-
-    job->start();
+    if( job ) 
+      job->start();
 }
 
 void UploadDialog::Private::_k_fileUploadFinished(Attica::BaseJob* )
