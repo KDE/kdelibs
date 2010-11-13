@@ -247,6 +247,9 @@ int main()
     }
     xsetenv("HOME", pw->pw_dir);
 
+    /* New user won't be able to connect it anyway. */
+    unsetenv("DBUS_SESSION_BUS_ADDRESS");
+
     /* Set scheduling/priority */
 
     prio = atoi(params[P_PRIORITY].value);
