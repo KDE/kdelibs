@@ -215,11 +215,10 @@ QByteArray PtyProcess::readAll(bool block)
        return ret;
     }
 
-    int nbytes;
-    char buf[256];
     while (1)
     {
-        nbytes = read(fd(), buf, 255);
+        ret.reserve(ret.size() + 0x8000);
+        int nbytes = read(fd(), ret.data() + ret.size(), 0x8000);
         if (nbytes == -1)
         {
             if (errno == EINTR)
@@ -229,8 +228,7 @@ QByteArray PtyProcess::readAll(bool block)
         if (nbytes == 0)
             break;        // nothing available / eof
 
-        buf[nbytes] = '\000';
-        ret += buf;
+        ret.resize(ret.size() + nbytes);
         break;
     }
 
@@ -255,7 +253,7 @@ QByteArray PtyProcess::readLine(bool block)
         } else
         {
             ret = d->m_Inbuf.left(pos);
-            d->m_Inbuf = d->m_Inbuf.mid(pos+1);
+            d->m_Inbuf.remove(0, pos+1);
         }
     }
 
