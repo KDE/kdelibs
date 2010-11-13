@@ -79,6 +79,13 @@ public:
 
     KMimeType::Ptr defaultMimeTypePtr();
 
+    /**
+     * Returns true if KMimeType::favIconForUrl should talk to kded's favicons module.
+     */
+    bool useFavIcons();
+
+    int sharedMimeInfoVersion();
+
 private: // only for KMimeType and unittests
     friend class KMimeType;
     friend class KMimeFileParserTest;
@@ -159,6 +166,9 @@ private:
     bool m_globsFilesParsed;
     bool m_patternsMapCalculated;
     bool m_mimeTypesChecked;
+    bool m_useFavIcons;
+    bool m_useFavIconsChecked;
+    int m_sharedMimeInfoVersion;
     QList<KMimeMagicRule> m_magicRules;
     KMimeGlobsFileParser::AllGlobs m_globs;
     KMimeType::Ptr m_defaultMimeType;

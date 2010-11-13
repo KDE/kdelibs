@@ -19,11 +19,15 @@
 
 #include "kmimetyperepository_p.h"
 #include <kstandarddirs.h>
-#include <QFile>
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
 #include "kmimetype.h"
+#include <kdeversion.h> // KDE_MAKE_VERSION
 #include <kmessage.h>
 #include <klocale.h>
 #include "kfoldermimetype.h"
+#include <QFile>
+#include <QProcess>
 
 extern int servicesDebugArea();
 
@@ -40,6 +44,9 @@ KMimeTypeRepository::KMimeTypeRepository()
       m_globsFilesParsed(false),
       m_patternsMapCalculated(false),
       m_mimeTypesChecked(false),
+      m_useFavIcons(true),
+      m_useFavIconsChecked(false),
+      m_sharedMimeInfoVersion(0),
       m_mutex(QReadWriteLock::Recursive)
 {
 }
@@ -662,3 +669,43 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
 
 }
 
+bool KMimeTypeRepository::useFavIcons()
+{
+    // this method will be called quite often, so better not read the config
+    // again and again.
+    m_mutex.lockForWrite();
+    if (!m_useFavIconsChecked) {
+        m_useFavIconsChecked = true;
+        KConfigGroup cg( KGlobal::config(), "HTML Settings" );
+        m_useFavIcons = cg.readEntry("EnableFavicon", true);
+    }
+    m_mutex.unlock();
+    return m_useFavIcons;
+}
+
+int KMimeTypeRepository::sharedMimeInfoVersion()
+{
+    m_mutex.lockForWrite();
+    if (m_sharedMimeInfoVersion == 0) {
+        QProcess smi;
+        const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
+        if (umd.isEmpty()) {
+            kWarning() << "update-mime-database not found!";
+            m_sharedMimeInfoVersion = -1;
+        } else {
+            smi.start(umd, QStringList() << QString::fromLatin1("-v"));
+            smi.waitForStarted();
+            smi.waitForFinished();
+            const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
+            QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
+            if (versionRe.indexIn(out) > -1) {
+                m_sharedMimeInfoVersion = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+            } else {
+                kWarning() << "Unexpected version scheme from update-mime-database -v: got" << out;
+                m_sharedMimeInfoVersion = -1;
+            }
+        }
+    }
+    m_mutex.unlock();
+    return m_sharedMimeInfoVersion;
+}

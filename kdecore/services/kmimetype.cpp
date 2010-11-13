@@ -22,8 +22,6 @@
 #include "kmimetypefactory.h"
 #include "kmimetyperepository_p.h"
 
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
@@ -471,18 +469,9 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
 
 QString KMimeType::favIconForUrl( const KUrl& url )
 {
-    // this method will be called quite often, so better not read the config
-    // again and again.
-    static bool useFavIcons = true;
-    static bool check = true;
-    if ( check ) {
-        check = false;
-        KConfigGroup cg( KGlobal::config(), "HTML Settings" );
-        useFavIcons = cg.readEntry("EnableFavicon", true);
-    }
-
-    if ( url.isLocalFile() || !url.protocol().startsWith(QLatin1String("http"))
-         || !useFavIcons )
+    if (url.isLocalFile()
+        || !url.protocol().startsWith(QLatin1String("http"))
+        || !KMimeTypeRepository::self()->useFavIcons())
         return QString();
 
     QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
@@ -712,30 +701,7 @@ QString KMimeType::userSpecifiedIconName() const
 
 int KMimeType::sharedMimeInfoVersion()
 {
-    static int s_version = 0;
-    static QMutex s_versionMutex;
-    QMutexLocker locker(&s_versionMutex);
-    if (s_version == 0) {
-        QProcess smi;
-        const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
-        if (umd.isEmpty()) {
-            kWarning() << "update-mime-database not found!";
-            s_version = -1;
-        } else {
-            smi.start(umd, QStringList() << QString::fromLatin1("-v"));
-            smi.waitForStarted();
-            smi.waitForFinished();
-            const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
-            QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
-            if (versionRe.indexIn(out) > -1) {
-                s_version = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
-            } else {
-                kWarning() << "Unexpected version scheme from update-mime-database -v: got" << out;
-                s_version = -1;
-            }
-        }
-    }
-    return s_version;
+    return KMimeTypeRepository::self()->sharedMimeInfoVersion();
 }
 
 QString KMimeType::mainExtension() const
