@@ -755,7 +755,7 @@ QString KMimeType::mainExtension() const
     }
 #endif // HACK END
 
-     Q_FOREACH(const QString& pattern, d->m_lstPatterns) {
+     Q_FOREACH(const QString& pattern, patterns()) {
         // Skip if if looks like: README or *. or *.*
         // or *.JP*G or *.JP?
         if (pattern.startsWith(QLatin1String("*.")) &&

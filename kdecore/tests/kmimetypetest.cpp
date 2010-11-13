@@ -103,6 +103,8 @@ void KMimeTypeTest::initTestCase()
     KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
     QVERIFY(fakeApp); // it should be found.
     QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
+
+    KGlobal::locale();
 }
 
 void KMimeTypeTest::cleanupTestCase()
@@ -883,24 +885,6 @@ void KMimeTypeTest::testParseMagicFile()
     testBuffer.close();
 }
 
-void KMimeTypeTest::testThreads()
-{
-    QThreadPool::globalInstance()->setMaxThreadCount(10);
-    // Note that data-based tests cannot be used here (QTest::fetchData asserts).
-    QList<QFuture<void> > futures;
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByUrl);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByFileContent);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByNameAndContent);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByPathWithContent);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testAllMimeTypes);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testAlias);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testMimeTypeParent);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testPreferredService);
-    kDebug() << "Joining all threads";
-    Q_FOREACH(QFuture<void> f, futures)
-        f.waitForFinished();
-}
-
 void KMimeTypeTest::testHelperProtocols()
 {
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
@@ -917,6 +901,34 @@ void KMimeTypeTest::testHelperProtocols()
     if (KProtocolInfo::isKnownProtocol("tel")) {
         QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
     }
+}
+
+void KMimeTypeTest::testFromThread()
+{
+    // Some simple tests to test more API from testThreads without using _data()
+    KMimeType::Ptr mime = KMimeType::mimeType("application/pdf");
+    QVERIFY(mime);
+    QCOMPARE(mime->mainExtension(), QString::fromLatin1(".pdf"));
+}
+
+void KMimeTypeTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(20);
+    // Note that data-based tests cannot be used here (QTest::fetchData asserts).
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByUrl);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByFileContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByNameAndContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFindByPathWithContent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testAllMimeTypes);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testAlias);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testMimeTypeParent);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testPreferredService);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testFromThread);
+    futures << QtConcurrent::run(this, &KMimeTypeTest::testHelperProtocols);
+    kDebug() << "Joining all threads";
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
 }
 
 #include "kmimetypetest.moc"
