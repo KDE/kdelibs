@@ -713,6 +713,8 @@ QString KMimeType::userSpecifiedIconName() const
 int KMimeType::sharedMimeInfoVersion()
 {
     static int s_version = 0;
+    static QMutex s_versionMutex;
+    QMutexLocker locker(&s_versionMutex);
     if (s_version == 0) {
         QProcess smi;
         const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
