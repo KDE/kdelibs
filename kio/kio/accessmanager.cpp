@@ -31,6 +31,7 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
 #include <QtCore/QStringBuilder>
@@ -149,8 +150,9 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     
     if (!d->externalContentAllowed && !isLocalRequest(reqUrl)) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
-        /* if kioJob equals zero, the AccessManagerReply will block the request */
-        return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+        reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);
+        return reply;
     }
 
     switch (op) {
@@ -178,14 +180,30 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case DeleteOperation: {
+            //kDebug(7044) << "DeleteOperation:" << reqUrl;
             kioJob = KIO::file_delete(reqUrl, KIO::HideProgressInfo);
             break;
         }
-        default: {
+        case CustomOperation: {
+            const QByteArray& method = req.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
+            //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;            
+            if (method.isEmpty()) {
+                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+                reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
+                return reply;
+            } else {
+                if (outgoingData)
+                    kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
+                else
+                    kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
+                kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
+            }
+            break;
+        }
+        default:
             // Defer to QNAM for operations that cannot be handled by KIO, 
             // e.g. CustomOperation,
             return QNetworkAccessManager::createRequest(op, req, outgoingData);            
-        }
     }
 
     kioJob->setRedirectionHandlingEnabled(false);
@@ -205,7 +223,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     kioJob->addMetaData(d->metaDataForRequest(req));
 
-    if ( op == PostOperation && !kioJob->metaData().contains("content-type"))  {
+    if ( op == PostOperation && !kioJob->metaData().contains(QL1S("content-type")))  {
         const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
           kioJob->addMetaData(QL1S("content-type"),
