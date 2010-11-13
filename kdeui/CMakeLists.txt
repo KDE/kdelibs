@@ -397,7 +397,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS})
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY})
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
@@ -406,10 +406,6 @@ endif(NOT WINCE)
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
 endif(MINGW)
-
-if(Q_WS_X11)
-   target_link_libraries(kdeui ${QT_QTNETWORK_LIBRARY})
-endif(Q_WS_X11)
 
 if(Q_WS_MAC)
    target_link_libraries(kdeui ${CARBON_LIBRARY})
