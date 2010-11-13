@@ -534,33 +534,6 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
   return ret;
 }
 
-KDualAction *showHideMenubar(const QObject *recvr, const char *slot, QObject *parent)
-{
-  KDualAction *ret = new KDualAction(
-    i18n( "Show &Menubar" ),
-    i18n( "Hide Menubar" ),
-    parent);
-  ret->setObjectName(name(ShowMenubar));
-
-  ret->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::ShowMenubar ) );
-
-  ret->setWhatsThis( i18n( "Show Menubar<p>"
-                           "Shows the menubar again after it has been hidden</p>" ) );
-
-  ret->setIconForStates( KIcon( "show-menu" ) );
-
-  ret->setActive( true );
-
-  if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( activeChangedByUser( bool ) ), recvr, slot );
-
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (collection)
-    collection->addAction(ret->objectName(), ret);
-
-  return ret;
-}
-
 KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent)
 {
   KToggleAction *ret = new KToggleAction(i18n( "Show St&atusbar" ), parent);
@@ -573,29 +546,6 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
 
   if ( recvr && slot )
     QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
-
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (collection)
-    collection->addAction(ret->objectName(), ret);
-
-  return ret;
-}
-
-KDualAction *showHideStatusbar(const QObject *recvr, const char *slot, QObject *parent)
-{
-  KDualAction *ret = new KDualAction(
-    i18n( "Show Statusbar" ),
-    i18n( "Hide Statusbar" ),
-    parent);
-  ret->setObjectName(name(ShowStatusbar));
-
-  ret->setWhatsThis( i18n( "Show Statusbar<br /><br />"
-                           "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
-
-  ret->setActive( true );
-
-  if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( activeChangedByUser( bool ) ), recvr, slot );
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
   if (collection)

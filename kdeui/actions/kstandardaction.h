@@ -522,21 +522,9 @@ namespace KStandardAction
   KDEUI_EXPORT KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
-   * Show/Hide the menubar.
-   * @since 4.6
-   */
-  KDEUI_EXPORT KDualAction *showHideMenubar(const QObject *recvr, const char *slot, QObject *parent);
-
-  /**
    * Show/Hide the statusbar.
    */
   KDEUI_EXPORT KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *parent);
-
-  /**
-   * Show/Hide the statusbar.
-   * @since 4.6
-   */
-  KDEUI_EXPORT KDualAction *showHideStatusbar(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Switch to/from full screen mode
