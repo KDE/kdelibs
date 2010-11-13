@@ -28,6 +28,7 @@
 
 #include "kglobal.h"
 #include "kglobal_p.h"
+#include <QThread>
 
 #include <config.h>
 
@@ -160,8 +161,13 @@ KLocale *KGlobal::locale()
         QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
         mainComponent().aboutData()->translateInternalProgramName();
         QCoreApplication* coreApp = QCoreApplication::instance();
-        if (coreApp) // testcase: kwrite --help: no qcore app
-            QCoreApplication::installTranslator(new KDETranslator(coreApp));
+        if (coreApp) { // testcase: kwrite --help: no qcore app
+            if (coreApp->thread() != QThread::currentThread()) {
+                qFatal("KGlobal::locale() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
+            } else {
+                QCoreApplication::installTranslator(new KDETranslator(coreApp));
+            }
+        }
     }
     return d->locale;
 }

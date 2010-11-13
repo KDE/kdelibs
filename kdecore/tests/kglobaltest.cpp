@@ -60,6 +60,26 @@ private Q_SLOTS:
         QVERIFY(!QTest::kWaitForSignal(this, SIGNAL(sigFoo()), 1));
     }
 
+    // For testing from multiple threads in testThreads
+    void testLocale()
+    {
+        KGlobal::locale();
+        KGlobal::locale()->setDecimalPlaces(2);
+        QCOMPARE(KGlobal::locale()->formatNumber(70), QString("70.00"));
+    }
+
+    // Calling this directly aborts in KGlobal::locale(), this is intended.
+    // We have to install the qtranslator in the main thread.
+    void testThreads()
+    {
+        QThreadPool::globalInstance()->setMaxThreadCount(10);
+        QList<QFuture<void> > futures;
+        futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
+        futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
+        Q_FOREACH(QFuture<void> f, futures)
+            f.waitForFinished();
+    }
+
 protected Q_SLOTS:
     void emitSigFoo()
     {
