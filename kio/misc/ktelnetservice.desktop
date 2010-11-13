@@ -9,12 +9,14 @@ NoDisplay=true
 
 Name=KTelnetService
 Name[ca]=KTelnetService
+Name[da]=KTelnetService
 Name[de]=KTelnetService
 Name[en_GB]=KTelnetService
 Name[es]=KTelnetService
 Name[et]=KTelnetService
 Name[hu]=KTelnetService
 Name[ia]=KTelnetService (Servicio de KTelnet)
+Name[kk]=KTelnetService
 Name[ko]=KTelnetService
 Name[nb]=KTelnetService
 Name[nds]=KTelnetService

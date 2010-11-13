@@ -10,12 +10,14 @@ NoDisplay=true
 # KMailService is the handler for mailto URLs
 Name=KMailService
 Name[ca]=KMailService
+Name[da]=KMailService
 Name[de]=KMailService
 Name[en_GB]=KMailService
 Name[es]=KMailService
 Name[et]=KMailService
 Name[hu]=KMailService
 Name[ia]=KMailService (Servicio de KMail)
+Name[kk]=KMailService
 Name[ko]=KMailService
 Name[nb]=KMail-posttjeneste
 Name[nds]=KMailService
