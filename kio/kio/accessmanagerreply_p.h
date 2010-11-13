@@ -2,6 +2,7 @@
  * This file is part of the KDE project.
  *
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
+ * Copyright (C) 2009 - 2010 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 #ifndef KIO_ACCESSMANAGERREPLY_P_H
 #define KIO_ACCESSMANAGERREPLY_P_H
 
+#include <QtCore/QPointer>
 #include <QtNetwork/QNetworkReply>
 
 namespace KIO
@@ -46,26 +48,32 @@ class AccessManagerReply : public QNetworkReply
 {
     Q_OBJECT
 public:
-    AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::SimpleJob *kioJob, QObject *parent);
+    AccessManagerReply(const QNetworkAccessManager::Operation &op,
+                       const QNetworkRequest &request,
+                       KIO::SimpleJob *kioJob,
+                       QObject *parent);
+    
     virtual ~AccessManagerReply();
     virtual qint64 bytesAvailable() const;
     virtual void abort();
 
-public Q_SLOTS:
-    void appendData(KIO::Job *kioJob, const QByteArray &data);
-    void setMimeType(KIO::Job *kioJob, const QString &mimeType);
-    void jobDone(KJob *kJob);
+    void setStatus(const QString& message, QNetworkReply::NetworkError);
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
     void readHttpResponseHeaders(KIO::Job *);
 
+private Q_SLOTS:
+    void slotData(KIO::Job *kioJob, const QByteArray &data);
+    void slotMimeType(KIO::Job *kioJob, const QString &mimeType);
+    void slotResult(KJob *kJob);
+    void slotRedirection(KIO::Job *job, const KUrl &url);
+    void slotPercent(KJob *job, unsigned long percent);
+    
 private:
-    class AccessManagerReplyPrivate;
-    AccessManagerReplyPrivate* const d;
-
-    Q_PRIVATE_SLOT(d, void _k_redirection(KIO::Job *job, const KUrl &url))
-    Q_PRIVATE_SLOT(d, void _k_percent(KJob *job, unsigned long percent))
+    QByteArray m_data;
+    bool m_metaDataRead;
+    QPointer<KIO::SimpleJob> m_kioJob;
 };
 
 }

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008 Alex Merry <alex.merry @ kdemail.net>
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
+ * Copyright (C) 2009 - 2010 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,97 +27,83 @@
 #include "job.h"
 
 #include <kdebug.h>
-#include <klocale.h>
 
 #include <QtNetwork/QSslConfiguration>
-#include <QtCore/QTimer>
-#include <QtCore/QPointer>
+
 
 namespace KDEPrivate {
 
-class AccessManagerReply::AccessManagerReplyPrivate
-{
-public:
-    AccessManagerReplyPrivate(AccessManagerReply *qq)
-    : q(qq),
-      m_metaDataRead(false) {}
-
-    void _k_redirection(KIO::Job *job, const KUrl &url);
-    void _k_percent(KJob *job, unsigned long percent);
-
-    AccessManagerReply *q;
-
-    QPointer<KIO::SimpleJob> m_kioJob;
-    QByteArray m_data;
-    bool m_metaDataRead;
-};
-
-AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op, const QNetworkRequest &request, KIO::SimpleJob *kioJob, QObject *parent)
-                   :QNetworkReply(parent), d(new AccessManagerReply::AccessManagerReplyPrivate(this))
+AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
+                                       const QNetworkRequest &request,
+                                       KIO::SimpleJob *kioJob,
+                                       QObject *parent)
+                   :QNetworkReply(parent),
+                    m_metaDataRead(false)
 
 {
-    d->m_kioJob = kioJob;
+    m_kioJob = kioJob;
     setRequest(request);
     setOpenMode(QIODevice::ReadOnly);
     setUrl(request.url());
     setOperation(op);
 
-    if (!request.sslConfiguration().isNull()) {
+    if (!request.sslConfiguration().isNull())
         setSslConfiguration(request.sslConfiguration());
-    }
 
-    if (!kioJob) { // a blocked request
-        setError(QNetworkReply::OperationCanceledError, i18n("Blocked request."));
-        QTimer::singleShot(0, this, SIGNAL(finished()));
-    } else {
-        connect(kioJob, SIGNAL(redirection(KIO::Job*, const KUrl&)), SLOT(_k_redirection(KIO::Job*, const KUrl&)));
-        connect(kioJob, SIGNAL(percent(KJob*, unsigned long)), SLOT(_k_percent(KJob*, unsigned long)));
-        connect(kioJob, SIGNAL(result(KJob *)), SLOT(jobDone(KJob *)));
+    if (kioJob) {
+        connect(kioJob, SIGNAL(redirection(KIO::Job*, const KUrl&)), SLOT(slotRedirection(KIO::Job*, const KUrl&)));
+        connect(kioJob, SIGNAL(percent(KJob*, unsigned long)), SLOT(slotPercent(KJob*, unsigned long)));
+        connect(kioJob, SIGNAL(result(KJob *)), SLOT(slotResult(KJob *)));
 
         if (!qobject_cast<KIO::StatJob*>(kioJob)) {
             connect(kioJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
-                SLOT(appendData(KIO::Job *, const QByteArray &)));
+                SLOT(slotData(KIO::Job *, const QByteArray &)));
             connect(kioJob, SIGNAL(mimetype(KIO::Job *, const QString&)),
-                SLOT(setMimeType(KIO::Job *, const QString&)));
+                SLOT(slotMimeType(KIO::Job *, const QString&)));
         }
     }
 }
 
 AccessManagerReply::~AccessManagerReply()
 {
-    delete d;
 }
 
 void AccessManagerReply::abort()
 {
-    if (d->m_kioJob) {
-        d->m_kioJob->kill();
+    if (m_kioJob) {
+        m_kioJob->kill();
     }
 
-    d->m_data.clear();
-    d->m_metaDataRead = false;
+    m_data.clear();
+    m_metaDataRead = false;
 }
 
 qint64 AccessManagerReply::bytesAvailable() const
 {
-    return (QNetworkReply::bytesAvailable() + d->m_data.length());
+    return (QNetworkReply::bytesAvailable() + m_data.length());
 }
 
 qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 {
-    const qint64 length = qMin(qint64(d->m_data.length()), maxSize);
+    const qint64 length = qMin(qint64(m_data.length()), maxSize);
 
     if (length) {
-        qMemCopy(data, d->m_data.constData(), length);
-        d->m_data.remove(0, length); 
+        qMemCopy(data, m_data.constData(), length);
+        m_data.remove(0, length);
     }
 
     return length;
 }
 
+
+void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
+{
+   setError(code, message);
+}
+
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 {
-    if (!d->m_metaDataRead) {
+    if (!m_metaDataRead) {
         // Set the HTTP status code...
         const QString responseCode = job->queryMetaData("responsecode");
         if (!responseCode.isEmpty())
@@ -158,24 +145,24 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         // Set the returned meta data as attribute...
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
                      job->metaData().toVariant());
-        d->m_metaDataRead = true;
+        m_metaDataRead = true;
     }
 }
 
-void AccessManagerReply::appendData(KIO::Job *kioJob, const QByteArray &data)
+void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
     readHttpResponseHeaders(kioJob);
-    d->m_data += data;
+    m_data += data;
     emit readyRead();
 }
 
-void AccessManagerReply::setMimeType(KIO::Job *kioJob, const QString &mimeType)
+void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
     Q_UNUSED(kioJob);
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
 }
 
-void AccessManagerReply::jobDone(KJob *kJob)
+void AccessManagerReply::slotResult(KJob *kJob)
 {
     int errcode = kJob->error();
     switch (errcode)
@@ -238,7 +225,7 @@ void AccessManagerReply::jobDone(KJob *kJob)
 
     QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid()) {
-        readHttpResponseHeaders(d->m_kioJob);
+        readHttpResponseHeaders(m_kioJob);
         //kDebug( 7044 ) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         //kDebug( 7044 ) << "Redirecting to" << redirectUrl;
     }
@@ -249,16 +236,16 @@ void AccessManagerReply::jobDone(KJob *kJob)
     emit finished();
 }
 
-void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job, const KUrl& url)
+void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& url)
 {
     Q_UNUSED(job);
-    q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
+    setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
 }
 
-void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsigned long percent)
+void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
 {
     qulonglong bytes = job->totalAmount(KJob::Bytes);
-    emit q->downloadProgress(bytes * ((double)percent / 100), bytes);
+    emit downloadProgress(bytes * ((double)percent / 100), bytes);
 }
 }
 
