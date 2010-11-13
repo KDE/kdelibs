@@ -661,5 +661,5 @@ const Nepomuk::Class* Nepomuk::Class::load( const QUrl& uri )
     }
 }
 
-#endif DISABLE_NEPOMUK_LEGACY
+#endif //DISABLE_NEPOMUK_LEGACY
 
