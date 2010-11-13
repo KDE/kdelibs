@@ -172,6 +172,24 @@ char **xstrsep(char *str)
 
 #define BUFSIZE	8192
 
+static void dequote(char *buf)
+{
+    char *in, *out;
+    for (in = buf, out = buf; *in; in++, out++) {
+        char c = *in;
+        if (c == '\\') {
+            c = *++in;
+            if (c == '/')
+                *out = '\\';
+            else
+                *out = c - '@';
+        } else {
+            *out = c;
+        }
+    }
+    *out = 0;
+}
+
 /**
  * The main program
  */
@@ -219,10 +237,11 @@ int main()
 	    perror("kdesu_stub: fgets()");
 	    exit(1);
 	}
+	dequote(buf);
 	tmp = xstrdup( buf );
 	if( tmp[ 0 ] == '\0' ) /* terminator */
 	    break;
-	putenv( xstrdup( buf ));
+	putenv(tmp);
     }
 
     printf("end\n");
@@ -384,6 +403,7 @@ int main()
         setsid();
 	/* Child: exec command. */
 	sprintf(buf, "%s", params[P_COMMAND].value);
+	dequote(buf);
 	execl("/bin/sh", "sh", "-c", buf, (void *)0);
 	perror("kdesu_stub: exec()");
 	_exit(1);

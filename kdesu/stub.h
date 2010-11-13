@@ -95,6 +95,7 @@ protected:
 
 private:
     QByteArray commaSeparatedList(const QList<QByteArray> &);
+    void writeString(const QByteArray &str);
 
 protected:
     virtual void virtual_hook( int id, void* data );

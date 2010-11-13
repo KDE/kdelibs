@@ -173,11 +173,22 @@ int KDEsuClient::connect()
 
 QByteArray KDEsuClient::escape(const QByteArray &str)
 {
-    QByteArray copy = str;
-    copy.replace('\\', "\\\\");
-    copy.replace('\"', "\\\"");
-    copy.prepend("\"");
-    copy.append("\"");
+    QByteArray copy;
+    copy.reserve(str.size() + 4);
+    copy.append('"');
+    for (int i = 0; i < str.size(); i++) {
+        uchar c = str.at(i);
+        if (c < 32) {
+            copy.append('\\');
+            copy.append('^');
+            copy.append(c + '@');
+        } else {
+            if (c == '\\' || c == '"')
+                copy.append('\\');
+            copy.append(c);
+        }
+    }
+    copy.append('"');
     return copy;
 }
 

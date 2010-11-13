@@ -89,6 +89,25 @@ QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
     return str;
 }
 
+void StubProcess::writeString(const QByteArray &str)
+{
+    QByteArray out;
+    out.reserve(str.size() + 8);
+    for (int i = 0; i < str.size(); i++) {
+        uchar c = str.at(i);
+        if (c < 32) {
+            out.append('\\');
+            out.append(c + '@');
+        } else if (c == '\\') {
+            out.append('\\');
+            out.append('/');
+        } else {
+            out.append(c);
+        }
+    }
+    writeLine(out);
+}
+
 /*
  * Map pid_t to a signed integer type that makes sense for QByteArray;
  * only the most common sizes 16 bit and 32 bit are special-cased.
@@ -138,7 +157,7 @@ int StubProcess::ConverseStub(int check)
 	    writeLine("");
 #endif
 	} else if (line == "command") {
-	    writeLine(m_Command);
+	    writeString(m_Command);
 	} else if (line == "path") {
 	    QByteArray path = qgetenv("PATH");
             if (!path.isEmpty() && path[0] == ':')
@@ -182,7 +201,7 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "environment") { // additional env vars
 	    QList<QByteArray> env = environment();
             for (int i = 0; i < env.count(); ++i)
-                writeLine(env.at(i));
+                writeString(env.at(i));
 	    writeLine( "" );
 	} else if (line == "end") {
 	    return 0;
