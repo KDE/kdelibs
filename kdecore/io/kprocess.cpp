@@ -212,6 +212,9 @@ void KProcess::setProgram(const QString &exe, const QStringList &args)
 
     d->prog = exe;
     d->args = args;
+#ifdef Q_OS_WIN
+    setNativeArguments(QString());
+#endif
 }
 
 void KProcess::setProgram(const QStringList &argv)
@@ -221,6 +224,9 @@ void KProcess::setProgram(const QStringList &argv)
     Q_ASSERT( !argv.isEmpty() );
     d->args = argv;
     d->prog = d->args.takeFirst();
+#ifdef Q_OS_WIN
+    setNativeArguments(QString());
+#endif
 }
 
 KProcess &KProcess::operator<<(const QString &arg)
@@ -251,6 +257,9 @@ void KProcess::clearProgram()
 
     d->prog.clear();
     d->args.clear();
+#ifdef Q_OS_WIN
+    setNativeArguments(QString());
+#endif
 }
 
 void KProcess::setShellCommand(const QString &cmd)
@@ -264,6 +273,9 @@ void KProcess::setShellCommand(const QString &cmd)
         d->prog = KStandardDirs::findExe(d->args[0]);
         if (!d->prog.isEmpty()) {
             d->args.removeFirst();
+#ifdef Q_OS_WIN
+            setNativeArguments(QString());
+#endif
             return;
         }
     }
@@ -303,19 +315,15 @@ void KProcess::setShellCommand(const QString &cmd)
     // KShell::joinArgs() may generate these for security reasons.
     setEnv(PERCENT_VARIABLE, QLatin1String("%"));
 
-    //see also TrollTechTaskTracker entry 88373.
-    d->prog = KStandardDirs::findExe(QLatin1String("kcmdwrapper"));
-
 #ifndef _WIN32_WCE
-    UINT size;
     WCHAR sysdir[MAX_PATH + 1];
-    size = GetSystemDirectoryW(sysdir, MAX_PATH + 1);
-    QString cmdexe = QString::fromUtf16((const ushort *) sysdir, size);
-    cmdexe.append(QLatin1String("\\cmd.exe"));
-
-    d->args << cmdexe << cmd;
+    UINT size = GetSystemDirectoryW(sysdir, MAX_PATH + 1);
+    d->prog = QString::fromUtf16((const ushort *) sysdir, size);
+    d->prog += QLatin1String("\\cmd.exe");
+    setNativeArguments(QLatin1String("/V:OFF /S /C \"") + cmd + QLatin1Char('"'));
 #else
-    d->args << QLatin1String("\\windows\\cmd.exe") << cmd;
+    d->prog = QLatin1String("\\windows\\cmd.exe");
+    setNativeArguments(QLatin1String("/S /C \"") + cmd + QLatin1Char('"'));
 #endif
 #endif
 }

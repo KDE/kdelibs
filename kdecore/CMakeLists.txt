@@ -478,16 +478,6 @@ install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### next target ###############
 
-if (WIN32 AND NOT WINCE)
-    kde4_add_executable(kcmdwrapper NOGUI io/kcmdwrapper.cpp )
-
-    target_link_libraries(kcmdwrapper kernel32 shell32 )
-
-    install(TARGETS kcmdwrapper DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif (WIN32 AND NOT WINCE)
-
-########### next target ###############
-
 if(NOT WINCE)
     # kjs hash stuff for transcript plugin
     set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
