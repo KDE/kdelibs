@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="el" english-language-name="Greek">
+
+   <l:gentext key="footer-doc-comment" text="&#917;&#960;&#953;&#952;&#965;&#956;&#949;&#943;&#964;&#949; &#957;&#945; &#954;&#940;&#957;&#949;&#964;&#949; &#941;&#957;&#945; &#963;&#967;&#972;&#955;&#953;&#959; &#942; &#957;&#945; &#963;&#965;&#957;&#949;&#953;&#963;&#966;&#941;&#961;&#949;&#964;&#949; &#963;&#964;&#959; &#960;&#949;&#961;&#953;&#949;&#967;&#972;&#956;&#949;&#957;&#959; &#945;&#965;&#964;&#942;&#962; &#964;&#951;&#962; &#963;&#949;&#955;&#943;&#948;&#945;&#962;;"/>
+   <l:gentext key="footer-doc-feedback" text="&#931;&#964;&#949;&#943;&#955;&#964;&#949; &#964;&#953;&#962; &#963;&#965;&#957;&#949;&#953;&#963;&#966;&#959;&#961;&#941;&#962; &#963;&#945;&#962; &#963;&#964;&#951;&#957; "/>
+   <l:gentext key="footer-doc-teamname" text="&#959;&#956;&#940;&#948;&#945; &#964;&#949;&#954;&#956;&#951;&#961;&#943;&#969;&#963;&#951;&#962; &#964;&#959;&#965; KDE"/>
+
+   <l:context name="datetime">
+      <l:template name="format" text="d/m/Y"/>
+   </l:context>
+
+   <l:context name="datetime-full">
+      <l:template name="January" text="&#921;&#945;&#957;&#959;&#965;&#940;&#961;&#953;&#959;&#962;"/>
+      <l:template name="February" text="&#934;&#949;&#946;&#961;&#959;&#965;&#940;&#961;&#953;&#959;&#962;"/>
+      <l:template name="March" text="&#924;&#940;&#961;&#964;&#953;&#959;&#962;"/>
+      <l:template name="April" text="&#913;&#960;&#961;&#943;&#955;&#953;&#959;&#962;"/>
+      <l:template name="May" text="&#924;&#940;&#953;&#959;&#962;"/>
+      <l:template name="June" text="&#921;&#959;&#973;&#957;&#953;&#959;&#962;"/>
+      <l:template name="July" text="&#921;&#959;&#973;&#955;&#953;&#959;&#962;"/>
+      <l:template name="August" text="&#913;&#973;&#947;&#959;&#965;&#963;&#964;&#959;&#962;"/>
+      <l:template name="September" text="&#931;&#949;&#960;&#964;&#941;&#956;&#946;&#961;&#953;&#959;&#962;"/>
+      <l:template name="October" text="&#927;&#954;&#964;&#974;&#946;&#961;&#953;&#959;&#962;"/>
+      <l:template name="November" text="&#925;&#959;&#941;&#956;&#946;&#961;&#953;&#959;&#962;"/>
+      <l:template name="December" text="&#916;&#949;&#954;&#941;&#956;&#946;&#961;&#953;&#959;&#962;"/>
+      <l:template name="Monday" text="&#916;&#949;&#965;&#964;&#941;&#961;&#945;"/>
+      <l:template name="Tuesday" text="&#932;&#961;&#943;&#964;&#951;"/>
+      <l:template name="Wednesday" text="&#932;&#949;&#964;&#940;&#961;&#964;&#951;"/>
+      <l:template name="Thursday" text="&#928;&#941;&#956;&#960;&#964;&#951;"/>
+      <l:template name="Friday" text="&#928;&#945;&#961;&#945;&#963;&#954;&#949;&#965;&#942;"/>
+      <l:template name="Saturday" text="&#931;&#945;&#946;&#946;&#940;&#964;&#959;"/>
+      <l:template name="Sunday" text="&#922;&#965;&#961;&#953;&#945;&#954;&#942;"/>
+   </l:context>
+
+   <l:context name="datetime-abbrev">
+      <l:template name="Jan" text="&#921;&#945;&#957;"/>
+      <l:template name="Feb" text="&#934;&#949;&#946;"/>
+      <l:template name="Mar" text="&#924;&#945;&#961;"/>
+      <l:template name="Apr" text="&#913;&#960;&#961;"/>
+      <l:template name="May" text="&#924;&#940;&#953;"/>
+      <l:template name="Jun" text="&#921;&#959;&#973;&#957;"/>
+      <l:template name="Jul" text="&#921;&#959;&#973;&#955;"/>
+      <l:template name="Aug" text="&#913;&#973;&#947;"/>
+      <l:template name="Sep" text="&#931;&#949;&#960;"/>
+      <l:template name="Oct" text="&#927;&#954;&#964;"/>
+      <l:template name="Nov" text="&#925;&#959;&#941;"/>
+      <l:template name="Dec" text="&#916;&#949;&#954;"/>
+      <l:template name="Mon" text="&#916;&#949;&#965;"/>
+      <l:template name="Tue" text="&#932;&#961;&#953;"/>
+      <l:template name="Wed" text="&#932;&#949;&#964;"/>
+      <l:template name="Thu" text="&#928;&#949;&#956;"/>
+      <l:template name="Fri" text="&#928;&#945;&#961;"/>
+      <l:template name="Sat" text="&#931;&#945;&#946;"/>
+      <l:template name="Sun" text="&#922;&#965;&#961;"/>
+   </l:context>
+</l:l10n>

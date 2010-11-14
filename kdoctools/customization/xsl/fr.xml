@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="fr" english-language-name="French">
+   <l:gentext key="footer-doc-comment" text="Vous souhaitez faire un commentaire ou participer au contenu de cette page&#160;?"/>
+   <l:gentext key="footer-doc-feedback" text="Envoyez vos contributions &#224; l'"/>
+   <l:gentext key="footer-doc-teamname" text="&#233;quipe de documentation de KDE"/>
+</l:l10n>
