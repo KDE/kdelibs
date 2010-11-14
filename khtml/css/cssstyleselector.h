@@ -227,6 +227,8 @@ namespace khtml
 	   current generic font family has changed. -dwh */
 	void checkForGenericFamilyChange(RenderStyle* aStyle, RenderStyle* aParentStyle);
 #endif
+        // locates potentially similar style
+        RenderStyle* locateSimilarStyle();
 
 	/* builds up the selectors and properties lists from the CSSStyleSelectorList's */
 	void buildLists();

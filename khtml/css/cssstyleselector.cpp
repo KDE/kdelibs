@@ -3,7 +3,7 @@
  *
  * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright 2003-2004 Apple Computer, Inc.
- * Copyright 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright 2004-2010 Allan Sandfeld Jensen (kde@carewolf.com)
  * Copyright 2004-2008 Germain Garand (germain@ebooksfrance.org)
  * Copyright 2008 Vyacheslav Tokarev (tsjoker@gmail.com)
  *           (C) 2005, 2006, 2008 Apple Computer, Inc.
@@ -543,6 +543,44 @@ void CSSStyleSelector::computeFontSizesFor(int logicalDpiY, int zoomFactor, QVec
 
 #undef MAXFONTSIZES
 
+RenderStyle* CSSStyleSelector::locateSimilarStyle()
+{
+    ElementImpl *s=0, *t=0, *c=0;
+    if (!element) return 0;
+    // Check previous siblings.
+    unsigned count = 0;
+    NodeImpl* n;
+    do {
+        for (n = element->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
+        if (!n) break;
+        ElementImpl *e = static_cast<ElementImpl*>(n);
+        if (++count > 10) break;
+        if (!s) s = e; // sibling match
+        if (e->id() != element->id()) continue;
+        if (!t) t = e; // tag match
+        if (element->hasClass()) {
+            if (!e->hasClass()) continue;
+            const DOMString& class1 = element->getAttribute(ATTR_CLASS);
+            const DOMString& class2 = e->getAttribute(ATTR_CLASS);
+            if  (class1 != class2) continue;
+        }
+        if (!c) c = e; // class match
+        break;
+    } while(true);
+
+    // if possible return sibling that matches tag and class
+    if (c && c->renderer() && c->renderer()->style()) return c->renderer()->style();
+    // second best: return sibling that matches tag
+    if (t && t->renderer() && t->renderer()->style()) return t->renderer()->style();
+    // third best: return sibling element
+    if (s && s->renderer() && s->renderer()->style()) return s->renderer()->style();
+    // last attempt: return parent element
+    NodeImpl* p = element->parentNode();
+    if (p && p->renderer()) return p->renderer()->style();
+
+    return 0;
+}
+
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
     while( b < e ) {
@@ -773,6 +811,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
         adjustRenderStyle(pseudoStyle, 0);
         pseudoStyle = pseudoStyle->pseudoStyle;
     }
+
+    // Try and share or partially share the style with our siblings
+    RenderStyle *commonStyle = locateSimilarStyle();
+    if (commonStyle)
+        style->compactWith(commonStyle);
 
     // Now return the style.
     return style;

@@ -618,6 +618,28 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
         setWhiteSpace(PRE_LINE);
 }
 
+void RenderStyle::compactWith(const RenderStyle* similarStyle)
+{
+    if (this == similarStyle) return;
+
+    if (box.get() != similarStyle->box.get() && box == similarStyle->box)
+        box = similarStyle->box;
+    if (visual.get() != similarStyle->visual.get() && visual == similarStyle->visual)
+        visual = similarStyle->visual;
+    if (background.get() != similarStyle->background.get() && background == similarStyle->background)
+        background = similarStyle->background;
+    if (surround.get() != similarStyle->surround.get() && surround == similarStyle->surround)
+        surround = similarStyle->surround;
+    if (generated.get() != similarStyle->generated.get() && generated == similarStyle->generated)
+        generated = similarStyle->generated;
+    if (css3NonInheritedData.get() != similarStyle->css3NonInheritedData.get() && css3NonInheritedData == similarStyle->css3NonInheritedData)
+        css3NonInheritedData = similarStyle->css3NonInheritedData;
+    if (css3InheritedData.get() != similarStyle->css3InheritedData.get() && css3InheritedData == similarStyle->css3InheritedData)
+        css3InheritedData = similarStyle->css3InheritedData;
+    if (inherited.get() != similarStyle->inherited.get() && inherited == similarStyle->inherited)
+        inherited = similarStyle->inherited;
+}
+
 RenderStyle::~RenderStyle()
 {
     RenderStyle *ps = pseudoStyle;

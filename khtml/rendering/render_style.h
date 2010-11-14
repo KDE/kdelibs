@@ -983,6 +983,7 @@ public:
     ~RenderStyle();
 
     void inheritFrom(const RenderStyle* inheritParent);
+    void compactWith(const RenderStyle* similarStyle);
 
     PseudoId styleType() const { return KDE_CAST_BF_ENUM(PseudoId, noninherited_flags.f._styleType); }
     void setStyleType(PseudoId pi) { noninherited_flags.f._styleType = pi; }
