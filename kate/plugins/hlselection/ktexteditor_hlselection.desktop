@@ -15,4 +15,6 @@ X-KDE-ServiceTypes=KTextEditor/Plugin
 Type=Service
 Icon=document-import
 Name=Highlight Selection
+Name[x-test]=xxHighlight Selectionxx
 Comment=Highlight all words based on the text selection
+Comment[x-test]=xxHighlight all words based on the text selectionxx
