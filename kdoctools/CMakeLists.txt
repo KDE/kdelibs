@@ -82,6 +82,8 @@ endif(KDE4_ENABLE_FINAL)
 
    target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
 
+   add_dependencies(meinproc4 docbookl10nhelper) 
+
    # "export" this target too so we can use the LOCATION property of the imported target in
    # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
    install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -106,6 +108,8 @@ if (NOT CMAKE_CROSSCOMPILING)
 
    target_link_libraries(meinproc4_simple ${QT_QTCORE_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
 
+   add_dependencies(meinproc4_simple docbookl10nhelper) 
+
    install(TARGETS meinproc4_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 endif (NOT CMAKE_CROSSCOMPILING)
@@ -118,6 +122,19 @@ set(genshortcutents_SRCS genshortcutents.cpp )
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
 target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
+
+
+########### customize includes for xslt ###############
+
+file( GLOB _kdeincludexslt_ALL "customization/kde-include*.xsl.cmake" )
+foreach( _kdeincludexslt ${_kdeincludexslt_ALL} )
+    get_filename_component( _kdeincludexslt_name ${_kdeincludexslt} NAME )
+    string( REGEX REPLACE ".cmake$" "" _kdeincludexslt_out "${_kdeincludexslt_name}" )
+    set( _kdeincludexslt_binarypath "${CMAKE_CURRENT_BINARY_DIR}/customization/${_kdeincludexslt_out}" )
+    configure_file( ${_kdeincludexslt} ${_kdeincludexslt_binarypath} )
+    install(FILES ${_kdeincludexslt_binarypath}
+            DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization )
+endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 
 
 ########### install files ###############
@@ -154,89 +171,6 @@ macro(INSTALL_CUSTOMIZE_L_DIR _expr _directory)
     endforeach(_curentfile ${_file_CUST})
 endmacro(INSTALL_CUSTOMIZE_L_DIR _expr _directory)
 
-set(docbookdir xsl )
-
-set(expr "docbook/README.kde")
-INSTALL_CUSTOMIZE_DIR( ${expr} docbook/)
-
-foreach (_currentdocbookdir ${docbookdir})
-	set(expr "docbook/${_currentdocbookdir}/*.mod")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/*.txt")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/*.dtd")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/*.cat")
-    install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/README*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/Changelog*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/*.xml")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/VERSION*")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/)
-	set(expr "docbook/${_currentdocbookdir}/What*")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/)
-	
-	set(expr "docbook/${_currentdocbookdir}/ent/*.ent")
-	install_customize_dir( ${expr} docbook/${_currentdocbookdir}/ent/)
-
-	set(expr "docbook/${_currentdocbookdir}/common/*.xsl")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
-	set(expr "docbook/${_currentdocbookdir}/common/*.xml")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
-	set(expr "docbook/${_currentdocbookdir}/common/*.dtd")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
-	set(expr "docbook/${_currentdocbookdir}/common/Changelog")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/common/)
-
-    set(expr "docbook/${_currentdocbookdir}/html/*.xsl")
-    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-    set(expr "docbook/${_currentdocbookdir}/html/*.xml")
-    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-    set(expr "docbook/${_currentdocbookdir}/html/*.dtd")
-    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-	set(expr "docbook/${_currentdocbookdir}/html/Changelog")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-	set(expr "docbook/${_currentdocbookdir}/html/*.ent")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-	set(expr "docbook/${_currentdocbookdir}/html/*.xweb")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/html/)
-
-    set(expr "docbook/${_currentdocbookdir}/images/*.png")
-    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
-	set(expr "docbook/${_currentdocbookdir}/images/*.gif")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
-	set(expr "docbook/${_currentdocbookdir}/images/*.tif")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
-	set(expr "docbook/${_currentdocbookdir}/images/Changelog")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/)
-
-	set(expr "docbook/${_currentdocbookdir}/images/callouts/*.png")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
-    set(expr "docbook/${_currentdocbookdir}/images/callouts/*.gif")
-    install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
-	set(expr "docbook/${_currentdocbookdir}/images/callouts/Changelog")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
-
-	set(expr "docbook/${_currentdocbookdir}/lib/lib.*")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
-	set(expr "docbook/${_currentdocbookdir}/lib/Changel*")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
-	set(expr "docbook/${_currentdocbookdir}/lib/README*")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/lib/)
-
-	set(expr "docbook/${_currentdocbookdir}/manpages/*.xsl")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/manpages/)
-
-	set(expr "docbook/${_currentdocbookdir}/params/*.xml")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/params/)
-	set(expr "docbook/${_currentdocbookdir}/params/Changelog")
-	install_customize_l_dir( ${expr} docbook/${_currentdocbookdir}/params/)
-	
-
-endforeach(_currentdocbookdir ${docbookdir})
 
 
 set(expr "customization/*.xsl")
@@ -272,5 +206,20 @@ endforeach(_currentcustomizedir ${customizedir})
 	  
 
 
+########### l10n xml helper ###############
 
+set( docbookl10nhelper_SRCS docbookl10nhelper.cpp )
+kde4_add_executable( docbookl10nhelper NOGUI ${docbookl10nhelper_SRCS} )
+target_link_libraries( docbookl10nhelper ${QT_QTCORE_LIBRARIES} )
+
+add_custom_command( TARGET docbookl10nhelper POST_BUILD
+  COMMAND ${EXECUTABLE_OUTPUT_PATH}/docbookl10nhelper
+  ${DOCBOOKXSL_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/customization/xsl
+  ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl
+)
+# all-l10n.xml and kde-custom-l10n.xml are generated by docbookl10nhelper
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl/all-l10n.xml
+  DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/xsl/ )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl/kde-custom-l10n.xml
+  DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/xsl/ )
 
