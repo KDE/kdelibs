@@ -167,14 +167,13 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         setupTranslations();
     }
 
+#ifndef KDE_NO_DEPRECATED
     if (keyword.isEmpty()) {
 
-        const char* kpartsIface = iface;
-#ifndef KDE_NO_DEPRECATED
         // kde3-kparts compatibility, remove in kde5
+        const char* kpartsIface = iface;
         if (args.contains(QVariant(QString::fromLatin1("Browser/View"))))
             kpartsIface = "Browser/View";
-#endif
 
         const QStringList argsStringList = variantListToStringList(args);
 
@@ -188,6 +187,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
             return obj;
         }
     }
+#endif
 
     const QList<KPluginFactoryPrivate::Plugin> candidates(d->createInstanceHash.values(keyword));
     // for !keyword.isEmpty() candidates.count() is 0 or 1
