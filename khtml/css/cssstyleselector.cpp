@@ -549,9 +549,9 @@ RenderStyle* CSSStyleSelector::locateSimilarStyle()
     if (!element) return 0;
     // Check previous siblings.
     unsigned count = 0;
-    NodeImpl* n;
+    NodeImpl* n = element;
     do {
-        for (n = element->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
+        for (n = n->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
         if (!n) break;
         ElementImpl *e = static_cast<ElementImpl*>(n);
         if (++count > 10) break;
