@@ -209,7 +209,7 @@ public:
             maxChar = qMax(5, fm.height());
         }
         m_columns  = maxWidth / maxChar;
-        if (m_columns == 0) {
+        if (m_columns <= 0) {
             m_columns = 1;
         }
         reset();
