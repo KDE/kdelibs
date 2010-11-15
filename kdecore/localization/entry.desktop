@@ -1,5 +1,6 @@
 [KCM Locale]
 Name=US English
+Name[ca]=Anglès US
 Name[da]=Engelsk (US)
 Name[de]=US-Englisch
 Name[ia]=Anglese de SU
@@ -11,4 +12,5 @@ Name[pt_BR]=Inglês dos EUA
 Name[sv]=Amerikansk engelska
 Name[uk]=Англійська (США)
 Name[x-test]=xxUS Englishxx
+Name[zh_CN]=美国英语
 Name[zh_TW]=美式英語
