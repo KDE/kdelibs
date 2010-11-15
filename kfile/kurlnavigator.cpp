@@ -1005,8 +1005,8 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
         }
         if (!insideCompressedPath) {
             // drop the tar: or zip: protocol since we are not
-            // inside the compressed path anymore
-            url.setProtocol(QString());
+            // inside the compressed path
+            url.setProtocol("file");
         }
     }
 

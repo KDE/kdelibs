@@ -159,4 +159,34 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historySize(), 4);
 }
 
+/**
+ * When the current URL is inside an archive and the user goes "up", it is expected
+ * that the new URL is that of the folder containing the archive (unless the URL was
+ * in a subfolder inside the archive). Furthermore, the protocol should be "file".
+ * An empty protocol would lead to problems in Dolphin, see
+ *
+ * https://bugs.kde.org/show_bug.cgi?id=251553
+ */
+
+void KUrlNavigatorTest::bug251553_goUpFromArchive()
+{
+    m_navigator->setLocationUrl(KUrl("zip:/test/archive.zip"));
+    QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.zip"));
+    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("zip"));
+
+    bool ok = m_navigator->goUp();
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
+    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("file"));
+
+    m_navigator->setLocationUrl(KUrl("tar:/test/archive.tar.gz"));
+    QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.tar.gz"));
+    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("tar"));
+
+    ok = m_navigator->goUp();
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
+    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("file"));
+}
+
 #include "kurlnavigatortest.moc"

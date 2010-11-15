@@ -36,6 +36,8 @@ private slots:
     void testGoForward();
     void testHistoryInsert();
 
+    void bug251553_goUpFromArchive();
+
 private:
     KUrlNavigator* m_navigator;
 };
