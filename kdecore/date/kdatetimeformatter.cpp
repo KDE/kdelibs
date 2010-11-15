@@ -613,6 +613,8 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
     }
 //kDebug() << " return = " << result;
 //kDebug() << "";
+    delete englishCalendar;
+    delete englishLocale;
     return result;
 }
 

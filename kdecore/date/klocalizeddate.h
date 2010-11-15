@@ -60,7 +60,7 @@ class KLocalizedDatePrivate;
  * either the Global Locale or a custom Locale (see below) will not apply
  * to that date instance.
  *
- * You may however whish to use a custom Locale with the Calendar System.
+ * You may however wish to use a custom Locale with the Calendar System.
  * For example, if you want your app to normally show dates using the Global
  * Locale and Calendar System, but wish to show an info box with the Islamic
  * date in Arabic language and format, then you need a custom Locale to do
