@@ -72,7 +72,10 @@ void Solid::ManagerBasePrivate::loadBackends()
                 m_backends << new Solid::Backends::UDev::UDevManager(0);
 #           endif
             m_backends << new Solid::Backends::Hal::HalManager(0)
+// FIXME: the udisks backend used to build on !Linux too
+#           if defined (Q_OS_LINUX)
                        << new Solid::Backends::UDisks::UDisksManager(0)
+#           endif
                        << new Solid::Backends::UPower::UPowerManager(0)
                        << new Solid::Backends::Fstab::FstabManager(0);
 #        if defined (HUPNP_FOUND)
