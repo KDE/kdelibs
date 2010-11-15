@@ -41,6 +41,7 @@
 #include <QCoreApplication>
 #include <QAbstractItemView>
 #include <QAbstractProxyModel>
+#include <QTreeView>
 
 #include "kwidgetitemdelegatepool_p.h"
 
@@ -167,6 +168,13 @@ KWidgetItemDelegate::KWidgetItemDelegate(QAbstractItemView *itemView, QObject *p
 
     itemView->viewport()->installEventFilter(d); // mouse events
     itemView->installEventFilter(d);             // keyboard events
+
+    if(qobject_cast<QTreeView*>(itemView)) {
+        connect(itemView,  SIGNAL(collapsed(QModelIndex)),
+                d, SLOT(initializeModel()));
+        connect(itemView,  SIGNAL(expanded(QModelIndex)),
+                d, SLOT(initializeModel()));
+    }
 }
 
 KWidgetItemDelegate::~KWidgetItemDelegate()
