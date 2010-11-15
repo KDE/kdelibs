@@ -208,16 +208,16 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halvolume.cpp
    backends/hal/halsmartcardreader.cpp
 
-   backends/udisks/udisksmanager.cpp
-   backends/udisks/udisksdevice.cpp
-   backends/udisks/udisksblock.cpp
-   backends/udisks/udisksstoragevolume.cpp
-   backends/udisks/udisksdeviceinterface.cpp
-   backends/udisks/udisksopticaldisc.cpp
-   backends/udisks/udisksopticaldrive.cpp
-   backends/udisks/udisksstoragedrive.cpp
-   backends/udisks/udisksstorageaccess.cpp
-   backends/udisks/udisksgenericinterface.cpp
+   # backends/udisks/udisksmanager.cpp
+   # backends/udisks/udisksdevice.cpp
+   # backends/udisks/udisksblock.cpp
+   # backends/udisks/udisksstoragevolume.cpp
+   # backends/udisks/udisksdeviceinterface.cpp
+   # backends/udisks/udisksopticaldisc.cpp
+   # backends/udisks/udisksopticaldrive.cpp
+   # backends/udisks/udisksstoragedrive.cpp
+   # backends/udisks/udisksstorageaccess.cpp
+   # backends/udisks/udisksgenericinterface.cpp
 
    backends/upower/upowermanager.cpp
    backends/upower/upowerdevice.cpp
@@ -226,6 +226,22 @@ if(NOT WIN32 AND NOT APPLE)
    backends/upower/upowerdeviceinterface.cpp
    backends/upower/upowergenericinterface.cpp
    )
+
+   # FIXME: this should work on more Unix systems
+   if (CMAKE_SYSTEM_NAME MATCHES Linux)
+      set(solid_LIB_SRCS ${solid_LIB_SRCS}
+      backends/udisks/udisksmanager.cpp
+      backends/udisks/udisksdevice.cpp
+      backends/udisks/udisksblock.cpp
+      backends/udisks/udisksstoragevolume.cpp
+      backends/udisks/udisksdeviceinterface.cpp
+      backends/udisks/udisksopticaldisc.cpp
+      backends/udisks/udisksopticaldrive.cpp
+      backends/udisks/udisksstoragedrive.cpp
+      backends/udisks/udisksstorageaccess.cpp
+      backends/udisks/udisksgenericinterface.cpp
+      )
+   endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 
    message(STATUS "Building Solid fstab backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
