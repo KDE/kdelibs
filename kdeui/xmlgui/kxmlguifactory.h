@@ -216,7 +216,11 @@ Q_SIGNALS:
     void makingChanges(bool);
 
 private:
-  KXMLGUIFactoryPrivate *const d;
+    friend class KXMLGUIClient;
+    /// Internal, called by KXMLGUIClient destructor
+    void forgetClient(KXMLGUIClient *client);
+
+    KXMLGUIFactoryPrivate *const d;
 };
 
 #endif
