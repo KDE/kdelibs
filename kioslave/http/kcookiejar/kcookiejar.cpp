@@ -49,7 +49,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
-#include <QtCore/QStringBuilder>
 
 // BR87227
 // Waba: Should the number of cookies be limited?
@@ -151,21 +150,21 @@ QString KHttpCookie::cookieStr(bool useDOMFormat) const
         if ( mName.isEmpty() )
            result = mValue;
         else
-           result = mName % QL1C('=') % mValue;
+           result = mName + QL1C('=') + mValue;
     } else {
-        result = mName % QL1C('=') % mValue;
+        result = mName + QL1C('=') + mValue;
         if (mExplicitPath)
-            result += QL1S("; $Path=\"") % mPath % QL1C('"');
+            result += QL1S("; $Path=\"") + mPath + QL1C('"');
         if (!mDomain.isEmpty())
-            result += QL1S("; $Domain=\"") % mDomain % QL1C('"');
+            result += QL1S("; $Domain=\"") + mDomain + QL1C('"');
         if (!mPorts.isEmpty()) {
             if (mPorts.length() == 2 && mPorts.at(0) == -1)
                 result += QL1S("; $Port");
             else {
                 QString portNums;
                 Q_FOREACH(int port, mPorts)
-                    portNums += QString::number(port) % QL1C(' ');
-                result += QL1S("; $Port=\"") % portNums.trimmed() % QL1C('"');
+                    portNums += QString::number(port) + QL1C(' ');
+                result += QL1S("; $Port=\"") + portNums.trimmed() + QL1C('"');
             }
         }
     }
@@ -189,7 +188,7 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
             return false;
 
         // Maybe the domain needs an extra dot.
-        QString domain = QL1C('.') % mDomain;
+        QString domain = QL1C('.') + mDomain;
         if ( !domains.contains( domain ) )
           if ( fqdn != mDomain )
             return false;
@@ -385,10 +384,10 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
             cookieStr = QL1S("Cookie: ");
         
         if (protVersion > 0)
-            cookieStr = cookieStr % QL1S("$Version=") % QString::number(protVersion) % QL1S("; ");
+            cookieStr = cookieStr + QL1S("$Version=") + QString::number(protVersion) + QL1S("; ");
           
         Q_FOREACH(const KHttpCookie& cookie, allCookies)
-            cookieStr = cookieStr % cookie.cookieStr(useDOMFormat) % QL1S("; ");
+            cookieStr = cookieStr + cookie.cookieStr(useDOMFormat) + QL1S("; ");
 
         cookieStr.truncate(cookieStr.length() - 2); // Remove the trailing ';'
     }
@@ -566,7 +565,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     // Always add the FQDN at the start of the list for
     // hostname == cookie-domainname checks!
     _domains.append(_fqdn);
-    _domains.append(QL1C('.') % _fqdn);
+    _domains.append(QL1C('.') + _fqdn);
 
     QStringList partList = _fqdn.split('.', QString::SkipEmptyParts);
 
@@ -600,7 +599,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
        QString domain = partList.join(QL1S("."));
        _domains.append(domain);
-       _domains.append(QL1C('.') % domain);
+       _domains.append(QL1C('.') + domain);
        partList.erase(partList.begin()); // Remove part
     }
 }
@@ -1210,7 +1209,7 @@ static QString hostWithPort(const KHttpCookie* cookie)
     Q_FOREACH(int port, ports)
         portList << QString::number(port);
 
-    return (cookie->host() % QL1C(':') % portList.join(QL1S(",")));
+    return (cookie->host() + QL1C(':') + portList.join(QL1S(",")));
 }
 
 //
@@ -1260,8 +1259,8 @@ bool KCookieJar::saveCookies(const QString &_filename)
                     ts << '[' << domain.toLocal8Bit().data() << "]\n";
                 }
                 // Store persistent cookies
-                const QString path = QL1S("\"") % cookie.path() % QL1C('"');
-                const QString domain = QL1S("\"") % cookie.domain() % QL1C('"');
+                const QString path = QL1S("\"") + cookie.path() + QL1C('"');
+                const QString domain = QL1S("\"") + cookie.domain() + QL1C('"');
                 const QString host = hostWithPort(&cookie);
 
                 // TODO: replace with direct QTextStream output ?
@@ -1464,7 +1463,7 @@ void KCookieJar::saveConfig(KConfig *_config)
          KCookieAdvice advice = getDomainAdvice( domain);
          if (advice != KCookieDunno)
          {
-             const QString value = domain % QL1C(':') % adviceToStr(advice);
+             const QString value = domain + QL1C(':') + adviceToStr(advice);
              domainSettings.append(value);
          }
     }
