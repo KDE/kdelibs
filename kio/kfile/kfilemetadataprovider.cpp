@@ -111,6 +111,7 @@ public:
 
     void slotMetaDataUpdateDone();
     void slotTagClicked(const Nepomuk::Tag& tag);
+    void slotLinkActivated(const QString& link);
 
     /**
      * Disables the metadata widget and starts the job that
@@ -269,6 +270,11 @@ void KFileMetaDataProvider::Private::slotTagClicked(const Nepomuk::Tag& tag)
 #endif
 }
 
+void KFileMetaDataProvider::Private::slotLinkActivated(const QString& link)
+{
+    emit q->urlActivated(KUrl(link));
+}
+
 void KFileMetaDataProvider::Private::startChangeDataJob(KJob* job)
 {
     connect(job, SIGNAL(result(KJob*)),
@@ -347,6 +353,7 @@ QWidget* KFileMetaDataProvider::Private::createValueWidget(const QString& value,
     valueWidget->setWordWrap(true);
     valueWidget->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     valueWidget->setText(m_readOnly ? plainText(value) : value);
+    connect(valueWidget, SIGNAL(linkActivated(QString)), q, SLOT(slotLinkActivated(QString)));
     return valueWidget;
 }
 
