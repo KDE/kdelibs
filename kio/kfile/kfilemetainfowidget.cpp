@@ -273,9 +273,9 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
 QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 {
     double value = d->m_item.value().toDouble();
-    
-    KDoubleNumInput* dni = new KDoubleNumInput(qMin(0.0,value),
-                                               qMax(0.0,value),
+
+    KDoubleNumInput* dni = new KDoubleNumInput(qMin(0.0,value), //krazy:exclude=qminmax
+                                               qMax(0.0,value), //krazy:exclude=qminmax
                                                value, this, 0.01 ,2);
 
 
