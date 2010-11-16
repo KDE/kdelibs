@@ -52,8 +52,6 @@ bool Processor::canChangeFrequency() const
     return m_device->property("processor.can_throttle").toBool();
 }
 
-static Solid::Processor::InstructionSets cpuFeatures();
-
 Solid::Processor::InstructionSets Processor::instructionSets() const
 {
     static Solid::Processor::InstructionSets cpuextensions = Solid::Backends::Shared::cpuFeatures();
