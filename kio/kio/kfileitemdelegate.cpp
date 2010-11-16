@@ -370,10 +370,9 @@ QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QString 
     layout.setText(text);
 
     layout.beginLayout();
-    const qreal maxLineWidth = qreal(maxWidth);
     while ((line = layout.createLine()).isValid())
     {
-        line.setLineWidth(maxLineWidth);
+        line.setLineWidth(maxWidth);
         height += leading;
         line.setPosition(QPoint(0, height));
         height += int(line.height());
