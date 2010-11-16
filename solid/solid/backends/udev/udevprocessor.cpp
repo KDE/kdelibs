@@ -23,6 +23,8 @@
 #include "udevdevice.h"
 #include "../shared/cpufeatures.h"
 
+#include <QtCore/QFile>
+
 using namespace Solid::Backends::UDev;
 
 Processor::Processor(UDevDevice *device)
@@ -47,8 +49,17 @@ int Processor::number() const
 
 int Processor::maxSpeed() const
 {
-    // TODO: source ?
-    return 0;
+    QFile m_cpuInfo("/proc/cpuinfo");
+    m_cpuInfo.open(QIODevice::ReadOnly);
+    QString cpuInfo = m_cpuInfo.readAll();
+    m_cpuInfo.close();
+
+    const QRegExp regExp("cpu MHz\\s+:\\s+(\\d+)");
+    regExp.indexIn(cpuInfo);
+
+    // TODO: really get information for each processor.
+
+    return regExp.capturedTexts()[1].toInt();
 }
 
 bool Processor::canChangeFrequency() const
