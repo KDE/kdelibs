@@ -43,7 +43,6 @@
 #include <QtCore/QVariant>
 #include <QtCore/QTextStream>
 
-#include <Soprano/Version>
 #include <Soprano/Node>
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
@@ -516,16 +515,10 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     // type term itself
     QString userVisibilityRestriction;
     if( !d->m_isFileQuery && !containsResourceTypeTerm(term) && !(queryFlags()&NoResultRestrictions) ) {
-#if SOPRANO_IS_VERSION(2,5,62)
         userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 %3 . " )
                                     .arg( qbd.uniqueVarName(),
                                           Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
                                           Soprano::Node::literalToN3(true) );
-#else
-        userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 . " )
-                                    .arg( qbd.uniqueVarName(),
-                                          Soprano::Node::literalToN3(true) );
-#endif
     }
 
     // build the core of the query - the part that never changes
