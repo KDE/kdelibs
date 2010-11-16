@@ -849,7 +849,7 @@ QString Nepomuk::Variant::toString() const
     else if( isDateTime() )
         return Soprano::LiteralValue( toDateTime() ).toString();
     else if( isUrl() )
-        return toUrl().toString();
+        return KUrl(toUrl()).pathOrUrl();
     else if( isResource() )
         return toResource().genericLabel();
     else
