@@ -370,9 +370,10 @@ QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QString 
     layout.setText(text);
 
     layout.beginLayout();
+    const qreal maxLineWidth = qreal(maxWidth);
     while ((line = layout.createLine()).isValid())
     {
-        line.setLineWidth(int(maxWidth));
+        line.setLineWidth(maxLineWidth);
         height += leading;
         line.setPosition(QPoint(0, height));
         height += int(line.height());
@@ -479,6 +480,15 @@ QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItemV4 &
     setLayoutOptions(layout, option);
 
     QSize size = layoutText(layout, label, maxWidth);
+    if (!info.isEmpty())
+    {
+        // As soon as additional information is shown, it might be necessary that
+        // the label and/or the additional information must get elided. To prevent
+        // an expensive eliding in the scope of displaySizeHint, the maximum
+        // width is reserved instead.
+        size.setWidth(maxWidth);
+    }
+
     return addMargin(size, TextMargin);
 }
 
