@@ -402,6 +402,11 @@ void KXMLGUIFactory::changeShortcutScheme(const QString &scheme)
     refreshActionProperties();
 }
 
+void KXMLGUIFactory::forgetClient( KXMLGUIClient *client )
+{
+    d->m_clients.removeAll( client );
+}
+
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
     //kDebug(260) << client;

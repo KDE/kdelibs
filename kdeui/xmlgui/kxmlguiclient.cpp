@@ -97,10 +97,12 @@ KXMLGUIClient::~KXMLGUIClient()
   }
 
   if ( d->m_factory ) {
-    d->m_factory->removeClient ( this );
+    d->m_factory->forgetClient(this);
   }
- 
+
   foreach (KXMLGUIClient* client, d->m_children) {
+      if (d->m_factory)
+          d->m_factory->forgetClient(client);
       assert( client->d->m_parent == this );
       client->d->m_parent = 0;
   }
