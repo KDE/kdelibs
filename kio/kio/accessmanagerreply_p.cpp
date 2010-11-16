@@ -169,65 +169,65 @@ void AccessManagerReply::slotResult(KJob *kJob)
     {
         case 0:
             setError(QNetworkReply::NoError, kJob->errorText());
-            //kDebug( 7044 ) << "0 -> QNetworkReply::NoError";
+            //kDebug(7044) << "0 -> QNetworkReply::NoError";
             break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
+            kDebug(7044) << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
             break;
         case KIO::ERR_UNKNOWN_HOST:
             setError(QNetworkReply::HostNotFoundError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
+            kDebug(7044) << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
             break;
         case KIO::ERR_SERVER_TIMEOUT:
             setError(QNetworkReply::TimeoutError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
+            kDebug(7044) << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
             break;
         case KIO::ERR_USER_CANCELED:
         case KIO::ERR_ABORTED:
             setError(QNetworkReply::OperationCanceledError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
+            kDebug(7044) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
             break;
         case KIO::ERR_UNKNOWN_PROXY_HOST:
             setError(QNetworkReply::ProxyNotFoundError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
+            kDebug(7044) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
             break;
         case KIO::ERR_ACCESS_DENIED:
             setError(QNetworkReply::ContentAccessDenied, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
+            kDebug(7044) << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
             break;
         case KIO::ERR_WRITE_ACCESS_DENIED:
             setError(QNetworkReply::ContentOperationNotPermittedError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
+            kDebug(7044) << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
             break;
         case KIO::ERR_NO_CONTENT:
         case KIO::ERR_DOES_NOT_EXIST:
             setError(QNetworkReply::ContentNotFoundError, kJob->errorText());
-            kDebug( 7044 ) << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
+            kDebug(7044) << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, kJob->errorText());
-            kDebug( 7044 ) << errcode;
+            kDebug(7044) << errcode;
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, kJob->errorText());
-            kDebug( 7044 ) << errcode;
+            kDebug(7044) << errcode;
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, kJob->errorText());
-            kDebug( 7044 ) << errcode;
+            kDebug(7044) << errcode;
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, kJob->errorText());
-            kDebug( 7044 ) << errcode;
+            kDebug(7044) << errcode;
     }
 
     QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid()) {
         readHttpResponseHeaders(m_kioJob);
-        //kDebug( 7044 ) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        //kDebug( 7044 ) << "Redirecting to" << redirectUrl;
+        //kDebug(7044) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        //kDebug(7044) << "Redirecting to" << redirectUrl;
     }
 
     setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
