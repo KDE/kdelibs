@@ -231,8 +231,8 @@ static const int types_indices[] = {
     517,  530,  536,  554,  -1
 };
 
-static int tokenize( QStringList& token, const QString& str,
-                     const QString& delim );
+static void tokenize(QStringList& token, const QString& str,
+                     const QString& delim);
 
 KStandardDirs::KStandardDirs()
     : d(new KStandardDirsPrivate(this))
@@ -1434,30 +1434,23 @@ static inline QString equalizePath(QString &str)
         return str;
 }
 
-static int tokenize( QStringList& tokens, const QString& str,
-                     const QString& delim )
+static void tokenize(QStringList& tokens, const QString& str,
+                    const QString& delim)
 {
-    int len = str.length();
+    const int len = str.length();
     QString token;
 
-    for( int index = 0; index < len; index++)
-    {
-        if ( delim.contains( str[ index ] ) )
-        {
-            tokens.append( equalizePath(token) );
+    for(int index = 0; index < len; index++) {
+        if (delim.contains(str[index])) {
+            tokens.append(equalizePath(token));
             token.clear();
-        }
-        else
-        {
-            token += str[ index ];
+        } else {
+            token += str[index];
         }
     }
-    if ( !token.isEmpty() )
-    {
-        tokens.append( equalizePath(token) );
+    if (!token.isEmpty()) {
+        tokens.append(equalizePath(token));
     }
-
-    return tokens.count();
 }
 
 #ifndef KDE_NO_DEPRECATED
