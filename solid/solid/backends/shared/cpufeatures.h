@@ -18,50 +18,22 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udevprocessor.h"
+#ifndef CPUFEATURES_H
+#define CPUFEATURES_H
 
-#include "udevdevice.h"
-#include "../shared/cpufeatures.h"
+#include <solid/processor.h>
 
-using namespace Solid::Backends::UDev;
-
-Processor::Processor(UDevDevice *device)
-    : DeviceInterface(device)
+namespace Solid
+{
+namespace Backends
+{
+namespace Shared
 {
 
-}
-
-Processor::~Processor()
-{
+Solid::Processor::InstructionSets cpuFeatures();
 
 }
-
-int Processor::number() const
-{
-    QRegExp regExp(":(\\d+)$");
-    if (regExp.indexIn(m_device->udi()) != -1) {
-        return regExp.cap(1).toInt();
-    }
-    return -1;
+}
 }
 
-int Processor::maxSpeed() const
-{
-    // TODO: source ?
-    return 0;
-}
-
-bool Processor::canChangeFrequency() const
-{
-    // TODO: source ?
-    return false;
-}
-
-Solid::Processor::InstructionSets Processor::instructionSets() const
-{
-    static Solid::Processor::InstructionSets cpuextensions = Solid::Backends::Shared::cpuFeatures();
-
-    return cpuextensions;
-}
-
-#include "backends/udev/udevprocessor.moc"
+#endif // CPUFEATURES_H

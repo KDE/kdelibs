@@ -126,6 +126,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakesmartcardreader.cpp
 
    backends/shared/rootdevice.cpp
+   backends/shared/cpufeatures.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)
