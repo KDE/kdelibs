@@ -44,6 +44,7 @@
 static const char KMENU_TITLE[] = "kmenu_title";
 
 class KMenu::KMenuPrivate
+    : public QObject
 {
 public:
     KMenuPrivate (KMenu *_parent);
@@ -53,6 +54,30 @@ public:
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);
     void skipTitles(QKeyEvent *event);
+
+    /**
+     * @internal
+     *
+     * This event filter which is installed
+     * on the title of the menu, which is a QToolButton. This will
+     * prevent clicks (what would change down and focus properties on
+     * the title) on the title of the menu.
+     *
+     * @author Rafael Fernández López <ereslibre@kde.org>
+     */
+    bool eventFilter(QObject *object, QEvent *event)
+    {
+        Q_UNUSED(object);
+
+        if (event->type() == QEvent::Paint ||
+            event->type() == QEvent::KeyPress ||
+            event->type() == QEvent::KeyRelease) {
+            return false;
+        }
+
+        event->accept();
+        return true;
+    }
 
     KMenu *parent;
 
@@ -75,42 +100,6 @@ public:
     QMenu* ctxMenu;
     QPointer<QAction> highlightedAction;
 
-    class EventSniffer;
-    EventSniffer *eventSniffer;
-};
-
-/**
-  * @internal
-  *
-  * This event sniffer is an event filter which will be installed
-  * on the title of the menu, which is a QToolButton. This will
-  * prevent clicks (what would change down and focus properties on
-  * the title) on the title of the menu.
-  *
-  * @author Rafael Fernández López <ereslibre@kde.org>
-  */
-class KMenu::KMenuPrivate::EventSniffer
-    : public QObject
-{
-public:
-    EventSniffer(QObject *parent = 0)
-        : QObject(parent) { }
-
-    ~EventSniffer() { }
-
-    bool eventFilter(QObject *object, QEvent *event)
-    {
-        Q_UNUSED(object);
-
-        if (event->type() == QEvent::Paint ||
-            event->type() == QEvent::KeyPress ||
-            event->type() == QEvent::KeyRelease) {
-            return false;
-        }
-
-        event->accept();
-        return true;
-    }
 };
 
 KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
@@ -124,7 +113,6 @@ KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
     , keyboardModifiers(Qt::NoModifier)
     , ctxMenu(0)
     , highlightedAction(0)
-    , eventSniffer(new EventSniffer)
 {
     resetKeyboardVars();
     KAcceleratorManager::manage(parent);
@@ -133,7 +121,6 @@ KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
 KMenu::KMenuPrivate::~KMenuPrivate ()
 {
     delete ctxMenu;
-    delete eventSniffer;
 }
 
 
@@ -196,7 +183,7 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
     QWidgetAction *action = new QWidgetAction(this);
     action->setObjectName(KMENU_TITLE);
     QToolButton *titleButton = new QToolButton(this);
-    titleButton->installEventFilter(d->eventSniffer); // prevent clicks on the title of the menu
+    titleButton->installEventFilter(d); // prevent clicks on the title of the menu
     titleButton->setDefaultAction(buttonAction);
     titleButton->setDown(true); // prevent hover style changes in some styles
     titleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
