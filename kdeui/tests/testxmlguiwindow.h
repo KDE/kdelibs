@@ -43,6 +43,7 @@ public:
         m_userFile.close(); // write to disk
     }
     void createGUI() {
+        // This merges in ui_standards.rc, too.
         KXmlGuiWindow::createGUI(m_fileName);
     }
     void createGUIBad() {

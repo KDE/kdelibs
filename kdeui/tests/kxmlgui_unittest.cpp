@@ -919,22 +919,42 @@ void KXmlGui_UnitTest::testXMLFileReplacement() {
 }
 
 void KXmlGui_UnitTest::testClientDestruction() { // #170806
-    const QByteArray xml =
+    const QByteArray hostXml =
         "<?xml version = '1.0'?>\n"
         "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
         "<gui version=\"1\" name=\"foo\" >\n"
         "<MenuBar>\n"
-        " <Menu name=\"filemenu\"><text>File Menu</text></Menu>\n"
+        " <Menu name=\"file\"><text>&amp;File</text>\n"
+        " </Menu>\n"
+        " <Merge/>\n"
+        "</MenuBar>\n"
+        "</gui>";
+    const QByteArray xml = "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"file\"><text>&amp;File</text>\n"
+        "  <Action name=\"file_open\"/>\n"
+        "  <Action name=\"file_quit\"/>\n"
+        " </Menu>\n"
         "</MenuBar>\n"
         "</gui>";
 
-    TestXmlGuiWindow mainWindow(xml);
+    TestXmlGuiWindow mainWindow(hostXml);
     TestGuiClient* client = new TestGuiClient(xml);
+    client->createActions(QStringList() << "file_open" << "file_quit");
     mainWindow.insertChildClient(client);
     mainWindow.createGUI();
+
+    checkActions(mainWindow.menuBar()->actions(), QStringList()
+                 << "file" << "separator" << "help" );
 
     QVERIFY(mainWindow.factory()->clients().contains(client));
     delete client;
     QVERIFY(!mainWindow.factory()->clients().contains(client));
+
+    // No change, because deletion is fast, it doesn't do manual unplugging.
+    checkActions(mainWindow.menuBar()->actions(), QStringList()
+                 << "file" << "separator" << "help" );
 }
 
