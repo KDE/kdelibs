@@ -241,7 +241,10 @@
             <xsd:attribute name="append" type="identifier" use="optional" />
             <xsd:attribute name="group" type="identifier" use="optional" />
             <xsd:attribute name="icon" type="xsd:string" use="optional" />
+            <!-- noMerge: if true, the standard menu layout from ui_standards.rc won't be used. -->
             <xsd:attribute name="noMerge" type="xsd:boolean" use="optional" />
+            <!-- deleted: if true, the menu will not be created, even if ui_standards.rc mentions it -->
+            <xsd:attribute name="deleted" type="xsd:boolean" use="optional" />
         </xsd:complexType>
     </xsd:element>
     
@@ -261,8 +264,8 @@
 	
         <xsd:complexType>
             <xsd:sequence>
-                
-		<!-- TODO: Menu is allowed in gui, as per the original DTD. Why is it so? Shouldn't Menu only be in Menubar? If this is about Popup/Regular menu distinction, then should probably different complexTypes be used, if it's possible to separate the two. Perhaps a popupMenu element in gui could be allowed, which is no where else. -->
+
+		<!-- Menu is allowed in gui, for popup menus. TODO: Probably different complexTypes be used for popup menus and regular menus, if it's possible to separate the two. Perhaps a popupMenu element in gui could be allowed, which is no where else. -->
 		<xsd:element ref="Menu" maxOccurs="unbounded" minOccurs="0"/>
                 <xsd:element name="MenuBar">
                     <xsd:complexType>
@@ -376,6 +379,10 @@
                         <xsd:attribute name="newline" use="optional" default="false" type="xsd:boolean" />
                         <xsd:attribute name="hidden" use="optional" default="false" type="xsd:boolean"/>
                         <xsd:attribute name="noEdit" use="optional" default="false" type="xsd:boolean"/>
+                        <!-- noMerge: if true, the standard toolbar layout from ui_standards.rc won't be used. -->
+                        <xsd:attribute name="noMerge" type="xsd:boolean" use="optional" />
+                        <!-- deleted: if true, the toolbar will not be created, even if ui_standards.rc mentions it -->
+                        <xsd:attribute name="deleted" type="xsd:boolean" use="optional" />
                     </xsd:complexType>
                 </xsd:element>
                 <xsd:element minOccurs="0" name="State">

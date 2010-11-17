@@ -74,8 +74,8 @@
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well.
-  -             noMerge: if true, the standard toolbar layout from ui_standards.rc won't be used.
-  -             deleted: if true, the toolbar will not be created, even if ui_standards.rc mentions it
+  -             noMerge: if true, the standard menu layout from ui_standards.rc won't be used.
+  -             deleted: if true, the menu will not be created, even if ui_standards.rc mentions it
 -->
 <!ELEMENT Menu (text?, (title | Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
 <!ATTLIST Menu
