@@ -181,7 +181,15 @@ Wallet::~Wallet() {
 
 
 QStringList Wallet::walletList() {
-    return walletLauncher->getInterface().wallets();
+    QDBusReply<QStringList> r = walletLauncher->getInterface().wallets();
+
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return QStringList();
+    }
+    else
+        return r;
 }
 
 
@@ -198,26 +206,53 @@ void Wallet::changePassword(const QString& name, WId w) {
 
 bool Wallet::isEnabled() {
     QDBusReply<bool> r = walletLauncher->getInterface().isEnabled();
-    return (r.isValid() && r);
+
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return false;
+    }
+    else
+        return r;
 }
 
 
 bool Wallet::isOpen(const QString& name) {
-    return walletLauncher->getInterface().isOpen(name); // default is false
-}
+    QDBusReply<bool> r = walletLauncher->getInterface().isOpen(name);
 
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return false;
+    }
+    else
+        return r;
+}
 
 int Wallet::closeWallet(const QString& name, bool force) {
     QDBusReply<int> r = walletLauncher->getInterface().close(name, force);
-    return r.isValid() ? r : -1;
+
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return -1;
+    }
+    else
+        return r;
 }
 
 
 int Wallet::deleteWallet(const QString& name) {
     QDBusReply<int> r = walletLauncher->getInterface().deleteWallet(name);
-    return r.isValid() ? r : -1;
-}
 
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return -1;
+    }
+    else
+        return r;
+}
 
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     if( w == 0 )
@@ -251,6 +286,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     }
     // error communicating with the daemon (maybe not running)
     if (!r.isValid()) {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
         delete wallet;
         return 0;
     }
@@ -283,12 +319,27 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
 
 bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
-    return walletLauncher->getInterface().disconnectApplication(wallet, app); // default is false
+    QDBusReply<bool> r = walletLauncher->getInterface().disconnectApplication(wallet, app);
+
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return false;
+    }
+    else
+        return r;
 }
 
 
 QStringList Wallet::users(const QString& name) {
-    return walletLauncher->getInterface().users(name); // default is QStringList()
+    QDBusReply<QStringList> r = walletLauncher->getInterface().users(name);
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return QStringList();
+    }
+    else
+        return r;
 }
 
 
@@ -314,7 +365,10 @@ int Wallet::lockWallet() {
     if (r.isValid()) {
         return r;
     }
-    return -1;
+    else {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+        return -1;
+    }
 }
 
 
@@ -358,7 +412,13 @@ QStringList Wallet::folderList() {
     }
 
     QDBusReply<QStringList> r = walletLauncher->getInterface().folderList(d->handle, appid());
-    return r;
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return QStringList();
+    }
+    else
+        return r;
 }
 
 
@@ -368,7 +428,13 @@ QStringList Wallet::entryList() {
     }
 
     QDBusReply<QStringList> r = walletLauncher->getInterface().entryList(d->handle, d->folder, appid());
-    return r;
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return QStringList();
+    }
+    else
+        return r;
 }
 
 
@@ -378,7 +444,14 @@ bool Wallet::hasFolder(const QString& f) {
     }
 
     QDBusReply<bool> r = walletLauncher->getInterface().hasFolder(d->handle, f, appid());
-    return r; // default is false
+    if (!r.isValid())
+    {
+            kDebug(285) << "Invalid DBus reply: " << r.error();
+            return false;
+    }
+    else
+        return r;
+
 }
 
 
@@ -389,7 +462,14 @@ bool Wallet::createFolder(const QString& f) {
 
     if (!hasFolder(f)) {
         QDBusReply<bool> r = walletLauncher->getInterface().createFolder(d->handle, f, appid());
-        return r;
+
+        if (!r.isValid())
+        {
+                kDebug(285) << "Invalid DBus reply: " << r.error();
+                return false;
+        }
+        else
+            return r;
     }
 
     return true;				// folder already exists
@@ -429,7 +509,13 @@ bool Wallet::removeFolder(const QString& f) {
         setFolder(QString());
     }
 
-    return r;					// default is false
+    if (!r.isValid())
+    {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+        return false;
+    }
+    else
+        return r;
 }
 
 
@@ -660,7 +746,13 @@ bool Wallet::hasEntry(const QString& key) {
     }
 
     QDBusReply<bool> r = walletLauncher->getInterface().hasEntry(d->handle, d->folder, key, appid());
-    return r;					// default is false
+    if (!r.isValid())
+    {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+        return false;
+    }
+    else
+        return r;
 }
 
 
@@ -749,14 +841,26 @@ void Wallet::emitWalletAsyncOpenError() {
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
 {
     QDBusReply<bool> r = walletLauncher->getInterface().folderDoesNotExist(wallet, folder);
-    return r;
+    if (!r.isValid())
+    {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+        return false;
+    }
+    else
+        return r;
 }
 
 
 bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
 {
     QDBusReply<bool> r = walletLauncher->getInterface().keyDoesNotExist(wallet, folder, key);
-    return r;
+    if (!r.isValid())
+    {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+        return false;
+    }
+    else
+        return r;
 }
 
 void Wallet::virtual_hook(int, void*) {
