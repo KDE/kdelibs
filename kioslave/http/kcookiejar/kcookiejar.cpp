@@ -1112,7 +1112,7 @@ KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
 void KCookieJar::eatCookie(KHttpCookieList::iterator cookieIterator)
 {
     const KHttpCookie& cookie = *cookieIterator;
-    QString domain = stripDomain(cookie); // We file the cookie under this domain.
+    const QString domain = stripDomain(cookie); // We file the cookie under this domain.
     KHttpCookieList *cookieList = m_cookieDomains.value(domain);
 
     if (cookieList) {
@@ -1124,7 +1124,6 @@ void KCookieJar::eatCookie(KHttpCookieList::iterator cookieIterator)
         {
             // This deletes cookieList!
             delete m_cookieDomains.take(domain);
-
             m_domainList.removeAll(domain);
         }
     }
