@@ -2250,6 +2250,7 @@ bool HTTPProtocol::sendQuery()
             // start a new cache file later if appropriate
             m_request.cacheTag.ioMode = WriteToCache;
         }
+        break;
     }
     case HTTP_HEAD:
         break;
@@ -2592,6 +2593,9 @@ void HTTPProtocol::parseHeaderFromCache()
 
 void HTTPProtocol::fixupResponseMimetype()
 {
+    if (m_mimeType.isEmpty())
+        return;
+
     kDebug(7113) << "before fixup" << m_mimeType;
     // Convert some common mimetypes to standard mimetypes
     if (m_mimeType == QLatin1String("application/x-targz"))
