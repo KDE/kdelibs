@@ -345,7 +345,7 @@ public:
     StyleVisualData(const StyleVisualData& o );
 
     bool operator==( const StyleVisualData &o ) const {
-	return ( clip == o.clip &&
+	return ( clip == o.clip && textDecoration == o.textDecoration &&
 		 palette == o.palette );
     }
     bool operator!=( const StyleVisualData &o ) const {
