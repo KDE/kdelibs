@@ -154,8 +154,11 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     // the popup won't be hidden if it is used as a standalone menu as well.
     // And we don't want to set the parent for a standalone popupmenu,
     // otherwise its shortcuts appear.
+    //
+    // Note: menus with a parent of 0, coming from child clients, can be
+    // leaked if the child client is deleted without a proper removeClient call, though.
     QWidget* p = parent;
-    while ( p && !qobject_cast<KMainWindow*>( p ) )
+    while ( p && !qobject_cast<QMainWindow*>( p ) )
         p = p->parentWidget();
 
     QByteArray name = element.attribute( d->attrName ).toUtf8();
