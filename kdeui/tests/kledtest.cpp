@@ -15,6 +15,7 @@ KLedTest::KLedTest(QWidget* parent)
     LedHeight(10),
     Grid(3),
     ledcolor(0),
+    ledlook(KLed::Flat),
     kled_round(true) // Switch HERE between rectangle and circular leds
 {
   if (kled_round) {
