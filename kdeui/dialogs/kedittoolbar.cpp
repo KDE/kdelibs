@@ -350,7 +350,8 @@ public:
     KEditToolBarWidgetPrivate(KEditToolBarWidget* widget,
                               const KComponentData &cData, KActionCollection* collection)
         : m_collection( collection ),
-          m_widget (widget),
+          m_widget(widget),
+          m_factory(NULL),
           m_loadedOnce( false )
     {
         m_componentData = cData;
@@ -461,6 +462,7 @@ public:
     //QValueList<KAction*> m_actionList;
     KActionCollection* m_collection;
     KEditToolBarWidget* m_widget;
+    KXMLGUIFactory* m_factory;
     KComponentData m_componentData;
 
     QPixmap m_emptyIcon;
@@ -606,28 +608,17 @@ void KEditToolBarPrivate::_k_slotDefault()
 
     if ( m_factory )
     {
-        const QString localPrefix = KStandardDirs::locateLocal("data", "");
+        kDebug() << m_factory->clients();
         foreach (KXMLGUIClient* client, m_factory->clients())
         {
-            QString file = client->xmlFile();
-
-            if (file.isNull()) // ##### should be isEmpty?
+            const QString file = client->localXMLFile();
+            if (file.isEmpty())
                 continue;
-
-            if (QDir::isRelativePath(file))
-            {
-                const KComponentData cData = client->componentData().isValid() ? client->componentData() : KGlobal::mainComponent();
-                file = KStandardDirs::locateLocal("data", cData.componentName() + '/' + file);
-            }
-            else
-            {
-                if (!file.startsWith(localPrefix))
-                    continue;
-            }
-
+            kDebug(240) << "Deleting local xml file" << file;
+            // << "for client" << client << typeid(*client).name();
             if ( QFile::exists( file ) )
                 if ( !QFile::remove( file ) )
-                    kWarning() << "Could not delete " << file;
+                    kWarning() << "Could not delete" << file;
         }
 
         m_widget = new KEditToolBarWidget( q );
@@ -774,10 +765,7 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
 
     m_loadedOnce = true;
 
-  // reusable vars
-  QDomElement elem;
-
-  m_widget->setFactory( factory );
+    m_factory = factory;
 
   // add all of the client data
   bool first = true;
@@ -790,6 +778,7 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
     if ( first ) {
       type = XmlData::Shell;
       first = false;
+      Q_ASSERT(!client->localXMLFile().isEmpty()); // where would we save changes??
     }
 
     XmlData data(type, client->localXMLFile(), client->actionCollection());
@@ -835,8 +824,8 @@ bool KEditToolBarWidget::save()
     KXMLGUIFactory::saveConfigFile((*it).domDocument(), (*it).xmlFile());
   }
 
-  if ( !factory() )
-    return true;
+    if (!d->m_factory)
+        return true;
 
   rebuildKXMLGUIClients();
 
@@ -845,23 +834,23 @@ bool KEditToolBarWidget::save()
 
 void KEditToolBarWidget::rebuildKXMLGUIClients()
 {
-  if ( !factory() )
-    return;
+    if (!d->m_factory)
+        return;
 
-  QList<KXMLGUIClient*> clients = factory()->clients();
-  //kDebug(240) << "factory: " << clients.count() << " clients";
+    const QList<KXMLGUIClient*> clients = d->m_factory->clients();
+    //kDebug(240) << "factory: " << clients.count() << " clients";
 
-  if (!clients.count())
-    return;
+    // remove the elements starting from the last going to the first
+    if (!clients.count())
+        return;
 
-  // remove the elements starting from the last going to the first
-  QListIterator<KXMLGUIClient*> clientIterator = clients;
-  clientIterator.toBack();
-  while ( clientIterator.hasPrevious() )
-  {
-    //kDebug(240) << "factory->removeClient " << client;
-    factory()->removeClient( clientIterator.previous() );
-  }
+    QListIterator<KXMLGUIClient*> clientIterator = clients;
+    clientIterator.toBack();
+    while (clientIterator.hasPrevious()) {
+        KXMLGUIClient* client = clientIterator.previous();
+        //kDebug(240) << "factory->removeClient " << client;
+        d->m_factory->removeClient(client);
+    }
 
   KXMLGUIClient *firstClient = clients.first();
 
@@ -885,11 +874,12 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
     }
   }
 
-  // Now we can add the clients to the factory
-  // We don't do it in the loop above because adding a part automatically
-  // adds its plugins, so we must make sure the plugins were updated first.
-  foreach (KXMLGUIClient* client, clients)
-    factory()->addClient( client );
+    // Now we can add the clients to the factory
+    // We don't do it in the loop above because adding a part automatically
+    // adds its plugins, so we must make sure the plugins were updated first.
+    foreach(KXMLGUIClient* client, clients) {
+        d->m_factory->addClient(client);
+    }
 }
 
 void KEditToolBarWidgetPrivate::setupLayout()
