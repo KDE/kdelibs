@@ -97,6 +97,7 @@ KXMLGUIClient::~KXMLGUIClient()
   }
 
   if ( d->m_factory ) {
+      kWarning(240) << this << "deleted without having been removed from the factory first. This will leak standalone popupmenus and could lead to crashes.";
     d->m_factory->forgetClient(this);
   }
 
@@ -162,6 +163,9 @@ QString KXMLGUIClient::localXMLFile() const
 
   if ( !QDir::isRelativePath(d->m_xmlFile) )
       return QString(); // can't save anything here
+
+    if (d->m_xmlFile.isEmpty()) // setXMLFile not called at all, can't save. Use case: ToolBarHandler
+        return QString();
 
   return KStandardDirs::locateLocal( "data", componentData().componentName() + '/' + d->m_xmlFile );
 }

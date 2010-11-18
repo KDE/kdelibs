@@ -317,7 +317,7 @@ void KXmlGui_UnitTest::testPartMerging()
                              << "host_after_merge" << "host_after_merge_2" << "last_from_host"
                              << "file_new" << "file_open" << "file_quit");
     hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
-    QMainWindow mainWindow;
+    KMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
     factory.addClient(&hostClient);
@@ -407,6 +407,8 @@ void KXmlGui_UnitTest::testPartMerging()
                  << "separator"
                  << "file_quit"
                  << "other_file_action");
+    factory.removeClient(&partClient);
+    factory.removeClient(&hostClient);
 }
 
 void KXmlGui_UnitTest::testPartMergingSettings() // #252911
@@ -429,7 +431,7 @@ void KXmlGui_UnitTest::testPartMergingSettings() // #252911
     hostClient.createActions(QStringList() << "options_configure_keybinding" << "options_configure_toolbars");
     hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
     //kDebug() << hostClient.domDocument().toString();
-    QMainWindow mainWindow;
+    KMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
     factory.addClient(&hostClient);
@@ -455,6 +457,8 @@ void KXmlGui_UnitTest::testPartMergingSettings() // #252911
                  << "options_configure_keybinding"
                  << "options_configure_toolbars"
                  << "configure_klinkstatus");
+    factory.removeClient(&partClient);
+    factory.removeClient(&hostClient);
 }
 
 void KXmlGui_UnitTest::testUiStandardsMerging_data()
@@ -564,7 +568,7 @@ void KXmlGui_UnitTest::testUiStandardsMerging()
     QCOMPARE(docElem.attribute("name"), QString("foo")); // not standard_containers from ui_standards.rc
     QCOMPARE(docElem.attribute("version"), QString("1")); // not standard_containers from ui_standards.rc
 
-    QMainWindow mainWindow;
+    KMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
     factory.addClient(&client);
@@ -572,6 +576,8 @@ void KXmlGui_UnitTest::testUiStandardsMerging()
     const QStringList containerNames = collectMenuNames(factory);
     //kDebug() << containerNames;
     QCOMPARE(containerNames, expectedMenus);
+
+    factory.removeClient(&client);
 }
 
 void KXmlGui_UnitTest::testActionListAndSeparator()
@@ -591,7 +597,7 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
 
     TestGuiClient client(xml);
     client.createActions(QStringList() << "view_add_to_new_group");
-    QMainWindow mainWindow;
+    KMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
     factory.addClient(&client);
@@ -642,6 +648,7 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
                  << "action1"
                  << "separator"
                  << "view_add_to_new_group");
+    factory.removeClient(&client);
 }
 
 void KXmlGui_UnitTest::testHiddenToolBar()
@@ -760,7 +767,7 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
     }
 }
 
-void KXmlGui_UnitTest::testDeletedContainers()
+void KXmlGui_UnitTest::testDeletedContainers() // deleted="true"
 {
     const QByteArray xml =
         "<?xml version = '1.0'?>\n"

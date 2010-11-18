@@ -271,7 +271,7 @@ public:
   void prepareXMLUnplug( QWidget * );
 
   /**
-   * Sets a new xmlFile() and localXMLFile(). The purpose of this pulic
+   * Sets a new xmlFile() and localXMLFile(). The purpose of this public
    * method is to allow non-inherited objects to replace the ui definition
    * of an embedded client with a customized version. It corresponds to the
    * usual calls to setXMLFile() and setLocalXMLFile().
