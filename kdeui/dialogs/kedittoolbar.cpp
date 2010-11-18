@@ -391,8 +391,8 @@ public:
 
     void setupLayout();
 
-    void initNonKPart( const QString& file, bool global, const QString& defaultToolbar );
-    void initKPart( KXMLGUIFactory* factory, const QString& defaultToolbar );
+    void initOldStyle( const QString& file, bool global, const QString& defaultToolbar );
+    void initFromFactory( KXMLGUIFactory* factory, const QString& defaultToolbar );
     void loadToolBarCombo( const QString& defaultToolbar );
     void loadActions(const QDomElement& elem);
 
@@ -707,15 +707,15 @@ KEditToolBarWidget::~KEditToolBarWidget()
 
 void KEditToolBarWidget::load( const QString& file, bool global, const QString& defaultToolBar )
 {
-    d->initNonKPart( file, global, defaultToolBar );
+    d->initOldStyle( file, global, defaultToolBar );
 }
 
 void KEditToolBarWidget::load( KXMLGUIFactory* factory, const QString& defaultToolBar )
 {
-    d->initKPart( factory, defaultToolBar );
+    d->initFromFactory( factory, defaultToolBar );
 }
 
-void KEditToolBarWidgetPrivate::initNonKPart( const QString& resourceFile,
+void KEditToolBarWidgetPrivate::initOldStyle( const QString& resourceFile,
                                               bool global,
                                               const QString& defaultToolBar )
 {
@@ -755,8 +755,8 @@ void KEditToolBarWidgetPrivate::initNonKPart( const QString& resourceFile,
     m_widget->setMinimumSize( m_widget->sizeHint() );
 }
 
-void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
-                                           const QString& defaultToolBar )
+void KEditToolBarWidgetPrivate::initFromFactory(KXMLGUIFactory* factory,
+                                                const QString& defaultToolBar)
 {
     //TODO: make sure we can call this multiple times?
     if ( m_loadedOnce ) {
@@ -852,7 +852,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
         d->m_factory->removeClient(client);
     }
 
-  KXMLGUIClient *firstClient = clients.first();
+//  KXMLGUIClient *firstClient = clients.first();
 
   // now, rebuild the gui from the first to the last
   //kDebug(240) << "rebuilding the gui";
@@ -865,12 +865,16 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
         // passing an empty stream forces the clients to reread the XML
         client->setXMLGUIBuildDocument( QDomDocument() );
 
+#if 0 // This would be only for old-style construction, but then m_factory is NULL !?!?
         // for the shell, merge in ui_standards.rc
         if ( client == firstClient ) // same assumption as in the ctor: first==shell
             client->setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
 
         // and this forces it to use the *new* XML file
         client->setXMLFile( file, client == firstClient /* merge if shell */ );
+#else
+        client->reloadXML();
+#endif
     }
   }
 
@@ -1279,8 +1283,6 @@ void KEditToolBarWidgetPrivate::slotInsertButton()
   // we're modified, so let this change
   emit m_widget->enableOk(true);
 
-  // TODO: #### this causes #97572.
-  // It would be better to just "delete item; loadActions( ... , ActiveListOnly );" or something.
   slotToolBarSelected( m_toolbarCombo->currentIndex() );
 
   selectActiveItem( internalName );
