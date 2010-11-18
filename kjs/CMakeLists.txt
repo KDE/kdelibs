@@ -32,7 +32,7 @@ macro_pop_required_vars()
 find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
-option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support ")
+option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
@@ -40,7 +40,7 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "http://www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
+macro_log_feature(PCRE_FOUND "PCRE" "Perl-compatible regular expressions in KJS" "http://www.pcre.org" FALSE "" "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)

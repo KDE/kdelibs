@@ -149,8 +149,8 @@ if(NOT WIN32 AND NOT APPLE)
 
    macro_optional_find_package( UDev )
    macro_optional_find_package( HUpnp )
-   macro_log_feature( HUPNP_FOUND "HUPnP" "Qt-based library for building UPnP devices and control points" "http://www.herqq.org" FALSE "" "" )
-   macro_log_feature( UDEV_FOUND "UDev" "UDev dynamic /dev directory " "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "" )
+   macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+   macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 
    if ( HUPNP_FOUND )
@@ -386,10 +386,22 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 find_package(Flex)
-macro_log_feature(FLEX_FOUND "Flex" "Fast lexical analyser generator" "http://flex.sourceforge.net" FALSE "" "Needed to build the Solid predicate parser.")
+macro_log_feature(FLEX_FOUND
+   "Flex"
+   "Allows the Solid predicate parser to be updated"
+   "http://flex.sourceforge.net"
+   FALSE
+   ""
+   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
 
 find_program(BISON_EXECUTABLE bison)
-macro_log_feature(BISON_EXECUTABLE "Bison" "Project parser generator (yacc replacement)" "http://www.gnu.org/software/bison" FALSE "" "Needed to build the Solid predicate parser.")
+macro_log_feature(BISON_EXECUTABLE
+   "Bison"
+   "Allows the Solid predicate parser to be updated"
+   "http://www.gnu.org/software/bison"
+   FALSE
+   ""
+   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
 mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
 
 if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
