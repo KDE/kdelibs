@@ -191,9 +191,8 @@ public:
   /**
    * Forces this client to re-read its XML resource file.  This is
    * intended to be used when you know that the resource file has
-   * changed and you will soon be rebuilding the GUI.  It has no
-   * useful effect with non-KParts GUIs, so don't bother using it
-   * unless your app is component based.
+   * changed and you will soon be rebuilding the GUI. This will only have
+   * an effect if the client is then removed and re-added to the factory.
    */
   void reloadXML();
 
@@ -208,7 +207,7 @@ public:
    *
    * Example:
    * \code
-   * <kpartgui name="xxx_part" version="1">
+   * <gui name="xxx_part" version="1">
    * <MenuBar>
    *   <Menu name="file">
    *     ...  <!-- some useful actions-->
@@ -217,7 +216,7 @@ public:
    *   </Menu>
    *   ...
    * </MenuBar>
-   * </kpartgui>
+   * </gui>
    * \endcode
    *
    * This tag will get expanded to a list of actions.  In the example
