@@ -152,9 +152,11 @@ if(NOT WIN32 AND NOT APPLE)
    macro_log_feature( HUPNP_FOUND "HUPnP" "Qt-based library for building UPnP devices and control points" "http://www.herqq.org" FALSE "" "" )
    macro_log_feature( UDEV_FOUND "UDev" "UDev dynamic /dev directory " "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
+
    if ( HUPNP_FOUND )
       include_directories( ${HUPNP_INCLUDE_DIR} )
 
+      message(STATUS "Building Solid UPnP backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
          backends/upnp/upnpdevice.cpp
@@ -168,6 +170,7 @@ if(NOT WIN32 AND NOT APPLE)
    endif( HUPNP_FOUND )
 
    if ( UDEV_FOUND )
+      message(STATUS "Building Solid UDev backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
       backends/udev/udevdevice.cpp
       backends/udev/udevmanager.cpp
@@ -175,7 +178,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevgenericinterface.cpp
       backends/udev/udevprocessor.cpp
       backends/udev/udevcamera.cpp
-	  backends/udev/udevportablemediaplayer.cpp
+      backends/udev/udevportablemediaplayer.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
@@ -184,7 +187,6 @@ if(NOT WIN32 AND NOT APPLE)
 
    message(STATUS "Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-
    backends/hal/halacadapter.cpp
    backends/hal/halaudiointerface.cpp
    backends/hal/halbattery.cpp
@@ -208,18 +210,10 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halvideo.cpp
    backends/hal/halvolume.cpp
    backends/hal/halsmartcardreader.cpp
+   )
 
-   # backends/udisks/udisksmanager.cpp
-   # backends/udisks/udisksdevice.cpp
-   # backends/udisks/udisksblock.cpp
-   # backends/udisks/udisksstoragevolume.cpp
-   # backends/udisks/udisksdeviceinterface.cpp
-   # backends/udisks/udisksopticaldisc.cpp
-   # backends/udisks/udisksopticaldrive.cpp
-   # backends/udisks/udisksstoragedrive.cpp
-   # backends/udisks/udisksstorageaccess.cpp
-   # backends/udisks/udisksgenericinterface.cpp
-
+   message(STATUS "Building Solid UPower backend." )
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
    backends/upower/upowermanager.cpp
    backends/upower/upowerdevice.cpp
    backends/upower/upowerbattery.cpp
@@ -230,6 +224,7 @@ if(NOT WIN32 AND NOT APPLE)
 
    # FIXME: this should work on more Unix systems
    if (CMAKE_SYSTEM_NAME MATCHES Linux)
+      message(STATUS "Building Solid UDisks backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
       backends/udisks/udisksmanager.cpp
       backends/udisks/udisksdevice.cpp
