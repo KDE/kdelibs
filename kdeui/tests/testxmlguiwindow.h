@@ -45,6 +45,8 @@ public:
     void createGUI() {
         // This merges in ui_standards.rc, too.
         KXmlGuiWindow::createGUI(m_fileName);
+        // just so that we can use kedittoolbar (because m_fileName is absolute)
+        setLocalXMLFile("kxmlgui_unittest.rc");
     }
     void createGUIBad() {
         KXmlGuiWindow::createGUI("dontexist.rc");
