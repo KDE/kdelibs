@@ -167,7 +167,9 @@ void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 {
     const QString udi = opath.path();
 
-    m_deviceCache.append(udi);
+    if (!m_deviceCache.isEmpty()) {
+        m_deviceCache.append(udi);
+    }
     emit deviceAdded(udi);
     slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
@@ -197,7 +199,9 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
         if (!m_knownDrivesWithMedia.contains(udi) && device.property("DeviceIsOpticalDisc").toBool())
         {
             m_knownDrivesWithMedia.append(udi);
-            m_deviceCache.append(udi + ":media");
+            if (!m_deviceCache.isEmpty()) {
+                m_deviceCache.append(udi + ":media");
+            }
             emit deviceAdded(udi + ":media");
         }
 
