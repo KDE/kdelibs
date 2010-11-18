@@ -49,14 +49,12 @@ UDisksManager::UDisksManager(QObject *parent)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    if (m_manager.isValid()) {
-        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-                this, SLOT(slotDeviceAdded(QDBusObjectPath)));
-        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-                this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
-        connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
-                this, SLOT(slotDeviceChanged(QDBusObjectPath)));
-    }
+    connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+            this, SLOT(slotDeviceAdded(QDBusObjectPath)));
+    connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+            this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
+    connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
+            this, SLOT(slotDeviceChanged(QDBusObjectPath)));
 }
 
 UDisksManager::~UDisksManager()
