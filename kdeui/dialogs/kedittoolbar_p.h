@@ -120,51 +120,27 @@ class KEditToolBarWidget : public QWidget, virtual public KXMLGUIClient
     Q_OBJECT
 public:
     /**
-     * Constructor.  This is the only entry point to this class.  You
-     * @p must pass along your collection of actions (some of which
-     * appear in your toolbars).  The other three parameters are
-     * optional.
+     * Old constructor for apps that do not use components.
+     * This constructor is somewhat deprecated, since it doesn't work
+     * with any KXMLGuiClient being added to the mainwindow.
+     * You really want to use the other constructor.
      *
-     * The second parameter, xmlfile, is the name (absolute or
-     * relative) of your application's UI resource file.  If it is
-     * left blank, then the resource file: share/apps/appname/appnameui.rc
-     * is used.  This is the same resource file that is used by the
-     * default createGUI function in KMainWindow so you're usually
-     * pretty safe in leaving it blank.
-     *
-     * The third parameter, global, controls whether or not the
-     * global resource file is used.  If this is true, then you may
-     * edit all of the actions in your toolbars -- global ones and
-     * local one.  If it is false, then you may edit only your
-     * application's entries.  The only time you should set this to
-     * false is if your application does not use the global resource
-     * file at all (very rare)
-     *
-     * The last parameter, parent, is the standard parent stuff.
+     * You @em must pass along your collection of actions (some of which appear in your toolbars).
+     * Then call old-style load.
      *
      * @param collection The collection of actions to work on
-     * @param xmlfile The application's local resource file
-     * @param global If true, then the global resource file will also
-     *               be parsed
      * @param parent This widget's parent
      */
     explicit KEditToolBarWidget( KActionCollection *collection,
                                  QWidget *parent = 0L);
 
     /**
-     * Constructor for KParts based apps.
-     *
-     * The first parameter, factory, is a pointer to the XML GUI
-     * factory object for your application.  It contains a list of all
-     * of the GUI clients (along with the action collections and xml
-     * files) and the toolbar editor uses that.
-     *
-     * The second parameter, parent, is the standard parent
+     * Main constructor.
      *
      * Use this like so:
      * \code
-     * KEditToolBar edit(factory());
-     * if ( edit.exec() )
+     * KEditToolBarWidget widget(this);
+     * widget.load(factory());
      * ...
      * \endcode
      *
@@ -181,7 +157,28 @@ public:
     virtual ~KEditToolBarWidget();
 
     /**
+     * Old-style load.
+     *
      * Loads the toolbar configuration into the widget. Should be called before being shown.
+     *
+     * @param resourceFile the name (absolute or relative) of your application's UI
+     * resource file.  If it is left blank, then the resource file: share/apps/appname/appnameui.rc
+     * is used.  This is the same resource file that is used by the
+     * default createGUI function in KMainWindow so you're usually
+     * pretty safe in leaving it blank.
+     *
+     * @param global controls whether or not the
+     * global resource file is used.  If this is true, then you may
+     * edit all of the actions in your toolbars -- global ones and
+     * local one.  If it is false, then you may edit only your
+     * application's entries.  The only time you should set this to
+     * false is if your application does not use the global resource
+     * file at all (very rare)
+     *
+     * @param defaultToolBar the default toolbar that will be selected when the dialog is shown.
+     * If not set, or QString() is passed in, the global default tool bar name
+     * will be used.
+     *
      * @see KEditToolBar
      */
     void load( const QString& resourceFile,
@@ -190,6 +187,15 @@ public:
 
     /**
      * Loads the toolbar configuration into the widget. Should be called before being shown.
+     *
+     * @param factory pointer to the XML GUI factory object for your application.
+     * It contains a list of all of the GUI clients (along with the action
+     * collections and xml files) and the toolbar editor uses that.
+     *
+     * @param defaultToolBar the default toolbar that will be selected when the dialog is shown.
+     * If not set, or QString() is passed in, the global default tool bar name
+     * will be used.
+     *
      * @see KEditToolBar
      */
     void load( KXMLGUIFactory* factory,

@@ -76,7 +76,6 @@ public:
    * You really want to use the other constructor.
    *
    * You @em must pass along your collection of actions (some of which appear in your toolbars).
-   * The other two parameters are optional.
    *
    * @param collection The collection of actions to work on.
    * @param parent The parent of the dialog.
@@ -87,7 +86,7 @@ public:
   /**
    * Main constructor.
    *
-   * The main parameter, factory(), is a pointer to the
+   * The main parameter, @p factory, is a pointer to the
    * XML GUI factory object for your application.  It contains a list
    * of all of the GUI clients (along with the action collections and
    * xml files) and the toolbar editor uses that.
