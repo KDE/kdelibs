@@ -189,13 +189,10 @@ void KCatalogPrivate::setupGettextEnv ()
     //kDebug() << "bindtextdomain" << name << localeDir;
     bindtextdomain(name, localeDir);
 
-    // // Magic to make sure Gettext doesn't use stale cached translation
-    // // from previous language.
-    // extern int _nl_msg_cat_cntr;
-    // ++_nl_msg_cat_cntr;
-    //
-    // Note: Not needed, caching of translations is not an issue because
-    // language is switched only if translation is not found.
+    // Magic to make sure Gettext doesn't use stale cached translation
+    // from previous language.
+    extern int _nl_msg_cat_cntr;
+    ++_nl_msg_cat_cntr;
   }
 }
 
