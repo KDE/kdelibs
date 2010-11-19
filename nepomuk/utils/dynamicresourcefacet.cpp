@@ -61,6 +61,7 @@ void Nepomuk::Utils::DynamicResourceFacet::Private::rebuild( bool clearSelection
 
 void Nepomuk::Utils::DynamicResourceFacet::Private::startQuery( const Query::Query& query )
 {
+    kDebug() << query;
     m_queryClient.query( query );
 }
 
@@ -77,16 +78,23 @@ void Nepomuk::Utils::DynamicResourceFacet::Private::addResource( const Nepomuk::
 void Nepomuk::Utils::DynamicResourceFacet::Private::_k_newEntries( const QList<Nepomuk::Query::Result>& entries )
 {
     kDebug();
+    bool selectionChanged = false;
     Q_FOREACH( const Query::Result& result, entries ) {
         if( m_resources.count() == m_maxRows ) {
             // add the more... button
             m_haveMore = true;
         }
-        else {
+        else if( !m_resources.contains(result.resource()) ){
             m_resources.append( result.resource() );
             if( m_selectionMode == Facet::MatchOne &&
-                m_selectedResources.isEmpty() )
+                m_selectedResources.isEmpty() ) {
                 m_selectedResources << m_resources.first();
+                selectionChanged = true;
+            }
+            else if( m_selectedResources.contains(result.resource()) ) {
+                // in case we remember a selection from before
+                selectionChanged = true;
+            }
         }
     }
     q->setLayoutChanged();
@@ -98,7 +106,8 @@ void Nepomuk::Utils::DynamicResourceFacet::Private::_k_populateFinished()
     kDebug() << m_resources.count();
     m_queryClient.close();
 
-    // clean up selection in case rebuild was calling without clearing it
+    // clean up selection in case rebuild was called without clearing it
+    // FIXME: shouldn't we rather add all the selected ones that are not in the list yet?
     QSet<Resource>::iterator it = m_selectedResources.begin();
     while( it != m_selectedResources.end() ) {
         if( m_resources.contains( *it ) )
@@ -253,6 +262,7 @@ KGuiItem Nepomuk::Utils::DynamicResourceFacet::guiItem( int index ) const
 
 void Nepomuk::Utils::DynamicResourceFacet::setSelected( const Resource& res, bool selected )
 {
+    kDebug() << res.resourceUri() << selected;
     if( res.hasType( d->resourceType() ) ) {
         if( selected ) {
             d->addResource(res);
@@ -266,6 +276,7 @@ void Nepomuk::Utils::DynamicResourceFacet::setSelected( const Resource& res, boo
 
 void Nepomuk::Utils::DynamicResourceFacet::setSelected( int index, bool selected )
 {
+    kDebug() << index << selected;
     if ( d->m_haveMore && index == count()-1 && selected ) {
         const QList<Resource> rl = getMoreResources();
         Q_FOREACH( const Resource& res, rl ) {
@@ -307,6 +318,7 @@ void Nepomuk::Utils::DynamicResourceFacet::setSelected( int index, bool selected
 
 void Nepomuk::Utils::DynamicResourceFacet::clearSelection()
 {
+    kDebug();
     d->m_selectedResources.clear();
     if( selectionMode() == MatchOne && !d->m_resources.isEmpty() )
         d->m_selectedResources.insert(d->m_resources.first());
@@ -317,15 +329,11 @@ void Nepomuk::Utils::DynamicResourceFacet::clearSelection()
 
 bool Nepomuk::Utils::DynamicResourceFacet::selectFromTerm( const Nepomuk::Query::Term& term )
 {
-    if( selectionMode() == MatchOne ) {
-        Resource res = resourceForTerm(term);
-        if( res.isValid() ) {
-            setSelected( res );
-            return true;
-        }
-        else {
-            return false;
-        }
+    kDebug() << term;
+    Resource res = resourceForTerm(term);
+    if( res.isValid() ) {
+        setSelected( res );
+        return true;
     }
     else if( ( term.isAndTerm() && selectionMode() == MatchAll ) ||
              ( term.isOrTerm() && selectionMode() == MatchAny ) ) {
