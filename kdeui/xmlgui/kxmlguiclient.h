@@ -193,6 +193,9 @@ public:
    * intended to be used when you know that the resource file has
    * changed and you will soon be rebuilding the GUI. This will only have
    * an effect if the client is then removed and re-added to the factory.
+   *
+   * This method is only for child clients, do not call it for a mainwindow!
+   * For a mainwindow, use loadStandardsXmlFile + setXmlFile(xmlFile()) instead.
    */
   void reloadXML();
 
@@ -326,6 +329,12 @@ protected:
    * @param setXMLDoc Specify whether to call setXML. Default is true.
    **/
   virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
+
+    /**
+     * Load the ui_standards.rc file. Usually followed by setXMLFile(xmlFile, true), for merging.
+     * @since 4.6
+     */
+    void loadStandardsXmlFile();
 
   /**
    * Set the full path to the "local" xml file, the one used for saving

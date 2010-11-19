@@ -262,7 +262,7 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     }
 
     // we always want to load in our global standards file
-    setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
+    loadStandardsXmlFile();
 
     // now, merge in our local xml file.
     setXMLFile(windowXmlFile, true);

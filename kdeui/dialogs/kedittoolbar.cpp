@@ -342,9 +342,9 @@ class KEditToolBarWidgetPrivate
 public:
     /**
      *
-     * @param collection In a non-KParts application, this is the collection passed
+     * @param collection In the old-style constructor, this is the collection passed
      * to the KEditToolBar constructor.
-     * In a KParts application we let create a KXMLGUIClient create a dummy one,
+     * In the xmlguifactory-based constructor, we let KXMLGUIClient create a dummy one,
      * but it probably isn't used.
      */
     KEditToolBarWidgetPrivate(KEditToolBarWidget* widget,
@@ -608,7 +608,6 @@ void KEditToolBarPrivate::_k_slotDefault()
 
     if ( m_factory )
     {
-        kDebug() << m_factory->clients();
         foreach (KXMLGUIClient* client, m_factory->clients())
         {
             const QString file = client->localXMLFile();
@@ -621,9 +620,11 @@ void KEditToolBarPrivate::_k_slotDefault()
                     kWarning() << "Could not delete" << file;
         }
 
+        // Reload the xml files in all clients, now that the local files are gone
+        oldWidget->rebuildKXMLGUIClients();
+
         m_widget = new KEditToolBarWidget( q );
         m_widget->load( m_factory, m_defaultToolBar );
-        m_widget->rebuildKXMLGUIClients();
     }
     else
     {
@@ -649,6 +650,7 @@ void KEditToolBarPrivate::_k_slotDefault()
     q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
 
     q->enableButtonApply(false);
+
     emit q->newToolBarConfig();
     emit q->newToolbarConfig(); // compat
 }
@@ -729,7 +731,7 @@ void KEditToolBarWidgetPrivate::initOldStyle( const QString& resourceFile,
 
     // handle the merging
     if (global)
-        m_widget->setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
+        m_widget->loadStandardsXmlFile(); // ui_standards.rc
     const QString localXML = loadXMLFile( resourceFile );
     m_widget->setXML(localXML, global ? true /*merge*/ : false);
 
@@ -852,7 +854,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
         d->m_factory->removeClient(client);
     }
 
-//  KXMLGUIClient *firstClient = clients.first();
+  KXMLGUIClient *firstClient = clients.first();
 
   // now, rebuild the gui from the first to the last
   //kDebug(240) << "rebuilding the gui";
@@ -865,16 +867,14 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
         // passing an empty stream forces the clients to reread the XML
         client->setXMLGUIBuildDocument( QDomDocument() );
 
-#if 0 // This would be only for old-style construction, but then m_factory is NULL !?!?
         // for the shell, merge in ui_standards.rc
         if ( client == firstClient ) // same assumption as in the ctor: first==shell
-            client->setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
+            client->loadStandardsXmlFile();
 
         // and this forces it to use the *new* XML file
         client->setXMLFile( file, client == firstClient /* merge if shell */ );
-#else
-        client->reloadXML();
-#endif
+
+        // [we can't use reloadXML, it doesn't load ui_standards.rc]
     }
   }
 
@@ -1665,7 +1665,7 @@ void KEditToolBar::showEvent( QShowEvent * event )
     if (!event->spontaneous()) {
         // The dialog has been shown, enable toolbar editing
         if ( d->m_factory ) {
-            // call the kpart version
+            // call the xmlgui-factory version
             d->m_widget->load( d->m_factory, d->m_defaultToolBar );
         } else {
             // call the action collection version

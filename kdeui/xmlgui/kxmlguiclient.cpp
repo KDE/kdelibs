@@ -173,6 +173,9 @@ QString KXMLGUIClient::localXMLFile() const
 
 void KXMLGUIClient::reloadXML()
 {
+    // TODO: this method can't be used for the KXmlGuiWindow, since it doesn't merge in ui_standards.rc!
+    //   -> KDE5: load ui_standards_rc in setXMLFile using a flag, and remember that flag?
+    //            and then KEditToolBar can use reloadXML.
     QString file( xmlFile() );
     if ( !file.isEmpty() )
         setXMLFile( file );
@@ -184,6 +187,17 @@ void KXMLGUIClient::setComponentData(const KComponentData &componentData)
   actionCollection()->setComponentData( componentData );
   if ( d->m_builder )
     d->m_builder->setBuilderClient( this );
+}
+
+void KXMLGUIClient::loadStandardsXmlFile()
+{
+    const QString file = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
+    if (file.isEmpty()) {
+        kWarning() << "ui/ui_standards.rc not found in" << componentData().dirs()->resourceDirs("config");
+    } else {
+        const QString doc = KXMLGUIFactory::readConfigFile( file );
+        setXML( doc );
+    }
 }
 
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc )
@@ -210,9 +224,8 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     kWarning() << "cannot find .rc file" << _file << "for component" << componentData().componentName();
   }
 
-  // make sure to merge the settings from any file specified by
-  // setLocalXMLFile()
-  if ( !d->m_localXMLFile.isEmpty() ) {
+  // make sure to merge the settings from any file specified by setLocalXMLFile()
+  if ( !d->m_localXMLFile.isEmpty() && !file.endsWith("ui_standards.rc") ) {
     const bool exists = QDir::isRelativePath(d->m_localXMLFile) || QFile::exists(d->m_localXMLFile);
     if (exists && !allFiles.contains(d->m_localXMLFile))
       allFiles.prepend( d->m_localXMLFile );
