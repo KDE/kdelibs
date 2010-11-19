@@ -352,8 +352,9 @@ QString UDisksDevice::volumeDescription() const
 {
     QString description;
     const UDisks::UDisksStorageVolume storageVolume(const_cast<UDisksDevice*>(this));
-    QString volume_label = storageVolume.label();
-
+    QString volume_label = property("IdLabel").toString();
+    if (volume_label.isEmpty())
+        volume_label = property("PartitionLabel").toString();
     if (!volume_label.isEmpty())
         return volume_label;
 
