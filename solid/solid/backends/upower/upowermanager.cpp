@@ -46,12 +46,10 @@ UPowerManager::UPowerManager(QObject *parent)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    if (m_manager.isValid()) {
-        connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-                this, SLOT(slotDeviceAdded(QString)));
-        connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-                this, SLOT(slotDeviceRemoved(QString)));
-    }
+    connect(&m_manager, SIGNAL(DeviceAdded(QString)),
+            this, SLOT(slotDeviceAdded(QString)));
+    connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
+            this, SLOT(slotDeviceRemoved(QString)));
 }
 
 UPowerManager::~UPowerManager()
