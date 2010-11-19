@@ -47,6 +47,7 @@
 
 Nepomuk::Resource::Resource()
 {
+    QMutexLocker lock( &ResourceManager::instance()->d->mutex );
     m_data = ResourceManager::instance()->d->data( QUrl(), QUrl() );
     if ( m_data )
         m_data->ref( this );
@@ -55,6 +56,7 @@ Nepomuk::Resource::Resource()
 
 Nepomuk::Resource::Resource( ResourceManager* manager )
 {
+    QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( QUrl(), QUrl() );
     if ( m_data )
         m_data->ref( this );
@@ -71,6 +73,7 @@ Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 
 Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 {
+    QMutexLocker lock( &ResourceManager::instance()->d->mutex );
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
@@ -79,6 +82,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 
 Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManager* manager )
 {
+    QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
@@ -88,6 +92,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManag
 #ifndef KDE_NO_DEPRECATED
 Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
+    QMutexLocker lock( &ResourceManager::instance()->d->mutex );
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
@@ -97,6 +102,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 {
+    QMutexLocker lock( &ResourceManager::instance()->d->mutex );
     m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
@@ -105,6 +111,7 @@ Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type, ResourceManager* manager )
 {
+    QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( uri, type );
     if ( m_data )
         m_data->ref( this );
@@ -122,6 +129,7 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 Nepomuk::Resource::~Resource()
 {
     if ( m_data ) {
+        QMutexLocker lock(&m_data->rm()->mutex);
         m_data->deref( this );
         if ( m_data->rm()->shouldBeDeleted( m_data ) )
             delete m_data;
@@ -132,6 +140,7 @@ Nepomuk::Resource::~Resource()
 Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
+        QMutexLocker lock(&m_data->rm()->mutex);
         if ( m_data && !m_data->deref( this ) && m_data->rm()->shouldBeDeleted( m_data ) ) {
             delete m_data;
         }

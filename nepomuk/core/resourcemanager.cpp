@@ -71,7 +71,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
         return data;
     }
     else {
-        QMutexLocker lock( &mutex );
         return new ResourceData( QUrl(), uri, type, this );
     }
 }
@@ -99,7 +98,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::dataForResourceUri( cons
         return data;
     }
     else {
-        QMutexLocker lock( &mutex );
         return new ResourceData( uri, QUrl(), type, this );
     }
 }
