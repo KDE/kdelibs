@@ -186,24 +186,24 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case CustomOperation: {
             const QByteArray& method = req.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
-            //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;            
+            //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
             if (method.isEmpty()) {
                 KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
                 reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
                 return reply;
-            } else {
-                if (outgoingData)
-                    kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
-                else
-                    kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
-                kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
             }
+            if (outgoingData)
+                kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
+            else
+                kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
+            kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
             break;
         }
-        default:
+        default: {
             // Defer to QNAM for operations that cannot be handled by KIO, 
             // e.g. CustomOperation,
-            return QNetworkAccessManager::createRequest(op, req, outgoingData);            
+            return QNetworkAccessManager::createRequest(op, req, outgoingData);
+        }
     }
 
     kioJob->setRedirectionHandlingEnabled(false);
