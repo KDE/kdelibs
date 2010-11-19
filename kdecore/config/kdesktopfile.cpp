@@ -137,14 +137,6 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 {
-  // Explicitly forbid desktop files if Kiosk does not allow.  There
-  // may be other reasons that desktop files are forbidden so keep
-  // checking otherwise.
-  if (!KAuthorized::authorize(QLatin1String("run_desktop_files"))) {
-     kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
-     return false;
-  }
-
   if (path.isEmpty())
      return false; // Empty paths are not ok.
 
@@ -166,13 +158,19 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
       return true;
   }
 
+  // Forbid desktop files outside of standard locations if kiosk is set so
+  if (!KAuthorized::authorize(QLatin1String("run_desktop_files"))) {
+     kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
+     return false;
+  }
+
   // Not otherwise permitted, so only allow if the file is executable, or if
   // owned by root (uid == 0)
   QFileInfo entryInfo( path );
   if (entryInfo.isExecutable() || entryInfo.ownerId() == 0)
       return true;
 
-  kWarning() << "Access to '" << path << "' denied because of 'non_executable_desktop_file' restriction." << endl;
+  kWarning() << "Access to '" << path << "' denied, not owned by root, executable flag not set." << endl;
   return false;
 }
 
