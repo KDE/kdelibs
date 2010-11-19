@@ -576,8 +576,8 @@ public:
      * Use this function to change the default protocol used when filtering
      * potentially valid url inputs. The default protocol is http.
      *
-     * If the scheme is specified without a separator, then the default separator
-     * "://" will be used by default. For example, if the default url scheme was
+     * If the scheme is specified without a separator, then  "://" will be used
+     * as the separator by default. For example, if the default url scheme was
      * simply set to "ftp", then a potentially valid url input such as "kde.org"
      * will be filtered to "ftp://kde.org".
      *
