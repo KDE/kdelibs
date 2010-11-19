@@ -1,10 +1,10 @@
 project(kdoctools)
 
 find_package(LibXslt)
-macro_log_feature(LIBXSLT_FOUND "LibXSLT" "A library to transform XML files into other XML files" "http://xmlsoft.org/XSLT" TRUE "" "Required for building the KDE help system")
+macro_log_feature(LIBXSLT_FOUND "LibXSLT" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org/XSLT" TRUE "" "")
 
 find_package(LibXml2)
-macro_log_feature(LIBXML2_FOUND "LibXML2" "Libraries used to develop XML applications" "http://xmlsoft.org" TRUE "" "Needed for building the KDE help system.")
+macro_log_feature(LIBXML2_FOUND "LibXML2" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org" TRUE "" "")
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
@@ -15,14 +15,14 @@ configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 find_package(DocBookXML)
-set (DOCBOOKXML_MSG "XML DTDs for DocBook ${DOCBOOKXML_CURRENTDTD_VERSION}")
+set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_CURRENTDTD_VERSION}")
 if (DOCBOOKXML_OLDDTD_VERSION)
-  set (DOCBOOKXML_MSG "${DOCBOOKXML_MSG} and ${DOCBOOKXML_OLDDTD_VERSION}")
+   set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_VERSIONS} and ${DOCBOOKXML_OLDDTD_VERSION}")
 endif (DOCBOOKXML_OLDDTD_VERSION)
-macro_log_feature(DOCBOOKXML_FOUND "DocBook XML" "${DOCBOOKXML_MSG}" "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}" TRUE "" "Needed for building the KDE help system.")
+macro_log_feature(DOCBOOKXML_FOUND "DocBook XML" "Required by the KDE help system to process DocBook XML" "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}" TRUE "" "XML DTDs for DocBook ${DOCBOOKXML_VERSIONS} are needed")
 
 find_package(DocBookXSL)
-macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Stylesheets for processing DocBook XML" "http://docbook.sourceforge.net/release/xsl/current/" TRUE "" "Needed for building the KDE help system.")
+macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Required by the KDE help system to process DocBook XML" "http://docbook.sourceforge.net/release/xsl/current/" TRUE "" "")
 
 set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
 configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )

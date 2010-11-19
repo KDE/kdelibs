@@ -1,7 +1,7 @@
 project(dnssd)
 macro_optional_find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
-macro_log_feature(AVAHI_FOUND "Avahi" "Facilities for service discovery on a local network" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
+macro_log_feature(AVAHI_FOUND "Avahi" "Facilities for service discovery on a local network (DNSSD)" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
 
 if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
    include_directories( ${KDE4_KDECORE_INCLUDES} )

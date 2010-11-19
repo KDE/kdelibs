@@ -60,63 +60,63 @@ endif(UNIX AND Q_WS_X11)
 #required features:
 # Perl is used e.g. in khtml, kjs, kjsembed and others
 find_package(Perl)
-macro_log_feature(PERL_FOUND "Perl" "Perl Programming Language" "http://www.perl.org" TRUE "" "Required by the KDE buildsystem.")
+macro_log_feature(PERL_FOUND "Perl" "Needed for building kdelibs" "http://www.perl.org" TRUE "" "")
 
 find_package(ZLIB)
-macro_log_feature(ZLIB_FOUND "ZLib" "The Zlib compression library" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves.")
+macro_log_feature(ZLIB_FOUND "ZLib" "Support for gzip compressed files and data streams" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves")
 
 set(STRIGI_MIN_VERSION 0.6.3)
 find_package(Strigi)
-macro_log_feature(STRIGI_FOUND "Strigi" "A fast and small desktop searching program" "http://strigi.sourceforge.net" TRUE "${STRIGI_MIN_VERSION}" "Required by some critical kioslaves.")
+macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" TRUE "${STRIGI_MIN_VERSION}" "Required by some critical kioslaves")
 
 set(LIBATTICA_MIN_VERSION "0.1.90")
 find_package(LibAttica)
-macro_log_feature(LIBATTICA_FOUND "libattica" "A library to access Open Collaboration Service providers" "http://websvn.kde.org/trunk/kdesupport/attica/" TRUE "${LIBATTICA_MIN_VERSION}" "Required for Get Hot New Stuff.")
+macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "http://websvn.kde.org/trunk/kdesupport/attica/" TRUE "${LIBATTICA_MIN_VERSION}" "")
 
 #optional features
 if(X11_FOUND)
   #X11_Xrender discovery is done by FindX11
-  macro_log_feature(X11_Xrender_FOUND "X Rendering extension" "an X Window System extension for image compositing" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED: For compositing, rendering operations, and alpha-blending.")
+  macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
   macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
   macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-  macro_log_feature(HAVE_XSCREENSAVER "libxss" "XScreenSaver Library" "http://www.x.org/" FALSE "" "Needed to enable fallback query methods in KIdleTime")
-  macro_log_feature(HAVE_XSYNC "libxext" "XSync Extension" "http://www.x.org/" FALSE "" "STRONGLY RECOMMENDED: Needed to enable high efficency query in KIdleTime.")
+  macro_log_feature(HAVE_XSCREENSAVER "X Screensaver Extension (libXss)" "Support for KIdleTime (fallback mode)" "http://www.x.org/" FALSE "" "")
+  macro_log_feature(HAVE_XSYNC "X Sync Extension (libXext)" "Efficient operation of KIdleTime" "http://www.x.org/" FALSE "" "STRONGLY RECOMMENDED")
 
   if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-    message(FATAL_ERROR "\nNeither XSync (libxext) or XScreensaver (libxss) development package was found.\nPlease install one of them (XSync is recommended)\n")
+    message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
   endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
 endif(X11_FOUND)
 
 macro_optional_find_package(BZip2)
-macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
+macro_log_feature(BZIP2_FOUND "BZip2" "Support for BZip2 compressed files and data streams" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED")
 
 macro_optional_find_package(LibLZMA)
-macro_log_feature(LIBLZMA_FOUND "LZMA/XZ" "A very high compression ratio data compressor" "http://tukaani.org/xz/" FALSE "" "Provides the ability to read and write xz compressed data files.")
+macro_log_feature(LIBLZMA_FOUND "LZMA/XZ" "Support for xz compressed files and data streams" "http://tukaani.org/xz/" FALSE "" "")
 
 macro_optional_find_package(OpenSSL)
-macro_log_feature(OPENSSL_FOUND "OpenSSL" "A toolkit implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS.")
+macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communications (SSL and TLS)" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS")
 
 macro_optional_find_package(Libintl)
-macro_log_feature(LIBINTL_FOUND "Libintl" "Library for message translation" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages.")
+macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
 
 macro_optional_find_package(OpenGL)
-macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
+macro_log_feature(OPENGL_FOUND "OpenGL" "Support for hardware-accelerated graphics" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players")
 
 set(SOPRANO_MIN_VERSION "2.5.60")
 macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
-macro_log_feature(SOPRANO_FOUND "Soprano" "Semantic Desktop Storing" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
-macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "RDF parser plugin for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano raptor parser plugin is required to build the Nepomuk semantic desktop system.")
-macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Redland storage backend for Soprano" "http://soprano.sourceforge.net" FALSE "" "The Soprano redland backend is required to build the Nepomuk semantic desktop system.")
+macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "")
+macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
+macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 
 set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.5)
 macro_optional_find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
-macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Desktop ontologies" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "Ontologies necessary for the Nepomuk semantic desktop.")
+macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "")
 
 macro_optional_find_package(QCA2)
-macro_log_feature(QCA2_FOUND "QCA2" "Qt Cryptographic Architecture" "http://delta.affinix.com/qca" FALSE "2.0.0" "Needed for the plasma remote widgets functionality.")
+macro_log_feature(QCA2_FOUND "QCA2" "Support for remote plasma widgets" "http://delta.affinix.com/qca" FALSE "2.0.0" "")
 
 find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "API to import export QMenu instance using DBusMenu protocol" "git clone git://gitorious.org/dbusmenu/dbusmenu-qt.git" TRUE "" "dbusmenu-qt is a standalone library providing a way to import and export QMenu instances using the DBusMenu protocol.")
+macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "git clone git://gitorious.org/dbusmenu/dbusmenu-qt.git" TRUE "" "")
 
 ################# Disallow in-source build #################
 
@@ -244,7 +244,7 @@ endif(STATIC_LIBRARY)
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-macro_log_feature(ACL_FOUND "LibACL" "Access control list (ACL) support library" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED: For manipulating access control lists.")
+macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
