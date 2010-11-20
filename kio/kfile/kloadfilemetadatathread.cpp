@@ -132,6 +132,13 @@ void KLoadFileMetaDataThread::run()
             if (variants.isEmpty()) {
                 // The file has not been indexed, query the meta data
                 // directly from the file
+
+                // TODO: Some Strigi analyzers (used in KFileMetaInfo) are not reentrant.
+                // As workaround the access is protected by a mutex here. To reproduce
+                // the issue run kfilemetainfotest with helgrind.
+                static QMutex metaInfoMutex;
+                metaInfoMutex.lock();
+
                 const QString path = urls.first().toLocalFile();
                 KFileMetaInfo metaInfo(path, QString(), KFileMetaInfo::Fastest);
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
@@ -140,6 +147,8 @@ void KLoadFileMetaDataThread::run()
                     const Nepomuk::Variant value(metaInfoItem.value());
                     data.insert(uriString, Nepomuk::Utils::formatPropertyValue(Nepomuk::Types::Property(), value));
                 }
+
+                metaInfoMutex.unlock();
             }
         }
 
