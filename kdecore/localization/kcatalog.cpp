@@ -49,6 +49,7 @@ Q_CONSTRUCTOR_FUNCTION(kInitializeLocale)
 
 // not defined on win32 :(
 #ifdef _WIN32
+extern "C" int __declspec(dllimport) _nl_msg_cat_cntr;
 # ifndef LC_MESSAGES
 #  define LC_MESSAGES 42
 # endif
