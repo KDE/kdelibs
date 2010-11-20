@@ -757,6 +757,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer COMPONENT Devel)
 
 
+if(NOT KDE_NO_DEPRECATED)
 install( FILES
   KNS/Author
   KNS/Category
@@ -765,6 +766,7 @@ install( FILES
   KNS/Installation
   KNS/KTranslatable
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS COMPONENT Devel)
+endif(NOT KDE_NO_DEPRECATED)
 
 install( FILES
   KNS3/DownloadDialog
@@ -1068,7 +1070,6 @@ install(FILES
   Plasma/AccessAppletJob
   Plasma/AccessManager
   Plasma/Animation
-  Plasma/AnimationDriver
   Plasma/Animator
   Plasma/Applet
   Plasma/AppletScript
@@ -1150,6 +1151,12 @@ if(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
       Plasma/GLApplet
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 endif(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
+
+if(NOT KDE_NO_DEPRECATED)
+install( FILES
+  Plasma/AnimationDriver
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
+endif(NOT KDE_NO_DEPRECATED)
 
 
 install(FILES
