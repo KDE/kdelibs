@@ -39,14 +39,12 @@ bool Nepomuk::Query::ResourceTypeTermPrivate::equals( const TermPrivate* other )
 }
 
 
-QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, QueryBuilderData* ) const
 {
     // we are using the crappy inferencing provided by the nepomuk ontology service where
     // each class is also a subclass of itself.
-    return QString::fromLatin1("%1 a %2 . %2 %3 %4 . ")
+    return QString::fromLatin1("%1 a %2 . ")
         .arg( resName,
-              qbd->uniqueVarName(),
-              Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subClassOf() ),
               Soprano::Node::resourceToN3( m_class.uri() ) );
 }
 

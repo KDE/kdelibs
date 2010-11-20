@@ -147,41 +147,6 @@ namespace {
             return term;
         }
     }
-
-
-    /**
-     * term is optimized and ran through prepareForSparql. The only type terms
-     * we are interested in are those that are non-optional.
-     */
-    bool containsResourceTypeTerm( const Nepomuk::Query::Term& term )
-    {
-        if( term.isResourceTypeTerm() ) {
-            return true;
-        }
-
-        // in an and-term a single resource type term is sufficient
-        else if( term.isAndTerm() ) {
-            Q_FOREACH( const Nepomuk::Query::Term& subTerm, term.toAndTerm().subTerms() ) {
-                if( containsResourceTypeTerm(subTerm) ) {
-                    return true;
-                }
-            }
-        }
-
-        // an or-term which only consists of resource type terms is valid also
-        else if( term.isOrTerm() ) {
-            Q_FOREACH( const Nepomuk::Query::Term& subTerm, term.toOrTerm().subTerms() ) {
-                if( !containsResourceTypeTerm(subTerm) ) {
-                    return false;
-                }
-            }
-            // at this point all subterms contain a non-optional resource type term
-            return true;
-        }
-
-        // fallback
-        return false;
-    }
 }
 
 
@@ -472,8 +437,26 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     // optimize whatever we can
     term = prepareForSparql( term ).optimized();
 
+
     // actually build the SPARQL query patterns
     QueryBuilderData qbd( d.constData(), sparqlFlags );
+
+
+    // We restrict results to user visible types only.
+    //
+    // Here we use an optimizations:
+    // The storage service creates "nao:userVisible 1" entries for all visible resources. This contains two optimizations:
+    // - We use an integer instead of a boolean because Virtuoso does not support booleans and, thus, Soprano converts
+    //   booleans into a fake type which is stored as a string. This makes comparision much slower.
+    // - Instead of using crappy inference via "?r a ?t . ?t nao:userVisible true" we can directly check the resources.
+    //
+    QString userVisibilityRestriction;
+    if( !(queryFlags()&NoResultRestrictions) ) {
+        userVisibilityRestriction = QString::fromLatin1("?r %1 1 . ")
+                .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()));
+    }
+
+
     QString termGraphPattern;
     if( term.isValid() ) {
         termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
@@ -491,18 +474,6 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
         const QString scoringExpression = qbd.buildScoringExpression();
         if( !scoringExpression.isEmpty() )
             selectVariables << scoringExpression;
-    }
-
-    // restrict to resources to user visible types only. There is no need to do that for file queries
-    // as those already restrict the type.
-    // Since we do the restriction on the type it gets useless as soon as the query contains a non-optional
-    // type term itself
-    QString userVisibilityRestriction;
-    if( !d->m_isFileQuery && !containsResourceTypeTerm(term) && !(queryFlags()&NoResultRestrictions) ) {
-        userVisibilityRestriction = QString::fromLatin1( "?r a %1 . %1 %2 %3 . " )
-                                    .arg( qbd.uniqueVarName(),
-                                          Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
-                                          Soprano::Node::literalToN3(true) );
     }
 
     // build the core of the query - the part that never changes

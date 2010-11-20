@@ -128,17 +128,13 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "type query" )
         << Query( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) )
-        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . ?v1 %1 %2 . }")
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()))
+        << QString::fromLatin1("select distinct ?r where { ?r a %1 . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()));
 
     QTest::newRow( "negated resource type" )
         << Query( NegationTerm::negateTerm( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) ) )
-        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r a ?v1 . ?v1 %1 %2 . }))) . "
-                               "?r %3 ?v2 . } . }")
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
-             Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()),
-             Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(!bif:exists((select (1) where { ?r a %1 . }))) . }")
+           .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()));
 
     QDateTime now = QDateTime::currentDateTime();
     QTest::newRow( "nie:lastModified" )
@@ -161,10 +157,8 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "negated hastag with resource" )
         << Query( NegationTerm::negateTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
-        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . "
-                               "?r %2 ?v1 . } . }")
-        .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-             Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . }")
+           .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()));
 
     QTest::newRow( "comparators <" )
         << Query( ComparisonTerm( Soprano::Vocabulary::NAO::numericRating(), LiteralTerm(4), ComparisonTerm::Smaller ) )
@@ -217,9 +211,8 @@ void QueryTest::testToSparql_data()
     setVarNameTerm1.setVariableName("myvar");
     QTest::newRow( "set variable name 1" )
         << Query( setVarNameTerm1 )
-        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . ?myvar a ?v1 . ?v1 %2 %3 . }")
+        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . ?myvar a %2 . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-             Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()));
 
     ComparisonTerm setVarNameTerm2( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( "nepomuk" ) );
@@ -375,12 +368,11 @@ void QueryTest::testToSparql_data()
 
     mainTerm.addSubTerm(ct.inverted());
 
-    QString sparql = QString::fromLatin1("select distinct ?r count(?v5) as ?cnt where { { "
-                                         "{ ?r a ?v1 . ?v1 %1 %2 . } UNION { ?r a ?v2 . ?v2 %1 %3 . } . "
-                                         "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v3 ?r . }))) . "
-                                         "?v5 ?v4 ?r . } . } ORDER BY DESC ( ?cnt )")
-                     .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
-                          Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
+    QString sparql = QString::fromLatin1("select distinct ?r count(?v3) as ?cnt where { { "
+                                         "{ ?r a %1 . } UNION { ?r a %2 . } . "
+                                         "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v1 ?r . }))) . "
+                                         "?v3 ?v2 ?r . } . } ORDER BY DESC ( ?cnt )")
+                     .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));
 
     QTest::newRow( "a complex one" )
@@ -449,6 +441,7 @@ void QueryTest::testToSparql()
 
     // we test without result restrictions which always look the same anyway
     query.setQueryFlags( Query::NoResultRestrictions|Query::WithoutFullTextExcerpt );
+    query.setFullTextScoringEnabled(true);
 
     QCOMPARE( query.toSparqlQuery().simplified(), queryString );
 
