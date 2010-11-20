@@ -17,6 +17,9 @@
     02110-1301, USA.
 */
 
+#ifndef DISPLAYCERTDIALOG_P_H
+#define DISPLAYCERTDIALOG_P_H
+
 #include "ui_displaycert.h"
 #include <QtNetwork/QSslCertificate>
 
@@ -37,3 +40,4 @@ private:
     QList<QSslCertificate> m_certs;
     int m_index;
 };
+#endif // DISPLAYCERTDIALOG_P_H
