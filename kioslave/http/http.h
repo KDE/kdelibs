@@ -136,7 +136,7 @@ public:
       preferErrorPage = false;
       useCookieJar = false;
     }
-    
+
     QByteArray methodString() const;
 
     KUrl url;
@@ -338,7 +338,7 @@ protected:
   void fixupResponseContentEncoding();
 
   bool readResponseHeader();
-  void parseHeaderFromCache();
+  bool parseHeaderFromCache();
   void parseContentDisposition(const QString &disposition);
 
   bool sendBody();
