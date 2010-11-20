@@ -18,8 +18,6 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#undef QT_NO_CAST_FROM_ASCII
-
 #include <auth/policy-gen/policy-gen.h>
 
 #include <cstdio>
@@ -50,21 +48,21 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
 
     // Blacklisted characters + replacements
     QHash< QChar, QString > blacklist;
-    blacklist.insert(QChar('&'), "&amp;");
+    blacklist.insert(QLatin1Char('&'), QLatin1String("&amp;"));
 
-    if (domain.contains("vendor")) {
+    if (domain.contains(QLatin1String("vendor"))) {
         QHash< QChar, QString >::const_iterator blI;
-        QString vendor = domain["vendor"];
+        QString vendor = domain[QLatin1String("vendor")];
         for (blI = blacklist.constBegin(); blI != blacklist.constEnd(); ++blI) {
             vendor.replace(blI.key(), blI.value());
         }
         out << "<vendor>" << vendor << "</vendor>\n";
     }
-    if (domain.contains("vendorurl")) {
-        out << "<vendor_url>" << domain["vendorurl"] << "</vendor_url>\n";
+    if (domain.contains(QLatin1String("vendorurl"))) {
+        out << "<vendor_url>" << domain[QLatin1String("vendorurl")] << "</vendor_url>\n";
     }
-    if (domain.contains("icon")) {
-        out << "<icon_name>" << domain["icon"] << "</icon_name>\n";
+    if (domain.contains(QLatin1String("icon"))) {
+        out << "<icon_name>" << domain[QLatin1String("icon")] << "</icon_name>\n";
     }
 
     foreach (const Action &action, actions) {
@@ -73,7 +71,7 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
         // Not a typo, messages and descriptions are actually inverted
         for (QHash< QString, QString >::const_iterator i = action.messages.constBegin(); i != action.messages.constEnd(); ++i) {
             out << dent << dent << "<description";
-            if (i.key() != "en") {
+            if (i.key() != QLatin1String("en")) {
                 out << " xml:lang=\"" << i.key() << '"';
             }
 
@@ -91,7 +89,7 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
              i != action.descriptions.constEnd();
              ++i) {
             out << dent << dent << "<message";
-            if (i.key() != "en") {
+            if (i.key() != QLatin1String("en")) {
                 out << " xml:lang=\"" << i.key() << '"';
             }
 
@@ -105,11 +103,12 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
         }
 
         QString policy = action.policy;
-        if (!action.persistence.isEmpty() && policy != "yes" && policy != "no") {
-            policy += "_keep";
+        if (!action.persistence.isEmpty() && policy != QLatin1String("yes") && policy !=
+                QLatin1String("no")) {
+            policy += QLatin1String("_keep");
         }
 
-        out << QString(policy_tag).arg(policy);
+        out << QString(QLatin1String(policy_tag)).arg(policy);
 
         out << dent << "</action>\n";
     }
