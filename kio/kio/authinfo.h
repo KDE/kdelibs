@@ -81,7 +81,7 @@ public:
    ~AuthInfo();
    
    /**
-    * Overloaded equal to operator.
+    * Custom assignment operator.
     */
    AuthInfo& operator=( const AuthInfo& info );
 

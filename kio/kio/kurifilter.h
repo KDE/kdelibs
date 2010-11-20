@@ -134,7 +134,7 @@ private:
 * details. If an error is encountered, then @ref KUriFilter::Error is returned.
 * You can use @ref errorMsg to obtain the error information.
 *
-* This functions in this class are not reenterant.
+* The functions in this class are not reentrant.
 *
 * \b Example
 *
@@ -750,23 +750,15 @@ private:
 };
 
 /**
- * Manages the filtering of URIs.
+ * KUriFilter applies a number of filters to a URI and returns a filtered version if any
+ * filter matches.
+ * A simple example is "kde.org" to "http://www.kde.org", which is commonplace in web browsers.
  *
- * The intention of this plugin class is to allow people to extend the
- * functionality of KUrl without modifying it directly. This way KUrl will
- * remain a generic parser capable of parsing any generic URL that adheres to
- * specifications.
+ * The filters are implemented as plugins in @ref KUriFilterPlugin subclasses.
  *
- * The KUriFilter class applies a number of filters to a URI and returns the
- * filtered version whenever possible. The filters are implemented using
- * plugins to provide easy extensibility of the filtering mechanism. New
- * filters can be added in the future by simply inheriting from the
- * @ref KUriFilterPlugin class.
- *
- * Use of this plugin-manager class is straight forward.  Since it is a
- * singleton object, all you have to do is obtain an instance by doing
- * @p KUriFilter::self() and use any of the public member functions to
- * preform the filtering.
+ * KUriFilter is a singleton object: obtain the instance by calling
+ * @p KUriFilter::self() and use the public member functions to
+ * perform the filtering.
  *
  * \b Example
  *
