@@ -371,8 +371,12 @@ bool Nepomuk::ResourceData::load()
         m_cache.clear();
 
         if ( m_uri.isValid() ) {
+            //
+            // We exclude properties that are part of the inference graph
+            // It would only pollute the user interface
+            //
             Soprano::QueryResultIterator it = MAINMODEL->executeQuery(QString("select distinct ?p ?o where { "
-                                                                              "%1 ?p ?o . "
+                                                                              "graph ?g { %1 ?p ?o . } . FILTER(?g!=<urn:crappyinference2:inferredtriples>) . "
                                                                               "}").arg(Soprano::Node::resourceToN3(m_uri)),
                                                                       Soprano::Query::QueryLanguageSparql);
             while ( it.next() ) {
