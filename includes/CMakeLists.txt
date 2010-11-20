@@ -70,7 +70,6 @@ install( FILES
   KArchiveDirectory
   KArchiveEntry
   KArchiveFile
-  KArrowButton
   KAssistantDialog
   KAuthorized
   KAutoMount
@@ -170,7 +169,6 @@ install( FILES
   KDoubleNumInput
   KDoubleValidator
   KEMailSettings
-  KEditListBox
   KEditListWidget
   KEditToolBar
   KEncodingFileDialog
@@ -469,6 +467,13 @@ install( FILES
   KWebPluginFactory
   KWebWallet
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
+
+if(NOT KDE_NO_DEPRECATED)
+install( FILES
+  KArrowButton
+  KEditListBox
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
+endif(NOT KDE_NO_DEPRECATED)
 
 if (UNIX)
    if (QT_QT3SUPPORT_FOUND)
