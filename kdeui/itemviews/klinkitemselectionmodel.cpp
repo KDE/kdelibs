@@ -100,7 +100,7 @@ void KLinkItemSelectionModel::select(const QModelIndex &index, QItemSelectionMod
 #endif
 
 #ifdef RANGE_FIX_HACK
-static QItemSelection removeInvalidRanges(const QItemSelection &selection)
+static QItemSelection klink_removeInvalidRanges(const QItemSelection &selection)
 {
   QItemSelection result;
   Q_FOREACH(const QItemSelectionRange &range, selection)
@@ -118,7 +118,7 @@ void KLinkItemSelectionModel::select(const QItemSelection &selection, QItemSelec
     Q_D(KLinkItemSelectionModel);
     d->m_ignoreCurrentChanged = true;
 #ifdef RANGE_FIX_HACK
-    QItemSelection _selection = removeInvalidRanges(selection);
+    QItemSelection _selection = klink_removeInvalidRanges(selection);
 #else
     QItemSelection _selection = selection;
 #endif
@@ -134,8 +134,8 @@ void KLinkItemSelectionModelPrivate::sourceSelectionChanged(const QItemSelection
 {
     Q_Q(KLinkItemSelectionModel);
 #ifdef RANGE_FIX_HACK
-    QItemSelection _selected = removeInvalidRanges(selected);
-    QItemSelection _deselected = removeInvalidRanges(deselected);
+    QItemSelection _selected = klink_removeInvalidRanges(selected);
+    QItemSelection _deselected = klink_removeInvalidRanges(deselected);
 #else
     QItemSelection _selected = selected;
     QItemSelection _deselected = deselected;
