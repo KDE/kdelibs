@@ -291,13 +291,13 @@ void KProcess::setShellCommand(const QString &cmd)
     d->prog = QFile::symLinkTarget(QString::fromLatin1("/bin/sh"));
     if (d->prog.isEmpty()) {
         // Try some known POSIX shells.
-        d->prog = KStandardDirs::findExe("ksh");
+        d->prog = KStandardDirs::findExe(QString::fromLatin1("ksh"));
         if (d->prog.isEmpty()) {
-            d->prog = KStandardDirs::findExe("ash");
+            d->prog = KStandardDirs::findExe(QString::fromLatin1("ash"));
             if (d->prog.isEmpty()) {
-                d->prog = KStandardDirs::findExe("bash");
+                d->prog = KStandardDirs::findExe(QString::fromLatin1("bash"));
                 if (d->prog.isEmpty()) {
-                    d->prog = KStandardDirs::findExe("zsh");
+                    d->prog = KStandardDirs::findExe(QString::fromLatin1("zsh"));
                     if (d->prog.isEmpty())
                         // We're pretty much screwed, to be honest ...
                         d->prog = QString::fromLatin1("/bin/sh");
