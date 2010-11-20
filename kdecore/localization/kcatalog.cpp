@@ -169,6 +169,10 @@ QString KCatalog::localeDir() const
   return QFile::decodeName(d->localeDir);
 }
 
+#ifdef _MSC_VER
+  extern "C" int __declspec(dllimport) _nl_msg_cat_cntr;
+#endif
+
 void KCatalogPrivate::setupGettextEnv ()
 {
   // Point Gettext to current language, recording system value for recovery.
@@ -191,7 +195,9 @@ void KCatalogPrivate::setupGettextEnv ()
 
     // Magic to make sure Gettext doesn't use stale cached translation
     // from previous language.
+#ifndef _MSC_VER
     extern int _nl_msg_cat_cntr;
+#endif
     ++_nl_msg_cat_cntr;
   }
 }
