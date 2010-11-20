@@ -164,7 +164,6 @@ install( FILES
   KFilePreviewGenerator
   KFilePlacesView
   KFileWidget
-  KDiskFreeSpace
   KDiskFreeSpaceInfo
   KDoubleNumInput
   KDoubleValidator
@@ -262,7 +261,6 @@ install( FILES
   KMimeType
   KMimeTypeChooser
   KMimeTypeChooserDialog
-  KMimeTypeResolver
   KMimeTypeTrader
   KMimeTypeValidator
   KMozillaBookmarkImporterImpl
@@ -472,6 +470,8 @@ if(NOT KDE_NO_DEPRECATED)
 install( FILES
   KArrowButton
   KEditListBox
+  KDiskFreeSpace
+  KMimeTypeResolver
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 endif(NOT KDE_NO_DEPRECATED)
 
@@ -672,7 +672,6 @@ install( FILES
   KIO/MultiGetJob
   KIO/NetAccess
   KIO/NetRC
-  KIO/PasswordDialog
   KIO/PreviewJob
   KIO/RenameDialog
   KIO/RenameDialogPlugin
@@ -690,6 +689,12 @@ install( FILES
   KIO/Task
   KIO/TransferJob
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
+
+if(NOT KDE_NO_DEPRECATED)
+install( FILES
+  KIO/PasswordDialog
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
+endif(NOT KDE_NO_DEPRECATED)
 
 
 # 2008-02-15: kjs headers are apparently not installed, so also
