@@ -3743,7 +3743,10 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
             kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
         }
         m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
-    } else if (mayCache && m_request.responseCode == 304 && m_request.cacheTag.file) {
+    } else if (m_request.responseCode == 304 && m_request.cacheTag.file) {
+        if (!mayCache) {
+            kDebug(7113) << "This webserver is confused about the cacheability of the data it sends.";
+        }
         // the cache file should still be open for reading, see satisfyRequestFromCache().
         Q_ASSERT(m_request.cacheTag.file->openMode() == QIODevice::ReadOnly);
         Q_ASSERT(m_request.cacheTag.ioMode == ReadFromCache);
