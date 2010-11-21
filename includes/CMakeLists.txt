@@ -137,6 +137,7 @@ install( FILES
   KCrash
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
+  KCurrencyCode
   KCursor
   KDBusServiceStarter
   KDebug
