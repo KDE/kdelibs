@@ -40,16 +40,16 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
             QString rule;
 
             if (action.policy == QLatin1String("yes"))
-                rule = kAuthorizationRuleClassAllow;
+                rule = QString::fromLatin1(kAuthorizationRuleClassAllow);
             else if (action.policy == QLatin1String("no"))
-                rule = kAuthorizationRuleClassDeny;
+                rule = QString::fromLatin1(kAuthorizationRuleClassDeny);
             else if (action.policy == QLatin1String("auth_self"))
-                rule = kAuthorizationRuleAuthenticateAsSessionUser;
+                rule = QString::fromLatin1(kAuthorizationRuleAuthenticateAsSessionUser);
             else if (action.policy == QLatin1String("auth_admin"))
-                rule = kAuthorizationRuleAuthenticateAsAdmin;
+                rule = QString::fromLatin1(kAuthorizationRuleAuthenticateAsAdmin);
 
             CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
-            CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value("en").toAscii(), kCFStringEncodingASCII);
+            CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value(QLatin1String("en")).toAscii(), kCFStringEncodingASCII);
 
             err = AuthorizationRightSet(auth, action.name.toAscii(), cfRule, cfPrompt, NULL, NULL);
             if (err != noErr) {
