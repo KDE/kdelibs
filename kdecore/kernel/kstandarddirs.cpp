@@ -1248,7 +1248,7 @@ static QString getBundle( const QString& path, bool ignore )
     kDebug(180) << "getBundle(" << path << ", " << ignore << ") called";
     QFileInfo info;
     QString bundle = path;
-    bundle += ".app/Contents/MacOS/" + bundle.section('/', -1);
+    bundle += QLatin1String(".app/Contents/MacOS/") + bundle.section(QLatin1Char('/'), -1);
     info.setFile( bundle );
     FILE *file;
     if (file = fopen(info.absoluteFilePath().toUtf8().constData(), "r")) {
@@ -1726,7 +1726,7 @@ void KStandardDirs::addKDEDefaults()
     // Adds the "Contents" directory of the current application bundle to
     // the search path. This way bundled resources can be found.
     QDir bundleDir(mac_app_filename());
-    if (bundleDir.dirName() == "MacOS") { // just to be sure we're in a bundle
+    if (bundleDir.dirName() == QLatin1String("MacOS")) { // just to be sure we're in a bundle
         bundleDir.cdUp();
         // now dirName should be "Contents". In there we can find our normal
         // dir-structure, beginning with "share"
