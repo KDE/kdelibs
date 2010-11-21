@@ -116,16 +116,16 @@ namespace {
 
         case Term::And:
             xml.writeStartElement( QLatin1String("and") );
-            Q_FOREACH( const Term& term, term.toAndTerm().subTerms() ) {
-                doSerializeTerm( xml, term );
+            Q_FOREACH( const Term& myterm, term.toAndTerm().subTerms() ) {
+                doSerializeTerm( xml, myterm );
             }
             xml.writeEndElement();
             break;
 
         case Term::Or:
             xml.writeStartElement( QLatin1String("or") );
-            Q_FOREACH( const Term& term, term.toOrTerm().subTerms() ) {
-                doSerializeTerm( xml, term );
+            Q_FOREACH( const Term& myterm, term.toOrTerm().subTerms() ) {
+                doSerializeTerm( xml, myterm );
             }
             xml.writeEndElement();
             break;
