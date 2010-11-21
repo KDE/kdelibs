@@ -604,8 +604,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
     // Move us to the final data hash now that the URI is known
     //
     if( !m_uri.isEmpty() ) {
-        QMutexLocker rmlock(&m_rm->mutex);
-
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );

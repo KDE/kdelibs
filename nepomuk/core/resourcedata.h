@@ -178,9 +178,6 @@ namespace Nepomuk {
         /// This is a set since Resource::determineFinalResourceData may add additional uris
         QSet<KUrl> m_kickoffUris;
 
-        /// Needs to be locked before calling determineUri()
-        QMutex m_determineUriMutex;
-
     private:
         void loadType( const QUrl& type );
 

@@ -923,7 +923,7 @@ Nepomuk::Resource Nepomuk::Resource::fromResourceUri( const KUrl& uri, const Nep
 
 void Nepomuk::Resource::determineFinalResourceData() const
 {
-    m_data->m_determineUriMutex.lock();
+    QMutexLocker lock( &m_data->rm()->mutex );
 
     // Get an initialized ResourceData instance
     ResourceData* oldData = m_data;
@@ -942,10 +942,6 @@ void Nepomuk::Resource::determineFinalResourceData() const
             newData->ref( res );
         }
     }
-
-    // we need to unlock before assigning ourselves to make sure we do not
-    // delete m_data before unlocking
-    oldData->m_determineUriMutex.unlock();
 
     if ( !oldData->cnt() )
         delete oldData;
