@@ -44,13 +44,13 @@ namespace WebCore {
         static bool parseTransformAttribute(SVGTransformList*, const UChar*& ptr, const UChar* end);
         static bool parseTransformValue(unsigned type, const UChar*& ptr, const UChar* end, SVGTransform&);
         
-// FIXME MSVC throws an ambiguous method call failure due to static vs. non-static member with same signature
-#if !defined(Q_CC_MSVC) && !defined(Q_CC_SUN)
+// FIXME non-gcc throw ambiguous method call failure due to static vs. non-static member with same signature
+#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL)
         using WebCore::SVGLocatable::getCTM;
 #endif
         AffineTransform getCTM(const SVGElement*) const;
-// FIXME MSVC throws an ambiguous method call failure due to static vs. non-static member with same signature
-#if !defined(Q_CC_MSVC) && !defined(Q_CC_SUN)
+// FIXME non-gcc throw ambiguous method call failure due to static vs. non-static member with same signature
+#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL)
         using WebCore::SVGLocatable::getScreenCTM;
 #endif
         AffineTransform getScreenCTM(const SVGElement*) const;
