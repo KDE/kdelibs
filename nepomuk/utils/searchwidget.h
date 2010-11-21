@@ -80,8 +80,8 @@ namespace Nepomuk {
                 /// enable auto searching while the user is typing in the query (live query)
                 SearchWhileYouType = 0x2,
 
-                /// the default: show facets and enable live query
-                DefaultConfigFlags = ShowFacets|SearchWhileYouType
+                /// the default: show facets and disable live query
+                DefaultConfigFlags = ShowFacets
             };
             Q_DECLARE_FLAGS( ConfigFlags, ConfigFlag )
 
