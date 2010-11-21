@@ -39,13 +39,13 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
 
             QString rule;
 
-            if (action.policy == "yes")
+            if (action.policy == QLatin1String("yes"))
                 rule = kAuthorizationRuleClassAllow;
-            else if (action.policy == "no")
+            else if (action.policy == QLatin1String("no"))
                 rule = kAuthorizationRuleClassDeny;
-            else if (action.policy == "auth_self")
+            else if (action.policy == QLatin1String("auth_self"))
                 rule = kAuthorizationRuleAuthenticateAsSessionUser;
-            else if (action.policy == "auth_admin")
+            else if (action.policy == QLatin1String("auth_admin"))
                 rule = kAuthorizationRuleAuthenticateAsAdmin;
 
             CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
