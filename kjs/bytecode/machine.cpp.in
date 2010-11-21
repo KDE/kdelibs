@@ -47,7 +47,7 @@
 
 namespace KJS {
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__ICC)
 #define USE_LABEL_VALS
 #endif
 
