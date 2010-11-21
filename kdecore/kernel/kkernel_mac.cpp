@@ -119,7 +119,7 @@ mac_fork_and_reexec_self()
 bool mac_set_dbus_address(QString value)
 {
 	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
-		value = "unix:path=" + value;
+		value = QLatin1String("unix:path=") + value;
 		::setenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit(), 1);
 		kDebug() << "set session bus address to" << value;
 		return true;
@@ -136,7 +136,7 @@ void mac_initialize_dbus()
 	if (dbus_initialized)
 		return;
 
-	QString dbusVar = qgetenv("DBUS_SESSION_BUS_ADDRESS");
+	QString dbusVar = QString::fromLocal8Bit(qgetenv("DBUS_SESSION_BUS_ADDRESS"));
 	if (!dbusVar.isEmpty()) {
 		dbus_initialized = true;
 		return;
@@ -149,11 +149,11 @@ void mac_initialize_dbus()
 	}
 
 	QString externalProc;
-	QStringList path = QFile::decodeName(qgetenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
-	path << QFile::decodeName(qgetenv("PATH")).split(':') << "/usr/local/bin";
+	QStringList path = QFile::decodeName(qgetenv("KDEDIRS")).split(QLatin1Char(':')).replaceInStrings(QRegExp(QLatin1String("$")), QLatin1String("/bin"));
+	path << QFile::decodeName(qgetenv("PATH")).split(QLatin1Char(':')) << QLatin1String("/usr/local/bin");
 
 	for (int i = 0; i < path.size(); ++i) {
-		QString testLaunchctl = QString(path.at(i)).append("/launchctl");
+		QString testLaunchctl = QString(path.at(i)).append(QLatin1String("/launchctl"));
 		if (QFile(testLaunchctl).exists()) {
 			externalProc = testLaunchctl;
 			break;
@@ -164,7 +164,7 @@ void mac_initialize_dbus()
                 QProcess qp;
                 qp.setTextModeEnabled(true);
 
-		qp.start(externalProc, QStringList() << "getenv" << "DBUS_LAUNCHD_SESSION_BUS_SOCKET");
+		qp.start(externalProc, QStringList() << QLatin1String("getenv") << QLatin1String("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
                 if (!qp.waitForFinished(timeout)) {
                     kDebug() << "error running" << externalProc << qp.errorString();
                     return;
@@ -174,7 +174,7 @@ void mac_initialize_dbus()
                     return;
                 }
 
-                QString line = qp.readLine().trimmed(); // read the first line
+                QString line = QString::fromAscii(qp.readLine()).trimmed(); // read the first line
                 if (mac_set_dbus_address(line))
                     dbus_initialized = true; // hooray
 	}
