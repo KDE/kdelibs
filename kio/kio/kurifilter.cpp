@@ -25,6 +25,7 @@
 #include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
+#include <kstandarddirs.h>
 
 #include <QtGui/QPixmap>
 #include <QtCore/QHashIterator>
@@ -44,6 +45,8 @@ static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
             iconName = KMimeType::favIconForUrl(url);
             if (iconName.isEmpty())
                 iconName = KMimeType::iconNameForUrl( url );
+            else
+                iconName = KStandardDirs::locate("cache", iconName + QLatin1String(".png"));
             break;
         case KUriFilterData::LocalFile:
         case KUriFilterData::LocalDir:
@@ -262,6 +265,7 @@ public:
     QChar searchTermSeparator;
 
     QStringList alternateSearchProviders;
+    QStringList searchProviderList;
     SearchProviderMap searchProviderMap;
 };
 
@@ -353,7 +357,7 @@ QString KUriFilterData::searchProvider() const
 
 QStringList KUriFilterData::preferredSearchProviders() const
 {
-    return d->searchProviderMap.keys();
+    return d->searchProviderList;
 }
 
 KUriFilterSearchProvider KUriFilterData::queryForSearchProvider(const QString& provider) const
@@ -552,8 +556,10 @@ void KUriFilterPlugin::setPreferredSearchProviders(KUriFilterData &data, const P
 
 void KUriFilterPlugin::setSearchProviders(KUriFilterData &data, const QList<KUriFilterSearchProvider*>& providers) const
 {
-    Q_FOREACH(KUriFilterSearchProvider* searchProvider, providers)
+    Q_FOREACH(KUriFilterSearchProvider* searchProvider, providers) {
+        data.d->searchProviderList << searchProvider->name();
         data.d->searchProviderMap.insert(searchProvider->name(), searchProvider);
+    }
 }
 
 QString KUriFilterPlugin::iconNameFor(const KUrl& url, KUriFilterData::UriTypes type) const
