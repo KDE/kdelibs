@@ -53,13 +53,16 @@
 
 bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
                                           QString& label, QString& icon,
+                                          bool isAddingNewPlace,
                                           bool& appLocal, int iconSize,
                                           QWidget *parent )
 {
     KFilePlaceEditDialog *dialog = new KFilePlaceEditDialog(allowGlobal, url,
                                                             label, icon,
                                                             appLocal,
-                                                            iconSize, parent );
+                                                            iconSize,
+                                                            isAddingNewPlace,
+                                                            parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
         url         = dialog->url();
@@ -77,12 +80,16 @@ bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
 
 KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                                            const QString& label,
-                                           const QString &icon, bool appLocal,
-                                           int iconSize,
+                                           const QString &icon,
+                                           bool isAddingNewPlace,
+                                           bool appLocal, int iconSize,
                                            QWidget *parent)
     : KDialog( parent )
 {
-    setCaption( i18n("Edit Places Entry") );
+    if (isAddingNewPlace)
+        setCaption( i18n("Add Places Entry") );
+    else
+        setCaption( i18n("Edit Places Entry") );
     setButtons( Ok | Cancel );
     setModal(true);
     setDefaultButton(Ok);

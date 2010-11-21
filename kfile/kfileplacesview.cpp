@@ -655,7 +655,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         bool appLocal = !bookmark.metaDataItem("OnlyInApp").isEmpty();
 
         if (KFilePlaceEditDialog::getInformation(true, url, label,
-                                                 iconName, appLocal, 64, this))
+                                                 iconName, false, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();
@@ -689,7 +689,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         QString iconName = "folder";
         bool appLocal = true;
         if (KFilePlaceEditDialog::getInformation(true, url, label,
-                                                 iconName, appLocal, 64, this))
+                                                 iconName, true, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();

@@ -64,6 +64,7 @@ public:
      */
     static bool getInformation( bool allowGlobal, KUrl& url,
                                 QString& label, QString& icon,
+                                bool isAddingNewPlace,
                                 bool& appLocal, int iconSize,
                                 QWidget *parent = 0 );
 
@@ -86,6 +87,7 @@ public:
      */
     KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                          const QString& label, const QString &icon,
+                         bool isAddingNewPlace,
                          bool appLocal = true,
                          int iconSize = KIconLoader::SizeMedium,
                          QWidget *parent = 0);
