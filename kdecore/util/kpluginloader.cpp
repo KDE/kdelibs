@@ -144,8 +144,6 @@ KPluginLoader::KPluginLoader(const QString &plugin, const KComponentData &compon
                 componentdata.aboutData()->appName());
         return;
     }
-
-    load();
 }
 
 
@@ -177,8 +175,6 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
                 componentdata.aboutData()->appName());
         return;
     }
-
-    load();
 }
 
 KPluginLoader::~KPluginLoader()
@@ -190,7 +186,7 @@ KPluginFactory *KPluginLoader::factory()
 {
     Q_D(KPluginLoader);
 
-    if (!isLoaded())
+    if (!load())
         return 0;
 
 #ifndef KDE_NO_DEPRECATED
@@ -221,6 +217,10 @@ KPluginFactory *KPluginLoader::factory()
 bool KPluginLoader::load()
 {
     Q_D(KPluginLoader);
+
+    if (isLoaded())
+        return true;
+
     if (!QPluginLoader::load()) {
         d->lib = new KLibrary(d->name);
         if (d->lib->load())
@@ -231,8 +231,7 @@ bool KPluginLoader::load()
 
     Q_ASSERT(!fileName().isEmpty());
     QLibrary lib(fileName());
-    lib.load();
-    Q_ASSERT(lib.isLoaded());
+    Q_ASSERT(lib.isLoaded()); // already loaded by QPluginLoader::load()
 
     d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");
     if (d->verificationData) {
@@ -241,7 +240,6 @@ bool KPluginLoader::load()
             || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000)))
         {
             d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, QString::fromLatin1(d->verificationData->KDEVersionString));
-            lib.unload();
             unload();
             return false;
         }
@@ -255,14 +253,14 @@ bool KPluginLoader::load()
     else
         d->pluginVersion = ~0U;
 
-    lib.unload();
-
     return true;
 }
 
 QString KPluginLoader::errorString() const
 {
     Q_D(const KPluginLoader);
+    const_cast<KPluginLoader*>(this)->load();
+
     if (!d->errorString.isEmpty())
         return d->errorString;
 
@@ -272,12 +270,14 @@ QString KPluginLoader::errorString() const
 quint32 KPluginLoader::pluginVersion() const
 {
     Q_D(const KPluginLoader);
+    const_cast<KPluginLoader*>(this)->load();
     return d->pluginVersion;
 }
 
 QString KPluginLoader::pluginName() const
 {
     Q_D(const KPluginLoader);
+    const_cast<KPluginLoader*>(this)->load();
     return d->name;
 }
 
