@@ -100,6 +100,7 @@ class KGlobalPrivate
         KLocale *locale;
         KCharsets *charsets;
         bool localeIsFromFakeComponent;
+        QStringList catalogsToInsert;
 
         /**
          * This component may be used in applications that doesn't have a
@@ -149,6 +150,16 @@ bool KGlobal::hasMainComponent()
     return d->mainComponent.isValid();
 }
 
+void KGlobal::insertCatalog(const QString& catalog)
+{
+    PRIVATE_DATA;
+    if (d->locale) {
+        d->locale->insertCatalog(catalog);
+    } else {
+        d->catalogsToInsert.append(catalog);
+    }
+}
+
 KLocale *KGlobal::locale()
 {
     PRIVATE_DATA;
@@ -168,6 +179,9 @@ KLocale *KGlobal::locale()
                 QCoreApplication::installTranslator(new KDETranslator(coreApp));
             }
         }
+        foreach(const QString &catalog, d->catalogsToInsert)
+            d->locale->insertCatalog(catalog);
+        d->catalogsToInsert.clear();
     }
     return d->locale;
 }

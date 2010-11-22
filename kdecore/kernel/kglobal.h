@@ -300,6 +300,33 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 } NAME;
 
 /**
+ * This macro is useful in libraries where you want to make sure that
+ * anyone that uses your library will get the correct catalog loaded.
+ *
+ * @param CATALOGNAME The name of your catalog
+ *
+ * @since 4.6
+ *
+ * Example:
+ * @code
+ * K_CATALOG_LOADER(libkdepim)
+ * @endcode
+ * 
+ * @ingroup KDEMacros
+ */
+#define K_CATALOG_LOADER(CATALOGNAME)                               \
+class KCatalogLoader##CATALOGNAME                                   \
+{                                                                   \
+    public:                                                         \
+        KCatalogLoader##CATALOGNAME();                              \
+};                                                                  \
+static KCatalogLoader##CATALOGNAME catalogLoader##CATALOGNAME;      \
+KCatalogLoader##CATALOGNAME::KCatalogLoader##CATALOGNAME()          \
+{                                                                   \
+    KGlobal::insertCatalog(QLatin1String(#CATALOGNAME));            \
+}
+
+/**
  * Access to the KDE global objects.
  * KGlobal provides you with pointers of many central
  * objects that exist only once in the process. It is also
@@ -336,6 +363,14 @@ namespace KGlobal
      * @return the global configuration object.
      */
     KDECORE_EXPORT KSharedConfigPtr config();
+
+    /**
+     * Inserts the catalog in the main locale object if it exists.
+     * Otherwise the catalog name is stored and added once the main locale gets created
+     *
+     * @since 4.6
+     */
+    KDECORE_EXPORT void insertCatalog(const QString& catalog);
 
     /**
      * Returns the global locale object.
