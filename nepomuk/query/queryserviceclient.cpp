@@ -142,10 +142,10 @@ void Nepomuk::Query::QueryServiceClient::Private::_k_handleQueryReply(QDBusPendi
     if(reply.isError()) {
         kDebug() << reply.error();
         m_errorMessage = reply.error().message();
+        m_queryActive = false;
         emit q->error(m_errorMessage);
     }
     else {
-        m_queryActive = true;
         queryInterface = new org::kde::nepomuk::Query( queryServiceInterface->service(),
                                                        reply.value().path(),
                                                        dbusConnection );
@@ -195,6 +195,7 @@ bool Nepomuk::Query::QueryServiceClient::query( const Query& query )
     close();
 
     if ( d->queryServiceInterface->isValid() ) {
+        d->m_queryActive = true;
         d->m_pendingCallWatcher = new QDBusPendingCallWatcher(d->queryServiceInterface->asyncCall(QLatin1String("query"),
                                                                                                   query.toString()),
                                                               this);
@@ -214,6 +215,7 @@ bool Nepomuk::Query::QueryServiceClient::sparqlQuery( const QString& query, cons
     close();
 
     if ( d->queryServiceInterface->isValid() ) {
+        d->m_queryActive = true;
         d->m_pendingCallWatcher = new QDBusPendingCallWatcher(d->queryServiceInterface->asyncCall(QLatin1String("sparqlQuery"),
                                                                                                   query,
                                                                                                   QVariant::fromValue(encodeRequestProperties( requestPropertyMap ))),
@@ -234,6 +236,7 @@ bool Nepomuk::Query::QueryServiceClient::desktopQuery( const QString& query )
     close();
 
     if ( d->queryServiceInterface->isValid() ) {
+        d->m_queryActive = true;
         d->m_pendingCallWatcher = new QDBusPendingCallWatcher(d->queryServiceInterface->asyncCall(QLatin1String("desktopQuery"),
                                                                                                   query),
                                                               this);
