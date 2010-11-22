@@ -37,10 +37,7 @@
 
 namespace KNS3
 {
-    static const int DelegateLabel = 0;
-    static const int DelegateInstallButton = 1;
-    static const int DelegateDetailsButton = 2;
-    static const int DelegateRatingWidget = 3;
+    enum { DelegateLabel, DelegateInstallButton, DelegateDetailsButton,  DelegateRatingWidget };
 
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : ItemsViewBaseDelegate(itemView, engine, parent)

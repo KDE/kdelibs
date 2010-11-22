@@ -30,6 +30,8 @@ set(nepomukutils_SRCS
   searchwidget.cpp
 )
 
+kde4_no_enable_final(nepomukutils)
+
 kde4_add_ui_files(nepomukutils_SRCS daterangeselectionwidget.ui)
 
 kde4_add_library(nepomukutils ${LIBRARY_TYPE} ${nepomukutils_SRCS})

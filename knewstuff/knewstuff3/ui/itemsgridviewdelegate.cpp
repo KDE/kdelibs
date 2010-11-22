@@ -38,14 +38,9 @@
 
 namespace KNS3
 {
-    static const int DelegateTitleLabel = 0;
-    static const int DelegateAuthorLabel = 1;
-    static const int DelegateDownloadCounterLabel = 2;
-    static const int DelegateRatingWidget = 3;
-    //optional maybe not sure for now
-    static const int DelegateDetailsButton = 5;
-    static const int DelegateDescriptionLabel = 6;
-    
+    enum { DelegateTitleLabel, DelegateAuthorLabel, DelegateDownloadCounterLabel,
+        DelegateGridRatingWidget };
+
 ItemsGridViewDelegate::ItemsGridViewDelegate(QAbstractItemView *itemView, Engine* engine, QObject * parent)
         : ItemsViewBaseDelegate(itemView, engine, parent)
         ,m_elementYPos(0)

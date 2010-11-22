@@ -26,8 +26,7 @@
 #include <QtGui/QtGui>
 
 #include "modeltest.h"
-
-Q_DECLARE_METATYPE ( QModelIndex )
+#include "modelspy.h"
 
 /*!
     Connect to all of the models signals.  Whenever anything happens recheck everything.
