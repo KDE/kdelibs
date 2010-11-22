@@ -332,7 +332,7 @@ static void setDisableCookieJarStorage(QNetworkAccessManager* manager, bool stat
 
 bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
-    kDebug(800) << "url: " << request.url() << ", type: " << type << ", frame: " << frame;
+    kDebug(800) << "url:" << request.url() << ", type:" << type << ", frame:" << frame;
 
     if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted)
         d->wallet->saveFormData(frame);
