@@ -39,7 +39,7 @@ void Enum::printDeclaration(ostream& hStream)
     }
     hStream << "    " << prefix << "NumValues\n";
     hStream << "};\n";
-    hStream << "extern const char* const " << name << "Vals[];\n\n";
+    hStream << "extern char* const " << name << "Vals[];\n\n";
 }
 
 void Enum::printDefinition(ostream& cppStream)
@@ -53,7 +53,7 @@ void Enum::printDefinition(ostream& cppStream)
 Array::Array(ostream& out, const std::string& type, const std::string &name):
     out(out), ended(false), first(true)
 {
-    out << "const " << type << " " << name << "[] = {\n";
+    out << type << " " << name << "[] = {\n";
 }
 
 Array::~Array()

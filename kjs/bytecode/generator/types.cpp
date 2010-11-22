@@ -29,7 +29,7 @@
 #include <cctype>
 #include <cstdio>
 #include <wtf/ASCIICType.h>
- 
+
 #include "tablebuilder.h"
 
 using namespace std;
@@ -63,7 +63,7 @@ void TypeTable::generateCode()
     typesEnum.printDefinition (out(OpCpp));
 
     // Also, print out the width array...
-    Array widths(out(OpCpp), "bool", "opTypeIsAlign8");
+    Array widths(out(OpCpp), "const bool", "opTypeIsAlign8");
     for (unsigned t = 0; t < typeNames.size(); ++t) {
         const Type& type = types[typeNames[t]];
         widths.item(type.alignTo8() ? "true": "false", type.name);
@@ -240,7 +240,7 @@ void TypeTable::handleConversion(const string& code, int codeLine,
         inf.flags &= ~Conv_Checked; // 'checked' makes no sense here
         rgConversions[from][to] = inf;
         rgConversionList.push_back(inf);
-        
+
         // We also generate the corresponding bytecode routine, using
         // the immediate conversion helper we'll emit in it.
         instrBuilder->handleOperation(regName, false);
@@ -251,7 +251,7 @@ void TypeTable::handleConversion(const string& code, int codeLine,
         param.typeName = from;
         param.flags    = Param_Exact;
         sig.push_back(param);
-        
+
         string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
         code += "$$ = out;\n";
         instrBuilder->handleImpl("", code, codeLine, 0, to, sig);

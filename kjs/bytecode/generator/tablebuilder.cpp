@@ -122,11 +122,11 @@ void TableBuilder::generateCode()
     jumps.endArray();
 
     fTemplate->handleUntilGenerate();
-    
+
 
     // Now, generate the VM loop.
     mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(pc);\n";
-    
+
     mInd(0) << "#ifdef USE_LABEL_VALS\n";
     mInd(8) << "goto *kjsVMOpHandlers[op];\n";
     mInd(8) << "{\n";
@@ -221,14 +221,14 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
     for (unsigned c = 0; c < sig.size(); ++c)
         extSig.push_back(sig[c]);
 
-    
+
 
     // Most of the stuff is the same as in the base impl,
     // but we have a different external signature, and are a tile.
     Operation op = impl;
     op.isTile       = true;
     op.opParamTypes = types.resolveSignature(extSig);
-    
+
     // Now also include the cost of inline conversions.
     for (unsigned p = 0; p < op.opParamTypes.size(); ++p)
         op.cost += types.immConv(op.opParamTypes[p], op.implParams[p].type).cost;
@@ -359,7 +359,7 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
         if (p != numParams - 1)
             out(OpCpp) << ", ";
     }
-    out(OpCpp) << "}, ";    
+    out(OpCpp) << "}, ";
 
     // Return type.
     out(OpCpp) << "OpType_" << variant.op.retType << ", ";
