@@ -288,7 +288,7 @@ public:
 
     /**
      * Use this method to create an object. It will try to create an object which inherits
-     * \p T. If it has multiple choices, you will get a fatal error (kFatal()), so be creaful
+     * \p T. If it has multiple choices, you will get a fatal error (kFatal()), so be careful
      * to request a unique interface or use keywords.
      *
      * \tparam T The interface for which an object should be created. The object will inherit \p T.
