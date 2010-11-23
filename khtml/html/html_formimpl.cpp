@@ -824,6 +824,15 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
     int i = formElements.indexOf(e);
     if (i != -1)
         formElements.removeAt(i);
+        
+    if (e->hasPastNames()) {
+        QMutableHashIterator<DOMString, HTMLGenericFormElementImpl*> it(m_pastNamesMap);
+        while (it.hasNext()) {
+            it.next();
+            if (it.value() == e)
+                it.remove();
+        }
+    }
 }
 
 void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
@@ -838,12 +847,29 @@ void HTMLFormElementImpl::removeImgElement(HTMLImageElementImpl *e)
         imgElements.removeAt(i);
 }
 
+HTMLGenericFormElementImpl* HTMLFormElementImpl::lookupByPastName(const DOMString& id)
+{
+    return m_pastNamesMap.value(id);
+}
+
+void HTMLFormElementImpl::bindPastName(HTMLGenericFormElementImpl* e)
+{
+    DOMString id = e->getAttribute(ATTR_ID);
+    if (!id.isEmpty())
+        m_pastNamesMap.insert(id, e);
+        
+    DOMString nm = e->getAttribute(ATTR_NAME);
+    if (!nm.isEmpty())
+        m_pastNamesMap.insert(nm, e);
+    e->setHasPastNames();
+}
+
 // -------------------------------------------------------------------------
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc)
 {
-    m_disabled = m_readOnly = false;
+    m_disabled = m_readOnly = m_hasPastNames = false;
     m_name = 0;
 
     if (f)

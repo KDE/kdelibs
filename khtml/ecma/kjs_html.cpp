@@ -1234,10 +1234,19 @@ KParts::ScriptableExtension *HTMLElement::getScriptableExtension(const DOM::HTML
 
 JSValue *HTMLElement::formNameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
-  HTMLElement *thisObj = static_cast<HTMLElement*>(slot.slotBase());
+    HTMLElement* thisObj = static_cast<HTMLElement*>(slot.slotBase());
+    HTMLFormElementImpl* form = static_cast<HTMLFormElementImpl*>(thisObj->impl());
 
-  KJS::HTMLCollection coll(exec, static_cast<HTMLFormElementImpl*>(thisObj->impl())->elements());
-  return coll.getNamedItems(exec, propertyName);
+    KJS::HTMLCollection coll(exec, form->elements());
+    JSValue* result = coll.getNamedItems(exec, propertyName);
+    
+    // In case of simple result, remember in past names map
+    // ### our HTMLFormElementsCollection is a bit too IE-compatey rather than HTML5ey
+    if (DOM::NodeImpl* node = toNode(result)) {
+	if (node->isGenericFormElement())
+	    form->bindPastName(static_cast<HTMLGenericFormElementImpl*>(node));
+    }
+    return result;
 }
 
 //JSValue* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
@@ -1259,9 +1268,14 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
       KJS::HTMLCollection coll(exec, form.elements());
       JSValue *namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems->type() != UndefinedType) {
-        slot.setCustom(this, formNameGetter);
-        return namedItems;
+          slot.setCustom(this, formNameGetter);
+          return true;
       }
+      
+      // Try with past names map
+      if (HTMLGenericFormElementImpl* r = form.lookupByPastName(propertyName.domString())) 
+	  return getImmediateValueSlot(this, getDOMNode(exec, r), slot);
+      
       break;
     }
     case ID_SELECT:

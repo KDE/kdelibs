@@ -71,7 +71,10 @@ public:
     virtual void removedFromDocument();
     virtual void addId(const DOMString& id);
     virtual void removeId(const DOMString& id);
-
+    
+    // See "past names map" in HTML5, 4.10.3, "The form element"
+    HTMLGenericFormElementImpl* lookupByPastName(const DOMString& id);
+    void bindPastName(HTMLGenericFormElementImpl* element);
 
     long length() const;
 
@@ -132,6 +135,8 @@ private:
     bool m_havePassword : 1; // for wallet storage
     DOMString m_name;        // our name
     QMap<QString, QString> m_walletMap; // for wallet storage
+    
+    QHash<DOMString, HTMLGenericFormElementImpl*> m_pastNamesMap;
 };
 
 // -------------------------------------------------------------------------
@@ -173,6 +178,9 @@ public:
 
     virtual bool isGenericFormElement() const { return true; }
     virtual bool isHiddenInput() const { return false; }
+    
+    bool hasPastNames() const { return m_hasPastNames; }
+    void setHasPastNames() { m_hasPastNames = true; }
 
     /*
      * override in derived classes to get the encoded name=value pair
@@ -191,7 +199,7 @@ protected:
 
     DOMStringImpl* m_name;
     HTMLFormElementImpl *m_form;
-    bool m_disabled, m_readOnly;
+    bool m_disabled, m_readOnly, m_hasPastNames;
 };
 
 // -------------------------------------------------------------------------
