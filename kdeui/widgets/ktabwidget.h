@@ -196,6 +196,8 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      */
     void setTabText( int , const QString & );
 
+    using QTabWidget::tabBar;
+
   public Q_SLOTS:
     /**
      * Move a widget's tab from first to second specified index and emit
