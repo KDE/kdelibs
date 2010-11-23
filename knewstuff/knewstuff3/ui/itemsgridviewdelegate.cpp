@@ -94,7 +94,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     int elementYPos = PreviewHeight + ItemMargin + FrameThickness*2;
     
     //setup rating widget
-    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateRatingWidget));
+    KRatingWidget * rating = qobject_cast<KRatingWidget*>(widgets.at(DelegateGridRatingWidget));
     if (rating) {
         if (entry.rating() > 0) {
             rating->setToolTip(i18n("Rating: %1%", entry.rating()));
