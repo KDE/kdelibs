@@ -975,7 +975,7 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
     SimpleJob * job = SimpleJobPrivate::newJob(url, CMD_SPECIAL, packedArgs);
-    Scheduler::scheduleJob(job);
+    Scheduler::setJobPriority(job, 1);
     return job;
 }
 
@@ -2456,7 +2456,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                                                true /*recursive*/,
                                                prefix + filename + '/',
                                                includeHidden);
-                    Scheduler::scheduleJob(job);
+                    Scheduler::setJobPriority(job, 1);
                     q->connect(job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                                SLOT( gotEntries( KIO::Job*, const KIO::UDSEntryList& )));
                     q->addSubjob(job);

@@ -32,7 +32,7 @@ QAsyncImage::QAsyncImage(const QString& url, QObject* parent)
 {
     if (!m_url.isEmpty()) {
         KIO::TransferJob *job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
-        KIO::Scheduler::scheduleJob(job);
+        KIO::Scheduler::setJobPriority(job,1);
         connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
         connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
     }

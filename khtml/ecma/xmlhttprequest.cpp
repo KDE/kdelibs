@@ -408,7 +408,7 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KUrl& _url) const
 // We map it to whether the method should be permitted or not (#4)
 static const IDTranslator<QByteArray, bool, const char*>::Info methodsTable[] = {
     {"CONNECT", false},
-    {"DELETE", true}, 
+    {"DELETE", true},
     {"GET", true},
     {"HEAD", true},
     {"OPTIONS", true},
@@ -438,7 +438,7 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async,
     return;
   }
 
-  // ### potentially raise a SYNTAX_ERR 
+  // ### potentially raise a SYNTAX_ERR
 
   // Lookup if the method is well-known, and if so check if it's OK
   QByteArray methodNormalized = _method.toUpper().toUtf8();
@@ -455,7 +455,7 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async,
       // Unknown -> pass through unchanged
       m_method = _method;
   }
-  
+
   url = _url;
   async = _async;
 
@@ -482,7 +482,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
       return;
   }
 
-  // We need to use a POST-like setup even for non-post whenever we 
+  // We need to use a POST-like setup even for non-post whenever we
   // have a payload.
   if (m_method == QLatin1String("POST") || !_body.isEmpty()) {
 
@@ -500,7 +500,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
   else {
     job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
   }
-  
+
   // Regardless of job type, make sure the method is set
   job->addMetaData("CustomHTTPMethod", m_method);
 
@@ -567,7 +567,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 #ifdef APPLE_CHANGES
   KWQServeRequest(khtml::Cache::loader(), doc->docLoader(), job);
 #else
-  KIO::Scheduler::scheduleJob( job );
+  KIO::Scheduler::setJobPriority( job, 1 );
 #endif
 }
 
@@ -858,7 +858,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
         decoder->setEncoding("UTF-8", KEncodingDetector::DefaultEncoding);
     }
   }
-  
+
   if (len == 0)
     return;
 
@@ -870,9 +870,9 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
     decoded = QString::fromLatin1(data, len);
   else
     decoded = decoder->decodeWithBuffering(data, len);
-    
+
   response += decoded;
-  
+
   if (!aborted) {
     changeState(XHRS_Receiving);
   }
@@ -942,12 +942,12 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
   case XMLHttpRequest::Send:
     {
       QString body;
-      if (!args[0]->isUndefinedOrNull() 
-            // make sure we don't marshal "undefined" or such; 
-          && request->m_method != QLatin1String("GET") 
+      if (!args[0]->isUndefinedOrNull()
+            // make sure we don't marshal "undefined" or such;
+          && request->m_method != QLatin1String("GET")
           && request->m_method != QLatin1String("HEAD")) {
             // ... or methods that don't have payload
-            
+
           DOM::NodeImpl* docNode = toNode(args[0]);
           if (docNode && docNode->isDocumentNode()) {
               DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);

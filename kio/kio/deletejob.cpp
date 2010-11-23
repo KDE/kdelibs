@@ -243,7 +243,7 @@ void DeleteJobPrivate::statNextSrc()
             statNextSrc();
         } else {
             KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 0, KIO::HideProgressInfo );
-            Scheduler::scheduleJob(job);
+            Scheduler::setJobPriority(job, 1);
             //kDebug(7007) << "stat'ing" << m_currentURL;
             q->addSubjob(job);
         }
@@ -301,7 +301,7 @@ void DeleteJobPrivate::deleteNextFile()
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
                 //kDebug(7007) << "calling file_delete on" << *it;
                 job = KIO::file_delete( *it, KIO::HideProgressInfo );
-                Scheduler::scheduleJob(job);
+                Scheduler::setJobPriority(job, 1);
                 m_currentURL=(*it);
             }
             if ( isLink )
@@ -343,7 +343,7 @@ void DeleteJobPrivate::deleteNextDir()
                 // CMD_DEL will trigger the recursive deletion in the slave.
                 SimpleJob* job = KIO::rmdir( *it );
                 job->addMetaData(QString::fromLatin1("recurse"), "true");
-                Scheduler::scheduleJob(job);
+                Scheduler::setJobPriority(job, 1);
                 dirs.erase(it);
                 q->addSubjob( job );
                 return;
@@ -386,7 +386,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
             newjob->addMetaData("details", "0");
             newjob->setUnrestricted(true); // No KIOSK restrictions
-            Scheduler::scheduleJob(newjob);
+            Scheduler::setJobPriority(newjob, 1);
             QObject::connect(newjob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList&)),
                              q, SLOT(slotEntries(KIO::Job*,const KIO::UDSEntryList&)));
             q->addSubjob(newjob);

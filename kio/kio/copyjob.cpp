@@ -812,7 +812,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
 
     KIO_ARGS << m_currentSrcURL << dest << (qint8) false /*no overwrite*/;
     SimpleJob * newJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
-    Scheduler::scheduleJob(newJob);
+    Scheduler::setJobPriority(newJob, 1);
     q->addSubjob( newJob );
     if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
         m_bOnlyRenames = false;
@@ -954,7 +954,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                         // We need to stat the existing dir, to get its last-modification time
                         KUrl existingDest((*it).uDest);
                         SimpleJob * newJob = KIO::stat(existingDest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
-                        Scheduler::scheduleJob(newJob);
+                        Scheduler::setJobPriority(newJob, 1);
                         kDebug(7007) << "KIO::stat for resolving conflict on " << existingDest;
                         state = STATE_CONFLICT_CREATING_DIRS;
                         q->addSubjob(newJob);
@@ -1140,7 +1140,7 @@ void CopyJobPrivate::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished; but for stuff coming from CDROM it sucks...
         KIO::SimpleJob *newjob = KIO::mkdir( udir, -1 );
-        Scheduler::scheduleJob(newjob);
+        Scheduler::setJobPriority(newjob, 1);
         if (shouldOverwriteFile(udir.path())) { // if we are overwriting an existing file or symlink
             newjob->addMetaData("overwrite", "true");
         }
@@ -1216,7 +1216,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     // We need to stat the existing file, to get its last-modification time
                     KUrl existingFile((*it).uDest);
                     SimpleJob * newJob = KIO::stat(existingFile, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
-                    Scheduler::scheduleJob(newJob);
+                    Scheduler::setJobPriority(newJob, 1);
                     kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile;
                     state = STATE_CONFLICT_COPYING_FILES;
                     q->addSubjob(newJob);
@@ -1424,7 +1424,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
     {
         // This is the case of creating a real symlink
         KIO::SimpleJob *newJob = KIO::symlink( uSource.path(), uDest, flags|HideProgressInfo /*no GUI*/ );
-        Scheduler::scheduleJob(newJob);
+        Scheduler::setJobPriority(newJob, 1);
         //kDebug(7007) << "Linking target=" << uSource.path() << "link=" << uDest;
         //emit linking( this, uSource.path(), uDest );
         m_bCurrentOperationIsLink = true;
@@ -1537,7 +1537,7 @@ void CopyJobPrivate::copyNextFile()
         {
             const JobFlags flags = bOverwrite ? Overwrite : DefaultFlags;
             KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, uDest, flags | HideProgressInfo /*no GUI*/ );
-            Scheduler::scheduleJob(newJob);
+            Scheduler::setJobPriority(newJob, 1);
             newjob = newJob;
             //kDebug(7007) << "Linking target=" << (*it).linkDest << "link=" << uDest;
             m_currentSrcURL = KUrl( (*it).linkDest );
@@ -1608,7 +1608,7 @@ void CopyJobPrivate::deleteNextDir()
         // Take first dir to delete out of list - last ones first !
         KUrl::List::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
-        Scheduler::scheduleJob(job);
+        Scheduler::setJobPriority(job, 1);
         dirsToRemove.erase(it);
         q->addSubjob( job );
     }
@@ -1635,7 +1635,7 @@ void CopyJobPrivate::setNextDirAttribute()
         ++m_directoriesCopiedIterator;
 
         KIO::SimpleJob *job = KIO::setModificationTime( url, dt );
-        Scheduler::scheduleJob(job);
+        Scheduler::setJobPriority(job, 1);
         q->addSubjob( job );
 
 

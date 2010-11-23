@@ -1137,7 +1137,7 @@ void JobTest::getInvalidUrl()
     QVERIFY(job != 0);
     job->setUiDelegate( 0 );
 
-    KIO::Scheduler::scheduleJob(job); // shouldn't crash (#135456)
+    KIO::Scheduler::setJobPriority(job, 1); // shouldn't crash (#135456)
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( !ok ); // it should fail :)
