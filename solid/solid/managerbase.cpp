@@ -21,7 +21,7 @@
 #include "managerbase_p.h"
 
 #include <stdlib.h>
-#ifndef Q_WS_WIN
+#if !defined (Q_WS_WIN) && !defined (Q_OS_MAC)
 #include <config-solid.h>
 #endif
 
