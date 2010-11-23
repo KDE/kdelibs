@@ -125,7 +125,9 @@ namespace KIO {
          * execution. This just sets the job's priority to 1 now.
          * @param job the job to schedule
          */
+#ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED static void scheduleJob(SimpleJob *job);
+#endif
 
         /**
          * Changes the priority of @p job; jobs of the same priority run in the order in which
