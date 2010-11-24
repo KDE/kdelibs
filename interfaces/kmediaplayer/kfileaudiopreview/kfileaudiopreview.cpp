@@ -89,6 +89,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
     layout->addWidget(d->videoWidget);
     layout->addWidget(d->controls);
     layout->addWidget(m_autoPlay);

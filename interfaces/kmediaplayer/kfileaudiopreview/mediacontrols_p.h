@@ -57,11 +57,14 @@ class MediaControlsPrivate
             pauseButton.hide();
             pauseButton.setAutoRaise(true);
 
+            seekSlider.setIconVisible(false);
+
             volumeSlider.setOrientation(Qt::Horizontal);
             volumeSlider.setFixedWidth(80);
             volumeSlider.hide();
 
             layout.setMargin(0);
+            layout.setSpacing(0);
             layout.addWidget(&playButton);
             layout.addWidget(&pauseButton);
             layout.addWidget(&seekSlider, 1);
