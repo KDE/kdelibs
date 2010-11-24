@@ -72,27 +72,23 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
 {
     KGlobal::locale()->insertCatalog("kfileaudiopreview4");
 
-    QGroupBox *box = new QGroupBox( i18n("Media Player"), this );
-    QVBoxLayout *layout = new QVBoxLayout( this );
-    layout->addWidget( box );
-
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
     d->audioOutput = new AudioOutput(Phonon::NoCategory, this);
 
-    d->videoWidget = new VideoWidget( box );
+    d->videoWidget = new VideoWidget( this );
     d->videoWidget->hide();
 
-    d->controls = new MediaControls( box );
+    d->controls = new MediaControls( this );
     d->controls->setEnabled( false );
     d->controls->setAudioOutput( d->audioOutput );
 
-    m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
+    m_autoPlay = new QCheckBox( i18n("Play &automatically"), this );
     KConfigGroup config( KGlobal::config(), ConfigGroup );
     m_autoPlay->setChecked( config.readEntry( "Autoplay sounds", true ) );
     connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
-    layout = new QVBoxLayout(box);
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(d->videoWidget);
     layout->addWidget(d->controls);
     layout->addWidget(m_autoPlay);
