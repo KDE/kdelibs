@@ -26,6 +26,8 @@
 #include <kdecore_export.h>
 #include <QtCore/QString>
 
+#include <CoreFoundation/CFString.h>
+
 /**
  * @short Mac-specific functions needed in kdecore
  * @author Benjamin Reed <rangerrick@befunk.com>
@@ -34,6 +36,11 @@
  * are needed to work around OS issues.
   */
 
+/**
+ * Convert a CFString to a QString.
+ * Don't export, is for internal kdelibs use only.
+ */
+QString convert_CFString_to_QString(CFStringRef str);
 
 /**
  * Fork and reexec to work around CoreFoundation issues.

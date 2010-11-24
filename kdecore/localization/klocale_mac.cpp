@@ -18,6 +18,7 @@
 */
 
 #include "klocale_mac_p.h"
+#include "kkernel_mac.h"
 
 KLocaleMacPrivate::KLocaleMacPrivate( KLocale *q_ptr, const QString &catalog, KConfig *config,
                                       const QString &language, const QString &country )
@@ -48,7 +49,7 @@ KLocaleMacPrivate::~KLocaleMacPrivate()
 
 QString KLocaleMacPrivate::macLocaleValue( CFStringRef key ) const
 {
-    return QCFString::toQString( CFStringRef( CFLocaleGetValue( m_macLocale, key ) ) );
+    return convert_CFString_to_QString( CFStringRef( CFLocaleGetValue( m_macLocale, key ) ) );
 }
 
 QString KLocaleMacPrivate::systemCountry() const
@@ -68,7 +69,7 @@ to ensure consistent behaviour, i.e. all KDE format or all Mac format, not some 
 QString KLocaleMacPrivate::macDateFormatterValue(CFStringRef key) const
 {
     CFDateFormatterRef formatter = CFDateFormatterCreate(kCFAllocatorDefault, m_macLocale, kCFDateFormatterNoStyle, kCFDateFormatterNoStyle);
-    return QCFString::toQString(CFStringRef(CFDateFormatterCopyProperty(formatter, key)));
+    return convert_CFString_to_QString(CFStringRef(CFDateFormatterCopyProperty(formatter, key)));
 }
 
 void KLocaleMacPrivate::initDayPeriods(const KConfigGroup &cg)

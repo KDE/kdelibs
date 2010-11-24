@@ -51,7 +51,7 @@ bool dbus_initialized = false;
   qAppFileName() is not public in qt4/mac, so we need to redo it here
 */
 
-static QString convert_CFString_to_QString(CFStringRef str) {
+QString convert_CFString_to_QString(CFStringRef str) {
 	CFIndex length = CFStringGetLength(str);
 	const UniChar *chars = CFStringGetCharactersPtr(str);
 	if (chars)
