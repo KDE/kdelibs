@@ -22,6 +22,7 @@
 
 #include "mediacontrols.h"
 #include <kicon.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <phonon/volumeslider.h>
 #include <phonon/seekslider.h>
@@ -45,23 +46,25 @@ class MediaControlsPrivate
             volumeSlider(parent),
             media(0)
         {
-            playButton.setIconSize(QSize(32, 32));
+            int size = KIconLoader::global()->currentSize(KIconLoader::Toolbar);
+            QSize iconSize(size, size);
+            playButton.setIconSize(iconSize);
             playButton.setIcon(KIcon("media-playback-start"));
             playButton.setToolTip(i18n("start playback"));
             playButton.setAutoRaise(true);
 
-            pauseButton.setIconSize(QSize(32, 32));
+            pauseButton.setIconSize(iconSize);
             pauseButton.setIcon(KIcon("media-playback-pause"));
             pauseButton.setToolTip(i18n("pause playback"));
             pauseButton.hide();
             pauseButton.setAutoRaise(true);
 
-            stopButton.setIconSize(QSize(32, 32));
+            stopButton.setIconSize(iconSize);
             stopButton.setIcon(KIcon("media-playback-stop"));
             stopButton.setToolTip(i18n("stop playback"));
             stopButton.setAutoRaise(true);
 
-            loopButton.setIconSize(QSize(32, 32));
+            loopButton.setIconSize(iconSize);
             loopButton.setIcon(KIcon("view-refresh"));
             loopButton.setToolTip(i18n("loop: restarts playback at end"));
             loopButton.setAutoRaise(true);
@@ -81,7 +84,6 @@ class MediaControlsPrivate
             layout.addWidget(&seekSlider, 1);
             layout.addSpacing(4);
             layout.addWidget(&volumeSlider);
-            layout.addStretch();
         }
 
         MediaControls *q_ptr;
