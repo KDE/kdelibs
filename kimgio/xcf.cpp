@@ -861,8 +861,10 @@ bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_siz
 	uchar* xcfodata;
 	uchar* xcfdatalimit;
 
-	if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5))
-		goto bogus_rle;
+	if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5)) {
+		kDebug(399) << "XCF: invalid tile data length" << data_length;
+		return false;
+	}
 
 	xcfdata = xcfodata = new uchar[data_length];
 
