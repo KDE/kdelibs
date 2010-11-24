@@ -5166,43 +5166,89 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 KHTMLPart *
 KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame )
 {
-#ifdef DEBUG_FINDFRAME
-  kDebug(6050) << this << "URL =" << url() << "name =" << objectName() << "findFrameParent(" << f << ")";
-#endif
-  // Check access
-  KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
-
-  if (!checkFrameAccess(callingHtmlPart))
-     return 0;
-
-  if (!childFrame && !parentPart() && (objectName() == f))
-     return this;
-
-  FrameIt it = d->m_frames.find( f );
-  const FrameIt end = d->m_frames.end();
-  if ( it != end )
-  {
-#ifdef DEBUG_FINDFRAME
-     kDebug(6050) << "FOUND!";
-#endif
-     if (childFrame)
-        *childFrame = *it;
-     return this;
-  }
-
-  it = d->m_frames.begin();
-  for (; it != end; ++it )
-  {
-    if ( KHTMLPart* p = qobject_cast<KHTMLPart*>((*it)->m_part.data()) )
-    {
-      KHTMLPart* const frameParent = p->findFrameParent(callingPart, f, childFrame);
-      if (frameParent)
-         return frameParent;
-    }
-  }
-  return 0;
+    return d->findFrameParent(callingPart, f, childFrame, false);
 }
 
+KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart, 
+                                             const QString& f, khtml::ChildFrame **childFrame, bool checkForNavigation)
+{
+#ifdef DEBUG_FINDFRAME
+    kDebug(6050) << q << "URL =" << q->url() << "name =" << q->objectName() << "findFrameParent(" << f << ")";
+#endif
+    // Check access
+    KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
+
+    if (!checkForNavigation && !q->checkFrameAccess(callingHtmlPart))
+        return 0;
+
+    if (!childFrame && !q->parentPart() && (q->objectName() == f)) {
+        if (!checkForNavigation || callingHtmlPart->d->canNavigate(q))
+            return q;
+    }
+
+    FrameIt it = m_frames.find( f );
+    const FrameIt end = m_frames.end();
+    if ( it != end )
+    {
+#ifdef DEBUG_FINDFRAME
+        kDebug(6050) << "FOUND!";
+#endif
+        if (!checkForNavigation || callingHtmlPart->d->canNavigate((*it)->m_part.data())) {
+            if (childFrame)
+                *childFrame = *it;
+            return q;
+        }
+    }
+
+    it = m_frames.begin();
+    for (; it != end; ++it )
+    {
+        if ( KHTMLPart* p = qobject_cast<KHTMLPart*>((*it)->m_part.data()) )
+        {
+            KHTMLPart* const frameParent = p->d->findFrameParent(callingPart, f, childFrame, checkForNavigation);
+            if (frameParent)
+                return frameParent;
+        }
+    }
+    return 0;
+}
+
+KHTMLPart* KHTMLPartPrivate::top()
+{
+    KHTMLPart* t = q;
+    while (t->parentPart())
+        t = t->parentPart();
+    return t;
+}
+
+bool KHTMLPartPrivate::canNavigate(KParts::ReadOnlyPart* bCand)
+{
+    KHTMLPart* b = qobject_cast<KHTMLPart*>(bCand);
+    assert(b);
+
+    // HTML5 gives conditions for this (a) being able to navigate b
+    
+    // 1) Same domain
+    if (q->checkFrameAccess(b))
+        return true;
+        
+    // 2) A is nested, with B its top
+    if (q->parentPart() && top() == b)
+        return true;
+        
+    // 3) B is 'auxilary' -- window.open with opener, 
+    // and A can navigate B's opener
+    if (b->opener() && canNavigate(b->opener()))
+        return true;
+        
+    // 4) B is not top-level, but an ancestor of it has same origin as A
+    for (KHTMLPart* anc = b->parentPart(); anc; anc = anc->parentPart()) {
+        if (anc->checkFrameAccess(q))
+            return true;
+    }
+    
+    return false;
+}
 
 KHTMLPart *KHTMLPart::findFrame( const QString &f )
 {

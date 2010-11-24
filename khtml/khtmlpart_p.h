@@ -452,6 +452,12 @@ public:
 
   void renameFrameForContainer(DOM::HTMLPartContainerElementImpl* cont,
                                const QString& newName);
+                               
+  KHTMLPart* findFrameParent(KParts::ReadOnlyPart* callingPart, const QString& f, 
+                             khtml::ChildFrame **childFrame, bool checkForNavigation);
+                             
+  bool canNavigate(KParts::ReadOnlyPart* b);
+  KHTMLPart* top();
 
   // Check whether the frame is fully loaded.
   // The return value doesn't consider any pending redirections.

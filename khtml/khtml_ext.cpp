@@ -992,7 +992,7 @@ bool KHTMLPartBrowserHostExtension::openUrlInFrame(const KUrl &url, const KParts
 KParts::BrowserHostExtension* KHTMLPartBrowserHostExtension::findFrameParent( KParts::ReadOnlyPart
       *callingPart, const QString &frame )
 {
-    KHTMLPart *parentPart = m_part->findFrameParent(callingPart, frame);
+    KHTMLPart *parentPart = m_part->d->findFrameParent(callingPart, frame, 0, true /* navigation*/);
     if (parentPart)
        return parentPart->browserHostExtension();
     return 0;
