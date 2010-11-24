@@ -28,6 +28,7 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 #include <kservice.h>
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
+#include <kprocess.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
 void KRunUnitTest::initTestCase()
@@ -36,7 +37,8 @@ void KRunUnitTest::initTestCase()
     KConfigGroup cg(KGlobal::config(), "General");
     cg.writeEntry("TerminalApplication", "x-term");
 
-    // determine the full path of sh
+    // Determine the full path of sh - this is needed to make testProcessDesktopExecNoFile()
+    // pass on systems where KStandardDirs::findExe("sh") is not "/bin/sh".
     m_sh = KStandardDirs::findExe("sh");
     if (m_sh.isEmpty()) m_sh = "/bin/sh";
 }
@@ -111,6 +113,12 @@ void KRunUnitTest::testProcessDesktopExec()
             "x-term -T ' - just_a_test' -e su sprallo -c '/bin/date -u'", // 6
             "x-term -T ' - just_a_test' -e su sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 7
         };
+
+    // Find out the full path of the shell which will be used to execute shell commands
+    KProcess process;
+    process.setShellCommand("");
+    const QString shellPath = process.program().at(0);
+
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
             for (int ex = 0; ex < 2; ex++) {
@@ -118,7 +126,7 @@ void KRunUnitTest::testProcessDesktopExec()
                 QString exe;
                 if (pt == 4 || pt == 5)
                     exe = KStandardDirs::findExe("kdesu");
-                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", m_sh);
+                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", shellPath);
                 checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }
