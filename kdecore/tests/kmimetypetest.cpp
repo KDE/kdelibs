@@ -93,6 +93,7 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("NotShowIn", "KDE;FVWM;");
         group.writeEntry("MimeType", "text/plain;");
         group.writeEntry("InitialPreference", "50");
+        group.writeEntry("Categories", "Qt;KDE;");
     }
 
     if ( mustUpdateKSycoca ) {
@@ -101,8 +102,10 @@ void KMimeTypeTest::initTestCase()
     }
 
     KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
-    QVERIFY(fakeApp); // it should be found.
-    QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
+    // Apparently the distro .menu file can make NotShowIn=KDE desktop files completely ignored,
+    // so we have no guarantee that it will be in ksycoca
+    //QVERIFY(fakeApp); // it should be found.
+    //QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
 
     KGlobal::locale();
 }
