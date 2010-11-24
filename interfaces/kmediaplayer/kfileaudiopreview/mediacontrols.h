@@ -86,6 +86,8 @@ class MediaControls : public QWidget
          */
         void setAudioOutput(AudioOutput *audioOutput);
 
+    protected:
+        void resizeEvent(QResizeEvent*);
 
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State, Phonon::State))

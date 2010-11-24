@@ -99,6 +99,13 @@ void MediaControls::setVolumeControlVisible(bool vis)
     d->volumeSlider.setVisible(vis);
 }
 
+void MediaControls::resizeEvent(QResizeEvent*)
+{
+    Q_D(MediaControls);
+    bool isWide = width() > d->playButton.sizeHint().width() + d->seekSlider.sizeHint().width() + d->volumeSlider.sizeHint().width();
+    d->volumeSlider.setVisible(isWide);
+}
+
 void MediaControlsPrivate::_k_stateChanged(State newstate, State)
 {
     switch(newstate)

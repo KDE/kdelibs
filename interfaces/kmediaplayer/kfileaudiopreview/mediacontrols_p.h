@@ -60,7 +60,7 @@ class MediaControlsPrivate
             seekSlider.setIconVisible(false);
 
             volumeSlider.setOrientation(Qt::Horizontal);
-            volumeSlider.setFixedWidth(80);
+            volumeSlider.setMaximumWidth(80);
             volumeSlider.hide();
 
             layout.setMargin(0);
