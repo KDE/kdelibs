@@ -40,8 +40,6 @@ class MediaControlsPrivate
             layout(parent),
             playButton(parent),
             pauseButton(parent),
-            stopButton(parent),
-            loopButton(parent),
             seekSlider(parent),
             volumeSlider(parent),
             media(0)
@@ -59,30 +57,14 @@ class MediaControlsPrivate
             pauseButton.hide();
             pauseButton.setAutoRaise(true);
 
-            stopButton.setIconSize(iconSize);
-            stopButton.setIcon(KIcon("media-playback-stop"));
-            stopButton.setToolTip(i18n("stop playback"));
-            stopButton.setAutoRaise(true);
-
-            loopButton.setIconSize(iconSize);
-            loopButton.setIcon(KIcon("view-refresh"));
-            loopButton.setToolTip(i18n("loop: restarts playback at end"));
-            loopButton.setAutoRaise(true);
-            loopButton.setCheckable(true);
-
             volumeSlider.setOrientation(Qt::Horizontal);
             volumeSlider.setFixedWidth(80);
             volumeSlider.hide();
 
             layout.setMargin(0);
-            layout.setSpacing(0);
             layout.addWidget(&playButton);
             layout.addWidget(&pauseButton);
-            layout.addWidget(&stopButton);
-            layout.addWidget(&loopButton);
-            layout.addSpacing(8);
             layout.addWidget(&seekSlider, 1);
-            layout.addSpacing(4);
             layout.addWidget(&volumeSlider);
         }
 
@@ -90,8 +72,6 @@ class MediaControlsPrivate
         QHBoxLayout layout;
         QToolButton playButton;
         QToolButton pauseButton;
-        QToolButton stopButton;
-        QToolButton loopButton;
         SeekSlider seekSlider;
         VolumeSlider volumeSlider;
         MediaObject *media;
@@ -99,7 +79,6 @@ class MediaControlsPrivate
     private:
         void _k_stateChanged(Phonon::State, Phonon::State);
         void _k_mediaDestroyed();
-        void _k_finished();
 };
 } // namespace Phonon
 

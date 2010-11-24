@@ -62,13 +62,6 @@ class MediaControls : public QWidget
      */
     Q_PROPERTY(bool volumeControlVisible READ isVolumeControlVisible WRITE setVolumeControlVisible)
 
-    /**
-     * This property holds whether the button controlling loop behaviour is
-     * visible.
-     *
-     * By default the loop button is hidden.
-     */
-    Q_PROPERTY(bool loopControlVisible READ isLoopControlVisible WRITE setLoopControlVisible)
     public:
         /**
          * Constructs a media control widget with a \p parent.
@@ -78,12 +71,10 @@ class MediaControls : public QWidget
 
         bool isSeekSliderVisible() const;
         bool isVolumeControlVisible() const;
-        bool isLoopControlVisible() const;
 
     public Q_SLOTS:
         void setSeekSliderVisible(bool);
         void setVolumeControlVisible(bool);
-        void setLoopControlVisible(bool);
 
         /**
          * Sets the media object to be controlled by this widget.
@@ -99,7 +90,6 @@ class MediaControls : public QWidget
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State, Phonon::State))
         Q_PRIVATE_SLOT(d_func(), void _k_mediaDestroyed())
-        Q_PRIVATE_SLOT(d_func(), void _k_finished())
 
         MediaControlsPrivate *const d_ptr;
 };

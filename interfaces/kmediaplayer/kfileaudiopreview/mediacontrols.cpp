@@ -58,12 +58,6 @@ bool MediaControls::isVolumeControlVisible() const
     return d->volumeSlider.isVisible();
 }
 
-bool MediaControls::isLoopControlVisible() const
-{
-    Q_D(const MediaControls);
-    return d->loopButton.isVisible();
-}
-
 void MediaControls::setMediaObject(MediaObject *media)
 {
     Q_D(MediaControls);
@@ -71,20 +65,16 @@ void MediaControls::setMediaObject(MediaObject *media)
         disconnect(d->media, SIGNAL(destroyed()), this, SLOT(_k_mediaDestroyed()));
         disconnect(d->media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this,
                 SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
-        disconnect(d->media, SIGNAL(finished()), this, SLOT(_k_finished()));
         disconnect(&d->playButton, SIGNAL(clicked()), d->media, SLOT(play()));
         disconnect(&d->pauseButton, SIGNAL(clicked()), d->media, SLOT(pause()));
-        disconnect(&d->stopButton, SIGNAL(clicked()), d->media, SLOT(stop()));
     }
     d->media = media;
     if (media) {
         connect(media, SIGNAL(destroyed()), SLOT(_k_mediaDestroyed()));
         connect(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
                 SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
-        connect(d->media, SIGNAL(finished()), this, SLOT(_k_finished()));
         connect(&d->playButton, SIGNAL(clicked()), media, SLOT(play()));
         connect(&d->pauseButton, SIGNAL(clicked()), media, SLOT(pause()));
-        connect(&d->stopButton, SIGNAL(clicked()), media, SLOT(stop()));
     }
 
     d->seekSlider.setMediaObject(media);
@@ -107,12 +97,6 @@ void MediaControls::setVolumeControlVisible(bool vis)
 {
     Q_D(MediaControls);
     d->volumeSlider.setVisible(vis);
-}
-
-void MediaControls::setLoopControlVisible(bool vis)
-{
-    Q_D(MediaControls);
-    d->loopButton.setVisible(vis);
 }
 
 void MediaControlsPrivate::_k_stateChanged(State newstate, State)
@@ -138,14 +122,6 @@ void MediaControlsPrivate::_k_stateChanged(State newstate, State)
 void MediaControlsPrivate::_k_mediaDestroyed()
 {
     media = 0;
-}
-
-void MediaControlsPrivate::_k_finished()
-{
-    if (loopButton.isChecked()) {
-        Q_ASSERT(media->state() == Phonon::StoppedState);
-        media->play();
-    }
 }
 
 } // namespace Phonon
