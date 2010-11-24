@@ -74,7 +74,7 @@ void KStandarddirsTest::testChangeSaveLocation()
     const QString newSaveLoc = m_kdehome + "/newconfigdir/";
     //cData.dirs()->addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
     cData.dirs()->addResourceType("config", 0, "newconfigdir");
-    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), newSaveLoc);
+    QCOMPARE_PATHS(KStandardDirs::realPath(cData.dirs()->saveLocation("config")), newSaveLoc);
 }
 
 static bool isKdelibsInstalled()
@@ -362,7 +362,7 @@ void KStandarddirsTest::testRestrictedResources()
     localFile.open(QIODevice::WriteOnly|QIODevice::Text);
     localFile.write("foo");
     localFile.close();
-    const QString localAppsDir = QFileInfo(localFile).absolutePath() + '/';
+    const QString localAppsDir = KStandardDirs::realPath(QFileInfo(localFile).absolutePath() + '/');
     QVERIFY(!localAppsDir.contains("foo.desktop"));
     // Ensure we have a local share/apps/qttest dir
     const QString localDataDir = KStandardDirs::locateLocal("data", "qttest/");
