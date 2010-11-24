@@ -171,7 +171,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case PutOperation: {
             //kDebug( 7044 ) << "PutOperation:" << reqUrl;
-            kioJob = KIO::put(reqUrl, -1, KIO::HideProgressInfo);
+            if (outgoingData)
+                kioJob = KIO::storedPut(outgoingData->readAll(), reqUrl, -1, KIO::HideProgressInfo);
+            else
+                kioJob = KIO::put(reqUrl, -1, KIO::HideProgressInfo);
             break;
         }
         case PostOperation: {
@@ -200,8 +203,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         default: {
-            // Defer to QNAM for operations that cannot be handled by KIO, 
-            // e.g. CustomOperation,
+            kWarning(7044) << "Unsupported KIO operation requested! Defering to QNetworkAccessManager...";
             return QNetworkAccessManager::createRequest(op, req, outgoingData);
         }
     }
