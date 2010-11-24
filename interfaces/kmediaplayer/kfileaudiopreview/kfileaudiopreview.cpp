@@ -92,7 +92,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     layout->setMargin(0);
     layout->addWidget(d->videoWidget);
     layout->addWidget(d->controls);
-    layout->addWidget(m_autoPlay);
+    layout->addWidget(m_autoPlay, 0, Qt::AlignHCenter);
     layout->addStretch();
 }
 
