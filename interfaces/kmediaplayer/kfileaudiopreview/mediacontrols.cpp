@@ -84,6 +84,7 @@ void MediaControls::setAudioOutput(AudioOutput *audioOutput)
 {
     Q_D(MediaControls);
     d->volumeSlider.setAudioOutput(audioOutput);
+    d->updateVolumeSliderVisibility();
     d->volumeSlider.setVisible(audioOutput != 0);
 }
 
@@ -102,8 +103,14 @@ void MediaControls::setVolumeControlVisible(bool vis)
 void MediaControls::resizeEvent(QResizeEvent*)
 {
     Q_D(MediaControls);
-    bool isWide = width() > d->playButton.sizeHint().width() + d->seekSlider.sizeHint().width() + d->volumeSlider.sizeHint().width();
-    d->volumeSlider.setVisible(isWide);
+    d->updateVolumeSliderVisibility();
+}
+
+void MediaControlsPrivate::updateVolumeSliderVisibility()
+{
+    bool isWide = q_ptr->width() > playButton.sizeHint().width() + seekSlider.sizeHint().width() + volumeSlider.sizeHint().width();
+    bool hasAudio = volumeSlider.audioOutput() != 0;
+    volumeSlider.setVisible(isWide && hasAudio);
 }
 
 void MediaControlsPrivate::_k_stateChanged(State newstate, State)

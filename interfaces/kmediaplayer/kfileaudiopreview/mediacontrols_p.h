@@ -82,6 +82,7 @@ class MediaControlsPrivate
     private:
         void _k_stateChanged(Phonon::State, Phonon::State);
         void _k_mediaDestroyed();
+        void updateVolumeSliderVisibility();
 };
 } // namespace Phonon
 
