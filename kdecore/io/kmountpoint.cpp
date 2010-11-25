@@ -290,6 +290,10 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 {
     KMountPoint::List result;
 
+    // In weird cases we can get two entries for the same mountpoint, e.g. in a chroot
+    // /proc can show up as being mounted twice (weird...). We just keep the first entry.
+    QSet<QString> seen_mountPoints;
+
 #ifdef HAVE_GETMNTINFO
 
 #ifdef GETMNTINFO_USES_STATVFS
@@ -325,7 +329,11 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 
       mp->d->finalizeCurrentMountPoint(infoNeeded);
       // TODO: Strip trailing '/' ?
-      result.append(mp);
+
+      if (!seen_mountPoints.contains(mp->d->mountedFrom)) {
+          seen_mountPoints.insert(mp->d->mountedFrom);
+          result.append(mp);
+      }
    }
 
 #elif defined(_AIX)
@@ -384,7 +392,10 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
             }
 
             mp->d->finalizeCurrentMountPoint(infoNeeded);
-            result.append(mp);
+            if (!seen_mountPoints.contains(mp->d->mountedFrom)) {
+                seen_mountPoints.insert(mp->d->mountedFrom);
+                result.append(mp);
+            }
 
             /* goto the next vmount structure: */
             vm = (struct vmount *)((char *)vm + vm->vmt_length);
@@ -411,7 +422,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
     }
 
 #elif defined(_WIN32_WCE)
-	Ptr mp(new KMountPoint);
+    Ptr mp(new KMountPoint);
     mp->d->mountPoint = QString("/");
     result.append(mp);
 
@@ -438,7 +449,10 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
       }
       mp->d->finalizeCurrentMountPoint(infoNeeded);
 
-      result.append(mp);
+      if (!seen_mountPoints.contains(mp->d->mountedFrom)) {
+          seen_mountPoints.insert(mp->d->mountedFrom);
+          result.append(mp);
+      }
    }
    ENDMNTENT(mnttab);
 #endif
