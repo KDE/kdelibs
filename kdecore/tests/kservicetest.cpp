@@ -419,6 +419,8 @@ void KServiceTest::testKSycocaUpdate()
 {
     KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
     QVERIFY(fakeService); // see initTestCase; it should be found.
+
+    // Test deleting a service
     const QString servPath = KStandardDirs::locateLocal("services", "fakeservice.desktop");
     QVERIFY(QFile::exists(servPath));
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
@@ -430,6 +432,7 @@ void KServiceTest::testKSycocaUpdate()
     while (spy.isEmpty())
         QTest::qWait(50);
     QVERIFY(!spy.isEmpty());
+    QVERIFY(!KService::serviceByDesktopPath("fakeservice.desktop")); // not in ksycoca anymore
     QVERIFY(spy[0][0].toStringList().contains("services"));
     kDebug() << QThread::currentThread() << "got signal ok";
 
