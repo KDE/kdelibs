@@ -10,6 +10,7 @@
 
 #include <QtGui/QLayout>
 
+#include <kdebug.h>
 #include <kio/previewjob.h>
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
@@ -182,9 +183,11 @@ void KFileMetaPreview::clearPreviewProviders()
 // static
 KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
 {
-    KPluginFactory *factory = KPluginLoader( "kfileaudiopreview" ).factory();
+    KPluginLoader loader( "kfileaudiopreview" );
+    KPluginFactory *factory = loader.factory();
     if ( !factory )
     {
+        kWarning() << "Couldn't load kfileaudiopreview" << loader.errorString();
         s_tryAudioPreview = false;
         return 0L;
     }
