@@ -285,7 +285,8 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
         if ( best != allDocuments.begin() ) {
             QList<DocStruct>::iterator local = allDocuments.begin();
 
-            if ( (*local).file.startsWith(KGlobal::dirs()->localkdedir()) ) {
+            if ( (*local).file.startsWith(KGlobal::dirs()->localkdedir()) ||
+                 (*local).file.startsWith(KGlobal::dirs()->saveLocation("appdata")) ) {
                 // load the local document and extract the action properties
                 QDomDocument localDocument;
                 localDocument.setContent( (*local).data );
