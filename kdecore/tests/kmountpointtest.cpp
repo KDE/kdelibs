@@ -48,7 +48,7 @@ void KMountPointTest::testCurrentMountPoints()
         QVERIFY(!mountPoint->realDeviceName().endsWith('/'));
 
         // keep one (any) mountpoint with a device name for the test below
-        if (!mountPoint->realDeviceName().isEmpty()) {
+        if (!mountPoint->realDeviceName().isEmpty() && !mountWithDevice) {
             mountWithDevice = mountPoint;
         }
     }
