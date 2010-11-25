@@ -876,7 +876,7 @@ public:
         DayPeriodHour = 0x4000000,  /**< The Day Period Hour portion of a date */
         Timezone      = 0x8000000,  /**< The Time Zone portion of a date, may be offset or name */
         TimezoneName  = 0x10000000, /**< The Time Zone Name portion of a date */
-        UnixTime      = 0x20000000, /**< The UNIX Time portion of a date */
+        UnixTime      = 0x20000000  /**< The UNIX Time portion of a date */
     };
     Q_DECLARE_FLAGS(DateTimeComponents, DateTimeComponent)
 
