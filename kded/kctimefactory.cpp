@@ -17,13 +17,78 @@
  **/
 
 #include "kctimefactory.h"
-#include "ksycoca.h"
-#include "ksycocatype.h"
+#include <ksycoca.h>
+#include <ksycocatype.h>
+#include <kdebug.h>
 
 #include <assert.h>
 
+static inline QString key(const QString &path, const QByteArray& resource)
+{
+    return QString::fromLatin1(resource) + QLatin1Char('|') + path;
+}
+
+void KCTimeDict::addCTime(const QString &path, const QByteArray& resource, quint32 ctime)
+{
+    assert(!path.isEmpty());
+    m_hash.insert(key(path, resource), ctime );
+}
+
+quint32 KCTimeDict::ctime(const QString &path, const QByteArray& resource) const
+{
+    return m_hash.value(key(path, resource), 0);
+}
+
+void KCTimeDict::remove(const QString &path, const QByteArray &resource)
+{
+    m_hash.remove(key(path, resource));
+}
+
+void KCTimeDict::dump() const
+{
+    kDebug() << m_hash.keys();
+}
+
+QStringList KCTimeDict::resourceList() const
+{
+    QSet<QString> resources;
+    Hash::const_iterator it = m_hash.constBegin();
+    const Hash::const_iterator end = m_hash.constEnd();
+    for ( ; it != end; ++it ) {
+        const QString key = it.key();
+        const QString res = key.left(key.indexOf('|'));
+        resources.insert(res);
+    }
+    return resources.toList();
+}
+
+void KCTimeDict::load(QDataStream &str)
+{
+    QString key;
+    quint32 ctime;
+    while(true)
+    {
+        KSycocaEntry::read(str, key);
+        str >> ctime;
+        if (key.isEmpty()) break;
+        m_hash.insert(key, ctime);
+    }
+}
+
+void KCTimeDict::save(QDataStream &str) const
+{
+    Hash::const_iterator it = m_hash.constBegin();
+    const Hash::const_iterator end = m_hash.constEnd();
+    for ( ; it != end; ++it ) {
+       str << it.key() << it.value();
+    }
+    str << QString() << (quint32) 0;
+}
+
+///////////
+
 KCTimeInfo::KCTimeInfo()
-    : KSycocaFactory( KST_CTimeInfo ), ctimeDict()
+    : KSycocaFactory( KST_CTimeInfo ), m_ctimeDict()
 {
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
@@ -45,52 +110,23 @@ KCTimeInfo::saveHeader(QDataStream &str)
   str << m_dictOffset;
 }
 
-void
-KCTimeInfo::save(QDataStream &str)
+void KCTimeInfo::save(QDataStream &str)
 {
-  KSycocaFactory::save(str);
+    KSycocaFactory::save(str);
 
-  m_dictOffset = str.device()->pos();
-  Dict::const_iterator it = ctimeDict.constBegin();
-  const Dict::const_iterator end = ctimeDict.constEnd();
-  for ( ; it != end; ++it )
-  {
-     str << it.key() << it.value();
-  }
-  str << QString() << (quint32) 0;
-
-  int endOfFactoryData = str.device()->pos();
-
-  saveHeader(str);
-  str.device()->seek(endOfFactoryData);
+    m_dictOffset = str.device()->pos();
+    m_ctimeDict.save(str);
+    const int endOfFactoryData = str.device()->pos();
+    saveHeader(str);
+    str.device()->seek(endOfFactoryData);
 }
 
-void
-KCTimeInfo::addCTime(const QString &path, quint32 ctime)
+KCTimeDict KCTimeInfo::loadDict() const
 {
-  assert(!path.isEmpty());
-  ctimeDict.insert(path, ctime);
-}
-
-quint32
-KCTimeInfo::ctime(const QString &path)
-{
-  return ctimeDict.value( path, 0 );
-}
-
-void
-KCTimeInfo::fillCTimeDict(Dict &dict)
-{
+    KCTimeDict dict;
     QDataStream* str = stream();
     assert(str);
     str->device()->seek(m_dictOffset);
-    QString path;
-    quint32 ctime;
-    while(true)
-    {
-      KSycocaEntry::read(*str, path);
-      (*str) >> ctime;
-      if (path.isEmpty()) break;
-      dict.insert(path, ctime);
-    }
+    dict.load(*str);
+    return dict;
 }

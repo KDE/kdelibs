@@ -23,10 +23,30 @@
 #include <QtCore/QHash>
 
 /**
- * Service group factory for building ksycoca
+ * Simple dict for assocating a timestamp with each file in ksycoca
+ */
+class KCTimeDict
+{
+public:
+    void addCTime(const QString &path, const QByteArray& resource, quint32 ctime);
+    quint32 ctime(const QString &path, const QByteArray& resource) const;
+    void remove(const QString &path, const QByteArray& resource);
+    void dump() const;
+    bool isEmpty() const { return m_hash.isEmpty(); }
+    QStringList resourceList() const;
+
+    void load(QDataStream &str);
+    void save(QDataStream &str) const;
+private:
+    typedef QHash<QString, quint32> Hash;
+    Hash m_hash;
+};
+
+/**
+ * Internal factory for storing the timestamp of each file in ksycoca
  * @internal
  */
-class KCTimeInfo : public KSycocaFactory
+class KCTimeInfo : public KSycocaFactory // TODO rename to KCTimeFactory
 {
   K_SYCOCAFACTORY( KST_CTimeInfo )
 public:
@@ -50,15 +70,15 @@ public:
   KSycocaEntry * createEntry(const QString &, const char *) const { return 0; }
   KSycocaEntry * createEntry(int) const { return 0; }
 
-  void addCTime(const QString &path, quint32 ctime);
+  // Loads the dict and returns it; does not set m_ctimeDict;
+  // this is only used in incremental mode for loading the old timestamps.
+  KCTimeDict loadDict() const;
 
-  quint32 ctime(const QString &path);
+  // The API for inserting/looking up entries is in KCTimeDict.
+  KCTimeDict* dict() { return &m_ctimeDict; }
 
-  typedef QHash<QString, quint32> Dict;
-  void fillCTimeDict(Dict &dict);
-
-protected:
-  Dict ctimeDict;
+private:
+  KCTimeDict m_ctimeDict;
   int m_dictOffset;
 };
 

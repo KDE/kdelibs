@@ -54,6 +54,8 @@ public:
 
    void setTrackId(const QString &id) { m_trackId = id; }
 
+   QStringList changedResources() const { return m_changedResources; }
+
     // Use our friendly-access-to-KSycoca to make this public
     static void clearCaches() { KSycoca::clearCaches(); }
 
@@ -98,6 +100,7 @@ private:
     */
    virtual bool isBuilding() { return true; }
 
+   QStringList m_changedResources;
    QStringList m_allResourceDirs;
    QString m_trackId;
 };
