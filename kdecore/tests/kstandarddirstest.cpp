@@ -437,6 +437,10 @@ void KStandarddirsTest::testSymlinkResolution()
     const QString sameSaveLoc = KGlobal::dirs()->resourceDirs("david").first();
     QCOMPARE(sameSaveLoc, saveLoc);
     QCOMPARE(sameSaveLoc, KGlobal::dirs()->saveLocation("david"));
+
+    // While we're here...
+    QCOMPARE(KStandardDirs::realPath(QString()), QString());
+    QCOMPARE(KStandardDirs::realPath(QString("/")), QString("/"));
 #endif
 }
 

@@ -911,6 +911,9 @@ KStandardDirs::realPath(const QString &dirname)
         return strRet + QLatin1Char('/');
     return strRet;
 #else
+    if (dirname.isEmpty() || (dirname.size() == 1 && dirname.at(0) == QLatin1Char('/')))
+       return dirname;
+
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
