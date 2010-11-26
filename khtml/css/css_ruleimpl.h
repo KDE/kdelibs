@@ -232,6 +232,19 @@ protected:
     QList<CSSSelector*> *m_selector;
 };
 
+class CSSNamespaceRuleImpl : public CSSRuleImpl
+{
+public:
+    CSSNamespaceRuleImpl(StyleBaseImpl *parent, const DOMString& prefix, const DOMString& ns);
+    DOMString namespaceURI() const { return m_namespace; }
+    DOMString prefix() const { return m_prefix; }
+    
+    bool isDefault() const { return m_prefix.isEmpty(); }
+private:
+    DOMString m_prefix;
+    DOMString m_namespace;
+};
+
 
 class CSSUnknownRuleImpl : public CSSRuleImpl
 {

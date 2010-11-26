@@ -72,6 +72,7 @@ public:
         MEDIA_RULE = 4,
         FONT_FACE_RULE = 5,
         PAGE_RULE = 6,
+        NAMESPACE_RULE = 10, ///< CSSOM, @since 4.6.0
 	QUIRKS_RULE = 100 // KHTML CSS Extension
     };
 
@@ -451,6 +452,33 @@ public:
      */
     CSSStyleDeclaration style() const;
 };
+
+class CSSNamespaceRuleImpl;
+/**
+ * The \c CSSNamespaceRule interface represents an @namespace rule
+ * @since 4.6.0
+ *
+ */
+class KHTML_EXPORT CSSNamespaceRule : public CSSRule
+{
+public:
+    CSSNamespaceRule();
+    CSSNamespaceRule(const CSSNamespaceRule &other);
+    CSSNamespaceRule(const CSSRule &other);
+    CSSNamespaceRule(CSSNamespaceRuleImpl *impl);
+    
+    DOMString namespaceURI() const;
+    DOMString prefix() const;
+public:
+
+    CSSNamespaceRule & operator = (const CSSNamespaceRule &other);
+    CSSNamespaceRule & operator = (const CSSRule &other);
+
+    ~CSSNamespaceRule();
+};
+
+
+
 
 class CSSUnknownRuleImpl;
 /**

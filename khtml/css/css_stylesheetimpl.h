@@ -42,6 +42,7 @@ class CSSStyleSheet;
 class CSSParser;
 class MediaListImpl;
 class CSSRuleImpl;
+class CSSNamespaceRuleImpl;
 class CSSRuleListImpl;
 class NodeImpl;
 class DocumentImpl;
@@ -99,9 +100,9 @@ public:
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index, int &exceptioncode );
     void deleteRule ( unsigned long index, int &exceptioncode );
 
-    void addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri);
     void determineNamespace(NamespaceName& namespacename, const DOM::DOMString& prefix);
     quint32 defaultNamespace() { return m_defaultNamespace.id(); }
+    void appendNamespaceRule(CSSNamespaceRuleImpl* ns);
 
     void setCharset(const DOMString &charset) { m_charset = charset; }
     const DOMString& charset() const { return m_charset; }
@@ -121,11 +122,16 @@ public:
     DocumentImpl *doc() const { return m_doc; }
     bool implicit() const { return m_implicit; }
 protected:
+    void recomputeNamespaceInfo(); // updates m_defaultNamespace and m_namespaces
+                                   // we update m_namespaces lazily, but 
+                                   // m_defaulNamespace eagerly.
+    void dirtyNamespaceInfo() { delete m_namespaces; m_namespaces = 0; }
+
     DocumentImpl *m_doc;
     bool m_implicit;
     mutable bool m_loadedHint;
     NamespaceName m_defaultNamespace;
-    CSSNamespace* m_namespaces;
+    QList<CSSNamespaceRuleImpl*>* m_namespaces;
     DOMString m_charset;
 };
 

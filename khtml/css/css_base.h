@@ -40,28 +40,6 @@ namespace DOM {
     class CSSSelector;
     class CSSProperty;
     class CSSValueImpl;
-                
-    
-    struct CSSNamespace {
-        DOMString m_prefix;
-        DOMString m_uri;
-        CSSNamespace* m_parent;
-
-        CSSNamespace(const DOMString& p, const DOMString& u, CSSNamespace* parent)
-            :m_prefix(p), m_uri(u), m_parent(parent) {}
-        ~CSSNamespace() { delete m_parent; }
-
-        const DOMString& uri() { return m_uri; }
-        const DOMString& prefix() { return m_prefix; }
-
-        CSSNamespace* namespaceForPrefix(const DOMString& prefix) {
-            if (prefix == m_prefix)
-                return this;
-            if (m_parent)
-                return m_parent->namespaceForPrefix(prefix);
-            return 0;
-        }
-    };
 
 // this class represents a selector for a StyleRule
     class CSSSelector

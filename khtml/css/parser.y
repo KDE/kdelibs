@@ -34,7 +34,6 @@
 #include <css/css_stylesheetimpl.h>
 #include <css/css_valueimpl.h>
 #include <css/css_mediaquery.h>
-#include <misc/htmlhashes.h>
 #include "cssparser.h"
 
 
@@ -245,12 +244,13 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <rule> charset
 %type <rule> ruleset
 %type <rule> safe_ruleset
-%type <rule> ruleset_or_import
+%type <rule> ruleset_or_import_or_namespace
 %type <rule> media
 %type <rule> import
 %type <rule> page
 %type <rule> font_face
 %type <rule> invalid_rule
+%type <rule> namespace_rule
 %type <rule> invalid_at
 %type <rule> rule
 
@@ -316,13 +316,14 @@ stylesheet:
   | khtml_selectors maybe_space
   ;
 
-ruleset_or_import:
+ruleset_or_import_or_namespace:
     ruleset |
-    import
+    import  |
+    namespace_rule
 ;
 
 khtml_rule:
-    KHTML_RULE_SYM '{' maybe_space ruleset_or_import maybe_space '}' {
+    KHTML_RULE_SYM '{' maybe_space ruleset_or_import_or_namespace maybe_space '}' {
         CSSParser *p = static_cast<CSSParser *>(parser);
 	p->rule = $4;
     }
@@ -448,14 +449,24 @@ namespace_list:
   | namespace_list namespace maybe_sgml
 ;
 
-namespace:
-NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';' {
+namespace_rule:
+NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "@namespace: " << qString($4);
+    kDebug( 6080 ) << "@namespace: " << qString($3) << qString($4);
 #endif
-      CSSParser *p = static_cast<CSSParser *>(parser);
+    CSSParser *p = static_cast<CSSParser *>(parser);
+    $$ = new CSSNamespaceRuleImpl(p->styleElement, domString($3), domString($4));
+ }
+    ;
+
+namespace: 
+namespace_rule maybe_space ';' {
+    CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
-        static_cast<CSSStyleSheetImpl*>(p->styleElement)->addNamespace(p, domString($3), domString($4));
+	static_cast<CSSStyleSheetImpl*>(p->styleElement)->appendNamespaceRule
+                    (static_cast<CSSNamespaceRuleImpl*>($1)); 
+                            // can't use ->append since it 
+                            // wouldn't keep track of dirtiness
  }
 | NAMESPACE_SYM error invalid_block
 | NAMESPACE_SYM error ';'

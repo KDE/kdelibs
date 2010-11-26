@@ -164,6 +164,8 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     m_namespaces = 0;
     m_defaultNamespace = NamespaceName::fromId(anyNamespace);
     m_loadedHint = false;
+    
+    recomputeNamespaceInfo(); // as we cloned kids
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -184,6 +186,8 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     m_namespaces = 0;
     m_defaultNamespace = NamespaceName::fromId(anyNamespace);
     m_loadedHint = false;
+    
+    recomputeNamespaceInfo(); // as we cloned kids
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
@@ -213,7 +217,23 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     m_lstChildren->insert(index, r);
     if (m_doc)
         m_doc->updateStyleSelector(true /*shallow*/);
+        
+    if (r->type() == DOM::CSSRule::NAMESPACE_RULE) {
+        dirtyNamespaceInfo();
+        if (static_cast<CSSNamespaceRuleImpl*>(r)->isDefault())
+            recomputeNamespaceInfo(); // default may have changed
+                                      // ### too late for some rules?
+    }
+        
     return index;
+}
+
+void CSSStyleSheetImpl::appendNamespaceRule(CSSNamespaceRuleImpl* ns)
+{
+    append(ns);
+    dirtyNamespaceInfo();
+    if (ns->isDefault())
+        recomputeNamespaceInfo();
 }
 
 CSSRuleListImpl *CSSStyleSheetImpl::cssRules(bool omitCharsetRules)
@@ -229,6 +249,13 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
         return;
     }
     StyleBaseImpl *b = m_lstChildren->takeAt(index);
+    
+    if (b->isRule() && static_cast<CSSRuleImpl*>(b)->type() == DOM::CSSRule::NAMESPACE_RULE) {
+        dirtyNamespaceInfo();
+        if (static_cast<CSSNamespaceRuleImpl*>(b)->isDefault())
+            recomputeNamespaceInfo(); // default may have changed
+                                      // ### too late for some rules?
+    }
 
     // TreeShared requires delete not deref when removed from tree
     b->setParent(0);
@@ -237,40 +264,49 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
         m_doc->updateStyleSelector(true /*shallow*/);
 }
 
-void CSSStyleSheetImpl::addNamespace(CSSParser* /*p*/, const DOM::DOMString& prefix, const DOM::DOMString& uri)
+void CSSStyleSheetImpl::recomputeNamespaceInfo()
 {
-    if (uri.isNull())
-        return;
-
-    m_namespaces = new CSSNamespace(prefix, uri, m_namespaces);
-
-    if (prefix.isEmpty()) {
-        Q_ASSERT(m_doc != 0);
-
-        m_defaultNamespace = NamespaceName::fromString(uri);
+    assert (!m_namespaces);
+    
+    m_namespaces = new QList<CSSNamespaceRuleImpl*>;
+    m_defaultNamespace = NamespaceName::fromId(anyNamespace);
+    
+    // Compute list of all the @namespace nodes, as well as the default one. 
+    for (int i = 0; i < m_lstChildren->count(); ++i) {
+        StyleBaseImpl* b = m_lstChildren->at(i);
+        if (b->isRule() && static_cast<CSSRuleImpl*>(b)->type() == DOM::CSSRule::NAMESPACE_RULE) {
+            CSSNamespaceRuleImpl* nr = static_cast<CSSNamespaceRuleImpl*>(b);
+            DOM::DOMString prefix = nr->prefix();
+            DOM::DOMString uri    = nr->namespaceURI();
+            
+            if (uri.isNull())
+                continue;
+            
+            if (nr->isDefault())
+                m_defaultNamespace = NamespaceName::fromString(uri);
+                
+            m_namespaces->append(nr);
+        }
     }
 }
 
 void CSSStyleSheetImpl::determineNamespace(NamespaceName& namespacename, const DOM::DOMString& prefix)
 {
-    // If the stylesheet has no namespaces we can just return.  There won't be any need to ever check
-    // namespace values in selectors.
-    //if (!m_namespaces)
-    //    return;
-
     if (prefix.isEmpty())
         namespacename = NamespaceName::fromId(emptyNamespace); // No namespace. If an element/attribute has a namespace, we won't match it.
     else if (prefix == "*")
         namespacename = NamespaceName::fromId(anyNamespace); // We'll match any namespace.
     else {
         if (!m_namespaces)
-            return;
-        CSSNamespace* ns = m_namespaces->namespaceForPrefix(prefix);
-        if (ns) {
-            Q_ASSERT(m_doc != 0);
-
-            // Look up the id for this namespace URI.
-            namespacename = NamespaceName::fromString(ns->uri());
+            recomputeNamespaceInfo();
+            
+        // To lookup the name, we go backwards, so the latest one wins
+        for (int p = m_namespaces->count() - 1; p >= 0; --p) {
+            CSSNamespaceRuleImpl* ns = m_namespaces->at(p);
+            if (ns->prefix() == prefix) {
+                namespacename = NamespaceName::fromString(ns->namespaceURI());
+                return;
+            }
         }
     }
 }
@@ -631,3 +667,5 @@ void MediaListImpl::appendMediaQuery(MediaQuery* mediaQuery)
 {
     m_queries.append(mediaQuery);
 }
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

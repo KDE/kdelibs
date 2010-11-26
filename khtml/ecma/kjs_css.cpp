@@ -777,6 +777,7 @@ const ClassInfo DOMCSSRule::fontface_info = { "CSSFontFaceRule", &DOMCSSRule::in
 const ClassInfo DOMCSSRule::page_info = { "CSSPageRule", &DOMCSSRule::info, &DOMCSSPageRuleTable, 0 };
 const ClassInfo DOMCSSRule::import_info = { "CSSImportRule", &DOMCSSRule::info, &DOMCSSImportRuleTable, 0 };
 const ClassInfo DOMCSSRule::charset_info = { "CSSCharsetRule", &DOMCSSRule::info, &DOMCSSCharsetRuleTable, 0 };
+const ClassInfo DOMCSSRule::namespace_info = { "CSSNamespaceRule", &DOMCSSRule::info, &DOMCSSNamespaceRuleTable, 0 };
 
 const ClassInfo* DOMCSSRule::classInfo() const
 {
@@ -793,6 +794,8 @@ const ClassInfo* DOMCSSRule::classInfo() const
     return &import_info;
   case DOM::CSSRule::CHARSET_RULE:
     return &charset_info;
+  case DOM::CSSRule::NAMESPACE_RULE:
+    return &namespace_info;
   case DOM::CSSRule::UNKNOWN_RULE:
   default:
     return &info;
@@ -829,6 +832,10 @@ const ClassInfo* DOMCSSRule::classInfo() const
 @end
 @begin DOMCSSCharsetRuleTable 1
   encoding		DOMCSSRule::Charset_Encoding	DontDelete
+@end
+@begin DOMCSSNamespaceRuleTable 2
+  namespaceURI		DOMCSSRule::Namespace_NamespaceURI	DontDelete|ReadOnly
+  prefix                DOMCSSRule::Namespace_Prefix            DontDelete|ReadOnly
 @end
 */
 bool DOMCSSRule::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
@@ -891,8 +898,13 @@ JSValue *DOMCSSRule::getValueProperty(ExecState *exec, int token) const
   // for DOM::CSSRule::CHARSET_RULE:
   case Charset_Encoding:
     return jsString(static_cast<CSSCharsetRuleImpl *>(m_impl.get())->encoding());
-
-  default:
+    
+  // for DOM::CSSRule::NAMESPACE_RULE:
+  case Namespace_Prefix:
+    return jsString(static_cast<DOM::CSSNamespaceRuleImpl *>(m_impl.get())->prefix());
+  case Namespace_NamespaceURI:
+    return jsString(static_cast<DOM::CSSNamespaceRuleImpl *>(m_impl.get())->namespaceURI());
+default:
     assert(0);
   }
   return jsUndefined();
@@ -1428,3 +1440,4 @@ JSValue *getDOMCounter(ExecState *exec, DOM::CounterImpl* c)
 }
 
 }
+

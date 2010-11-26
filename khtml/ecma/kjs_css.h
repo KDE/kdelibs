@@ -182,12 +182,13 @@ namespace KJS {
     void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const;
     static const ClassInfo info;
-    static const ClassInfo style_info, media_info, fontface_info, page_info, import_info, charset_info;
+    static const ClassInfo style_info, media_info, fontface_info, page_info, import_info, charset_info, namespace_info;
     enum { ParentStyleSheet, Type, CssText, ParentRule,
            Style_SelectorText, Style_Style,
            Media_Media, Media_InsertRule, Media_DeleteRule, Media_CssRules,
            FontFace_Style, Page_SelectorText, Page_Style,
-           Import_Href, Import_Media, Import_StyleSheet, Charset_Encoding };
+           Import_Href, Import_Media, Import_StyleSheet, Charset_Encoding, 
+           Namespace_NamespaceURI, Namespace_Prefix };
     DOM::CSSRuleImpl* impl() const { return m_impl.get(); }
     JSValue *indexGetter(ExecState* exec, unsigned index);
   protected:

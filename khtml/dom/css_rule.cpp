@@ -428,6 +428,56 @@ CSSStyleDeclaration CSSStyleRule::style() const
     return ((CSSStyleRuleImpl *)impl)->style();
 }
 
+// ----------------------------------------------------------
+
+
+CSSNamespaceRule::CSSNamespaceRule() : CSSRule()
+{
+}
+
+CSSNamespaceRule::CSSNamespaceRule(const CSSNamespaceRule &other)
+    : CSSRule(other)
+{
+}
+
+CSSNamespaceRule::CSSNamespaceRule(const CSSRule &other)
+{
+    impl = 0;
+    operator=(other);
+}
+
+CSSNamespaceRule::CSSNamespaceRule(CSSNamespaceRuleImpl *impl)
+    : CSSRule(impl)
+{
+}
+
+CSSNamespaceRule &CSSNamespaceRule::operator = (const CSSNamespaceRule &other)
+{
+    CSSRule::operator = (other);
+    return *this;
+}
+
+CSSNamespaceRule &CSSNamespaceRule::operator = (const CSSRule &other)
+{
+    assignOther( other, CSSRule::NAMESPACE_RULE );
+    return *this;
+}
+
+CSSNamespaceRule::~CSSNamespaceRule()
+{
+}
+
+DOMString CSSNamespaceRule::namespaceURI() const
+{
+    if(!impl) return DOMString();
+    return static_cast<CSSNamespaceRuleImpl*>(impl)->namespaceURI();
+}
+
+DOMString CSSNamespaceRule::prefix() const
+{
+    if(!impl) return DOMString();
+    return static_cast<CSSNamespaceRuleImpl*>(impl)->prefix();
+}
 
 // ----------------------------------------------------------
 

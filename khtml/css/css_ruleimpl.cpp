@@ -426,6 +426,16 @@ void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
 
 // --------------------------------------------------------------------
 
+CSSNamespaceRuleImpl::CSSNamespaceRuleImpl(StyleBaseImpl *parent, const DOMString& prefix, const DOMString& ns)
+    : CSSRuleImpl(parent)
+{
+    m_type      = CSSRule::NAMESPACE_RULE;
+    m_prefix    = prefix;
+    m_namespace = ns;
+}
+
+// --------------------------------------------------------------------
+
 CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const list, bool omitCharsetRules)
 {
      m_list = list;
