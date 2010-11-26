@@ -261,9 +261,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             k.bDefault = (options&EntryDefault);
             k.bRaw = (options&EntryRawKey);
 
-/*            qDebug() << "changing" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
-                    << '=' << maybeNull(e.mValue)
-                    << entryDataToQString(e).toLatin1().constData();*/
+            //qDebug() << "changing [" << group << "," << key << "] =" << e.mValue;
             e.mValue = value;
             e.bDirty = e.bDirty || (options&EntryDirty);
             e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
@@ -276,9 +274,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 e.bDeleted = false; // setting a value to a previously deleted entry
             e.bExpand = (options&EntryExpansion);
 
-//             qDebug() << "to" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
-//                     << '=' << maybeNull(e.mValue)
-//                     << entryDataToQString(e).toLatin1().constData();
+             //qDebug() << "to [" << group << "," << key << "] =" << e.mValue;
             if(newKey)
             {
                 insert(k, e);
@@ -437,9 +433,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         {
             Iterator entry = findEntry(group, key, flags);
             if (entry != end()) {
-/*                qDebug() << "reverting" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
-                        << '=' << entry->mValue
-                        << entryDataToQString(*entry).toLatin1().constData();*/
+                //qDebug() << "reverting [" << group << "," << key << "] = " << entry->mValue;
                 const ConstIterator defaultEntry(entry+1);
                 if (defaultEntry != constEnd() && defaultEntry.key().bDefault) {
                     *entry = *defaultEntry;
@@ -449,9 +443,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                     entry->bDirty = true;
                     entry->bDeleted = true;
                 }
-/*                qDebug() << "to" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
-                        << '=' << entry->mValue
-                        << entryDataToQString(*entry).toLatin1().constData();*/
+                //qDebug() << "to [" << group << "," << key << "] =" << entry->mValue;
             }
         }
 };
