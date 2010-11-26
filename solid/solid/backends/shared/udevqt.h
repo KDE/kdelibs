@@ -44,6 +44,7 @@ class Device
         QString devType() const;
         QString name() const;
         QString sysfsPath() const;
+        int sysfsNumber() const;
         QString driver() const;
         QString primaryDeviceFile() const;
         QStringList alternateDeviceSymlinks() const;

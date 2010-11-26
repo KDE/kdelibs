@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Rafael Fernández López <ereslibre@kde.org>
+    Copyright 2010 Alex Merry <alex.merry@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -18,11 +18,10 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_UDEV_PROCESSOR_H
-#define SOLID_BACKENDS_UDEV_PROCESSOR_H
+#ifndef SOLID_BACKENDS_UDEV_CPUINFO_H
+#define SOLID_BACKENDS_UDEV_CPUINFO_H
 
-#include <solid/ifaces/processor.h>
-#include "udevdeviceinterface.h"
+#include <QtCore/QString>
 
 namespace Solid
 {
@@ -30,33 +29,17 @@ namespace Backends
 {
 namespace UDev
 {
-class UDevDevice;
 
-class Processor : public DeviceInterface, virtual public Solid::Ifaces::Processor
-{
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Processor)
+/**
+ * Extracts a line from /proc/cpuinfo for a given processor
+ *
+ * The regexp should have exactly one capture, which should match the
+ * value of the field.
+ */
+QString extractCpuInfoLine(int processorNumber, const QString &regExp);
 
-public:
-    Processor(UDevDevice *device);
-    virtual ~Processor();
-
-    virtual int number() const;
-    virtual int maxSpeed() const;
-    virtual bool canChangeFrequency() const;
-    virtual Solid::Processor::InstructionSets instructionSets() const;
-
-private:
-    enum CanChangeFrequencyEnum {
-        NotChecked,
-        CanChangeFreq,
-        CannotChangeFreq
-    };
-    mutable CanChangeFrequencyEnum m_canChangeFrequency;
-    mutable int m_maxSpeed;
-};
 }
 }
 }
 
-#endif // SOLID_BACKENDS_UDEV_PROCESSOR_H
+#endif // SOLID_BACKENDS_UDEV_CPUINFO_H

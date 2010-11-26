@@ -176,6 +176,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevmanager.cpp
       backends/udev/udevdeviceinterface.cpp
       backends/udev/udevgenericinterface.cpp
+      backends/udev/cpuinfo.cpp
       backends/udev/udevprocessor.cpp
       backends/udev/udevcamera.cpp
       backends/udev/udevportablemediaplayer.cpp

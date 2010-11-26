@@ -25,6 +25,7 @@
 #include "../shared/rootdevice.h"
 
 #include <QtCore/QSet>
+#include <QtCore/QFile>
 
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
@@ -53,8 +54,13 @@ UDevManager::Private::~Private()
 
 bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 {
-    return device.driver() == "processor" ||
-           device.driver() == "video";
+    if (device.driver() == "processor") {
+        // Linux ACPI reports processor slots, rather than processors.
+        // Empty slots will not have a system device associated with them.
+        return QFile::exists(device.sysfsPath() + "/sysdev");
+    } else {
+        return device.driver() == "video";
+    }
 }
 
 UDevManager::UDevManager(QObject *parent)

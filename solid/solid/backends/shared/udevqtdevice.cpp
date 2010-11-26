@@ -152,6 +152,19 @@ QString Device::sysfsPath() const
     return QString::fromLatin1(udev_device_get_syspath(d->udev));
 }
 
+int Device::sysfsNumber() const
+{
+    if (!d)
+        return -1;
+
+    QString value = QString::fromLatin1(udev_device_get_sysnum(d->udev));
+    bool success = false;
+    int number = value.toInt(&success);
+    if (success)
+        return number;
+    return -1;
+}
+
 QString Device::driver() const
 {
     if (!d)

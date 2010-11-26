@@ -21,6 +21,7 @@
 #include "udevprocessor.h"
 
 #include "udevdevice.h"
+#include "cpuinfo.h"
 #include "../shared/cpufeatures.h"
 
 #include <QtCore/QFile>
@@ -28,7 +29,9 @@
 using namespace Solid::Backends::UDev;
 
 Processor::Processor(UDevDevice *device)
-    : DeviceInterface(device)
+    : DeviceInterface(device),
+      m_canChangeFrequency(NotChecked),
+      m_maxSpeed(-1)
 {
 
 }
@@ -40,32 +43,50 @@ Processor::~Processor()
 
 int Processor::number() const
 {
-    QRegExp regExp(":(\\d+)$");
-    if (regExp.indexIn(m_device->udi()) != -1) {
-        return regExp.cap(1).toInt();
-    }
-    return -1;
+    // There's a subtle assumption here: suppose the system's ACPI
+    // supports more processors/cores than are installed, and so udev reports
+    // 4 cores when there are 2, say.  Will the processor numbers (in
+    // /proc/cpuinfo, in particular) always match the sysfs device numbers?
+    return m_device->deviceNumber();
 }
 
 int Processor::maxSpeed() const
 {
-    QFile m_cpuInfo("/proc/cpuinfo");
-    m_cpuInfo.open(QIODevice::ReadOnly);
-    QString cpuInfo = m_cpuInfo.readAll();
-    m_cpuInfo.close();
-
-    const QRegExp regExp("cpu MHz\\s+:\\s+(\\d+)");
-    regExp.indexIn(cpuInfo);
-
-    // TODO: really get information for each processor.
-
-    return regExp.capturedTexts()[1].toInt();
+    if (m_maxSpeed == -1) {
+        QFile cpuMaxFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_max_freq");
+        if (cpuMaxFreqFile.open(QIODevice::ReadOnly)) {
+            QString value = cpuMaxFreqFile.readAll().trimmed();
+            // cpuinfo_max_freq is in kHz
+            m_maxSpeed = static_cast<int>(value.toLongLong() / 1000);
+        }
+        if (m_maxSpeed <= 0) {
+            // couldn't get the info from /sys, try /proc instead
+            m_maxSpeed = extractCpuInfoLine(number(), "cpu MHz\\s+:\\s+(\\d+).*").toInt();
+        }
+    }
+    return m_maxSpeed;
 }
 
 bool Processor::canChangeFrequency() const
 {
-    // TODO: source ?
-    return false;
+    if (m_canChangeFrequency == NotChecked) {
+        /* Note that cpufreq is the right information source here, rather than
+         * anything to do with throttling (ACPI T-states).  */
+
+        m_canChangeFrequency = CannotChangeFreq;
+
+        QFile cpuMinFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_min_freq");
+        QFile cpuMaxFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_max_freq");
+        if (cpuMinFreqFile.open(QIODevice::ReadOnly) && cpuMaxFreqFile.open(QIODevice::ReadOnly)) {
+            QString minFreq = cpuMinFreqFile.readAll().trimmed();
+            QString maxFreq = cpuMaxFreqFile.readAll().trimmed();
+            if (minFreq > 0 && maxFreq > minFreq) {
+                m_canChangeFrequency = CanChangeFreq;
+            }
+        }
+    }
+
+    return m_canChangeFrequency == CanChangeFreq;
 }
 
 Solid::Processor::InstructionSets Processor::instructionSets() const

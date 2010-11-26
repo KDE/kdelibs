@@ -68,6 +68,7 @@ public:
     QString systemAttribute(const char *attribute) const;
     QString deviceName() const;
     QString devicePath() const;
+    int deviceNumber() const;
 
 private:
     UdevQt::Device m_device;

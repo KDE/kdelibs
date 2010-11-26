@@ -24,6 +24,7 @@
 #include "udevprocessor.h"
 #include "udevcamera.h"
 #include "udevportablemediaplayer.h"
+#include "cpuinfo.h"
 
 using namespace Solid::Backends::UDev;
 
@@ -49,12 +50,22 @@ QString UDevDevice::parentUdi() const
 
 QString UDevDevice::vendor() const
 {
-    return m_device.sysfsProperty("manufacturer").toString();
+    QString vendor = m_device.sysfsProperty("manufacturer").toString();
+    if (vendor.isEmpty() && queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        // sysfs doesn't have anything useful here
+        vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
+    }
+    return vendor;
 }
 
 QString UDevDevice::product() const
 {
-    return m_device.sysfsProperty("product").toString();
+    QString product = m_device.sysfsProperty("product").toString();
+    if (product.isEmpty() && queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        // sysfs doesn't have anything useful here
+        product = extractCpuInfoLine(deviceNumber(), "model name\\s+:\\s+(\\S.+)");
+    }
+    return product;
 }
 
 QString UDevDevice::icon() const
@@ -179,6 +190,11 @@ QString UDevDevice::systemAttribute(const char *attribute) const
 QString UDevDevice::deviceName() const
 {
     return m_device.sysfsPath();
+}
+
+int UDevDevice::deviceNumber() const
+{
+    return m_device.sysfsNumber();
 }
 
 QString UDevDevice::devicePath() const
