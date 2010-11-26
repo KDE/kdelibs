@@ -914,6 +914,11 @@ KStandardDirs::realPath(const QString &dirname)
     if (dirname.isEmpty() || (dirname.size() == 1 && dirname.at(0) == QLatin1Char('/')))
        return dirname;
 
+    if (dirname.at(0) != QLatin1Char('/')) {
+        qWarning("realPath called with a relative path '%s', please fix", qPrintable(dirname));
+        return dirname;
+    }
+
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
