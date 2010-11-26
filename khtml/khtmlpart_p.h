@@ -448,7 +448,7 @@ public:
       executeJavascriptURL(url);
   }
 
-  void propagateInitialDomainTo(KHTMLPart* kid);
+  void propagateInitialDomainAndBaseTo(KHTMLPart* kid);
 
   void renameFrameForContainer(DOM::HTMLPartContainerElementImpl* cont,
                                const QString& newName);

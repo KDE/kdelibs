@@ -4441,11 +4441,9 @@ bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::Rea
     KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(inPart));
 
     p->begin();
-    if (d->m_doc && p->d->m_doc)
-        p->d->m_doc->setBaseURL(d->m_doc->baseURL());
 
     // We may have to re-propagate the domain here if we go here due to navigation
-    d->propagateInitialDomainTo(p);
+    d->propagateInitialDomainAndBaseTo(p);
 
     // Support for javascript: sources
     if (d->isJavaScriptURL(url.url())) {
@@ -4456,7 +4454,7 @@ bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::Rea
             p->begin();
             p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
             // We recreated the document, so propagate domain again.
-            d->propagateInitialDomainTo( p );
+            d->propagateInitialDomainAndBaseTo(p);
             p->write( res.toString() );
             p->end();
         }
@@ -5031,20 +5029,22 @@ void KHTMLPart::slotChildDocCreated()
   // This must only be done when loading the frameset initially (#22039),
   // not when following a link in a frame (#44162).
   if (KHTMLPart* htmlFrame = qobject_cast<KHTMLPart*>(sender()))
-    d->propagateInitialDomainTo( htmlFrame );
+      d->propagateInitialDomainAndBaseTo(htmlFrame);
 
   // So it only happens once
   disconnect( sender(), SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
 }
 
-void KHTMLPartPrivate::propagateInitialDomainTo(KHTMLPart* kid)
+void KHTMLPartPrivate::propagateInitialDomainAndBaseTo(KHTMLPart* kid)
 {
-    // This method is used to propagate our domain information for
-    // child frames, to provide a domain for about: or JavaScript: URLs 
+    // This method is used to propagate our domain and base information for
+    // child frames, to provide them for about: or JavaScript: URLs 
     if ( m_doc && kid->d->m_doc ) {
         DocumentImpl* kidDoc = kid->d->m_doc;
-        if ( kidDoc->origin()->isEmpty() )
-            kidDoc->setOrigin( m_doc->origin() );
+        if ( kidDoc->origin()->isEmpty() ) {
+            kidDoc->setOrigin ( m_doc->origin() );
+            kidDoc->setBaseURL( m_doc->baseURL() );
+        }
     }
 }
 
