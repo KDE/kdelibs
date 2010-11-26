@@ -923,9 +923,28 @@ KStandardDirs::realPath(const QString &dirname)
         return QFile::decodeName(realpath_buffer);
     }
 
-    if (!dirname.endsWith(QLatin1Char('/')))
-        return dirname + QLatin1Char('/');
-    return dirname;
+    // Does not exist yet; resolve symlinks in parent dirs then.
+    // This ensures that once the directory exists, it will still be resolved
+    // the same way, so that the general rule that KStandardDirs always returns
+    // canonical paths stays true, and app code can compare paths more easily.
+    QString dir = dirname;
+    if (!dir.endsWith(QLatin1Char('/')))
+        dir += QLatin1Char('/');
+    QString relative;
+    while (!KStandardDirs::exists(dir)) {
+        //qDebug() << "does not exist:" << dir;
+        const int pos = dir.lastIndexOf(QLatin1Char('/'), -2);
+        Q_ASSERT(pos > 0); // what? even "/" doesn't exist?
+        relative.prepend(dir.mid(pos+1)); // keep "subdir/"
+        dir = dir.left(pos+1);
+        Q_ASSERT(dir.endsWith(QLatin1Char('/')));
+    }
+    Q_ASSERT(!relative.isEmpty()); // infinite recursion ahead
+    if (!relative.isEmpty()) {
+        //qDebug() << "done, resolving" << dir << "and adding" << relative;
+        dir = realPath(dir) + relative;
+    }
+    return dir;
 #endif
 }
 

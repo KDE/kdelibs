@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testAddResourceDir();
     void testSetXdgDataDirs();
     void testRestrictedResources();
+    void testSymlinkResolution();
     void testThreads();
 
 private:

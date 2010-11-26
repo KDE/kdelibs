@@ -26,6 +26,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kstandarddirs.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <ktempdir.h>
 #include "config-prefix.h"
 #include <QtCore/QDebug>
 #include <kconfiggroup.h>
@@ -405,6 +406,38 @@ void KStandarddirsTest::testRestrictedResources()
 
     restrictionsGroup.deleteGroup();
     localFile.remove();
+}
+
+void KStandarddirsTest::testSymlinkResolution()
+{
+#ifndef Q_OS_WIN
+    // This makes the save location for the david resource, "$HOME/.kde-unit-test/symlink/test/"
+    // where symlink points to "real", and the subdir test will be created later
+    // This used to confuse KStandardDirs and make it return unresolved paths,
+    // and thus making comparisons fail later on in KConfig.
+    const QString symlink = m_kdehome + "/symlink";
+    const QString expected = m_kdehome + "/real/test/";
+    QVERIFY(KTempDir::removeDir(m_kdehome + "/real"));
+    QVERIFY(QDir(m_kdehome).mkdir("real"));
+    QFile::remove(symlink);
+    QVERIFY(!QFile::exists(symlink));
+    QVERIFY(QFile::link("real", symlink));
+    QVERIFY(QFileInfo(symlink).isSymLink());
+    QVERIFY(!QFile::exists(expected));
+    KGlobal::dirs()->addResourceType("david", 0, "symlink/test");
+    QVERIFY(!QFile::exists(expected));
+    const QString saveLoc = KGlobal::dirs()->resourceDirs("david").first();
+    QVERIFY(!QFile::exists(expected));
+    // The issue at this point is that saveLoc does not actually exist yet.
+    QVERIFY(QDir(saveLoc).canonicalPath().isEmpty()); // this is why we can't use canonicalPath
+    QVERIFY(!QFile::exists(saveLoc));
+    QCOMPARE(saveLoc, KStandardDirs::realPath(saveLoc)); // must be resolved
+    QCOMPARE(saveLoc, expected);
+    QVERIFY(QDir(m_kdehome).mkpath("real/test")); // KConfig calls mkdir on its own, we simulate that here
+    const QString sameSaveLoc = KGlobal::dirs()->resourceDirs("david").first();
+    QCOMPARE(sameSaveLoc, saveLoc);
+    QCOMPARE(sameSaveLoc, KGlobal::dirs()->saveLocation("david"));
+#endif
 }
 
 #include <QThreadPool>
