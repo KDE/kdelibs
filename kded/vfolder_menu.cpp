@@ -431,12 +431,14 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
    if (!dir.endsWith('/'))
       dir += '/';
 
-   if (QDir::isRelativePath(dir) && !keepRelativeToCfg)
-   {
+   bool relative = QDir::isRelativePath(dir);
+   if (relative && !keepRelativeToCfg) {
+      relative = false;
       dir = KGlobal::dirs()->findResource("xdgconf-menu", dir);
    }
 
-   dir = KGlobal::dirs()->realPath(dir);
+   if (!relative)
+      dir = KGlobal::dirs()->realPath(dir);
 
    return dir;
 }
