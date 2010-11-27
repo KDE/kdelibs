@@ -96,14 +96,6 @@ void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *current, 
         }
     }
 
-    KCModuleProxy *currentModule = 0;
-    for ( int i = 0; i < modules.count(); ++i ) {
-        if ( modules[ i ].item == current ) {
-            currentModule = modules[ i ].kcm;
-            break;
-        }
-    }
-
     if( resolveChanges(previousModule) ) {
         q->setCurrentPage(current);
     }
