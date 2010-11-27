@@ -150,7 +150,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     KAction *action;
     action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
     action->setToolTip( profile.email() );
-    action->setData( QString( QLatin1String("mailto:") + profile.email() ) );
+    action->setData( QString( QLatin1String( "mailto:") + profile.email() ) );
     action->setVisible( true );
     if( !profile.homepage().isEmpty() ) {
         action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
@@ -257,8 +257,12 @@ void KAboutApplicationPersonListDelegate::paint( QPainter *painter,
 void KAboutApplicationPersonListDelegate::launchUrl( QAction *action ) const
 {
     QString url = action->data().toString();
-    if( !url.isEmpty() )
-        KToolInvocation::invokeBrowser( url );
+    if( !url.isEmpty() ) {
+        if( url.startsWith( "mailto:" ) )
+            KToolInvocation::invokeMailer( url.mid( 7 ) );
+        else
+            KToolInvocation::invokeBrowser( url );
+    }
 }
 
 } //namespace KDEPrivate
