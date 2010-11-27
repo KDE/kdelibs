@@ -262,6 +262,16 @@ public:
      */
     QList<Plasma::Containment *> importLayout(const KConfigBase &config);
 
+    /**
+     * Exports a set of containments to a config file.
+     *
+     * @param config the config group to save to
+     * @param containments the list of containments to save
+     * @since 4.5.4
+     */
+    void exportLayout(KConfigGroup &config, QList<Containment*> containments);
+
+
 public Q_SLOTS:
     /**
      * Initializes the layout from a config file. This will first clear any existing
