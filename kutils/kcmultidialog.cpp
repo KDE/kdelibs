@@ -104,11 +104,6 @@ void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *current, 
         }
     }
 
-    if ( !previousModule || !currentModule ) {
-        q->blockSignals(false);
-        return;
-    }
-
     if( resolveChanges(previousModule) ) {
         q->setCurrentPage(current);
     }
