@@ -273,6 +273,11 @@ void HTMLFrameElementImpl::ensureUniqueName()
     // Generate synthetic name if there isn't a natural one or
     // if the natural one conflicts
     KHTMLPart* parentPart = document()->part();
+    
+    // If there is no part, we will not load anything, so no 
+    // worry about names being unique or not.
+    if (!parentPart)
+        return;
 
     KHTMLPart* otherFrame = parentPart->findFrame( name.string() );
     if (name.isEmpty() || (otherFrame && otherFrame != contentPart()))
