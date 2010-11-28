@@ -62,6 +62,12 @@ class KActionSelectorPrivate {
    */
   int insertionIndex( QListWidget *lb, KActionSelector::InsertionPolicy policy );
   
+  /**
+   @return the index of the first selected item in listbox @p lb.
+   If no item is selected, it will return -1.
+   */
+  int selectedRowIndex( QListWidget *lb );
+
   void buttonAddClicked();    
   void buttonRemoveClicked();
   void buttonUpClicked();
@@ -135,13 +141,12 @@ KActionSelector::KActionSelector( QWidget *parent )
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
   connect( d->selectedListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
-  connect( d->availableListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
-           this, SLOT(slotCurrentChanged(QListWidgetItem *)) );
-  connect( d->selectedListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
-           this, SLOT(slotCurrentChanged(QListWidgetItem *)) );
+  connect( d->availableListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(polish()) );
+  connect( d->selectedListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(polish()) );
 
   d->availableListWidget->installEventFilter( this );
   d->selectedListWidget->installEventFilter( this );
+  setButtonsEnabled();
 }
 
 KActionSelector::~KActionSelector()
@@ -257,11 +262,11 @@ void KActionSelector::setButtonWhatsThis( const QString &text, MoveButton button
 
 void KActionSelector::setButtonsEnabled()
 {
-  d->btnAdd->setEnabled( d->availableListWidget->currentRow() > -1 );
-  d->btnRemove->setEnabled( d->selectedListWidget->currentRow() > -1 );
-  d->btnUp->setEnabled( d->selectedListWidget->currentRow() > 0 );
-  d->btnDown->setEnabled( d->selectedListWidget->currentRow() > -1 &&
-                          d->selectedListWidget->currentRow() < d->selectedListWidget->count() - 1 );
+  d->btnAdd->setEnabled( d->selectedRowIndex(d->availableListWidget) > -1 );
+  d->btnRemove->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 );
+  d->btnUp->setEnabled( d->selectedRowIndex(d->selectedListWidget) > 0 );
+  d->btnDown->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 &&
+                          d->selectedRowIndex(d->selectedListWidget) < d->selectedListWidget->count() - 1 );
 }
 
 //END Public Methods
@@ -464,7 +469,7 @@ void KActionSelectorPrivate::buttonRemoveClicked()
 
 void KActionSelectorPrivate::buttonUpClicked()
 {
-  int c = selectedListWidget->currentRow();
+  int c = selectedRowIndex(selectedListWidget);
   if ( c < 1 ) return;
   QListWidgetItem *item = selectedListWidget->item( c );
   selectedListWidget->takeItem( c );
@@ -475,7 +480,7 @@ void KActionSelectorPrivate::buttonUpClicked()
 
 void KActionSelectorPrivate::buttonDownClicked()
 {
-  int c = selectedListWidget->currentRow();
+  int c = selectedRowIndex(selectedListWidget);
   if ( c < 0 || c == selectedListWidget->count() - 1 ) return;
   QListWidgetItem *item = selectedListWidget->item( c );
   selectedListWidget->takeItem( c );
@@ -545,6 +550,15 @@ int KActionSelectorPrivate::insertionIndex( QListWidget *lb, KActionSelector::In
     index = -1;
   }
   return index;
+}
+
+int KActionSelectorPrivate::selectedRowIndex( QListWidget *lb )
+{
+  QList<QListWidgetItem *> list = lb->selectedItems();
+  if (list.isEmpty()) {
+      return -1;
+  }
+  return lb->row(list.at(0));
 }
 
 //END Private Methods
