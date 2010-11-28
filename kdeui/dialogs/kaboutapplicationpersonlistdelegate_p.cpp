@@ -98,44 +98,17 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
 
     KAboutApplicationPersonProfile profile = index.data().value< KAboutApplicationPersonProfile >();
 
-
-    QRect widgetsRect;
-    if( qobject_cast< const KAboutApplicationPersonModel * >( index.model() )->hasAvatarPixmaps() ) {
-        widgetsRect = QRect( option.rect.left() + AVATAR_WIDTH + 3 * margin,
-                             margin,
-                             option.rect.width() - AVATAR_WIDTH - 4 * margin,
-                             option.fontMetrics.height() * 2 );
-    }
-    else {
-        widgetsRect = QRect( option.rect.left() + margin,
-                             margin,
-                             option.rect.width() - 2*margin,
-                             option.fontMetrics.height() * 2 );
-    }
+    QRect wRect = widgetsRect( option, index );
 
     //Let's fill in the text first...
     QLabel *label = qobject_cast< QLabel * >( widgets.at( TextLabel ) );
     label->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 
-    QString text;
-    text += QLatin1String("<b>");
-    text += profile.name();
-    text += QLatin1String("</b>");
-    
-    if (!profile.task().isEmpty()) {
-      text += QLatin1String("<br><i>");
-      text += profile.task();
-      text += QLatin1String("</i>");
-    }
-    
-    if (!profile.location().isEmpty()) {
-        text +=  QLatin1String("<br>");
-        text += profile.location();
-    }
+    QString text = buildTextForProfile( profile );
 
-    int labelRows = text.count( QLatin1String("<br>") ) + 1;
-    label->move( widgetsRect.left(), widgetsRect.top() );
-    label->resize( widgetsRect.width(), option.fontMetrics.height() * labelRows + margin );
+    label->move( wRect.left(), wRect.top() );
+    label->resize( wRect.width(), heightForString( text, wRect.width() - margin, option ) + margin );
+    label->setWordWrap( true );
     label->setContentsMargins( 0, 0, 0, 0 );
     label->setAlignment( Qt::AlignBottom | Qt::AlignLeft );
     label->setForegroundRole( QPalette::WindowText );
@@ -168,7 +141,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
         action->setVisible( true );
     }
     mainLinks->resize( QSize( mainLinks->sizeHint().width(), MAIN_LINKS_HEIGHT ) );
-    mainLinks->move( widgetsRect.left(), widgetsRect.top() + label->height() );
+    mainLinks->move( wRect.left(), wRect.top() + label->height() );
 
     //Finally, the social links...
     KToolBar *socialLinks = qobject_cast< KToolBar * >( widgets.at( SocialLinks ) );
@@ -195,8 +168,8 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     }
 
     socialLinks->resize( QSize( socialLinks->sizeHint().width(), SOCIAL_LINKS_HEIGHT ) );
-    socialLinks->move( widgetsRect.left() + mainLinks->width(),
-                       widgetsRect.top() + label->height() +
+    socialLinks->move( wRect.left() + mainLinks->width(),
+                       wRect.top() + label->height() +
                        ( MAIN_LINKS_HEIGHT - SOCIAL_LINKS_HEIGHT ) / 2 );
 
     itemView()->reset();
@@ -206,17 +179,13 @@ QSize KAboutApplicationPersonListDelegate::sizeHint( const QStyleOptionViewItem 
                                                      const QModelIndex &index ) const
 {
     KAboutApplicationPersonProfile profile = index.data().value< KAboutApplicationPersonProfile >();
-    bool hasLocation = !profile.location().isEmpty();
     bool hasAvatar = !profile.avatar().isNull();
-
-    int textHeight = hasLocation ? option.fontMetrics.height() * 3
-                                 : option.fontMetrics.height() * 2;
 
     int margin = option.fontMetrics.height() / 2;
 
-    int height = hasAvatar ? qMax( textHeight + MAIN_LINKS_HEIGHT + 2*margin,
+    int height = hasAvatar ? qMax( widgetsRect( option, index ).height(),
                                    AVATAR_HEIGHT + 2*margin )
-                           : textHeight + MAIN_LINKS_HEIGHT + 2*margin;
+                           : widgetsRect( option, index ).height();
 
     QSize metrics( option.fontMetrics.height() * 7, height );
     return metrics;
@@ -234,7 +203,7 @@ void KAboutApplicationPersonListDelegate::paint( QPainter *painter,
     const KAboutApplicationPersonModel * model = qobject_cast< const KAboutApplicationPersonModel * >(index.model());
 
     if ( model->hasAvatarPixmaps() ) {
-        int height = option.rect.height();
+        int height = qMax( widgetsRect( option, index ).height(), AVATAR_HEIGHT + 2*margin );
         QPoint point( option.rect.left() + 2 * margin,
                       option.rect.top() + ( (height - AVATAR_HEIGHT) / 2) );
 
@@ -263,6 +232,62 @@ void KAboutApplicationPersonListDelegate::launchUrl( QAction *action ) const
         else
             KToolInvocation::invokeBrowser( url );
     }
+}
+
+int KAboutApplicationPersonListDelegate::heightForString( const QString &string,
+                                                          int lineWidth,
+                                                          const QStyleOptionViewItem &option) const
+{
+    QFontMetrics fm = option.fontMetrics;
+    QRect boundingRect = fm.boundingRect( 0, 0, lineWidth, 9999, Qt::AlignLeft |
+                                          Qt::AlignBottom | Qt::TextWordWrap, string );
+    return boundingRect.height();
+}
+
+QString KAboutApplicationPersonListDelegate::buildTextForProfile( const KAboutApplicationPersonProfile &profile ) const
+{
+    QString text;
+    text += QLatin1String("<b>");
+    text += profile.name();
+    text += QLatin1String("</b>");
+
+    if( !profile.task().isEmpty() ) {
+        text += QLatin1String("\n<br><i>");
+        text += profile.task();
+        text += QLatin1String("</i>");
+    }
+
+    if( !profile.location().isEmpty() ) {
+        text += QLatin1String("\n<br>");
+        text += profile.location();
+    }
+    return text;
+}
+
+QRect KAboutApplicationPersonListDelegate::widgetsRect( const QStyleOptionViewItem &option,
+                                                        const QPersistentModelIndex &index ) const
+{
+    KAboutApplicationPersonProfile profile = index.data().value< KAboutApplicationPersonProfile >();
+    int margin = option.fontMetrics.height() / 2;
+
+    QRect widgetsRect;
+    if( qobject_cast< const KAboutApplicationPersonModel * >( index.model() )->hasAvatarPixmaps() ) {
+        widgetsRect = QRect( option.rect.left() + AVATAR_WIDTH + 3 * margin,
+                             margin/2,
+                             option.rect.width() - AVATAR_WIDTH - 4 * margin,
+                             0 );
+    }
+    else {
+        widgetsRect = QRect( option.rect.left() + margin,
+                             margin/2,
+                             option.rect.width() - 2*margin,
+                             0 );
+    }
+
+    int textHeight = heightForString( buildTextForProfile( profile ), widgetsRect.width() - margin, option );
+    widgetsRect.setHeight( textHeight + MAIN_LINKS_HEIGHT + 1.5*margin );
+
+    return widgetsRect;
 }
 
 } //namespace KDEPrivate

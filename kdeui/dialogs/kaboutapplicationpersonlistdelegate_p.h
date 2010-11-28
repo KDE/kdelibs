@@ -24,6 +24,7 @@
 
 namespace KDEPrivate
 {
+class KAboutApplicationPersonProfile;
 
 class KAboutApplicationPersonListDelegate : public KWidgetItemDelegate
 {
@@ -48,6 +49,10 @@ private Q_SLOTS:
     void launchUrl( QAction *action ) const;
 
 private:
+    int heightForString( const QString &string, int lineWidth, const QStyleOptionViewItem &option ) const;
+    QString buildTextForProfile( const KAboutApplicationPersonProfile &profile ) const;
+    QRect widgetsRect( const QStyleOptionViewItem &option, const QPersistentModelIndex &index ) const;
+
     enum DelegateWidgets
     {
         TextLabel = 0,
