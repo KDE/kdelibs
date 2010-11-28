@@ -37,6 +37,10 @@
 #include <QtCore/QMetaObject>
 #include <QtCore/QMetaProperty>
 
+#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusMetaType>
+#include <QtDBus/QDBusPendingReply>
+
 using namespace Solid::Backends::UDisks;
 
 // Adapted from KLocale as Solid needs to be Qt-only
@@ -692,12 +696,11 @@ bool UDisksDevice::propertyExists(const QString &key) const
 
 QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
-    const QMetaObject* metaObject = m_device->metaObject();
-    const int count = metaObject->propertyCount();
-    for(int i = metaObject->propertyOffset(); i < count; ++i) {
-        const QString name = QString::fromUtf8(metaObject->property(i).name());
-        m_cache.insert(name, m_device->property(name.toUtf8()));
-    }
+    QDBusMessage call = QDBusMessage::createMethodCall(m_device->service(), m_device->path(),
+                                                       "org.freedesktop.DBus.Properties", "GetAll");
+    QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
+    reply.waitForFinished();
+    m_cache = reply.value();
 
     return m_cache;
 }

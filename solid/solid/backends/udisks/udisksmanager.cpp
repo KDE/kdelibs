@@ -48,6 +48,7 @@ UDisksManager::UDisksManager(QObject *parent)
             << Solid::DeviceInterface::StorageVolume;
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
+    qDBusRegisterMetaType<QVariantMap>();
 
     connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
             this, SLOT(slotDeviceAdded(QDBusObjectPath)));
