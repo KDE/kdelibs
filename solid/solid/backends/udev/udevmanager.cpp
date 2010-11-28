@@ -109,10 +109,30 @@ QStringList UDevManager::allDevices()
 QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
                                           Solid::DeviceInterface::Type type)
 {
-    Q_UNUSED(parentUdi)
-    Q_UNUSED(type)
-    // TODO: actually use the query parameters
-    return QStringList();
+    QStringList allDev = allDevices();
+    QStringList result;
+
+    if (!parentUdi.isEmpty()) {
+        foreach (const QString &udi, allDev) {
+            UDevDevice device(d->m_client->deviceBySysfsPath(udi.right(udi.size() - udiPrefix().size())));
+            if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi) {
+                result << udi;
+            }
+        }
+
+        return result;
+    } else if (type != Solid::DeviceInterface::Unknown) {
+        foreach (const QString &udi, allDev) {
+            UDevDevice device(d->m_client->deviceBySysfsPath(udi.right(udi.size() - udiPrefix().size())));
+            if (device.queryDeviceInterface(type)) {
+                result << udi;
+            }
+        }
+
+        return result;
+    } else {
+        return allDev;
+    }
 }
 
 QObject *UDevManager::createDevice(const QString &udi_)
