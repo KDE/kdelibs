@@ -41,9 +41,14 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
     if( m_providerUrl.isEmpty() )
         m_providerUrl = QString( "https://api.opendesktop.org/v1/" );
 
+    bool hasOcsUsernames = 0;
     for( QList< KAboutPerson >::const_iterator it = personList.begin(); it != personList.end(); ++it )
     {
         KAboutPerson person = *it;
+
+        if( !person.ocsUsername().isEmpty() )
+            hasOcsUsernames = 1;
+
         KAboutApplicationPersonProfile profile =
                 KAboutApplicationPersonProfile( person.name(),
                                                 person.task(),
@@ -55,7 +60,8 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
 #ifdef HAVE_ATTICA
     connect( &m_providerManager, SIGNAL( defaultProvidersLoaded() ),
              SLOT( onProvidersLoaded() ) );
-    m_providerManager.loadDefaultProviders();
+    if( hasOcsUsernames )
+        m_providerManager.loadDefaultProviders();
 #endif //HAVE_ATTICA
 }
 
