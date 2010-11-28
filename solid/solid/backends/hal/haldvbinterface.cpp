@@ -1,5 +1,6 @@
 /*
     Copyright 2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2007 Christoph Pfister <christophpfister@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
