@@ -1653,7 +1653,6 @@ void DocumentImpl::close(  )
 {
     if (parsing() && hasVariableLength() && m_tokenizer) {
         m_tokenizer->finish();
-        assert(!parsing());
     } else if (parsing() || !m_tokenizer)
         return;
 
