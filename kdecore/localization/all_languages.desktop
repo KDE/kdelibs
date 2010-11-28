@@ -16481,6 +16481,8 @@ Name[x-test]=xxXhosaxx
 Name[zh_CN]=科萨语
 Name[zh_HK]=科薩語
 Name[zh_TW]=科薩語
+[x-test]
+Name=KDE Test Language
 [yi]
 Name=Yiddish
 Name[af]=Yiddish
