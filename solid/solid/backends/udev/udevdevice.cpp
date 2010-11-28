@@ -24,6 +24,7 @@
 #include "udevprocessor.h"
 #include "udevcamera.h"
 #include "udevportablemediaplayer.h"
+#include "udevdvbinterface.h"
 #include "cpuinfo.h"
 
 using namespace Solid::Backends::UDev;
@@ -124,6 +125,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::PortableMediaPlayer:
         return false; // TODO: check what determines a portable media player
 
+    case Solid::DeviceInterface::DvbInterface:
+        return m_device.subsystem() ==  QLatin1String("dvb");
+
     default:
         return false;
     }
@@ -147,6 +151,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::PortableMediaPlayer:
         return new PortableMediaPlayer(this);
+
+    case Solid::DeviceInterface::DvbInterface:
+        return new DvbInterface(this);
 
     default:
         qFatal("Shouldn't happen");

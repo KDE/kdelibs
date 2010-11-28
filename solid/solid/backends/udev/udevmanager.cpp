@@ -59,7 +59,7 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         // Empty slots will not have a system device associated with them.
         return QFile::exists(device.sysfsPath() + "/sysdev");
     } else {
-        return device.driver() == "video";
+        return device.driver() == "video" || device.subsystem() == QLatin1String("dvb");
     }
 }
 
@@ -75,6 +75,7 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::AudioInterface
                              << Solid::DeviceInterface::Camera
                              << Solid::DeviceInterface::PortableMediaPlayer
+                             << Solid::DeviceInterface::DvbInterface
                              << Solid::DeviceInterface::Video;
 }
 
