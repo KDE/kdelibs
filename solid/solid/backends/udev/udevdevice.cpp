@@ -186,7 +186,7 @@ QMap<QString, QVariant> UDevDevice::allProperties() const
 
 bool UDevDevice::propertyExists(const QString &key) const
 {
-    return allProperties().contains(key);
+    return m_device.deviceProperties().contains(key);
 }
 
 QString UDevDevice::systemAttribute(const char *attribute) const
