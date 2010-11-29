@@ -40,31 +40,29 @@ public:
 void KPixmapSequence::Private::loadSequence(const QPixmap& bigPixmap, const QSize &frameSize)
 {
     if(bigPixmap.isNull()) {
-        kDebug() << "Invalid pixmap specified.";
+        kWarning() << "Invalid pixmap specified.";
+        return;
     }
-    else {
-        QSize size(frameSize);
-        if(!size.isValid()) {
-            size = QSize(bigPixmap.width(), bigPixmap.width());
-        }
-        if(bigPixmap.width() % size.width() ||
-           bigPixmap.height() % size.height()) {
-            kWarning() << "Invalid framesize.";
-            return;
-        }
 
-        mFrames.resize((bigPixmap.height()/size.height()) * (bigPixmap.width()/size.width()));
+    QSize size(frameSize);
+    if(!size.isValid()) {
+        size = QSize(bigPixmap.width(), bigPixmap.width());
+    }
+    if(bigPixmap.width() % size.width() ||
+       bigPixmap.height() % size.height()) {
+        kWarning() << "Invalid framesize.";
+        return;
+    }
 
-        int pos = 0;
-        for (int row = 0; row < bigPixmap.height()/size.height(); ++row) {
-            for (int col = 0; col < bigPixmap.width()/size.width(); ++col) {
-                QPixmap pix = QPixmap(size);
-                pix.fill(Qt::transparent);
-                QPainter painter(&pix);
-                painter.drawPixmap(QPoint(0, 0), bigPixmap, QRect(col*size.width(), row*size.height(), size.width(), size.height()));
-                painter.end();
-                mFrames[pos++] = pix;
-            }
+    const int rowCount = bigPixmap.height() / size.height();
+    const int colCount = bigPixmap.width() / size.width();
+    mFrames.resize(rowCount * colCount);
+
+    int pos = 0;
+    for (int row = 0; row < rowCount; ++row) {
+        for (int col = 0; col < colCount; ++col) {
+            QPixmap pix = bigPixmap.copy(col * size.width(), row * size.height(), size.width(), size.height());
+            mFrames[pos++] = pix;
         }
     }
 }
@@ -122,7 +120,7 @@ bool KPixmapSequence::isEmpty() const
 
 QSize KPixmapSequence::frameSize() const
 {
-    if (d->mFrames.size() == 0) {
+    if (isEmpty()) {
         kWarning() << "No frame loaded";
         return QSize();
     }
