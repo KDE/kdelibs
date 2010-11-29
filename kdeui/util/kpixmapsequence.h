@@ -37,10 +37,8 @@ class QPixmap;
  *
  * KPixmapSequence is implicitly shared. Copying is fast.
  *
- * Once typically uses the static methods loadFromPath and loadFromPixmap
- * to create an instance of KPixmapSequence.
- *
- * \author Aurélien Gâteau <agateau@kde.org><br/>Sebastian Trueg <trueg@kde.org>
+ * \author Aurélien Gâteau <agateau@kde.org>
+ * \author Sebastian Trueg <trueg@kde.org>
  *
  * \since 4.4
  */
@@ -58,25 +56,22 @@ public:
     KPixmapSequence(const KPixmapSequence &other);
 
     /**
-     * Load a sequence from a pixmap.
+     * Create a sequence from a pixmap.
      *
      * \param pixmap Pixmap to load
      * \param frameSize The size of the frames to load. The width of the file has to be
      * a multiple of the frame width; the same is true for the height. If an invalid
      * size is specified the file is considered to be one column of square frames.
-     *
-     * \return The sequence loaded from \a path or an invalid sequence if an error occurred
-     * (file could not be opened or \a frameSize does not match the file's size)
      */
     explicit KPixmapSequence(const QPixmap &pixmap, const QSize &frameSize = QSize());
 
     /**
-     * Create a sequence from an xdg animation pixmap.
+     * Create a sequence from an icon name.
      *
-     * \param xdgIconName The name of the icon (example: process-working)
+     * \param iconName The name of the icon (example: process-working)
      * \param size The icon/frame size
      */
-    explicit KPixmapSequence(const QString &xdgIconName, int size = KIconLoader::SizeSmall);
+    explicit KPixmapSequence(const QString &iconName, int size = KIconLoader::SizeSmall);
 
     /**
      * Destructor
@@ -104,7 +99,6 @@ public:
 
     /**
      * \return The size of an individual frame in the sequence.
-     * Be aware that frames are always taken to be squared.
      */
     QSize frameSize() const;
 
