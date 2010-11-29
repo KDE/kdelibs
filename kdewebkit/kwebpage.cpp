@@ -324,7 +324,7 @@ static void setDisableCookieJarStorage(QNetworkAccessManager* manager, bool stat
     if (manager) {
         KIO::Integration::CookieJar *cookieJar = manager ? qobject_cast<KIO::Integration::CookieJar*>(manager->cookieJar()) : 0;
         if (cookieJar) {
-            kDebug(800) << "Store cookies ?" << status;
+            kDebug(800) << "Store cookies ?" << !status;
             cookieJar->setDisableCookieStorage(status);
         }
     }
