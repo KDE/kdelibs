@@ -181,6 +181,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevcamera.cpp
       backends/udev/udevportablemediaplayer.cpp
       backends/udev/udevdvbinterface.cpp
+      backends/udev/udevblock.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
