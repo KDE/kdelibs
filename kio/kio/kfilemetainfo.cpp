@@ -136,7 +136,8 @@ public:
             const std::string& value) {
         if (idx->writerData()) {
             QString val = QString::fromUtf8(value.c_str(), value.size());
-            addValue(idx, field, val);
+            if( !val.startsWith(':') )
+                addValue(idx, field, val);
         }
     }
     void addValue(const Strigi::AnalysisResult* idx, const Strigi::RegisteredField* field,
