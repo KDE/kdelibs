@@ -441,6 +441,8 @@ void KStandarddirsTest::testSymlinkResolution()
     // While we're here...
     QCOMPARE(KStandardDirs::realPath(QString()), QString());
     QCOMPARE(KStandardDirs::realPath(QString("/")), QString("/"));
+
+    QCOMPARE(KStandardDirs::realPath(QString("/does_not_exist/")), QString("/does_not_exist/"));
 #endif
 }
 
