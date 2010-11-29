@@ -138,5 +138,9 @@ int KPixmapSequence::frameCount() const
 
 QPixmap KPixmapSequence::frameAt(int index) const
 {
+    if (isEmpty()) {
+        kWarning() << "No frame loaded";
+        return QPixmap();
+    }
     return d->mFrames.at(index);
 }
