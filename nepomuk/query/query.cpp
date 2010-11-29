@@ -214,38 +214,6 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
 
 
 
-QStringList Nepomuk::Query::QueryPrivate::buildRequestPropertyVariableList() const
-{
-    QStringList s;
-    for ( int i = 1; i <= m_requestProperties.count(); ++i ) {
-        s << QString( "?reqProp%1 " ).arg( i );
-    }
-    return s;
-}
-
-
-QString Nepomuk::Query::QueryPrivate::buildRequestPropertyPatterns() const
-{
-    QString s;
-    int i = 1;
-    foreach ( const Query::RequestProperty& rp, m_requestProperties ) {
-        if ( rp.optional() ) {
-            s += "OPTIONAL { ";
-        }
-
-        s += QString( "?r %1 ?reqProp%2 . " )
-             .arg( Soprano::Node::resourceToN3( rp.property().uri() ) )
-             .arg( i++ );
-
-        if ( rp.optional() ) {
-            s += "} ";
-        }
-    }
-    return s;
-}
-
-
-
 class Nepomuk::Query::Query::RequestProperty::Private : public QSharedData
 {
 public:
@@ -485,6 +453,22 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
         term = AndTerm( term, fileModeTerm );
     }
 
+
+    // convert request properties into ComparisonTerms
+    // in ask and count query mode we can omit the optional req props
+    for ( int i = 0; i < d->m_requestProperties.count(); ++i ) {
+        const RequestProperty& rp = d->m_requestProperties[i];
+        ComparisonTerm rpt( rp.property(), Term() );
+        rpt.setVariableName( QString::fromLatin1("reqProp%1").arg(i+1) );
+        if( rp.optional() && !( sparqlFlags&(CreateAskQuery|CreateCountQuery) ) ) {
+            term = term && OptionalTerm::optionalizeTerm( rpt );
+        }
+        else if( !rp.optional() ) {
+            term = term && rpt;
+        }
+    }
+
+
     // optimize whatever we can
     term = prepareForSparql( term ).optimized();
 
@@ -500,7 +484,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     }
 
     // build the list of variables to select (in addition to the main result variable ?r)
-    QStringList selectVariables = d->buildRequestPropertyVariableList() + qbd.customVariables();
+    QStringList selectVariables = qbd.customVariables();
 
     // add additional scoring variable if requested
     if( d->m_fullTextScoringEnabled ) {
@@ -522,10 +506,9 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     }
 
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "where { %1 %2 %3 %4 }" )
+    QString queryBase = QString::fromLatin1( "where { %1 %2 %3 }" )
                         .arg( termGraphPattern,
                               d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
-                              d->buildRequestPropertyPatterns(),
                               userVisibilityRestriction );
 
     // build the final query
