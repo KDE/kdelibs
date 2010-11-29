@@ -942,7 +942,7 @@ KStandardDirs::realPath(const QString &dirname)
     while (!KStandardDirs::exists(dir)) {
         //qDebug() << "does not exist:" << dir;
         const int pos = dir.lastIndexOf(QLatin1Char('/'), -2);
-        Q_ASSERT(pos > 0); // what? even "/" doesn't exist?
+        Q_ASSERT(pos >= 0); // what? even "/" doesn't exist?
         relative.prepend(dir.mid(pos+1)); // keep "subdir/"
         dir = dir.left(pos+1);
         Q_ASSERT(dir.endsWith(QLatin1Char('/')));
