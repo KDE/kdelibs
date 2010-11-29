@@ -141,7 +141,8 @@ public:
                     const string& value ) {
         if ( idx->writerData() ) {
             QString val = QString::fromUtf8 ( value.c_str(), value.size() );
-            addValue ( idx, field, val );
+            if( !val.startsWith(':') )
+                addValue ( idx, field, val );
         }
     }
 
