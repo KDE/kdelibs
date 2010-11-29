@@ -82,6 +82,9 @@ Q_SIGNALS:
      */
     void metaDataRequestFinished(const KFileItemList& items);
 
+protected:
+    virtual bool event(QEvent* event);
+
 private:
     class Private;
     Private* d;

@@ -394,4 +394,9 @@ QSize KFileMetaDataWidget::sizeHint() const
     return QSize(width, height);
 }
 
+bool KFileMetaDataWidget::event(QEvent* event)
+{
+    return QWidget::event(event);
+}
+
 #include "kfilemetadatawidget.moc"
