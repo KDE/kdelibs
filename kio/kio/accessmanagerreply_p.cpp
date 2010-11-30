@@ -119,26 +119,29 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         // Set the raw header information...
         const QString headers = job->queryMetaData("HTTP-Headers");
         if (!headers.isEmpty()) {
-            QStringListIterator it (headers.split('\n'));
-            while (it.hasNext()) {
-                QStringList headerPair = it.next().split(QLatin1String(":"));
-                if (headerPair.size() < 2)
-                    continue;
+            const QStringList httpHeaders (headers.split('\n'));
+            Q_FOREACH(const QString& httpHeader, httpHeaders) {
+                int index = httpHeader.indexOf(QLatin1Char(':'));
+                if (index == -1)
+                   continue; // Ignore the HTTP status line...
+                const QString headerName = httpHeader.left(index);
+                QString headerValue = httpHeader.mid(index+1);
                 // Skip setting cookies since they are automatically handled by kio_http...
-                if (headerPair.first().startsWith("set-cookie", Qt::CaseInsensitive))
+                if (headerName.startsWith("set-cookie", Qt::CaseInsensitive))
                     continue;
-                if (headerPair.first().startsWith("content-type", Qt::CaseInsensitive)) {
+                if (headerName.startsWith("content-type", Qt::CaseInsensitive)) {
                     const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
-                    if (!headerPair.at(1).contains(mimeType, Qt::CaseInsensitive)) {
-                        const int index = headerPair.at(1).indexOf(QLatin1Char(';'));
+                    if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
+                        index = headerValue.indexOf(QLatin1Char(';'));
                         if (index == -1)
-                            headerPair[1] = mimeType;
+                            headerValue = mimeType;
                         else
-                            headerPair[1].replace(0, index, mimeType);
+                            headerValue.replace(0, index, mimeType);
+                        kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
                     }
                 }
-                //kDebug(7044) << "Adding header:" << headerPair.at(0) << ":" << headerPair.at(1);
-                setRawHeader(headerPair.at(0).trimmed().toUtf8(), headerPair.at(1).trimmed().toUtf8());
+                kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
+                setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
             }
         }
 
@@ -223,7 +226,7 @@ void AccessManagerReply::slotResult(KJob *kJob)
             kDebug(7044) << errcode;
     }
 
-    QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid()) {
         readHttpResponseHeaders(m_kioJob);
         //kDebug(7044) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -236,10 +239,10 @@ void AccessManagerReply::slotResult(KJob *kJob)
     emit finished();
 }
 
-void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& url)
+void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
 {
     Q_UNUSED(job);
-    setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
+    setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(u));
 }
 
 void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
