@@ -140,7 +140,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
                         kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
                     }
                 }
-                kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
+                // kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
                 setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
             }
         }
