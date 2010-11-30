@@ -364,7 +364,8 @@ QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
     Q_ASSERT(!action->objectName().isEmpty());
     ret.append(action->objectName());                   // Action Unique Name
     ret.append(componentFriendlyForAction(action));     // Component Friendly name
-    ret.append(action->text());                         // Action Friendly Name
+    const QString actionText = KGlobal::locale()->removeAcceleratorMarker(action->text());
+    ret.append(actionText);                             // Action Friendly Name
     return ret;
 }
 
