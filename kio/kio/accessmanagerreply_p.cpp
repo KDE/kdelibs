@@ -119,7 +119,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         // Set the raw header information...
         const QString headers = job->queryMetaData("HTTP-Headers");
         if (!headers.isEmpty()) {
-            const QStringList httpHeaders (headers.split('\n'));
+            const QStringList httpHeaders (headers.split(QLatin1Char('\n')));
             Q_FOREACH(const QString& httpHeader, httpHeaders) {
                 int index = httpHeader.indexOf(QLatin1Char(':'));
                 if (index == -1)
@@ -129,6 +129,8 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
                 // Skip setting cookies since they are automatically handled by kio_http...
                 if (headerName.startsWith("set-cookie", Qt::CaseInsensitive))
                     continue;
+                // Without overridding the corrected mime-type sent by kio_http, add
+                // back the "charset=" portion of the content-type header if present.
                 if (headerName.startsWith("content-type", Qt::CaseInsensitive)) {
                     const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
                     if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
