@@ -43,6 +43,7 @@
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 #include <Soprano/NodeIterator>
+#include <KDE/KDebug>
 
 
 QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& property,
@@ -110,6 +111,11 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
 
     else if(value.isDouble()) {
         valueString = KGlobal::locale()->formatNumber(value.toDouble());
+    }
+
+    else if(value.isInt() && property == Vocabulary::NFO::duration() ) {
+        QTime time = QTime().addSecs( value.toInt() );
+        valueString = KGlobal::locale()->formatTime( time, true, true );
     }
 
     else if(value.isResource() &&
