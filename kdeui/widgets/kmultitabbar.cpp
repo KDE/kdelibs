@@ -354,8 +354,11 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 	initStyleOption(&opt);
 
 	// Paint bevel..
-	if (underMouse() || isChecked())
-		style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, &painter);
+	if (underMouse() || isChecked()) {
+		opt.text.clear();
+		opt.icon = QIcon();
+		style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &painter, this);
+	}
 
 	int hMargin, vMargin;
 	computeMargins(&hMargin, &vMargin);
@@ -384,8 +387,6 @@ void KMultiTabBarTab::paintEvent(QPaintEvent*) {
 		if (t == QLatin1String("...") || t == QChar(0x2026))
 			t.clear();
 	}
-
-	opt.text = t;
 
 	// Label time.... Simple case: no text, so just plop down the icon right in the center
 	// We only do this when the button never draws the text, to avoid jumps in icon position
