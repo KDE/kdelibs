@@ -16483,7 +16483,13 @@ Name[zh_HK]=科薩語
 Name[zh_TW]=科薩語
 [x-test]
 Name=KDE Test Language
+Name[ia]=Linguage de essayo de KDE
+Name[nl]=KDE-testtaal
+Name[pt]=Língua de Testes do KDE
+Name[sv]=KDE testspråk
+Name[uk]=Тестова мова KDE
 Name[x-test]=xxKDE Test Languagexx
+Name[zh_TW]=KDE 測試語言
 [yi]
 Name=Yiddish
 Name[af]=Yiddish
