@@ -57,12 +57,12 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
     KToolBar *mainLinks = new KToolBar( itemView(), false, false );
 
     KAction *emailAction = new KAction( KIcon( "internet-mail" ),
-                                        i18n("Email contributor"),
+                                        i18n( "Email contributor" ),
                                         mainLinks );
     emailAction->setVisible( false );
     mainLinks->addAction( emailAction );
     KAction *homepageAction = new KAction( KIcon( "applications-internet" ),
-                                           i18n("Visit contributor's homepage"),
+                                           i18n( "Visit contributor's homepage" ),
                                            mainLinks );
     homepageAction->setVisible( false );
     mainLinks->addAction( homepageAction );
@@ -122,12 +122,13 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     mainLinks->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
     KAction *action;
     action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
-    action->setToolTip( profile.email() );
+    action->setToolTip( i18nc( "Action to send an email to a contributor",
+                               "Email contributor\n%1", profile.email() ) );
     action->setData( QString( QLatin1String( "mailto:") + profile.email() ) );
     action->setVisible( true );
     if( !profile.homepage().isEmpty() ) {
         action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
-        action->setToolTip( profile.homepage().url() );
+        action->setToolTip( i18n( "Visit contributor's homepage\n%1", profile.homepage().url() ) );
         action->setData( profile.homepage().url() );
         action->setVisible( true );
     }
@@ -155,9 +156,23 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
             continue;   //We skip it if it's the same as the homepage from KAboutData
 
         action = qobject_cast< KAction * >( socialLinks->actions().at( currentSocialLinkAction ) );
-        action->setToolTip( i18n( "Visit contributor's profile on %1\n%2",
-                                  link.prettyType(),
-                                  link.url().url() ) );
+        if( link.type() == KAboutApplicationPersonProfileOcsLink::Other ) {
+            action->setToolTip( i18n( "Visit contributor's page\n%1",
+                                      link.url().url() ) );
+        }
+        else if( link.type() == KAboutApplicationPersonProfileOcsLink::Blog ) {
+            action->setToolTip( i18n( "Visit contributor's blog\n%1",
+                                      link.url().url() ) );
+        }
+        else if( link.type() == KAboutApplicationPersonProfileOcsLink::Homepage ) {
+            action->setToolTip( i18n( "Visit contributor's homepage\n%1",
+                                      link.url().url() ) );
+        }
+        else {
+            action->setToolTip( i18n( "Visit contributor's profile on %1\n%2",
+                                      link.prettyType(),
+                                      link.url().url() ) );
+        }
         action->setIcon( link.icon() );
         action->setData( link.url().url() );
         action->setVisible( true );
