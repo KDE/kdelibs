@@ -34,7 +34,6 @@
 #include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
-#include <QtCore/QStringBuilder>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -48,9 +47,9 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-static bool isLocalRequest(const QUrl& url)
+static bool isLocalRequest(const KUrl& url)
 {
-    const QString scheme (url.scheme());
+    const QString scheme (url.protocol());
     return (KProtocolInfo::isKnownProtocol(scheme) && 
             KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
 }
@@ -146,7 +145,7 @@ KIO::MetaData& AccessManager::sessionMetaData()
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
     KIO::SimpleJob *kioJob = 0;
-    const QUrl reqUrl (req.url());
+    const KUrl reqUrl (req.url());
     
     if (!d->externalContentAllowed && !isLocalRequest(reqUrl)) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
@@ -229,7 +228,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
           kioJob->addMetaData(QL1S("content-type"),
-                              (QL1S("Content-Type: ") % header.toString()));
+                              (QL1S("Content-Type: ") + header.toString()));
         else
           kioJob->addMetaData(QL1S("content-type"),
                               QL1S("Content-Type: application/x-www-form-urlencoded"));
@@ -279,7 +278,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     Q_FOREACH(const QByteArray &key, request.rawHeaderList()) {
         const QByteArray value = request.rawHeader(key);
         if (value.length())
-            customHeaders << (key % QL1S(": ") % value);
+            customHeaders << (key + QL1S(": ") + value);
     }
 
     if (!customHeaders.isEmpty())
@@ -355,7 +354,7 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const {
 
     if (d->isEnabled) {
         QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(), (qlonglong)d->windowId);
+        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
 
         if (reply.isValid()) {
             const QString cookieStr = reply.value();
@@ -387,7 +386,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
                 cookieHeader += sessionCookie.toRawForm();
             } else
                 cookieHeader += cookie.toRawForm();
-            kcookiejar.call("addCookies", url.toString(), cookieHeader, (qlonglong)d->windowId);
+            kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
             //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
         }
 
