@@ -51,6 +51,16 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
                                              const QList<Nepomuk::Resource>& resources,
                                              PropertyFormatFlags flags )
 {
+    // first handle lists
+    if( value.isList() ) {
+        QList<Variant> values = value.toVariantList();
+        QStringList valueStrings;
+        Q_FOREACH( const Variant& v, values ) {
+            valueStrings << formatPropertyValue( property, v, resources, flags );
+        }
+        return valueStrings.join( QLatin1String(", ") );
+    }
+
     //
     // We handle the one special case of referrer URLs of downloads
     // TODO: put stuff like this in a generic rule-based framework
