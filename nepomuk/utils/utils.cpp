@@ -43,7 +43,6 @@
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 #include <Soprano/NodeIterator>
-#include <KDE/KDebug>
 
 
 QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& property,
