@@ -300,31 +300,26 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 } NAME;
 
 /**
- * This macro is useful in libraries where you want to make sure that
+ * This class is useful in libraries where you want to make sure that
  * anyone that uses your library will get the correct catalog loaded.
+ * Just declare a static KCatalogLoader in the global namespace of one of
+ * your cpp files and that will load your catalog once
+ * the global klocale is created
  *
- * @param CATALOGNAME The name of your catalog
+ * @param catalogName The name of your catalog
  *
  * @since 4.6
  *
  * Example:
  * @code
- * K_CATALOG_LOADER(libkdepim)
+ * static const KCatalogLoader loader("libkdepim");
  * @endcode
- * 
- * @ingroup KDEMacros
  */
-#define K_CATALOG_LOADER(CATALOGNAME)                               \
-class KCatalogLoader##CATALOGNAME                                   \
-{                                                                   \
-    public:                                                         \
-        KCatalogLoader##CATALOGNAME();                              \
-};                                                                  \
-static KCatalogLoader##CATALOGNAME catalogLoader##CATALOGNAME;      \
-KCatalogLoader##CATALOGNAME::KCatalogLoader##CATALOGNAME()          \
-{                                                                   \
-    KGlobal::insertCatalog(QLatin1String(#CATALOGNAME));            \
-}
+class KCatalogLoader
+{
+    public:
+        KCatalogLoader(const QString &catalogName);
+};
 
 /**
  * Access to the KDE global objects.

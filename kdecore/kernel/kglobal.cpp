@@ -118,6 +118,12 @@ class KGlobalPrivate
         }
 };
 
+KCatalogLoader::KCatalogLoader(const QString &catalogName)
+{
+    KGlobal::insertCatalog(catalogName);
+}
+
+
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
 K_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFakeComponent()))
 
