@@ -59,9 +59,9 @@ bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
 {
     KFilePlaceEditDialog *dialog = new KFilePlaceEditDialog(allowGlobal, url,
                                                             label, icon,
+                                                            isAddingNewPlace,
                                                             appLocal,
                                                             iconSize,
-                                                            isAddingNewPlace,
                                                             parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
