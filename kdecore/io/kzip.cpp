@@ -444,7 +444,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             {
 	    	// here we have to read through the compressed data to find
 		// the next PKxx
-	        kDebug(7040) << "trying to seek for next PK78";
+	        //kDebug(7040) << "trying to seek for next PK78";
                 bool foundSignature = false;
 
                 while (!foundSignature)
@@ -734,7 +734,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
         {
             // The file does not start with any ZIP header (e.g. self-extractable ZIP files)
             // Therefore we need to find the first PK\003\004 (local header)
-            kDebug(7040) << "Try to skip start of file";
+            //kDebug(7040) << "Try to skip start of file";
             startOfFile = false;
             bool foundSignature = false;
 
