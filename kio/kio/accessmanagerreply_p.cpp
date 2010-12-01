@@ -120,45 +120,50 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             setSslConfiguration(sslConfig);
 
         // Set the raw header information...
-        const QString headers = job->queryMetaData(QL1S("HTTP-Headers"));
-        if (!headers.isEmpty()) {
-            const QStringList httpHeaders (headers.split(QL1C('\n')));
-            Q_FOREACH(const QString& httpHeader, httpHeaders) {
-                int index = httpHeader.indexOf(QL1C(':'));
-                 // Ignore the HTTP status line...
-                if (index == -1 && httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive)) {
-                    index = httpHeader.indexOf(responseCode);
-                    if (index > -1) {
-                        index += responseCode.length();
-                        if (index < httpHeader.length()) {
-                            const QString& reasonPhrase = httpHeader.mid(index).trimmed();
-                            setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, reasonPhrase);
-                            //kDebug(7044) << "Set reason phrase to" << reasonPhrase;
-                        }
-                    }
-                    continue;
-                }
-                const QString headerName = httpHeader.left(index);
-                QString headerValue = httpHeader.mid(index+1);
-                // Skip setting cookies since they are automatically handled by kio_http...
-                if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
-                    continue;
-                // Without overridding the corrected mime-type sent by kio_http, add
-                // back the "charset=" portion of the content-type header if present.
-                if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
-                    const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
-                    if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
-                        index = headerValue.indexOf(QL1C(';'));
-                        if (index == -1)
-                            headerValue = mimeType;
-                        else
-                            headerValue.replace(0, index, mimeType);
-                        //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
-                    }
-                }
-                // kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
-                setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
+        const QStringList httpHeaders (job->queryMetaData(QL1S("HTTP-Headers")).split(QL1C('\n')));
+        Q_FOREACH(const QString& httpHeader, httpHeaders) {
+            int index = httpHeader.indexOf(QL1C(':'));
+              // Ignore the HTTP status line...
+            if (index == -1) {
+                // Except for the status line, all HTTP headers must be a name/value pair,i.e "<name>:<value>"
+                if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive))
+                  continue;
+
+                // Further validate the status line to make sure it contains the response code...
+                index = httpHeader.indexOf(responseCode);
+                if (index == -1)
+                   continue;                
+
+                // Assign the status/reason pharse...
+                index += responseCode.length();
+                if (index < httpHeader.length())
+                    setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, httpHeader.mid(index).trimmed());
+                continue;
             }
+
+            const QString headerName = httpHeader.left(index);
+            QString headerValue = httpHeader.mid(index+1);
+
+            // Skip setting cookies since they are automatically handled by kio_http...
+            if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
+                continue;
+            
+            // Without overridding the corrected mime-type sent by kio_http, add
+            // back the "charset=" portion of the content-type header if present.
+            if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
+                const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+                if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
+                    index = headerValue.indexOf(QL1C(';'));
+                    if (index == -1)
+                        headerValue = mimeType;
+                    else
+                        headerValue.replace(0, index, mimeType);
+                    //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
+                }
+            }
+            
+            // kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
+            setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
         }
 
         // Set the returned meta data as attribute...
