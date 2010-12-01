@@ -16,7 +16,7 @@
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>κλπ.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY ie     "<abbrev>i.e.</abbrev>">
+<!ENTITY ie     "<abbrev>δηλ.</abbrev>">
 <!ENTITY infocenter	"<application>Κέντρο πληροφοριών</application>">
 <!ENTITY kcontrolcenter	"<application>Κέντρο ελέγχου του &kde;</application>">
 <!ENTITY kicon	"<guiicon>
