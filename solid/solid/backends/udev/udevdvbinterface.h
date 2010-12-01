@@ -45,9 +45,6 @@ public:
     virtual int deviceAdapter() const;
     virtual Solid::DvbInterface::DeviceType deviceType() const;
     virtual int deviceIndex() const;
-
-private:
-    bool parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *index) const;
 };
 }
 }

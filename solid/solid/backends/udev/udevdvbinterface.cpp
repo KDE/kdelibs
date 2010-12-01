@@ -44,23 +44,8 @@ QString DvbInterface::device() const
 
 int DvbInterface::deviceAdapter() const
 {
-    QString string = device();
-    int pos = string.lastIndexOf('/');
-    if (pos < 0)
-        return -1;
-    string = string.left(pos);
-
-    pos = string.lastIndexOf('/');
-    if (pos < 0)
-        return -1;
-    string = string.mid(pos + 1);
-
-    if (!string.startsWith(QLatin1String("adapter")))
-        return -1;
-    string = string.mid(7);
-
     bool ok;
-    int adapter = string.toInt(&ok, 10);
+    int adapter = m_device->property("DVB_ADAPTER_NUM").toString().toInt(&ok, 10);
     if (ok)
         return adapter;
     else
@@ -69,68 +54,40 @@ int DvbInterface::deviceAdapter() const
 
 Solid::DvbInterface::DeviceType DvbInterface::deviceType() const
 {
-    Solid::DvbInterface::DeviceType type;
-    int index;
+    Solid::DvbInterface::DeviceType type = Solid::DvbInterface::DvbUnknown;
+    const QString typeString = m_device->property("DVB_DEVICE_TYPE").toString();
 
-    if (parseTypeIndex(&type, &index))
-        return type;
-    else
-        return Solid::DvbInterface::DvbUnknown;
+    if (typeString == QLatin1String("audio")) {
+        type = Solid::DvbInterface::DvbAudio;
+    } else if (typeString == QLatin1String("ca")) {
+        type = Solid::DvbInterface::DvbCa;
+    } else if (typeString == QLatin1String("demux")) {
+        type = Solid::DvbInterface::DvbDemux;
+    } else if (typeString == QLatin1String("dvr")) {
+        type = Solid::DvbInterface::DvbDvr;
+    } else if (typeString == QLatin1String("frontend")) {
+        type = Solid::DvbInterface::DvbFrontend;
+    } else if (typeString == QLatin1String("net")) {
+        type = Solid::DvbInterface::DvbNet;
+    } else if (typeString == QLatin1String("osd")) {
+        type = Solid::DvbInterface::DvbOsd;
+    } else if (typeString == QLatin1String("sec")) {
+        type = Solid::DvbInterface::DvbSec;
+    } else if (typeString == QLatin1String("video")) {
+        type = Solid::DvbInterface::DvbVideo;
+    }
+
+    return type;
 }
 
 int DvbInterface::deviceIndex() const
 {
-    Solid::DvbInterface::DeviceType type;
-    int index;
-
-    if (parseTypeIndex(&type, &index))
+    bool ok;
+    int index = m_device->property("DVB_DEVICE_NUM").toString().toInt(&ok, 10);
+    if (ok)
         return index;
     else
         return -1;
-}
-
-bool DvbInterface::parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *index) const
-{
-    QString string = device();
-    int pos = string.lastIndexOf('/');
-    if (pos < 0)
-        return false;
-    string = string.mid(pos + 1);
-
-    if (string.startsWith(QLatin1String("audio"))) {
-        *type = Solid::DvbInterface::DvbAudio;
-        string = string.mid(5);
-    } else if (string.startsWith(QLatin1String("ca"))) {
-        *type = Solid::DvbInterface::DvbCa;
-        string = string.mid(2);
-    } else if (string.startsWith(QLatin1String("demux"))) {
-        *type = Solid::DvbInterface::DvbDemux;
-        string = string.mid(5);
-    } else if (string.startsWith(QLatin1String("dvr"))) {
-        *type = Solid::DvbInterface::DvbDvr;
-        string = string.mid(3);
-    } else if (string.startsWith(QLatin1String("frontend"))) {
-        *type = Solid::DvbInterface::DvbFrontend;
-        string = string.mid(8);
-    } else if (string.startsWith(QLatin1String("net"))) {
-        *type = Solid::DvbInterface::DvbNet;
-        string = string.mid(3);
-    } else if (string.startsWith(QLatin1String("osd"))) {
-        *type = Solid::DvbInterface::DvbOsd;
-        string = string.mid(3);
-    } else if (string.startsWith(QLatin1String("sec"))) {
-        *type = Solid::DvbInterface::DvbSec;
-        string = string.mid(3);
-    } else if (string.startsWith(QLatin1String("video"))) {
-        *type = Solid::DvbInterface::DvbVideo;
-        string = string.mid(5);
-    } else
-        return false;
-
-    bool ok;
-    *index = string.toInt(&ok, 10);
-
-    return ok;
 }
 
 #include "backends/udev/udevdvbinterface.moc"
