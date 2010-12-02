@@ -352,7 +352,8 @@ void PreviewJob::slotResult( KJob *job )
 
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
-            if (d->currentItem.item.mostLocalUrl().isLocalFile())
+            const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
+            if (itemUrl.isLocalFile() || itemUrl.protocol() == QLatin1String("trash"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
                                   && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
