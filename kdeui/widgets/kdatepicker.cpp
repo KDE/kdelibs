@@ -41,6 +41,7 @@
 #include <kicon.h>
 #include <kiconloader.h>
 #include <klineedit.h>
+#include <klocale.h>
 #include <knotification.h>
 
 #include "kdatepicker.moc"
@@ -447,11 +448,6 @@ bool KDatePicker::setCalendar( KCalendarSystem *calendar )
 bool KDatePicker::setCalendar( const QString &calendarType )
 {
     return  d->table->setCalendar( calendarType );
-}
-
-bool KDatePicker::setCalendarSystem( KLocale::CalendarSystem calendarSystem )
-{
-    return  d->table->setCalendarSystem( calendarSystem );
 }
 
 void KDatePicker::monthForwardClicked()
