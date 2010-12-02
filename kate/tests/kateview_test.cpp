@@ -77,3 +77,70 @@ void KateViewTest::testReloadMultipleViews()
 
     QVERIFY(doc.documentReload());
 }
+
+void KateViewTest::testLowerCaseBlockSelection()
+{
+    // testcase for https://bugs.kde.org/show_bug.cgi?id=258480
+    KateDocument doc(false, false, false);
+    doc.setText("nY\nnYY\n");
+
+    KateView* view1 = new KateView(&doc, 0);
+    view1->setBlockSelectionMode(true);
+    view1->setSelection(Range(0, 1, 1, 3));
+    view1->lowercase();
+
+    QCOMPARE(doc.text(), QString("ny\nnyy\n"));
+}
+
+void KateViewTest::testFolding_data()
+{
+    QTest::addColumn<bool>("dynWordWrap");
+    QTest::addColumn<bool>("scrollPastEnd");
+    QTest::addColumn<int>("autoCenterLines");
+
+    QTest::newRow("dynWordWrap") << true << false << 0;
+    QTest::newRow("dynWordWrap+scrollPastEnd") << true << true << 0;
+    QTest::newRow("dynWordWrap+autoCenterLines") << true << false << 10;
+    QTest::newRow("dynWordWrap+scrollPastEnd+autoCenterLines") << true << true << 10;
+    QTest::newRow("scrollPastEnd") << false << true << 0;
+    QTest::newRow("scrollPastEnd+autoCenterLines") << false << true << 10;
+}
+
+void KateViewTest::testFolding()
+{
+    KTemporaryFile file;
+    file.setSuffix(".cpp");
+    file.open();
+    QTextStream stream(&file);
+    stream << "int main() {\n"
+           << "  asdf;\n"
+           << "}\n";
+    stream << flush;
+    file.close();
+
+    KateDocument doc(false, false, false);
+    QVERIFY(doc.openUrl(KUrl(file.fileName())));
+    QCOMPARE(doc.highlightingMode(), QString("C++"));
+
+    KateView* view = new KateView(&doc, 0);
+    QAction* collapseAction = view->action("folding_toplevel");
+    QVERIFY(collapseAction);
+    QAction* expandAction = view->action("folding_expandtoplevel");
+    QVERIFY(expandAction);
+
+    QFETCH(bool, dynWordWrap);
+    QFETCH(bool, scrollPastEnd);
+    QFETCH(int, autoCenterLines);
+
+    view->config()->setDynWordWrap(dynWordWrap);
+    view->config()->setScrollPastEnd(scrollPastEnd);
+    view->config()->setAutoCenterLines(autoCenterLines);
+
+    QCOMPARE(doc.visibleLines(), 4u);
+
+    collapseAction->trigger();
+    QCOMPARE(doc.visibleLines(), 2u);
+
+    expandAction->trigger();
+    QCOMPARE(doc.visibleLines(), 4u);
+}
