@@ -27,6 +27,8 @@
 #include <QtCore/QDateTime>
 #include <QtGui/QFrame>
 
+#include <klocale.h>
+
 class QLineEdit;
 class KDateTable;
 class KCalendarSystem;
@@ -118,6 +120,16 @@ public:
      * @return @c true if the calendar system was successfully set, @c false otherwise
      */
     bool setCalendar( const QString &calendarType );
+
+    /**
+     * @since 4.6
+     *
+     * Changes the calendar system to use.  Will always use global locale.
+     *
+     * @param calendarSystem the calendar system to use
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendarSystem( KLocale::CalendarSystem calendarSystem );
 
     /**
      * Enables or disables the widget.

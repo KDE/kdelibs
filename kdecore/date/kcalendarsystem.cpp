@@ -46,62 +46,13 @@
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
-    return create( calendarType, KSharedConfig::Ptr(), locale );
+    return create( calendarSystemForCalendarType( calendarType ), locale );
 }
 
 KCalendarSystem *KCalendarSystem::create( const QString &calendarType, KSharedConfig::Ptr config,
                                           const KLocale *locale )
 {
-    if ( calendarType == QLatin1String("coptic") ) {
-        return new KCalendarSystemCoptic( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("ethiopian") ) {
-        return new KCalendarSystemEthiopian( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("gregorian") ) {
-        return new KCalendarSystemGregorian( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("gregorian-proleptic") ) {
-        return new KCalendarSystemGregorianProleptic( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("hebrew") ) {
-        return new KCalendarSystemHebrew( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("hijri") ) {
-        return new KCalendarSystemHijri( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("indian-national") ) {
-        return new KCalendarSystemIndianNational( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("jalali") ) {
-        return new KCalendarSystemJalali( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("japanese") ) {
-        return new KCalendarSystemJapanese( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("julian") ) {
-        return new KCalendarSystemJulian( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("minguo") ) {
-        return new KCalendarSystemMinguo( config, locale );
-    }
-
-    if ( calendarType == QLatin1String("thai") ) {
-        return new KCalendarSystemThai( config, locale );
-    }
-
-    // ### HPB: Should it really be a default here?
-    return new KCalendarSystemGregorian( config, locale );
+    return create( calendarSystemForCalendarType( calendarType ), config, locale );
 }
 
 QStringList KCalendarSystem::calendarSystems()
@@ -111,10 +62,7 @@ QStringList KCalendarSystem::calendarSystems()
     lst.append( QLatin1String("coptic") );
     lst.append( QLatin1String("ethiopian") );
     lst.append( QLatin1String("gregorian") );
-    //Do not return in list as we don't want used unless the client absolutely knows what they are doing
-    //This is to prevent interop issues with the "gregorian" being a hybrid Julian/Gregorian, and to prevent
-    //double listing of Gregorian confusing users about which to use.
-    //lst.append( QLatin1String("gregorian-proleptic") );
+    lst.append( QLatin1String("gregorian-proleptic") );
     lst.append( QLatin1String("hebrew") );
     lst.append( QLatin1String("hijri") );
     lst.append( QLatin1String("indian-national") );
@@ -129,55 +77,11 @@ QStringList KCalendarSystem::calendarSystems()
 
 QString KCalendarSystem::calendarLabel( const QString &calendarType )
 {
-    if ( calendarType == QLatin1String("coptic") ) {
-        return KCalendarSystem::calendarLabel( KLocale::CopticCalendar );
+    if ( calendarSystems().contains( calendarType ) ) {
+        return KCalendarSystem::calendarLabel( KCalendarSystem::calendarSystemForCalendarType( calendarType ) );
+    } else {
+        return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
     }
-
-    if ( calendarType == QLatin1String("ethiopian") ) {
-        return KCalendarSystem::calendarLabel( KLocale::EthiopianCalendar );
-    }
-
-    if ( calendarType == QLatin1String("gregorian") ) {
-        return KCalendarSystem::calendarLabel( KLocale::QDateCalendar );
-    }
-
-    if ( calendarType == QLatin1String("gregorian-proleptic") ) {
-        return KCalendarSystem::calendarLabel( KLocale::GregorianCalendar );
-    }
-
-    if ( calendarType == QLatin1String("hebrew") ) {
-        return KCalendarSystem::calendarLabel( KLocale::HebrewCalendar );
-    }
-
-    if ( calendarType == QLatin1String("hijri") ) {
-        return KCalendarSystem::calendarLabel( KLocale::IslamicCivilCalendar );
-    }
-
-    if ( calendarType == QLatin1String("indian-national") ) {
-        return KCalendarSystem::calendarLabel( KLocale::IndianNationalCalendar );
-    }
-
-    if ( calendarType == QLatin1String("jalali") ) {
-        return KCalendarSystem::calendarLabel( KLocale::JalaliCalendar );
-    }
-
-    if ( calendarType == QLatin1String("japanese") ) {
-        return KCalendarSystem::calendarLabel( KLocale::JapaneseCalendar );
-    }
-
-    if ( calendarType == QLatin1String("julian") ) {
-        return KCalendarSystem::calendarLabel( KLocale::JulianCalendar );
-    }
-
-    if ( calendarType == QLatin1String("minguo") ) {
-        return KCalendarSystem::calendarLabel( KLocale::MinguoCalendar );
-    }
-
-    if ( calendarType == QLatin1String("thai") ) {
-        return KCalendarSystem::calendarLabel( KLocale::ThaiCalendar );
-    }
-
-    return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( KGlobal::locale() );
 }
 
 KCalendarSystem *KCalendarSystem::create( KLocale::CalendarSystem calendarSystem, const KLocale *locale )
@@ -268,6 +172,37 @@ QString KCalendarSystem::calendarLabel( KLocale::CalendarSystem calendarSystem, 
     }
 
     return ki18nc( "@item Calendar system", "Invalid Calendar Type" ).toString( locale );
+}
+
+KLocale::CalendarSystem KCalendarSystem::calendarSystemForCalendarType( const QString &calendarType )
+{
+    if ( calendarType == QLatin1String( "coptic" ) ) {
+        return KLocale::CopticCalendar;
+    } else if ( calendarType == QLatin1String( "ethiopian" ) ) {
+        return KLocale::EthiopianCalendar;
+    } else if ( calendarType == QLatin1String( "gregorian" ) ) {
+        return KLocale::QDateCalendar;
+    } else if ( calendarType == QLatin1String( "gregorian-proleptic" ) ) {
+        return KLocale::GregorianCalendar;
+    } else if ( calendarType == QLatin1String( "hebrew" ) ) {
+        return KLocale::HebrewCalendar;
+    } else if ( calendarType == QLatin1String( "hijri" ) ) {
+        return KLocale::IslamicCivilCalendar;
+    } else if ( calendarType == QLatin1String( "indian-national" ) ) {
+        return KLocale::IndianNationalCalendar;
+    } else if ( calendarType == QLatin1String( "jalali" ) ) {
+        return KLocale::JalaliCalendar;
+    } else if ( calendarType == QLatin1String( "japanese" ) ) {
+        return KLocale::JapaneseCalendar;
+    } else if ( calendarType == QLatin1String( "julian" ) ) {
+        return KLocale::JulianCalendar;
+    } else if ( calendarType == QLatin1String( "minguo" ) ) {
+        return KLocale::MinguoCalendar;
+    } else if ( calendarType == QLatin1String( "thai" ) ) {
+        return KLocale::ThaiCalendar;
+    } else {
+        return KLocale::QDateCalendar;
+    }
 }
 
 // Shared d pointer base class definitions
@@ -777,48 +712,49 @@ void KCalendarSystemPrivate::loadEraList( const KConfigGroup & cg )
 {
     delete m_eraList;
     m_eraList = new QList<KCalendarEra>;
-    if ( cg.exists() ) {
-        int eraCount = cg.readEntry( "EraCount", 0 );
-        for ( int i = 1; i <= eraCount; ++i ) {
-            QString eraEntry = cg.readEntry( QString::fromLatin1( "Era%1" ).arg( i ), QString() );
-            if ( !eraEntry.isEmpty() ) {
-                // Based on LC_TIME, but different!
-                // Includes long and short names, uses ISO fomat dates
-                // e.g. +:1:0001-01-01:9999-12-31:Anno Domini:AD:%EC %Ey
-                QChar direction = eraEntry.section( QLatin1Char(':'), 0, 0 ).at( 0 );
-                QDate startDate, endDate;
-                int startYear;
-                QString buffer = eraEntry.section( QLatin1Char(':'), 2, 2 );
-                if ( buffer.isEmpty() ) {
-                    if ( direction == QLatin1Char('-') ) {
-                        startDate = q->latestValidDate();
-                    } else {
-                        startDate = q->earliestValidDate();
-                    }
+    QString eraKey = QString::fromLatin1("Era1");
+    int i = 1;
+    while ( cg.hasKey( eraKey ) ) {
+        QString eraEntry = cg.readEntry( eraKey, QString() );
+        if ( !eraEntry.isEmpty() ) {
+            // Based on LC_TIME, but different!
+            // Includes long and short names, uses ISO fomat dates
+            // e.g. +:1:0001-01-01:9999-12-31:Anno Domini:AD:%EC %Ey
+            QChar direction = eraEntry.section( QLatin1Char(':'), 0, 0 ).at( 0 );
+            QDate startDate, endDate;
+            int startYear;
+            QString buffer = eraEntry.section( QLatin1Char(':'), 2, 2 );
+            if ( buffer.isEmpty() ) {
+                if ( direction == QLatin1Char('-') ) {
+                    startDate = q->latestValidDate();
                 } else {
-                    startDate = q->readDate( buffer, KLocale::IsoFormat );
+                    startDate = q->earliestValidDate();
                 }
-                if ( q->isValid( startDate ) ) {
-                    startYear = q->year( startDate );
-                } else {
-                    startYear = eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(); //Use offset
-                }
-
-                buffer = eraEntry.section( QLatin1Char(':'), 3, 3 );
-                if ( buffer.isEmpty() ) {
-                    if ( direction == QLatin1Char('-') ) {
-                        endDate = q->earliestValidDate();
-                    } else {
-                        endDate = q->latestValidDate();
-                    }
-                } else {
-                    endDate = q->readDate( buffer, KLocale::IsoFormat );
-                }
-                addEra( direction.toLatin1(), eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(),
-                        startDate, startYear, endDate, eraEntry.section( QLatin1Char(':'), 4, 4 ),
-                        eraEntry.section( QLatin1Char(':'), 5, 5 ), eraEntry.section( QLatin1Char(':'), 6 ) );
+            } else {
+                startDate = q->readDate( buffer, KLocale::IsoFormat );
             }
+            if ( q->isValid( startDate ) ) {
+                startYear = q->year( startDate );
+            } else {
+                startYear = eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(); //Use offset
+            }
+
+            buffer = eraEntry.section( QLatin1Char(':'), 3, 3 );
+            if ( buffer.isEmpty() ) {
+                if ( direction == QLatin1Char('-') ) {
+                    endDate = q->earliestValidDate();
+                } else {
+                    endDate = q->latestValidDate();
+                }
+            } else {
+                endDate = q->readDate( buffer, KLocale::IsoFormat );
+            }
+            addEra( direction.toLatin1(), eraEntry.section( QLatin1Char(':'), 1, 1 ).toInt(),
+                    startDate, startYear, endDate, eraEntry.section( QLatin1Char(':'), 4, 4 ),
+                    eraEntry.section( QLatin1Char(':'), 5, 5 ), eraEntry.section( QLatin1Char(':'), 6 ) );
         }
+        ++i;
+        eraKey = QString::fromLatin1("Era%1").arg(i);
     }
 
     if ( m_eraList->isEmpty() ) {
@@ -892,9 +828,10 @@ KSharedConfig::Ptr KCalendarSystemPrivate::config()
 
 void KCalendarSystemPrivate::loadConfig( const QString & calendarType )
 {
-    KConfigGroup cg( config(), QString::fromLatin1( "KCalendarSystem %1" ).arg( calendarType ) );
-    loadEraList( cg );
-    loadShortYearWindowStartYear( cg );
+    KConfigGroup localeGroup( config(), QString::fromLatin1( "Locale" ) );
+    KConfigGroup calendarGroup = localeGroup.group( QString::fromLatin1( "KCalendarSystem %1" ).arg( calendarType ) );
+    loadEraList( calendarGroup );
+    loadShortYearWindowStartYear( calendarGroup );
 }
 
 

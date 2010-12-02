@@ -175,6 +175,17 @@ public:
     static QString calendarLabel( KLocale::CalendarSystem calendarSystem, const KLocale *locale = KGlobal::locale() );
 
     /**
+     * @since 4.6
+     *
+     * Returns the Calendar System enum value for a given Calendar Type,
+     * e.g. KLocale::QDateCalendar for "gregorian"
+     *
+     * @param calendarType the calendar type to convert
+     * @return calendar system for calendar type
+     */
+    static KLocale::CalendarSystem calendarSystemForCalendarType( const QString &calendarType );
+
+    /**
      * Constructor of abstract calendar class. This will be called by derived classes.
      *
      * @param locale locale to use for translations. The global locale is used if null.

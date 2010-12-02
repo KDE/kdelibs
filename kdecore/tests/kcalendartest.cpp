@@ -128,10 +128,11 @@ void KCalendarTest::testTypes()
     delete calendar;
 
     QStringList lst = KCalendarSystem::calendarSystems();
-    QCOMPARE( lst.count(), 11 );
+    QCOMPARE( lst.count(), 12 );
     QVERIFY( lst.contains( "coptic" ) );
     QVERIFY( lst.contains( "ethiopian" ) );
     QVERIFY( lst.contains( "gregorian" ) );
+    QVERIFY( lst.contains( "gregorian-proleptic" ) );
     QVERIFY( lst.contains( "hebrew" ) );
     QVERIFY( lst.contains( "hijri" ) );
     QVERIFY( lst.contains( "indian-national" ) );
@@ -1083,9 +1084,9 @@ void KCalendarTest::testFirstLast()
 
 void KCalendarTest::testEra()
 {
-    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( "gregorian" ) );
-    cg.deleteGroup( KConfigGroup::Normal );
-    cg.deleteGroup( KConfigGroup::Global );
+    KConfigGroup lcg( KGlobal::config(), QString( "Locale" ) );
+    KConfigGroup cg = lcg.group( QString( "KCalendarSystem %1" ).arg( "gregorian" ) );
+    cg.deleteGroup();
 
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
@@ -1147,17 +1148,17 @@ void KCalendarTest::testEra()
     QCOMPARE( setEraDate( calendar, "AD", 2005, 12, 31 ), QDate( 2005, 12, 31 ) );
 
     delete calendar;
-    cg.writeEntry( "EraCount", 2,  KConfigGroup::Global );
-    cg.writeEntry( "Era1", "-:1:-0001-01-01::Test Era 1:TE1:£%Ey£%EC£",  KConfigGroup::Global );
-    cg.writeEntry( "Era2", "+:1:0001-01-01::Test Era 2:TE2:^%Ey^%EC^",  KConfigGroup::Global );
+    cg.writeEntry( "Era1", "-:1:-0001-01-01::Test Era 1:TE1:£%Ey£%EC£" );
+    cg.writeEntry( "Era2", "+:1:0001-01-01::Test Era 2:TE2:^%Ey^%EC^" );
     calendar = KCalendarSystem::create( "gregorian" );
     testEraDate( calendar, QDate( 2010,  1,  1 ), 2010, "2010", "2010", "TE2", "Test Era 2" );
     testEraDate( calendar, QDate(   -5,  1,  1 ),    5, "5",    "0005", "TE1", "Test Era 1" );
     QCOMPARE( calendar->formatDate( QDate( 2010, 1, 1 ), "%EY"), QString( "^2010^TE2^" ) );
     QCOMPARE( calendar->formatDate( QDate(   -5, 1, 1 ), "%EY"), QString( "£5£TE1£" ) );
 
-    cg.deleteGroup( KConfigGroup::Normal );
-    cg.deleteGroup( KConfigGroup::Global );
+    cg.deleteGroup();
+    cg.markAsClean();
+    lcg.markAsClean();
     delete calendar;
 }
 
@@ -1395,9 +1396,9 @@ void KCalendarTest::testGregorianYmd()
 
 void KCalendarTest::testGregorianSpecialCases()
 {
-    KConfigGroup cg( KGlobal::config(), QString( "KCalendarSystem %1" ).arg( "gregorian" ) );
-    cg.deleteGroup( KConfigGroup::Normal );
-    cg.deleteGroup( KConfigGroup::Global );
+    KConfigGroup lcg( KGlobal::config(), QString( "Locale" ) );
+    KConfigGroup cg = lcg.group( QString( "KCalendarSystem %1" ).arg( "gregorian" ) );
+    cg.deleteGroup();
 
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
@@ -1416,8 +1417,8 @@ void KCalendarTest::testGregorianSpecialCases()
     testEraDate( calendar, QDate( 2010,  1,  1 ), 2010, "2010", "2010", "CE", "Common Era" );
     testEraDate( calendar, QDate(   -5,  1,  1 ),    5, "5",    "0005", "BCE", "Before Common Era" );
 
-    cg.deleteGroup( KConfigGroup::Normal );
-    cg.deleteGroup( KConfigGroup::Global );
+    cg.deleteGroup();
+    cg.markAsClean();
     delete calendar;
 }
 
