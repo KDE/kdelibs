@@ -28,6 +28,8 @@
 #include <QtGui/QLineEdit>
 #include <QtCore/QDateTime>
 
+#include <klocale.h>
+
 class KMenu;
 class KCalendarSystem;
 class KColorScheme;
@@ -176,6 +178,7 @@ public:
      */
     bool setDate( const QDate &date );
 
+    // KDE5 remove the const & from the returned QDate
     /**
      * @returns the selected date.
      */
@@ -205,6 +208,16 @@ public:
      * @return @c true if the calendar system was successfully set, @c false otherwise
      */
     bool setCalendar( const QString &calendarType );
+
+    /**
+     * @since 4.6
+     *
+     * Changes the calendar system to use.  Will always use global locale.
+     *
+     * @param calendarSystem the calendar system to use
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendarSystem( KLocale::CalendarSystem calendarSystem );
 
     /**
      * Enables a popup menu when right clicking on a date.
@@ -301,6 +314,7 @@ private:
     friend class KDateTablePrivate;
     KDateTablePrivate * const d;
 
+    void init( const QDate &date );
     void initAccels();
     void paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme );
 
