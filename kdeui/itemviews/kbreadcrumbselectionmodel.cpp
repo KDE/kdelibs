@@ -53,6 +53,9 @@ public:
 
   void sourceSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
+  void init();
+  void syncBreadcrumbs();
+
   bool m_includeActualSelection;
   int m_selectionDepth;
   bool m_showHiddenAscendantData;
@@ -65,6 +68,7 @@ KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *select
   : QItemSelectionModel(const_cast<QAbstractItemModel *>(selectionModel->model()), parent),
     d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, MakeBreadcrumbSelectionInSelf))
 {
+  d_ptr->init();
 }
 
 KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *selectionModel, BreadcrumbTarget direction, QObject* parent)
@@ -74,6 +78,8 @@ KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *select
   if ( direction != MakeBreadcrumbSelectionInSelf)
     connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
             this, SLOT(sourceSelectionChanged(const QItemSelection&,const QItemSelection&)));
+
+  d_ptr->init();
 }
 
 KBreadcrumbSelectionModel::~KBreadcrumbSelectionModel()
@@ -217,5 +223,21 @@ void KBreadcrumbSelectionModel::select(const QItemSelection &selection, QItemSel
     QItemSelectionModel::select(selection, command);
   }
 }
+
+void KBreadcrumbSelectionModelPrivate::init()
+{
+  Q_Q(KBreadcrumbSelectionModel);
+  q->connect(m_selectionModel->model(), SIGNAL(layoutChanged()), SLOT(syncBreadcrumbs()));
+  q->connect(m_selectionModel->model(), SIGNAL(modelReset()), SLOT(syncBreadcrumbs()));
+  q->connect(m_selectionModel->model(), SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)), SLOT(syncBreadcrumbs()));
+  // Don't need to handle insert & remove because they can't change the breadcrumbs on their own.
+}
+
+void KBreadcrumbSelectionModelPrivate::syncBreadcrumbs()
+{
+  Q_Q(KBreadcrumbSelectionModel);
+  q->select(m_selectionModel->selection(), QItemSelectionModel::ClearAndSelect);
+}
+
 
 #include "kbreadcrumbselectionmodel.moc"
