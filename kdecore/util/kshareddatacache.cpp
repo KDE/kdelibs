@@ -1437,7 +1437,7 @@ unsigned KSharedDataCache::totalSize() const
 {
     Private::CacheLocker lock(d);
     if (lock.failed()) {
-        return false;
+        return 0u;
     }
 
     return d->shm->cacheSize;
@@ -1447,7 +1447,7 @@ unsigned KSharedDataCache::freeSize() const
 {
     Private::CacheLocker lock(d);
     if (lock.failed()) {
-        return false;
+        return 0u;
     }
 
     return d->shm->cacheAvail * d->shm->cachePageSize();
