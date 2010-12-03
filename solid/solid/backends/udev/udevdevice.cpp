@@ -178,6 +178,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::Block:
         return new Block(this);
 
+    case Solid::DeviceInterface::Video:
+        return new Video(this);
+
     default:
         qFatal("Shouldn't happen");
         return 0;
