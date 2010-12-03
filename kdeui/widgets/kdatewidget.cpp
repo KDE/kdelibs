@@ -1,16 +1,16 @@
 /*  This file is part of the KDE libraries
     Copyright (C) 2001 Waldo Bastian (bastian@kde.org)
-    Copyright (c) 2007 John Layt <john@layt.net>
- 
+    Copyright 2007, 2010 John Layt <john@layt.net>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2 as published by the Free Software Foundation.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -27,9 +27,9 @@
 #include <kcombobox.h>
 
 #include "kcalendarsystem.h"
+#include "klocalizeddate.h"
 #include "kdialog.h"
 #include "kglobal.h"
-#include "klocale.h"
 
 
 class KDateWidgetSpinBox : public QSpinBox
@@ -49,57 +49,35 @@ public:
     KDateWidgetSpinBox *m_day;
     KComboBox *m_month;
     KDateWidgetSpinBox *m_year;
-    QDate m_dat;
-    KCalendarSystem *m_cal;
+    KLocalizedDate m_date;
+    // Need to keep a QDate copy as the "const QDate &date() const;" method returns a reference
+    // and returning m_date.date() creates a temporary leading to crashes.  Doh!
+    QDate m_refDate;
 };
 
 
 KDateWidget::KDateWidget( QWidget *parent ) : QWidget( parent ), d( new KDateWidgetPrivate )
 {
-    init( QDate() );
-    setDate( QDate::currentDate() );
+    init( QDate::currentDate() );
 }
 
 KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
             : QWidget( parent ), d( new KDateWidgetPrivate )
 {
     init( date );
-    if ( ! setDate( date ) ) {
-        setDate( QDate::currentDate() );
-    }
 }
 
 void KDateWidget::init( const QDate &date )
 {
-    //set calendar system to default, i.e. global
-    setCalendar();
-    //make sure date is valid in calendar system
-    QDate initDate;
-    if ( calendar()->isValid( date ) ) {
-        initDate = date;
-    } else {
-        initDate = QDate::currentDate();
-    }
-
     QHBoxLayout *layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
     layout->setSpacing( KDialog::spacingHint() );
-	// set the maximum day value in the day field, so that the day can
-	// be editted when the KDateWidget is constructed with an empty date
+
     d->m_day = new KDateWidgetSpinBox( 1, 31, this );
     d->m_month = new KComboBox( this );
-    d->m_month->setMaxVisibleItems( 12 );
-
-    for ( int i = 1; ; ++i ) {
-        const QString str = calendar()->monthName( i, calendar()->year( initDate ) );
-        if ( str.isEmpty() ) {
-            break;
-        }
-        d->m_month->addItem( str );
-    }
-
     d->m_year = new KDateWidgetSpinBox( calendar()->year( calendar()->earliestValidDate() ),
                                         calendar()->year( calendar()->latestValidDate() ), this );
+
     layout->addWidget( d->m_day );
     layout->addWidget( d->m_month );
     layout->addWidget( d->m_year );
@@ -111,7 +89,11 @@ void KDateWidget::init( const QDate &date )
     setFocusProxy(d->m_day);
     setFocusPolicy(Qt::StrongFocus);
 
-    d->m_dat = initDate;
+    if ( calendar()->isValid( date ) ) {
+        setDate( date );
+    } else {
+        setDate( QDate::currentDate() );
+    }
 }
 
 KDateWidget::~KDateWidget()
@@ -126,17 +108,25 @@ bool KDateWidget::setDate( const QDate &date )
         bool monthBlocked = d->m_month->blockSignals( true );
         bool yearBlocked = d->m_year->blockSignals( true );
 
-        d->m_day->setMaximum( calendar()->daysInMonth( date ) );
-        d->m_day->setValue( calendar()->day( date ) );
-        d->m_month->setCurrentIndex( calendar()->month( date ) - 1 );
-        d->m_year->setValue( calendar()->year( date ) );
+        d->m_date.setDate( date );
+        d->m_refDate = date;
+
+        d->m_day->setMaximum( d->m_date.daysInMonth() );
+        d->m_day->setValue( d->m_date.day() );
+
+        d->m_month->setMaxVisibleItems( d->m_date.monthsInYear() );
+        for ( int m = 1; m <= d->m_date.monthsInYear(); ++m ) {
+            d->m_month->addItem( calendar()->monthName( m, d->m_date.year() ) );
+        }
+        d->m_month->setCurrentIndex( d->m_date.month() - 1 );
+
+        d->m_year->setValue( d->m_date.year() );
 
         d->m_day->blockSignals( dayBlocked );
         d->m_month->blockSignals( monthBlocked );
         d->m_year->blockSignals( yearBlocked );
 
-        d->m_dat = date;
-        emit changed( d->m_dat );
+        emit changed( d->m_refDate );
         return true;
     }
     return false;
@@ -144,50 +134,51 @@ bool KDateWidget::setDate( const QDate &date )
 
 const QDate& KDateWidget::date() const
 {
-    return d->m_dat;
+    return d->m_refDate;
 }
 
 void KDateWidget::slotDateChanged( )
 {
-    QDate date;
+    KLocalizedDate date;
     int y, m, day;
 
     y = d->m_year->value();
     y = qMin( qMax( y, calendar()->year( calendar()->earliestValidDate() ) ),
               calendar()->year( calendar()->latestValidDate() ) );
 
-    calendar()->setYMD( date, y, 1, 1 );
+    date.setDate( y, 1, 1 );
     m = d->m_month->currentIndex() + 1;
-    m = qMin( qMax( m, 1 ), calendar()->monthsInYear( date ) );
+    m = qMin( qMax( m, 1 ), date.monthsInYear() );
 
-    calendar()->setYMD( date, y, m, 1 );
+    date.setDate( y, m, 1 );
     day = d->m_day->value();
-    day = qMin( qMax( day, 1 ), calendar()->daysInMonth( date ) );
+    day = qMin( qMax( day, 1 ), date.daysInMonth() );
 
-    calendar()->setYMD( date, y, m, day );
-    setDate( date );
+    date.setDate( y, m, day );
+    setDate( date.date() );
 }
 
 const KCalendarSystem *KDateWidget::calendar() const
 {
-    if ( d->m_cal ) {
-        return d->m_cal;
-    }
-
-    return  KGlobal::locale()->calendar();
+    return  d->m_date.calendar();
 }
 
-bool KDateWidget::setCalendar( KCalendarSystem *calendar )
+bool KDateWidget::setCalendar( KCalendarSystem *newCalendar )
 {
-    d->m_cal = calendar;
+    QDate oldDate = date();
+    d->m_date = KLocalizedDate( oldDate, newCalendar );
+    return setDate( oldDate );
+}
+
+bool KDateWidget::setCalendar( const QString &newCalendarType )
+{
+    return setCalendarSystem( KCalendarSystem::calendarSystemForCalendarType( newCalendarType ) );
+}
+
+bool KDateWidget::setCalendarSystem( KLocale::CalendarSystem newCalendarSystem )
+{
+    d->m_date.setCalendarSystem( newCalendarSystem );
     return true;
 }
-
-bool KDateWidget::setCalendar( const QString &calendarType )
-{
-    d->m_cal = KCalendarSystem::create( calendarType );
-    return d->m_cal;
-}
-
 
 #include "kdatewidget.moc"

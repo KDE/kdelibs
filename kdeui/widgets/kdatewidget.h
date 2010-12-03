@@ -24,6 +24,8 @@
 
 #include <QtGui/QWidget>
 
+#include "klocale.h"
+
 class KCalendarSystem;
 
 class QDate;
@@ -61,6 +63,7 @@ public:
      */
     virtual ~KDateWidget();
 
+    // KDE5 remove const &
     /**
      * Returns the currently selected date.
      */
@@ -97,6 +100,16 @@ public:
      * @return @c true if the calendar system was successfully set, @c false otherwise
      */
     bool setCalendar( const QString &calendarType );
+
+    /**
+     * @since 4.6
+     *
+     * Changes the calendar system to use.  Will always use global locale.
+     *
+     * @param calendarSystem the calendar system to use
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendarSystem( KLocale::CalendarSystem calendarSystem );
 
 Q_SIGNALS:
     /**
