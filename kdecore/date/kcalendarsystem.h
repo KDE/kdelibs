@@ -1192,9 +1192,12 @@ public:
      * @param date The date to format
      * @param component The date component to return
      * @param format The format to return the @p component in
+     * @param weekNumberSystem To override the default Week Number System to use
      * @return The localized string form of the date component
      */
-    QString formatDateComponent(const QDate &date, KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
+    QString formatDate(const QDate &date, KLocale::DateTimeComponent component,
+                       KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat,
+                       KLocale::WeekNumberSystem weekNumberSystem = KLocale::DefaultWeekNumber) const;
 
     /**
      * Converts a localized date string to a QDate.

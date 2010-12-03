@@ -98,7 +98,7 @@ class KLocalizedDatePrivate;
  * formats defined in the Locale, although you can provide your own format in
  * either the KDE, POSIX, or UNICODE standards.
  *
- * @see formatDate() formatDateComponent() formatWeek() formatDayOfWeek()
+ * @see formatDate() formatDate() formatWeek() formatDayOfWeek()
  *
  * @section parsing Date Parsing
  *
@@ -119,7 +119,7 @@ class KLocalizedDatePrivate;
  *
  * 2) If a year number is not supplied then the current year will be assumed.
  *
- * 3) All date componants must be separated by a non-numeric character.
+ * 3) All date components must be separated by a non-numeric character.
  *
  * 4) The format is not applied strictly to the input string:
  * @li extra whitespace is ignored
@@ -389,7 +389,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return the localized year number
      */
     int year() const;
@@ -399,7 +399,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return the localized month number, 0 if date is invalid
      */
     int month() const;
@@ -409,7 +409,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return the localized day number, 0 if date is invalid
      */
     int day() const;
@@ -420,7 +420,7 @@ public:
      *
      * See @ref formatting for more details on Date Formatting.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param format format to return, either short or long
      * @return the localized era name, empty string if date is invalid
      */
@@ -432,7 +432,7 @@ public:
      *
      * See @ref formatting for more details on Date Formatting.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param format format to return, either short or long
      * @return the localized era year string, empty string if date is invalid
      */
@@ -444,7 +444,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @see formatYearInEra()
      * @return the localized Year In Era number, -1 if date is invalid
      */
@@ -455,7 +455,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return day of year number, -1 if date not valid
      */
     int dayOfYear() const;
@@ -465,7 +465,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return day of week number, -1 if date not valid
      */
     int dayOfWeek() const;
@@ -489,7 +489,7 @@ public:
      * appropriate year.
      *
      * @see weeksInYear()
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param yearNum returns the year the date belongs to
      * @return localized week number, -1 if input date invalid
      */
@@ -511,7 +511,7 @@ public:
      * System, but the same rules will be applied to the current Calendar System.
      *
      * @see weeksInYear()
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param weekNumberSystem the Week Number System to use
      * @param yearNum returns the year the date belongs to
      * @return week number, -1 if input date invalid
@@ -523,7 +523,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return number of months in the year, -1 if  date invalid
      */
     int monthsInYear() const;
@@ -540,7 +540,7 @@ public:
      * weeksInYear(KLocale::IsoWeekNumber)
      *
      * @see week()
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return number of weeks in the year, -1 if  date invalid
      */
     int weeksInYear() const;
@@ -555,7 +555,7 @@ public:
      * you should use the localized number of weeks provided by weeksInYear().
      *
      * @see week()
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param weekNumberSystem the week number system to use
      * @return number of weeks in the year, -1 if  date invalid
      */
@@ -569,7 +569,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return number of days in year, -1 if date invalid
      */
     int daysInYear() const;
@@ -579,7 +579,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return number of days in month, -1 if date invalid
      */
     int daysInMonth() const;
@@ -589,7 +589,7 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @return number of days in week, -1 if date invalid
      */
     int daysInWeek() const;
@@ -609,7 +609,7 @@ public:
      * See @ref formatting for more details on Date Formatting and valid Locale
      * formats.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param dateFormat the standard date format to use
      * @return The date as a localized string
      */
@@ -622,7 +622,7 @@ public:
      * codes.
      *
      * Please use with care and only in situations where the standard Locale
-     * formats or the componant format methods do not provide what you
+     * formats or the component format methods do not provide what you
      * need.  You should almost always translate your @p formatString as
      * documented above.  Using the standard DateFormat options instead would
      * take care of the translation for you.
@@ -647,10 +647,10 @@ public:
      * should be used.  The UNICODE standard is provided for comaptability with QDate
      * and so is not yet the full standard, only what Qt currently supports.
      *
-     * Date format strings are made up of date componants and string literals.
-     * Date componants are prefixed by a % escape character and are made up of
+     * Date format strings are made up of date components and string literals.
+     * Date components are prefixed by a % escape character and are made up of
      * optional padding and case modifier flags, an optional width value, and a
-     * compulsary code for the actual date componant:
+     * compulsary code for the actual date component:
      *   %[Flags][Width][Componant]
      * e.g. %_^5Y
      * No spaces are allowed.
@@ -721,7 +721,7 @@ public:
      *
      * %0 is not supported as the returned result is always in the locale's chosen numeric symbol digit set.
      *
-     * @see formatDateComponent()
+     * @see formatDate()
      * @param formatString the date format to use
      * @param formatStandard the standard the @p dateFormat uses, defaults to KDE Standard
      * @return The date as a localized string
@@ -748,51 +748,12 @@ public:
      * @see formatDate()
      * @param component The date component to return
      * @param format The format to return the @p component in
+     * @param weekNumberSystem To override the default Week Number System to use
      * @return The string form of the date component
      */
-    QString formatDateComponent(KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
-
-    /**
-     * Returns the Week as a localized string in the requested format
-     * and Week Number System.
-     *
-     * See @ref formatting for more details on Date Formatting.
-     *
-     * For example for Week 1 with en_US Locale and Gregorian calendar may return:
-     *   KLocale::ShortNumber = "1"
-     *   KLocale::LongNumber  = "01"
-     *
-     * This is the equivalent of the POSIX date format code "%" and "%"
-     *
-     * @see week()
-     * @see formatWeeksInYear()
-     * @see formatDateComponent()
-     * @param weekNumberSystem the Week Number System to use
-     * @param format The format to return
-     * @return The string form of the week number
-     */
-    QString formatWeek(KLocale::WeekNumberSystem weekNumberSystem, KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
-
-    /**
-     * Returns the Weeks In Year as a localized string in the requested format
-     * and Week Number System.
-     *
-     * See @ref formatting for more details on Date Formatting.
-     *
-     * For example for Week 1 with en_US Locale and Gregorian calendar may return:
-     *   KLocale::ShortNumber = "1"
-     *   KLocale::LongNumber  = "01"
-     *
-     * This is the equivalent of the POSIX date format code "%" and "%"
-     *
-     * @see week()
-     * @see weeksInYear()
-     * @see formatWeek()
-     * @see formatDateComponent()
-     * @param format The format to return
-     * @return The string form of the weeks in year
-     */
-    QString formatWeeksInYear(KLocale::WeekNumberSystem weekNumberSystem, KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat) const;
+    QString formatDate(KLocale::DateTimeComponent component,
+                       KLocale::DateTimeComponentFormat format = KLocale::DefaultComponentFormat,
+                       KLocale::WeekNumberSystem weekNumberSystem = KLocale::DefaultWeekNumber) const;
 
     /**
      * Converts a localized date string to a KLocalizedDate using either the

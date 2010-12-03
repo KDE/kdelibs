@@ -2563,31 +2563,31 @@ void KCalendarTest::testKLocalizedDate()
     // Compare KLocalizedDate format/read to KCalendarSystem format
     QCOMPARE( testKLocalizedDate.formatDate(),           calendar->formatDate( testQDate ) );
     QCOMPARE( testKLocalizedDate.formatDate("%d-%m-%y"), calendar->formatDate( testQDate, "%d-%m-%y" ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Year),              calendar->yearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::YearName),          calendar->yearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Month),             calendar->monthString( testQDate, KCalendarSystem::ShortFormat ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::MonthName),         calendar->monthName( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Day),               calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayName),           calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::JulianDay),         QString::number( testQDate.toJulianDay() ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::EraName),           calendar->eraName( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::EraYear),           calendar->eraYear( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::YearInEra),         calendar->yearInEraString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfYear),         calendar->dayOfYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfYearName),     calendar->dayOfYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfWeek),         calendar->dayOfWeekString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DayOfWeekName),     calendar->weekDayName( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::Week),              calendar->weekNumberString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Year),              calendar->yearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::YearName),          calendar->yearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Month),             calendar->monthString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::MonthName),         calendar->monthName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Day),               calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayName),           calendar->dayString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::JulianDay),         QString::number( testQDate.toJulianDay() ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::EraName),           calendar->eraName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::EraYear),           calendar->eraYear( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::YearInEra),         calendar->yearInEraString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYear),         calendar->dayOfYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYearName),     calendar->dayOfYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfWeek),         calendar->dayOfWeekString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfWeekName),     calendar->weekDayName( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Week),              calendar->weekNumberString( testQDate ) );
     int weekYear;
     QDate weekDate;
     calendar->weekNumber( testQDate, &weekYear );
     calendar->setDate( weekDate, weekYear, 1, 1);
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::WeekYear),          calendar->yearString( weekDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::MonthsInYear),      calendar->monthsInYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::WeeksInYear),       calendar->weeksInYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInYear),        calendar->daysInYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInMonth),       calendar->daysInMonthString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDateComponent(KLocale::DaysInWeek),        calendar->daysInWeekString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::WeekYear),          calendar->yearString( weekDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::MonthsInYear),      calendar->monthsInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::WeeksInYear),       calendar->weeksInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DaysInYear),        calendar->daysInYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DaysInMonth),       calendar->daysInMonthString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DaysInWeek),        calendar->daysInWeekString( testQDate ) );
 
     // Compare KLocalizedDate format/read to KCalendarSystem read
     QCOMPARE( testKLocalizedDate.readDate( "2010-01-01" ).date(),                        calendar->readDate( "2010-01-01" ) );
@@ -2678,4 +2678,14 @@ void KCalendarTest::testKLocalizedDate()
     kDebug() << newOne;
     newOne = KLocalizedDate::currentDate();
     kDebug() << newOne;
+
+    KLocalizedDate calendarDate( testQDate, calendar );
+    QCOMPARE( calendarDate.date(), testQDate );
+    QCOMPARE( calendarDate.day(), calendar->day( testQDate ) );
+
+    KCalendarSystem *hijriCalendar =  KCalendarSystem::create( "hijri" );
+    KLocalizedDate hijriDate( testQDate, hijriCalendar );
+    QCOMPARE( hijriDate.date(), testQDate );
+    QCOMPARE( hijriDate.day(), hijriCalendar->day( testQDate ) );
+    delete hijriCalendar;
 }

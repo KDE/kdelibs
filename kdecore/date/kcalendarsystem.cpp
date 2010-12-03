@@ -1873,9 +1873,12 @@ QString KCalendarSystem::formatDate( const QDate &fromDate, const QString &toFor
 }
 
 // NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::formatDateComponent(const QDate &date, KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format) const
+QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponent component,
+                                    KLocale::DateTimeComponentFormat format,
+                                    KLocale::WeekNumberSystem weekNumberSystem) const
 {
     Q_D( const KCalendarSystem );
+    Q_UNUSED( weekNumberSystem );
 
     switch ( component ) {
     case KLocale::Year:
@@ -2024,7 +2027,7 @@ QString KCalendarSystem::formatDateComponent(const QDate &date, KLocale::DateTim
         QDate yearDate;
         weekNumber( date, &weekYear );
         setDate( yearDate, weekYear, 1, 1 );
-        return formatDateComponent( yearDate, KLocale::Year, format );
+        return formatDate( yearDate, KLocale::Year, format );
     }
     case KLocale::MonthsInYear:
         switch (format) {

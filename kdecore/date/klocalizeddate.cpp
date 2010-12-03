@@ -272,12 +272,12 @@ int KLocalizedDate::day() const
 
 QString KLocalizedDate::eraName() const
 {
-    return formatDateComponent(KLocale::EraName);
+    return formatDate(KLocale::EraName);
 }
 
 QString KLocalizedDate::eraYear() const
 {
-    return formatDateComponent(KLocale::EraYear);
+    return formatDate(KLocale::EraYear);
 }
 
 int KLocalizedDate::yearInEra() const
@@ -358,21 +358,11 @@ QString KLocalizedDate::formatDate(const QString &toFormat, KLocale::DateTimeFor
     return calendar()->formatDate(date(), toFormat, formatStandard);
 }
 
-QString KLocalizedDate::formatDateComponent(KLocale::DateTimeComponent component, KLocale::DateTimeComponentFormat format) const
+QString KLocalizedDate::formatDate(KLocale::DateTimeComponent component,
+                                   KLocale::DateTimeComponentFormat format,
+                                   KLocale::WeekNumberSystem weekNumberSystem) const
 {
-    return calendar()->formatDateComponent(date(), component, format);
-}
-
-QString KLocalizedDate::formatWeek(KLocale::WeekNumberSystem weekNumberSystem, KLocale::DateTimeComponentFormat format) const
-{
-    Q_UNUSED(weekNumberSystem); // only support ISO Week for now
-    return formatDateComponent(KLocale::Week, format);
-}
-
-QString KLocalizedDate::formatWeeksInYear(KLocale::WeekNumberSystem weekNumberSystem, KLocale::DateTimeComponentFormat format) const
-{
-    Q_UNUSED(weekNumberSystem); // only support ISO Week for now
-    return formatDateComponent(KLocale::WeeksInYear, format);
+    return calendar()->formatDate(date(), component, format, weekNumberSystem);
 }
 
 /*****************************************************************************
