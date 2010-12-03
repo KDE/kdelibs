@@ -52,6 +52,7 @@
 #include <kservice.h>
 #include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
+#include <kprotocolinfo.h>
 
 #include "jobuidelegate.h"
 #include "job_p.h"
@@ -353,7 +354,7 @@ void PreviewJob::slotResult( KJob *job )
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
             const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
-            if (itemUrl.isLocalFile() || itemUrl.protocol() == QLatin1String("trash"))
+            if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.protocol()) == QLatin1String(":local"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
                                   && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
