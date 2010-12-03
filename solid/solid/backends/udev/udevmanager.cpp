@@ -54,12 +54,12 @@ UDevManager::Private::~Private()
 
 bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 {
-    if (device.driver() == "processor") {
+    if (device.driver() == QLatin1String("processor")) {
         // Linux ACPI reports processor slots, rather than processors.
         // Empty slots will not have a system device associated with them.
         return QFile::exists(device.sysfsPath() + "/sysdev");
     } else {
-        return device.driver() == "video" || device.subsystem() == QLatin1String("dvb") ||
+        return device.driver() == QLatin1String("video") || device.subsystem() == QLatin1String("dvb") ||
                device.subsystem() == QLatin1String("video4linux");
     }
 }
