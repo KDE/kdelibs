@@ -778,8 +778,8 @@ void KDescendantsProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent,
     q->endRemoveRows();
     return;
   }
-  Mapping::right_const_iterator lowerBound = m_mapping.rightLowerBound(proxyStart);
-  if (lowerBound == m_mapping.rightConstEnd()) {
+  Mapping::right_iterator lowerBound = m_mapping.rightLowerBound(proxyStart);
+  if (lowerBound == m_mapping.rightEnd()) {
     int proxyRow = (lowerBound - 1).key();
 
     for (int row = newEnd.row(); row >= 0; --row ) {
@@ -793,7 +793,7 @@ void KDescendantsProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent,
     m_mapping.insert(newEnd, proxyRow);
     q->endRemoveRows();
     return;
-  } else if (lowerBound == m_mapping.rightConstBegin()) {
+  } else if (lowerBound == m_mapping.rightBegin()) {
     int proxyRow = rowCount - 1;
     QModelIndex trackedParent = parent;
     while (trackedParent.isValid()) {
@@ -804,7 +804,7 @@ void KDescendantsProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent,
     q->endRemoveRows();
     return;
   }
-  const Mapping::right_const_iterator boundAbove = lowerBound - 1;
+  const Mapping::right_iterator boundAbove = lowerBound - 1;
 
   QVector<QModelIndex> targetParents;
   targetParents.push_back(parent);
