@@ -841,7 +841,7 @@ void KUrl::setEncodedPath( const QString& _txt, int encoding_hint )
 
 void KUrl::setEncodedPathAndQuery( const QString& _txt )
 {
-  int pos = _txt.indexOf( QLatin1Char('?') );
+  const int pos = _txt.indexOf(QLatin1Char('?'));
   if ( pos == -1 )
   {
     setPath( QUrl::fromPercentEncoding( _txt.toLatin1() ) );
@@ -849,7 +849,7 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
   }
   else
   {
-    setPath( QUrl::fromPercentEncoding( _txt.toLatin1() ).left( pos ) );
+    setPath( QUrl::fromPercentEncoding(_txt.toLatin1().left(pos)) );
     _setQuery( _txt.right( _txt.length() - pos - 1 ) );
   }
 }

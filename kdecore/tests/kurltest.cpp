@@ -94,8 +94,8 @@ void KUrlTest::testSetQuery()
   QCOMPARE( url1.query(), QString("?foo=bar") );
   url1.setQuery( "toto=titi&kde=rocks" );
   QCOMPARE( url1.query(), QString("?toto=titi&kde=rocks") );
-  url1.setQuery( "?kde=rocks&a=b" );
-  QCOMPARE( url1.query(), QString("?kde=rocks&a=b") );
+  url1.setQuery( "?kde%20rocks&a=b" ); // must be encoded already, as documented
+  QCOMPARE( url1.query(), QString("?kde%20rocks&a=b") ); // encoded, as documented
   url1.setQuery( "?" );
   QCOMPARE( url1.query(), QString("?") );
   url1.setQuery( "" );
@@ -536,6 +536,12 @@ void KUrlTest::testPathAndQuery()
   QCOMPARE( tobi1.query(), QString("?another&query") );
   QCOMPARE( tobi1.path(), QString("another/path") ); // without trailing slash
   QCOMPARE( tobi1.encodedPathAndQuery(), QString( "another/path?another&query" ) );
+  tobi1.setEncodedPathAndQuery("and%20another%2Bpath%2E?bug=%2B258301&query%2Bword");
+  QCOMPARE( tobi1.query(), QString("?bug=%2B258301&query%2Bword") ); // encoded
+  QCOMPARE( tobi1.queryItem("bug"), QString("+258301") ); // decoded
+  QCOMPARE( tobi1.path(), QString("and another+path.") ); // decoded
+  QCOMPARE( tobi1.encodedPath().constData(), "and%20another+path." ); // from QUrl. It only encodes the space.
+  QCOMPARE( tobi1.encodedPathAndQuery(), QString( "and%20another+path.?bug=%2B258301&query%2Bword" ) );
 
   tobi1 = "http://host.net/path/#no-query";
   QCOMPARE( tobi1.encodedPathAndQuery(), QString( "/path/" ) );
