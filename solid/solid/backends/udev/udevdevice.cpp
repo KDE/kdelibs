@@ -85,6 +85,8 @@ QString UDevDevice::icon() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
         return "multimedia-player";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
+        return "camera-web";
     }
 
     return QString();
@@ -108,6 +110,8 @@ QString UDevDevice::description() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
         return QObject::tr("Portable Media Player"); // FIXME: not sure what HAL was returning since I can't check it
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
+        return product();
     }
 
     return QString();
@@ -133,6 +137,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
 
     case Solid::DeviceInterface::Block:
         return !property("MAJOR").toString().isEmpty();
+
+    case Solid::DeviceInterface::Video:
+        return m_device.subsystem() == QLatin1String("video4linux");
 
     default:
         return false;
