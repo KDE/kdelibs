@@ -23,6 +23,7 @@
 #include "udevgenericinterface.h"
 #include "udevprocessor.h"
 #include "udevcamera.h"
+#include "udevvideo.h"
 #include "udevportablemediaplayer.h"
 #include "udevdvbinterface.h"
 #include "udevblock.h"
@@ -65,9 +66,13 @@ QString UDevDevice::vendor() const
 QString UDevDevice::product() const
 {
     QString product = m_device.sysfsProperty("product").toString();
-    if (product.isEmpty() && queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        // sysfs doesn't have anything useful here
-        product = extractCpuInfoLine(deviceNumber(), "model name\\s+:\\s+(\\S.+)");
+    if (product.isEmpty()) {
+        if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+            // sysfs doesn't have anything useful here
+            product = extractCpuInfoLine(deviceNumber(), "model name\\s+:\\s+(\\S.+)");
+        } else if(queryDeviceInterface(Solid::DeviceInterface::Video)) {
+            product = m_device.deviceProperty("ID_V4L_PRODUCT").toString();
+        }
     }
     return product;
 }
