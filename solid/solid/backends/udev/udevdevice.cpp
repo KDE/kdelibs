@@ -58,6 +58,8 @@ QString UDevDevice::vendor() const
          if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
              // sysfs doesn't have anything useful here
             vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
+         } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
+             vendor = m_device.deviceProperty("ID_VENDOR").toString();
          }
     }
     return vendor;
