@@ -23,17 +23,23 @@
 #ifndef NEPOMUK_QUERY_FACETDELEGATE_H
 #define NEPOMUK_QUERY_FACETDELEGATE_H
 
-#include <qstyleditemdelegate.h>
+#include <qitemdelegate.h>
 
 
 namespace Nepomuk {
     namespace Utils {
-        class FacetDelegate : public QStyledItemDelegate
+        class FacetDelegate : public QItemDelegate
         {
         public:
             explicit FacetDelegate( QObject* parent = 0 );
             virtual void paint( QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const;
             virtual ~FacetDelegate();
+
+        protected:
+            virtual void drawCheck( QPainter* painter, const QStyleOptionViewItem& option, const QRect& rect, Qt::CheckState state ) const;
+
+        private:
+            mutable bool m_isExclusive;
         };
     }
 }

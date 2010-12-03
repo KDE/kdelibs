@@ -24,9 +24,13 @@
 #include "facet.h"
 #include "facetmodel.h"
 
+#include <QtGui/QAbstractProxyModel>
+#include <QtGui/QApplication>
+#include <QtGui/QWidget>
 
 Nepomuk::Utils::FacetDelegate::FacetDelegate( QObject* parent )
-    : QStyledItemDelegate( parent )
+    : QItemDelegate( parent ),
+      m_isExclusive( false )
 {
 }
 
@@ -36,9 +40,46 @@ Nepomuk::Utils::FacetDelegate::~FacetDelegate()
 
 void Nepomuk::Utils::FacetDelegate::paint( QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
-    // TODO: draw radio buttons instead of check boxes if Facet::selectionMode() == MatchOne, ie. if the facet is exclusive
-
     // hacky way to not paint anything on title items which we use as spacers for now
-    if( !index.data(Qt::DisplayRole).toString().isEmpty() )
-        QStyledItemDelegate::paint( painter, option, index );
+    if( index.data(Qt::DisplayRole).toString().isEmpty() ) {
+        return;
+    }
+
+    const QAbstractProxyModel* proxyModel = qobject_cast<const QAbstractProxyModel*>(index.model());
+    const Facet* facet = proxyModel->data( index, FacetModel::FacetRole ).value<Facet*>();
+    if( facet ) {
+        m_isExclusive = ( facet->selectionMode() == Facet::MatchOne );
+    }
+
+    QItemDelegate::paint( painter, option, index );
+}
+
+void Nepomuk::Utils::FacetDelegate::drawCheck( QPainter* painter, const QStyleOptionViewItem& option, const QRect& rect, Qt::CheckState state ) const
+{
+    if( m_isExclusive ) {
+        const QStyleOptionViewItemV3 *v3 = qstyleoption_cast<const QStyleOptionViewItemV3 *>( &option );
+        const QWidget* widget = v3 ? v3->widget : 0;
+
+        QStyleOptionViewItem opt(option);
+        opt.rect = rect;
+        opt.state = opt.state & ~QStyle::State_HasFocus;
+
+        switch( state ) {
+        case Qt::Unchecked:
+            opt.state |= QStyle::State_Off;
+            break;
+        case Qt::PartiallyChecked:
+            opt.state |= QStyle::State_NoChange;
+            break;
+        case Qt::Checked:
+            opt.state |= QStyle::State_On;
+            break;
+        }
+
+        QStyle *style = widget ? widget->style() : QApplication::style();
+        style->drawPrimitive( QStyle::QStyle::PE_IndicatorRadioButton, &opt, painter, widget );
+    }
+    else {
+        QItemDelegate::drawCheck( painter, option, rect, state );
+    }
 }
