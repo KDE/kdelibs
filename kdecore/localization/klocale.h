@@ -800,8 +800,9 @@ public:
      * @see weekNumberSystem()
      */
     enum WeekNumberSystem {
-         IsoWeekNumber     /**< ISO Week Number */
-         //UsaWeek         /**< USA Week Number */
+        DefaultWeekNumber = -1, /**< The system locale default */
+        IsoWeekNumber     =  0  /**< ISO Week Number */
+        //UsaWeekNumber     = 1   /**< USA Week Number */
     };
 
     //KDE5 move to KDateTime namespace
