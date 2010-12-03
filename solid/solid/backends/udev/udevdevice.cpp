@@ -53,9 +53,11 @@ QString UDevDevice::parentUdi() const
 QString UDevDevice::vendor() const
 {
     QString vendor = m_device.sysfsProperty("manufacturer").toString();
-    if (vendor.isEmpty() && queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        // sysfs doesn't have anything useful here
-        vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
+    if (vendor.isEmpty()) {
+         if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+             // sysfs doesn't have anything useful here
+            vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
+         }
     }
     return vendor;
 }
