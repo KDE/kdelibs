@@ -97,7 +97,7 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
 
 static QByteArray valueForKey(const QList<QByteArray> &ba, const QByteArray &key)
 {
-    for (int i = 0; i + 1 < ba.count(); i += 2) {
+    for (int i = 0, count = ba.count(); (i + 1) < count; i += 2) {
         if (ba[i] == key) {
             return ba[i + 1];
         }
@@ -433,6 +433,24 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     info.nonce = valueForKey(m_challenge, "nonce");
     QByteArray opaque = valueForKey(m_challenge, "opaque");
     info.qop = valueForKey(m_challenge, "qop");
+
+    // NOTE: Since we do not have access to the entity body, we cannot support
+    // the "auth-int" qop value ; so if the server returns a comma separated
+    // list of qop values, prefer "auth".See RFC 2617 sec 3.2.2 for the details.
+    // If "auth" is not present or it is set to "auth-int" only, then we simply
+    // print a warning message and disregard the qop option altogether.
+    if (info.qop.contains(',')) {
+        const QList<QByteArray> values = info.qop.split(',');
+        if (info.qop.contains("auth"))
+            info.qop = "auth";
+        else {
+            kWarning(7113) << "Unsupported digest authentication qop paramters:" << values;
+            info.qop.clear();
+        }
+    } else if (info.qop == "auth-int") {
+        kWarning(7113) << "Unsupported digest authentication qop paramter:" << info.qop;
+        info.qop.clear();
+    }
 
     if (info.realm.isEmpty() || info.nonce.isEmpty()) {
         // ### proper error return
