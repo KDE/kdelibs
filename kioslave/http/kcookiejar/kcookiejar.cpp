@@ -188,7 +188,7 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
             return false;
 
         // Maybe the domain needs an extra dot.
-        QString domain = QL1C('.') + mDomain;
+        const QString domain = QL1C('.') + mDomain;
         if ( !domains.contains( domain ) )
           if ( fqdn != mDomain )
             return false;
@@ -210,8 +210,8 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     if( path.startsWith(mPath) &&
         (
          (path.length() == mPath.length() ) || 	// Paths are exact match
-          mPath.endsWith('/') || 	        // mPath ended with a slash
-         (path[mPath.length()] == '/')		// A slash follows
+          mPath.endsWith(QL1C('/')) || 	        // mPath ended with a slash
+         (path[mPath.length()] == QL1C('/'))		// A slash follows
          ))
         return true; // Path of URL starts with cookie-path
 
@@ -523,10 +523,10 @@ bool KCookieJar::parseUrl(const QString &_url,
        return false;
 
     _fqdn = kurl.host().toLower();
-    // Cookie spoofing protection.  Since there is no way a path separator
-    // or escape encoded character is allowed in the hostname according
-    // to RFC 2396, reject attempts to include such things there!
-    if(_fqdn.contains('/') || _fqdn.contains('%'))
+    // Cookie spoofing protection.  Since there is no way a path separator,
+    // a space or the escape encoding character is allowed in the hostname
+    // according to RFC 2396, reject attempts to include such things there!
+    if (_fqdn.contains(QL1C('/')) || _fqdn.contains(QL1C('%')))
         return false;  // deny everything!!
 
     // Set the port number from the protocol when one is found...
@@ -567,7 +567,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     _domains.append(_fqdn);
     _domains.append(QL1C('.') + _fqdn);
 
-    QStringList partList = _fqdn.split('.', QString::SkipEmptyParts);
+    QStringList partList = _fqdn.split(QL1C('.'), QString::SkipEmptyParts);
 
     if (partList.count())
         partList.erase(partList.begin()); // Remove hostname
@@ -629,7 +629,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     const char *cookieStr = cookie_headers.constData();    
 
     QString defaultPath;
-    const int index = path.lastIndexOf('/');
+    const int index = path.lastIndexOf(QL1C('/'));
     if (index > 0)
        defaultPath = path.left(index);
 
@@ -716,7 +716,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if(dom.length() > 2 && dom[dom.length()-1] == '.')
                     dom = dom.left(dom.length()-1);
 
-                if(dom.count('.') > 1 || dom == ".local")
+                if(dom.count(QL1C('.')) > 1 || dom == ".local")
                     lastCookie.mDomain = dom;
             }
             else if (Name.compare(QL1S("max-age"), Qt::CaseInsensitive) == 0)
@@ -982,7 +982,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
     // cross-site cookie injection.
     if (!cookie.domain().isEmpty()) {
       if (!domains.contains(cookie.domain()) &&
-          !cookie.domain().endsWith('.'+cookie.host()))
+          !cookie.domain().endsWith(QL1C('.') + cookie.host()))
          cookie.fixDomain(QString());
     }
 
@@ -994,7 +994,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
     QStringListIterator it (domains);
     while(advice == KCookieDunno && it.hasNext()) {
        const QString& domain = it.next();
-       if (domain.startsWith('.') || cookie.host() == domain) {
+       if (domain.startsWith(QL1C('.')) || cookie.host() == domain) {
               KHttpCookieList *cookieList = m_cookieDomains.value(domain);
           if (cookieList)
              advice = cookieList->getAdvice();
@@ -1502,7 +1502,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
          it != itEnd; ++it)
     {
         const QString& value = *it;
-        const int sepPos = value.lastIndexOf(':');
+        const int sepPos = value.lastIndexOf(QL1C(':'));
         if (sepPos <= 0)
           continue;
         
