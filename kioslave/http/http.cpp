@@ -3475,7 +3475,6 @@ endParsing:
         // parse everything related to expire and other dates, and cache directives; also switch
         // between cache reading and writing depending on cache validation result.
         cacheParseResponseHeader(tokenizer);
-
     }
 
     if (m_request.cacheTag.ioMode == ReadFromCache) {
@@ -4216,50 +4215,50 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if ( sz )
     m_iSize += sz;
 
-    if (!m_isRedirection) {
-        // Update the application with total size except when
-        // it is compressed, or when the data is to be handled
-        // internally (webDAV).  If compressed we have to wait
-        // until we uncompress to find out the actual data size
-        if ( !dataInternal ) {
-            if ((m_iSize > 0) && (m_iSize != NO_SIZE)) {
-                totalSize(m_iSize);
-                infoMessage(i18n("Retrieving %1 from %2...", KIO::convertSize(m_iSize),
-                            m_request.url.host()));
-            } else {
-                totalSize (0);
-            }
-        } else {
-            infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
-        }
+  if (!m_isRedirection) {
+      // Update the application with total size except when
+      // it is compressed, or when the data is to be handled
+      // internally (webDAV).  If compressed we have to wait
+      // until we uncompress to find out the actual data size
+      if ( !dataInternal ) {
+          if ((m_iSize > 0) && (m_iSize != NO_SIZE)) {
+              totalSize(m_iSize);
+              infoMessage(i18n("Retrieving %1 from %2...", KIO::convertSize(m_iSize),
+                          m_request.url.host()));
+          } else {
+              totalSize (0);
+          }
+      } else {
+          infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
+      }
 
-        if (m_request.cacheTag.ioMode == ReadFromCache) {
-            kDebug(7113) << "read data from cache!";
+      if (m_request.cacheTag.ioMode == ReadFromCache) {
+          kDebug(7113) << "reading data from cache...";
 
-            m_iContentLeft = NO_SIZE;
+          m_iContentLeft = NO_SIZE;
+          
+          QByteArray d;
+          while (true) {
+              d = cacheFileReadPayload(MAX_IPC_SIZE);
+              if (d.isEmpty()) {
+                  break;
+              }
+              slotData(d);
+              sz += d.size();
+              if (!dataInternal) {
+                  processedSize(sz);
+              }
+          }
 
-            QByteArray d;
-            while (true) {
-                d = cacheFileReadPayload(4096);
-                if (d.isEmpty()) {
-                    break;
-                }
-                slotData(d);
-                sz += d.size();
-                if (!dataInternal) {
-                    processedSize(sz);
-                }
-            }
+          m_receiveBuf.resize(0);
 
-            m_receiveBuf.resize(0);
+          if (!dataInternal) {
+              data(QByteArray());
+          }
 
-            if (!dataInternal) {
-                data(QByteArray());
-            }
-
-            return true;
-        }
-    }
+          return true;
+      }
+  }
 
   if (m_iSize != NO_SIZE)
     m_iBytesLeft = m_iSize - sz;
@@ -4271,7 +4270,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (m_isChunked)
     m_iBytesLeft = NO_SIZE;
 
-  kDebug(7113) << "retrieve data."<<KIO::number(m_iBytesLeft)<<"left.";
+  kDebug(7113) << KIO::number(m_iBytesLeft) << "bytes left.";
 
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
