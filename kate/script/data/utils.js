@@ -271,7 +271,7 @@ function help(cmd)
         return i18n("Remove duplicate lines from the selected text or whole document.");
     } else if (cmd == "natsort") {
         return i18n("Sort the selected text or whole document in natural order.<br>"
-              +"Here's an example to show the difference to the normal sort method:<br>"
+              +"Here is an example to show the difference to the normal sort method:<br>"
               +"sort(a10, a1, a2) => a1, a10, a2<br>"
               +"natsort(a10, a1, a2) => a1, a2, a10");
     } else if (cmd == "rtrim") {
