@@ -2438,17 +2438,18 @@ bool HTTPProtocol::sendQuery()
     if (!cookieStr.isEmpty())
       header += cookieStr + QLatin1String("\r\n");
 
-    QString customHeader = metaData( QLatin1String("customHTTPHeader") );
+    const QString customHeader = metaData( QLatin1String("customHTTPHeader") );
     if (!customHeader.isEmpty())
     {
       header += sanitizeCustomHTTPHeader(customHeader);
       header += QLatin1String("\r\n");
     }
 
-    QString contentType = metaData(QLatin1String("content-type"));
-    if ((m_request.method == HTTP_POST || m_request.method == HTTP_PUT)
-    && !contentType.isEmpty())
+    const QString contentType = metaData(QLatin1String("content-type"));
+    if (!contentType.isEmpty())
     {
+      if (!contentType.startsWith(QLatin1String("content-type"), Qt::CaseInsensitive))
+        header += QLatin1String("Content-Type:");
       header += contentType;
       header += QLatin1String("\r\n");
     }
