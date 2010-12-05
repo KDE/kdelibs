@@ -190,7 +190,10 @@ static const struct {
 // specifying both param and param* is allowed, param* should be taken
     { "attachment; filename*=UTF-8''foo-%c3%a4-%e2%82%ac.html; filename=foo.html",
       "type\tattachment\n"
-      "filename\tfoo-ä-€.html" }
+      "filename\tfoo-ä-€.html" },
+// missing closing quote, so parameter is broken
+    { "attachment; filename=\"bar",
+      "type\tattachment" }
 };
 
 #if 0

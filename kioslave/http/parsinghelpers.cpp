@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDir>
 #include <QMap>
 #include <QTextCodec>
 #include <QUrl>
@@ -360,6 +361,9 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
         // Skip the quote...
         ++pos;
 
+        // when quoted we also need an end-quote
+        bool endquote = false;
+
         // Parse until trailing quote...
         while (pos < str.length()) {
             if (str[pos] == QLatin1Char('\\') && pos + 1 < str.length()) {
@@ -368,11 +372,17 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
                 pos += 2; // Skip both...
             } else if (str[pos] == QLatin1Char('"')) {
                 ++pos;
+                endquote = true;
                 break;
             }  else {
                 out += str[pos];
                 ++pos;
             }
+        }
+
+        if( !endquote ) {
+            pos = -1;
+            return QString();
         }
 
         // Skip until term..
@@ -547,7 +557,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         // Content-Disposition is not allowed to dictate directory
         // path, thus we extract the filename only.
         QString val = parameters[fn];
-        int slpos = val.lastIndexOf( QLatin1Char('/') );
+        int slpos = val.lastIndexOf( QDir::separator() );
 
         if( slpos > -1 )
             parameters.insert(fn, val.mid( slpos + 1 ));
