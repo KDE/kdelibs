@@ -77,7 +77,7 @@ void Nepomuk::Utils::FacetDelegate::drawCheck( QPainter* painter, const QStyleOp
         }
 
         QStyle *style = widget ? widget->style() : QApplication::style();
-        style->drawPrimitive( QStyle::QStyle::PE_IndicatorRadioButton, &opt, painter, widget );
+        style->drawPrimitive( QStyle::PE_IndicatorRadioButton, &opt, painter, widget );
     }
     else {
         QItemDelegate::drawCheck( painter, option, rect, state );
