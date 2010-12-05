@@ -542,7 +542,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         } else {
             QTextCodec *codec = QTextCodec::codecForName( charset.toAscii() );
             if( codec )
-                val = codec->toUnicode(rawval);
+                val = codec->toUnicode( rawval );
             else
                 val.clear();
         }
@@ -556,7 +556,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
     if( parameters.contains(fn) ) {
         // Content-Disposition is not allowed to dictate directory
         // path, thus we extract the filename only.
-        QString val = parameters[fn];
+        const QString val = QDir::toNativeSeparators( parameters[fn] );
         int slpos = val.lastIndexOf( QDir::separator() );
 
         if( slpos > -1 )
