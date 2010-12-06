@@ -79,11 +79,9 @@ private Q_SLOTS:
     void testKill();
     void testDelegateUsage();
     void testNestedExec();
-    void testDeletedInResult();
 
     void slotResult( KJob *job );
     void slotFinished(KJob *job);
-    void deleteJob(KJob *);
 
 private:
     QEventLoop loop;
