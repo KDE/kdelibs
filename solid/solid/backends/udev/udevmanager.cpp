@@ -60,7 +60,9 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         return QFile::exists(device.sysfsPath() + "/sysdev");
     } else {
         return device.driver() == QLatin1String("video") || device.subsystem() == QLatin1String("dvb") ||
-               device.subsystem() == QLatin1String("video4linux");
+                device.subsystem() == QLatin1String("video4linux") ||
+                device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices
+                device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
     }
 }
 

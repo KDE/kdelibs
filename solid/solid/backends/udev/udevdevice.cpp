@@ -87,11 +87,11 @@ QString UDevDevice::icon() const
 
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
         return "cpu";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return "camera-photo";
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
         return "multimedia-player";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return "camera-photo";
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
         return "camera-web";
     }
@@ -112,11 +112,11 @@ QString UDevDevice::description() const
 
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
         return QObject::tr("Processor");
-    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return QObject::tr("Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
-        return QObject::tr("Portable Media Player"); // FIXME: not sure what HAL was returning since I can't check it
+        return QObject::tr("Portable Media Player");
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return QObject::tr("Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
         return product();
     }
@@ -134,10 +134,10 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
         return property("DRIVER").toString() == "processor";
 
     case Solid::DeviceInterface::Camera:
-        return !property("ID_GPHOTO2").toString().isEmpty();
+        return property("ID_GPHOTO2").toInt() == 1;
 
     case Solid::DeviceInterface::PortableMediaPlayer:
-        return false; // TODO: check what determines a portable media player
+        return property("ID_MEDIA_PLAYER").toInt() == 1;
 
     case Solid::DeviceInterface::DvbInterface:
         return m_device.subsystem() ==  QLatin1String("dvb");

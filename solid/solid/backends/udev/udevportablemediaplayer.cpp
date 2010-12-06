@@ -1,5 +1,6 @@
 /*
     Copyright 2010 Rafael Fernández López <ereslibre@kde.org>
+              2010 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -35,19 +36,23 @@ PortableMediaPlayer::~PortableMediaPlayer()
 
 QStringList PortableMediaPlayer::supportedProtocols() const
 {
-    return QStringList();
+    return QStringList() << "usb";
 }
 
-QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const
+QStringList PortableMediaPlayer::supportedDrivers(QString /*protocol*/) const
 {
-    Q_UNUSED(protocol)
+    QStringList res;
 
-    return QStringList();
+    if (!supportedProtocols().isEmpty())
+        res << "mtp";
+
+    return res;
 }
 
 QVariant PortableMediaPlayer::driverHandle(const QString &driver) const
 {
-    Q_UNUSED(driver)
+    if (driver == "mtp")
+        return property("ID_SERIAL_SHORT");
 
     return QVariant();
 }
