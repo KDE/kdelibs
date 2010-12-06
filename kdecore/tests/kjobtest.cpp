@@ -303,6 +303,24 @@ void KJobTest::testNestedExec()
   m_outerJob->exec();
 }
 
+void KJobTest::testDeletedInResult()
+{
+    TestJob *job = new TestJob;
+    job->setAutoDelete( false );
+
+    connect( job, SIGNAL( result( KJob* ) ),
+             this, SLOT( deleteJob( KJob* ) ) );
+
+    job->start();
+    loop.exec();
+}
+
+void KJobTest::deleteJob(KJob *job)
+{
+    delete job;
+    loop.quit();
+}
+
 void KJobTest::slotStartInnerJob()
 {
   QTimer::singleShot( 100, this, SLOT( slotFinishOuterJob() ) );

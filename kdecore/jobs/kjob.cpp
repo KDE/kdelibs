@@ -24,11 +24,13 @@
 
 #include "kjobuidelegate.h"
 
+#include <kdebug.h>
 #include <kglobal.h>
 #include <QEventLoop>
 #include <QMap>
 #include <QMetaType>
 #include <QTimer>
+#include <QWeakPointer>
 
 bool KJobPrivate::_k_kjobUnitEnumRegistered = false;
 KJobPrivate::KJobPrivate()
@@ -302,6 +304,9 @@ void KJob::emitResult()
     Q_D(KJob);
     d->isFinished = true;
 
+    bool autoDelete = isAutoDelete();
+    QWeakPointer<KJob> guard(this);
+
     if ( d->eventLoop ) {
         d->eventLoop->quit();
     }
@@ -311,8 +316,14 @@ void KJob::emitResult()
 
     emit result( this );
 
-    if ( isAutoDelete() )
-        deleteLater();
+    if ( autoDelete ) {
+        Q_ASSERT( guard.data() );
+        if ( guard.data() ) {
+            deleteLater();
+        } else {
+            kWarning() << "Job was marked as autoDelete() but has already been deleted!";
+        }
+    }
 }
 
 void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
