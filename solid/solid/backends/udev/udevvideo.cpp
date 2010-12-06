@@ -45,9 +45,13 @@ QStringList Video::supportedProtocols() const
 QStringList Video::supportedDrivers(QString protocol) const
 {
     QStringList drivers;
+
+    if (m_device->propertyExists("ID_USB_DRIVER"))
+        drivers << m_device->property("ID_USB_DRIVER").toString();
+
     if (protocol == QLatin1String("video4linux")) {
         drivers << QLatin1String("video4linux"); //Retrocompatibility with KDE < 4.3
-        if (m_device->property("ID_V4L_VERSION") == "2") {
+        if (m_device->property("ID_V4L_VERSION").toInt() == 2) {
             drivers << QLatin1String("video4linux2");
         } else {
             drivers << QLatin1String("video4linux1");
@@ -59,8 +63,9 @@ QStringList Video::supportedDrivers(QString protocol) const
 QVariant Video::driverHandle(const QString &driver) const
 {
     if (driver == QLatin1String("video4linux") || driver == QLatin1String("video4linux1") || driver == QLatin1String("video4linux2")) {
-        return m_device->property("DEVPATH");
+        return m_device->devicePath();
     }
+
     return QVariant();
 }
 
