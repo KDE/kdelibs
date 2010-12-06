@@ -52,12 +52,10 @@
 #include "filequery.h"
 #include "negationterm.h"
 #include "nfo.h"
+#include "variant.h"
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Vocabulary/NAO>
-
-Q_DECLARE_METATYPE(Nepomuk::Resource)
-
 
 void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::setupFacetWidget()
 {
