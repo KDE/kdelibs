@@ -1841,7 +1841,9 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_kded)
    {
+      setenv("KDED_STARTED_BY_KDEINIT", "1", true);
       pid = launch( 1, KDED_EXENAME, 0 );
+      unsetenv("KDED_STARTED_BY_KDEINIT");
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit4: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif

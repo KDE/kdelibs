@@ -209,37 +209,58 @@ void Kded::messageFilter(const QDBusMessage &message)
   Q_UNUSED(module);
 }
 
+static int phaseForModule(const KService::Ptr& service)
+{
+    const QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
+    return phasev.isValid() ? phasev.toInt() : 2;
+}
+
 void Kded::initModules()
 {
-     m_dontLoad.clear();
-     bool kde_running = !qgetenv( "KDE_FULL_SESSION" ).isEmpty();
-    // not the same user like the one running the session (most likely we're run via sudo or something)
-    const QByteArray sessionUID = qgetenv( "KDE_SESSION_UID" );
-    if( !sessionUID.isEmpty() && uid_t( sessionUID.toInt() ) != getuid())
-        kde_running = false;
+    m_dontLoad.clear();
+    bool kde_running = !qgetenv( "KDE_FULL_SESSION" ).isEmpty();
+    if (kde_running) {
+        // not the same user like the one running the session (most likely we're run via sudo or something)
+        const QByteArray sessionUID = qgetenv( "KDE_SESSION_UID" );
+        if( !sessionUID.isEmpty() && uid_t( sessionUID.toInt() ) != getuid())
+            kde_running = false;
+
+        // not the same kde version as the current desktop
+        const QByteArray kdeSession = qgetenv("KDE_SESSION_VERSION");
+        if (kdeSession.toInt() != KDE_VERSION_MAJOR)
+            kde_running = false;
+    }
+
+    // There will be a "phase 2" only if we're in the KDE startup.
+    // If kded is restarted by its crashhandled or by hand,
+    // then there will be no second phase autoload, so load
+    // these modules now, if in a KDE session.
+    const bool loadPhase2Now = (kde_running && qgetenv("KDED_STARTED_BY_KDEINIT").toInt() == 0);
+
      // Preload kded modules.
      const KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
          // Should the service load on startup?
-         bool autoload = isModuleAutoloaded(service);
+         const bool autoload = isModuleAutoloaded(service);
 
          // see ksmserver's README for description of the phases
-         QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
-         int phase = phasev.isValid() ? phasev.toInt() : 2;
          bool prevent_autoload = false;
-         switch( phase )
+         switch( phaseForModule(service) )
          {
              case 0: // always autoload
                  break;
              case 1: // autoload only in KDE
-                 if( !kde_running )
+                 if (!kde_running) {
                      prevent_autoload = true;
+                 }
                  break;
              case 2: // autoload delayed, only in KDE
              default:
-                 prevent_autoload = true;
+                 if (!loadPhase2Now) {
+                     prevent_autoload = true;
+                 }
                  break;
          }
 
@@ -264,20 +285,17 @@ void Kded::initModules()
 
 void Kded::loadSecondPhase()
 {
-     kDebug(7020) << "Loading second phase autoload";
-     KSharedConfig::Ptr config = KGlobal::config();
-     KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
-     for(KService::List::ConstIterator it = kdedModules.constBegin(); it != kdedModules.constEnd(); ++it)
-     {
-         KService::Ptr service = *it;
-         bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
-         KConfigGroup cg(config, QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = cg.readEntry("autoload", autoload);
-         QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
-         int phase = phasev.isValid() ? phasev.toInt() : 2;
-         if( phase == 2 && autoload )
+    kDebug(7020) << "Loading second phase autoload";
+    KSharedConfig::Ptr config = KGlobal::config();
+    KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
+    for(KService::List::ConstIterator it = kdedModules.constBegin(); it != kdedModules.constEnd(); ++it) {
+        const KService::Ptr service = *it;
+        const bool autoload = isModuleAutoloaded(service);
+        if (autoload && phaseForModule(service) == 2) {
+            //kDebug(7020) << "2nd phase: loading" << service->desktopEntryName();
             loadModule(service, false);
-     }
+        }
+    }
 }
 
 void Kded::noDemandLoad(const QString &obj)
