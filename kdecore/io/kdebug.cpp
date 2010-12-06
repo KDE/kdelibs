@@ -258,14 +258,9 @@ struct KDebugPrivate
         Area &areaData = cache[0];
         areaData.clear();
 
-        if (KGlobal::hasMainComponent()) {
-            areaData.name = KGlobal::mainComponent().componentName().toUtf8();
-            m_seenMainComponent = true;
-        } else {
-            areaData.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
-            m_seenMainComponent = false;
-        }
-        //qDebug() << "loadAreaNames: area 0 has name" << areaData.name;
+        Q_ASSERT(KGlobal::hasMainComponent());
+        areaData.name = KGlobal::mainComponent().componentName().toUtf8();
+        //qDebug() << "loadAreaNames: area 0 has name" << KGlobal::mainComponent().componentName().toUtf8();
 
         for (int i = 0; i < 8; i++) {
             m_nullOutputYesNoCache[i] = -1;
@@ -397,14 +392,18 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
-        if (!configObject()) {
+        if (!configObject() || (cache.isEmpty() && !KGlobal::hasMainComponent())) {
             // we don't have a config and we can't create one...
+            // or we don't have a main component (yet?)
             Area &area = cache[0]; // create a dummy entry
-            area.name = KGlobal::mainComponent().componentName().toUtf8();
+            if (KGlobal::hasMainComponent())
+                area.name = KGlobal::mainComponent().componentName().toUtf8();
+            else
+                area.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
             return cache.find(0);
         }
 
-        if (!cache.contains(0)) {
+        if (!cache.contains(0) || (cache.count() == 1 && KGlobal::hasMainComponent())) {
             loadAreaNames(); // fills 'cache'
             Q_ASSERT(cache.contains(0));
         } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
