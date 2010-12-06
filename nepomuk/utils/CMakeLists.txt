@@ -8,6 +8,7 @@ include_directories(
 )
 
 set(nepomukutils_SRCS
+  typefacet.cpp
   utils.cpp
 
   facetdelegate.cpp
@@ -18,7 +19,6 @@ set(nepomukutils_SRCS
   simplefacet.cpp
   dynamicresourcefacet.cpp
   datefacet.cpp
-  typefacet.cpp
   proxyfacet.cpp
 
   daterange.cpp
