@@ -59,7 +59,7 @@ QString UDevDevice::vendor() const
              // sysfs doesn't have anything useful here
             vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
          } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
-             vendor = m_device.deviceProperty("ID_VENDOR").toString();
+             vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', " ");
          }
     }
     return vendor;
