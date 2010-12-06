@@ -257,9 +257,9 @@ struct KDebugPrivate
         Area &areaData = cache[0];
         areaData.clear();
 
-        //AB: this is necessary here, otherwise all output with area 0 won't be
-        //prefixed with anything, unless something with area != 0 is called before
+        Q_ASSERT(KGlobal::hasMainComponent());
         areaData.name = KGlobal::mainComponent().componentName().toUtf8();
+        //qDebug() << "loadAreaNames: area 0 has name" << KGlobal::mainComponent().componentName().toUtf8();
 
         for (int i = 0; i < 8; i++) {
             m_nullOutputYesNoCache[i] = -1;
@@ -391,14 +391,18 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
-        if (!configObject()) {
+        if (!configObject() || (cache.isEmpty() && !KGlobal::hasMainComponent())) {
             // we don't have a config and we can't create one...
+            // or we don't have a main component (yet?)
             Area &area = cache[0]; // create a dummy entry
-            area.name = KGlobal::mainComponent().componentName().toUtf8();
+            if (KGlobal::hasMainComponent())
+                area.name = KGlobal::mainComponent().componentName().toUtf8();
+            else
+                area.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
             return cache.find(0);
         }
 
-        if (!cache.contains(0)) {
+        if (!cache.contains(0) || (cache.count() == 1 && KGlobal::hasMainComponent())) {
             loadAreaNames(); // fills 'cache'
         }
 
@@ -413,6 +417,7 @@ struct KDebugPrivate
             static bool s_firstDebugFromApplication = true;
             if (s_firstDebugFromApplication && !m_disableAll) {
                 s_firstDebugFromApplication = false;
+                //qDebug() << "First debug output from" << it->name << "writing out with default" << enableByDefault;
                 writeGroupForNamedArea(it->name, enableByDefault);
             }
         }
