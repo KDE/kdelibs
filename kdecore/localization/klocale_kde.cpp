@@ -1004,29 +1004,29 @@ QString KLocalePrivate::digitSetString(KLocale::DigitSet digitSet)
 {
     switch (digitSet) {
     case KLocale::ArabicIndicDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("٠١٢٣٤٥٦٧٨٩");
     case KLocale::BengaliDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("০১২৩৪৫৬৭৮৯");
     case KLocale::DevenagariDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("०१२३४५६७८९");
     case KLocale::EasternArabicIndicDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("۰۱۲۳۴۵۶۷۸۹");
     case KLocale::GujaratiDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("૦૧૨૩૪૫૬૭૮૯");
     case KLocale::GurmukhiDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("੦੧੨੩੪੫੬੭੮੯");
     case KLocale::KannadaDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("೦೧೨೩೪೫೬೭೮೯");
     case KLocale::KhmerDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("០១២៣៤៥៦៧៨៩");
     case KLocale::MalayalamDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("൦൧൨൩൪൫൬൭൮൯");
     case KLocale::OriyaDigits:
-        return QString::fromUtf8("??????????");
+        return QString::fromUtf8("୦୧୨୩୪୫୬୭୮୯");
     case KLocale::TamilDigits:
-        return QString::fromUtf8("?????????");
+        return QString::fromUtf8("௦௧௨௩௪௫௬௭௮");
     case KLocale::TeluguDigits:
-        return QString::fromUtf8("?????????");
+        return QString::fromUtf8("౦౧౨౩౪౫౬౭౯");
     case KLocale::ThaiDigits:
         return QString::fromUtf8("๐๑๒๓๔๕๖๗๘๙");
     default:
