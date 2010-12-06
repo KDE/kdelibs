@@ -101,8 +101,21 @@ QDebug operator<<(QDebug debug, const KCatalogName &cn)
     return debug << cn.name << cn.loadCount;
 }
 
-KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *config,
-                               const QString &language, const QString &country )
+KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
+               : q(q_ptr),
+                 m_config(config),
+                 m_country(QString()),
+                 m_language(QString()),
+                 m_languages(0),
+                 m_catalogName(catalog),
+                 m_calendar(0),
+                 m_currency(0),
+                 m_codecForEncoding(0)
+{
+}
+
+KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog,
+                               const QString &language, const QString &country, KConfig *config)
                : q(q_ptr),
                  m_country(country.toLower()),
                  m_language(language.toLower()),
@@ -112,6 +125,13 @@ KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KConfig *
                  m_currency(0),
                  m_codecForEncoding(0)
 {
+    if (config) {
+        //Copy config to a new shared config
+        m_config = KSharedConfig::openConfig();
+        config->copyTo(QString(), m_config.data());
+    } else {
+        m_config = KSharedConfig::Ptr();
+    }
 }
 
 KLocalePrivate::KLocalePrivate(const KLocalePrivate &rhs)
@@ -125,10 +145,22 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
     return *this;
 }
 
+KSharedConfig::Ptr KLocalePrivate::config()
+{
+    if (m_config == KSharedConfig::Ptr()) {
+        return KGlobal::config();
+    } else {
+        return m_config;
+    }
+}
+
 void KLocalePrivate::copy(const KLocalePrivate &rhs)
 {
     // Parent KLocale
     q = 0;
+
+    // Config
+    m_config = rhs.m_config;
 
     // Country settings
     m_country = rhs.m_country;
@@ -205,29 +237,19 @@ KLocalePrivate::~KLocalePrivate()
     delete m_currency;
     delete m_calendar;
     delete m_languages;
+    if (m_config != KSharedConfig::Ptr()) {
+        m_config->markAsClean();
+    }
 }
 
-void KLocalePrivate::init( KConfig *config ) {
+void KLocalePrivate::init()
+{
     initEncoding();
     initFileNameEncoding();
-
-    bool useEnv = false;
-    if ( !config ) {
-        useEnv = true;
-        config = KGlobal::config().data();
-    }
-
-    KConfigGroup localeSettings( config, "Locale" );
-
-    if ( m_country.isEmpty() ) {
-        initCountry( localeSettings );
-    }
-
-    initLanguageList( localeSettings, useEnv );
-
+    initCountry();
+    initLanguageList();
     initMainCatalogs();
-
-    initFormat( config );
+    initFormat();
 }
 
 void KLocalePrivate::initMainCatalogs()
@@ -292,7 +314,7 @@ void KLocalePrivate::getLanguagesFromVariable(QStringList &list, const char *var
     }
 }
 
-void KLocalePrivate::initCountry( KConfigGroup localeSettings )
+void KLocalePrivate::initCountry()
 {
     // First check if the constructor passed in a country and if that is valid
     QString putativeCountry = m_country;
@@ -308,6 +330,7 @@ void KLocalePrivate::initCountry( KConfigGroup localeSettings )
         // * Application level setting, i.e. from the kapprc
         // * User level setting, i.e. from kdeglobals
         // * Any group policy setting
+        KConfigGroup localeSettings(config(), "Locale");
         putativeCountry = localeSettings.readEntry( "Country" );
 
         // If the config country is not valid
@@ -341,7 +364,7 @@ QString KLocalePrivate::systemCountry() const
     return systemCountry.toLower();
 }
 
-void KLocalePrivate::initLanguageList(KConfigGroup localeSettings, bool useEnv)
+void KLocalePrivate::initLanguageList()
 {
     // Collect possible languages by decreasing priority.
     // The priority is as follows:
@@ -355,11 +378,13 @@ void KLocalePrivate::initLanguageList(KConfigGroup localeSettings, bool useEnv)
         list += m_language;
     }
 
+    bool useEnv = (m_config == KSharedConfig::Ptr());
     if (useEnv) {
         // KDE_LANG contains list of language codes, not locale string.
         getLanguagesFromVariable(list, "KDE_LANG", true);
     }
 
+    KConfigGroup localeSettings(config(), "Locale");
     QString languages(localeSettings.readEntry("Language", QString()));
     if (!languages.isEmpty()) {
         list += languages.split(QLatin1Char(':'));
@@ -386,15 +411,10 @@ QStringList KLocalePrivate::systemLanguageList() const
     return QStringList();
 }
 
-void KLocalePrivate::initFormat(KConfig *config)
+void KLocalePrivate::initFormat()
 {
-    Q_ASSERT(config);
-
-    //kDebug(173) << "KLocalePrivate::KLocalePrivate";
-
-    config->setLocale(m_language);
-
-    KConfigGroup cg(config, "Locale");
+    config()->setLocale(m_language);
+    KConfigGroup cg(config(), "Locale");
 
     KConfig entryFile(KStandardDirs::locate("locale", QString::fromLatin1("l10n/%1/entry.desktop").arg(m_country)));
     entryFile.setLocale(m_language);
@@ -535,6 +555,14 @@ bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
         return false;
     }
 
+    if (config) {
+        //Copy config to a new shared config
+        m_config = KSharedConfig::openConfig();
+        config->copyTo(QString(), m_config.data());
+    } else {
+        m_config = KSharedConfig::Ptr();
+    }
+
     // Always save as lowercase, unless it's C when we want it uppercase
     if ( country.toLower() == defaultCountry().toLower() ) {
         m_country = defaultCountry();
@@ -542,7 +570,7 @@ bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
         m_country = country.toLower();
     }
 
-    initFormat(config);
+    initFormat();
     return true;
 }
 
@@ -554,6 +582,14 @@ bool KLocalePrivate::setCountryDivisionCode(const QString &countryDivisionCode)
 
 bool KLocalePrivate::setLanguage(const QString &language, KConfig *config)
 {
+    if (config) {
+        //Copy config to a new shared config
+        m_config = KSharedConfig::openConfig();
+        config->copyTo(QString(), m_config.data());
+    } else {
+        m_config = KSharedConfig::Ptr();
+    }
+
     QMutexLocker lock(kLocaleMutex());
     m_languageList.removeAll(language);
     m_languageList.prepend(language);   // let us consider this language to be the most important one
@@ -564,7 +600,7 @@ bool KLocalePrivate::setLanguage(const QString &language, KConfig *config)
     // populating the catalog name list
     updateCatalogs();
 
-    initFormat(config);
+    initFormat();
 
     // Maybe the mo-files for this language are empty, but in principle we can speak all languages
     return true;
@@ -2816,9 +2852,8 @@ KLocale::CalendarSystem KLocalePrivate::calendarSystem() const
 
 const KCalendarSystem * KLocalePrivate::calendar()
 {
-    // Check if it's the correct calendar?!?
     if (!m_calendar) {
-        m_calendar = KCalendarSystem::create(m_calendarSystem, q);
+        m_calendar = KCalendarSystem::create(m_calendarSystem, m_config, q);
     }
 
     return m_calendar;

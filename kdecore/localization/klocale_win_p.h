@@ -27,8 +27,10 @@
 class KLocaleWindowsPrivate : public KLocalePrivate
 {
 public:
-    KLocaleWindowsPrivate( KLocale *q, const QString &catalog, KConfig *config,
-                           const QString &language = QString(), const QString &country = QString() );
+    KLocaleWindowsPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config);
+
+    KLocaleWindowsPrivate(KLocale *q_ptr, const QString& catalog,
+                          const QString &language, const QString &country, KConfig *config);
 
     KLocaleWindowsPrivate( const KLocaleWindowsPrivate &rhs );
 

@@ -19,11 +19,17 @@
 
 #include "klocale_unix_p.h"
 
-KLocaleUnixPrivate::KLocaleUnixPrivate( KLocale *q_ptr, const QString &catalog, KConfig *config,
-                                        const QString &language, const QString &country )
-                   :KLocalePrivate( q_ptr, catalog, config, language, country )
+KLocaleUnixPrivate::KLocaleUnixPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
+                   :KLocalePrivate(q_ptr, catalog, config)
 {
-    init( config );
+    init();
+}
+
+KLocaleUnixPrivate::KLocaleUnixPrivate(KLocale *q_ptr, const QString& catalog,
+                                       const QString &language,const QString &country, KConfig *config)
+                   :KLocalePrivate(q_ptr, catalog, language, country, config)
+{
+    init();
 }
 
 KLocaleUnixPrivate::KLocaleUnixPrivate( const KLocaleUnixPrivate &rhs )

@@ -35,15 +35,17 @@ class KLocalePrivate
 {
 public:
     /**
-     * Constructor
+     * Constructors
      *
      * This class should not be instantited directly, it is intended as a base class for each
      * platform to provide a common KDE fallback implemenation.  Instead use the relevent
      * derived system class for Unix, Win, or Mac which will prefer the local platform settings
      * where possible.
      */
-    KLocalePrivate(KLocale *q, const QString &catalog, KConfig *config,
-                   const QString &language = QString(), const QString &country = QString());
+    KLocalePrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config);
+
+    KLocalePrivate(KLocale *q_ptr, const QString& catalog,
+                   const QString &language, const QString &country, KConfig *config);
 
     /**
      * Copy constructor
@@ -67,6 +69,11 @@ public:
 protected:
 
     /**
+     * @internal Returns config object
+     */
+    KSharedConfig::Ptr config();
+
+    /**
      * @internal Copies object members
      */
     virtual void copy(const KLocalePrivate &rhs);
@@ -74,12 +81,12 @@ protected:
     /**
      * @internal Reads the format configuration from disk.
      */
-    virtual void initFormat(KConfig *config);
+    virtual void initFormat();
 
     /**
      * @internal Main init function, needs to be called by appropriate child constructor.
      */
-    void init( KConfig *config );
+    void init();
 
     /**************************
      **   Country settings   **
@@ -91,10 +98,8 @@ protected:
      * @internal Initializes the country if not already explicity set when calling the constructor
      * Will default to any value set in the config, otherwise will attempt to use the host system
      * country, or finally fall back to the default C.
-     *
-     * @param config The configuration object used for init
      */
-    virtual void initCountry( KConfigGroup localeSettings );
+    virtual void initCountry();
 
     /**
      * @internal Returns the host system country ISO code
@@ -168,9 +173,8 @@ protected:
      * contain the global entries.
      *
      * @param config The configuration object used for init
-     * @param useEnv True if we should use environment variables
      */
-    virtual void initLanguageList(KConfigGroup localeSettings, bool useEnv);
+    virtual void initLanguageList();
 
     /**
      * @internal function used to determine if we are using the en_US translation
@@ -1091,6 +1095,9 @@ public:
     KLocale *q;
 
 private:
+    // Config file containing locale config
+    KSharedConfig::Ptr m_config;
+
     // Country settings
     QString m_country;
     QString m_countryDivisionCode;

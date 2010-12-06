@@ -102,7 +102,10 @@ public:
      * @param country  the ISO Country Code for the locale, e.g. "us" for USA
      * @param config   a configuration file with a Locale group detailing
      *                 locale-related preferences (such as date and time
-     *                 formatting options)
+     *                 formatting).  A copy of this config will be taken,
+     *                 any updates made to the config will not affect this
+     *                 KLocale object.  If a null pointer the global config
+     *                 will be used.
      */
     KLocale(const QString& catalog, const QString &language, const QString &country = QString(),
             KConfig *config = 0);
@@ -2007,7 +2010,10 @@ public:
      * @param country the ISO 3166 country code
      * @param config  a configuration file with a Locale group detailing
      *                locale-related preferences (such as date and time
-     *                formatting)
+     *                formatting).  A copy of this config will be taken,
+     *                any updates made to the config will not affect this
+     *                KLocale object.  If a null pointer the global config
+     *                will be used.
      *
      * @return @c true on success, @c false on failure
      */
@@ -2038,7 +2044,10 @@ public:
      * @param language the language code
      * @param config  a configuration file with a Locale group detailing
      *                locale-related preferences (such as date and time
-     *                formatting)
+     *                formatting).  A copy of this config will be taken,
+     *                any updates made to the config will not affect this
+     *                KLocale object.  If a null pointer the global config
+     *                will be used.
      *
      * @return true on success
      */

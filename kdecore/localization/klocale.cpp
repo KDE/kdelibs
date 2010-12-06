@@ -47,22 +47,22 @@
 
 KLocale::KLocale(const QString &catalog, KSharedConfig::Ptr config)
 #if defined Q_WS_WIN
-        : d(new KLocaleWindowsPrivate(this, catalog, config.data()))
+        : d(new KLocaleWindowsPrivate(this, catalog, config))
 #elif defined Q_OS_MAC
-        : d(new KLocaleMacPrivate(this, catalog, config.data()))
+        : d(new KLocaleMacPrivate(this, catalog, config))
 #else
-        : d(new KLocaleUnixPrivate(this, catalog, config.data()))
+        : d(new KLocaleUnixPrivate(this, catalog, config))
 #endif
 {
 }
 
 KLocale::KLocale(const QString& catalog, const QString &language, const QString &country, KConfig *config)
 #if defined Q_WS_WIN
-        : d(new KLocaleWindowsPrivate(this, catalog, config, language, country))
+        : d(new KLocaleWindowsPrivate(this, catalog, language, country, config))
 #elif defined Q_OS_MAC
-        : d(new KLocaleMacPrivate(this, catalog, config, language, country))
+        : d(new KLocaleMacPrivate(this, catalog, language, country, config))
 #else
-        : d(new KLocaleUnixPrivate(this, catalog, config, language, country))
+        : d(new KLocaleUnixPrivate(this, catalog, language, country, config))
 #endif
 {
 }

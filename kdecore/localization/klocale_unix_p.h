@@ -25,8 +25,10 @@
 class KLocaleUnixPrivate : public KLocalePrivate
 {
 public:
-    KLocaleUnixPrivate( KLocale *q, const QString &catalog, KConfig *config,
-                       const QString &language = QString(), const QString &country = QString() );
+    KLocaleUnixPrivate( KLocale *q, const QString &catalog, KSharedConfig::Ptr config );
+
+    KLocaleUnixPrivate(KLocale *q, const QString& catalog, const QString &language,
+                       const QString &country, KConfig *config);
 
     KLocaleUnixPrivate( const KLocaleUnixPrivate &rhs );
 
