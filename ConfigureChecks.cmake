@@ -242,7 +242,7 @@ check_function_exists(strlcpy    HAVE_STRLCPY)           # kdecore/fakes.c
 check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
 check_cxx_symbol_exists(__CORRECT_ISO_CPP_STRING_H_PROTO "string.h" HAVE_STRCASESTR_OVERLOAD) # glibc-2.9 strangeness
 if (HAVE_STRCASESTR_OVERLOAD)
-  message(STATUS "string.h defines __CORRECT_ISO_CPP_STRING_H_PROTO")
+  #message(STATUS "string.h defines __CORRECT_ISO_CPP_STRING_H_PROTO")
   set(HAVE_STRCASESTR 1)
   set(HAVE_STRCASESTR_PROTO 1)
 else()
