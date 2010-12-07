@@ -391,18 +391,22 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
-        if (!configObject() || (cache.isEmpty() && !KGlobal::hasMainComponent())) {
+        if (!configObject() || !KGlobal::hasMainComponent()) {
             // we don't have a config and we can't create one...
             // or we don't have a main component (yet?)
             Area &area = cache[0]; // create a dummy entry
-            if (KGlobal::hasMainComponent())
-                area.name = KGlobal::mainComponent().componentName().toUtf8();
-            else
-                area.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
+            if (area.name.isEmpty()) {
+                if (KGlobal::hasMainComponent())
+                    area.name = KGlobal::mainComponent().componentName().toUtf8();
+                else
+                    area.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
+            }
+            //qDebug() << "Created dummy entry for area 0 with name" << area.name;
             return cache.find(0);
         }
 
         if (!cache.contains(0) || (cache.count() == 1 && KGlobal::hasMainComponent())) {
+            //qDebug() << "cache size=" << cache.count() << "loading area names";
             loadAreaNames(); // fills 'cache'
         }
 
