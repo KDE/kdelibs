@@ -78,8 +78,8 @@ bool Processor::canChangeFrequency() const
         QFile cpuMinFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_min_freq");
         QFile cpuMaxFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_max_freq");
         if (cpuMinFreqFile.open(QIODevice::ReadOnly) && cpuMaxFreqFile.open(QIODevice::ReadOnly)) {
-            QString minFreq = cpuMinFreqFile.readAll().trimmed();
-            QString maxFreq = cpuMaxFreqFile.readAll().trimmed();
+            qlonglong minFreq = cpuMinFreqFile.readAll().trimmed().toLongLong();
+            qlonglong maxFreq = cpuMaxFreqFile.readAll().trimmed().toLongLong();
             if (minFreq > 0 && maxFreq > minFreq) {
                 m_canChangeFrequency = CanChangeFreq;
             }
