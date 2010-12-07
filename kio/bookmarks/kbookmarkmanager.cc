@@ -104,6 +104,8 @@ public:
       , m_dbusObjectName(dbusObjectName)
       , m_docIsLoaded(bDocIsloaded)
       , m_update(false)
+      , m_dialogAllowed(true)
+      , m_dialogParent(0)
       , m_browserEditor(false)
       , m_typeExternal(false)
       , m_kDirWatch(0)
@@ -119,6 +121,8 @@ public:
     QString m_dbusObjectName;
     mutable bool m_docIsLoaded;
     bool m_update;
+    bool m_dialogAllowed;
+    QWidget *m_dialogParent;
 
     bool m_browserEditor;
     QString m_editorCaption;
@@ -310,6 +314,17 @@ KBookmarkManager::~KBookmarkManager()
     delete d;
 }
 
+bool KBookmarkManager::autoErrorHandlingEnabled() const
+{
+    return d->m_dialogAllowed;
+}
+
+void KBookmarkManager::setAutoErrorHandlingEnabled( bool enable, QWidget *parent )
+{
+    d->m_dialogAllowed = enable;
+    d->m_dialogParent = parent;
+}
+
 void KBookmarkManager::setUpdate( bool update )
 {
     d->m_update = update;
@@ -425,15 +440,17 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     static int hadSaveError = false;
     file.abort();
     if ( !hadSaveError ) {
-        QString error = i18n("Unable to save bookmarks in %1. Reported error was: %2. "
+        QString err = i18n("Unable to save bookmarks in %1. Reported error was: %2. "
                              "This error message will only be shown once. The cause "
                              "of the error needs to be fixed as quickly as possible, "
                              "which is most likely a full hard drive.",
                          filename, file.errorString());
-        if (qApp->type() != QApplication::Tty)
-            KMessageBox::error( QApplication::activeWindow(), error );
-        else
-            kError() << error << endl;
+
+        if (d->m_dialogAllowed && qApp->type() != QApplication::Tty && QThread::currentThread() == qApp->thread())
+            KMessageBox::error( QApplication::activeWindow(), err );
+
+        kError() << QString("Unable to save bookmarks in %1. File reported the following error-code: %2.").arg(filename).arg(file.error());
+        emit const_cast<KBookmarkManager*>(this)->error(err);
     }
     hadSaveError = true;
     return false;
