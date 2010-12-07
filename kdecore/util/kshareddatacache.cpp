@@ -36,6 +36,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QtDebug>
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -923,6 +924,13 @@ class KSharedDataCache::Private
     // the cache remains "valid", we just don't actually do anything).
     void mapSharedMemory()
     {
+        //
+        // DEBUGGING NOTE:
+        //
+        // This method is called early on in the life of most KDE programs. Do not rely
+        // on normal kdelibs features, such as kdebug, being available yet. That's why you
+        // see Qt debugging methods, and only in actual errors/serious warnings.
+
         // 0-sized caches are fairly useless.
         unsigned cacheSize = qMax(m_defaultCacheSize, uint(SharedMemory::MINIMUM_CACHE_SIZE));
         unsigned pageSize = SharedMemory::equivalentPageSize(m_expectedItemSize);
@@ -947,7 +955,7 @@ class KSharedDataCache::Private
         void *mapAddress = MAP_FAILED;
 
         if (size < cacheSize) {
-            kError(264) << "Asked for a cache size less than requested size somehow -- Logic Error :(";
+            qCritical() << "Asked for a cache size less than requested size somehow -- Logic Error :(";
             return;
         }
 
@@ -974,7 +982,7 @@ class KSharedDataCache::Private
                 if (mapped->version != SharedMemory::PIXMAP_CACHE_VERSION &&
                     mapped->version > 0)
                 {
-                    kWarning(264) << "Deleting wrong version of cache" << cacheName;
+                    qWarning() << "Deleting wrong version of cache" << cacheName;
 
                     // CAUTION: Potentially recursive since the recovery
                     // involves calling this function again.
@@ -1011,8 +1019,8 @@ class KSharedDataCache::Private
         // shared memory. If we don't get shared memory the disk info is ignored,
         // if we do get shared memory we never look at disk again.
         if (mapAddress == MAP_FAILED) {
-            kWarning(264) << "Failed to establish shared memory mapping, will fallback"
-                          << "to private memory -- memory usage will increase";
+            qWarning() << "Failed to establish shared memory mapping, will fallback"
+                       << "to private memory -- memory usage will increase";
 
             mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         }
@@ -1020,7 +1028,7 @@ class KSharedDataCache::Private
         // Well now we're really hosed. We can still work, but we can't even cache
         // data.
         if (mapAddress == MAP_FAILED) {
-            kError(264) << "Unable to allocate shared memory segment for shared data cache"
+            qCritical() << "Unable to allocate shared memory segment for shared data cache"
                         << cacheName << "of size" << cacheSize;
             return;
         }
@@ -1042,7 +1050,7 @@ class KSharedDataCache::Private
         while (shm->ready != 2) {
             if (usecSleepTime >= (1 << 21)) {
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
-                kError(264) << "Unable to acquire shared lock, is the cache corrupt?";
+                qCritical() << "Unable to acquire shared lock, is the cache corrupt?";
 
                 ::munmap(shm, size);
                 file.remove(); // Unlink the cache in case it's corrupt.
@@ -1052,7 +1060,7 @@ class KSharedDataCache::Private
 
             if (shm->ready.testAndSetAcquire(0, 1)) {
                 if (!shm->performInitialSetup(cacheSize, pageSize)) {
-                    kError(264) << "Unable to perform initial setup, this system probably "
+                    qCritical() << "Unable to perform initial setup, this system probably "
                                    "does not really support process-shared pthreads or "
                                    "semaphores, even though it claims otherwise.";
                     ::munmap(shm, size);
@@ -1071,12 +1079,6 @@ class KSharedDataCache::Private
 
         m_expectedType = shm->shmLock.type;
         m_lock = QSharedPointer<KSDCLock>(createLockFromId(m_expectedType, shm->shmLock));
-
-        // We are "attached" if we have a valid memory mapping, whether it is
-        // shared or private.
-        kDebug(264) << "Cache attached to shared memory,"
-                    << shm->cacheAvail * shm->cachePageSize() << "bytes available out of"
-                    << shm->cacheSize;
     }
 
     // Called whenever the cache is apparently corrupt (for instance, a timeout trying to
