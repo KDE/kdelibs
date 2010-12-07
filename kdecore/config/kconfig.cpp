@@ -415,9 +415,10 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
             file = sGlobalFileName;
         } // else anonymous config.
         // KDE5: remove these magic overloads
-    } else if (QDir::isAbsolutePath(fileName))
-        file = KStandardDirs::realFilePath(fileName);
-    else {
+    } else if (QDir::isAbsolutePath(fileName)) {
+        fileName = KStandardDirs::realFilePath(fileName);
+        file = fileName;
+    } else {
         if (type && *type)
             resourceType = type; // only change it if it's not empty
         file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
