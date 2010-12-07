@@ -52,10 +52,31 @@ void ProxyModelTest::setUseIntermediateProxy(SourceModel sourceModel)
   m_sourceModel = m_intermediateProxyModel;
 }
 
+
+static bool hasMetaMethodStartingWith(QObject *object, const QString &checkedSignature)
+{
+  const QMetaObject *mo = object->metaObject();
+  bool found = false;
+  for (int methodIndex = 0; methodIndex < mo->methodCount(); ++methodIndex) {
+    QMetaMethod mm = mo->method(methodIndex);
+    QString signature = QString::fromLatin1( mm.signature() );
+
+    if (signature.startsWith(checkedSignature)) {
+      found = true;
+      break;
+    }
+  }
+  return found;
+}
+
 void ProxyModelTest::initRootModel(DynamicTreeModel *rootModel, const QString &currentTest, const QString &currentTag)
 {
   Q_UNUSED(rootModel)
   // Get the model into the state it is expected to be in.
+
+  if (!hasMetaMethodStartingWith(m_modelCommander, "init_" + currentTest))
+    return;
+
   QMetaObject::invokeMethod(m_modelCommander, QString("init_" + currentTest).toAscii(), Q_ARG(QString, currentTag));
 }
 
@@ -104,7 +125,12 @@ void ProxyModelTest::init()
   {
     verifyExecutedTests();
     m_dataTags.clear();
+
     QString metaMethod = QString("execute_" + QLatin1String(currentTest));
+
+    if (!hasMetaMethodStartingWith(m_modelCommander, metaMethod))
+      return;
+
     QMetaObject::invokeMethod(m_modelCommander, metaMethod.toAscii(), Q_RETURN_ARG(QStringList, m_modelCommanderTags), Q_ARG(QString, QString()));
     m_currentTest = currentTest;
   }
