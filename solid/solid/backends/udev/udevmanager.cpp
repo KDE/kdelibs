@@ -26,6 +26,9 @@
 
 #include <QtCore/QSet>
 #include <QtCore/QFile>
+#include <QtCore/QDebug>
+
+#define DETAILED_OUTPUT 0
 
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
@@ -54,16 +57,26 @@ UDevManager::Private::~Private()
 
 bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 {
+#if DETAILED_OUTPUT
+    qDebug() << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+    qDebug() << "Path:" << device.sysfsPath();
+    qDebug() << "Properties:" << device.deviceProperties();
+    Q_FOREACH (const QString &key, device.deviceProperties()) {
+        qDebug() << "\t" << key << ":" << device.deviceProperty(key).toString();
+    }
+    qDebug() << "Driver:" << device.driver();
+    qDebug() << "Subsystem:" << device.subsystem();
+    qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+#endif
     if (device.driver() == QLatin1String("processor")) {
         // Linux ACPI reports processor slots, rather than processors.
         // Empty slots will not have a system device associated with them.
         return QFile::exists(device.sysfsPath() + "/sysdev");
-    } else {
-        return device.subsystem() == QLatin1String("dvb") ||
-                device.subsystem() == QLatin1String("video4linux") ||
-                device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices
-                device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
     }
+    return device.subsystem() == QLatin1String("dvb") ||
+           device.subsystem() == QLatin1String("video4linux") ||
+           device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices
+           device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
 }
 
 UDevManager::UDevManager(QObject *parent)
