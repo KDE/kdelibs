@@ -217,7 +217,7 @@ struct KDebugPrivate
     typedef QHash<unsigned int, Area> Cache;
 
     KDebugPrivate()
-        : config(0), kDebugDBusIface(0), m_disableAll(false)
+        : config(0), kDebugDBusIface(0), m_disableAll(false), m_seenMainComponent(false)
     {
         Q_ASSERT(int(QtDebugMsg) == 0);
         Q_ASSERT(int(QtFatalMsg) == 3);
@@ -252,14 +252,20 @@ struct KDebugPrivate
 
     void loadAreaNames()
     {
-        cache.clear();
+        // Don't clear the cache here, that would lose previously registered dynamic areas
+        //cache.clear();
 
         Area &areaData = cache[0];
         areaData.clear();
 
-        Q_ASSERT(KGlobal::hasMainComponent());
-        areaData.name = KGlobal::mainComponent().componentName().toUtf8();
-        //qDebug() << "loadAreaNames: area 0 has name" << KGlobal::mainComponent().componentName().toUtf8();
+        if (KGlobal::hasMainComponent()) {
+            areaData.name = KGlobal::mainComponent().componentName().toUtf8();
+            m_seenMainComponent = true;
+        } else {
+            areaData.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
+            m_seenMainComponent = false;
+        }
+        //qDebug() << "loadAreaNames: area 0 has name" << areaData.name;
 
         for (int i = 0; i < 8; i++) {
             m_nullOutputYesNoCache[i] = -1;
@@ -325,7 +331,7 @@ struct KDebugPrivate
 
     OutputMode areaOutputMode(QtMsgType type, unsigned int area, bool enableByDefault)
     {
-        if (!config)
+        if (!configObject())
             return QtOutput;
 
         QString key;
@@ -355,7 +361,7 @@ struct KDebugPrivate
 
     QString logFileName(QtMsgType type, unsigned int area)
     {
-        if (!config)
+        if (!configObject())
             return QString();
 
         const char* aKey;
@@ -391,30 +397,22 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num, bool enableByDefault = true)
     {
-        if (!configObject() || !KGlobal::hasMainComponent()) {
-            // we don't have a config and we can't create one...
-            // or we don't have a main component (yet?)
-            Area &area = cache[0]; // create a dummy entry
-            if (area.name.isEmpty()) {
-                if (KGlobal::hasMainComponent())
-                    area.name = KGlobal::mainComponent().componentName().toUtf8();
-                else
-                    area.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
-            }
-            //qDebug() << "Created dummy entry for area 0 with name" << area.name;
-            return cache.find(0);
-        }
-
-        if (!cache.contains(0) || (cache.count() == 1 && KGlobal::hasMainComponent())) {
+        if (!cache.contains(0)) {
             //qDebug() << "cache size=" << cache.count() << "loading area names";
             loadAreaNames(); // fills 'cache'
+            Q_ASSERT(cache.contains(0));
+        } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
+            // Update the name for area 0 once a main component exists
+            cache[0].name = KGlobal::mainComponent().componentName().toUtf8();
+            m_seenMainComponent = true;
         }
 
         Cache::Iterator it = cache.find(num);
         if (it == cache.end()) {
             // unknown area
             Q_ASSERT(cache.contains(0));
-            return cache.find(0);
+            it = cache.find(0);
+            num = 0;
         }
 
         if (num == 0 && type == QtDebugMsg) { // area 0 is special, it becomes the named area "appname"
@@ -432,6 +430,8 @@ struct KDebugPrivate
             it->mode[lev] = areaOutputMode(type, num, enableByDefault);
         if (it->mode[lev] == FileOutput && it->logFileName[lev].isEmpty())
             it->logFileName[lev] = logFileName(type, num);
+
+        Q_ASSERT(it->mode[lev] != Unknown);
 
         return it;
     }
@@ -630,6 +630,7 @@ struct KDebugPrivate
         static bool env_colored = (!qgetenv("KDE_COLOR_DEBUG").isEmpty());
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
+        Q_ASSERT(mode != Unknown);
         QString file = it->logFileName[level(type)];
         QByteArray areaName = it->name;
 
@@ -649,11 +650,11 @@ struct KDebugPrivate
         case SyslogOutput:
             s = setupSyslogWriter(type);
             break;
-        case Unknown: // don't want kdelibs debug output in Qt-only programs with no componentdata (-> no kdebugrc)
         case NoOutput:
             s = QDebug(&devnull);
             return s; //no need to take the time to "print header" if we don't want to output anyway
             break;
+        case Unknown: // should not happen
         default:                // QtOutput
             s = setupQtWriter(type);
 #ifndef Q_OS_WIN
@@ -686,6 +687,7 @@ struct KDebugPrivate
     KDebugDBusIface *kDebugDBusIface;
     Cache cache;
     bool m_disableAll;
+    bool m_seenMainComponent; // false: area zero still contains qAppName
     int m_nullOutputYesNoCache[8];
 
     KNoDebugStream devnull;
@@ -861,6 +863,7 @@ int KDebug::registerArea(const QByteArray& areaName, bool enabled)
     }
     KDebugPrivate::Area areaData;
     areaData.name = areaName;
+    //qDebug() << "Assigning area number" << areaNumber << "for name" << areaName;
     d->cache.insert(areaNumber, areaData);
     d->writeGroupForNamedArea(areaName, enabled);
     return areaNumber;

@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testDisabledDynamicArea();
     void testDisableAll();
     void testHasNullOutput();
+    void testNoMainComponentData();
     void testMultipleThreads();
 
 private:

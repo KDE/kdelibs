@@ -23,6 +23,7 @@
 #include <kconfiggroup.h>
 #include <qtest_kde.h>
 #include <kdebug.h>
+#include <kprocess.h>
 #include <kstandarddirs.h>
 #include "kdebug_unittest.moc"
 
@@ -45,9 +46,11 @@ void KDebugTest::initTestCase()
     config.group("qttest").writeEntry("WarnOutput", 0 /*FileOutput*/);
     config.sync();
 
+    //QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, false), false);
+
     // Test for crash that used to happen when using an unknown area after only dynamic areas
-    KDebug::registerArea("somearea");
-    KDebug::registerArea("someotherarea");
+    KDebug::registerArea("somearea"); // gets number 1
+    KDebug::registerArea("someotherarea"); // gets number 2
     QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), false); // unknown area -> area 0 is being used
 
     kClearDebugConfig();
@@ -179,14 +182,14 @@ void KDebugTest::testDisableArea()
 
 void KDebugTest::testDynamicArea()
 {
-    const int myArea = KDebug::registerArea("myarea");
-    QVERIFY(myArea > 0);
+    const int myArea = KDebug::registerArea("myarea"); // gets number 3
+    QCOMPARE(myArea, 3);
     KConfig config("kdebugrc");
     QVERIFY(!config.hasGroup(QString::number(myArea)));
     QVERIFY(config.hasGroup("myarea"));
     kDebug(myArea) << "TEST DEBUG using myArea" << myArea;
     QList<QByteArray> expected;
-    expected << "/myarea KDebugTest::testDynamicArea: TEST DEBUG using myArea 1\n";
+    expected << "/myarea KDebugTest::testDynamicArea: TEST DEBUG using myArea 3\n";
     compareLines(expected, "myarea.dbg");
 }
 
@@ -250,6 +253,41 @@ void KDebugTest::testHasNullOutput()
     config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.sync();
     kClearDebugConfig();
+}
+
+void KDebugTest::testNoMainComponentData()
+{
+    // This test runs kdebug_qcoreapptest and checks its output
+    KProcess proc;
+    proc.setEnv("KDE_DEBUG_NOPROCESSINFO", "1");
+    proc.setOutputChannelMode(KProcess::OnlyStderrChannel);
+#ifdef Q_OS_WIN
+    proc << "kdebug_qcoreapptest.exe";
+#else
+    if (QFile::exists("./kdebug_qcoreapptest.shell"))
+        proc << "./kdebug_qcoreapptest.shell";
+    else {
+        QVERIFY(QFile::exists("./kdebug_qcoreapptest"));
+        proc << "./kdebug_qcoreapptest";
+    }
+#endif
+    //     kDebug() << proc.args();
+    const int ok = proc.execute();
+    QVERIFY(ok == 0);
+    const QByteArray allOutput = proc.readAllStandardError();
+    const QList<QByteArray> receivedLines = allOutput.split('\n');
+    //qDebug() << receivedLines;
+    QList<QByteArray> expectedLines;
+    expectedLines << "qcoreapp_myarea main: Test debug using qcoreapp_myarea 1";
+    expectedLines << "kdebug_qcoreapptest main: Debug in area 100";
+    expectedLines << "kdebug_qcoreapptest main: Simple debug";
+    expectedLines << "kdebug_qcoreapptest_mainData main: This should appear, under the kdebug_qcoreapptest_mainData area";
+    expectedLines << "kdebug_qcoreapptest_mainData main: Debug in area 100";
+    expectedLines << ""; // artefact of split, I guess?
+    for (int i = 0; i < qMin(expectedLines.count(), receivedLines.count()); ++i)
+        QCOMPARE(QString::fromLatin1(receivedLines[i]), QString::fromLatin1(expectedLines[i]));
+    QCOMPARE(receivedLines.count(), expectedLines.count());
+    QCOMPARE(receivedLines, expectedLines);
 }
 
 #include <QThreadPool>
