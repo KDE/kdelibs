@@ -46,6 +46,7 @@ private Q_SLOTS:
     void testEnums();
     void testEntryMap();
     void testInvalid();
+    void testDeleteEntry();
     void testDelete();
     void testDeleteWhenLocalized();
     void testDefaultGroup();

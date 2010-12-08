@@ -618,13 +618,32 @@ void KConfigTest::testChangeGroup()
 #endif
 }
 
+// Simple test for deleteEntry
+void KConfigTest::testDeleteEntry()
+{
+    const char* configFile = "kconfigdeletetest";
+    {
+        KConfig conf(configFile);
+        conf.group("Hello").writeEntry("DelKey", "ToBeDeleted");
+    }
+    const QList<QByteArray> lines = readLines(configFile);
+    Q_ASSERT(lines.contains("[Hello]\n"));
+    Q_ASSERT(lines.contains("DelKey=ToBeDeleted\n"));
+
+    KConfig sc(configFile);
+    KConfigGroup group(&sc, "Hello");
+
+    group.deleteEntry("DelKey");
+    QCOMPARE( group.readEntry("DelKey", QString("Fietsbel")), QString("Fietsbel") );
+
+    group.sync();
+    Q_ASSERT(!readLines(configFile).contains("DelKey=ToBeDeleted\n"));
+    QCOMPARE( group.readEntry("DelKey", QString("still deleted")), QString("still deleted") );
+}
+
 void KConfigTest::testDelete()
 {
   KConfig sc( "kconfigtest" );
-  KConfigGroup sc3(&sc, "Hello");
-
-  sc3.deleteEntry("Test");
-  QCOMPARE( sc3.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
 
   KConfigGroup ct(&sc, "Complex Types");
   KConfigGroup ng(&ct, "Nested Group 2");
@@ -688,11 +707,9 @@ void KConfigTest::testDefaultGroup()
         QCOMPARE(emptyGroup.readEntry("TestKey", QString()), QString("defaultGroup"));
     }
 
-#ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
     QVERIFY(!lines.contains("[]\n"));
     QCOMPARE(lines.first(), QByteArray("TestKey=defaultGroup\n"));
-#endif
 
     // Now that the group exists make sure it isn't returned from groupList()
     foreach(const QString& group, sc.groupList()) {
@@ -703,10 +720,8 @@ void KConfigTest::testDefaultGroup()
     sc.sync();
 
     // Test if deleteGroup worked
-#ifdef Q_OS_UNIX
     lines = readLines();
     QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
-#endif
 }
 
 void KConfigTest::testEmptyGroup()
@@ -737,11 +752,9 @@ void KConfigTest::testEmptyGroup()
         QCOMPARE(emptyGroup2.readEntry("TestKey", QString()), QString("emptyGroup"));
     }
 
-#ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
     QVERIFY(!lines.contains("[]\n")); // there's no support for the [] group, in fact.
     QCOMPARE(lines.first(), QByteArray("TestKey=emptyGroup\n"));
-#endif
 
     // Now that the group exists make sure it isn't returned from groupList()
     foreach(const QString& group, sc.groupList()) {
@@ -751,10 +764,8 @@ void KConfigTest::testEmptyGroup()
     sc.sync();
 
     // Test if deleteGroup worked
-#ifdef Q_OS_UNIX
     lines = readLines();
     QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
-#endif
 }
 
 void KConfigTest::testMerge()
@@ -1175,7 +1186,7 @@ QList<QByteArray> KConfigTest::readLines(const char* fileName)
     const QString path = KStandardDirs::locateLocal("config", fileName);
     Q_ASSERT(!path.isEmpty());
     QFile file(path);
-    const bool opened = file.open(QIODevice::ReadOnly);
+    const bool opened = file.open(QIODevice::ReadOnly|QIODevice::Text);
     Q_ASSERT(opened);
     Q_UNUSED(opened);
     QList<QByteArray> lines;
@@ -1323,12 +1334,9 @@ void KConfigTest::testDeleteWhenLocalized()
     // The current state is: (Just return before this comment.)
     // [...]
     // foobool[ca]=true
-    // foobool[$d]
     // foobool[de]=wahr
-    // foostring[ca][$d]
     // foostring=ugly
     // foostring[de]=schoen
-    // [...]
 
     // Now switch the locale to "de" and repeat the checks. Results should be
     // the same. But they currently are not. The localized value are
@@ -1425,13 +1433,8 @@ void KConfigTest::testKdeGlobals()
 
     // Check we wrote into kdeglobals
     const QList<QByteArray> lines = readLines("kdeglobals");
-#ifdef Q_WS_WIN
-#define LINEENDING "\r\n"
-#else
-#define LINEENDING "\n"
-#endif
-    QVERIFY(lines.contains("[General]"LINEENDING));
-    QVERIFY(lines.contains("testKG=1"LINEENDING));
+    QVERIFY(lines.contains("[General]\n"));
+    QVERIFY(lines.contains("testKG=1\n"));
 
     // Writing using NoGlobals
     {
