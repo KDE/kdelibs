@@ -205,6 +205,30 @@ void KConfigTest::cleanupTestCase()
   QVERIFY(!QFile::exists(localConfig));
 }
 
+
+static QList<QByteArray> readLinesFrom(const QString& path)
+{
+    QFile file(path);
+    const bool opened = file.open(QIODevice::ReadOnly|QIODevice::Text);
+    Q_ASSERT(opened);
+    Q_UNUSED(opened);
+    QList<QByteArray> lines;
+    QByteArray line;
+    do {
+        line = file.readLine();
+        if (!line.isEmpty())
+            lines.append(line);
+    } while(!line.isEmpty());
+    return lines;
+}
+
+static QList<QByteArray> readLines(const char* fileName = "kconfigtest")
+{
+    const QString path = KStandardDirs::locateLocal("config", fileName);
+    Q_ASSERT(!path.isEmpty());
+    return readLinesFrom(path);
+}
+
 // ### TODO: call this, and test the state of things afterwards
 void KConfigTest::revertEntries()
 {
@@ -1181,23 +1205,6 @@ void KConfigTest::testDirtyOnEqualOverdo()
     QCOMPARE(cgLocal.readEntry("someKey", defvalr), val2);
 }
 
-QList<QByteArray> KConfigTest::readLines(const char* fileName)
-{
-    const QString path = KStandardDirs::locateLocal("config", fileName);
-    Q_ASSERT(!path.isEmpty());
-    QFile file(path);
-    const bool opened = file.open(QIODevice::ReadOnly|QIODevice::Text);
-    Q_ASSERT(opened);
-    Q_UNUSED(opened);
-    QList<QByteArray> lines;
-    QByteArray line;
-    do {
-        line = file.readLine();
-        if (!line.isEmpty())
-            lines.append(line);
-    } while(!line.isEmpty());
-    return lines;
-}
 
 void KConfigTest::testCreateDir()
 {
@@ -1373,7 +1380,8 @@ void KConfigTest::testDeleteWhenLocalized()
     cg.deleteGroup();
     config.sync();
 
-    // Current state: The same as above [$d] for all values.
+    // Current state: [ca] and [de] entries left... oops.
+    //qDebug() << readLinesFrom(file);
 
     // The group still exists but the values are all gone.
     QVERIFY(cg.exists());

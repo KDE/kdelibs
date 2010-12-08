@@ -81,7 +81,6 @@ private Q_SLOTS:
     void testSyncOnExit();
 private:
     void revertEntries();
-    static QList<QByteArray> readLines(const char* fileName = "kconfigtest");
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 
