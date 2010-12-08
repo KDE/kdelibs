@@ -144,6 +144,9 @@ void Nepomuk::Query::QueryServiceClient::Private::_k_handleQueryReply(QDBusPendi
         m_errorMessage = reply.error().message();
         m_queryActive = false;
         emit q->error(m_errorMessage);
+        if( loop ) {
+            loop->exit();
+        }
     }
     else {
         queryInterface = new org::kde::nepomuk::Query( queryServiceInterface->service(),
@@ -275,7 +278,7 @@ QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncQuery(co
         loop.exec();
         qsc.d->loop = 0;
         if (ok) {
-            *ok = true;
+            *ok = !qsc.errorMessage().isEmpty();
         }
         return loop.result();
     }
@@ -314,7 +317,7 @@ QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncSparqlQu
         loop.exec();
         qsc.d->loop = 0;
         if (ok) {
-            *ok = true;
+            *ok = !qsc.errorMessage().isEmpty();
         }
         return loop.result();
     }
@@ -351,7 +354,7 @@ QList< Nepomuk::Query::Result > Nepomuk::Query::QueryServiceClient::syncDesktopQ
         loop.exec();
         qsc.d->loop = 0;
         if (ok) {
-            *ok = true;
+            *ok = !qsc.errorMessage().isEmpty();
         }
         return loop.result();
     }
