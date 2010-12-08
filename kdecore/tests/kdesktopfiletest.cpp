@@ -39,7 +39,7 @@ void KDesktopFileTest::testRead()
     QCOMPARE(df.hasLinkType(), false);
     QCOMPARE(df.hasMimeTypeType(), false);
     QCOMPARE(df.hasApplicationType(), false);
-    QCOMPARE(df.fileName(), fileName);
+    QCOMPARE(df.fileName(), KStandardDirs::realFilePath(fileName));
     QCOMPARE(df.resource(), "apps"); // default for .desktop files
 }
 
