@@ -65,14 +65,15 @@ void Nepomuk::Types::EntityPrivate::initAncestors()
 
 bool Nepomuk::Types::EntityPrivate::load()
 {
+    const QString query = QString::fromLatin1( "select ?p ?o where { "
+                                               "graph ?g { <%1> ?p ?o . } . "
+                                               "{ ?g a %2 . } UNION { ?g a %3 . } . }" )
+                          .arg( QString::fromAscii( uri.toEncoded() ),
+                                Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::Ontology() ),
+                                Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::KnowledgeBase() ) );
+                          
     Soprano::QueryResultIterator it
-        = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p ?o where { "
-                                                                          "graph ?g { <%1> ?p ?o . } . "
-                                                                          "{ ?g a <%2> . } UNION { ?g a <%3> . } . }")
-                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
-                                                                  .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
-                                                                  Soprano::Query::QueryLanguageSparql );
+        = ResourceManager::instance()->mainModel()->executeQuery( query, Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         QUrl property = it.binding( "p" ).uri();
         Soprano::Node value = it.binding( "o" );
@@ -114,14 +115,15 @@ bool Nepomuk::Types::EntityPrivate::load()
 
 bool Nepomuk::Types::EntityPrivate::loadAncestors()
 {
+    const QString query = QString::fromLatin1( "select ?s ?p where { "
+                                               "graph ?g { ?s ?p <%1> . } . "
+                                               "{ ?g a %2 . } UNION { ?g a %3 . } . }" )
+                          .arg( QString::fromAscii( uri.toEncoded() ),
+                                Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::Ontology() ),
+                                Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::KnowledgeBase() ) );
+                          
     Soprano::QueryResultIterator it
-        = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?s ?p where { "
-                                                                          "graph ?g { ?s ?p <%1> . } . "
-                                                                          "{ ?g a <%2> . } UNION { ?g a <%3> . } . }")
-                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
-                                                                  .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
-                                                                  Soprano::Query::QueryLanguageSparql );
+        = ResourceManager::instance()->mainModel()->executeQuery( query, Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         addAncestorProperty( it.binding( "s" ).uri(), it.binding( "p" ).uri() );
     }
@@ -135,10 +137,10 @@ void Nepomuk::Types::EntityPrivate::reset( bool )
 {
     QMutexLocker lock( &mutex );
 
-    label.truncate(0);
-    comment.truncate(0);
-    l10nLabel.truncate(0);
-    l10nComment.truncate(0);;
+    label.clear();
+    comment.clear();
+    l10nLabel.clear();
+    l10nComment.clear();;
 
     icon = QIcon();
 
@@ -307,12 +309,11 @@ bool Nepomuk::Types::Entity::operator==( const Entity& other ) const
 
 bool Nepomuk::Types::Entity::operator==( const QUrl& other ) const
 {
-    // since we use one instace cache we can improve comparation operations
-    // intensly by not comparing URLs but pointers.
     if( d )
         return( d->uri == other );
     else
         return !other.isValid();
+    //vHanda: Why return !other.isValid()? 
 }
 
 
@@ -326,8 +327,6 @@ bool Nepomuk::Types::Entity::operator!=( const Entity& other ) const
 
 bool Nepomuk::Types::Entity::operator!=( const QUrl& other ) const
 {
-    // since we use one instace cache we can improve comparation operations
-    // intensly by not comparing URLs but pointers.
     if( d )
         return( d->uri != other );
     else

@@ -216,7 +216,8 @@ namespace Nepomuk {
             operator QUrl() const { return uri(); }
 
             /**
-             * Compares two Entity instances by simply comparing their URI.
+             * Compares two Entity instances. This is faster than simply
+             * comparing the URIs.
              */
             bool operator==( const Entity& other ) const;
 
@@ -228,7 +229,8 @@ namespace Nepomuk {
             bool operator==( const QUrl& other ) const;
 
             /**
-             * Compares two Entity instances by simply comparing their URI.
+             * Compares two Entity instances. This is faster than simply
+             * comparing the URIs.
              */
             bool operator!=( const Entity& other ) const;
 
