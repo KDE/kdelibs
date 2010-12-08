@@ -312,8 +312,7 @@ bool Nepomuk::Types::Entity::operator==( const QUrl& other ) const
     if( d )
         return( d->uri == other );
     else
-        return !other.isValid();
-    //vHanda: Why return !other.isValid()? 
+        return other.isEmpty();
 }
 
 
@@ -330,7 +329,7 @@ bool Nepomuk::Types::Entity::operator!=( const QUrl& other ) const
     if( d )
         return( d->uri != other );
     else
-        return other.isValid();
+        return !other.isEmpty();
 }
 
 
