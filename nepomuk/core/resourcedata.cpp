@@ -284,6 +284,9 @@ bool Nepomuk::ResourceData::store()
             }
         }
 
+        // save the type (additional types are saved in setTypes)
+        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
+
         // the only situation in which determineUri keeps the kickoff URI is for file URLs.
         if ( m_nieUrl.isValid() ) {
             statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_nieUrl ) );
@@ -304,8 +307,7 @@ bool Nepomuk::ResourceData::store()
     // save type (There should be no need to save all the types since there is only one way
     // that m_types contains more than one element: if we loaded them)
     // The first type, however, can be set at creation time to any value
-    if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() &&
-         !MAINMODEL->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) ) {
+    else if ( !MAINMODEL->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) ) {
         statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
     }
 

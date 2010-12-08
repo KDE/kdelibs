@@ -221,7 +221,8 @@ void ResourceTest::testResourceIdentifiers()
         QList<Statement> sl
             = ResourceManager::instance()->mainModel()->listStatements( Statement( r1.resourceUri(), Node(), Node() ) ).allStatements();
 
-        QCOMPARE( sl.count(), 4 );
+        // rdf:type, nao:created, nao:lastModified, nao:identifier, and the property above
+        QCOMPARE( sl.count(), 5 );
 
         QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( Statement( r1.resourceUri(),
                                                                                             QUrl( Resource::identifierUri() ),
