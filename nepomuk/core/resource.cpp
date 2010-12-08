@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -65,6 +65,7 @@ Nepomuk::Resource::Resource( ResourceManager* manager )
 
 Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 {
+    QMutexLocker lock( &res.m_data->rm()->mutex );
     m_data = res.m_data;
     if ( m_data )
         m_data->ref( this );
@@ -120,6 +121,7 @@ Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type, ResourceManager*
 
 Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
+    QMutexLocker lock( &data->rm()->mutex );
     m_data = data;
     if ( m_data )
         m_data->ref( this );
