@@ -184,7 +184,7 @@ namespace Nepomuk {
         void resetAll( bool isDelete = false );
 
         /// Updates both m_kickoffUris and ResourceMangerPrivate's list
-        void updateKickOffLists( const QUrl & prop, const QUrl & newUri );
+        void updateKickOffLists( const QUrl & prop, const Variant & v );
 
         /// final resource URI created by determineUri
         KUrl m_uri;

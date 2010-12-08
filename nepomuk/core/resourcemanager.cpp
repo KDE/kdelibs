@@ -1,6 +1,7 @@
 /*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -179,7 +180,7 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 {
     QMutexLocker lock( &mutex );
 
-    QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet();
+    QSet<ResourceData*> rdl = m_uriKickoffData.values().toSet() + m_initializedData.values().toSet();
     for( QSet<ResourceData*>::iterator rdIt = rdl.begin();
          rdIt != rdl.end(); ++rdIt ) {
         ResourceData* data = *rdIt;

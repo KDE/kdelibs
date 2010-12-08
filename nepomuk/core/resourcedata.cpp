@@ -1,6 +1,7 @@
 /*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -383,8 +384,9 @@ bool Nepomuk::ResourceData::load()
                     }
                 }
                 else {
-                    updateKickOffLists( p, o.uri() );
-                    m_cache[p].append( Variant::fromNode( o ) );
+                    Nepomuk::Variant var = Variant::fromNode( o );
+                    updateKickOffLists( p, var );
+                    m_cache[p].append( var );
                 }
             }
 
@@ -444,7 +446,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         MAINMODEL->updateProperty( m_uri, uri, value.toNodeList() );
 
         // update the kickofflists
-        updateKickOffLists( uri, value.toUrl() );
+        updateKickOffLists( uri, value );
     }
 }
 
@@ -459,7 +461,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
         MAINMODEL->removeProperty( m_uri, uri );
 
         // update the kickofflists
-        updateKickOffLists( uri, QUrl() );
+        updateKickOffLists( uri, Variant() );
     }
 }
 
@@ -606,6 +608,8 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
     // Move us to the final data hash now that the URI is known
     //
     if( !m_uri.isEmpty() ) {
+        //vHanda: Is there some way to avoid this hash lookup every time?
+        //        It sure would speed things up.
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
@@ -681,11 +685,13 @@ QDebug operator<<( QDebug dbg, const Nepomuk::ResourceData& data )
 }
 
 
-void Nepomuk::ResourceData::updateKickOffLists(const QUrl& prop, const QUrl& newUrl)
+void Nepomuk::ResourceData::updateKickOffLists(const QUrl& prop, const Nepomuk::Variant& v)
 {
     KUrl oldUrl;
+    KUrl newUrl;
     if( prop == Nepomuk::Vocabulary::NIE::url() ) {
         oldUrl = m_nieUrl;
+        newUrl = v.toUrl();
         m_nieUrl = newUrl;
     }
     else if( prop == Soprano::Vocabulary::NAO::identifier() ) {
@@ -695,6 +701,7 @@ void Nepomuk::ResourceData::updateKickOffLists(const QUrl& prop, const QUrl& new
                 break;
             }
         }
+        newUrl = KUrl( v.toString() );
     }
     else {
         return;
