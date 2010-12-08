@@ -36,7 +36,7 @@ PortableMediaPlayer::~PortableMediaPlayer()
 
 QStringList PortableMediaPlayer::supportedProtocols() const
 {
-    return QStringList() << "usb";
+    return QStringList() << "mtp";
 }
 
 QStringList PortableMediaPlayer::supportedDrivers(QString /*protocol*/) const
@@ -44,7 +44,7 @@ QStringList PortableMediaPlayer::supportedDrivers(QString /*protocol*/) const
     QStringList res;
 
     if (!supportedProtocols().isEmpty())
-        res << "mtp";
+        res << "usb";
 
     return res;
 }
