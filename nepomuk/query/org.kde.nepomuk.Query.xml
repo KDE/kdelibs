@@ -12,7 +12,7 @@
       <arg type="s" direction="out" />
     </method>
     <signal name="newEntries">
-      <arg name="entries" type="a(sda{s(isss)})" />
+      <arg name="entries" type="a(sda{s(isss)}s)" />
       <annotation name="com.trolltech.QtDBus.QtTypeName.In0" value="QList&lt;Nepomuk::Query::Result&gt;" />
     </signal>
     <signal name="entriesRemoved">
