@@ -117,7 +117,7 @@ void ResourceTest::testProperties()
     }
 
     QTextStream s(stdout);
-    foreach( const Statement& st,     ResourceManager::instance()->mainModel()->listStatements().allStatements() ) {
+    foreach( const Statement& st, ResourceManager::instance()->mainModel()->listStatements().allStatements() ) {
         s << st << endl;
     }
 
@@ -403,6 +403,7 @@ void ResourceTest::testLocalFileUrls()
 
 void ResourceTest::testKickOffListRemoval()
 {
+    Soprano::Model * model = ResourceManager::instance()->mainModel();
     {
         KTemporaryFile tmpFile1;
         QVERIFY( tmpFile1.open() );
@@ -411,7 +412,7 @@ void ResourceTest::testKickOffListRemoval()
         fileRes.setRating( 4 );
 
         // make sure the nie:url is saved
-        QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile1.fileName()) ) );
+        QVERIFY( model->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile1.fileName()) ) );
 
         // make sure a proper nepomuk:/ uri has been created
         QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
@@ -441,27 +442,35 @@ void ResourceTest::testKickOffListRemoval()
         fileRes.setRating( 4 );
 
         // make sure the nie:url is saved
-        QVERIFY( ResourceManager::instance()->mainModel()->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile.fileName()) ) );
+        QVERIFY( model->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile.fileName()) ) );
 
         // make sure a proper nepomuk:/ uri has been created
         QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
 
-        // Add a different the nie:url
+        // Add a different nie:url
         KTemporaryFile tmpFile2;
         QVERIFY( tmpFile2.open() );
         fileRes.setProperty( Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
 
+        // make sure the new nie:url is saved and the old one is gone
+        QVERIFY( model->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) ) );
+        QVERIFY( !model->containsAnyStatement( fileRes.resourceUri(), Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile.fileName()) ) );
+
+        // At this point the ResourceManager's kickOffUri's should contain
+        // only tmpFile2 -> fileRes
+
         Resource fileRes2( KUrl(tmpFile.fileName()) );
+        
         QVERIFY( fileRes.resourceUri() != fileRes2.resourceUri() );
 
         Resource fileRes3( KUrl(tmpFile2.fileName()) );
         QVERIFY( fileRes3.resourceUri() == fileRes.resourceUri() );
-
+        
         Resource r1( "res1" );
         r1.setProperty( QUrl("http://test/prop1"), 42 );
-
+        
         r1.setProperty( Soprano::Vocabulary::NAO::identifier(), "foo" );
-
+        
         Resource r2( "res1" );
         r2.setProperty( QUrl("http://test/prop1"), 46 );
 
