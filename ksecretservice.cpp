@@ -36,7 +36,6 @@
 #include <kglobal.h>
 #include <klocalizedstring.h>
 
-#include <QtCrypto/QtCrypto>
 
 class KSecretServiceHelper
 {
