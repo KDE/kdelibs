@@ -150,7 +150,8 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     if (kdeinit.isEmpty()) kdeinit = "kdeinit4";
 
     QString kioexec = KStandardDirs::findExe("kioexec");
-    if (kioexec.isEmpty()) kioexec = "kioexec";
+    if (kioexec.isEmpty())
+        QSKIP("kioexec not found, kdebase needed", SkipAll);
 
     QString kmailservice = KStandardDirs::findExe("kmailservice");
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
