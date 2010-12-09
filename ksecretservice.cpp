@@ -174,7 +174,7 @@ KSecretService::KSecretService(QObject* parent)
 
 KSecretService::~KSecretService()
 {
-
+    delete d;
 }
 
 void KSecretService::init()
