@@ -51,7 +51,7 @@ QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
 void KGlobalShortcutTest::initTestCase()
 {
-    m_daemonInstalled = KService::serviceByDesktopName("kglobalaccel") != 0;
+    m_daemonInstalled = !KService::serviceByDesktopName("kglobalaccel").isNull();
 }
 
 void KGlobalShortcutTest::setupTest(QString id)
