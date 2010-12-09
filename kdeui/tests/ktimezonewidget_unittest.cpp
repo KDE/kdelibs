@@ -21,12 +21,27 @@
 #include <ktimezonewidget.h>
 #include <kconfiggroup.h>
 #include <QtDBus/QtDBus>
+#include "../../kdecore/tests/ktimezonestest_p.h"
 
 class KTimeZoneWidgetTest : public QObject
 {
     Q_OBJECT
 
+public:
+    void init() { initTestCase(); }
+
 private Q_SLOTS:
+
+    void initTestCase()
+    {
+        mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
+    }
+
+    void cleanupTestCase()
+    {
+        mTestData.cleanupTimeZoneTest();
+    }
+
     void testSetSelected()
     {
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
@@ -39,9 +54,9 @@ private Q_SLOTS:
 
         // Single selection mode (default)
         QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
-        tzw.setSelected("Europe/Zurich", true);
+        tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 1);
-        QCOMPARE(tzw.selection(), QStringList() << "Europe/Zurich");
+        QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
         tzw.setSelected("Africa/Cairo", true);
         QCOMPARE(tzw.selectedItems().count(), 1);
         QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
@@ -53,16 +68,16 @@ private Q_SLOTS:
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 1);
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
-        tzw.setSelected("America/New_York", true);
+        tzw.setSelected("America/Los_Angeles", true);
         QCOMPARE(tzw.selectedItems().count(), 2);
-        QCOMPARE(tzw.selection(), QStringList() << "America/New_York" << "Europe/Paris");
+        QCOMPARE(tzw.selection(), QStringList() << "America/Los_Angeles" << "Europe/Paris");
     }
 
     void testCheckableItems()
     {
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-            QSKIP("kded not running", SkipSingle);
-        }
+        //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+        //    QSKIP("kded not running", SkipSingle);
+        //}
 
         KTimeZoneWidget tzw;
         tzw.setItemsCheckable(true);
@@ -72,9 +87,9 @@ private Q_SLOTS:
 
         // Single selection mode (default)
         QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
-        tzw.setSelected("Europe/Zurich", true);
+        tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 0); // it got checked, not selected
-        QCOMPARE(tzw.selection(), QStringList() << "Europe/Zurich");
+        QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
         tzw.setSelected("Africa/Cairo", true);
         QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
 
@@ -83,9 +98,11 @@ private Q_SLOTS:
         tzw.clearSelection();
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
-        tzw.setSelected("America/New_York", true);
-        QCOMPARE(tzw.selection(), QStringList() << "America/New_York" << "Europe/Paris");
+        tzw.setSelected("America/Los_Angeles", true);
+        QCOMPARE(tzw.selection(), QStringList() << "America/Los_Angeles" << "Europe/Paris");
     }
+private:
+    TimeZoneTestData mTestData;
 };
 
 // Tricky problem. The kded module writes out a config file, but unit tests have
@@ -104,7 +121,9 @@ int main(int argc, char *argv[])
     QApplication app( argc, argv );
     app.setApplicationName( "ktimezonewidgettest" );
 
+    KTimeZoneWidgetTest tc;
 #if 0
+    tc.init();
     KTimeZoneWidget tzw;
     tzw.setItemsCheckable(true);
     tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
@@ -112,7 +131,6 @@ int main(int argc, char *argv[])
     tzw.show();
     return app.exec();
 #else
-    KTimeZoneWidgetTest tc;
     return QTest::qExec( &tc, argc, argv );
 #endif
 }
