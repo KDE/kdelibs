@@ -39,6 +39,9 @@ void KConfigTest::initTestCase()
   // cheat the linker on windows to link against kdeui
   KCursor::hideCursorDelay();
 
+  setenv("KDE_DEBUG_NOPROCESSINFO", "1", 1);
+  setenv("KDE_DEBUG_TIMESTAMP", "0", 1);
+
   KConfig sc( "kconfigtest" );
 
   KConfigGroup cg(&sc, "ComplexTypes");
@@ -100,6 +103,7 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( QString("badList"), list);
   sc.sync();
 
+  QTest::ignoreMessage(QtWarningMsg, "QColor::setNamedColor: Unknown color name '1'");
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 2 element list

@@ -61,7 +61,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             QColor col;
             col.setNamedColor(QString::fromUtf8(data.constData(), data.length()));
             if (!col.isValid())
-                kError() << errString << endl;
+                kError() << qPrintable(errString);
             output = col;
             return true;
         } else {
@@ -69,7 +69,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             const int count = list.count();
 
             if (count != 3 && count != 4) {
-                kError() << errString << formatError.arg("3' or '4").arg(count) << endl;
+                kError() << qPrintable(errString) << qPrintable(formatError.arg("3' or '4").arg(count));
                 return true;    // return default
             }
 
@@ -79,7 +79,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
                 bool ok;
                 const int j = temp[i] = list.at(i).toInt(&ok);
                 if (!ok) { // failed to convert to int
-                    kError() << errString << " (integer conversion failed)" << endl;
+                    kError() << qPrintable(errString) << " (integer conversion failed)";
                     return true; // return default
                 }
                 if (j < 0 || j > 255) {
@@ -87,9 +87,8 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
                         "red", "green", "blue", "alpha"
                     };
                     const QString boundsError = QLatin1String(" (bounds error: %1 component %2)");
-                    kError() << errString
-                             << boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255")
-                             << endl;
+                    kError() << qPrintable(errString)
+                             << qPrintable(boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255"));
                     return true; // return default
                 }
             }
@@ -100,7 +99,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             if (aColor.isValid())
                 output = aColor;
             else
-                kError() << errString << endl;
+                kError() << qPrintable(errString);
             return true;
         }
     }
@@ -110,7 +109,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
         if (tmp.convert(QVariant::Font))
             output = tmp;
         else
-            kError() << errString << endl;
+            kError() << qPrintable(errString);
         return true;
     }
     case QVariant::Pixmap:
