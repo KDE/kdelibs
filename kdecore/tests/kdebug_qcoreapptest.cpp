@@ -18,6 +18,11 @@
 
 */
 
+// Emulate being compiled in debug mode, so that kDebug(0) defaults to "on"
+#undef QT_NO_DEBUG
+
+// TODO: a separate test program with #define QT_NO_DEBUG...
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QtGlobal>
 #include <QtCore/QFile>
