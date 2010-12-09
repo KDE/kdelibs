@@ -110,6 +110,8 @@ void KDialogPrivate::queuedLayoutUpdate()
 
 void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
 {
+    Q_Q(KDialog);
+
   QDialogButtonBox::ButtonRole role = QDialogButtonBox::InvalidRole;
   switch ( key ) {
     case KDialog::Help:
@@ -158,6 +160,11 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
 
     QObject::connect(button, SIGNAL(clicked()),
            &mButtonSignalMapper, SLOT( map() ) );
+
+    if (key == mDefaultButton) {
+        // Now that it exists, set it as default
+        q->setDefaultButton(mDefaultButton);
+    }
 }
 
 void KDialogPrivate::init(KDialog *q)
@@ -279,6 +286,8 @@ void KDialog::setEscapeButton( ButtonCode id )
 
 void KDialog::setDefaultButton( ButtonCode newDefaultButton )
 {
+    Q_D(KDialog);
+
     if (newDefaultButton == None)
         newDefaultButton = NoDefault; // #148969
 
@@ -308,6 +317,7 @@ void KDialog::setDefaultButton( ButtonCode newDefaultButton )
             }
         }
     }
+    d->mDefaultButton = newDefaultButton;
     Q_ASSERT(defaultButton() == newDefaultButton);
 }
 
@@ -322,7 +332,7 @@ KDialog::ButtonCode KDialog::defaultButton() const
     }
   }
 
-  return NoDefault;
+    return d->mDefaultButton;
 }
 
 void KDialog::setMainWidget( QWidget *widget )

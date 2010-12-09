@@ -41,6 +41,7 @@ class KDialogPrivate
             mDetailsWidget(0),
             mTopLayout(0), mMainWidget(0), mUrlHelp(0), mActionSeparator(0),
             mButtonOrientation(Qt::Horizontal),
+            mDefaultButton(KDialog::NoDefault),
             mButtonBox(0)
         {
         }
@@ -72,6 +73,7 @@ class KDialogPrivate
         QString mHelpLinkText;
 
         Qt::Orientation mButtonOrientation;
+        KDialog::ButtonCode mDefaultButton;
         KDialog::ButtonCode mEscapeButton;
 
         QDialogButtonBox *mButtonBox;

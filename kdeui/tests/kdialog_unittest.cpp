@@ -77,6 +77,22 @@ private Q_SLOTS:
         checkOtherButtonsAreNotDefault(dialog, KDialog::None);
     }
 
+    void testFutureDefaultButton()
+    {
+        // Test setting a default button that doesn't exist yet
+        KDialog dialog;
+        KDialog::ButtonCode id = KDialog::Apply;
+        dialog.setDefaultButton(id);
+        QCOMPARE(dialog.defaultButton(), id);
+        QCOMPARE(dialog.button(id), static_cast<KPushButton *>(0));
+
+        dialog.setButtons(KDialog::Ok | KDialog::Apply
+            | KDialog::Cancel | KDialog::No | KDialog::Yes);
+        QCOMPARE(dialog.defaultButton(), KDialog::Apply);
+        QVERIFY(dialog.button(id)->isDefault());
+        QVERIFY(!dialog.button(KDialog::Ok)->isDefault());
+    }
+
     // Test what happens with giving focus to widgets before the window is shown
     // This is mostly Qt experimentation, unrelated to KDialog's own code
     void testFocus()
