@@ -40,7 +40,7 @@ void KTimeZonesTest::initTestCase()
 
 void KTimeZonesTest::cleanupTestCase()
 {
-    cleanupTimeZoneTest();
+    s_testData.cleanupTimeZoneTest();
 }
 
 ///////////////////
@@ -166,7 +166,7 @@ void KTimeZonesTest::zonetabChange()
 
     // Check that 'london' is automatically updated with the new zone.tab
     // contents, and that the new zones are added to KSystemTimeZones.
-    writeZoneTab(true);
+    s_testData.writeZoneTab(true);
     QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "zonetabChanged");
     QList<QVariant> args;
     args += mDataDir + QLatin1String("/zone.tab");
@@ -190,7 +190,7 @@ void KTimeZonesTest::zonetabChange()
 
     // Check that 'london' is automatically updated with the new zone.tab
     // contents, and that the removed zones are deleted from KSystemTimeZones.
-    writeZoneTab(false);
+    s_testData.writeZoneTab(false);
     QDBusConnection::sessionBus().send(message);
     timer.start(1000);
     loop.exec();

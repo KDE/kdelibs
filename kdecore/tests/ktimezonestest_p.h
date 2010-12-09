@@ -77,6 +77,7 @@ private:
         local.rmpath(subd);
     }
 
+public:
     void writeZoneTab(bool testcase)
     {
         QFile f(mDataDir + QLatin1String("/zone.tab"));
