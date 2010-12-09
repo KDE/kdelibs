@@ -30,6 +30,7 @@ class KGlobalShortcutTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testSetShortcut();
     void testFindActionByKey();
     void testChangeShortcut();
@@ -53,6 +54,7 @@ private:
 
     KAction *m_actionA;
     KAction *m_actionB;
+    bool m_daemonInstalled;
 };
 
 #endif

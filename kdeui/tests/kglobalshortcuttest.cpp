@@ -29,6 +29,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kdebug.h>
+#include <kservice.h>
 
 #include <unistd.h>
 
@@ -47,6 +48,11 @@ const QKeySequence sequenceF = QKeySequence(Qt::META + Qt::Key_F27);
 
 //we need a KComponentData and a GUI so that the implementation can grab keys
 QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
+
+void KGlobalShortcutTest::initTestCase()
+{
+    m_daemonInstalled = KService::serviceByDesktopName("kglobalaccel") != 0;
+}
 
 void KGlobalShortcutTest::setupTest(QString id)
 {
@@ -90,6 +96,9 @@ void KGlobalShortcutTest::testSetShortcut()
 {
     setupTest("testSetShortcut");
 
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
+
     // Just ensure that the desired values are set for both actions
     KShortcut cutA(sequenceA, sequenceB);
     QCOMPARE(m_actionA->globalShortcut(), cutA);
@@ -107,6 +116,8 @@ void KGlobalShortcutTest::testFindActionByKey()
 {
     // Skip this. The above testcase hasn't changed the actions
     setupTest("testFindActionByKey");
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
 
     QList<KGlobalShortcutInfo> actionId = KGlobalAccel::self()->getGlobalShortcutsByKey(sequenceB);
     QCOMPARE(actionId.size(), 1);
@@ -135,6 +146,8 @@ void KGlobalShortcutTest::testChangeShortcut()
     // Skip this. The above testcase hasn't changed the actions
     setupTest("testChangeShortcut");
 
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
     // Change the shortcut
     KShortcut newCutA(sequenceC);
     m_actionA->setGlobalShortcut(newCutA, KAction::ActiveShortcut, KAction::NoAutoloading);
@@ -166,6 +179,8 @@ void KGlobalShortcutTest::testChangeShortcut()
 void KGlobalShortcutTest::testStealShortcut()
 {
     setupTest("testStealShortcut");
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
 
     // Steal a shortcut from an action. First ensure the initial state is
     // correct
@@ -221,6 +236,8 @@ enum actionIdFields
 void KGlobalShortcutTest::testListActions()
 {
     setupTest("testListActions");
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
 
     // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
     KGlobalAccel *kga = KGlobalAccel::self();
@@ -388,6 +405,8 @@ void KGlobalShortcutTest::testForgetGlobalShortcut()
     // Ensure that forgetGlobalShortcut can be called on any action.
     KAction a("Test", NULL);
     a.forgetGlobalShortcut();
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed", SkipAll);
 
     // We forget these two shortcuts and check that the component is gone
     // after that. If not it can mean the forgetGlobalShortcut() call is
