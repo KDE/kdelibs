@@ -71,9 +71,6 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 #define HOMEPATH QDir::homePath()+"/foo"
 #define HOMEPATHESCAPE QDir::homePath()+"/foo/$HOME"
-#define SUBGROUPLIST (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2")
-#define PARENTGROUPKEYS (QStringList() << "parentgrpstring")
-#define SUBGROUP3KEYS (QStringList() << "sub3string")
 #define DOLLARGROUP "$i"
 
 void KConfigTest::initTestCase()
@@ -924,13 +921,16 @@ void KConfigTest::testSubGroup()
     KConfigGroup srcg( &rcg, "ParentGroup" );
     QCOMPARE(srcg.readEntry( "parentgrpstring", ""), QString("somevalue") );
 
-    QCOMPARE(cg.groupList(), SUBGROUPLIST );
+    QCOMPARE(cg.groupList(), (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2"));
 
-    QCOMPARE(subcg3.keyList(), SUBGROUP3KEYS);
-    QCOMPARE(cg.keyList(), PARENTGROUPKEYS);
+    const QStringList expectedSubgroup3Keys = (QStringList() << "sub3string");
+    QCOMPARE(subcg3.keyList(), expectedSubgroup3Keys);
+    const QStringList expectedParentGroupKeys(QStringList() << "parentgrpstring");
 
-    QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
-    QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
+    QCOMPARE(cg.keyList(), expectedParentGroupKeys);
+
+    QCOMPARE(QStringList(cg.entryMap().keys()), expectedParentGroupKeys);
+    QCOMPARE(QStringList(subcg3.entryMap().keys()), expectedSubgroup3Keys);
 
     // Create A group containing only other groups. We want to make sure it
     // shows up in groupList of sc
@@ -948,19 +948,20 @@ void KConfigTest::testSubGroup()
     QVERIFY(negsub1.exists());
 
     // But it doesn't exist if it has no content
-    QEXPECT_FAIL("", "Currently groups without content do not exist!", Continue);
-    QVERIFY(negsub2.exists());
+    // Ossi and David say: this is how it's supposed to work.
+    // However you could add a dummy entry for now, or we could add a "Persist" feature to kconfig groups
+    // which would make it written out, much like "immutable" already makes them persistent.
+    QVERIFY(!negsub2.exists());
 
-    // A subgroup does not qualify as content if it is also empty!
-    QEXPECT_FAIL("", "Currently groups without content do not exist!", Continue);
-    QVERIFY(negsub3.exists());
+    // A subgroup does not qualify as content if it is also empty
+    QVERIFY(!negsub3.exists());
 
     // A subgroup with content is ok
     QVERIFY(negsub4.exists());
 
     // Only subgroups with content show up in groupList()
-    QEXPECT_FAIL("", "Empty subgroups do not show up in groupList()", Continue);
-    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2" << "NEG Child3" << "NEG Child4");
+    //QEXPECT_FAIL("", "Empty subgroups do not show up in groupList()", Continue);
+    //QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2" << "NEG Child3" << "NEG Child4");
     // This is what happens
     QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child4");
 
@@ -971,6 +972,16 @@ void KConfigTest::testSubGroup()
       QVERIFY(!group.contains("subgroup"));
       QVERIFY(!group.contains("SubGroup"));
     }
+
+    sc.sync();
+
+    // Check that the empty groups are not written out.
+    const QList<QByteArray> lines = readLines();
+    QVERIFY(lines.contains("[NoEntryGroup][NEG Child1]\n"));
+    QVERIFY(!lines.contains("[NoEntryGroup][NEG Child2]\n"));
+    QVERIFY(!lines.contains("[NoEntryGroup][NEG Child3]\n"));
+    QVERIFY(!lines.contains("[NoEntryGroup][NEG Child4]\n")); // implicit group, not written out
+    QVERIFY(lines.contains("[NoEntryGroup][NEG Child4][NEG Child4-1]\n"));
 }
 
 void KConfigTest::testAddConfigSources()
