@@ -207,9 +207,10 @@ QStringList KConfig::groupList() const
     QSet<QString> groups;
 
     for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
-        const QByteArray group = entryMapIt.key().mGroup;
-        if (entryMapIt.key().mKey.isNull() && !group.isEmpty() && group != "<default>" && group != "$Version") {
-            QString groupname = QString::fromUtf8(group);
+        const KEntryKey& key = entryMapIt.key();	
+        const QByteArray group = key.mGroup;
+        if (key.mKey.isNull() && !group.isEmpty() && group != "<default>" && group != "$Version") {
+            const QString groupname = QString::fromUtf8(group);
             groups << groupname.left(groupname.indexOf(QLatin1Char('\x1d')));
         }
     }
@@ -222,23 +223,53 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
     QByteArray theGroup = group + '\x1d';
     QSet<QString> groups;
 
-    for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt)
-        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup)) {
-            const QString groupname = QString::fromUtf8(entryMapIt.key().mGroup.mid(theGroup.length()));
+    for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt) {
+        const KEntryKey& key = entryMapIt.key();	
+        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
+            const QString groupname = QString::fromUtf8(key.mGroup.mid(theGroup.length()));
             groups << groupname.left(groupname.indexOf(QLatin1Char('\x1d')));
         }
+    }
 
     return groups.toList();
 }
 
-QStringList KConfig::keyList(const QString& aGroup) const
+// List all sub groups, including subsubgroups
+QSet<QByteArray> KConfigPrivate::allSubGroups(const QByteArray& parentGroup) const
 {
-    Q_D(const KConfig);
-    QStringList keys;
-    const QByteArray theGroup(aGroup.isEmpty() ? "<default>" : aGroup.toUtf8());
+    QSet<QByteArray> groups;
+    QByteArray theGroup = parentGroup + '\x1d';
+    groups << parentGroup;
 
-    const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
-    KEntryMapConstIterator it = d->entryMap.findEntry(theGroup);
+    for (KEntryMap::const_iterator entryMapIt = entryMap.begin(); entryMapIt != entryMap.end(); ++entryMapIt) {
+        const KEntryKey& key = entryMapIt.key();
+        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
+            groups << key.mGroup;
+        }
+    }
+    return groups;
+}
+
+bool KConfigPrivate::hasNonDeletedEntries(const QByteArray& group) const
+{
+    const QSet<QByteArray> allGroups = allSubGroups(group);
+
+    Q_FOREACH(const QByteArray& aGroup, allGroups) {
+        // Could be optimized, let's use the slow way for now
+        // Check for any non-deleted entry
+        if (!keyListImpl(aGroup).isEmpty())
+            return true;
+    }
+    return false;
+}
+
+
+QStringList KConfigPrivate::keyListImpl(const QByteArray& theGroup) const
+{
+    QStringList keys;
+
+    const KEntryMapConstIterator theEnd = entryMap.constEnd();
+    KEntryMapConstIterator it = entryMap.findEntry(theGroup);
     if (it != theEnd) {
         ++it; // advance past the special group entry marker
 
@@ -252,6 +283,13 @@ QStringList KConfig::keyList(const QString& aGroup) const
     }
 
     return keys;
+}
+
+QStringList KConfig::keyList(const QString& aGroup) const
+{
+    Q_D(const KConfig);
+    const QByteArray theGroup(aGroup.isEmpty() ? "<default>" : aGroup.toUtf8());
+    return d->keyListImpl(theGroup);
 }
 
 QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
@@ -657,18 +695,9 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
     Q_D(KConfig);
     KEntryMap::EntryOptions options = convertToOptions(flags)|KEntryMap::EntryDeleted;
 
-    QByteArray theGroup = aGroup + '\x1d';
-    QSet<QByteArray> groups;
-    groups << aGroup;
-
-    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
-        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup)) {
-            groups << entryMapIt.key().mGroup;
-        }
-    }
-
+    const QSet<QByteArray> groups = d->allSubGroups(aGroup);
     foreach (const QByteArray& group, groups) {
-        const QStringList keys = keyList(QString::fromUtf8(group));
+        const QStringList keys = d->keyListImpl(group);
         foreach (const QString& _key, keys) {
             const QByteArray &key = _key.toUtf8();
             if (d->canWriteEntry(group, key.constData())) {
@@ -709,17 +738,10 @@ bool KConfig::hasGroupImpl(const QByteArray& aGroup) const
 {
     Q_D(const KConfig);
 
-    if (d->entryMap.hasEntry(aGroup)) return true;
+    // No need to look for the actual group entry anymore, or for subgroups:
+    // a group exists if it contains any non-deleted entry.
 
-    QByteArray subGroupMarker = aGroup + '\x1d';
-    // Because this group could have only subgroups but no entries we have to
-    // search for group markers
-    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
-        if (entryMapIt.key().mGroup.startsWith(subGroupMarker)) {
-            return true;
-        }
-    }
-    return false;
+    return d->hasNonDeletedEntries(aGroup);
 }
 
 bool KConfigPrivate::canWriteEntry(const QByteArray& group, const char* key, bool isDefault) const

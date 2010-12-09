@@ -61,6 +61,9 @@ public:
     // of @p source with @p destination
     void copyGroup(const QByteArray& source, const QByteArray& destination,
                    KConfigGroup *otherGroup, KConfigBase::WriteConfigFlags flags) const;
+    QStringList keyListImpl(const QByteArray& theGroup) const;
+    QSet<QByteArray> allSubGroups(const QByteArray& parentGroup) const;
+    bool hasNonDeletedEntries(const QByteArray& group) const;
 
 protected:
     KSharedPtr<KConfigBackend> mBackend;

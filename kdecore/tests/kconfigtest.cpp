@@ -133,6 +133,9 @@ void KConfigTest::initTestCase()
   cg = KConfigGroup(&cg, "Nested Group 2.1");
   cg.writeEntry( "stringEntry3", STRINGENTRY3 );
 
+  cg = KConfigGroup(&ct, "Nested Group 3");
+  cg.writeEntry( "stringEntry3", STRINGENTRY3 );
+
   cg = KConfigGroup(&sc, "List Types" );
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
@@ -667,10 +670,25 @@ void KConfigTest::testDelete()
   KConfig sc( "kconfigtest" );
 
   KConfigGroup ct(&sc, "Complex Types");
+
+  // First delete a nested group
+  KConfigGroup delgr(&ct, "Nested Group 3");
+  QVERIFY(delgr.exists());
+  QVERIFY(ct.hasGroup("Nested Group 3"));
+  delgr.deleteGroup();
+  QVERIFY(!delgr.exists());
+  QVERIFY(!ct.hasGroup("Nested Group 3"));
+  QVERIFY(ct.groupList().contains("Nested Group 3"));
+
   KConfigGroup ng(&ct, "Nested Group 2");
+  QVERIFY(sc.hasGroup("Complex Types"));
+  QVERIFY(!sc.hasGroup("Does not exist"));
   sc.deleteGroup("Complex Types");
   QCOMPARE(sc.group("Complex Types").keyList().count(), 0);
-  QVERIFY(sc.group("Complex Types").exists()); // yep, we deleted it, but it still "exists"...
+  QVERIFY(!sc.hasGroup("Complex Types")); // #192266
+  QVERIFY(!sc.group("Complex Types").exists());
+  QVERIFY(!ct.hasGroup("Nested Group 1"));
+
   QCOMPARE(ct.group("Nested Group 1").keyList().count(), 0);
   QCOMPARE(ct.group("Nested Group 2").keyList().count(), 0);
   QCOMPARE(ng.group("Nested Group 2.1").keyList().count(), 0);
@@ -681,6 +699,17 @@ void KConfigTest::testDelete()
   QVERIFY( sc.entryMap("AAA").isEmpty() );
   QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
+
+  cg.sync();
+  // Check what happens on disk
+  const QList<QByteArray> lines = readLines();
+  //qDebug() << lines;
+  QVERIFY(!lines.contains("[Complex Types]\n"));
+  QVERIFY(!lines.contains("[Complex Types][Nested Group 1]\n"));
+  QVERIFY(!lines.contains("[Complex Types][Nested Group 2]\n"));
+  QVERIFY(!lines.contains("[Complex Types][Nested Group 2.1]\n"));
+  QVERIFY(!lines.contains("[AAA]\n"));
+  QVERIFY(lines.contains("[Hello]\n")); // a group that was not deleted
 
   // test for entries that are marked as deleted when there is no default
   KConfig cf("kconfigtest", KConfig::SimpleConfig); // make sure there are no defaults
@@ -1394,10 +1423,11 @@ void KConfigTest::testDeleteWhenLocalized()
     // Current state: [ca] and [de] entries left... oops.
     //qDebug() << readLinesFrom(file);
 
-    // The group still exists but the values are all gone.
+    // Bug: The group still exists [because of the localized entries]...
     QVERIFY(cg.exists());
     QVERIFY(!cg.hasKey("foo"));
     QVERIFY(!cg.hasKey("foostring"));
+    QEXPECT_FAIL("", "Currently localized values are not deleted correctly", Continue);
     QVERIFY(!cg.hasKey("foobool"));
 
     // Now switch the locale to "de" and repeat the checks. All values

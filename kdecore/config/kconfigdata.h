@@ -226,12 +226,13 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             if (key.isEmpty()) { // inserting a group marker
                 k.mGroup = group;
                 e.bImmutable = (options&EntryImmutable);
-                if(it == end())
-                {
+                if (options&EntryDeleted) { qWarning("Internal KConfig error: cannot mark groups as deleted"); }
+                if(it == end()) {
                     insert(k, e);
                     return true;
-                } else if(it.value() == e)
+                } else if(it.value() == e) {
                     return false;
+                }
                 
                 it.value() = e;
                 return true;
@@ -274,7 +275,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 e.bDeleted = false; // setting a value to a previously deleted entry
             e.bExpand = (options&EntryExpansion);
 
-             //qDebug() << "to [" << group << "," << key << "] =" << e.mValue;
+            //qDebug() << "to [" << group << "," << key << "] =" << e.mValue << "newKey=" << newKey;
             if(newKey)
             {
                 insert(k, e);
@@ -365,9 +366,12 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             const ConstIterator it = findEntry(group, key, flags);
             if (it == constEnd())
                 return false;
-            if (key.isNull()) // looking for group marker
+            if (it->bDeleted)
+                return false;
+            if (key.isNull()) { // looking for group marker
                 return it->mValue.isNull();
-            return !it->bDeleted;
+            }
+            return true;
         }
 
         bool getEntryOption(const ConstIterator& it, EntryOption option) const

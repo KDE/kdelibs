@@ -368,8 +368,9 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     Q_ASSERT(!filePath().isEmpty());
 
     KEntryMap writeMap;
-    bool bGlobal = options & WriteGlobal;
+    const bool bGlobal = options & WriteGlobal;
 
+    // First, reparse the file on disk, to merge our changes with the ones done by other apps
     {
         ParseOptions opts = ParseExpansions;
         if (bGlobal)
@@ -378,6 +379,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
         if (info != ParseOk) // either there was an error or the file became immutable
             return false;
     }
+
     const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
         if (!it.key().mKey.isEmpty() && !it->bDirty) // not dirty, doesn't overwrite entry in writeMap. skips default entries, too.
@@ -392,10 +394,13 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
             } else {
                 KEntryKey defaultKey = key;
                 defaultKey.bDefault = true;
-                if (!entryMap.contains(defaultKey))
+                if (!entryMap.contains(defaultKey)) {
                     writeMap.remove(key); // remove the deleted entry if there is no default
-                else
+                    //qDebug() << "Detected as deleted=>removed:" << key.mGroup << key.mKey << "global=" << bGlobal;
+                } else {
                     writeMap[key] = *it; // otherwise write an explicitly deleted entry
+                    //qDebug() << "Detected as deleted=>[$d]:" << key.mGroup << key.mKey << "global=" << bGlobal;
+                }
             }
             it->bDirty = false;
         }
