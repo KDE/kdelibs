@@ -283,9 +283,9 @@ void KTcpSocketTest::states()
         s->connectToHost(hosts[i % numHosts], 80);
         bool skip = false;
         KTcpSocket::State expectedState = KTcpSocket::ConnectingState;
-#if QT_VERSION > 0x040700
+#if QT_VERSION > 0x040701
         // Since Qt 4.6.3 the Qt-internal DNS cache returns a result (if cached) immediately
-        // but it was unreliable (when called from QTcpSocket) until 4.7.1
+        // but it was unreliable (when called from QTcpSocket) until 4.7.2
         if (i < numHosts) {
             expectedState = KTcpSocket::HostLookupState;
         } else {
@@ -294,7 +294,7 @@ void KTcpSocketTest::states()
 #elif QT_VERSION < 0x040603
         // Previously there was no caching
         expectedState = KTcpSocket::HostLookupState;
-#else   // 4.6.3 to 4.7.0: unreliable results, skip test
+#else   // 4.6.3 to 4.7.1: unreliable results, skip test
         skip = true;
         qDebug() << "Skipping test on state(), because DNS caching is unreliable in this Qt version";
 #endif
