@@ -260,6 +260,7 @@ void KDebugTest::testNoMainComponentData()
     // This test runs kdebug_qcoreapptest and checks its output
     KProcess proc;
     proc.setEnv("KDE_DEBUG_NOPROCESSINFO", "1");
+    proc.setEnv("KDE_DEBUG_TIMESTAMP", "0");
     proc.setOutputChannelMode(KProcess::OnlyStderrChannel);
 #ifdef Q_OS_WIN
     proc << "kdebug_qcoreapptest.exe";
