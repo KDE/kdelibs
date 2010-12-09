@@ -113,6 +113,7 @@ Test_KLockFile::testStaleNoBlockFlag()
     lockFile = new KLockFile(QLatin1String(lockName));
     QVERIFY(!lockFile->isLocked());
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag), KLockFile::LockStale);
+    QTest::ignoreMessage(QtWarningMsg, "WARNING: deleting stale lockfile klockfiletest.lock");
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag|KLockFile::ForceFlag), KLockFile::LockOK);
 
     QVERIFY(lockFile->isLocked());
