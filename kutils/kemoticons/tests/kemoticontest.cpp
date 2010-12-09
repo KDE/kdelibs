@@ -65,15 +65,15 @@ void KEmoticonTest::testEmoticonParser()
             continue;
         }
         if (inputFile.open(QIODevice::ReadOnly) && expectedFile.open(QIODevice::ReadOnly)) {
-            QString inputData;
-            QString expectedData;
-            inputData = QString(inputFile.readAll());
-            expectedData = QString(expectedFile.readAll());
+            const QString inputData = QString::fromLatin1(inputFile.readAll());
+            const QString expectedData = QString::fromLatin1(expectedFile.readAll());
 
             inputFile.close();
             expectedFile.close();
 
-            QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
+            const QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
+            if (path.isEmpty())
+                QSKIP("Emoticons not installed, skipping. kdebase-runtime needed.", SkipAll);
 
             QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
 
