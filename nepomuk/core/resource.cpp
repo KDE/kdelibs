@@ -919,6 +919,7 @@ Nepomuk::Resource Nepomuk::Resource::fromResourceUri( const KUrl& uri, const Nep
 {
     if( !manager )
         manager = ResourceManager::instance();
+    QMutexLocker lock( &manager->d->mutex );
     return Resource( manager->d->dataForResourceUri( uri, type.uri() ) );
 }
 
