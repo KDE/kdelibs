@@ -337,10 +337,24 @@ public:
 };
 //END V3
 
+//BEGIN V4
+///Extension of CodeCompletionModelControllerInterface3
+class KTEXTEDITOR_EXPORT_DEPRECATED CodeCompletionModelControllerInterface4 : public CodeCompletionModelControllerInterface3 {
+  public:
 
+    /**
+     * When multiple completion models are used at the same time, it may happen that multiple models add items with the same
+     * name to the list. This option allows to hide items from this completion model when another model with higher priority
+     * contains items with the same name.
+     * \return Whether items of this completion model should be hidden if another completion model has items with the same name
+     */
+    virtual bool shouldHideItemsWithEqualNames() const;
+};
+//END V4
 }
 
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface, "org.kde.KTextEditor.CodeCompletionModelControllerInterface")
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface2, "org.kde.KTextEditor.CodeCompletionModelControllerInterface2")
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface3, "org.kde.KTextEditor.CodeCompletionModelControllerInterface3")
+Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface4, "org.kde.KTextEditor.CodeCompletionModelControllerInterface4")
 #endif // KDELIBS_KTEXTEDITOR_CODECOMPLETIONMODELCONTROLLERINTERFACE_H

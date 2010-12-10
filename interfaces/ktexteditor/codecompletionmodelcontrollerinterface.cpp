@@ -203,5 +203,11 @@ KTextEditor::CodeCompletionModelControllerInterface3::MatchReaction CodeCompleti
 }
 //END V3
 
+//BEGIN V4
+bool CodeCompletionModelControllerInterface4::shouldHideItemsWithEqualNames() const
+{
+  return false;
+}
+//END V4
 
 }
