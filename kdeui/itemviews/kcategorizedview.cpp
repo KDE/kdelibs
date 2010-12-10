@@ -1365,11 +1365,10 @@ void KCategorizedView::updateGeometries()
         verticalScrollBar()->setSingleStep(lastItemRect.height());
         const int rowsPerPage = qMax(viewport()->height() / lastItemRect.height(), 1);
         verticalScrollBar()->setPageStep(rowsPerPage * lastItemRect.height());
-        verticalScrollBar()->setRange(0, bottomRange);
-    } else {
-        verticalScrollBar()->setRange(0, bottomRange);
-        verticalScrollBar()->setValue(oldVerticalOffset);
     }
+
+    verticalScrollBar()->setRange(0, bottomRange);
+    verticalScrollBar()->setValue(oldVerticalOffset);
 
     //TODO: also consider working with the horizontal scroll bar. since at this level I am not still
     //      supporting "top to bottom" flow, there is no real problem. If I support that someday
