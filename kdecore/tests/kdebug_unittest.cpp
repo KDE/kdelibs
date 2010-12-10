@@ -31,6 +31,9 @@ QTEST_KDEMAIN_CORE( KDebugTest )
 
 void KDebugTest::initTestCase()
 {
+    setenv("KDE_DEBUG_FILELINE", "", 1);
+    setenv("KDE_DEBUG_TIMESTAMP", "", 1);
+
     QString kdebugrc = KStandardDirs::locateLocal("config", "kdebugrc");
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
