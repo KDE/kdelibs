@@ -1963,8 +1963,8 @@ void KateCompletionModel::makeGroupItemsUnique(bool onlyFiltered)
       QList<Item> temp;   
       foreach(const Item& item, items)
       {
-        QHash<QString, CodeCompletionModel*>::const_iterator it = had.find(item.name());
-        if(it != had.end() && *it != item.sourceRow().first && m_needShadowing.contains(item.sourceRow().first))
+        QHash<QString, CodeCompletionModel*>::const_iterator it = had.constFind(item.name());
+        if(it != had.constEnd() && *it != item.sourceRow().first && m_needShadowing.contains(item.sourceRow().first))
           continue;
         had.insert(item.name(), item.sourceRow().first);
         temp.push_back(item);
