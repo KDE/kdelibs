@@ -14,7 +14,7 @@ if(NOT KAUTH_BACKEND)
     if (APPLE)
         set (KAUTH_BACKEND "OSX")
     elseif (UNIX)
-        macro_optional_find_package(PolkitQt-1 0.98.1)
+        macro_optional_find_package(PolkitQt-1 0.99.0)
 
         if (POLKITQT-1_FOUND)
             set (KAUTH_BACKEND "PolkitQt-1")
@@ -71,7 +71,7 @@ else(NOT KAUTH_BACKEND)
         endif (NOT POLKITQT_FOUND)
     endif (KAUTH_BACKEND STREQUAL "POLKITQT")
     if (KAUTH_BACKEND STREQUAL "POLKITQT-1")
-        macro_optional_find_package(PolkitQt-1)
+        macro_optional_find_package(PolkitQt-1 0.99.0)
         macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
                           FALSE "" "STRONGLY RECOMMENDED: Required to make KAuth work, and hence enable certain workspace functionalities")
 
