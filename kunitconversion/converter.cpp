@@ -127,7 +127,7 @@ Value Converter::convert(const Value& value, int toUnit) const
 
 Value Converter::convert(const Value& value, UnitPtr toUnit) const
 {
-    if (!toUnit.isNull() && !value.unit().isNull()) {
+    if (!toUnit.isNull() && !value.unit().isNull() && value.unit()->isValid()) {
         UnitCategory* category = value.unit()->category();
         if (category) {
             return category->convert(value, toUnit);
