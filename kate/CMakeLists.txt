@@ -48,6 +48,7 @@ buffer/katetextrange.cpp
 buffer/katetexthistory.cpp
 
 # completion (widget, model, delegate, ...)
+completion/codecompletionmodelcontrollerinterfacev4.cpp
 completion/katecompletionwidget.cpp
 completion/katecompletionmodel.cpp
 completion/katecompletiontree.cpp

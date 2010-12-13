@@ -27,7 +27,7 @@
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/codecompletionmodel.h>
 #include <ktexteditor/configpage.h>
-#include <ktexteditor/codecompletionmodelcontrollerinterface.h>
+#include "codecompletionmodelcontrollerinterfacev4.h"
 #include <kxmlguiclient.h>
 
 #include <QtCore/QEvent>

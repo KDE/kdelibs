@@ -36,7 +36,7 @@
 #include "kateview.h"
 #include "katerenderer.h"
 #include "kateconfig.h"
-#include <ktexteditor/codecompletionmodelcontrollerinterface.h>
+#include "codecompletionmodelcontrollerinterfacev4.h"
 
 using namespace KTextEditor;
 
