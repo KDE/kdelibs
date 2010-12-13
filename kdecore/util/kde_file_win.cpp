@@ -83,7 +83,7 @@ QString mkdtemp_QString (const QString &_template)
   int value;
 
   if ( !_template.endsWith(QLatin1String("XXXXXX")) )
-      return 0;
+      return QString();
 
   strcpy(XXXXXX, "XXXXXX");
   const QString tmpl = _template.left(_template.length() - 6);
