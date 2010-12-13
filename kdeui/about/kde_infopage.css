@@ -4,12 +4,12 @@
  */
 
 img {margin: 0px; padding: 0px}
-body {margin: 0px; padding: 0px; background-color: #749BAB; background-image: url(body-background.png); color: #444444; height="100%"; width="100%"}
-a { color: #334560; text-decoration: none; font-weight: bold; }
+body {margin: 0px; padding: 0px; background-color: #285C69; background-image: url(body-background.png); color: #111111; height="100%"; width="100%"}
+a { color: #1A2C36; text-decoration: none; font-weight: bold; }
 a:hover {
-  color: #6193CF;
+  color: #003B5A;
   text-decoration: none;
-  text-shadow: #6193CF 0px 0px 6px;
+  text-shadow: #45A4BC 0px 0px 6px;
 }
 <!-- .bar_text a {color: #FFFFFF;} -->
 
@@ -61,8 +61,8 @@ a:hover {
   text-align: right;
   font-size: xx-large;
   font-weight: bold;
-  text-shadow: #CDE1FF 0px 0px 5px;
-  color: #444;
+  text-shadow: #A6EAF9 0px 0px 5px;
+  color: #151515;
   z-index: 5;
 }
 
@@ -74,8 +74,8 @@ a:hover {
   text-align: right;
   font-size: large;
   font-weight: bold;
-  text-shadow: #CDE1FF 0px 0px 5px;
-  color: #444;
+  text-shadow: #A6EAF9 0px 0px 5px;
+  color: #151515;
   z-index: 5;
 }
 
@@ -90,7 +90,7 @@ a:hover {
 #barCenter {
   text-align: center;
   /*background-color: #F5F5F4;*/
-  color: #282828;
+  color: #111111;
   padding-top: 0.5ex;
   padding-bottom: 0.5ex;
   font-weight: bold;
@@ -98,20 +98,20 @@ a:hover {
 }
 
 #barCenter a.selected, #barCenter a.selected:hover {
-  color: #282828;
+  color: #111111;
   text-decoration: none;
   text-shadow: #CDE1FF 0px 0px 5px;
 }
 
 
 #barCenter li a:link, #barCenter li a:visited, #barCenter li a:active {
-  color: #282828;
+  color: #111111;
   text-decoration: none;
   text-shadow: none;
 }
 
 #barCenter li a:hover {
-  color: #282828;
+  color: #111111;
   text-decoration: none;
   text-shadow: #CDE1FF 0px 0px 6px;
 }
