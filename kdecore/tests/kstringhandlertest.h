@@ -13,6 +13,8 @@ private Q_SLOTS:
     void perlSplit();
     void naturalCompare();
     void obscure();
+    void preProcessWrap_data();
+    void preProcessWrap();
 
 private:
     static QString test;
