@@ -81,13 +81,15 @@ public:
      * any of the specified languages, the default language (en_US) will be
      * used.
      *
-     * If you specify a configuration file, it has to be valid until
-     * the KLocale object is destroyed.
+     * If you specify a configuration file, it has to be valid until the KLocale
+     * object is destroyed.  Note that a setLocale() will be performed on the
+     * config, causing a sync() and reparseConfiguration() which will save any
+     * changes you have made and load any changes other shared copies have made.
      *
      * @param catalog the name of the main language file
      * @param config  a configuration file with a Locale group detailing
      *                locale-related preferences (such as language and
-     *                formatting options)
+     *                formatting options).
      */
     explicit KLocale(const QString& catalog, KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
@@ -97,15 +99,17 @@ public:
      * Allows you to override the language and, optionally, the
      * country of this locale.
      *
+     * If you specify a configuration file, it has to be valid until the KLocale
+     * object is destroyed.  Note that a setLocale() will be performed on the
+     * config, causing a sync() and reparseConfiguration() which will save any
+     * changes you have made and load any changes other shared copies have made.
+     *
      * @param catalog  the name of the main language file
      * @param language the ISO Language Code for the locale, e.g. "en" for English
      * @param country  the ISO Country Code for the locale, e.g. "us" for USA
      * @param config   a configuration file with a Locale group detailing
-     *                 locale-related preferences (such as date and time
-     *                 formatting).  A copy of this config will be taken,
-     *                 any updates made to the config will not affect this
-     *                 KLocale object.  If a null pointer the global config
-     *                 will be used.
+     *                 locale-related preferences (such as language and
+     *                 formatting options).
      */
     KLocale(const QString& catalog, const QString &language, const QString &country = QString(),
             KConfig *config = 0);
@@ -2007,13 +2011,17 @@ public:
      * unchanged if failed. It will force a reload of the country specific
      * configuration.
      *
+     * An empty country value will set the country to the system default.
+     *
+     * If you specify a configuration file, it has to be valid until the KLocale
+     * object is destroyed.  Note that a setLocale() will be performed on the
+     * config, causing a sync() and reparseConfiguration() which will save any
+     * changes you have made and load any changes other shared copies have made.
+     *
      * @param country the ISO 3166 country code
      * @param config  a configuration file with a Locale group detailing
-     *                locale-related preferences (such as date and time
-     *                formatting).  A copy of this config will be taken,
-     *                any updates made to the config will not affect this
-     *                KLocale object.  If a null pointer the global config
-     *                will be used.
+     *                locale-related preferences (such as language and
+     *                formatting options).
      *
      * @return @c true on success, @c false on failure
      */
@@ -2041,13 +2049,15 @@ public:
      * unchanged if failed. It will force a reload of the country specific
      * configuration as well.
      *
+     * If you specify a configuration file, it has to be valid until the KLocale
+     * object is destroyed.  Note that a setLocale() will be performed on the
+     * config, causing a sync() and reparseConfiguration() which will save any
+     * changes you have made and load any changes other shared copies have made.
+     *
      * @param language the language code
-     * @param config  a configuration file with a Locale group detailing
-     *                locale-related preferences (such as date and time
-     *                formatting).  A copy of this config will be taken,
-     *                any updates made to the config will not affect this
-     *                KLocale object.  If a null pointer the global config
-     *                will be used.
+     * @param config   a configuration file with a Locale group detailing
+     *                 locale-related preferences (such as language and
+     *                 formatting options).
      *
      * @return true on success
      */

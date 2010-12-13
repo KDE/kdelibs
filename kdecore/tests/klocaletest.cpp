@@ -343,7 +343,7 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( testPeriod.isValid(), false );
     testPeriod = locale.dayPeriodForTime( QTime( 03, 00, 00 ) );
     QCOMPARE( testPeriod.isValid(), true );
-    QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Ante Meridian" ) );
+    QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Ante Meridiem" ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "AM" ) );
     QCOMPARE( testPeriod.periodName(KLocale::NarrowName), QString( "A" ) );
     QCOMPARE( testPeriod.periodStart(), QTime( 0, 0, 0 ) );
@@ -361,7 +361,7 @@ void KLocaleTest::testDayPeriods()
 
     testPeriod = locale.dayPeriodForTime( QTime( 13, 00, 00 ) );
     QCOMPARE( testPeriod.isValid(), true );
-    QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Post Meridian" ) );
+    QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Post Meridiem" ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "PM" ) );
     QCOMPARE( testPeriod.periodName(KLocale::NarrowName), QString( "P" ) );
     QCOMPARE( testPeriod.periodStart(), QTime( 12, 0, 0 ) );
@@ -478,15 +478,15 @@ void KLocaleTest::testDayPeriods()
     KConfigGroup testGroup( testConfig, "Locale" );
     testGroup.writeEntry( "DayPeriod1",
                           QStringList() << "third1" << "First Third" << "T1" << "T" <<
-                          QTime( 0, 0, 0 ).toString() << QTime( 7, 59, 59, 999 ).toString() <<
+                          QTime( 0, 0, 0 ).toString("HH:mm:ss.zzz") << QTime( 7, 59, 59, 999 ).toString("HH:mm:ss.zzz") <<
                           QString::number(0) << QString::number(12) );
     testGroup.writeEntry( "DayPeriod2",
                           QStringList() << "third2" << "Second Third" << "T2" << "S" <<
-                          QTime( 8, 0, 0 ).toString() << QTime( 15, 59, 59, 999 ).toString() <<
+                          QTime( 8, 0, 0 ).toString("HH:mm:ss.zzz") << QTime( 15, 59, 59, 999 ).toString("HH:mm:ss.zzz") <<
                           QString::number(8) << QString::number(12) );
     testGroup.writeEntry( "DayPeriod3",
                           QStringList() << "third3" << "First Third" << "T3" << "R" <<
-                          QTime( 16, 0, 0 ).toString() << QTime( 23, 59, 59, 999 ).toString() <<
+                          QTime( 16, 0, 0 ).toString("HH:mm:ss.zzz") << QTime( 23, 59, 59, 999 ).toString("HH:mm:ss.zzz") <<
                           QString::number(4) << QString::number(12) );
     locale = KLocale("klocaletest", "en_us", "us", testConfig);
     QCOMPARE( locale.dayPeriodForTime( QTime( 1, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T1" ) );

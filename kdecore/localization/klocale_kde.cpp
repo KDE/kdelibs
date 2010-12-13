@@ -103,7 +103,8 @@ QDebug operator<<(QDebug debug, const KCatalogName &cn)
 
 KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
                : q(q_ptr),
-                 m_config(config),
+                 m_config(0),
+                 m_sharedConfig(config),
                  m_country(QString()),
                  m_language(QString()),
                  m_languages(0),
@@ -117,6 +118,8 @@ KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog, KSharedCo
 KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog,
                                const QString &language, const QString &country, KConfig *config)
                : q(q_ptr),
+                 m_config(config),
+                 m_sharedConfig(KSharedConfig::Ptr()),
                  m_country(country.toLower()),
                  m_language(language.toLower()),
                  m_languages(0),
@@ -125,13 +128,6 @@ KLocalePrivate::KLocalePrivate(KLocale *q_ptr, const QString &catalog,
                  m_currency(0),
                  m_codecForEncoding(0)
 {
-    if (config) {
-        //Copy config to a new shared config
-        m_config = KSharedConfig::openConfig();
-        config->copyTo(QString(), m_config.data());
-    } else {
-        m_config = KSharedConfig::Ptr();
-    }
 }
 
 KLocalePrivate::KLocalePrivate(const KLocalePrivate &rhs)
@@ -145,12 +141,14 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
     return *this;
 }
 
-KSharedConfig::Ptr KLocalePrivate::config()
+KConfig *KLocalePrivate::config()
 {
-    if (m_config == KSharedConfig::Ptr()) {
-        return KGlobal::config();
-    } else {
+    if (m_config) {
         return m_config;
+    } else if (m_sharedConfig != KSharedConfig::Ptr()) {
+        return m_sharedConfig.data();
+    } else {
+        return KGlobal::config().data();
     }
 }
 
@@ -237,9 +235,6 @@ KLocalePrivate::~KLocalePrivate()
     delete m_currency;
     delete m_calendar;
     delete m_languages;
-    if (m_config != KSharedConfig::Ptr()) {
-        m_config->markAsClean();
-    }
 }
 
 void KLocalePrivate::init()
@@ -378,7 +373,10 @@ void KLocalePrivate::initLanguageList()
         list += m_language;
     }
 
-    bool useEnv = (m_config == KSharedConfig::Ptr());
+    // If the Locale object was created with a specific config file, then do not use the
+    // environmental variables.  If the locale object was created with the global config, then
+    // do use the environmental variables.
+    bool useEnv = (m_config == 0 && m_sharedConfig == KSharedConfig::Ptr());
     if (useEnv) {
         // KDE_LANG contains list of language codes, not locale string.
         getLanguagesFromVariable(list, "KDE_LANG", true);
@@ -537,7 +535,8 @@ void KLocalePrivate::initDayPeriods(const KConfigGroup &cg)
         QStringList period = cg.readEntry(periodKey, QStringList());
         if (period.count() == 8) {
             m_dayPeriods.append(KDayPeriod(period[0], period[1], period[2], period[3],
-                                           QTime::fromString(period[4]), QTime::fromString(period[5]),
+                                           QTime::fromString(period[4], QString::fromLatin1("HH:mm:ss.zzz")),
+                                           QTime::fromString(period[5], QString::fromLatin1("HH:mm:ss.zzz")),
                                            period[6].toInt(), period[7].toInt()));
         }
         i = i + 1;
@@ -551,17 +550,13 @@ bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
     // Add the default C as it is valid to use but is not in the list
     validCountries.append( defaultCountry() );
 
-    if ( country.isEmpty() || !validCountries.contains( country, Qt::CaseInsensitive ) ) {
+    // If the country is empty it means to use the system default, otherwise check is a country we support
+    if ( !country.isEmpty() && !validCountries.contains( country, Qt::CaseInsensitive ) ) {
         return false;
     }
 
-    if (config) {
-        //Copy config to a new shared config
-        m_config = KSharedConfig::openConfig();
-        config->copyTo(QString(), m_config.data());
-    } else {
-        m_config = KSharedConfig::Ptr();
-    }
+    m_config = config;
+    m_sharedConfig = KSharedConfig::Ptr();
 
     // Always save as lowercase, unless it's C when we want it uppercase
     if ( country.toLower() == defaultCountry().toLower() ) {
@@ -570,6 +565,7 @@ bool KLocalePrivate::setCountry(const QString &country, KConfig *config)
         m_country = country.toLower();
     }
 
+    initCountry();
     initFormat();
     return true;
 }
@@ -582,13 +578,8 @@ bool KLocalePrivate::setCountryDivisionCode(const QString &countryDivisionCode)
 
 bool KLocalePrivate::setLanguage(const QString &language, KConfig *config)
 {
-    if (config) {
-        //Copy config to a new shared config
-        m_config = KSharedConfig::openConfig();
-        config->copyTo(QString(), m_config.data());
-    } else {
-        m_config = KSharedConfig::Ptr();
-    }
+    m_config = config;
+    m_sharedConfig = KSharedConfig::Ptr();
 
     QMutexLocker lock(kLocaleMutex());
     m_languageList.removeAll(language);
@@ -2283,12 +2274,12 @@ QList<KDayPeriod> KLocalePrivate::dayPeriods() const
     // valid loacle constructed.
     if (m_dayPeriods.isEmpty()) {
         m_dayPeriods.append(KDayPeriod(QString::fromLatin1("am"),
-                                       i18nc( "Before Noon KLocale::LongName", "Ante Meridian" ),
+                                       i18nc( "Before Noon KLocale::LongName", "Ante Meridiem" ),
                                        i18nc( "Before Noon KLocale::ShortName", "AM" ),
                                        i18nc( "Before Noon KLocale::NarrowName", "A" ),
                                        QTime( 0, 0, 0 ), QTime( 11, 59, 59, 999 ), 0, 12 ));
         m_dayPeriods.append(KDayPeriod(QString::fromLatin1("pm"),
-                                       i18nc( "After Noon KLocale::LongName", "Post Meridian" ),
+                                       i18nc( "After Noon KLocale::LongName", "Post Meridiem" ),
                                        i18nc( "After Noon KLocale::ShortName", "PM" ),
                                        i18nc( "After Noon KLocale::NarrowName", "P" ),
                                        QTime( 12, 0, 0 ), QTime( 23, 59, 59, 999 ), 0, 12 ));
@@ -2853,7 +2844,13 @@ KLocale::CalendarSystem KLocalePrivate::calendarSystem() const
 const KCalendarSystem * KLocalePrivate::calendar()
 {
     if (!m_calendar) {
-        m_calendar = KCalendarSystem::create(m_calendarSystem, m_config, q);
+        if (m_config) {
+            KSharedConfig::Ptr sharedConfig = KSharedConfig::openConfig(QString::fromLatin1("klocaletmp"), KConfig::SimpleConfig);
+            m_config->copyTo(QString(), sharedConfig.data());
+            m_calendar = KCalendarSystem::create(m_calendarSystem, sharedConfig, q);
+        } else {
+            m_calendar = KCalendarSystem::create(m_calendarSystem, m_sharedConfig, q);
+        }
     }
 
     return m_calendar;

@@ -71,7 +71,7 @@ protected:
     /**
      * @internal Returns config object
      */
-    KSharedConfig::Ptr config();
+    KConfig *config();
 
     /**
      * @internal Copies object members
@@ -1096,7 +1096,8 @@ public:
 
 private:
     // Config file containing locale config
-    KSharedConfig::Ptr m_config;
+    KConfig *m_config;
+    KSharedConfig::Ptr m_sharedConfig;
 
     // Country settings
     QString m_country;
