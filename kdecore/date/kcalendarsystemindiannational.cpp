@@ -19,7 +19,6 @@
 
 #include "kcalendarsystemindiannational_p.h"
 #include "kcalendarsystemprivate_p.h"
-#include "kcalendarsystemgregorianproleptic_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -48,21 +47,17 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
-
-    KCalendarSystemGregorianProleptic *gregorian;
 };
 
 // Shared d pointer base class definitions
 
 KCalendarSystemIndianNationalPrivate::KCalendarSystemIndianNationalPrivate( KCalendarSystemIndianNational *q )
-                                     :KCalendarSystemPrivate( q ),
-                                      gregorian( new KCalendarSystemGregorianProleptic )
+                                     :KCalendarSystemPrivate( q )
 {
 }
 
 KCalendarSystemIndianNationalPrivate::~KCalendarSystemIndianNationalPrivate()
 {
-    delete gregorian;
 }
 
 KLocale::CalendarSystem KCalendarSystemIndianNationalPrivate::calendarSystem() const
@@ -120,8 +115,21 @@ int KCalendarSystemIndianNationalPrivate::daysInWeek() const
 bool KCalendarSystemIndianNationalPrivate::isLeapYear( int year ) const
 {
     //Uses same rule as Gregorian, and is explicitly synchronized to Gregorian
-    //so add 78 years to get Gregorian year and call Gregorian implementation
-    return gregorian->isLeapYear( year + 78 );
+    //so add 78 years to get Gregorian year and apply Gregorian calculation
+    year = year + 78;
+    if ( !hasYearZero() && year < 1 ) {
+        year = year + 1;
+    }
+
+    if ( year % 4 == 0 ) {
+        if ( year % 100 != 0 ) {
+            return true;
+        } else if ( year % 400 == 0 ) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool KCalendarSystemIndianNationalPrivate::hasLeapMonths() const
@@ -564,111 +572,44 @@ bool KCalendarSystemIndianNational::isProleptic() const
 
 bool KCalendarSystemIndianNational::julianDayToDate( int jd, int &year, int &month, int &day ) const
 {
-    Q_D( const KCalendarSystemIndianNational );
+    int L, N, I, J, D, M, Y;
 
-    // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
-    // We can use this and the regular sequence of days in months to do a simple conversion by finding
-    // what day in the Gregorian year the Julian Day number is, converting this to the day in the
-    // Indian year and subtracting off the required number of months and days to get the final date
+    // "Explanatory Supplement to the Astronomical Almanac" 2006 section 12.94 pp 605-606
+    // Originally from "Report of the Calendar Reform Committee" 1955
+    L = jd + 68518;
+    N = ( 4 * L ) / 146097;
+    L = L - ( 146097 * N + 3 ) / 4;
+    I = ( 4000 * ( L + 1 ) ) / 1461001;
+    L = L - ( 1461 * I ) / 4 + 1;
+    J = ( ( L - 1 ) / 31 ) * ( 1 - L / 185 ) + ( L / 185 ) * ( ( L - 156 ) / 30 + 5 ) - L / 366;
+    D = L - 31 * J + ( ( J + 2 ) / 8 ) * ( J - 5 );
+    L = J / 11;
+    M = J + 2 - 12 * L;
+    Y = 100 * ( N - 49 ) + L + I - 78;
 
-    // Calculate the Day of Year in the Gregorian calendar
-    // Need to use julianDayToDate() and dateToJulianDay() to calculate instead of QDate::fromJulianDay()
-    // and dayOfYear() to avoid the Gregorian year > 9999 validation check
-    int gregorianYear, gregorianMonth, gregorianDay, jdGregorianFirstDayOfYear;
-    d->gregorian->julianDayToDate( jd, gregorianYear, gregorianMonth, gregorianDay );
-    d->gregorian->dateToJulianDay( gregorianYear, 1, 1, jdGregorianFirstDayOfYear );
-    int gregorianDayOfYear = jd - jdGregorianFirstDayOfYear + 1;
-
-    // There is a fixed 78 year difference between year numbers, but the years do not exactly match up,
-    // there is a fixed 80 day difference between the first day of the year, if the Gregorian day of
-    // the year is 80 or less then the equivalent Indian day actually falls in the preceding  year
-    if ( gregorianDayOfYear > 80 ) {
-        year = gregorianYear - 78;
-    } else {
-        year = gregorianYear - 79;
-    }
-
-    // If it is a leap year then the first month has 31 days, otherwise 30.
-    int daysInMonth1;
-    if ( isLeapYear( year ) ) {
-        daysInMonth1 = 31;
-    } else {
-        daysInMonth1 = 30;
-    }
-
-    // The Indian year always starts 80 days after the Gregorian year, calculate the Indian day of
-    // the year, taking into account if it falls into the previous Gregorian year
-    int indianDayOfYear;
-    if ( gregorianDayOfYear > 80 ) {
-        indianDayOfYear = gregorianDayOfYear - 80;
-    } else {
-        indianDayOfYear = gregorianDayOfYear + ( daysInMonth1 + ( 5 * 31 ) + ( 6 * 30 ) ) - 80;
-    }
-
-    // Then simply remove the whole months from the day of the year and you are left with the day of month
-    if ( indianDayOfYear <= daysInMonth1 ) {
-        month = 1;
-        day = indianDayOfYear;
-    } else if ( indianDayOfYear <= ( daysInMonth1 + ( 5 * 31 ) ) ) {
-        month = ( ( indianDayOfYear - daysInMonth1 - 1 ) / 31 ) + 2;
-        day = indianDayOfYear - daysInMonth1 - ( ( month - 2 ) * 31 );
-    } else {
-        month = ( ( indianDayOfYear - daysInMonth1 - ( 5 * 31 ) - 1 ) / 30 ) + 7;
-        day = indianDayOfYear - daysInMonth1 - ( 5 * 31 ) - ( ( month - 7 ) * 30 );
-    }
+    day = D;
+    month = M;
+    year = Y;
 
     return true;
 }
 
 bool KCalendarSystemIndianNational::dateToJulianDay( int year, int month, int day, int &jd ) const
 {
-    Q_D( const KCalendarSystemIndianNational );
+    int Y = year;
+    int M = month;
+    int D = day;
 
-    // The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
-    // We can use this and the regular sequence of days in months to do a simple conversion by finding
-    // the Julian Day number of the first day of the year and adding on the required number of months
-    // and days to get the final Julian Day number
-
-    int jdFirstDayOfYear;
-    int daysInMonth1;
-
-    // Calculate the jd of 1 Chaitra for this year and how many days are in Chaitra this year
-    // If a Leap Year, then 1 Chaitra == 21 March of the Gregorian year and Chaitra has 31 days
-    // If not a Leap Year, then 1 Chaitra == 22 March of the Gregorian year and Chaitra has 30 days
-    // Need to use dateToJulianDay() to calculate instead of setDate() to avoid the year 9999 validation
-    if ( isLeapYear( year ) ) {
-        d->gregorian->dateToJulianDay( year + 78, 3, 21, jdFirstDayOfYear );
-        daysInMonth1 = 31;
-    } else {
-        d->gregorian->dateToJulianDay( year + 78, 3, 22, jdFirstDayOfYear );
-        daysInMonth1 = 30;
-    }
-
-    // Add onto the jd of the first day of the year the number of days required
-    // Calculate the number of days in the months before the required month
-    // Then add on the required days
-    // The first month has 30 or 31 days depending on if it is a Leap Year (determined above)
-    // The second to sixth months have 31 days each
-    // The seventh to twelth months have 30 days each
-    // Note: could be expressed more efficiently, but I think this is clearer
-    if ( month == 1) {
-        jd = jdFirstDayOfYear             // Start with jd of first day of year
-           + day                          // Add on required day in required month
-           - 1;                           // Adjust for fact we double count 1 Chaitra
-    } else if ( month <= 6 ){
-        jd = jdFirstDayOfYear             // Start with jd of first day of year
-           + daysInMonth1                 // Add on days in month 1
-           + ( ( month - 2 ) * 31 )       // Add on days after month 1 up to month before required month
-           + day                          // Add on required day in required month
-           - 1;                           // Adjust for fact we double count 1 Chaitra
-    } else { // month > 6
-        jd = jdFirstDayOfYear             // Start with jd of first day of year
-           + daysInMonth1                 // Add on days in month 1
-           + ( 5 * 31 )                   // Add on days in months 2 to 6
-           + ( ( month - 7 ) * 30 )       // Add on days after month 6 up to month before required month
-           + day                          // Add on required day in required month
-           - 1;                           // Adjust for fact we double count 1 Chaitra
-    }
+    // "Explanatory Supplement to the Astronomical Almanac" 2006 section 12.94 pp 605-606
+    // Originally from "Report of the Calendar Reform Committee" 1955
+    jd = 365 * Y
+         + ( Y + 78 - 1 / M ) / 4
+         + 31 * M
+         - ( M + 9 ) / 11
+         - ( M / 7 ) * ( M - 7 )
+         - ( 3 * ( ( Y  + 78 - 1 / M ) / 100 + 1 ) ) / 4
+         + D
+         + 1749579;
 
     return true;
 }

@@ -1335,6 +1335,8 @@ void KCalendarTest::testIndianNational()
     testYmd( calendar, 1932,  1,  1, QDate( 2010,  3, 22 ).toJulianDay() );
     testYmd( calendar, 1932, 12, 30, QDate( 2011,  3, 21 ).toJulianDay() );
 
+    testRoundTrip( calendar );
+
     delete calendar;
 }
 
