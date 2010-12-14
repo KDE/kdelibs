@@ -30,6 +30,8 @@
 class HalBasicTest : public QObject
 {
     Q_OBJECT
+public:
+    HalBasicTest(QObject *parent = 0);
 private slots:
     void testBasic();
     void testProcessorList();

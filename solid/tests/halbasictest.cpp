@@ -32,6 +32,11 @@
 
 QTEST_MAIN(HalBasicTest)
 
+HalBasicTest::HalBasicTest(QObject *parent)
+    : QObject(parent)
+{
+    setenv("SOLID_HAL_LEGACY", "1", 1);
+}
 
 void HalBasicTest::testBasic()
 {
