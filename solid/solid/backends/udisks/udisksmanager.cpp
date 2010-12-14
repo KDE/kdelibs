@@ -59,8 +59,7 @@ UDisksManager::UDisksManager(QObject *parent)
                                                               "org.freedesktop.DBus",
                                                               "ListActivatableNames");
 
-        QDBusPendingReply< QStringList > reply = QDBusConnection::systemBus().asyncCall(message);
-        reply.waitForFinished();
+        QDBusReply<QStringList> reply = QDBusConnection::systemBus().call(message);
         if (reply.isValid() && reply.value().contains(UD_DBUS_SERVICE)) {
             QDBusConnection::systemBus().interface()->startService(UD_DBUS_SERVICE);
             serviceFound = true;
