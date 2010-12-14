@@ -129,6 +129,25 @@ set(solid_LIB_SRCS
    backends/shared/cpufeatures.cpp
 )
 
+if(NOT APPLE)
+  macro_optional_find_package( HUpnp )
+  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+
+  if ( HUPNP_FOUND )
+    include_directories( ${HUPNP_INCLUDE_DIR} )
+    message(STATUS "Building Solid UPnP backend." )
+    set(solid_LIB_SRCS ${solid_LIB_SRCS}
+
+       backends/upnp/upnpdevice.cpp
+       backends/upnp/upnpdevicemanager.cpp
+       backends/upnp/upnpdeviceinterface.cpp
+       backends/upnp/upnpmediaserver.cpp
+       backends/upnp/upnpinternetgateway.cpp
+       backends/upnp/upnpcontrolpoint.cpp
+    )
+  endif( HUPNP_FOUND )
+endif(NOT APPLE)
+
 if(NOT WIN32 AND NOT APPLE)
 #   message(STATUS "Building Solid KUPnP backend." )
 #   set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -148,26 +167,9 @@ if(NOT WIN32 AND NOT APPLE)
 #   )
 
    macro_optional_find_package( UDev )
-   macro_optional_find_package( HUpnp )
-   macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
    macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 
-   if ( HUPNP_FOUND )
-      include_directories( ${HUPNP_INCLUDE_DIR} )
-
-      message(STATUS "Building Solid UPnP backend." )
-      set(solid_LIB_SRCS ${solid_LIB_SRCS}
-
-         backends/upnp/upnpdevice.cpp
-         backends/upnp/upnpdevicemanager.cpp
-         backends/upnp/upnpdeviceinterface.cpp
-         backends/upnp/upnpmediaserver.cpp
-         backends/upnp/upnpinternetgateway.cpp
-         backends/upnp/upnpcontrolpoint.cpp
-      )
-
-   endif( HUPNP_FOUND )
 
    if ( UDEV_FOUND )
       message(STATUS "Building Solid UDev backend." )
