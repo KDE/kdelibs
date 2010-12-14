@@ -75,7 +75,7 @@ class KLocalizedDatePrivate;
  * In this case you are responsible for the memory management of the KLocale
  * and KCalendarSystem.  This allows you to reuse this calendar across multiple
  * date instances without it being deleted under you.  It also allows you to
- * change any setting in the Locale and have it apply acrooss all those date
+ * change any setting in the Locale and have it apply across all those date
  * instances.  @warning Don't try changing the Calendar System via your Locale
  * instance, your KCalendarSystem instance will be deleted and all the dates
  * will be invalid!
@@ -98,7 +98,7 @@ class KLocalizedDatePrivate;
  * formats defined in the Locale, although you can provide your own format in
  * either the KDE, POSIX, or UNICODE standards.
  *
- * @see formatDate() formatDate() formatWeek() formatDayOfWeek()
+ * @see formatDate() formatDate()
  *
  * @section parsing Date Parsing
  *
@@ -453,6 +453,8 @@ public:
     /**
      * Returns the day number of year for the date
      *
+     * The days are numbered 1..daysInYear()
+     *
      * See @ref formatting for why you should never display this value.
      *
      * @see formatDate()
@@ -462,6 +464,10 @@ public:
 
     /**
      * Returns the weekday number for the date
+     *
+     * The weekdays are numbered 1..7 for Monday..Sunday.
+     *
+     * This value is @em not affected by the value of KLocale::weekStartDay()
      *
      * See @ref formatting for why you should never display this value.
      *

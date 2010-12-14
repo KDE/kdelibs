@@ -661,6 +661,8 @@ public:
     /**
      * Returns the day number of year for the given date
      *
+     * The days are numbered 1..daysInYear()
+     *
      * @param date the date to obtain day from
      * @return day of year number, -1 if input date not valid
      */
@@ -668,6 +670,10 @@ public:
 
     /**
      * Returns the weekday number for the given date
+     *
+     * The weekdays are numbered 1..7 for Monday..Sunday.
+     *
+     * This value is @em not affected by the value of weekStartDay()
      *
      * @param date the date to obtain day from
      * @return day of week number, -1 if input date not valid
