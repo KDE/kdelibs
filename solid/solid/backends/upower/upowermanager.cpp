@@ -26,6 +26,7 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusMetaType>
+#include <QtDBus/QDBusConnectionInterface>
 
 #include "../shared/rootdevice.h"
 
@@ -46,10 +47,28 @@ UPowerManager::UPowerManager(QObject *parent)
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
 
-    connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-            this, SLOT(slotDeviceAdded(QString)));
-    connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-            this, SLOT(slotDeviceRemoved(QString)));
+    bool serviceFound = m_manager.isValid();
+    if (!serviceFound) {
+        // find out whether it will be activated automatically
+        QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.DBus",
+                                                              "/org/freedesktop/DBus",
+                                                              "org.freedesktop.DBus",
+                                                              "ListActivatableNames");
+
+        QDBusPendingReply< QStringList > reply = QDBusConnection::systemBus().asyncCall(message);
+        reply.waitForFinished();
+        if (reply.isValid() && reply.value().contains(UP_DBUS_SERVICE)) {
+            QDBusConnection::systemBus().interface()->startService(UP_DBUS_SERVICE);
+            serviceFound = true;
+        }
+    }
+
+    if (serviceFound) {
+        connect(&m_manager, SIGNAL(DeviceAdded(QString)),
+                this, SLOT(slotDeviceAdded(QString)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
+                this, SLOT(slotDeviceRemoved(QString)));
+    }
 }
 
 UPowerManager::~UPowerManager()

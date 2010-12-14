@@ -25,6 +25,7 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusMetaType>
+#include <QtDBus/QDBusConnectionInterface>
 
 #include "../shared/rootdevice.h"
 
@@ -50,12 +51,30 @@ UDisksManager::UDisksManager(QObject *parent)
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
     qDBusRegisterMetaType<QVariantMap>();
 
-    connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-            this, SLOT(slotDeviceAdded(QDBusObjectPath)));
-    connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-            this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
-    connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
-            this, SLOT(slotDeviceChanged(QDBusObjectPath)));
+    bool serviceFound = m_manager.isValid();
+    if (!serviceFound) {
+        // find out whether it will be activated automatically
+        QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.DBus",
+                                                              "/org/freedesktop/DBus",
+                                                              "org.freedesktop.DBus",
+                                                              "ListActivatableNames");
+
+        QDBusPendingReply< QStringList > reply = QDBusConnection::systemBus().asyncCall(message);
+        reply.waitForFinished();
+        if (reply.isValid() && reply.value().contains(UD_DBUS_SERVICE)) {
+            QDBusConnection::systemBus().interface()->startService(UD_DBUS_SERVICE);
+            serviceFound = true;
+        }
+    }
+
+    if (serviceFound) {
+        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+                this, SLOT(slotDeviceAdded(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+                this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
+                this, SLOT(slotDeviceChanged(QDBusObjectPath)));
+    }
 }
 
 UDisksManager::~UDisksManager()
