@@ -1781,14 +1781,17 @@ bool KateView::removeSelectedText()
   if (!selection())
     return false;
 
-  m_doc->editStart ();
+  m_doc->editStart();
 
-  m_doc->removeText (m_selection, blockSelect);
+  // Optimization: clear selection before removing text
+  KTextEditor::Range selection = m_selection;
 
   // don't redraw the cleared selection - that's done in editEnd().
   clearSelection(false);
 
-  m_doc->editEnd ();
+  m_doc->removeText(selection, blockSelect);
+
+  m_doc->editEnd();
 
   return true;
 }
