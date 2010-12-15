@@ -70,6 +70,8 @@ private:
                                          KLocale::DigitSet digitSet,
                                          KLocale::DateTimeFormatStandard standard ) const;
 
+    virtual void initEnglish( const KCalendarSystem *calendar, const KLocale *locale ) const;
+
     virtual QString formatDateTimeUnicode( const KDateTime &fromDateTime,
                                            const QString &toFormat,
                                            KLocale::TimeFormatOptions timeOptions,
@@ -86,6 +88,11 @@ private:
 
     virtual QString stringFromInteger( int number, int padWidth, QChar padChar, QChar signChar,
                                        KLocale::DigitSet digitSet, const KLocale *locale ) const;
+
+    // Is private class, but if ever made public need to move these into a d->
+    // Some format modifiers force English names to be returned
+    mutable KLocale *m_englishLocale;
+    mutable KCalendarSystem *m_englishCalendar;
 };
 
 #endif // KDATETIMEFORMATTER_H

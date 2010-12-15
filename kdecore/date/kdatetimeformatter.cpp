@@ -32,11 +32,15 @@
 #include "kdebug.h"
 
 KDateTimeFormatter::KDateTimeFormatter()
+                   : m_englishLocale(0),
+                     m_englishCalendar(0)
 {
 }
 
 KDateTimeFormatter::~KDateTimeFormatter()
 {
+    delete m_englishCalendar;
+    delete m_englishLocale;
 }
 
 QString KDateTimeFormatter::formatDate( const QDate &fromDate,
@@ -127,11 +131,6 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
     // and it is 1/3rd more efficient than 3 separatre calls
     int year, month, day;
     calendar->getDate( fromDateTime.date(), &year, &month, &day );
-
-    // Set up an English locale and calendar for use with ':' modifier which forces English names
-    KLocale *englishLocale = new KLocale( *locale );
-    englishLocale->setLanguage( QStringList() << QString::fromLatin1("en_US") );
-    KCalendarSystem *englishCalendar = KCalendarSystem::create( calendar->calendarType(), englishLocale );
 
     for ( int formatIndex = 0; formatIndex < toFormat.length(); ++formatIndex ) {
 
@@ -312,14 +311,16 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     if ( locale->dateMonthNamePossessive() ) {
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
-                            componentString = englishCalendar->monthName( month, year, KCalendarSystem::LongNamePossessive );
+                            initEnglish( calendar, locale );
+                            componentString = m_englishCalendar->monthName( month, year, KCalendarSystem::LongNamePossessive );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::LongNamePossessive );
                         }
                     } else {
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
-                            componentString = englishCalendar->monthName( month, year, KCalendarSystem::LongName );
+                            initEnglish( calendar, locale );
+                            componentString = m_englishCalendar->monthName( month, year, KCalendarSystem::LongName );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::LongName );
                         }
@@ -333,14 +334,16 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                     if ( locale->dateMonthNamePossessive() ) {
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
-                            componentString = englishCalendar->monthName( month, year, KCalendarSystem::ShortNamePossessive );
+                            initEnglish( calendar, locale );
+                            componentString = m_englishCalendar->monthName( month, year, KCalendarSystem::ShortNamePossessive );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::ShortNamePossessive );
                         }
                     } else {
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
-                            componentString = englishCalendar->monthName( month, year, KCalendarSystem::ShortName );
+                            initEnglish( calendar, locale );
+                            componentString = m_englishCalendar->monthName( month, year, KCalendarSystem::ShortName );
                         } else {
                             componentString = calendar->monthName( month, year, KCalendarSystem::ShortName );
                         }
@@ -352,7 +355,8 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'A':  //Long weekday name, default space pad to 0 places no sign
                     if ( modifierChar == QLatin1Char(':') ) {
                         invalidModifier = false;
-                        componentString = englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::LongDayName );
+                        initEnglish( calendar, locale );
+                        componentString = m_englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::LongDayName );
                     } else {
                         componentString = calendar->weekDayName( fromDateTime.date(), KCalendarSystem::LongDayName );
                     }
@@ -363,7 +367,8 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'a':  //Short weekday name, default space pad to 0 places no sign
                     if ( modifierChar == QLatin1Char(':') ) {
                         invalidModifier = false;
-                        componentString = englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::ShortDayName );
+                        initEnglish( calendar, locale );
+                        componentString = m_englishCalendar->weekDayName( fromDateTime.date(), KCalendarSystem::ShortDayName );
                     } else {
                         componentString = calendar->weekDayName( fromDateTime.date(), KCalendarSystem::ShortDayName );
                     }
@@ -486,7 +491,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'S':   // Long seconds
                     invalidModifier = false;
                     if ( (timeOptions & KLocale::TimeWithoutSeconds) == KLocale::TimeWithoutSeconds ) {
-                        //do strip the preceeding/following punctuation
+                        //TODO strip the preceeding/following punctuation
                     } else {
                         componentInteger = fromDateTime.time().second();
                         if ( modifierChar == QLatin1Char(':') ) {  // Only if not 00 seconds
@@ -513,11 +518,12 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                 case 'p':   // AM/PM symbol
                 case 'P':   // AM/PM symbol in lowercase
                     if ( (timeOptions & KLocale::TimeWithoutAmPm) == KLocale::TimeWithoutAmPm ) {
-                        //do strip the preceeding/following punctuation
+                        //TODO strip the preceeding/following punctuation
                     } else {
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
-                            componentString = englishLocale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
+                            initEnglish( calendar, locale );
+                            componentString = m_englishLocale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         } else {
                             componentString = locale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         }
@@ -613,9 +619,20 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
     }
 //kDebug() << " return = " << result;
 //kDebug() << "";
-    delete englishCalendar;
-    delete englishLocale;
     return result;
+}
+
+void KDateTimeFormatter::initEnglish( const KCalendarSystem *calendar, const KLocale *locale ) const
+{
+    if ( !m_englishCalendar || m_englishCalendar->calendarType() != calendar->calendarType() ) {
+            // Set up an English locale and calendar for use with ':' modifier which forces English names
+            if ( !m_englishLocale ) {
+                m_englishLocale = new KLocale( *locale );
+                m_englishLocale->setLanguage( QStringList() << QString::fromLatin1("en_US") );
+            }
+            delete m_englishCalendar;
+            m_englishCalendar = KCalendarSystem::create( calendar->calendarType(), m_englishLocale );
+    }
 }
 
 // Reimplement if special string handling required
