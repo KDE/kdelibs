@@ -83,7 +83,12 @@ QString UDisksStorageAccess::filePath() const
         return holderDevice.property("DeviceMountPaths").toStringList().first();
     }
 
-    return m_device->property("DeviceMountPaths").toStringList().first(); // FIXME Solid doesn't support multiple mount points
+    QStringList mntPoints = m_device->property("DeviceMountPaths").toStringList();
+
+    if (!mntPoints.isEmpty())
+        return mntPoints.first(); // FIXME Solid doesn't support multiple mount points
+    else
+        return QString();
 }
 
 bool UDisksStorageAccess::isIgnored() const
