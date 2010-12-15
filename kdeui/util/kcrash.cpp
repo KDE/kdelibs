@@ -41,7 +41,9 @@
 #include <sys/wait.h>
 #include <sys/un.h>
 #include <sys/socket.h>
+#ifdef Q_OS_LINUX
 #include <sys/prctl.h>
+#endif
 #include <errno.h>
 
 #include <qwindowdefs.h>
@@ -544,10 +546,13 @@ static bool startProcessInternal(int argc, const char *argv[], bool waitAndExit,
             //if the process was started directly, use waitpid(), as it's a child...
             while(waitpid(-1, NULL, 0) != pid) {}
         } else {
+#ifdef Q_OS_LINUX
+            // Declare the process that will be debugging the crashed KDE app (#245529)
 #ifndef PR_SET_PTRACER
 # define PR_SET_PTRACER 0x59616d61
 #endif
             prctl(PR_SET_PTRACER, pid, 0, 0, 0);
+#endif
             //...else poll its status using kill()
             while(kill(pid, 0) >= 0) {
                 sleep(1);
