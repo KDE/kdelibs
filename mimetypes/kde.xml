@@ -89,6 +89,14 @@ Notes:
     <comment>Kexi project file</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
+  <mime-type type="application/x-vnd.kde.plan">
+    <comment>Calligra Plan project management document</comment>
+    <glob pattern="*.plan"/>
+  </mime-type>
+  <mime-type type="application/x-vnd.kde.plan.work">
+    <comment>Calligra Plan work package document</comment>
+    <glob pattern="*.planwork"/>
+  </mime-type>
   <mime-type type="application/x-vnd.kde.kplato">
     <comment>KPlato project management document</comment>
     <glob pattern="*.kplato"/>
