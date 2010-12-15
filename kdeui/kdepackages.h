@@ -1231,10 +1231,10 @@ const char * const packages[] = {
 "solid",
 "solid/control::bluetooth",
 "solid/control::network",
-"solid/control::powermanager",
 "solid/libsolid",
-"solid/powerdevil-daemon",
-"solid/powerdevil-kcm",
+"solid/powermanagement"
+"solid/powermanagement-daemon",
+"solid/powermanagement-kcm",
 "spreadkde.org",
 "step",
 "step/stepcore",
