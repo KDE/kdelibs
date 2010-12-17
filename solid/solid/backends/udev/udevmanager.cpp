@@ -82,6 +82,7 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
+           device.subsystem() == QLatin1String("net") ||
            device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices
            device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
 }
@@ -96,6 +97,7 @@ UDevManager::UDevManager(QObject *parent)
     d->m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
                              << Solid::DeviceInterface::Processor
                              << Solid::DeviceInterface::AudioInterface
+                             << Solid::DeviceInterface::NetworkInterface
                              << Solid::DeviceInterface::Camera
                              << Solid::DeviceInterface::PortableMediaPlayer
                              << Solid::DeviceInterface::DvbInterface

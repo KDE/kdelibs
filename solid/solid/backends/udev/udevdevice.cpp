@@ -28,7 +28,13 @@
 #include "udevdvbinterface.h"
 #include "udevblock.h"
 #include "udevaudiointerface.h"
+#include "udevnetworkinterface.h"
 #include "cpuinfo.h"
+
+#include <sys/socket.h>
+#include <linux/if_arp.h>
+
+#include <QFile>
 
 using namespace Solid::Backends::UDev;
 
@@ -61,6 +67,8 @@ QString UDevDevice::vendor() const
             vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
          } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
              vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', " ");
+         }  else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
+             vendor = m_device.deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
          }
     }
     return vendor;
@@ -78,6 +86,16 @@ QString UDevDevice::product() const
         } else if(queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
             const AudioInterface audioIface(const_cast<UDevDevice *>(this));
             product = audioIface.name();
+        }  else if(queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
+            QFile typeFile(deviceName() + "/type");
+            if (typeFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                int mediaType = typeFile.readAll().trimmed().toInt();
+                if (mediaType == ARPHRD_LOOPBACK) {
+                    product = QLatin1String("Loopback device Interface");
+                } else  {
+                    product = m_device.deviceProperty("ID_MODEL_FROM_DATABASE").toString();
+                }
+            }
         }
     }
     return product;
@@ -144,6 +162,12 @@ QString UDevDevice::description() const
         return product();
     } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
         return product();
+    } else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
+        const NetworkInterface networkIface(const_cast<UDevDevice *>(this));
+        if (networkIface.isWireless()) {
+            return QObject::tr("WLAN Interface");
+        }
+        return QObject::tr("Networking Interface");
     }
 
     return QString();
@@ -175,6 +199,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
 
     case Solid::DeviceInterface::AudioInterface:
         return m_device.subsystem() == QLatin1String("sound");
+
+    case Solid::DeviceInterface::NetworkInterface:
+        return m_device.subsystem() == QLatin1String("net");
 
     default:
         return false;
@@ -211,6 +238,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::AudioInterface:
         return new AudioInterface(this);
+
+    case Solid::DeviceInterface::NetworkInterface:
+        return new NetworkInterface(this);
 
     default:
         qFatal("Shouldn't happen");
