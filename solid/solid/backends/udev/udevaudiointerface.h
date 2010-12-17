@@ -49,9 +49,6 @@ public:
     virtual Solid::AudioInterface::SoundcardType soundcardType() const;
 
 private:
-    mutable Solid::AudioInterface::SoundcardType m_soundcardType;
-    mutable bool m_soundcardTypeValid;
-
     UdevAudioInterfacePrivate *d;
 };
 }

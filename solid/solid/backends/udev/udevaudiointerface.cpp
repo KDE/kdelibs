@@ -30,8 +30,6 @@ using namespace Solid::Backends::UDev;
 
 AudioInterface::AudioInterface(UDevDevice *device)
     : DeviceInterface(device),
-    m_soundcardType(Solid::AudioInterface::InternalSoundcard),
-    m_soundcardTypeValid(false),
     d(new UdevAudioInterfacePrivate(device))
 {
 }
