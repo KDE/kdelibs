@@ -78,8 +78,6 @@ UdevAudioInterfacePrivate::UdevAudioInterfacePrivate(UDevDevice *device) : m_dev
     if (isOSSDevice(lastElement, lastElementAscii)) {
         return;
     }
-
-    m_driver = Solid::AudioInterface::UnknownAudioDriver;
 }
 
 Solid::AudioInterface::SoundcardType UdevAudioInterfacePrivate::soundcardType()
