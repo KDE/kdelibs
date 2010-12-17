@@ -1368,8 +1368,6 @@ QString KStandardDirs::findExe( const QString& appname,
 
     //kDebug(180) << "findExe(): relative path given";
 
-    // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
-
     QString p = installPath("libexec") + appname;
     QString result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
@@ -1377,11 +1375,16 @@ QString KStandardDirs::findExe( const QString& appname,
         return result;
     }
 
-    p = installPath("exe") + appname;
-    result = checkExecutable(p, options & IgnoreExecBit);
-    if (!result.isEmpty()) {
-        //kDebug(180) << "findExe(): returning " << result;
-        return result;
+    // Look into the KDE-specific bin dir ("exe" resource) in case KDE was installed into a custom
+    // prefix, to make things easier ($PATH not required). But not if KDE is in /usr (#241763).
+    p = installPath("exe");
+    if (p != QLatin1String("/usr/")) {
+        p += appname;
+        result = checkExecutable(p, options & IgnoreExecBit);
+        if (!result.isEmpty()) {
+            kDebug(180) << "findExe(): returning " << result;
+            return result;
+        }
     }
 
     //kDebug(180) << "findExe(): checking system paths";
