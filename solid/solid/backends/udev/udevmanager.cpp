@@ -73,6 +73,13 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         // Empty slots will not have a system device associated with them.
         return QFile::exists(device.sysfsPath() + "/sysdev");
     }
+    if (device.subsystem() == QLatin1String("sound")) {
+        if (device.parent().subsystem() == QLatin1String("sound") ||
+            device.parent().subsystem().isEmpty()) {
+            return true;
+        }
+    }
+
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
            device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices

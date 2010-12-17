@@ -27,6 +27,7 @@
 #include "udevportablemediaplayer.h"
 #include "udevdvbinterface.h"
 #include "udevblock.h"
+#include "udevaudiointerface.h"
 #include "cpuinfo.h"
 
 using namespace Solid::Backends::UDev;
@@ -74,6 +75,9 @@ QString UDevDevice::product() const
             product = extractCpuInfoLine(deviceNumber(), "model name\\s+:\\s+(\\S.+)");
         } else if(queryDeviceInterface(Solid::DeviceInterface::Video)) {
             product = m_device.deviceProperty("ID_V4L_PRODUCT").toString();
+        } else if(queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
+            const AudioInterface audioIface(const_cast<UDevDevice *>(this));
+            product = audioIface.name();
         }
     }
     return product;
@@ -94,6 +98,25 @@ QString UDevDevice::icon() const
         return "camera-photo";
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
         return "camera-web";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
+        const AudioInterface audioIface(const_cast<UDevDevice *>(this));
+        switch (audioIface.soundcardType()) {
+        case Solid::AudioInterface::InternalSoundcard:
+            return QLatin1String("audio-card");
+        case Solid::AudioInterface::UsbSoundcard:
+            return QLatin1String("audio-card-usb");
+        case Solid::AudioInterface::FirewireSoundcard:
+            return QLatin1String("audio-card-firewire");
+        case Solid::AudioInterface::Headset:
+            if (udi().contains("usb", Qt::CaseInsensitive) ||
+                    audioIface.name().contains("usb", Qt::CaseInsensitive)) {
+                return QLatin1String("audio-headset-usb");
+            } else {
+                return QLatin1String("audio-headset");
+            }
+        case Solid::AudioInterface::Modem:
+            return QLatin1String("modem");
+        }
     }
 
     return QString();
@@ -118,6 +141,8 @@ QString UDevDevice::description() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
         return QObject::tr("Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
+        return product();
+    } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
         return product();
     }
 
@@ -147,6 +172,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
 
     case Solid::DeviceInterface::Video:
         return m_device.subsystem() == QLatin1String("video4linux");
+
+    case Solid::DeviceInterface::AudioInterface:
+        return m_device.subsystem() == QLatin1String("sound");
 
     default:
         return false;
@@ -180,6 +208,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::Video:
         return new Video(this);
+
+    case Solid::DeviceInterface::AudioInterface:
+        return new AudioInterface(this);
 
     default:
         qFatal("Shouldn't happen");
@@ -233,4 +264,9 @@ int UDevDevice::deviceNumber() const
 QString UDevDevice::devicePath() const
 {
     return QString(UDEV_UDI_PREFIX) + deviceName();
+}
+
+UdevQt::Device UDevDevice::udevDevice()
+{
+    return m_device;
 }

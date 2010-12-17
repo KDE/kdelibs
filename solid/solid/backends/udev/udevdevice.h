@@ -70,6 +70,7 @@ public:
     QString devicePath() const;
     int deviceNumber() const;
 
+    UdevQt::Device udevDevice();
 private:
     UdevQt::Device m_device;
 };
