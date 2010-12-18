@@ -70,6 +70,31 @@ class KReparentingProxyModelPrivate;
   Note that the implementation returns true for a query if "C" is a descendant of "A".
   The implementation must return the correct value for all of its descendants, not only its direct parent.
   The actual location to insert the descendant in the tree is determined internally by a binary find algorithm.
+
+  The KReparentingProxyModel performs movement of items in the left-right directions, but not the up-down directions.
+
+  \image html reparenting1.png "KReparentingProxyModel moving rows left to right"
+
+  \image html reparenting2.png "KReparentingProxyModel can not move items both left-right and up-down"
+
+  Reordering the rows in a model is the domain of QSortFilterProxyModel. An intermediate QSortFilterProxyModel
+  can be used to achieve the desired result.
+
+  \image html reparenting3.png "KReparentingProxyModel and QSortFilterProxyModel working in concert to move items both left-right and up-down"
+
+  @code
+    QAbstractItemModel *model = getModel();
+
+    QSortFilterProxyModel *sorter = getSorter();
+    sorter->setSourceModel(model);
+
+    KReparentingProxyModel *reparenter = getReparenter();
+    reparenter->setSourceModel(sorter);
+
+    QTreeView *view = getView();
+    view->setModel(reparenter);
+  @endcode
+
 */
 class KReparentingProxyModel : public QAbstractProxyModel
 {
