@@ -40,9 +40,6 @@ using namespace Solid::Backends::UDisks;
 UDisksOpticalDrive::UDisksOpticalDrive(UDisksDevice *device)
     : UDisksStorageDrive(device), m_ejectInProgress(false), m_readSpeed(0), m_writeSpeed(0), m_speedsInit(false)
 {
-  // TODO: ...
-/*    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-      this, SLOT(slotCondition(const QString &, const QString &))); */
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
                              SLOT(slotEjectDone(int, const QString&)));
