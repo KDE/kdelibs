@@ -315,8 +315,11 @@ Nepomuk::Query::Query Nepomuk::Utils::FacetModel::extractFacetsFromQuery( const 
 {
     // safety net to prevent endless loops
     // ===============================
-    if ( query.term() == queryTerm() )
-        return Query::Query();
+    if ( query.term() == queryTerm() ) {
+        Query::Query rest(query);
+        rest.setTerm(Query::Term());
+        return rest;
+    }
 
     // we do not want to emit any queryTermChanged() signal during this method
     // as it would confuse client code
