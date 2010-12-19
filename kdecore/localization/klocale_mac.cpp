@@ -21,20 +21,20 @@
 #include "kkernel_mac.h"
 
 KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
-                  :KLocalePrivate(q_ptr, catalog, config)
+                  :KLocalePrivate(q_ptr)
 {
     // Lock in the current Mac Locale settings
     m_macLocale = CFLocaleCopyCurrent();
-    init();
+    init(catalogName, QString(), QString(), config, 0);
 }
 
 KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, const QString& catalog,
                                      const QString &language, const QString &country, KConfig *config)
-                  :KLocalePrivate(q_ptr, catalog, language, country, config)
+                  :KLocalePrivate(q_ptr)
 {
     // Lock in the current Mac Locale settings
     m_macLocale = CFLocaleCopyCurrent();
-    init();
+    init(catalogName, language, country, KSharedConfig::Ptr(), config);
 }
 
 KLocaleMacPrivate::KLocaleMacPrivate( const KLocaleMacPrivate &rhs )

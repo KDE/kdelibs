@@ -68,7 +68,8 @@ KCurrencyCodePrivate::KCurrencyCodePrivate( const QString &isoCurrencyCode, cons
 {
     QFileInfo file( KStandardDirs::locate( "locale", QString::fromLatin1( "currency/%1.desktop" ).arg( isoCurrencyCode.toLower() ) ) );
 
-    loadCurrency( file, language );}
+    loadCurrency( file, language );
+}
 
 KCurrencyCodePrivate::KCurrencyCodePrivate( const QFileInfo &currencyCodeFile, const QString &language )
 {
@@ -108,9 +109,8 @@ void KCurrencyCodePrivate::loadCurrency( const QFileInfo &currencyCodeFile, cons
 {
     KConfig cgFile( currencyCodeFile.absoluteFilePath() );
 
-    if ( language.isEmpty() ) {
-        cgFile.setLocale( KGlobal::locale()->language() );
-    } else {
+    // If language is empty, means to stick with the global default, which is the default for any new KConfig
+    if ( !language.isEmpty() ) {
         cgFile.setLocale( language );
     }
 
@@ -270,7 +270,7 @@ bool KCurrencyCode::isValid() const
 
 bool KCurrencyCode::isValid( const QString &isoCurrencyCode, CurrencyStatusFlags currencyStatusFlags )
 {
-    KCurrencyCode test = KCurrencyCode( isoCurrencyCode, QLatin1String("us_EN") );
+    KCurrencyCode test = KCurrencyCode( isoCurrencyCode );
     return test.isValid() && ( currencyStatusFlags & test.status() );
 }
 

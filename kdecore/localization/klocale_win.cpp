@@ -24,22 +24,22 @@
 #include <QtCore/QTextCodec>
 
 KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
-                      :KLocalePrivate(q_ptr, catalog, config)
+                      :KLocalePrivate(q_ptr)
 {
     // Lock in the current Windows Locale ID
     // Can we also lock in the actual settings like we do for Mac?
     m_winLocaleId = GetUserDefaultLCID();
-    init();
+    init(catalogName, QString(), QString(), config, 0);
 }
 
 KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString& catalog,
                                              const QString &language, const QString &country, KConfig *config)
-                      :KLocalePrivate(q_ptr, catalog, language, country, config)
+                      :KLocalePrivate(q_ptr)
 {
     // Lock in the current Windows Locale ID
     // Can we also lock in the actual settings like we do for Mac?
     m_winLocaleId = GetUserDefaultLCID();
-    init();
+    init(catalogName, language, country, KSharedConfig::Ptr(), config);
 }
 
 KLocaleWindowsPrivate::KLocaleWindowsPrivate( const KLocaleWindowsPrivate &rhs )

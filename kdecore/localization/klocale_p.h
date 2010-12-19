@@ -42,10 +42,7 @@ public:
      * derived system class for Unix, Win, or Mac which will prefer the local platform settings
      * where possible.
      */
-    KLocalePrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config);
-
-    KLocalePrivate(KLocale *q_ptr, const QString& catalog,
-                   const QString &language, const QString &country, KConfig *config);
+    KLocalePrivate(KLocale *q_ptr);
 
     /**
      * Copy constructor
@@ -86,7 +83,13 @@ protected:
     /**
      * @internal Main init function, needs to be called by appropriate child constructor.
      */
-    void init();
+    virtual void init(const QString& catalogName, const QString &language, const QString &country,
+                      KSharedConfig::Ptr persistantconfig, KConfig *tempConfig);
+
+    /**
+     * @internal Init config.
+     */
+    virtual void initConfig(KConfig *config);
 
     /**************************
      **   Country settings   **
@@ -99,7 +102,7 @@ protected:
      * Will default to any value set in the config, otherwise will attempt to use the host system
      * country, or finally fall back to the default C.
      */
-    virtual void initCountry();
+    virtual void initCountry(const QString &country, const QString &configCountry);
 
     /**
      * @internal Returns the host system country ISO code
@@ -172,9 +175,9 @@ protected:
      * list of languages that the user picks in kcontrol. The config object should be valid and
      * contain the global entries.
      *
-     * @param config The configuration object used for init
+     * @param configLanguages The "Language" setting from the current config
      */
-    virtual void initLanguageList();
+    virtual void initLanguageList(const QString &language, const QString &configLanguages, bool useEnv);
 
     /**
      * @internal function used to determine if we are using the en_US translation
@@ -1096,8 +1099,7 @@ public:
 
 private:
     // Config file containing locale config
-    KConfig *m_config;
-    KSharedConfig::Ptr m_sharedConfig;
+    KSharedConfig::Ptr m_config;
 
     // Country settings
     QString m_country;
