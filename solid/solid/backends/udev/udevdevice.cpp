@@ -101,9 +101,9 @@ QString UDevDevice::product() const
         } else if(queryDeviceInterface(Solid::DeviceInterface::SerialInterface)) {
             const SerialInterface serialIface(const_cast<UDevDevice *>(this));
             if (serialIface.serialType() == Solid::SerialInterface::Platform) {
-                product.append(QStringList("Platform serial"));
+                product.append(QLatin1String("Platform serial"));
             } else if (serialIface.serialType() == Solid::SerialInterface::Usb) {
-                product.append(QStringList("USB Serial Port"));
+                product.append(QLatin1String("USB Serial Port"));
             }
         }
     }
