@@ -113,18 +113,18 @@ QString UDevDevice::product() const
 QString UDevDevice::icon() const
 {
     if (parentUdi().isEmpty()) {
-        return "computer";
+        return QLatin1String("computer");
     }
 
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        return "cpu";
+        return QLatin1String("cpu");
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
-        return "multimedia-player";
+        return QLatin1String("multimedia-player");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return "camera-photo";
+        return QLatin1String("camera-photo");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
-        return "camera-web";
+        return QLatin1String("camera-web");
     } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
         const AudioInterface audioIface(const_cast<UDevDevice *>(this));
         switch (audioIface.soundcardType()) {
