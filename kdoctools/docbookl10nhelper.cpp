@@ -116,14 +116,18 @@ int main( int argc, char **argv ) {
     * for each language defined in the original l10n.xml, copy
     * it into all-l10n.xml and store it in a list;
     **/
-   QRegExp rxEntity, rxDocType;
+   QRegExp rxEntity, rxEntity2, rxDocType, rxDocType2;
    rxDocType.setPattern("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s+\\[\\s*$");
+   rxDocType2.setPattern("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s*>$");
    rxEntity.setPattern("^\\s*<!ENTITY\\s+([^\\s]+)\\s+SYSTEM\\s+\"([^\\s]+)\">\\s*$");
+   rxEntity2.setPattern("^\\s*<l:l10n language=\"([^\\s]+)\"\\s+href=\"([^\\s]+)\"/>\\s*$");
    QTextStream inStream( &i18nFile );
    int parsingState = 0;
 
    LangListType allLangs, customLangs;
 
+   bool foundRxEntity = false;
+   bool foundRxEntity2 = false;
    while ( ! inStream.atEnd() ) {
       QString line = inStream.readLine();
 
@@ -132,13 +136,23 @@ int main( int argc, char **argv ) {
          if ( rxDocType.indexIn( line ) != -1 ) {
             parsingState = 1;
             //qDebug() << "DTD found";
+         } else if ( rxDocType2.indexIn( line ) != -1 ) {
+            parsingState = 1;
+            //qDebug() << "DTD found";
          }
          break;
        case 1:
          QString langCode, langFile;
-         if ( rxEntity.indexIn( line ) != -1 ) {
+         if ( rxEntity.indexIn( line ) != -1 && !foundRxEntity2 ) {
+            foundRxEntity = true;
             langCode = rxEntity.cap( 1 );
             langFile = l10nDir + "common/" + rxEntity.cap( 2 );
+            allLangs += qMakePair( langCode, langFile );
+            //qDebug() << langCode << " - " << langFile;
+         } else if ( rxEntity2.indexIn( line ) != -1  && !foundRxEntity ) {
+            foundRxEntity2 = true;
+            langCode = rxEntity2.cap( 1 );
+            langFile = l10nDir + "common/" + rxEntity2.cap( 2 );
             allLangs += qMakePair( langCode, langFile );
             //qDebug() << langCode << " - " << langFile;
          }
