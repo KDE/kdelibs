@@ -28,6 +28,7 @@
 #include "udevdvbinterface.h"
 #include "udevblock.h"
 #include "udevaudiointerface.h"
+#include "udevserialinterface.h"
 #include "udevnetworkinterface.h"
 #include "cpuinfo.h"
 
@@ -35,6 +36,7 @@
 #include <linux/if_arp.h>
 
 #include <QFile>
+#include <QDebug>
 
 using namespace Solid::Backends::UDev;
 
@@ -96,6 +98,13 @@ QString UDevDevice::product() const
                     product = m_device.deviceProperty("ID_MODEL_FROM_DATABASE").toString();
                 }
             }
+        } else if(queryDeviceInterface(Solid::DeviceInterface::SerialInterface)) {
+            const SerialInterface serialIface(const_cast<UDevDevice *>(this));
+            if (serialIface.serialType() == Solid::SerialInterface::Platform) {
+                product.append(QStringList("Platform serial"));
+            } else if (serialIface.serialType() == Solid::SerialInterface::Usb) {
+                product.append(QStringList("USB Serial Port"));
+            }
         }
     }
     return product;
@@ -135,6 +144,10 @@ QString UDevDevice::icon() const
         case Solid::AudioInterface::Modem:
             return QLatin1String("modem");
         }
+    } else if (queryDeviceInterface(Solid::DeviceInterface::SerialInterface)) {
+        // TODO - a serial device can be a modem, or just
+        // a COM port - need a new icon?
+        return QLatin1String("modem");
     }
 
     return QString();
@@ -203,6 +216,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::NetworkInterface:
         return m_device.subsystem() == QLatin1String("net");
 
+    case Solid::DeviceInterface::SerialInterface:
+        return m_device.subsystem() == QLatin1String("tty");
+
     default:
         return false;
     }
@@ -241,6 +257,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::NetworkInterface:
         return new NetworkInterface(this);
+
+    case Solid::DeviceInterface::SerialInterface:
+        return new SerialInterface(this);
 
     default:
         qFatal("Shouldn't happen");

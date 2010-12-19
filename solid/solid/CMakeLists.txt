@@ -184,6 +184,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevvideo.cpp
       backends/udev/udevaudiointerface.cpp
       backends/udev/udevnetworkinterface.cpp
+      backends/udev/udevserialinterface.cpp
       backends/udev/udevaudiointerface_p.cpp
       backends/udev/udevportablemediaplayer.cpp
       backends/udev/udevdvbinterface.cpp

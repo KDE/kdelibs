@@ -80,6 +80,16 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         }
     }
 
+    if (device.subsystem() == QLatin1String("tty")) {
+        QString path = device.deviceProperty("DEVPATH").toString();
+
+        int lastSlash = path.length() - path.lastIndexOf(QLatin1String("/")) -1;
+        QByteArray lastElement = path.right(lastSlash).toAscii();
+
+        if (lastElement.startsWith("tty")) {
+            return true;
+        }
+    }
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
            device.subsystem() == QLatin1String("net") ||
@@ -98,6 +108,7 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::Processor
                              << Solid::DeviceInterface::AudioInterface
                              << Solid::DeviceInterface::NetworkInterface
+                             << Solid::DeviceInterface::SerialInterface
                              << Solid::DeviceInterface::Camera
                              << Solid::DeviceInterface::PortableMediaPlayer
                              << Solid::DeviceInterface::DvbInterface
