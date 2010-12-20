@@ -7,6 +7,8 @@ Currently the following backends are implemented on Linux:
 <ul>
 <li><a href="http://www.freedesktop.org/wiki/Software/hal">HAL</a></li>
 <li><a href="http://www.freedesktop.org/wiki/Software/udisks">udisks</a></li>
+<li><a href="http://upower.freedesktop.org/">upower</a></li>
+<li><a href="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html">udev</a></li>
 </ul>
 
 on MacOS X:
@@ -34,7 +36,14 @@ Just for fun: \ref song
 
 
 \authors
-Kevin Ottens \<ervin@kde.org\>
+Kevin Ottens \<ervin@kde.org\><br>
+Lukas Tinkl \<ltinkl@redhat.com\><br>
+Pino Toscano \<pino@kde.org\><br>
+Alex Fiestas \<alex@eyeos.org\><br>
+Rafael Fernández López \<ereslibre@kde.org\><br>
+Alex Merry \<alex.merry@kdemail.net\><br>
+Mario Bensi \<mbensi@ipsquad.net\><br>
+Harald Fernengel \<harry@kdevelop.org\>
 
 <b>Maintainers</b>:<br>
 Kevin Ottens \<ervin@kde.org\>
