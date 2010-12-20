@@ -3488,15 +3488,6 @@ endParsing:
         return parseHeaderFromCache();
     }
 
-    // Let the app know about the mime-type iff this is not
-    // a redirection and the mime-type string is not empty.
-    if (!m_isRedirection &&
-        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
-        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
-        kDebug(7113) << "Emitting mimetype " << m_mimeType;
-        mimeType( m_mimeType );
-    }
-
     if (config()->readEntry("PropagateHttpHeader", false) ||
         m_request.cacheTag.ioMode == WriteToCache) {
         // store header lines if they will be used; note that the tokenizer removing
@@ -3520,6 +3511,15 @@ endParsing:
     // Do not move send response header before any redirection as it seems
     // to screw up some sites. See BR# 150904.
     forwardHttpResponseHeader();
+
+    // Let the app know about the mime-type iff this is not
+    // a redirection and the mime-type string is not empty.
+    if (!m_isRedirection &&
+        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
+        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
+        kDebug(7113) << "Emitting mimetype " << m_mimeType;
+        mimeType( m_mimeType );
+    }    
 
     if (m_request.method == HTTP_HEAD) {
         return true;
@@ -4230,7 +4230,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
               totalSize (0);
           }
       } else {
-          infoMessage( i18n( "Retrieving from %1..." ,  m_request.url.host() ) );
+          infoMessage(i18n("Retrieving from %1..." ,  m_request.url.host()));
       }
 
       if (m_request.cacheTag.ioMode == ReadFromCache) {
