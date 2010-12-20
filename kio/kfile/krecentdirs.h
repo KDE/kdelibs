@@ -33,7 +33,7 @@
 #include <kio/kio_export.h>
 
 /**
- * The goal of this class is to make sure that, when the user needs to 
+ * The goal of this namespace is to make sure that, when the user needs to 
  * specify a file via the file selection dialog, this dialog will start 
  * in the directory most likely to contain the desired files.
  *
@@ -46,25 +46,32 @@
  * A file-class can either start with ':' or with '::'. If it starts with
  * a single ':' the file-class is specific to the current application.
  * If the file-class starts with '::' it is global to all applications.
+ *
+ * @since 4.6
  */
-class KIO_EXPORT KRecentDirs
+namespace KRecentDirs
 {
-public:
     /**
      * Returns a list of directories associated with this file-class.
      * The most recently used directory is at the front of the list.
+     *
+     * @since 4.6
      */
-    static QStringList list(const QString &fileClass);
+    KIO_EXPORT QStringList list(const QString &fileClass);
     
     /**
      * Returns the most recently used directory accociated with this file-class.
+     *
+     * @since 4.6
      */
-    static QString dir(const QString &fileClass);
+    KIO_EXPORT QString dir(const QString &fileClass);
     
     /**
      * Associates @p directory with @p fileClass
+     *
+     * @since 4.6
      */
-    static void add(const QString &fileClass, const QString &directory);
+    KIO_EXPORT void add(const QString &fileClass, const QString &directory);
 };
 
 #endif

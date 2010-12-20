@@ -435,6 +435,7 @@ install( FILES
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
+  kfile/krecentdirs.h
   kfile/krecentdocument.h
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
