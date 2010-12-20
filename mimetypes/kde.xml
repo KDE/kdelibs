@@ -206,8 +206,7 @@ Notes:
     <comment>rtspu: URIs</comment>
   </mime-type>
 
-  <!-- fonts/ fake mime types -->
-  <mime-type type="fonts/package">
+  <mime-type type="application/vnd.kde.fontspackage">
     <sub-class-of type="application/zip"/>
     <comment>fonts package</comment>
     <glob pattern="*.fonts.zip"/>
