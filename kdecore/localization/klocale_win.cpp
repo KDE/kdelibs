@@ -23,7 +23,7 @@
 #include <QtCore/QLocale>
 #include <QtCore/QTextCodec>
 
-KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config)
+KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString &catalogName, KSharedConfig::Ptr config)
                       :KLocalePrivate(q_ptr)
 {
     // Lock in the current Windows Locale ID
@@ -32,7 +32,7 @@ KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString &cata
     init(catalogName, QString(), QString(), config, 0);
 }
 
-KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString& catalog,
+KLocaleWindowsPrivate::KLocaleWindowsPrivate(KLocale *q_ptr, const QString& catalogName,
                                              const QString &language, const QString &country, KConfig *config)
                       :KLocalePrivate(q_ptr)
 {
