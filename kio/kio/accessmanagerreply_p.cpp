@@ -49,6 +49,7 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
     setOpenMode(QIODevice::ReadOnly);
     setUrl(request.url());
     setOperation(op);
+    setError(NoError, QString());
 
     if (!request.sslConfiguration().isNull())
         setSslConfiguration(request.sslConfiguration());
@@ -73,9 +74,8 @@ AccessManagerReply::~AccessManagerReply()
 
 void AccessManagerReply::abort()
 {
-    if (m_kioJob) {
+    if (m_kioJob)
         m_kioJob->kill();
-    }
 
     m_data.clear();
     m_metaDataRead = false;
@@ -98,84 +98,83 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
     return length;
 }
 
-
 void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
 {
-   setError(code, message);
+    setError(code, message);
 }
 
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 {
-    if (!m_metaDataRead) {
-        // Set the HTTP status code...
-        const QString responseCode = job->queryMetaData(QL1S("responsecode"));
-        if (!responseCode.isEmpty())
-            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, responseCode.toInt());
+    if (m_metaDataRead)
+        return;
 
-        // Set the encryption attribute and values...
-        QSslConfiguration sslConfig;
-        const bool isEncrypted = KIO::Integration::sslConfigFromMetaData(job->metaData(), sslConfig);
-        setAttribute(QNetworkRequest::ConnectionEncryptedAttribute, isEncrypted);
-        if (isEncrypted)
-            setSslConfiguration(sslConfig);
+    const KIO::MetaData& metaData = job->metaData();
+    if (metaData.isEmpty())
+        return;
 
-        // Set the raw header information...
-        const QStringList httpHeaders (job->queryMetaData(QL1S("HTTP-Headers")).split(QL1C('\n')));
-        Q_FOREACH(const QString& httpHeader, httpHeaders) {
-            int index = httpHeader.indexOf(QL1C(':'));
-              // Ignore the HTTP status line...
-            if (index == -1) {
-                // Except for the status line, all HTTP headers must be a name/value pair,i.e "<name>:<value>"
-                if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive))
-                  continue;
+    // Set the encryption attribute and values...
+    QSslConfiguration sslConfig;
+    const bool isEncrypted = KIO::Integration::sslConfigFromMetaData(metaData, sslConfig);
+    setAttribute(QNetworkRequest::ConnectionEncryptedAttribute, isEncrypted);
+    if (isEncrypted)
+        setSslConfiguration(sslConfig);
 
-                // Further validate the status line to make sure it contains the response code...
-                index = httpHeader.indexOf(responseCode);
-                if (index == -1)
-                   continue;                
+    // Set the returned meta data as attribute...
+    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
+                 metaData.toVariant());
 
-                // Assign the status/reason pharse...
-                index += responseCode.length();
-                if (index < httpHeader.length())
-                    setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, httpHeader.mid(index).trimmed());
-                continue;
-            }
+    // Set the raw header information...
+    const QStringList httpHeaders (metaData.value(QL1S("HTTP-Headers")).split(QL1C('\n'), QString::SkipEmptyParts));
+    Q_FOREACH(const QString& httpHeader, httpHeaders) {
+        int index = httpHeader.indexOf(QL1C(':'));
+        // Handle HTTP status line...
+        if (index == -1) {
+            // Except for the status line, all HTTP header must be an nvpair of
+            // type "<name>:<value>"
+            if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive))
+              continue;
 
-            const QString headerName = httpHeader.left(index);
-            QString headerValue = httpHeader.mid(index+1);
+            QStringList statusLineAttrs (httpHeader.split(QL1C(' '), QString::SkipEmptyParts));
+            if (statusLineAttrs.count() > 1)
+                setAttribute(QNetworkRequest::HttpStatusCodeAttribute, statusLineAttrs.at(1));
 
-            // Skip setting cookies since they are automatically handled by kio_http...
-            if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
-                continue;
-            
-            // Without overridding the corrected mime-type sent by kio_http, add
-            // back the "charset=" portion of the content-type header if present.
-            if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
-                const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
-                if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
-                    index = headerValue.indexOf(QL1C(';'));
-                    if (index == -1)
-                        headerValue = mimeType;
-                    else
-                        headerValue.replace(0, index, mimeType);
-                    //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
-                }
-            }
-            
-            // kDebug(7044) << "Adding header:" << headerName << ":" << headerValue;
-            setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
+            if (statusLineAttrs.count() > 2)
+                setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, statusLineAttrs.at(2));
+
+            continue;
         }
 
-        // Set the returned meta data as attribute...
-        setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
-                     job->metaData().toVariant());
-        m_metaDataRead = true;
+        const QString headerName = httpHeader.left(index);
+        QString headerValue = httpHeader.mid(index+1);
+
+        // Skip setting cookies since they are automatically handled by kio_http...
+        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
+            continue;
+
+        // Without overridding the corrected mime-type sent by kio_http, add
+        // back the "charset=" portion of the content-type header if present.
+        if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
+            const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+            if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
+                index = headerValue.indexOf(QL1C(';'));
+                if (index == -1)
+                    headerValue = mimeType;
+                else
+                    headerValue.replace(0, index, mimeType);
+                //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
+            }
+        }
+
+        setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
     }
+
+    m_metaDataRead = true;
+    emit metaDataChanged();
 }
 
 void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
-    readHttpResponseHeaders(kioJob);
+    Q_UNUSED(kioJob);
     m_data += data;
     emit readyRead();
 }
@@ -184,11 +183,12 @@ void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
     Q_UNUSED(kioJob);
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
+    readHttpResponseHeaders(kioJob);
 }
 
 void AccessManagerReply::slotResult(KJob *kJob)
 {
-    int errcode = kJob->error();
+    const int errcode = kJob->error();
     switch (errcode)
     {
         case 0:
@@ -248,15 +248,13 @@ void AccessManagerReply::slotResult(KJob *kJob)
     }
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-    if (redirectUrl.isValid()) {
+    if (redirectUrl.isValid())
         readHttpResponseHeaders(m_kioJob);
-        //kDebug(7044) << "HTTP Status code:" << attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        //kDebug(7044) << "Redirecting to" << redirectUrl;
-    }
 
     setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
     if (errcode)
         emit error(error());
+    
     emit finished();
 }
 
