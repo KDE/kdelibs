@@ -22,12 +22,14 @@
 
 #include <ktexteditor/codecompletionmodelcontrollerinterface.h>
 
+#include "katepartprivate_export.h"
+
 /// @todo For KDE 4.7 this interface (or a version of it) should go into interfaces/ktexteditor
 
 namespace KTextEditor {
 //BEGIN V4
 ///Extension of CodeCompletionModelControllerInterface3
-class KTEXTEDITOR_EXPORT_DEPRECATED CodeCompletionModelControllerInterface4 : public CodeCompletionModelControllerInterface3 {
+class KATEPART_TESTS_EXPORT_DEPRECATED CodeCompletionModelControllerInterface4 : public CodeCompletionModelControllerInterface3 {
   public:
 
     /**
