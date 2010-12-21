@@ -132,7 +132,7 @@ public:
      * If KIO integration is disabled, this will always return @c true.
      *
      * @see setAllowExternalContent()
-     * @see KIO::AccessManager::isExternalContentAllowed()
+     * @see KIO::Integration::AccessManager::isExternalContentAllowed()
      *
      * @return @c true if access to remote content is permitted, @c false otherwise
      */
@@ -156,7 +156,7 @@ public:
      * If KIO integration is not enabled, this method will have no effect.
      *
      * @see isExternalContentAllowed()
-     * @see KIO::AccessManager::setAllowExternalContent(bool)
+     * @see KIO::Integration::AccessManager::setAllowExternalContent(bool)
      *
      * @param allow  @c true if access to remote content should be allowed,
      *               @c false if only local content should be accessible
@@ -213,7 +213,7 @@ protected:
      *
      * If KIO integration is disabled, this will always return an empty string.
      *
-     * @see KIO::AccessManager::sessionMetaData
+     * @see KIO::Integration::AccessManager::sessionMetaData
      * @see setSessionMetaData
      *
      * @param key  the key of the metadata to retrieve
@@ -229,7 +229,7 @@ protected:
      *
      * If KIO integration is disabled, this will always return an empty string.
      *
-     * @see KIO::AccessManager::requestMetaData
+     * @see KIO::Integration::AccessManager::requestMetaData
      * @see setRequestMetaData
      *
      * @param key  the key of the metadata to retrieve
@@ -245,7 +245,7 @@ protected:
      *
      * Metadata set using this method will be sent with every request.
      *
-     * @see KIO::AccessManager::sessionMetaData
+     * @see KIO::Integration::AccessManager::sessionMetaData
      *
      * @param key    the key for the metadata; any existing metadata associated
      *               with this key will be overwritten
@@ -261,7 +261,7 @@ protected:
      * Metadata set using this method will be deleted after it has been sent
      * once.
      *
-     * @see KIO::AccessManager::requestMetaData
+     * @see KIO::Integration::AccessManager::requestMetaData
      *
      * @param key    the key for the metadata; any existing metadata associated
      *               with this key will be overwritten
@@ -274,7 +274,7 @@ protected:
      *
      * Removes the permanent (per-session) metadata associated with @p key.
      *
-     * @see KIO::AccessManager::sessionMetaData
+     * @see KIO::Integration::AccessManager::sessionMetaData
      * @see setSessionMetaData
      *
      * @param key  the key for the metadata to remove
@@ -286,7 +286,7 @@ protected:
      *
      * Removes the temporary (per-request) metadata associated with @p key.
      *
-     * @see KIO::AccessManager::requestMetaData
+     * @see KIO::Integration::AccessManager::requestMetaData
      * @see setRequestMetaData
      *
      * @param key  the key for the metadata to remove
