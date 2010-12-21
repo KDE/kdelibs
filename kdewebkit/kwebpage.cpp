@@ -336,7 +336,7 @@ bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &
 
     if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted)
         d->wallet->saveFormData(frame);
-    
+
     // Make sure nothing is cached when private browsing mode is enabled...
     if (settings()->testAttribute(QWebSettings::PrivateBrowsingEnabled)) {
         if (!d->inPrivateBrowsingMode) {

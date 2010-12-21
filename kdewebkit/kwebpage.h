@@ -37,8 +37,28 @@ class KUrl;
  *
  * This is a convenience class that provides full integration with KDE
  * technologies such as KIO for network request handling, KCookiejar for cookie
- * handling and KWebPluginFactory for embedded non-html content handling using
- * KDE KParts.
+ * handling, KParts for embedding non-html content and KWallet for storing
+ * form data.  It also sets standard icons for many of the actions provided by
+ * QWebPage.
+ *
+ * Most of this integration happens behind the scenes.  If you want KWallet
+ * integration, however, you will have to provide a mechanism for deciding
+ * whether to allow form data to be stored.  To do this, you will need to
+ * connect to the KWebWallet::saveFormDataRequested signal and call either
+ * KWebWallet::acceptSaveFormDataRequest or
+ * KWebWallet::rejectSaveFormDataRequest, typically after asking the user
+ * whether they want to save the form data.  If you do not do this, no form
+ * data will be saved.
+ *
+ * KWebPage will also not automatically load form data for you.  You should
+ * connect to QWebPage::loadFinished and, if the page was loaded sucessfully,
+ * call
+ * @code
+ * page->wallet()->fillFormData(page->mainFrame());
+ * @endcode
+ *
+ * @see KIO::Integration
+ * @see KWebWallet
  *
  * @author Urs Wolfer <uwolfer @ kde.org>
  * @author Dawit Alemayehu <adawit @ kde.org>
@@ -52,25 +72,49 @@ class KDEWEBKIT_EXPORT KWebPage : public QWebPage
     Q_FLAGS (Integration)
 
 public:
+    /**
+     * Indicates the level of integration required.
+     */
     enum IntegrationFlags
     {
-      NoIntegration = 0x01,
-      KIOIntegration = 0x02,
-      KPartsIntegration = 0x04,
-      KWalletIntegration = 0x08
+        /**
+         * The KWebPage should behave almost identically to QWebPage.
+         *
+         * Very basic integration is still provided, such as setting
+         * icons for the actions provided by QWebPage.
+         */
+        NoIntegration = 0x01,
+        /**
+         * KIO should be used for accessing resources.
+         *
+         * @see KIO::Integration::AccessManager
+         */
+        KIOIntegration = 0x02,
+        /**
+         * KParts should be used for displaying content in &lt;embed&gt; and
+         * &lt;object&gt; tags.
+         */
+        KPartsIntegration = 0x04,
+        /**
+         * KWallet should be used for saving form data.
+         *
+         * @see wallet() and setWallet()
+         */
+        KWalletIntegration = 0x08
     };
     Q_DECLARE_FLAGS(Integration, IntegrationFlags)
 
     /**
      * Constructs a KWebPage with parent @p parent.
      *
-     * By default @p flags is set to zero which means integration with KDE is
-     * completely activated. If you inherit from this class you can use the
-     * flags in @ref IntegrationFlags to control which, if any, integration
-     * should be automatically activated for you.
+     * Note that if no integration flags are set (the default), all integration
+     * options are activated.  If you inherit from this class you can use the
+     * flags in @ref IntegrationFlags to control how much integration should
+     * be used.
      *
      * @see KIO::Integration::CookieJar
      * @see KIO::Integration::AccessManager
+     * @see wallet() and setWallet()
      */
     explicit KWebPage(QObject *parent = 0, Integration flags = Integration());
 
@@ -80,67 +124,79 @@ public:
     ~KWebPage();
 
     /**
-     * Returns true if access to remote content is allowed.
+     * Whether access to remote content is permitted.
      *
-     * By default access to remote content is allowed.
+     * If this is @c false, only resources on the local system can be accessed
+     * through this web page.  By default access to remote content is allowed.
+     *
+     * If KIO integration is disabled, this will always return @c true.
      *
      * @see setAllowExternalContent()
      * @see KIO::AccessManager::isExternalContentAllowed()
+     *
+     * @return @c true if access to remote content is permitted, @c false otherwise
      */
     bool isExternalContentAllowed() const;
 
     /**
-     * Returns true KWallet used to store form data.
+     * The wallet integration manager.
      *
-     * @see KWebWallet
+     * If you wish to use KDE wallet integration, you will have to connect to
+     * signals emitted by this object and react accordingly.  See KWebWallet
+     * for more information.
+     *
+     * @return the wallet integration manager, or 0 if KDE wallet integration
+     *         is disabled
      */
     KWebWallet *wallet() const;
 
     /**
-     * Set @p allow to false if you want to prevent access to remote content.
+     * Set whether to allow remote content.
      *
-     * If this function is set to false, only resources on the local system
-     * can be accessed through this class. By default fetching external content
-     * is allowed.
+     * If KIO integration is not enabled, this method will have no effect.
      *
      * @see isExternalContentAllowed()
      * @see KIO::AccessManager::setAllowExternalContent(bool)
+     *
+     * @param allow  @c true if access to remote content should be allowed,
+     *               @c false if only local content should be accessible
      */
     void setAllowExternalContent(bool allow);
 
     /**
-     * Sets the @ref KWebWallet that is used to store form data.
+     * Set the @ref KWebWallet that is used to store form data.
      *
-     * This function will set the parent of the KWebWallet object passed to
-     * itself so that the wallet is deleted when this object is deleted. If
-     * you do not want that to happen, you should change the wallet's parent
-     * after calling this function.
-     *
-     * To disable wallet intgreation, call this function with a NULL argument. 
+     * This KWebPage will take ownership of @p wallet, so that the wallet
+     * is deleted when the KWebPage is deleted.  If you do not want that
+     * to happen, you should call setParent() on @p wallet after calling
+     * this function.
      *
      * @see KWebWallet
+     *
+     * @param wallet  the KWebWallet to be used for storing form data, or
+     *                0 to disable KWallet integration
      */
     void setWallet(KWebWallet* wallet);
 
 public Q_SLOTS:
     /**
-     * Downloads @p request using KIO.
+     * Download @p request using KIO.
      *
-     * This slot first prompts the user where to put/save the requested
+     * This slot first prompts the user where to save the requested
      * resource and then downloads it using KIO.
      */
     virtual void downloadRequest(const QNetworkRequest &request);
 
     /**
-     * Downloads @p url using KIO.
+     * Download @p url using KIO.
      *
-     * This slot first prompts the user where to put/save the requested
-     * resource and then downloads it using KIO.     
+     * This slot first prompts the user where to save the requested
+     * resource and then downloads it using KIO.
      */
     virtual void downloadUrl(const KUrl &url);
 
     /**
-     * Downloads the resource specified by @p reply using KIO.
+     * Download the resource specified by @p reply using KIO.
      *
      * This slot first prompts the user where to save the requested resource
      * and then downloads it using KIO.
@@ -151,63 +207,121 @@ public Q_SLOTS:
 
 protected:
     /**
-     * Returns the value of the permanent (per session) meta data for the given @p key.
+     * Get an item of session metadata.
      *
-     * @see KIO::MetaData
+     * Retrieves the value of the permanent (per-session) metadata for @p key.
+     *
+     * If KIO integration is disabled, this will always return an empty string.
+     *
+     * @see KIO::AccessManager::sessionMetaData
+     * @see setSessionMetaData
+     *
+     * @param key  the key of the metadata to retrieve
+     * @return     the value of the metadata associated with @p key, or an
+     *             empty string if there is no such metadata
      */
     QString sessionMetaData(const QString &key) const;
 
     /**
-     * Returns the value of the temporary (per request) meta data for the given @p key.
+     * Get an item of request metadata.
      *
-     * @see KIO::MetaData
+     * Retrieves the value of the temporary (per-request) metadata for @p key.
+     *
+     * If KIO integration is disabled, this will always return an empty string.
+     *
+     * @see KIO::AccessManager::requestMetaData
+     * @see setRequestMetaData
+     *
+     * @param key  the key of the metadata to retrieve
+     * @return     the value of the metadata associated with @p key, or an
+     *             empty string if there is no such metadata
      */
     QString requestMetaData(const QString &key) const;
 
     /**
-     * Set meta data that will be sent to KIO slave with every request.
+     * Set an item of metadata to be sent to the KIO slave with every request.
      *
-     * Note that meta data set using this function will be sent with
-     * every request.
+     * If KIO integration is disabled, this method will have no effect.
      *
-     * @see KIO::MetaData
+     * Metadata set using this method will be sent with every request.
+     *
+     * @see KIO::AccessManager::sessionMetaData
+     *
+     * @param key    the key for the metadata; any existing metadata associated
+     *               with this key will be overwritten
+     * @param value  the value to associate with @p key
      */
     void setSessionMetaData(const QString &key, const QString &value);
 
     /**
-     * Set meta data that will be sent to KIO slave with the first request.
+     * Set an item of metadata to be sent to the KIO slave with the next request.
      *
-     * Note that a meta data set using this function will be deleted after
-     * it has been sent the first time.
+     * If KIO integration is disabled, this method will have no effect.
      *
-     * @see KIO::MetaData
+     * Metadata set using this method will be deleted after it has been sent
+     * once.
+     *
+     * @see KIO::AccessManager::requestMetaData
+     *
+     * @param key    the key for the metadata; any existing metadata associated
+     *               with this key will be overwritten
+     * @param value  the value to associate with @p key
      */
     void setRequestMetaData(const QString &key, const QString &value);
 
     /**
-     * Remove session meta data associated with @p key.
+     * Remove an item of session metadata.
+     *
+     * Removes the permanent (per-session) metadata associated with @p key.
+     *
+     * @see KIO::AccessManager::sessionMetaData
+     * @see setSessionMetaData
+     *
+     * @param key  the key for the metadata to remove
      */
     void removeSessionMetaData(const QString &key);
 
     /**
-     * Remove request meta data associated with @p key.
+     * Remove an item of request metadata.
+     *
+     * Removes the temporary (per-request) metadata associated with @p key.
+     *
+     * @see KIO::AccessManager::requestMetaData
+     * @see setRequestMetaData
+     *
+     * @param key  the key for the metadata to remove
      */
     void removeRequestMetaData(const QString &key);
 
     /**
+     * @reimp
+     *
      * This function is re-implemented to provide KDE user-agent management
      * integration through KProtocolManager.
      *
-     * @see KProtocolManager::userAgentForUrl.
+     * If a special user-agent has been configured for the host indicated by
+     * @p url, that user-agent will be returned.  Otherwise, QWebPage's
+     * default user agent is returned.
+     *
+     * @see KProtocolManager::userAgentForHost.
      * @see QWebPage::userAgentForUrl.
      */
     virtual QString userAgentForUrl(const QUrl& url) const;
 
     /**
-     * Reimplemented for internal reasons, the API is not affected.
+     * @reimp
      *
-     * @see QWebPage::acceptNavigationRequest.
-     * @internal
+     * This performs various integration-related actions when navigation
+     * is requested.  If you override this method, you should ensure you
+     * call KWebPage::acceptNaviationRequest (unless you want to block
+     * the request outright), even if you do not used the return value.
+     *
+     * If you do override acceptNavigationRequest and call this method,
+     * however, be aware of the effect of the page's
+     * linkDelegationPolicy on how * QWebPage::acceptNavigationRequest
+     * behaves.
+     *
+     * @see QWebPage::acceptNavigationRequest
      */
     virtual bool acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type);
 

@@ -40,6 +40,24 @@ class QWebPage;
 /**
  * @short A class that provides KDE wallet integration for QWebFrame.
  *
+ * Normally, you will use this class via KWebPage.  In this case, you need to
+ * connect to the saveFormDataRequested signal and call either
+ * acceptSaveFormDataRequest or rejectSaveFormDataRequest, typically after
+ * asking the user whether they want to save the form data.
+ *
+ * You will also need to call fillFormData when a QWebFrame has finished
+ * loading.  To do this, connect to QWebPage::loadFinished and, if the page was
+ * loaded sucessfully, call
+ * @code
+ * page->wallet()->fillFormData(page->mainFrame());
+ * @endcode
+ *
+ * If you wish to use this directly with a subclass of QWebPage, you should call
+ * saveFormData from QWebPage::acceptNavigationRequest when a user submits a
+ * form.
+ *
+ * @see KWebPage
+ *
  * @author Dawit Alemayehu <adawit @ kde.org>
  * @since 4.4
  */
@@ -50,31 +68,42 @@ class KDEWEBKIT_EXPORT KWebWallet : public QObject
 public:
 
     /**
-     * Structure to hold data from HTML <form> element.
-     *
-     * @p url    holds the origination url of a form.
-     * @p name   holds the name attribute of a form.
-     * @p index  holds the order of a form on a web page.
-     * @p fields holds the name and value attributes of each <input> in a form.
+     * Holds data from a HTML &lt;form&gt; element.
      */
     struct WebForm
     {
        /**
-        * A typedef for storing the name and value attributes of HTML <input>
+        * A typedef for storing the name and value attributes of HTML &lt;input&gt;
         * elements.
         */
         typedef QPair<QString, QString> WebField;
 
+        /** The URL the form was found at. */
         QUrl url;
+        /** The name attribute of the form. */
         QString name;
+        /** The position of the form on the web page, relative to other forms. */
         QString index;
+        /** The name and value attributes of each input element in the form. */
         QList<WebField> fields;
     };
 
+    /**
+     * A list of web forms
+     */
     typedef QList<WebForm> WebFormList;
 
     /**
-     * Constructs a KWebWallet with @p parent as its parent.
+     * Constructs a KWebWallet
+     *
+     * @p parent is usually the QWebPage this wallet is being used for.
+     *
+     * The @p wid parameter is used to tell KDE's wallet manager which window
+     * is requesting access to the wallet.
+     *
+     * @param parent  the owner of this wallet
+     * @param wid     the window ID of the window the web page will be
+     *                embedded in
      */
     explicit KWebWallet(QObject* parent = 0, WId wid = 0);
 
@@ -128,7 +157,7 @@ public:
      * Removes the form data specified by @p forms from the persistent storage.
      *
      * This function is provided for convenience and simply calls @ref formsWithCachedData
-     * and @ref removeFormData. Note that this function will remove all cached
+     * and @ref removeFormData(WebFormList). Note that this function will remove all cached
      * data for forms found in @p frame. If @p recursive is set to true, then
      * all cached data for all of the child frames of @p frame will be removed
      * from the persistent storage as well.

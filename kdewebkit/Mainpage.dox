@@ -1,20 +1,26 @@
 /**
  * @mainpage The KDE WebKit Library
  *
- * This library provides KDE integration of the QtWebKit library. If you are using QtWebKit in your KDE
- * application, you are encouraged to use this layer instead of using the QtWebKit classes directly.
- * 
+ * This library provides KDE integration of the QtWebKit library. If you are
+ * using QtWebKit in your KDE application, you are encouraged to use this layer
+ * instead of using the QtWebKit classes directly.
+ *
+ * In particular, you should use KWebView in place of QWebView, KGraphicsWebView
+ * in place of QGraphicsWebView and KWebPage in place of QWebPage.
+ * See the documentation for those classes for more information.
+ *
  * @authors
  * Various: see the copyright headers of the individual files.
- * 
+ *
  * @maintainers
  * For support please use the webkit@kde.org mailing list.
- * 
+ *
  * @licenses
  * @lgpl
- * 
+ *
  */
 
+// DOXYGEN_REFERENCES = kdecore kdeui kio
 // DOXYGEN_SET_INTERNAL_DOCS = YES
 // DOXYGEN_SET_PROJECT_NAME = KDEWebKit
 // DOXYGEN_SET_RECURSIVE = YES

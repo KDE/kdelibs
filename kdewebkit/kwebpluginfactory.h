@@ -28,7 +28,9 @@
 #include <QtWebKit/QWebPluginFactory>
 
 /**
- * @short An enhanced QWebPluginFactory with integration into the KDE environment.
+ * @short A QWebPluginFactory with integration into the KDE environment.
+ *
+ * This class will attempt to find a KPart to satisfy a plugin request.
  *
  * @author Michael Howell <mhowell123@gmail.com>
  * @author Dawit Alemayehu <adawit@kde.org>
@@ -51,6 +53,8 @@ public:
     ~KWebPluginFactory();
 
     /**
+     * @reimp
+     *
      * Reimplemented for internal reasons, the API is not affected.
      *
      * @see QWebPluginFactory::create
@@ -62,6 +66,8 @@ public:
                             const QStringList &argumentValues) const;
 
     /**
+     * @reimp
+     *
      * Reimplemented for internal reasons, the API is not affected.
      *
      * @see QWebPluginFactory::plugins
