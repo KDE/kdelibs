@@ -511,9 +511,9 @@ void KApplicationPrivate::init(bool GUIenabled)
   qDBusBindToApplication();
   QDBusConnectionInterface *bus = 0;
   if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
-      kFatal(101) << "Session bus not found" << endl <<
-                     "To circumvent this problem try the following command (with Linux and bash)" << endl <<
-                     "export $(dbus-launch)" << endl;
+      kFatal(240) << "Session bus not found" << endl <<
+                  "To circumvent this problem try the following command (with Linux and bash)" << endl <<
+                  "export $(dbus-launch)";
       ::exit(125);
   }
 
@@ -533,7 +533,7 @@ void KApplicationPrivate::init(bool GUIenabled)
       const QString pidSuffix = QString::number( getpid() ).prepend( QLatin1String("-") );
       const QString serviceName = reversedDomain + q->applicationName() + pidSuffix;
       if ( bus->registerService(serviceName) == QDBusConnectionInterface::ServiceNotRegistered ) {
-          kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
+          kError(240) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
           ::exit(126);
       }
   }
@@ -1025,7 +1025,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kWarning(101) << "Relative filename passed to KApplication::tempSaveName";
+      kWarning(240) << "Relative filename passed to KApplication::tempSaveName";
       aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
@@ -1058,7 +1058,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kWarning(101) << "Relative filename passed to KApplication::tempSaveName";
+      kWarning(240) << "Relative filename passed to KApplication::tempSaveName";
       aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
