@@ -118,12 +118,14 @@ void KTextBrowser::wheelEvent( QWheelEvent *event )
 void KTextBrowser::contextMenuEvent( QContextMenuEvent *event )
 {
   QMenu *popup = createStandardContextMenu(event->pos());
-  KIconTheme::assignIconsToContextMenu( isReadOnly() ? KIconTheme::ReadOnlyText
-                                                     : KIconTheme::TextEditor,
-                                        popup->actions() );
+  if (popup) {
+    KIconTheme::assignIconsToContextMenu( isReadOnly() ? KIconTheme::ReadOnlyText
+                                                       : KIconTheme::TextEditor,
+                                          popup->actions() );
 
-  popup->exec( event->globalPos() );
-  delete popup;
+    popup->exec( event->globalPos() );
+    delete popup;
+  }
 }
 
 #include "ktextbrowser.moc"
