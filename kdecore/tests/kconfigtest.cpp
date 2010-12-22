@@ -1539,3 +1539,23 @@ void KConfigTest::testNoKdeHome()
     // Cleanup
     KTempDir::removeDir(kdeHome);
 }
+
+#include <QThreadPool>
+#include <qtconcurrentrun.h>
+
+// To find multithreading bugs: valgrind --tool=helgrind --track-lockorders=no ./kconfigtest testThreads
+void KConfigTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    QList<QFuture<void> > futures;
+    // Run in parallel some tests that work on different config files,
+    // otherwise unexpected things might indeed happen.
+    futures << QtConcurrent::run(this, &KConfigTest::testAddConfigSources);
+    futures << QtConcurrent::run(this, &KConfigTest::testGroupCopyTo);
+    futures << QtConcurrent::run(this, &KConfigTest::testDefaults);
+    // QEXPECT_FAIL triggers race conditions, it should be fixed to use QThreadStorage...
+    //futures << QtConcurrent::run(this, &KConfigTest::testDeleteWhenLocalized);
+    //futures << QtConcurrent::run(this, &KConfigTest::testEntryMap);
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
+}

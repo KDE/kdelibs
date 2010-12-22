@@ -74,6 +74,8 @@ private Q_SLOTS:
     void testKdeGlobals();
     void testNoKdeHome();
 
+    void testThreads();
+
     // unrelated
     void testKAboutDataOrganizationDomain();
 
