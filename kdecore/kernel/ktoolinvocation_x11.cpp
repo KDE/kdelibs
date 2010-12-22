@@ -27,6 +27,7 @@
 #include "ktoolinvocation.h"
 
 #include <kconfiggroup.h>
+#include <kmimetypetrader.h>
 
 #include "kcmdlineargs.h"
 #include "kconfig.h"
@@ -298,7 +299,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     // This method should launch a webbrowser, preferably without doing a mimetype
     // check first, like KRun (i.e. kde-open) would do.
 
-    // In a KDE session, honour BrowserApplication if set, otherwise call kfmclient if present,
+    // In a KDE session, honour BrowserApplication if set, otherwise use preferred app for text/html if any,
     // otherwise xdg-open, otherwise kde-open (which does a mimetype check first though).
 
     // Outside KDE, call xdg-open if present, otherwise fallback to the above logic.
@@ -337,10 +338,19 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
                 }
             }
         } else {
-            const QString kfmclient = KStandardDirs::findExe(QString::fromLatin1("kfmclient"));
-            if (!kfmclient.isEmpty()) {
-                exe = kfmclient;
-                args.prepend(QLatin1String("openURL"));
+            const KService::Ptr htmlApp = KMimeTypeTrader::self()->preferredService(QLatin1String("text/html"));
+            if (htmlApp) {
+                QString error;
+                int pid = 0;
+                int err = startServiceByDesktopPath(htmlApp->entryPath(), url, &error, 0, &pid, startup_id);
+                if (err != 0) {
+                    KMessage::message(KMessage::Error,
+                                      // TODO: i18n("Could not launch %1:\n\n%2", htmlApp->exec(), error),
+                                      i18n("Could not launch the browser:\n\n%1", error),
+                                      i18n("Could not launch Browser"));
+                } else { // success
+                    return;
+                }
             } else {
                 exe = xdg_open;
             }
