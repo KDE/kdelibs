@@ -174,7 +174,8 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
 void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
-    Q_UNUSED(kioJob);
+    // FIXME: Remove the line below when kio_http is fixed to do the correct thing!
+    readHttpResponseHeaders(kioJob);
     m_data += data;
     emit readyRead();
 }
