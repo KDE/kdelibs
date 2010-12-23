@@ -66,7 +66,7 @@ private Q_SLOTS:
     void onPersonJobFinished( Attica::BaseJob *job );
     void onAvatarJobFinished( QNetworkReply *reply );
 
-private:    
+private:
     QList< KAboutPerson > m_personList;
     QList< KAboutApplicationPersonProfile > m_profileList;
 

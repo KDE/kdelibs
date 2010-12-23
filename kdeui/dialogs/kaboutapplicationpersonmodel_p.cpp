@@ -247,6 +247,7 @@ void KAboutApplicationPersonModel::onAvatarJobFinished( QNetworkReply *reply )  
 
     emit dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
     emit layoutChanged();
+    reply->deleteLater();
 #endif //HAVE_ATTICA
 }
 
