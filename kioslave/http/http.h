@@ -331,7 +331,7 @@ protected:
   void httpCloseConnection();  // Close connection
   bool httpShouldCloseConnection();  // Check whether to keep or close the connection.
 
-  void forwardHttpResponseHeader();
+  void forwardHttpResponseHeader(bool forwardImmediately = true);
 
   // Helpers for readResponseHeader - fix common mimetype/content-encoding errors by webservers.
   void fixupResponseMimetype();
