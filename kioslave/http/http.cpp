@@ -2548,14 +2548,16 @@ bool HTTPProtocol::sendQuery()
   return res;
 }
 
-void HTTPProtocol::forwardHttpResponseHeader()
+void HTTPProtocol::forwardHttpResponseHeader(bool forwardImmediately)
 {
-  // Send the response header if it was requested
-  if ( config()->readEntry("PropagateHttpHeader", false) )
-  {
-    setMetaData(QLatin1String("HTTP-Headers"), m_responseHeaders.join(QString(QLatin1Char('\n'))));
-    sendMetaData();
-  }
+  // Send the response header if it was requested...
+  if (!config()->readEntry("PropagateHttpHeader", false))
+      return;
+  
+  setMetaData(QLatin1String("HTTP-Headers"), m_responseHeaders.join(QString(QLatin1Char('\n'))));
+
+  if (forwardImmediately)
+      sendMetaData();
 }
 
 bool HTTPProtocol::parseHeaderFromCache()
@@ -2589,7 +2591,10 @@ bool HTTPProtocol::parseHeaderFromCache()
     // this header comes from the cache, so the response must have been cacheable :)
     setCacheabilityMetadata(true);
     kDebug(7113) << "Emitting mimeType" << m_mimeType;
+    forwardHttpResponseHeader(false);
     mimeType(m_mimeType);
+    // IMPORTANT: Do not remove the call below or the http response headers will
+    // not be available to the application if this slave is put on hold.
     forwardHttpResponseHeader();
     return true;
 }
@@ -3488,15 +3493,6 @@ endParsing:
         return parseHeaderFromCache();
     }
 
-    // Let the app know about the mime-type iff this is not
-    // a redirection and the mime-type string is not empty.
-    if (!m_isRedirection &&
-        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
-        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
-        kDebug(7113) << "Emitting mimetype " << m_mimeType;
-        mimeType( m_mimeType );
-    }
-
     if (config()->readEntry("PropagateHttpHeader", false) ||
         m_request.cacheTag.ioMode == WriteToCache) {
         // store header lines if they will be used; note that the tokenizer removing
@@ -3515,15 +3511,33 @@ endParsing:
                                                          prevLineEnd - prevLinePos));
             prevLinePos = nextLinePos;
         }
+        
+        // IMPORTNAT: Do not remove this line because forwardHttpResponseHeader
+        // is called below. This line is added to make http response headers are
+        // available by the time the content mimetype information is transmitted
+        // to the job. If the line below is removed, the KIO-QNAM integration
+        // will not work properly when attempting to put ioslaves on hold.
+        setMetaData(QLatin1String("HTTP-Headers"), m_responseHeaders.join(QString(QLatin1Char('\n'))));
     }
 
-    // Do not move send response header before any redirection as it seems
-    // to screw up some sites. See BR# 150904.
+    // Let the app know about the mime-type iff this is not a redirection and
+    // the mime-type string is not empty.
+    if (!m_isRedirection &&
+        (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
+        (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
+        kDebug(7113) << "Emitting mimetype " << m_mimeType;
+        mimeType( m_mimeType );
+    }
+
+    // Do not move the function call below before doing any redirection.
+    // Otherwise it might mess up some sites. See BR# 150904.
+    // IMPORTANT: Do not remove it either thinking it duplicates what is done
+    // above. Otherwise, the http response headers will not be available if
+    // this ioslave is put on hold.    
     forwardHttpResponseHeader();
-
-    if (m_request.method == HTTP_HEAD) {
+    
+    if (m_request.method == HTTP_HEAD)
         return true;
-    }
 
     return !authRequiresAnotherRoundtrip; // return true if no more credentials need to be sent
 }
