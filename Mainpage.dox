@@ -203,7 +203,7 @@ Note: only enter the class name, without any namespace qualifiers.
 <input type="text" name="class" value="[classname]" style="width:100%;" onClick="this.value='';"/>
 <input type="submit" name="go" value="Go" />
 <input type=hidden name="module" value="kdelibs">
-<input type=hidden name="version" value="4.3">
+<input type=hidden name="version" value="4.7">
 </form>
 @endhtmlonly
 
