@@ -33,7 +33,6 @@
 #include "udisksopticaldrive.h"
 #include "udisks.h"
 #include "udisksdevice.h"
-#include "linux_dvd_rw_utils.c"
 
 using namespace Solid::Backends::UDisks;
 
@@ -103,6 +102,7 @@ void UDisksOpticalDrive::slotEjectDone(int error, const QString &errorString)
 
 void UDisksOpticalDrive::initReadWriteSpeeds() const
 {
+#if 0
     int read_speed, write_speed;
     char *write_speeds = 0;
     QByteArray device_file = QFile::encodeName(m_device->property("DeviceFile").toString());
@@ -128,6 +128,7 @@ void UDisksOpticalDrive::initReadWriteSpeeds() const
     }
 
     close(fd);
+#endif
 }
 
 QList<int> UDisksOpticalDrive::writeSpeeds() const
