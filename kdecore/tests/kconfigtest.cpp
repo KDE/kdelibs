@@ -1551,7 +1551,7 @@ void KConfigTest::testThreads()
     // Run in parallel some tests that work on different config files,
     // otherwise unexpected things might indeed happen.
     futures << QtConcurrent::run(this, &KConfigTest::testAddConfigSources);
-    futures << QtConcurrent::run(this, &KConfigTest::testGroupCopyTo);
+    futures << QtConcurrent::run(this, &KConfigTest::testSimple);
     futures << QtConcurrent::run(this, &KConfigTest::testDefaults);
     // QEXPECT_FAIL triggers race conditions, it should be fixed to use QThreadStorage...
     //futures << QtConcurrent::run(this, &KConfigTest::testDeleteWhenLocalized);
