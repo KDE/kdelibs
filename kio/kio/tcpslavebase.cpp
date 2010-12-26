@@ -267,18 +267,19 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
     }
 
     if (!d->socket.bytesAvailable()) {
-        if (d->isBlocking) {
-            d->socket.waitForReadyRead(-1);
-        } else {
-            d->socket.waitForReadyRead(readTimeout());
-        }
-    } else if (d->socket.encryptionMode() != KTcpSocket::SslClientMode ||
+        const int timeout = d->isBlocking ? -1 : readTimeout();
+        d->socket.waitForReadyRead(timeout);
+    }
+#if 0
+    // Do not do this because its only benefit is to cause a nasty side effect
+    // upstream in Qt. See BR# 260769.
+    else if (d->socket.encryptionMode() != KTcpSocket::SslClientMode ||
                QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy) {
         // we only do this when it doesn't trigger Qt socket bugs. When it doesn't break anything
         // it seems to help performance.
         d->socket.waitForReadyRead(0);
     }
-
+#endif
     return d->socket.read(data, len);
 }
 
