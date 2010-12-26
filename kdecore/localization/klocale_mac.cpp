@@ -25,7 +25,7 @@ KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, const QString &catalog, KSh
 {
     // Lock in the current Mac Locale settings
     m_macLocale = CFLocaleCopyCurrent();
-    init(catalogName, QString(), QString(), config, 0);
+    init(catalog, QString(), QString(), config, 0);
 }
 
 KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, const QString& catalog,
@@ -34,7 +34,7 @@ KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, const QString& catalog,
 {
     // Lock in the current Mac Locale settings
     m_macLocale = CFLocaleCopyCurrent();
-    init(catalogName, language, country, KSharedConfig::Ptr(), config);
+    init(catalog, language, country, KSharedConfig::Ptr(), config);
 }
 
 KLocaleMacPrivate::KLocaleMacPrivate( const KLocaleMacPrivate &rhs )
