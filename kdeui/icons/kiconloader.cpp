@@ -801,7 +801,7 @@ QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
     else
     {
 #ifndef _WIN32_WCE
-        KSvgRenderer renderer(path, q);
+        QSvgRenderer renderer(path, q);
 
         if (renderer.isValid()) {
             img = QImage(size, size, QImage::Format_ARGB32_Premultiplied);

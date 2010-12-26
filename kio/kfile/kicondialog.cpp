@@ -208,7 +208,7 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
             // Special stuff for SVG icons
             img = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
             img.fill(0);
-            KSvgRenderer renderer(*it);
+            QSvgRenderer renderer(*it);
             if (renderer.isValid()) {
                 QPainter p(&img);
                 renderer.render(&p);

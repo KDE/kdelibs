@@ -1484,7 +1484,7 @@ QPixmap KPixmapCache::loadFromSvg(const QString& filename, const QSize& size)
     QString key = QString("file:%1_%2_%3").arg(filename).arg(size.width()).arg(size.height());
     if (!find(key, pix)) {
         // It wasn't in the cache, so load it...
-        KSvgRenderer svg;
+        QSvgRenderer svg;
         if (!svg.load(filename)) {
             return pix;  // null pixmap
         } else {
