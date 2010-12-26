@@ -69,37 +69,6 @@ static inline Slave *jobSlave(SimpleJob *job)
     return SimpleJobPrivate::get(job)->m_slave;
 }
 
-// Returns true if the scheme and domain of the two urls match...
-static bool domainSchemeMatch(const KUrl& u1, const KUrl& u2)
-{
-    if (u1.scheme() != u2.scheme())
-        return false;
-
-    QStringList u1List = u1.host().split(QLatin1Char('.'), QString::SkipEmptyParts);
-    QStringList u2List = u2.host().split(QLatin1Char('.'), QString::SkipEmptyParts);
-
-    if (qMin(u1List.count(), u2List.count()) < 2)
-        return false;  // better safe than sorry...
-
-    while (u1List.count() > 2)
-        u1List.removeFirst();
-
-    while (u2List.count() > 2)
-        u2List.removeFirst();
-
-    return (u1List == u2List);
-}
-
-static void clearNonSSLMetaData(KIO::MetaData *metaData)
-{
-    QMutableMapIterator<QString, QString> it(*metaData);
-    while (it.hasNext()) {
-        it.next();
-        if (!it.key().startsWith(QLatin1String("ssl_"), Qt::CaseInsensitive))
-            it.remove();
-    }
-}
-
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
@@ -1064,15 +1033,7 @@ void TransferJob::slotFinished()
             // Another solution would be to create a subjob, but the same problem
             // happens (unpacking+repacking)
             d->staticData.truncate(0);
-
-            // When appropriate, retain SSL meta-data information on redirection.
-            if (d->m_incomingMetaData.contains("ssl_in_use") &&
-                domainSchemeMatch(d->m_url, d->m_redirectionURL)) {
-                clearNonSSLMetaData(&d->m_incomingMetaData);
-            } else {
-                d->m_incomingMetaData.clear();
-            }
-
+            d->m_incomingMetaData.clear();
             if (queryMetaData("cache") != "reload")
                 addMetaData("cache","refresh");
             d->m_internalSuspended = false;
@@ -2795,15 +2756,7 @@ void MultiGetJob::slotFinished()
   }
   d->m_redirectionURL = KUrl();
   setError( 0 );
-
-  // When appropriate, retain SSL meta-data information on redirection.
-  if (d->m_incomingMetaData.contains("ssl_in_use") &&
-      domainSchemeMatch(d->m_url, d->m_redirectionURL)) {
-      clearNonSSLMetaData(&d->m_incomingMetaData);
-  } else {
-      d->m_incomingMetaData.clear();
-  }
-
+  d->m_incomingMetaData.clear();
   d->m_activeQueue.removeAll(d->m_currentEntry);
   if (d->m_activeQueue.count() == 0)
   {
