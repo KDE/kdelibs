@@ -35,6 +35,9 @@
 
 #include <kjob.h>
 
+#ifdef Q_OS_WIN
+template class KDE_EXPORT QMap<QString, QString>;
+#endif
 
 class KUrl;
 class KJobTrackerInterface;
