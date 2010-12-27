@@ -35,7 +35,7 @@
 
 #include <kjob.h>
 
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
 template class KDE_EXPORT QMap<QString, QString>;
 #endif
 
