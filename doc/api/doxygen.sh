@@ -437,15 +437,16 @@ doxyndex()
 		# into parts. For each, if the file part exists (as a html
 		# file) tack it onto the MENU variable as a <li> with link.
 		for i in "Main Page/index" \
-			"Modules/modules" \
 			"Namespace List/namespaces" \
-			"Class Hierarchy/hierarchy" \
+			"Namespace Members/namespacemembers" \
 			"Alphabetical List/classes" \
 			"Class List/annotated" \
+			"Class Hierarchy/hierarchy" \
+                        "Class Members/functions" \
 			"File List/files" \
+                        "File Members/globals" \
+			"Modules/modules" \
 			"Directories/dirs" \
-			"Namespace Members/namespacemembers" \
-			"Class Members/functions" \
 			"Related Pages/pages"
 		do
 			NAME=`dirname "$i"`
