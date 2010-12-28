@@ -207,7 +207,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
  util/kstandardguiitem.cpp
- util/kwallet.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
@@ -288,6 +287,17 @@ set(kdeui_LIB_SRCS
  widgets/keditlistbox.cpp
 )
 endif(NOT KDE_NO_DEPRECATED)
+
+option(MAC_USE_OSXKEYCHAIN "On OS X, use the keychain as backend for kwallet, instead of kwalletd.")
+
+if (Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+    FIND_LIBRARY(SECURITY_LIBRARY Security)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
+else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
+else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
+endif(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
 
 if(NOT WINCE)
 set(kdeui_LIB_SRCS
@@ -409,6 +419,9 @@ endif(MINGW)
 
 if(Q_WS_MAC)
    target_link_libraries(kdeui ${CARBON_LIBRARY})
+   if (MAC_USE_OSXKEYCHAIN)
+     target_link_libraries(kdeui ${SECURITY_LIBRARY})
+   endif (MAC_USE_OSXKEYCHAIN)
 endif(Q_WS_MAC)
 
 if(X11_XTest_FOUND)

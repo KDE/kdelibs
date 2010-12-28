@@ -838,6 +838,10 @@ void Wallet::emitWalletAsyncOpenError() {
     emit walletOpened(false);
 }
 
+void Wallet::emitWalletOpened() {
+  emit walletOpened(true);
+}
+
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
 {
     QDBusReply<bool> r = walletLauncher->getInterface().folderDoesNotExist(wallet, folder);

@@ -497,6 +497,12 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		void emitWalletAsyncOpenError();
 
+		/**
+		 *  @internal
+		 *  Emits wallet opening success.
+		 */
+		void emitWalletOpened();
+
 	private:
 		class WalletPrivate;
 		WalletPrivate* const d;
