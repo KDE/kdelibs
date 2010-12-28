@@ -663,8 +663,10 @@ void KateSearchBar::addCurrentTextToHistory(QComboBox * combo) {
 
     if (index > 0)
         combo->removeItem(index);
-    if (index != 0)
+    if (index != 0) {
         combo->insertItem(0, text);
+        combo->setCurrentIndex(0);
+    }
 }
 
 
@@ -1489,13 +1491,6 @@ void KateSearchBar::showEvent(QShowEvent * event) {
     updateSelectionOnly();
     KateViewBarWidget::showEvent(event);
 }
-
-
-
-void KateSearchBar::closed() {
-    // empty, can probably be removed
-}
-
 
 
 void KateSearchBar::updateSelectionOnly() {
