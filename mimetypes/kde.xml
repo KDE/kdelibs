@@ -111,6 +111,7 @@ Notes:
   </mime-type>
   <mime-type type="application/x-webarchive">
     <sub-class-of type="application/x-compressed-tar"/>
+    <sub-class-of type="application/x-gzip"/> <!-- only necessary because x-compressed-tar is not specifying this sub-class-of (shared-mime-info 0.8) -->
     <comment>web archive</comment>
     <glob pattern="*.war"/>
   </mime-type>
