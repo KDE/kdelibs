@@ -166,6 +166,7 @@ if(UNIX)
        kio/kautomount.cpp
        kio/knfsshare.cpp
        kio/ksambashare.cpp
+       kio/ksambasharedata.cpp
    )
 endif(UNIX)
 
@@ -415,6 +416,7 @@ install( FILES
   kio/kremoteencoding.h
   kio/krun.h
   kio/ksambashare.h
+  kio/ksambasharedata.h
   kio/kscan.h
   kio/kshellcompletion.h
   kio/kurifilter.h

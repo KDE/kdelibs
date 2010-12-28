@@ -329,6 +329,7 @@ install( FILES
   KRun
   KShortcutsEditor
   KSambaShare
+  KSambaShareData
   KSaveFile
   KScanDialog
   KSelectAction
