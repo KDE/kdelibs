@@ -63,7 +63,7 @@ QStringList Video::supportedDrivers(QString protocol) const
 QVariant Video::driverHandle(const QString &driver) const
 {
     if (driver == QLatin1String("video4linux") || driver == QLatin1String("video4linux1") || driver == QLatin1String("video4linux2")) {
-        return m_device->devicePath();
+        return m_device->property("DEVNAME");  // physical device, eg. /dev/video0
     }
 
     return QVariant();
