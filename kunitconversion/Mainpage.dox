@@ -1,0 +1,24 @@
+/** @mainpage
+
+@section purpose Purpose
+
+Convert units.
+
+@section desc Description
+
+todo
+
+@authors
+Petri Damstén \<damu@iki.fi\>
+
+@maintainers
+Petri Damstén \<damu@iki.fi\>
+
+@licenses
+@lgpl
+
+
+*/
+
+// DOXYGEN_SET_PROJECT_NAME = KUnitConversion
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
