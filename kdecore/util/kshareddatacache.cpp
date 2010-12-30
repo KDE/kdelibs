@@ -1162,6 +1162,9 @@ class KSharedDataCache::Private
                     // drop the map and (try to) re-establish.
                     d->unlock();
 
+#ifdef KSDC_MSYNC_SUPPORTED
+                    ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
+#endif
                     ::munmap(d->shm, d->m_mapSize);
                     d->m_mapSize = 0;
                     d->shm = 0;
@@ -1300,6 +1303,9 @@ KSharedDataCache::~KSharedDataCache()
     // shared memory segment, simply unmapping is enough. This makes things
     // *much* easier so I'd recommend maintaining this ideal.
     if (d->shm) {
+#ifdef KSDC_MSYNC_SUPPORTED
+        ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
+#endif
         ::munmap(d->shm, d->m_mapSize);
     }
 

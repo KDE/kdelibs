@@ -55,6 +55,19 @@
 #warning "No system support claimed for process-shared synchronization, KSharedDataCache will be mostly useless."
 #endif
 
+#if defined(_POSIX_MAPPED_FILES) && ((_POSIX_MAPPED_FILES == 0) || (_POSIX_MAPPED_FILES >= 200112L))
+#define KSDC_MAPPED_FILES_SUPPORTED 1
+#endif
+
+#if defined(_POSIX_SYNCHRONIZED_IO) && ((_POSIX_SYNCHRONIZED_IO == 0) || (_POSIX_SYNCHRONIZED_IO >= 200112L))
+#define KSDC_SYNCHRONIZED_IO_SUPPORTED 1
+#endif
+
+// msync(2) requires both MAPPED_FILES and SYNCHRONIZED_IO POSIX options
+#if defined(KSDC_MAPPED_FILES_SUPPORTED) && defined(KSDC_SYNCHRONIZED_IO_SUPPORTED)
+#define KSDC_MSYNC_SUPPORTED
+#endif
+
 // BSD/Mac OS X compat
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
