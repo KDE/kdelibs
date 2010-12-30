@@ -2,7 +2,7 @@
  * dialog.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
- * Copyright (C)  2009  Michel Ludwig <michel.ludwig@kdemail.net>
+ * Copyright (C)  2009-2010  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -165,7 +165,7 @@ void Dialog::initGui()
     setGuiEnabled(false);
 
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
-    updateDictionaryComboBox();
+    fillDictionaryComboBox();
     d->restart = false;
 
     d->suggestionsModel=new ReadOnlyStringListModel(this);
@@ -275,15 +275,20 @@ void Dialog::setBuffer(const QString &buf)
     d->restart = true;
 }
 
+void Dialog::fillDictionaryComboBox()
+{
+  Speller speller = d->checker->speller();
+  d->dictsMap = speller.availableDictionaries();
+  QStringList langs = d->dictsMap.keys();
+  d->ui.m_language->clear();
+  d->ui.m_language->addItems(langs);
+  updateDictionaryComboBox();
+}
+
 void Dialog::updateDictionaryComboBox()
 {
-    d->ui.m_language->clear();
-    Speller speller = d->checker->speller();
-    d->dictsMap = speller.availableDictionaries();
-    QStringList langs = d->dictsMap.keys();
-    d->ui.m_language->insertItems(0, langs);
-    d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(
-                                          speller.language()));
+  Speller speller = d->checker->speller();
+  d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(speller.language()));
 }
 
 void Dialog::updateDialog( const QString& word )
@@ -303,6 +308,7 @@ void Dialog::show()
 {
     kDebug()<<"Showing dialog";
     d->canceled = false;
+    fillDictionaryComboBox();
     updateDictionaryComboBox();
     if (d->originalBuffer.isEmpty())
     {
@@ -421,14 +427,10 @@ void Dialog::slotMisspelling(const QString& word, int start)
 void Dialog::slotDone()
 {
     d->restart=false;
-    QString currentLanguage = d->checker->speller().language();
     emit done(d->checker->text());
     if (d->restart)
     {
-        if (currentLanguage != d->checker->speller().language())
-        {
-          updateDictionaryComboBox();
-        }
+        updateDictionaryComboBox();
         d->checker->setText(d->originalBuffer);
         d->restart=false;
     }

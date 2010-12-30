@@ -3,7 +3,7 @@
  * dialog.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
- * Copyright (C)  2009  Michel Ludwig <michel.ludwig@kdemail.net>
+ * Copyright (C)  2009-2010  Michel Ludwig <michel.ludwig@kdemail.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -149,6 +149,7 @@ namespace Sonnet
 
     private:
         void updateDialog( const QString& word );
+        void fillDictionaryComboBox();
         void updateDictionaryComboBox();
         void fillSuggestions( const QStringList& suggs );
         void initConnections();
