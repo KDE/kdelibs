@@ -86,7 +86,7 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         int lastSlash = path.length() - path.lastIndexOf(QLatin1String("/")) -1;
         QByteArray lastElement = path.right(lastSlash).toAscii();
 
-        if (lastElement.startsWith("tty")) {
+        if (lastElement.startsWith("tty") && !path.startsWith("/devices/virtual")) {
             return true;
         }
     }
