@@ -22,6 +22,7 @@
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "klocale_p.h"
 #include "kglobal.h"
 #include "kconfiggroup.h"
 #include "kcalendarsystem.h"
@@ -324,7 +325,7 @@ KLocaleTest::readTime()
 
     // strict processing of a time string with a missing space
     locale.setTimeFormat("%I:%M:%S %p");
-    QString timeString = QString("11:13:55%1").arg(locale.dayPeriodForTime(QTime(11,13,55)).periodName());
+    QString timeString = QString("11:13:55%1").arg(locale.d->dayPeriodForTime(QTime(11,13,55)).periodName());
     locale.readLocaleTime(timeString, &ok, KLocale::TimeDefault, KLocale::ProcessStrict);
     QVERIFY(!ok);
 
@@ -341,7 +342,7 @@ void KLocaleTest::testDayPeriods()
     //Test default standard AM/PM Day Periods
     KDayPeriod testPeriod;
     QCOMPARE( testPeriod.isValid(), false );
-    testPeriod = locale.dayPeriodForTime( QTime( 03, 00, 00 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 03, 00, 00 ) );
     QCOMPARE( testPeriod.isValid(), true );
     QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Ante Meridiem" ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "AM" ) );
@@ -359,7 +360,7 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( testPeriod.time( 11, 59, 59, 999 ), QTime( 11, 59, 59, 999 ) );
     QCOMPARE( testPeriod.time( 13, 0, 0 ), QTime() );
 
-    testPeriod = locale.dayPeriodForTime( QTime( 13, 00, 00 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 13, 00, 00 ) );
     QCOMPARE( testPeriod.isValid(), true );
     QCOMPARE( testPeriod.periodName(KLocale::LongName), QString( "Post Meridiem" ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "PM" ) );
@@ -393,8 +394,8 @@ void KLocaleTest::testDayPeriods()
     dayPeriods.append( KDayPeriod( "p1", "Early Day", "Early", "E", QTime( 0, 0, 0 ), QTime( 7, 59, 59, 999 ), 1, 0 ) );
     dayPeriods.append( KDayPeriod( "p2", "Middle Day", "Middle", "M", QTime( 8, 0, 0 ), QTime( 15, 59, 59, 999 ), 1, 0 ) );
     dayPeriods.append( KDayPeriod( "p3", "Late Day", "Late", "L", QTime( 16, 0, 0 ), QTime( 23, 59, 59, 999 ), 1, 0 ) );
-    locale.setDayPeriods( dayPeriods );
-    testPeriod = locale.dayPeriodForTime( QTime( 0, 0, 0 ) );
+    locale.d->setDayPeriods( dayPeriods );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 0, 0, 0 ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "Early" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime( 0, 0, 0 ) ), 1 );
     QCOMPARE( testPeriod.hourInPeriod( QTime( 4, 0, 0 ) ), 5 );
@@ -404,7 +405,7 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( testPeriod.time( 5, 0, 0 ), QTime( 4, 0, 0 ) );
     QCOMPARE( testPeriod.time( 8, 0, 0 ), QTime( 7, 0, 0 ) );
     QCOMPARE( testPeriod.time( 9, 0, 0 ), QTime() );
-    testPeriod = locale.dayPeriodForTime( QTime( 8, 0, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 8, 0, 0 ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "Middle" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  8, 0, 0 ) ), 1 );
     QCOMPARE( testPeriod.hourInPeriod( QTime( 12, 0, 0 ) ), 5 );
@@ -414,7 +415,7 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( testPeriod.time( 5, 0, 0 ), QTime( 12, 0, 0 ) );
     QCOMPARE( testPeriod.time( 8, 0, 0 ), QTime( 15, 0, 0 ) );
     QCOMPARE( testPeriod.time( 9, 0, 0 ), QTime() );
-    testPeriod = locale.dayPeriodForTime( QTime( 16, 0, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 16, 0, 0 ) );
     QCOMPARE( testPeriod.periodName(KLocale::ShortName), QString( "Late" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime( 16, 0, 0 ) ), 1 );
     QCOMPARE( testPeriod.hourInPeriod( QTime( 20, 0, 0 ) ), 5 );
@@ -438,20 +439,20 @@ void KLocaleTest::testDayPeriods()
     dayPeriods.append( KDayPeriod( "afternoon", "Afternoon", "in the afternoon", "A", QTime( 12, 1, 0 ), QTime( 17, 59, 59, 999 ), 0, 12 ) );
     dayPeriods.append( KDayPeriod( "evening", "Evening", "in the evening", "E", QTime( 18, 0, 0 ), QTime( 21, 59, 59, 999 ), 6, 12 ) );
     dayPeriods.append( KDayPeriod( "night", "Night", "at night", "N", QTime( 22, 0, 0 ), QTime( 5, 59, 59, 999 ), 10, 12 ) );
-    locale.setDayPeriods( dayPeriods );
-    testPeriod = locale.dayPeriodForTime( QTime( 8, 0, 0 ) );
+    locale.d->setDayPeriods( dayPeriods );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 8, 0, 0 ) );
     QCOMPARE( testPeriod.periodName( KLocale::ShortName ), QString( "in the morning" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  8, 0, 0 ) ), 8 );
     QCOMPARE( testPeriod.time( 8, 0, 0 ), QTime(  8, 0, 0 ) );
-    testPeriod = locale.dayPeriodForTime( QTime( 12, 0, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 12, 0, 0 ) );
     QCOMPARE( testPeriod.periodName( KLocale::ShortName ), QString( "noon" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  12, 0, 0 ) ), 12 );
     QCOMPARE( testPeriod.time( 12, 0, 0 ), QTime( 12, 0, 0 ) );
-    testPeriod = locale.dayPeriodForTime( QTime( 12, 1, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 12, 1, 0 ) );
     QCOMPARE( testPeriod.periodName( KLocale::ShortName ), QString( "in the afternoon" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  12, 1, 0 ) ), 12 );
     QCOMPARE( testPeriod.time( 12, 1, 0 ), QTime( 12, 1, 0 ) );
-    testPeriod = locale.dayPeriodForTime( QTime( 23, 0, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 23, 0, 0 ) );
     QCOMPARE( testPeriod.periodName( KLocale::ShortName ), QString( "at night" ) );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  23, 0, 0 ) ), 11 );
     QCOMPARE( testPeriod.hourInPeriod( QTime(  0, 0, 0 ) ), 12 );
@@ -459,7 +460,7 @@ void KLocaleTest::testDayPeriods()
     QCOMPARE( testPeriod.time( 11, 0, 0 ), QTime( 23, 0, 0 ) );
     QCOMPARE( testPeriod.time( 12, 0, 0 ), QTime( 0, 0, 0 ) );
     QCOMPARE( testPeriod.time(  1, 0, 0 ), QTime( 1, 0, 0 ) );
-    testPeriod = locale.dayPeriodForTime( QTime( 0, 0, 0 ) );
+    testPeriod = locale.d->dayPeriodForTime( QTime( 0, 0, 0 ) );
     QCOMPARE( testPeriod.periodName( KLocale::ShortName ), QString( "at night" ) );
     QCOMPARE( locale.readLocaleTime( QString( "8:00:00 in the morning" ) ), QTime(  8, 0, 0 ) );
     QCOMPARE( locale.readLocaleTime( QString( "12:00:00 noon" ) ), QTime( 12, 0, 0 ) );
@@ -489,9 +490,9 @@ void KLocaleTest::testDayPeriods()
                           QTime( 16, 0, 0 ).toString("HH:mm:ss.zzz") << QTime( 23, 59, 59, 999 ).toString("HH:mm:ss.zzz") <<
                           QString::number(4) << QString::number(12) );
     locale = KLocale("klocaletest", "en_us", "us", testConfig);
-    QCOMPARE( locale.dayPeriodForTime( QTime( 1, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T1" ) );
-    QCOMPARE( locale.dayPeriodForTime( QTime( 11, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T2" ) );
-    QCOMPARE( locale.dayPeriodForTime( QTime( 21, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T3" ) );
+    QCOMPARE( locale.d->dayPeriodForTime( QTime( 1, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T1" ) );
+    QCOMPARE( locale.d->dayPeriodForTime( QTime( 11, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T2" ) );
+    QCOMPARE( locale.d->dayPeriodForTime( QTime( 21, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T3" ) );
 }
 
 void KLocaleTest::testCalendarSystemType()

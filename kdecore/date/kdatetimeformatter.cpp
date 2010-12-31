@@ -29,6 +29,7 @@
 #include "ktimezone.h"
 #include "kcalendarsystem.h"
 #include "kdayperiod_p.h"
+#include "klocale_p.h"
 #include "kdebug.h"
 
 KDateTimeFormatter::KDateTimeFormatter()
@@ -470,7 +471,7 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         if ( (timeOptions & KLocale::TimeDuration) == KLocale::TimeDuration ) {
                             componentInteger =  fromDateTime.time().hour();
                         } else {
-                            componentInteger = locale->dayPeriodForTime( fromDateTime.time() ).hourInPeriod( fromDateTime.time() );
+                            componentInteger = locale->d->dayPeriodForTime( fromDateTime.time() ).hourInPeriod( fromDateTime.time() );
                         }
                         if ( thisChar == QLatin1Char('I') ) {
                             minWidth = 2;
@@ -523,9 +524,9 @@ QString KDateTimeFormatter::formatDateTimePosix( const KDateTime &fromDateTime,
                         if ( modifierChar == QLatin1Char(':') ) {
                             invalidModifier = false;
                             initEnglish( calendar, locale );
-                            componentString = m_englishLocale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
+                            componentString = m_englishLocale->d->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         } else {
-                            componentString = locale->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
+                            componentString = locale->d->dayPeriodForTime( fromDateTime.time() ).periodName( KLocale::ShortName );
                         }
                         if ( thisChar == QLatin1Char('P') ) {
                             componentString = componentString.toLower();
