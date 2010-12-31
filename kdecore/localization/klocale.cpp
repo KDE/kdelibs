@@ -431,21 +431,6 @@ bool KLocale::use12Clock() const
     return d->use12Clock();
 }
 
-void KLocale::setDayPeriods(const QList<KDayPeriod> &dayPeriods)
-{
-    d->setDayPeriods(dayPeriods);
-}
-
-QList<KDayPeriod> KLocale::dayPeriods() const
-{
-    return d->dayPeriods();
-}
-
-KDayPeriod KLocale::dayPeriodForTime(const QTime &time) const
-{
-    return d->dayPeriodForTime(time);
-}
-
 QString KLocale::dayPeriodText(const QTime &time, DateTimeComponentFormat format) const
 {
     return d->dayPeriodForTime(time).periodName(format);

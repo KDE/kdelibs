@@ -1059,38 +1059,6 @@ public:
      */
     bool use12Clock() const;
 
-private:  // Initially private, may make public if really needed
-    /**
-     * @since 4.6
-     *
-     * Set the Day Periods to use in time formatting.
-     * This is usually AM/PM, but may be different depending on locale.
-     *
-     * @see dayPeriods
-     * @param dayPeriods A list of valid Day Periods
-     */
-    void setDayPeriods(const QList<KDayPeriod> &setdayPeriods);
-
-    /**
-     * @since 4.6
-     *
-     * Returns the current list of Day Periods
-     *
-     * @see setDayPeriods
-     */
-    QList<KDayPeriod> dayPeriods() const;
-
-    /**
-     * @since 4.6
-     *
-     * Returns the Day Period matching the time given
-     *
-     * @param time the time to return the day period for
-     * @return the Day Period for the given time
-     */
-    KDayPeriod dayPeriodForTime(const QTime &time) const;
-
-public:
     /**
      * @since 4.6
      *
