@@ -41,13 +41,20 @@ public:
 
     bool isOfInterest(const UdevQt::Device &device);
 
-    UdevQt::Client *const m_client;
+    UdevQt::Client *m_client;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 };
 
 UDevManager::Private::Private()
-    : m_client(new UdevQt::Client)
 {
+    QStringList subsystems;
+    subsystems << "processor";
+    subsystems << "sound";
+    subsystems << "tty";
+    subsystems << "dvb";
+    subsystems << "video4linux";
+    subsystems << "net";
+    m_client = new UdevQt::Client(subsystems);
 }
 
 UDevManager::Private::~Private()
