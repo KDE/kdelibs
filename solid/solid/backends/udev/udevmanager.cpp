@@ -54,6 +54,7 @@ UDevManager::Private::Private()
     subsystems << "dvb";
     subsystems << "video4linux";
     subsystems << "net";
+    subsystems << "usb";
     m_client = new UdevQt::Client(subsystems);
 }
 
