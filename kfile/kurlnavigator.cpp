@@ -682,7 +682,11 @@ QString KUrlNavigator::Private::firstButtonText() const
     if (text.isEmpty()) {
         const KUrl currentUrl = q->locationUrl();
         if (currentUrl.isLocalFile()) {
+#ifdef Q_OS_WIN
+            text = currentUrl.path().length() > 1 ? currentUrl.path().left(2) : QDir::rootPath();
+#else
             text = m_showFullPath ? QLatin1String("/") : i18n("Custom Path");
+#endif
         } else {
             text = currentUrl.protocol() + QLatin1Char(':');
             if (!currentUrl.host().isEmpty()) {
@@ -712,7 +716,7 @@ KUrl KUrlNavigator::Private::buttonUrl(int index) const
             // prevent the last "/" from being stripped
             // or we end up with an empty path
 #ifdef Q_OS_WIN
-            pathOrUrl = pathOrUrl.length() > 2 ? pathOrUrl.left(3) : QDir::rootPath();
+            pathOrUrl = pathOrUrl.length() > 1 ? pathOrUrl.left(2) : QDir::rootPath();
 #else
             pathOrUrl = QLatin1String("/");
 #endif
