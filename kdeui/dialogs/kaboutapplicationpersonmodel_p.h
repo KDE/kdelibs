@@ -42,6 +42,7 @@ namespace KDEPrivate
 {
 
 class KAboutApplicationPersonProfile;
+class KAboutApplicationPersonIconsJob;
 
 class KAboutApplicationPersonModel : public QAbstractListModel
 {
@@ -65,10 +66,16 @@ private Q_SLOTS:
     void onProvidersLoaded();
     void onPersonJobFinished( Attica::BaseJob *job );
     void onAvatarJobFinished( QNetworkReply *reply );
+    void onOcsLinksJobFinished( KAboutApplicationPersonIconsJob *job );
 
 private:
+    void fetchOcsLinkIcons( int personProfileListIndex );
+
     QList< KAboutPerson > m_personList;
     QList< KAboutApplicationPersonProfile > m_profileList;
+
+    QMap< int, QString > m_ocsLinkIconUrls;
+    QMap< int, QPixmap > m_ocsLinkIcons;
 
     bool m_hasAvatarPixmaps;
 
@@ -78,6 +85,8 @@ private:
 #endif //HAVE_ATTICA
     QString m_providerUrl;
     QString m_providerName;
+
+    friend class KAboutApplicationPersonIconsJob;
 };
 
 //This list must be in sync with the one in KAboutApplicationPersonProfileOcsLink::prettyType()
@@ -98,24 +107,6 @@ static const char s_personOcsLinkAtticaTypes[][16] = {
     { "Wikipedia" },
     { "Xing" },
     { "YouTube" } };
-
-static const char s_profileOcsLinkIconNames[][28] = {
-    { "applications-internet" }, //TODO: These are dummy icons, order real ones!
-    { "accessories-text-editor" },
-    { "align-horizontal-bottom-out" },
-    { "align-horizontal-center" },
-    { "align-horizontal-left-out" },
-    { "go-home" },
-    { "align-horizontal-right-out" },
-    { "align-horizontal-right" },
-    { "align-horizontal-left" },
-    { "align-horizontal-top-out" },
-    { "align-vertical-bottom-out" },
-    { "align-vertical-bottom" },
-    { "align-vertical-center" },
-    { "align-vertical-top-out" },
-    { "align-vertical-top" },
-    { "media-playback-start" } };
 
 class KAboutApplicationPersonProfileOcsLink
 {
@@ -146,11 +137,11 @@ public:
     KAboutApplicationPersonProfileOcsLink( Type type, const KUrl &url )
         : m_type( type )
         , m_url( url )
-        , m_icon( KIcon( s_profileOcsLinkIconNames[ type ] ) )
     {}
 
     Type type() const { return m_type; }
     QString prettyType() const;
+    void setIcon( const QIcon &icon ) { m_icon = icon; }
     const QIcon &icon() const { return m_icon; }
     const KUrl & url() const { return m_url; }
 
@@ -209,6 +200,35 @@ private:
     QString m_location;
     QStringList m_additionalStrings;
     QList< KAboutApplicationPersonProfileOcsLink > m_ocsLinks;
+};
+
+class KAboutApplicationPersonIconsJob : public QObject
+{
+    Q_OBJECT
+public:
+    KAboutApplicationPersonIconsJob( KAboutApplicationPersonModel *model,
+                                    int personProfileListIndex );
+
+    void start();
+
+    int personProfileListIndex() const { return m_personProfileListIndex; }
+
+    const QList< KAboutApplicationPersonProfileOcsLink > & ocsLinks() const { return m_ocsLinks; }
+
+signals:
+    void finished( KAboutApplicationPersonIconsJob *job);
+
+private Q_SLOTS:
+    void onJobFinished( QNetworkReply *reply );
+
+private:
+    void getIcons( int i );
+
+    int m_personProfileListIndex;
+    KAboutApplicationPersonModel *m_model;
+    QList< KAboutApplicationPersonProfileOcsLink > m_ocsLinks;
+
+    QNetworkAccessManager *m_manager;
 };
 
 } //namespace KDEPrivate
