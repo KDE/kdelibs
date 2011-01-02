@@ -155,7 +155,7 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown");
 
-        if ( m_device->property("DriveIsMediaEjectable").toBool() )
+        if (m_device->property("DriveIsMediaEjectable").toBool() && !m_device->property("DeviceIsOpticalDisc").toBool())
         {
             QString devnode = m_device->property("DeviceFile").toString();
 
