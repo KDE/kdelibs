@@ -57,7 +57,7 @@ class KFILE_EXPORT KNewFileMenu : public KActionMenu
 public:
     /**
      * Constructor.
-     * @param parent the KActionCollection this KAction should be added to.
+     * @param collection the KActionCollection this KAction should be added to.
      * @param name action name, when adding the action to the collection
      * @param parent the parent object, for ownership.
      * If the parent object is a widget, it will also used as parent widget
