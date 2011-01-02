@@ -29,6 +29,9 @@
 
 #include <kdebug.h>
 
+// Our debug area, disabled by default
+static int s_area = KDebug::registerArea("KSharedDataCache", false);
+
 // Mac OS X, for all its POSIX compliance, does not support timeouts on its
 // mutexes, which is kind of a disaster for cross-process support. However
 // synchronization primitives still work, they just might hang if the cache is
@@ -383,7 +386,7 @@ static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
 #endif
 
     default:
-        kError(264) << "Creating shell of a lock!";
+        kError(s_area) << "Creating shell of a lock!";
         return new KSDCLock;
     }
 }
