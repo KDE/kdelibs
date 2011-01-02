@@ -1240,7 +1240,7 @@ void SharedMemory::removeEntry(uint index)
 
     // Update page table first
     pageID firstPage = entriesIndex[index].firstPage;
-    if (firstPage < 0 || firstPage >= pageTableSize()) {
+    if (firstPage < 0 || static_cast<quint32>(firstPage) >= pageTableSize()) {
         kError(264) << "Removing" << index << "which is already marked as empty!";
 
         clearInternalTables();
