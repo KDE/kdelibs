@@ -717,5 +717,5 @@ bool UDisksDevice::isDeviceBlacklisted() const
     return property("DevicePresentationHide").toBool() || property("DevicePresentationNopolicy").toBool() ||
             property("DeviceMountPaths").toStringList().contains("/boot") ||
             property("IdLabel").toString() == "System Reserved" ||
-            property("IdUsage").toString().isEmpty();
+            ( property("IdUsage").toString().isEmpty() && !property("OpticalDiscIsBlank").toBool());
 }
