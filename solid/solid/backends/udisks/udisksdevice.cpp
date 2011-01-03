@@ -152,7 +152,7 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::GenericInterface:
             return true;
         case Solid::DeviceInterface::Block:
-            return property("DeviceBlockSize").toULongLong() > 0;
+            return property("DeviceMajor").toInt() != -1;
         case Solid::DeviceInterface::StorageVolume:
             if (property("DeviceIsOpticalDisc").toBool()) {
                 return m_udi.endsWith(":media");
