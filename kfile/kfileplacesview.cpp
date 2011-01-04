@@ -624,6 +624,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove Entry '%1'", label));
     }
 
+    menu.addActions(actions());
+
     if (menu.isEmpty()) {
         return;
     }
