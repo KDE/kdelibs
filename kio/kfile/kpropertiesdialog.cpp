@@ -2232,7 +2232,7 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
     Q_ASSERT(standardPermissions[textIndex] != (mode_t)-1); // must not happen, would be irreglar
 
     for (int i = 0; permissionsTexts[(int)d->pmode][i]; i++)
-        combo->addItem(i18n(permissionsTexts[(int)d->pmode][i]));
+        combo->addItem(i18n(permissionsTexts[(int)d->pmode][i]).replace("&", "&&"));
 
     if (partial & tMask & ~UniExec) {
         combo->addItem(i18n("Varying (No Change)"));
