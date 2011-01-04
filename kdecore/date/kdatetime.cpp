@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2011 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1260,6 +1260,19 @@ KDateTime KDateTime::currentUtcDateTime()
 
 KDateTime KDateTime::currentDateTime(const Spec &spec)
 {
+    switch (spec.type())
+    {
+        case UTC:
+            return currentUtcDateTime();
+        case TimeZone:
+	    if (spec.timeZone() != KSystemTimeZones::local())
+                break;
+	    // fall through to LocalZone
+        case LocalZone:
+            return currentLocalDateTime();
+        default:
+            break;
+    }
     return currentUtcDateTime().toTimeSpec(spec);
 }
 
