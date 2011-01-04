@@ -1138,6 +1138,10 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * Returns the current date and time, as reported by the system clock,
      * expressed in a given time specification.
      *
+     * @note To fetch the current date and time expressed in UTC or in the local
+     * system time zone, it is more efficient to use currentUtcDateTime() or
+     * currentLocalDateTime().
+     *
      * @param spec time specification
      * @return current date/time
      * @see currentUtcDateTime(), currentLocalDateTime()
