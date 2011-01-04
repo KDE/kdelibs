@@ -1260,6 +1260,19 @@ KDateTime KDateTime::currentUtcDateTime()
 
 KDateTime KDateTime::currentDateTime(const Spec &spec)
 {
+    switch (spec.type())
+    {
+        case UTC:
+            return currentUtcDateTime();
+        case TimeZone:
+	    if (spec.timeZone() != KSystemTimeZones::local())
+                break;
+	    // fall through to LocalZone
+        case LocalZone:
+            return currentLocalDateTime();
+        default:
+            break;
+    }
     return currentUtcDateTime().toTimeSpec(spec);
 }
 
