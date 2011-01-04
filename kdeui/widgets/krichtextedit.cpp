@@ -522,9 +522,47 @@ bool KRichTextEdit::canDedentList() const
 
 QString KRichTextEdit::toCleanHtml() const
 {
-    // Does nothing anymore, as Qt seems to be fixed now.
-    // See the unit test which confirms this.
-    return toHtml();
+  QString result = toHtml();
+
+  static const QString EMPTYLINEFROMQT = QLatin1String(
+  "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+  "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
+  "-qt-user-state:0;\"></p>" );
+
+  static const QString EMPTYLINEHTML = QLatin1String(
+  "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+  "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
+  "-qt-user-state:0;\"><br /></p>" );
+
+  static const QString OLLISTPATTERNQT = QLatin1String(
+  "<ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px;" );
+
+  static const QString ULLISTPATTERNQT = QLatin1String(
+  "<ul style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px;" );
+
+  static const QString ORDEREDLISTHTML = QLatin1String(
+  "<ol style=\"margin-top: 0px; margin-bottom: 0px;" );
+
+  static const QString UNORDEREDLISTHTML = QLatin1String(
+  "<ul style=\"margin-top: 0px; margin-bottom: 0px;" );
+
+  // fix 1 - empty lines should show as empty lines - MS Outlook treats margin-top:0px; as
+  // a non-existing line.
+  // Although we can simply remove the margin-top style property, we still get unwanted results
+  // if you have three or more empty lines. It's best to replace empty <p> elements with <p><br /></p>.
+  // As per http://www.w3.org/TR/xhtml1/dtds.html#a_dtd_XHTML-1.0-Strict, <br> elements are still proper
+  // HTML.
+  result.replace(EMPTYLINEFROMQT, EMPTYLINEHTML);
+
+  // fix 2a - ordered lists - MS Outlook treats margin-left:0px; as
+  // a non-existing number; e.g: "1. First item" turns into "First Item"
+  result.replace(OLLISTPATTERNQT, ORDEREDLISTHTML);
+
+  // fix 2b - unordered lists - MS Outlook treats margin-left:0px; as
+  // a non-existing bullet; e.g: "* First bullet" turns into "First Bullet"
+  result.replace(ULLISTPATTERNQT, UNORDEREDLISTHTML);
+
+  return result;
 }
 
 #include "krichtextedit.moc"
