@@ -902,6 +902,17 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const
     }
 }
 
+static bool mayReturnContent(int cmd, const QString& protocol)
+{
+    if (cmd == CMD_GET)
+        return true;
+
+    if (cmd == CMD_SPECIAL && protocol.startsWith(QLatin1String("http"), Qt::CaseInsensitive))
+        return true;
+
+    return false;
+}
+
 void SchedulerPrivate::doJob(SimpleJob *job)
 {
     kDebug(7006) << job;
@@ -912,7 +923,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
     jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxy);
 
-    if (jobCommand(job) == CMD_GET) {
+    if (mayReturnContent(jobCommand(job), jobPriv->m_protocol)) {
        jobPriv->m_checkOnHold = m_checkOnHold;
        m_checkOnHold = false;
     }
@@ -1138,14 +1149,14 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             canJobReuse = cmd == CMD_GET || cmd == CMD_SPECIAL;
             if (canJobReuse) {
                 KIO::MetaData outgoing = tJob->outgoingMetaData();
-                QString resume = outgoing.value("resume");
+                const QString resume = outgoing.value("resume");
                 kDebug(7006) << "Resume metadata is" << resume;
                 canJobReuse = resume.isEmpty() || resume == "0";
             }
         }
 
-        if (canJobReuse) {
-            if (job->url() == m_urlOnHold) {
+        if (job->url() == m_urlOnHold) {
+            if (canJobReuse) {
                 kDebug(7006) << "HOLD: Reusing held slave for" << m_urlOnHold;
                 slave = m_slaveOnHold;
             } else {
