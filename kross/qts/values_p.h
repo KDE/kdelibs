@@ -193,7 +193,8 @@ namespace Kross {
             return context->throwError(QScriptContext::TypeError, QString("No such QWidget \"%1\"").arg(widgetname));
         if( parent && parent->layout() )
             parent->layout()->addWidget(widget);
-        QScriptValue result = engine->newQObject(widget);
+        QScriptEngine::ValueOwnership owner = parent ? QScriptEngine::QtOwnership : QScriptEngine::ScriptOwnership;
+        QScriptValue result = engine->newQObject(widget, owner);
         //result.setPrototype(context->callee().prototype());
         return result;
     }
