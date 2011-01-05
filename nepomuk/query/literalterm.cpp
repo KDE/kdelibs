@@ -56,29 +56,24 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
     const QString v2 = qbd->uniqueVarName();
     const QString v3 = qbd->uniqueVarName();
     const QString v4 = qbd->uniqueVarName();
-    const QString text = queryText();
-    QString scoringPattern;
-    if( qbd->query()->m_fullTextScoringEnabled ) {
-        scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
-    }
-    qbd->addFullTextSearchTerm( v2, text );
+    const QString containsPattern = createContainsPattern( v2, m_value.toString(), qbd );
 
-    return QString::fromLatin1( "{ %1 %2 %3 . %3 bif:contains \"%4\" %9. } "
+    return QString::fromLatin1( "{ %1 %2 %3 . %4 } "
                                 "UNION "
-                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %3 bif:contains \"%4\" %9. } . " )
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %4 } . " )
         .arg( resourceVarName,
               v1,
               v2,
-              text,
+              containsPattern,
               v3,
               v4,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()),
-              scoringPattern );
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 }
 
 
-QString Nepomuk::Query::LiteralTermPrivate::queryText() const
+namespace {
+QString prepareQueryText( const QString& text )
 {
     //
     // we try to be a little smart about creating the query text
@@ -90,7 +85,7 @@ QString Nepomuk::Query::LiteralTermPrivate::queryText() const
     // [4. wildcards can only be used if they are preceeded by at least 4 chars]
     //
 
-    QString s = m_value.toString().simplified();
+    QString s = text.simplified();
     if( s.isEmpty() )
         return s;
 
@@ -111,6 +106,44 @@ QString Nepomuk::Query::LiteralTermPrivate::queryText() const
     s = '\'' + s + '\'';
 
     return s;
+}
+
+QString prepareRegexText( const QString& text )
+{
+    QString filterRxStr = QRegExp::escape( text );
+    filterRxStr.replace( "\\*", QLatin1String( ".*" ) );
+    filterRxStr.replace( "\\?", QLatin1String( "." ) );
+    filterRxStr.replace( '\\',"\\\\" );
+    return filterRxStr;
+}
+}
+
+
+QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString& varName, const QString& text, Nepomuk::Query::QueryBuilderData* qbd )
+{
+    const int i = text.indexOf( QRegExp(QLatin1String("[\\?\\*]")) );
+
+    //
+    // Virtuoso needs four leading chars when using wildcards. Thus, if there is less (this includes 0) we fall back to the slower regex filter
+    //
+    if( i < 0 || i > 3 ) {
+        const QString finalText = prepareQueryText( text );
+
+        QString scoringPattern;
+        if( qbd->query()->m_fullTextScoringEnabled ) {
+            scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
+        }
+        qbd->addFullTextSearchTerm( varName, finalText );
+
+        return QString::fromLatin1( "%1 bif:contains \"%2\" %3. " )
+                .arg( varName,
+                     finalText,
+                     scoringPattern );
+    }
+    else {
+        return QString::fromLatin1( "FILTER(REGEX(%1, \"%2\")) . " )
+                .arg( varName, prepareRegexText(text) );
+    }
 }
 
 
