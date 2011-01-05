@@ -404,6 +404,13 @@ Notes:
     </magic>
     <glob pattern="*.pic"/>
   </mime-type>
+  <mime-type type="text/x-qml"> <!-- in fdo smi > 0.90 -->
+    <comment>Qt Markup Language file</comment>
+    <magic priority="80">
+      <match type="string" value="import Qt " offset="0:256"/>
+    </magic>
+    <glob pattern="*.qml"/>
+  </mime-type>
   <mime-type type="application/x-mobipocket-ebook">
     <comment>E-book in Mobipocket format</comment>
     <glob pattern="*.mobi"/>
