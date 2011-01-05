@@ -1671,9 +1671,11 @@ KLocale::BinaryUnitDialect KLocalePrivate::binaryUnitDialect() const
 
 void KLocalePrivate::setBinaryUnitDialect(KLocale::BinaryUnitDialect newDialect)
 {
-    QMutexLocker lock(kLocaleMutex());
-    m_binaryUnitDialect = newDialect;
-    m_byteSizeFmt.clear(); // Reset cached translations.
+    if (newDialect > KLocale::DefaultBinaryDialect && newDialect <= KLocale::LastBinaryDialect) {
+        QMutexLocker lock(kLocaleMutex());
+        m_binaryUnitDialect = newDialect;
+        m_byteSizeFmt.clear(); // Reset cached translations.
+    }
 }
 
 QString KLocalePrivate::formatDuration(unsigned long mSec) const
