@@ -783,8 +783,8 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
     const QStringList authors = author.split(',');
     const QStringList emails = email.split(',');
-    int i = 0;
     if (authors.count() == emails.count()) {
+	int i = 0;
         foreach (const QString &author, authors) {
             if (!author.isEmpty()) {
                 aboutData.addAuthor(ki18n(author.toUtf8()), ki18n(QByteArray()), emails[i].toUtf8(), 0);
