@@ -66,8 +66,8 @@ SpellerPlugin *QSpellEnchantClient::createSpeller(
                                                     language.toUtf8());
 
     if (!dict) {
+#ifndef NDEBUG	    
         const char *err = enchant_broker_get_error(m_broker);
-#ifndef NDEBUG
         qDebug()<<"Couldn't create speller for"<<language<<": "<<err;
 #endif
         return 0;
