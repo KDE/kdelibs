@@ -100,7 +100,7 @@ public:
          *
          * @see wallet() and setWallet()
          */
-        KWalletIntegration = 0x08,
+        KWalletIntegration = 0x08
     };
     Q_DECLARE_FLAGS(Integration, IntegrationFlags)
 
