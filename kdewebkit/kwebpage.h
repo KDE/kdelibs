@@ -31,6 +31,7 @@
 
 class KWebWallet;
 class KUrl;
+class KJob;
 
 /**
  * @short An enhanced QWebPage that provides integration into the KDE environment.
@@ -73,34 +74,33 @@ class KDEWEBKIT_EXPORT KWebPage : public QWebPage
 
 public:
     /**
-     * Indicates the level of integration required.
+     * Flags for setting the desired level of integration.
      */
     enum IntegrationFlags
     {
         /**
-         * The KWebPage should behave almost identically to QWebPage.
-         *
-         * Very basic integration is still provided, such as setting
-         * icons for the actions provided by QWebPage.
+         * Provide only very basic integration such as using KDE icons for the
+         * actions provided by QWebPage.
          */
         NoIntegration = 0x01,
         /**
-         * KIO should be used for accessing resources.
+         * Use KIO to handle network requests.
          *
          * @see KIO::Integration::AccessManager
          */
         KIOIntegration = 0x02,
         /**
-         * KParts should be used for displaying content in &lt;embed&gt; and
-         * &lt;object&gt; tags.
+         * Use KPart componenets, if available, to display content in
+         * &lt;embed&gt; and &lt;object&gt; tags.
          */
         KPartsIntegration = 0x04,
         /**
-         * KWallet should be used for saving form data.
+         * Use KWallet to store login credentials and other form data from web
+         * sites.
          *
          * @see wallet() and setWallet()
          */
-        KWalletIntegration = 0x08
+        KWalletIntegration = 0x08,
     };
     Q_DECLARE_FLAGS(Integration, IntegrationFlags)
 
@@ -314,7 +314,7 @@ protected:
      * This performs various integration-related actions when navigation
      * is requested.  If you override this method, you should ensure you
      * call KWebPage::acceptNaviationRequest (unless you want to block
-     * the request outright), even if you do not used the return value.
+     * the request outright), even if you do not use the return value.
      *
      * If you do override acceptNavigationRequest and call this method,
      * however, be aware of the effect of the page's
@@ -328,6 +328,7 @@ protected:
 private:
     class KWebPagePrivate;
     KWebPagePrivate* const d;
+    Q_PRIVATE_SLOT(d, void _k_copyResultToTempFile(KJob *))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KWebPage::Integration)

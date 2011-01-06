@@ -57,7 +57,9 @@ public:
     virtual qint64 bytesAvailable() const;
     virtual void abort();
 
+    void setIgnoreContentDisposition(bool on);
     void setStatus(const QString& message, QNetworkReply::NetworkError);
+    void putOnHold();
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
@@ -73,6 +75,7 @@ private Q_SLOTS:
 private:
     QByteArray m_data;
     bool m_metaDataRead;
+    bool m_ignoreContentDisposition;
     QPointer<KIO::SimpleJob> m_kioJob;
 };
 
