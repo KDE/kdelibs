@@ -134,6 +134,14 @@ namespace Solid
              */
             void appShouldConserveResourcesChanged(bool newState);
 
+            /**
+             * This signal is emitted whenever the system is resuming from suspend. Applications should connect
+             * to this signal to perform actions due after a wake up (such as updating clocks, etc.).
+             *
+             * @since 4.7
+             */
+            void resumingFromSuspend();
+
         protected:
             Notifier();
         };

@@ -36,7 +36,10 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
                        QDBusConnection::sessionBus()),
       inhibitIface("org.freedesktop.PowerManagement.Inhibit",
                    "/org/freedesktop/PowerManagement/Inhibit",
-                   QDBusConnection::sessionBus())
+                   QDBusConnection::sessionBus()),
+      serviceWatcher("org.kde.Solid.PowerManagement",
+                     QDBusConnection::sessionBus(),
+                     QDBusServiceWatcher::WatchForRegistration)
 {
     powerSaveStatus = managerIface.GetPowerSaveStatus();
 
@@ -51,6 +54,13 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
             this, SLOT(slotCanHibernateChanged(bool)));
     connect(&managerIface, SIGNAL(PowerSaveStatusChanged(bool)),
             this, SLOT(slotPowerSaveStatusChanged(bool)));
+    connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)),
+            this, SLOT(slotServiceRegistered(QString)));
+
+    // If the service is registered, trigger the connection immediately
+    if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Solid.PowerManagement")) {
+        slotServiceRegistered("org.kde.Solid.PowerManagement");
+    }
 }
 
 Solid::PowerManagementPrivate::~PowerManagementPrivate()
@@ -175,6 +185,29 @@ void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
 {
     powerSaveStatus = newState;
     emit appShouldConserveResourcesChanged(powerSaveStatus);
+}
+
+void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &serviceName)
+{
+    Q_UNUSED(serviceName);
+
+    // Is the resume signal available?
+    QDBusMessage call = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
+                                                       "/org/kde/Solid/PowerManagement",
+                                                       "org.kde.Solid.PowerManagement",
+                                                       "backendCapabilities");
+    QDBusPendingReply< uint > reply = QDBusConnection::sessionBus().asyncCall(call);
+    reply.waitForFinished();
+
+    if (reply.isValid() && reply.value() > 0) {
+        // Connect the signal
+        QDBusConnection::sessionBus().connect("org.kde.Solid.PowerManagement",
+                                              "/org/kde/Solid/PowerManagement",
+                                              "org.kde.Solid.PowerManagement",
+                                              "resumingFromSuspend",
+                                              this,
+                                              SIGNAL(resumingFromSuspend()));
+    }
 }
 
 #include "powermanagement_p.moc"

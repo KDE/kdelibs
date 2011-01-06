@@ -27,6 +27,8 @@
 #include "powermanagementinterface.h"
 #include "policyagentinterface.h"
 
+#include <QtDBus/QDBusServiceWatcher>
+
 namespace Solid
 {
     class PowerManagementPrivate : public PowerManagement::Notifier
@@ -47,11 +49,13 @@ namespace Solid
         void slotCanSuspendChanged(bool newState);
         void slotCanHibernateChanged(bool newState);
         void slotPowerSaveStatusChanged(bool newState);
+        void slotServiceRegistered(const QString &serviceName);
 
     public:
         OrgFreedesktopPowerManagementInterface managerIface;
         OrgKdeSolidPowerManagementPolicyAgentInterface policyAgentIface;
         OrgFreedesktopPowerManagementInhibitInterface inhibitIface;
+        QDBusServiceWatcher serviceWatcher;
 
         bool powerSaveStatus;
         QSet<Solid::PowerManagement::SleepState> supportedSleepStates;
