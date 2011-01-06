@@ -61,6 +61,7 @@
 #endif
 
 #if PLATFORM(WIN_OS)
+#include <windows.h>
 #define copysign(x, y) _copysign(x, y)
 #define snprintf _snprintf
 #if !COMPILER(GCC)
@@ -458,7 +459,11 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
   // check whether time value is outside time_t's usual range
   // make the necessary transformations if necessary
   static bool time_tIsSigned = isTime_tSigned();
+#if PLATFORM(WIN_OS)
+  static double time_tMin = 0; //on windows localtime/gmtime returns NULL for pre 1970 dates
+#else
   static double time_tMin = (time_tIsSigned ? - (double)(1ULL << (8 * sizeof(time_t) - 1)) : 0);
+#endif
   static double time_tMax = (time_tIsSigned ? (1ULL << (8 * sizeof(time_t) - 1)) - 1 : 2 * (double)(1ULL << (8 * sizeof(time_t) - 1)) - 1);
   int realYearOffset = 0;
   double milliOffset = 0.0;
@@ -914,6 +919,23 @@ static const struct KnownZone {
     { "PDT", -420 }
 };
 
+#if PLATFORM(WIN_OS)
+void FileTimeToUnixTime(LPFILETIME pft, double* pt)
+{
+    ULARGE_INTEGER ull;
+    ull.LowPart = pft->dwLowDateTime;
+    ull.HighPart = pft->dwHighDateTime;
+    *pt = (double)(ull.QuadPart / 10000000ULL) - 11644473600ULL;
+}
+
+void SystemTimeToUnixTime(LPSYSTEMTIME pst, double* pt)
+{
+    FILETIME ft;
+    SystemTimeToFileTime(pst, &ft);
+    FileTimeToUnixTime(&ft, pt);
+}
+#endif
+
 static double makeTime(tm *t, double ms, bool utc)
 {
     int utcOffset;
@@ -942,6 +964,7 @@ static double makeTime(tm *t, double ms, bool utc)
         t->tm_isdst = -1;
     }
 
+#if !PLATFORM(WIN_OS)
     double yearOffset = 0.0;
     if (t->tm_year < (1971 - 1900) || t->tm_year > (2037 - 1900)) {
         // we'll fool mktime() into believing that this year is within
@@ -967,6 +990,24 @@ static double makeTime(tm *t, double ms, bool utc)
     }
 
     return (mktime(t) + utcOffset) * msPerSecond + ms + yearOffset;
+#else
+    SYSTEMTIME st, dt;
+    double tval;
+
+    st.wYear = 1900 + t->tm_year;
+    st.wMonth = t->tm_mon + 1;
+    st.wDayOfWeek = t->tm_wday;
+    st.wDay = t->tm_mday;
+    st.wHour = t->tm_hour;
+    st.wMinute = t->tm_min;
+    st.wSecond = t->tm_sec;
+    st.wMilliseconds = 0;
+
+    TzSpecificLocalTimeToSystemTime(0, &st, &dt);        
+    SystemTimeToUnixTime(&dt, &tval);
+
+    return (tval + utcOffset) * msPerSecond + ms;
+#endif
 }
 
 inline static bool isSpaceLike(char c)
