@@ -199,8 +199,9 @@ QObject *UDevManager::createDevice(const QString &udi_)
 
 void UDevManager::slotDeviceAdded(const UdevQt::Device &device)
 {
-    qDebug() << device.name();
-    emit deviceAdded(udiPrefix() + device.sysfsPath());
+    if (d->isOfInterest(device)) {
+        emit deviceAdded(udiPrefix() + device.sysfsPath());
+    }
 }
 
 void UDevManager::slotDeviceRemoved(const UdevQt::Device &device)
