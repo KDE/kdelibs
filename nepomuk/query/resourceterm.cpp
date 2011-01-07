@@ -21,6 +21,8 @@
 
 #include "resourceterm.h"
 #include "resourceterm_p.h"
+#include "querybuilderdata_p.h"
+#include "andterm_p.h"
 
 #include <Soprano/Node>
 
@@ -37,9 +39,38 @@ bool Nepomuk::Query::ResourceTermPrivate::equals( const TermPrivate* other ) con
 }
 
 
-QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString&, QueryBuilderData* ) const
+QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString& varName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
-    return Soprano::Node::resourceToN3( m_resource.resourceUri() );
+    //
+    // A negation is expressed via a filter. Since filters can only work on a "real" graph pattern
+    // we need to make sure that such a pattern exists. This can be done by searching one in a
+    // surrounding AndTerm.
+    //
+    // Why is that enough?
+    // Nested AndTerms are flattened before the SPARQL query is constructed in Query. Thus, an AndTerm can
+    // only be embedded in an OrTerm or as a child term to either a ComparisonTerm or an OptionalTerm.
+    // In both cases we need a real pattern inside the AndTerm.
+    //
+    // We use a type pattern for performance reasons. Thus, we assume that each resource has a type. This
+    // is not perfect but much faster than using a wildcard for the property. And in the end all Nepomuk
+    // resources should have a properly defined type.
+    //
+    bool haveRealTerm = false;
+    if( parentTerm && parentTerm->m_type == Term::And ) {
+        haveRealTerm = static_cast<const AndTermPrivate*>(parentTerm)->hasRealPattern();
+    }
+
+    QString term;
+    if( !haveRealTerm ) {
+        term += QString::fromLatin1("%1 a %2 . ")
+                .arg( varName, qbd->uniqueVarName() );
+    }
+
+    term += QString::fromLatin1("FILTER(%1=%2) . ")
+            .arg( varName,
+                  Soprano::Node::resourceToN3( m_resource.resourceUri() ) );
+
+    return term;
 }
 
 

@@ -47,7 +47,7 @@ namespace Nepomuk {
 
             bool equals( const TermPrivate* other ) const;
             bool isValid() const;
-            QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
+            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const;
 
             /**
              * return m_variableName and register it with qbd

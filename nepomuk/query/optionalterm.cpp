@@ -23,10 +23,12 @@
 #include "optionalterm_p.h"
 #include "querybuilderdata_p.h"
 
-QString Nepomuk::Query::OptionalTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::OptionalTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     return QString( "OPTIONAL { %1} " )
-        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
+        .arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, this, qbd ) );
 }
 
 

@@ -134,8 +134,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "negated resource type" )
         << Query( NegationTerm::negateTerm( ResourceTypeTerm( Soprano::Vocabulary::NAO::Tag() ) ) )
-        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r a ?v1 . ?v1 %1 %2 . }))) . "
-                               "?r %3 ?v2 . } . }")
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(!bif:exists((select (1) where { ?r a ?v2 . ?v2 %1 %2 . }))) . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subClassOf()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::Tag()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
@@ -161,8 +160,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "negated hastag with resource" )
         << Query( NegationTerm::negateTerm(ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm( QUrl("nepomuk:/res/foobar") ) )))
-        << QString::fromLatin1("select distinct ?r where { { FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . "
-                               "?r %2 ?v1 . } . }")
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(!bif:exists((select (1) where { ?r %1 <nepomuk:/res/foobar> . }))) . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()));
 
@@ -351,6 +349,19 @@ void QueryTest::testToSparql_data()
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
+
+
+    QTest::newRow( "Query one resource" )
+            << Query(ResourceTerm(QUrl("nepomuk:/A")))
+            << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . }");
+
+    QTest::newRow( "Query several resources resource" )
+            << Query(OrTerm(ResourceTerm(QUrl("nepomuk:/A")), ResourceTerm(QUrl("nepomuk:/B")), ResourceTerm(QUrl("nepomuk:/C"))))
+            << QString::fromLatin1("select distinct ?r where { { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . } UNION { ?r a ?v2 . FILTER(?r=<nepomuk:/B>) . } UNION { ?r a ?v3 . FILTER(?r=<nepomuk:/C>) . } . }");
+
+    QTest::newRow( "Pointless but correct: Query several resources resource 2" )
+            << Query(AndTerm(ResourceTerm(QUrl("nepomuk:/A")), ResourceTerm(QUrl("nepomuk:/B")), ResourceTerm(QUrl("nepomuk:/C"))))
+            << QString::fromLatin1("select distinct ?r where { { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . ?r a ?v2 . FILTER(?r=<nepomuk:/B>) . ?r a ?v3 . FILTER(?r=<nepomuk:/C>) . } . }");
 
     //
     // A more complex example

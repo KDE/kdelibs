@@ -35,7 +35,24 @@ namespace Nepomuk {
 
             TermPrivate* clone() const { return new AndTermPrivate( *this ); }
 
-            QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
+            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate*, QueryBuilderData* qbd ) const;
+
+            /**
+             * Since filters can only work on a "real" graph pattern
+             * we need to make sure that such a pattern exists. This can be done by searching one in a
+             * surrounding AndTerm.
+             *
+             * Why is that enough?
+             * Nested AndTerms are flattened before the SPARQL query is constructed in Query. Thus, an AndTerm can
+             * only be embedded in an OrTerm or as a child term to either a ComparisonTerm or an OptionalTerm.
+             * In both cases we need a real pattern inside the AndTerm.
+             *
+             * This method checks if the and term has a "real" non-filter subterm.
+             *
+             * This method is used by NegationTerm and ResourceTerm to check if they need to add an artificial "real"
+             * pattern.
+             */
+            bool hasRealPattern() const;
         };
     }
 }

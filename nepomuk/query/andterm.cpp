@@ -25,17 +25,32 @@
 
 #include <QtCore/QStringList>
 
-QString Nepomuk::Query::AndTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::AndTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     QStringList pattern;
 
     qbd->pushGroupTerm(this);
     foreach( const Nepomuk::Query::Term &t, m_subTerms ) {
-        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, qbd );
+        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, this, qbd );
     }
     qbd->popGroupTerm();
 
     return QLatin1String( "{ " ) + pattern.join(QString()) + QLatin1String( "} . " );
+}
+
+
+bool Nepomuk::Query::AndTermPrivate::hasRealPattern() const
+{
+    Q_FOREACH( const Nepomuk::Query::Term& term, m_subTerms ) {
+        if( term.isComparisonTerm() ||
+                term.isResourceTypeTerm() ||
+                term.isLiteralTerm() ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 

@@ -71,84 +71,6 @@ ORDER BY  desc (?
 
 
 namespace {
-    Nepomuk::Query::Term prepareForSparql( const Nepomuk::Query::Term& term )
-    {
-        //
-        // A negation is expressed via a filter. Since filters can only work on a "real" graph pattern
-        // we need to make sure that such a pattern exists. This can be done by searching one in a
-        // surrounding and term.
-        //
-        // Why is that enough?
-        // Nested AndTerms are flattened before the SPARQL query is constructed in Query. Thus, an AndTerm can
-        // only be embedded in an OrTerm or as a child term to either a ComparisonTerm or an OptionalTerm.
-        // In both cases we need a real pattern inside the AndTerm.
-        //
-        // We use a type pattern for performance reasons. Thus, we assume that each resource has a type. This
-        // is not perfect but much faster than using a wildcard for the property. And in the end all Nepomuk
-        // resources should have a properly defined type.
-        //
-
-        switch( term.type() ) {
-        case Nepomuk::Query::Term::And: {
-            // check if there are negation terms without proper patterns
-            Nepomuk::Query::AndTerm at = term.toAndTerm();
-            Nepomuk::Query::AndTerm newAndTerm;
-            bool haveNegationTerm = false;
-            bool haveRealTerm = false;
-            Q_FOREACH( const Nepomuk::Query::Term& term, at.subTerms() ) {
-                if( term.isNegationTerm() ) {
-                    haveNegationTerm = true;
-                    newAndTerm.addSubTerm( term );
-                }
-                else {
-                    if( term.isComparisonTerm() ||
-                        term.isResourceTypeTerm() ||
-                        term.isLiteralTerm() ) {
-                        haveRealTerm = true;
-                    }
-                    newAndTerm.addSubTerm( prepareForSparql( term ) );
-                }
-            }
-            if( haveNegationTerm && !haveRealTerm ) {
-                newAndTerm.addSubTerm( Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::Term() ) );
-            }
-            return newAndTerm;
-        }
-
-        case Nepomuk::Query::Term::Or: {
-            // call prepareForSparql on all subterms
-            QList<Nepomuk::Query::Term> subTerms = term.toOrTerm().subTerms();
-            QList<Nepomuk::Query::Term> newSubTerms;
-            Q_FOREACH( const Nepomuk::Query::Term& term, subTerms ) {
-                newSubTerms.append( prepareForSparql( term ) );
-            }
-            return Nepomuk::Query::OrTerm( newSubTerms );
-        }
-
-        case Nepomuk::Query::Term::Negation: {
-            // add an additional type term since there is no useful pattern. Otherwise
-            // we would have caught it above
-            return Nepomuk::Query::AndTerm(
-                term,
-                Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::Term() ) );
-        }
-
-        case Nepomuk::Query::Term::Optional: {
-            return Nepomuk::Query::OptionalTerm::optionalizeTerm( prepareForSparql( term.toOptionalTerm().subTerm() ) );
-        }
-
-        case Nepomuk::Query::Term::Comparison: {
-            Nepomuk::Query::ComparisonTerm ct = term.toComparisonTerm();
-            ct.setSubTerm( prepareForSparql( ct.subTerm() ) );
-            return ct;
-        }
-
-        default:
-            return term;
-        }
-    }
-
-
     /**
      * term is optimized and ran through prepareForSparql. The only type terms
      * we are interested in are those that are non-optional.
@@ -470,13 +392,13 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 
 
     // optimize whatever we can
-    term = prepareForSparql( term ).optimized();
+    term = term.optimized();
 
     // actually build the SPARQL query patterns
     QueryBuilderData qbd( d.constData(), sparqlFlags );
     QString termGraphPattern;
     if( term.isValid() ) {
-        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), &qbd );
+        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), 0, &qbd );
         if( termGraphPattern.isEmpty() ) {
             kDebug() << "Got no valid SPARQL pattern from" << term;
             return QString();

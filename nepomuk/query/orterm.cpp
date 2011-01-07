@@ -25,13 +25,15 @@
 
 #include <QtCore/QStringList>
 
-QString Nepomuk::Query::OrTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::OrTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     QStringList pattern;
 
     qbd->pushGroupTerm(this);
     foreach( const Nepomuk::Query::Term &t, m_subTerms ) {
-        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, qbd );
+        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, this, qbd );
     }
     qbd->popGroupTerm();
 

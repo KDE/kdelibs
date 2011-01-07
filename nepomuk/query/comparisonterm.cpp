@@ -106,8 +106,10 @@ Nepomuk::Query::ComparisonTerm::Comparator Nepomuk::Query::stringToComparator( c
         return Nepomuk::Query::ComparisonTerm::Contains;
 }
 
-QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     //
     // 1. property range: literal
     // 1.1. operator =
@@ -260,13 +262,13 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else if ( m_subTerm.isResourceTerm() ) {
             // ?r <prop> <res>
-            return corePattern.arg( m_subTerm.d_ptr->toSparqlGraphPattern( resourceVarName, qbd ) );
+            return corePattern.arg( Soprano::Node::resourceToN3(m_subTerm.toResourceTerm().resource().resourceUri()) );
         }
         else {
             // ?r <prop> ?v1 . ?v1 ...
             QString v = getMainVariableName(qbd);
             qbd->increaseDepth();
-            QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, qbd );
+            QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, this, qbd );
             qbd->decreaseDepth();
             return corePattern.arg(v) + subTermSparql;
         }

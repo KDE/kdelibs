@@ -50,8 +50,10 @@ bool Nepomuk::Query::LiteralTermPrivate::equals( const TermPrivate* other ) cons
 // But since many relations like nao:hasTag or nmm:performer or similar are considered as plain text fields we extend the pattern by adding
 // relations to resources that have labels containing the query text.
 //
-QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     const QString v1 = qbd->uniqueVarName();
     const QString v2 = qbd->uniqueVarName();
     const QString v3 = qbd->uniqueVarName();

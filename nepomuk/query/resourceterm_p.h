@@ -40,7 +40,7 @@ namespace Nepomuk {
 
             bool equals( const TermPrivate* other ) const;
             bool isValid() const { return m_resource.isValid(); }
-            QString toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const;
+            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const;
 
             Resource m_resource;
         };

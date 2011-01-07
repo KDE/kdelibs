@@ -39,8 +39,10 @@ bool Nepomuk::Query::ResourceTypeTermPrivate::equals( const TermPrivate* other )
 }
 
 
-QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
+    Q_UNUSED(parentTerm);
+
     // we are using the crappy inferencing provided by the nepomuk ontology service where
     // each class is also a subclass of itself.
     return QString::fromLatin1("%1 a %2 . %2 %3 %4 . ")
