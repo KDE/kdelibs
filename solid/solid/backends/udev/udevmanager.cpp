@@ -206,5 +206,7 @@ void UDevManager::slotDeviceAdded(const UdevQt::Device &device)
 
 void UDevManager::slotDeviceRemoved(const UdevQt::Device &device)
 {
-    emit deviceRemoved(udiPrefix() + device.sysfsPath());
+    if (d->isOfInterest(device)) {
+        emit deviceRemoved(udiPrefix() + device.sysfsPath());
+    }
 }
