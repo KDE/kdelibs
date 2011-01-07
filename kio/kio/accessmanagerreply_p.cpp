@@ -41,7 +41,8 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
                                        KIO::SimpleJob *kioJob,
                                        QObject *parent)
                    :QNetworkReply(parent),
-                    m_metaDataRead(false)
+                    m_metaDataRead(false),
+                    m_ignoreContentDisposition(false)
 
 {
     m_kioJob = kioJob;
@@ -98,14 +99,37 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
     return length;
 }
 
+void AccessManagerReply::setIgnoreContentDisposition(bool on)
+{
+    kDebug(7044) << on;
+    m_ignoreContentDisposition = on;
+}
+
 void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
 {
     setError(code, message);
 }
 
+void AccessManagerReply::putOnHold()
+{
+    if (!m_kioJob)
+        return;
+
+    m_kioJob->putOnHold();
+}
+
+static bool isStatusCodeSuccess(const QNetworkReply* reply)
+{
+    bool ok = false;
+    const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(&ok);
+    if (!ok || statusCode < 200 || statusCode > 299)
+        return false;
+    return true;
+}
+
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 {
-    if (m_metaDataRead)
+    if (!job || m_metaDataRead)
         return;
 
     const KIO::MetaData& metaData = job->metaData();
@@ -151,6 +175,10 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
             continue;
 
+        if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
+            (m_ignoreContentDisposition || !isStatusCodeSuccess(this)))
+            continue;
+
         // Without overridding the corrected mime-type sent by kio_http, add
         // back the "charset=" portion of the content-type header if present.
         if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
@@ -174,15 +202,13 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
 void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
-    // FIXME: Remove the line below when kio_http is fixed to do the correct thing!
-    readHttpResponseHeaders(kioJob);
     m_data += data;
     emit readyRead();
 }
 
 void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
-    Q_UNUSED(kioJob);
+    kDebug(7044) << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
 }

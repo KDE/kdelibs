@@ -63,8 +63,8 @@ public:
     : externalContentAllowed(true)
     {}
 
-    KIO::MetaData metaDataForRequest(QNetworkRequest request);
-
+    void setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData);
+    
     bool externalContentAllowed;    
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
@@ -140,6 +140,15 @@ KIO::MetaData& AccessManager::requestMetaData()
 KIO::MetaData& AccessManager::sessionMetaData()
 {
     return d->sessionMetaData;
+}
+
+void AccessManager::putReplyOnHold(QNetworkReply* reply)
+{
+    KDEPrivate::AccessManagerReply* r = qobject_cast<KDEPrivate::AccessManagerReply*>(reply);
+    if (!r)
+      return;
+
+    r->putOnHold();
 }
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
@@ -221,9 +230,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     }
 
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
-
-    kioJob->addMetaData(d->metaDataForRequest(req));
-
+    if (req.hasRawHeader("x-kdewebkit-ignore-disposition")) {
+        kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
+        reply->setIgnoreContentDisposition(true);
+    }
+    
+    KIO::MetaData metaData;
+    d->setMetaDataForRequest(req, metaData);
+    kioJob->addMetaData(metaData);
+    
     if ( op == PostOperation && !kioJob->metaData().contains(QL1S("content-type")))  {
         const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
         if (header.isValid())
@@ -237,10 +252,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     return reply;
 }
 
-KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRequest request)
+void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData)
 {
-    KIO::MetaData metaData;
-
     // Add any meta data specified within request...
     QVariant userMetaData = request.attribute (static_cast<QNetworkRequest::Attribute>(MetaData));
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map) {
@@ -273,6 +286,7 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     request.setRawHeader("Connection", QByteArray());
     request.setRawHeader("If-None-Match", QByteArray());
     request.setRawHeader("If-Modified-Since", QByteArray());
+    request.setRawHeader("x-kdewebkit-ignore-disposition", QByteArray());
 
     QStringList customHeaders;
     Q_FOREACH(const QByteArray &key, request.rawHeaderList()) {
@@ -294,8 +308,6 @@ KIO::MetaData AccessManager::AccessManagerPrivate::metaDataForRequest(QNetworkRe
     // Append per session meta data, if any...
     if (!sessionMetaData.isEmpty())
         metaData += sessionMetaData;
-    
-    return metaData;
 }
 
 

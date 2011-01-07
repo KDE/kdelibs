@@ -160,6 +160,18 @@ public:
      */
     KIO::MetaData& sessionMetaData();
 
+    /**
+     * Puts the ioslave associated with the given @p reply on hold.
+     *
+     * This function is intended to make possible the implementation of
+     * the special case mentioned in KIO::get's documentation within the
+     * KIO-QNAM integration.
+     *
+     * @see KIO::get.
+     * @since 4.6
+     */
+    static void putReplyOnHold(QNetworkReply* reply);    
+
 protected:
     /**
      * Reimplemented for internal reasons, the API is not affected.
