@@ -58,8 +58,8 @@ void ClientPrivate::setWatchedSubsystems(const QStringList &subsystemList)
         qWarning("UdevQt: unable to create udev monitor connection");
         return;
     }
+
     // apply our filters; an empty list means listen to everything
-#if 0
     foreach (const QString& subsysDevtype, subsystemList) {
         int ix = subsysDevtype.indexOf("/");
 
@@ -71,7 +71,6 @@ void ClientPrivate::setWatchedSubsystems(const QStringList &subsystemList)
             udev_monitor_filter_add_match_subsystem_devtype(newM, subsysDevtype.toLatin1().constData(), NULL);
         }
     }
-#endif
 
     // start the new monitor receiving
     udev_monitor_enable_receiving(newM);
