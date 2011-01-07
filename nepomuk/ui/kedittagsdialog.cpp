@@ -66,8 +66,6 @@ KEditTagsDialog::KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
     m_tagsList->installEventFilter(this);
     connect(m_tagsList, SIGNAL(itemEntered(QListWidgetItem*)),
             this, SLOT(slotItemEntered(QListWidgetItem*)));
-    connect(m_tagsList, SIGNAL(itemEntered(QListWidgetItem*)),
-            this, SLOT(slotItemEntered(QListWidgetItem*)));
 
     QLabel* newTagLabel = new QLabel(i18nc("@label", "Create new tag:"));
     m_newTagEdit = new KLineEdit(this);
