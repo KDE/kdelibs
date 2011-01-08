@@ -22,6 +22,9 @@
 
 #include "kdeclarative_export.h"
 
+class QDeclarativeEngine;
+class QScriptEngine;
+
 class KDeclarativePrivate;
 
 class KDECLARATIVE_EXPORT KDeclarative
@@ -29,6 +32,13 @@ class KDECLARATIVE_EXPORT KDeclarative
 public:
     explicit KDeclarative();
     ~KDeclarative();
+
+    void initialize();
+
+    void setDeclarativeEngine(QDeclarativeEngine *engine);
+    QDeclarativeEngine *declarativeEngine() const;
+
+    QScriptEngine *scriptEngine() const;
 
 private:
     KDeclarativePrivate *const d;

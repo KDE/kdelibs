@@ -19,20 +19,62 @@
 
 #include "kdeclarative.h"
 
+#include <QDeclarativeEngine>
+#include <QDeclarativeComponent>
+#include <QScriptEngine>
+#include <QWeakPointer>
+
 class KDeclarativePrivate
 {
 public:
-    
+    KDeclarativePrivate();
+
+    QWeakPointer<QDeclarativeEngine> declarativeEngine;
+    QWeakPointer<QScriptEngine> scriptEngine;
+    bool initialized;
 };
+
+KDeclarativePrivate::KDeclarativePrivate()
+    : initialized(false)
+{
+}
 
 KDeclarative::KDeclarative()
     : d(new KDeclarativePrivate)
 {
+    /*
+    //TODO: make possible to use a preexisting QDeclarativeEngine, due to the existence of the horrible qdeclarativeview class
+    d->engine = new QDeclarativeEngine(this);
+    d->component = new QDeclarativeComponent(d->engine, this);
+    */
 }
 
 KDeclarative::~KDeclarative()
 {
-    //kDebug() << objectName() << ": bye bye birdy! ";
     delete d;
 }
 
+
+void KDeclarative::setDeclarativeEngine(QDeclarativeEngine *engine)
+{
+    if (d->declarativeEngine.data() == engine) {
+        return;
+    }
+    d->initialized = false;
+    d->declarativeEngine = engine;
+}
+
+QDeclarativeEngine *KDeclarative::declarativeEngine() const
+{
+    return d->declarativeEngine.data();
+}
+
+void KDeclarative::initialize()
+{
+    d->initialized = true;
+}
+
+QScriptEngine *KDeclarative::scriptEngine() const
+{
+    return d->scriptEngine.data();
+}
