@@ -26,7 +26,7 @@ public:
 };
 
 KDeclarative::KDeclarative()
-    : d(new KDeclarative)
+    : d(new KDeclarativePrivate)
 {
 }
 

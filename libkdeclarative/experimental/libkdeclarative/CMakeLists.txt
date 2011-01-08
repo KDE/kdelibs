@@ -1,3 +1,9 @@
+find_package(KDE4 REQUIRED)
+
+include(KDE4Defaults)
+
+add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+
 
 set(kdeclarative_LIB_SRCS
     kdeclarative.cpp)
