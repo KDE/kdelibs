@@ -18,13 +18,12 @@
  */
 
 #include "engineaccess_p.h"
-#include "scriptenv.h"
+#include "kdeclarative.h"
 
-#include "plasmoid/declarativeappletscript.h"
 
-EngineAccess::EngineAccess(DeclarativeAppletScript *parent)
-    : QObject(parent),
-      m_appletScriptEngine(parent)
+EngineAccess::EngineAccess(KDeclarative *parent)
+    : QObject(0),
+      m_kDeclarative(parent)
 {
 }
 
@@ -34,7 +33,7 @@ EngineAccess::~EngineAccess()
 
 void EngineAccess::setEngine(QScriptValue val)
 {
-    m_appletScriptEngine->setEngine(val);
+    m_kDeclarative->d->setEngine(val);
 }
 
-#include "engineaccess.moc"
+#include "engineaccess_p.moc"

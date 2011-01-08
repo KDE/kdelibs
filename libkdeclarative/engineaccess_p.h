@@ -24,7 +24,7 @@
 
 #include <QScriptValue>
 
-class DeclarativeAppletScript;
+class KDeclarative;
 
 class EngineAccess : public QObject
 {
@@ -32,13 +32,13 @@ class EngineAccess : public QObject
 
 
 public:
-    EngineAccess(DeclarativeAppletScript *parent);
+    EngineAccess(KDeclarative *parent);
     ~EngineAccess();
 
     Q_INVOKABLE void setEngine(QScriptValue val);
 
 private:
-    DeclarativeAppletScript *m_appletScriptEngine;
+    KDeclarative *m_kDeclarative;
 
 };
 
