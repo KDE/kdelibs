@@ -202,6 +202,7 @@ install( FILES
   KFontDialog
   KFontRequester
   KFontSizeAction
+  KFontUtils
   KGenericFactory
   KGenericFactoryBase
   KGlobal
