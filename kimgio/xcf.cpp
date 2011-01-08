@@ -113,6 +113,10 @@ bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
             kDebug(399) << "XCF: read failure on header tag";
             return false;
 	}
+	if (qstrncmp(tag, "gimp xcf", 8) != 0) {
+            kDebug(399) << "XCF: read called on non-XCF file";
+            return false;
+	}
 
 	xcf_io >> xcf_image.width >> xcf_image.height >> xcf_image.type;
 
