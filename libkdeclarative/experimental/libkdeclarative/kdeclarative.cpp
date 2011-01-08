@@ -19,8 +19,14 @@
 
 #include "kdeclarative.h"
 
+class KDeclarativePrivate
+{
+public:
+    
+};
 
 KDeclarative::KDeclarative()
+    : d(new KDeclarative)
 {
 }
 

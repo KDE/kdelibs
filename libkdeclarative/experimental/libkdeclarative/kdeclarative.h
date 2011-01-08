@@ -20,6 +20,7 @@
 #ifndef KDECLARATIVE_H
 #define KDECLARATIVE_H
 
+#include "kdeclarative_export.h"
 
 class KDeclarativePrivate;
 
