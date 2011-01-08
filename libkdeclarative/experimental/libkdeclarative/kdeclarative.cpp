@@ -18,6 +18,7 @@
  */
 
 #include "kdeclarative.h"
+#include "engineaccess_p.h"
 
 #include <QDeclarativeEngine>
 #include <QDeclarativeComponent>

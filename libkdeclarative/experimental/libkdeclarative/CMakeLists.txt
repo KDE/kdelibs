@@ -11,7 +11,8 @@ include_directories(
    )
 
 set(kdeclarative_LIB_SRCS
-    kdeclarative.cpp)
+    kdeclarative.cpp
+    engineaccess.cpp)
 
 kde4_add_library(kdeclarative ${LIBRARY_TYPE} ${kdeclarative_LIB_SRCS})
 
