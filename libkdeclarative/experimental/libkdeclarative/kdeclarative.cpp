@@ -18,22 +18,18 @@
  */
 
 #include "kdeclarative.h"
+#include "kdeclarativeprivate_p.h"
 #include "engineaccess_p.h"
 
-#include <QDeclarativeEngine>
 #include <QDeclarativeComponent>
+#include <QDeclarativeContext>
+#include <QDeclarativeEngine>
+#include <QDeclarativeExpression>
 #include <QScriptEngine>
+#include <QScriptValueIterator>
 #include <QWeakPointer>
 
-class KDeclarativePrivate
-{
-public:
-    KDeclarativePrivate();
-
-    QWeakPointer<QDeclarativeEngine> declarativeEngine;
-    QWeakPointer<QScriptEngine> scriptEngine;
-    bool initialized;
-};
+#include <kdebug.h>
 
 KDeclarativePrivate::KDeclarativePrivate()
     : initialized(false)
@@ -72,6 +68,59 @@ QDeclarativeEngine *KDeclarative::declarativeEngine() const
 
 void KDeclarative::initialize()
 {
+    //Glorious hack:steal the engine
+    //create the access object
+    EngineAccess *engineAccess = new EngineAccess(this);
+    d->declarativeEngine.data()->rootContext()->setContextProperty("__engineAccess", engineAccess);
+
+    //make engineaccess set our d->scriptengine
+    QDeclarativeExpression *expr = new QDeclarativeExpression(d->declarativeEngine.data()->rootContext(), d->declarativeEngine.data()->rootContext()->contextObject(), "__engineAccess.setEngine(this)");
+    expr->evaluate();
+    delete expr;
+    engineAccess->deleteLater();
+
+    //fail?
+    if (!d->scriptEngine) {
+        kWarning() << "Failed to get the script engine";
+        return;
+    }
+
+    //change the old globalobject with a new read/write copy
+    QScriptValue originalGlobalObject = d->scriptEngine.data()->globalObject();
+
+    QScriptValue newGlobalObject = d->scriptEngine.data()->newObject();
+
+    QString eval = QLatin1String("eval");
+    QString version = QLatin1String("version");
+
+    {
+        QScriptValueIterator iter(originalGlobalObject);
+        QVector<QString> names;
+        QVector<QScriptValue> values;
+        QVector<QScriptValue::PropertyFlags> flags;
+        while (iter.hasNext()) {
+            iter.next();
+
+            QString name = iter.name();
+
+            if (name == version) {
+                continue;
+            }
+
+            if (name != eval) {
+                names.append(name);
+                values.append(iter.value());
+                flags.append(iter.flags() | QScriptValue::Undeletable);
+            }
+            newGlobalObject.setProperty(iter.scriptName(), iter.value());
+
+           // m_illegalNames.insert(name);
+        }
+
+    }
+
+    d->scriptEngine.data()->setGlobalObject(newGlobalObject);
+
     d->initialized = true;
 }
 

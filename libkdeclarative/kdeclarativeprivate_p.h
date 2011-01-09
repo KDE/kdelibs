@@ -1,5 +1,5 @@
 /*
- *   Copyright 2010 Marco Martin <mart@kde.org>
+ *   Copyright 2010 Marco Martin <mart@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -17,25 +17,21 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "engineaccess_p.h"
+#ifndef KDECLARATIVE_P_H
+#define KDECLARATIVE_P_H
+
 #include "kdeclarative.h"
-#include "kdeclarativeprivate_p.h"
 
-#include <QScriptEngine>
+#include <QWeakPointer>
 
-EngineAccess::EngineAccess(KDeclarative *parent)
-    : QObject(0),
-      m_kDeclarative(parent)
+class KDeclarativePrivate
 {
-}
+public:
+    KDeclarativePrivate();
 
-EngineAccess::~EngineAccess()
-{
-}
+    QWeakPointer<QDeclarativeEngine> declarativeEngine;
+    QWeakPointer<QScriptEngine> scriptEngine;
+    bool initialized;
+};
 
-void EngineAccess::setEngine(QScriptValue val)
-{
-    m_kDeclarative->d->scriptEngine = val.engine();
-}
-
-#include "engineaccess_p.moc"
+#endif

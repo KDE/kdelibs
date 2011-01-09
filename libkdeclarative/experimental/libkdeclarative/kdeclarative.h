@@ -42,6 +42,7 @@ public:
 
 private:
     KDeclarativePrivate *const d;
+    friend class EngineAccess;
 };
 
 #endif
