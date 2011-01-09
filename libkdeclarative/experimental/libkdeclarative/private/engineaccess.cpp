@@ -19,7 +19,7 @@
 
 #include "engineaccess_p.h"
 #include "kdeclarative.h"
-#include "kdeclarativeprivate_p.h"
+#include "kdeclarative_p.h"
 
 #include <QScriptEngine>
 

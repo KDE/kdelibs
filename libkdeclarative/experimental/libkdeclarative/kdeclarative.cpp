@@ -18,8 +18,8 @@
  */
 
 #include "kdeclarative.h"
-#include "kdeclarativeprivate_p.h"
-#include "engineaccess_p.h"
+#include "private/kdeclarative_p.h"
+#include "private/engineaccess_p.h"
 
 #include <QDeclarativeComponent>
 #include <QDeclarativeContext>
