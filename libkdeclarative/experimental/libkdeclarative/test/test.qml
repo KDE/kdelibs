@@ -28,5 +28,12 @@ Rectangle {
         print(testObject.prop)
         testObject.prop = "New text"
         print(testObject.prop)
+        //QtScript binded elements don't appear to notify
+        textElement.text = testObject.prop
+    }
+    Text {
+        id: textElement
+        anchors.fill: parent
+        text: testObject.prop
     }
 }

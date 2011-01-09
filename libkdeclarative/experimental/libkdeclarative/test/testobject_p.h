@@ -25,18 +25,22 @@
 class TestObject : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString prop READ prop WRITE setProp)
+    Q_PROPERTY(QString prop READ prop WRITE setProp NOTIFY propChanged)
 
 public:
     void setProp(const QString &prop)
     {
         m_prop = prop;
+        emit propChanged();
     }
 
     QString prop() const
     {
         return m_prop;
     }
+
+Q_SIGNALS:
+    void propChanged();
 
 private:
     QString m_prop;
