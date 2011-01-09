@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
     KDeclarative kdeclarative;
     kdeclarative.setDeclarativeEngine(view.engine());
     kdeclarative.initialize();
+    //binds things like kconfig and icons
+    kdeclarative.setupBindings();
 
     //If all gone well, the QScriptEngine has been extracted
     QScriptEngine *scriptEngine = kdeclarative.scriptEngine();

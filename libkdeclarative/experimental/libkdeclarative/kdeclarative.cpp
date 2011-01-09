@@ -18,6 +18,7 @@
  */
 
 #include "kdeclarative.h"
+#include "bindings/i18n_p.h"
 #include "private/kdeclarative_p.h"
 #include "private/engineaccess_p.h"
 
@@ -30,6 +31,11 @@
 #include <QWeakPointer>
 
 #include <kdebug.h>
+#include <kurl.h>
+
+void registerNonGuiMetaTypes(QScriptEngine *engine);
+QScriptValue constructIconClass(QScriptEngine *engine);
+QScriptValue constructKUrlClass(QScriptEngine *engine);
 
 KDeclarativePrivate::KDeclarativePrivate()
     : initialized(false)
@@ -39,11 +45,6 @@ KDeclarativePrivate::KDeclarativePrivate()
 KDeclarative::KDeclarative()
     : d(new KDeclarativePrivate)
 {
-    /*
-    //TODO: make possible to use a preexisting QDeclarativeEngine, due to the existence of the horrible qdeclarativeview class
-    d->engine = new QDeclarativeEngine(this);
-    d->component = new QDeclarativeComponent(d->engine, this);
-    */
 }
 
 KDeclarative::~KDeclarative()
@@ -125,6 +126,27 @@ void KDeclarative::initialize()
     d->scriptEngine.data()->setGlobalObject(newGlobalObject);
 
     d->initialized = true;
+}
+
+void KDeclarative::setupBindings()
+{
+    QScriptEngine *engine = d->scriptEngine.data();
+    if (!engine) {
+        return;
+    }
+
+    QScriptValue global = engine->globalObject();
+
+    //KConfig and KJob
+    registerNonGuiMetaTypes(d->scriptEngine.data());
+
+    // Stuff from Qt
+    global.setProperty("QIcon", constructIconClass(engine));
+
+    // Add stuff from KDE libs
+    bindI18N(engine);
+    qScriptRegisterSequenceMetaType<KUrl::List>(engine);
+    global.setProperty("Url", constructKUrlClass(engine));
 }
 
 QScriptEngine *KDeclarative::scriptEngine() const

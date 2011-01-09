@@ -1,8 +1,8 @@
 /*
- *   Copyright 2011 Marco Martin <mart@kde.org>
+ *   Copyright 2009 Aaron Seigo <aseigo@kde.org>
  *
  *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as
+ *   it under the terms of the GNU General Public License as
  *   published by the Free Software Foundation; either version 2, or
  *   (at your option) any later version.
  *
@@ -17,33 +17,19 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef KDECLARATIVE_H
-#define KDECLARATIVE_H
+#ifndef JAVASCRIPTBINDI18N_H
+#define JAVASCRIPTBINDI18N_H
 
-#include "kdeclarative_export.h"
+#include <QScriptValue>
 
-class QDeclarativeEngine;
+class QScriptContext;
 class QScriptEngine;
 
-class KDeclarativePrivate;
-
-class KDECLARATIVE_EXPORT KDeclarative
-{
-public:
-    explicit KDeclarative();
-    ~KDeclarative();
-
-    void initialize();
-    void setupBindings();
-
-    void setDeclarativeEngine(QDeclarativeEngine *engine);
-    QDeclarativeEngine *declarativeEngine() const;
-
-    QScriptEngine *scriptEngine() const;
-
-private:
-    KDeclarativePrivate *const d;
-    friend class EngineAccess;
-};
+QScriptValue jsi18n(QScriptContext *context, QScriptEngine *engine);
+QScriptValue jsi18nc(QScriptContext *context, QScriptEngine *engine);
+QScriptValue jsi18np(QScriptContext *context, QScriptEngine *engine);
+QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine);
+void bindI18N(QScriptEngine *engine);
 
 #endif
+

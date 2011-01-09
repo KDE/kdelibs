@@ -26,10 +26,15 @@ Rectangle {
 
     Component.onCompleted: {
         print(testObject.prop)
-        testObject.prop = "New text"
+        testObject.prop = i18n("New text")
         print(testObject.prop)
         //QtScript binded elements don't appear to notify
         textElement.text = testObject.prop
+
+        //test urls
+        var url = new Url("http://www.kde.org")
+        print(url.protocol)
+        print(url.host)
     }
     Text {
         id: textElement
