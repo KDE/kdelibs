@@ -18,6 +18,8 @@
  */
 
 import Qt 4.7
+import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.plasma.graphicswidgets 0.1 as PlasmaWidgets
 
 Rectangle {
     width: 300
@@ -35,10 +37,18 @@ Rectangle {
         var url = new Url("http://www.kde.org")
         print(url.protocol)
         print(url.host)
+
+        //test icons
+        iconWidget.icon = new QIcon("konqueror")
     }
-    Text {
-        id: textElement
+    Column {
         anchors.fill: parent
-        text: testObject.prop
+        Text {
+            id: textElement
+            text: testObject.prop
+        }
+        PlasmaWidgets.IconWidget {
+            id: iconWidget
+        }
     }
 }

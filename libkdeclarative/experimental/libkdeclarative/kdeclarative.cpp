@@ -31,6 +31,8 @@
 #include <QWeakPointer>
 
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 #include <kurl.h>
 
 void registerNonGuiMetaTypes(QScriptEngine *engine);
@@ -133,6 +135,11 @@ void KDeclarative::setupBindings()
     QScriptEngine *engine = d->scriptEngine.data();
     if (!engine) {
         return;
+    }
+
+    //tell to the engine to search for inport in the kde4 plugin dirs
+    foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "imports")) {
+        d->declarativeEngine.data()->addImportPath(importPath);
     }
 
     QScriptValue global = engine->globalObject();
