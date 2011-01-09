@@ -1,5 +1,5 @@
 /*
- *   Copyright 2011 Marco Martin <mart@kde.org>
+ *   Copyright 2011 Marco Martin <mart@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -17,21 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef KDECLARATIVE_P_H
-#define KDECLARATIVE_P_H
+import Qt 4.7
 
-#include "kdeclarative.h"
-
-#include <QWeakPointer>
-
-class KDeclarativePrivate
-{
-public:
-    KDeclarativePrivate();
-
-    QWeakPointer<QDeclarativeEngine> declarativeEngine;
-    QWeakPointer<QScriptEngine> scriptEngine;
-    bool initialized;
-};
-
-#endif
+Rectangle {
+    width: 300
+    height: 300
+    color: "red"
+}

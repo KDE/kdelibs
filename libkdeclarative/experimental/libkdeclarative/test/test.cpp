@@ -1,5 +1,5 @@
 /*
- *   Copyright 2011 Marco Martin <mart@kde.org>
+ *   Copyright 2011 Marco Martin <mart@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -17,21 +17,23 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef KDECLARATIVE_P_H
-#define KDECLARATIVE_P_H
+#include <QApplication>
+#include <QDeclarativeView>
+#include <QDeclarativeContext>
 
-#include "kdeclarative.h"
+#include <kdeclarative.h>
 
-#include <QWeakPointer>
-
-class KDeclarativePrivate
+int main(int argc, char *argv[])
 {
-public:
-    KDeclarativePrivate();
+    QApplication app(argc, argv);
 
-    QWeakPointer<QDeclarativeEngine> declarativeEngine;
-    QWeakPointer<QScriptEngine> scriptEngine;
-    bool initialized;
-};
+    QDeclarativeView view;
+    QDeclarativeContext *context = view.rootContext();
+    context->setContextProperty("backgroundColor",
+                                QColor(Qt::yellow));
 
-#endif
+    view.setSource(QUrl::fromLocalFile("test.qml"));
+    view.show();
+
+    return app.exec();
+}

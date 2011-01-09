@@ -18,6 +18,15 @@ kde4_add_library(kdeclarative ${LIBRARY_TYPE} ${kdeclarative_LIB_SRCS})
 
 target_link_libraries(kdeclarative ${QT_QTDECLARATIVE_LIBRARY})
 
+
+## test
+set(kdeclarative_TEST_SRCS
+    test/test.cpp)
+
+kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
+
+target_link_libraries(kdeclarativetest kdeclarative ${QT_QTDECLARATIVE_LIBRARY})
+
 ## install
 
 set(kdeclarative_LIB_HEADERS
@@ -26,3 +35,6 @@ set(kdeclarative_LIB_HEADERS
 install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ COMPONENT Devel)
 
 install(TARGETS kdeclarative EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+
+install(FILES "test/test.qml" DESTINATION ${CMAKE_BINARY_DIR})
