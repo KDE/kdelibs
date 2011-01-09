@@ -99,7 +99,7 @@ class Client : public QObject
 
     private:
         friend class ClientPrivate;
-        Q_PRIVATE_SLOT(d, void _uq_monitorReadyRead(int fd));
+        Q_PRIVATE_SLOT(d, void _uq_monitorReadyRead(int fd))
         ClientPrivate *d;
 };
 

@@ -72,6 +72,6 @@ namespace KRecentDirs
      * @since 4.6
      */
     KIO_EXPORT void add(const QString &fileClass, const QString &directory);
-};
+}
 
 #endif

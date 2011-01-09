@@ -75,7 +75,7 @@ inline QStringList listFromListEntry(struct udev_list_entry *list)
         ret << QString::fromLatin1(udev_list_entry_get_name(entry));
     }
     return ret;
-};
+}
 
 }
 
