@@ -1,3 +1,5 @@
+project(kdeclarative)
+
 find_package(KDE4 REQUIRED)
 
 include(KDE4Defaults)
@@ -16,6 +18,8 @@ set(kdeclarative_LIB_SRCS
 
 kde4_add_library(kdeclarative ${LIBRARY_TYPE} ${kdeclarative_LIB_SRCS})
 
+set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
+
 target_link_libraries(kdeclarative ${QT_QTDECLARATIVE_LIBRARY})
 
 
@@ -25,7 +29,7 @@ set(kdeclarative_TEST_SRCS
 
 kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
 
-target_link_libraries(kdeclarativetest kdeclarative ${QT_QTDECLARATIVE_LIBRARY})
+target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QTDECLARATIVE_LIBRARY})
 
 ## install
 

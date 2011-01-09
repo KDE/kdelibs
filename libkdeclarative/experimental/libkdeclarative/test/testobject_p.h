@@ -17,16 +17,29 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import Qt 4.7
+#ifndef TESTOBJECT_P_H
+#define TESTOBJECT_P_H
 
-Rectangle {
-    width: 300
-    height: 300
-    color: "red"
+#include <QObject>
 
-    Component.onCompleted: {
-        print(testObject.prop)
-        testObject.prop = "New text"
-        print(testObject.prop)
+class TestObject : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QString prop READ prop WRITE setProp)
+
+public:
+    void setProp(const QString &prop)
+    {
+        m_prop = prop;
     }
-}
+
+    QString prop() const
+    {
+        return m_prop;
+    }
+
+private:
+    QString m_prop;
+};
+
+#endif

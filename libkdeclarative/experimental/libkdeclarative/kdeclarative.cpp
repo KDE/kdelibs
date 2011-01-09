@@ -77,6 +77,9 @@ void KDeclarative::initialize()
     QDeclarativeExpression *expr = new QDeclarativeExpression(d->declarativeEngine.data()->rootContext(), d->declarativeEngine.data()->rootContext()->contextObject(), "__engineAccess.setEngine(this)");
     expr->evaluate();
     delete expr;
+
+    //we don't need engineaccess anymore
+    d->declarativeEngine.data()->rootContext()->setContextProperty("__engineAccess", 0);
     engineAccess->deleteLater();
 
     //fail?

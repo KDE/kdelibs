@@ -20,8 +20,11 @@
 #include <QApplication>
 #include <QDeclarativeView>
 #include <QDeclarativeContext>
+#include <QScriptEngine>
 
 #include <kdeclarative.h>
+
+#include "testobject_p.h"
 
 int main(int argc, char *argv[])
 {
@@ -32,8 +35,25 @@ int main(int argc, char *argv[])
     context->setContextProperty("backgroundColor",
                                 QColor(Qt::yellow));
 
+    KDeclarative kdeclarative;
+    kdeclarative.setDeclarativeEngine(view.engine());
+    kdeclarative.initialize();
+
+    //If all gone well, the QScriptEngine has been extracted
+    QScriptEngine *scriptEngine = kdeclarative.scriptEngine();
+    Q_ASSERT(scriptEngine);
+
+    //Bind a test QObject in the "QtScript way"
+    QScriptValue global = scriptEngine->globalObject();
+    TestObject *testObject = new TestObject();
+    QScriptValue testValue = scriptEngine->newQObject(testObject);
+    testValue.setScope(global);
+    global.setProperty("testObject", testValue);
+
     view.setSource(QUrl::fromLocalFile("test.qml"));
     view.show();
 
     return app.exec();
 }
+
+#include "testobject_p.moc"
