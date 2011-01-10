@@ -61,7 +61,6 @@
 // kdeui
 #include "kicontheme.h"
 #include "kiconeffect.h"
-#include "kiconcache.h"
 #include "k3icon_p.h"
 
 // Used to make cache keys for icons with no group. Result type is QString*
@@ -73,8 +72,6 @@ K_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1
 // support...). So, we have no chance for now. Let's disable svg rendering unconditionally.
 // (ereslibre)
 #undef KDE_QT_SVG_RENDERER_FIXED
-
-//#define NO_LAZYLOAD_ICONTHEME
 
 /**
  * Checks for relative paths quickly on UNIX-alikes, slowly on everything else.
@@ -170,7 +167,6 @@ public:
     KIconLoaderPrivate(KIconLoader *q)
         : q(q)
         , mpGroups(0)
-        , mIconThemeCache(0)
         , mIconCache(0)
     {
     }
@@ -181,7 +177,6 @@ public:
         deleted when the elements of d->links are deleted */
         qDeleteAll(links);
         delete[] mpGroups;
-        delete mIconThemeCache;
         delete mIconCache;
     }
 
@@ -295,7 +290,6 @@ public:
     KStandardDirs *mpDirs;
     KIconEffect mpEffect;
     QList<KIconThemeNode *> links;
-    KIconCache* mIconThemeCache;
 
     // This shares the icons across all processes
     KSharedDataCache* mIconCache;
@@ -482,42 +476,31 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
     // smaller.
     mPixmapCache.setMaxCost(10 * 1024 * 1024);
 
-    // Initialize icon theme cache
-    mIconThemeCache = new KIconCache;
-    if (!mIconThemeCache->isValid()) {
-        initIconThemes();
-        QList<KIconTheme*> allThemes;
-        foreach (KIconThemeNode* node, links) {
-            allThemes.append(node->theme);
-        }
-        mIconThemeCache->setThemeInfo(allThemes);
-    }
-
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", "Dialog", 0L };
     KSharedConfig::Ptr config = KGlobal::config();
 
     // loading config and default sizes
+    initIconThemes();
+    KIconTheme *defaultSizesTheme = links.empty() ? 0 : links.first()->theme;
     mpGroups = new KIconGroup[(int) KIconLoader::LastGroup];
-    for (KIconLoader::Group i=KIconLoader::FirstGroup; i<KIconLoader::LastGroup; ++i)
-    {
-        if (groups[i] == 0L)
+    for (KIconLoader::Group i = KIconLoader::FirstGroup; i < KIconLoader::LastGroup; ++i) {
+        if (groups[i] == 0L) {
             break;
+        }
 
         KConfigGroup cg(config, QLatin1String(groups[i]) + "Icons");
         mpGroups[i].size = cg.readEntry("Size", 0);
-        if (QPixmap::defaultDepth()>8)
+        if (QPixmap::defaultDepth() > 8) {
             mpGroups[i].alphaBlending = cg.readEntry("AlphaBlending", true);
-        else
+        } else {
             mpGroups[i].alphaBlending = false;
+        }
 
-        if (!mpGroups[i].size)
-            mpGroups[i].size = mIconThemeCache->defaultIconSize(i);
+        if (!mpGroups[i].size && defaultSizesTheme) {
+            mpGroups[i].size = defaultSizesTheme->defaultSize(i);
+        }
     }
-
-#ifdef NO_LAZYLOAD_ICONTHEME
-    initIconThemes();
-#endif
 }
 
 bool KIconLoaderPrivate::initIconThemes()
@@ -1187,7 +1170,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                               QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
-    bool unknownIcon = false;
     bool favIconOverlay = false;
 
     if (size < 0 || _name.isEmpty())
