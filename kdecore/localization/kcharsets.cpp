@@ -405,39 +405,6 @@ static const int builtin_indices[] = {
      573,  450,  577,  364,   -1
 };
 
-#if 0
-// some different names for the encodings defined in the charmaps files.
-// even though the charmap file names are all uppercase, the names are all lowercase here.
-/* input data for generate_string_table.pl:
-cp852
-ibm852
-cp-852
-ibm852
-x-cp-852
-ibm852
-windows852
-ibm852
-windows-852
-ibm852
-x-windows-852
-ibm852
- */
-static const char aliases_string[] =
-    "cp852\0"
-    "ibm852\0"
-    "cp-852\0"
-    "x-cp-852\0"
-    "windows852\0"
-    "windows-852\0"
-    "x-windows-852\0"
-    "\0";
-
-static const int aliases_indices[] = {
-       0,    6,   13,    6,   20,    6,   29,    6,
-      40,    6,   52,    6,   -1
-};
-#endif
-
 /*
  * some last resort hints in case the charmap file couldn't be found.
  * This gives at least a partial conversion and helps making things readable.
@@ -817,91 +784,6 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
         d->codecForNameDict.insert( n, codec );
         return codec;
     }
-
-#ifdef __GNUC__
-#warning is it still useful with Qt4 ?
-#endif
-	//don't forget to remove the #if 0 on a few structs at the top also if you reenable that ;)  (search for 852 )
-	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not
-	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
-        // Yes, it is useful (for examples EBCDIC in Kate or codepages for KOffice filters from/to MS formats) (goutte)
-#if 0
-    QString dir;
-    {
-    KConfigGroup cg( KGlobal::config(), "i18n" );
-    dir = cg.readPathEntry("i18ndir", QLatin1String("/usr/share/i18n/charmaps"));
-    }
-
-    // these are codecs not included in Qt. They can be build up if the corresponding charmap
-    // is available in the charmap directory.
-    cname = kcharsets_array_search< Aliases, const char* >( aliases, name.data());
-
-    if(cname.isEmpty())
-        cname = name;
-    cname = cname.toUpper();
-
-    const QString basicName = QLatin1String(cname);
-    kDebug() << endl << " Trying to find " << cname << " in " << dir;
-
-    QString charMapFileName;
-    bool gzipped = false;
-    QDir qdir(dir);
-    if (!qdir.exists()) {
-        // The directory for the charmaps does not even exist... (That is common!)
-    }
-    else if (qdir.exists(basicName, false)) {
-        charMapFileName = basicName;
-    }
-    else if (qdir.exists(basicName+".gz", false)) {
-        charMapFileName = basicName + ".gz";
-        gzipped = true;
-    }
-    else {
-        // Check if we are asking a code page
-        // If yes, then check "CP99999" and "IBM99999"
-        // First we need to find the number of the codepage
-        QRegExp regexp("^(X-)?(CP|IBM)(-| )?(0-9)+");
-        if ( regexp.search(basicName) != -1) {
-            const QString num = regexp.cap(4);
-            if (num.isEmpty()) {
-                // No number, not a code page (or something went wrong)
-            }
-            else if (qdir.exists("IBM"+num)) {
-                charMapFileName = "IBM"+num;
-            }
-            else if (qdir.exists("IBM"+num+".gz")) {
-                charMapFileName = "IBM"+num+".gz";
-                gzipped = true;
-            }
-            else if (qdir.exists("CP"+num)) {
-                charMapFileName = "CP"+num;
-            }
-            else if (qdir.exists("CP"+num+".gz")) {
-                charMapFileName = "CP"+num+".gz";
-                gzipped = true;
-            }
-        }
-    }
-
-    if (gzipped && !charMapFileName.isEmpty()) {
-        KFilterDev gzip(dir + '/' + charMapFileName);
-        if (gzip.open(QIODevice::ReadOnly)) {
-            kDebug() << "Loading gzipped charset...";
-            codec = QTextCodec::loadCharmap(&gzip);
-            gzip.close();
-        }
-        else
-            kWarning() << "Could not open gzipped charset!";
-    }
-    else if (!charMapFileName.isEmpty()) {
-        codec = QTextCodec::loadCharmapFile(dir + '/' + charMapFileName);
-    }
-
-    if(codec) {
-        d->codecForNameDict.insert( n, codec );
-        return codec;
-    }
-#endif
 
     // this also failed, the last resort is now to take some compatibility charmap
     // ### TODO: while emergency conversions might be useful at read, it is not sure if they should be done if the application plans to write.
