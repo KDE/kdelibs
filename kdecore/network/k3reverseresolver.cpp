@@ -123,6 +123,7 @@ KReverseResolver::~KReverseResolver()
 {
   if (d->worker)
     d->worker->m_parent = 0L;
+  delete d;
 }
 
 bool KReverseResolver::isRunning() const
