@@ -1067,6 +1067,10 @@ KSslErrorUiData::KSslErrorUiData(const KSslErrorUiData &other)
  : d(new Private(*other.d))
 {}
 
+KSslErrorUiData::~KSslErrorUiData()
+{
+    delete d;
+}
 
 KSslErrorUiData &KSslErrorUiData::operator=(const KSslErrorUiData &other)
 {

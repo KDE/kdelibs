@@ -385,6 +385,11 @@ public:
     KSslErrorUiData(const KTcpSocket *socket);
     KSslErrorUiData(const KSslErrorUiData &other);
     KSslErrorUiData &operator=(const KSslErrorUiData &);
+    /**
+     * Destructor
+     * @since 4.7
+     */
+    ~KSslErrorUiData();
     class Private;
 private:
     friend class Private;
