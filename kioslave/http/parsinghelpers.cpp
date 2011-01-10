@@ -374,7 +374,9 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
                 ++pos;
                 endquote = true;
                 break;
-            }  else {
+            } else if (!str[pos].isPrint()) { // Don't allow CTL's RFC 2616 sec 2.2
+                break;
+            } else {
                 out += str[pos];
                 ++pos;
             }
