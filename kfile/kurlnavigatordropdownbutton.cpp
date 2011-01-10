@@ -26,6 +26,9 @@
 #include <QtGui/QPainter>
 #include <QtGui/QStyleOption>
 
+namespace KDEPrivate
+{
+
 KUrlNavigatorDropDownButton::KUrlNavigatorDropDownButton(QWidget* parent) :
     KUrlNavigatorButtonBase(parent)
 {
@@ -64,7 +67,8 @@ void KUrlNavigatorDropDownButton::paintEvent(QPaintEvent* event)
     } else {
         style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
     }
-
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatordropdownbutton_p.moc"

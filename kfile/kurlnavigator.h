@@ -37,9 +37,8 @@ class QMouseEvent;
  * @brief Widget that allows to navigate through the paths of an URL.
  *
  * The URL navigator offers two modes:
- * - Editable:     Represents the 'classic' mode, where the URL of the location
- *                 is editable inside a line editor. By pressing RETURN
- *                 the URL will get activated.
+ * - Editable:     The URL of the location is editable inside an editor.
+ *                 By pressing RETURN the URL will get activated.
  * - Non editable ("breadcrumb view"): The URL of the location is represented by
  *                 a number of buttons, where each button represents a path
  *                 of the URL. By clicking on a button the path will get
@@ -113,7 +112,7 @@ public:
      * data << QPoint(x, y);
      * data << ...;
      * ...
-     * urlNavigator::saveLocationState(state);
+     * urlNavigator->saveLocationState(state);
      * \endcode
      *
      * @since 4.5
@@ -164,6 +163,8 @@ public:
      *
      * @see KUrlNavigator::setHomeUrl()
      */
+    // KDE5: Remove the home-property. It is sufficient to invoke
+    // KUrlNavigator::setLocationUrl(homeUrl) on application-side.
     void goHome();
 
     /**
@@ -171,6 +172,8 @@ public:
      * home URL is set, the default home path of the user is used.
      * @since 4.5
      */
+    // KDE5: Remove the home-property. It is sufficient to invoke
+    // KUrlNavigator::setLocationUrl(homeUrl) on application-side.
     void setHomeUrl(const KUrl& url);
 
     KUrl homeUrl() const;
@@ -265,6 +268,8 @@ public:
      * If an application supports only some special protocols, they can be set
      * with \a protocols .
      */
+    // KDE5: Think about removing the custom-protocols-property. It had been used
+    // only by one application currently which uses a different approach now.
     void setCustomProtocols(const QStringList& protocols);
 
     /**
@@ -272,13 +277,12 @@ public:
      */
     QStringList customProtocols() const;
 
+#if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
     /**
      * @return     The current URL of the location.
      * @deprecated Use KUrlNavigator::locationUrl() instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED const KUrl& url() const;
-#endif
 
     /**
      * @return The portion of the current URL up to the path part given
@@ -290,9 +294,7 @@ public:
      * - index >= 3: /home/peter/Documents/Music
      * @deprecated It should not be necessary for a client of KUrlNavigator to query this information.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED KUrl url(int index) const;
-#endif
 
     /**
      * @return URL for the history element with the index \a historyIndex.
@@ -300,29 +302,22 @@ public:
      * @since 4.3
      * @deprecated Use KUrlNavigator::locationUrl(historyIndex) instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED KUrl historyUrl(int historyIndex) const;
-#endif
 
     /**
      * @return The saved root URL for the current URL (see KUrlNavigator::saveRootUrl()).
      * @deprecated Use KUrlNavigator::locationState() instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED const KUrl& savedRootUrl() const;
-#endif
 
     /**
      * @return The saved contents position of the upper left corner
      *         for the current URL.
      * @deprecated Use KUrlNavigator::locationState() instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED QPoint savedPosition() const;
-#endif
 
     /** @deprecated Use setHomeUrl(const KUrl& url) instead. */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setHomeUrl(const QString& homeUrl);
 #endif
 
@@ -343,30 +338,28 @@ public Q_SLOTS:
      */
     void requestActivation();
 
-    /* @see QWidget::setFocus() */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    // KDE5: Remove and listen for focus-signal instead
     void setFocus();
+#endif
 
+#if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
     /**
      * Sets the location to \a url.
      * @deprecated Use KUrlNavigator::setLocationUrl(url).
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void setUrl(const KUrl& url);
-#endif
 
     /**
      * Saves the used root URL of the content for the current history element.
      * @deprecated Use KUrlNavigator::saveLocationState() instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void saveRootUrl(const KUrl& url);
-#endif
 
     /**
      * Saves the coordinates of the contents for the current history element.
      * @deprecated Use KUrlNavigator::saveLocationState() instead.
      */
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void savePosition(int x, int y);
 #endif
 
@@ -426,6 +419,7 @@ Q_SIGNALS:
      */
     void tabRequested(const KUrl& url);
 
+#if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
     /**
      * Is emitted if the URLs \a urls have been dropped
      * to the destination \a destination.
@@ -435,13 +429,13 @@ Q_SIGNALS:
      */
     // KDE5: remove, as the signal has been replaced by
     // urlsDropped(const KUrl& destination, QDropEvent* event)
-#ifndef KDE_NO_DEPRECATED
     KDE_DEPRECATED void urlsDropped(const KUrl::List& urls,
                                     const KUrl& destination);
 #endif
 
 protected:
-    /*
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    /**
      * If the Escape key is pressed, the navigation bar should switch
      * to the breadcrumb view.
      * @see QWidget::keyPressEvent()
@@ -449,21 +443,21 @@ protected:
     virtual void keyPressEvent(QKeyEvent* event);
 
     /**
-     * Reimplemented for internal purposes
+     * Reimplemented for internal purposes.
      */
     virtual void keyReleaseEvent(QKeyEvent* event);
 
-    /*
+    /**
      * Paste the clipboard content as URL, if the middle mouse
      * button has been clicked.
      * @see QWidget::mouseReleaseEvent()
      */
     virtual void mouseReleaseEvent(QMouseEvent* event);
 
-    /* @see QWidget::resizeEvent() */
     virtual void resizeEvent(QResizeEvent* event);
 
     virtual bool eventFilter(QObject* watched, QEvent* event);
+#endif
 
 private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed())

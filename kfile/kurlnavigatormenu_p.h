@@ -23,10 +23,15 @@
 
 #include <kmenu.h>
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Provides drop-down menus for the URL navigator.
  *
  * The implementation extends KMenu with drag & drop support.
+ *
+ * @internal
  */
 class KUrlNavigatorMenu : public KMenu
 {
@@ -55,5 +60,7 @@ protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
 };
+
+} // namespace KDEPrivate
 
 #endif

@@ -34,6 +34,9 @@
 #include <QtGui/QPixmap>
 #include <kicon.h>
 
+namespace KDEPrivate
+{
+
 KUrlNavigatorPlacesSelector::KUrlNavigatorPlacesSelector(QWidget* parent, KFilePlacesModel* placesModel) :
     KUrlNavigatorButtonBase(parent),
     m_selectedItem(-1),
@@ -117,8 +120,7 @@ void KUrlNavigatorPlacesSelector::updateSelection(const KUrl& url)
         m_selectedItem = index.row();
         m_selectedUrl = url;
         setIcon(m_placesModel->icon(index));
-    }
-    else {
+    } else {
         m_selectedItem = -1;
         // No bookmark has been found which matches to the given Url. Show
         // a generic folder icon as pixmap for indication:
@@ -213,8 +215,7 @@ void KUrlNavigatorPlacesSelector::activatePlace(QAction* action)
         m_lastClickedIndex = index;
         m_placesModel->requestSetup(index);
         return;
-    }
-    else if (index.isValid()) {
+    } else if (index.isValid()) {
         m_selectedItem = index.row();
         setIcon(m_placesModel->icon(index));
         updateTeardownAction();
@@ -224,7 +225,7 @@ void KUrlNavigatorPlacesSelector::activatePlace(QAction* action)
 
 void KUrlNavigatorPlacesSelector::onStorageSetupDone(const QModelIndex &index, bool success)
 {
-    if (m_lastClickedIndex==index)  {
+    if (m_lastClickedIndex == index)  {
         if (success) {
             m_selectedItem = index.row();
             setIcon(m_placesModel->icon(index));
@@ -234,6 +235,8 @@ void KUrlNavigatorPlacesSelector::onStorageSetupDone(const QModelIndex &index, b
         m_lastClickedIndex = QPersistentModelIndex();
     }
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatorplacesselector_p.moc"
 

@@ -35,6 +35,9 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStyleOption>
 
+namespace KDEPrivate
+{
+
 QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_subDirsMenu;
 
 KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
@@ -599,5 +602,6 @@ void KUrlNavigatorButton::initMenu(KUrlNavigatorMenu* menu, int startIndex)
     }
 }
 
+} // namespace KDEPrivate
 
 #include "kurlnavigatorbutton_p.moc"

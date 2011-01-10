@@ -23,6 +23,9 @@
 
 #include <QtGui/QKeyEvent>
 
+namespace KDEPrivate
+{
+
 KUrlNavigatorMenu::KUrlNavigatorMenu(QWidget* parent) :
     KMenu(parent)
 {
@@ -65,5 +68,7 @@ void KUrlNavigatorMenu::mouseReleaseEvent(QMouseEvent* event)
     }
     KMenu::mouseReleaseEvent(event);
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatormenu_p.moc"

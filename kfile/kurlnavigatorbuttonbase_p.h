@@ -27,6 +27,9 @@
 class KUrl;
 class QEvent;
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Base class for buttons of the URL navigator.
  *
@@ -79,5 +82,7 @@ private:
     bool m_active;
     int m_displayHint;
 };
+
+} // namespace KDEPrivate
 
 #endif

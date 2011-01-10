@@ -27,6 +27,9 @@
 
 class QMenu;
 
+namespace KDEPrivate
+{
+
 /**
  * @brief A combobox listing available protocols.
  *
@@ -79,5 +82,7 @@ private:
     QStringList m_protocols;
     QHash<QString, ProtocolCategory> m_categories;
 };
+
+} // namespace KDEPrivate
 
 #endif

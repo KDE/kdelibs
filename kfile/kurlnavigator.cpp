@@ -53,6 +53,8 @@
 
 #include <fixx11h.h>
 
+using namespace KDEPrivate;
+
 struct LocationData
 {
     KUrl url;

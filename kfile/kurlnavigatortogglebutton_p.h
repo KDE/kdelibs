@@ -23,6 +23,9 @@
 #include "kurlnavigatorbuttonbase_p.h"
 #include <QtGui/QPixmap>
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Represents the button of the URL navigator to switch to
  *        the editable mode.
@@ -52,5 +55,7 @@ private slots:
 private:
     QPixmap m_pixmap;
 };
+
+} // namespace KDEPrivate
 
 #endif

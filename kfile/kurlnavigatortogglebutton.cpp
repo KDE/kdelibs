@@ -27,6 +27,9 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QApplication>
 
+namespace KDEPrivate
+{
+
 KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
     KUrlNavigatorButtonBase(parent)
 {
@@ -97,5 +100,7 @@ void KUrlNavigatorToggleButton::updateCursor()
 {
     setCursor(isChecked() ? Qt::ArrowCursor : Qt::IBeamCursor);
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatortogglebutton_p.moc"

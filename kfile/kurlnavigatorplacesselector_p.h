@@ -29,6 +29,9 @@
 class KFilePlacesModel;
 class KMenu;
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Allows to select a bookmark from a popup menu.
  *
@@ -36,6 +39,7 @@ class KMenu;
  * inside the bookmark selector.
  *
  * @see KUrlNavigator
+ * @internal
  */
 class KUrlNavigatorPlacesSelector : public KUrlNavigatorButtonBase
 {
@@ -104,5 +108,7 @@ private:
     KFilePlacesModel* m_placesModel;
     KUrl m_selectedUrl;
 };
+
+} // namespace KDEPrivate
 
 #endif

@@ -22,6 +22,9 @@
 
 #include "kurlnavigatorbuttonbase_p.h"
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Button of the URL navigator which offers a drop down menu
  *        of hidden paths.
@@ -43,5 +46,7 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent* event);
 };
+
+} // namespace KDEPrivate
 
 #endif

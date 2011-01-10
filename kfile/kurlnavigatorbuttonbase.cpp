@@ -32,6 +32,9 @@
 #include <QStyle>
 #include <QStyleOptionFocusRect>
 
+namespace KDEPrivate
+{
+
 KUrlNavigatorButtonBase::KUrlNavigatorButtonBase(QWidget* parent) :
     QPushButton(parent),
     m_active(true),
@@ -133,5 +136,7 @@ void KUrlNavigatorButtonBase::activate()
 {
     setActive(true);
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatorbuttonbase_p.moc"

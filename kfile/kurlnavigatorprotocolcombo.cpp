@@ -31,9 +31,13 @@
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
 
-namespace {
+namespace
+{
     const int ArrowSize = 10;
 }
+
+namespace KDEPrivate
+{
 
 KUrlNavigatorProtocolCombo::KUrlNavigatorProtocolCombo(const QString& protocol, QWidget* parent) :
     KUrlNavigatorButtonBase(parent),
@@ -218,5 +222,7 @@ void KUrlNavigatorProtocolCombo::initializeCategories()
         m_categories.insert("svn+ssh", SubversionCategory);
     }
 }
+
+} // namespace KDEPrivate
 
 #include "kurlnavigatorprotocolcombo_p.moc"

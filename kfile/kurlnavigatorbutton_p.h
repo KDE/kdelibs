@@ -39,6 +39,9 @@ namespace KIO
     class Job;
 }
 
+namespace KDEPrivate
+{
+
 /**
  * @brief Button of the URL navigator which contains one part of an URL.
  *
@@ -184,5 +187,7 @@ private:
 
     static QPointer<KUrlNavigatorMenu> m_subDirsMenu;
 };
+
+} // namespace KDEPrivate
 
 #endif
