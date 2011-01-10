@@ -23,15 +23,14 @@
  */
 
 #include "kiconloader.h"
-#include "kicontheme.h"
-#include "kiconeffect.h"
-#include "kiconcache.h"
-#include "k3icon_p.h"
+
+#include <sys/types.h>
+#include <stdlib.h>     //for abs
+#include <unistd.h>     //for readlink
+#include <dirent.h>
+#include <assert.h>
 
 #include <QtCore/QCache>
-#include <QtGui/QPixmap>
-#include <QtGui/QPixmapCache>
-#include <QtGui/QImage>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 #include <QtCore/QBuffer>
@@ -39,28 +38,31 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QStringBuilder> // % operator for QString
 #include <QtGui/QIcon>
+#include <QtGui/QImage>
+#include <QtGui/QMovie>
 #include <QtGui/QPainter>
-#include <QMovie>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
+#ifndef _WIN32_WCE
+#include <QtSvg/QSvgRenderer>
+#endif
 
-#include <kapplication.h>
+// kdecore
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
-#ifndef _WIN32_WCE
-#include <ksvgrenderer.h>
-#endif
 #include <kde_file.h>
 #include <kshareddatacache.h>
 
-#include <sys/types.h>
-#include <stdlib.h>     //for abs
-#include <unistd.h>     //for readlink
-#include <dirent.h>
-#include <assert.h>
-#include <kconfiggroup.h>
+// kdeui
+#include "kicontheme.h"
+#include "kiconeffect.h"
+#include "kiconcache.h"
+#include "k3icon_p.h"
 
 // Used to make cache keys for icons with no group. Result type is QString*
 K_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
