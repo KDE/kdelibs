@@ -24,8 +24,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QMutex>
 
-#include <HDeviceProxy>
-#include <HControlPoint>
+#include <HUpnpCore/HClientDevice>
+#include <HUpnpCore/HControlPoint>
 #include <QtCore/QStringList>
 
 namespace Solid

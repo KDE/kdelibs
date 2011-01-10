@@ -25,10 +25,10 @@
 #include <QtCore/QList>
 #include <QtCore/QMap>
 
-#include <HDiscoveryType>
-#include <HDeviceInfo>
-#include <HDeviceProxy>
-#include <HUdn>
+#include <HUpnpCore/HDiscoveryType>
+#include <HUpnpCore/HDeviceInfo>
+#include <HUpnpCore/HClientDevice>
+#include <HUpnpCore/HUdn>
 
 #include "../shared/rootdevice.h"
 
@@ -45,15 +45,15 @@ UPnPDeviceManager::UPnPDeviceManager(QObject* parent) :
 
     connect(
         upnpControlPoint->controlPoint(),
-        SIGNAL(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)),
+        SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)),
         this,
-        SLOT(rootDeviceOnline(Herqq::Upnp::HDeviceProxy*)));
+        SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
 
     connect(
         upnpControlPoint->controlPoint(),
-        SIGNAL(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)),
+        SIGNAL(rootDeviceOffline(Herqq::Upnp::HClientDevice*)),
         this,
-        SLOT(rootDeviceOffline(Herqq::Upnp::HDeviceProxy*)));
+        SLOT(rootDeviceOffline(Herqq::Upnp::HClientDevice*)));
 
     UPnPControlPoint::releaseInstance();
 
@@ -114,7 +114,7 @@ QObject *UPnPDeviceManager::createDevice(const QString& udi)
     {
         UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 
-        Herqq::Upnp::HDeviceProxy* device = upnpControlPoint->controlPoint()->device(udn);
+        Herqq::Upnp::HClientDevice* device = upnpControlPoint->controlPoint()->device(udn);
 
         UPnPControlPoint::releaseInstance();
         if (device)
@@ -126,14 +126,14 @@ QObject *UPnPDeviceManager::createDevice(const QString& udi)
     return 0;
 }
 
-void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HDeviceProxy* device)
+void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HClientDevice* device)
 {
     QString udn = device->info().udn().toString();
     qDebug() << "UPnP device entered:" << udn;
     emit deviceAdded(udiPrefix() + '/' + udn);
 }
 
-void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HDeviceProxy* device)
+void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HClientDevice* device)
 {
     QString udn = device->info().udn().toString();
     qDebug() << "UPnP device gone:" << udn;

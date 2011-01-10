@@ -25,9 +25,9 @@
 
 #include "upnpdeviceinterface.h"
 
-#include <HAsyncOp>
-#include <HDeviceProxy>
-#include <HServiceProxy>
+#include <HUpnpCore/HAsyncOp>
+#include <HUpnpCore/HClientDevice>
+#include <HUpnpCore/HClientService>
 
 namespace Solid
 {
@@ -60,9 +60,9 @@ namespace UPnP
             virtual QStringList currentConnections() const;
 
         private:
-            Herqq::Upnp::HDeviceProxy* getDevice(const QString typePreffix, Herqq::Upnp::HDeviceProxies& devices) const;
+            Herqq::Upnp::HClientDevice* getDevice(const QString typePreffix, Herqq::Upnp::HClientDevices& devices) const;
 
-            Herqq::Upnp::HServiceProxy* getWANConnectionService(Herqq::Upnp::HDeviceProxy* device) const;
+            Herqq::Upnp::HClientService* getWANConnectionService(Herqq::Upnp::HClientDevice* device) const;
 
             int getNumberOfActiveConnections();
 
@@ -77,7 +77,7 @@ namespace UPnP
 
             void addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
 
-            void getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+            void getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp invocationID, const Herqq::Upnp::HActionArguments &outArgs);
 
         Q_SIGNALS:
             void enabledForInternet(bool enabled);

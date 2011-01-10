@@ -26,8 +26,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
 
-#include <HDeviceProxy>
-#include <HControlPoint>
+#include <HUpnpCore/HClientDevice>
+#include <HUpnpCore/HControlPoint>
 
 #include "upnpcontrolpoint.h"
 
@@ -58,9 +58,9 @@ namespace UPnP
             virtual QObject *createDevice(const QString &udi);
 
         public Q_SLOTS:
-            void rootDeviceOnline(Herqq::Upnp::HDeviceProxy*);
+            void rootDeviceOnline(Herqq::Upnp::HClientDevice*);
 
-            void rootDeviceOffline(Herqq::Upnp::HDeviceProxy*);
+            void rootDeviceOffline(Herqq::Upnp::HClientDevice*);
 
         private:
             QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;

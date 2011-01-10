@@ -23,7 +23,7 @@
 
 #include <solid/ifaces/device.h>
 
-#include <HDeviceProxy>
+#include <HUpnpCore/HClientDevice>
 
 namespace Solid
 {
@@ -37,7 +37,7 @@ namespace UPnP
         Q_OBJECT
 
         public:
-            explicit UPnPDevice(const Herqq::Upnp::HDeviceProxy* device);
+            explicit UPnPDevice(const Herqq::Upnp::HClientDevice* device);
 
             virtual ~UPnPDevice();
 
@@ -61,7 +61,7 @@ namespace UPnP
 
             bool isValid() const;
 
-            const Herqq::Upnp::HDeviceProxy* device() const;
+            const Herqq::Upnp::HClientDevice* device() const;
 
             const QString specVersion() const;
 
@@ -72,7 +72,7 @@ namespace UPnP
             bool isInternetGatewayDevice() const;
 
         protected:
-            const Herqq::Upnp::HDeviceProxy* m_device;
+            const Herqq::Upnp::HClientDevice* m_device;
 
             const QString m_specVersion;
 

@@ -22,9 +22,9 @@
 #include "upnpmediaserver.h"
 #include "upnpinternetgateway.h"
 
-#include <HResourceType>
-#include <HDeviceInfo>
-#include <HUdn>
+#include <HUpnpCore/HResourceType>
+#include <HUpnpCore/HDeviceInfo>
+#include <HUpnpCore/HUdn>
 #include <QtCore/QUrl>
 
 namespace Solid
@@ -68,7 +68,7 @@ static QMap<QString, QString> makeTypeIconMap()
 
 static const QMap<QString, QString> typeIconMap = makeTypeIconMap();
 
-UPnPDevice::UPnPDevice(const Herqq::Upnp::HDeviceProxy* device) :
+UPnPDevice::UPnPDevice(const Herqq::Upnp::HClientDevice* device) :
     Solid::Ifaces::Device(),
     m_device(device),
     m_specVersion(device->info().deviceType().toString(Herqq::Upnp::HResourceType::Version)),
@@ -80,7 +80,7 @@ UPnPDevice::~UPnPDevice()
 {
 }
 
-const Herqq::Upnp::HDeviceProxy* UPnPDevice::device() const
+const Herqq::Upnp::HClientDevice* UPnPDevice::device() const
 {
     return m_device;
 }
@@ -101,7 +101,7 @@ QString UPnPDevice::udi() const
 
 QString UPnPDevice::parentUdi() const
 {
-    const Herqq::Upnp::HDeviceProxy* parent = device()->parentProxyDevice();
+    const Herqq::Upnp::HClientDevice* parent = device()->parentDevice();
     if (parent)
     {
         Herqq::Upnp::HDeviceInfo parentInfo = parent->info();

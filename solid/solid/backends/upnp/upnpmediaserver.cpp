@@ -20,8 +20,8 @@
 
 #include "upnpmediaserver.h"
 
-#include <HDeviceInfo>
-#include <HUdn>
+#include <HUpnpCore/HDeviceInfo>
+#include <HUpnpCore/HUdn>
 
 #include <QtCore/QUrl>
 #include <QtCore/QTimer>

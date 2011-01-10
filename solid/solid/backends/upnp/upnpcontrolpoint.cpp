@@ -20,10 +20,10 @@
 
 #include <QtCore/QtDebug>
 
-#include <HDeviceProxy>
-#include <HDeviceInfo>
-#include <HUdn>
-#include <HDiscoveryType>
+#include <HUpnpCore/HClientDevice>
+#include <HUpnpCore/HDeviceInfo>
+#include <HUpnpCore/HUdn>
+#include <HUpnpCore/HDiscoveryType>
 
 #include "upnpcontrolpoint.h"
 
@@ -85,11 +85,11 @@ QStringList UPnPControlPoint::allDevices()
     QStringList result;
     Herqq::Upnp::HDiscoveryType discoveryType = Herqq::Upnp::HDiscoveryType::createDiscoveryTypeForRootDevices();
 
-    Herqq::Upnp::HDeviceProxies list = m_controlPoint->rootDevices();
+    Herqq::Upnp::HClientDevices list = m_controlPoint->rootDevices();
 
     for (int i = 0; i < list.size(); ++i)
     {
-        Herqq::Upnp::HDeviceProxy* device = list[i];
+        Herqq::Upnp::HClientDevice* device = list[i];
         Herqq::Upnp::HDeviceInfo info = device->info();
 
         result << ( QString::fromLatin1("/org/kde/upnp") + '/' + info.udn().toString() );
