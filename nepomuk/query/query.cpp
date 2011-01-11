@@ -449,11 +449,15 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     // - We use an integer instead of a boolean because Virtuoso does not support booleans and, thus, Soprano converts
     //   booleans into a fake type which is stored as a string. This makes comparision much slower.
     // - Instead of using crappy inference via "?r a ?t . ?t nao:userVisible true" we can directly check the resources.
+    // - Instead of restricting the visibility to 1 we trick the Virtuoso query optimizer so it won't try to use the visibility
+    //   as priority. We do this with a filter that does not test for equality. Using "?r nao:userVisible 1" has a drastic
+    //   performance impact which the filter has not.
     //
     QString userVisibilityRestriction;
     if( !(queryFlags()&NoResultRestrictions) ) {
-        userVisibilityRestriction = QString::fromLatin1("?r %1 1 . ")
-                .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()));
+        userVisibilityRestriction = QString::fromLatin1("?r %1 %2 . FILTER(%2>0) . ")
+                .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
+                     qbd.uniqueVarName());
     }
 
 

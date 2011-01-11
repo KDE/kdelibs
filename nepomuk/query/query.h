@@ -400,6 +400,9 @@ namespace Nepomuk {
              * Convert the query into a SPARQL query which can be used with the
              * Nepomuk query service or directly in Soprano::Model::executeQuery.
              *
+             * It is recommended to use QueryServiceClient instead of creating
+             * the SPARQL query this way.
+             *
              * The resulting query will bind the results to variable \p 'r'. Request
              * properties will be bound to variables \p 'reqProp1' through \p 'reqPropN'
              * (the only exception is a count query created via the CreateCountQuery flag).
