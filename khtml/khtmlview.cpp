@@ -1641,10 +1641,8 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     {
         // Discard postponed "autorepeat key-release" events that didn't see
         // a keypress after them (e.g. due to QAccel)
-        if ( d->postponed_autorepeat ) {
-            delete d->postponed_autorepeat;
-            d->postponed_autorepeat = 0;
-        }
+        delete d->postponed_autorepeat;
+        d->postponed_autorepeat = 0;
 
         if( !_ke->isAutoRepeat()) {
             return dispatchKeyEventHelper( _ke, false ); // keyup
