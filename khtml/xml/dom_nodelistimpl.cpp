@@ -66,7 +66,7 @@ NodeImpl* DynamicNodeListImpl::item( unsigned long index ) const
 
     m_cache->updateNodeListInfo(m_refNode->document());
 
-    NodeImpl* n;
+    NodeImpl* n = 0;
     bool usedCache = false;
     if (m_cache->current.node) {
         //Compute distance from the requested index to the cache node
