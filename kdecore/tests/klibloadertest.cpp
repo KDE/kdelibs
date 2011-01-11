@@ -43,6 +43,9 @@ void KLibLoaderTest::testNonWorking()
     QString errorString = KLibLoader::errorString( error );
     kDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
+
+    KPluginFactory* factory = KPluginLoader( "idontexist2" ).factory();
+    QVERIFY(!factory);
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
