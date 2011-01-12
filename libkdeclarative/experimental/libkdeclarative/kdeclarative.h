@@ -20,7 +20,7 @@
 #ifndef KDECLARATIVE_H
 #define KDECLARATIVE_H
 
-#include "kdeclarative_export.h"
+#include <kdeclarative_export.h>
 
 class QDeclarativeEngine;
 class QScriptEngine;

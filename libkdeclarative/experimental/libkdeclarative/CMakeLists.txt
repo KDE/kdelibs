@@ -38,7 +38,8 @@ target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QT
 ## install
 
 set(kdeclarative_LIB_HEADERS
-    kdeclarative.h)
+    kdeclarative.h
+    kdeclarative_export.h)
 
 install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ COMPONENT Devel)
 
