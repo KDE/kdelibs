@@ -75,15 +75,21 @@ QString UDisksStorageAccess::filePath() const
     if (!isAccessible())
         return QString();
 
+    QStringList mntPoints;
+
     if (isLuksDevice()) {  // encrypted (and unlocked) device
         QString path = m_device->property("LuksHolder").value<QDBusObjectPath>().path();
         if (path.isEmpty() || path == "/")
             return QString();
         UDisksDevice holderDevice(path);
-        return holderDevice.property("DeviceMountPaths").toStringList().first();
+        mntPoints = holderDevice.property("DeviceMountPaths").toStringList();
+        if (!mntPoints.isEmpty())
+            return mntPoints.first(); // FIXME Solid doesn't support multiple mount points
+        else
+            return QString();
     }
 
-    QStringList mntPoints = m_device->property("DeviceMountPaths").toStringList();
+    mntPoints = m_device->property("DeviceMountPaths").toStringList();
 
     if (!mntPoints.isEmpty())
         return mntPoints.first(); // FIXME Solid doesn't support multiple mount points
