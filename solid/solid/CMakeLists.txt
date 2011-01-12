@@ -129,24 +129,24 @@ set(solid_LIB_SRCS
    backends/shared/cpufeatures.cpp
 )
 
-if(NOT APPLE)
-  macro_optional_find_package( HUpnp )
-  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
-
-  if ( HUPNP_FOUND )
-    include_directories( ${HUPNP_INCLUDE_DIR} )
-    message(STATUS "Building Solid UPnP backend." )
-    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-
-       backends/upnp/upnpdevice.cpp
-       backends/upnp/upnpdevicemanager.cpp
-       backends/upnp/upnpdeviceinterface.cpp
-       backends/upnp/upnpmediaserver.cpp
-       backends/upnp/upnpinternetgateway.cpp
-       backends/upnp/upnpcontrolpoint.cpp
-    )
-  endif( HUPNP_FOUND )
-endif(NOT APPLE)
+#if(NOT APPLE)
+#  macro_optional_find_package( HUpnp )
+#  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+#
+#  if ( HUPNP_FOUND )
+#    include_directories( ${HUPNP_INCLUDE_DIR} )
+#    message(STATUS "Building Solid UPnP backend." )
+#    set(solid_LIB_SRCS ${solid_LIB_SRCS}
+#
+#       backends/upnp/upnpdevice.cpp
+#       backends/upnp/upnpdevicemanager.cpp
+#       backends/upnp/upnpdeviceinterface.cpp
+#       backends/upnp/upnpmediaserver.cpp
+#       backends/upnp/upnpinternetgateway.cpp
+#       backends/upnp/upnpcontrolpoint.cpp
+#    )
+#  endif( HUPNP_FOUND )
+#endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
 #   message(STATUS "Building Solid KUPnP backend." )
@@ -345,9 +345,9 @@ endif(APPLE)
 
 kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
 
-if ( HUPNP_FOUND )
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
-endif( HUPNP_FOUND )
+#if ( HUPNP_FOUND )
+#   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
+#endif( HUPNP_FOUND )
 
 if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
