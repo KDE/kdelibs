@@ -700,7 +700,11 @@ QMap<QString, QVariant> UDisksDevice::allProperties() const
                                                        "org.freedesktop.DBus.Properties", "GetAll");
     QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
     reply.waitForFinished();
-    m_cache = reply.value();
+
+    if (reply.isValid())
+        m_cache = reply.value();
+    else
+        m_cache.clear();
 
     return m_cache;
 }
