@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 2008 Carlo Segato (brandon.ml@gmail.com)
-	Copyright (C) 2011 Pau Garcia i Quiles (pgquiles@elpauer.org)
+    Copyright (C) 2011 Pau Garcia i Quiles (pgquiles@elpauer.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,19 +28,19 @@
 class KWindowInfo::Private
 {
     public:
-	Private()
-	: properties(0),properties2(0)
-	{}
+    Private()
+    : properties(0),properties2(0)
+    {}
     
-	~Private() { }
+    ~Private() { }
    
-	WId win_;
-	int ref;
+    WId win_;
+    int ref;
     unsigned long properties;
     unsigned long properties2;
     private:
-	Private( const Private& );
-	void operator=( const Private& );
+    Private( const Private& );
+    void operator=( const Private& );
 };
 
 #include <QRect>
@@ -62,9 +62,9 @@ KWindowInfo::KWindowInfo()
 KWindowInfo::~KWindowInfo()
 {
     if( d != NULL ) {
-	if( --d->ref == 0 ) {
-	    delete d;
-	}
+    if( --d->ref == 0 ) {
+        delete d;
+    }
     }
 }
 
@@ -72,18 +72,18 @@ KWindowInfo::KWindowInfo( const KWindowInfo& wininfo )
     : d( wininfo.d )
 {
     if( d != NULL )
-	++d->ref;
+    ++d->ref;
 }
 
 KWindowInfo& KWindowInfo::operator=( const KWindowInfo& wininfo )
 {
     if( d != wininfo.d ) {
-	if( d != NULL )
-	    if( --d->ref == 0 )
-		delete d;
-	d = wininfo.d;
-	if( d != NULL )
-	    ++d->ref;
+    if( d != NULL )
+        if( --d->ref == 0 )
+        delete d;
+    d = wininfo.d;
+    if( d != NULL )
+        ++d->ref;
     }
     return *this;
 }
@@ -275,14 +275,14 @@ QByteArray KWindowInfo::windowClassClass() const
 //        << "Pass NET::WM2WindowClass to KWindowInfo";
 //    return d->info->windowClassClass();
 
-	// Implemented per http://tronche.com/gui/x/icccm/sec-4.html#WM_CLASS (but only 2nd and 3rd choices, -name ignored)
-	char* resourcenamevar;
-	resourcenamevar = getenv("RESOURCE_NAME");
-	if(resourcenamevar != NULL ) {
-		return QByteArray(resourcenamevar);
-	}
+    // Implemented per http://tronche.com/gui/x/icccm/sec-4.html#WM_CLASS (but only 2nd and 3rd choices, -name ignored)
+    char* resourcenamevar;
+    resourcenamevar = getenv("RESOURCE_NAME");
+    if(resourcenamevar != NULL ) {
+        return QByteArray(resourcenamevar);
+    }
 
-	return QCoreApplication::applicationName().toLocal8Bit();
+    return QCoreApplication::applicationName().toLocal8Bit();
 }
 
 QByteArray KWindowInfo::windowClassName() const
@@ -294,10 +294,10 @@ QByteArray KWindowInfo::windowClassName() const
     // Maybe should use RealGetWindowClass instead of GetClassName? See
     // http://blogs.msdn.com/b/oldnewthing/archive/2010/12/31/10110524.aspx
 
-	const int max = 256; // truncate to 255 characters
-	TCHAR name[max];
-	int count = GetClassName(d->win_, name, max);
-	return QString::fromUtf16(name).toLocal8Bit();
+    const int max = 256; // truncate to 255 characters
+    TCHAR name[max];
+    int count = GetClassName(d->win_, name, max);
+    return QString::fromUtf16(name).toLocal8Bit();
 }
 
 #if 0
