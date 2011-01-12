@@ -1,6 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 2008 Carlo Segato (brandon.ml@gmail.com)
+	Copyright (C) 2011 Pau Garcia i Quiles (pgquiles@elpauer.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,6 +22,8 @@
 #include "kwindowinfo.h"
 #include "kwindowsystem.h"
 #include <windows.h>
+#include <stdlib.h>
+#include <QCoreApplication>
 
 class KWindowInfo::Private
 {
@@ -264,21 +267,40 @@ WId KWindowInfo::groupLeader() const
         << "Pass NET::WM2GroupLeader to KWindowInfo";
     return d->info->groupLeader();
 }
+#endif
 
 QByteArray KWindowInfo::windowClassClass() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo";
-    return d->info->windowClassClass();
+//    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+//        << "Pass NET::WM2WindowClass to KWindowInfo";
+//    return d->info->windowClassClass();
+
+	// Implemented per http://tronche.com/gui/x/icccm/sec-4.html#WM_CLASS (but only 2nd and 3rd choices, -name ignored)
+	char* resourcenamevar;
+	resourcenamevar = getenv("RESOURCE_NAME");
+	if(resourcenamevar != NULL ) {
+		return QByteArray(resourcenamevar);
+	}
+
+	return QCoreApplication::applicationName().toLocal8Bit();
 }
 
 QByteArray KWindowInfo::windowClassName() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo";
-    return d->info->windowClassName();
+//    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+//        << "Pass NET::WM2WindowClass to KWindowInfo";
+//    return d->info->windowClassName();
+
+    // Maybe should use RealGetWindowClass instead of GetClassName? See
+    // http://blogs.msdn.com/b/oldnewthing/archive/2010/12/31/10110524.aspx
+
+	const int max = 256; // truncate to 255 characters
+	TCHAR name[max];
+	int count = GetClassName(d->win_, name, max);
+	return QString::fromUtf16(name).toLocal8Bit();
 }
 
+#if 0
 QByteArray KWindowInfo::windowRole() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
@@ -301,19 +323,5 @@ bool KWindowInfo::actionSupported( NET::Action action ) const
         return d->info->allowedActions() & action;
     else
         return true; // no idea if it's supported or not -> pretend it is
-}
-
-// see NETWM spec section 7.6
-bool KWindowInfo::isMinimized() const
-{
-    if( mappingState() != NET::Iconic )
-        return false;
-    // NETWM 1.2 compliant WM - uses NET::Hidden for minimized windows
-    if(( state() & NET::Hidden ) != 0
-	&& ( state() & NET::Shaded ) == 0 ) // shaded may have NET::Hidden too
-        return true;
-    // older WMs use WithdrawnState for other virtual desktops
-    // and IconicState only for minimized
-    return KWindowSystem::icccmCompliantMappingState() ? false : true;
 }
 #endif
