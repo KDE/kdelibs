@@ -857,7 +857,9 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 QString KUrl::path( AdjustPathOption trailing ) const
 {
 #ifdef Q_WS_WIN
+#ifdef DEBUG_KURL
   kWarning() << (isLocalFile() ? "converted to local file - the related call should be converted to toLocalFile()" : "") << QUrl::path();
+#endif
   return trailingSlash( trailing, isLocalFile() ? QUrl::toLocalFile() : QUrl::path() );
 #else
   return trailingSlash( trailing, QUrl::path() );
