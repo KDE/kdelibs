@@ -290,7 +290,7 @@ QString UdevAudioInterfacePrivate::cardNumberToName()
 
     QByteArray line = grepHelper(QLatin1String("/proc/asound/cards"), toFind.toAscii());
 
-    int cut =  line.length() - line.lastIndexOf("-") - 2;
+    int cut =  line.length() - line.lastIndexOf(" - ") - 3;
     QString name = line.right(cut);
     if (!name.isEmpty()) {
         return name;
