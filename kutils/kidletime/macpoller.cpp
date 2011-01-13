@@ -78,6 +78,7 @@ static OSStatus LoadFrameworkBundle(CFStringRef framework, CFBundleRef *bundlePt
 
 pascal void MacPoller::IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData)
 {
+    Q_ASSERT(inUserData);
     switch (inState) {
     case kEventLoopIdleTimerStarted:
     case kEventLoopIdleTimerStopped:
@@ -151,7 +152,7 @@ bool MacPoller::setUpPoller()
     }
 
     EventLoopIdleTimerUPP timerUPP = NewEventLoopIdleTimerUPP(IdleTimerAction);
-    if ((*myInstallEventLoopIdleTimer)(GetMainEventLoop(), kEventDurationSecond, kEventDurationSecond, timerUPP, 0, &m_timerRef)) {
+    if ((*myInstallEventLoopIdleTimer)(GetMainEventLoop(), kEventDurationSecond, kEventDurationSecond, timerUPP, this, &m_timerRef)) {
         return true;
     }
 
