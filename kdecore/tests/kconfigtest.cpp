@@ -447,7 +447,8 @@ void KConfigTest::testPath()
       out << "[Test Group]" << endl
               << "homePath=$HOME/foo" << endl
               << "homePath2=file://$HOME/foo" << endl
-              << "URL[$e]=file://$HOME/foo" << endl
+              << "withBraces[$e]=file://${HOME}/foo" << endl
+              << "URL[$e]=file://${HOME}/foo" << endl
               << "hostname[$e]=$(hostname)" << endl;
   }
   KConfig cf2("pathtest");
@@ -456,6 +457,8 @@ void KConfigTest::testPath()
   QCOMPARE(group.readPathEntry("homePath", QString()), HOMEPATH);
   QVERIFY(group.hasKey("homePath2"));
   QCOMPARE(group.readPathEntry("homePath2", QString()), QString("file://") + HOMEPATH );
+  QVERIFY(group.hasKey("withBraces"));
+  QCOMPARE(group.readPathEntry("withBraces", QString()), QString("file://") + HOMEPATH );
   QVERIFY(group.hasKey("URL"));
   QCOMPARE(group.readEntry("URL", QString()), QString("file://") + HOMEPATH );
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
