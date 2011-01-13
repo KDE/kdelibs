@@ -46,6 +46,7 @@ UPowerManager::UPowerManager(QObject *parent)
             << Solid::DeviceInterface::Battery;
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
+    qDBusRegisterMetaType<QVariantMap>();
 
     bool serviceFound = m_manager.isValid();
     if (!serviceFound) {
