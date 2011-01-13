@@ -31,8 +31,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
-#include <QtCore/QMetaObject>
-#include <QtCore/QMetaProperty>
+#include <QtDBus/QDBusPendingReply>
 
 using namespace Solid::Backends::UPower;
 
@@ -199,11 +198,15 @@ bool UPowerDevice::propertyExists(const QString &key) const
 
 QMap<QString, QVariant> UPowerDevice::allProperties() const
 {
-    const QMetaObject* metaObject = m_device.metaObject();
-    for(int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i) {
-        QString name = QString::fromUtf8(metaObject->property(i).name());
-        m_cache.insert(name, m_device.property(name.toUtf8()));
-    }
+    QDBusMessage call = QDBusMessage::createMethodCall(m_device.service(), m_device.path(),
+                                                       "org.freedesktop.DBus.Properties", "GetAll");
+    QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
+    reply.waitForFinished();
+
+    if (reply.isValid())
+        m_cache = reply.value();
+    else
+        m_cache.clear();
 
     return m_cache;
 }
