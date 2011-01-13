@@ -26,6 +26,7 @@
 #include <kiconloader.h>
 #include <kdirlister.h>
 #include <klocale.h>
+#include <solid/block.h>
 #include <solid/opticaldisc.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
@@ -175,7 +176,8 @@ QVariant KFilePlacesItem::deviceData(int role) const
             if (m_access) {
                 return QUrl(KUrl(m_access->filePath()));
             } else if (m_disc && (m_disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
-                return QUrl("audiocd:/");
+                QString device = d.as<Solid::Block>()->device();
+                return QUrl(QString("audiocd:/?device=%1").arg(device));
             } else {
                 return QVariant();
             }
