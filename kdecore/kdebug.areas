@@ -227,6 +227,9 @@
 5900        kalarmautostart
 5950        kalarm
 5951        kalarm (resources)
+5952        akonadiresource (kalarm)
+5953        akonadiresource (kalarmdir)
+5954        akonadiserializer (kalarm)
 5960        kandy
 5970        ktimetracker
 5975        ktnef
