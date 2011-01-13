@@ -359,7 +359,7 @@ KStyle::SubElement KStyle::newSubElement(const QString &element)
 
 QString KStyle::defaultStyle()
 {
-#if defined(Q_WS_X11) && !defined(Q_WS_MAEMO_5)
+#if defined(Q_WS_X11) && !defined(Q_WS_MAEMO_5) || defined(Q_WS_WIN)
     return QString("oxygen");
 #else
     return QString(); // native style
