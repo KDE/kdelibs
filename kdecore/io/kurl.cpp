@@ -1096,6 +1096,10 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   }
 
   tmp = path();
+#ifdef Q_WS_WIN
+  if (isLocalFile())
+    tmp.prepend(QLatin1Char('/')); // KUrl::path() returns toLocalFile() on windows so we need to add the / back to create a proper url
+#endif
   result += toPrettyPercentEncoding(tmp, false);
 
   // adjust the trailing slash, if necessary
