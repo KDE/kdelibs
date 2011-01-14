@@ -70,7 +70,8 @@ void Solid::Ifaces::Device::broadcastActionRequested(const QString &actionName) 
 
 QString Solid::Ifaces::Device::deviceDBusPath() const
 {
-    return QString("/org/kde/solid/Device_%1").arg(udi().replace(':', '_').replace('.','_'));
+    const QByteArray encodedUdi = udi().toUtf8().toPercentEncoding(QByteArray(), ".~", '_');
+    return QString("/org/kde/solid/Device_") + QString::fromLatin1(encodedUdi);
 }
 
 #include "ifaces/device.moc"
