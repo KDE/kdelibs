@@ -333,7 +333,7 @@ bool Wallet::hasFolder(const QString& f) {
     QDBusReply<bool> r = walletLauncher->getInterface().hasFolder(d->handle, f, appid());
     return r; // default is false
 #else
-    return false;
+    return true;
 #endif
 }
 
