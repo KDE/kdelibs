@@ -2540,11 +2540,12 @@ void HTTPProtocol::forwardHttpResponseHeader()
   }
 }
 
-void HTTPProtocol::parseHeaderFromCache()
+bool HTTPProtocol::parseHeaderFromCache()
 {
     kDebug(7113);
-    // ### we're not checking the return value, but we actually should
-    cacheFileReadTextHeader2();
+    if (!cacheFileReadTextHeader2()) {
+        return false;
+    }
 
     Q_FOREACH (const QString &str, m_responseHeaders) {
         QString header = str.trimmed().toLower();
@@ -2572,6 +2573,7 @@ void HTTPProtocol::parseHeaderFromCache()
     kDebug() << "emitting mimeType" << m_mimeType;
     mimeType(m_mimeType);
     forwardHttpResponseHeader();
+    return true;
 }
 
 void HTTPProtocol::fixupResponseMimetype()
@@ -2676,8 +2678,8 @@ bool HTTPProtocol::readResponseHeader()
     resetResponseParsing();
     if (m_request.cacheTag.ioMode == ReadFromCache &&
         m_request.cacheTag.plan(m_maxCacheAge) == CacheTag::UseCached) {
-        parseHeaderFromCache();
-        return true;
+        // parseHeaderFromCache replaces this method in case of cached content
+        return parseHeaderFromCache();
     }
 
 try_again:
@@ -3482,8 +3484,8 @@ endParsing:
             kDebug(7113) << "Reading resource from cache even though the cache plan is not "
                             "UseCached; the server is probably sending wrong expiry information.";
         }
-        parseHeaderFromCache();
-        return true;
+        // parseHeaderFromCache replaces this method in case of cached content
+        return parseHeaderFromCache();
     }
 
     if (config()->readEntry("PropagateHttpHeader", false) ||
