@@ -67,6 +67,7 @@
 #include <QtCore/QTextIStream>
 #include <QtCore/QDate>
 #include <QtCore/QRegExp>
+#include <QDir>
 #include <kdesktopfile.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
@@ -299,13 +300,13 @@ KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
     switch (option) {
     case 'u':
         ret << ((url.isLocalFile() && url.fragment().isNull() && url.encodedQuery().isNull()) ?
-                url.toLocalFile()  : url.url());
+                QDir::toNativeSeparators(url.toLocalFile())  : url.url());
         break;
     case 'd':
         ret << url.directory();
         break;
     case 'f':
-        ret << url.path();
+        ret << QDir::toNativeSeparators(url.toLocalFile());
         break;
     case 'n':
         ret << url.fileName();
