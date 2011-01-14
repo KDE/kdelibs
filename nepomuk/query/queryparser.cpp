@@ -461,6 +461,14 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
     bool inAndBlock = false;
 
     int pos = 0;
+
+    // create local copies of the regexps for thread safety purposes
+    const QRegExp resourceRx = s_resourceRx;
+    const QRegExp propertyRx = s_propertyRx;
+    const QRegExp fieldFieldRx = s_fieldFieldRx;
+    const QRegExp fieldRx = s_fieldRx;
+    const QRegExp plainTermRx = s_plainTermRx;
+
     while ( pos < query.length() ) {
         // skip whitespace
         while ( pos < query.length() && query[pos].isSpace() ) {
@@ -471,27 +479,27 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
         Term term;
 
         if ( pos < query.length() ) {
-            if ( s_resourceRx.indexIn( query, pos ) == pos ) {
-                kDebug() << "matched resource term at" << pos << s_resourceRx.cap( 0 );
-                term = ComparisonTerm( tryToBeIntelligentAboutParsingUrl( s_resourceRx.cap( 2 ) ),
-                                       ResourceTerm( tryToBeIntelligentAboutParsingUrl( s_resourceRx.cap( 3 ) ) ),
+            if ( resourceRx.indexIn( query, pos ) == pos ) {
+                kDebug() << "matched resource term at" << pos << resourceRx.cap( 0 );
+                term = ComparisonTerm( tryToBeIntelligentAboutParsingUrl( resourceRx.cap( 2 ) ),
+                                       ResourceTerm( tryToBeIntelligentAboutParsingUrl( resourceRx.cap( 3 ) ) ),
                                        ComparisonTerm::Equal );
-                if ( !positiveTerm(s_resourceRx.cap( 1 ) ) ) {
+                if ( !positiveTerm( resourceRx.cap( 1 ) ) ) {
                     term = NegationTerm::negateTerm( term );
                 }
-                pos += s_resourceRx.matchedLength();
+                pos += resourceRx.matchedLength();
             }
 
-            else if ( s_propertyRx.indexIn( query, pos ) == pos ) {
-                kDebug() << "matched property term at" << pos << s_propertyRx.cap( 0 );
+            else if ( propertyRx.indexIn( query, pos ) == pos ) {
+                kDebug() << "matched property term at" << pos << propertyRx.cap( 0 );
                 ComparisonTerm ct;
-                ct.setProperty( tryToBeIntelligentAboutParsingUrl( s_propertyRx.cap( 2 ) ) );
-                ct.setSubTerm( LiteralTerm( createLiteral( s_propertyRx.cap( 4 ), flags&QueryTermGlobbing ) ) );
-                QString comparator = s_propertyRx.cap( 3 );
+                ct.setProperty( tryToBeIntelligentAboutParsingUrl( propertyRx.cap( 2 ) ) );
+                ct.setSubTerm( LiteralTerm( createLiteral( propertyRx.cap( 4 ), flags&QueryTermGlobbing ) ) );
+                QString comparator = propertyRx.cap( 3 );
                 ct.setComparator( fieldTypeRelationFromString( comparator ) );
-                pos += s_propertyRx.matchedLength();
+                pos += propertyRx.matchedLength();
 
-                if ( !positiveTerm(s_propertyRx.cap( 1 ) ) ) {
+                if ( !positiveTerm(propertyRx.cap( 1 ) ) ) {
                     term = NegationTerm::negateTerm( ct );
                 }
                 else {
@@ -499,24 +507,24 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                 }
             }
 
-            else if ( s_fieldFieldRx.indexIn( query, pos ) == pos ) {
+            else if ( fieldFieldRx.indexIn( query, pos ) == pos ) {
                 kDebug() << "matched field field term at" << pos
-                         << s_fieldFieldRx.cap( 0 )
-                         << s_fieldFieldRx.cap( 2 )
-                         << s_fieldFieldRx.cap( 4 )
-                         << s_fieldFieldRx.cap( 5 )
-                         << s_fieldFieldRx.cap( 7 )
-                         << s_fieldFieldRx.cap( 8 );
+                         << fieldFieldRx.cap( 0 )
+                         << fieldFieldRx.cap( 2 )
+                         << fieldFieldRx.cap( 4 )
+                         << fieldFieldRx.cap( 5 )
+                         << fieldFieldRx.cap( 7 )
+                         << fieldFieldRx.cap( 8 );
                 ComparisonTerm ct;
-                ct.setProperty( QUrl(stripQuotes( s_fieldFieldRx.cap( 2 ) )) );
-                QString comparator = s_fieldFieldRx.cap( 4 );
+                ct.setProperty( QUrl(stripQuotes( fieldFieldRx.cap( 2 ) )) );
+                QString comparator = fieldFieldRx.cap( 4 );
                 ct.setComparator( fieldTypeRelationFromString( comparator ) );
-                ct.setSubTerm( ComparisonTerm( QUrl(stripQuotes( s_fieldFieldRx.cap( 5 ) )),
-                                               LiteralTerm( createLiteral( s_fieldFieldRx.cap( 8 ), flags&QueryTermGlobbing ) ),
-                                               fieldTypeRelationFromString( s_fieldFieldRx.cap( 7 ) ) ) );
-                pos += s_fieldFieldRx.matchedLength();
+                ct.setSubTerm( ComparisonTerm( QUrl(stripQuotes( fieldFieldRx.cap( 5 ) )),
+                                               LiteralTerm( createLiteral( fieldFieldRx.cap( 8 ), flags&QueryTermGlobbing ) ),
+                                               fieldTypeRelationFromString( fieldFieldRx.cap( 7 ) ) ) );
+                pos += fieldFieldRx.matchedLength();
 
-                if ( !positiveTerm(s_fieldFieldRx.cap( 1 ) ) ) {
+                if ( !positiveTerm( fieldFieldRx.cap( 1 ) ) ) {
                     term = NegationTerm::negateTerm( ct );
                 }
                 else {
@@ -524,27 +532,27 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                 }
             }
 
-            else if ( s_fieldRx.indexIn( query, pos ) == pos ) {
-                kDebug() << "matched field term at" << pos << s_fieldRx.cap( 0 ) << s_fieldRx.cap( 2 ) << s_fieldRx.cap( 4 ) << s_fieldRx.cap( 5 );
-                if( stripQuotes ( s_fieldRx.cap( 2 ) ).compare( QString( "inFolder" ), Qt::CaseInsensitive ) == 0 ) {
-                    KUrl url( s_fieldRx.cap( 5 ) );
+            else if ( fieldRx.indexIn( query, pos ) == pos ) {
+                kDebug() << "matched field term at" << pos << fieldRx.cap( 0 ) << fieldRx.cap( 2 ) << fieldRx.cap( 4 ) << fieldRx.cap( 5 );
+                if( stripQuotes ( fieldRx.cap( 2 ) ).compare( QString( "inFolder" ), Qt::CaseInsensitive ) == 0 ) {
+                    KUrl url( fieldRx.cap( 5 ) );
                     kDebug() << "found include path" << url;
                     FileQuery fileQuery(final);
-                    if ( positiveTerm( s_fieldRx.cap( 1 ) ) )
+                    if ( positiveTerm( fieldRx.cap( 1 ) ) )
                         fileQuery.addIncludeFolder(url);
                     else
                         fileQuery.addExcludeFolder(url);
                     final = fileQuery;
-                    pos += s_fieldRx.matchedLength();
+                    pos += fieldRx.matchedLength();
                 }
                 else {
                     ComparisonTerm ct;
-                    ct.setProperty( QUrl( stripQuotes( s_fieldRx.cap( 2 ) ) ) );
-                    ct.setSubTerm( LiteralTerm( createLiteral( s_fieldRx.cap( 5 ), flags&QueryTermGlobbing ) ) );
-                    QString comparator = s_fieldRx.cap( 4 );
+                    ct.setProperty( QUrl( stripQuotes( fieldRx.cap( 2 ) ) ) );
+                    ct.setSubTerm( LiteralTerm( createLiteral( fieldRx.cap( 5 ), flags&QueryTermGlobbing ) ) );
+                    QString comparator = fieldRx.cap( 4 );
                     ct.setComparator( fieldTypeRelationFromString( comparator ) );
-                    pos += s_fieldRx.matchedLength();
-                    if ( !positiveTerm(s_fieldRx.cap( 1 ) ) ) {
+                    pos += fieldRx.matchedLength();
+                    if ( !positiveTerm(fieldRx.cap( 1 ) ) ) {
                         NegationTerm nt;
                         nt.setSubTerm( ct );
                         term = nt;
@@ -555,8 +563,8 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                 }
             }
 
-            else if ( s_plainTermRx.indexIn( query, pos ) == pos ) {
-                QString value = s_plainTermRx.cap( 2 );
+            else if ( plainTermRx.indexIn( query, pos ) == pos ) {
+                QString value = plainTermRx.cap( 2 );
                 if ( d->orKeywords.contains( value.toLower() ) ) {
                     inOrBlock = true;
                 }
@@ -571,11 +579,11 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
                     else {
                         term = LiteralTerm( createLiteral( value, flags&QueryTermGlobbing ) );
                     }
-                    if ( !positiveTerm(s_plainTermRx.cap( 1 ) ) ) {
+                    if ( !positiveTerm(plainTermRx.cap( 1 ) ) ) {
                         term = NegationTerm::negateTerm( term );
                     }
                 }
-                pos += s_plainTermRx.matchedLength();
+                pos += plainTermRx.matchedLength();
             }
 
             else {
