@@ -204,7 +204,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     Q_UNUSED(w);
     Q_UNUSED(ot);
     Wallet *wallet = new Wallet(-1, name);
-    QMetaObject::invokeMethod( wallet, "emitWalletOpenend", Qt::QueuedConnection );
+    QMetaObject::invokeMethod( wallet, "emitWalletOpened", Qt::QueuedConnection );
     return wallet;
 }
 
