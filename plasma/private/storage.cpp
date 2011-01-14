@@ -43,7 +43,11 @@ public:
     void ref()
     {
         if (m_ref == 0) {
+#ifdef _WIN64
+            m_db = QSqlDatabase::addDatabase("QSQLITE", QString("plasma-storage-%1").arg((ulonglong)this));
+#else
             m_db = QSqlDatabase::addDatabase("QSQLITE", QString("plasma-storage-%1").arg((ulong)this));
+#endif
             m_db.setDatabaseName(KStandardDirs::locateLocal("appdata", "plasma-storage.db"));
         }
         //Q_ASSERT(db.isValid());
