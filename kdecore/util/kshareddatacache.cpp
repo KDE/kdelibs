@@ -1237,7 +1237,7 @@ void SharedMemory::removeEntry(uint index)
     IndexTableEntry *entriesIndex = indexTable();
 
     if (entriesIndex[index].firstPage < 0) {
-        kError(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
+        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
                     << "cache is likely corrupt.";
 
         clearInternalTables(); // The nuclear option...
