@@ -19,7 +19,8 @@
 
 #include "thumbsequencecreator.h"
 
-struct ThumbSequenceCreator::Private {
+class ThumbSequenceCreator::Private {
+public:
     Private() : sequenceIndex(0) {
     }
   
