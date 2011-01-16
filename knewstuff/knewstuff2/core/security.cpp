@@ -200,8 +200,10 @@ void Security::slotReadyReadStandardOutput()
                 } else {
                     m_result |= BAD_PASSPHRASE;
                     m_process->kill();
+		    delete dlg;
                     return;
                 }
+		delete dlg;
             } else
                 if (data.contains("BAD_PASSPHRASE")) {
                     m_result |= BAD_PASSPHRASE;
