@@ -227,6 +227,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
                 dxs->call_comment(entry->idNumber(), s);
             }
         }
+	delete commentDialog;
     }
     break;
     case kCollabRate: {
@@ -239,6 +240,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
                 dxs->call_rating(entry->idNumber(), rating);
             }
         }
+	delete ratingDialog;
     }
     break;
     }
@@ -519,6 +521,7 @@ void DownloadDialog::slotComments(QStringList comments)
     }
 
     commentsdlg->exec();
+    delete commentsdlg;
 }
 
 ///////////////// DXS ////////////////////
