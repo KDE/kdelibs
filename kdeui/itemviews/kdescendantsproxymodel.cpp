@@ -423,9 +423,14 @@ QModelIndex KDescendantsProxyModel::mapFromSource(const QModelIndex &sourceIndex
   if (!sourceModel())
     return QModelIndex();
 
+  if (d->m_mapping.isEmpty() && sourceModel()->hasChildren())
+  {
+    Q_ASSERT(sourceModel()->rowCount() > 0);
+    const_cast<KDescendantsProxyModelPrivate*>(d)->synchronousMappingRefresh();
+  }
+
   if (d->m_mapping.isEmpty())
     return QModelIndex();
-
 
   {
     // TODO: Consider a parent Mapping to speed this up.
