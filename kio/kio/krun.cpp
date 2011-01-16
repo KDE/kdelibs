@@ -1049,7 +1049,14 @@ bool KRun::runCommand(const QString& cmd, QWidget* window, const QString& workin
         kWarning() << "Command was empty, nothing to run";
         return false;
     }
-    const QString bin = KShell::splitArgs(cmd).first();
+
+    const QStringList args = KShell::splitArgs(cmd);
+    if (args.isEmpty()) {
+        kWarning() << "Command could not be parsed.";
+        return false;
+    }
+
+    const QString bin = args.first();
     return KRun::runCommand(cmd, bin, bin /*iconName*/, window, QByteArray(), workingDirectory);
 }
 
