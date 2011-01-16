@@ -197,9 +197,11 @@ void Security::slotReadyReadStandardOutput()
                 dlg->setPrompt(i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:</qt>", m_secretKey, key.name, key.mail));
                 if (dlg->exec()) {
                     m_process->write(dlg->password().toLocal8Bit() + '\n');
+		    delete dlg;
                 } else {
                     m_result |= BAD_PASSPHRASE;
                     m_process->kill();
+		    delete dlg;
                     return;
                 }
             } else
