@@ -31,6 +31,8 @@
 
 #include <QtCore/QRegExp>
 #include <QtCore/QSet>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -48,40 +50,6 @@
 using namespace Nepomuk::Query;
 
 namespace {
-    // a field differs from a plain term in that it does never allow comparators
-    QString s_fieldNamePattern( "([^\\s\"':=<>]+|(?:([\"'])[^\"':=<>]+\\%1))" );
-    QString s_plainTermPattern( "([^\\s\"':=<>]+|(?:([\"'])[^\"']+\\%1))" );
-    QString s_inExclusionPattern( "([\\+\\-]?)" );
-    QString s_uriPattern( "<([^<>]+)>" );
-    QString s_comparatorPattern( "(:|\\<=|\\>=|=|\\<|\\>)" );
-
-    // match a simple search text
-    // captures: 1 - The optional + or - sign (may be empty)
-    //           2 - the search text (including optional paranthesis)
-    QRegExp s_plainTermRx( s_inExclusionPattern + s_plainTermPattern.arg( 3 ) );
-
-    // match a field search term: fieldname + relation (:, =, etc) + search text with optional paranthesis
-    // captures: 1 - The optional + or - sign (may be empty)
-    //           2 - fieldname
-    //           3 - relation
-    //           4 - search text (including optional paranthesis)
-    QRegExp s_fieldRx( s_inExclusionPattern + s_fieldNamePattern.arg( 3 ) + s_comparatorPattern + s_plainTermPattern.arg( 6 ) );
-
-    // match a property URI search term: property URI + relation (:, =, etc) + search text with optional paranthesis
-    // captures: 1 - The optional + or - sign (may be empty)
-    //           2 - property URI
-    //           3 - relation
-    //           4 - search text (including optional paranthesis)
-    QRegExp s_propertyRx( s_inExclusionPattern + s_uriPattern + s_comparatorPattern + s_plainTermPattern.arg( 5 ) );
-
-    // match a property URI search term: property URI + relation (:, =, etc) + resource URI
-    // captures: 1 - The optional + or - sign (may be empty)
-    //           2 - property URI
-    //           3 - resource URI
-    QRegExp s_resourceRx( s_inExclusionPattern + s_uriPattern + "(?::|=)" + s_uriPattern );
-
-    QRegExp s_fieldFieldRx( s_inExclusionPattern + s_fieldNamePattern.arg( 3 ) + s_comparatorPattern + "\\(" +  s_fieldNamePattern.arg( 6 ) + s_comparatorPattern + s_plainTermPattern.arg( 9 ) + "\\)" );
-
     Nepomuk::Query::ComparisonTerm::Comparator fieldTypeRelationFromString( const QString& s ) {
         if ( s == "=" ) {
             return Nepomuk::Query::ComparisonTerm::Equal;
@@ -358,6 +326,77 @@ namespace {
         }
     }
 #endif
+
+    // a field differs from a plain term in that it does never allow comparators
+    const char* s_fieldNamePattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"':=<>]+\\%1))";
+    const char* s_plainTermPattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"']+\\%1))";
+    const char* s_inExclusionPattern = "([\\+\\-]?)";
+    const char* s_uriPattern = "<([^<>]+)>";
+    const char* s_comparatorPattern = "(:|\\<=|\\>=|=|\\<|\\>)";
+
+    /**
+     * Creating QRegExp is expensive, copying them is cheap. Thus, we keep static
+     * instances of the regexps around which we only have to create once.
+     */
+    class QueryParserRegExpPool
+    {
+    public:
+        QueryParserRegExpPool()
+            : plainTermRx( QLatin1String(s_inExclusionPattern)
+                  + QString::fromLatin1(s_plainTermPattern).arg( 3 ) ),
+              fieldRx( QLatin1String(s_inExclusionPattern)
+                  + QString::fromLatin1(s_fieldNamePattern).arg( 3 )
+                  + QLatin1String(s_comparatorPattern)
+                  + QString::fromLatin1(s_plainTermPattern).arg( 6 ) ),
+              propertyRx( QLatin1String(s_inExclusionPattern)
+                  + QLatin1String(s_uriPattern)
+                  + QLatin1String(s_comparatorPattern)
+                  + QString::fromLatin1(s_plainTermPattern).arg( 5 ) ),
+              resourceRx( QLatin1String(s_inExclusionPattern)
+                  + QLatin1String(s_uriPattern)
+                  + QLatin1String("(?::|=)")
+                  + QLatin1String(s_uriPattern) ),
+              fieldFieldRx( QLatin1String(s_inExclusionPattern)
+                  + QString::fromLatin1(s_fieldNamePattern).arg( 3 )
+                  + QLatin1String(s_comparatorPattern)
+                  + QLatin1String("\\(")
+                  +  QString::fromLatin1(s_fieldNamePattern).arg( 6 )
+                  + QLatin1String(s_comparatorPattern)
+                  + QString::fromLatin1(s_plainTermPattern).arg( 9 )
+                  + QLatin1String("\\)") )
+        {
+        }
+
+        // match a simple search text
+        // captures: 1 - The optional + or - sign (may be empty)
+        //           2 - the search text (including optional paranthesis)
+        QRegExp plainTermRx;
+
+        // match a field search term: fieldname + relation (:, =, etc) + search text with optional paranthesis
+        // captures: 1 - The optional + or - sign (may be empty)
+        //           2 - fieldname
+        //           3 - relation
+        //           4 - search text (including optional paranthesis)
+        QRegExp fieldRx;
+
+        // match a property URI search term: property URI + relation (:, =, etc) + search text with optional paranthesis
+        // captures: 1 - The optional + or - sign (may be empty)
+        //           2 - property URI
+        //           3 - relation
+        //           4 - search text (including optional paranthesis)
+        QRegExp propertyRx;
+
+        // match a property URI search term: property URI + relation (:, =, etc) + resource URI
+        // captures: 1 - The optional + or - sign (may be empty)
+        //           2 - property URI
+        //           3 - resource URI
+        QRegExp resourceRx;
+
+        QRegExp fieldFieldRx;
+    };
+
+    // the one global instance used for the statis QueryParser methods
+    K_GLOBAL_STATIC( QueryParserRegExpPool, s_regExpPool )
 }
 
 
@@ -367,6 +406,7 @@ public:
     QSet<QString> andKeywords;
     QSet<QString> orKeywords;
     mutable QHash<QString, QList<Types::Property> > fieldMatchCache;
+    QMutex fieldMatchCacheMutex;
 };
 
 
@@ -404,11 +444,15 @@ QList<Nepomuk::Types::Property> Nepomuk::Query::QueryParser::matchProperty( cons
 {
     kDebug() << fieldName;
 
+    QMutexLocker lock( &d->fieldMatchCacheMutex );
+
     QHash<QString, QList<Types::Property> >::ConstIterator it = d->fieldMatchCache.constFind( fieldName );
     if( it != d->fieldMatchCache.constEnd() ) {
         return it.value();
     }
     else {
+        lock.unlock();
+
         QList<Nepomuk::Types::Property> results;
 
         //
@@ -437,6 +481,7 @@ QList<Nepomuk::Types::Property> Nepomuk::Query::QueryParser::matchProperty( cons
             kDebug() << "Found property match" << property;
         }
 
+        lock.relock();
         d->fieldMatchCache.insert( fieldName, results );
         return results;
     }
@@ -463,11 +508,11 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
     int pos = 0;
 
     // create local copies of the regexps for thread safety purposes
-    const QRegExp resourceRx = s_resourceRx;
-    const QRegExp propertyRx = s_propertyRx;
-    const QRegExp fieldFieldRx = s_fieldFieldRx;
-    const QRegExp fieldRx = s_fieldRx;
-    const QRegExp plainTermRx = s_plainTermRx;
+    const QRegExp resourceRx = s_regExpPool->resourceRx;
+    const QRegExp propertyRx = s_regExpPool->propertyRx;
+    const QRegExp fieldFieldRx = s_regExpPool->fieldFieldRx;
+    const QRegExp fieldRx = s_regExpPool->fieldRx;
+    const QRegExp plainTermRx = s_regExpPool->plainTermRx;
 
     while ( pos < query.length() ) {
         // skip whitespace
