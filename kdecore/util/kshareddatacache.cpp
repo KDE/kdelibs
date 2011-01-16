@@ -443,6 +443,11 @@ struct SharedMemory
         IndexTableEntry *indices = indexTable();
         for (uint i = 0; i < indexTableSize(); ++i) {
             indices[i].firstPage = -1;
+            indices[i].useCount = 0;
+            indices[i].fileNameHash = 0;
+            indices[i].totalItemSize = 0;
+            indices[i].addTime = 0;
+            indices[i].lastUsedTime = 0;
         }
     }
 
@@ -558,10 +563,10 @@ struct SharedMemory
     static bool lruCompare(const IndexTableEntry &l, const IndexTableEntry &r)
     {
         // Ensure invalid entries migrate to the end
-        if (l.firstPage == -1 && r.firstPage >= 0) {
+        if (l.firstPage < 0 && r.firstPage >= 0) {
             return false;
         }
-        if (l.firstPage >= 0 && r.firstPage == -1) {
+        if (l.firstPage >= 0 && r.firstPage < 0) {
             return true;
         }
 
@@ -574,10 +579,10 @@ struct SharedMemory
     static bool seldomUsedCompare(const IndexTableEntry &l, const IndexTableEntry &r)
     {
         // Ensure invalid entries migrate to the end
-        if (l.firstPage == -1 && r.firstPage >= 0) {
+        if (l.firstPage < 0 && r.firstPage >= 0) {
             return false;
         }
-        if (l.firstPage >= 0 && r.firstPage == -1) {
+        if (l.firstPage >= 0 && r.firstPage < 0) {
             return true;
         }
 
@@ -589,10 +594,10 @@ struct SharedMemory
     static bool ageCompare(const IndexTableEntry &l, const IndexTableEntry &r)
     {
         // Ensure invalid entries migrate to the end
-        if (l.firstPage == -1 && r.firstPage >= 0) {
+        if (l.firstPage < 0 && r.firstPage >= 0) {
             return false;
         }
-        if (l.firstPage >= 0 && r.firstPage == -1) {
+        if (l.firstPage >= 0 && r.firstPage < 0) {
             return true;
         }
 
@@ -822,7 +827,7 @@ struct SharedMemory
         // of pages.
         uint i = 0;
         while (i < indexTableSize() && numberNeeded > cacheAvail) {
-            int curIndex = table[i++].firstPage;
+            int curIndex = table[i++].firstPage; // Really an index, not a page
 
             // Removed everything, still no luck. At *this* point,
             // pagesRemoved < numberNeeded or in other words we can't fulfill
