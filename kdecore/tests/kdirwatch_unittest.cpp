@@ -36,6 +36,24 @@
 
 // Note that kdirlistertest and kdirmodeltest also exercise KDirWatch quite a lot.
 
+static const char* methodToString(KDirWatch::Method method)
+{
+    switch (method) {
+    case KDirWatch::FAM:
+        return "Fam";
+    case KDirWatch::INotify:
+        return "INotify";
+    case KDirWatch::DNotify:
+        return "DNotify";
+    case KDirWatch::Stat:
+        return "Stat";
+    case KDirWatch::QFSWatch:
+        return "QFSWatch";
+    default:
+        return "ERROR!";
+    }
+}
+
 class KDirWatch_UnitTest : public QObject
 {
     Q_OBJECT
@@ -45,7 +63,6 @@ public:
         m_path = m_tempDir.name();
         Q_ASSERT(m_path.endsWith('/'));
 
-        // Speed up the test by making the kdirwatch timer (to compress changes) faster
         KConfigGroup config(KGlobal::config(), "DirWatch");
         const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
         if (!testMethod.isEmpty()) {
@@ -53,10 +70,12 @@ public:
         } else {
             config.deleteEntry("PreferredMethod");
         }
+        // Speed up the test by making the kdirwatch timer (to compress changes) faster
         config.writeEntry("PollInterval", 50);
 
         KDirWatch foo;
         m_slow = (foo.internalMethod() == KDirWatch::FAM || foo.internalMethod() == KDirWatch::Stat);
+        kDebug() << "Using method" << methodToString(foo.internalMethod());
     }
 
 private Q_SLOTS: // test methods
