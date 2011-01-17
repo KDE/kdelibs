@@ -297,7 +297,7 @@ QByteArray KWindowInfo::windowClassName() const
     const int max = 256; // truncate to 255 characters
     TCHAR name[max];
     int count = GetClassName(d->win_, name, max);
-    return QString::fromUtf16(name).toLocal8Bit();
+    return QString::fromUtf16((ushort*)name).toLocal8Bit();
 }
 
 #if 0
