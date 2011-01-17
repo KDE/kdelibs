@@ -54,6 +54,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
+#include <QtCore/QCoreApplication>
 
 #include <ksharedconfig.h>
 #include <kdebug.h>
@@ -255,7 +256,8 @@ KDirWatchPrivate::~KDirWatchPrivate()
     ::close( m_inotify_fd );
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER
-  delete fsWatcher;
+  if(QCoreApplication::instance() != 0)
+    delete fsWatcher;
 #endif
 }
 
