@@ -437,6 +437,11 @@ struct SharedMemory
         IndexTableEntry *indices = indexTable();
         for (uint i = 0; i < indexTableSize(); ++i) {
             indices[i].firstPage = -1;
+            indices[i].useCount = 0;
+            indices[i].fileNameHash = 0;
+            indices[i].totalItemSize = 0;
+            indices[i].addTime = 0;
+            indices[i].lastUsedTime = 0;
         }
     }
 
