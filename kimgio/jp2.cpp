@@ -128,7 +128,7 @@ static long qiodevice_seek(jas_stream_obj_t *obj, long offset, int origin)
                 newpos = io->size() - offset;
                 break;
         case SEEK_CUR:
-                newpos = io->size() + offset;
+                newpos = io->pos() + offset;
                 break;
         default:
                 return -1;
@@ -355,11 +355,10 @@ write_image( const QImage &image, QIODevice* io, int quality )
         // - rate=#B => the resulting file size is about # bytes
         // - rate=0.0 .. 1.0 => the resulting file size is about the factor times
         //                      the uncompressed size
-        QString rate;
-        QTextStream ts( &rate, QIODevice::WriteOnly );
-        ts << "rate="
-                << ( (quality < 0) ? DEFAULT_RATE : quality / 100.0F );
-        int i = jp2_encode( ji, stream, rate.toUtf8().data() );
+        // use sprintf for locale-aware string
+        char rateBuffer[16];
+        sprintf(rateBuffer, "rate=%.2g\n", (quality < 0) ? DEFAULT_RATE : quality / 100.0);
+        int i = jp2_encode( ji, stream, rateBuffer);
 
         jas_image_destroy( ji );
         jas_stream_close( stream );
