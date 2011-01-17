@@ -91,6 +91,7 @@ private Q_SLOTS: // test methods
     void watchAndModifyOneFile();
     void removeAndReAdd();
     void watchNonExistent();
+    void watchNonExistentWithSingleton();
     void testDelete();
     void testDeleteAndRecreateFile();
     void testDeleteAndRecreateDir();
@@ -432,6 +433,16 @@ void KDirWatch_UnitTest::watchNonExistent()
     // Create the file after all; we're not watching for it, but the dir will emit dirty
     createFile(file1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), subdir));
+}
+
+void KDirWatch_UnitTest::watchNonExistentWithSingleton()
+{
+    const QString file = "/root/.ssh/authorized_keys";
+    KDirWatch::self()->addFile(file);
+    // When running this test in KDIRWATCHTEST_METHOD=QFSWatch, or when FAM is not available
+    // and we fallback to qfswatch when inotify fails above, we end up creating the fsWatch
+    // in the kdirwatch singleton. Bug 261541 discovered that Qt hanged when deleting fsWatch
+    // once QCoreApp was gone, this is what this test is about.
 }
 
 void KDirWatch_UnitTest::testDelete()

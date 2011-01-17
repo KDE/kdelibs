@@ -54,6 +54,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
+#include <QtCore/QCoreApplication>
 
 #include <ksharedconfig.h>
 #include <kdebug.h>
@@ -680,6 +681,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
     return true;
   }
 
+   kDebug(7001) << "inotify failed for monitoring" << e->path << ":" << strerror(errno);
   return false;
 }
 #endif
@@ -1723,9 +1725,15 @@ KDirWatch* KDirWatch::self()
   return s_pKDirWatchSelf;
 }
 
+// TODO KDE5: is this used anywhere?
 bool KDirWatch::exists()
 {
-  return s_pKDirWatchSelf != 0;
+  return s_pKDirWatchSelf.exists();
+}
+
+static void cleanupKDirWatch()
+{
+  s_pKDirWatchSelf.destroy();
 }
 
 KDirWatch::KDirWatch (QObject* parent)
@@ -1739,6 +1747,13 @@ KDirWatch::KDirWatch (QObject* parent)
   d->ref();
 
   d->_isStopped = false;
+
+    static bool cleanupRegistered = false;
+    if (!cleanupRegistered) {
+        cleanupRegistered = true;
+        // Must delete kdirwatch before qApp is gone, due to QFileSystemWatcher - bug 261541
+        qAddPostRoutine(cleanupKDirWatch);
+    }
 }
 
 KDirWatch::~KDirWatch()
