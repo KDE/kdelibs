@@ -88,6 +88,6 @@ Name[zh_TW]=JP2
 Type=Service
 X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=jp2
-X-KDE-MimeType=image/jpeg2000
+X-KDE-MimeType=image/jp2
 X-KDE-Read=true
 X-KDE-Write=true
