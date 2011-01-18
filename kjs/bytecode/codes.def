@@ -714,8 +714,8 @@ operation BracketGet {
         uint32_t i;
 
         if (v2->getUInt32(i)) {
-    	   $$ = v1->getByIndex(exec, i);
-    	   continue;
+           $$ = v1->getByIndex(exec, i);
+           continue;
         }
 
         JSObject *o = v1->toObject(exec);
@@ -728,8 +728,15 @@ operation BracketGet {
         $$ = val;
     ]]
 
-    impl value (value [noimm] base, int32 [exact] prop) [[
-        $$ = base->getByIndex(exec, prop);
+    impl value (value [noimm] base, int32 [exact] prop) [[        
+        if (prop >= 0) {
+            $$ = base->getByIndex(exec, static_cast<uint32_t>(prop));
+        } else {
+            // Have to go as a string, as above.
+            JSObject* o = base->toObject(exec);
+            JSValue* val = o->get(exec, Identifier(UString::from(prop)));
+            $$ = val;
+        }
     ]]
 }
 
@@ -757,7 +764,12 @@ operation BracketGetAndBind {
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
 
-        $$ = baseObj->get(exec, (uint32_t)prop);
+        if (prop >= 0) {
+            $$ = baseObj->get(exec, static_cast<uint32_t>(prop));
+        } else {
+            JSValue* val = baseObj->get(exec, Identifier(UString::from(prop)));
+            $$ = val;
+        }
     ]]
 }
 
@@ -776,7 +788,11 @@ operation BracketPutKnownObject {
 
     impl void (value [noimm] base, int32 [exact] prop, value val) [[
         ASSERT(base->isObject());
-        static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
+        if (prop >= 0) {
+            static_cast<JSObject*>(base)->put(exec, static_cast<uint32_t>(prop), val);
+        } else {
+            static_cast<JSObject*>(base)->put(exec, Identifier(UString::from(prop)), val);
+        }
     ]]
 }
 
@@ -826,7 +842,10 @@ operation BracketDelete {
         if (pc != localPC)
             continue;
 
-        $$ = o->deleteProperty(exec, (uint32_t)i);
+        if (i >= 0)
+            $$ = o->deleteProperty(exec, static_cast<uint32_t>(i));
+        else
+            $$ = o->deleteProperty(exec, Identifier(UString::from(i)));
     ]]
 }
 
