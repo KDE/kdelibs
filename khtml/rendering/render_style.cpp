@@ -83,9 +83,10 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 	    max_width == o.max_width &&
 	    min_height == o.min_height &&
 	    max_height == o.max_height &&
-            box_sizing == o.box_sizing &&
+	    box_sizing == o.box_sizing &&
+	    vertical_align == o.vertical_align &&
 	    z_index == o.z_index &&
-            z_auto == o.z_auto;
+	    z_auto == o.z_auto;
 }
 
 StyleVisualData::StyleVisualData()
