@@ -899,6 +899,13 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
             }
             else
                 style->setDisplay(BLOCK);
+        } else if (e && e->id() == ID_BUTTON && style->isOriginalDisplayInlineType()) {
+            // <button>s are supposed to be replaced elements; but we don't handle 
+            // them as such (as they are rendered as CSS contexts, not natives 
+            // with intrinsic sizes), so we must be careful not to make them fully 
+            // inline, as that will display stuff like width:; so mutate inline-like
+            // display types into inline-block
+            style->setDisplay(INLINE_BLOCK);
         }
 
         // After performing the display mutation, check our position.  We do not honor position:relative on
