@@ -1079,7 +1079,7 @@ void KStartupInfoId::initId( const QByteArray& id_P )
 
 bool KStartupInfoId::setupStartupEnv() const
     {
-    if( id().isEmpty())
+    if( none())
         {
         unsetenv( NET_STARTUP_ENV );
         return false;
