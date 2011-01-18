@@ -25,6 +25,7 @@
 #include <kstatusbar.h>
 #include <kmainwindow.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kparts/part.h>
 #include <kparts/event.h>
 
@@ -98,23 +99,9 @@ StatusBarExtension::~StatusBarExtension()
   delete d;
 }
 
-
 StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 {
-    if ( !obj )
-        return 0;
-
-    // we try to do it on our own, in hope that we are faster than
-    // queryList, which looks kind of big :-)
-    const QObjectList &children = obj->children();
-    QObjectList::ConstIterator it = children.begin();
-    for (; it != children.end(); ++it ) {
-        KParts::StatusBarExtension* ext = ::qobject_cast<KParts::StatusBarExtension *>( *it );
-        if ( ext )
-            return ext;
-    }
-
-    return 0;
+    return KGlobal::findDirectChild<KParts::StatusBarExtension*>(obj);
 }
 
 bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
