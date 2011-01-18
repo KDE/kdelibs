@@ -22,6 +22,7 @@ public:
     QByteArray name() const;
     bool supportsOption(ImageOption option) const;
     QVariant option(ImageOption option) const;
+    void setOption(ImageOption option, const QVariant &value);
                     
     static bool canRead(QIODevice *device);
 private:

@@ -430,6 +430,12 @@ QVariant JP2Handler::option(ImageOption option) const
     return QVariant();
 }
 
+void JP2Handler::setOption(ImageOption option, const QVariant &value)
+{
+    if (option == Quality)
+        quality = qBound(-1, value.toInt(), 100);
+}
+
 QByteArray JP2Handler::name() const
 {
     return "jp2";
