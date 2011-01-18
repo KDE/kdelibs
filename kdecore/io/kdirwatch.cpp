@@ -1731,9 +1731,9 @@ bool KDirWatch::exists()
   return s_pKDirWatchSelf.exists();
 }
 
-static void cleanupKDirWatch()
+static void cleanupQFSWatcher()
 {
-  s_pKDirWatchSelf.destroy();
+  s_pKDirWatchSelf->deleteQFSWatcher();
 }
 
 KDirWatch::KDirWatch (QObject* parent)
@@ -1751,8 +1751,8 @@ KDirWatch::KDirWatch (QObject* parent)
     static bool cleanupRegistered = false;
     if (!cleanupRegistered) {
         cleanupRegistered = true;
-        // Must delete kdirwatch before qApp is gone, due to QFileSystemWatcher - bug 261541
-        qAddPostRoutine(cleanupKDirWatch);
+        // Must delete QFileSystemWatcher before qApp is gone - bug 261541
+        qAddPostRoutine(cleanupQFSWatcher);
     }
 }
 
@@ -1854,6 +1854,12 @@ bool KDirWatch::contains( const QString& _path ) const
   }
 
   return false;
+}
+
+void KDirWatch::deleteQFSWatcher()
+{
+  delete d->fsWatcher;
+  d->fsWatcher = 0;
 }
 
 void KDirWatch::statistics()

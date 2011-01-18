@@ -212,6 +212,8 @@ class KDECORE_EXPORT KDirWatch : public QObject
     */
    bool contains( const QString& path ) const;
 
+   void deleteQFSWatcher();
+
    /**
     * Dump statistic information about the KDirWatch::self() instance.
     * This checks for consistency, too.
