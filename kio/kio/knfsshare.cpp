@@ -174,9 +174,10 @@ KNFSShare::KNFSShare()
 
 KNFSShare::~KNFSShare()
 {
-  if (QFile::exists(d->exportsFile)) {
-    KDirWatch::self()->removeFile(d->exportsFile);
-  }
+  // This is not needed, we're exiting the process anyway, and KDirWatch is already deleted.
+  //if (QFile::exists(d->exportsFile)) {
+  //  KDirWatch::self()->removeFile(d->exportsFile);
+  //}
   delete d;
 }
 
