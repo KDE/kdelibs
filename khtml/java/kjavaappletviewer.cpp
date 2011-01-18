@@ -23,7 +23,6 @@
 #include "kjavaappletwidget.h"
 #include "kjavaappletserver.h"
 
-#include <algorithm>
 #include <stdio.h>
 
 #ifdef KDE_USE_FINAL
@@ -63,14 +62,11 @@ KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
     delete s_componentData;
 }
 
-QString variant2StringHelper(const QVariant &variant) {
-    return variant.toString();
-}
-
 QObject *KJavaAppletViewerFactory::create(const char *, QWidget *wparent, QObject *parent,
                                           const QVariantList & args, const QString &) {
     QStringList argsStrings;
-    std::transform(args.begin(), args.end(), argsStrings.begin(), variant2StringHelper);
+    for (int i = 0; i < args.size(); ++i)
+        argsStrings.append(args[i].toString());
     return new KJavaAppletViewer (wparent, parent, argsStrings);
 }
 
