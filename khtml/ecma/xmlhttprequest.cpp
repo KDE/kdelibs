@@ -917,10 +917,7 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
           return throwError(exec, SyntaxError, "Not enough arguments");
 
       QString method = args[0]->toString(exec).qstring();
-      KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
-      if (!part)
-        return jsUndefined();
-      KUrl url = KUrl(part->document().completeURL(args[1]->toString(exec).qstring()).string());
+      KUrl url = KUrl(request->doc->completeURL(args[1]->toString(exec).qstring()));
 
       bool async = true;
       if (args.size() >= 3) {

@@ -107,8 +107,6 @@ IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
 # IE extensions
   contains	DOMNode::Contains		DontDelete|Function 1
   insertAdjacentHTML	DOMNode::InsertAdjacentHTML	DontDelete|Function 2
-# "DOM level 0" (from Gecko DOM reference; also in WinIE)
-  item          DOMNode::Item           DontDelete|Function 1
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
@@ -692,10 +690,6 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
       }
 
       return jsUndefined();
-    }
-    case DOMNode::Item: {
-      SharedPtr<NodeListImpl> childNodes = node.childNodes();
-      return getDOMNode(exec, childNodes->item(static_cast<unsigned long>(args[0]->toNumber(exec))));
     }
     case DOMNode::CompareDocumentPosition: {
        DOM::NodeImpl* other = toNode(args[0]);
