@@ -808,6 +808,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 @begin HTMLSelectElementProtoTable 4
   add		KJS::HTMLElement::SelectAdd	DontDelete|Function 2
+  item		KJS::HTMLElement::SelectItem	DontDelete|Function 1
   remove	KJS::HTMLElement::SelectRemove	DontDelete|Function 1
 @end
 @begin HTMLOptGroupElementTable 2
@@ -2205,6 +2206,10 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       if (id == KJS::HTMLElement::SelectAdd) {
         select.add(toHTMLElement(args[0]),toHTMLElement(args[1]),exception);
         return jsUndefined();
+      }
+      else if (id == KJS::HTMLElement::SelectItem) {
+        SharedPtr<DOM::HTMLCollectionImpl> opts = select.options();
+        return getDOMNode(exec, opts->item(static_cast<unsigned long>(args[0]->toNumber(exec))));
       }
       else if (id == KJS::HTMLElement::SelectRemove) {
         // Apparently this takes both elements and indices (ebay.fr)

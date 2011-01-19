@@ -100,7 +100,7 @@ namespace KJS {
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
            SelectRemove, SelectForm, SelectType, SelectOptions,
-           SelectDisabled, SelectMultiple, SelectName, SelectSize, 
+           SelectDisabled, SelectMultiple, SelectName, SelectSize, SelectItem,  
            OptGroupDisabled, OptGroupLabel, OptionIndex, OptionSelected,
            OptionForm, OptionText, OptionDefaultSelected, OptionDisabled,
            OptionLabel, OptionValue, InputReadOnly, InputAccept,

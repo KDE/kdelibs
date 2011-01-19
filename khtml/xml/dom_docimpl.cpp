@@ -2870,8 +2870,7 @@ void DocumentImpl::setDomain(const DOMString &newDomain)
     // the new domain is a suffix of the old domain.
     int oldLength = oldDomain.length();
     int newLength = newDomain.length();
-    if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
-    {
+    if ( newLength < oldLength ) { // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
         DOMString test = oldDomain.copy();
         DOMString reference = newDomain.lower();
         if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
@@ -2880,6 +2879,12 @@ void DocumentImpl::setDomain(const DOMString &newDomain)
             if ( test == reference )                 // and we check that it's the same thing as newDomain
                 m_origin->setDomainFromDOM( reference.string() );
         }
+    } else if ( oldLength == newLength ) {
+        // It's OK and not a no-op to set the domain to the present one:
+        // we want to set the 'set from DOM' bit in that case
+        DOMString reference = newDomain.lower();
+        if ( oldDomain.lower() == reference )
+            m_origin->setDomainFromDOM( reference.string() );
     }
 }
 
