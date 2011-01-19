@@ -67,6 +67,7 @@ Comment=Provides SSL certificate policy to applications
 Comment[bg]=Осигурява управление на SSL-сертификати за приложения
 Comment[ca]=Proporciona la política de certificats SSL a les aplicacions
 Comment[ca@valencia]=Proporciona la política de certificats SSL a les aplicacions
+Comment[cs]=Poskytuje politiky SSL certifikátů pro aplikace
 Comment[da]=Leverer politik for SSL-certifikat til programmer
 Comment[de]=SSL-Zertifikat-Regel den Anwendungen zur Verfügung stellen
 Comment[el]=Παρέχει την πολιτική πιστοποιητικών SSL στις εφαρμογές
