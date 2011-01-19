@@ -27,12 +27,20 @@
 #include "job.h"
 
 #include <kdebug.h>
+#include <kprotocolinfo.h>
 
 #include <QtNetwork/QSslConfiguration>
 
 #define QL1S(x)  QLatin1String(x)
 #define QL1C(x)  QLatin1Char(x)
 
+
+static bool isLocalRequest(const KUrl& url)
+{
+    const QString scheme (url.protocol());
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
 
 namespace KDEPrivate {
 
@@ -133,8 +141,15 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         return;
 
     const KIO::MetaData& metaData = job->metaData();
-    if (metaData.isEmpty())
+    if (metaData.isEmpty()) {
+        // Allow handling of local resources such as man pages and file url...
+        if (isLocalRequest(url())) {
+            setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
+            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
+            emit metaDataChanged();
+        }        
         return;
+    }
 
     // Set the encryption attribute and values...
     QSslConfiguration sslConfig;
@@ -202,6 +217,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
 void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
+    Q_UNUSED (kioJob);
     m_data += data;
     emit readyRead();
 }
