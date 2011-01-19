@@ -968,6 +968,11 @@ void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& max
             pixmap.fill(Qt::transparent);
 
             Display* dpy = QX11Info::display();
+
+            XRenderPictureAttributes attr;
+            attr.repeat = RepeatPad;
+            XRenderChangePicture(dpy, icon.x11PictureHandle(), CPRepeat, &attr);
+
             XRenderSetPictureFilter(dpy, icon.x11PictureHandle(), FilterBilinear, 0, 0);
             XRenderSetPictureTransform(dpy, icon.x11PictureHandle(), &xform);
             XRenderComposite(dpy, PictOpOver, icon.x11PictureHandle(), None, pixmap.x11PictureHandle(),
