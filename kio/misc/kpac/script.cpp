@@ -41,6 +41,8 @@
 #include <kjs/object.h>
 #include <kjs/JSVariableObject.h>
 
+#include <kio/kio/hostinfo_p.h>
+
 using namespace KJS;
 
 QString UString::qstring() const
@@ -58,6 +60,28 @@ UString::UString( const QString &s )
 
 namespace
 {
+    // A little helper that tries to do lookups based on the 
+    // KIO dns cache. If fails, it gives up, hoping that the 
+    // in-process query will be a useful result.
+    class CachedLookup: public QObject
+    {
+        Q_OBJECT
+    public:
+        CachedLookup( const QString& s ) {
+            KIO::HostInfo::lookupHost(s, this, SLOT(haveResult(QHostInfo)));
+        }
+        
+        QHostInfo result() {
+            return m_result;
+        }
+    private Q_SLOTS:
+        void haveResult( const QHostInfo& r ) {
+            m_result = r;
+        }
+    private:
+        QHostInfo m_result;
+    };
+    
     class Address
     {
     public:
@@ -73,15 +97,27 @@ namespace
     private:
         Address( const QString& host, bool numeric )
         {
-            if ( numeric ) {
-                m_address = QHostAddress( host );
-                if ( m_address.isNull() )
+            // Always try to see if it's already an IP first, to avoid Qt doing a 
+            // needless reverse lookup
+            m_address = QHostAddress( host );
+            if ( m_address.isNull() ) {
+                if ( numeric ) {
                     throw Error();
-            } else {
-                QHostInfo addresses = QHostInfo::fromName(host);
-                if ( addresses.error() || addresses.addresses().isEmpty() )
-                    throw Error();
-                m_address = addresses.addresses().at(0);
+                } else {
+                    QHostInfo addresses;
+                    // See if the KIO DNS cache has this. If not, this will 
+                    // be a prefetch.
+                    CachedLookup lookup( host );
+                    if ( lookup.result().error() == QHostInfo::NoError ) {
+                        addresses = lookup.result();
+                        return;
+                    } else {
+                        addresses = QHostInfo::fromName(host);
+                    }
+                    if ( addresses.error() || addresses.addresses().isEmpty() )
+                        throw Error();
+                    m_address = addresses.addresses().at(0);
+                }
             }
         }
 
@@ -462,5 +498,7 @@ namespace KPAC
         return retval->toString( exec ).qstring();
     }
 }
+
+#include "script.moc"
 
 // vim: ts=4 sw=4 et

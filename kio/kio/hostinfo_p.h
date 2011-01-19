@@ -29,7 +29,7 @@ namespace KIO
 {
     namespace HostInfo
     {
-        void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        KIO_EXPORT void lookupHost(const QString& hostName, QObject* receiver, const char* member);
 
         // used by khtml's DNS prefetching feature
         KIO_EXPORT void prefetchHost(const QString& hostName);
