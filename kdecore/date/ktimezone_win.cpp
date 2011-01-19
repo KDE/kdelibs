@@ -33,6 +33,117 @@
 #include <string>
 #include <cassert>
 
+struct ZoneKey {
+    QString zoneOlson;
+    QString zoneWin;
+};
+
+static const ZoneKey ZoneTbl[] =
+{
+    {QLatin1String("Australia/Darwin"), QLatin1String("AUS Central Standard Time")},
+    {QLatin1String("Australia/Sydney"), QLatin1String("AUS Eastern Standard Time")},
+    {QLatin1String("Asia/Kabul"), QLatin1String("Afghanistan Standard Time")},
+    {QLatin1String("America/Anchorage"), QLatin1String("Alaskan Standard Time")},
+    {QLatin1String("Asia/Riyadh"), QLatin1String("Arab Standard Time")},
+    {QLatin1String("Asia/Dubai"), QLatin1String("Arabian Standard Time")},
+    {QLatin1String("Asia/Baghdad"), QLatin1String("Arabic Standard Time")},
+    {QLatin1String("America/Buenos_Aires"), QLatin1String("Argentina Standard Time")},
+    {QLatin1String("Asia/Yerevan"), QLatin1String("Armenian Standard Time")},
+    {QLatin1String("America/Halifax"), QLatin1String("Atlantic Standard Time")},
+    {QLatin1String("Asia/Baku"), QLatin1String("Azerbaijan Standard Time")},
+    {QLatin1String("Atlantic/Azores"), QLatin1String("Azores Standard Time")},
+    {QLatin1String("America/Regina"), QLatin1String("Canada Central Standard Time")},
+    {QLatin1String("Atlantic/Cape_Verde"), QLatin1String("Cape Verde Standard Time")},
+    {QLatin1String("Asia/Yerevan"), QLatin1String("Caucasus Standard Time")},
+    {QLatin1String("Australia/Adelaide"), QLatin1String("Cen. Australia Standard Time")},
+    {QLatin1String("America/Guatemala"), QLatin1String("Central America Standard Time")},
+    {QLatin1String("Asia/Dhaka"), QLatin1String("Central Asia Standard Time")},
+    {QLatin1String("America/Manaus"), QLatin1String("Central Brazilian Standard Time")},
+    {QLatin1String("Europe/Budapest"), QLatin1String("Central Europe Standard Time")},
+    {QLatin1String("Europe/Warsaw"), QLatin1String("Central European Standard Time")},
+    {QLatin1String("Pacific/Guadalcanal"), QLatin1String("Central Pacific Standard Time")},
+    {QLatin1String("America/Chicago"), QLatin1String("Central Standard Time")},
+    {QLatin1String("America/Mexico_City"), QLatin1String("Central Standard Time (Mexico)")},
+    {QLatin1String("Asia/Shanghai"), QLatin1String("China Standard Time")},
+    {QLatin1String("Etc/GMT+12"), QLatin1String("Dateline Standard Time")},
+    {QLatin1String("Africa/Nairobi"), QLatin1String("E. Africa Standard Time")},
+    {QLatin1String("Australia/Brisbane"), QLatin1String("E. Australia Standard Time")},
+    {QLatin1String("Europe/Minsk"), QLatin1String("E. Europe Standard Time")},
+    {QLatin1String("America/Sao_Paulo"), QLatin1String("E. South America Standard Time")},
+    {QLatin1String("America/New_York"), QLatin1String("Eastern Standard Time")},
+    {QLatin1String("Africa/Cairo"), QLatin1String("Egypt Standard Time")},
+    {QLatin1String("Asia/Yekaterinburg"), QLatin1String("Ekaterinburg Standard Time")},
+    {QLatin1String("Europe/Kiev"), QLatin1String("FLE Standard Time")},
+    {QLatin1String("Pacific/Fiji"), QLatin1String("Fiji Standard Time")},
+    {QLatin1String("Europe/London"), QLatin1String("GMT Standard Time")},
+    {QLatin1String("Europe/Istanbul"), QLatin1String("GTB Standard Time")},
+    {QLatin1String("Etc/GMT-3"), QLatin1String("Georgian Standard Time")},
+    {QLatin1String("America/Godthab"), QLatin1String("Greenland Standard Time")},
+    {QLatin1String("Atlantic/Reykjavik"), QLatin1String("Greenwich Standard Time")},
+    {QLatin1String("Pacific/Honolulu"), QLatin1String("Hawaiian Standard Time")},
+    {QLatin1String("Asia/Calcutta"), QLatin1String("India Standard Time")},
+    {QLatin1String("Asia/Tehran"), QLatin1String("Iran Standard Time")},
+    {QLatin1String("Asia/Jerusalem"), QLatin1String("Israel Standard Time")},
+    {QLatin1String("Asia/Amman"), QLatin1String("Jordan Standard Time")},
+    {QLatin1String("Asia/Seoul"), QLatin1String("Korea Standard Time")},
+    {QLatin1String("Indian/Mauritius"), QLatin1String("Mauritius Standard Time")},
+    {QLatin1String("America/Mexico_City"), QLatin1String("Mexico Standard Time")},
+    {QLatin1String("America/Chihuahua"), QLatin1String("Mexico Standard Time 2")},
+    {QLatin1String("Atlantic/South_Georgia"), QLatin1String("Mid-Atlantic Standard Time")},
+    {QLatin1String("Asia/Beirut"), QLatin1String("Middle East Standard Time")},
+    {QLatin1String("America/Montevideo"), QLatin1String("Montevideo Standard Time")},
+    {QLatin1String("Africa/Casablanca"), QLatin1String("Morocco Standard Time")},
+    {QLatin1String("America/Denver"), QLatin1String("Mountain Standard Time")},
+    {QLatin1String("America/Chihuahua"), QLatin1String("Mountain Standard Time (Mexico)")},
+    {QLatin1String("Asia/Rangoon"), QLatin1String("Myanmar Standard Time")},
+    {QLatin1String("Asia/Novosibirsk"), QLatin1String("N. Central Asia Standard Time")},
+    {QLatin1String("Africa/Windhoek"), QLatin1String("Namibia Standard Time")},
+    {QLatin1String("Asia/Katmandu"), QLatin1String("Nepal Standard Time")},
+    {QLatin1String("Pacific/Auckland"), QLatin1String("New Zealand Standard Time")},
+    {QLatin1String("America/St_Johns"), QLatin1String("Newfoundland Standard Time")},
+    {QLatin1String("Asia/Irkutsk"), QLatin1String("North Asia East Standard Time")},
+    {QLatin1String("Asia/Krasnoyarsk"), QLatin1String("North Asia Standard Time")},
+    {QLatin1String("America/Santiago"), QLatin1String("Pacific SA Standard Time")},
+    {QLatin1String("America/Los_Angeles"), QLatin1String("Pacific Standard Time")},
+    {QLatin1String("America/Tijuana"), QLatin1String("Pacific Standard Time (Mexico)")},
+    {QLatin1String("Asia/Karachi"), QLatin1String("Pakistan Standard Time")},
+    {QLatin1String("Europe/Paris"), QLatin1String("Romance Standard Time")},
+    {QLatin1String("Europe/Moscow"), QLatin1String("Russian Standard Time")},
+    {QLatin1String("Etc/GMT+3"), QLatin1String("SA Eastern Standard Time")},
+    {QLatin1String("America/Bogota"), QLatin1String("SA Pacific Standard Time")},
+    {QLatin1String("America/La_Paz"), QLatin1String("SA Western Standard Time")},
+    {QLatin1String("Asia/Bangkok"), QLatin1String("SE Asia Standard Time")},
+    {QLatin1String("Pacific/Apia"), QLatin1String("Samoa Standard Time")},
+    {QLatin1String("Asia/Singapore"), QLatin1String("Singapore Standard Time")},
+    {QLatin1String("Africa/Johannesburg"), QLatin1String("South Africa Standard Time")},
+    {QLatin1String("Asia/Colombo"), QLatin1String("Sri Lanka Standard Time")},
+    {QLatin1String("Asia/Taipei"), QLatin1String("Taipei Standard Time")},
+    {QLatin1String("Australia/Hobart"), QLatin1String("Tasmania Standard Time")},
+    {QLatin1String("Asia/Tokyo"), QLatin1String("Tokyo Standard Time")},
+    {QLatin1String("Pacific/Tongatapu"), QLatin1String("Tonga Standard Time")},
+    {QLatin1String("Etc/GMT+5"), QLatin1String("US Eastern Standard Time")},
+    {QLatin1String("America/Phoenix"), QLatin1String("US Mountain Standard Time")},
+    {QLatin1String("America/Caracas"), QLatin1String("Venezuela Standard Time")},
+    {QLatin1String("Asia/Vladivostok"), QLatin1String("Vladivostok Standard Time")},
+    {QLatin1String("Australia/Perth"), QLatin1String("W. Australia Standard Time")},
+    {QLatin1String("Africa/Lagos"), QLatin1String("W. Central Africa Standard Time")},
+    {QLatin1String("Europe/Berlin"), QLatin1String("W. Europe Standard Time")},
+    {QLatin1String("Asia/Tashkent"), QLatin1String("West Asia Standard Time")},
+    {QLatin1String("Pacific/Port_Moresby"), QLatin1String("West Pacific Standard Time")},
+    {QLatin1String("Asia/Yakutsk"), QLatin1String("Yakutsk Standard Time")}
+};
+
+static QString getWinZoneName(const QString &name)
+{
+    for ( int i = 0; i < sizeof(ZoneTbl) / sizeof(ZoneTbl[0]); ++i ) {
+        if (ZoneTbl[i].zoneOlson == name) {
+            return ZoneTbl[i].zoneWin;
+        }
+    }
+    
+    return name;
+}
+
 typedef BOOL (WINAPI *PtrTzSpecificLocalTimeToSystemTime )(LPTIME_ZONE_INFORMATION lpTimeZoneInformation,
                                                            LPSYSTEMTIME lpLocalTime,
                                                            LPSYSTEMTIME lpUniversalTime
@@ -309,6 +420,11 @@ static QStringList list_standard_names()
 
     standardNames << tchar_to_qstring(tz.StandardName);
     }
+    
+    for ( int i = 0; i < sizeof(ZoneTbl) / sizeof(ZoneTbl[0]); ++i ) {
+        standardNames << ZoneTbl[i].zoneOlson;
+    }
+
     return standardNames;
 }
 
@@ -316,6 +432,10 @@ static std::basic_string<TCHAR> pathFromZoneName(const KTimeZone& zone)
 {
     std::basic_string<TCHAR> path( timeZonesKey );
     path += TEXT( "\\" );
+    
+    QString name = zone.name();
+
+    name = getWinZoneName(name);
 
     HKEY timeZones;
     QStringList keys;
@@ -337,7 +457,7 @@ static std::basic_string<TCHAR> pathFromZoneName(const KTimeZone& zone)
     TIME_ZONE_INFORMATION tz;
     get_string_value( key, L"Std", tz.StandardName, sizeof( tz.StandardName ) );
 
-    if ( tchar_to_qstring(tz.StandardName) == zone.name() ) {
+    if ( tchar_to_qstring(tz.StandardName) == name ) {
         return keypath;
     }
     }
