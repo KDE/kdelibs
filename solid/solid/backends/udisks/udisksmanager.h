@@ -61,6 +61,7 @@ private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QDBusInterface m_manager;
     QStringList m_deviceCache;
+    QStringList m_dirtyDevices; // special 2-stage storage like Nokia N900
 };
 
 }

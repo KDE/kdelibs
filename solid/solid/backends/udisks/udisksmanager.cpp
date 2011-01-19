@@ -186,9 +186,16 @@ void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 {
     const QString udi = opath.path();
 
-    if (!m_deviceCache.isEmpty()) {
+    if (!m_deviceCache.contains(udi)) {
         m_deviceCache.append(udi);
     }
+
+    UDisksDevice device(udi);
+    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
+            && !device.property("DeviceIsMediaAvailable").toBool()
+            && !m_dirtyDevices.contains(udi))
+        m_dirtyDevices.append(udi);
+
     emit deviceAdded(udi);
     slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
 }
@@ -203,6 +210,9 @@ void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
         m_deviceCache.removeAll(udi + ":media");
         emit deviceRemoved(udi + ":media");
     }
+
+    if (m_dirtyDevices.contains(udi))
+        m_dirtyDevices.removeAll(udi);
 
     emit deviceRemoved(udi);
     m_deviceCache.removeAll(opath.path());
@@ -230,6 +240,15 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
             m_deviceCache.removeAll(udi + ":media");
             emit deviceRemoved(udi + ":media");
         }
+    }
+
+    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
+            && device.property("DeviceIsMediaAvailable").toBool()
+            && m_dirtyDevices.contains(udi))
+    {
+        //qDebug() << "dirty device added:" << udi;
+        emit deviceAdded(udi);
+        m_dirtyDevices.removeAll(udi);
     }
 }
 
