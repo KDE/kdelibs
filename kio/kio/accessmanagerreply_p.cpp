@@ -35,7 +35,7 @@
 #define QL1C(x)  QLatin1Char(x)
 
 
-static bool isLocalRequest(const KUrl& url)
+static bool accessManager_isLocalRequest(const KUrl& url)
 {
     const QString scheme (url.protocol());
     return (KProtocolInfo::isKnownProtocol(scheme) &&
@@ -143,7 +143,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     const KIO::MetaData& metaData = job->metaData();
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
-        if (isLocalRequest(url())) {
+        if (accessManager_isLocalRequest(url())) {
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
             emit metaDataChanged();
