@@ -130,9 +130,14 @@ namespace {
         }
     }
 
-    Soprano::LiteralValue createLiteral( const QString& s_, bool globbing ) {
-        bool hadQuotes = false;
-        QString s = stripQuotes( s_, &hadQuotes );
+    Soprano::LiteralValue createLiteral( const QString& s, bool globbing ) {
+        // no globbing if we have quotes or if there already is a wildcard
+        if ( s[0] == QLatin1Char('\'') ||
+             s[0] == QLatin1Char('\"') ) {
+            return s;
+        }
+
+        // at this point we should have a string without spaces in it
         bool b = false;
         int i = s.toInt( &b );
         if ( b )
@@ -144,7 +149,7 @@ namespace {
         //
         // we can only do query term globbing for strings longer than 3 chars
         //
-        if( !hadQuotes && globbing && s.length() > 3 && !s.endsWith('*') && !s.endsWith('?') )
+        if( globbing && s.length() > 3 && !s.endsWith('*') && !s.endsWith('?') )
             return QString(s + '*');
         else
             return s;
@@ -248,6 +253,36 @@ namespace {
         return Nepomuk::Query::ComparisonTerm( Nepomuk::Vocabulary::NFO::fileName(),
                                                Nepomuk::Query::LiteralTerm( regex ),
                                                Nepomuk::Query::ComparisonTerm::Regexp );
+    }
+
+    /**
+     * Merging literal terms is an optimization which is based on the assumption that most
+     * users want to search for the full text terms they enter in the value of the same
+     * property.
+     * Since merging two literals "foo" and "bar" into one term "foo AND bar" effectively
+     * changes the result set (the former allows that "foo" occurs in a property value
+     * different from "bar" while the latter forces them to occur in the same.)
+     * But the resulting query is much faster.
+     */
+    Nepomuk::Query::Term mergeLiteralTerms( const Nepomuk::Query::Term& term )
+    {
+        if( term.isAndTerm() ) {
+            AndTerm mergedTerm;
+            QStringList fullTextTerms;
+            Q_FOREACH( const Term& st, term.toAndTerm().subTerms() ) {
+                if( st.isLiteralTerm() ) {
+                    fullTextTerms << st.toLiteralTerm().value().toString();
+                }
+                else {
+                    mergedTerm.addSubTerm( st );
+                }
+            }
+            mergedTerm.addSubTerm( LiteralTerm( fullTextTerms.join( QString::fromLatin1(" AND ") ) ) );
+            return mergedTerm.optimized();
+        }
+        else {
+            return term;
+        }
     }
 
 #ifndef Q_CC_MSVC
@@ -620,7 +655,7 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
         final.setTerm( t );
     }
 
-    final.setTerm( resolveFields( final.term(), this ) );
+    final.setTerm( mergeLiteralTerms( resolveFields( final.term(), this ) ) );
     return final;
 }
 
