@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2011 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -99,20 +99,25 @@ namespace {
     }
 
     Soprano::LiteralValue createLiteral( const QString& s, bool globbing ) {
+        // 1. check if it is a number
+        QString clearString(s);
+        clearString.remove(QLatin1Char('\''));
+        clearString.remove(QLatin1Char('"'));
+        bool b = false;
+        int i = clearString.toInt( &b );
+        if ( b )
+            return Soprano::LiteralValue( i );
+        double d = clearString.toDouble( &b );
+        if ( b )
+            return Soprano::LiteralValue( d );
+
+        // 2. no number - continue with the original string
+
         // no globbing if we have quotes or if there already is a wildcard
         if ( s[0] == QLatin1Char('\'') ||
              s[0] == QLatin1Char('\"') ) {
             return s;
         }
-
-        // at this point we should have a string without spaces in it
-        bool b = false;
-        int i = s.toInt( &b );
-        if ( b )
-            return Soprano::LiteralValue( i );
-        double d = s.toDouble( &b );
-        if ( b )
-            return Soprano::LiteralValue( d );
 
         //
         // we can only do query term globbing for strings longer than 3 chars
