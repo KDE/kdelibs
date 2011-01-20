@@ -75,41 +75,6 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
 
 
 namespace {
-QString prepareQueryText( const QString& text )
-{
-    //
-    // we try to be a little smart about creating the query text
-    // by following a few simple rules:
-    //
-    // 1. enclose everything in quotes to be safe
-    // 2. quotes in search terms are not handled. replace them with spaces
-    // 3. replace double quotes with single quotes
-    // [4. wildcards can only be used if they are preceeded by at least 4 chars]
-    //
-
-    QString s = text.simplified();
-    if( s.isEmpty() )
-        return s;
-
-    // strip quotes
-    if( s[0] == '"' || s[0] == '\'' ) {
-        s = s.mid(1);
-    }
-    if( !s.isEmpty() &&
-        ( s[s.length()-1] == '"' || s[s.length()-1] == '\'' ) ) {
-        s.truncate(s.length()-1);
-    }
-
-    // replace quotes with spaces
-    s.replace( '"', ' ' );
-    s.replace( '\'', ' ' );
-
-    // add quotes
-    s = '\'' + s + '\'';
-
-    return s;
-}
-
 QString prepareRegexText( const QString& text )
 {
     QString filterRxStr = QRegExp::escape( text );
@@ -123,29 +88,107 @@ QString prepareRegexText( const QString& text )
 
 QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString& varName, const QString& text, Nepomuk::Query::QueryBuilderData* qbd )
 {
-    const int i = text.indexOf( QRegExp(QLatin1String("[\\?\\*]")) );
+    // each token with a negation flag
+    QList<QPair<QString, bool> > containsTokens;
+    QList<QPair<QString, bool> > regexTokens;
 
-    //
-    // Virtuoso needs four leading chars when using wildcards. Thus, if there is less (this includes 0) we fall back to the slower regex filter
-    //
-    if( i < 0 || i > 3 ) {
-        const QString finalText = prepareQueryText( text );
+    // we only support AND xor OR, not both at the same time
+    bool isUnion = false;
 
-        QString scoringPattern;
-        if( qbd->query()->m_fullTextScoringEnabled ) {
-            scoringPattern = QString::fromLatin1("OPTION (score %1) ").arg(qbd->createScoringVariable());
+    // gather all the tokens
+    bool inQuotes = false;
+    QString currentToken;
+    bool nextIsNegated = false;
+    int i = 0;
+    while( i < text.length() ) {
+        const QChar& c = text[i];
+        bool tokenEnd = false;
+
+        if( c == QChar('"') || c == QChar('\'') ) {
+            inQuotes = !inQuotes;
+            tokenEnd = !inQuotes;
         }
-        qbd->addFullTextSearchTerm( varName, finalText );
+        else if( c.isSpace() && !inQuotes ) {
+            tokenEnd = true;
+        }
+        else {
+            currentToken.append(c);
+        }
 
-        return QString::fromLatin1( "%1 bif:contains \"%2\" %3. " )
+        if( i == text.count()-1 ) {
+            tokenEnd = true;
+        }
+
+        if( tokenEnd && !currentToken.isEmpty() ) {
+            //
+            // Handle the three special tokens supported in Virtuoso's full text search engine we support (there is also "near" which we do not handle yet)
+            //
+            if( currentToken.toLower() == QLatin1String("and") ) {
+                isUnion = false;
+            }
+            else if( currentToken.toLower() == QLatin1String("or") ) {
+                isUnion = true;
+            }
+            else if( currentToken.toLower() == QLatin1String("not") ) {
+                nextIsNegated = true;
+            }
+            else {
+                QPair<QString, bool> currentTokenPair = qMakePair( currentToken, nextIsNegated );
+
+                //
+                // Virtuoso needs four leading chars when using wildcards. Thus, if there is less (this includes 0) we fall back to the slower regex filter
+                //
+                const QStringList subTokens = currentToken.split( QLatin1Char(' '), QString::SkipEmptyParts );
+                bool needsRegex = false;
+                Q_FOREACH( const QString& subToken, subTokens ) {
+                    const int i = subToken.indexOf( QRegExp(QLatin1String("[\\?\\*]")) );
+                    if( i >= 0 && i < 4 ) {
+                        needsRegex = true;
+                        break;
+                    }
+                }
+                if( !needsRegex ) {
+                    containsTokens << currentTokenPair;
+                }
+                else {
+                    regexTokens << currentTokenPair;
+                }
+            }
+
+            nextIsNegated = false;
+            currentToken.clear();
+        }
+
+        ++i;
+    }
+
+    // convert the tokens into SPARQL filters
+    QStringList filters;
+    QStringList containsFilterTokens;
+    for( int i = 0; i < containsTokens.count(); ++i ) {
+        QString containsFilterToken;
+        if( containsTokens[i].second )
+            containsFilterToken += QLatin1String("NOT ");
+        containsFilterToken += QString::fromLatin1("'%1'").arg(containsTokens[i].first);
+        containsFilterTokens << containsFilterToken;
+    }
+    if( !containsFilterTokens.isEmpty() ) {
+        filters << QString::fromLatin1("bif:contains(%1, \"%2\")")
+                   .arg( varName,
+                         containsFilterTokens.join( isUnion ? QLatin1String(" OR ") : QLatin1String(" AND ")) );
+    }
+    QStringList regexFilters;
+    for( int i = 0; i < regexTokens.count(); ++i ) {
+        QString regexFilter;
+        if( regexTokens[i].second )
+            regexFilter += QLatin1Char('!');
+        regexFilter += QString::fromLatin1( "REGEX(%1, \"%2\")" )
                 .arg( varName,
-                     finalText,
-                     scoringPattern );
+                      prepareRegexText(regexTokens[i].first) );
+        filters << regexFilter;
     }
-    else {
-        return QString::fromLatin1( "FILTER(REGEX(%1, \"%2\")) . " )
-                .arg( varName, prepareRegexText(text) );
-    }
+
+    return QString( QLatin1String("FILTER(") + filters.join( isUnion ? QLatin1String(" || ") : QLatin1String(" && ") ) + QLatin1String(") . ") );
 }
 
 
