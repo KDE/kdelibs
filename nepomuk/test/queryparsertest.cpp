@@ -108,8 +108,8 @@ void QueryParserTest::testQueryParser_data()
 
     // simple literal queries
     QTest::newRow( "simple literal query" ) << QString( "Hello" ) << Query( LiteralTerm( "Hello" ) );
-    QTest::newRow( "literal with spaces without quotes" ) << QString( "Hello World" ) << Query( AndTerm( LiteralTerm("Hello"), LiteralTerm("World" ) ) );
-    QTest::newRow( "literal with spaces with quotes" ) << QString( "'Hello World'" ) << Query( LiteralTerm( "Hello World" ) );
+    QTest::newRow( "literal with spaces without quotes" ) << QString( "Hello World" ) << Query( LiteralTerm("Hello AND World" ) );
+    QTest::newRow( "literal with spaces with quotes" ) << QString( "'Hello World'" ) << Query( LiteralTerm( "'Hello World'" ) );
 
     // comparison queries
     QTest::newRow( "simple field query" )    << QString( "hastag:nepomuk" )
@@ -135,8 +135,8 @@ void QueryParserTest::testQueryParser_data()
     QTest::newRow( "field negation" ) << QString( "-label:nepomuk" ) << Query( NegationTerm::negateTerm( ComparisonTerm( QUrl("onto:/label"), LiteralTerm( "nepomuk" ) ) ) );
 
     // and query
-    QTest::newRow( "and: two literals" )          << QString( "Hello World" ) << Query( AndTerm( LiteralTerm( "Hello" ), LiteralTerm( "World" ) ) );
-    QTest::newRow( "and: two literals with AND" ) << QString( "Hello AND World" ) << Query( AndTerm( LiteralTerm( "Hello" ), LiteralTerm( "World" ) ) );
+    QTest::newRow( "and: two literals" )          << QString( "Hello World" ) << Query( LiteralTerm( "Hello AND World" ) );
+    QTest::newRow( "and: two literals with AND" ) << QString( "Hello AND World" ) << Query( LiteralTerm( "Hello AND World" ) ) ;
 
     // or queries
     QTest::newRow( "or: two literals" )          << QString( "Hello OR World" ) << Query( OrTerm( LiteralTerm( "Hello" ), LiteralTerm( "World" ) ) );
@@ -161,9 +161,9 @@ void QueryParserTest::testQueryParserWithGlobbing_data()
 
     // simple literal queries
     QTest::newRow( "simple literal query" ) << QString( "Hello" ) << Query( LiteralTerm( "Hello*" ) );
-    QTest::newRow( "simple literal query" ) << QString( "\"Hello\"" ) << Query( LiteralTerm( "Hello" ) );
-    QTest::newRow( "literal with spaces without quotes" ) << QString( "Hello World" ) << Query( AndTerm( LiteralTerm("Hello*"), LiteralTerm("World*" ) ) );
-    QTest::newRow( "literal with spaces with quotes" ) << QString( "'Hello World'" ) << Query( LiteralTerm( "Hello World" ) );
+    QTest::newRow( "simple literal query" ) << QString( "\"Hello\"" ) << Query( LiteralTerm( "\"Hello\"" ) );
+    QTest::newRow( "literal with spaces without quotes" ) << QString( "Hello World" ) << Query( LiteralTerm("Hello* AND World*" ) );
+    QTest::newRow( "literal with spaces with quotes" ) << QString( "'Hello World'" ) << Query( LiteralTerm( "'Hello World'" ) );
 }
 
 
