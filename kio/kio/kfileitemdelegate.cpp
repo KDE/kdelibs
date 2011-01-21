@@ -1666,9 +1666,15 @@ bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
 
     case QEvent::FocusOut:
     {
-        emit commitData(editor);
-        emit closeEditor(editor, NoHint);
-        return true;
+        const QWidget *w = QApplication::activePopupWidget();
+        if (!w || w->parent() != editor)
+        {
+            emit commitData(editor);
+            emit closeEditor(editor, NoHint);
+            return true;
+        }
+        else
+            return false;
     }
 
     default:
