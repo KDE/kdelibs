@@ -2390,10 +2390,10 @@ bool HTTPProtocol::sendQuery()
       kDebug(7113) << "needs validation, performing conditional get.";
       /* conditional get */
       if (!m_request.cacheTag.etag.isEmpty())
-        header += QLatin1String("If-None-Match: ")+m_request.cacheTag.etag+QLatin1String("\r\n");
+        header += QLatin1String("If-None-Match: ") + m_request.cacheTag.etag + QLatin1String("\r\n");
 
       if (m_request.cacheTag.lastModifiedDate != -1) {
-        QString httpDate = formatHttpDate(m_request.cacheTag.lastModifiedDate);
+        const QString httpDate = formatHttpDate(m_request.cacheTag.lastModifiedDate);
         header += QLatin1String("If-Modified-Since: ") + httpDate + QLatin1String("\r\n");
         setMetaData(QLatin1String("modified"), httpDate);
       }
@@ -4241,7 +4241,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
               infoMessage(i18n("Retrieving %1 from %2...", KIO::convertSize(m_iSize),
                           m_request.url.host()));
           } else {
-              totalSize (0);
+              totalSize(0);
           }
       } else {
           infoMessage(i18n("Retrieving from %1...",  m_request.url.host()));
@@ -4498,7 +4498,7 @@ HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAg
     }
     Q_ASSERT(policy == CC_Verify);
     time_t currentDate = time(0);
-    if ((servedDate != -1 && currentDate > servedDate + maxCacheAge) ||
+    if ((servedDate != -1 && currentDate > (servedDate + maxCacheAge)) ||
         (expireDate != -1 && currentDate > expireDate)) {
         return ValidateCached;
     }
