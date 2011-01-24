@@ -334,7 +334,7 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_iSize(NO_SIZE)
     , m_isBusy(false)
     , m_maxCacheAge(DEFAULT_MAX_CACHE_AGE)
-    , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE/2)
+    , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE)
     , m_protocol(protocol)
     , m_wwwAuth(0)
     , m_proxyAuth(0)
@@ -3756,7 +3756,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         if (!cacheFileOpenWrite()) {
             kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
         }
-        m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
+        m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE);
     } else if (m_request.responseCode == 304 && m_request.cacheTag.file) {
         if (!mayCache) {
             kDebug(7113) << "This webserver is confused about the cacheability of the data it sends.";
@@ -4928,13 +4928,24 @@ void HTTPProtocol::cacheFileWritePayload(const QByteArray &d)
     if (!m_request.cacheTag.file) {
         return;
     }
+
+    // If the file being downloaded is so big that it exceeds the max cache size,
+    // do not cache it! See BR# 244215. NOTE: this can be improved upon in the
+    // future...
+    if (m_iSize >= (m_maxCacheSize * 1024)) {
+        kDebug(7113) << "Caching diabled because content size is too big.";
+        cacheFileClose();
+        return;
+    }
+
     Q_ASSERT(m_request.cacheTag.ioMode == WriteToCache);
     Q_ASSERT(m_request.cacheTag.file->openMode() & QIODevice::WriteOnly);
+
     if (d.isEmpty()) {
         cacheFileClose();
     }
 
-    //### abort if file grows too big! (early abort if we know the size, implement!)
+    //TODO: abort if file grows too big!
 
     // write the variable length text header as soon as we start writing to the file
     if (!m_request.cacheTag.bytesCached) {
