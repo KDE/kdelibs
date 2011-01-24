@@ -132,16 +132,17 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
         return removeProperty( resource, property );
     }
 
-    QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
+    QSet<Node> existingValuesSet = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes().toSet();
+    QSet<Node> valuesSet = values.toSet();
 
     Error::ErrorCode c = Error::ErrorNone;
-    foreach( const Node &node, existingValues.toSet() - values.toSet() ) {
+    foreach( const Node &node, existingValuesSet - valuesSet ) {
         if ( ( c = removeAllStatements( Statement( resource, property, node ) ) ) != Error::ErrorNone ) {
             return c;
         }
     }
 
-    QSet<Node> newNodes = values.toSet() - existingValues.toSet();
+    QSet<Node> newNodes = valuesSet- existingValuesSet;
     if ( !newNodes.isEmpty() ) {
         QUrl context = mainContext();
         foreach( const Node &node, newNodes ) {
