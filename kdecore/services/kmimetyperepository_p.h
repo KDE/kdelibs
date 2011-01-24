@@ -86,6 +86,11 @@ public:
 
     int sharedMimeInfoVersion();
 
+    /**
+     * @internal
+     */
+    static bool matchFileName( const QString &filename, const QString &pattern );
+
 private: // only for KMimeType and unittests
     friend class KMimeType;
     friend class KMimeFileParserTest;
@@ -127,11 +132,6 @@ private:
      * @internal (public for unit tests only)
      */
     QList<KMimeMagicRule> parseMagicFile(QIODevice* file, const QString& fileName) const;
-
-    /**
-     * @internal (public for unit tests only)
-     */
-    static bool matchFileName( const QString &filename, const QString &pattern );
 
     // Read magic files
     void parseMagic();

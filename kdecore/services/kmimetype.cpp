@@ -26,6 +26,7 @@
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocale.h>
+#include <kmimetyperepository_p.h>
 #include <kprotocolinfo.h>
 #include <kprotocolinfofactory.h>
 #include <kstandarddirs.h>
@@ -734,6 +735,11 @@ QString KMimeType::mainExtension() const
     }
     // TODO we should also look into the parent mimetype's patterns, no?
     return QString();
+}
+
+bool KMimeType::matchFileName( const QString &filename, const QString &pattern )
+{
+    return KMimeTypeRepository::matchFileName( filename, pattern );
 }
 
 int KMimeTypePrivate::serviceOffersOffset() const
