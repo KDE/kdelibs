@@ -2632,17 +2632,19 @@ void HTTPProtocol::fixupResponseMimetype()
 
     // Some webservers say "text/plain" when they mean "application/x-bzip"
     else if ((m_mimeType == QLatin1String("text/plain")) || (m_mimeType == QLatin1String("application/octet-stream"))) {
-        QString ext = m_request.url.path().right(4).toUpper();
-        if (ext == QLatin1String(".BZ2"))
+        const QString ext = QFileInfo(m_request.url.path()).suffix().toUpper();
+        if (ext == QLatin1String("BZ2"))
             m_mimeType = QLatin1String("application/x-bzip");
-        else if (ext == QLatin1String(".PEM"))
+        else if (ext == QLatin1String("PEM"))
             m_mimeType = QLatin1String("application/x-x509-ca-cert");
-        else if (ext == QLatin1String(".SWF"))
+        else if (ext == QLatin1String("SWF"))
             m_mimeType = QLatin1String("application/x-shockwave-flash");
-        else if (ext == QLatin1String(".PLS"))
+        else if (ext == QLatin1String("PLS"))
             m_mimeType = QLatin1String("audio/x-scpls");
-        else if (ext == QLatin1String(".WMV"))
+        else if (ext == QLatin1String("WMV"))
             m_mimeType = QLatin1String("video/x-ms-wmv");
+        else if (ext == QLatin1String("WEBM"))
+            m_mimeType = QLatin1String("video/webm");
     }
     kDebug(7113) << "after fixup" << m_mimeType;
 }
