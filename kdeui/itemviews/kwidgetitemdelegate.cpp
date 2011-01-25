@@ -72,12 +72,23 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 
 void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, int start, int end)
 {
-    updateRowRange(parent, start, end, false);
+    Q_UNUSED(end);
+    // We need to update the rows behind the inserted row as well because the widgets need to be
+    // moved to their new position
+    updateRowRange(parent, start, model->rowCount(parent), false);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
     updateRowRange(parent, start, end, true);
+}
+
+void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, int start, int end)
+{
+    Q_UNUSED(end);
+    // We need to update the rows that come behind the deleted rows because the widgets need to be
+    // moved to the new position
+    updateRowRange(parent, start, model->rowCount(parent), false);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -228,6 +239,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         if (model) {
             disconnect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
             disconnect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
+            disconnect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
             disconnect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
             disconnect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
             disconnect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));
@@ -235,6 +247,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         model = itemView->model();
         connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
         connect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
+        connect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         connect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));

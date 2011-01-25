@@ -97,7 +97,7 @@ public:
     KWidgetItemDelegateEventListener *eventListener;
 
     QList<QList<QWidget*> > allocatedWidgets;
-    QHash<QModelIndex, QList<QWidget*> > usedWidgets;
+    QHash<QPersistentModelIndex, QList<QWidget*> > usedWidgets;
     QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
 
     bool clearing;
