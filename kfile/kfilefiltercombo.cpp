@@ -214,4 +214,9 @@ QString KFileFilterCombo::defaultFilter() const
     return d->defaultFilter;
 }
 
+bool KFileFilterCombo::isMimeFilter() const
+{
+    return d->isMimeFilter;
+}
+
 #include "kfilefiltercombo.moc"

@@ -93,6 +93,12 @@ public:
      * @return all filters (this can be a list of patterns or a list of mimetypes)
      */
     QStringList filters() const;
+    
+    /**
+     * Returns true if the filter has been set using setMimeFilter().
+     * @since 4.6.1
+     */
+    bool isMimeFilter() const;
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* );

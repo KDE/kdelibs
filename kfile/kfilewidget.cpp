@@ -54,6 +54,7 @@
 #include <krecentdirs.h>
 #include <kdebug.h>
 #include <kio/kfileitemdelegate.h>
+#include <kde_file.h>
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QDockWidget>
@@ -2294,15 +2295,26 @@ void KFileWidgetPrivate::updateFilter()
 //     kDebug(kfile_area);
 
     if ((operationMode == KFileWidget::Saving) && (ops->mode() & KFile::File) ) {
-        const QString urlStr = locationEditCurrentText();
+        QString urlStr = locationEditCurrentText();
         if (urlStr.isEmpty())
             return;
 
-        KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
-        if (mime && mime->name() != KMimeType::defaultMimeType()) {
-            if (filterWidget->currentFilter() != mime->name() &&
-                filterWidget->filters().indexOf(mime->name()) != -1)
-                filterWidget->setCurrentFilter(mime->name());
+        if( filterWidget->isMimeFilter()) {
+            KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
+            if (mime && mime->name() != KMimeType::defaultMimeType()) {
+                if (filterWidget->currentFilter() != mime->name() &&
+                    filterWidget->filters().indexOf(mime->name()) != -1)
+                    filterWidget->setCurrentFilter(mime->name());
+            }
+        } else {
+            QString filename = urlStr.mid( urlStr.lastIndexOf( KDIR_SEPARATOR ) + 1 ); // only filename
+            foreach( const QString& filter, filterWidget->filters()) {
+                QString f = filter.left( filter.indexOf( '|' )); // '*.foo|Foo type' -> '*.foo'
+                if( KMimeType::matchFileName( filename, f )) {
+                    filterWidget->setCurrentFilter( filter );
+                    break;
+                }
+            }
         }
     }
 }
