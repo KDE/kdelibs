@@ -401,7 +401,7 @@ public:
 
     /**
      * Returns true if the given filename matches the given pattern.
-     * @since 4.7
+     * @since 4.6.1
      */
     static bool matchFileName( const QString &filename, const QString &pattern );
 
