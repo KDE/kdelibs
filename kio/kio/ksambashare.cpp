@@ -257,7 +257,7 @@ KSambaShareData::UserShareError KSambaSharePrivate::isPathValid(const QString &p
 
 KSambaShareData::UserShareError KSambaSharePrivate::isAclValid(const QString &acl) const
 {
-    const QRegExp aclRx("((?:(\\w\\s)+\\|)(\\w\\s)+):([fFrRd])(?:,|)");
+    const QRegExp aclRx("(?:(?:(\\w+\\s*)\\\\|)(\\w+\\s*):([fFrRd]{1})(?:,|))+");
     // TODO: check if user is a valid smb user
     return aclRx.exactMatch(acl) ? KSambaShareData::UserShareAclOk
            : KSambaShareData::UserShareAclInvalid;
@@ -286,12 +286,14 @@ KSambaShareData::UserShareError KSambaSharePrivate::add(const KSambaShareData &s
     QByteArray stdErr;
 
     if (data.contains(shareData.name())) {
-        return KSambaShareData::UserShareNameInUse;
+        if (data.value(shareData.name()).path() != shareData.path()) {
+            return KSambaShareData::UserShareNameInUse;
+        }
+    } else {
+        // It needs to be added here, otherwise another instance of KSambaShareDataPrivate
+        // will be created and added to data.
+        data.insert(shareData.name(), shareData);
     }
-
-    // It needs to be added here, otherwise another instance of KSambaShareDataPrivate
-    // will be created and added to data.
-    data.insert(shareData.name(), shareData);
 
     QString guestok = QString("guest_ok=%1").arg(
                           (shareData.guestPermission() == KSambaShareData::GuestsNotAllowed)
