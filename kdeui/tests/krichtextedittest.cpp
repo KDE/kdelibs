@@ -25,7 +25,10 @@
 #include <qtestevent.h>
 #include <qtest_kde.h>
 #include <qtextcursor.h>
+#include <QTextList>
 #include <qfont.h>
+
+#include <kdebug.h>
 
 QTEST_KDEMAIN(KRichTextEditTest, GUI)
 
@@ -116,3 +119,153 @@ void KRichTextEditTest::testUpdateLinkRemove()
     QCOMPARE(charFormat.underlineColor().name(), QColor(Qt::black).name());
     QCOMPARE(charFormat.underlineStyle(), QTextCharFormat::NoUnderline);
 }
+
+
+void KRichTextEditTest::testHTMLLineBreaks()
+{
+  KRichTextEdit edit;
+  edit.enableRichTextMode();
+
+  // Create the following text:
+  //A
+  //
+  //B
+  QTest::keyClick( &edit, Qt::Key_A );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+
+  edit.setTextUnderline( true );
+  
+  QTest::keyClick( &edit, Qt::Key_Enter );
+
+  QTest::keyClick( &edit, Qt::Key_B );
+  
+  QString html = edit.toCleanHtml();
+  
+  // The problem we have is that we need to "fake" being a viewer such
+  // as Thunderbird or MS-Outlook to unit test our html line breaks.
+  // For now, we'll parse the 6th line (the empty one) and make sure it has the proper format
+  // The first four (4) HTML code lines are DOCTYPE through <body> declaration
+  
+  const QStringList lines = html.split('\n');
+  
+//  for (int idx=0; idx<lines.size(); idx++) {
+//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//  }
+  
+  QVERIFY2( lines.size() == 7,  "we can't perform this unit test: "
+			       "the html rendering has changed beyond recognition");
+  
+  const QString& line6 = lines.at(5);
+  
+  // make sure that this is an empty <p> line
+  QVERIFY( line6.startsWith( QString( "<p style=\"-qt-paragraph-type:empty;" ) ) );
+  
+  // make sure that empty lines have the &nbsp; inserted
+  QVERIFY2( line6.endsWith( QString( ">&nbsp;</p>" ) ), "Empty lines must have &nbsp; or otherwise 3rd party "
+							"viewers render those as non-existing lines" );
+  
+}
+
+void KRichTextEditTest::testHTMLOrderedLists() 
+{
+
+  // The problem we have is that we need to "fake" being a viewer such
+  // as Thunderbird or MS-Outlook to unit test our html lists.
+  // For now, we'll parse the 6th line (the <ol> element) and make sure it has the proper format
+
+  KRichTextEdit edit;
+  edit.enableRichTextMode();
+  
+  edit.setTextUnderline( true );
+
+  // create a numbered (ordered) list
+  QTextCursor cursor = edit.textCursor();
+  cursor.insertList( QTextListFormat::ListDecimal );
+  
+  QTest::keyClick( &edit, Qt::Key_A );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClick( &edit, Qt::Key_B );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClick( &edit, Qt::Key_C );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  
+  QString html = edit.toCleanHtml();
+  
+  const QStringList lines = html.split('\n');
+  
+//  Uncomment this section in case the first test fails to see if the HTML
+//  rendering has actually introduced a bug, or merely a problem with the unit test itself
+//  
+//  for (int idx=0; idx<lines.size(); idx++) {
+//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//  }
+  
+  QVERIFY2( lines.size() == 9,  "we can't perform this unit test: "
+			       "the html rendering has changed beyond recognition");
+  
+  // this is the <ol> declaration line
+  const QString& line6 = lines.at(5);
+  
+//  kDebug() << line6;
+  
+  // there should not be a margin-left: 0 defined for the <ol> element
+  QRegExp regex( QString ( "<ol.*margin-left: 0px.*><li" ) );
+  regex.setMinimal( true );
+  
+  QVERIFY2 ( regex.indexIn( line6, 0 ) == -1, "margin-left: 0px specified for ordered lists "
+					      "removes numbers in 3rd party viewers " );
+  
+}
+
+void KRichTextEditTest::testHTMLUnorderedLists()
+{
+  // The problem we have is that we need to "fake" being a viewer such
+  // as Thunderbird or MS-Outlook to unit test our html lists.
+  // For now, we'll parse the 6th line (the <ul> element) and make sure it has the proper format
+  // The first four (4) HTML code lines are DOCTYPE through <body> declaration
+
+  KRichTextEdit edit;
+  edit.enableRichTextMode();
+  
+  edit.setTextUnderline( true );
+
+  // create a numbered (ordered) list
+  QTextCursor cursor = edit.textCursor();
+  cursor.insertList( QTextListFormat::ListDisc );
+  
+  QTest::keyClick( &edit, Qt::Key_A );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClick( &edit, Qt::Key_B );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClick( &edit, Qt::Key_C );
+  QTest::keyClick( &edit, Qt::Key_Enter );
+  
+  QString html = edit.toCleanHtml();
+  
+  const QStringList lines = html.split('\n');
+  
+//  Uncomment this section in case the first test fails to see if the HTML
+//  rendering has actually introduced a bug, or merely a problem with the unit test itself
+//  
+//  for (int idx=0; idx<lines.size(); idx++) {
+//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//  }
+  
+  QVERIFY2( lines.size() == 9,  "we can't perform this unit test: "
+			       "the html rendering has changed beyond recognition");
+  
+  // this is the <ol> declaration line
+  const QString& line6 = lines.at(5);
+  
+//  kDebug() << line6;
+  
+  // there should not be a margin-left: 0 defined for the <ol> element
+  QRegExp regex( QString ( "<ul.*margin-left: 0px.*><li" ) );
+  regex.setMinimal( true );
+  
+  QVERIFY2 ( regex.indexIn( line6, 0 ) == -1, "margin-left: 0px specified for unordered lists "
+					      "removes numbers in 3rd party viewers " );
+  
+}
+
+

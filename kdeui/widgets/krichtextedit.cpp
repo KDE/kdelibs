@@ -524,16 +524,15 @@ QString KRichTextEdit::toCleanHtml() const
 {
   QString result = toHtml();
 
-  static const QString EMPTYLINEFROMQT = QLatin1String(
-  "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-  "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
-  "-qt-user-state:0;\"></p>" );
-
   static const QString EMPTYLINEHTML = QLatin1String(
   "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-  "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
-  "-qt-user-state:0;\"><br /></p>" );
+  "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; \">&nbsp;</p>" );
 
+  // Qt inserts various style properties based on the current mode of the editor (underline, 
+  // bold, etc), but only empty paragraphs *also* have qt-paragraph-type set to 'empty'.
+  static const QString EMPTYLINEREGEX = QLatin1String(
+    "<p style=\"-qt-paragraph-type:empty;(.*)</p>" );
+  
   static const QString OLLISTPATTERNQT = QLatin1String(
   "<ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px;" );
 
@@ -549,11 +548,22 @@ QString KRichTextEdit::toCleanHtml() const
   // fix 1 - empty lines should show as empty lines - MS Outlook treats margin-top:0px; as
   // a non-existing line.
   // Although we can simply remove the margin-top style property, we still get unwanted results
-  // if you have three or more empty lines. It's best to replace empty <p> elements with <p><br /></p>.
-  // As per http://www.w3.org/TR/xhtml1/dtds.html#a_dtd_XHTML-1.0-Strict, <br> elements are still proper
-  // HTML.
-  result.replace(EMPTYLINEFROMQT, EMPTYLINEHTML);
+  // if you have three or more empty lines. It's best to replace empty <p> elements with <p>&nbsp;</p>.
 
+  QRegExp emptyLineFinder( EMPTYLINEREGEX );
+  emptyLineFinder.setMinimal( true );
+  
+  // find the first occurance
+  int offset = emptyLineFinder.indexIn( result, 0 );
+  while (offset != -1) {
+    // replace all the matching text with the new line text
+    result.replace( offset, emptyLineFinder.matchedLength(), EMPTYLINEHTML );
+    // advance the search offset to just beyond the last replace
+    offset += EMPTYLINEHTML.length();
+    // find the next occurance
+    offset = emptyLineFinder.indexIn( result, offset );
+  }
+  
   // fix 2a - ordered lists - MS Outlook treats margin-left:0px; as
   // a non-existing number; e.g: "1. First item" turns into "First Item"
   result.replace(OLLISTPATTERNQT, ORDEREDLISTHTML);

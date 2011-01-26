@@ -30,6 +30,9 @@ class KRichTextEditTest : public QObject
         void testLinebreaks();
         void testUpdateLinkAdd();
         void testUpdateLinkRemove();
+	void testHTMLLineBreaks();
+	void testHTMLOrderedLists();
+	void testHTMLUnorderedLists();
 };
 
 #endif
