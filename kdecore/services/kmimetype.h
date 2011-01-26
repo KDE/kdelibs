@@ -400,6 +400,12 @@ public:
     static QString extractKnownExtension( const QString &fileName );
 
     /**
+     * Returns true if the given filename matches the given pattern.
+     * @since 4.6.1
+     */
+    static bool matchFileName( const QString &filename, const QString &pattern );
+
+    /**
      * Returns the version of the installed update-mime-database program
      * (from freedesktop.org shared-mime-info). This is used by unit tests
      * and by the code that writes out icon definitions.
