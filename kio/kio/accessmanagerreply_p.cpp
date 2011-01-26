@@ -293,11 +293,12 @@ void AccessManagerReply::slotResult(KJob *kJob)
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid())
         readHttpResponseHeaders(m_kioJob);
+    else {
+        setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
+        if (errcode)
+            emit error(error());
+    }
 
-    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
-    if (errcode)
-        emit error(error());
-    
     emit finished();
 }
 
