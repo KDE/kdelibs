@@ -274,30 +274,35 @@ void AccessManagerReply::slotResult(KJob *kJob)
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << "KIO::ERR_COULD_NOT_AUTHENTICATE -> QNetworkReply::AuthenticationRequiredError";
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << "KIO::ERR_UNSUPPORTED_PROTOCOL -> QNetworkReply::ProtocolUnknownError";
+            break;
+        case KIO::ERR_CONNECTION_BROKEN:
+            setError(QNetworkReply::RemoteHostClosedError, kJob->errorText());
+            kDebug(7044) << "KIO::ERR_CONNECTION_BROKEN -> QNetworkReply::RemoteHostClosedError";
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << "KIO::ERR_UNSUPPORTED_ACTION -> QNetworkReply::ProtocolInvalidOperationError";
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << KIO::rawErrorDetail(errcode, QString()) << "-> QNetworkReply::UnknownNetworkError";
     }
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid())
         readHttpResponseHeaders(m_kioJob);
+    else {
+        setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
+        if (errcode)
+            emit error(error());
+    }
 
-    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
-    if (errcode)
-        emit error(error());
-    
     emit finished();
 }
 
