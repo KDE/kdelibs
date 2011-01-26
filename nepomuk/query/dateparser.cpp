@@ -116,6 +116,7 @@ public:
 
         format date12( QRegExp( QString( "\\b(\\d{1,3}) (month)s? ago\\b" ) ), months, true );
 
+        m_regexes.reserve( 13 );
         m_regexes.push_back( date1 );
         m_regexes.push_back( date2 );
         m_regexes.push_back( date3 );
