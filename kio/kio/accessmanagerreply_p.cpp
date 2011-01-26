@@ -224,7 +224,7 @@ void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 
 void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
-    kDebug(7044) << kioJob << mimeType;
+    //kDebug(7044) << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
 }
