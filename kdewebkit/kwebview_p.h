@@ -113,7 +113,7 @@ public:
                 return true;
 
             if (!hitTest.linkUrl().isValid() && !hitTest.isContentEditable() && !page->isModified()) {
-                QString subType (QLatin1String("plain"));
+                QString subType (QL1S("plain"));
                 const QString clipboardText = QApplication::clipboard()->text(subType, QClipboard::Selection);
                 if (!clipboardText.isEmpty()) {
                     KUriFilterData data (clipboardText.left(250).trimmed());
@@ -131,7 +131,7 @@ public:
                         default:
                             break;
                         }
-                    } else if (KUriFilter::self()->filterUri(data, QStringList(QL1S("kuriikwsfilter")))) {
+                    } else if (KUriFilter::self()->filterSearchUri(data, KUriFilter::NormalTextFilter)) {
                         emit q->selectionClipboardUrlPasted(data.uri(), clipboardText);
 #ifndef KDE_NO_DEPRECATED
                         emit q->selectionClipboardUrlPasted(data.uri());
