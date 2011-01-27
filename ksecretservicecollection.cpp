@@ -304,6 +304,9 @@ void SearchEntriesJob::onReplyFinished(QDBusPendingCallWatcher *reply)
     emitResult();
 }
 
+QStringList SearchEntriesJob::result() const {
+    return m_result;
+}
 //// Entry
 
 class KSecretServiceCollection::Entry::Data : public QSharedData

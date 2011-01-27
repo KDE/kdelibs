@@ -29,6 +29,7 @@ class OrgFreedesktopSecretSessionInterface;
 class OrgFreedesktopSecretServiceInterface;
 class KSecretService::Private {
 public:
+    Private() : serviceInterface(0), sessionInterface(0) {}
     OrgFreedesktopSecretServiceInterface *serviceInterface;
     OrgFreedesktopSecretSessionInterface *sessionInterface;
 };

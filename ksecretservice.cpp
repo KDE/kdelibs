@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2010 Dario Freddi <drf@kde.org>
+ * Copyright (C) 2011 Valentin Rusu <kde@rusu.info>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,7 +36,7 @@
 
 #include <kglobal.h>
 #include <klocalizedstring.h>
-
+#include <kdebug.h>
 
 class KSecretServiceHelper
 {
@@ -53,6 +54,8 @@ KSecretService *KSecretService::instance()
 {
     if (!s_globalKSecretService->q) {
         new KSecretService;
+        // FIXME: i'd prefer the static initilization be here instead in constructor code
+        Q_ASSERT( s_globalKSecretService->q != NULL );
     }
 
     return s_globalKSecretService->q;
@@ -66,6 +69,10 @@ CreateCollectionJob::CreateCollectionJob(const QString& label, const QVariantMap
     , m_label(label)
     , m_properties(properties)
 {
+}
+
+CreateCollectionJob::~CreateCollectionJob() {
+    
 }
 
 void CreateCollectionJob::start()
@@ -117,6 +124,9 @@ DeleteCollectionJob::DeleteCollectionJob(const QString& label, KSecretService *p
 {
 }
 
+DeleteCollectionJob::~DeleteCollectionJob() {
+}
+
 void DeleteCollectionJob::start()
 {
     QTimer::singleShot(0, this, SLOT(run()));
@@ -166,6 +176,7 @@ void DeleteCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
 KSecretService::KSecretService(QObject* parent)
     : QObject(parent)
     , d(new Private)
+    , _sessionAlgorithm( ALGORITHM_PLAIN )
 {
     Q_ASSERT(!s_globalKSecretService->q);
     s_globalKSecretService->q = this;
@@ -176,7 +187,13 @@ KSecretService::~KSecretService()
     delete d;
 }
 
-void KSecretService::init()
+void KSecretService::setAlgorithm(KSecretService::SessionEncryptingAlgorithm sessionAlgorithm)
+{
+    Q_ASSERT( !isConnected() );
+    _sessionAlgorithm = sessionAlgorithm;
+}
+
+void KSecretService::connectToService()
 {
     // Create a session and make everything ready
     QCA::init();
@@ -188,18 +205,34 @@ void KSecretService::init()
                                                                    QDBusConnection::sessionBus(),
                                                                    this);
 
-    QDBusPendingReply< QDBusVariant, QDBusObjectPath > reply = d->serviceInterface->OpenSession("RSA", QDBusVariant());
-    reply.waitForFinished();
-
-    if (reply.isError()) {
-        // Hmm, do something here
-        return;
+    const char *algorithm = 0;
+    switch ( _sessionAlgorithm ) {
+        case ALGORITHM_PLAIN:
+            algorithm = "plain";
+            break;
+            // TODO: add other algorithms here
+        default:
+            kDebug() << "Unknown session algorithm " << _sessionAlgorithm;
+            Q_ASSERT(0);
+            return;
     }
+    
+//     QDBusPendingReply< QDBusVariant, QDBusObjectPath > reply = d->serviceInterface->OpenSession(algorithm, QDBusVariant(""));
+//     reply.waitForFinished();
+//
+//     if (reply.isError()) {
+//         kDebug() << "Cannot open KSecretService session";
+//         return;
+//     }
+//
+//     QDBusObjectPath sessionPath = reply.reply().arguments().last().value< QDBusObjectPath >();
 
-    QDBusObjectPath sessionPath = reply.reply().arguments().last().value< QDBusObjectPath >();
+    QDBusObjectPath sessionPath;
+    QDBusReply< QDBusVariant > reply = d->serviceInterface->OpenSession( algorithm, QDBusVariant(""), sessionPath );
+
 
     if (sessionPath.path().isEmpty()) {
-        // Hmm, do something here
+        kDebug() << "KSecretService session path is empty!";
         return;
     }
 
@@ -208,6 +241,22 @@ void KSecretService::init()
                                                                    sessionPath.path(),
                                                                    QDBusConnection::sessionBus(),
                                                                    this);
+    if ( !d->sessionInterface->isValid() ) {
+        kDebug() << "Cannot open KSecretService session interface";
+    }
+}
+
+bool KSecretService::isConnected() const
+{
+    return d->serviceInterface->isValid() && d->sessionInterface->isValid();
+}
+
+OrgFreedesktopSecretSessionInterface* KSecretService::session() 
+{
+    if ( !d->serviceInterface || !d->serviceInterface->isValid() ) {
+        connectToService();
+    }
+    return d->sessionInterface;
 }
 
 QStringList KSecretService::collections() const
@@ -225,7 +274,7 @@ QStringList KSecretService::collections() const
     return collectionLabels;
 }
 
-KJob *KSecretService::createCollection(const QString& label, const QVariantMap& properties)
+KJob *KSecretService::createCollectionJob(const QString& label, const QVariantMap& properties)
 {
     return new CreateCollectionJob(label, properties, this);
 }
