@@ -28,6 +28,7 @@
 class KJob;
 class KSecretServiceCollection;
 class OrgFreedesktopSecretSessionInterface;
+class OrgFreedesktopSecretServiceInterface;
 
 class KSecretService : public QObject
 {
@@ -50,8 +51,15 @@ public:
      * @return true if we're connected to the ksecretservice daemon
      */
     bool isConnected() const;
+
+    /*
+     * This method will attempt to connect to KSecretService daemon if not aloready connected
+     * @return the main service interface
+     */
+    OrgFreedesktopSecretServiceInterface *service();
     
     /*
+     * This method will attempt to connect to KSecretService daemon if not aloready connected
      * @return the KSecretService session interface
      */
     OrgFreedesktopSecretSessionInterface *session();
