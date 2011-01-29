@@ -25,7 +25,7 @@
 #include "ksecretservice_p.h"
 
 // Types
-#include <adaptors/dbustypes.h>
+#include "../daemon/frontend/secret/adaptors/dbustypes.h"
 
 // DBus interfaces
 #include "collection_interface.h"

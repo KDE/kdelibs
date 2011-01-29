@@ -26,7 +26,7 @@
 #include "ksecretservicecollection.h"
 
 // Types
-#include <adaptors/dbustypes.h>
+#include "../daemon/frontend/secret/adaptors/dbustypes.h"
 
 // DBus interfaces
 #include "collection_interface.h"
@@ -201,7 +201,7 @@ void KSecretService::connectToService()
 
     // Create the service interface!
     d->serviceInterface = new OrgFreedesktopSecretServiceInterface("org.freedesktop.Secret",
-                                                                   "/org/freedesktop/Secrets",
+                                                                   "/org/freedesktop/secrets",
                                                                    QDBusConnection::sessionBus(),
                                                                    this);
 
@@ -248,7 +248,7 @@ void KSecretService::connectToService()
 
 bool KSecretService::isConnected() const
 {
-    return d->serviceInterface->isValid() && d->sessionInterface->isValid();
+    return d->serviceInterface != NULL && d->serviceInterface->isValid() && d->sessionInterface->isValid();
 }
 
 OrgFreedesktopSecretSessionInterface* KSecretService::session() 
