@@ -25,7 +25,7 @@
 #include "ksecretservice_p.h"
 
 // Types
-#include <adaptors/dbustypes.h>
+#include "../daemon/frontend/secret/adaptors/dbustypes.h"
 
 // DBus interfaces
 #include "collection_interface.h"
@@ -304,6 +304,9 @@ void SearchEntriesJob::onReplyFinished(QDBusPendingCallWatcher *reply)
     emitResult();
 }
 
+QStringList SearchEntriesJob::result() const {
+    return m_result;
+}
 //// Entry
 
 class KSecretServiceCollection::Entry::Data : public QSharedData

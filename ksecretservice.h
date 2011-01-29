@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2010 Dario Freddi <drf@kde.org>
+ * Copyright (C) 2011 Valentin Rusu <kde@rusu.info>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +27,8 @@
 
 class KJob;
 class KSecretServiceCollection;
+class OrgFreedesktopSecretSessionInterface;
+
 class KSecretService : public QObject
 {
     Q_OBJECT
@@ -35,19 +38,41 @@ public:
 
     virtual ~KSecretService();
 
-    void init();
-
+    enum SessionEncryptingAlgorithm {
+        ALGORITHM_PLAIN
+        // TODO: add other algorithm types here
+    };
+    
+    void setAlgorithm( SessionEncryptingAlgorithm sessionAlgorithm );
+    SessionEncryptingAlgorithm sessionAlgorithm() const { return _sessionAlgorithm; }
+    
+    /*
+     * @return true if we're connected to the ksecretservice daemon
+     */
+    bool isConnected() const;
+    
+    /*
+     * @return the KSecretService session interface
+     */
+    OrgFreedesktopSecretSessionInterface *session();
+    
     QStringList collections() const;
     KSecretServiceCollection *openCollection(const QString &label);
 
-    KJob *createCollection(const QString &label, const QVariantMap &properties = QVariantMap());
+    KJob *createCollectionJob(const QString &label, const QVariantMap &properties = QVariantMap());
     KJob *deleteCollection(const QString &label);
 
 private:
     KSecretService(QObject *parent = 0);
+    
+    /**
+     * This method will connect the client process using this class to the ksecretservice daemon
+     */
+    void connectToService();
 
     class Private;
     Private * const d;
+    SessionEncryptingAlgorithm _sessionAlgorithm;
 
     friend class CreateCollectionJob;
     friend class DeleteCollectionJob;
