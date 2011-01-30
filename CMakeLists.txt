@@ -152,7 +152,7 @@ endif(QCA2_FOUND)
 
 set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
                       ${CMAKE_BINARY_DIR}/kjs)
-                      
+
 if(NOT WINCE)
     set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES} )
 endif(NOT WINCE)
@@ -309,9 +309,6 @@ add_subdirectory( interfaces  )
 #if ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
 add_subdirectory( kdewidgets  )
 #endif ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
-if(NOT WINCE)
-add_subdirectory( kate  )
-endif(NOT WINCE)
 add_subdirectory( knotify )
 if(NOT WINCE)
 add_subdirectory( kimgio )
