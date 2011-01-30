@@ -6,16 +6,15 @@ Known Issues [PENDING]:
   disabling Phonon support (-no-phonon) when compiling Qt and simply use the Phonon
   libraries from kdesupport to ensure multimedia in KDE is functional. Unfortunately,
   compiling Qt without phonon support means no HTML 5 <video> support in QtWebKit.
-  This is supposed to change in some future release, perhaps QtWebKit 2.1 ?? For
-  more details see:
-    http://bugreports.qt.nokia.com/browse/QTWEBKIT-9
-    http://webkit.org/b/34631.
+  See http://bugreports.qt.nokia.com/browse/QTWEBKIT-9 and http://webkit.org/b/34631.
 
 * [QtWebKit] Spell checking support. See https://webkit.org/b/44114
 
-* [QtWebKit] No access to the input/control widgets making it very difficult to
-  implement very useful features such as form completion like the one available
-  when using native Qt widgets, e.g. QLineEdit. See http://webkit.org/b/36668
+* [QtWebKit] Form completion like the one available in native Qt widgets such
+  as QLineEdit is missing due to lack of access to form elements.
+  See http://webkit.org/b/36668.
+
+* [QtWebKit] HTML access key support has not yet been implemented in QtWebKit.
 
 Known Issues [FIXED]:
 =====================
@@ -39,15 +38,6 @@ Known Issues [FIXED]:
 
 * [QtWebKit] No way to stop <meta> tag based page refresh. [QtWebKit 2.0**]
   See http://webkit.org/b/29899
-
-
-
-
-
-
-
-
-
 
 
 NOTES:

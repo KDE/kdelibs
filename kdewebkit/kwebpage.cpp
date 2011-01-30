@@ -64,10 +64,10 @@
 static bool isMimeTypeAssociatedWithSelf(const QString& mimeType, const KService::Ptr &offer)
 {
     Q_UNUSED(mimeType);
-    
+
     if (!offer)
         return false;
-    
+
     kDebug(800) << offer->desktopEntryName();
 
     const QString& appName = QCoreApplication::applicationName();
@@ -134,9 +134,9 @@ static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName =
 
     if (!destUrl.isValid())
         return false;
-    
+
     KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
-    
+
     if (!metaData.isEmpty())
         job->setMetaData(metaData);
 
@@ -292,7 +292,7 @@ static bool isReplyStatusOk(const QNetworkReply* reply)
 void KWebPage::downloadResponse(QNetworkReply *reply)
 {
     Q_ASSERT(reply);
-    
+
     if (!reply)
         return;
 
@@ -304,12 +304,12 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
 
     // Get the top level window...
     QWidget* topLevelWindow = view() ? view()->window() : 0;
-    
+
     // Get suggested file name...
     const KIO::MetaData& metaData = reply->attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap();
     const QString suggestedFileName = metaData.value(QL1S("content-disposition-filename"));
     const QString contentDispositionType = metaData.value(QL1S("content-disposition-type"));
-   
+
     // Get the mime-type...
     QString mimeType;
     extractMimeType(reply, mimeType);
@@ -386,7 +386,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
         case KParts::BrowserOpenOrSaveQuestion::Cancel:
         default:
             break;
-        }        
+        }
     } else {
         KService::Ptr offer = KMimeTypeTrader::self()->preferredService(mimeType);
         if (isMimeTypeAssociatedWithSelf(mimeType, offer)) {
@@ -394,9 +394,9 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
             req.setRawHeader("x-kdewebkit-ignore-disposition", "true");
             currentFrame()->load(req);
             return;
-        }        
+        }
     }
-    
+
     // Remove any ioslave that was put on hold...
     KIO::Scheduler::removeSlaveOnHold();
 }
