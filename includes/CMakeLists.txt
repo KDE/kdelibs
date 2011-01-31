@@ -125,7 +125,6 @@ install( FILES
   KCompletionMatches
   KCompositeJob
   KConfig
-#  KConfigBackend # do not install until kconfigbackend.h is installed
   KConfigBase
   KConfigDialog
   KConfigDialogManager
@@ -698,60 +697,6 @@ install( FILES
   KIO/PasswordDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
 endif(NOT KDE_NO_DEPRECATED)
-
-
-# 2008-02-15: kjs headers are apparently not installed, so also
-# don't install the forwarding headers. (dirk)
-
-#install( FILES
-#  KJS/CString
-#  KJS/Collector
-#  KJS/Completion
-#  KJS/DeclaredFunctionImp
-#  KJS/Error
-#  KJS/ExecState
-#  KJS/FunctionImp
-#  KJS/HashEntry
-#  KJS/Identifier
-#  KJS/Interpreter
-#  KJS/JSCell
-#  KJS/JSImmediate
-#  KJS/JSLock
-#  KJS/JSObject
-#  KJS/JSValue
-#  KJS/List
-#  KJS/Lookup
-#  KJS/PropertyMap
-#  KJS/PropertyNameArray
-#  KJS/PropertySlot
-#  KJS/ProtectedPtr
-#  KJS/ScopeChain
-#  KJS/ScopeChainIterator
-#  KJS/ScopeChainNode
-#  KJS/UChar
-#  KJS/UCharReference
-#  KJS/UString
-#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
-
-# 2008-02-28: kjsembed headers are apparently not installed, so also
-# don't install the forwarding headers. (dirk)
-
-#install( FILES
-#  KJSEmbed/Constructor
-#  KJSEmbed/Engine
-#  KJSEmbed/Enumerator
-#  KJSEmbed/Method
-#  KJSEmbed/ObjectBinding
-#  KJSEmbed/ObjectFactory
-#  KJSEmbed/ProxyBinding
-#  KJSEmbed/QObjectBinding
-#  KJSEmbed/QWidgetBinding
-#  KJSEmbed/SlotBinding
-#  KJSEmbed/StaticBinding
-#  KJSEmbed/StaticConstructor
-#  KJSEmbed/VariantBinding
-#  KJSEmbed/VariantFactory
-#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 
 install( FILES
