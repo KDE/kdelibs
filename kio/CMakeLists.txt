@@ -39,6 +39,7 @@ include_directories(
    ${KDE4_KDEUI_INCLUDES}
    ${KDE4_KDECORE_INCLUDES}/
    ${STRIGI_INCLUDE_DIR}
+   ${SOPRANO_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
 )
 
