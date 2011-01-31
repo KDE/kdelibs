@@ -550,22 +550,33 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     // domain<->certificate matching here.
     d->sslErrors = d->socket.sslErrors();
     QSslCertificate peerCert = d->socket.peerCertificateChain().first();
-    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
-    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
     QMutableListIterator<KSslError> it(d->sslErrors);
     while (it.hasNext()) {
         // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
         // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
         // be an error of the peer certificate so we just don't check the error's
         // certificate().
-        if (it.next().error() != KSslError::HostNameMismatch) {
-            continue;
+
+        // Remove all HostNameMismatch, we have to redo name checking later.
+        if (it.next().error() == KSslError::HostNameMismatch) {
+            it.remove();
         }
-        Q_FOREACH (const QString &dp, domainPatterns) {
-            if (isMatchingHostname(dp, d->host)) {
-                it.remove();
-            }
+    }
+    // Redo name checking here and (re-)insert HostNameMismatch to sslErrors if
+    // host name does not match any of the names in server certificate.
+    // QSslSocket may not report HostNameMismatch error, when server
+    // certificate was issued for the IP we are connecting to.
+    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
+    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
+    bool names_match = false;
+    foreach (const QString &dp, domainPatterns) {
+        if (isMatchingHostname(dp, d->host)) {
+            names_match = true;
+            break;
         }
+    }
+    if (!names_match) {
+        d->sslErrors.insert(0, KSslError(KSslError::HostNameMismatch, peerCert));
     }
 
     // TODO: review / rewrite / remove the comment

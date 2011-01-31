@@ -21,7 +21,7 @@ add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fa
 if(NOT WIN32 AND NOT APPLE)
 set(halbasictest_SRCS halbasictest.cpp )
 
-kde4_add_unit_test(halbasictest ${halbasictest_SRCS})
+kde4_add_executable(halbasictest ${halbasictest_SRCS})
 
 if(WIN32)
   set_target_properties(halbasictest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)

@@ -40,6 +40,9 @@ FstabWatcher::FstabWatcher()
     : m_isRoutineInstalled(false)
     , m_fileSystemWatcher(new QFileSystemWatcher(this))
 {
+    if (qApp) {
+        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(orphanFileSystemWatcher()));
+    }
     m_fileSystemWatcher->addPath(MTAB);
     m_fileSystemWatcher->addPath(FSTAB);
     connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
@@ -47,11 +50,23 @@ FstabWatcher::FstabWatcher()
 
 FstabWatcher::~FstabWatcher()
 {
-    qRemovePostRoutine(globalFstabWatcher.destroy);
+    // The QFileSystemWatcher doesn't work correctly in a singleton
+    // The solution so far was to destroy the QFileSystemWatcher when the application quits
+    // But we have some crash with this solution.
+    // For the moment to workaround the problem, we detach the QFileSystemWatcher from the parent
+    // effectively leaking it on purpose.
+
+    //qRemovePostRoutine(globalFstabWatcher.destroy);
+}
+
+void FstabWatcher::orphanFileSystemWatcher()
+{
+    m_fileSystemWatcher->setParent(0);
 }
 
 FstabWatcher *FstabWatcher::instance()
 {
+#if 0
     FstabWatcher *fstabWatcher = globalFstabWatcher;
 
     if (fstabWatcher && !fstabWatcher->m_isRoutineInstalled) {
@@ -59,6 +74,9 @@ FstabWatcher *FstabWatcher::instance()
         fstabWatcher->m_isRoutineInstalled = true;
     }
     return fstabWatcher;
+#else
+    return globalFstabWatcher;
+#endif
 }
 
 
