@@ -56,7 +56,11 @@ FstabWatcher::~FstabWatcher()
     // For the moment to workaround the problem, we detach the QFileSystemWatcher from the parent
     // effectively leaking it on purpose.
 
+#if 0
     //qRemovePostRoutine(globalFstabWatcher.destroy);
+#else
+    m_fileSystemWatcher->setParent(0);
+#endif
 }
 
 void FstabWatcher::orphanFileSystemWatcher()
