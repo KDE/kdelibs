@@ -1870,7 +1870,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
     resetSessionSettings();
 
-    for (unsigned i = 0; i < n; i++) {
+    for (unsigned i = 0; i < n; ++i) {
         KUrl url;
         stream >> url >> mIncomingMetaData;
 
@@ -2035,7 +2035,7 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
         }
         size_t bufferFill = readBuffered(mybuf, step);
 
-        for (size_t i = 0; i < bufferFill ; i++, pos++) {
+        for (size_t i = 0; i < bufferFill ; ++i, ++pos) {
             // we copy the data from mybuf to buf immediately and look for the newlines in buf.
             // that way we don't miss newlines split over several invocations of this method.
             buf[pos] = mybuf[i];
@@ -4935,7 +4935,7 @@ void HTTPProtocol::cacheFileWritePayload(const QByteArray &d)
     // do not cache it! See BR# 244215. NOTE: this can be improved upon in the
     // future...
     if (m_iSize >= (m_maxCacheSize * 1024)) {
-        kDebug(7113) << "Caching diabled because content size is too big.";
+        kDebug(7113) << "Caching disabled because content size is too big.";
         cacheFileClose();
         return;
     }
