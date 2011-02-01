@@ -44,6 +44,8 @@
     var forms = new Array; \
     for (var i = 0; i < document.forms.length; ++i) { \
         var form = document.forms[i]; \
+        if (form.method.toLowerCase() != 'post') \
+            continue; \
         var formObject = new Object; \
         formObject.name = form.name; \
         formObject.index = i; \
@@ -145,11 +147,12 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
             const QString type = elementMap[QL1S("type")].toString();
             const bool isPasswdInput = (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0);
             const bool isTextInput = (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0);
+            const bool autoCompleteOff = (elementMap[QL1S("autocomplete")].toString().compare(QL1S("off"), Qt::CaseInsensitive) == 0);
             if (name.isEmpty())
                 continue;
             if (!isPasswdInput && !isTextInput)
                 continue;
-            if (elementMap[QL1S("autocomplete")].toString() == QL1S("on"))
+            if (autoCompleteOff)
                 continue;
             if (elementMap[QL1S("disabled")].toBool())
                 continue;
