@@ -204,7 +204,16 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
             // Found one glob match exactly: OK, use that.
             // We disambiguate multiple glob matches by sniffing, below.
             if ( mimeList.count() == 1 ) {
-                return mimeType(mimeList.first());
+                const QString selectedMime = mimeList.at(0);
+                KMimeType::Ptr mime = mimeType(selectedMime);
+                if (!mime) {
+                    // #265188 - this can happen when an old globs file is lying around after
+                    // the packages xml file was removed.
+                    kWarning() << "Glob file refers to" << selectedMime << "but this mimetype does not exist!";
+                    mimeList.clear();
+                } else {
+                    return mime;
+                }
             }
         }
     }
@@ -233,7 +242,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                 foreach(const QString &m, mimeList) {
                     KMimeType::Ptr mimeFromPattern = KMimeType::mimeType(m);
                     //kDebug(servicesDebugArea()) << "sniffedMime=" << sniffedMime << "mimeFromPattern=" << mimeFromPattern->name();
-                    if (mimeFromPattern->is(sniffedMime)) {
+                    if (mimeFromPattern && mimeFromPattern->is(sniffedMime)) {
                         // We have magic + pattern pointing to this, so it's a pretty good match
                         if (accuracy)
                             *accuracy = 100;
@@ -257,7 +266,13 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
         // We have to pick one...
         // At least make this deterministic
         qSort(mimeList.begin(), mimeList.end());
-        return mimeType(mimeList.first());
+        Q_FOREACH(const QString& mimeName, mimeList) {
+            KMimeType::Ptr mime = mimeType(mimeName);
+            if (!mime)
+                kWarning() << "Glob file refers to" << mimeName << "but this mimetype does not exist!";
+            else
+                return mime;
+        }
     }
 
     // Find a fallback from the protocol
