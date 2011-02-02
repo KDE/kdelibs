@@ -59,7 +59,7 @@ using namespace Nepomuk::Query;
 using namespace Nepomuk::Types;
 
 
-class DynamicResourceTestFacet::DynamicResourceTestFacet::TestPrivate : public DynamicResourceFacet::Private
+class DynamicResourceTestFacet::TestPrivate : public DynamicResourceFacet::Private
 {
 public:
     void startQuery( const Nepomuk::Query::Query& query ) {

@@ -33,8 +33,13 @@
 
 #include <QtCore/QSet>
 
+#ifdef Q_OS_WIN
+#include "nepomukutils_export.h"
 
+class NEPOMUKUTILS_EXPORT Nepomuk::Utils::DynamicResourceFacet::Private
+#else
 class Nepomuk::Utils::DynamicResourceFacet::Private
+#endif
 {
 public:
     Private()
