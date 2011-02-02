@@ -45,7 +45,7 @@ namespace Sonnet
         Speller &operator=(const Speller &speller);
 
         /**
-         * Returns true is the speller supports currently selected
+         * Returns true if the speller supports currently selected
          * language.
          */
         bool isValid() const;
