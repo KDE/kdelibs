@@ -74,8 +74,12 @@ void FilterSet::addFilter(const QString& filterStr)
 
     // Strip options, we ignore them for now.
     int dollar = filter.lastIndexOf(QLatin1Char('$'));
-    if (dollar != -1)
+    if (dollar != -1) {
         last = dollar - 1;
+        // If only "*" is left after ignoring the options, disregard the rule.
+        if (first == last && firstChar == QLatin1Char('*'))
+            return;
+    }
 
     // Perhaps nothing left?
     if (first > last)
