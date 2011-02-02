@@ -714,7 +714,6 @@ namespace KIO {
         Q_PRIVATE_SLOT(d_func(), void slotPostRedirection())
         Q_PRIVATE_SLOT(d_func(), void slotNeedSubUrlData())
         Q_PRIVATE_SLOT(d_func(), void slotSubUrlData(KIO::Job*, const QByteArray &))
-        Q_PRIVATE_SLOT(d_func(), void slotDataReqFromDevice())
         Q_DECLARE_PRIVATE(TransferJob)
 
         // A FileCopyJob may control one or more TransferJobs
