@@ -248,8 +248,16 @@ namespace KIO {
             : SimpleJobPrivate(url, command, packedArgs),
               m_internalSuspended(false), m_errorPage(false),
               staticData(_staticData), m_isMimetypeEmitted(false), m_subJob(0)
-            { }
+            {
+            }
 
+        inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
+                                  QIODevice* ioDevice)
+            : SimpleJobPrivate(url, command, packedArgs),
+              m_internalSuspended(false), m_errorPage(false),
+              m_isMimetypeEmitted(false), m_subJob(0),
+              m_outgoingDataSource(QWeakPointer<QIODevice>(ioDevice))
+            { }
 
         bool m_internalSuspended;
         bool m_errorPage;
@@ -259,6 +267,7 @@ namespace KIO {
         QString m_mimetype;
         bool m_isMimetypeEmitted;
         TransferJob *m_subJob;
+        QWeakPointer<QIODevice> m_outgoingDataSource;
 
         /**
          * Flow control. Suspend data processing from the slave.
@@ -275,6 +284,13 @@ namespace KIO {
          * @param slave the slave that works on the job
          */
         virtual void start( KIO::Slave *slave );
+        /**
+         * @internal
+         * Called when the ioslave needs the data to send the server. This slot
+         * is invoked when the data is to be sent is read from a QIODevice rather
+         * instead of a QByteArray buffer.
+         */
+        virtual void slotDataReqFromDevice();
 
         void slotErrorPage();
         void slotCanResume( KIO::filesize_t offset );
@@ -289,6 +305,18 @@ namespace KIO {
                                           JobFlags flags)
         {
             TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, _staticData));
+            job->setUiDelegate(new JobUiDelegate);
+            if (!(flags & HideProgressInfo))
+                KIO::getJobTracker()->registerJob(job);
+            return job;
+        }
+
+        static inline TransferJob *newJob(const KUrl& url, int command,
+                                          const QByteArray &packedArgs,
+                                          QIODevice* ioDevice,
+                                          JobFlags flags)
+        {
+            TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, ioDevice));
             job->setUiDelegate(new JobUiDelegate);
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);

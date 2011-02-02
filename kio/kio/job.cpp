@@ -1127,7 +1127,6 @@ QString TransferJob::mimetype() const
     return d_func()->m_mimetype;
 }
 
-
 // Slave requests data
 void TransferJob::slotDataReq()
 {
@@ -1217,8 +1216,12 @@ void TransferJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
 
-    q->connect( slave, SIGNAL( dataReq() ),
-             SLOT( slotDataReq() ) );
+    if (m_outgoingDataSource)
+        q->connect( slave, SIGNAL( dataReq() ),
+                SLOT( slotDataReqFromDevice() ) );
+    else
+        q->connect( slave, SIGNAL( dataReq() ),
+                SLOT( slotDataReq() ) );
 
     q->connect( slave, SIGNAL( redirection(const KUrl &) ),
              SLOT( slotRedirection(const KUrl &) ) );
@@ -1284,6 +1287,37 @@ void TransferJobPrivate::slotCanResume( KIO::filesize_t offset )
     emit q->canResume(q, offset);
 }
 
+void TransferJobPrivate::slotDataReqFromDevice()
+{
+    Q_Q(TransferJob);
+
+    QByteArray dataForSlave;
+
+    m_extraFlags |= JobPrivate::EF_TransferJobNeedData;
+
+    if (m_outgoingDataSource)
+    {
+        const int MAX_BUF_SIZE = 64 * 1024; // 64 KB at a time seems reasonable...
+        dataForSlave = m_outgoingDataSource.data()->read(MAX_BUF_SIZE);
+    }
+
+    if (dataForSlave.isEmpty())
+    {
+        emit q->dataReq(q, dataForSlave);
+        if (m_extraFlags & JobPrivate::EF_TransferJobAsync)
+            return;
+    }
+
+    q->sendAsyncData(dataForSlave);
+
+    if (m_subJob)
+    {
+       // Bitburger protocol in action
+       internalSuspend(); // Wait for more data from subJob.
+       m_subJob->d_func()->internalResume(); // Ask for more!
+    }
+}
+
 void TransferJob::slotResult( KJob *job)
 {
     Q_D(TransferJob);
@@ -1324,6 +1358,13 @@ public:
         : TransferJobPrivate(url, command, packedArgs, _staticData),
           m_uploadOffset( 0 )
         {}
+    StoredTransferJobPrivate(const KUrl& url, int command,
+                             const QByteArray &packedArgs,
+                             QIODevice* ioDevice)
+        : TransferJobPrivate(url, command, packedArgs, ioDevice),
+          m_uploadOffset( 0 )
+        {}
+
     QByteArray m_data;
     int m_uploadOffset;
 
@@ -1343,6 +1384,18 @@ public:
             KIO::getJobTracker()->registerJob(job);
         return job;
     }
+
+    static inline StoredTransferJob *newJob(const KUrl &url, int command,
+                                            const QByteArray &packedArgs,
+                                            QIODevice* ioDevice, JobFlags flags)
+    {
+        StoredTransferJob *job = new StoredTransferJob(
+            *new StoredTransferJobPrivate(url, command, packedArgs, ioDevice));
+        job->setUiDelegate(new JobUiDelegate);
+        if (!(flags & HideProgressInfo))
+            KIO::getJobTracker()->registerJob(job);
+        return job;
+    }
 };
 
 namespace KIO {
@@ -1357,10 +1410,16 @@ namespace KIO {
                 setErrorText( url );
             }
 
+        PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, QIODevice* ioDevice)
+            : StoredTransferJob(*new StoredTransferJobPrivate(KUrl(), CMD_SPECIAL, packedArgs, ioDevice))
+            {
+                setError( _error );
+                setErrorText( url );
+            }
     };
 }
 
-static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& postData, JobFlags flags )
+static int isUrlPortBad(const KUrl& url)
 {
     int _error = 0;
 
@@ -1464,7 +1523,34 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
     if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), url))
         _error = KIO::ERR_ACCESS_DENIED;
 
+    return _error;
+}
+
+static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, QIODevice* ioDevice, JobFlags flags )
+{
     // if request is not valid, return an invalid transfer job
+    const int _error = isUrlPortBad(url);
+
+    if (_error)
+    {
+        KIO_ARGS << (int)1 << url;
+        PostErrorJob * job = new PostErrorJob(_error, url.pathOrUrl(), packedArgs, ioDevice);
+        job->setUiDelegate(new JobUiDelegate());
+        if (!(flags & HideProgressInfo)) {
+            KIO::getJobTracker()->registerJob(job);
+        }
+        return job;
+    }
+
+    // all is ok, return 0
+    return 0;
+}
+
+static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& postData, JobFlags flags )
+{
+    // if request is not valid, return an invalid transfer job
+    const int _error = isUrlPortBad(url);
+
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
@@ -1504,6 +1590,31 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFla
     return job;
 }
 
+TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, JobFlags flags )
+{
+    bool redirection = false;
+    KUrl _url(url);
+    if (_url.path().isEmpty())
+    {
+      redirection = true;
+      _url.setPath("/");
+    }
+
+    TransferJob* job = precheckHttpPost(_url, ioDevice, flags);
+    if (job)
+        return job;
+
+    // Send http post command (1), decoded path and encoded query
+    KIO_ARGS << (int)1 << _url;
+    job = TransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, ioDevice, flags);
+
+    if (redirection)
+      QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
+
+    return job;
+}
+
+
 StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
 {
     bool redirection = false;
@@ -1521,6 +1632,26 @@ StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& 
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << _url;
     job = StoredTransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, postData, flags );
+    return job;
+}
+
+StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const KUrl& url, JobFlags flags )
+{
+    bool redirection = false;
+    KUrl _url(url);
+    if (_url.path().isEmpty())
+    {
+      redirection = true;
+      _url.setPath("/");
+    }
+
+    StoredTransferJob* job = precheckHttpPost(_url, ioDevice, flags);
+    if (job)
+        return job;
+
+    // Send http post command (1), decoded path and encoded query
+    KIO_ARGS << (int)1 << _url;
+    job = StoredTransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, ioDevice, flags );
     return job;
 }
 

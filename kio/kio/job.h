@@ -311,6 +311,17 @@ namespace KIO {
                                        JobFlags flags = DefaultFlags );
 
     /**
+     * Same as the above function except this one takes a QIODevice for reading
+     * the content to post to the HTTP server.
+     *
+     * Use this function to avoid excessive memory usage that occurs with the
+     * above function that accepts a QByteArray when sending a large content to
+     * the server.
+     */
+    KIO_EXPORT TransferJob *http_post( const KUrl& url, QIODevice* device,
+                                       JobFlags flags = DefaultFlags );
+
+    /**
      * Get (a.k.a. read), into a single QByteArray.
      * @see StoredTransferJob
      *
@@ -346,6 +357,18 @@ namespace KIO {
      * @since 4.2
      */
     KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const KUrl& url,
+                                                  JobFlags flags = DefaultFlags );
+    /**
+     * HTTP POST (a.k.a. write) data from the given IO device.
+     * @see StoredTransferJob
+     *
+     * @param device IO device from which the data is obtained.
+     * @param url Where to write data.
+     * @param flags Can be HideProgressInfo here.
+     * @return the job handling the operation.
+     * @since 4.2
+     */
+    KIO_EXPORT StoredTransferJob *storedHttpPost( QIODevice* device, const KUrl& url,
                                                   JobFlags flags = DefaultFlags );
 
     /**
