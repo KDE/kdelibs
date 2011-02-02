@@ -228,7 +228,7 @@ fi
 ### We need some values from top-level files, which
 ### are not preserved between invocations of this
 ### script, so factor it out for easy use.
-create_doxyfile_in() 
+create_doxyfile_in()
 {
 	VERSION=`grep '^/.*DOXYGEN_VERSION' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++'`
 	NAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++'`
@@ -246,7 +246,7 @@ if test -z "$subdir" ; then
 	if test ! -d "$apidoxdir" ; then
 		mkdir "$apidoxdir" > /dev/null 2>&1
 	fi
-	cd "$apidoxdir" > /dev/null 2>&1 || { 
+	cd "$apidoxdir" > /dev/null 2>&1 || {
 		echo "Cannot create and cd into $apidoxdir"
 		exit 1
 	}
@@ -292,7 +292,8 @@ extract_line()
 	test -f "$file" || return
 	pattern=`echo "$1" | tr + .`
 	grep "^//[[:space:]]*$1" "$file" | \
-		sed -e "s+//[[:space:]]*$pattern.*=[[:space:]]*++"
+        sed -e "s+//[[:space:]]*$pattern.*=[[:space:]]*++" | \
+        sed -e "s+@currentdir@+$subdir+g"
 }
 
 ### Try to order the top-level subdirectories so that we get the smallest
@@ -301,7 +302,7 @@ create_subdirs()
 {
 echo "* Sorting top-level subdirs"
 
-( cd "$top_srcdir" && 
+( cd "$top_srcdir" &&
 for dir in *
 do
 	# For each Mainpage.dox, get the list (possibly empty) of
@@ -554,7 +555,7 @@ apidox_toplevel()
 		echo "OUTPUT_DIRECTORY       = $top_builddir"
 		echo "RECURSIVE              = NO"
 		echo "ALPHABETICAL_INDEX     = NO"
-		echo "HTML_OUTPUT            = ." 
+		echo "HTML_OUTPUT            = ."
 	} >> Doxyfile
 	apidox_htmlfiles "main"
         if test "$manpages" = "1"; then
@@ -614,7 +615,7 @@ apidox_toplevel()
 # $1 is empty to generate tag files only.
 # $1 is non-empty to generate HTML.
 #
-# Additionally, the environment variable $NO_APPEND_TAG may be set 
+# Additionally, the environment variable $NO_APPEND_TAG may be set
 # to a non-empty value to suppress adding the tag for this subdir
 # to the list of tag files (used when re-generating a single subdir).
 #
