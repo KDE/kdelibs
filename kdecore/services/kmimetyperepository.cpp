@@ -27,6 +27,7 @@
 #include <klocale.h>
 #include "kfoldermimetype.h"
 #include <QFile>
+#include <QProcess>
 
 extern int servicesDebugArea();
 
@@ -686,17 +687,19 @@ int KMimeTypeRepository::sharedMimeInfoVersion()
 {
     m_mutex.lockForWrite();
     if (m_sharedMimeInfoVersion == 0) {
-        QFile file (KStandardDirs::findExe(QString::fromLatin1("update-mime-database")));
-        if (!file.open(QIODevice::ReadOnly)) {
-            kWarning() << "update-mime-database not found or not readable!";
+        QProcess smi;
+        const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
+        if (umd.isEmpty()) {
+            kWarning() << "update-mime-database not found!";
             m_sharedMimeInfoVersion = -1;
         } else {
-            const QString out = QString::fromLocal8Bit(file.readAll().replace('\0', ""));
-            file.close();
+            smi.start(umd, QStringList() << QString::fromLatin1("-v"));
+            smi.waitForStarted();
+            smi.waitForFinished();
+            const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
             QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
             if (versionRe.indexIn(out) > -1) {
                 m_sharedMimeInfoVersion = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
-                kWarning() << "Version of update-mime-database:" << m_sharedMimeInfoVersion;
             } else {
                 kWarning() << "Unexpected version scheme from update-mime-database -v: got" << out;
                 m_sharedMimeInfoVersion = -1;
