@@ -1,6 +1,5 @@
 /* This file is part of the KDE project
    Copyright (C) 2010 Sebastian Trueg <trueg@kde.org>
-   Based on konq_popupmenuplugin.h Copyright 2008 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or modify
    it under the terms of the GNU Library General Public License as published
@@ -19,33 +18,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KFILEITEMACTION_PLUGIN_H
-#define KFILEITEMACTION_PLUGIN_H
+#include "kabstractfileitemactionplugin.h"
 
-#include <kio/kio_export.h>
-#include <QtCore/QObject>
-
-class QAction;
-class QMenu;
-class QWidget;
-class KFileItemListProperties;
-
-/**
- * @deprecated use KAbstractFileItemActionPlugin instead
- * (introduced in kdelibs-4.6.1 in order to remove the erroneous
- * "const" in the actions method)
- */
-class KIO_EXPORT_DEPRECATED KFileItemActionPlugin : public QObject
+KAbstractFileItemActionPlugin::KAbstractFileItemActionPlugin(QObject *parent)
+    : QObject(parent)
 {
-    Q_OBJECT
+}
 
-public:
-    KFileItemActionPlugin(QObject *parent);
+KAbstractFileItemActionPlugin::~KAbstractFileItemActionPlugin()
+{
+}
 
-    virtual ~KFileItemActionPlugin();
-
-    virtual QList<QAction*> actions(const KFileItemListProperties &fileItemInfos,
-                                    QWidget *parentWidget) const = 0;
-};
-
-#endif
+#include "kabstractfileitemactionplugin.moc"
