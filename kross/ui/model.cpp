@@ -29,6 +29,7 @@
 
 #include <QtCore/QEvent>
 #include <QtCore/QMimeData>
+#include <QtCore/QPointer>
 
 using namespace Kross;
 
@@ -42,7 +43,7 @@ namespace Kross {
     class ActionCollectionModel::Private
     {
         public:
-            ActionCollection* collection;
+            QPointer<ActionCollection> collection;
             Mode mode;
     };
 
@@ -219,7 +220,7 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
     if ( action( index) ) {
         return 0;
     }
-    ActionCollection* par = index.isValid() ? collection( index ) : d->collection;
+    ActionCollection* par = index.isValid() ? collection( index ) : d->collection.data();
     Q_ASSERT_X( par, "ActionCollectionModel::rowCount", "index is not an action nor a collection" );
     if (!par) {
         kWarning()<<"index is not an action nor a collection"<<index;
@@ -234,7 +235,7 @@ QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex&
     if ( ! hasIndex( row, column, parent ) ) {
         return QModelIndex();
     }
-    ActionCollection* par = parent.isValid() ? collection( parent ) : d->collection;
+    ActionCollection* par = parent.isValid() ? collection( parent ) : d->collection.data();
     if ( par == 0 ) {
         // safety: may happen if parent index is an action (ModelTest tests this)
         return QModelIndex();
