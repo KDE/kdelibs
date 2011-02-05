@@ -471,12 +471,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char *tty=0, bool avoid_loops = false,
                     const char* startup_id_str = "0" ) // krazy:exclude=doublequote_chars
 {
-  QString lib;
-  QByteArray name;
-  QByteArray exec;
-
+    QString lib;
+    QByteArray name;
+    QByteArray exec;
     QString libpath;
     QByteArray execpath;
+
     if (_name[0] != '/') {
         name = _name;
         lib = QFile::decodeName(name);
