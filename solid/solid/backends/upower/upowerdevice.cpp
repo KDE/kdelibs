@@ -83,7 +83,7 @@ bool UPowerDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::GenericInterface:
             return true;
         case Solid::DeviceInterface::Battery:
-            return (uptype == 2);
+            return (uptype == 2 || uptype == 3);
         case Solid::DeviceInterface::AcAdapter:
             return (uptype == 1);
         default:
