@@ -536,6 +536,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
   if( !startup_id.none())
       init_startup_info( startup_id, name, envc, envs );
 #endif
+  // find out these paths before forking, doing it afterwards
+  // crashes on some platforms, notably OSX
+  const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
+#ifdef Q_WS_MAC
+  const QString bundlepath = s_instance->dirs()->findExe(QFile::decodeName(execpath));
+#endif
 
   d.errorMsg = 0;
   d.fork = fork();
@@ -565,7 +571,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
          // on Maemo5, documentPath() is on the SD card, setting it as working directory would block
          // USB mass storage access
 #ifndef Q_WS_MAEMO_5
-         const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
          (void)chdir(docPath.constData());
 #endif
      }
@@ -681,7 +686,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
         QByteArray executable = execpath;
 #ifdef Q_WS_MAC
-        QString bundlepath = s_instance->dirs()->findExe(QFile::decodeName(executable));
         if (!bundlepath.isEmpty())
            executable = QFile::encodeName(bundlepath);
 #endif
