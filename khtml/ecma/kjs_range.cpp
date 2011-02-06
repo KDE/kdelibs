@@ -332,7 +332,7 @@ JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
         case DOMSelection::Collapsed: {
             DOM::NodeImpl* node   = toNode(args[0]);
             int            offset = args[1]->toInt32(exec);
-            if (node->document() == self->m_document)
+            if (node && node->document() == self->m_document)
                 self->m_document->part()->setCaret(DOM::Selection(DOM::Position(node, offset)));
             else
                 setDOMException(exec, DOMException::WRONG_DOCUMENT_ERR);
@@ -359,7 +359,7 @@ JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
 
         case DOMSelection::SelectAllChildren: {
             DOM::NodeImpl* node = toNode(args[0]);
-            if (node->document() == self->m_document) {
+            if (node && node->document() == self->m_document) {
                 DOM::RangeImpl* range = new DOM::RangeImpl(self->m_document);
                 range->selectNodeContents(node, exception);
                 self->m_document->part()->setCaret(DOM::Selection(DOM::Range(range)));

@@ -1131,7 +1131,7 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
     return getDOMEvent(exec,doc.createEvent(s, exception));
   case DOMDocument::GetOverrideStyle: {
     DOM::NodeImpl* arg0 = toNode(args[0]);
-    if (!arg0->isElementNode())
+    if (!arg0 || !arg0->isElementNode())
       return jsUndefined(); // throw exception?
     else
       return getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::ElementImpl*>(arg0),args[1]->toString(exec).domString().implementation()));

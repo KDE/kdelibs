@@ -1481,7 +1481,7 @@ Node NamedAttrMapImpl::removeNamedItem(NodeImpl::Id id, const PrefixName& prefix
 
 Node NamedAttrMapImpl::setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode )
 {
-    if (!m_element) {
+    if (!m_element || !arg) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
     }

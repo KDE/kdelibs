@@ -723,6 +723,11 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
         exceptioncode = DOMException::INVALID_STATE_ERR;
         return;
     }
+    
+    if (!newNode) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
+    }
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
     // the Range is read-only.
