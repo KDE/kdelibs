@@ -369,11 +369,15 @@ JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
             break;
         }
 
-        case DOMSelection::DeleteFromDocument:
+        case DOMSelection::DeleteFromDocument: {
             self->m_document->part()->setCaret(DOM::Selection());
-            sel.toRange().deleteContents();
+            DOM::Range r = sel.toRange();
+            DOM::RangeImpl* ri = r.handle();
+            if (ri) {
+                ri->deleteContents(exception);
+            }
             break;
-        
+        }
             
         case DOMSelection::GetRangeAt: {
             int i = args[0]->toInt32(exec);
@@ -441,10 +445,15 @@ JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
             break;
 
         case DOMSelection::ToString:
-            if (sel.isEmpty() || sel.isCollapsed())
+            if (sel.isEmpty() || sel.isCollapsed()) {
                 return jsString(UString());
-            else
-                return jsString(sel.toRange().toString());
+            } else {
+                DOM::Range r = sel.toRange();
+                DOM::RangeImpl* ri = r.handle();
+                if (ri) {
+                    return jsString(ri->toString(exception));
+                }
+            }
             break;
     }
     return jsUndefined();
