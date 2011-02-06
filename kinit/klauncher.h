@@ -31,6 +31,10 @@
 #include <fixx11h.h>
 #endif
 
+#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+#define USE_KPROCESS_FOR_KIOSLAVES
+#endif
+
 #include <QtCore/QString>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
@@ -101,7 +105,7 @@ public:
 #endif
    QStringList envs; // env. variables to be app's environment
    QString cwd;
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
 protected:
    KProcess *process;
    friend class KLauncher;
@@ -121,7 +125,7 @@ class KLauncher : public QObject
    Q_OBJECT
 
 public:
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
    KLauncher(int kdeinitSocket);
 #else
    KLauncher();
@@ -250,9 +254,7 @@ public: // remote methods, called by KLauncherAdaptor
 public Q_SLOTS:
    void slotAutoStart();
    void slotDequeue();
-#ifndef Q_WS_WIN
    void slotKDEInitData(int);
-#endif
    void slotNameOwnerChanged(const QString &name, const QString &oldOnwer, const QString &newOwner);
    void slotSlaveStatus(IdleSlave *);
    void acceptSlave();
@@ -266,7 +268,7 @@ protected:
    QList<KLaunchRequest*> requestQueue; // Requests waiting to being handled
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
 #endif
@@ -286,9 +288,7 @@ protected:
    void processRequestReturn(int status, const QByteArray &requestData);
 
 protected Q_SLOTS:
-#ifdef Q_WS_WIN
     void slotGotOutput();
     void slotFinished(int exitCode, QProcess::ExitStatus exitStatus);
-#endif
 };
 #endif

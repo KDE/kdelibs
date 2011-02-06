@@ -171,7 +171,7 @@ IdleSlave::age(time_t now)
 
 static KLauncher* g_klauncher_self;
 
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
 KLauncher::KLauncher(int _kdeinitSocket)
   : QObject(0),
     kdeinitSocket(_kdeinitSocket)
@@ -206,7 +206,7 @@ KLauncher::KLauncher()
 
    connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
    connect(kdeinitNotifier, SIGNAL( activated( int )),
            this, SLOT( slotKDEInitData( int )));
@@ -226,7 +226,7 @@ KLauncher::KLauncher()
       mSlaveValgrindSkin = QString::fromLocal8Bit(qgetenv("KDE_SLAVE_VALGRIND_SKIN"));
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", qPrintable(mSlaveValgrind));
    }
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
    kDebug(7016) << "LAUNCHER_OK";
 #else
    klauncher_header request_header;
@@ -264,9 +264,7 @@ KLauncher::destruct()
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 {
-#ifdef Q_WS_WIN
-
-#else
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
    klauncher_header request_header;
    QByteArray requestData;
    requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
@@ -274,10 +272,13 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
    request_header.arg_length = requestData.size();
    write(kdeinitSocket, &request_header, sizeof(request_header));
    write(kdeinitSocket, requestData.data(), request_header.arg_length);
+#else
+   Q_UNUSED(name);
+   Q_UNUSED(value);
 #endif
 }
 
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
 /*
  * Read 'len' bytes from 'sock' into buffer.
  * returns -1 on failure, 0 on no data.
@@ -318,11 +319,12 @@ read_socket(int sock, char *buffer, int len)
   }
   return 0;
 }
-
+#endif
 
 void
 KLauncher::slotKDEInitData(int)
 {
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
    klauncher_header request_header;
    QByteArray requestData;
 
@@ -340,9 +342,8 @@ KLauncher::slotKDEInitData(int)
                         request_header.arg_length);
 
    processRequestReturn(request_header.cmd,requestData);
-
-}
 #endif
+}
 
 void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 {
@@ -621,7 +622,7 @@ static void appendLong(QByteArray &ba, long l)
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
    requestList.append( request );
    lastRequest = request;
 
@@ -636,7 +637,13 @@ KLauncher::requestStart(KLaunchRequest *request)
    foreach (const QString &arg, request->arg_list)
       args << arg;
 
-   process->setProgram(request->name,args);
+   QString executable = request->name;
+#ifdef Q_WS_MAC
+   const QString bundlepath = KStandardDirs::findExe(executable);
+   if (!bundlepath.isEmpty())
+      executable = bundlepath;
+#endif
+   process->setProgram(executable,args);
    process->start();
 
    if (!process->waitForStarted())
@@ -1129,7 +1136,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
 
     QStringList arg_list;
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
     arg_list << name;
     arg_list << protocol;
     arg_list << mConnectionServer.address();
@@ -1148,18 +1155,25 @@ KLauncher::requestSlave(const QString &protocol,
      << " args=" << arg_list << endl;
 
 #ifdef Q_OS_UNIX
-    if (mSlaveDebug == arg1)
+    if (mSlaveDebug == protocol)
     {
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
        klauncher_header request_header;
        request_header.cmd = LAUNCHER_DEBUG_WAIT;
        request_header.arg_length = 0;
        write(kdeinitSocket, &request_header, sizeof(request_header));
+#else
+      name = QString::fromLatin1("gdb");
+#endif
     }
-    if (mSlaveValgrind == arg1) {
+    if (mSlaveValgrind == protocol) {
+#ifndef USE_KPROCESS_FOR_KIOSLAVES // otherwise we've already done this
        KLibrary lib(name, KGlobal::mainComponent());
        arg_list.prepend(lib.fileName());
        arg_list.prepend(KStandardDirs::locate("exe", QString::fromLatin1("kioslave")));
+#endif
        name = QString::fromLatin1("valgrind");
+
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
        } else
@@ -1271,18 +1285,21 @@ void KLauncher::reparseConfiguration()
       slave->reparseConfiguration();
 }
 
-#ifdef Q_WS_WIN
+
 void
 KLauncher::slotGotOutput()
 {
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
   KProcess *p = static_cast<KProcess *>(sender());
   QByteArray _stdout = p->readAllStandardOutput();
   kDebug(7016) << _stdout.data();
+#endif
 }
 
 void
 KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 {
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
     KProcess *p = static_cast<KProcess *>(sender());
     kDebug(7016) << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
 
@@ -1302,13 +1319,17 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
         }
     }
     delete p;
-}
+#else
+   Q_UNUSED(exitCode);
+   Q_UNUSED(exitStatus);
 #endif
+}
+
 
 void KLauncher::terminate_kdeinit()
 {
     kDebug(7016);
-#ifndef Q_WS_WIN
+#ifndef USE_KPROCESS_FOR_KIOSLAVES
     klauncher_header request_header;
     request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;
     request_header.arg_length = 0;
