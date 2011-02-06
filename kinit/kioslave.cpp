@@ -30,12 +30,19 @@
 #include <QtCore/QString>
 #include <QtCore/QLibrary>
 #include <QtCore/QFile>
-#ifdef Q_WS_WIN
+
+#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+#define USE_KPROCESS_FOR_KIOSLAVES
+#endif
+
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
 #include <QtCore/QDir>
 #include <QtCore/QProcess>
 #include <QtCore/QStringList>
+#ifdef Q_WS_WIN
 #include <windows.h>
 #include <process.h>
+#endif
 #include "kstandarddirs.h"
 #endif
 
@@ -64,12 +71,12 @@ int main(int argc, char **argv)
      }
 
      QLibrary lib(libpath);
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
      qDebug("trying to load '%s'", qPrintable(libpath));
 #endif
      if ( !lib.load() || !lib.isLoaded() )
      {
-#ifdef Q_WS_WIN
+#ifdef USE_KPROCESS_FOR_KIOSLAVES
         libpath = KStandardDirs::installPath("module") + QFileInfo(libpath).fileName();
         lib.setFileName( libpath );
         if(!lib.load() || !lib.isLoaded())
