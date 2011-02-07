@@ -1,6 +1,6 @@
 /*
     Copyright 2010 Michael Zanetti <mzanetti@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010-2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 
 #include <ifaces/device.h>
 #include <solid/deviceinterface.h>
+#include <solid/solidnamespace.h>
 
 #include <QtDBus/QDBusInterface>
 #include <QtCore/QSet>
@@ -58,6 +59,9 @@ public:
     QMap<QString, QVariant> allProperties() const;
 
     bool isDeviceBlacklisted() const;
+
+    QString errorToString(const QString & error) const;
+    Solid::ErrorType errorToSolidError(const QString & error) const;
 Q_SIGNALS:
     void changed();
 

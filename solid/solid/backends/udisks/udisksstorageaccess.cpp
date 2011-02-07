@@ -1,6 +1,6 @@
 /*
     Copyright 2009 Pino Toscano <pino@kde.org>
-    Copyright 2009 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2009-2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -191,16 +191,16 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
     if (m_setupInProgress)
     {
         m_setupInProgress = false;
-        m_device->broadcastActionDone("setup", Solid::UnauthorizedOperation,
-                                      error.name()+": "+error.message());
+        m_device->broadcastActionDone("setup", m_device->errorToSolidError(error.name()),
+                                      m_device->errorToString(error.name()) + ": " +error.message());
 
         slotChanged();
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
-        m_device->broadcastActionDone("teardown", Solid::UnauthorizedOperation,
-                                      error.name()+": "+error.message());
+        m_device->broadcastActionDone("teardown", m_device->errorToSolidError(error.name()),
+                                      m_device->errorToString(error.name()) + ": " + error.message());
         slotChanged();
     }
 }

@@ -1,6 +1,6 @@
 /*
     Copyright 2010 Michael Zanetti <mzanetti@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010-2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -84,8 +84,8 @@ void UDisksOpticalDrive::slotDBusReply(const QDBusMessage &/*reply*/)
 void UDisksOpticalDrive::slotDBusError(const QDBusError &error)
 {
     m_ejectInProgress = false;
-    m_device->broadcastActionDone("eject", Solid::UnauthorizedOperation,
-                                  error.name()+": "+error.message());
+    m_device->broadcastActionDone("eject", m_device->errorToSolidError(error.name()),
+                                  m_device->errorToString(error.name()) + ": " +error.message());
 }
 
 void UDisksOpticalDrive::slotEjectRequested()

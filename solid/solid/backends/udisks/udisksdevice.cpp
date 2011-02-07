@@ -1,6 +1,6 @@
 /*
     Copyright 2010 Michael Zanetti <mzanetti@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010-2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -722,4 +722,38 @@ bool UDisksDevice::isDeviceBlacklisted() const
             property("DeviceMountPaths").toStringList().contains("/boot") ||
             property("IdLabel").toString() == "System Reserved" ||
             ( property("IdUsage").toString().isEmpty() && !property("OpticalDiscIsBlank").toBool());
+}
+
+QString UDisksDevice::errorToString(const QString & error) const
+{
+    if (error == UD_ERROR_UNAUTHORIZED)
+        return QObject::tr("You are not authorized to perform this operation.");
+    else if (error == UD_ERROR_BUSY)
+        return QObject::tr("The device is currently busy.");
+    else if (error == UD_ERROR_FAILED)
+        return QObject::tr("The requested operation has failed.");
+    else if (error == UD_ERROR_CANCELED)
+        return QObject::tr("The requested operation has been canceled.");
+    else if (error == UD_ERROR_INVALID_OPTION)
+        return QObject::tr("An invalid or malformed option has been given.");
+    else if (error == UD_ERROR_MISSING_DRIVER)
+        return QObject::tr("The kernel driver for this filesystem type is not available.");
+    else
+        return QObject::tr("An unspecified error has occurred.");
+}
+
+Solid::ErrorType UDisksDevice::errorToSolidError(const QString & error) const
+{
+    if (error == UD_ERROR_BUSY)
+        return Solid::Busy;
+    else if (error == UD_ERROR_FAILED)
+        return Solid::Failed;
+    else if (error == UD_ERROR_CANCELED)
+        return Solid::Canceled;
+    else if (error == UD_ERROR_INVALID_OPTION)
+        return Solid::InvalidOption;
+    else if (error == UD_ERROR_MISSING_DRIVER)
+        return Solid::MissingDriver;
+    else
+        return Solid::UnauthorizedOperation;
 }
