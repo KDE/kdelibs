@@ -27,9 +27,9 @@ namespace Solid
     enum ErrorType {
         NoError = 0,
         UnauthorizedOperation,
-        Busy,
-        Failed,
-        Canceled,
+        DeviceBusy,
+        OperationFailed,
+        UserCanceled,
         InvalidOption,
         MissingDriver
     };

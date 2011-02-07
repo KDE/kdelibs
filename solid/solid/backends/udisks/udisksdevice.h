@@ -62,6 +62,7 @@ public:
 
     QString errorToString(const QString & error) const;
     Solid::ErrorType errorToSolidError(const QString & error) const;
+
 Q_SIGNALS:
     void changed();
 
