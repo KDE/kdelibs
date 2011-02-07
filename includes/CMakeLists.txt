@@ -182,6 +182,7 @@ install( FILES
   KFileItemList
   KFileItemListProperties
   KFileItemDelegate
+  KFileMetaDataWidget
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
@@ -275,6 +276,7 @@ install( FILES
   KNSBookmarkImporter
   KNSBookmarkImporterImpl
   KNTLM
+  KNewFileMenu
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
@@ -666,6 +668,7 @@ install( FILES
   KIO/FileJob
   KIO/ForwardingSlaveBase
   KIO/Job
+  KIO/JobClasses
   KIO/JobUiDelegate
   KIO/ListJob
   KIO/MetaData
