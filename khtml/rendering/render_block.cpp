@@ -1667,7 +1667,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
             bool doBreak = true;
             // don't break before the first child or when page-break-inside is avoid
             if (!forcePageBreak && (!style()->pageBreakInside() || m_avoidPageBreak || child == firstChild())) {
-                if (parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
+                if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
                     kDebug(6040) << renderName() << "Avoid page-break inside";
 #endif
@@ -1699,7 +1699,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
         kDebug(6040) << "Page-break between children";
 #endif
         if (!style()->pageBreakInside() || m_avoidPageBreak) {
-            if(parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
+            if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
                 kDebug(6040) << "Avoid page-break inside";
 #endif
