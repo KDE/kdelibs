@@ -179,7 +179,7 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
 void KWebWallet::KWebWalletPrivate::fillDataFromCache(KWebWallet::WebFormList &formList)
 {
     if (!wallet) {
-        kWarning(800) << "Unable to retreive form data from wallet";
+        kWarning(800) << "Unable to retrieve form data from wallet";
         return;
     }
 

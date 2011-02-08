@@ -47,7 +47,7 @@ class QWebPage;
  *
  * You will also need to call fillFormData when a QWebFrame has finished
  * loading.  To do this, connect to QWebPage::loadFinished and, if the page was
- * loaded sucessfully, call
+ * loaded successfully, call
  * @code
  * page->wallet()->fillFormData(page->mainFrame());
  * @endcode

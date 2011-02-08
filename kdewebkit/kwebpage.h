@@ -52,7 +52,7 @@ class KJob;
  * data will be saved.
  *
  * KWebPage will also not automatically load form data for you.  You should
- * connect to QWebPage::loadFinished and, if the page was loaded sucessfully,
+ * connect to QWebPage::loadFinished and, if the page was loaded successfully,
  * call
  * @code
  * page->wallet()->fillFormData(page->mainFrame());
