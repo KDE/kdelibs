@@ -194,7 +194,7 @@ public:
     // stop all running jobs for lister
     void stop( KDirLister *lister, bool silent = false );
     // stop just the job listing url for lister
-    void stop( KDirLister *lister, const KUrl &_url, bool silent = false );
+    void stopListingUrl( KDirLister *lister, const KUrl &_url, bool silent = false );
 
   void setAutoUpdate( KDirLister *lister, bool enable );
 
@@ -258,8 +258,7 @@ private:
 
     bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
-    // helper for both stop methods
-    void stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData, bool silent);
+    void stopListJob(const QString& url, bool silent);
 
     KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
     const KUrl& joburl( KIO::ListJob *job );
@@ -468,9 +467,10 @@ public:
         : KJob(lister),
           m_lister(lister), m_url(url),
           m_items(items), m_rootItem(rootItem),
-          m_reload(reload), m_emitCompleted(true) {
+          m_reload(reload), m_emitCompleted(true) { // TODO move implementation to .cpp
         Q_ASSERT(lister->d->m_cachedItemsJob == 0);
         lister->d->m_cachedItemsJob = this;
+        //kDebug() << "Creating CachedItemsJob" << this << "for lister" << lister;
         setAutoDelete(true);
         start();
     }
@@ -481,6 +481,9 @@ public:
     void setEmitCompleted(bool b) { m_emitCompleted = b; }
 
     KUrl url() const { return m_url; }
+
+protected:
+    virtual bool doKill();
 
 public Q_SLOTS:
     void done();

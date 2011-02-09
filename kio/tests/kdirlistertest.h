@@ -101,6 +101,7 @@ private Q_SLOTS:
     void testRenameAndOverwrite();
     void testConcurrentListing();
     void testConcurrentHoldingListing();
+    void testDeleteListerEarly();
     void testOpenUrlTwice();
     void testOpenUrlTwiceWithKeep();
     void testOpenAndStop();
