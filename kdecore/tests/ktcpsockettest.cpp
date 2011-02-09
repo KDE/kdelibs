@@ -227,14 +227,14 @@ void KTcpSocketTest::states()
     KTcpSocket *s = new KTcpSocket(this);
     connect(s, SIGNAL(hostFound()), this, SLOT(states_hostFound()));
     QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
-    s->connectToHost("www.example.com", 80);
+    s->connectToHost("www.iana.org", 80);
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
     s->write(HTTPREQUEST);
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
     s->waitForBytesWritten(2500);
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
     s->waitForReadyRead(2500);
-    //I actually assume that the page delivered by example.com will not change for years
+    //I actually assume that the page delivered by www.iana.org will exist for years
     QVERIFY(s->bytesAvailable() > 200);
 
     s->write(HTTPREQUEST);
