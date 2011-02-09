@@ -37,7 +37,7 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 void MyDirLister::handleError(KIO::Job* job)
 {
     // Currently we don't expect any errors.
-    kFatal() << job << job->errorString();
+    kFatal() << "KDirLister called handleError!" << job << job->error() << job->errorString();
 }
 
 void KDirListerTest::initTestCase()
@@ -101,6 +101,8 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(m_dirLister.spyClear.count(), 1);
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_dirLister.spyRedirection.count(), 0);
+    //qDebug() << m_items;
+    //qDebug() << "In dir" << QDir(path).entryList( QDir::AllEntries | QDir::NoDotAndDotDot);
     QCOMPARE(m_items.count(), fileCount());
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
@@ -613,7 +615,9 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(dirLister2.spyClear.count(), 1);
     QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
     QCOMPARE(m_items2.count(), origItemCount);
-    //QVERIFY(m_dirLister.isFinished()); // false when an update is running because subdir is already in cache
+    if (!m_dirLister.isFinished()) { // false when an update is running because subdir is already in cache
+      QTest::kWaitForSignal(&m_dirLister, SIGNAL(canceled()), 1000);
+    }
 
     disconnect(&m_dirLister, 0, this, 0);
     disconnect(&dirLister2, 0, this, 0);
@@ -680,6 +684,27 @@ void KDirListerTest::testConcurrentHoldingListing()
     QCOMPARE(m_items.count(), origItemCount);
 }
 
+void KDirListerTest::testDeleteListerEarly()
+{
+    // Do the same again, it should behave the same, even with the items in the cache
+    testOpenUrl();
+
+    // Start a second lister, it will get a cached items job, but delete it before the job can run
+    //kDebug() << "==========================================";
+    {
+        m_items.clear();
+        const QString path = m_tempDir.name();
+        MyDirLister secondDirLister;
+        secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+        QVERIFY(!secondDirLister.isFinished());
+    }
+    //kDebug() << "==========================================";
+
+    // Check if we didn't keep the deleted dirlister in one of our lists.
+    // I guess the best way to do that is to just list the same dir again.
+    testOpenUrl();
+}
+
 void KDirListerTest::testOpenUrlTwice()
 {
     // Calling openUrl(reload)+openUrl(normal) before listing even starts.
@@ -707,7 +732,9 @@ void KDirListerTest::testOpenUrlTwice()
     QCOMPARE(secondDirLister.spyCanceledKUrl.count(), 0);
     QCOMPARE(secondDirLister.spyClear.count(), 2);
     QCOMPARE(secondDirLister.spyClearKUrl.count(), 0);
-    QCOMPARE(m_items.count(), origItemCount);
+    if (origItemCount) { // 0 if running this test separately
+      QCOMPARE(m_items.count(), origItemCount);
+    }
     QVERIFY(secondDirLister.isFinished());
     disconnect(&secondDirLister, 0, this, 0);
 }
@@ -728,6 +755,7 @@ void KDirListerTest::testOpenUrlTwiceWithKeep()
 
     secondDirLister.openUrl(KUrl(path)); // will start a list job
     QCOMPARE(secondDirLister.spyStarted.count(), 1);
+    QCOMPARE(secondDirLister.spyCanceled.count(), 0);
     QCOMPARE(secondDirLister.spyCompleted.count(), 0);
 
     qDebug("calling openUrl again");
