@@ -67,7 +67,14 @@ macro_log_feature(ZLIB_FOUND "ZLib" "Support for gzip compressed files and data 
 
 set(STRIGI_MIN_VERSION 0.6.3)
 find_package(Strigi)
-macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" TRUE "${STRIGI_MIN_VERSION}" "Required by some critical kioslaves")
+if (WIN32)
+    set (STRIGI_REQUIRED FALSE)
+    set (STRIGI_EXTRA_TEXT "")
+else (WIN32)
+    set (STRIGI_REQUIRED TRUE)
+    set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
+endif (WIN32)
+macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" ${STRIGI_EXTRA_TEXT})
 
 set(LIBATTICA_MIN_VERSION "0.1.90")
 find_package(LibAttica)

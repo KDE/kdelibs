@@ -9,6 +9,13 @@ if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
 endif(NOT HAVE_NEPOMUK)
 
+if(NOT HAVE_STRIGI)
+   set(KIO_NO_STRIGI TRUE)
+endif(NOT HAVE_STRIGI)
+
+if(NOT HAVE_SOPRANO)
+   set(KIO_NO_SOPRANO TRUE)
+endif(NOT HAVE_SOPRANO)
 
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
@@ -38,11 +45,16 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${KDE4_KDEUI_INCLUDES}
    ${KDE4_KDECORE_INCLUDES}/
-   ${STRIGI_INCLUDE_DIR}
-   ${SOPRANO_INCLUDE_DIR}
    ${ZLIB_INCLUDE_DIR}
 )
+if (NOT KIO_NO_STRIGI)
+   include_directories(${STRIGI_INCLUDE_DIR})
+   set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
+endif()
 
+if (NOT KIO_NO_SOPRANO)
+   include_directories(${SOPRANO_INCLUDE_DIR})
+endif (NOT KIO_NO_SOPRANO)
 
 if(NOT KIO_NO_SOLID)
    include_directories(${CMAKE_BINARY_DIR}/solid/)
@@ -51,7 +63,9 @@ if(NOT KIO_NO_SOLID)
 endif(NOT KIO_NO_SOLID)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
-configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
+if (NOT KIO_NO_STRIGI)
+   configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
+endif (NOT KIO_NO_STRIGI)
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
@@ -60,7 +74,9 @@ add_subdirectory( kssl/kssl )
 add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
-add_subdirectory( kio/dummyanalyzers )
+if(HAVE_STRIGI)
+   add_subdirectory( kio/dummyanalyzers )
+endif(HAVE_STRIGI)
 
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
@@ -307,7 +323,7 @@ kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
-target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)
