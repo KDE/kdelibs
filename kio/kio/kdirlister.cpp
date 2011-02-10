@@ -271,6 +271,23 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
     return true;
 }
 
+KDirLister::Private::CachedItemsJob::CachedItemsJob(KDirLister* lister, const KFileItemList& items, 
+						    const KFileItem& rootItem, const KUrl& url, bool reload)
+  : KJob(lister),
+    m_lister(lister), m_url(url),
+    m_items(items), m_rootItem(rootItem),
+    m_reload(reload), m_emitCompleted(true)
+{
+    if (lister->d->m_cachedItemsJob) {
+	kWarning(7004) << "Lister" << lister << "has a cached items job already:" << lister->d->m_cachedItemsJob;
+    }
+    Q_ASSERT(lister->d->m_cachedItemsJob == 0);
+    lister->d->m_cachedItemsJob = this;
+    //kDebug() << "Creating CachedItemsJob" << this << "for lister" << lister;
+    setAutoDelete(true);
+    start();
+}
+
 // Called by start() via QueuedConnection
 void KDirLister::Private::CachedItemsJob::done()
 {

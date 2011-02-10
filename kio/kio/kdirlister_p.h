@@ -463,17 +463,7 @@ class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
     CachedItemsJob(KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem,
-                   const KUrl& url, bool reload)
-        : KJob(lister),
-          m_lister(lister), m_url(url),
-          m_items(items), m_rootItem(rootItem),
-          m_reload(reload), m_emitCompleted(true) { // TODO move implementation to .cpp
-        Q_ASSERT(lister->d->m_cachedItemsJob == 0);
-        lister->d->m_cachedItemsJob = this;
-        //kDebug() << "Creating CachedItemsJob" << this << "for lister" << lister;
-        setAutoDelete(true);
-        start();
-    }
+                   const KUrl& url, bool reload);
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
 
