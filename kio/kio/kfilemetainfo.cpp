@@ -26,11 +26,13 @@
 #include "kfilewriteplugin.h"
 #include "kfilewriteplugin_p.h"
 
+#ifndef KIO_NO_STRIGI
 #include <strigi/bufferedstream.h>
 #include <strigi/analyzerconfiguration.h>
 #include <strigi/indexwriter.h>
 #include <strigi/analysisresult.h>
 #include <strigi/fieldtypes.h>
+#endif
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -62,7 +64,7 @@ QDataStream& operator << ( QDataStream& s, const KFileMetaInfo& )
 {
     return s;
 }
-
+#ifndef KIO_NO_STRIGI
 /**
  * @brief Wrap a QIODevice in a Strigi stream.
  **/
@@ -393,6 +395,88 @@ KFileMetaInfoGroupList KFileMetaInfo::preferredGroups() const
 KFileMetaInfoGroupList KFileMetaInfo::supportedGroups() const
 {
     return KFileMetaInfoGroupList();
+}
+#endif
+#else //KIO_NO_STRIGI
+
+class KFileMetaInfoPrivate : public QSharedData
+{
+public:
+};
+
+KFileMetaInfo::KFileMetaInfo ( const QString& path, const QString& /*mimetype*/,
+                               KFileMetaInfo::WhatFlags w )
+{
+}
+
+KFileMetaInfo::KFileMetaInfo ( const KUrl& url )
+{
+}
+
+KFileMetaInfo::KFileMetaInfo()
+{
+}
+
+KFileMetaInfo::KFileMetaInfo ( const KFileMetaInfo& k )
+{
+}
+
+const KFileMetaInfo& KFileMetaInfo::operator= ( KFileMetaInfo const & kfmi )
+{
+    return kfmi;
+}
+
+KFileMetaInfo::~KFileMetaInfo()
+{
+}
+
+bool KFileMetaInfo::applyChanges()
+{
+    return false;
+}
+
+const KUrl& KFileMetaInfo::url() const
+{
+    static const KUrl item;
+    return item;
+}
+
+const QHash<QString, KFileMetaInfoItem>& KFileMetaInfo::items() const
+{
+    static const QHash<QString, KFileMetaInfoItem> items;
+    return items;
+}
+
+const KFileMetaInfoItem& KFileMetaInfo::item ( const QString& key ) const
+{
+    static const KFileMetaInfoItem item;
+    return item;
+}
+
+QStringList KFileMetaInfo::keys() const
+{
+    return QStringList();
+}
+
+KFileMetaInfoItem& KFileMetaInfo::item ( const QString& key )
+{
+    static KFileMetaInfoItem item;
+    return item;
+}
+
+bool KFileMetaInfo::isValid() const
+{
+    return false;
+}
+
+QStringList KFileMetaInfo::preferredKeys() const
+{
+    return QStringList();
+}
+
+QStringList KFileMetaInfo::supportedKeys() const
+{
+    return QStringList();
 }
 #endif
 
