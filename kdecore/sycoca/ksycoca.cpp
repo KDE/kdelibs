@@ -528,8 +528,12 @@ quint32 KSycoca::updateSignature()
 
 QString KSycoca::absoluteFilePath(DatabaseType type)
 {
-    if (type == GlobalDatabase)
-        return KGlobal::dirs()->saveLocation("services") + QString::fromLatin1(KSYCOCA_FILENAME);
+    if (type == GlobalDatabase) {
+        QString path = KGlobal::dirs()->findResource("services", QString::fromLatin1(KSYCOCA_FILENAME));
+        if (path.isEmpty())
+            return KGlobal::dirs()->saveLocation("services") + QString::fromLatin1(KSYCOCA_FILENAME);
+        return path;
+    }
 
     const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
     if (ksycoca_env.isEmpty())
