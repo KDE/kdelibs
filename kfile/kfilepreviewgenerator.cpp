@@ -607,13 +607,13 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
 
     // check whether the item is part of the directory lister (it is possible
     // that a preview from an old directory lister is received)
-    const KUrl url = item.url();
-    KDirLister* dirLister = dirModel->dirLister();
     bool isOldPreview = true;
-    const KUrl::List dirs = dirLister->directories();
-    const QString itemDir = url.directory();
-    foreach (const KUrl& url, dirs) {
-        if (url.path() == itemDir) {
+
+    KUrl itemParentDir(item.url());
+    itemParentDir.setPath(itemParentDir.directory());
+
+    foreach (const KUrl& dir, dirModel->dirLister()->directories()) {
+        if (dir == itemParentDir || !dir.hasPath()) {
             isOldPreview = false;
             break;
         }
@@ -641,7 +641,7 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     // remember the preview and URL, so that it can be applied to the model
     // in KFilePreviewGenerator::dispatchIconUpdateQueue()
     ItemInfo preview;
-    preview.url = url;
+    preview.url = item.url();
     preview.pixmap = icon;
     m_previews.append(preview);
 
