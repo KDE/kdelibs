@@ -439,7 +439,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   QString localFile = cgFilter.readEntry(QString("HTMLFilterListLocalFilename-").append(QString::number(id)));
                   localFile = KStandardDirs::locateLocal("data", "khtml/" + localFile);
 
-                  /** determine existance and age of cache file */
+                  /** determine existence and age of cache file */
                   QFileInfo fileInfo(localFile);
 
                   /** load cached file if it exists, irrespective of age */

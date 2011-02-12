@@ -434,7 +434,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
         // The exclusion is so that things like image load events don't make it
         // all the way upto window.onload. Meanwhile, the main load event
         // is dispatched specially, via dispatchWindowEvent, with the case
-        // above doing the neccessary fiddling for it.
+        // above doing the necessary fiddling for it.
         if (evt->id() != EventImpl::LOAD_EVENT) {
             EventTargetImpl* t = document()->windowEventTarget();
             t->ref();

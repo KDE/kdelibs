@@ -179,7 +179,7 @@ protected:
     bool m_pagedMode;
     // Canvas contains overlaid widgets
     bool m_needsWidgetMasks;
-    // Wether we are currently performing a layout
+    // Whether we are currently performing a layout
     bool m_isPerformingLayout;
 
     short m_pageNr;
