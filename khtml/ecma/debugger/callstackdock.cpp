@@ -71,7 +71,7 @@ void CallStackDock::displayStack(InterpreterContext* ic)
 {
     m_activeCtx = ic;
 
-    // Try to save our position accross updates if nothing changed.
+    // Try to save our position across updates if nothing changed.
     // this is needed for console eval.
     bool dirty     = false;
     int  activeRow = m_view->currentRow();

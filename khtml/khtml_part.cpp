@@ -4158,7 +4158,7 @@ bool KHTMLPart::loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, cons
         // We navigate it to about:blank to setup an empty one, but we do it
         // before hooking up the signals and extensions, so that any sync emit
         // of completed by the kid doesn't cause us to be marked as completed.
-        // (async ones are discovered by the presense of the KHTMLRun)
+        // (async ones are discovered by the presence of the KHTMLRun)
         // ### load event on the kid?
         navigateLocalProtocol(child, part, KUrl("about:blank"));
         connectToChildPart(child, part, "text/html" /* mimetype of the part, not what's being loaded */);
