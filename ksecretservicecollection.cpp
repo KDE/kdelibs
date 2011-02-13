@@ -448,5 +448,20 @@ KJob* KSecretServiceCollection::writeEntry(const QString& label, const QByteArra
     return new WriteEntryJob(label, secret, attributes, this);
 }
 
+bool KSecretServiceCollection::writeEntry(const KSecretServiceCollection::Entry& entry)
+{
+    bool result = false;
+    // TODO: implement this
+    return result;
+}
+
+bool KSecretServiceCollection::readEntry(const QString& label, KSecretServiceCollection::Entry& entry)
+{
+    bool result = false;
+    // TODO: implement this
+    return result;
+
+}
+
 #include "ksecretservicecollection.moc"
 #include "ksecretservicecollection_p.moc"

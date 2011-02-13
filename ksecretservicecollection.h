@@ -69,9 +69,31 @@ public:
     QStringList entries() const;
 
     KJob *writeEntry(const QString &label, const QByteArray &secret, const QVariantMap &attributes = QVariantMap());
+    
+    /**
+     * This convenience overload synchronously writes an entry into this collection.
+     * @param entry reference to an Entry instance describing the data to be written into the collection
+     * @return true if the entry was successfully written
+     */
+    bool writeEntry(const Entry &entry );
+    
     ReadEntryJob *readEntry(const QString &label);
+    
+    /**
+     * This method will synchrounously read the specified entry into the referenced instance.
+     * @param label is the to be read entry's label
+     * @param entry is the reference where the entry must be read
+     * @return true if the entry was correctly read
+     */
+    bool readEntry(const QString &label, Entry &entry);
+    
+    /**
+     * Asynchrounously delete and entry from the collection
+     * @param label is the entry's label
+     * @return true if the entry has been successfully deleted
+     */
     KJob *deleteEntry(const QString &label);
-
+    
 private:
     class Private;
     Private * const d;

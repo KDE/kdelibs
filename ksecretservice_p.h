@@ -21,23 +21,39 @@
 #ifndef KSECRETSERVICE_P_H
 #define KSECRETSERVICE_P_H
 
-#include "ksecretservice.h"
 
 #include <kjob.h>
+#include <QtDBus/QDBusVariant>
 
 class OrgFreedesktopSecretSessionInterface;
 class OrgFreedesktopSecretServiceInterface;
-class KSecretService::Private {
+
+#include "ksecretservice.h"
+#include <QEventLoop>
+
+class KSecretService::Private : public QObject {
+    Q_OBJECT
 public:
-    Private() : serviceInterface(0), sessionInterface(0) {}
+    Private() : 
+        serviceInterface(0), 
+        sessionInterface(0), 
+        createCollectionDone(0),
+        createCollectionDismissed(true) {}
     OrgFreedesktopSecretServiceInterface *serviceInterface;
     OrgFreedesktopSecretSessionInterface *sessionInterface;
+    bool createCollectionDone;
+    bool createCollectionDismissed;
+    QString createCollectionPath;
+    QEventLoop localEventLoop;
+    
+private Q_SLOTS:
+    void createCollectionPromptCompleted(bool, const QDBusVariant&);
 };
 
 // Jobs
 
 class QDBusPendingCallWatcher;
-class CreateCollectionJob : public KJob
+class KSecretService::CreateCollectionJob : public KJob
 {
     Q_OBJECT
 public:
@@ -56,7 +72,7 @@ private:
     QVariantMap m_properties;
 };
 
-class DeleteCollectionJob : public KJob
+class KSecretService::DeleteCollectionJob : public KJob
 {
     Q_OBJECT
 public:

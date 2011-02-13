@@ -38,6 +38,7 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
+
 class KSecretServiceHelper
 {
 public:
@@ -63,7 +64,7 @@ KSecretService *KSecretService::instance()
 
 // Jobs
 
-CreateCollectionJob::CreateCollectionJob(const QString& label, const QVariantMap& properties, KSecretService *parent)
+KSecretService::CreateCollectionJob::CreateCollectionJob(const QString& label, const QVariantMap& properties, KSecretService *parent)
     : KJob(parent)
     , m_kss(parent)
     , m_label(label)
@@ -71,16 +72,16 @@ CreateCollectionJob::CreateCollectionJob(const QString& label, const QVariantMap
 {
 }
 
-CreateCollectionJob::~CreateCollectionJob() {
+KSecretService::CreateCollectionJob::~CreateCollectionJob() {
     
 }
 
-void CreateCollectionJob::start()
+void KSecretService::CreateCollectionJob::start()
 {
     QTimer::singleShot(0, this, SLOT(run()));
 }
 
-void CreateCollectionJob::run()
+void KSecretService::CreateCollectionJob::run()
 {
     if (!m_properties.contains("Locked")) {
         m_properties["Locked"] = false; // create collection unlocked
@@ -96,7 +97,7 @@ void CreateCollectionJob::run()
             this, SLOT(onReplyFinished(QDBusPendingCallWatcher*)));
 }
 
-void CreateCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
+void KSecretService::CreateCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
 {
     if (reply->isError()) {
         // TODO: Figure out what to do with errors
@@ -117,22 +118,22 @@ void CreateCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
 
 ////////////////////////////////
 
-DeleteCollectionJob::DeleteCollectionJob(const QString& label, KSecretService *parent)
+KSecretService::DeleteCollectionJob::DeleteCollectionJob(const QString& label, KSecretService *parent)
     : KJob(parent)
     , m_kss(parent)
     , m_label(label)
 {
 }
 
-DeleteCollectionJob::~DeleteCollectionJob() {
+KSecretService::DeleteCollectionJob::~DeleteCollectionJob() {
 }
 
-void DeleteCollectionJob::start()
+void KSecretService::DeleteCollectionJob::start()
 {
     QTimer::singleShot(0, this, SLOT(run()));
 }
 
-void DeleteCollectionJob::run()
+void KSecretService::DeleteCollectionJob::run()
 {
     QString retpath;
     foreach (const QDBusObjectPath &path, m_kss->d->serviceInterface->collections()) {
@@ -157,7 +158,7 @@ void DeleteCollectionJob::run()
     emitResult();
 }
 
-void DeleteCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
+void KSecretService::DeleteCollectionJob::onReplyFinished(QDBusPendingCallWatcher *reply)
 {
     if (reply->isError()) {
         setErrorText(i18n("DBus call failed - could not contact KSecretService"));
@@ -195,6 +196,9 @@ void KSecretService::setAlgorithm(KSecretService::SessionEncryptingAlgorithm ses
 
 void KSecretService::connectToService()
 {
+    if ( isConnected() )
+        return;
+    
     // Create a session and make everything ready
     QCA::init();
     registerDBusTypes();
@@ -253,10 +257,18 @@ bool KSecretService::isConnected() const
 
 OrgFreedesktopSecretSessionInterface* KSecretService::session() 
 {
-    if ( !d->serviceInterface || !d->serviceInterface->isValid() ) {
+    if ( !isConnected() ) {
         connectToService();
     }
     return d->sessionInterface;
+}
+
+OrgFreedesktopSecretServiceInterface* KSecretService::service() 
+{
+    if ( !isConnected() ) {
+        connectToService();
+    }
+    return d->serviceInterface;
 }
 
 QStringList KSecretService::collections() const
@@ -274,9 +286,59 @@ QStringList KSecretService::collections() const
     return collectionLabels;
 }
 
-KJob *KSecretService::createCollectionJob(const QString& label, const QVariantMap& properties)
+KJob *KSecretService::createCollectionAsync(const QString& label, const QVariantMap& properties)
 {
     return new CreateCollectionJob(label, properties, this);
+}
+
+KSecretServiceCollection * KSecretService::createCollection(const QString& label, const QVariantMap& properties)
+{
+    KSecretServiceCollection * result = 0;
+    QVariantMap collectionProps = properties;
+    collectionProps.insert("Label", label);
+    QDBusObjectPath promptPath;
+    QDBusReply<QDBusObjectPath> collPathReply = service()->CreateCollection( collectionProps, promptPath );
+    QString collectionPath = collPathReply.value().path();
+    if ( collectionPath == "/" ) {
+        collectionPath.clear();
+        OrgFreedesktopSecretPromptInterface promptIf( "org.freedesktop.Secret", promptPath.path(), d->serviceInterface->connection() );
+        if ( promptIf.isValid() ) {
+            d->connect( &promptIf, SIGNAL( Completed(bool, const QDBusVariant&) ), SLOT( createCollectionPromptCompleted(bool, const QDBusVariant&)));
+            QDBusPendingReply<> promptReply = promptIf.Prompt("");
+            promptReply.waitForFinished();
+            // NOTE waitForFinished above does not mean that collection was created
+            // NOTE the prompt launch creation on a separate job and we must wait
+            // NOTE for the createCollectionPromptCompleted slot to be called before continuing
+            if ( !promptReply.isError() ) {
+                d->createCollectionDone = false;
+                do {
+                    d->localEventLoop.processEvents();
+                } while ( !d->createCollectionDone );
+                
+                if ( !d->createCollectionDismissed )
+                    collectionPath = d->createCollectionPath;
+            }
+        }
+        else {
+            kDebug() << "Cannot get prompt interface from path " << promptPath.path();
+        }
+    }
+    if ( !collectionPath.isEmpty() ) {
+        result = new KSecretServiceCollection( collectionPath, this );
+    }
+    return result;
+}
+
+void KSecretService::Private::createCollectionPromptCompleted(bool dismissed, const QDBusVariant& collectionPath)
+{
+    createCollectionDismissed = dismissed;
+    if ( createCollectionDismissed ) {
+        createCollectionPath.clear();
+    }
+    else {
+        createCollectionPath = collectionPath.variant().value<QDBusObjectPath>().path();
+    }
+    createCollectionDone = true;
 }
 
 KSecretServiceCollection* KSecretService::openCollection(const QString& label)
@@ -303,3 +365,4 @@ KJob *KSecretService::deleteCollection(const QString& label)
 
 #include "ksecretservice.moc"
 #include "ksecretservice_p.moc"
+
