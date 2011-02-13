@@ -966,7 +966,8 @@ class KSharedDataCache::Private
         // mutex support (systemSupportsProcessSharing), then we:
         // Open the file and resize to some sane value if the file is too small.
         if (file.open(QIODevice::ReadWrite) &&
-           (file.size() >= size || file.resize(size)))
+           (file.size() >= size || file.resize(size)) &&
+           ensureFileAllocated(file.handle(), size))
         {
             // Use mmap directly instead of QFile::map since the QFile (and its
             // shared mapping) will disappear unless we hang onto the QFile for no
@@ -1015,6 +1016,7 @@ class KSharedDataCache::Private
         // 5) The mapping succeeded, but the size was wrong and we were unable to map when
         //    we tried again.
         // 6) The incorrect version of the cache was detected.
+        // 7) The file could be created, but posix_fallocate failed to commit it fully to disk.
         // In any of these cases, attempt to fallback to the
         // better-supported anonymous private page style of mmap. This memory won't
         // be shared, but our code will still work the same.
