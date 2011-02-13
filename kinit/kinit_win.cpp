@@ -115,7 +115,7 @@ QDebug operator <<(QDebug out, const ProcessListEntry &c)
 */
 class ProcessList {
     public:
-       ProcessList() {initProcessList(); }
+       ProcessList();
        ~ProcessList();
        ProcessListEntry *hasProcessInList(const QString &name, K_UID owner=0 );
        bool terminateProcess(const QString &name);
@@ -125,31 +125,54 @@ class ProcessList {
        void initProcessList();
        void getProcessNameAndID( DWORD processID );
        QList<ProcessListEntry *> processList;
+       QString m_domain;
+       QString m_username;
+       QString m_host;
+       KUser *m_user;
+       K_UID m_currentUserID;
 };
 
+ProcessList::ProcessList() 
+{
+    m_domain = qgetenv("USERDOMAIN");
+    m_username = qgetenv("USERNAME");
+    m_host = qgetenv("COMPUTERNAME");
+
+    m_user = 0;
+    m_currentUserID = 0;
+    //if (m_domain == m_host)
+    {
+        m_user = new KUser; 
+        m_currentUserID = m_user->uid();
+    }
+    initProcessList(); 
+}
+
+ProcessList::~ProcessList()
+{
+    ProcessListEntry *ple;
+    QList<ProcessListEntry*> l = listProcesses();
+    foreach(ple,l) {
+        CloseHandle(ple->handle);
+        delete ple;
+    }
+    delete m_user;
+}
 
 void ProcessList::getProcessNameAndID( DWORD processID )
 {
 #ifndef _WIN32_WCE
     char szProcessName[MAX_PATH];
     // by default use the current process' uid
-    KUser user;
-    K_UID processSid;
-    K_UID userId = user.uid();
+    K_UID processSid = 0;
+    DWORD sidLength  = 0;
 
-    if(userId == NULL) {
-        return;
-    }
-
-    if(!IsValidSid(userId))
+    if (m_currentUserID)
     {
-        return;
+        sidLength = GetLengthSid(m_currentUserID);
+        processSid = (PSID) malloc(sidLength);
+        CopySid(sidLength, processSid, m_currentUserID);
     }
-
-    DWORD sidLength = GetLengthSid(user.uid());
-    processSid = (PSID) malloc(sidLength);
-    CopySid(sidLength, processSid, user.uid());
-
     // Get a handle to the process.
 
     HANDLE hProcess = OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
@@ -171,6 +194,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                                            sizeof(szProcessName)/sizeof(TCHAR) );
         }
         
+        // get process owner
         if (ret > 0)
         {
             HANDLE hToken = NULL;
@@ -189,7 +213,8 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                     GetTokenInformation(hToken, TokenUser, userStruct, size, &size);
 
                     sidLength = GetLengthSid(userStruct->User.Sid);
-                    free(processSid);
+                    if (processSid)
+                        free(processSid);
                     processSid = 0;
                     processSid = (PSID) malloc(sidLength);
                     CopySid(sidLength, processSid, userStruct->User.Sid);
@@ -207,7 +232,6 @@ void ProcessList::getProcessNameAndID( DWORD processID )
     free(processSid);
 #endif
 }
-
 
 /**
     read process list from system and fill in global var aProcessList
@@ -285,16 +309,6 @@ QList<ProcessListEntry*> ProcessList::listProcesses()
 }
 
 
-ProcessList::~ProcessList()
-{
-    ProcessListEntry *ple;
-    QList<ProcessListEntry*> l = listProcesses();
-    foreach(ple,l) {
-        CloseHandle(ple->handle);
-        delete ple;
-    }
-}
-
 /**
  return process list entry of given name
 */
@@ -326,14 +340,11 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
         else
         {
             /// @todo KUser lacks domain support yet: if user is in a domain skip process owner check for now because it simply does not work
-            const QByteArray domain = qgetenv("USERDOMAIN");
-            const QByteArray host = qgetenv("COMPUTERNAME");
-            if (domain != host)
+            if (m_domain != m_host)
                 return ple; 
                 
             // no owner is set, use the owner of this process
-            KUser user;
-            if(EqualSid(user.uid(), ple->owner)) return ple;
+            if(EqualSid(m_currentUserID, ple->owner)) return ple;
         }
 #else
             return ple;
@@ -536,7 +547,7 @@ int main(int argc, char **argv, char **envp)
 #endif
            printf("   --terminate                hard kill of *all* running kde processes\n");
            printf("   --verbose                  print verbose messages\n");
-	   printf("   --version                  Show version information\n");
+       printf("   --version                  Show version information\n");
            exit(0);
         }
         if (strcmp(safe_argv[i], "--list") == 0)
