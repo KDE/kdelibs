@@ -546,7 +546,8 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
                     rawContent[ rawContentSize ] = 0;
                     rawContent[ rawContentSize + 1 ] = 0;
                     currToken.tid = ID_COMMENT;
-                    processListing(TokenizerString(rawContent, rawContentSize - 3));
+                    int size = scriptEnd ? rawContentSize - 3 : rawContentSize - 1;
+                    processListing(TokenizerString(rawContent, size));
                     processToken();
                     currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
                     processToken();
