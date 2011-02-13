@@ -899,10 +899,32 @@ int KeyboardEventImpl::keyCode() const
 {
     //Keycode on key events always identifies the -key- and not the input,
     //so e.g. 'a' will get 'A'
-    if (m_virtKeyVal != DOM_VK_UNDEFINED)
+    if (m_virtKeyVal != DOM_VK_UNDEFINED) {
         return m_virtKeyVal;
-    else
-        return QChar((unsigned short)m_keyVal).toUpper().unicode();
+    } else {
+        unsigned char code = QChar((unsigned short)m_keyVal).toUpper().unicode();
+        // Some codes we get from Qt are things like ( which conflict with
+        // browser scancodes. Remap them to what's on their keycaps in a US
+        // layout.
+        if (virtKeyToQtKey()->hasLeft(code)) {
+            switch (code) {
+                case '!': return '1';
+                case '@': return '2';
+                case '#': return '3';
+                case '$': return '4';
+                case '%': return '5';
+                case '^': return '6';
+                case '&': return '7';
+                case '*': return '8';
+                case '(': return '9';
+                case ')': return '0';
+                default:
+                    kWarning(6000) << "Don't know how resolve conflict of code:" << code
+                                   << " with a virtKey";
+            }
+        }
+        return code;
+    }
 }
 
 int KeyboardEventImpl::charCode() const
