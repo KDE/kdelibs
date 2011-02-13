@@ -39,16 +39,17 @@ else (WIN32)
   set(kdeinit_LIBS "")
 endif (WIN32)
 
-if (Q_WS_MAC OR WIN32)
+# on win32 kdeinit4 has to be a console application 
+# to be able to catch stderr based --verbose output
+if (Q_WS_MAC)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
-  # and on Windows this makes kdeinit4 create separate console window
   kde4_add_executable(kdeinit4 ${kdeinit_SRCS})
   set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
   set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit4")
   set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
-else (Q_WS_MAC OR WIN32)
+else (Q_WS_MAC)
   kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
-endif (Q_WS_MAC OR WIN32)
+endif (Q_WS_MAC)
 
 target_link_libraries(kdeinit4 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} )
 if (Q_WS_X11)
