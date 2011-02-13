@@ -38,8 +38,6 @@
 #include <QtCore/QListIterator>
 #include <QtCore/QStringList>
 #include <QtCore/QList>
-#include <QtCore/QTimer>
-#include <QtCore/QEventLoop>
 
 #include <QtWebKit/QWebPluginFactory>
 #include <QtWebKit/QWebFrame>
@@ -63,35 +61,13 @@ static bool excludedMimeType(const QString &type)
     return false;
 }
 
-class KWebPluginFactory::KWebPluginFactoryPrivate
-{
-public:
-  KWebPluginFactoryPrivate() {}
-
-  void _k_slotMimeType(KIO::Job *, const QString&);
-  QString mimeType;
-};
-
-void KWebPluginFactory::KWebPluginFactoryPrivate::_k_slotMimeType(KIO::Job *kioJob, const QString& mimeType)
-{
-    kDebug(800) << "Got mimetype" << mimeType;
-    this->mimeType = mimeType;
-    KIO::TransferJob * job = qobject_cast<KIO::TransferJob*> (kioJob);
-    if (job) {
-        job->putOnHold();
-        KIO::Scheduler::publishSlaveOnHold();
-    }
-}
-
 KWebPluginFactory::KWebPluginFactory(QObject *parent)
-                  :QWebPluginFactory(parent),
-                   d(new KWebPluginFactoryPrivate)
+                  :QWebPluginFactory(parent)
 {
 }
 
 KWebPluginFactory::~KWebPluginFactory()
 {
-    delete d;
 }
 
 QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, const QStringList& argumentNames, const QStringList& argumentValues) const
@@ -107,23 +83,11 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     QString mimeType (_mimeType.trimmed());
     // If no mimetype is provided, we do our best to correctly determine it here...
     if (mimeType.isEmpty()) {
-        kDebug(800) << "Looking up missing mimetype for plugin resource:" << url;
-        const KUrl reqUrl (url);
-        KMimeType::Ptr ptr = KMimeType::findByUrl(reqUrl, 0, reqUrl.isLocalFile());
-        // Stat the resource if we mimetype cannot be determined thru
-        // KMimeType::findByUrl...
-        if (ptr->isDefault()) {
-            d->mimeType.clear();
-            QEventLoop eventLoop;
-            KIO::TransferJob *job = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
-            connect(job, SIGNAL(mimetype (KIO::Job *, const QString&)),
-                    this, SLOT(_k_slotMimeType(KIO::Job *, const QString&)));
-            connect (job, SIGNAL(finished (KJob *)), &eventLoop, SLOT(quit()));
-            eventLoop.exec();
-            mimeType = d->mimeType;
-        } else {
-            mimeType = ptr->name();
-        }
+      kDebug(800) << "Looking up missing mimetype for plugin resource:" << url;
+      const KUrl reqUrl (url);
+      KMimeType::Ptr ptr = KMimeType::findByUrl(reqUrl, 0, reqUrl.isLocalFile());
+      if (ptr->isDefault())
+          mimeType = ptr->name();
 
        // Disregard inode/* mime-types...
        if (mimeType.startsWith(QLatin1String("inode/"), Qt::CaseInsensitive))
