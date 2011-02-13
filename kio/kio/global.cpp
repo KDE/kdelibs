@@ -362,6 +362,9 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
     case KIO::ERR_POST_DENIED:
       result = i18n( "Access to restricted port in POST denied.");
       break;
+    case KIO::ERR_POST_NO_SIZE:
+      result = i18n( "The required content size information was not provided for a POST operation.");
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\nPlease send a full bug report at http://bugs.kde.org." ,  errorCode ,  errorText );
       break;

@@ -48,6 +48,7 @@
 
 class QDomNodeList;
 class QFile;
+class QIODevice;
 
 namespace KIO {
     class AuthInfo;
@@ -279,7 +280,7 @@ public:
 
   virtual void closeConnection(); // Forced close of connection
 
-  void post( const KUrl& url );
+  void post( const KUrl& url, qint64 size = -1 );
   void multiGet(const QByteArray &data);
   bool maybeSetRequestUrl(const KUrl &);
 
@@ -342,6 +343,7 @@ protected:
   void parseContentDisposition(const QString &disposition);
 
   bool sendBody();
+  bool sendCachedBody();
 
   // where dataInternal == true, the content is to be made available
   // to an internal function.
@@ -431,6 +433,22 @@ protected:
    */
   void resetConnectionSettings();
 
+  /**
+   * Caches the POST data in a temporary buffer.
+   *
+   * Depending on size of content, the temporary buffer might be
+   * created either in memory or on disk as (a temporary file).
+   */
+  void cachePostData(const QByteArray&);
+
+  /**
+   * Clears the POST data buffer.
+   *
+   * Note that calling this function results in the POST data buffer
+   * getting completely deleted.
+   */
+  void clearPostDataBuffer();
+
 protected:
   HTTPServerState m_server;
   HTTPRequest m_request;
@@ -438,6 +456,7 @@ protected:
 
   // Processing related
   KIO::filesize_t m_iSize; // Expected size of message
+  KIO::filesize_t m_iPostDataSize;
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   KIO::filesize_t m_iContentLeft; // # of content bytes left
   QByteArray m_receiveBuf; // Receive buffer
@@ -477,7 +496,7 @@ protected:
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting
   // a form.
-  QByteArray m_POSTbuf;
+  QIODevice* m_POSTbuf;
 
   // Cache related
   int m_maxCacheAge; // Maximum age of a cache entry.

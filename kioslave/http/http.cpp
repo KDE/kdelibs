@@ -44,6 +44,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
 #include <QtCore/QDate>
+#include <QtCore/QBuffer>
+#include <QtCore/QIODevice>
 #include <QtDBus/QtDBus>
 #include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
@@ -92,6 +94,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kde_file.h>
+#include <ktemporaryfile.h>
 
 //string parsing helpers and HeaderTokenizer implementation
 #include "parsinghelpers.cpp"
@@ -103,6 +106,7 @@
 static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
 static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
 static const int s_hashedUrlBytes = s_hashedUrlBits / 8;
+static const int s_MaxInMemPostBufSize = 256 * 1024;   // Write anyting over 256 KB to file...
 
 using namespace KIO;
 
@@ -247,6 +251,20 @@ static bool isHttpProxy(const KUrl &u)
     return isValidProxy(u) && u.protocol() == QLatin1String("http");
 }
 
+static QIODevice* createPostBufferDeviceFor (KIO::filesize_t size)
+{
+    QIODevice* device;
+    if (size > static_cast<KIO::filesize_t>(s_MaxInMemPostBufSize))
+      device = new KTemporaryFile;
+    else
+      device = new QBuffer;
+
+    if (!device->open(QIODevice::ReadWrite))
+      return 0;
+
+    return device;
+}
+
 QByteArray HTTPProtocol::HTTPRequest::methodString() const
 {
     if (!methodStringOverride.isEmpty())
@@ -332,7 +350,9 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
                             const QByteArray &app )
     : TCPSlaveBase(protocol, pool, app, isEncryptedHttpVariety(protocol))
     , m_iSize(NO_SIZE)
+    , m_iPostDataSize(NO_SIZE)
     , m_isBusy(false)
+    , m_POSTbuf(0)
     , m_maxCacheAge(DEFAULT_MAX_CACHE_AGE)
     , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE)
     , m_protocol(protocol)
@@ -666,7 +686,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
   setMetaData(QLatin1String("content-type"), m_mimeType);
 
   // At this point sendBody() should have delivered any POST data.
-  m_POSTbuf.clear();
+  clearPostDataBuffer();
 
   return true;
 }
@@ -717,7 +737,7 @@ void HTTPProtocol::listDir( const KUrl& url )
 void HTTPProtocol::davSetRequest( const QByteArray& requestXML )
 {
   // insert the document into the POST buffer, kill trailing zero byte
-  m_POSTbuf = requestXML;
+  cachePostData(requestXML);
 }
 
 void HTTPProtocol::davStatList( const KUrl& url, bool stat )
@@ -1459,7 +1479,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   }
 }
 
-void HTTPProtocol::post( const KUrl& url )
+void HTTPProtocol::post( const KUrl& url, qint64 size )
 {
   kDebug(7113) << url.url();
 
@@ -1470,6 +1490,7 @@ void HTTPProtocol::post( const KUrl& url )
   m_request.method = HTTP_POST;
   m_request.cacheTag.policy= CC_Reload;
 
+  m_iPostDataSize = (size > -1 ? static_cast<KIO::filesize_t>(size) : NO_SIZE);
   proceedUntilResponseContent();
 }
 
@@ -1513,7 +1534,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
   }
 
   // insert the document into the POST buffer
-  m_POSTbuf = lockReq.toByteArray();
+  cachePostData(lockReq.toByteArray());
 
   proceedUntilResponseContent( true );
 
@@ -3788,67 +3809,115 @@ void HTTPProtocol::setCacheabilityMetadata(bool cachingAllowed)
     }
 }
 
-bool HTTPProtocol::sendBody()
+bool HTTPProtocol::sendCachedBody()
 {
-  infoMessage( i18n( "Requesting data to send" ) );
-
-  int readFromApp = -1;
-
-  // m_POSTbuf will NOT be empty iff authentication was required before posting
-  // the data OR a re-connect is requested from ::readResponseHeader because the
-  // connection was lost for some reason.
-  if (m_POSTbuf.isEmpty())
-  {
-    kDebug(7113) << "POST'ing live data...";
-
-    QByteArray buffer;
-
-    do {
-      m_POSTbuf.append(buffer);
-      buffer.clear();
-      dataReq(); // Request for data
-      readFromApp = readData(buffer);
-    } while (readFromApp > 0);
-  }
-  else
-  {
-    kDebug(7113) << "POST'ing saved data...";
-    readFromApp = 0;
-  }
-
-  if (readFromApp < 0)
-  {
-    error(ERR_ABORTED, m_request.url.host());
-    return false;
-  }
+  kDebug(7113) << "POST'ing cached data...";
 
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
-  const QString cLength = QLatin1String("Content-Length: ") + QString::number(m_POSTbuf.size()) + QLatin1String("\r\n\r\n");
+  QByteArray cLength ("Content-Length: ");
+  cLength += QByteArray::number(m_POSTbuf->size());
+  cLength += "\r\n\r\n";
+
   kDebug( 7113 ) << cLength.trimmed();
 
   // Send the content length...
-  bool sendOk = (write(cLength.toLatin1(), cLength.length()) == (ssize_t) cLength.length());
-  if (!sendOk)
-  {
+  bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
+  if (!sendOk) {
     kDebug( 7113 ) << "Connection broken when sending "
                     << "content length: (" << m_request.url.host() << ")";
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
 
+  // Make sure the read head is at the beginning...
+  m_POSTbuf->reset();
+
   // Send the data...
-  // kDebug( 7113 ) << "POST DATA:" << QCString(m_POSTbuf);
-  sendOk = (write(m_POSTbuf.data(), m_POSTbuf.size()) == (ssize_t) m_POSTbuf.size());
-  if (!sendOk)
-  {
-    kDebug(7113) << "Connection broken when sending message body: ("
-                  << m_request.url.host() << ")";
+  while (!m_POSTbuf->atEnd()) {
+      const QByteArray buffer = m_POSTbuf->read(s_MaxInMemPostBufSize);
+      sendOk = (write(buffer.data(), buffer.size()) == (ssize_t) buffer.size());
+      if (!sendOk)  {
+        kDebug(7113) << "Connection broken when sending message body: ("
+                      << m_request.url.host() << ")";
+        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
+        return false;
+      }
+  }
+
+  return true;
+}
+
+bool HTTPProtocol::sendBody()
+{
+  // If we have cached data, the it is either a repost or a DAV request so send
+  // the cached data...
+  if (m_POSTbuf)
+     return sendCachedBody();
+
+  if (m_iPostDataSize == NO_SIZE) {
+      error(ERR_POST_NO_SIZE, m_request.url.host());
+      return false;
+  }
+
+  kDebug(7113) << "POST'ing live data...";
+
+  infoMessage(i18n("Sending data to %1",  m_request.url.host()));
+
+  QByteArray cLength ("Content-Length: ");
+  cLength += QByteArray::number(m_iPostDataSize);
+  cLength += "\r\n\r\n";
+
+  kDebug(7113) << cLength.trimmed();
+
+  // Send the content length...
+  bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
+  if (!sendOk)  {
+    kDebug(7113) << "Connection broken while sending POST content size to" << m_request.url.host();
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
 
-  return true;
+  // Send the amount
+  totalSize(m_iPostDataSize);
+
+  sendOk = true;
+  KIO::filesize_t bytesSent = 0;
+
+  while (bytesSent < m_iPostDataSize) {
+    dataReq();
+
+    QByteArray buffer;
+    const int bytesRead = readData(buffer);
+
+    // On error return false...
+    if (bytesRead < 0) {
+      error(ERR_ABORTED, m_request.url.host());
+      return false;
+    }
+
+    // Cache the POST data in case of a repost request.
+    cachePostData(buffer);
+
+    // This will only happen if transmitting the data failed before...
+    if (!sendOk)
+      continue;
+
+    if (write(buffer.data(), bytesRead) == static_cast<ssize_t>(bytesRead)) {
+      bytesSent += bytesRead;
+      processedSize(bytesSent);  // Send update status...
+      continue;
+    }
+
+    // NOTE: We do not break out of the while loop at this point because we need to
+    // buffer all the content in case we need to re-post due to connection problems
+    // ot proxy authorization requests...
+    kDebug(7113) << "Connection broken while sending POST content to" << m_request.url.host();
+    error(ERR_CONNECTION_BROKEN, m_request.url.host());
+    sendOk = false;
+  }
+
+  return sendOk;
 }
 
 void HTTPProtocol::httpClose( bool keepAlive )
@@ -3935,8 +4004,9 @@ void HTTPProtocol::special( const QByteArray &data )
     case 1: // HTTP POST
     {
       KUrl url;
-      stream >> url;
-      post( url );
+      qint64 size;
+      stream >> url >> size;
+      post( url, size );
       break;
     }
     case 2: // cache_update
@@ -4457,7 +4527,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   }
 
   // It's over, we don't need it anymore
-  m_POSTbuf.clear();
+  clearPostDataBuffer();
 
   SlaveBase::error( _err, _text );
   m_isError = true;
@@ -4956,6 +5026,28 @@ void HTTPProtocol::cacheFileWritePayload(const QByteArray &d)
     m_request.cacheTag.bytesCached += d.size();
     m_request.cacheTag.file->write(d);
 }
+
+void HTTPProtocol::cachePostData(const QByteArray& data)
+{
+    if (!m_POSTbuf) {
+        m_POSTbuf = createPostBufferDeviceFor(qMax(m_iPostDataSize, static_cast<KIO::filesize_t>(data.size())));
+        if (!m_POSTbuf)
+            return;
+    }
+
+    m_POSTbuf->write (data.constData(), data.size());
+}
+
+void HTTPProtocol::clearPostDataBuffer()
+{
+    if (!m_POSTbuf)
+        return;
+
+    delete m_POSTbuf;
+    m_POSTbuf = 0;
+}
+
+
 
 // The above code should be kept in sync
 // with the code in http_cache_cleaner.cpp

@@ -311,6 +311,25 @@ namespace KIO {
                                        JobFlags flags = DefaultFlags );
 
     /**
+     * HTTP POST.
+     *
+     * This function, unlike the one that accepts a QByteArray, accepts an IO device
+     * from which to read the encoded data to be posted to the server in order to
+     * to avoid holding the content of very large post requests, e.g. multimedia file
+     * uploads, in memory.
+     *
+     * @param url Where to write the data.
+     * @param postData Encoded data to post.
+     * @param size Size of the encoded post data.
+     * @param flags Can be HideProgressInfo here
+     * @return the job handling the operation.
+     *
+     * @since 4.7
+     */
+    KIO_EXPORT TransferJob *http_post( const KUrl& url, QIODevice* device,
+                                       qint64 size = -1, JobFlags flags = DefaultFlags );
+
+    /**
      * Get (a.k.a. read), into a single QByteArray.
      * @see StoredTransferJob
      *
@@ -347,6 +366,20 @@ namespace KIO {
      */
     KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const KUrl& url,
                                                   JobFlags flags = DefaultFlags );
+    /**
+     * HTTP POST (a.k.a. write) data from the given IO device.
+     * @see StoredTransferJob
+     *
+     * @param device Device from which the encoded data to be posted is read.
+     * @param url Where to write data.
+     * @param size Size of the encoded data to be posted.
+     * @param flags Can be HideProgressInfo here.
+     * @return the job handling the operation.
+     *
+     * @since 4.7
+     */
+    KIO_EXPORT StoredTransferJob *storedHttpPost( QIODevice* device, const KUrl& url,
+                                                  qint64 size = -1, JobFlags flags = DefaultFlags );
 
     /**
      * Creates a new multiple get job.

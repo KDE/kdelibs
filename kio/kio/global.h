@@ -266,7 +266,8 @@ namespace KIO
                                                   // see job.cpp
     ERR_COULD_NOT_SEEK = KJob::UserDefinedError + 66,
     ERR_CANNOT_SETTIME = KJob::UserDefinedError + 67, // Emitted by setModificationTime
-    ERR_CANNOT_CHOWN = KJob::UserDefinedError + 68
+    ERR_CANNOT_CHOWN = KJob::UserDefinedError + 68,
+    ERR_POST_NO_SIZE = KJob::UserDefinedError + 69
   };
 
   /**
