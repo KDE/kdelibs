@@ -62,7 +62,7 @@ static bool excludedMimeType(const QString &type)
 }
 
 KWebPluginFactory::KWebPluginFactory(QObject *parent)
-                  :QWebPluginFactory(parent)
+                  :QWebPluginFactory(parent),d(0)
 {
 }
 
