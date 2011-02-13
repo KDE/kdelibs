@@ -611,8 +611,8 @@ void KCalendarTest::testReadDate()
     QCOMPARE( calendar->readDate( "2004-W53-6", "%Y-W%V-%u" ), QDate( 2005, 1, 1 ) );
     QCOMPARE( calendar->readDate( "2004-W53-7", "%Y-W%V-%u" ), QDate( 2005, 1, 2 ) );
 
-    //Need to fix each year!
-    QCOMPARE( calendar->readDate( "W46-5", "W%V-%u" ), QDate( 2010, 11, 19 ) );
+    calendar->setDateIsoWeek( testDate, currentYear, 46, 5 );
+    QCOMPARE( calendar->readDate( "W46-5", "W%V-%u" ), testDate );
 
     QCOMPARE( calendar->readDate( "2004-W00-1", "%Y-W%V-%u" ),   QDate() );
     QCOMPARE( calendar->readDate( "2004-W01-0", "%Y-W%V-%u" ),   QDate() );
@@ -2575,11 +2575,11 @@ void KCalendarTest::testKLocalizedDate()
     QCOMPARE( testKLocalizedDate.formatDate(KLocale::EraName),           calendar->eraName( testQDate ) );
     QCOMPARE( testKLocalizedDate.formatDate(KLocale::EraYear),           calendar->eraYear( testQDate ) );
     QCOMPARE( testKLocalizedDate.formatDate(KLocale::YearInEra),         calendar->yearInEraString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYear),         calendar->dayOfYearString( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYearName),     calendar->dayOfYearString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYear),         calendar->dayOfYearString( testQDate, KCalendarSystem::ShortFormat ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfYearName),     calendar->dayOfYearString( testQDate, KCalendarSystem::ShortFormat ) );
     QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfWeek),         calendar->dayOfWeekString( testQDate ) );
     QCOMPARE( testKLocalizedDate.formatDate(KLocale::DayOfWeekName),     calendar->weekDayName( testQDate ) );
-    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Week),              calendar->weekNumberString( testQDate ) );
+    QCOMPARE( testKLocalizedDate.formatDate(KLocale::Week),              calendar->weekNumberString( testQDate, KCalendarSystem::ShortFormat ) );
     int weekYear;
     QDate weekDate;
     calendar->weekNumber( testQDate, &weekYear );
