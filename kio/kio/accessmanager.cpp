@@ -50,8 +50,16 @@
 static bool isLocalRequest(const KUrl& url)
 {
     const QString scheme (url.protocol());
-    return (KProtocolInfo::isKnownProtocol(scheme) && 
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
             KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
+static qint64 sizeFromRequest(const QNetworkRequest& req)
+{
+    const QVariant size = req.header(QNetworkRequest::ContentLengthHeader);
+    if (!size.isValid())
+        return -1;
+    return size.toLongLong();
 }
 
 namespace KIO {
@@ -187,7 +195,9 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case PostOperation: {
             //kDebug( 7044 ) << "PostOperation:" << reqUrl;
-            kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
+            const qint64 size = sizeFromRequest(req);
+            kDebug(7044) << "PostOperation: data size=" << size;
+            kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
             break;
         }
         case DeleteOperation: {
@@ -198,15 +208,18 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         case CustomOperation: {
             const QByteArray& method = req.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
             //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
+
             if (method.isEmpty()) {
                 KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
                 reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
                 return reply;
             }
+
             if (outgoingData)
-                kioJob = KIO::http_post(reqUrl, outgoingData->readAll(), KIO::HideProgressInfo);
+                kioJob = KIO::http_post(reqUrl, outgoingData, sizeFromRequest(req), KIO::HideProgressInfo);
             else
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
+
             kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
             break;
         }
