@@ -24,6 +24,7 @@ endif(OPENSSL_FOUND)
 
 if(NOT KIO_NO_NEPOMUK)
     include_directories(
+       ${SOPRANO_INCLUDE_DIR}
        ${CMAKE_SOURCE_DIR}/nepomuk/
        ${CMAKE_SOURCE_DIR}/nepomuk/core/
        ${CMAKE_SOURCE_DIR}/nepomuk/types/    
