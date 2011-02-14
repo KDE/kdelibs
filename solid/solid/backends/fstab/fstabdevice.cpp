@@ -37,8 +37,8 @@ FstabDevice::FstabDevice(QString uid) :
         m_product = m_device.left(m_device.indexOf("/", 2));
         m_vendor = m_device.mid(m_device.indexOf("/", 2) + 1);
     } else {
-        m_product = m_device.left(m_device.indexOf(":"));
-        m_vendor = m_device.mid(m_device.indexOf(":") + 1);
+        m_product = m_device.left(m_device.indexOf(":/"));
+        m_vendor = m_device.mid(m_device.indexOf(":/") + 1);
     }
 
     m_description = m_vendor + " on " + m_product;
