@@ -51,11 +51,12 @@ KDescendantEntitiesProxyModel can also display the ancestors of the index in the
 
 @code
 // ... Create an entityTreeModel
-KDescendantsProxyModel *descProxy = new KDescendantesProxyModel(this);
+KDescendantsProxyModel *descProxy = new KDescendantsProxyModel(this);
 descProxy->setSourceModel(entityTree);
 
 // #### This is new
-descProxy->setDisplayAncestorData(true, QString( " / " ));
+descProxy->setDisplayAncestorData(true);
+descProxy->setDisplayAncestorSeparator(QString(" / "));
 
 view->setModel(descProxy);
 
