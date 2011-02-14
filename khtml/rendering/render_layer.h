@@ -346,6 +346,8 @@ protected:
     bool m_visibleDescendantStatusDirty : 1;
     bool m_hasVisibleDescendant : 1;
     bool m_inScrollbarRelayout : 1;
+    bool m_wasStackingContext : 1; // set to 1 when last style application
+                                   // establised us as a stacking context
 
     QRect m_visibleRect;
 

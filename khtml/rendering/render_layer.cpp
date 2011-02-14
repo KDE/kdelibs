@@ -122,6 +122,7 @@ m_marquee( 0 )
     }
     m_buffer[0] = 0;
     m_buffer[1] = 0;
+    m_wasStackingContext = object->style() ? isStackingContext() : false;
 }
 
 RenderLayer::~RenderLayer()
@@ -1697,25 +1698,35 @@ bool RenderLayer::shouldBeOverflowOnly() const
 
 void RenderLayer::styleChanged()
 {
+    RenderLayer* parentSC = stackingContext();
+
     // If we stopped being a stacking context, make sure to clear our
     // child lists so we don't end up with dangling references when a kid
     // is removed (as it wouldn't know to remove from us)
-    if (!isStackingContext() && (m_posZOrderList || m_negZOrderList)) {
+    bool nowStackingContext = isStackingContext();
+    if (!nowStackingContext && (m_posZOrderList || m_negZOrderList)) {
         delete m_posZOrderList;
         m_posZOrderList = 0;
         delete m_negZOrderList;
         m_negZOrderList = 0;
     }
 
+    // If we stopped or started being a stacking context, dirty the parent, as
+    // who is responsible for some of the layers may change
+    if (nowStackingContext != m_wasStackingContext && parentSC) {
+        parentSC->dirtyZOrderLists();
+    }
+
+    m_wasStackingContext = nowStackingContext;
+
     bool isOverflowOnly = shouldBeOverflowOnly();
     if (isOverflowOnly != m_isOverflowOnly) {
         m_isOverflowOnly = isOverflowOnly;
         RenderLayer* p = parent();
-        RenderLayer* sc = stackingContext();
         if (p)
             p->dirtyOverflowList();
-        if (sc)
-            sc->dirtyZOrderLists();
+        if (parentSC)
+            parentSC->dirtyZOrderLists();
     }
 
     if (m_object->hasOverflowClip() && 
