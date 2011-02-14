@@ -1,9 +1,9 @@
-/*
+﻿/*
  * This file is part of the KDE libraries
  * Copyright (c) 1999-2000 Waldo Bastian <bastian@kde.org>
  *                 (c) 1999 Mario Weilguni <mweilguni@sime.com>
  *                 (c) 2001 Lubos Lunak <l.lunak@kde.org>
- *                 (c) 2006 Ralf Habacker <ralf.habacker@freenet.de>
+ *                 (c) 2006-2011 Ralf Habacker <ralf.habacker@freenet.de>
  *                 (c) 2009 Patrick Spendrin <ps_ml@gmx.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -32,9 +32,8 @@
 #include <windows.h>
 #ifndef _WIN32_WCE
 #include <Sddl.h>
-#else
-#include <tlhelp32.h>
 #endif
+#include <tlhelp32.h>
 #include <psapi.h>
 
 
@@ -48,7 +47,6 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kdeversion.h>
-#include <kuser.h>
 
 //#define ENABLE_SUICIDE 
 //#define ENABLE_EXIT
@@ -63,39 +61,166 @@ int verbose=0;
 /// holds process list for suicide mode
 QList<QProcess*> startedProcesses;
 
+/* --------------------------------------------------------------------
+  sid helper - will be migrated later to a class named Sid, which could 
+  be used as base class for platform independent K_UID and K_GID types 
+  - would this be possible before KDE 5 ? 
+  --------------------------------------------------------------------- */
+
+/**
+ copy sid 
+ @param from sif to copy from 
+ @return copied sid, need to be free'd with free
+ @note null sid's are handled too
+*/
+PSID copySid(PSID from)
+{
+    if (!from)
+        return 0;
+    int sidLength = GetLengthSid(from);
+    PSID to = (PSID) malloc(sidLength);
+    CopySid(sidLength, to, from);
+    return to;
+}
+
+/**
+ copy sid 
+ @param from sif to copy from 
+ @return copied sid, need to be free'd with free
+ @note null sid's are handled too
+*/
+void freeSid(PSID sid)
+{
+    if (sid)
+        free(sid);
+}
+
+/**
+ copy sid 
+ @param from sif to copy from 
+ @return copied sid, need to be free'd with free
+ @note null sid's are handled too
+*/
+QString toString(PSID sid)
+{
+    LPWSTR s;
+    if (!ConvertSidToStringSid(sid, &s))
+        return QString();
+
+    QString result = QString::fromUtf16(s);
+    LocalFree(s);
+    return result;
+}
+
+/* --------------------------------------------------------------------
+  process helper 
+  --------------------------------------------------------------------- */
+
+/** 
+ return process handle
+ @param pid process id 
+ @return process handle
+ */ 
+static HANDLE getProcessHandle(int processID)
+{
+    return OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
+                        PROCESS_VM_READ | PROCESS_TERMINATE,
+                        false, processID );
+}
+
+/** 
+ return absolute path of process 
+ @param pid process id 
+ @return process name
+ */ 
+static QString getProcessName(DWORD pid)
+{
+    HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
+    MODULEENTRY32 me32;
+
+    hModuleSnap = CreateToolhelp32Snapshot( TH32CS_SNAPMODULE, pid );
+    if( hModuleSnap == INVALID_HANDLE_VALUE )
+        return QString();
+
+    me32.dwSize = sizeof( MODULEENTRY32 );
+
+    if( !Module32First( hModuleSnap, &me32 ) ) {
+        CloseHandle( hModuleSnap );           // clean the snapshot object
+        return QString();
+    }
+    QString name = QString::fromWCharArray(me32.szExePath);
+    CloseHandle( hModuleSnap );
+    return name;
+}
+
+/**
+ return sid of specific process
+ @param hProcess handle to process
+ @return sid pointer to PSID structure, must be freed with LocalAlloc
+*/
+static PSID getProcessOwner(HANDLE hProcess)
+{
+#ifndef _WIN32_WCE
+    HANDLE hToken = NULL;    
+    PSID sid;
+            
+    OpenProcessToken(hProcess, TOKEN_READ, &hToken);
+    if(hToken)
+    {
+        DWORD size;
+        PTOKEN_USER userStruct;
+                
+        // check how much space is needed
+        GetTokenInformation(hToken, TokenUser, NULL, 0, &size);
+        if( ERROR_INSUFFICIENT_BUFFER == GetLastError() )
+        {
+            userStruct = reinterpret_cast<PTOKEN_USER>( new BYTE[size] );
+            GetTokenInformation(hToken, TokenUser, userStruct, size, &size);
+
+            sid = copySid(userStruct->User.Sid);
+            CloseHandle(hToken);
+            delete [] userStruct;
+            return sid;
+        }
+    }
+#endif
+    return 0;
+}
+
+/**
+ return sid of current process owner
+*/
+static PSID getCurrentProcessOwner()
+{
+    return getProcessOwner(GetCurrentProcess());
+}
+
+/** 
+ holds single process
+ */
 class ProcessListEntry {
     public:
-       ProcessListEntry( HANDLE _handle,char *_path, int _pid, K_UID _owner ) 
+       ProcessListEntry( HANDLE _handle, QString _path, int _pid, PSID _owner=0 ) 
        {    
            QFileInfo p(_path);
            path = p.absolutePath();
            name = p.baseName();
            handle = _handle; 
            pid = _pid;
-//There are no users under wince
-#ifndef _WIN32_WCE
-           DWORD length = GetLengthSid(_owner);
-           owner = (PSID) malloc(length);
-           CopySid(length, owner, _owner);
-#else
-           owner = 0;
-#endif
+           owner = copySid(_owner);
        }
 
        ~ProcessListEntry()
        {
-//There are no users under wince
-#ifndef _WIN32_WCE
-           free(owner);
-#endif
-           owner = 0;
+           freeSid(owner);
+           CloseHandle(handle);
        }
        
        QString name;
        QString path;
        int pid;
        HANDLE handle;
-       K_UID owner;
+       PSID owner;
        friend QDebug operator <<(QDebug out, const ProcessListEntry &c);
 };
 
@@ -106,157 +231,68 @@ QDebug operator <<(QDebug out, const ProcessListEntry &c)
         << "path" << c.path
         << "pid" << c.pid
         << "handle" << c.handle
+        << "sid" << toString(c.owner)
         << ")";
     return out;
 }    
 
 /**
- holds system process list
+ holds system process list snapshot 
+
+ Could be used as a public platform independent class or namespace in kdecore 
+ for dealing with system processes, named perhaps KSystemProcessSnapshot or similar. 
+ If implemented at Qt level it will be named QSystemProcessSnapshot or similar
 */
 class ProcessList {
-    public:
-       ProcessList();
-       ~ProcessList();
-       ProcessListEntry *hasProcessInList(const QString &name, K_UID owner=0 );
-       bool terminateProcess(const QString &name);
-       QList<ProcessListEntry *> &list() { return processList; }
-       QList<ProcessListEntry *> listProcesses();
-    private:
-       void initProcessList();
-       void getProcessNameAndID( DWORD processID );
-       QList<ProcessListEntry *> processList;
-       QString m_domain;
-       QString m_username;
-       QString m_host;
-       KUser *m_user;
-       K_UID m_currentUserID;
+public:
+    /**
+    collect process 
+    @param userSid  sid of user for which processes should be collected or 0 for all processes
+    */
+    ProcessList(PSID userSid=0);
+
+    ~ProcessList();
+
+    /** 
+    find process in list
+    @param name process name (with or without extension)
+    @return instance of process entry 
+    */
+    ProcessListEntry *find(const QString &name);
+
+    /** 
+    killprocess from list
+    @param name process name (with or without extension)
+    @return ... 
+    */
+    bool terminateProcess(const QString &name);
+
+    /**
+    return all processes 
+    @return list with processes
+    */
+    QList<ProcessListEntry *> &list() { return m_processes; }
+
+private:
+    void init();
+    QList<ProcessListEntry *> m_processes;
+    PSID m_userId;
 };
 
-ProcessList::ProcessList() 
+ProcessList::ProcessList(PSID userSid) 
 {
-    m_domain = qgetenv("USERDOMAIN");
-    m_username = qgetenv("USERNAME");
-    m_host = qgetenv("COMPUTERNAME");
-
-    m_user = 0;
-    m_currentUserID = 0;
-    //if (m_domain == m_host)
-    {
-        m_user = new KUser; 
-        m_currentUserID = m_user->uid();
-    }
-    initProcessList(); 
+    m_userId = userSid;
+    init(); 
 }
 
 ProcessList::~ProcessList()
 {
-    ProcessListEntry *ple;
-    QList<ProcessListEntry*> l = listProcesses();
-    foreach(ple,l) {
-        CloseHandle(ple->handle);
+    foreach(const ProcessListEntry *ple,m_processes)
         delete ple;
-    }
-    delete m_user;
 }
 
-void ProcessList::getProcessNameAndID( DWORD processID )
+void ProcessList::init()
 {
-#ifndef _WIN32_WCE
-    char szProcessName[MAX_PATH];
-    // by default use the current process' uid
-    K_UID processSid = 0;
-    DWORD sidLength  = 0;
-
-    if (m_currentUserID)
-    {
-        sidLength = GetLengthSid(m_currentUserID);
-        processSid = (PSID) malloc(sidLength);
-        CopySid(sidLength, processSid, m_currentUserID);
-    }
-    // Get a handle to the process.
-
-    HANDLE hProcess = OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
-                                   PROCESS_VM_READ | PROCESS_TERMINATE,
-                                   false, processID );
-
-    // Get the process name.
-    int ret = 0;
-
-    if (NULL != hProcess )
-    {
-       HMODULE hMod;
-       DWORD cbNeeded;
-
-        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
-              &cbNeeded) )
-        {
-            ret = GetModuleFileNameExA( hProcess, hMod, szProcessName,
-                                           sizeof(szProcessName)/sizeof(TCHAR) );
-        }
-        
-        // get process owner
-        if (ret > 0)
-        {
-            HANDLE hToken = NULL;
-            
-            OpenProcessToken(hProcess, TOKEN_READ, &hToken);
-            if(hToken)
-            {
-                DWORD size;
-                PTOKEN_USER userStruct;
-                
-                // check how much space is needed
-                GetTokenInformation(hToken, TokenUser, NULL, 0, &size);
-                if( ERROR_INSUFFICIENT_BUFFER == GetLastError() )
-                {
-                    userStruct = reinterpret_cast<PTOKEN_USER>( new BYTE[size] );
-                    GetTokenInformation(hToken, TokenUser, userStruct, size, &size);
-
-                    sidLength = GetLengthSid(userStruct->User.Sid);
-                    if (processSid)
-                        free(processSid);
-                    processSid = 0;
-                    processSid = (PSID) malloc(sidLength);
-                    CopySid(sidLength, processSid, userStruct->User.Sid);
-
-                    CloseHandle(hToken);
-                    delete [] userStruct;
-                }
-            }
-        }
-    }
-    if (ret > 0)
-    {
-        processList << new ProcessListEntry( hProcess, szProcessName, processID, processSid );
-    }
-    free(processSid);
-#endif
-}
-
-/**
-    read process list from system and fill in global var aProcessList
-*/
-void ProcessList::initProcessList()
-{
-#ifndef _WIN32_WCE
-    // Get the list of process identifiers.
-
-    DWORD aProcesses[1024], cbNeeded, cProcesses;
-    unsigned int i;
-
-    if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
-        return;
-
-    // Calculate how many process identifiers were returned.
-
-    cProcesses = cbNeeded / sizeof(DWORD);
-
-    // Print the name and process identifier for each process.
-
-    for ( i = 0; i < cProcesses; i++ )
-        if( aProcesses[i] != 0 )
-            getProcessNameAndID( aProcesses[i] );
-#else
     HANDLE h;
     PROCESSENTRY32 pe32;
 
@@ -270,52 +306,33 @@ void ProcessList::initProcessList()
       
     do
     {
-        HANDLE hProcess = OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
-                               PROCESS_VM_READ | PROCESS_TERMINATE,
-                               false, pe32.th32ProcessID );
-                               
-        processList << new ProcessListEntry( hProcess, QString::fromWCharArray(pe32.szExeFile).toAscii().data(), pe32.th32ProcessID, 0 );
-
-    } while( Process32Next( h, &pe32 ) );
+        HANDLE hProcess = getProcessHandle(pe32.th32ProcessID);
+        if (!hProcess)
+            continue;
+        QString name = getProcessName(pe32.th32ProcessID);
+#ifndef _WIN32_WCE
+        PSID sid = getProcessOwner(hProcess);
+        if (!sid || m_userId && !EqualSid(m_userId,sid))
+        {
+            freeSid(sid);
+            continue;
+        }
+#else
+        PSID sid = 0;
+#endif
+        m_processes << new ProcessListEntry( hProcess, name, pe32.th32ProcessID, sid);
+    } while(Process32Next( h, &pe32 ));
+#ifndef _WIN32_WCE
+    CloseHandle(h);
+#else
     CloseToolhelp32Snapshot(h);
 #endif
 }
 
-QList<ProcessListEntry*> ProcessList::listProcesses()
-{
-//FIXME: Under wince there is no EnumProcesses
-#ifndef _WIN32_WCE
-    // Get the list of process identifiers.
-
-    DWORD aProcesses[1024], cbNeeded, cProcesses;
-    unsigned int i;
-
-    if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
-        return QList<ProcessListEntry*>();
-
-    // Calculate how many process identifiers were returned.
-
-    cProcesses = cbNeeded / sizeof(DWORD);
-
-    // Print the name and process identifier for each process.
-
-    processList.erase(processList.begin(), processList.end());
-    for ( i = 0; i < cProcesses; i++ )
-        if( aProcesses[i] != 0 )
-            getProcessNameAndID( aProcesses[i] );
-
-#endif            
-    return processList;
-}
-
-
-/**
- return process list entry of given name
-*/
-ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner)
+ProcessListEntry *ProcessList::find(const QString &name)
 {
     ProcessListEntry *ple;
-    foreach(ple,processList) {
+    foreach(ple,m_processes) {
         if (ple->pid < 0) { 
             qDebug() << "negative pid!";
             continue;
@@ -330,36 +347,15 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name, K_UID owner
             qDebug() << "path of the process" << name << "seems to be outside of the installPath:" << ple->path << KStandardDirs::installPath("kdedir");
             continue;
         }
-        
-#ifndef _WIN32_WCE
-        if(owner)
-        {
-            // owner is set
-            if(EqualSid(owner, ple->owner)) return ple;
-        }
-        else
-        {
-            /// @todo KUser lacks domain support yet: if user is in a domain skip process owner check for now because it simply does not work
-            if (m_domain != m_host)
-                return ple; 
-                
-            // no owner is set, use the owner of this process
-            if(EqualSid(m_currentUserID, ple->owner)) return ple;
-        }
-#else
-            return ple;
-#endif
+        return ple;
     }
     return NULL;
 }
 
-/**
- terminate process from process list
-*/
 bool ProcessList::terminateProcess(const QString &name)
 {
     qDebug() << "going to terminate process" << name;
-    ProcessListEntry *p = hasProcessInList(name);
+    ProcessListEntry *p = find(name);
     if (!p) {
         qDebug() << "could not find ProcessListEntry for process name" << name;
         return false;
@@ -367,9 +363,8 @@ bool ProcessList::terminateProcess(const QString &name)
 
     bool ret = TerminateProcess(p->handle,0);
     if (ret) {
-        CloseHandle(p->handle);
-        int i = processList.indexOf(p);
-        if(i != -1) processList.removeAt(i);
+        int i = m_processes.indexOf(p);
+        if(i != -1) m_processes.removeAt(i);
         delete p;
         return true;
     } else {
@@ -423,11 +418,9 @@ bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
 
 void listAllRunningKDEProcesses(ProcessList &processList)
 {
-    ProcessListEntry *ple;
     QString installPrefix = KStandardDirs::installPath("kdedir");
-    QList<ProcessListEntry*> l = processList.listProcesses();
 
-    foreach(ple,l) 
+    foreach(const ProcessListEntry *ple, processList.list()) 
     {
         if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower()))
             fprintf(stderr,"path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
@@ -436,11 +429,9 @@ void listAllRunningKDEProcesses(ProcessList &processList)
 
 void terminateAllRunningKDEProcesses(ProcessList &processList)
 {
-    ProcessListEntry *ple;
     QString installPrefix = KStandardDirs::installPath("kdedir");
-    QList<ProcessListEntry*> l = processList.listProcesses();
 
-    foreach(ple,l) 
+    foreach(const ProcessListEntry *ple, processList.list()) 
     {
         if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower())) 
         {
@@ -562,7 +553,11 @@ int main(int argc, char **argv, char **envp)
             quitAppsOverDBus = true;
     }
 
-    ProcessList processList;
+    PSID currentSid = getCurrentProcessOwner();
+    if (verbose)
+        fprintf(stderr,"current user sid: %s\n",qPrintable(toString(currentSid)));
+    ProcessList processList(currentSid);
+    freeSid(currentSid);
 
     if (listProcesses) {
         listAllRunningKDEProcesses(processList);
@@ -591,7 +586,7 @@ int main(int argc, char **argv, char **envp)
 
 #ifdef _DEBUG
     // first try to launch dbus-daemond in debug mode
-    if (launch_dbus && processList.hasProcessInList("dbus-daemond"))
+    if (launch_dbus && processList.find("dbus-daemond"))
           launch_dbus = false;
     if (launch_dbus)
     {
@@ -601,7 +596,7 @@ int main(int argc, char **argv, char **envp)
           launch_dbus = (pid == 0);
     }
 #endif
-    if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
+    if (launch_dbus && !processList.find("dbus-daemon"))
     {
           if (!pid)
               pid = launch("dbus-launch.exe");
@@ -611,7 +606,7 @@ int main(int argc, char **argv, char **envp)
               exit(1);
     }
 
-    if (launch_klauncher && !processList.hasProcessInList("klauncher"))
+    if (launch_klauncher && !processList.find("klauncher"))
     {
           pid = launch("klauncher");
           if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10))
@@ -619,7 +614,7 @@ int main(int argc, char **argv, char **envp)
     }
 
 
-    if (launch_kded && !processList.hasProcessInList(KDED_EXENAME))
+    if (launch_kded && !processList.find(KDED_EXENAME))
     {
         pid = launch(KDED_EXENAME);
         if (!pid || !checkIfRegisteredInDBus("org.kde.kded",10))
