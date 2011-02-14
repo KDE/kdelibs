@@ -190,6 +190,20 @@ QList<KSslError> KSslCertificateRule::filterErrors(const QList<KSslError> &error
 
 ////////////////////////////////////////////////////////////////////
 
+static QList<QSslCertificate> deduplicate(const QList<QSslCertificate> &certs)
+{
+    QSet<QByteArray> digests;
+    QList<QSslCertificate> ret;
+    foreach (const QSslCertificate &cert, certs) {
+        QByteArray digest = cert.digest();
+        if (!digests.contains(digest)) {
+            digests.insert(digest);
+            ret.append(cert);
+        }
+    }
+    return ret;
+}
+
 KSslCertificateManagerPrivate::KSslCertificateManagerPrivate()
  : config(QString::fromLatin1("ksslcertificatemanager"), KConfig::SimpleConfig),
    iface(new org::kde::KSSLDInterface(QString::fromLatin1("org.kde.kded"),
@@ -217,7 +231,7 @@ void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
         return;                 // we need KGlobal::dirs() available
     }
 
-    QList<QSslCertificate> certs = QSslSocket::systemCaCertificates();
+    QList<QSslCertificate> certs = deduplicate(QSslSocket::systemCaCertificates());
 
     KConfig config(QString::fromLatin1("ksslcablacklist"), KConfig::SimpleConfig);
     KConfigGroup group = config.group("Blacklist of CA Certificates");
@@ -375,7 +389,7 @@ QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
 {
     kDebug(7029);
     QList<KSslCaCertificate> ret;
-    foreach (const QSslCertificate &cert, QSslSocket::systemCaCertificates()) {
+    foreach (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
     }
 
