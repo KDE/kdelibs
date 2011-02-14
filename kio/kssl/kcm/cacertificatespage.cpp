@@ -65,7 +65,7 @@ public:
     {
        setEnabled(isEnabled);
     }
-       
+
     QVariant data(int column, int role) const
     {
         switch (role) {
@@ -82,15 +82,15 @@ public:
                 return m_cert.issuerInfo(QSslCertificate::OrganizationalUnitName);
             }
         }
-        
+
         return QTreeWidgetItem::data(column, role);
     }
-    
+
     bool isEnabled() const
     {
         return data(OrgCnColumn, Qt::CheckStateRole).toInt() == Qt::Checked;
     }
-    
+
     void setEnabled(bool enabled)
     {
         setData(OrgCnColumn, Qt::CheckStateRole, enabled ? Qt::Checked : Qt::Unchecked);
@@ -114,10 +114,9 @@ CaCertificatesPage::CaCertificatesPage(QWidget *parent)
             SLOT(itemChanged(QTreeWidgetItem *, int)));
     connect(m_ui.treeWidget, SIGNAL(itemSelectionChanged()),
             SLOT(itemSelectionChanged()));
-    
+
     m_ui.treeWidget->setColumnCount(HiddenSortColumn + 1);
     m_ui.treeWidget->setColumnHidden(HiddenSortColumn, true);
-    m_ui.treeWidget->setUniformRowHeights(true);
 }
 
 
@@ -126,7 +125,7 @@ void CaCertificatesPage::load()
     m_ui.treeWidget->clear();
     m_ui.treeWidget->sortByColumn(-1);  // disable during mass insertion
     m_knownCertificates.clear();
-    
+
     m_systemCertificatesParent = new QTreeWidgetItem(m_ui.treeWidget);
     m_systemCertificatesParent->setText(0, i18n("System certificates"));
     // make system certificates come first in the sorted view
@@ -139,7 +138,7 @@ void CaCertificatesPage::load()
     m_userCertificatesParent->setText(HiddenSortColumn, QLatin1String("b"));
     m_userCertificatesParent->setExpanded(true);
     m_userCertificatesParent->setFlags(m_userCertificatesParent->flags() & ~Qt::ItemIsSelectable);
-     
+
     QList<KSslCaCertificate> caCerts = _allKsslCaCertificates(KSslCertificateManager::self());
     kDebug(7029) << "# certs:" << caCerts.count();
     foreach (const KSslCaCertificate &caCert, caCerts) {
@@ -162,13 +161,13 @@ void CaCertificatesPage::showEvent(QShowEvent *event)
 void CaCertificatesPage::save()
 {
     QList<KSslCaCertificate> newState;
-        
+
     KSslCaCertificate::Store store = KSslCaCertificate::SystemStore;
     QTreeWidgetItem *grandParent = m_systemCertificatesParent;
-    
+
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < grandParent->childCount(); j++) {
-            
+
             QTreeWidgetItem *parentItem = grandParent->child(j);
             for (int k = 0; k < parentItem->childCount(); k++) {
                 CaCertificateItem *item = static_cast<CaCertificateItem *>(parentItem->child(k));
@@ -290,10 +289,10 @@ void CaCertificatesPage::removeSelectionClicked()
 // private slot
 void CaCertificatesPage::addCertificateClicked()
 {
-    QStringList certFiles 
+    QStringList certFiles
       = KFileDialog::getOpenFileNames(KUrl(), QLatin1String("application/x-x509-ca-cert"),
                                       this, i18n("Pick Certificates"));
-      
+
     QList<QSslCertificate> certs;
     foreach (const QString &certFile, certFiles) {
         // trying both formats is easiest to program and most user-friendly if somewhat sloppy
@@ -367,7 +366,7 @@ bool CaCertificatesPage::addCertificateItem(const KSslCaCertificate &caCert)
         parent->setExpanded(true);
         parent->setFlags(parent->flags() & ~Qt::ItemIsSelectable);
     }
-    
+
     CaCertificateItem *it = new CaCertificateItem(parent, caCert.cert, !caCert.isBlacklisted);
     m_knownCertificates.insert(caCert.certHash);
     m_blockItemChanged = prevBlockItemChanged;
