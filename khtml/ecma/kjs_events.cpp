@@ -718,7 +718,7 @@ const ClassInfo DOMKeyEventBase::info = { "KeyEventBase", &DOMUIEvent::info, &DO
   ctrlKey        DOMKeyEventBase::CtrlKey     DontDelete|ReadOnly
   altKey         DOMKeyEventBase::AltKey      DontDelete|ReadOnly
   shiftKey       DOMKeyEventBase::ShiftKey    DontDelete|ReadOnly
-  altKey         DOMKeyEventBase::AltKey      DontDelete|ReadOnly
+  metaKey        DOMKeyEventBase::MetaKey     DontDelete|ReadOnly
 @end
 */
 
