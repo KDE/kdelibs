@@ -745,11 +745,11 @@ QString UDisksDevice::errorToString(const QString & error) const
 Solid::ErrorType UDisksDevice::errorToSolidError(const QString & error) const
 {
     if (error == UD_ERROR_BUSY)
-        return Solid::Busy;
+        return Solid::DeviceBusy;
     else if (error == UD_ERROR_FAILED)
-        return Solid::Failed;
+        return Solid::OperationFailed;
     else if (error == UD_ERROR_CANCELED)
-        return Solid::Canceled;
+        return Solid::UserCanceled;
     else if (error == UD_ERROR_INVALID_OPTION)
         return Solid::InvalidOption;
     else if (error == UD_ERROR_MISSING_DRIVER)
