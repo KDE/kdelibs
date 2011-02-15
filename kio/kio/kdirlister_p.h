@@ -64,7 +64,6 @@ public:
     hasPendingChanges = false;
 
     window = 0;
-    m_cachedItemsJob = 0;
   }
 
     void _k_emitCachedItems(const KUrl&, bool, bool);
@@ -106,6 +105,9 @@ public:
 
     void emitChanges();
 
+    class CachedItemsJob;
+    CachedItemsJob* cachedItemsJobForUrl(const KUrl& url) const;
+
 
   KDirLister *m_parent;
 
@@ -145,8 +147,7 @@ public:
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
 
     QWidget *window; // Main window this lister is associated with
-    class CachedItemsJob;
-    CachedItemsJob* m_cachedItemsJob;
+    QList<CachedItemsJob*> m_cachedItemsJobs;
 
     QString nameFilter; // parsed into lstFilters
 
@@ -209,7 +210,8 @@ public:
 
     // Called by CachedItemsJob:
     // Emits those items, for this lister and this url
-    void emitItemsFromCache(KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
+    void emitItemsFromCache(KDirLister::Private::CachedItemsJob* job, KDirLister* lister,
+                            const KFileItemList& lst, const KFileItem& rootItem,
                             const KUrl& _url, bool _reload, bool _emitCompleted);
 
 public Q_SLOTS:
