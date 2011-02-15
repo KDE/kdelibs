@@ -670,8 +670,9 @@ enum {
     NoFlag = 0,
     NewDir = 1, // whether to re-create a new KTempDir completely, to avoid cached fileitems
     ListFinalDir = 2, // whether to list the target dir at the same time, like k3b, for #193364
-    Recreate = 4
-    // flags, next item is 8!
+    Recreate = 4,
+    CacheSubdir = 8, // put subdir in the cache before expandToUrl
+    // flags, next item is 16!
 };
 
 void KDirModelTest::testExpandToUrl_data()
@@ -713,7 +714,12 @@ void KDirModelTest::testExpandToUrl_data()
         << int(NewDir) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
     QTest::newRow("hold dest dir") // #193364
-        << int(NewDir|ListFinalDir|Recreate) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+        << int(NewDir|ListFinalDir) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
+
+    // Put subdir in cache too (#175035)
+    QTest::newRow("hold subdir and dest dir")
+      << int(NewDir|CacheSubdir|ListFinalDir|Recreate) << subsubdirfile
+                           << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
     // Make sure the last test has the Recreate option set, for the subsequent test methods.
 }
@@ -731,6 +737,11 @@ void KDirModelTest::testExpandToUrl()
     }
 
     const QString path = m_tempDir->name();
+    if (flags & CacheSubdir) {
+        // This way, the listDir for subdir will find items in cache, and will schedule a CachedItemsJob
+        m_dirModel->dirLister()->openUrl(path + "subdir");
+        QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
+    }
     if (flags & ListFinalDir) {
         // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
         m_dirModel->dirLister()->openUrl(path + "subdir/subsubdir");
