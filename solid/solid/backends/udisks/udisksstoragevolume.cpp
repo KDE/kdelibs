@@ -55,8 +55,6 @@ QString UDisksStorageVolume::label() const
     QString label = m_device->property("IdLabel").toString();
     if (label.isEmpty())
         label = m_device->property("PartitionLabel").toString();
-    if (label.isEmpty())
-        label = QString("%1 %2").arg(m_device->vendor()).arg(m_device->product());
     return label;
 }
 
