@@ -9,9 +9,9 @@ if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
 endif(NOT HAVE_NEPOMUK)
 
-if(NOT HAVE_STRIGI)
+if(NOT STRIGI_FOUND)
    set(KIO_NO_STRIGI TRUE)
-endif(NOT HAVE_STRIGI)
+endif(NOT STRIGI_FOUND)
 
 if(NOT HAVE_SOPRANO)
    set(KIO_NO_SOPRANO TRUE)
@@ -76,9 +76,9 @@ add_subdirectory( kssl/kssl )
 add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
-if(HAVE_STRIGI)
+if(STRIGI_FOUND)
    add_subdirectory( kio/dummyanalyzers )
-endif(HAVE_STRIGI)
+endif(STRIGI_FOUND)
 
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
