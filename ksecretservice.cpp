@@ -271,14 +271,6 @@ OrgFreedesktopSecretSessionInterface* KSecretService::session()
     return d->sessionInterface;
 }
 
-OrgFreedesktopSecretServiceInterface* KSecretService::service() 
-{
-    if ( !isConnected() ) {
-        connectToService();
-    }
-    return d->serviceInterface;
-}
-
 QStringList KSecretService::collections() const
 {
     // Obtain the collections labels
