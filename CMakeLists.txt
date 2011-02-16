@@ -38,6 +38,11 @@ if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDE_NO_DEPRECATED TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
+############### Load the CTest options ###############
+# CTestCustom.cmake has to be in the CTEST_BINARY_DIR.
+# in the KDE build system, this is the same as CMAKE_BINARY_DIR.
+configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake COPYONLY)
+
 ################# now find all used packages #################
 
 set (QT_MIN_VERSION "4.7.0")
