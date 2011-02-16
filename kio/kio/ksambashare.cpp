@@ -99,7 +99,6 @@ int KSambaSharePrivate::runProcess(const QString &progName, const QStringList &a
 
     process.setProgram(progName, args);
     process.setOutputChannelMode(KProcess::SeparateChannels);
-    process.setEnv(QLatin1String("LANG"), QLatin1String("C"));
     process.start();
     //TODO: make it async in future
     process.waitForFinished();
