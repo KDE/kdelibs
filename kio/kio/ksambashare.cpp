@@ -331,7 +331,7 @@ KSambaShareData::UserShareError KSambaSharePrivate::remove(const KSambaShareData
 bool KSambaSharePrivate::sync()
 {
     const QRegExp headerRx(QLatin1String("^\\s*\\["
-                                         "([\\w\\d\\s]+)"
+                                         "([^%<>*\?|/\\+=;:\",]+)"
                                          "\\]"));
 
     const QRegExp OptValRx(QLatin1String("^\\s*([\\w\\d\\s]+)"
