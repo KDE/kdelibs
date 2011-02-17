@@ -35,6 +35,7 @@ public:
     KSambaSharePrivate(KSambaShare *parent);
     ~KSambaSharePrivate();
 
+    static bool isSambaInstalled();
     bool findSmbConf();
     void setUserSharePath();
 

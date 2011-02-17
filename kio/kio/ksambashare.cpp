@@ -66,6 +66,18 @@ KSambaSharePrivate::~KSambaSharePrivate()
 {
 }
 
+bool KSambaSharePrivate::isSambaInstalled()
+{
+    if (QFile::exists("/usr/sbin/smbd")
+        || QFile::exists("/usr/local/sbin/smbd")) {
+        return true;
+    }
+
+    kDebug() << "Samba is not installed!";
+
+    return false;
+}
+
 // Try to find the samba config file path
 // in several well-known paths
 bool KSambaSharePrivate::findSmbConf()
@@ -110,6 +122,10 @@ int KSambaSharePrivate::runProcess(const QString &progName, const QStringList &a
 
 QString KSambaSharePrivate::testparmParamValue(const QString &parameterName)
 {
+    if (!isSambaInstalled()) {
+        return QString();
+    }
+
     QStringList args;
     QByteArray stdErr;
     QByteArray stdOut;
@@ -143,6 +159,10 @@ QString KSambaSharePrivate::testparmParamValue(const QString &parameterName)
 
 QByteArray KSambaSharePrivate::getNetUserShareInfo() const
 {
+    if (!isSambaInstalled()) {
+        return QByteArray();
+    }
+
     QStringList args;
     QByteArray stdOut;
     QByteArray stdErr;
@@ -280,6 +300,10 @@ KSambaShareData::UserShareError KSambaSharePrivate::add(const KSambaShareData &s
     // TODO:
     // * check for usershare max shares
 
+    if (!isSambaInstalled()) {
+        return KSambaShareData::UserShareSystemError;
+    }
+
     QStringList args;
     QByteArray stdOut;
     QByteArray stdErr;
@@ -316,6 +340,10 @@ KSambaShareData::UserShareError KSambaSharePrivate::add(const KSambaShareData &s
 
 KSambaShareData::UserShareError KSambaSharePrivate::remove(const KSambaShareData &shareData) const
 {
+    if (!isSambaInstalled()) {
+        return KSambaShareData::UserShareSystemError;
+    }
+
     QStringList args;
 
     if (!data.contains(shareData.name())) {
