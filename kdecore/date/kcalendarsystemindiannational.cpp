@@ -91,7 +91,7 @@ int KCalendarSystemIndianNationalPrivate::daysInMonth( int year, int month ) con
         }
     }
 
-    if ( month >= 2 || month <= 6  ) {
+    if ( month >= 2 && month <= 6  ) {
         return 31;
     }
 
