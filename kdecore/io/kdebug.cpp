@@ -628,6 +628,7 @@ struct KDebugPrivate
                   const char *funcinfo)
     {
         static bool env_colored = (!qgetenv("KDE_COLOR_DEBUG").isEmpty());
+        static bool env_colors_on_any_fd = (!qgetenv("KDE_COLOR_DEBUG_ALWAYS").isEmpty());
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
         Q_ASSERT(mode != Unknown);
@@ -658,8 +659,8 @@ struct KDebugPrivate
         default:                // QtOutput
             s = setupQtWriter(type);
 #ifndef Q_OS_WIN
-            //only color if the debug goes to a tty.
-            colored = env_colored && isatty(fileno(stderr));
+            //only color if the debug goes to a tty, unless env_colors_on_any_fd is set too.
+            colored = env_colored && (env_colors_on_any_fd || isatty(fileno(stderr)));
 #endif
             break;
         }
