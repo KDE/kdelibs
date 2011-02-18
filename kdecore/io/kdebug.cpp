@@ -296,8 +296,8 @@ struct KDebugPrivate
             if (ch =='#')
                 continue; // We have an eof, a comment or an empty line
 
-            if (ch < '0' && ch > '9') {
-                qWarning("Syntax error: no number (line %u)",lineNumber);
+            if (ch < '0' || ch > '9') {
+                qWarning("Syntax error parsing '%s': no number (line %u)", qPrintable(filename), lineNumber);
                 continue;
             }
 
