@@ -83,6 +83,13 @@ public:
     void installEntry(const KNS3::Entry& entry);
 
     /**
+     * Uninstalls the given entry.
+     * @param entry The entry which will be uninstalled.
+     * @since 4.7
+     */
+    void uninstallEntry(const KNS3::Entry& entry);
+
+    /**
       Sets the search term to filter the results on the server.
       Note that this function does not trigger a search. Use search after setting this.
       @param searchTerm

@@ -130,6 +130,14 @@ void DownloadManager::installEntry(const KNS3::Entry& entry)
     }
 }
 
+void DownloadManager::uninstallEntry(const KNS3::Entry& entry)
+{
+    KNS3::EntryInternal entryInternal = EntryInternal::fromEntry(entry);
+    if (entryInternal.isValid()) {
+        d->engine->uninstall(entryInternal);
+    }
+}
+
 void DownloadManager::search(int page, int pageSize)
 {
     d->page = page;
