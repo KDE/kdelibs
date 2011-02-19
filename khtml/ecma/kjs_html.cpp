@@ -848,6 +848,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   value		KJS::HTMLElement::InputValue		DontDelete
   selectionStart KJS::HTMLElement::InputSelectionStart  DontDelete
   selectionEnd   KJS::HTMLElement::InputSelectionEnd    DontDelete
+  placeholder   KJS::HTMLElement::InputPlaceholder      DontDelete
 @end
 @begin HTMLInputElementProtoTable 5
   select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
@@ -869,6 +870,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selectionStart KJS::HTMLElement::TextAreaSelectionStart DontDelete
   selectionEnd   KJS::HTMLElement::TextAreaSelectionEnd   DontDelete
   textLength     KJS::HTMLElement::TextAreaTextLength     DontDelete|ReadOnly
+  placeholder   KJS::HTMLElement::TextAreaPlaceholder     DontDelete
 @end
 @begin HTMLTextAreaElementProtoTable 4
   select  KJS::HTMLElement::TextAreaSelect        DontDelete|Function 0
@@ -1800,6 +1802,9 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         else
           return jsUndefined();
       }
+    case InputPlaceholder: {
+         return jsString(input.placeholder());
+      }
     }
   }
   break;
@@ -1814,6 +1819,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TextAreaSelectionStart:  return jsNumber(textarea.selectionStart());
     case TextAreaSelectionEnd:    return jsNumber(textarea.selectionEnd());
     case TextAreaTextLength:      return jsNumber(textarea.textLength());
+    case TextAreaPlaceholder:     return jsString(textarea.placeholder());
     }
   }
   break;
@@ -2575,6 +2581,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       case InputValue:           { input.setValue(str); return; }
       case InputSelectionStart:  { input.setSelectionStart(value->toInteger(exec)); return; }
       case InputSelectionEnd:    { input.setSelectionEnd  (value->toInteger(exec)); return; }
+      case InputPlaceholder:     { input.setPlaceholder(str); return; }
       }
     }
     break;
@@ -2586,6 +2593,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       case TextAreaValue:           { textarea.setValue(str); return; }
       case TextAreaSelectionStart:  { textarea.setSelectionStart(value->toInteger(exec)); return; }
       case TextAreaSelectionEnd:    { textarea.setSelectionEnd  (value->toInteger(exec)); return; }
+      case TextAreaPlaceholder:     { textarea.setPlaceholder(str); return; }
       }
     }
     break;

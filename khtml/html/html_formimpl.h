@@ -339,6 +339,11 @@ public:
     void setSelectionStart(long pos);
     void setSelectionEnd  (long pos);
     void setSelectionRange(long start, long end);
+
+    // HTML5
+    void setPlaceholder(const DOMString& p);
+    DOMString placeholder() const;
+
 protected:
     void parseType(const DOMString& t);
 
@@ -604,6 +609,11 @@ public:
     void setSelectionEnd  (long pos);
     void setSelectionRange(long start, long end);
     long textLength();
+
+    // HTML5
+    void setPlaceholder(const DOMString& p);
+    DOMString placeholder() const;
+
 protected:
     int m_rows;
     int m_cols;

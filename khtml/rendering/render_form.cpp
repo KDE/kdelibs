@@ -1148,6 +1148,8 @@ void RenderLineEdit::updateFromElement()
     }
     widget()->setReadOnly(element()->readOnly());
 
+    widget()->setClickMessage(element()->placeholder().string().remove(QLatin1Char('\n')).remove(QLatin1Char('\r')));
+
     RenderFormElement::updateFromElement();
 }
 
@@ -2297,6 +2299,7 @@ void RenderTextArea::updateFromElement()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
+    w->setClickMessage(element()->placeholder().string());
     RenderFormElement::updateFromElement();
 }
 

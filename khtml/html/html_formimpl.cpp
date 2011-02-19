@@ -1529,6 +1529,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
+    case ATTR_PLACEHOLDER:
+        setChanged();
+        break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -2033,6 +2036,16 @@ void HTMLInputElementImpl::setSelectionRange(long start, long end)
 {
     if (m_type != TEXT || !m_render) return;
     static_cast<RenderLineEdit*>(m_render)->setSelectionRange(start, end);
+}
+
+void HTMLInputElementImpl::setPlaceholder(const DOMString& p)
+{
+    setAttribute(ATTR_PLACEHOLDER, p);
+}
+
+DOMString HTMLInputElementImpl::placeholder() const
+{
+    return getAttribute(ATTR_PLACEHOLDER);
 }
 
 // -------------------------------------------------------------------------
@@ -2927,6 +2940,8 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
 	    document()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
+    case ATTR_PLACEHOLDER:
+        setChanged();
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -3123,6 +3138,16 @@ void HTMLTextAreaElementImpl::setSelectionRange(long start, long end)
 long HTMLTextAreaElementImpl::textLength()
 {
     return value().length();
+}
+
+void HTMLTextAreaElementImpl::setPlaceholder(const DOMString& p)
+{
+    setAttribute(ATTR_PLACEHOLDER, p);
+}
+
+DOMString HTMLTextAreaElementImpl::placeholder() const
+{
+    return getAttribute(ATTR_PLACEHOLDER);
 }
 
 // -------------------------------------------------------------------------

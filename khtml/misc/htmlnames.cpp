@@ -198,6 +198,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_OVERSRC), "oversrc");
     s_idTable->addStaticMapping(localNamePart(ATTR_PAGEX), "pagex");
     s_idTable->addStaticMapping(localNamePart(ATTR_PAGEY), "pagey");
+    s_idTable->addStaticMapping(localNamePart(ATTR_PLACEHOLDER), "placeholder");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLAIN), "plain");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLUGINPAGE), "pluginpage");
     s_idTable->addStaticMapping(localNamePart(ATTR_PLUGINSPAGE), "pluginspage");
