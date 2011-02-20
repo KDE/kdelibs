@@ -132,6 +132,7 @@ public:
     Q_DECLARE_PUBLIC(PreviewJob)
 };
 
+#ifndef KDE_NO_DEPRECATED
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
@@ -142,7 +143,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->shmid = -1;
     d->shmaddr = 0;
     d->initialItems = items;
-    d->enabledPlugins = enabledPlugins ? *enabledPlugins : QStringList();
+    d->enabledPlugins = enabledPlugins ? *enabledPlugins : availablePlugins();
     d->width = width;
     d->height = height ? height : width;
     d->cacheWidth = d->width;
@@ -152,7 +153,46 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->bScale = scale;
     d->bSave = save && scale;
     d->succeeded = false;
-    d->thumbRoot = QDir::homePath() + "/.thumbnails/";
+    d->thumbRoot = QDir::homePath() + QLatin1String("/.thumbnails/");
+    d->ignoreMaximumSize = false;
+    d->sequenceIndex = 0;
+    d->maximumLocalSize = 0;
+    d->maximumRemoteSize = 0;
+
+    // Return to event loop first, determineNextFile() might delete this;
+    QTimer::singleShot(0, this, SLOT(startPreview()));
+}
+#endif
+
+PreviewJob::PreviewJob(const KFileItemList &items,
+                       const QSize &size,
+                       const QStringList *enabledPlugins) :
+    KIO::Job(*new PreviewJobPrivate)
+{
+    Q_D(PreviewJob);
+    d->tOrig = 0;
+    d->shmid = -1;
+    d->shmaddr = 0;
+    d->initialItems = items;
+    if (enabledPlugins) {
+        d->enabledPlugins = *enabledPlugins;
+    } else {
+        const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+        d->enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
+                                                              << "directorythumbnail"
+                                                              << "imagethumbnail"
+                                                              << "jpegthumbnail");
+    }
+    d->width = size.width();
+    d->height = size.height();
+    d->cacheWidth = d->width;
+    d->cacheHeight = d->height;
+    d->iconSize = 0;
+    d->iconAlpha = 70;
+    d->bScale = true;
+    d->bSave = true;
+    d->succeeded = false;
+    d->thumbRoot = QDir::homePath() + QLatin1String("/.thumbnails/");
     d->ignoreMaximumSize = false;
     d->sequenceIndex = 0;
     d->maximumLocalSize = 0;
@@ -173,6 +213,60 @@ PreviewJob::~PreviewJob()
 #endif
 }
 
+void PreviewJob::setOverlayIconSize(int size)
+{
+    Q_D(PreviewJob);
+    d->iconSize = size;
+}
+
+int PreviewJob::overlayIconSize() const
+{
+    Q_D(const PreviewJob);
+    return d->iconSize;
+}
+
+void PreviewJob::setOverlayIconAlpha(int alpha)
+{
+    Q_D(PreviewJob);
+    d->iconAlpha = qBound(0, alpha, 255);
+}
+
+int PreviewJob::overlayIconAlpha() const
+{
+    Q_D(const PreviewJob);
+    return d->iconAlpha;
+}
+
+void PreviewJob::setScaleType(ScaleType type)
+{
+    Q_D(PreviewJob);
+    switch (type) {
+    case Unscaled:
+        d->bScale = false;
+        d->bSave = false;
+        break;
+    case Scaled:
+        d->bScale = true;
+        d->bSave = false;
+        break;
+    case ScaledAndCached:
+        d->bScale = true;
+        d->bSave = true;
+        break;
+    default:
+        break;
+    }
+}
+
+PreviewJob::ScaleType PreviewJob::scaleType() const
+{
+    Q_D(const PreviewJob);
+    if (d->bScale) {
+        return d->bSave ? ScaledAndCached : Scaled;
+    }
+    return Unscaled;
+}
+
 void PreviewJobPrivate::startPreview()
 {
     Q_Q(PreviewJob);
@@ -181,7 +275,7 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        if (enabledPlugins.isEmpty() || enabledPlugins.contains((*it)->desktopEntryName())) {
+        if (enabledPlugins.contains((*it)->desktopEntryName())) {
             const QStringList mimeTypes = (*it)->serviceTypes();
             for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
                 mimeMap.insert(*mt, *it);
@@ -629,6 +723,7 @@ QStringList PreviewJob::supportedMimeTypes()
     return result;
 }
 
+#ifndef KDE_NO_DEPRECATED
 PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
@@ -648,6 +743,12 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     }
     return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
                           scale, save, enabledPlugins);
+}
+#endif
+
+PreviewJob *KIO::filePreview(const KFileItemList &items, const QSize &size, const QStringList *enabledPlugins)
+{
+    return new PreviewJob(items, size, enabledPlugins);
 }
 
 #ifndef KDE_NO_DEPRECATED
