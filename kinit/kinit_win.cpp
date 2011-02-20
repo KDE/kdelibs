@@ -107,7 +107,7 @@ QString toString(PSID sid)
     if (!ConvertSidToStringSid(sid, &s))
         return QString();
 
-    QString result = QString::fromUtf16(s);
+    QString result = QString::fromUtf16(reinterpret_cast<ushort*>(s));
     LocalFree(s);
     return result;
 }
