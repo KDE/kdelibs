@@ -169,9 +169,17 @@ QSize KImageFilePreview::sizeHint() const
 
 KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
 {
-    KUrl::List urls;
-    urls.append( url );
-    return KIO::filePreview( urls, w, h, 0, 0, true, false );
+    if (url.isValid()) {
+        KFileItemList items;
+        items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url, true));
+
+        KIO::PreviewJob *previewJob = KIO::filePreview(items, QSize(w, h));
+        previewJob->setOverlayIconAlpha(0);
+        previewJob->setScaleType(KIO::PreviewJob::Scaled);
+        return previewJob;
+    } else {
+        return 0;
+    }
 }
 
 void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )

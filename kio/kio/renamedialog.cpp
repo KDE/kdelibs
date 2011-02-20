@@ -205,18 +205,12 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->m_destPendingPreview = true;
 
         KIO::PreviewJob* srcJob = KIO::filePreview(KFileItemList() << srcItem,
-                                  d->m_srcPreview->width(),
-                                  d->m_srcPreview->height(),
-                                  0,
-                                  0,
-                                  false /*don't scale*/);
+                                  QSize(d->m_srcPreview->width(), d->m_srcPreview->height()));
+        srcJob->setScaleType(KIO::PreviewJob::Unscaled);
 
         KIO::PreviewJob* destJob = KIO::filePreview(KFileItemList() << destItem,
-                                   d->m_destPreview->width(),
-                                   d->m_destPreview->height(),
-                                   0,
-                                   0,
-                                   false /*don't scale*/);
+                                   QSize(d->m_destPreview->width(), d->m_destPreview->height()));
+        destJob->setScaleType(KIO::PreviewJob::Unscaled);
 
         connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
                 this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));

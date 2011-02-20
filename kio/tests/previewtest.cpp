@@ -29,9 +29,10 @@ PreviewTest::PreviewTest()
 
 void PreviewTest::slotGenerate()
 {
-    KUrl::List urls;
-    urls.append(m_url->text());
-    KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
+    KFileItemList items;
+    items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(m_url->text()), true));
+
+    KIO::PreviewJob *job = KIO::filePreview(items, QSize(m_preview->width(), m_preview->height()));
     connect(job, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
     connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap &)), SLOT(slotPreview(const KFileItem&, const QPixmap &)));
     connect(job, SIGNAL(failed(const KFileItem&)), SLOT(slotFailed()));
