@@ -82,6 +82,10 @@ DavJob::DavJob(DavJobPrivate &dd, int method, const QString &request)
     d->staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.toUtf8();
     d->staticData.truncate( d->staticData.size() - 1 );
     d->savedStaticData = d->staticData;
+    stream << static_cast<qint64>( d->staticData.size() );
+  }
+  else {
+    stream << static_cast<qint64>( -1 );
   }
 }
 
@@ -108,15 +112,17 @@ void DavJob::slotFinished()
             (d->m_command == CMD_SPECIAL)) {
 		QDataStream istream( d->m_packedArgs );
 		int s_cmd, s_method;
+    qint64 s_size;
 		KUrl s_url;
 		istream >> s_cmd;
 		istream >> s_url;
 		istream >> s_method;
+    istream >> s_size;
 		// PROPFIND
 		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
 			d->m_packedArgs.truncate(0);
 			QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-			stream << (int)7 << d->m_redirectionURL << (int)KIO::DAV_PROPFIND;
+			stream << (int)7 << d->m_redirectionURL << (int)KIO::DAV_PROPFIND << s_size;
 		}
   } else if ( ! d->m_response.setContent( d->str_response, true ) ) {
 		// An error occurred parsing the XML response

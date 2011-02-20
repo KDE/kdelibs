@@ -247,7 +247,7 @@ public:
   bool davHostOk();
 
   // send generic DAV request
-  void davGeneric( const KUrl& url, KIO::HTTP_METHOD method );
+  void davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size = -1 );
 
   // Send requests to lock and unlock resources
   void davLock( const KUrl& url, const QString& scope,

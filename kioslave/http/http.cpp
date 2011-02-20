@@ -878,7 +878,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   }
 }
 
-void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
+void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
 {
   kDebug(7113) << url.url();
 
@@ -895,6 +895,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
 
+  m_iPostDataSize = (size > -1 ? static_cast<KIO::filesize_t>(size) : NO_SIZE);
   proceedUntilResponseContent( false );
 }
 
@@ -4056,8 +4057,9 @@ void HTTPProtocol::special( const QByteArray &data )
     {
       KUrl url;
       int method;
-      stream >> url >> method;
-      davGeneric( url, (KIO::HTTP_METHOD) method );
+      qint64 size;
+      stream >> url >> method >> size;
+      davGeneric( url, (KIO::HTTP_METHOD) method, size );
       break;
     }
     case 99: // Close Connection
