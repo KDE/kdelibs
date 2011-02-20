@@ -570,7 +570,7 @@ QString UDisksDevice::icon() const
                 if (availContent & Solid::OpticalDisc::VideoDvd) // Video DVD
                     return "media-optical-dvd-video";
                 else if ((availContent & Solid::OpticalDisc::VideoCd) || (availContent & Solid::OpticalDisc::SuperVideoCd)) // Video CD
-                    return "media-optical";
+                    return "media-optical-video";
                 else if ((availContent & Solid::OpticalDisc::Data) && (availContent & Solid::OpticalDisc::Audio)) // Mixed CD
                     return "media-optical-mixed-cd";
                 else if (availContent & Solid::OpticalDisc::Audio) // Audio CD
@@ -605,11 +605,10 @@ QString UDisksDevice::icon() const
         }
 
         // handle drives
-        bool isDrive = property( "DeviceIsDrive" ).toBool();
         bool isRemovable = property( "DeviceIsRemovable" ).toBool();
         const QString conn = property( "DriveConnectionInterface" ).toString();
 
-        if ( isDrive && isOptical )
+        if ( queryDeviceInterface(Solid::DeviceInterface::OpticalDrive) )
             return "drive-optical";
         else if ( isRemovable && !isOptical )
         {
