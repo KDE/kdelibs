@@ -426,6 +426,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_pendingItems(),
     m_dispatchedItems(),
     m_resolvedMimeTypes(),
+    m_enabledPlugins(),
     m_tileSet(0),
     q(parent)
 {
@@ -478,6 +479,12 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_changedItemsTimer->setInterval(5000);
     connect(m_changedItemsTimer, SIGNAL(timeout()),
             q, SLOT(delayedIconUpdate()));
+
+    const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+    m_enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
+                                                         << "directorythumbnail"
+                                                         << "imagethumbnail"
+                                                         << "jpegthumbnail");
 }
 
 KFilePreviewGenerator::Private::~Private()
@@ -1027,15 +1034,7 @@ void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
 void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items, int width, int height)
 {
     if (items.count() > 0) {
-        if (m_enabledPlugins.isEmpty()) {
-            const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
-            m_enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
-                                                                 << "directorythumbnail"
-                                                                 << "imagethumbnail"
-                                                                 << "jpegthumbnail");
-        }
-
-        KIO::PreviewJob* job = KIO::filePreview(items, width, height, 0, 70, true, true, &m_enabledPlugins);
+        KIO::PreviewJob* job = KIO::filePreview(items, QSize(width, height), &m_enabledPlugins);
 
         // Set the sequence index to the target. We only need to check if items.count() == 1,
         // because requestSequenceIcon(..) creates exactly such a request.

@@ -96,8 +96,8 @@ public:
 
     /**
      * Sets the list of enabled thumbnail plugins.
-     * If the list is empty, all plugins will be enabled.
-     * All plugins are enabled by default.
+     * Per default all plugins enabled in the KConfigGroup "PreviewSettings"
+     * are used.
      *
      * Note that this method doesn't cause already generated previews
      * to be regenerated.
@@ -109,9 +109,7 @@ public:
     void setEnabledPlugins(const QStringList& list);
 
     /**
-     * Returns the list of enabled thumbnail plugins,
-     * or an empty list if all plugins are enabled.
-     *
+     * Returns the list of enabled thumbnail plugins.
      * @see setEnabledPlugins
      */
     QStringList enabledPlugins() const;
