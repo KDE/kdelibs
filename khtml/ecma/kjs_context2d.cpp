@@ -837,7 +837,9 @@ void CanvasImageDataArray::put(ExecState* exec, unsigned index, JSValue* value, 
         return;
     }
 
-    JSObject::put(exec, index, value, attr);
+    // Must use the string version here since numberic one will fall back to
+    // us again.
+    JSObject::put(exec, Identifier::from(index), value, attr);
 }
 
 DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val)
