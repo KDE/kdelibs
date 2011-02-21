@@ -25,6 +25,7 @@
 
 class QListWidget;
 class QListWidgetItem;
+class QModelIndex;
 
 /**
  * This class makes it easy to add a search line for filtering the items in a
@@ -117,6 +118,8 @@ private:
     Q_PRIVATE_SLOT(d, void _k_listWidgetDeleted())
     Q_PRIVATE_SLOT(d, void _k_queueSearch(const QString&))
     Q_PRIVATE_SLOT(d, void _k_activateSearch())
+    Q_PRIVATE_SLOT(d, void _k_rowsInserted(const QModelIndex&, int, int))
+    Q_PRIVATE_SLOT(d, void _k_dataChanged(const QModelIndex&, const QModelIndex&))
 };
 
 

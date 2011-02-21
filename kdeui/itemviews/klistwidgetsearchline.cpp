@@ -44,8 +44,11 @@ public:
     void _k_listWidgetDeleted();
     void _k_queueSearch(const QString&);
     void _k_activateSearch();
+    void _k_rowsInserted(const QModelIndex&, int, int);
+    void _k_dataChanged(const QModelIndex&, const QModelIndex&);
 
     void init( QListWidget *listWidget = 0 );
+    void updateHiddenState( int start, int end );
 
     KListWidgetSearchLine *q;
     QListWidget *listWidget;
@@ -87,36 +90,10 @@ QListWidget *KListWidgetSearchLine::listWidget() const
  *****************************************************************************/
 void KListWidgetSearchLine::updateSearch( const QString &s )
 {
-    QListWidget *lw = d->listWidget;
-    if ( !lw )
-        return ; // disabled
-
-    QString search = d->search = s.isNull() ? text() : s;
-
-    QListWidgetItem *currentItem = lw->currentItem();
-
-    // Remove Non-Matching items
-    int index = 0;
-    while ( index < lw->count() ) {
-        QListWidgetItem *item = lw->item(index);
-        if ( ! itemMatches( item, search ) ) {
-        	item->setHidden( true );
-
-            if ( item == currentItem ) {
-                currentItem = 0; // It's not in listWidget anymore.
-            }
-        } else if ( item->isHidden() ){
-        	item->setHidden( false );
-        }
-
-        index++;
+    d->search = s.isNull() ? text() : s;
+    if( d->listWidget ) {
+        d->updateHiddenState( 0, d->listWidget->count() - 1 );
     }
-
-    if ( lw->isSortingEnabled() )
-    	lw->sortItems();
-
-    if ( currentItem != 0 )
-        lw->scrollToItem( currentItem );
 }
 
 void KListWidgetSearchLine::clear()
@@ -140,15 +117,21 @@ void KListWidgetSearchLine::setCaseSensitivity( Qt::CaseSensitivity cs )
 
 void KListWidgetSearchLine::setListWidget( QListWidget *lw )
 {
-    if ( d->listWidget != 0 )
+    if ( d->listWidget != 0 ) {
         disconnect( d->listWidget, SIGNAL( destroyed() ),
                     this, SLOT( _k_listWidgetDeleted() ) );
+        d->listWidget->model()->disconnect( this );
+    }
 
     d->listWidget = lw;
 
     if ( lw != 0 ) {
         connect( d->listWidget, SIGNAL( destroyed() ),
                  this, SLOT( _k_listWidgetDeleted() ) );
+        connect( d->listWidget->model(), SIGNAL( rowsInserted( const QModelIndex &, int, int ) ),
+                 this, SLOT( _k_rowsInserted( const QModelIndex &, int, int ) ) );
+        connect( d->listWidget->model(), SIGNAL( dataChanged( const QModelIndex &, const QModelIndex & ) ),
+                 this, SLOT( _k_dataChanged( const QModelIndex &, const QModelIndex & ) ) );
         setEnabled( true );
     } else
         setEnabled( false );
@@ -180,12 +163,46 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_li
     if ( listWidget != 0 ) {
         connect( listWidget, SIGNAL( destroyed() ),
                  q, SLOT( _k_listWidgetDeleted() ) );
+        connect( listWidget->model(), SIGNAL( rowsInserted( const QModelIndex &, int, int ) ),
+                 q, SLOT( _k_rowsInserted( const QModelIndex &, int, int ) ) );
+        connect( listWidget->model(), SIGNAL( dataChanged( const QModelIndex &, const QModelIndex & ) ),
+                 q, SLOT( _k_dataChanged( const QModelIndex &, const QModelIndex & ) ) );
         q->setEnabled( true );
     } else {
         q->setEnabled( false );
     }
 
     q->setClearButtonShown(true);
+}
+
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::updateHiddenState( int start, int end ) {
+    if ( !listWidget ) {
+        return;
+    }
+
+    QListWidgetItem *currentItem = listWidget->currentItem();
+
+    // Remove Non-Matching items
+    for( int index = start; index <= end; ++index ) {
+        QListWidgetItem *item = listWidget->item(index);
+        if ( ! q->itemMatches( item, search ) ) {
+            item->setHidden( true );
+
+            if ( item == currentItem ) {
+                currentItem = 0; // It's not in listWidget anymore.
+            }
+        } else if ( item->isHidden() ) {
+            item->setHidden( false );
+        }
+    }
+
+    if ( listWidget->isSortingEnabled() ) {
+        listWidget->sortItems();
+    }
+
+    if ( currentItem != 0 ) {
+        listWidget->scrollToItem( currentItem );
+    }
 }
 
 bool KListWidgetSearchLine::event(QEvent *event) {
@@ -234,5 +251,26 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_listWidgetDeleted()
     listWidget = 0;
     q->setEnabled( false );
 }
+
+
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_rowsInserted( const QModelIndex &parent, int start, int end )
+{
+    if( parent.isValid() ) {
+        return;
+    }
+
+    updateHiddenState( start, end );
+}
+
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_dataChanged( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+{
+    if( topLeft.parent().isValid() ) {
+        return;
+    }
+
+    updateHiddenState( topLeft.row(), bottomRight.row() );
+}
+
+
 
 #include "klistwidgetsearchline.moc"
