@@ -67,6 +67,7 @@ KDEUI_UNIT_TESTS(
   ktoolbar_unittest
   krichtextedittest
   kselectaction_unittest
+  klistwidgetsearchlinetest
 )
 
 KDEUI_PROXYMODEL_TESTS(
