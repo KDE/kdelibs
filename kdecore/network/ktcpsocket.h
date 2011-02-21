@@ -261,6 +261,7 @@ public:
     QHostAddress peerAddress() const;
     QString peerName() const;
     quint16 peerPort() const;
+    void setVerificationPeerName(const QString& hostName);
 
 #ifndef QT_NO_NETWORKPROXY
     /**

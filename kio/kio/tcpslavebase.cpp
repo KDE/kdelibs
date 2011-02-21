@@ -314,6 +314,8 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
 {
     d->clearSslMetaData(); //We have separate connection and SSL setup phases
 
+    d->socket.setVerificationPeerName(host); // Used for ssl certificate verification (SNI)
+
     //  - leaving SSL - warn before we even connect
     //### see if it makes sense to move this into the HTTP ioslave which is the only
     //    user.

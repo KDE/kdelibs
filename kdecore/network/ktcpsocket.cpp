@@ -733,6 +733,14 @@ void KTcpSocket::setLocalCertificate(const QString &fileName, QSsl::EncodingForm
 }
 
 
+void KTcpSocket::setVerificationPeerName(const QString& hostName)
+{
+#if QT_VERSION >= 0x040800
+    d->sock.setPeerVerifyName(hostName);
+#endif
+}
+
+
 //TODO
 void KTcpSocket::setPrivateKey(const KSslKey &key)
 {
