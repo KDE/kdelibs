@@ -4560,14 +4560,24 @@ QString HTTPProtocol::findCookies( const QString &url)
 HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAge) const
 {
     //notable omission: we're not checking cache file presence or integrity
-    if (policy == KIO::CC_CacheOnly || policy == KIO::CC_Cache) {
-        return UseCached;
-    } else if (policy == KIO::CC_Refresh) {
-        return ValidateCached;
-    } else if (policy == KIO::CC_Reload) {
+    switch (policy) {
+    case KIO::CC_Refresh:
+        // Conditional GET requires the presence of either an ETag or
+        // last modified date.
+        if (lastModifiedDate != -1 || !etag.isEmpty()) {
+            return ValidateCached;
+        }
+        break;
+    case KIO::CC_Reload:
         return IgnoreCached;
+    case KIO::CC_CacheOnly:
+    case KIO::CC_Cache:
+        return UseCached;
+    default:
+        break;
     }
-    Q_ASSERT(policy == CC_Verify);
+
+    Q_ASSERT((policy == CC_Verify || policy == CC_Refresh));
     time_t currentDate = time(0);
     if ((servedDate != -1 && currentDate > (servedDate + maxCacheAge)) ||
         (expireDate != -1 && currentDate > expireDate)) {
