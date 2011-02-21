@@ -526,14 +526,6 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
         q->insertPlugin(p);
     }
 
-#ifndef Q_OS_WIN
-    if ( KAuthorized::authorizeKAction("sharefile") &&
-         KFileSharePropsPlugin::supports( m_items ) ) {
-        KPropertiesDialogPlugin *p = new KFileSharePropsPlugin(q);
-        q->insertPlugin(p);
-    }
-#endif
-
     //plugins
 
     if ( m_items.count() != 1 )
