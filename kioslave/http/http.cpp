@@ -3535,12 +3535,12 @@ endParsing:
                                                          prevLineEnd - prevLinePos));
             prevLinePos = nextLinePos;
         }
-        
+
         // IMPORTNAT: Do not remove this line because forwardHttpResponseHeader
-        // is called below. This line is added to make http response headers are
-        // available by the time the content mimetype information is transmitted
-        // to the job. If the line below is removed, the KIO-QNAM integration
-        // will not work properly when attempting to put ioslaves on hold.
+        // is called below. This line is here to ensure the response headers are
+        // available to the client before it receives mimetype information.
+        // The support for putting ioslaves on hold in the KIO-QNAM integration
+        // will break if this line is removed.
         setMetaData(QLatin1String("HTTP-Headers"), m_responseHeaders.join(QString(QLatin1Char('\n'))));
     }
 
@@ -3553,13 +3553,10 @@ endParsing:
         mimeType( m_mimeType );
     }
 
-    // Do not move the function call below before doing any redirection.
-    // Otherwise it might mess up some sites. See BR# 150904.
-    // IMPORTANT: Do not remove it either thinking it duplicates what is done
-    // above. Otherwise, the http response headers will not be available if
-    // this ioslave is put on hold.    
+    // IMPORTANT: Do not move the function call below before doing any
+    // redirection. Otherwise it might mess up some sites, see BR# 150904.
     forwardHttpResponseHeader();
-    
+
     if (m_request.method == HTTP_HEAD)
         return true;
 
@@ -4732,7 +4729,7 @@ void HTTPProtocol::cacheFileWriteTextHeader()
 
 static bool readLineChecked(QIODevice *dev, QByteArray *line)
 {
-    *line = dev->readLine(8192);
+    *line = dev->readLine(MAX_IPC_SIZE);
     // if nothing read or the line didn't fit into 8192 bytes(!)
     if (line->isEmpty() || !line->endsWith('\n')) {
         return false;
