@@ -160,6 +160,16 @@ void RenderBlock::attach()
     updatePseudoChildren();
 }
 
+static inline bool isFirstLetterPunct(const QChar* c) {
+    // CSS2.1/3 definition for ::first-letter doesn't include Pc or Pd.
+    if (c->isPunct()) {
+        QChar::Category cat = c->category();
+        return cat != QChar::Punctuation_Connector &&
+               cat != QChar::Punctuation_Dash;
+    }
+    return false;
+}
+
 void RenderBlock::updateFirstLetter()
 {
     // Only blocks with inline-children can generate a first-letter
@@ -240,12 +250,12 @@ void RenderBlock::updateFirstLetter()
                 length++;
             begin = length;
             while ( length < oldText->l &&
-                    ( (oldText->s+length)->isPunct() || (oldText->s+length)->isSpace() ))
+                    ( isFirstLetterPunct(oldText->s+length) || (oldText->s+length)->isSpace() ))
                 length++;
             if ( length < oldText->l &&
-                    !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
+                    !( (oldText->s+length)->isSpace() || isFirstLetterPunct(oldText->s+length) ))
                 length++;
-            while ( length < oldText->l && (oldText->s+length)->isMark() )
+            while ( length < oldText->l && isFirstLetterPunct(oldText->s+length) )
                 length++;
 
             // we need to generated a remainingText object even if no text is left
