@@ -49,11 +49,29 @@ static int set_protection( pid_t pid, int enable )
 {
    char buf[ 1024 ];
    int procfile;
+   struct stat st;
+   /* Newer kernels (noticed in 2.6.36) */
+   sprintf( buf, "/proc/%d/oom_score_adj", pid );
+   if ( lstat (buf, &st) == 0) {
+     if ( !enable ) {
+       /* Be paranoid and check that the pid we got from the pipe
+          belongs to this user. */
+       if( st.st_uid != getuid())
+           return 0;
+     }
+     procfile = open(buf, O_WRONLY);
+     if( enable )
+       write( procfile, "-300", sizeof( "-300" ));
+     else
+       write( procfile, "0", sizeof( "0" ));
+     close( procfile );
+     return 1;
+   }
+
    sprintf( buf, "/proc/%d/stat", pid );
    if( !enable ) {
        /* Be paranoid and check that the pid we got from the pipe
           belongs to this user. */
-       struct stat st;
        if( lstat( buf, &st ) < 0 || st.st_uid != getuid())
            return 0;
    }
