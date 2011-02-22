@@ -38,24 +38,24 @@ UDisksStorageDrive::~UDisksStorageDrive()
 
 qulonglong UDisksStorageDrive::size() const
 {
-    return m_device->property("DeviceSize").toULongLong();
+    return m_device->prop("DeviceSize").toULongLong();
 }
 
 bool UDisksStorageDrive::isHotpluggable() const
 {
-    return m_device->property("DriveCanDetach").toBool();
+    return m_device->prop("DriveCanDetach").toBool();
 }
 
 bool UDisksStorageDrive::isRemovable() const
 {
-    return m_device->property("DeviceIsRemovable").toBool() ||
-            !m_device->property( "DeviceIsSystemInternal" ).toBool();
+    return m_device->prop("DeviceIsRemovable").toBool() ||
+            !m_device->prop( "DeviceIsSystemInternal" ).toBool();
 }
 
 Solid::StorageDrive::DriveType UDisksStorageDrive::driveType() const
 {
-    const QStringList mediaTypes = m_device->property("DriveMediaCompatibility").toStringList();
-    bool isHardDisk = m_device->property( "DeviceIsSystemInternal" ).toBool();
+    const QStringList mediaTypes = m_device->prop("DriveMediaCompatibility").toStringList();
+    bool isHardDisk = m_device->prop( "DeviceIsSystemInternal" ).toBool();
 
     if ( isHardDisk )
     {
@@ -116,7 +116,7 @@ Solid::StorageDrive::DriveType UDisksStorageDrive::driveType() const
 
 Solid::StorageDrive::Bus UDisksStorageDrive::bus() const
 {
-    const QString bus = m_device->property( "DriveConnectionInterface" ).toString();
+    const QString bus = m_device->prop( "DriveConnectionInterface" ).toString();
 
     if ( bus == "ata" || bus == "ata_parallel" ) // parallel (classical) ATA
     {

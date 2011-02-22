@@ -38,18 +38,18 @@ Processor::~Processor()
 
 int Processor::number() const
 {
-    return m_device->property("processor.number").toInt();
+    return m_device->prop("processor.number").toInt();
 }
 
 int Processor::maxSpeed() const
 {
     // the property is not mandatory in HAL
-    return m_device->property("processor.maximum_speed").toInt();
+    return m_device->prop("processor.maximum_speed").toInt();
 }
 
 bool Processor::canChangeFrequency() const
 {
-    return m_device->property("processor.can_throttle").toBool();
+    return m_device->prop("processor.can_throttle").toBool();
 }
 
 Solid::Processor::InstructionSets Processor::instructionSets() const

@@ -38,14 +38,14 @@ Volume::~Volume()
 bool Volume::isIgnored() const
 {
     static HalDevice lock("/org/freedesktop/Hal/devices/computer");
-    bool isLocked = lock.property("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
+    bool isLocked = lock.prop("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
 
-    if (m_device->property("volume.ignore").toBool() || isLocked ){
+    if (m_device->prop("volume.ignore").toBool() || isLocked ){
         return true;
     }
 
     const QString mount_point = StorageAccess(m_device).filePath();
-    const bool mounted = m_device->property("volume.is_mounted").toBool();
+    const bool mounted = m_device->prop("volume.is_mounted").toBool();
     if (!mounted) {
         return false;
     } else if (mount_point.startsWith(QLatin1String("/media/")) || mount_point.startsWith(QLatin1String("/mnt/"))) {
@@ -57,7 +57,7 @@ bool Volume::isIgnored() const
      * the volumes mounted to make the system (/, /boot, /var, etc.)
      * are useless to him.
      */
-    Solid::Device drive(m_device->property("block.storage_device").toString());
+    Solid::Device drive(m_device->prop("block.storage_device").toString());
 
     const bool removable = drive.as<Solid::GenericInterface>()->property("storage.removable").toBool();
     const bool hotpluggable = drive.as<Solid::GenericInterface>()->property("storage.hotpluggable").toBool();
@@ -67,7 +67,7 @@ bool Volume::isIgnored() const
 
 Solid::StorageVolume::UsageType Volume::usage() const
 {
-    QString usage = m_device->property("volume.fsusage").toString();
+    QString usage = m_device->prop("volume.fsusage").toString();
 
     if (usage == "filesystem")
     {
@@ -97,27 +97,27 @@ Solid::StorageVolume::UsageType Volume::usage() const
 
 QString Volume::fsType() const
 {
-    return m_device->property("volume.fstype").toString();
+    return m_device->prop("volume.fstype").toString();
 }
 
 QString Volume::label() const
 {
-    return m_device->property("volume.label").toString();
+    return m_device->prop("volume.label").toString();
 }
 
 QString Volume::uuid() const
 {
-    return m_device->property("volume.uuid").toString();
+    return m_device->prop("volume.uuid").toString();
 }
 
 qulonglong Volume::size() const
 {
-    return m_device->property("volume.size").toULongLong();
+    return m_device->prop("volume.size").toULongLong();
 }
 
 QString Solid::Backends::Hal::Volume::encryptedContainerUdi() const
 {
-    return m_device->property("volume.crypto_luks.clear.backing_volume").toString();
+    return m_device->prop("volume.crypto_luks.clear.backing_volume").toString();
 }
 
 #include "backends/hal/halvolume.moc"

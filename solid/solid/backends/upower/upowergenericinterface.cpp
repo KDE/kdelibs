@@ -27,12 +27,6 @@ using namespace Solid::Backends::UPower;
 GenericInterface::GenericInterface(UPowerDevice *device)
     : DeviceInterface(device)
 {
-/* TODO
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
-    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-            this, SIGNAL(conditionRaised(const QString &, const QString &)));
-*/
 }
 
 GenericInterface::~GenericInterface()
@@ -41,7 +35,7 @@ GenericInterface::~GenericInterface()
 
 QVariant GenericInterface::property(const QString &key) const
 {
-    return m_device->property(key);
+    return m_device->prop(key);
 }
 
 QMap<QString, QVariant> GenericInterface::allProperties() const

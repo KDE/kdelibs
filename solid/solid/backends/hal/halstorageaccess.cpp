@@ -94,7 +94,7 @@ void StorageAccess::slotEjectDone(int error, const QString &errorString)
 
 bool StorageAccess::isAccessible() const
 {
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+    if (m_device->prop("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
 
         // Might be a bit slow, but I see no cleaner way to do this with HAL...
         QDBusInterface manager("org.freedesktop.Hal",
@@ -111,17 +111,17 @@ bool StorageAccess::isAccessible() const
         return reply.isValid() && !list.isEmpty();
 
     } else {
-        return m_device->property("volume.is_mounted").toBool();
+        return m_device->prop("volume.is_mounted").toBool();
     }
 }
 
 QString StorageAccess::filePath() const
 {
-    QString result = m_device->property("volume.mount_point").toString();
+    QString result = m_device->prop("volume.mount_point").toString();
 
     if (result.isEmpty()) {
         QStringList mountpoints
-            = FstabHandling::possibleMountPoints(m_device->property("block.device").toString());
+            = FstabHandling::possibleMountPoints(m_device->prop("block.device").toString());
         if (mountpoints.size()==1) {
             result = mountpoints.first();
         }
@@ -133,14 +133,14 @@ QString StorageAccess::filePath() const
 bool StorageAccess::isIgnored() const
 {
     HalDevice lock("/org/freedesktop/Hal/devices/computer");
-    bool isLocked = lock.property("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
+    bool isLocked = lock.prop("info.named_locks.Global.org.freedesktop.Hal.Device.Storage.locked").toBool();
 
-    if (m_device->property("volume.ignore").toBool() || isLocked ){
+    if (m_device->prop("volume.ignore").toBool() || isLocked ){
         return true;
     }
 
     const QString mount_point = StorageAccess(m_device).filePath();
-    const bool mounted = m_device->property("volume.is_mounted").toBool();
+    const bool mounted = m_device->prop("volume.is_mounted").toBool();
     if (!mounted) {
         return false;
     } else if (mount_point.startsWith(QLatin1String("/media/")) || mount_point.startsWith(QLatin1String("/mnt/"))) {
@@ -152,7 +152,7 @@ bool StorageAccess::isIgnored() const
      * the volumes mounted to make the system (/, /boot, /var, etc.)
      * are useless to him.
      */
-    Solid::Device drive(m_device->property("block.storage_device").toString());
+    Solid::Device drive(m_device->prop("block.storage_device").toString());
 
     const bool removable = drive.as<Solid::GenericInterface>()->property("storage.removable").toBool();
     const bool hotpluggable = drive.as<Solid::GenericInterface>()->property("storage.hotpluggable").toBool();
@@ -168,9 +168,9 @@ bool StorageAccess::setup()
     m_setupInProgress = true;
     m_device->broadcastActionRequested("setup");
 
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+    if (m_device->prop("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return requestPassphrase();
-    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+    } else if (FstabHandling::isInFstab(m_device->prop("block.device").toString())) {
         return callSystemMount();
     } else {
         return callHalVolumeMount();
@@ -185,9 +185,9 @@ bool StorageAccess::teardown()
     m_teardownInProgress = true;
     m_device->broadcastActionRequested("teardown");
 
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+    if (m_device->prop("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return callCryptoTeardown();
-    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+    } else if (FstabHandling::isInFstab(m_device->prop("block.device").toString())) {
         return callSystemUnmount();
     } else {
         return callHalVolumeUnmount();
@@ -211,11 +211,11 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown");
 
-        HalDevice drive(m_device->property("block.storage_device").toString());
-        if (drive.property("storage.drive_type").toString()!="cdrom"
-         && drive.property("storage.requires_eject").toBool()) {
+        HalDevice drive(m_device->prop("block.storage_device").toString());
+        if (drive.prop("storage.drive_type").toString()!="cdrom"
+         && drive.prop("storage.requires_eject").toBool()) {
 
-            QString devnode = m_device->property("block.device").toString();
+            QString devnode = m_device->prop("block.device").toString();
 
 #if defined(Q_OS_OPENBSD)
             QString program = "cdio";
@@ -374,15 +374,15 @@ bool StorageAccess::callHalVolumeMount()
     // specify some other driver (fstype) to the Mount method.
     // TODO: Allow the user to choose the driver.
 
-    QString fstype = m_device->property("volume.fstype").toString();
-    QStringList halOptions = m_device->property("volume.mount.valid_options").toStringList();
+    QString fstype = m_device->prop("volume.fstype").toString();
+    QStringList halOptions = m_device->prop("volume.mount.valid_options").toStringList();
 
-    QString alternativePreferred = m_device->property("volume.fstype.alternative.preferred").toString();
+    QString alternativePreferred = m_device->prop("volume.fstype.alternative.preferred").toString();
     if (!alternativePreferred.isEmpty()) {
-        QStringList alternativeFstypes = m_device->property("volume.fstype.alternative").toStringList();
+        QStringList alternativeFstypes = m_device->prop("volume.fstype.alternative").toStringList();
         if (alternativeFstypes.contains(alternativePreferred)) {
             fstype = alternativePreferred;
-            halOptions = m_device->property("volume.mount."+fstype+".valid_options").toStringList();
+            halOptions = m_device->prop("volume.mount."+fstype+".valid_options").toStringList();
         }
     }
 
@@ -469,7 +469,7 @@ bool StorageAccess::callHalVolumeEject()
 
 bool Solid::Backends::Hal::StorageAccess::callSystemMount()
 {
-    const QString device = m_device->property("block.device").toString();
+    const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("mount", device,
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 
@@ -478,7 +478,7 @@ bool Solid::Backends::Hal::StorageAccess::callSystemMount()
 
 bool Solid::Backends::Hal::StorageAccess::callSystemUnmount()
 {
-    const QString device = m_device->property("block.device").toString();
+    const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("umount", device,
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 

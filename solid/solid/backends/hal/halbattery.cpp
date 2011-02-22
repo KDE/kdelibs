@@ -37,12 +37,12 @@ Battery::~Battery()
 
 bool Battery::isPlugged() const
 {
-    return m_device->property("battery.present").toBool();
+    return m_device->prop("battery.present").toBool();
 }
 
 Solid::Battery::BatteryType Battery::type() const
 {
-    QString name = m_device->property("battery.type").toString();
+    QString name = m_device->prop("battery.type").toString();
 
     if (name == "pda")
     {
@@ -80,18 +80,18 @@ Solid::Battery::BatteryType Battery::type() const
 
 int Battery::chargePercent() const
 {
-    return m_device->property("battery.charge_level.percentage").toInt();
+    return m_device->prop("battery.charge_level.percentage").toInt();
 }
 
 bool Battery::isRechargeable() const
 {
-    return m_device->property("battery.is_rechargeable").toBool();
+    return m_device->prop("battery.is_rechargeable").toBool();
 }
 
 Solid::Battery::ChargeState Battery::chargeState() const
 {
-    bool charging = m_device->property("battery.rechargeable.is_charging").toBool();
-    bool discharging = m_device->property("battery.rechargeable.is_discharging").toBool();
+    bool charging = m_device->prop("battery.rechargeable.is_charging").toBool();
+    bool discharging = m_device->prop("battery.rechargeable.is_discharging").toBool();
 
     if (!charging && !discharging)
     {

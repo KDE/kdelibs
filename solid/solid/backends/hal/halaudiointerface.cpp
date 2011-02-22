@@ -41,7 +41,7 @@ AudioInterface::~AudioInterface()
 
 Solid::AudioInterface::AudioDriver AudioInterface::driver() const
 {
-    QString capacity = m_device->property("info.category").toString();
+    QString capacity = m_device->prop("info.category").toString();
 
     if (capacity == "alsa")
     {
@@ -63,8 +63,8 @@ QVariant AudioInterface::driverHandle() const
 
     if (d == Solid::AudioInterface::Alsa)
     {
-        QVariant card_id = m_device->property("alsa.card");
-        QVariant dev_id = m_device->property("alsa.device");
+        QVariant card_id = m_device->prop("alsa.card");
+        QVariant dev_id = m_device->prop("alsa.device");
         QVariant subdev_id;
         //TODO alsa.subdevice
 
@@ -72,7 +72,7 @@ QVariant AudioInterface::driverHandle() const
     }
     else if (d == Solid::AudioInterface::OpenSoundSystem)
     {
-        return m_device->property("oss.device_file");
+        return m_device->prop("oss.device_file");
     }
     else
     {
@@ -86,21 +86,21 @@ QString AudioInterface::name() const
 
     if (d == Solid::AudioInterface::Alsa)
     {
-        QVariant card_id = m_device->property("alsa.card_id");
+        QVariant card_id = m_device->prop("alsa.card_id");
         if (card_id.isValid())
         {
-            return card_id.toString().trimmed() + QLatin1String(" (") + m_device->property("alsa.device_id").toString().trimmed() + ')';
+            return card_id.toString().trimmed() + QLatin1String(" (") + m_device->prop("alsa.device_id").toString().trimmed() + ')';
         }
-        return m_device->property("alsa.device_id").toString();
+        return m_device->prop("alsa.device_id").toString();
     }
     else if (d == Solid::AudioInterface::OpenSoundSystem)
     {
-        QVariant card_id = m_device->property("oss.card_id");
+        QVariant card_id = m_device->prop("oss.card_id");
         if (card_id.isValid())
         {
-            return card_id.toString().trimmed() + QLatin1String(" (") + m_device->property("oss.device_id").toString().trimmed() + ')';
+            return card_id.toString().trimmed() + QLatin1String(" (") + m_device->prop("oss.device_id").toString().trimmed() + ')';
         }
-        return m_device->property("oss.device_id").toString();
+        return m_device->prop("oss.device_id").toString();
     }
     else
     {
@@ -114,7 +114,7 @@ Solid::AudioInterface::AudioInterfaceTypes AudioInterface::deviceType() const
 
     if (d == Solid::AudioInterface::Alsa)
     {
-        QString type = m_device->property("alsa.type").toString();
+        QString type = m_device->prop("alsa.type").toString();
 
         if (type == "control")
         {
@@ -135,7 +135,7 @@ Solid::AudioInterface::AudioInterfaceTypes AudioInterface::deviceType() const
     }
     else if (d == Solid::AudioInterface::OpenSoundSystem)
     {
-        QString type = m_device->property("oss.type").toString();
+        QString type = m_device->prop("oss.type").toString();
 
         if (type == "mixer")
         {
@@ -192,8 +192,8 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
         }
         else
         {
-            QString busName = parentDevice.property("info.subsystem").toString();
-            QString driverName = parentDevice.property("info.linux.driver").toString();
+            QString busName = parentDevice.prop("info.subsystem").toString();
+            QString driverName = parentDevice.prop("info.linux.driver").toString();
             if (busName == "ieee1394")
             {
                 m_soundcardType = Solid::AudioInterface::FirewireSoundcard;

@@ -174,13 +174,13 @@ OpticalDisc::~OpticalDisc()
 
 qulonglong OpticalDisc::capacity() const
 {
-    return m_device->property("DeviceSize").toULongLong();
+    return m_device->prop("DeviceSize").toULongLong();
 }
 
 bool OpticalDisc::isRewritable() const
 {
     // the hard way, udisks has no notion of a disc "rewritability"
-    const QString mediaType = m_device->property("DriveMedia").toString();
+    const QString mediaType = m_device->prop("DriveMedia").toString();
     return mediaType == "optical_cd_rw" || mediaType == "optical_dvd_rw" || mediaType == "optical_dvd_ram" ||
             mediaType == "optical_dvd_plus_rw" || mediaType == "optical_dvd_plus_rw_dl" ||
             mediaType == "optical_bd_re" || mediaType == "optical_hddvd_rw"; // TODO check completeness
@@ -188,17 +188,17 @@ bool OpticalDisc::isRewritable() const
 
 bool OpticalDisc::isBlank() const
 {
-    return m_device->property("OpticalDiscIsBlank").toBool();
+    return m_device->prop("OpticalDiscIsBlank").toBool();
 }
 
 bool OpticalDisc::isAppendable() const
 {
-    return m_device->property("OpticalDiscIsAppendable").toBool();
+    return m_device->prop("OpticalDiscIsAppendable").toBool();
 }
 
 Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 {
-    const QString discType = m_device->property("DriveMedia").toString();
+    const QString discType = m_device->prop("DriveMedia").toString();
 
     QMap<Solid::OpticalDisc::DiscType, QString> map;
     map[Solid::OpticalDisc::CdRom] = "optical_cd";
@@ -232,15 +232,15 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
     if (!isBlank())
     {
-        bool hasData = m_device->property("OpticalDiscNumTracks").toInt() > 0;
-        bool hasAudio = m_device->property("OpticalDiscNumAudioTracks").toInt() > 0;
+        bool hasData = m_device->prop("OpticalDiscNumTracks").toInt() > 0;
+        bool hasAudio = m_device->prop("OpticalDiscNumAudioTracks").toInt() > 0;
 
         if ( hasData )
             content |= Solid::OpticalDisc::Data;
         if ( hasAudio )
             content |= Solid::OpticalDisc::Audio;
 
-        content |= advancedDiscDetect(m_device->property("DeviceFile").toString());
+        content |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
     }
 
     return content;

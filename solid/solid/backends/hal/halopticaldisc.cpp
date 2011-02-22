@@ -48,7 +48,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
     foreach (const Solid::OpticalDisc::ContentType type, map.keys())
     {
-        if (m_device->property(map[type]).toBool())
+        if (m_device->prop(map[type]).toBool())
         {
             content|= type;
         }
@@ -59,7 +59,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
 Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 {
-    QString type = m_device->property("volume.disc.type").toString();
+    QString type = m_device->prop("volume.disc.type").toString();
 
     if (type == "cd_rom")
     {
@@ -137,22 +137,22 @@ Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 
 bool OpticalDisc::isAppendable() const
 {
-    return m_device->property("volume.disc.is_appendable").toBool();
+    return m_device->prop("volume.disc.is_appendable").toBool();
 }
 
 bool OpticalDisc::isBlank() const
 {
-    return m_device->property("volume.disc.is_blank").toBool();
+    return m_device->prop("volume.disc.is_blank").toBool();
 }
 
 bool OpticalDisc::isRewritable() const
 {
-    return m_device->property("volume.disc.is_rewritable").toBool();
+    return m_device->prop("volume.disc.is_rewritable").toBool();
 }
 
 qulonglong OpticalDisc::capacity() const
 {
-    return m_device->property("volume.disc.capacity").toULongLong();
+    return m_device->prop("volume.disc.capacity").toULongLong();
 }
 
 #include "backends/hal/halopticaldisc.moc"

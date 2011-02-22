@@ -143,7 +143,7 @@ QStringList UDisksManager::allDevices()
         UDisksDevice device(udi);
         if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) // forge a special (separate) device for optical discs
         {
-            if (device.property("DeviceIsOpticalDisc").toBool())
+            if (device.prop("DeviceIsOpticalDisc").toBool())
             {
                 if (!m_knownDrivesWithMedia.contains(udi))
                     m_knownDrivesWithMedia.append(udi);
@@ -192,7 +192,7 @@ void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
 
     UDisksDevice device(udi);
     if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
-            && !device.property("DeviceIsMediaAvailable").toBool()
+            && !device.prop("DeviceIsMediaAvailable").toBool()
             && !m_dirtyDevices.contains(udi))
         m_dirtyDevices.append(udi);
 
@@ -225,7 +225,7 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
 
     if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
     {
-        if (!m_knownDrivesWithMedia.contains(udi) && device.property("DeviceIsOpticalDisc").toBool())
+        if (!m_knownDrivesWithMedia.contains(udi) && device.prop("DeviceIsOpticalDisc").toBool())
         {
             m_knownDrivesWithMedia.append(udi);
             if (!m_deviceCache.isEmpty()) {
@@ -234,7 +234,7 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
             emit deviceAdded(udi + ":media");
         }
 
-        if (m_knownDrivesWithMedia.contains(udi) && !device.property("DeviceIsOpticalDisc").toBool())
+        if (m_knownDrivesWithMedia.contains(udi) && !device.prop("DeviceIsOpticalDisc").toBool())
         {
             m_knownDrivesWithMedia.removeAll(udi);
             m_deviceCache.removeAll(udi + ":media");
@@ -243,7 +243,7 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
     }
 
     if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
-            && device.property("DeviceIsMediaAvailable").toBool()
+            && device.prop("DeviceIsMediaAvailable").toBool()
             && m_dirtyDevices.contains(udi))
     {
         //qDebug() << "dirty device added:" << udi;

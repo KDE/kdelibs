@@ -39,12 +39,12 @@ SerialInterface::~SerialInterface()
 
 QVariant SerialInterface::driverHandle() const
 {
-    return m_device->property("serial.device");
+    return m_device->prop("serial.device");
 }
 
 Solid::SerialInterface::SerialType SerialInterface::serialType() const
 {
-    QString type = m_device->property("serial.type").toString();
+    QString type = m_device->prop("serial.type").toString();
     if (type == QLatin1String("platform"))
         return Solid::SerialInterface::Platform;
     if (type == QLatin1String("usb"))
@@ -54,7 +54,7 @@ Solid::SerialInterface::SerialType SerialInterface::serialType() const
 
 int SerialInterface::port() const
 {
-    return m_device->property("serial.port").toInt();
+    return m_device->prop("serial.port").toInt();
 }
 
 #include "backends/hal/halserialinterface.moc"

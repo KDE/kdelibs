@@ -77,7 +77,7 @@ QObject* UPowerDevice::createDeviceInterface(const Solid::DeviceInterface::Type&
 
 bool UPowerDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type) const
 {
-    const uint uptype = property("Type").toUInt();
+    const uint uptype = prop("Type").toUInt();
     switch (type)
     {
         case Solid::DeviceInterface::GenericInterface:
@@ -108,7 +108,7 @@ QString UPowerDevice::description() const
 
 QString UPowerDevice::batteryTechnology() const
 {
-    const uint tech = property("Technology").toUInt();
+    const uint tech = prop("Technology").toUInt();
     switch (tech)
     {
     case 1:
@@ -143,7 +143,7 @@ QString UPowerDevice::icon() const
 
 QString UPowerDevice::product() const
 {
-    QString result = property("Model").toString();
+    QString result = prop("Model").toString();
 
     if (result.isEmpty()) {
         result = description();
@@ -154,7 +154,7 @@ QString UPowerDevice::product() const
 
 QString UPowerDevice::vendor() const
 {
-    return property("Vendor").toString();
+    return prop("Vendor").toString();
 }
 
 QString UPowerDevice::udi() const
@@ -184,7 +184,7 @@ void UPowerDevice::checkCache(const QString &key) const
     }
 }
 
-QVariant UPowerDevice::property(const QString &key) const
+QVariant UPowerDevice::prop(const QString &key) const
 {
     checkCache(key);
     return m_cache.value(key);

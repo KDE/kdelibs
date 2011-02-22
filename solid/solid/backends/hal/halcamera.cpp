@@ -37,7 +37,7 @@ QStringList Camera::supportedProtocols() const
 {
     QStringList protocols;
 
-    QString method = m_device->property("camera.access_method").toString();
+    QString method = m_device->prop("camera.access_method").toString();
 
     protocols << method;
 
@@ -48,7 +48,7 @@ QStringList Camera::supportedDrivers(QString /*protocol*/) const
 {
     QStringList res;
 
-    if (m_device->property("camera.libgphoto2.support").toBool()) {
+    if (m_device->prop("camera.libgphoto2.support").toBool()) {
         res << "gphoto";
     }
 
@@ -58,12 +58,12 @@ QStringList Camera::supportedDrivers(QString /*protocol*/) const
 QVariant Solid::Backends::Hal::Camera::driverHandle(const QString &driver) const
 {
     if (driver=="gphoto"
-     && m_device->property("info.subsystem").toString()=="usb") {
+     && m_device->prop("info.subsystem").toString()=="usb") {
         QVariantList list;
 
         list << "usb"
-             << m_device->property("usb.vendor_id")
-             << m_device->property("usb.product_id");
+             << m_device->prop("usb.vendor_id")
+             << m_device->prop("usb.product_id");
 
         return list;
     }
