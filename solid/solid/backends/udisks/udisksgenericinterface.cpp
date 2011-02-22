@@ -41,7 +41,7 @@ GenericInterface::~GenericInterface()
 
 QVariant GenericInterface::property(const QString &key) const
 {
-    return m_device->property(key);
+    return m_device->prop(key);
 }
 
 QMap<QString, QVariant> GenericInterface::allProperties() const

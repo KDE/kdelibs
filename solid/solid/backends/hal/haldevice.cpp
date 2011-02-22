@@ -162,37 +162,37 @@ HalDevice::~HalDevice()
 
 QString HalDevice::udi() const
 {
-    return property("info.udi").toString();
+    return prop("info.udi").toString();
 }
 
 QString HalDevice::parentUdi() const
 {
-    return property("info.parent").toString();
+    return prop("info.parent").toString();
 }
 
 QString HalDevice::vendor() const
 {
-    const QString category = property("info.category").toString();
+    const QString category = prop("info.category").toString();
 
     if (category == QLatin1String("battery")) {
-        return property("battery.vendor").toString();
+        return prop("battery.vendor").toString();
     } else {
-        return property("info.vendor").toString();
+        return prop("info.vendor").toString();
     }
 }
 
 QString HalDevice::product() const
 {
-    return property("info.product").toString();
+    return prop("info.product").toString();
 }
 
 QString HalDevice::icon() const
 {
-    QString category = property("info.category").toString();
+    QString category = prop("info.category").toString();
 
     if(parentUdi().isEmpty()) {
 
-        QString formfactor = property("system.formfactor").toString();
+        QString formfactor = prop("system.formfactor").toString();
         if (formfactor=="laptop") {
             return "computer-laptop";
         } else {
@@ -201,16 +201,16 @@ QString HalDevice::icon() const
 
     } else if (category=="storage") {
 
-        if (property("storage.drive_type").toString()=="floppy") {
+        if (prop("storage.drive_type").toString()=="floppy") {
             return "media-floppy";
-        } else if (property("storage.drive_type").toString()=="cdrom") {
+        } else if (prop("storage.drive_type").toString()=="cdrom") {
             return "drive-optical";
-        } else if (property("storage.drive_type").toString()=="sd_mmc") {
+        } else if (prop("storage.drive_type").toString()=="sd_mmc") {
             return "media-flash-sd-mmc";
-        } else if (property("storage.hotpluggable").toBool()) {
-            if (property("storage.bus").toString()=="usb") {
-                if (property("storage.no_partitions_hint").toBool()
-                 || property("storage.removable.media_size").toLongLong()<4000000000LL) {
+        } else if (prop("storage.hotpluggable").toBool()) {
+            if (prop("storage.bus").toString()=="usb") {
+                if (prop("storage.no_partitions_hint").toBool()
+                 || prop("storage.removable.media_size").toLongLong()<4000000000LL) {
                     return "drive-removable-media-usb-pendrive";
                 } else {
                     return "drive-removable-media-usb";
@@ -224,16 +224,16 @@ QString HalDevice::icon() const
 
     } else if (category=="volume") {
 
-        QStringList capabilities = property("info.capabilities").toStringList();
+        QStringList capabilities = prop("info.capabilities").toStringList();
 
         if (capabilities.contains("volume.disc")) {
-            bool has_video = property("volume.disc.is_vcd").toBool()
-                          || property("volume.disc.is_svcd").toBool()
-                          || property("volume.disc.is_videodvd").toBool();
-            bool has_audio = property("volume.disc.has_audio").toBool();
-            bool recordable = property("volume.disc.is_blank").toBool()
-                          || property("volume.disc.is_appendable").toBool()
-                          || property("volume.disc.is_rewritable").toBool();
+            bool has_video = prop("volume.disc.is_vcd").toBool()
+                          || prop("volume.disc.is_svcd").toBool()
+                          || prop("volume.disc.is_videodvd").toBool();
+            bool has_audio = prop("volume.disc.has_audio").toBool();
+            bool recordable = prop("volume.disc.is_blank").toBool()
+                          || prop("volume.disc.is_appendable").toBool()
+                          || prop("volume.disc.is_rewritable").toBool();
 
             if (has_video) {
                 return "media-optical-video";
@@ -262,7 +262,7 @@ QString HalDevice::icon() const
         return "camera-photo";
 
     } else if (category=="input") {
-        QStringList capabilities = property("info.capabilities").toStringList();
+        QStringList capabilities = prop("info.capabilities").toStringList();
 
         if (capabilities.contains("input.mouse")) {
             return "input-mouse";
@@ -275,7 +275,7 @@ QString HalDevice::icon() const
         }
 
     } else if (category=="portable_audio_player") {
-        QStringList protocols = property("portable_audio_player.access_method.protocols").toStringList();
+        QStringList protocols = prop("portable_audio_player.access_method.protocols").toStringList();
 
         if (protocols.contains("ipod")) {
             return "multimedia-player-apple-ipod";
@@ -325,7 +325,7 @@ QStringList HalDevice::emblems() const
     QStringList res;
 
     if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess)) {
-        bool isEncrypted = property("volume.fsusage").toString()=="crypto";
+        bool isEncrypted = prop("volume.fsusage").toString()=="crypto";
 
         const Hal::StorageAccess accessIface(const_cast<HalDevice *>(this));
         if (accessIface.isAccessible()) {
@@ -348,7 +348,7 @@ QStringList HalDevice::emblems() const
 
 QString HalDevice::description() const
 {
-    QString category = property("info.category").toString();
+    QString category = prop("info.category").toString();
 
     if (category=="storage") {
         return storageDescription();
@@ -363,7 +363,7 @@ QString HalDevice::description() const
     }
 }
 
-QVariant HalDevice::property(const QString &key) const
+QVariant HalDevice::prop(const QString &key) const
 {
     d->checkCache(key);
     return d->cache.value(key);
@@ -414,11 +414,11 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     if (type==Solid::DeviceInterface::GenericInterface) {
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
-        return property("org.freedesktop.Hal.Device.Volume.method_names").toStringList().contains("Mount")
-            || property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto");
+        return prop("org.freedesktop.Hal.Device.Volume.method_names").toStringList().contains("Mount")
+            || prop("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto");
     }
     else if (type==Solid::DeviceInterface::Video) {
-        if (!property("video4linux.device").toString().contains("video" ) )
+        if (!prop("video4linux.device").toString().contains("video" ) )
           return false;
     } else if (d->capListCache.contains(type)) {
         return d->capListCache.value(type);
@@ -635,7 +635,7 @@ QString HalDevice::storageDescription() const
     bool drive_is_removable = storageDrive.isRemovable();
 
     if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable) {
-        QString size_str = formatByteSize(property("storage.size").toInt());
+        QString size_str = formatByteSize(prop("storage.size").toInt());
         if (!size_str.isEmpty()) {
             if (drive_is_hotpluggable) {
                 description = QObject::tr("%1 External Hard Drive", "%1 is the size").arg(size_str);
@@ -653,8 +653,8 @@ QString HalDevice::storageDescription() const
     }
 
     QString vendormodel_str;
-    QString model = property("storage.model").toString();
-    QString vendor = property("storage.vendor").toString();
+    QString model = prop("storage.model").toString();
+    QString vendor = prop("storage.vendor").toString();
 
     if (vendor.isEmpty()) {
         if (!model.isEmpty())
@@ -677,7 +677,7 @@ QString HalDevice::storageDescription() const
 QString HalDevice::volumeDescription() const
 {
     QString description;
-    QString volume_label = property("volume.label").toString();
+    QString volume_label = prop("volume.label").toString();
 
     if (!volume_label.isEmpty()) {
         return volume_label;
@@ -812,9 +812,9 @@ QString HalDevice::volumeDescription() const
 
     bool drive_is_removable = storageDrive.isRemovable();
     bool drive_is_hotpluggable = storageDrive.isHotpluggable();
-    bool drive_is_encrypted_container = property("volume.fsusage").toString()=="crypto";
+    bool drive_is_encrypted_container = prop("volume.fsusage").toString()=="crypto";
 
-    QString size_str = formatByteSize(property("volume.size").toULongLong());
+    QString size_str = formatByteSize(prop("volume.size").toULongLong());
     if (drive_is_encrypted_container) {
         if (!size_str.isEmpty()) {
             description = QObject::tr("%1 Encrypted Container", "%1 is the size").arg(size_str);

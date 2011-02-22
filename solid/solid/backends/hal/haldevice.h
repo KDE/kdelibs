@@ -62,7 +62,7 @@ public:
     virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
 
 public:
-    QVariant property(const QString &key) const;
+    QVariant prop(const QString &key) const;
     QMap<QString, QVariant> allProperties() const;
     bool propertyExists(const QString &key) const;
 

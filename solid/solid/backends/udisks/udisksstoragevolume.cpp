@@ -34,38 +34,38 @@ UDisksStorageVolume::~UDisksStorageVolume()
 
 QString UDisksStorageVolume::encryptedContainerUdi() const
 {
-    if ( m_device->property( "DeviceIsLuksCleartext" ).toBool() )
-        return m_device->property( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
+    if ( m_device->prop( "DeviceIsLuksCleartext" ).toBool() )
+        return m_device->prop( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
 
     return QString();
 }
 
 qulonglong UDisksStorageVolume::size() const
 {
-    return m_device->property("PartitionSize").toULongLong();
+    return m_device->prop("PartitionSize").toULongLong();
 }
 
 QString UDisksStorageVolume::uuid() const
 {
-    return m_device->property("IdUuid").toString();
+    return m_device->prop("IdUuid").toString();
 }
 
 QString UDisksStorageVolume::label() const
 {
-    QString label = m_device->property("IdLabel").toString();
+    QString label = m_device->prop("IdLabel").toString();
     if (label.isEmpty())
-        label = m_device->property("PartitionLabel").toString();
+        label = m_device->prop("PartitionLabel").toString();
     return label;
 }
 
 QString UDisksStorageVolume::fsType() const
 {
-    return m_device->property("IdType").toString();
+    return m_device->prop("IdType").toString();
 }
 
 Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const
 {
-    QString usage = m_device->property("IdUsage").toString();
+    QString usage = m_device->prop("IdUsage").toString();
 
     if (usage == "filesystem")
     {

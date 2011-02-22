@@ -34,8 +34,6 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
-#include <QtCore/QMetaObject>
-#include <QtCore/QMetaProperty>
 
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusMetaType>
@@ -152,33 +150,33 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
         case Solid::DeviceInterface::GenericInterface:
             return true;
         case Solid::DeviceInterface::Block:
-            return property("DeviceMajor").toInt() != -1;
+            return prop("DeviceMajor").toInt() != -1;
         case Solid::DeviceInterface::StorageVolume:
-            if (property("DeviceIsOpticalDisc").toBool()) {
+            if (prop("DeviceIsOpticalDisc").toBool()) {
                 return m_udi.endsWith(":media");
             } else {
-                return property("DeviceIsPartition").toBool()
-                        || property("IdUsage").toString()=="filesystem";
+                return prop("DeviceIsPartition").toBool()
+                        || prop("IdUsage").toString()=="filesystem";
             }
 
         case Solid::DeviceInterface::StorageAccess:
-            if (property("DeviceIsOpticalDisc").toBool()) {
-                return property("IdUsage").toString()=="filesystem"
+            if (prop("DeviceIsOpticalDisc").toBool()) {
+                return prop("IdUsage").toString()=="filesystem"
                         && m_udi.endsWith(":media");
 
             } else {
-                return property("IdUsage").toString()=="filesystem"
-                        || property("IdUsage").toString()=="crypto";
+                return prop("IdUsage").toString()=="filesystem"
+                        || prop("IdUsage").toString()=="crypto";
             }
 
         case Solid::DeviceInterface::StorageDrive:
-            return !m_udi.endsWith(":media") && property("DeviceIsDrive").toBool();
+            return !m_udi.endsWith(":media") && prop("DeviceIsDrive").toBool();
         case Solid::DeviceInterface::OpticalDrive:
             return !m_udi.endsWith(":media")
-                    && property( "DeviceIsDrive" ).toBool()
-                    && !property( "DriveMediaCompatibility" ).toStringList().filter( "optical_" ).isEmpty();
+                    && prop( "DeviceIsDrive" ).toBool()
+                    && !prop( "DriveMediaCompatibility" ).toStringList().filter( "optical_" ).isEmpty();
         case Solid::DeviceInterface::OpticalDisc:
-            return m_udi.endsWith(":media") && property("DeviceIsOpticalDisc").toBool();
+            return m_udi.endsWith(":media") && prop("DeviceIsOpticalDisc").toBool();
         default:
             return false;
     }
@@ -356,9 +354,9 @@ QString UDisksDevice::volumeDescription() const
 {
     QString description;
     const UDisks::UDisksStorageVolume storageVolume(const_cast<UDisksDevice*>(this));
-    QString volume_label = property("IdLabel").toString();
+    QString volume_label = prop("IdLabel").toString();
     if (volume_label.isEmpty())
-        volume_label = property("PartitionLabel").toString();
+        volume_label = prop("PartitionLabel").toString();
     if (!volume_label.isEmpty())
         return volume_label;
 
@@ -529,7 +527,7 @@ QString UDisksDevice::volumeDescription() const
 
 QString UDisksDevice::icon() const
 {
-    QString iconName = property( "DevicePresentationIconName" ).toString();
+    QString iconName = prop( "DevicePresentationIconName" ).toString();
 
     if ( !iconName.isEmpty() )
     {
@@ -537,7 +535,7 @@ QString UDisksDevice::icon() const
     }
     else
     {
-        bool isPartition = property( "DeviceIsPartition" ).toBool();
+        bool isPartition = prop( "DeviceIsPartition" ).toBool();
         if ( isPartition )      // this is a slave device, we need to return its parent's icon
         {
             UDisksDevice* parent = 0;
@@ -555,14 +553,14 @@ QString UDisksDevice::icon() const
         }
 
         // handle media
-        const QString media = property( "DriveMedia" ).toString();
-        bool isOptical = property( "DeviceIsOpticalDisc" ).toBool();
+        const QString media = prop( "DriveMedia" ).toString();
+        bool isOptical = prop( "DeviceIsOpticalDisc" ).toBool();
 
         if ( !media.isEmpty() )
         {
             if ( isOptical )    // optical stuff
             {
-                bool isWritable = property( "OpticalDiscIsBlank" ).toBool() || property("OpticalDiscIsAppendable").toBool();
+                bool isWritable = prop( "OpticalDiscIsBlank" ).toBool() || prop("OpticalDiscIsAppendable").toBool();
 
                 const UDisks::OpticalDisc disc(const_cast<UDisksDevice*>(this));
                 Solid::OpticalDisc::ContentTypes availContent = disc.availableContent();
@@ -605,8 +603,8 @@ QString UDisksDevice::icon() const
         }
 
         // handle drives
-        bool isRemovable = property( "DeviceIsRemovable" ).toBool();
-        const QString conn = property( "DriveConnectionInterface" ).toString();
+        bool isRemovable = prop( "DeviceIsRemovable" ).toBool();
+        const QString conn = prop( "DriveConnectionInterface" ).toString();
 
         if ( queryDeviceInterface(Solid::DeviceInterface::OpticalDrive) )
             return "drive-optical";
@@ -624,11 +622,11 @@ QString UDisksDevice::icon() const
 
 QString UDisksDevice::product() const
 {
-    QString product = property("DriveModel").toString();
-    const bool isDrive = property( "DeviceIsDrive" ).toBool() && !m_udi.endsWith(":media");
+    QString product = prop("DriveModel").toString();
+    const bool isDrive = prop( "DeviceIsDrive" ).toBool() && !m_udi.endsWith(":media");
 
     if (!isDrive) {
-        QString label = property("IdLabel").toString();
+        QString label = prop("IdLabel").toString();
         if (!label.isEmpty()) {
             product = label;
         }
@@ -639,7 +637,7 @@ QString UDisksDevice::product() const
 
 QString UDisksDevice::vendor() const
 {
-    return property("DriveVendor").toString();
+    return prop("DriveVendor").toString();
 }
 
 QString UDisksDevice::udi() const
@@ -653,10 +651,10 @@ QString UDisksDevice::parentUdi() const
         QString result = m_udi;
         return result.remove(":media");
     }
-    else if ( m_device->property( "DeviceIsLuksCleartext" ).toBool() )
-        return m_device->property( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
+    else if ( prop( "DeviceIsLuksCleartext" ).toBool() )
+        return prop( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
     else {
-        QString parent = property("PartitionSlave").value<QDBusObjectPath>().path();
+        QString parent = prop("PartitionSlave").value<QDBusObjectPath>().path();
         if (parent.isEmpty() || parent=="/") {
             parent = UD_UDI_DISKS_PREFIX;
         }
@@ -681,7 +679,7 @@ void UDisksDevice::checkCache(const QString &key) const
     }
 }
 
-QVariant UDisksDevice::property(const QString &key) const
+QVariant UDisksDevice::prop(const QString &key) const
 {
     checkCache(key);
     return m_cache.value(key);
@@ -717,10 +715,10 @@ void UDisksDevice::slotChanged()
 
 bool UDisksDevice::isDeviceBlacklisted() const
 {
-    return property("DevicePresentationHide").toBool() || property("DevicePresentationNopolicy").toBool() ||
-            property("DeviceMountPaths").toStringList().contains("/boot") ||
-            property("IdLabel").toString() == "System Reserved" ||
-            ( property("IdUsage").toString().isEmpty() && !property("OpticalDiscIsBlank").toBool());
+    return prop("DevicePresentationHide").toBool() || prop("DevicePresentationNopolicy").toBool() ||
+            prop("DeviceMountPaths").toStringList().contains("/boot") ||
+            prop("IdLabel").toString() == "System Reserved" ||
+            ( prop("IdUsage").toString().isEmpty() && !prop("OpticalDiscIsBlank").toBool());
 }
 
 QString UDisksDevice::errorToString(const QString & error) const

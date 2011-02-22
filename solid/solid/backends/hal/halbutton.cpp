@@ -36,7 +36,7 @@ Button::~Button()
 
 Solid::Button::ButtonType Button::type() const
 {
-    QString buttontype = m_device->property("button.type").toString();
+    QString buttontype = m_device->prop("button.type").toString();
 
     if (buttontype=="lid")
     {
@@ -62,12 +62,12 @@ Solid::Button::ButtonType Button::type() const
 
 bool Button::hasState() const
 {
-    return m_device->property("button.has_state").toBool();
+    return m_device->prop("button.has_state").toBool();
 }
 
 bool Button::stateValue() const
 {
-    return m_device->property("button.state.value").toBool();
+    return m_device->prop("button.state.value").toBool();
 }
 
 void Button::slotConditionRaised(const QString &name, const QString &/*reason */)

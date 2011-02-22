@@ -70,7 +70,7 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 
     foreach (const Solid::OpticalDrive::MediumType type, map.keys())
     {
-        if (m_device->property(map[type]).toBool())
+        if (m_device->prop(map[type]).toBool())
         {
             supported|= type;
         }
@@ -81,18 +81,18 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 
 int Cdrom::readSpeed() const
 {
-    return m_device->property("storage.cdrom.read_speed").toInt();
+    return m_device->prop("storage.cdrom.read_speed").toInt();
 }
 
 int Cdrom::writeSpeed() const
 {
-    return m_device->property("storage.cdrom.write_speed").toInt();
+    return m_device->prop("storage.cdrom.write_speed").toInt();
 }
 
 QList<int> Cdrom::writeSpeeds() const
 {
     QList<int> speeds;
-    QStringList speed_strlist = m_device->property("storage.cdrom.write_speeds").toStringList();
+    QStringList speed_strlist = m_device->prop("storage.cdrom.write_speeds").toStringList();
 
     foreach (const QString &speed_str, speed_strlist)
     {
@@ -118,7 +118,7 @@ bool Cdrom::eject()
     m_ejectInProgress = true;
     m_device->broadcastActionRequested("eject");
 
-    if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+    if (FstabHandling::isInFstab(m_device->prop("block.device").toString())) {
         return callSystemEject();
     } else {
         return callHalDriveEject();
@@ -138,7 +138,7 @@ bool Cdrom::callHalDriveEject()
 
     // HACK: Eject doesn't work on cdrom drives when there's a mounted disc,
     // let's try to workaround this by calling a child volume...
-    if (m_device->property("storage.removable.media_available").toBool()) {
+    if (m_device->prop("storage.removable.media_available").toBool()) {
         QDBusInterface manager("org.freedesktop.Hal",
                                "/org/freedesktop/Hal/Manager",
                                "org.freedesktop.Hal.Manager",
@@ -170,7 +170,7 @@ bool Cdrom::callHalDriveEject()
 
 bool Solid::Backends::Hal::Cdrom::callSystemEject()
 {
-    const QString device = m_device->property("block.device").toString();
+    const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("eject", device,
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 

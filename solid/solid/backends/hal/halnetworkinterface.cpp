@@ -39,30 +39,30 @@ NetworkInterface::~NetworkInterface()
 
 QString NetworkInterface::ifaceName() const
 {
-    return m_device->property("net.interface").toString();
+    return m_device->prop("net.interface").toString();
 }
 
 bool NetworkInterface::isWireless() const
 {
-    QStringList capabilities = m_device->property("info.capabilities").toStringList();
+    QStringList capabilities = m_device->prop("info.capabilities").toStringList();
 
     return capabilities.contains("net.80211");
 }
 
 QString NetworkInterface::hwAddress() const
 {
-    return m_device->property("net.address").toString();
+    return m_device->prop("net.address").toString();
 }
 
 qulonglong NetworkInterface::macAddress() const
 {
     if (m_device->propertyExists("net.80211.mac_address"))
     {
-        return m_device->property("net.80211.mac_address").toULongLong();
+        return m_device->prop("net.80211.mac_address").toULongLong();
     }
     else
     {
-        return m_device->property("net.80203.mac_address").toULongLong();
+        return m_device->prop("net.80203.mac_address").toULongLong();
     }
 }
 

@@ -40,7 +40,7 @@ SmartCardReader::~SmartCardReader()
 Solid::SmartCardReader::ReaderType SmartCardReader::readerType() const
 {
     Solid::SmartCardReader::ReaderType type;
-    QStringList capabilities = m_device->property("info.capabilities").toStringList();
+    QStringList capabilities = m_device->prop("info.capabilities").toStringList();
 
     if (capabilities.contains("card_reader")) {
         type = Solid::SmartCardReader::CardReader;

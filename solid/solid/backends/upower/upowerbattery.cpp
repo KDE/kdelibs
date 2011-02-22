@@ -37,13 +37,13 @@ Battery::~Battery()
 
 bool Battery::isPlugged() const
 {
-    return m_device->property("IsPresent").toBool();
+    return m_device->prop("IsPresent").toBool();
 }
 
 Solid::Battery::BatteryType Battery::type() const
 {
     Solid::Battery::BatteryType result = Solid::Battery::UnknownBattery;
-    const uint t = m_device->property("Type").toUInt();
+    const uint t = m_device->prop("Type").toUInt();
     switch (t)
     {
         case 1: // TODO "Line Power"
@@ -75,18 +75,18 @@ Solid::Battery::BatteryType Battery::type() const
 
 int Battery::chargePercent() const
 {
-    return qRound(m_device->property("Percentage").toDouble());
+    return qRound(m_device->prop("Percentage").toDouble());
 }
 
 bool Battery::isRechargeable() const
 {
-    return m_device->property("IsRechargeable").toBool();
+    return m_device->prop("IsRechargeable").toBool();
 }
 
 Solid::Battery::ChargeState Battery::chargeState() const
 {
     Solid::Battery::ChargeState result = Solid::Battery::NoCharge;
-    const uint state = m_device->property("State").toUInt();
+    const uint state = m_device->prop("State").toUInt();
     switch (state)
     {
         case 0:

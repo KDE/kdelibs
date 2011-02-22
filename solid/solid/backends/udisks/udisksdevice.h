@@ -54,7 +54,7 @@ public:
     virtual QString udi() const;
     virtual QString parentUdi() const;
 
-    QVariant property(const QString &key) const;
+    QVariant prop(const QString &key) const;
     bool propertyExists(const QString &key) const;
     QMap<QString, QVariant> allProperties() const;
 

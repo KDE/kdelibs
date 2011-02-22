@@ -38,7 +38,7 @@ DvbInterface::~DvbInterface()
 
 QString DvbInterface::device() const
 {
-    return m_device->property("dvb.device").toString();
+    return m_device->prop("dvb.device").toString();
 }
 
 int DvbInterface::deviceAdapter() const

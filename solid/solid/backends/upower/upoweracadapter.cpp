@@ -37,7 +37,7 @@ AcAdapter::~AcAdapter()
 
 bool AcAdapter::isPlugged() const
 {
-    return m_device->property("Online").toBool();
+    return m_device->prop("Online").toBool();
 }
 
 void AcAdapter::slotChanged()

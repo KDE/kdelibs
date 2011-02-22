@@ -63,7 +63,7 @@ bool UDisksOpticalDrive::eject()
     QString path = m_device->udi();
 
     // check if the device is mounted and call umount if needed
-    if (m_device->property("DeviceIsMounted").toBool())
+    if (m_device->prop("DeviceIsMounted").toBool())
     {
         QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
         msg << QStringList();   // options, unused now
@@ -155,7 +155,7 @@ int UDisksOpticalDrive::readSpeed() const
 
 Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
 {
-    const QStringList mediaTypes = m_device->property("DriveMediaCompatibility").toStringList();
+    const QStringList mediaTypes = m_device->prop("DriveMediaCompatibility").toStringList();
     Solid::OpticalDrive::MediumTypes supported;
 
     QMap<Solid::OpticalDrive::MediumType, QString> map;

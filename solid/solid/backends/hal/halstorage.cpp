@@ -35,7 +35,7 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
-    QString bus = m_device->property("storage.bus").toString();
+    QString bus = m_device->prop("storage.bus").toString();
 
     if (bus=="ide")
     {
@@ -65,7 +65,7 @@ Solid::StorageDrive::Bus Storage::bus() const
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-    QString type = m_device->property("storage.drive_type").toString();
+    QString type = m_device->prop("storage.drive_type").toString();
 
     if (type=="disk")
     {
@@ -107,17 +107,17 @@ Solid::StorageDrive::DriveType Storage::driveType() const
 
 bool Storage::isRemovable() const
 {
-    return m_device->property("storage.removable").toBool();
+    return m_device->prop("storage.removable").toBool();
 }
 
 bool Storage::isHotpluggable() const
 {
-    return m_device->property("storage.hotpluggable").toBool();
+    return m_device->prop("storage.hotpluggable").toBool();
 }
 
 qulonglong Storage::size() const
 {
-  return m_device->property("storage.size").toULongLong();
+  return m_device->prop("storage.size").toULongLong();
 }
 
 #include "backends/hal/halstorage.moc"
