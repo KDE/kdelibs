@@ -116,7 +116,7 @@ public:
      * Given a directory path and a filename (which usually exists already),
      * this function returns a suggested name for a file that doesn't exist
      * in that directory. The existence is only checked for local urls though.
-     * The suggested file name is of the form foo_1 foo_2 etc.
+     * The suggested file name is of the form "foo 1", "foo 2" etc.
      */
     static QString suggestName(const KUrl& baseURL, const QString& oldName);
 
