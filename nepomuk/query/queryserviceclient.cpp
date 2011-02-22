@@ -261,6 +261,7 @@ bool Nepomuk::Query::QueryServiceClient::blockingQuery( const Query& q )
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
+        close();
         return true;
     }
     else {
@@ -298,6 +299,7 @@ bool Nepomuk::Query::QueryServiceClient::blockingSparqlQuery( const QString& q, 
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
+        close();
         return true;
     }
     else {
@@ -337,6 +339,7 @@ bool Nepomuk::Query::QueryServiceClient::blockingDesktopQuery( const QString& q 
         d->loop = &loop;
         loop.exec();
         d->loop = 0;
+        close();
         return true;
     }
     else {
