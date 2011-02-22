@@ -67,9 +67,11 @@ enum DestinationState {
 /**
  * States:
  *     STATE_STATING for the dest
- *     STATE_STATING for each src url (statNextSrc)
- *          for each: if dir -> STATE_LISTING (filling 'd->dirs' and 'd->files')
- *          but if direct rename possible: STATE_RENAMING instead.
+ *     statCurrentSrc then does, for each src url:
+ *      STATE_RENAMING if direct rename looks possible
+ *         (on already exists, and user chooses rename, TODO: go to STATE_RENAMING again)
+ *      STATE_STATING
+ *         and then, if dir -> STATE_LISTING (filling 'd->dirs' and 'd->files')
  *     STATE_CREATING_DIRS (createNextDir, iterating over 'd->dirs')
  *          if conflict: STATE_CONFLICT_CREATING_DIRS
  *     STATE_COPYING_FILES (copyNextFile, iterating over 'd->files')
@@ -796,7 +798,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest.addPath( m_currentSrcURL.fileName() );
     m_currentDestURL = dest;
-    kDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del";
+    kDebug(7007) << m_currentSrcURL << "->" << dest << "trying direct rename first";
     state = STATE_RENAMING;
 
     struct CopyInfo info;
@@ -894,12 +896,15 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if (m_bAutoRenameDirs) {
-                        KUrl newUrl((*it).uDest);
                         QString oldPath = (*it).uDest.path(KUrl::AddTrailingSlash);
 
-                        QString newName = KIO::RenameDialog::suggestName((*it).uDest, (*it).uDest.fileName());
+                        KUrl destDirectory((*it).uDest);
+                        destDirectory.setPath(destDirectory.directory());
+                        QString newName = KIO::RenameDialog::suggestName(destDirectory, (*it).uDest.fileName());
 
+                        KUrl newUrl((*it).uDest);
                         newUrl.setFileName(newName);
+
                         emit q->renamed(q, (*it).uDest, newUrl); // for e.g. kpropsdlg
 
                         // Change the current one and strip the trailing '/'
@@ -1186,11 +1191,6 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
         }
         else
         {
-            if ( !q->isInteractive() ) {
-                q->Job::slotResult( job ); // will set the error and emit result(this)
-                return;
-            }
-
             m_conflictError = job->error(); // save for later
             // Existing dest ?
             if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
@@ -1198,7 +1198,9 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                  || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
                 if (m_bAutoRenameFiles) {
-                    QString newName = KIO::RenameDialog::suggestName((*it).uDest, (*it).uDest.fileName());
+                    KUrl destDirectory((*it).uDest);
+                    destDirectory.setPath(destDirectory.directory());
+                    const QString newName = KIO::RenameDialog::suggestName(destDirectory, (*it).uDest.fileName());
 
                     KUrl newUrl((*it).uDest);
                     newUrl.setFileName(newName);
@@ -1211,6 +1213,11 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     emit q->aboutToCreate(q, files);
                 }
                 else {
+                    if ( !q->isInteractive() ) {
+                        q->Job::slotResult( job ); // will set the error and emit result(this)
+                        return;
+                    }
+
                     q->removeSubjob(job);
                     assert (!q->hasSubjobs());
                     // We need to stat the existing file, to get its last-modification time
@@ -1232,6 +1239,11 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     m_fileProcessedSize = (*it).size;
                     files.erase( it );
                 } else {
+                    if ( !q->isInteractive() ) {
+                        q->Job::slotResult( job ); // will set the error and emit result(this)
+                        return;
+                    }
+
                     // Go directly to the conflict resolution, there is nothing to stat
                     slotResultConflictCopyingFiles( job );
                     return;
@@ -1845,9 +1857,9 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
-                KUrl destDirectory(m_dest);
+                KUrl destDirectory(m_currentDestURL); // dest including filename
                 destDirectory.setPath(destDirectory.directory());
-                QString newName = KIO::RenameDialog::suggestName(destDirectory, m_dest.fileName());
+                const QString newName = KIO::RenameDialog::suggestName(destDirectory, m_currentDestURL.fileName());
 
                 m_dest.setFileName(newName);
                 KIO::Job* job = KIO::stat(m_dest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
