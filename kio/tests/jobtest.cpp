@@ -1419,6 +1419,87 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     QVERIFY(!QFile::exists(file2)); // it was moved
 }
 
+void JobTest::moveDestAlreadyExistsAutoRename_data()
+{
+    QTest::addColumn<bool>("samePartition");
+    QTest::addColumn<bool>("moveDirs");
+
+    QTest::newRow("files same partition") << true << false;
+    QTest::newRow("files other partition") << false << false;
+    QTest::newRow("dirs same partition") << true << true;
+    QTest::newRow("dirs other partition") << false << true;
+}
+
+void JobTest::moveDestAlreadyExistsAutoRename()
+{
+    QFETCH(bool, samePartition);
+    QFETCH(bool, moveDirs);
+
+    QString dir;
+    if (samePartition) {
+        dir = homeTmpDir() + "dir/";
+        QVERIFY(QDir(dir).exists() || QDir().mkdir(dir));
+    } else {
+        dir = otherTmpDir();
+    }
+    moveDestAlreadyExistsAutoRename(dir, moveDirs);
+
+    if (samePartition) {
+        // cleanup
+        KIO::Job* job = KIO::del(dir, KIO::HideProgressInfo);
+        QVERIFY(job->exec());
+        QVERIFY(!QFile::exists(dir));
+    }
+}
+
+void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveDirs) // #256650
+{
+    const QString prefix = moveDirs ? "dir " : "file ";
+    QStringList sources;
+    const QString file1 = homeTmpDir() + prefix + "1";
+    const QString file2 = homeTmpDir() + prefix + "2";
+    const QString existingDest1 = destDir + prefix + "1";
+    const QString existingDest2 = destDir + prefix + "2";
+    sources << file1 << file2 << existingDest1 << existingDest2;
+    Q_FOREACH(const QString& source, sources) {
+        if (moveDirs)
+            QVERIFY(QDir().mkdir(source));
+        else
+            createTestFile(source);
+    }
+
+    KUrl::List urls; urls << KUrl(file1) << KUrl(file2);
+    KIO::CopyJob* job = KIO::move(urls, destDir, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    job->setAutoRename(true);
+
+    //kDebug() << QDir(destDir).entryList();
+
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+
+    kDebug() << QDir(destDir).entryList();
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(file1)); // it was moved
+    QVERIFY(!QFile::exists(file2)); // it was moved
+    QVERIFY(QFile::exists(existingDest1));
+    QVERIFY(QFile::exists(existingDest2));
+    const QString file3 = destDir + prefix + "3";
+    const QString file4 = destDir + prefix + "4";
+    QVERIFY(QFile::exists(file3));
+    QVERIFY(QFile::exists(file4));
+    if (moveDirs) {
+        QDir().rmdir(file1);
+        QDir().rmdir(file2);
+        QDir().rmdir(file3);
+        QDir().rmdir(file4);
+    } else {
+        QFile::remove(file1);
+        QFile::remove(file2);
+        QFile::remove(file3);
+        QFile::remove(file4);
+    }
+}
+
 void JobTest::moveAndOverwrite()
 {
     const QString sourceFile = homeTmpDir() + "fileFromHome";

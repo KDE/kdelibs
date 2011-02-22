@@ -111,6 +111,15 @@ namespace KIO {
         void setAutoSkip(bool autoSkip);
 
         /**
+         * Rename files automatically when the destination already exists,
+         * instead of the default behavior (interactive mode: showing a dialog to the user,
+         * non-interactive mode: aborting with an error).
+         * Initially added for a unit test.
+         * \since 4.7
+         */
+        void setAutoRename(bool autoRename);
+
+        /**
          * Reuse any directory that already exists, instead of the default behavior
          * (interactive mode: showing a dialog to the user,
          * non-interactive mode: aborting with an error).

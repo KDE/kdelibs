@@ -72,6 +72,8 @@ private Q_SLOTS:
     //void newApiPerformance();
     void calculateRemainingSeconds();
     void moveFileDestAlreadyExists();
+    void moveDestAlreadyExistsAutoRename_data();
+    void moveDestAlreadyExistsAutoRename();
 
     void moveAndOverwrite();
     void moveOverSymlinkToSelf();
@@ -102,6 +104,7 @@ private:
     void deleteSymlink(bool using_fast_path);
     void deleteManyDirs(bool using_fast_path);
     void deleteManyFilesTogether(bool using_fast_path);
+    void moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveDirs);
 
     int m_result;
     QByteArray m_data;

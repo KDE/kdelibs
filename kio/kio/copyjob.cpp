@@ -2086,6 +2086,12 @@ void KIO::CopyJob::setAutoSkip(bool autoSkip)
     d_func()->m_bAutoSkipDirs = autoSkip;
 }
 
+void KIO::CopyJob::setAutoRename(bool autoRename)
+{
+    d_func()->m_bAutoRenameFiles = autoRename;
+    d_func()->m_bAutoRenameDirs = autoRename;
+}
+
 void KIO::CopyJob::setWriteIntoExistingDirectories(bool overwriteAll) // #65926
 {
     d_func()->m_bOverwriteAllDirs = overwriteAll;
