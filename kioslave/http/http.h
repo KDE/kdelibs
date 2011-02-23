@@ -449,6 +449,11 @@ protected:
    */
   void clearPostDataBuffer();
 
+  /**
+   * Returns true on successful retrieval of all content data.
+   */
+  bool retrieveAllData();
+
 protected:
   HTTPServerState m_server;
   HTTPRequest m_request;

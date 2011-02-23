@@ -3809,15 +3809,13 @@ void HTTPProtocol::setCacheabilityMetadata(bool cachingAllowed)
 
 bool HTTPProtocol::sendCachedBody()
 {
-  kDebug(7113) << "POST'ing cached data...";
-
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
   QByteArray cLength ("Content-Length: ");
   cLength += QByteArray::number(m_POSTbuf->size());
   cLength += "\r\n\r\n";
 
-  kDebug( 7113 ) << cLength.trimmed();
+  kDebug(7113) << "sending cached data (size=" << m_POSTbuf->size() << ")";
 
   // Send the content length...
   bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
@@ -3851,14 +3849,19 @@ bool HTTPProtocol::sendBody()
   // If we have cached data, the it is either a repost or a DAV request so send
   // the cached data...
   if (m_POSTbuf)
-     return sendCachedBody();
+    return sendCachedBody();
 
   if (m_iPostDataSize == NO_SIZE) {
-      error(ERR_POST_NO_SIZE, m_request.url.host());
-      return false;
+    // Try the old approach of retireving content data from the job
+    // before giving up.
+    if (retrieveAllData())
+      return sendCachedBody();
+
+    error(ERR_POST_NO_SIZE, m_request.url.host());
+    return false;
   }
 
-  kDebug(7113) << "POST'ing live data...";
+  kDebug(7113) << "sending data (size=" << m_iPostDataSize << ")";
 
   infoMessage(i18n("Sending data to %1",  m_request.url.host()));
 
@@ -3870,7 +3873,7 @@ bool HTTPProtocol::sendBody()
 
   // Send the content length...
   bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
-  if (!sendOk)  {
+  if (!sendOk) {
     kDebug(7113) << "Connection broken while sending POST content size to" << m_request.url.host();
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
@@ -3882,22 +3885,30 @@ bool HTTPProtocol::sendBody()
   sendOk = true;
   KIO::filesize_t bytesSent = 0;
 
-  while (bytesSent < m_iPostDataSize) {
+  while (true) {
     dataReq();
 
     QByteArray buffer;
     const int bytesRead = readData(buffer);
 
+    // On done...
+    if (bytesRead == 0) {
+      sendOk = (bytesSent == m_iPostDataSize);
+      break;
+    }
+
     // On error return false...
     if (bytesRead < 0) {
       error(ERR_ABORTED, m_request.url.host());
-      return false;
+      sendOk = false;
+      break;
     }
 
     // Cache the POST data in case of a repost request.
     cachePostData(buffer);
 
-    // This will only happen if transmitting the data failed before...
+    // This will only happen if transmitting the data fails, so we will simply
+    // cache the content locally for the potential re-transmit...
     if (!sendOk)
       continue;
 
@@ -3907,9 +3918,6 @@ bool HTTPProtocol::sendBody()
       continue;
     }
 
-    // NOTE: We do not break out of the while loop at this point because we need to
-    // buffer all the content in case we need to re-post due to connection problems
-    // ot proxy authorization requests...
     kDebug(7113) << "Connection broken while sending POST content to" << m_request.url.host();
     error(ERR_CONNECTION_BROKEN, m_request.url.host());
     sendOk = false;
@@ -5056,7 +5064,35 @@ void HTTPProtocol::clearPostDataBuffer()
     m_POSTbuf = 0;
 }
 
+bool HTTPProtocol::retrieveAllData()
+{
+    if (!m_POSTbuf) {
+        m_POSTbuf = createPostBufferDeviceFor(s_MaxInMemPostBufSize + 1);
+    }
 
+    if (!m_POSTbuf) {
+        error (ERR_OUT_OF_MEMORY, m_request.url.host());
+        return false;
+    }
+
+    while (true) {
+        dataReq();
+        QByteArray buffer;
+        const int bytesRead = readData(buffer);
+
+        if (bytesRead < 0) {
+          error(ERR_ABORTED, m_request.url.host());
+          return false;
+        }
+
+        if (bytesRead == 0)
+          break;
+
+        m_POSTbuf->write(buffer.constData(), buffer.size());
+    }
+
+    return true;
+}
 
 // The above code should be kept in sync
 // with the code in http_cache_cleaner.cpp
