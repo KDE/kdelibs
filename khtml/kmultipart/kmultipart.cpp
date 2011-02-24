@@ -37,7 +37,7 @@
 #include <kvbox.h>
 
 K_PLUGIN_FACTORY(KMultiPartFactory, registerPlugin<KMultiPart>();)
-K_EXPORT_PLUGIN(KMultiPartFactory)
+K_EXPORT_PLUGIN(KMultiPartFactory("kmultipart"))
 
 //#define DEBUG_PARSING
 
