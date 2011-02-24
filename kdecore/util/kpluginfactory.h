@@ -282,6 +282,10 @@ public:
      * The K_PLUGIN_FACTORY macros provide a static version of this method, this can be used from
      * any place within the plugin.
      *
+     * Only use this method if you specified a componentData name or instance to the factory
+     * constructor or to setComponentData.
+     * Otherwise you get an invalid KComponentData, which will crash if used.
+     *
      * \returns The KComponentData for the plugin
      */
     KComponentData componentData() const;
