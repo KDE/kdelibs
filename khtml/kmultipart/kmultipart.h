@@ -46,8 +46,6 @@ public:
 
     virtual bool closeUrl();
 
-    static KAboutData* createAboutData();
-
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
     void setPart( const QString& mimeType );

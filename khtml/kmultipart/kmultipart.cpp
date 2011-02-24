@@ -36,8 +36,18 @@
 #include <QtCore/QTimer>
 #include <kvbox.h>
 
+static KAboutData kmultipartAboutData()
+{
+    KAboutData aboutData( "kmultipart", 0, ki18n("KMultiPart"),
+                                            "0.1",
+                                            ki18n( "Embeddable component for multipart/mixed" ),
+                                            KAboutData::License_GPL,
+                                            ki18n("Copyright 2001-2011, David Faure <email>faure@kde.org</email>"));
+    return aboutData;
+}
+
 K_PLUGIN_FACTORY(KMultiPartFactory, registerPlugin<KMultiPart>();)
-K_EXPORT_PLUGIN(KMultiPartFactory("kmultipart"))
+K_EXPORT_PLUGIN(KMultiPartFactory(kmultipartAboutData()))
 
 //#define DEBUG_PARSING
 
@@ -562,15 +572,6 @@ void KMultiPart::slotProgressInfo()
     emit m_extension->infoMessage( str );
 }
 
-KAboutData* KMultiPart::createAboutData()
-{
-    KAboutData* aboutData = new KAboutData( "kmultipart", 0, ki18n("KMultiPart"),
-                                            "0.1",
-                                            ki18n( "Embeddable component for multipart/mixed" ),
-                                            KAboutData::License_GPL,
-                                            ki18n("Copyright 2001, David Faure <email>david@mandrakesoft.com</email>"));
-    return aboutData;
-}
 
 #if 0
 KMultiPartBrowserExtension::KMultiPartBrowserExtension( KMultiPart *parent, const char *name )
