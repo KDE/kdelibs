@@ -54,6 +54,9 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
 {
     Q_UNUSED(parentTerm);
 
+    if( m_value.toString().isEmpty() )
+        return QString();
+
     const QString p1 = qbd->uniqueVarName();
     const QString p2 = qbd->uniqueVarName();
     const QString v1 = qbd->uniqueVarName();
@@ -92,11 +95,16 @@ QString prepareRegexText( const QString& text )
 QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString& varName, const QString& text, Nepomuk::Query::QueryBuilderData* qbd )
 {
     Q_UNUSED( qbd );
+
+    if( text.isEmpty() )
+        return QString();
+    
     // each token with a negation flag
     QList<QPair<QString, bool> > containsTokens;
     QList<QPair<QString, bool> > regexTokens;
 
     // we only support AND or OR, not both at the same time
+    // TODO: Fix this. Virtuoso supports a combination of both
     bool isUnion = false;
 
     // gather all the tokens
