@@ -22,13 +22,13 @@
 #include "private/kdeclarative_p.h"
 #include "private/engineaccess_p.h"
 
-#include <QDeclarativeComponent>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
-#include <QDeclarativeExpression>
-#include <QScriptEngine>
-#include <QScriptValueIterator>
-#include <QWeakPointer>
+#include <QtDeclarative/QDeclarativeComponent>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeExpression>
+#include <QtScript/QScriptEngine>
+#include <QtScript/QScriptValueIterator>
+#include <QtCore/QWeakPointer>
 
 #include <kdebug.h>
 #include <kglobal.h>
