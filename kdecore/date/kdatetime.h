@@ -1173,57 +1173,57 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * format of the result string. The @p format codes used for the date and time
      * components follow those used elsewhere in KDE, and are similar but not
      * identical to those used by strftime(3). Conversion specifiers are
-     * introduced by a '%' character, and are replaced in @p format as follows:
+     * introduced by a '\%' character, and are replaced in @p format as follows:
      *
      * \b Date
      *
-     * - %y   2-digit year excluding century (00 - 99). Conversion is undefined
-     *        if year < 0.
-     * - %Y   full year number
-     * - %:m  month number, without leading zero (1 - 12)
-     * - %m   month number, 2 digits (01 - 12)
-     * - %b   abbreviated month name in current locale
-     * - %B   full month name in current locale
-     * - %:b  abbreviated month name in English (Jan, Feb, ...)
-     * - %:B  full month name in English
-     * - %e   day of the month (1 - 31)
-     * - %d   day of the month, 2 digits (01 - 31)
-     * - %a   abbreviated weekday name in current locale
-     * - %A   full weekday name in current locale
-     * - %:a  abbreviated weekday name in English (Mon, Tue, ...)
-     * - %:A  full weekday name in English
+     * - \%y   2-digit year excluding century (00 - 99). Conversion is undefined
+     *         if year < 0.
+     * - \%Y   full year number
+     * -  %:m  month number, without leading zero (1 - 12)
+     * - \%m   month number, 2 digits (01 - 12)
+     * - \%b   abbreviated month name in current locale
+     * - \%B   full month name in current locale
+     * -  %:b  abbreviated month name in English (Jan, Feb, ...)
+     * -  %:B  full month name in English
+     * - \%e   day of the month (1 - 31)
+     * - \%d   day of the month, 2 digits (01 - 31)
+     * - \%a   abbreviated weekday name in current locale
+     * - \%A   full weekday name in current locale
+     * -  %:a  abbreviated weekday name in English (Mon, Tue, ...)
+     * -  %:A  full weekday name in English
      *
      * \b Time
      *
-     * - %H   hour in the 24 hour clock, 2 digits (00 - 23)
-     * - %k   hour in the 24 hour clock, without leading zero (0 - 23)
-     * - %I   hour in the 12 hour clock, 2 digits (01 - 12)
-     * - %l   hour in the 12 hour clock, without leading zero (1 - 12)
-     * - %M   minute, 2 digits (00 - 59)
-     * - %S   seconds (00 - 59)
-     * - %:S  seconds preceded with ':', but omitted if seconds value is zero
-     * - %:s  milliseconds, 3 digits (000 - 999)
-     * - %P   "am" or "pm" in the current locale, or if undefined there, in English
-     * - %p   "AM" or "PM" in the current locale, or if undefined there, in English
-     * - %:P  "am" or "pm"
-     * - %:p  "AM" or "PM"
+     * - \%H   hour in the 24 hour clock, 2 digits (00 - 23)
+     * - \%k   hour in the 24 hour clock, without leading zero (0 - 23)
+     * - \%I   hour in the 12 hour clock, 2 digits (01 - 12)
+     * - \%l   hour in the 12 hour clock, without leading zero (1 - 12)
+     * - \%M   minute, 2 digits (00 - 59)
+     * - \%S   seconds (00 - 59)
+     * -  %:S  seconds preceded with ':', but omitted if seconds value is zero
+     * -  %:s  milliseconds, 3 digits (000 - 999)
+     * - \%P   "am" or "pm" in the current locale, or if undefined there, in English
+     * - \%p   "AM" or "PM" in the current locale, or if undefined there, in English
+     * -  %:P  "am" or "pm"
+     * -  %:p  "AM" or "PM"
      *
      * \b Time zone
      *
-     * - %:u  UTC offset of the time zone in hours, e.g. -02. If the offset
-     *        is not a whole number of hours, the output is the same as for '%U'.
-     * - %z   UTC offset of the time zone in hours and minutes, e.g. -0200.
-     * - %:z  UTC offset of the time zone in hours and minutes, e.g. +02:00.
-     * - %Z   time zone abbreviation, e.g. UTC, EDT, GMT. This is not guaranteed
-     *        to be unique among different time zones. If not applicable (i.e. if
-     *        the instance is type OffsetFromUTC), the UTC offset is substituted.
-     * - %:Z  time zone name, e.g. Europe/London. This is system dependent. If
-     *        not applicable (i.e. if the instance is type OffsetFromUTC), the
-     *        UTC offset is substituted.
+     * -  %:u  UTC offset of the time zone in hours, e.g. -02. If the offset
+     *         is not a whole number of hours, the output is the same as for '\%U'.
+     * - \%z   UTC offset of the time zone in hours and minutes, e.g. -0200.
+     * -  %:z  UTC offset of the time zone in hours and minutes, e.g. +02:00.
+     * - \%Z   time zone abbreviation, e.g. UTC, EDT, GMT. This is not guaranteed
+     *         to be unique among different time zones. If not applicable (i.e. if
+     *         the instance is type OffsetFromUTC), the UTC offset is substituted.
+     * -  %:Z  time zone name, e.g. Europe/London. This is system dependent. If
+     *         not applicable (i.e. if the instance is type OffsetFromUTC), the
+     *         UTC offset is substituted.
      *
      * \b Other
      *
-     * - %%   literal '%' character
+     * -  %%   literal '\%' character
      *
      * Note that if the instance has a time specification of ClockTime, the
      * time zone or UTC offset in the result will be blank.
@@ -1320,65 +1320,65 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * \b Date
      *
-     * - %y   year excluding century (0 - 99). Years 0 - 50 return 2000 - 2050,
-     *        while years 51 - 99 return 1951 - 1999.
-     * - %Y   full year number (4 digits with optional sign)
-     * - %:Y  full year number (>= 4 digits with optional sign)
-     * - %:m  month number (1 - 12)
-     * - %m   month number, 2 digits (01 - 12)
-     * - %b
-     * - %B   month name in the current locale or, if no match, in English,
-     *        abbreviated or in full
-     * - %:b
-     * - %:B  month name in English, abbreviated or in full
-     * - %e   day of the month (1 - 31)
-     * - %d   day of the month, 2 digits (01 - 31)
-     * - %a
-     * - %A   weekday name in the current locale or, if no match, in English,
-     *        abbreviated or in full
-     * - %:a
-     * - %:A  weekday name in English, abbreviated or in full
+     * - \%y   year excluding century (0 - 99). Years 0 - 50 return 2000 - 2050,
+     *         while years 51 - 99 return 1951 - 1999.
+     * - \%Y   full year number (4 digits with optional sign)
+     * -  %:Y  full year number (>= 4 digits with optional sign)
+     * -  %:m  month number (1 - 12)
+     * - \%m   month number, 2 digits (01 - 12)
+     * - \%b
+     * - \%B   month name in the current locale or, if no match, in English,
+     *         abbreviated or in full
+     * -  %:b
+     * -  %:B  month name in English, abbreviated or in full
+     * - \%e   day of the month (1 - 31)
+     * - \%d   day of the month, 2 digits (01 - 31)
+     * - \%a
+     * - \%A   weekday name in the current locale or, if no match, in English,
+     *         abbreviated or in full
+     * -  %:a
+     * -  %:A  weekday name in English, abbreviated or in full
      *
      * \b Time
      *
-     * - %H   hour in the 24 hour clock, 2 digits (00 - 23)
-     * - %k   hour in the 24 hour clock (0 - 23)
-     * - %I   hour in the 12 hour clock, 2 digits (01 - 12)
-     * - %l   hour in the 12 hour clock (1 - 12)
-     * - %M   minute, 2 digits (00 - 59)
-     * - %:M  minute (0 - 59)
-     * - %S   seconds, 2 digits (00 - 59)
-     * - %s   seconds (0 - 59)
-     * - %:S  optional seconds value (0 - 59) preceded with ':'. If no colon is
-     *        found in @p string, no input is consumed and the seconds value is
-     *        set to zero.
-     * - %:s  fractional seconds value, preceded with a decimal point (either '.'
-     *        or the locale's decimal point symbol)
-     * - %P
-     * - %p   "am" or "pm", in the current locale or, if no match, in
-     *        English. This format is only useful when used with %I or %l.
-     * - %:P
-     * - %:p  "am" or "pm" in English. This format is only useful when used with
-     *        %I or %l.
+     * - \%H   hour in the 24 hour clock, 2 digits (00 - 23)
+     * - \%k   hour in the 24 hour clock (0 - 23)
+     * - \%I   hour in the 12 hour clock, 2 digits (01 - 12)
+     * - \%l   hour in the 12 hour clock (1 - 12)
+     * - \%M   minute, 2 digits (00 - 59)
+     * -  %:M  minute (0 - 59)
+     * - \%S   seconds, 2 digits (00 - 59)
+     * - \%s   seconds (0 - 59)
+     * -  %:S  optional seconds value (0 - 59) preceded with ':'. If no colon is
+     *         found in @p string, no input is consumed and the seconds value is
+     *         set to zero.
+     * -  %:s  fractional seconds value, preceded with a decimal point (either '.'
+     *         or the locale's decimal point symbol)
+     * - \%P
+     * - \%p   "am" or "pm", in the current locale or, if no match, in
+     *         English. This format is only useful when used with \%I or \%l.
+     * -  %:P
+     * -  %:p  "am" or "pm" in English. This format is only useful when used with
+     *         \%I or \%l.
      *
      * \b Time zone
      *
-     * - %:u
-     * - %z   UTC offset of the time zone in hours and optionally minutes,
-     *        e.g. -02, -0200.
-     * - %:z  UTC offset of the time zone in hours and minutes, colon separated,
-     *        e.g. +02:00.
-     * - %Z   time zone abbreviation, consisting of alphanumeric characters,
-     *        e.g. UTC, EDT, GMT.
-     * - %:Z  time zone name, e.g. Europe/London. The name may contain any
-     *        characters and is delimited by the following character in the
-     *        @p format string. It will not work if you follow %:Z with another
-     *        escape sequence (except %% or %t).
+     * -  %:u
+     * - \%z   UTC offset of the time zone in hours and optionally minutes,
+     *         e.g. -02, -0200.
+     * -  %:z  UTC offset of the time zone in hours and minutes, colon separated,
+     *         e.g. +02:00.
+     * - \%Z   time zone abbreviation, consisting of alphanumeric characters,
+     *         e.g. UTC, EDT, GMT.
+     * -  %:Z  time zone name, e.g. Europe/London. The name may contain any
+     *         characters and is delimited by the following character in the
+     *         @p format string. It will not work if you follow %:Z with another
+     *         escape sequence (except %% or \%t).
      *
      * \b Other
      *
-     * - %t   matches one or more whitespace characters
-     * - %%   literal '%' character
+     * - \%t   matches one or more whitespace characters
+     * -  %%   literal '\%' character
      *
      * Any other character must have a matching character in @p string, except
      * that a space will match zero or more whitespace characters in the input
@@ -1388,7 +1388,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * attempts to find a matching time zone in the @p zones collection. A time
      * zone name (format code %:Z) will provide an unambiguous look up in
      * @p zones. Any other type of time zone information (an abbreviated time
-     * zone code (%Z) or UTC offset (%z, %:z, %:u) is searched for in @p zones
+     * zone code (\%Z) or UTC offset (\%z, %:z, %:u) is searched for in @p zones
      * and if only one time zone is found to match, the result is set to that
      * zone. Otherwise:
      * - If more than one match of a UTC offset is found, the action taken is
