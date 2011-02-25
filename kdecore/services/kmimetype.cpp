@@ -635,10 +635,6 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
             while (xml.readNextStartElement()) {
                 const QStringRef tag = xml.name();
                 if (tag == "comment") {
-                    if (!comment.isEmpty()) { // already found, skip this one
-                        xml.skipCurrentElement();
-                        continue;
-                    }
                     QString lang = xml.attributes().value(QLatin1String("xml:lang")).toString();
                     const QString text = xml.readElementText();
                     if (lang.isEmpty()) {
