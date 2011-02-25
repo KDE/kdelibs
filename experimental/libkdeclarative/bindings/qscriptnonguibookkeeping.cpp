@@ -17,12 +17,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <QScriptEngine>
-#include <QScriptValueIterator>
+#include <QtScript/QScriptEngine>
+#include <QtScript/QScriptValueIterator>
 
-#include <KConfigGroup>
-#include <KIO/Job>
-#include <KSharedConfig>
+#include <kconfiggroup.h>
+#include <kio/global.h>
+#include <kio/job.h>
+#include <ksharedconfig.h>
 
 Q_DECLARE_METATYPE(KConfigGroup)
 Q_DECLARE_METATYPE(KJob *)

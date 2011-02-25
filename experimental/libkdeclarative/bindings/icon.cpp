@@ -20,7 +20,7 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptContext>
 
-#include <KIcon>
+#include <kicon.h>
 
 #include "backportglobal.h"
 

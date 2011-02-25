@@ -19,11 +19,11 @@
 
 #include "i18n_p.h"
 
-#include <QScriptContext>
-#include <QScriptEngine>
+#include <QtScript/QScriptContext>
+#include <QtScript/QScriptEngine>
 
-#include <KDebug>
-#include <KLocalizedString>
+#include <kdebug.h>
+#include <klocalizedstring.h>
 
 QScriptValue jsi18n(QScriptContext *context, QScriptEngine *engine)
 {

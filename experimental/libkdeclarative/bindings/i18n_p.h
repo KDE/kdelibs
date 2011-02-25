@@ -20,7 +20,7 @@
 #ifndef JAVASCRIPTBINDI18N_H
 #define JAVASCRIPTBINDI18N_H
 
-#include <QScriptValue>
+#include <QtScript/QScriptValue>
 
 class QScriptContext;
 class QScriptEngine;

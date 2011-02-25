@@ -10,6 +10,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_BINARY_DIR}
    ${KDE4_INCLUDES}
+   ${KDE4_KIO_INCLUDES}
    )
 
 set(kdeclarative_LIB_SRCS
@@ -47,3 +48,4 @@ install(TARGETS kdeclarative EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFA
 
 
 install(FILES "test/test.qml" DESTINATION ${CMAKE_BINARY_DIR})
+
