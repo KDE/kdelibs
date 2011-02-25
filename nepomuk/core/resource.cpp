@@ -369,58 +369,55 @@ bool Nepomuk::Resource::isValid() const
 }
 
 
-// KDE 4.5: cache this one in ResourceData
+// TODO: cache this one in ResourceData
 QString Nepomuk::Resource::genericLabel() const
 {
     QString label = this->label();
-    if ( label.isEmpty() ) {
-        label = property( Soprano::Vocabulary::RDFS::label() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-        if ( label.isEmpty() ) {
-            label = property( Nepomuk::Vocabulary::NIE::title() ).toString();
+    label = property( Soprano::Vocabulary::RDFS::label() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-            if ( label.isEmpty() ) {
-                label = property( Nepomuk::Vocabulary::NCO::fullname() ).toString();
+    label = property( Nepomuk::Vocabulary::NIE::title() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-                if ( label.isEmpty() ) {
-                    label = property( Soprano::Vocabulary::NAO::identifier() ).toString();
+    label = property( Nepomuk::Vocabulary::NCO::fullname() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-                    if ( label.isEmpty() ) {
-                        label = property( Soprano::Vocabulary::Xesam::name() ).toString();
+    label = property( Soprano::Vocabulary::NAO::identifier() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-                        if ( label.isEmpty() ) {
-                            label = m_data->pimoThing().label();
+    label = m_data->pimoThing().label();
+    if(!label.isEmpty())
+        return label;
 
-                            if ( label.isEmpty() ) {
-                                label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
+    label = property( Nepomuk::Vocabulary::NFO::fileName() ).toString();
+    if(!label.isEmpty())
+        return label;
 
-                                if ( label.isEmpty() ) {
-                                    label = KUrl(property( Nepomuk::Vocabulary::NIE::url() ).toUrl()).fileName();
+    const KUrl nieUrl = property( Nepomuk::Vocabulary::NIE::url() ).toUrl();
+    if(!nieUrl.isEmpty()) {
+        if(nieUrl.isLocalFile())
+            return nieUrl.fileName();
+        else
+            return nieUrl.prettyUrl();
+    }
 
-                                    if ( label.isEmpty() ) {
-                                        QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
-                                        if( !go.isEmpty() ) {
-                                            label = go.first().genericLabel();
-                                            if( label == KUrl(go.first().resourceUri()).pathOrUrl() ) {
-                                                label.clear();
-                                            }
-                                        }
-
-                                        if ( label.isEmpty() ) {
-                                            // ugly fallback
-                                            label = KUrl(resourceUri()).pathOrUrl();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
+    if( !go.isEmpty() ) {
+        label = go.first().genericLabel();
+        if( label != KUrl(go.first().resourceUri()).pathOrUrl() ) {
+            return label;
         }
     }
 
-    return label;
+    // ugly fallback
+    return KUrl(resourceUri()).pathOrUrl();
 }
 
 
