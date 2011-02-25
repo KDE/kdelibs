@@ -111,9 +111,6 @@ macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communicat
 macro_optional_find_package(Libintl)
 macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
 
-macro_optional_find_package(OpenGL)
-macro_log_feature(OPENGL_FOUND "OpenGL" "Support for hardware-accelerated graphics" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players")
-
 set(SOPRANO_MIN_VERSION "2.5.60")
 macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
 macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "")
