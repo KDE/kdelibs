@@ -39,15 +39,9 @@ void KRichTextEditTest::testLinebreaks()
 
   // Enter the text with keypresses, for some strange reason a normal setText() or
   // setPlainText() call doesn't do the trick
-  QTest::keyClick( &edit, Qt::Key_A );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClicks(&edit, "a\r\r");
   edit.setTextUnderline( true );
-  QTest::keyClick( &edit, Qt::Key_B );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_C );
+  QTest::keyClicks(&edit, "b\r\r\rc" );
   QCOMPARE( edit.toPlainText(), QString( "a\n\nb\n\n\nc" ) );
 
   QString html = edit.toCleanHtml();
@@ -130,14 +124,11 @@ void KRichTextEditTest::testHTMLLineBreaks()
   //A
   //
   //B
-  QTest::keyClick( &edit, Qt::Key_A );
-  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClicks(&edit, "a\r");
 
   edit.setTextUnderline( true );
   
-  QTest::keyClick( &edit, Qt::Key_Enter );
-
-  QTest::keyClick( &edit, Qt::Key_B );
+  QTest::keyClicks(&edit, "\rb");
   
   QString html = edit.toCleanHtml();
   
@@ -181,13 +172,8 @@ void KRichTextEditTest::testHTMLOrderedLists()
   // create a numbered (ordered) list
   QTextCursor cursor = edit.textCursor();
   cursor.insertList( QTextListFormat::ListDecimal );
-  
-  QTest::keyClick( &edit, Qt::Key_A );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_B );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_C );
-  QTest::keyClick( &edit, Qt::Key_Enter );
+
+  QTest::keyClicks(&edit, "a\rb\rc\r");
   
   QString html = edit.toCleanHtml();
   
@@ -233,12 +219,7 @@ void KRichTextEditTest::testHTMLUnorderedLists()
   QTextCursor cursor = edit.textCursor();
   cursor.insertList( QTextListFormat::ListDisc );
   
-  QTest::keyClick( &edit, Qt::Key_A );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_B );
-  QTest::keyClick( &edit, Qt::Key_Enter );
-  QTest::keyClick( &edit, Qt::Key_C );
-  QTest::keyClick( &edit, Qt::Key_Enter );
+  QTest::keyClicks(&edit, "a\rb\rc\r");
   
   QString html = edit.toCleanHtml();
   
