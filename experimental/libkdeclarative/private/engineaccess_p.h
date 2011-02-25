@@ -20,9 +20,9 @@
 #ifndef ENGINEACCESS_P_H
 #define ENGINEACCESS_P_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
-#include <QScriptValue>
+#include <QtScript/QScriptValue>
 
 class KDeclarative;
 

@@ -22,7 +22,7 @@
 
 #include "kdeclarative.h"
 
-#include <QWeakPointer>
+#include <QtCore/QWeakPointer>
 
 class KDeclarativePrivate
 {

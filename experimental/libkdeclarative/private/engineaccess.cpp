@@ -21,7 +21,7 @@
 #include "kdeclarative.h"
 #include "kdeclarative_p.h"
 
-#include <QScriptEngine>
+#include <QtScript/QScriptEngine>
 
 EngineAccess::EngineAccess(KDeclarative *parent)
     : QObject(0),
