@@ -48,6 +48,7 @@ public:
     // virtual because reimplemented in KFolderMimeType
     virtual QString iconName(const KUrl &) const
     {
+        ensureXmlDataLoaded();
         if (!m_iconName.isEmpty())
             return m_iconName;
 
