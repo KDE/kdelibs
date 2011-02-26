@@ -234,6 +234,7 @@ public:
     Q_PRIVATE_SLOT( d, void slotContextAboutToHide() )
     Q_PRIVATE_SLOT( d, void slotContextLeft() )
     Q_PRIVATE_SLOT( d, void slotContextRight() )
+    Q_PRIVATE_SLOT( d, void slotContextShowText() )
     Q_PRIVATE_SLOT( d, void slotContextTop() )
     Q_PRIVATE_SLOT( d, void slotContextBottom() )
     Q_PRIVATE_SLOT( d, void slotContextIcons() )

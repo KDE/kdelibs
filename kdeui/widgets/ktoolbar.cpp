@@ -97,6 +97,20 @@ class KToolBar::Private
 #endif
         unlockedMovable(true),
         xmlguiClient(0),
+        contextOrient(0),
+        contextMode(0),
+        contextSize(0),
+        contextButtonTitle(0),
+        contextShowText(0),
+        contextButtonAction(0),
+        contextTop(0),
+        contextLeft(0),
+        contextRight(0),
+        contextBottom(0),
+        contextIcons(0),
+        contextTextRight(0),
+        contextText(0),
+        contextTextUnder(0),
         contextLockAction(0),
         dropIndicatorAction(0),
         context(0),
@@ -109,6 +123,7 @@ class KToolBar::Private
     void slotContextAboutToHide();
     void slotContextLeft();
     void slotContextRight();
+    void slotContextShowText();
     void slotContextTop();
     void slotContextBottom();
     void slotContextIcons();
@@ -120,7 +135,7 @@ class KToolBar::Private
 
     void init(bool readConfig = true, bool isMainToolBar = false);
     QString getPositionAsString() const;
-    KMenu *contextMenu();
+    KMenu *contextMenu(const QPoint &globalPos);
     void setLocked(bool locked);
     void adjustSeparatorVisibility();
     void loadKDESettings();
@@ -145,6 +160,9 @@ class KToolBar::Private
     QMenu* contextMode;
     QMenu* contextSize;
 
+    QAction* contextButtonTitle;
+    QAction* contextShowText;
+    QAction* contextButtonAction;
     QAction* contextTop;
     QAction* contextLeft;
     QAction* contextRight;
@@ -265,11 +283,15 @@ QString KToolBar::Private::getPositionAsString() const
   }
 }
 
-KMenu *KToolBar::Private::contextMenu()
+KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
 {
   if (!context) {
     context = new KMenu(q);
-    context->addTitle(i18n("Toolbar Settings"));
+
+    contextButtonTitle = context->addTitle(i18nc("@title:menu", "Show Text"));
+    contextShowText = context->addAction(QString(), q, SLOT(slotContextShowText()));
+
+    context->addTitle(i18nc("@title:menu", "Toolbar Settings"));
 
     contextOrient = new KMenu(i18n("Orientation"), context);
 
@@ -374,6 +396,13 @@ KMenu *KToolBar::Private::contextMenu()
     context->addSeparator();
 
     connect(context, SIGNAL(aboutToShow()), q, SLOT(slotContextAboutToShow()));
+  }
+
+  contextButtonAction = q->actionAt(q->mapFromGlobal(globalPos));
+  if (contextButtonAction) {
+      contextShowText->setText(contextButtonAction->text());
+      contextShowText->setIcon(contextButtonAction->icon());
+      contextShowText->setCheckable(true);
   }
 
   contextOrient->menuAction()->setVisible(!q->toolBarsLocked());
@@ -592,6 +621,13 @@ void KToolBar::Private::slotContextAboutToShow()
       contextTop->setChecked(true);
       break;
   }
+
+  const bool showButtonSettings = contextButtonAction && contextTextRight->isChecked();
+  contextButtonTitle->setVisible(showButtonSettings);
+  contextShowText->setVisible(showButtonSettings);
+  if (showButtonSettings) {
+    contextShowText->setChecked(contextButtonAction->priority() >= QAction::NormalPriority);
+  }
 }
 
 void KToolBar::Private::slotContextAboutToHide()
@@ -631,6 +667,26 @@ void KToolBar::Private::slotContextLeft()
 void KToolBar::Private::slotContextRight()
 {
   q->mainWindow()->addToolBar(Qt::RightToolBarArea, q);
+}
+
+void KToolBar::Private::slotContextShowText()
+{
+    Q_ASSERT(contextButtonAction);
+    const QAction::Priority priority = contextShowText->isChecked()
+                                       ? QAction::NormalPriority : QAction::LowPriority;
+    contextButtonAction->setPriority(priority);
+
+    // Save the priority state of the action
+    const KComponentData& componentData = KGlobal::mainComponent();
+    const QString componentName = componentData.componentName() + "ui.rc";
+    const QString configFile = KXMLGUIFactory::readConfigFile(componentName, componentData);
+
+    QDomDocument document;
+    document.setContent(configFile);
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement(document);
+    QDomElement actionElem = KXMLGUIFactory::findActionByName(elem, contextButtonAction->objectName(), true);
+    actionElem.setAttribute("priority", priority);
+    KXMLGUIFactory::saveConfigFile(document, componentName, componentData);
 }
 
 void KToolBar::Private::slotContextTop()
@@ -781,7 +837,8 @@ void KToolBar::contextMenuEvent(QContextMenuEvent* event)
 #ifndef KDE_NO_DEPRECATED
     if (mainWindow() && d->enableContext) {
         QPointer<KToolBar> guard(this);
-        d->contextMenu()->exec(event->globalPos());
+        const QPoint globalPos = event->globalPos();
+        d->contextMenu(globalPos)->exec(globalPos);
 
         // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
         if (guard) {
