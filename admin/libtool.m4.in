@@ -81,8 +81,8 @@ AC_BEFORE([$0],[AC_LIBTOOL_GCJ])dnl
 # This can be used to rebuild libtool when needed
 LIBTOOL_DEPS="$ac_aux_dir/ltmain.sh"
 
-# Always use our own libtool.
-LIBTOOL='$(SHELL) $(top_builddir)/libtool --silent'
+# Always use our own libtool (a copy of official libtool)
+LIBTOOL='$(SHELL) $(top_srcdir)/admin/libtool-2.2.10 --silent'
 AC_SUBST(LIBTOOL)dnl
 
 # Prevent multiple expansion
