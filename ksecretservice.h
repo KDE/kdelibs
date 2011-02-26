@@ -73,7 +73,6 @@ public:
      * @return the KSecretService session interface
      */
     OrgFreedesktopSecretSessionInterface *session();
-    OrgFreedesktopSecretServiceInterface *service();
     
     QStringList collections() const;
     KSecretServiceCollection *openCollection(const QString &label);
