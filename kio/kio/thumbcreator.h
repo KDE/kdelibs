@@ -24,11 +24,14 @@
 
 class QString;
 class QImage;
+class QWidget;
+
 /**
  * This is the baseclass for "thumbnail-plugins" in KDE. Using the class
  * KIO::PreviewJob allows you to generate small images (thumbnails)
  * for any kind of file, where a "ThumbCreator" is available. Have a look
- * at kdebase/kioslave/thumbnail/ for existing ThumbCreators.
+ * at kdebase/kioslave/thumbnail/ for existing ThumbCreators. Use ThumbCreatorV2
+ * if the thumbnail-plugin should be configurable by the user.
  *
  * What you need to do to create and register a ThumbCreator:
  * @li Inherit from this class and reimplement the create() method to
@@ -138,7 +141,37 @@ public:
      *
      * @return flags for this plugin
      */
-    virtual Flags flags() const { return None; } //krazy:exclude=inline
+    virtual Flags flags() const;
+};
+
+/**
+ * @since 4.7
+ */
+class KIO_EXPORT ThumbCreatorV2 : public ThumbCreator
+{
+public:
+    virtual ~ThumbCreatorV2();
+
+    /**
+     * Creates a widget that allows to configure the
+     * thumbcreator by the user. The caller of this method is defined
+     * as owner of the returned instance and must take care to delete it.
+     * The default implementation returns 0.
+     *
+     * The following key in the thumbcreator .desktop file must be set to
+     * mark the plugin as configurable:
+     * \code
+     * Configurable=true
+     * \endcode
+     */
+    virtual QWidget *createConfigurationWidget();
+
+    /**
+     * Writes the configuration that is specified by \p configurationWidget.
+     * The passed configuration widget is the instance created by
+     * ThumbCreatorV2::createConfigurationWidget().
+     */
+    virtual void writeConfiguration(const QWidget* configurationWidget);
 };
 
 typedef ThumbCreator *(*newCreator)();
