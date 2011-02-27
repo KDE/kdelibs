@@ -89,7 +89,7 @@ QStringList UPnPDeviceManager::allDevices()
     return result;
 }
 
-QStringList UPnPDeviceManager::devicesFromQuery(const QString& parentUdi, DeviceInterface::Type type)
+QStringList UPnPDeviceManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
 {
     Q_UNUSED(parentUdi)
     Q_UNUSED(type)
