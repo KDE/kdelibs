@@ -52,21 +52,27 @@ bool Nepomuk::Query::LiteralTermPrivate::equals( const TermPrivate* other ) cons
 //
 QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, QueryBuilderData* qbd ) const
 {
-    const QString v1 = qbd->uniqueVarName();
-    const QString v2 = qbd->uniqueVarName();
-    const QString v3 = qbd->uniqueVarName();
-    const QString v4 = qbd->uniqueVarName();
-    const QString containsPattern = createContainsPattern( v2, m_value.toString(), qbd );
+    if( m_value.toString().isEmpty() )
+        return QString();
 
+    const QString p1 = qbd->uniqueVarName();
+    const QString p2 = qbd->uniqueVarName();
+    const QString v1 = qbd->uniqueVarName();
+    const QString r2 = qbd->uniqueVarName();
+    const QString containsPattern = createContainsPattern( v1, m_value.toString(), qbd );
+
+    // { ?r ?p1 ?v1 . containsPattern(v1) }
+    // UNION
+    // { ?r ?p1 ?r2 . ?r2 ?p2 ?v1 . ?v1 rdfs:subPropertyOf rdfs:label . containsPattern(v1) } .
     return QString::fromLatin1( "{ %1 %2 %3 . %4 } "
                                 "UNION "
                                 "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %4 } . " )
         .arg( resourceVarName,
+              p1,
               v1,
-              v2,
               containsPattern,
-              v3,
-              v4,
+              r2,
+              p2,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 }
@@ -86,11 +92,17 @@ QString prepareRegexText( const QString& text )
 
 QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString& varName, const QString& text, Nepomuk::Query::QueryBuilderData* qbd )
 {
+    Q_UNUSED( qbd );
+
+    if( text.isEmpty() )
+        return QString();
+    
     // each token with a negation flag
     QList<QPair<QString, bool> > containsTokens;
     QList<QPair<QString, bool> > regexTokens;
 
-    // we only support AND xor OR, not both at the same time
+    // we only support AND or OR, not both at the same time
+    // TODO: Fix this. Virtuoso supports a combination of both
     bool isUnion = false;
 
     // gather all the tokens
@@ -113,7 +125,7 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
             currentToken.append(c);
         }
 
-        if( i == text.count()-1 ) {
+        if( i == text.length()-1 ) {
             tokenEnd = true;
         }
 
@@ -138,8 +150,9 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
                 //
                 const QStringList subTokens = currentToken.split( QLatin1Char(' '), QString::SkipEmptyParts );
                 bool needsRegex = false;
+                QRegExp regex(QLatin1String("[\\?\\*]")); // The regex used to check if we needs a regex
                 Q_FOREACH( const QString& subToken, subTokens ) {
-                    const int i = subToken.indexOf( QRegExp(QLatin1String("[\\?\\*]")) );
+                    const int i = subToken.indexOf( regex );
                     if( i >= 0 && i < 4 ) {
                         needsRegex = true;
                         break;
