@@ -41,9 +41,7 @@
     #include <property.h>
     #include <tag.h>
 
-    #include <QMutex>
     #include <QSpacerItem>
-    #include <QThread>
 #endif
 
 class KFileMetaDataWidget::Private

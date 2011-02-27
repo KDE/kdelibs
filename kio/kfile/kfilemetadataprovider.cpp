@@ -22,18 +22,20 @@
 #include <kfileitem.h>
 #include "knfotranslator_p.h"
 #include <klocale.h>
+#include <kprocess.h>
+#include <kstandarddirs.h>
 #include <kurl.h>
 
 #ifndef KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include "nepomukmassupdatejob.h"
     #include "tagwidget.h"
+    #include "tag.h"
     #include "kratingwidget.h"
     #include "resource.h"
     #include "resourcemanager.h"
 
     #include "kcommentwidget_p.h"
-    #include "kloadfilemetadatathread_p.h"
 #else
     namespace Nepomuk
     {
@@ -103,7 +105,7 @@ public:
     Private(KFileMetaDataProvider* parent);
     ~Private();
 
-    void slotLoadingFinished(QThread* finishedThread);
+    void slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
     void slotRatingChanged(unsigned int rating);
     void slotTagsChanged(const QList<Nepomuk::Tag>& tags);
@@ -135,8 +137,8 @@ public:
 #ifndef KIO_NO_NEPOMUK
     QHash<KUrl, Nepomuk::Variant> m_data;
 
-    QList<KLoadFileMetaDataThread*> m_metaDataThreads;
-    KLoadFileMetaDataThread* m_latestMetaDataThread;
+    QList<KProcess*> m_metaDataProcesses;
+    KProcess* m_latestMetaDataProcess;
 
     QWeakPointer<KRatingWidget> m_ratingWidget;
     QWeakPointer<Nepomuk::TagWidget> m_tagWidget;
@@ -153,8 +155,8 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_fileItems(),
 #ifndef KIO_NO_NEPOMUK
     m_data(),
-    m_metaDataThreads(),
-    m_latestMetaDataThread(0),
+    m_metaDataProcesses(),
+    m_latestMetaDataProcess(0),
     m_ratingWidget(),
     m_tagWidget(),
     m_commentWidget(),
@@ -169,35 +171,57 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
 KFileMetaDataProvider::Private::~Private()
 {
 #ifndef KIO_NO_NEPOMUK
-    foreach (KLoadFileMetaDataThread* thread, m_metaDataThreads) {
-        disconnect(thread, SIGNAL(finished(QThread*)),
-                   q, SLOT(slotLoadingFinished(QThread*)));
-        thread->wait();
-    }
+    qDeleteAll(m_metaDataProcesses);
 #endif
 }
 
-void KFileMetaDataProvider::Private::slotLoadingFinished(QThread* finishedThread)
+void KFileMetaDataProvider::Private::slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
+
 #ifndef KIO_NO_NEPOMUK
-    // The thread that has emitted the finished() signal
-    // will get deleted and removed from m_metaDataThreads.
-    const int threadsCount = m_metaDataThreads.count();
-    for (int i = 0; i < threadsCount; ++i) {
-        KLoadFileMetaDataThread* thread = m_metaDataThreads[i];
-        if (thread == finishedThread) {
-            m_metaDataThreads.removeAt(i);
-            if (thread != m_latestMetaDataThread) {
-                // Ignore data of older threads, as the data got
-                // obsolete by m_latestMetaDataThread.
-                thread->deleteLater();
+    KProcess* finishedProcess = qobject_cast<KProcess*>(q->sender());
+    // The process that has emitted the finished() signal
+    // will get deleted and removed from m_metaDataProcesses.
+    for (int i = 0; i < m_metaDataProcesses.count(); ++i) {
+        KProcess* process = m_metaDataProcesses[i];
+        if (process == finishedProcess) {
+            m_metaDataProcesses.removeAt(i);
+            if (process != m_latestMetaDataProcess) {
+                // Ignore data of older processs, as the data got
+                // obsolete by m_latestMetaDataProcess.
+                process->deleteLater();
                 return;
             }
         }
     }
 
-    m_data = m_latestMetaDataThread->data();
-    m_latestMetaDataThread->deleteLater();
+    m_data.clear();
+    while (m_latestMetaDataProcess->canReadLine()) {
+        // Read key
+        QString key = QString::fromLocal8Bit(m_latestMetaDataProcess->readLine());
+        key.remove(QChar::Other_Control);
+
+        // Read variant-type
+        if (!m_latestMetaDataProcess->canReadLine()) {
+            break;
+        }
+        QString valueTypeString(QString::fromLocal8Bit(m_latestMetaDataProcess->readLine()));
+        valueTypeString.remove(QChar::Other_Control);
+        const int valueType = valueTypeString.toInt();
+        if (!m_latestMetaDataProcess->canReadLine()) {
+            break;
+        }
+
+        // Read variant-value
+        QString value(QString::fromLocal8Bit(m_latestMetaDataProcess->readLine()));
+        value.remove(QChar::Other_Control);
+        // TODO: Handle value-types like QVariantList
+        Q_UNUSED(valueType);
+        m_data.insert(KUrl(key), value);
+    }
+    m_latestMetaDataProcess->deleteLater();
 
     if (m_fileItems.count() == 1) {
         // TODO: Handle case if remote URLs are used properly. isDir() does
@@ -219,13 +243,10 @@ void KFileMetaDataProvider::Private::slotLoadingFinished(QThread* finishedThread
         }
         m_data.insert(KUrl("kfileitem#totalSize"), KIO::convertSize(totalSize));
     }
-#else
-    Q_UNUSED(finishedThread)
 #endif
 
     emit q->loadingFinished();
 }
-
 
 void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 {
@@ -386,18 +407,27 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
         }
     }
 
-    // Cancel all threads that have not emitted a finished() signal.
-    // The deleting of those threads is done in slotLoadingFinished().
-    foreach (KLoadFileMetaDataThread* thread, d->m_metaDataThreads) {
-        thread->cancel();
+    // Create a new process that will provide the meta data for the items
+    d->m_latestMetaDataProcess = new KProcess();
+
+    const QString fileMetaDataReaderExe = KStandardDirs::findExe(QLatin1String("kfilemetadatareader"));
+    (*d->m_latestMetaDataProcess) << fileMetaDataReaderExe;
+
+    foreach (const KUrl& url, urls) {
+        (*d->m_latestMetaDataProcess) << url.url();
     }
 
-    // Create a new thread that will provide the meta data for the items
-    d->m_latestMetaDataThread = new KLoadFileMetaDataThread();
-    connect(d->m_latestMetaDataThread, SIGNAL(finished(QThread*)),
-            this, SLOT(slotLoadingFinished(QThread*)));
-    d->m_latestMetaDataThread->load(urls);
-    d->m_metaDataThreads.append(d->m_latestMetaDataThread);
+    d->m_latestMetaDataProcess->setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    d->m_latestMetaDataProcess->setNextOpenMode(QIODevice::ReadOnly | QIODevice::Text);
+    d->m_latestMetaDataProcess->start();
+    if (d->m_latestMetaDataProcess->waitForStarted()) {
+        connect(d->m_latestMetaDataProcess, SIGNAL(finished(int, QProcess::ExitStatus)),
+                this, SLOT(slotLoadingFinished(int, QProcess::ExitStatus)));
+        d->m_metaDataProcesses.append(d->m_latestMetaDataProcess);
+    } else {
+        delete d->m_latestMetaDataProcess;
+        d->m_latestMetaDataProcess = 0;
+    }
 #endif
 }
 

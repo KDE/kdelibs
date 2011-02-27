@@ -1,6 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2009-2010 by Peter Penz <peter.penz@gmx.at>                 *
- * Copyright (C) 2009-2010 by Sebastian Trueg <trueg@kde.org>                *
+ * Copyright (C) 2011 by Peter Penz <peter.penz@gmx.at>                      *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
  * modify it under the terms of the GNU Library General Public               *
@@ -18,72 +17,65 @@
  * Boston, MA 02110-1301, USA.                                               *
  *****************************************************************************/
 
-#include "kloadfilemetadatathread_p.h"
+#include <iostream>
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kfilemetainfo.h>
-#include <kfilemetainfoitem.h>
-#include <kglobal.h>
 #include <klocale.h>
-#include "kfilemetadataprovider_p.h"
-#include <kprotocolinfo.h>
 
-#include "resource.h"
-#include "thing.h"
-#include "variant.h"
-#include "resourcemanager.h"
+#include <QtCore/QHash>
+#include <QtCore/QString>
 
+#define DISABLE_NEPOMUK_LEGACY
 #include "config-nepomuk.h"
 
-#include "query/filequery.h"
-#include "query/comparisonterm.h"
-#include "query/andterm.h"
-#include "query/resourceterm.h"
-#include "query/resourcetypeterm.h"
-#include "query/optionalterm.h"
-#include "utils/utils.h"
+#include <nepomuk/query/filequery.h>
+#include <nepomuk/query/comparisonterm.h>
+#include <nepomuk/query/andterm.h>
+#include <nepomuk/query/resourceterm.h>
+#include <nepomuk/query/resourcetypeterm.h>
+#include <nepomuk/query/optionalterm.h>
+#include <nepomuk/utils/utils.h>
+#include <nepomuk/property.h>
+#include <nepomuk/tag.h>
+#include <nepomuk/variant.h>
+#include <nepomuk/resourcemanager.h>
 
-#include <Soprano/Model>
-#include <Soprano/QueryResultIterator>
-#include <Soprano/NodeIterator>
+using namespace std;
 
-#include <QMutexLocker>
-
-KLoadFileMetaDataThread::KLoadFileMetaDataThread()
-    : m_canceled(false)
+static void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
 {
-    connect(this, SIGNAL(finished()), this, SLOT(slotLoadingFinished()));
+    // Write the meta-data as sequence of the following properties:
+    // 1. Metadata key
+    // 2. Variant type
+    // 3. Variant value
+    QHashIterator<KUrl, Nepomuk::Variant> it(data);
+    while (it.hasNext()) {
+        it.next();
+        const QString key = it.key().url();
+        const Nepomuk::Variant& variant = it.value();
+
+        const QString variantType = QString::number(variant.type());
+        // TODO: serialize valuetypes like variant lists
+        QString variantValue = variant.toString();
+        // QChar::Other_Control acts as separator between the output-values.
+        // Assure that this character is not already part of a value:
+        variantValue.remove(QChar::Other_Control);
+
+        cout << key.toLocal8Bit().data() << endl;
+        cout << variantType.toLocal8Bit().data() << endl;
+        cout << variantValue.toLocal8Bit().data() << endl;
+    }
 }
 
-KLoadFileMetaDataThread::~KLoadFileMetaDataThread()
+static int readMetaData(const KCmdLineArgs* args)
 {
-}
-
-void KLoadFileMetaDataThread::load(const KUrl::List& urls)
-{
-    QMutexLocker locker(&m_mutex);
-    m_urls = urls;
-    m_canceled = false;
-    start();
-}
-
-QHash<KUrl, Nepomuk::Variant> KLoadFileMetaDataThread::data() const
-{
-    QMutexLocker locker(&m_mutex);
-    return m_data;
-}
-
-void KLoadFileMetaDataThread::cancel()
-{
-    // Setting m_canceled to true will cancel KLoadFileMetaDataThread::run()
-    // as soon as run() gets the chance to check m_cancel.
-    m_canceled = true;
-}
-
-void KLoadFileMetaDataThread::run()
-{
-    QMutexLocker locker(&m_mutex);
-    const KUrl::List urls = m_urls;
-    locker.unlock(); // no shared member is accessed until locker.relock()
+    KUrl::List urls;
+    const int argsCount = args->count();
+    for (int i = 0; i < argsCount; ++i) {
+        urls.append(KUrl(args->arg(i)));
+    }
 
     unsigned int rating = 0;
     QString comment;
@@ -92,63 +84,53 @@ void KLoadFileMetaDataThread::run()
 
     bool first = true;
     foreach (const KUrl& url, urls) {
-        if (m_canceled) {
-            return;
-        }
-
         Nepomuk::Resource file(url);
         if (!file.isValid()) {
             continue;
         }
 
         if (!first && (rating != file.rating())) {
-            rating = 0; // reset rating
+            rating = 0; // Reset rating
         } else if (first) {
             rating = file.rating();
         }
 
         if (!first && (comment != file.description())) {
-            comment.clear(); // reset comment
+            comment.clear(); // Reset comment
         } else if (first) {
             comment = file.description();
         }
 
         if (!first && (tags != file.tags())) {
-            tags.clear(); // reset tags
+            tags.clear(); // Reset tags
         } else if (first) {
             tags = file.tags();
         }
 
         if (first && (urls.count() == 1)) {
-            // get cached meta data by checking the indexed files
+            // Get cached meta data by checking the indexed files
             QHash<QUrl, Nepomuk::Variant> variants = file.properties();
             QHash<QUrl, Nepomuk::Variant>::const_iterator it = variants.constBegin();
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
-                data.insert(prop.uri(), Nepomuk::Utils::formatPropertyValue(prop, it.value(), QList<Nepomuk::Resource>() << file, Nepomuk::Utils::WithKioLinks));
+                data.insert(prop.uri(), Nepomuk::Utils::formatPropertyValue(prop, it.value(),
+                                                                            QList<Nepomuk::Resource>() << file,
+                                                                            Nepomuk::Utils::WithKioLinks));
                 ++it;
             }
 
             if (variants.isEmpty()) {
                 // The file has not been indexed, query the meta data
-                // directly from the file
-
-                // TODO: Some Strigi analyzers (used in KFileMetaInfo) are not reentrant.
-                // As workaround the access is protected by a mutex here. To reproduce
-                // the issue run kfilemetainfotest with helgrind.
-                static QMutex metaInfoMutex;
-                metaInfoMutex.lock();
-
+                // directly from the file.
                 const QString path = urls.first().toLocalFile();
                 KFileMetaInfo metaInfo(path, QString(), KFileMetaInfo::Fastest);
                 const QHash<QString, KFileMetaInfoItem> metaInfoItems = metaInfo.items();
                 foreach (const KFileMetaInfoItem& metaInfoItem, metaInfoItems) {
                     const QString uriString = metaInfoItem.name();
                     const Nepomuk::Variant value(metaInfoItem.value());
-                    data.insert(uriString, Nepomuk::Utils::formatPropertyValue(Nepomuk::Types::Property(), value));
+                    data.insert(uriString,
+                                Nepomuk::Utils::formatPropertyValue(Nepomuk::Types::Property(), value));
                 }
-
-                metaInfoMutex.unlock();
             }
         }
 
@@ -166,13 +148,27 @@ void KLoadFileMetaDataThread::run()
         data.insert(KUrl("kfileitem#tags"), tagVariants);
     }
 
-    locker.relock();
-    m_data = data;
+    sendMetaData(data);
+    return 0;
 }
 
-void KLoadFileMetaDataThread::slotLoadingFinished()
+int main(int argc, char *argv[])
 {
-    emit finished(this);
+    KAboutData aboutData("kfilemetadatareader", 0, ki18n("KFileMetaDataReader"),
+                         "1.0",
+                         ki18n("KFileMetaDataReader can be used to read metadata from a file"),
+                         KAboutData::License_GPL,
+                         ki18n("(C) 2011, Peter Penz"));
+    aboutData.addAuthor(ki18n("Peter Penz"), ki18n("Current maintainer"), "peter.penz19@gmail.com");
+    
+    KCmdLineArgs::init(argc, argv, &aboutData);
+    
+    KCmdLineOptions options;
+    options.add("+[arg]", ki18n("List of URLs where the meta-data should be read from"));
+
+    KCmdLineArgs::addCmdLineOptions(options);
+    const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+    return readMetaData(args);
 }
 
-#include "kloadfilemetadatathread_p.moc"

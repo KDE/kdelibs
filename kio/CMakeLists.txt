@@ -257,7 +257,6 @@ if(NOT KIO_NO_NEPOMUK)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
     kfile/kcommentwidget.cpp
-    kfile/kloadfilemetadatathread.cpp
     )
 endif(NOT KIO_NO_NEPOMUK)
 
@@ -307,6 +306,12 @@ set(kio_LIB_PRIVATE_SRCS
     kio/slaveinterface_p.h
 )
 
+if(NOT KIO_NO_NEPOMUK)
+    set(kfilemetadatareader_SRCS
+        kfile/kfilemetadatareader.cpp
+    )
+endif(NOT KIO_NO_NEPOMUK)
+
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
    kfile/kpropertiesdesktopbase.ui
@@ -323,6 +328,8 @@ install(FILES kssl/ksslcertificatemanager.upd
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 
 if(NOT KIO_NO_NEPOMUK)
+  kde4_add_executable(kfilemetadatareader ${kfilemetadatareader_SRCS})
+  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
@@ -343,6 +350,9 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 
 ########### install files ###############
 install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+if(NOT KIO_NO_NEPOMUK)
+    install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
+endif(NOT KIO_NO_NEPOMUK)
 
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
