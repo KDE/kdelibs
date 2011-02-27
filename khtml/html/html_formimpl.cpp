@@ -2942,6 +2942,7 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_PLACEHOLDER:
         setChanged();
+        break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
