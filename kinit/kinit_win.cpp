@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the KDE libraries
  * Copyright (c) 1999-2000 Waldo Bastian <bastian@kde.org>
  *                 (c) 1999 Mario Weilguni <mweilguni@sime.com>
@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include <windows.h>
+#ifndef _WIN32_WCE
 #include <Sddl.h>
 #endif
 #include <tlhelp32.h>
@@ -356,6 +357,7 @@ bool ProcessList::terminateProcess(const QString &name)
     if (!p) {
         qDebug() << "could not find ProcessListEntry for process name" << name;
         return false;
+    }
 
     bool ret = TerminateProcess(p->handle,0);
     if (ret) {
