@@ -255,6 +255,14 @@ bool KSecretService::isConnected() const
     return d->serviceInterface != NULL && d->serviceInterface->isValid() && d->sessionInterface->isValid();
 }
 
+OrgFreedesktopSecretServiceInterface* KSecretService::service()
+{
+    if ( !isConnected() ) {
+        connectToService();
+    }
+    return d->serviceInterface;
+}
+
 OrgFreedesktopSecretSessionInterface* KSecretService::session() 
 {
     if ( !isConnected() ) {

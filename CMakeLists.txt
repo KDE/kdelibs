@@ -2,8 +2,6 @@ PROJECT( ksecretserviceclient )
 
 add_subdirectory(tests)
 
-FIND_PACKAGE (QCA2 REQUIRED)
-
 include_directories (
     ${KDE4_INCLUDES}
     ${QCA2_INCLUDE_DIR} 

@@ -329,6 +329,7 @@ public:
     QDateTime lastModified;
 
     Secret secret;
+    QString contentType;
 };
 
 KSecretServiceCollection::Entry::Entry()
@@ -385,6 +386,11 @@ QDateTime KSecretServiceCollection::Entry::lastModified() const
 QByteArray KSecretServiceCollection::Entry::secret() const
 {
     return d->secret.value();
+}
+
+QString KSecretServiceCollection::Entry::contentType() const
+{
+    return d->secret.contentType();
 }
 
 KSecretServiceCollection::KSecretServiceCollection(const QString& path, KSecretService* parent)

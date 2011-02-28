@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2010 Dario Freddi <drf@kde.org>
+ * Copyright (C) 2011 Valentin Rusu <kde@rusu.info>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -48,6 +49,7 @@ public:
         QDateTime lastModified() const;
 
         QByteArray secret() const;
+        QString contentType() const;
 
     private:
         Entry(const QString &path, const QString &session);
