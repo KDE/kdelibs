@@ -72,6 +72,11 @@ QString UDevDevice::vendor() const
          }  else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
              vendor = m_device.deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
          }
+         else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
+             if (m_device.parent().isValid()) {
+                 vendor = m_device.parent().deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
+             }
+         }
     }
     return vendor;
 }
