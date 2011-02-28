@@ -37,10 +37,10 @@
 #include <nepomuk/query/resourcetypeterm.h>
 #include <nepomuk/query/optionalterm.h>
 #include <nepomuk/utils/utils.h>
-#include <nepomuk/property.h>
-#include <nepomuk/tag.h>
-#include <nepomuk/variant.h>
-#include <nepomuk/resourcemanager.h>
+#include <nepomuk/types/property.h>
+#include <nepomuk/core/tag.h>
+#include <nepomuk/core/variant.h>
+#include <nepomuk/core/resourcemanager.h>
 
 using namespace std;
 
