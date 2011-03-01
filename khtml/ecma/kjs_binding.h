@@ -273,7 +273,7 @@ namespace KJS {
       const Identifier& propertyName, PropertySlot& slot)
   {
     bool ok;
-    unsigned u = propertyName.toUInt32(&ok);
+    unsigned u = propertyName.toArrayIndex(&ok);
     if (ok && u < listObj.length()) {
       slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
       return true;
@@ -289,7 +289,7 @@ namespace KJS {
       const Identifier& propertyName, PropertySlot& slot)
   {
     bool ok;
-    unsigned u = propertyName.toUInt32(&ok);
+    unsigned u = propertyName.toArrayIndex(&ok);
     if (ok && u < lengthLimit) {
       slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
       return true;
@@ -311,7 +311,7 @@ namespace KJS {
   inline bool getIndexSlot(ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
   {
     bool ok;
-    unsigned u = propertyName.toUInt32(&ok);
+    unsigned u = propertyName.toArrayIndex(&ok);
     if (ok) {
       slot.setCustomIndex(thisObj, u, indexGetterAdapter<ThisImp>);
       return true;

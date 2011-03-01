@@ -431,7 +431,7 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
   if (pluginsEnabled()) {
     // plugins[#]
     bool ok;
-    unsigned int i = propertyName.toUInt32(&ok);
+    unsigned int i = propertyName.toArrayIndex(&ok);
     if (ok && i < static_cast<unsigned>(plugins->count())) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
@@ -522,7 +522,7 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
   if (pluginsEnabled()) {
     // mimeTypes[#]
     bool ok;
-    unsigned int i = propertyName.toUInt32(&ok);
+    unsigned int i = propertyName.toArrayIndex(&ok);
     if (ok && i < static_cast<unsigned>(mimes->count())) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
@@ -624,7 +624,7 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 
   // plugin[#]
   bool ok;
-  unsigned int i = propertyName.toUInt32(&ok);
+  unsigned int i = propertyName.toArrayIndex(&ok);
   if (ok && i < static_cast<unsigned>(m_info->mimes.count())) {
     slot.setCustomIndex(this, i, indexGetter);
     return true;

@@ -3119,7 +3119,7 @@ JSValue* KJS::HTMLCollection::callAsFunction(ExecState *exec, JSObject *, const 
     // support for document.all(<index>) etc.
     bool ok;
     UString s = args[0]->toString(exec);
-    unsigned int u = s.toUInt32(&ok, false);
+    unsigned int u = s.toArrayIndex(&ok);
     if (ok)
       return getDOMNode(exec, collection.item(u));
     // support for document.images('<name>') etc.
@@ -3129,7 +3129,7 @@ JSValue* KJS::HTMLCollection::callAsFunction(ExecState *exec, JSObject *, const 
   {
     bool ok;
     UString s = args[0]->toString(exec);
-    unsigned int u = args[1]->toString(exec).toUInt32(&ok, false);
+    unsigned int u = args[1]->toString(exec).toArrayIndex(&ok);
     if (ok)
     {
       DOM::DOMString pstr = s.domString();
@@ -3190,7 +3190,7 @@ JSValue* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject 
     // support for item(<index>) (DOM)
     UString s = args[0]->toString(exec);
     bool ok;
-    unsigned int u = s.toUInt32(&ok, false);
+    unsigned int u = s.toArrayIndex(&ok);
     if (ok) {
       return getDOMNode(exec,coll.item(u));
     }

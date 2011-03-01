@@ -372,7 +372,7 @@ IndexToNameMap::~IndexToNameMap() {
 bool IndexToNameMap::isMapped(const Identifier &index) const
 {
   bool indexIsNumber;
-  int indexAsNumber = index.toUInt32(&indexIsNumber);
+  int indexAsNumber = index.toStrictUInt32(&indexIsNumber);
 
   if (!indexIsNumber)
     return false;
@@ -389,7 +389,7 @@ bool IndexToNameMap::isMapped(const Identifier &index) const
 void IndexToNameMap::unMap(const Identifier &index)
 {
   bool indexIsNumber;
-  int indexAsNumber = index.toUInt32(&indexIsNumber);
+  int indexAsNumber = index.toStrictUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
 
@@ -404,7 +404,7 @@ Identifier& IndexToNameMap::operator[](int index)
 Identifier& IndexToNameMap::operator[](const Identifier &index)
 {
   bool indexIsNumber;
-  int indexAsNumber = index.toUInt32(&indexIsNumber);
+  int indexAsNumber = index.toStrictUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
 

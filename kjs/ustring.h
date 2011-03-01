@@ -379,15 +379,6 @@ namespace KJS {
      * Attempts an conversion to a 32-bit integer. ok will be set
      * according to the success.
      */
-    uint32_t toUInt32(bool *ok = 0) const;
-    /**
-     * Attempts an conversion to a 32-bit integer. ok will be set
-     * according to the success.
-     *
-     * @param tolerateEmptyString if false, toUInt32 will return false
-     * for *ok for an empty string.
-     */
-    uint32_t toUInt32(bool *ok, bool tolerateEmptyString) const;
     uint32_t toStrictUInt32(bool *ok = 0) const;
 
     /**

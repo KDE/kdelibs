@@ -1080,38 +1080,6 @@ double UString::toDouble() const
   return toDouble(false, true);
 }
 
-uint32_t UString::toUInt32(bool *ok) const
-{
-  double d = toDouble();
-  bool b = true;
-
-  if (d != static_cast<uint32_t>(d)) {
-    b = false;
-    d = 0;
-  }
-
-  if (ok)
-    *ok = b;
-
-  return static_cast<uint32_t>(d);
-}
-
-uint32_t UString::toUInt32(bool *ok, bool tolerateEmptyString) const
-{
-  double d = toDouble(false, tolerateEmptyString);
-  bool b = true;
-
-  if (d != static_cast<uint32_t>(d)) {
-    b = false;
-    d = 0;
-  }
-
-  if (ok)
-    *ok = b;
-
-  return static_cast<uint32_t>(d);
-}
-
 uint32_t UString::toStrictUInt32(bool *ok) const
 {
   if (ok)
