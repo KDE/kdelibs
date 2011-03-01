@@ -3027,18 +3027,23 @@ endParsing:
             // If we still have text, then it means we have a mime-type with a
             // parameter (eg: charset=iso-8851) ; so let's get that...
             Q_FOREACH (const QByteArray &statement, l) {
-                QList<QByteArray> parts = statement.split('=');
-                if (parts.count() != 2) {
-                    continue;
+                const int index = statement.indexOf('=');
+                if (index <= 0) {
+                    mediaAttribute = toQString(statement.mid(0, index));
+                } else {
+                    mediaAttribute = toQString(statement.mid(0, index));
+                    mediaValue = toQString(statement.mid(index+1));
                 }
-                mediaAttribute = toQString(parts[0].trimmed().toLower());
-                mediaValue = toQString(parts[1].trimmed());
-                if (mediaValue.length() && (mediaValue[0] == QLatin1Char('"')) &&
-                    (mediaValue[mediaValue.length() - 1] == QLatin1Char('"'))) {
-                    mediaValue = mediaValue.mid(1, mediaValue.length() - 2);
+
+                if (mediaValue.startsWith(QLatin1Char('"'))) {
+                    mediaValue.remove(QLatin1Char('"'));
                 }
-                kDebug (7113) << "Encoding-type:" << mediaAttribute
-                              << "=" << mediaValue;
+
+                if (mediaValue.endsWith(QLatin1Char('"'))) {
+                    mediaValue.truncate(mediaValue.length()-1);
+                }
+
+                kDebug (7113) << "Encoding-type:" << mediaAttribute << "=" << mediaValue;
 
                 if (mediaAttribute == QLatin1String("charset")) {
                     mediaValue = mediaValue.toLower();
