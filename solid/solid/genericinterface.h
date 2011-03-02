@@ -34,7 +34,7 @@ namespace Solid
 
     /**
      * Generic interface to deal with a device. It exposes a set of properties
-     * and is organized a a key/value set.
+     * and is organized as a key/value set.
      *
      * Warning: Using this class could expose some backend specific details
      * and lead to non portable code. Use it at your own risk, or during

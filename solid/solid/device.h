@@ -40,7 +40,7 @@ namespace Solid
      * underlying system.
      *
      * Device stores a reference to device data provided by the backend.
-     * Device objects are designed to be used by value.  Copying these objects
+     * Device objects are designed to be used by value. Copying these objects
      * is quite cheap, so using pointers to the me is generally not needed.
      *
      * @author Kevin Ottens <ervin@kde.org>
