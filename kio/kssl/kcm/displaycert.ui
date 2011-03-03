@@ -68,7 +68,7 @@
      <item row="0" column="1">
       <widget class="QLabel" name="validityPeriod">
        <property name="text">
-        <string>TextLabel</string>
+        <string comment="KDE::DoNotExtract">TextLabel</string>
        </property>
       </widget>
      </item>
@@ -82,7 +82,7 @@
      <item row="1" column="1">
       <widget class="QLabel" name="serialNumber">
        <property name="text">
-        <string>TextLabel</string>
+        <string comment="KDE::DoNotExtract">TextLabel</string>
        </property>
       </widget>
      </item>
@@ -96,7 +96,7 @@
      <item row="2" column="1">
       <widget class="QLabel" name="md5Digest">
        <property name="text">
-        <string>TextLabel</string>
+        <string comment="KDE::DoNotExtract">TextLabel</string>
        </property>
       </widget>
      </item>
@@ -110,7 +110,7 @@
      <item row="3" column="1">
       <widget class="QLabel" name="sha1Digest">
        <property name="text">
-        <string>TextLabel</string>
+        <string comment="KDE::DoNotExtract">TextLabel</string>
        </property>
       </widget>
      </item>
