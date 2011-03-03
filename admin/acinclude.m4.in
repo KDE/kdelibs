@@ -4740,61 +4740,6 @@ else
 fi
 ])
 
-AC_DEFUN([KDE_CHECK_HONORS_SOCKET_PERMS],
-[
-AC_MSG_CHECKING([if underlying system honors socket permissions])
-AC_CACHE_VAL(ac_cv_honors_socket_perms,
-[
-AC_LANG_SAVE
-AC_LANG_C
-ac_save_LIBS="$LIBS"
-ac_save_CPPFLAGS="$CPPFLAGS"
-LIBS="$all_libraries"
-CPPFLAGS="$CPPFLAGS $all_includes"
-AC_TRY_RUN(dnl
-[
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-int main()
-{
-    int fd, fd2;
-    struct sockaddr_un sa;
-
-    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
-        return 2;
-    sa.sun_family = AF_UNIX;
-    strcpy(sa.sun_path, "testsock");
-    unlink(sa.sun_path);
-    if (bind(fd, (struct sockaddr *)&sa, sizeof(sa)))
-        return 2;
-    chmod(sa.sun_path, 0);
-    setuid(getuid() + 1000);
-    if ((fd2 = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
-        return 2;
-    connect(fd2, (struct sockaddr *)&sa, sizeof(sa));
-    return errno != EACCES;
-}
-],
-            ac_cv_honors_socket_perms=yes,
-            ac_cv_honors_socket_perms=no,
-	    ac_cv_honors_socket_perms=no)
-LIBS="$ac_save_LIBS"
-CPPFLAGS="$ac_save_CPPFLAGS"
-AC_LANG_RESTORE
-])dnl
-if eval "test \"`echo $ac_cv_honors_socket_perms`\" = yes"; then
-  AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED(HONORS_SOCKET_PERMS, 1, [Defined if the underlying system honors socket permissions])
-else
-  AC_MSG_RESULT(no)
-fi
-])
-
 AC_DEFUN([AM_DISABLE_LIBRARIES],
 [
     AC_PROVIDE([AM_ENABLE_STATIC])
