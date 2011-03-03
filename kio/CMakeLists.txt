@@ -257,6 +257,7 @@ if(NOT KIO_NO_NEPOMUK)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
     kfile/kcommentwidget.cpp
+    kfile/kfilemetadatareader.cpp
     )
 endif(NOT KIO_NO_NEPOMUK)
 
@@ -307,8 +308,8 @@ set(kio_LIB_PRIVATE_SRCS
 )
 
 if(NOT KIO_NO_NEPOMUK)
-    set(kfilemetadatareader_SRCS
-        kfile/kfilemetadatareader.cpp
+    set(kfilemetadatareaderprocess_SRCS
+        kfile/kfilemetadatareaderprocess.cpp
     )
 endif(NOT KIO_NO_NEPOMUK)
 
@@ -328,7 +329,7 @@ install(FILES kssl/ksslcertificatemanager.upd
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 
 if(NOT KIO_NO_NEPOMUK)
-  kde4_add_executable(kfilemetadatareader ${kfilemetadatareader_SRCS})
+  kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
   target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)

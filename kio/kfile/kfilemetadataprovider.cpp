@@ -20,9 +20,9 @@
 #include "kfilemetadataprovider_p.h"
 
 #include <kfileitem.h>
+#include <kfilemetadatareader_p.h>
 #include "knfotranslator_p.h"
 #include <klocale.h>
-#include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
 
@@ -105,7 +105,7 @@ public:
     Private(KFileMetaDataProvider* parent);
     ~Private();
 
-    void slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void slotLoadingFinished();
 
     void slotRatingChanged(unsigned int rating);
     void slotTagsChanged(const QList<Nepomuk::Tag>& tags);
@@ -137,8 +137,8 @@ public:
 #ifndef KIO_NO_NEPOMUK
     QHash<KUrl, Nepomuk::Variant> m_data;
 
-    QList<KProcess*> m_metaDataProcesses;
-    KProcess* m_latestMetaDataProcess;
+    QList<KFileMetaDataReader*> m_metaDataReaders;
+    KFileMetaDataReader* m_latestMetaDataReader;
 
     QWeakPointer<KRatingWidget> m_ratingWidget;
     QWeakPointer<Nepomuk::TagWidget> m_tagWidget;
@@ -155,8 +155,8 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_fileItems(),
 #ifndef KIO_NO_NEPOMUK
     m_data(),
-    m_metaDataProcesses(),
-    m_latestMetaDataProcess(0),
+    m_metaDataReaders(),
+    m_latestMetaDataReader(0),
     m_ratingWidget(),
     m_tagWidget(),
     m_commentWidget(),
@@ -171,57 +171,37 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
 KFileMetaDataProvider::Private::~Private()
 {
 #ifndef KIO_NO_NEPOMUK
-    qDeleteAll(m_metaDataProcesses);
+    qDeleteAll(m_metaDataReaders);
 #endif
 }
 
-void KFileMetaDataProvider::Private::slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void KFileMetaDataProvider::Private::slotLoadingFinished()
 {
-    Q_UNUSED(exitCode);
-    Q_UNUSED(exitStatus);
-
 #ifndef KIO_NO_NEPOMUK
-    KProcess* finishedProcess = qobject_cast<KProcess*>(q->sender());
+    KFileMetaDataReader* finishedMetaDataReader = qobject_cast<KFileMetaDataReader*>(q->sender());
     // The process that has emitted the finished() signal
-    // will get deleted and removed from m_metaDataProcesses.
-    for (int i = 0; i < m_metaDataProcesses.count(); ++i) {
-        KProcess* process = m_metaDataProcesses[i];
-        if (process == finishedProcess) {
-            m_metaDataProcesses.removeAt(i);
-            if (process != m_latestMetaDataProcess) {
+    // will get deleted and removed from m_metaDataReaders.
+    for (int i = 0; i < m_metaDataReaders.count(); ++i) {
+        KFileMetaDataReader* metaDataReader = m_metaDataReaders[i];
+        if (metaDataReader == finishedMetaDataReader) {
+            m_metaDataReaders.removeAt(i);
+            if (metaDataReader != m_latestMetaDataReader) {
                 // Ignore data of older processs, as the data got
-                // obsolete by m_latestMetaDataProcess.
-                process->deleteLater();
+                // obsolete by m_latestMetaDataReader.
+                metaDataReader->deleteLater();
                 return;
             }
         }
     }
 
     m_data.clear();
-    while (m_latestMetaDataProcess->canReadLine()) {
-        // Read key
-        QString key = QString::fromLocal8Bit(m_latestMetaDataProcess->readLine());
-        key.remove(QChar::Other_Control);
-
-        // Read variant-type
-        if (!m_latestMetaDataProcess->canReadLine()) {
-            break;
-        }
-        QString valueTypeString(QString::fromLocal8Bit(m_latestMetaDataProcess->readLine()));
-        valueTypeString.remove(QChar::Other_Control);
-        const int valueType = valueTypeString.toInt();
-        if (!m_latestMetaDataProcess->canReadLine()) {
-            break;
-        }
-
-        // Read variant-value
-        QString value(QString::fromLocal8Bit(m_latestMetaDataProcess->readLine()));
-        value.remove(QChar::Other_Control);
-        // TODO: Handle value-types like QVariantList
-        Q_UNUSED(valueType);
-        m_data.insert(KUrl(key), value);
+    QHashIterator<QString, QVariant> it(m_latestMetaDataReader->metaData());
+    while (it.hasNext()) {
+        it.next();
+        m_data.insert(it.key(), Nepomuk::Variant(it.value()));
     }
-    m_latestMetaDataProcess->deleteLater();
+
+    m_latestMetaDataReader->deleteLater();
 
     if (m_fileItems.count() == 1) {
         // TODO: Handle case if remote URLs are used properly. isDir() does
@@ -407,27 +387,10 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
         }
     }
 
-    // Create a new process that will provide the meta data for the items
-    d->m_latestMetaDataProcess = new KProcess();
-
-    const QString fileMetaDataReaderExe = KStandardDirs::findExe(QLatin1String("kfilemetadatareader"));
-    (*d->m_latestMetaDataProcess) << fileMetaDataReaderExe;
-
-    foreach (const KUrl& url, urls) {
-        (*d->m_latestMetaDataProcess) << url.url();
-    }
-
-    d->m_latestMetaDataProcess->setOutputChannelMode(KProcess::OnlyStdoutChannel);
-    d->m_latestMetaDataProcess->setNextOpenMode(QIODevice::ReadOnly | QIODevice::Text);
-    d->m_latestMetaDataProcess->start();
-    if (d->m_latestMetaDataProcess->waitForStarted()) {
-        connect(d->m_latestMetaDataProcess, SIGNAL(finished(int, QProcess::ExitStatus)),
-                this, SLOT(slotLoadingFinished(int, QProcess::ExitStatus)));
-        d->m_metaDataProcesses.append(d->m_latestMetaDataProcess);
-    } else {
-        delete d->m_latestMetaDataProcess;
-        d->m_latestMetaDataProcess = 0;
-    }
+    d->m_latestMetaDataReader = new KFileMetaDataReader(urls);
+    connect(d->m_latestMetaDataReader, SIGNAL(finished()), this, SLOT(slotLoadingFinished()));
+    d->m_metaDataReaders.append(d->m_latestMetaDataReader);
+    d->m_latestMetaDataReader->start();
 #endif
 }
 

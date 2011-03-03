@@ -132,7 +132,7 @@ private:
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT(d, void slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus))
+    Q_PRIVATE_SLOT(d, void slotLoadingFinished())
     Q_PRIVATE_SLOT(d, void slotRatingChanged(unsigned int rating))
     Q_PRIVATE_SLOT(d, void slotTagsChanged(const QList<Nepomuk::Tag>& tags))
     Q_PRIVATE_SLOT(d, void slotCommentChanged(const QString& comment))
