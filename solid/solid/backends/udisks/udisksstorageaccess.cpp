@@ -1,6 +1,6 @@
 /*
     Copyright 2009 Pino Toscano <pino@kde.org>
-    Copyright 2009 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2009, 2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -151,17 +151,18 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
 
         m_setupInProgress = false;
         m_device->broadcastActionDone("setup");
+
         slotChanged();
     }
     else if (m_teardownInProgress)
     {
-        if (isLuksDevice()) //unlocked device, lock it
+        if (isLuksDevice()) // unlocked device, lock it
             callCryptoTeardown();
 
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown");
 
-        if (m_device->prop("DriveIsMediaEjectable").toBool() && !m_device->prop("DeviceIsOpticalDisc").toBool())
+        if (m_device->prop("DriveIsMediaEjectable").toBool() && !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
         {
             QString devnode = m_device->prop("DeviceFile").toString();
 
@@ -182,6 +183,17 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
 
             QProcess::startDetached( program, args );
         }
+
+        // try to eject the (parent) drive, e.g. SD card from a reader
+        QString drivePath = m_device->prop("PartitionSlave").value<QDBusObjectPath>().path();
+        if (!drivePath.isEmpty() || drivePath != "/")
+        {
+            QDBusConnection c = QDBusConnection::systemBus();
+            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
+            msg << QStringList();   // options, unused now
+            c.call(msg, QDBus::NoBlock);
+        }
+
         slotChanged();
     }
 }
@@ -349,6 +361,5 @@ bool UDisksStorageAccess::callCryptoTeardown()
                               SLOT(slotDBusReply(const QDBusMessage &)),
                               SLOT(slotDBusError(const QDBusError &)));
 }
-
 
 #include "backends/udisks/udisksstorageaccess.moc"
