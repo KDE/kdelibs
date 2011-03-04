@@ -2089,7 +2089,7 @@ bool HTTPProtocol::httpShouldCloseConnection()
   // TODO compare current proxy state against proxy needs of next request,
   // *when* we actually have variable proxy settings!
 
-  if (isValidProxy(m_request.proxyUrl))  {
+  if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl())  {
       return !isCompatibleNextUrl(m_server.proxyUrl, m_request.proxyUrl);
   }
   return !isCompatibleNextUrl(m_server.url, m_request.url);
