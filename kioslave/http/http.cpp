@@ -3831,11 +3831,17 @@ bool HTTPProtocol::sendBody()
   kDebug( 7113 ) << cLength.trimmed();
 
   // Send the content length...
-  bool sendOk = (write(cLength.toLatin1(), cLength.length()) == (ssize_t) cLength.length());
-  if (!sendOk)
-  {
-    kDebug( 7113 ) << "Connection broken when sending "
-                    << "content length: (" << m_request.url.host() << ")";
+  bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
+  if (!sendOk) {
+    // The server might have closed the connection due to a timeout, or maybe
+    // some transport problem arose while the connection was idle.
+    if (m_request.isKeepAlive)
+    {
+      httpCloseConnection();
+      return true; // Try again
+    }
+
+    kDebug(7113) << "Connection broken while sending POST content size to" << m_request.url.host();
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
