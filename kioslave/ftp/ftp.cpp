@@ -533,7 +533,7 @@ bool Ftp::ftpLogin()
 
     if( needPass )
     {
-      tempbuf = "pass ";
+      tempbuf = "PASS ";
       tempbuf += pass.toLatin1();
       kDebug(7102) << "Sending Login password: " << "[protected]";
       loggedIn = ( ftpSendCmd(tempbuf) && (m_iRespCode == 230) );
