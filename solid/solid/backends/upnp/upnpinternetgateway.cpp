@@ -58,17 +58,16 @@ void UPnPInternetGateway::setEnabledForInternet(bool enabled) const
             Herqq::Upnp::HClientAction* setEnabledForInternetAction = wanCommonIfaceConfigService->actions()[QString::fromLatin1("SetEnabledForInternet")];
             if (setEnabledForInternetAction) {
                 Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->info().inputArguments();
-                inArgs["NewEnabledForInternet"]->setValue(enabled);
+                inArgs["NewEnabledForInternet"].setValue(enabled);
 
                 connect(setEnabledForInternetAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
                         this,
-                        SLOT(setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                        SLOT(setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
 
                 qDebug() << "setEnabledForInternetAction begin invoke";
 
-                Herqq::Upnp::HAsyncOp id = setEnabledForInternetAction->beginInvoke(inArgs);
-                id.setUserData(reinterpret_cast<void*>(setEnabledForInternetAction));
+                Herqq::Upnp::HClientActionOp id = setEnabledForInternetAction->beginInvoke(inArgs);
             } else {
                 qWarning() << "Unable to retrieve SetEnabledForInternet action for this device:" << upnpDevice()->udi();
                 qWarning() << "Maybe the device doesn't implement, since it's an optional action. See the service description XML.";
@@ -81,17 +80,17 @@ void UPnPInternetGateway::setEnabledForInternet(bool enabled) const
     }
 }
 
-void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyncOp invocationID)
+void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID)
 {
     qDebug() << "setEnabledForInternetAction callback";
 
-    Herqq::Upnp::HClientAction* setEnabledForInternetAction = reinterpret_cast<Herqq::Upnp::HClientAction*>(invocationID.userData());
+    Herqq::Upnp::HClientAction* setEnabledForInternetAction = action;
 
     if (invocationID.returnValue() == Herqq::Upnp::UpnpSuccess) {
         qDebug() << "setEnabledForInternetAction invocation successful";
 
         Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->info().inputArguments();
-        bool enabled = inArgs["NewEnabledForInternet"]->value().toBool();
+        bool enabled = inArgs["NewEnabledForInternet"].value().toBool();
 
         emit enabledForInternet(enabled);
     } else {
@@ -150,28 +149,27 @@ void UPnPInternetGateway::deletePortMapping(const QString& remoteHost, qint16 ex
             Herqq::Upnp::HClientAction* deletePortMappingAction = wanConnectionService->actions()[QString::fromLatin1("DeletePortMapping")];
             if (deletePortMappingAction) {
                 Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->info().inputArguments();
-                inArgs["NewRemoteHost"]->setValue(remoteHost);
-                inArgs["NewExternalPort"]->setValue(externalPort);
+                inArgs["NewRemoteHost"].setValue(remoteHost);
+                inArgs["NewExternalPort"].setValue(externalPort);
 
                 if (mappingProtocol == Solid::InternetGateway::TCP) {
-                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("TCP"));
+                    inArgs["NewProtocol"].setValue(QString::fromLatin1("TCP"));
                 } else {
-                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("UDP"));
+                    inArgs["NewProtocol"].setValue(QString::fromLatin1("UDP"));
                 }
 
                 connect(deletePortMappingAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
                         this,
-                        SLOT(deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                        SLOT(deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
 
                 qDebug() << "deletePortMappingAction begin invoke";
                 qDebug() << "inArgs:"
-                         << inArgs["NewRemoteHost"]->value().toString()
-                         << inArgs["NewExternalPort"]->value().toInt()
-                         << inArgs["NewProtocol"]->value().toString();
+                         << inArgs["NewRemoteHost"].value().toString()
+                         << inArgs["NewExternalPort"].value().toInt()
+                         << inArgs["NewProtocol"].value().toString();
 
-                Herqq::Upnp::HAsyncOp id = deletePortMappingAction->beginInvoke(inArgs);
-                id.setUserData(reinterpret_cast<void*>(deletePortMappingAction));
+                Herqq::Upnp::HClientActionOp id = deletePortMappingAction->beginInvoke(inArgs);
             } else {
                 qWarning() << "Unable to retrieve DeletePortMapping action for this device:" << upnpDevice()->udi();
             }
@@ -183,19 +181,19 @@ void UPnPInternetGateway::deletePortMapping(const QString& remoteHost, qint16 ex
     }
 }
 
-void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID)
+void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID)
 {
     qDebug() << "deletePortMappingAction callback";
 
-    Herqq::Upnp::HClientAction* deletePortMappingAction = reinterpret_cast<Herqq::Upnp::HClientAction*>(invocationID.userData());
+    Herqq::Upnp::HClientAction* deletePortMappingAction = action;
 
     if (invocationID.returnValue() == Herqq::Upnp::UpnpSuccess) {
         qDebug() << "deletePortMapping Action invocation successful" << invocationID.returnValue();
 
         Herqq::Upnp::HActionArguments inArgs = deletePortMappingAction->info().inputArguments();
-        QString newRemoteHost = inArgs["NewRemoteHost"]->value().toString();
-        int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
-        QString newProtocol = inArgs["NewProtocol"]->value().toString();
+        QString newRemoteHost = inArgs["NewRemoteHost"].value().toString();
+        int newExternalPort = inArgs["NewExternalPort"].value().toInt();
+        QString newProtocol = inArgs["NewProtocol"].value().toString();
 
         Solid::InternetGateway::NetworkProtocol protocol;
         if (newProtocol == QString::fromLatin1("TCP")) {
@@ -238,39 +236,38 @@ void UPnPInternetGateway::addPortMapping(const QString& remoteHost, qint16 exter
             Herqq::Upnp::HClientAction* addPortMappingAction = wanConnectionService->actions()[QString::fromLatin1("AddPortMapping")];
             if (addPortMappingAction) {
                 Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->info().inputArguments();
-                inArgs["NewRemoteHost"]->setValue(remoteHost);
-                inArgs["NewExternalPort"]->setValue(externalPort);
+                inArgs["NewRemoteHost"].setValue(remoteHost);
+                inArgs["NewExternalPort"].setValue(externalPort);
 
                 if (mappingProtocol == Solid::InternetGateway::TCP) {
-                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("TCP"));
+                    inArgs["NewProtocol"].setValue(QString::fromLatin1("TCP"));
                 } else {
-                    inArgs["NewProtocol"]->setValue(QString::fromLatin1("UDP"));
+                    inArgs["NewProtocol"].setValue(QString::fromLatin1("UDP"));
                 }
 
-                inArgs["NewInternalPort"]->setValue(internalPort);
-                inArgs["NewInternalClient"]->setValue(internalClient);
-                inArgs["NewEnabled"]->setValue(true);
-                inArgs["NewPortMappingDescription"]->setValue(QString());
-                inArgs["NewLeaseDuration"]->setValue(0);
+                inArgs["NewInternalPort"].setValue(internalPort);
+                inArgs["NewInternalClient"].setValue(internalClient);
+                inArgs["NewEnabled"].setValue(true);
+                inArgs["NewPortMappingDescription"].setValue(QString());
+                inArgs["NewLeaseDuration"].setValue(0);
 
                 connect(addPortMappingAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
                         this,
-                        SLOT(addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                        SLOT(addPortMappingInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
 
                 qDebug() << "addPortMappingAction begin invoke";
                 qDebug() << "inArgs:"
-                         << inArgs["NewRemoteHost"]->value().toString()
-                         << inArgs["NewExternalPort"]->value().toInt()
-                         << inArgs["NewProtocol"]->value().toString()
-                         << inArgs["NewInternalPort"]->value().toInt()
-                         << inArgs["NewInternalClient"]->value().toString()
-                         << inArgs["NewEnabled"]->value().toBool()
-                         << inArgs["NewPortMappingDescription"]->value().toString()
-                         << inArgs["NewLeaseDuration"]->value().toLongLong();
+                         << inArgs["NewRemoteHost"].value().toString()
+                         << inArgs["NewExternalPort"].value().toInt()
+                         << inArgs["NewProtocol"].value().toString()
+                         << inArgs["NewInternalPort"].value().toInt()
+                         << inArgs["NewInternalClient"].value().toString()
+                         << inArgs["NewEnabled"].value().toBool()
+                         << inArgs["NewPortMappingDescription"].value().toString()
+                         << inArgs["NewLeaseDuration"].value().toLongLong();
 
-                Herqq::Upnp::HAsyncOp id = addPortMappingAction->beginInvoke(inArgs);
-                id.setUserData(reinterpret_cast<void*>(addPortMappingAction));
+                Herqq::Upnp::HClientActionOp id = addPortMappingAction->beginInvoke(inArgs);
             } else {
                 qWarning() << "Unable to retrieve AddPortMapping action for this device:" << upnpDevice()->udi();
             }
@@ -282,19 +279,19 @@ void UPnPInternetGateway::addPortMapping(const QString& remoteHost, qint16 exter
     }
 }
 
-void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID)
+void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID)
 {
     qDebug() << "addPortMappingAction callback";
 
-    Herqq::Upnp::HClientAction* addPortMappingAction = reinterpret_cast<Herqq::Upnp::HClientAction*>(invocationID.userData());
+    Herqq::Upnp::HClientAction* addPortMappingAction = action;
 
     if (invocationID.returnValue() == Herqq::Upnp::UpnpSuccess) {
         qDebug() << "addPortMapping Action invocation successful" << invocationID.returnValue();
 
         Herqq::Upnp::HActionArguments inArgs = addPortMappingAction->info().inputArguments();
-        QString newRemoteHost = inArgs["NewRemoteHost"]->value().toString();
-        int newExternalPort = inArgs["NewExternalPort"]->value().toInt();
-        QString newProtocol = inArgs["NewProtocol"]->value().toString();
+        QString newRemoteHost = inArgs["NewRemoteHost"].value().toString();
+        int newExternalPort = inArgs["NewExternalPort"].value().toInt();
+        QString newProtocol = inArgs["NewProtocol"].value().toString();
 
         Solid::InternetGateway::NetworkProtocol protocol;
         if (newProtocol == QString::fromLatin1("TCP")) {
@@ -303,8 +300,8 @@ void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp inv
             protocol = Solid::InternetGateway::UDP;
         }
 
-        int newInternalPort = inArgs["NewInternalPort"]->value().toInt();
-        QString newInternalClient = inArgs["NewInternalClient"]->value().toString();
+        int newInternalPort = inArgs["NewInternalPort"].value().toInt();
+        QString newInternalClient = inArgs["NewInternalClient"].value().toString();
 
         emit portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
     } else {
@@ -353,17 +350,16 @@ void UPnPInternetGateway::requestCurrentConnections()
                 int numberOfActiveConnections = getNumberOfActiveConnections();
                 if (numberOfActiveConnections > 0) {
                     connect(getActiveConnectionAction,
-                            SIGNAL(invokeComplete(Herqq::Upnp::HAsyncOp)),
+                            SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
                             this,
-                            SLOT(getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp)));
+                            SLOT(getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
 
                     for (int i = 0; i < numberOfActiveConnections; ++i) {
                         Herqq::Upnp::HActionArguments inArgs = getActiveConnectionAction->info().inputArguments();
-                        inArgs["NewActiveConnectionIndex"]->setValue(i);
+                        inArgs["NewActiveConnectionIndex"].setValue(i);
 
                         qDebug() << "getActiveConnectionAction begin invoke" << i;
-                        Herqq::Upnp::HAsyncOp id = getActiveConnectionAction->beginInvoke(inArgs);
-                        id.setUserData(reinterpret_cast<void*>(getActiveConnectionAction));
+                        Herqq::Upnp::HClientActionOp id = getActiveConnectionAction->beginInvoke(inArgs);
                     }
                 }
             } else {
@@ -378,15 +374,16 @@ void UPnPInternetGateway::requestCurrentConnections()
     }
 }
 
-void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp invocationID, const Herqq::Upnp::HActionArguments &outArgs)
+void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID)
 {
     qDebug() << "getActiveConnectionAction callback";
+    Herqq::Upnp::HActionArguments outArgs = invocationID.outputArguments();
 
-    Herqq::Upnp::HClientAction* getActiveConnectionAction = reinterpret_cast<Herqq::Upnp::HClientAction*>(invocationID.userData());
+    Herqq::Upnp::HClientAction* getActiveConnectionAction = action;
 
     if (invocationID.returnValue() == Herqq::Upnp::UpnpSuccess) {
         qDebug() << "getActiveConnection Action invocation successful" << invocationID.returnValue();
-        QString conn = outArgs["ActiveConnectionDeviceContainer"]->value().toString();
+        QString conn = outArgs["ActiveConnectionDeviceContainer"].value().toString();
         activeConnections << conn;
     } else {
         qDebug() << "getActiveConnection Action invocation failed";

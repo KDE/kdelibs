@@ -25,7 +25,7 @@
 
 #include "upnpdeviceinterface.h"
 
-#include <HUpnpCore/HAsyncOp>
+#include <HUpnpCore/HClientActionOp>
 #include <HUpnpCore/HClientDevice>
 #include <HUpnpCore/HClientService>
 
@@ -71,13 +71,13 @@ namespace UPnP
             int numberOfConnections;
 
         private slots:
-            void setEnabledForInternetInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+            void setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);
 
-            void deletePortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+            void deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);
 
-            void addPortMappingInvokeCallback(Herqq::Upnp::HAsyncOp invocationID);
+            void addPortMappingInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);
 
-            void getActiveConnectionActionInvokeCallback(Herqq::Upnp::HAsyncOp invocationID, const Herqq::Upnp::HActionArguments &outArgs);
+            void getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);
 
         Q_SIGNALS:
             void enabledForInternet(bool enabled);
