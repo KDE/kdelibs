@@ -293,10 +293,15 @@ static const char valueSpecials[] =      "()<>@,;:\\\"/[]?=";
 
 static bool specialChar(const QChar &ch, const char *specials)
 {
-    if( (ch.unicode() < 32) || (ch.unicode() >= 128) )
+    // WORKAROUND: According to RFC 2616, any character other than ascii
+    // characters should NOT be allowed in unquoted content-disposition file
+    // names. However, since none of the major browsers follow this rule, we do
+    // the same thing here and allow all printable unicode characters. See
+    // https://bugs.kde.org/show_bug.cgi?id=261223 for the detials.
+    if(!ch.isPrint())
         return true;
 
-    for( int i = strlen(specials) - 1; i>= 0; i--)
+    for( int i = qstrlen(specials) - 1; i>= 0; i--)
        if( ch == QLatin1Char(specials[i]) )
            return true;
 
@@ -326,7 +331,7 @@ static QString extractUntil(const QString &str, QChar term, int &pos, const char
 
     while (pos < str.length() && (str[pos] != term)) {
         out += str[pos];
-        valid &= !specialChar(str[pos], specials);
+        valid = (valid && !specialChar(str[pos], specials));
         ++pos;
     }
 
@@ -429,7 +434,6 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
             break;
         }
 
-        int spos = key.indexOf(QLatin1Char('*'));
         QString val;
         if( key.endsWith(QLatin1Char('*')) )
             val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials).toLower();
@@ -444,6 +448,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
             continue;
         }
 
+        const int spos = key.indexOf(QLatin1Char('*'));
         if( spos == key.length() - 1 ) {
             key.chop(1);
             encparams.insert(key, val);
@@ -514,7 +519,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         }
     }
 
-    for( QMap<QString, QString>::iterator i = encparams.begin();
+    for( QMap<QString, QString>::iterator i = encparams.begin(), iEnd = encparams.end();
          i != encparams.end(); ++i )
     {
         QString val = i.value();
