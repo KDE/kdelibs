@@ -559,6 +559,7 @@ void HTTPProtocol::resetSessionSettings()
   // the persistent link has been terminated by the remote end.
   m_request.isKeepAlive = true;
   m_request.keepAliveTimeout = 0;
+  m_iPostDataSize = NO_SIZE;
 }
 
 void HTTPProtocol::setHost( const QString& host, quint16 port,
