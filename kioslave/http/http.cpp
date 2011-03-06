@@ -539,9 +539,6 @@ void HTTPProtocol::resetSessionSettings()
 
   // Bounce back the actual referrer sent
   setMetaData(QLatin1String("referrer"), m_request.referrer);
-
-  // Reset the post data size
-  m_iPostDataSize = NO_SIZE;
 }
 
 void HTTPProtocol::setHost( const QString& host, quint16 port,
