@@ -202,7 +202,20 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
        QString tmp = job->queryMetaData("media-boundary");
        kDebug() << "Got Boundary from kio-http '" << tmp << "'";
        if ( !tmp.isEmpty() ) {
-           if (tmp.startsWith(QLatin1String("--")))
+           // as per r437578, sometimes we se something like this:
+           // Content-Type: multipart/x-mixed-replace; boundary=--myboundary
+           // ..
+           // --myboundary
+           // e.g. the hashes specified in the header are extra. However,
+           // we also see the following on the w3c bugzilla:
+           // boundary="------- =_aaaaaaaaaa0"
+           // ..
+           //--------- =_aaaaaaaaaa0
+           // e.g. the hashes are accurate. For now, we consider the quoted
+           // case to be quirk-free, and only apply the -- stripping quirk
+           // when we're unquoted.
+           if (tmp.startsWith(QLatin1String("--")) &&
+               job->queryMetaData("media-boundary-kio-quoted") != "true")
                m_boundary = tmp.toLatin1();
            else
                m_boundary = QByteArray("--")+tmp.toLatin1();

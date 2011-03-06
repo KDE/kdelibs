@@ -38,6 +38,7 @@ UserAgent       string          The user agent name to send to remote host (read
 
 content-type    string          The content type of the data to be uploaded (read and set by http)
 media-*         string          Media-Parameter attributes (e.g. media-boundary)
+media-*-kio-quoted  bool        The corresponding media- attribute's value was quoted. (set by http)
 
 cache           "cache"         Use entry from cache if available.
                 "cacheonly"     Do not do any remote lookups, fail if not in cache. (read by http)

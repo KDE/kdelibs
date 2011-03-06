@@ -3064,7 +3064,9 @@ endParsing:
                 mediaAttribute = mediaAttribute.trimmed();
                 mediaValue     = mediaValue.trimmed();
 
+                bool quoted = false;
                 if (mediaValue.startsWith(QLatin1Char('"'))) {
+                    quoted = true;
                     mediaValue.remove(QLatin1Char('"'));
                 }
 
@@ -3080,6 +3082,10 @@ endParsing:
                     setMetaData(QLatin1String("charset"), mediaValue);
                 } else {
                     setMetaData(QLatin1String("media-") + mediaAttribute, mediaValue);
+                    if (quoted) {
+                        setMetaData(QLatin1String("media-") + mediaAttribute + QLatin1String("-kio-quoted"),
+                                    QLatin1String("true"));
+                    }
                 }
             }
         }
