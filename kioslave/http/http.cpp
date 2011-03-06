@@ -440,7 +440,13 @@ void HTTPProtocol::resetSessionSettings()
   if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
       m_request.isKeepAlive = config()->readEntry("PersistentProxyConnection", false);
       kDebug(7113) << "Enable Persistent Proxy Connection:" << m_request.isKeepAlive;
+  } else {
+      // Follow HTTP/1.1 spec and enable keep-alive by default
+      // unless the remote side tells us otherwise or we determine
+      // the persistent link has been terminated by the remote end.
+      m_request.isKeepAlive = true;
   }
+  m_request.keepAliveTimeout = 0;
 
   m_request.redirectUrl = KUrl();
   m_request.useCookieJar = config()->readEntry("Cookies", false);
@@ -534,11 +540,7 @@ void HTTPProtocol::resetSessionSettings()
   // Bounce back the actual referrer sent
   setMetaData(QLatin1String("referrer"), m_request.referrer);
 
-  // Follow HTTP/1.1 spec and enable keep-alive by default
-  // unless the remote side tells us otherwise or we determine
-  // the persistent link has been terminated by the remote end.
-  m_request.isKeepAlive = true;
-  m_request.keepAliveTimeout = 0;
+  // Reset the post data size
   m_iPostDataSize = NO_SIZE;
 }
 
