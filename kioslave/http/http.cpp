@@ -3034,6 +3034,8 @@ endParsing:
                     mediaAttribute = toQString(statement.mid(0, index));
                     mediaValue = toQString(statement.mid(index+1));
                 }
+                mediaAttribute = mediaAttribute.trimmed();
+                mediaValue     = mediaValue.trimmed();
 
                 if (mediaValue.startsWith(QLatin1Char('"'))) {
                     mediaValue.remove(QLatin1Char('"'));
