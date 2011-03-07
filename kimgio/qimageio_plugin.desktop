@@ -80,7 +80,7 @@ Comment[uk]=Додаток QImageIOHandler
 Comment[vi]=Bổ sung QImageIOHandler
 Comment[wa]=Tchôke-divins QImageIOHandler
 Comment[x-test]=xxQImageIOHandler pluginxx
-Comment[zh_CN]=QImageIOHandler 插件
+Comment[zh_CN]=QImage 读写处理插件
 Comment[zh_TW]=QImageIOHandler plugin
 
 [PropertyDef::X-KDE-ImageFormat]

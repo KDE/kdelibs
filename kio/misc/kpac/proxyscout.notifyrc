@@ -55,7 +55,7 @@ Comment[tr]=Vekil Sunucu Yapılandırması
 Comment[uk]=Налаштування проксі-сервера мережі
 Comment[wa]=Apontiaedje do procsi del rantoele
 Comment[x-test]=xxNetwork Proxy Configurationxx
-Comment[zh_CN]=网络代理服务器配置
+Comment[zh_CN]=网络代理配置
 Comment[zh_TW]=網路代理組態
 
 [Event/script-error]
@@ -227,7 +227,7 @@ Comment[uz]=Proksini moslash uchun yozib olingan skript haqiqiy emas
 Comment[uz@cyrillic]=Проксини мослаш учун ёзиб олинган скрипт ҳақиқий эмас
 Comment[wa]=Li scripe d' apontiaedje do procsi aberweté n' est nén valåbe
 Comment[x-test]=xxThe downloaded proxy configuration script is invalidxx
-Comment[zh_CN]=下载的代理服务器配置脚本无效
+Comment[zh_CN]=下载的代理配置脚本无效
 Comment[zh_HK]=剛下載的代理伺服器組態 script 語法有誤
 Comment[zh_TW]=下載的代理組態文稿不合法
 Action=Popup
