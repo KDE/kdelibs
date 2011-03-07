@@ -3827,11 +3827,11 @@ bool HTTPProtocol::sendBody()
 
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
-  const QString cLength = QLatin1String("Content-Length: ") + QString::number(m_POSTbuf.size()) + QLatin1String("\r\n\r\n");
-  kDebug( 7113 ) << cLength.trimmed();
+  const QByteArray cLength = QByteArray("Content-Length: ") + QByteArray::number(m_POSTbuf.size()) + "\r\n\r\n";
+  kDebug(7113) << cLength.trimmed();
 
   // Send the content length...
-  bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
+  bool sendOk = (write(cLength.constData(), cLength.size()) == (ssize_t) cLength.size());
   if (!sendOk) {
     // The server might have closed the connection due to a timeout, or maybe
     // some transport problem arose while the connection was idle.
@@ -3847,7 +3847,7 @@ bool HTTPProtocol::sendBody()
   }
 
   // Send the data...
-  // kDebug( 7113 ) << "POST DATA:" << QCString(m_POSTbuf);
+  //kDebug(7113) << "POST DATA:" << QString::fromLocal8Bit(m_POSTbuf);
   sendOk = (write(m_POSTbuf.data(), m_POSTbuf.size()) == (ssize_t) m_POSTbuf.size());
   if (!sendOk)
   {
