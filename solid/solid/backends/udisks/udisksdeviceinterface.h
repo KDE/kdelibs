@@ -110,6 +110,9 @@ public:
             break;
         case Solid::DeviceInterface::SmartCardReader:
             // Doesn't exist with UDisks
+        case Solid::DeviceInterface::NetworkShare:
+            // Doesn't exist with UDisks
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:
@@ -157,6 +160,8 @@ public:
             return Solid::DeviceInterface::SerialInterface;
         else if (capability == "smart_card_reader")
             return Solid::DeviceInterface::SmartCardReader;
+        else if (capability == "networkshare")
+            return Solid::DeviceInterface::NetworkShare;
         else
             return Solid::DeviceInterface::Unknown;
     }
