@@ -35,7 +35,7 @@
 #include <kstandarddirs.h>
 #include <kdatetime.h>
 #include "browseropenorsavequestion.h"
-#include <assert.h>
+#include <kprotocolmanager.h>
 
 using namespace KParts;
 
@@ -120,10 +120,17 @@ void BrowserRun::scanFile()
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   // Optimization for http/https, findByURL doesn't trust extensions over http.
-  if ( KRun::url().query().isEmpty() && !KRun::url().protocol().startsWith(QLatin1String("http")) )
+  QString protocol = KRun::url().protocol();
+
+  if (!KProtocolInfo::proxiedBy(protocol).isEmpty()) {
+    QString dummy;
+    protocol = KProtocolManager::slaveProtocol(KRun::url(), dummy);
+  }
+
+  if ( KRun::url().query().isEmpty() && !protocol.startsWith(QLatin1String("http")))
   {
     KMimeType::Ptr mime = KMimeType::findByUrl( KRun::url() );
-    assert( mime );
+    Q_ASSERT( mime );
     if ( !mime->isDefault() || isLocalFile() )
     {
       kDebug(1000) << "MIME TYPE is" << mime->name();

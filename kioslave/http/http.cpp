@@ -2179,7 +2179,7 @@ QString HTTPProtocol::formatRequestUri() const
     if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
         KUrl u;
 
-        QString protocol = toQString(m_protocol);
+        QString protocol = m_request.url.protocol();
         if (protocol.startsWith(QLatin1String("webdav"))) {
             protocol.replace(0, qstrlen("webdav"), QLatin1String("http"));
         }
