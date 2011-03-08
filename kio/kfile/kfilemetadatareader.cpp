@@ -32,7 +32,7 @@ public:
 
     bool m_readContextData;
     KProcess* m_process;
-    QHash<QString, QVariant> m_metaData;
+    QHash<KUrl, Nepomuk::Variant> m_metaData;
 
 private:
     KFileMetaDataReader* const q;
@@ -58,10 +58,38 @@ void KFileMetaDataReader::Private::slotLoadingFinished(int exitCode, QProcess::E
 
     QDataStream in(QByteArray::fromBase64(m_process->readLine()));
 
-    QString key;
-    QVariant value;
+    KUrl key;
+    Nepomuk::Variant value;
     while (!in.atEnd()) {
-        in >> key >> value;
+        in >> key;
+
+        // Unlike QVariant no streaming operators are implemented for Nepomuk::Variant.
+        // So it is required to manually decode the variant from the stream. See
+        // function sendMetaData() in kfilemetadatareaderprocess.cpp for the encoding
+        // counterpart.
+        int streamType;
+        in >> streamType;
+
+        switch (streamType) {
+        case 0: {
+            QStringList stringList;
+            in >> stringList;
+            value = stringList;
+            break;
+        }
+        case 1: {
+            QString resource;
+            in >> resource;
+            value = resource;
+            break;
+        }
+
+        default:
+            QVariant variant;
+            in >> variant;
+            value = Nepomuk::Variant(variant);
+        }
+
         m_metaData.insert(key, value);
     }
 
@@ -110,7 +138,7 @@ void KFileMetaDataReader::start()
     }
 }
 
-QHash<QString, QVariant> KFileMetaDataReader::metaData() const
+QHash<KUrl, Nepomuk::Variant> KFileMetaDataReader::metaData() const
 {
     return d->m_metaData;
 }

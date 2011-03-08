@@ -194,13 +194,7 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
         }
     }
 
-    m_data.clear();
-    QHashIterator<QString, QVariant> it(m_latestMetaDataReader->metaData());
-    while (it.hasNext()) {
-        it.next();
-        m_data.insert(it.key(), Nepomuk::Variant(it.value()));
-    }
-
+    m_data = m_latestMetaDataReader->metaData();
     m_latestMetaDataReader->deleteLater();
 
     if (m_fileItems.count() == 1) {
@@ -317,11 +311,10 @@ QWidget* KFileMetaDataProvider::Private::createRatingWidget(int rating, QWidget*
 QWidget* KFileMetaDataProvider::Private::createTagWidget(const QList<Nepomuk::Tag>& tags, QWidget* parent)
 {
     Nepomuk::TagWidget* tagWidget = new Nepomuk::TagWidget(parent);
-    tagWidget->setModeFlags(Nepomuk::TagWidget::MiniMode);
-    tagWidget->setSelectedTags(tags);
     tagWidget->setModeFlags(m_readOnly
                             ? Nepomuk::TagWidget::MiniMode | Nepomuk::TagWidget::ReadOnly
                             : Nepomuk::TagWidget::MiniMode);
+    tagWidget->setSelectedTags(tags);
 
     connect(tagWidget, SIGNAL(selectionChanged(QList<Nepomuk::Tag>)),
             q, SLOT(slotTagsChanged(QList<Nepomuk::Tag>)));
@@ -483,11 +476,10 @@ QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
         if (uri == QLatin1String("kfileitem#rating")) {
             widget = d->createRatingWidget(value.toInt(), parent);
         } else if (uri == QLatin1String("kfileitem#tags")) {
-            const QList<Nepomuk::Variant> variants = value.toVariantList();
+            const QStringList tagNames = value.toStringList();
             QList<Nepomuk::Tag> tags;
-            foreach (const Nepomuk::Variant& variant, variants) {
-                const Nepomuk::Resource resource = variant.toResource();
-                tags.append(static_cast<Nepomuk::Tag>(resource));
+            foreach (const QString& tagName, tagNames) {
+                tags.append(Nepomuk::Tag(tagName));
             }
 
             widget = d->createTagWidget(tags, parent);

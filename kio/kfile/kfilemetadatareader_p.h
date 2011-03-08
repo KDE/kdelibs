@@ -22,6 +22,8 @@
 
 #include <kurl.h>
 
+#include <nepomuk/core/variant.h>
+
 #include <QtCore/QHash>
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -71,7 +73,7 @@ public:
      *         after the signal finished() has been emitted. If it is invoked before
      *         an empty hash-table will be returned.
      */
-    QHash<QString, QVariant> metaData() const;
+    QHash<KUrl, Nepomuk::Variant> metaData() const;
 
 Q_SIGNALS:
     /**

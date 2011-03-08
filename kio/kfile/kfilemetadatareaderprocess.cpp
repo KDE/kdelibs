@@ -54,7 +54,20 @@ static void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
     QHashIterator<KUrl, Nepomuk::Variant> it(data);
     while (it.hasNext()) {
         it.next();
-        out << it.key().url() << it.value().variant();
+
+        out << it.key();
+
+        // Unlike QVariant no streaming operators are implemented for Nepomuk::Variant.
+        // So it is required to manually encode the variant for the stream.
+        // The decoding counterpart is located in KFileMetaDataReader.
+        const Nepomuk::Variant& variant = it.value();
+        if (variant.isList()) {
+            out << 0 << variant.toStringList();
+        } else if (variant.isResource()) {
+            out << 1 << variant.toString();
+        } else {
+            out << 2 << variant.variant();
+        }
     }
 
     cout << byteArray.toBase64().constData();
