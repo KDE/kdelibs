@@ -65,7 +65,10 @@ public:
     void startQuery( const Nepomuk::Query::Query& query ) {
         // we cannot use the query service since that would ignore our custom model
         // thus, we perform a sync query and call _k_newEntries async from there
-        Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( query.toSparqlQuery(), Soprano::Query::QueryLanguageSparql );
+        Nepomuk::Query::Query ourQuery(query);
+        // disable result restrictions since we do not support those in our custom model
+        ourQuery.setQueryFlags(Nepomuk::Query::Query::NoResultRestrictions);
+        Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( ourQuery.toSparqlQuery(), Soprano::Query::QueryLanguageSparql );
         QList<Nepomuk::Query::Result> results;
         while( it.next() ) {
             results << Result( it[0].uri() );
