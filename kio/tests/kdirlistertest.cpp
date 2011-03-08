@@ -678,10 +678,81 @@ void KDirListerTest::testConcurrentHoldingListing()
     QCOMPARE(m_dirLister.spyClear.count(), 1);
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QVERIFY(dirLister2.isFinished());
-    disconnect(&dirLister2, 0, this, 0);
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
     QCOMPARE(m_items.count(), origItemCount);
+}
+
+void KDirListerTest::testConcurrentListingAndStop()
+{
+    m_items.clear();
+    m_items2.clear();
+
+    MyDirLister dirLister2;
+
+    // Use a new tempdir for this test, so that we don't use the cache at all.
+    KTempDir tempDir;
+    const QString path = tempDir.name();
+    createTestFile(path+"file_1");
+    createTestFile(path+"file_2");
+    createTestFile(path+"file_3");
+
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
+
+    // Before m_dirLister has time to emit the items, let's make dirLister2 call stop().
+    // This should not stop the list job for m_dirLister (#267709).
+    dirLister2.openUrl(KUrl(path), KDirLister::Reload);
+    m_dirLister.openUrl(KUrl(path)/*, KDirLister::Reload*/);
+
+    QCOMPARE(m_dirLister.spyStarted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompleted.count(), 0);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+    QCOMPARE(m_items.count(), 0);
+
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 0);
+    QCOMPARE(dirLister2.spyCompletedKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyCanceled.count(), 0);
+    QCOMPARE(dirLister2.spyCanceledKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyClear.count(), 1);
+    QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
+    QCOMPARE(m_items2.count(), 0);
+    QVERIFY(!m_dirLister.isFinished());
+    QVERIFY(!dirLister2.isFinished());
+
+    dirLister2.stop();
+
+    QCOMPARE(dirLister2.spyStarted.count(), 1);
+    QCOMPARE(dirLister2.spyCompleted.count(), 0);
+    QCOMPARE(dirLister2.spyCompletedKUrl.count(), 0);
+    QCOMPARE(dirLister2.spyCanceled.count(), 1);
+    QCOMPARE(dirLister2.spyCanceledKUrl.count(), 1);
+    QCOMPARE(dirLister2.spyClear.count(), 1);
+    QCOMPARE(dirLister2.spyClearKUrl.count(), 0);
+    QCOMPARE(m_items2.count(), 0);
+
+    // then wait for completed
+    qDebug("waiting for completed");
+    connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+    enterLoop();
+
+    QCOMPARE(m_items.count(), 3);
+    QCOMPARE(m_items2.count(), 0);
+
+    //QCOMPARE(m_dirLister.spyStarted.count(), 1); // 2 when in cache
+    QCOMPARE(m_dirLister.spyCompleted.count(), 1);
+    QCOMPARE(m_dirLister.spyCompletedKUrl.count(), 1);
+    QCOMPARE(m_dirLister.spyCanceled.count(), 0);
+    QCOMPARE(m_dirLister.spyCanceledKUrl.count(), 0);
+    QCOMPARE(m_dirLister.spyClear.count(), 1);
+    QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
+
+    disconnect(&m_dirLister, 0, this, 0);
 }
 
 void KDirListerTest::testDeleteListerEarly()
