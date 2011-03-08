@@ -373,6 +373,8 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
                     }
                     // For non KDE applications, we launch and kill the slave-on-hold...
                     KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
+                } else {
+                    (void)new KRun(requestUrl, topLevelWindow);
                 }
             }
             break;
