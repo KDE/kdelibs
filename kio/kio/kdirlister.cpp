@@ -194,7 +194,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
             // List items from the cache in a delayed manner, just like things would happen
             // if we were not using the cache.
-            new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload);
+            new KDirLister::Private::CachedItemsJob(lister, _url, _reload);
 
         } else {
             // dir not in cache or _reload is true
@@ -260,8 +260,13 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
         // List existing items in a delayed manner, just like things would happen
         // if we were not using the cache.
-        //kDebug() << "Listing" << itemU->lstItems.count() << "cached items soon";
-        new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload);
+        if (!itemU->lstItems.isEmpty()) {
+            kDebug() << "Listing" << itemU->lstItems.count() << "cached items soon";
+            new KDirLister::Private::CachedItemsJob(lister, _url, _reload);
+        } else {
+            // The other lister hasn't emitted anything yet. Good, we'll just listen to it.
+            // One problem could be if we have _reload=true and the existing job doesn't, though.
+        }
 
 #ifdef DEBUG_CACHE
         printDebug();
@@ -280,11 +285,9 @@ KDirLister::Private::CachedItemsJob* KDirLister::Private::cachedItemsJobForUrl(c
     return 0;
 }
 
-KDirLister::Private::CachedItemsJob::CachedItemsJob(KDirLister* lister, const KFileItemList& items, 
-                                                    const KFileItem& rootItem, const KUrl& url, bool reload)
+KDirLister::Private::CachedItemsJob::CachedItemsJob(KDirLister* lister, const KUrl& url, bool reload)
   : KJob(lister),
     m_lister(lister), m_url(url),
-    m_items(items), m_rootItem(rootItem),
     m_reload(reload), m_emitCompleted(true)
 {
     //kDebug() << "Creating CachedItemsJob" << this << "for lister" << lister << url;
@@ -301,54 +304,47 @@ void KDirLister::Private::CachedItemsJob::done()
 {
     if (!m_lister) // job was already killed, but waiting deletion due to deleteLater
         return;
-    kDirListerCache->emitItemsFromCache(this, m_lister, m_items, m_rootItem, m_url, m_reload, m_emitCompleted);
+    kDirListerCache->emitItemsFromCache(this, m_lister, m_url, m_reload, m_emitCompleted);
     emitResult();
 }
 
 bool KDirLister::Private::CachedItemsJob::doKill()
 {
-    //kDebug() << this;
-    kDirListerCache->emitItemsFromCache(this, m_lister, KFileItemList(), KFileItem(), m_url, false, false);
+    //kDebug(7004) << this;
+    kDirListerCache->forgetCachedItemsJob(this, m_lister, m_url);
+    if (!property("_kdlc_silent").toBool()) {
+        emit m_lister->canceled(m_url);
+        emit m_lister->canceled();
+    }
     m_lister = 0;
     return true;
 }
 
-void KDirListerCache::emitItemsFromCache(KDirLister::Private::CachedItemsJob* cachedItemsJob, KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem, const KUrl& _url, bool _reload, bool _emitCompleted)
+void KDirListerCache::emitItemsFromCache(KDirLister::Private::CachedItemsJob* cachedItemsJob, KDirLister* lister, const KUrl& _url, bool _reload, bool _emitCompleted)
 {
     const QString urlStr = _url.url();
-    DirItem *itemU = kDirListerCache->itemsInUse.value(urlStr);
-    Q_ASSERT(itemU); // hey we're listing that dir, so this can't be 0, right?
-
     KDirLister::Private* kdl = lister->d;
-
     kdl->complete = false;
 
-    if (kdl->rootFileItem.isNull() && !rootItem.isNull() && kdl->url == _url) {
-        kdl->rootFileItem = rootItem;
-    }
-    if (!items.isEmpty()) {
-        //kDebug(7004) << "emitting" << items.count() << "for lister" << lister;
-        kdl->addNewItems(_url, items);
-        kdl->emitItems();
-    }
-
-    // Modifications to data structures only below this point;
-    // so that addNewItems is called with a consistent state
-
-    lister->d->m_cachedItemsJobs.removeAll(cachedItemsJob);
-
-    KDirListerCacheDirectoryData& dirData = directoryData[urlStr];
-    Q_ASSERT(dirData.listersCurrentlyListing.contains(lister));
-
-    KIO::ListJob *listJob = jobForUrl(urlStr);
-    if (!listJob) {
-        Q_ASSERT(!dirData.listersCurrentlyHolding.contains(lister));
-        kDebug(7004) << "Moving from listing to holding, because no more job" << lister << urlStr;
-        dirData.listersCurrentlyHolding.append( lister );
-        dirData.listersCurrentlyListing.removeAll( lister );
+    DirItem *itemU = kDirListerCache->itemsInUse.value(urlStr);
+    if (!itemU) {
+        kWarning(7004) << "Can't find item for directory" << urlStr << "anymore";
     } else {
-        //kDebug(7004) << "Still having a listjob" << listJob << ", so not moving to currently-holding.";
+        const KFileItemList items = itemU->lstItems;
+        const KFileItem rootItem = itemU->rootItem;
+        _reload = _reload || !itemU->complete;
+
+        if (kdl->rootFileItem.isNull() && !rootItem.isNull() && kdl->url == _url) {
+            kdl->rootFileItem = rootItem;
+        }
+        if (!items.isEmpty()) {
+            //kDebug(7004) << "emitting" << items.count() << "for lister" << lister;
+            kdl->addNewItems(_url, items);
+            kdl->emitItems();
+        }
     }
+
+    forgetCachedItemsJob(cachedItemsJob, lister, _url);
 
     // Emit completed, unless we were told not to,
     // or if listDir() was called while another directory listing for this dir was happening,
@@ -360,9 +356,31 @@ void KDirListerCache::emitItemsFromCache(KDirLister::Private::CachedItemsJob* ca
         emit lister->completed( _url );
         emit lister->completed();
 
-        if ( _reload || !itemU->complete ) {
+        if ( _reload ) {
             updateDirectory( _url );
         }
+    }
+}
+
+void KDirListerCache::forgetCachedItemsJob(KDirLister::Private::CachedItemsJob* cachedItemsJob, KDirLister* lister, const KUrl& _url)
+{
+    // Modifications to data structures only below this point;
+    // so that addNewItems is called with a consistent state
+
+    const QString urlStr = _url.url();
+    lister->d->m_cachedItemsJobs.removeAll(cachedItemsJob);
+
+    KDirListerCacheDirectoryData& dirData = directoryData[urlStr];
+    Q_ASSERT(dirData.listersCurrentlyListing.contains(lister));
+
+    KIO::ListJob *listJob = jobForUrl(urlStr);
+    if (!listJob) {
+        Q_ASSERT(!dirData.listersCurrentlyHolding.contains(lister));
+        //kDebug(7004) << "Moving from listing to holding, because no more job" << lister << urlStr;
+        dirData.listersCurrentlyHolding.append( lister );
+        dirData.listersCurrentlyListing.removeAll( lister );
+    } else {
+        //kDebug(7004) << "Still having a listjob" << listJob << ", so not moving to currently-holding.";
     }
 }
 
@@ -396,19 +414,13 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
 #ifdef DEBUG_CACHE
     //printDebug();
 #endif
-    //kDebug(7004) << "lister: " << lister;
+    //kDebug(7004) << "lister:" << lister << "silent=" << silent;
 
     const KUrl::List urls = lister->d->lstDirs;
     Q_FOREACH(const KUrl& url, urls) {
-        //kDebug() << "Stopping any listjob for" << url.url();
-        stopListJob(url.url(), silent);
+        stopListingUrl(lister, url, silent);
     }
-
-    Q_FOREACH(KDirLister::Private::CachedItemsJob* job, lister->d->m_cachedItemsJobs) {
-        //kDebug() << "Killing cached items job";
-        job->kill(); // removes job from list, too
-    }
-
+    
 #if 0 // test code
     QHash<QString,KDirListerCacheDirectoryData>::iterator dirit = directoryData.begin();
     const QHash<QString,KDirListerCacheDirectoryData>::iterator dirend = directoryData.end();
@@ -416,6 +428,7 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
         KDirListerCacheDirectoryData& dirData = dirit.value();
         if (dirData.listersCurrentlyListing.contains(lister)) {
             kDebug(7004) << "ERROR: found lister" << lister << "in list - for" << dirit.key();
+            Q_ASSERT(false);
         }
     }
 #endif
@@ -429,6 +442,9 @@ void KDirListerCache::stopListingUrl(KDirLister *lister, const KUrl& _u, bool si
 
     KDirLister::Private::CachedItemsJob* cachedItemsJob = lister->d->cachedItemsJobForUrl(url);
     if (cachedItemsJob) {
+        if (silent) {
+            cachedItemsJob->setProperty("_kdlc_silent", true);
+        }
         cachedItemsJob->kill(); // removes job from list, too
     }
 
@@ -440,9 +456,18 @@ void KDirListerCache::stopListingUrl(KDirLister *lister, const KUrl& _u, bool si
         return;
     KDirListerCacheDirectoryData& dirData = dirit.value();
     if (dirData.listersCurrentlyListing.contains(lister)) {
-
         //kDebug(7004) << " found lister" << lister << "in list - for" << urlStr;
-        stopListJob(urlStr, silent);
+        if (dirData.listersCurrentlyListing.count() == 1) {
+            // This was the only dirlister interested in the list job -> kill the job
+            stopListJob(urlStr, silent);
+        } else {
+            // Leave the job running for the other dirlisters, just unsubscribe us.
+            dirData.listersCurrentlyListing.removeAll(lister);
+            if (!silent) {
+                emit lister->canceled();
+                emit lister->canceled(url);
+            }
+        }
     }
 }
 
@@ -460,9 +485,10 @@ void KDirListerCache::stopListJob(const QString& url, bool silent)
 
     KIO::ListJob *job = jobForUrl(url);
     if (job) {
-        //kDebug() << "Killing list job" << job;
-        if (silent)
+        //kDebug() << "Killing list job" << job << "for" << url;
+        if (silent) {
             job->setProperty("_kdlc_silent", true);
+        }
         job->kill(KJob::EmitResult);
     }
 }

@@ -209,10 +209,12 @@ public:
     KFileItem *findByUrl(const KDirLister *lister, const KUrl &url) const;
 
     // Called by CachedItemsJob:
-    // Emits those items, for this lister and this url
+    // Emits the cached items, for this lister and this url
     void emitItemsFromCache(KDirLister::Private::CachedItemsJob* job, KDirLister* lister,
-                            const KFileItemList& lst, const KFileItem& rootItem,
                             const KUrl& _url, bool _reload, bool _emitCompleted);
+    // Called by CachedItemsJob:
+    void forgetCachedItemsJob(KDirLister::Private::CachedItemsJob* job, KDirLister* lister,
+                              const KUrl& url);
 
 public Q_SLOTS:
   /**
@@ -464,8 +466,7 @@ struct KDirListerCacheDirectoryData
 class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
-    CachedItemsJob(KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem,
-                   const KUrl& url, bool reload);
+    CachedItemsJob(KDirLister* lister, const KUrl& url, bool reload);
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
 
@@ -483,8 +484,6 @@ public Q_SLOTS:
 private:
     KDirLister* m_lister;
     KUrl m_url;
-    KFileItemList m_items;
-    KFileItem m_rootItem;
     bool m_reload;
     bool m_emitCompleted;
 };
