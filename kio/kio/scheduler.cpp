@@ -658,7 +658,8 @@ public:
     SchedulerPrivate()
      : q(new Scheduler()),
        m_slaveOnHold(0),
-       m_checkOnHold(true) // !! Always check with KLauncher for the first request
+       m_checkOnHold(true), // !! Always check with KLauncher for the first request
+       m_ignoreConfigReparse(false)
     {
     }
 
@@ -678,6 +679,7 @@ public:
     Slave *m_slaveOnHold;
     KUrl m_urlOnHold;
     bool m_checkOnHold;
+    bool m_ignoreConfigReparse;
 
     SessionData sessionData;
     QMap<QObject *,WId> m_windowList;
@@ -866,20 +868,23 @@ void Scheduler::checkSlaveOnHold(bool b)
 
 void Scheduler::emitReparseSlaveConfiguration()
 {
-    emit self()->reparseSlaveConfiguration( QString() );
-
     // Do it immediately in this process, otherwise we might send a request before reparsing
     // (e.g. when changing useragent in the plugin)
     schedulerPrivate->slotReparseSlaveConfiguration(QString(), QDBusMessage());
+
+    schedulerPrivate->m_ignoreConfigReparse = true;
+    emit self()->reparseSlaveConfiguration( QString() );
 }
 
 
-void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const QDBusMessage& msg)
+void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const QDBusMessage&)
 {
-    if (QDBusConnection::sessionBus().baseService() == msg.service()) {
+    if (m_ignoreConfigReparse) {
         kDebug(7006) << "Ignoring signal sent by myself";
+        m_ignoreConfigReparse = false;
         return;
     }
+
     kDebug(7006) << "proto=" << proto;
     KProtocolManager::reparseConfiguration();
     SlaveConfig::self()->reset();
