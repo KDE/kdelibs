@@ -404,7 +404,8 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
               // The idea behind slave protocols is not applicable to http
               // and webdav protocols.
               const QString protocol = url.protocol().toLower();
-              if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")))
+              if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
+                  !KProtocolInfo::isKnownProtocol(protocol))
                 d->protocol = protocol;
               else
               {
