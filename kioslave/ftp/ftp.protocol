@@ -11,6 +11,7 @@ writing=true
 makedir=true
 deleting=true
 moving=true
+ProxiedBy=http
 Icon=folder-remote
 maxInstancesPerHost=2
 maxInstances=10
