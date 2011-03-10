@@ -219,7 +219,6 @@ QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) c
 
     // http://bugreports.qt.nokia.com/browse/QTBUG-18039
     if ( m_treeView->model()->hasChildren( child ) ) {
-      qDebug() << child << child.data() << m_treeView->isExpanded( child );
       if ( m_treeView->isExpanded( child ) )
         expansion << q->indexToConfigString( child );
       expansion << getExpandedItems( child );
