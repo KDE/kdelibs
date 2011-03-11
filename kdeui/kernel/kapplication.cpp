@@ -407,6 +407,8 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
 void KApplicationPrivate::preqapplicationhack()
 {
     preread_app_startup_id();
+
+    KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
 int KApplication::xioErrhandler( Display* dpy )
