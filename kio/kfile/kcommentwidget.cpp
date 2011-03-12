@@ -65,10 +65,11 @@ void KCommentWidget::setText(const QString& comment)
             text = "<a href=\"addComment\">" + i18nc("@label", "Add Comment...") + "</a>";
         }
     } else {
+        QTextDocument textDocument(comment);
         if (m_readOnly) {
-            text = comment;
+            text = textDocument.toHtml();
         } else {
-            text = "<p>" + comment + " <a href=\"changeComment\">" + i18nc("@label", "Change...") + "</a></p>";
+            text = "<p>" + textDocument.toHtml() + " <a href=\"changeComment\">" + i18nc("@label", "Change...") + "</a></p>";
         }
     }
 
