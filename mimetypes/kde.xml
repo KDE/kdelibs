@@ -404,4 +404,18 @@ Notes:
     </magic>
     <glob pattern="*.pic"/>
   </mime-type>
+  <mime-type type="application/x-mobipocket-ebook">
+    <comment>Mobipocket e-book</comment>
+    <sub-class-of type="application/x-palm-database"/>
+    <generic-icon name="x-office-document"/>
+    <glob pattern="*.mobi"/>
+    <glob pattern="*.prc" />
+    <magic priority="30">
+      <!-- This also matches AportisDoc, so lower the priority and prefer extension -->
+      <match type="string" offset="60" value="TEXtREAd" />
+    </magic>
+    <magic priority="80">
+      <match type="string" offset="60" value="BOOKMOBI" />
+    </magic>
+  </mime-type>
 </mime-info>
