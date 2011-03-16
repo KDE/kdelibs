@@ -308,14 +308,14 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
  *
  * @param catalogName The name of your catalog
  *
- * @since 4.6
+ * @since 4.6.2
  *
  * Example:
  * @code
  * static const KCatalogLoader loader("libkdepim");
  * @endcode
  */
-class KCatalogLoader
+class KDECORE_EXPORT KCatalogLoader
 {
     public:
         KCatalogLoader(const QString &catalogName);
