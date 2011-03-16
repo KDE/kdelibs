@@ -1,8 +1,5 @@
 project(kdeclarative)
 
-find_package(KDE4 REQUIRED)
-
-include(KDE4Defaults)
 
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 
@@ -46,6 +43,4 @@ install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ CO
 
 install(TARGETS kdeclarative EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-
-install(FILES "test/test.qml" DESTINATION ${CMAKE_BINARY_DIR})
 
