@@ -59,6 +59,9 @@ public:
 
 void KPixmapSequenceOverlayPainter::Private::_k_timeout()
 {
+    if (sequence().isEmpty()) {
+        return;
+    }
     ++m_counter;
     m_counter %= sequence().frameCount();
     if (m_widget)
@@ -68,6 +71,9 @@ void KPixmapSequenceOverlayPainter::Private::_k_timeout()
 
 void KPixmapSequenceOverlayPainter::Private::paintFrame()
 {
+    if (m_counter >= sequence().frameCount()) {
+        return;
+    }
     QPainter p(m_widget);
     p.drawPixmap(pixmapRect(), sequence().frameAt(m_counter), QRect(QPoint(0, 0), sequence().frameSize()));
 }
