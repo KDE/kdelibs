@@ -146,6 +146,24 @@ static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName =
     return true;
 }
 
+static bool isReplyStatusOk(const QNetworkReply* reply)
+{
+    if (!reply || reply->error() != QNetworkReply::NoError)
+        return false;
+
+    // Check HTTP status code only for http and webdav protocols...
+    const QString scheme = reply->url().scheme();
+    if (scheme.startsWith(QLatin1String("http"), Qt::CaseInsensitive) ||
+        scheme.startsWith(QLatin1String("webdav"), Qt::CaseInsensitive)) {
+        bool ok = false;
+        const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(&ok);
+        if (!ok || statusCode < 200 || statusCode > 299)
+            return false;
+    }
+
+    return true;
+}
+
 class KWebPage::KWebPagePrivate
 {
 public:
@@ -275,20 +293,6 @@ void KWebPage::downloadUrl(const KUrl &url)
     downloadResource(url, QString(), view());
 }
 
-static bool isReplyStatusOk(const QNetworkReply* reply)
-{
-    if (!reply || reply->error() != QNetworkReply::NoError)
-        return false;
-
-    bool ok = false;
-    const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(&ok);
-
-    if (!ok || statusCode < 200 || statusCode > 299)
-        return false;
-
-    return true;
-}
-
 void KWebPage::downloadResponse(QNetworkReply *reply)
 {
     Q_ASSERT(reply);
@@ -296,7 +300,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
     if (!reply)
         return;
 
-    // Put the job on hold...
+    // Put the job on hold only for the protocols we know about (read: http).
     KIO::Integration::AccessManager::putReplyOnHold(reply);
 
     // Reply url...
@@ -319,9 +323,10 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
 
     //kDebug(800) << "Content-disposition:" << contentDispositionType << suggestedFileName;
     //kDebug(800) << "Got unsupported content of type:" << mimeType << "URL:" << requestUrl;
-    //kDebug(800) << "Error code:" << reply->error() << reply->errorString();    
+    //kDebug(800) << "Error code:" << reply->error() << reply->errorString();
+
     if (isReplyStatusOk(reply)) {
-        KParts::BrowserOpenOrSaveQuestion::Result result;      
+        KParts::BrowserOpenOrSaveQuestion::Result result;
         KParts::BrowserOpenOrSaveQuestion dlg(topLevelWindow, requestUrl, mimeType);
         dlg.setSuggestedFileName(suggestedFileName);
         dlg.setFeatures(KParts::BrowserOpenOrSaveQuestion::ServiceSelection);
