@@ -870,6 +870,8 @@ int KDebug::registerArea(const QByteArray& areaName, bool enabled)
     return areaNumber;
 }
 
+#ifndef KDE_NO_DEBUG_OUTPUT
+
 KDebug::Block::Block(const char* label, int area)
     : m_label(label), m_area(area), d(0)
 {
@@ -909,3 +911,5 @@ KDebug::Block::~Block()
         }
     }
 }
+
+#endif
