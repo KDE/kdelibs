@@ -87,6 +87,33 @@
 //#undef  kDebug
 #define ENABLE_CAN_RESUME
 
+static QString ftpCleanPath(const QString& path)
+{
+    if (path.endsWith(QLatin1String(";type=A"), Qt::CaseInsensitive) ||
+        path.endsWith(QLatin1String(";type=I"), Qt::CaseInsensitive) ||
+        path.endsWith(QLatin1String(";type=D"), Qt::CaseInsensitive)) {
+        return path.left((path.length() - sizeof(";type=")));
+    }
+
+    return path;
+}
+
+static char ftpModeFromPath(const QString& path, char defaultMode = '\0')
+{
+    const int index = path.lastIndexOf(QLatin1String(";type="));
+
+    if (index > -1 && (index+6) < path.size()) {
+        const QChar mode = path.at(index+6);
+        // kio_ftp supports only A (ASCII) and I(BINARY) modes.
+        if (mode == QLatin1Char('A') || mode == QLatin1Char('a') ||
+            mode == QLatin1Char('I') || mode == QLatin1Char('i')) {
+            return mode.toUpper().toLatin1();
+        }
+    }
+
+    return defaultMode;
+}
+
 // JPF: somebody should find a better solution for this or move this to KIO
 // JPF: anyhow, in KDE 3.2.0 I found diffent MAX_IPC_SIZE definitions!
 namespace KIO {
@@ -949,7 +976,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
                           int errorcode, KIO::fileoffset_t _offset )
 {
   int errCode = 0;
-  if( !ftpDataMode(_mode) )
+  if( !ftpDataMode(ftpModeFromPath(_path, _mode)) )
     errCode = ERR_COULD_NOT_CONNECT;
   else
     errCode = ftpOpenDataConnection();
@@ -978,7 +1005,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if ( !_path.isEmpty() ) {
     tmp += ' ';
-    tmp += remoteEncoding()->encode(_path);
+    tmp += remoteEncoding()->encode(ftpCleanPath(_path));
   }
 
   if( !ftpSendCmd( tmp ) || (m_iRespType != 1) )
@@ -1259,7 +1286,7 @@ void Ftp::stat(const KUrl &url)
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
-  QString path = QDir::cleanPath( url.path() );
+  const QString path = ftpCleanPath( QDir::cleanPath( url.path() ) );
   kDebug(7102) << "cleaned path=" << path;
 
   // We can't stat root, but we know it's a dir.
