@@ -2142,11 +2142,12 @@ bool Ftp::ftpSize( const QString & path, char mode )
     return false;
 
   // skip leading "213 " (response code)
-  const char* psz = ftpResponse(4);
-  if(!psz)
+  QByteArray psz (ftpResponse(4));
+  if(psz.isEmpty())
     return false;
-  m_size = charToLongLong(psz);
-  if (!m_size) m_size = UnknownSize;
+  bool ok = false;
+  m_size = psz.trimmed().toLongLong(&ok);
+  if (!ok) m_size = UnknownSize;
   return true;
 }
 
