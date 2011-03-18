@@ -468,7 +468,14 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     QWidget* mainWidget = new QWidget(fileDialog);
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
     QLabel *label = new QLabel(entry.comment);
-    KLineEdit *lineEdit = new KLineEdit(text);
+
+    // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
+    // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
+    // TODO: should probably be investigated and fixed in KLineEdit.
+    KLineEdit *lineEdit = new KLineEdit;
+    lineEdit->setClearButtonShown(true);
+    lineEdit->setText(text);
+
     _k_slotTextChanged(text);
     QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)), q, SLOT(_k_slotTextChanged(const QString &)));
     
@@ -1006,7 +1013,14 @@ void KNewFileMenu::createDirectory()
     QWidget* mainWidget = new QWidget(fileDialog);
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
     QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()));
-    KLineEdit *lineEdit = new KLineEdit(name);
+
+    // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
+    // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
+    // TODO: should probably be investigated and fixed in KLineEdit.
+    KLineEdit *lineEdit = new KLineEdit;
+    lineEdit->setClearButtonShown(true);
+    lineEdit->setText(name);
+
     d->_k_slotTextChanged(name); // have to save string in d->m_text in case user does not touch dialog
     connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(_k_slotTextChanged(const QString &)));
     layout->addWidget(label);
