@@ -110,7 +110,7 @@ QList<QByteArray> TokenIterator::all() const
 
 
 HeaderTokenizer::HeaderTokenizer(char *buffer)
- : m_buffer(buffer)
+    : m_buffer(buffer)
 {
     // add information about available headers and whether they have one or multiple,
     // comma-separated values.
@@ -282,8 +282,9 @@ TokenIterator HeaderTokenizer::iterator(const char *key) const
 
 static void skipLWS(const QString &str, int &pos)
 {
-    while (pos < str.length() && (str[pos] == QLatin1Char(' ') || str[pos] == QLatin1Char('\t')))
+    while (pos < str.length() && (str[pos] == QLatin1Char(' ') || str[pos] == QLatin1Char('\t'))) {
         ++pos;
+    }
 }
 
 // keep the common ending, this allows the compiler to join them
@@ -298,12 +299,15 @@ static bool specialChar(const QChar &ch, const char *specials)
     // names. However, since none of the major browsers follow this rule, we do
     // the same thing here and allow all printable unicode characters. See
     // https://bugs.kde.org/show_bug.cgi?id=261223 for the detials.
-    if(!ch.isPrint())
+    if (!ch.isPrint()) {
         return true;
+    }
 
-    for( int i = qstrlen(specials) - 1; i>= 0; i--)
-       if( ch == QLatin1Char(specials[i]) )
-           return true;
+    for (int i = qstrlen(specials) - 1; i >= 0; i--) {
+        if (ch == QLatin1Char(specials[i])) {
+            return true;
+        }
+    }
 
     return false;
 }
@@ -335,18 +339,22 @@ static QString extractUntil(const QString &str, QChar term, int &pos, const char
         ++pos;
     }
 
-    if (pos < str.length()) // Stopped due to finding term
+    if (pos < str.length()) { // Stopped due to finding term
         ++pos;
+    }
 
-    if( !valid )
+    if (!valid) {
         return QString();
+    }
 
     // Remove trailing linear whitespace...
-    while (out.endsWith(QLatin1Char(' ')) || out.endsWith(QLatin1Char('\t')))
+    while (out.endsWith(QLatin1Char(' ')) || out.endsWith(QLatin1Char('\t'))) {
         out.chop(1);
+    }
 
-    if( out.contains(QLatin1Char(' ')) )
+    if (out.contains(QLatin1Char(' '))) {
         out.clear();
+    }
 
     return out;
 }
@@ -387,22 +395,23 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
             }
         }
 
-        if( !endquote ) {
+        if (!endquote) {
             pos = -1;
             return QString();
         }
 
         // Skip until term..
         while (pos < str.length() && (str[pos] != term)) {
-            if( (str[pos] != QLatin1Char(' ')) && (str[pos] != QLatin1Char('\t')) ) {
-              pos = -1;
-              return QString();
+            if ((str[pos] != QLatin1Char(' ')) && (str[pos] != QLatin1Char('\t'))) {
+                pos = -1;
+                return QString();
             }
             ++pos;
         }
 
-        if (pos < str.length()) // Stopped due to finding term
+        if (pos < str.length()) {  // Stopped due to finding term
             ++pos;
+        }
 
         return out;
     } else {
@@ -421,15 +430,16 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
     QMap<QString, QString> encparams;    // all parameters that have character encoding
 
     // the type is invalid, the complete header is junk
-    if( strDisposition.isEmpty() )
+    if (strDisposition.isEmpty()) {
         return parameters;
+    }
 
     parameters.insert(QLatin1String("type"), strDisposition);
 
     while (pos < disposition.length()) {
         QString key = extractUntil(disposition, QLatin1Char('='), pos, attrSpecials).toLower();
 
-        if( key.isEmpty() ) {
+        if (key.isEmpty()) {
             // parse error in this key: do not parse more, but add up
             // everything we already got
             kDebug(7113) << "parse error, abort parsing";
@@ -437,13 +447,14 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         }
 
         QString val;
-        if( key.endsWith(QLatin1Char('*')) )
+        if (key.endsWith(QLatin1Char('*'))) {
             val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials).toLower();
-        else
+        } else {
             val = extractMaybeQuotedUntil(disposition, pos);
+        }
 
-        if( val.isEmpty() ) {
-            if( pos == -1 ) {
+        if (val.isEmpty()) {
+            if (pos == -1) {
                 kDebug(7113) << "parse error, abort parsing";
                 break;
             }
@@ -451,12 +462,12 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         }
 
         const int spos = key.indexOf(QLatin1Char('*'));
-        if( spos == key.length() - 1 ) {
+        if (spos == key.length() - 1) {
             key.chop(1);
             encparams.insert(key, val);
-        } else if( spos >= 0 ) {
+        } else if (spos >= 0) {
             contparams.insert(key, val);
-        } else if( parameters.contains(key) ) {
+        } else if (parameters.contains(key)) {
             kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
             parameters.remove(key);
             return parameters;
@@ -466,21 +477,21 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
     }
 
     QMap<QString, QString>::iterator i = contparams.begin();
-    while( i != contparams.end() ) {
+    while (i != contparams.end()) {
         QString key = i.key();
         int spos = key.indexOf(QLatin1Char('*'));
         bool hasencoding = false;
 
-        if( key.at(spos + 1) != QLatin1Char('0') ) {
+        if (key.at(spos + 1) != QLatin1Char('0')) {
             ++i;
             continue;
         }
 
         // no leading zeros allowed, so delete the junk
         int klen = key.length();
-        if( klen > spos + 2 ) {
+        if (klen > spos + 2) {
             // nothing but continuations and encodings may insert * into parameter name
-            if( (klen > spos + 3) || ((klen == spos + 3) && (key.at(spos + 2) != QLatin1Char('*'))) ) {
+            if ((klen > spos + 3) || ((klen == spos + 3) && (key.at(spos + 2) != QLatin1Char('*')))) {
                 kDebug(7113) << "removing invalid key " << key << "with val" << i.value() << key.at(spos + 2);
                 i = contparams.erase(i);
                 continue;
@@ -494,13 +505,9 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         // part is allowed to have one
         QString val = i.value();
 
-        if (hasencoding)
-            key.chop(2);
-        else
-            key.chop(1);
+        key.chop(hasencoding ? 2 : 1);
 
-        while( (partsi = contparams.find(key + QString::number(seqnum))) != contparams.end() )
-        {
+        while ((partsi = contparams.find(key + QString::number(seqnum))) != contparams.end()) {
             val += partsi.value();
             contparams.erase(partsi);
         }
@@ -511,7 +518,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         if (hasencoding) {
             encparams.insert(key, val);
         } else {
-            if( parameters.contains(key) ) {
+            if (parameters.contains(key)) {
                 kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
                 parameters.remove(key);
                 return parameters;
@@ -521,53 +528,58 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         }
     }
 
-    for( QMap<QString, QString>::iterator i = encparams.begin(), iEnd = encparams.end();
-         i != encparams.end(); ++i )
-    {
+    for (QMap<QString, QString>::iterator i = encparams.begin(); i != encparams.end(); ++i) {
         QString val = i.value();
 
         // RfC 2231 encoded character set in filename
         int spos = val.indexOf(QLatin1Char('\''));
-        if (spos == -1)
+        if (spos == -1) {
             continue;
+        }
         int npos = val.indexOf(QLatin1Char('\''), spos + 1);
-        if (npos == -1)
+        if (npos == -1) {
             continue;
-
-        const QString charset = val.left( spos );
-        const QString lang = val.mid( spos + 1, npos - spos - 1 );
-        const QByteArray rawval = QByteArray::fromPercentEncoding( val.mid(npos + 1).toAscii() );
-        if( charset.isEmpty() || (charset == QLatin1String("us-ascii")) ) {
-            bool valid = true;
-            for( int j = rawval.length() - 1; (j >= 0) && valid; j-- )
-                valid = (rawval.at(j) >= 32);
-
-            if( valid )
-                val = QString::fromAscii(rawval.constData());
-            else
-                val.clear();
-        } else {
-            QTextCodec *codec = QTextCodec::codecForName( charset.toAscii() );
-            if( codec )
-                val = codec->toUnicode( rawval );
-            else
-                val.clear();
         }
 
-        if( !val.isEmpty() ) {
-            parameters.insert( i.key(), val );
+        const QString charset = val.left(spos);
+        const QString lang = val.mid(spos + 1, npos - spos - 1);
+        const QByteArray rawval = QByteArray::fromPercentEncoding(val.mid(npos + 1).toAscii());
+
+        if (charset.isEmpty() || (charset == QLatin1String("us-ascii"))) {
+            bool valid = true;
+            for (int j = rawval.length() - 1; (j >= 0) && valid; j--) {
+                valid = (rawval.at(j) >= 32);
+            }
+
+            if (valid) {
+                val = QString::fromAscii(rawval.constData());
+            } else {
+                val.clear();
+            }
+        } else {
+            QTextCodec *codec = QTextCodec::codecForName(charset.toAscii());
+            if (codec) {
+                val = codec->toUnicode(rawval);
+            } else {
+                val.clear();
+            }
+        }
+
+        if (!val.isEmpty()) {
+            parameters.insert(i.key(), val);
         }
     }
 
     const QLatin1String fn("filename");
-    if( parameters.contains(fn) ) {
+    if (parameters.contains(fn)) {
         // Content-Disposition is not allowed to dictate directory
         // path, thus we extract the filename only.
-        const QString val = QDir::toNativeSeparators( parameters[fn] );
-        int slpos = val.lastIndexOf( QDir::separator() );
+        const QString val = QDir::toNativeSeparators(parameters[fn]);
+        int slpos = val.lastIndexOf(QDir::separator());
 
-        if( slpos > -1 )
-            parameters.insert(fn, val.mid( slpos + 1 ));
+        if (slpos > -1) {
+            parameters.insert(fn, val.mid(slpos + 1));
+        }
     }
 
     return parameters;
