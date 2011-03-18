@@ -332,18 +332,6 @@ private:
    */
   StatusCode ftpCopyGet(int& iError, int& iCopyFile, const QString &sCopyFile, const KUrl& url, int permissions, KIO::JobFlags flags);
 
-  /**
-   * Returns true if @p info was successfully populated with proper login data.
-   *
-   * This function populates @p info with username and password information by
-   * first checking for cached credentials and then prompting the user if none
-   * could be found.
-   *
-   * @param info      the authentication object to be filled.
-   * @param errmsg    error message which indicates prior failure.
-   */
-  bool ftpGetAuthenticationInfo(KIO::AuthInfo& info, const QString& errmsg);
-
 private: // data members
 
   QString m_host;
