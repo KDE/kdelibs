@@ -1073,11 +1073,10 @@ void Ftp::mkdir( const KUrl & url, int permissions )
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
-  QString path = remoteEncoding()->encode(url);
-  QByteArray buf = "mkd ";
-  buf += remoteEncoding()->encode(path);
+  const QByteArray encodedPath (remoteEncoding()->encode(url));
+  const QString path = QString::fromLatin1(encodedPath.constData(), encodedPath.size());
 
-  if( !ftpSendCmd( buf ) || (m_iRespType != 2) )
+  if( !ftpSendCmd( (QByteArray ("mkd ") + encodedPath) ) || (m_iRespType != 2) )
   {
     QString currentPath( m_currentPath );
 
@@ -2127,7 +2126,6 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   finished();
   return statusSuccess;
 }
-
 
 /** Use the SIZE command to get the file size.
     Warning : the size depends on the transfer mode, hence the second arg. */
