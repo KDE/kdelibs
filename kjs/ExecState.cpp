@@ -215,7 +215,7 @@ void ExecState::setAbruptCompletion(Completion comp)
 
 void ExecState::quietUnwind(int depth)
 {
-    ASSERT(m_exceptionHandlers.size() >= depth);
+    ASSERT(m_exceptionHandlers.size() >= size_t(depth));
     for (int e = 0; e < depth; ++e) {
         HandlerType type = m_exceptionHandlers.last().type;
         m_exceptionHandlers.removeLast();
