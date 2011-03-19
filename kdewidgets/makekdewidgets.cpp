@@ -59,7 +59,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	bool isInitialized() const { return mInitialized; }\n"
                                 "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
                                 "	QString codeTemplate() const { return QLatin1String(\"%CodeTemplate\");}\n"
-                                "//	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
+                                "	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
                                 "	QString group() const { return QLatin1String(\"%Group\"); }\n"
                                 "	QString includeFile() const { return QLatin1String(\"%IncludeFile\"); }\n"
                                 "	QString name() const { return QLatin1String(\"%Class\"); }\n"
@@ -195,7 +195,7 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
 
     // FIXME: ### make this more useful, i.e. outsource to separate file
-    defMap.insert( "DomXml", input.readEntry( "DomXML" ) );
+    defMap.insert( "DomXml", input.readEntry( "DomXML" ).replace( '\"', "\\\"" ) );
     defMap.insert( "CodeTemplate", input.readEntry( "CodeTemplate" ) );
     defMap.insert( "CreateWidget", input.readEntry( "CreateWidget",
       QString( "\n\t\treturn new %1%2;" )

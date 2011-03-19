@@ -96,6 +96,7 @@ ToolTip=Button Box (KDE)
 WhatsThis=KDE's button box.
 IncludeFile=kdialogbuttonbox.h
 Group=Buttons (KDE)
+DomXML=<ui><widget class="KDialogButtonBox"><property name="standardButtons"><set>QDialogButtonBox::Ok|QDialogButtonBox::Cancel</set></property></widget></ui>
 
 [KDoubleNumInput]
 ToolTip=Floating Point Number Input Widget (KDE)
