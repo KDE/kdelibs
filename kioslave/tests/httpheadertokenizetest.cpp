@@ -192,4 +192,7 @@ void HeaderTokenizeTest::testRedirectHeader()
         nValues2 += it.value().beginEnd.count();
     }
     QCOMPARE(nValues2, nValues);
+
+    // Fix compiler warning
+    (void)contentDispositionParser;
 }

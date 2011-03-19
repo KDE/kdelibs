@@ -62,25 +62,6 @@ static bool nextLine(const char input[], int *pos, int end)
     return idx < end && rCount < 2 && nCount < 2;
 }
 
-//Return true if the term was found, false otherwise. Advance *pos.
-//If (*pos + strlen(term) >= end) just advance *pos to end and return false.
-//This means that users should always search for the shortest terms first.
-static bool consume(const char input[], int *pos, int end, const char *term)
-{
-    // note: gcc/g++ is quite good at optimizing away redundant strlen()s
-    int idx = *pos;
-    if (idx + (int)strlen(term) >= end) {
-        *pos = end;
-        return false;
-    }
-    if (strncasecmp(&input[idx], term, strlen(term)) == 0) {
-        *pos = idx + strlen(term);
-        return true;
-    }
-    return false;
-}
-
-
 QByteArray TokenIterator::next()
 {
     QPair<int, int> token = m_tokens[m_currentToken++];
