@@ -375,7 +375,7 @@ bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
 	
 	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
 	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src), 
-	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
 	
 	dialog->show();
@@ -405,7 +405,7 @@ void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
 	  i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
 	  QStringList(),
 	  i18n("Do not ask again"),
-	  false,
+	  0,
 	  KMessageBox::NoExec,
 	  QString());
     confirmDialog->setButtonGuiItem(KDialog::Ok, continueGuiItem);
@@ -876,7 +876,7 @@ void KNewFileMenuPrivate::_k_slotSymLink()
 	
 	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
 	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."), 
-	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
 	
 	dialog->show();
