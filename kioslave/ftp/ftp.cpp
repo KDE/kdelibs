@@ -92,7 +92,7 @@ static QString ftpCleanPath(const QString& path)
     if (path.endsWith(QLatin1String(";type=A"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=I"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=D"), Qt::CaseInsensitive)) {
-        return path.left((path.length() - sizeof(";type=")));
+        return path.left((path.length() - strlen(";type=X")));
     }
 
     return path;
