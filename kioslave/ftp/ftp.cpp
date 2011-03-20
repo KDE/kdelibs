@@ -32,29 +32,18 @@
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
 
-#include <sys/stat.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <signal.h>
 
 #if TIME_WITH_SYS_TIME
-#include <time.h>
+#include <ctime>
 #endif
+
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
