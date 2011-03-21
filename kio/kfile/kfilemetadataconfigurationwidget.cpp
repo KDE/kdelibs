@@ -23,7 +23,6 @@
 #include <kconfiggroup.h>
 #include <kfilemetainfo.h>
 #include <kfilemetainfoitem.h>
-#include "kfilemetadataprovider_p.h"
 #include "knfotranslator_p.h"
 #include <klocale.h>
 
@@ -34,6 +33,8 @@
     #include <resourcemanager.h>
     #include <property.h>
     #include <variant.h>
+
+    #include "kfilemetadataprovider_p.h"
 #endif
 
 #include <QEvent>
@@ -59,7 +60,9 @@ public:
 
     int m_visibleDataTypes;
     KFileItemList m_fileItems;
+#ifndef KIO_NO_NEPOMUK
     KFileMetaDataProvider* m_provider;
+#endif
     QListWidget* m_metaDataList;
 
 private:
@@ -69,7 +72,9 @@ private:
 KFileMetaDataConfigurationWidget::Private::Private(KFileMetaDataConfigurationWidget* parent) :
     m_visibleDataTypes(0),
     m_fileItems(),
+#ifndef KIO_NO_NEPOMUK
     m_provider(0),
+#endif
     m_metaDataList(0),
     q(parent)
 {
@@ -80,7 +85,9 @@ KFileMetaDataConfigurationWidget::Private::Private(KFileMetaDataConfigurationWid
     QVBoxLayout* layout = new QVBoxLayout(q);
     layout->addWidget(m_metaDataList);
 
+#ifndef KIO_NO_NEPOMUK
     m_provider = new KFileMetaDataProvider(q);
+#endif
 }
 
 KFileMetaDataConfigurationWidget::Private::~Private()
@@ -126,9 +133,13 @@ void KFileMetaDataConfigurationWidget::Private::addItem(const KUrl& uri)
     KConfig config("kmetainformationrc", KConfig::NoGlobals);
     KConfigGroup settings = config.group("Show");
 
+#ifndef KIO_NO_NEPOMUK
     const QString label = (m_provider == 0)
                           ? KNfoTranslator::instance().translation(uri)
                           : m_provider->label(uri);
+#else
+    const QString label = KNfoTranslator::instance().translation(uri);
+#endif
 
     QListWidgetItem* item = new QListWidgetItem(label, m_metaDataList);
     item->setData(Qt::UserRole, key);
