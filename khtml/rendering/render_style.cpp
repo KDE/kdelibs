@@ -178,7 +178,7 @@ bool BackgroundLayer::operator==(const BackgroundLayer& o) const {
     return m_image == o.m_image && m_xPosition == o.m_xPosition && m_yPosition == o.m_yPosition &&
            m_bgAttachment == o.m_bgAttachment && m_bgClip == o.m_bgClip && m_bgOrigin == o.m_bgOrigin && m_bgRepeat == o.m_bgRepeat &&
            m_backgroundSize.width == o.m_backgroundSize.width && m_bgSizeType == o.m_bgSizeType && m_backgroundSize.height == o.m_backgroundSize.height &&
-           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet &&  m_clipSet == o.clipSet &&
+           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet &&  m_clipSet == o.m_clipSet &&
            m_originSet == o.m_originSet && m_repeatSet == o.m_repeatSet &&
            m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet && m_backgroundSizeSet == o.m_backgroundSizeSet &&
            ((m_next && o.m_next) ? *m_next == *o.m_next : m_next == o.m_next);
