@@ -496,6 +496,12 @@ public:
      */
     static void allowExternalProcessWindowActivation( int pid = -1 );
 
+    /**
+     * Sets whether the client wishes to block compositing (for better performance)
+     * @since 4.7
+     */
+    static void setBlockingCompositing( WId window, bool active );
+
 #ifdef Q_WS_X11
     /**
      * @internal
