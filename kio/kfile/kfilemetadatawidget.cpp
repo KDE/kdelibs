@@ -109,7 +109,6 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     initMetaInfoSettings();
 
 #ifndef KIO_NO_NEPOMUK
-    KFileMetaDataProvider* m_provider;
     // TODO: If KFileMetaDataProvider might get a public class in future KDE releases,
     // the following code should be moved into KFileMetaDataWidget::setModel():
     m_provider = new KFileMetaDataProvider(q);
