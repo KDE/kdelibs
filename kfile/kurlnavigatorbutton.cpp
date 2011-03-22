@@ -336,10 +336,9 @@ void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
         m_wheelSteps = event->delta() / 120;
         m_replaceButton = true;
         startSubDirsJob();
-        event->accept();
-    } else {
-        KUrlNavigatorButtonBase::wheelEvent(event);
     }
+
+    KUrlNavigatorButtonBase::wheelEvent(event);
 }
 
 void KUrlNavigatorButton::requestSubDirs()

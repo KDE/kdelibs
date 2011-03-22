@@ -1136,6 +1136,12 @@ void KUrlNavigator::resizeEvent(QResizeEvent* event)
     QWidget::resizeEvent(event);
 }
 
+void KUrlNavigator::wheelEvent(QWheelEvent* event)
+{
+    setActive(true);
+    QWidget::wheelEvent(event);
+}
+
 bool KUrlNavigator::eventFilter(QObject* watched, QEvent* event)
 {
     if ((watched == d->m_pathBox) && (event->type() == QEvent::FocusIn)) {
