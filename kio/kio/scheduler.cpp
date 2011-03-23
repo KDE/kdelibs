@@ -1148,15 +1148,15 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
     if (!slave && m_slaveOnHold) {
         // Make sure that the job wants to do a GET or a POST, and with no offset
         const int cmd = jobPriv->m_command;
-        bool canJobReuse = cmd == CMD_GET;
+        bool canJobReuse = (cmd == CMD_GET || cmd == CMD_MULTI_GET);
 
         if (KIO::TransferJob *tJob = qobject_cast<KIO::TransferJob *>(job)) {
-            canJobReuse = cmd == CMD_GET || cmd == CMD_SPECIAL;
+            canJobReuse = ( canJobReuse || cmd == CMD_SPECIAL );
             if (canJobReuse) {
                 KIO::MetaData outgoing = tJob->outgoingMetaData();
                 const QString resume = outgoing.value("resume");
                 kDebug(7006) << "Resume metadata is" << resume;
-                canJobReuse = resume.isEmpty() || resume == "0";
+                canJobReuse = (resume.isEmpty() || resume == "0");
             }
         }
 
