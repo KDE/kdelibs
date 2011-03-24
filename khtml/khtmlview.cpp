@@ -3162,6 +3162,10 @@ void KHTMLView::print(bool quick)
         int page = 1;
         while(top < root->docHeight()) {
             if(top > 0) printer.newPage();
+#ifndef QT_NO_TRANSFORMATIONS
+            if (scalePage)
+                p->scale(scale, scale);
+#endif
             p->save();
             p->setClipRect(0, 0, pageWidth, headerHeight);
             if (printHeader)
@@ -3177,10 +3181,6 @@ void KHTMLView::print(bool quick)
                 p->drawText(0, 0, printer.width(), dy, Qt::AlignRight, headerRight);
             }
 
-#ifndef QT_NO_TRANSFORMATIONS
-            if (scalePage)
-                p->scale(scale, scale);
-#endif
             p->restore();
             p->translate(0, headerHeight-top);
 
