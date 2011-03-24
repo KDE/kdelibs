@@ -1,6 +1,6 @@
 /*
     Copyright 2010 Michael Zanetti <mzanetti@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010, 2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -48,6 +48,13 @@ public:
     virtual bool isAppendable() const;
     virtual Solid::OpticalDisc::DiscType discType() const;
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
+
+private slots:
+    void slotChanged();
+
+private:
+    mutable bool m_needsReprobe;
+    mutable Solid::OpticalDisc::ContentTypes m_cachedContent;
 };
 
 }
