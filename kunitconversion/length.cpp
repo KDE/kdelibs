@@ -140,6 +140,13 @@ Length::Length() : UnitCategory(LengthCategory)
       ki18nc("amount in units (real)", "%1 nanometers"),
       ki18ncp("amount in units (integer)", "%1 nanometer", "%1 nanometers")
     );
+    U(Angstrom, 1e-10,
+      i18nc("length unit symbol", "Å"),
+      i18nc("unit description in lists", "Ångström"),
+      i18nc("unit synonyms for matching user input", "Ångström;Ångstrom;Angström;Angstrom;Ångströms;Ångstroms;Angströms;Angstroms;Å"),
+      ki18nc("amount in units (real)", "%1 Ångströms"),
+      ki18ncp("amount in units (integer)", "%1 Ångström", "%1 Ångströms")
+    );
     U(Picometer, 1e-12,
       i18nc("length unit symbol", "pm"),
       i18nc("unit description in lists", "picometers"),
