@@ -555,7 +555,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     }
 
     CachedImage* bg = bgLayer->backgroundImage();
-    bool shouldPaintBackgroundImage = bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage();
+    bool shouldPaintBackgroundImage = bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage() && canvas()->printImages();
     QColor bgColor = c;
 
     // the "bottom" of the page can't be transparent
