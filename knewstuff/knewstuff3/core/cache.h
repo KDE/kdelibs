@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (c) 2010 Matthias Fuchs <mat69@gmx.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -29,10 +30,18 @@ namespace KNS3 {
 class Cache : public QObject
 {
     Q_OBJECT
+
 public:
-    Cache(QObject* parent = 0);
-    /// The file name of the registry - this is usually the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
-    void setRegistryFileName(const QString& appName);
+    /**
+     * Returns an instance of a shared cache for appName
+     * That way it is made sure, that there do not exist different
+     * instances of cache, with different contents
+     * @param appName The file name of the registry - this is usually
+     * the application name, it will be stored in "apps/knewstuff3/appname.knsregistry"
+     */
+    static QSharedPointer<Cache> getCache(const QString &appName);
+
+    ~Cache();
 
     /// Read the installed entries (on startup)
     void readRegistry();
@@ -49,9 +58,13 @@ public Q_SLOTS:
     void registerChangedEntry(const KNS3::EntryInternal& entry);
 
 private:
+    Q_DISABLE_COPY(Cache)
+    Cache(const QString& appName);
+
     // compatibility with KNS2
     void readKns2MetaFiles();
 
+private:
     // The file that is used to keep track of downloaded entries
     QString registryFile;
 
