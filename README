@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 4.6 of the KDE libraries.
+This is version 4.7 of the KDE libraries.
 
 This package includes libraries that are central to the development and
 execution of a KDE program, as well as internationalization files for these
@@ -155,7 +155,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If cmake claims Qt cannot be found, look at http://qt.nokia.com/
-to get a copy of Qt, version 4.6 or newer. If you have peeked there
+to get a copy of Qt, version 4.7 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.
