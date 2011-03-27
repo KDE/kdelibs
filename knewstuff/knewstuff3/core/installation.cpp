@@ -470,7 +470,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
             bool success = true;
-            bool update = (entry.status() == Entry::Updateable);
+            const bool update = ((entry.status() == Entry::Updateable) || (entry.status() == Entry::Updating));
 
             if (QFile::exists(installpath)) {
                 if (!update) {
