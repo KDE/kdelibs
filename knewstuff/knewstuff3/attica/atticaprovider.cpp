@@ -385,9 +385,9 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
 
     int index = mCachedEntries.indexOf(entry);
     if (index >= 0) {
-        EntryInternal cacheEntry = mCachedEntries.at(index);
+        EntryInternal &cacheEntry = mCachedEntries[index];
         // check if updateable
-        if ((cacheEntry.status() == Entry::Installed) &&
+        if (((cacheEntry.status() == Entry::Installed) || (cacheEntry.status() == Entry::Updateable)) &&
             ((cacheEntry.version() != entry.version()) || (cacheEntry.releaseDate() != entry.releaseDate()))) {
             cacheEntry.setStatus(Entry::Updateable);
             cacheEntry.setUpdateVersion(entry.version());
