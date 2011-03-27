@@ -1804,7 +1804,10 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   stream >> errorName >> techName >> description >> causes >> solutions;
 
   QString url, protocol, datetime;
-  url = Qt::escape( reqUrl.prettyUrl() );
+
+  // This is somewhat confusing, but we have to escape the externally-
+  // controlled URL twice: once for i18n, and once for HTML.
+  url = Qt::escape( Qt::escape( reqUrl.prettyUrl() ) );
   protocol = reqUrl.protocol();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
