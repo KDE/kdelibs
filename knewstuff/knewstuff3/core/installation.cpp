@@ -304,7 +304,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
         if (!entry.updateVersion().isEmpty()) {
             entry.setVersion(entry.updateVersion());
         }
-        if (!entry.updateReleaseDate().isValid()) {
+        if (entry.updateReleaseDate().isValid()) {
             entry.setReleaseDate(entry.updateReleaseDate());
         }
     }
