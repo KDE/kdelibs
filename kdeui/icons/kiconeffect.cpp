@@ -187,8 +187,7 @@ QString KIconEffect::fingerprint(int group, int state) const
             cached += d->color2[group][state].name();
         }
 
-        // Using deep copy since cached is a local variable.
-        d->key[group][state] = QString(cached.data());
+        d->key[group][state] = cached;
     }
 
     return cached;
