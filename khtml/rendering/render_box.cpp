@@ -724,6 +724,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             sx+=b.x()-fix.x();
             sy+=b.y()-fix.y();
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
+
+	    if (canvas()->pagedMode() && scaledImageHeight > 0)
+		sy = (sy - viewRect().y()) % scaledImageHeight;
         }
         // restrict painting to repaint-clip
         if (cy < clipr.y()) {
