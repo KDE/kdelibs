@@ -7,7 +7,7 @@
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2003 Apple Computer, Inc.
- *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2005,2011 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2008 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2009 Carlos Licea (carlos.licea@kdemail.net)
  *
@@ -2017,25 +2017,13 @@ void RenderTableSection::addSpaceAt(int pos, int dy)
     const int nEffCols = table()->numEffCols();
     const int totalRows = numRows();
     for ( int r = 0; r < totalRows; r++ ) {
-        if (rowPos[r] >= pos) {
+        if (rowPos[r] > pos) {
             rowPos[r] += dy;
-            int rindx;
-            for ( int c = 0; c < nEffCols; c++ )
-            {
-                RenderTableCell *cell = cellAt(r, c);
-                if (!cell || cell == (RenderTableCell *)-1 )
-                    continue;
-                if ( r > 0 && cell == cellAt(r-1, c) )
-                    continue;
-
-                if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
-                    rindx = 0;
-
-                cell->setPos(cell->xPos(), rowPos[r]);
-            }
+	    if (grid[r].rowRenderer)
+		grid[r].rowRenderer->setPos(0, rowPos[r]);
         }
     }
-    if (rowPos[totalRows] >= pos)
+    if (rowPos[totalRows] > pos)
         rowPos[totalRows] += dy;
     m_height = rowPos[totalRows];
 
@@ -2298,8 +2286,13 @@ void RenderTableRow::layout()
                 cell->setNeedsLayout(true);
                 int oldHeight = child->height();
                 cell->layout();
-                if (oldHeight > 0 && child->containsPageBreak() && child->height() != oldHeight)
-                    section()->addSpaceAt(child->yPos()+1, child->height() - oldHeight);
+                if (oldHeight > 0 && child->containsPageBreak() && child->height() != oldHeight) {
+		    // child has grown to accomodate a page-page, grow the same amount ourselves, 
+		    // and shift following rows down without relayouting the entire table
+		    int adjust = child->height() - oldHeight;
+		    setHeight(height()+adjust);
+                    section()->addSpaceAt(yPos()+1, adjust);
+		}
             } else
             if ( child->needsLayout() ) {
                 if (markedForRepaint())
@@ -2547,7 +2540,7 @@ void RenderTableCell::repaintRectangle(int x, int y, int w, int h, Priority p, b
 
 int RenderTableCell::pageTopAfter(int y) const
 {
-    return section()->pageTopAfter(y+m_y + _topExtra) - (m_y  + _topExtra);
+    return parent()->pageTopAfter(y+m_y + _topExtra) - (m_y  + _topExtra);
 }
 
 short RenderTableCell::baselinePosition( bool ) const
