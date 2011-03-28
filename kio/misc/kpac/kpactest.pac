@@ -7,11 +7,11 @@
 
 function FindProxyForURL( url, host )
 {
-    var result = "PROXY http://" + myIPAddress();
+    var result = "PROXY http://" + myIpAddress();
 
     // plainhost1
     if ( !isPlainHostName( "foo" ) )
-        result += "/plainhost1=failed"
+        result += "/plainhost1=failed";
     // plainhost2
     if ( isPlainHostName( "foo.bar" ) )
         result += "/plainhost2=failed";

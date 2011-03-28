@@ -53,6 +53,8 @@ namespace KIO
         HostInfoAgentPrivate(int cacheSize = 100);
         virtual ~HostInfoAgentPrivate() {};
         void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        QHostInfo lookupCachedHostInfoFor(const QString& hostName);
+        void cacheLookup(const QHostInfo&);
         void setCacheSize(int s) { dnsCache.setMaxCost(s); }
         void setTTL(int _ttl) { ttl = _ttl; }
     private slots:
@@ -117,6 +119,16 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     hostInfoAgentPrivate->lookupHost(hostName, receiver, member);
 }
 
+QHostInfo HostInfo::lookupCachedHostInfoFor(const QString& hostName)
+{
+    return hostInfoAgentPrivate->lookupCachedHostInfoFor(hostName);
+}
+
+void HostInfo::cacheLookup(const QHostInfo& info)
+{
+    hostInfoAgentPrivate->cacheLookup(info);
+}
+
 void HostInfo::prefetchHost(const QString& hostName)
 {
     hostInfoAgentPrivate->lookupHost(hostName, 0, 0);
@@ -179,6 +191,26 @@ void HostInfoAgentPrivate::lookupHost(const QString& hostName,
         connect(query, SIGNAL(result(QHostInfo)), receiver, member);
     }
     query->start(hostName);
+}
+
+QHostInfo HostInfoAgentPrivate::lookupCachedHostInfoFor(const QString& hostName)
+{
+    QPair<QHostInfo, QTime>* info = dnsCache.object(hostName);
+    if (info && info->second.addSecs(ttl) >= QTime::currentTime())
+        return info->first;
+
+    return QHostInfo();
+}
+
+void HostInfoAgentPrivate::cacheLookup(const QHostInfo& info)
+{
+    if (info.hostName().isEmpty())
+        return;
+
+    if (info.error() != QHostInfo::NoError)
+        return;
+
+    dnsCache.insert(info.hostName(), new QPair<QHostInfo, QTime>(info, QTime::currentTime()));
 }
 
 void HostInfoAgentPrivate::queryFinished(const QHostInfo& info)

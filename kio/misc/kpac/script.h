@@ -1,5 +1,6 @@
 /* 
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
+   Copyright (c) 2011 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,9 +24,8 @@
 
 #include <QtCore/QString>
 
-#include <kjs/interpreter.h>
-
 class KUrl;
+class QScriptEngine;
 
 namespace KPAC
 {
@@ -48,7 +48,7 @@ namespace KPAC
         QString evaluate( const KUrl& );
 
     private:
-        KJS::Interpreter* m_interpreter;
+        QScriptEngine* m_engine;
     };
 }
 

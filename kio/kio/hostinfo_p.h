@@ -25,11 +25,15 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QObject>
 #include "kio_export.h"
 
+class QHostInfo;
+
 namespace KIO
 {
     namespace HostInfo
     {
         KIO_EXPORT void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        KIO_EXPORT QHostInfo lookupCachedHostInfoFor(const QString& hostName);
+        KIO_EXPORT void cacheLookup(const QHostInfo& info);
 
         // used by khtml's DNS prefetching feature
         KIO_EXPORT void prefetchHost(const QString& hostName);

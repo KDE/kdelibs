@@ -46,6 +46,7 @@ namespace KPAC
 
     public Q_SLOTS:
         Q_SCRIPTABLE QString proxyForUrl( const QString& checkUrl, const QDBusMessage & );
+        Q_SCRIPTABLE QStringList proxiesForUrl( const QString& checkUrl, const QDBusMessage & );
         Q_SCRIPTABLE Q_NOREPLY void blackListProxy( const QString& proxy );
         Q_SCRIPTABLE Q_NOREPLY void reset();
 
@@ -54,7 +55,7 @@ namespace KPAC
 
     private:
         bool startDownload();
-        QString handleRequest( const KUrl& url );
+        QStringList handleRequest( const KUrl& url );
 
         KComponentData m_componentData;
         Downloader* m_downloader;
@@ -63,10 +64,11 @@ namespace KPAC
         struct QueuedRequest
         {
             QueuedRequest() {}
-            QueuedRequest( const QDBusMessage&, const KUrl& );
+            QueuedRequest( const QDBusMessage&, const KUrl&, bool sendall = false);
 
             QDBusMessage transaction;
             KUrl url;
+            bool sendAll;
         };
         typedef QList< QueuedRequest > RequestQueue;
         RequestQueue m_requestQueue;
@@ -74,6 +76,7 @@ namespace KPAC
         typedef QMap< QString, time_t > BlackList;
         BlackList m_blackList;
         time_t m_suspendTime;
+        int m_debugArea;
     };
 }
 
