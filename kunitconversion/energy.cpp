@@ -199,14 +199,14 @@ Energy::Energy() : UnitCategory(EnergyCategory)
     U(JoulePerMole, 1.66054238581e-24,
       i18nc("energy unit symbol", "J/mol"),
       i18nc("unit description in lists", "joule per mole"),
-      i18nc("unit synonyms for matching user input", "jouleper mole;joulepermole;joulemol;jmol;j/mol"),
+      i18nc("unit synonyms for matching user input", "joule per mole;joulepermole;joulemol;jmol;j/mol"),
       ki18nc("amount in units (real)", "%1 joules per mole"),
       ki18ncp("amount in units (integer)", "%1 joule per mole", "%1 joules per mole")
     );
     U(KiloJoulePerMole, 1.66054238581e-21,
       i18nc("energy unit symbol", "kJ/mol"),
       i18nc("unit description in lists", "kilojoule per mole"),
-      i18nc("unit synonyms for matching user input", "kilojouleper mole;kilojoulepermole;kilojolue per mol;kilojoulemol;kjmol;kj/mol"),
+      i18nc("unit synonyms for matching user input", "kilojoule per mole;kilojoulepermole;kilojoule per mole;kilojoulemol;kjmol;kj/mol"),
       ki18nc("amount in units (real)", "%1 kilojoules per mole"),
       ki18ncp("amount in units (integer)", "%1 kilojoule per mole", "%1 kilojoules per mole")
     );
