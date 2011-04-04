@@ -1275,6 +1275,19 @@ public:
      */
     const char* activities() const;
 
+
+    /**
+     * Sets whether the client wishes to block compositing (for better performance)
+     * @since 4.7
+     */
+    void setBlockingCompositing(bool active);
+
+    /**
+     * Returns whether the client wishes to block compositing (for better performance)
+     * @since 4.7
+     */
+    bool isBlockingCompositing() const;
+
     /**
        Places the window frame geometry in frame, and the application window
        geometry in window.  Both geometries are relative to the root window.

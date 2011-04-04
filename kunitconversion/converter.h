@@ -45,7 +45,7 @@ enum UnitId {
     Yottameter = 2000, Zettameter, Exameter, Petameter, Terameter, Gigameter, Megameter,
     Kilometer, Hectometer, Decameter, Meter, Decimeter, Centimeter, Millimeter, Micrometer,
     Nanometer, Picometer, Femtometer, Attometer, Zeptometer, Yoctometer, Inch, Foot, Yard,
-    Mile, NauticalMile, LightYear, Parsec, AstronomicalUnit, Thou,
+    Mile, NauticalMile, LightYear, Parsec, AstronomicalUnit, Thou, Angstrom,
 
     // Volume
     CubicYottameter = 3000, CubicZettameter, CubicExameter, CubicPetameter, CubicTerameter,
@@ -77,7 +77,7 @@ enum UnitId {
     Yottajoule = 7000, Zettajoule, Exajoule, Petajoule, Terajoule, Gigajoule, Megajoule,
     Kilojoule, Hectojoule, Decajoule, Joule, Decijoule, Centijoule, Millijoule, Microjoule,
     Nanojoule, Picojoule, Femtojoule, Attojoule, Zeptojoule, Yoctojoule, GuidelineDailyAmount,
-    Electronvolt, Rydberg, Kilocalorie, PhotonWavelength,
+    Electronvolt, Rydberg, Kilocalorie, PhotonWavelength, KiloJoulePerMole, JoulePerMole,
 
     // Currency
     Eur = 8000, Ats, Bef, Nlg, Fim, Frf, Dem, Iep, Itl, Luf, Pte, Esp, Grd, Sit, Cyp, Mtl, Skk,

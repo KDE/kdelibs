@@ -63,6 +63,7 @@ set(solid_LIB_SRCS
    camera.cpp
    portablemediaplayer.cpp
    networkinterface.cpp
+   networkshare.cpp
    serialinterface.cpp
    acadapter.cpp
    battery.cpp
@@ -92,6 +93,7 @@ set(solid_LIB_SRCS
    ifaces/dvbinterface.cpp
    ifaces/genericinterface.cpp
    ifaces/networkinterface.cpp
+   ifaces/networkshare.cpp
    ifaces/serialinterface.cpp
    ifaces/opticaldisc.cpp
    ifaces/portablemediaplayer.cpp
@@ -253,6 +255,7 @@ if(NOT WIN32 AND NOT APPLE)
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
    backends/fstab/fstabmanager.cpp
    backends/fstab/fstabdevice.cpp
+   backends/fstab/fstabnetworkshare.cpp
    backends/fstab/fstabstorageaccess.cpp
    backends/fstab/fstabhandling.cpp
    backends/fstab/fstabwatcher.cpp
@@ -388,7 +391,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
                networking.h video.h serialinterface.h smartcardreader.h internetgateway.h
-               DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
+               networkshare.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############
 

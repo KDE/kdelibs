@@ -349,7 +349,7 @@ apidox_qhppages()
                PROJECT_NAME="KDE"
         fi
         if test -z "$PROJECT_VERSION" ; then
-               PROJECT_VERSION="4.6"
+               PROJECT_VERSION="4.7"
         fi
         vf="$PROJECT_NAME"-"$PROJECT_VERSION"
         echo "QHP_VIRTUAL_FOLDER     = $vf" >> "$subdir/Doxyfile"

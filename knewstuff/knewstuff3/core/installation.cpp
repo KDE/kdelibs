@@ -304,7 +304,7 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
         if (!entry.updateVersion().isEmpty()) {
             entry.setVersion(entry.updateVersion());
         }
-        if (!entry.updateReleaseDate().isValid()) {
+        if (entry.updateReleaseDate().isValid()) {
             entry.setReleaseDate(entry.updateReleaseDate());
         }
     }
@@ -470,7 +470,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
             bool success = true;
-            bool update = (entry.status() == Entry::Updateable);
+            const bool update = ((entry.status() == Entry::Updateable) || (entry.status() == Entry::Updating));
 
             if (QFile::exists(installpath)) {
                 if (!update) {

@@ -701,4 +701,10 @@ void KWindowSystem::allowExternalProcessWindowActivation( int pid )
 #endif
 }
 
+void KWindowSystem::setBlockingCompositing( WId window, bool active )
+{
+    //TODO
+    kDebug() << "setBlockingCompositing( WId window, bool active ) isn't yet implemented!";
+}
+
 #include "kwindowsystem.moc"

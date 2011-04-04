@@ -456,6 +456,8 @@ protected:
 
     virtual void resizeEvent(QResizeEvent* event);
 
+    virtual void wheelEvent(QWheelEvent* event);
+
     virtual bool eventFilter(QObject* watched, QEvent* event);
 #endif
 

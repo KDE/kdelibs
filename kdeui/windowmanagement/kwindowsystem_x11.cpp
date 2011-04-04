@@ -976,6 +976,12 @@ void KWindowSystem::allowExternalProcessWindowActivation( int pid )
     Q_UNUSED(pid)
 }
 
+void KWindowSystem::setBlockingCompositing( WId window, bool active )
+{
+    NETWinInfo info( QX11Info::display(), window, QX11Info::appRootWindow(), 0 );
+    info.setBlockingCompositing( active );
+}
+
 
 bool KWindowSystem::mapViewport()
 {

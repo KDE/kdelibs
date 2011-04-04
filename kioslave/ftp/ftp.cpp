@@ -32,30 +32,18 @@
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
 
-#include <sys/stat.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <assert.h>
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <signal.h>
 
 #if TIME_WITH_SYS_TIME
-#include <time.h>
+#include <ctime>
 #endif
+
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
@@ -92,7 +80,7 @@ static QString ftpCleanPath(const QString& path)
     if (path.endsWith(QLatin1String(";type=A"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=I"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=D"), Qt::CaseInsensitive)) {
-        return path.left((path.length() - sizeof(";type=")));
+        return path.left((path.length() - strlen(";type=X")));
     }
 
     return path;
@@ -244,7 +232,7 @@ void Ftp::ftpCloseControlConnection()
  */
 const char* Ftp::ftpResponse(int iOffset)
 {
-  assert(m_control != NULL);    // must have control connection socket
+  Q_ASSERT(m_control != NULL);    // must have control connection socket
   const char *pTxt = m_lastControlLine.data();
 
   // read the next line ...
@@ -343,7 +331,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   // check for implicit login if we are already logged on ...
   if(loginMode == loginImplicit && m_bLoggedOn)
   {
-    assert(m_control != NULL);    // must have control connection socket
+    Q_ASSERT(m_control != NULL);    // must have control connection socket
     return true;
   }
 
@@ -358,7 +346,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
     return false;
   }
 
-  assert( !m_bLoggedOn );
+  Q_ASSERT( !m_bLoggedOn );
 
   m_initialPath.clear();
   m_currentPath.clear();
@@ -442,7 +430,7 @@ bool Ftp::ftpLogin()
 {
   infoMessage( i18n("Sending login information") );
 
-  assert( !m_bLoggedOn );
+  Q_ASSERT( !m_bLoggedOn );
 
   QString user = m_user;
   QString pass = m_pass;
@@ -675,7 +663,7 @@ void Ftp::ftpAutoLoginMacro ()
  */
 bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
 {
-  assert(m_control != NULL);    // must have control connection socket
+  Q_ASSERT(m_control != NULL);    // must have control connection socket
 
   if ( cmd.indexOf( '\r' ) != -1 || cmd.indexOf( '\n' ) != -1)
   {
@@ -774,8 +762,8 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
  */
 int Ftp::ftpOpenPASVDataConnection()
 {
-  assert(m_control != NULL);    // must have control connection socket
-  assert(m_data == NULL);       // ... but no data connection
+  Q_ASSERT(m_control != NULL);    // must have control connection socket
+  Q_ASSERT(m_data == NULL);       // ... but no data connection
 
   // Check that we can do PASV
   QHostAddress addr = m_control->peerAddress();
@@ -832,8 +820,8 @@ int Ftp::ftpOpenPASVDataConnection()
  */
 int Ftp::ftpOpenEPSVDataConnection()
 {
-  assert(m_control != NULL);    // must have control connection socket
-  assert(m_data == NULL);       // ... but no data connection
+  Q_ASSERT(m_control != NULL);    // must have control connection socket
+  Q_ASSERT(m_data == NULL);       // ... but no data connection
 
   QHostAddress address = m_control->peerAddress();
   int portnum;
@@ -877,7 +865,7 @@ int Ftp::ftpOpenEPSVDataConnection()
 int Ftp::ftpOpenDataConnection()
 {
   // make sure that we are logged on and have no data connection...
-  assert( m_bLoggedOn );
+  Q_ASSERT( m_bLoggedOn );
   ftpCloseDataConnection();
 
   int  iErrCode = 0;
@@ -924,8 +912,8 @@ int Ftp::ftpOpenDataConnection()
  */
 int Ftp::ftpOpenPortDataConnection()
 {
-  assert(m_control != NULL);    // must have control connection socket
-  assert(m_data == NULL);       // ... but no data connection
+  Q_ASSERT(m_control != NULL);    // must have control connection socket
+  Q_ASSERT(m_data == NULL);       // ... but no data connection
 
   m_bPasv = false;
   if (m_extControl & eprtUnknown)
@@ -1117,7 +1105,7 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
 
 bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobFlags)
 {
-    assert(m_bLoggedOn);
+    Q_ASSERT(m_bLoggedOn);
 
     // Must check if dst already exists, RNFR+RNTO overwrites by default (#127793).
     if (!(jobFlags & KIO::Overwrite)) {
@@ -1172,7 +1160,7 @@ void Ftp::del( const KUrl& url, bool isfile )
 
 bool Ftp::ftpChmod( const QString & path, int permissions )
 {
-  assert( m_bLoggedOn );
+  Q_ASSERT( m_bLoggedOn );
 
   if(m_extControl & chmodUnknown)      // previous errors?
     return false;
@@ -1207,7 +1195,7 @@ void Ftp::chmod( const KUrl & url, int permissions )
 
 void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntry& entry, bool isDir )
 {
-  assert(entry.count() == 0); // by contract :-)
+  Q_ASSERT(entry.count() == 0); // by contract :-)
 
   entry.insert( KIO::UDSEntry::UDS_NAME, filename );
   entry.insert( KIO::UDSEntry::UDS_SIZE, ftpEnt.size );
@@ -1512,7 +1500,7 @@ bool Ftp::ftpOpenDir( const QString & path )
 
 bool Ftp::ftpReadDir(FtpEntry& de)
 {
-  assert(m_data != NULL);
+  Q_ASSERT(m_data != NULL);
 
   // get a line from the data connecetion ...
   while( true )
@@ -1727,9 +1715,11 @@ void Ftp::get( const KUrl & url )
     kDebug(7102) << url;
   int iError = 0;
   ftpGet(iError, -1, url, 0);               // iError gets status
+  ftpCloseCommand();                        // must close command!
   if(iError)                                // can have only server side errs
      error(iError, url.path());
-  ftpCloseCommand();                        // must close command!
+  else
+     finished();
 }
 
 Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fileoffset_t llOffset)
@@ -1854,8 +1844,6 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     data(array);               // array is empty and must be empty!
 
   processedSize( m_size == UnknownSize ? processed_size : m_size );
-  kDebug(7102) << "ftpGet: emitting finished()";
-  finished();
   return statusSuccess;
 }
 
@@ -1933,9 +1921,11 @@ void Ftp::put(const KUrl& url, int permissions, KIO::JobFlags flags)
     kDebug(7102) << url;
   int iError = 0;                           // iError gets status
   ftpPut(iError, -1, url, permissions, flags);
-  if(iError)                                // can have only server side errs
-     error(iError, url.path());
   ftpCloseCommand();                        // must close command!
+  if(iError)                                // can have only server side errs
+    error(iError, url.path());
+  else
+    finished();
 }
 
 Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
@@ -2122,8 +2112,6 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
     }
   }
 
-  // We have done our job => finish
-  finished();
   return statusSuccess;
 }
 
@@ -2251,9 +2239,11 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, KIO::JobFlag
   // perform clean-ups and report error (if any)
   if(iCopyFile != -1)
     ::close(iCopyFile);
+  ftpCloseCommand();                        // must close command!
   if(iError)
     error(iError, sCopyFile);
-  ftpCloseCommand();                        // must close command!
+  else
+    finished();
 }
 
 

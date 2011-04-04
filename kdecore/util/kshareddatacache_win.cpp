@@ -108,3 +108,12 @@ unsigned KSharedDataCache::freeSize() const
         return 0;
     }
 }
+
+unsigned KSharedDataCache::timestamp() const
+{
+    return 0;
+}
+
+void KSharedDataCache::setTimestamp(unsigned newTimestamp)
+{
+}

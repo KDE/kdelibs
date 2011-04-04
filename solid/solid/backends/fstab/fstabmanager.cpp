@@ -32,6 +32,7 @@ FstabManager::FstabManager(QObject *parent)
   : Solid::Ifaces::DeviceManager(parent)
 {
     m_supportedInterfaces << Solid::DeviceInterface::StorageAccess;
+    m_supportedInterfaces << Solid::DeviceInterface::NetworkShare;
 
     m_deviceList = FstabHandling::deviceList();
 
@@ -63,7 +64,8 @@ QStringList FstabManager::allDevices()
 QStringList FstabManager::devicesFromQuery( const QString &parentUdi,
                                              Solid::DeviceInterface::Type type)
 {
-    if (type == Solid::DeviceInterface::StorageAccess) {
+    if (type == Solid::DeviceInterface::StorageAccess
+     || type == Solid::DeviceInterface::NetworkShare) {
         if (parentUdi.isEmpty() || parentUdi == udiPrefix()) {
             QStringList list = allDevices();
             list.removeFirst();

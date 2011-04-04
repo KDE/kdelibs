@@ -106,6 +106,9 @@ public:
         case Solid::DeviceInterface::InternetGateway:
             list << "internet_gateway";
             break;
+        case Solid::DeviceInterface::NetworkShare:
+            list << "networkshare";
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:
@@ -147,6 +150,8 @@ public:
             return Solid::DeviceInterface::DvbInterface;
         else if (capability == "video4linux")
             return Solid::DeviceInterface::Video;
+        else if (capability == "networkshare")
+            return Solid::DeviceInterface::NetworkShare;
         else
             return Solid::DeviceInterface::Unknown;
     }

@@ -20,6 +20,7 @@
 
 #include "fstabdevice.h"
 #include "fstabhandling.h"
+#include "fstabnetworkshare.h"
 #include "fstabstorageaccess.h"
 #include "fstabservice.h"
 #include <QtCore/QStringList>
@@ -93,7 +94,8 @@ QString FstabDevice::description() const
 
 bool FstabDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
-    if (type == Solid::DeviceInterface::StorageAccess) {
+    if (type == Solid::DeviceInterface::StorageAccess
+     || type == Solid::DeviceInterface::NetworkShare) {
         return true;
     }
     return false;
@@ -103,6 +105,8 @@ QObject* FstabDevice::createDeviceInterface(const Solid::DeviceInterface::Type &
 {
     if (type == Solid::DeviceInterface::StorageAccess) {
         return new FstabStorageAccess(this);
+    } else if (type == Solid::DeviceInterface::NetworkShare) {
+        return new FstabNetworkShare(this);
     }
     return 0;
 }

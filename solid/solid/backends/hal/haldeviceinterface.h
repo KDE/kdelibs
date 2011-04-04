@@ -110,6 +110,9 @@ public:
             list << "smart_card_reader";
         case Solid::DeviceInterface::InternetGateway:
             list << "internet_gateway";
+        case Solid::DeviceInterface::NetworkShare:
+            list << "networkshare";
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:
@@ -155,6 +158,8 @@ public:
             return Solid::DeviceInterface::SerialInterface;
         else if (capability == "smart_card_reader")
             return Solid::DeviceInterface::SmartCardReader;
+        else if (capability == "networkshare")
+            return Solid::DeviceInterface::NetworkShare;
         else
             return Solid::DeviceInterface::Unknown;
     }

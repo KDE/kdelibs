@@ -3,6 +3,7 @@
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (C) 2007-2010 Frederik Gladhorn <gladhorn@kde.org>
     Copyright (c) 2009 Jeremy Whiting <jpwhiting@kde.org>
+    Copyright (c) 2010 Matthias Fuchs <mat69@gmx.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -65,7 +66,6 @@ Engine::Engine(QObject* parent)
     : QObject(parent)
     , m_initialized(false)
     , m_installation(new Installation)
-    , m_cache(new Cache)
     , m_searchTimer(new QTimer)
     , m_currentPage(-1)
     , m_pageSize(20)
@@ -77,7 +77,6 @@ Engine::Engine(QObject* parent)
     m_searchTimer->setSingleShot(true);
     m_searchTimer->setInterval(1000);
     connect(m_searchTimer, SIGNAL(timeout()), SLOT(slotSearchTimerExpired()));
-    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), m_cache, SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
     connect(m_installation, SIGNAL(signalInstallationFinished()), this, SLOT(slotInstallationFinished()));
     connect(m_installation, SIGNAL(signalInstallationFailed(QString)), this, SLOT(slotInstallationFailed(QString)));
 
@@ -89,7 +88,6 @@ Engine::~Engine()
     delete m_atticaProviderManager;
     delete m_searchTimer;
     delete m_installation;
-    delete m_cache;
 }
 
 bool Engine::init(const QString &configfile)
@@ -140,7 +138,8 @@ bool Engine::init(const QString &configfile)
 
     connect(m_installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
 
-    m_cache->setRegistryFileName(m_applicationName.split(':')[0]);
+    m_cache = Cache::getCache(m_applicationName.split(':')[0]);
+    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), m_cache.data(), SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
     m_cache->readRegistry();
 
     m_initialized = true;

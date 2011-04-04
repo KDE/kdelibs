@@ -202,6 +202,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         break;
     case Solid::DeviceInterface::Video:
         break;
+    case Solid::DeviceInterface::NetworkShare:
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
         break;

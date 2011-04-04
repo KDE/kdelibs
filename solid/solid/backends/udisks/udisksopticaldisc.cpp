@@ -1,6 +1,6 @@
 /*
     Copyright 2010 Michael Zanetti <mzanetti@kde.org>
-    Copyright 2010-2011 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010, 2011 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -162,9 +162,9 @@ out:
 using namespace Solid::Backends::UDisks;
 
 OpticalDisc::OpticalDisc(UDisksDevice *device)
-    : UDisksStorageVolume(device)
+    : UDisksStorageVolume(device), m_needsReprobe(true), m_cachedContent(Solid::OpticalDisc::NoContent)
 {
-
+    connect(device, SIGNAL(changed()), this, SLOT(slotChanged()));
 }
 
 OpticalDisc::~OpticalDisc()
@@ -228,21 +228,32 @@ Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 
 Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 {
-    Solid::OpticalDisc::ContentTypes content = Solid::OpticalDisc::NoContent;
+    if (isBlank()) {
+        m_needsReprobe = false;
+        return Solid::OpticalDisc::NoContent;
+    }
 
-    if (!isBlank())
-    {
+    if (m_needsReprobe) {
+        m_cachedContent = Solid::OpticalDisc::NoContent;
         bool hasData = m_device->prop("OpticalDiscNumTracks").toInt() > 0;
         bool hasAudio = m_device->prop("OpticalDiscNumAudioTracks").toInt() > 0;
 
         if ( hasData )
-            content |= Solid::OpticalDisc::Data;
+            m_cachedContent |= Solid::OpticalDisc::Data;
         if ( hasAudio )
-            content |= Solid::OpticalDisc::Audio;
+            m_cachedContent |= Solid::OpticalDisc::Audio;
 
-        content |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
+        m_cachedContent |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
+
+        m_needsReprobe = false;
     }
 
-    return content;
+    return m_cachedContent;
+}
+
+void Solid::Backends::UDisks::OpticalDisc::slotChanged()
+{
+    m_needsReprobe = true;
+    m_cachedContent = Solid::OpticalDisc::NoContent;
 }
 

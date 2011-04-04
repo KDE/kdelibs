@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2009 Frederik Gladhorn <gladhorn@kde.org>
+    Copyright (c) 2010 Matthias Fuchs <mat69@gmx.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -26,16 +27,32 @@
 
 using namespace KNS3;
 
-Cache::Cache(QObject* parent): QObject(parent)
+typedef QHash<QString, QWeakPointer<Cache> > CacheHash;
+K_GLOBAL_STATIC(CacheHash, s_caches)
+
+Cache::Cache(const QString &appName): QObject(0)
 {
+    m_kns2ComponentName = appName;
+
+    registryFile = KStandardDirs::locateLocal("data", "knewstuff3/" + appName + ".knsregistry");
+    kDebug() << "Using registry file: " << registryFile;
 }
 
-void Cache::setRegistryFileName(const QString& file)
+QSharedPointer<Cache> Cache::getCache(const QString &appName)
 {
-    m_kns2ComponentName = file;
+    CacheHash::const_iterator it = s_caches->constFind(appName);
+    if ((it != s_caches->constEnd()) && !(*it).isNull()) {
+        return QSharedPointer<Cache>(*it);
+    }
 
-    registryFile = KStandardDirs::locateLocal("data", "knewstuff3/" + file + ".knsregistry");
-    kDebug() << "Using registry file: " << registryFile;
+    QSharedPointer<Cache> p(new Cache(appName));
+    s_caches->insert(appName, QWeakPointer<Cache>(p));
+
+    return p;
+}
+
+Cache::~Cache()
+{
 }
 
 void Cache::readRegistry()

@@ -622,7 +622,9 @@ void KToolBar::Private::slotContextAboutToShow()
       break;
   }
 
-  const bool showButtonSettings = contextButtonAction && contextTextRight->isChecked();
+  const bool showButtonSettings = contextButtonAction
+                                  && !contextShowText->text().isEmpty()
+                                  && contextTextRight->isChecked();
   contextButtonTitle->setVisible(showButtonSettings);
   contextShowText->setVisible(showButtonSettings);
   if (showButtonSettings) {

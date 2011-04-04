@@ -25,7 +25,6 @@
 #include <kfileitem.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include "kfilemetadataprovider_p.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -42,6 +41,8 @@
     #include <tag.h>
 
     #include <QSpacerItem>
+
+    #include "kfilemetadataprovider_p.h"
 #endif
 
 class KFileMetaDataWidget::Private
@@ -88,7 +89,9 @@ public:
 #endif
 
     QList<Row> m_rows;
+#ifndef KIO_NO_NEPOMUK
     KFileMetaDataProvider* m_provider;
+#endif
     QGridLayout* m_gridLayout;
 
 private:
@@ -97,17 +100,21 @@ private:
 
 KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_rows(),
+#ifndef KIO_NO_NEPOMUK
     m_provider(0),
+#endif
     m_gridLayout(0),
     q(parent)
 {
     initMetaInfoSettings();
 
+#ifndef KIO_NO_NEPOMUK
     // TODO: If KFileMetaDataProvider might get a public class in future KDE releases,
     // the following code should be moved into KFileMetaDataWidget::setModel():
     m_provider = new KFileMetaDataProvider(q);
     connect(m_provider, SIGNAL(loadingFinished()), q, SLOT(slotLoadingFinished()));
     connect(m_provider, SIGNAL(urlActivated(KUrl)), q, SIGNAL(urlActivated(KUrl)));
+#endif
 }
 
 KFileMetaDataWidget::Private::~Private()
@@ -249,7 +256,9 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 #endif
 
     q->updateGeometry();
+#ifndef KIO_NO_NEPOMUK
     emit q->metaDataRequestFinished(m_provider->items());
+#endif
 }
 
 void KFileMetaDataWidget::Private::slotLinkActivated(const QString& link)
@@ -325,22 +334,34 @@ KFileMetaDataWidget::~KFileMetaDataWidget()
 
 void KFileMetaDataWidget::setItems(const KFileItemList& items)
 {
+#ifndef KIO_NO_NEPOMUK
     d->m_provider->setItems(items);
+#endif
 }
 
 KFileItemList KFileMetaDataWidget::items() const
 {
+#ifndef KIO_NO_NEPOMUK
     return d->m_provider->items();
+#else
+    return KFileItemList();
+#endif
 }
 
 void KFileMetaDataWidget::setReadOnly(bool readOnly)
 {
+#ifndef KIO_NO_NEPOMUK
     d->m_provider->setReadOnly(readOnly);
+#endif
 }
 
 bool KFileMetaDataWidget::isReadOnly() const
 {
+#ifndef KIO_NO_NEPOMUK
     return d->m_provider->isReadOnly();
+#else
+    return true;
+#endif
 }
 
 QSize KFileMetaDataWidget::sizeHint() const

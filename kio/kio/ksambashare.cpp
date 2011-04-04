@@ -440,7 +440,7 @@ KSambaShare::KSambaShare()
 KSambaShare::~KSambaShare()
 {
     Q_D(const KSambaShare);
-    if (KDirWatch::self()->contains(d->userSharePath)) {
+    if (KDirWatch::exists() && KDirWatch::self()->contains(d->userSharePath)) {
         KDirWatch::self()->removeDir(d->userSharePath);
     }
     delete d_ptr;

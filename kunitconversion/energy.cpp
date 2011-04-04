@@ -196,6 +196,20 @@ Energy::Energy() : UnitCategory(EnergyCategory)
       ki18nc("amount in units (real)", "%1 electronvolts"),
       ki18ncp("amount in units (integer)", "%1 electronvolt", "%1 electronvolts")
     );
+    U(JoulePerMole, 1.66054238581e-24,
+      i18nc("energy unit symbol", "J/mol"),
+      i18nc("unit description in lists", "joule per mole"),
+      i18nc("unit synonyms for matching user input", "joule per mole;joulepermole;joulemol;jmol;j/mol"),
+      ki18nc("amount in units (real)", "%1 joules per mole"),
+      ki18ncp("amount in units (integer)", "%1 joule per mole", "%1 joules per mole")
+    );
+    U(KiloJoulePerMole, 1.66054238581e-21,
+      i18nc("energy unit symbol", "kJ/mol"),
+      i18nc("unit description in lists", "kilojoule per mole"),
+      i18nc("unit synonyms for matching user input", "kilojoule per mole;kilojoulepermole;kilojoule per mole;kilojoulemol;kjmol;kj/mol"),
+      ki18nc("amount in units (real)", "%1 kilojoules per mole"),
+      ki18ncp("amount in units (integer)", "%1 kilojoule per mole", "%1 kilojoules per mole")
+    );
     U(Rydberg, 2.17987e-18,
       i18nc("energy unit symbol", "Ry"),
       i18nc("unit description in lists", "rydbergs"),

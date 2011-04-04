@@ -97,6 +97,7 @@ static Atom kde_net_wm_window_type_topmenu    = 0;
 static Atom kde_net_wm_temporary_rules        = 0;
 static Atom kde_net_wm_frame_overlap          = 0;
 static Atom kde_net_wm_activities             = 0;
+static Atom kde_net_wm_block_compositing      = 0;
 static Atom kde_net_wm_shadow                 = 0;
 
 // application protocols
@@ -255,7 +256,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 88;
+static const int netAtomCount = 89;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -354,6 +355,7 @@ static void create_netwm_atoms(Display *d) {
 
             "_NET_WM_FULL_PLACEMENT",
             "_KDE_NET_WM_ACTIVITIES",
+            "_KDE_NET_WM_BLOCK_COMPOSITING",
             "_KDE_NET_WM_SHADOW"
 	    };
 
@@ -454,6 +456,7 @@ static void create_netwm_atoms(Display *d) {
 
             &net_wm_full_placement,
             &kde_net_wm_activities,
+            &kde_net_wm_block_compositing,
             &kde_net_wm_shadow
 	    };
 
@@ -1294,6 +1297,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2Activities)
     atoms[pnum++] = kde_net_wm_activities;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2BlockCompositing)
+    atoms[pnum++] = kde_net_wm_block_compositing;
+
     if (p->properties[ PROTOCOLS2 ] & WM2KDEShadow ) {
         atoms[pnum++] = kde_net_wm_shadow;
     }
@@ -1535,6 +1541,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == kde_net_wm_activities )
         p->properties[ PROTOCOLS2 ] |= WM2Activities;
+
+    else if( atom == kde_net_wm_block_compositing )
+        p->properties[ PROTOCOLS2 ] |= WM2BlockCompositing;
 
     else if( atom == kde_net_wm_shadow )
         p->properties[ PROTOCOLS2 ] |= WM2KDEShadow;
@@ -2788,6 +2797,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->client_machine = (char*) 0;
     p->icon_sizes = NULL;
     p->activities = (char *) 0;
+    p->blockCompositing = false;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2851,6 +2861,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->client_machine = (char*) 0;
     p->icon_sizes = NULL;
     p->activities = (char *) 0;
+    p->blockCompositing = false;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -3873,6 +3884,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
                 dirty2 |= WM2ClientMachine;
         else if (pe.xproperty.atom == kde_net_wm_activities)
         dirty2 |= WM2Activities;
+        else if (pe.xproperty.atom == kde_net_wm_block_compositing)
+        dirty2 |= WM2BlockCompositing;
             else if (pe.xproperty.atom == kde_net_wm_shadow)
                 dirty2 |= WM2KDEShadow;
 	    else {
@@ -4352,6 +4365,17 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         }
     }
 
+    if (dirty2 & WM2BlockCompositing) {
+        p->blockCompositing = false;
+        if (XGetWindowProperty(p->display, p->window, kde_net_wm_block_compositing, 0l,
+                               1, False, XA_STRING, &type_ret,
+                               &format_ret, &nitems_ret, &unused, &data_ret) == Success) {
+            p->blockCompositing = (data_ret != None);
+            if (data_ret)  // stupid question to everyone - since the result is "Success", is this check required?
+                XFree(data_ret);
+        }
+    }
+
     if (dirty & WMPid) {
 	p->pid = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
@@ -4671,6 +4695,23 @@ const char* NETWinInfo::clientMachine() const {
 
 const char* NETWinInfo::activities() const {
     return p->activities;
+}
+
+void NETWinInfo::setBlockingCompositing(bool active) {
+    if (p->role != Client) return;
+
+    p->blockCompositing = active;
+    if (active) {
+        long d = 1;
+        XChangeProperty(p->display, p->window, kde_net_wm_block_compositing, XA_CARDINAL, 32,
+                        PropModeReplace, (unsigned char *) &d, 1);
+    }
+    else
+        XDeleteProperty(p->display, p->window, kde_net_wm_block_compositing);
+}
+
+bool NETWinInfo::isBlockingCompositing() const {
+    return p->blockCompositing;
 }
 
 Bool NETWinInfo::handledIcons() const {

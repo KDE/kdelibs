@@ -199,7 +199,7 @@ private:
     // handle installation of entries
     Installation* m_installation;
     // read/write cache of entries
-    Cache* m_cache;
+    QSharedPointer<Cache> m_cache;
     QTimer* m_searchTimer;
     // The url of the file containing information about content providers
     QString m_providerFileUrl;

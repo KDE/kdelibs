@@ -375,7 +375,7 @@ bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
 	
 	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
 	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src), 
-	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
 	
 	dialog->show();
@@ -405,7 +405,7 @@ void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
 	  i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
 	  QStringList(),
 	  i18n("Do not ask again"),
-	  false,
+	  0,
 	  KMessageBox::NoExec,
 	  QString());
     confirmDialog->setButtonGuiItem(KDialog::Ok, continueGuiItem);
@@ -430,6 +430,7 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
     {
         QString text = entry.text;
         text.remove("..."); // the ... is fine for the menu item but not for the default filename
+        text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
 
         KUrl defaultFile(*it);
         defaultFile.addPath(KIO::encodeFileName(text));
@@ -453,6 +454,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     // Show the small dialog for getting the destination filename
     QString text = entry.text;
     text.remove("..."); // the ... is fine for the menu item but not for the default filename
+    text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
     m_strategy.m_src = entry.templatePath;
 
     KUrl defaultFile(m_popupFiles.first());
@@ -876,7 +878,7 @@ void KNewFileMenuPrivate::_k_slotSymLink()
 	
 	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
 	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."), 
-	  QStringList(), QString(), false, KMessageBox::NoExec,
+	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
 	
 	dialog->show();

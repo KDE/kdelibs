@@ -71,14 +71,27 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
 {
     m_url = url;
 
-    if (m_url.isLocalFile()) {
-        setText(m_url.fileName());
-    } else {
+    bool startTextResolving = !m_url.isLocalFile();
+    if (startTextResolving) {
+        // Doing a text-resolving with KIO::stat() for all non-local
+        // URLs leads to problems for protocols where a limit is given for
+        // the number of parallel connections. A black-list
+        // is given where KIO::stat() should not be used:
+        static QSet<QString> protocols;
+        if (protocols.isEmpty()) {
+            protocols << "fish" << "ftp" << "nfs" << "sftp" << "smb" << "webdav";
+        }
+        startTextResolving = !protocols.contains(m_url.protocol());
+    }
+
+    if (startTextResolving) {
         m_pendingTextChange = true;
         KIO::StatJob* job = KIO::stat(m_url, KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)),
                 this, SLOT(statFinished(KJob*)));
         emit startedTextResolving();
+    } else {
+        setText(m_url.fileName());
     }
 }
 
@@ -336,10 +349,9 @@ void KUrlNavigatorButton::wheelEvent(QWheelEvent* event)
         m_wheelSteps = event->delta() / 120;
         m_replaceButton = true;
         startSubDirsJob();
-        event->accept();
-    } else {
-        KUrlNavigatorButtonBase::wheelEvent(event);
     }
+
+    KUrlNavigatorButtonBase::wheelEvent(event);
 }
 
 void KUrlNavigatorButton::requestSubDirs()

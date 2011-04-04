@@ -680,6 +680,9 @@
 # KMAP - KDE wrapper for world map widgets
 51006   KMAP
 
+# MEDIAWIKI - KDE C++ interface for mediawiki based web service
+51007   KMAP
+
 # Network Management
 51010   Network Management (internals)
 51011   Network Management (service)
