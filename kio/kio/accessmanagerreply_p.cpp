@@ -262,16 +262,16 @@ int AccessManagerReply::jobError(KJob* kJob)
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << errCode;
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << errCode;
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << errCode;
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, kJob->errorText());
