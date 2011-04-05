@@ -616,6 +616,22 @@
                 <property key="soundcardType">internal</property>
             </device>
 
-
-
+        <device udi="/org/kde/solid/fakehw/fstab">
+            <property key="name">Network Shares</property>
+            <property key="product">Network Shares</property>
+            <property key="vendor">KDE</property>
+            <property key="parent">/org/kde/solid/fakehw/computer</property>
+        </device>
+            <device udi="/org/kde/solid/fakehw/fstab/thehost/solidpath">
+                <property key="parent">/org/kde/solid/fstab</property>
+                <property key="interfaces">NetworkShare,StorageAccess</property>
+                <property key="vendor">/solidpath</property>
+                <property key="product">thehost</property>
+                <property key="type">nfs</property>
+                <property key="url">nfs://thehost/solid-path</property>
+                <property key="filePath">/media/nfs</property>
+                <property key="isIgnored">false</property>
+                <property key="isMounted">true</property>
+                <property key="mountPoint">/media/nfs</property>
+            </device>
 </machine>

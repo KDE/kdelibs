@@ -71,7 +71,8 @@ FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
                            << Solid::DeviceInterface::DvbInterface
                            << Solid::DeviceInterface::Video
                            << Solid::DeviceInterface::SerialInterface
-                           << Solid::DeviceInterface::SmartCardReader;
+                           << Solid::DeviceInterface::SmartCardReader
+                           << Solid::DeviceInterface::NetworkShare;
 }
 
 FakeManager::~FakeManager()

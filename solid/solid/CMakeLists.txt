@@ -117,6 +117,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakedvbinterface.cpp
    backends/fakehw/fakegenericinterface.cpp
    backends/fakehw/fakemanager.cpp
+   backends/fakehw/fakenetworkshare.cpp
    backends/fakehw/fakenetworkinterface.cpp
    backends/fakehw/fakeopticaldisc.cpp
    backends/fakehw/fakeportablemediaplayer.cpp

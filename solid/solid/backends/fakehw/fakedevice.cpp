@@ -30,6 +30,7 @@
 #include "fakestorageaccess.h"
 #include "fakecamera.h"
 #include "fakeportablemediaplayer.h"
+#include "fakenetworkshare.h"
 #include "fakenetworkinterface.h"
 #include "fakeacadapter.h"
 #include "fakebattery.h"
@@ -317,6 +318,7 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::InternetGateway:
         break;
     case Solid::DeviceInterface::NetworkShare:
+        iface = new FakeNetworkShare(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

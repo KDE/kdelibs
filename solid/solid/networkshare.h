@@ -44,6 +44,7 @@ namespace Solid
     class SOLID_EXPORT NetworkShare : public DeviceInterface
     {
         Q_OBJECT
+        Q_ENUMS(ShareType)
         Q_PROPERTY(ShareType type READ type)
         Q_PROPERTY(QUrl url READ url)
         Q_DECLARE_PRIVATE(NetworkShare)
