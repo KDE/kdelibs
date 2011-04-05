@@ -901,6 +901,7 @@ install( FILES
   Solid/StorageAccess
   Solid/StorageDrive
   Solid/StorageVolume
+  Solid/NetworkShare
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid COMPONENT Devel)
 
 
