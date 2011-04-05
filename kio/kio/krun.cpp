@@ -251,7 +251,7 @@ KRunMX1::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
         ret << service.entryPath().replace('%', "%%");
         break;
     case 'i':
-        ret << "-icon" << service.icon().replace('%', "%%");
+        ret << "--icon" << service.icon().replace('%', "%%");
         break;
     case 'm':
 //       ret << "-miniicon" << service.icon().replace( '%', "%%" );
