@@ -66,9 +66,11 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
     if (kioJob) {
         connect(kioJob, SIGNAL(redirection(KIO::Job*, const KUrl&)), SLOT(slotRedirection(KIO::Job*, const KUrl&)));
         connect(kioJob, SIGNAL(percent(KJob*, unsigned long)), SLOT(slotPercent(KJob*, unsigned long)));
-        connect(kioJob, SIGNAL(result(KJob *)), SLOT(slotResult(KJob *)));
 
-        if (!qobject_cast<KIO::StatJob*>(kioJob)) {
+        if (qobject_cast<KIO::StatJob*>(kioJob)) {
+            connect(kioJob, SIGNAL(result(KJob *)), SLOT(slotStatResult(KJob *)));
+        } else {
+            connect(kioJob, SIGNAL(result(KJob *)), SLOT(slotResult(KJob *)));
             connect(kioJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
                 SLOT(slotData(KIO::Job *, const QByteArray &)));
             connect(kioJob, SIGNAL(mimetype(KIO::Job *, const QString&)),
@@ -147,7 +149,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
             emit metaDataChanged();
-        }        
+        }
         return;
     }
 
@@ -215,24 +217,10 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     emit metaDataChanged();
 }
 
-void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
+int AccessManagerReply::jobError(KJob* kJob)
 {
-    Q_UNUSED (kioJob);
-    m_data += data;
-    emit readyRead();
-}
-
-void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
-{
-    kDebug(7044) << kioJob << mimeType;
-    setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
-    readHttpResponseHeaders(kioJob);
-}
-
-void AccessManagerReply::slotResult(KJob *kJob)
-{
-    const int errcode = kJob->error();
-    switch (errcode)
+    const int errCode = kJob->error();
+    switch (errCode)
     {
         case 0:
             setError(QNetworkReply::NoError, kJob->errorText());
@@ -287,8 +275,30 @@ void AccessManagerReply::slotResult(KJob *kJob)
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, kJob->errorText());
-            kDebug(7044) << errcode;
+            kDebug(7044) << KIO::rawErrorDetail(errCode, QString()) << "-> QNetworkReply::UnknownNetworkError";
     }
+
+    return errCode;
+}
+
+
+void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
+{
+    Q_UNUSED (kioJob);
+    m_data += data;
+    emit readyRead();
+}
+
+void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
+{
+    //kDebug(7044) << kioJob << mimeType;
+    setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
+    readHttpResponseHeaders(kioJob);
+}
+
+void AccessManagerReply::slotResult(KJob *kJob)
+{
+    const int errcode = jobError(kJob);
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid())
@@ -298,6 +308,27 @@ void AccessManagerReply::slotResult(KJob *kJob)
         if (errcode)
             emit error(error());
     }
+
+    emit finished();
+}
+
+void AccessManagerReply::slotStatResult(KJob* kJob)
+{
+    if (jobError(kJob)) {
+        emit error (error());
+        emit finished();
+    }
+
+    KIO::StatJob* statJob = qobject_cast<KIO::StatJob*>(kJob);
+    Q_ASSERT(statJob);
+
+    KIO::UDSEntry entry =  statJob->statResult();
+    QString mimeType = entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE);
+    if (mimeType.isEmpty() && entry.isDir())
+        mimeType = QL1S("inode/directory");
+
+    if (!mimeType.isEmpty())
+        setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
 
     emit finished();
 }

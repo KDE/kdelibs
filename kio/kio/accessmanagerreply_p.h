@@ -52,7 +52,7 @@ public:
                        const QNetworkRequest &request,
                        KIO::SimpleJob *kioJob,
                        QObject *parent);
-    
+
     virtual ~AccessManagerReply();
     virtual qint64 bytesAvailable() const;
     virtual void abort();
@@ -64,14 +64,16 @@ public:
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
     void readHttpResponseHeaders(KIO::Job *);
+    int jobError(KJob *kJob);
 
 private Q_SLOTS:
     void slotData(KIO::Job *kioJob, const QByteArray &data);
     void slotMimeType(KIO::Job *kioJob, const QString &mimeType);
     void slotResult(KJob *kJob);
+    void slotStatResult(KJob *kJob);
     void slotRedirection(KIO::Job *job, const KUrl &url);
     void slotPercent(KJob *job, unsigned long percent);
-    
+
 private:
     QByteArray m_data;
     bool m_metaDataRead;
