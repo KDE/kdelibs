@@ -101,7 +101,8 @@ public:
 };
 
 CaCertificatesPage::CaCertificatesPage(QWidget *parent)
- : m_firstShowEvent(true),
+ : QWidget(parent),
+   m_firstShowEvent(true),
    m_blockItemChanged(false)
 {
     m_ui.setupUi(this);
@@ -323,6 +324,9 @@ void CaCertificatesPage::addCertificateClicked()
 // private slot
 void CaCertificatesPage::itemChanged(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(item);
+    Q_UNUSED(column);
+
     if (m_blockItemChanged) {
         return;
     }
@@ -367,7 +371,7 @@ bool CaCertificatesPage::addCertificateItem(const KSslCaCertificate &caCert)
         parent->setFlags(parent->flags() & ~Qt::ItemIsSelectable);
     }
 
-    CaCertificateItem *it = new CaCertificateItem(parent, caCert.cert, !caCert.isBlacklisted);
+    (void) new CaCertificateItem(parent, caCert.cert, !caCert.isBlacklisted);
     m_knownCertificates.insert(caCert.certHash);
     m_blockItemChanged = prevBlockItemChanged;
     return true;
