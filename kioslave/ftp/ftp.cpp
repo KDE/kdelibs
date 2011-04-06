@@ -1599,8 +1599,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 
         if (tmp.indexOf('/') != -1)
           continue; // Don't trick us!
-        // Some sites put more than one space between the date and the name
-        // e.g. ftp://ftp.uni-marburg.de/mirror/
+
         de.name     = remoteEncoding()->decode(tmp);
       }
 
