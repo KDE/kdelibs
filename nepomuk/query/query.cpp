@@ -559,10 +559,12 @@ KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags
     else
         url.addQueryItem( QLatin1String("sparql"), q.toSparqlQuery( flags ) );
 
-    if( !customTitle.isEmpty() )
-        url.addPath( customTitle );
-    else
+    if( !customTitle.isEmpty() ) {
+        url.addPath( QString::fromUtf8(customTitle.toUtf8().toPercentEncoding()) );
+    }
+    else {
         url.addPath( titleFromQueryUrl( url ) );
+    }
 
     return url;
 }
