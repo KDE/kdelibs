@@ -246,18 +246,38 @@ public:
   static QString proxyFor( const QString& protocol );
 
   /**
-   * Returns the Proxy server address for a given URL
-   * If automatic proxy configuration is configured, KPAC
-   * is used to determine the proxy server, otherwise the return
-   * value of proxyFor for the URL's protocol is used.
-   * If an empty string is returned, the request is to be aborted,
-   * a return value of "DIRECT" requests a direct connection.
+   * Returns the Proxy server address for a given URL.
+   *
+   * If the selected proxy type is @ref PACProxy or @ref WPADProxy, then a
+   * helper kded module, proxyscout, is used to determine the proxy information.
+   * Otherwise, @ref proxyFor is used to find the proxy to use for the given url.
+   *
+   * If this function returns an empty string, then the request to a proxy server
+   * must be denied. For a direct connection, without the use of a proxy, this
+   * function will return "DIRECT".
    *
    * @param url the URL whose proxy info is needed
-   * @returns the proxy server address if one is available
-   *          or QString() otherwise
+   * @returns the proxy server address if one is available, otherwise a QString().
    */
   static QString proxyForUrl( const KUrl& url );
+
+  /**
+   * Returns all the possible proxy server addresses for @p url.
+   *
+   * If the selected proxy type is @ref PACProxy or @ref WPADProxy, then a
+   * helper kded module, proxyscout, is used to determine the proxy information.
+   * Otherwise, @ref proxyFor is used to find the proxy to use for the given url.
+   *
+   * If this function returns empty list, then the request is to a proxy server
+   * must be denied. For a direct connection, this function will return a single
+   * entry of "DIRECT".
+   *
+   * @since 4.7
+   *
+   * @param url the URL whose proxy info is needed
+   * @returns the proxy server address if one is available, otherwise an empty list .
+   */
+  static QStringList proxiesForUrl( const KUrl& url );
 
   /**
    * Marks this proxy as bad (down). It will not be used for the
@@ -640,6 +660,13 @@ public:
    * @return the slave protocol (e.g. 'http'), can be null if unknown
    */
   static QString slaveProtocol(const KUrl &url, QString &proxy);
+
+  /**
+   * Overloaded function that returns a list of all available proxy servers.
+   *
+   * @since 4.7
+   */
+  static QString slaveProtocol(const KUrl &url, QStringList &proxy);
 
   /**
    * Return Accept-Languages header built up according to user's desktop

@@ -144,6 +144,7 @@ CustomHTTPMethod        string  Overrides the method string sent by kio_http
                                 without changing the behavior (read by http)
 
 UseProxy		string	URL representing the proxy settings (read by http)
+ProxyUrls               string  a comma separated list of proxy urls. The first url in this list matches one set in "UseProxy".
 
 PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
                                 policies presented by the HTTP server

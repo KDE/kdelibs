@@ -65,7 +65,7 @@ static inline void startJob(SimpleJob *job, Slave *slave)
 // here be uglies
 // forward declaration to break cross-dependency of SlaveKeeper and SchedulerPrivate
 static void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
-                       const QString &proxy , bool newSlave, const KIO::MetaData *config = 0);
+                       const QStringList &proxyList, bool newSlave, const KIO::MetaData *config = 0);
 // same reason as above
 static Scheduler *scheduler();
 static Slave *heldSlaveForJob(SimpleJob *job);
@@ -627,7 +627,7 @@ void ProtoQueue::startAJob()
 
         if (slave) {
             jobPriv->m_slave = slave;
-            setupSlave(slave, jobPriv->m_url, jobPriv->m_protocol, jobPriv->m_proxy, isNewSlave);
+            setupSlave(slave, jobPriv->m_url, jobPriv->m_protocol, jobPriv->m_proxyList, isNewSlave);
             startJob(startingJob, slave);
         } else {
             // dispose of our records about the job and mark the job as unknown
@@ -701,9 +701,9 @@ public:
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
     void registerWindow(QWidget *wid);
 
-    MetaData metaDataFor(const QString &protocol, const QString &proxy, const KUrl &url);
+    MetaData metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url);
     void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
-                    const QString &proxy, bool newSlave, const KIO::MetaData *config = 0);
+                    const QStringList &proxyList, bool newSlave, const KIO::MetaData *config = 0);
 
     void slotSlaveDied(KIO::Slave *slave);
     void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
@@ -926,7 +926,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
     }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
-    jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxy);
+    jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxyList);
 
     if (mayReturnContent(jobCommand(job), jobPriv->m_protocol)) {
        jobPriv->m_checkOnHold = m_checkOnHold;
@@ -1007,7 +1007,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
                 while (it.hasNext()) {
                     Slave* runningSlave = it.next();
                     if (slave->host() == runningSlave->host()) {
-                        slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxy, jobUrl));
+                        slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxyList, jobUrl));
                         kDebug(7006) << "Updated configuration of" << slave->protocol()
                                      << "ioslave, pid=" << slave->slave_pid();
                     }
@@ -1026,17 +1026,23 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 
 // static
 void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
-                const QString &proxy , bool newSlave, const KIO::MetaData *config)
+                const QStringList &proxyList , bool newSlave, const KIO::MetaData *config)
 {
-    schedulerPrivate->setupSlave(slave, url, protocol, proxy, newSlave, config);
+    schedulerPrivate->setupSlave(slave, url, protocol, proxyList, newSlave, config);
 }
 
-MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QString &proxy, const KUrl &url)
+MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url)
 {
     const QString host = url.host();
     MetaData configData = SlaveConfig::self()->configData(protocol, host);
     sessionData.configDataFor( configData, protocol, host );
-    configData["UseProxy"] = proxy;
+    if (proxyList.isEmpty()) {
+        configData.remove(QLatin1String("UseProxy"));
+        configData.remove(QLatin1String("ProxyUrls"));
+    } else {
+        configData[QLatin1String("UseProxy")] = proxyList.first();
+        configData[QLatin1String("ProxyUrls")] = proxyList.join(QLatin1String(","));
+    }
 
     if ( configData.contains("EnableAutoLogin") &&
          configData.value("EnableAutoLogin").compare("true", Qt::CaseInsensitive) == 0 )
@@ -1063,7 +1069,7 @@ MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QString &p
 }
 
 void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
-                                  const QString &proxy , bool newSlave, const KIO::MetaData *config)
+                                  const QStringList &proxyList, bool newSlave, const KIO::MetaData *config)
 {
     int port = url.port();
     if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
@@ -1075,7 +1081,7 @@ void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QStr
     if (newSlave || slave->host() != host || slave->port() != port ||
         slave->user() != user || slave->passwd() != passwd) {
 
-        MetaData configData = metaDataFor(protocol, proxy, url);
+        MetaData configData = metaDataFor(protocol, proxyList, url);
         if (config)
            configData += *config;
 
@@ -1187,13 +1193,13 @@ void SchedulerPrivate::removeSlaveOnHold()
 
 Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData &config)
 {
-    QString proxy;
-    QString protocol = KProtocolManager::slaveProtocol(url, proxy);
+    QStringList proxyList;
+    const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
     ProtoQueue *pq = protoQ(protocol);
 
     Slave *slave = pq->createSlave(protocol, /* job */0, url);
     if (slave) {
-        setupSlave(slave, url, protocol, proxy, true, &config);
+        setupSlave(slave, url, protocol, proxyList, true, &config);
         pq->m_connectedSlaveQueue.addSlave(slave);
 
         slave->send( CMD_CONNECT );

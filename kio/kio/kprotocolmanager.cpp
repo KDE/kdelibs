@@ -30,6 +30,11 @@
 #include <QtNetwork/QSslSocket>
 #include <QtDBus/QtDBus>
 
+#if !defined(QT_NO_NETWORKPROXY) && (defined (Q_OS_WIN32) || defined(Q_OS_MAC))
+#include <QtNetwork/QNetworkProxyFactory>
+#include <QtNetwork/QNetworkProxyQuery>
+#endif
+
 #include <kdeversion.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -40,16 +45,18 @@
 #include <kstringhandler.h>
 #include <kurl.h>
 #include <kmimetypetrader.h>
+#include <kprotocolinfofactory.h>
+
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
-#include <kprotocolinfofactory.h>
+
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-class
-KProtocolManagerPrivate
+
+class KProtocolManagerPrivate
 {
 public:
    KProtocolManagerPrivate();
@@ -60,7 +67,7 @@ public:
    KSharedConfig::Ptr http_config;
    KUrl url;
    QString protocol;
-   QString proxy;
+   QStringList proxyList;
    QString modifiers;
    QString useragent;
 
@@ -102,18 +109,18 @@ void KProtocolManager::reparseConfiguration()
         d->config->reparseConfiguration();
     }
     d->protocol.clear();
-    d->proxy.clear();
+    d->proxyList.clear();
     d->modifiers.clear();
     d->useragent.clear();
     d->url.clear();
 
-  // Force the slave config to re-read its config...
-  KIO::SlaveConfig::self()->reset ();
+    // Force the slave config to re-read its config...
+    KIO::SlaveConfig::self()->reset ();
 }
 
 KSharedConfig::Ptr KProtocolManager::config()
 {
-    PRIVATE_DATA;
+  PRIVATE_DATA;
   if (!d->config)
   {
      d->config = KSharedConfig::openConfig("kioslaverc", KConfig::NoGlobals);
@@ -123,7 +130,7 @@ KSharedConfig::Ptr KProtocolManager::config()
 
 static KConfigGroup http_config()
 {
-    PRIVATE_DATA;
+  PRIVATE_DATA;
   if (!d->http_config) {
      d->http_config = KSharedConfig::openConfig("kio_httprc", KConfig::NoGlobals);
   }
@@ -226,69 +233,115 @@ QString KProtocolManager::noProxyFor()
   return noProxy;
 }
 
+static QString adjustProtocol(const QString& scheme)
+{
+  if (scheme.compare(QL1S("webdav"), Qt::CaseInsensitive) == 0)
+    return QL1S("http");
+
+  if (scheme.compare(QL1S("webdavs"), Qt::CaseInsensitive) == 0)
+    return QL1S("https");
+
+  return scheme.toLower();
+}
+
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
-  QString key = protocol.toLower();
+  const QString key = adjustProtocol(protocol) + QL1S("Proxy");
+  QString socksProxy = config()->group("Proxy Settings").readEntry(QL1S("socksProxy"), QString());
 
-  if (key == QL1S("webdav"))
-    key = QL1S("http");
-  else if (key == QL1S("webdavs"))
-    key = QL1S("https");
+  if (!socksProxy.isEmpty() && !socksProxy.startsWith(QL1S("socks://"), Qt::CaseInsensitive))
+    socksProxy.prepend(QL1S("socks://"));
 
-  key += QL1S("Proxy");
-
-  return config()->group("Proxy Settings").readEntry(key, QString());
+  return config()->group("Proxy Settings").readEntry(key, socksProxy);
 }
 
 QString KProtocolManager::proxyForUrl( const KUrl &url )
 {
-  QString proxy;
-  ProxyType pt = proxyType();
+  const QStringList proxies = proxiesForUrl(url);
+
+  if (proxies.isEmpty())
+    return QString();
+
+  return proxies.first();
+}
+
+static QStringList getSystemProxyFor( const KUrl& url )
+{
+  QStringList proxies;
+
+#if !defined(QT_NO_NETWORKPROXY) && (defined(Q_OS_WIN32) || defined(Q_OS_MAC))
+  QNetworkProxyQuery query ( url );
+  const QList<QNetworkProxy> proxyList = QNetworkProxyFactory::systemProxyForQuery(query);
+  Q_FOREACH(const QNetworkProxy& proxy, proxyList)
+  {
+    KUrl url;
+    const QNetworkProxy::ProxyType type = proxy.type();
+    if (type == QNetworkProxy::NoProxy || type == QNetworkProxy::DefaultProxy)
+    {
+      proxies << QL1S("DIRECT");
+      continue;
+    }
+
+    if (type == QNetworkProxy::HttpProxy || type == QNetworkProxy::HttpCachingProxy)
+      url.setProtocol(QL1S("http"));
+    else if (type == QNetworkProxy::Socks5Proxy)
+      url.setProtocol(QL1S("socks"));
+    else if (type == QNetworkProxy::FtpCachingProxy)
+      url.setProtocol(QL1S("ftp"));
+
+    url.setHost(proxy.hostName());
+    url.setPort(proxy.port());
+    url.setUser(proxy.user());
+    proxies << url.url();
+  }
+#else
+  // On Unix/Linux use system environment variables if any are set.
+  const QString proxyVar = KProtocolManager::proxyFor(url.protocol());
+  proxies <<  QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed();
+#endif
+  return proxies;
+}
+
+QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
+{
+  QStringList proxyList;
+  const ProxyType pt = proxyType();
 
   switch (pt)
   {
-      case PACProxy:
-      case WPADProxy:
-          if (!url.host().isEmpty())
-          {
-            KUrl u (url);
-            QString p = u.protocol().toLower();
+    case PACProxy:
+    case WPADProxy:
+    {
+      KUrl u (url);
+      const QString protocol = adjustProtocol(u.protocol());
+      u.setProtocol(protocol);
 
-            // webdav is a KDE specific protocol. Look up proxy
-            // information using HTTP instead...
-            if (p == QL1S("webdav"))
-            {
-              p = QL1S("http");
-              u.setProtocol(p);
-            }
-            else if (p == QL1S("webdavs"))
-            {
-              p = QL1S("https");
-              u.setProtocol(p);
-            }
-
-            if (p.startsWith(QL1S("http")) || p.startsWith(QL1S("ftp")))
-            {
-              QDBusReply<QString> reply = QDBusInterface(QL1S("org.kde.kded"),
-                                                         QL1S("/modules/proxyscout"),
-                                                         QL1S("org.kde.KPAC.ProxyScout"))
-                                          .call(QL1S("proxyForUrl"), u.url() );
-              proxy = reply;
-            }
-          }
-          break;
-      case EnvVarProxy:
-          proxy = QString::fromLocal8Bit(qgetenv(proxyFor(url.protocol()).toLocal8Bit())).trimmed();
-          break;
-      case ManualProxy:
-          proxy = proxyFor( url.protocol() );
-          break;
-      case NoProxy:
-      default:
-          break;
+      if (KProtocolInfo::protocolClass(protocol) != QL1S(":local"))
+      {
+        QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
+                                                        QL1S("/modules/proxyscout"),
+                                                        QL1S("org.kde.KPAC.ProxyScout"))
+                                        .call(QL1S("proxiesForUrl"), u.url());
+        proxyList = reply;
+      }
+      break;
+    }
+    case EnvVarProxy:
+      proxyList = getSystemProxyFor( url );
+      break;
+    case ManualProxy:
+      proxyList << proxyFor( url.protocol() );
+      break;
+    case NoProxy:
+    default:
+      break;
   }
 
-  return (proxy.isEmpty() ? QL1S("DIRECT") : proxy);
+  if (proxyList.isEmpty()) {
+    proxyList << QL1S("DIRECT");
+  }
+
+  return proxyList;
 }
 
 void KProtocolManager::badProxy( const QString &proxy )
@@ -340,90 +393,132 @@ static bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
+/*
+ * Returns true if url is in the no proxy list.
+ */
+static bool shouldIgnoreProxyFor(const KUrl& url)
+{
+  bool isRevMatch = false;
+  const KProtocolManager::ProxyType type = KProtocolManager::proxyType();
+  const bool useRevProxy = ((type == KProtocolManager::ManualProxy) && KProtocolManager::useReverseProxy());
+
+  QString noProxy;
+  // Check no proxy information iff the proxy type is either
+  // manual or environment variable based...
+  if ( (type == KProtocolManager::ManualProxy) || (type == KProtocolManager::EnvVarProxy) )
+    noProxy = KProtocolManager::noProxyFor();
+
+  if (!noProxy.isEmpty())
+  {
+    QString qhost = url.host().toLower();
+    QByteArray host = qhost.toLatin1();
+    QString qno_proxy = noProxy.trimmed().toLower();
+    const QByteArray no_proxy = qno_proxy.toLatin1();
+    isRevMatch = revmatch(host, no_proxy);
+
+    // If no match is found and the request url has a port
+    // number, try the combination of "host:port". This allows
+    // users to enter host:port in the No-proxy-For list.
+    if (!isRevMatch && url.port() > 0)
+    {
+      qhost += QL1C(':');
+      qhost += QString::number(url.port());
+      host = qhost.toLatin1();
+      isRevMatch = revmatch (host, no_proxy);
+    }
+
+    // If the hostname does not contain a dot, check if
+    // <local> is part of noProxy.
+    if (!isRevMatch && !host.isEmpty() && (strchr(host, '.') == NULL))
+      isRevMatch = revmatch("<local>", no_proxy);
+  }
+
+  return (useRevProxy != isRevMatch);
+}
+
+// For proxy address comparisons, we only need to compare
+// protocol, host and port number. Nothing else.
+static bool compareProxyUrls(const KUrl& u1, const KUrl& u2)
+{
+  return ((u1.protocol() == u2.protocol()) &&
+          (u1.host() == u2.host()) &&
+          (u1.port() == u2.port()));
+}
+
 QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 {
+    QStringList proxyList;
+    const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
+    if (!proxyList.isEmpty()) {
+      proxy = proxyList.first();
+    }
+    return protocol;
+}
+
+QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
+{
+  // Do not perform a proxy lookup for all urls classified as ":local".
+  if (KProtocolInfo::protocolClass(url.protocol()).compare(QL1S(":local"), Qt::CaseInsensitive) == 0)
+  {
+      return url.protocol();
+  }
+
   if (url.hasSubUrl()) // We don't want the suburl's protocol
   {
-     KUrl::List list = KUrl::split(url);
-     KUrl l = list.last();
-     return slaveProtocol(l, proxy);
+    const KUrl::List list = KUrl::split(url);
+    return slaveProtocol(list.last(), proxyList);
   }
 
-    PRIVATE_DATA;
-  if (d->url == url)
+  PRIVATE_DATA;
+  if (compareProxyUrls(d->url, url))
   {
-     proxy = d->proxy;
-     return d->protocol;
+    proxyList = d->proxyList;
+    return d->protocol;
   }
 
-  if (useProxy())
+  if (useProxy() && !shouldIgnoreProxyFor(url))
   {
-     proxy = proxyForUrl(url);
-     if ((proxy != "DIRECT") && (!proxy.isEmpty()))
-     {
-        bool isRevMatch = false;
-        KProtocolManager::ProxyType type = proxyType();
-        bool useRevProxy = ((type == ManualProxy) && useReverseProxy());
+    const QStringList proxies = proxiesForUrl(url);
+    proxyList.clear();
 
-        QString noProxy;
-        // Check no proxy information iff the proxy type is either
-        // manual or environment variable based...
-        if ( (type == ManualProxy) || (type == EnvVarProxy) )
-          noProxy = noProxyFor();
+    Q_FOREACH(const QString& proxy, proxies)
+    {
+      kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
+      if (proxy == QL1S("DIRECT") || proxy.isEmpty())
+      {
+        continue;
+      }
 
-        if (!noProxy.isEmpty())
+      d->url = proxy;
+      if (d->url.isValid() && !d->url.protocol().isEmpty())
+      {
+        // The idea behind slave protocols is not applicable to http
+        // and webdav protocols as well as protocols unknown to KDE.
+        const QString protocol = url.protocol();
+        if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
+            !KProtocolInfo::isKnownProtocol(protocol))
+          d->protocol = protocol;
+        else
         {
-           QString qhost = url.host().toLower();
-           QByteArray host = qhost.toLatin1();
-           QString qno_proxy = noProxy.trimmed().toLower();
-           const QByteArray no_proxy = qno_proxy.toLatin1();
-           isRevMatch = revmatch(host, no_proxy);
-
-           // If no match is found and the request url has a port
-           // number, try the combination of "host:port". This allows
-           // users to enter host:port in the No-proxy-For list.
-           if (!isRevMatch && url.port() > 0)
-           {
-              qhost += QL1C(':');
-              qhost += QString::number(url.port());
-              host = qhost.toLatin1();
-              isRevMatch = revmatch (host, no_proxy);
-           }
-
-           // If the hostname does not contain a dot, check if
-           // <local> is part of noProxy.
-           if (!isRevMatch && !host.isEmpty() && (strchr(host, '.') == NULL))
-              isRevMatch = revmatch("<local>", no_proxy);
+          d->protocol = d->url.protocol();
+          kDebug () << "slaveProtocol: " << d->protocol;
         }
+        proxyList << proxy;
+      }
+    }
 
-        if ( (!useRevProxy && !isRevMatch) || (useRevProxy && isRevMatch) )
-        {
-           d->url = proxy;
-           if (d->url.isValid() && !d->url.protocol().isEmpty())
-           {
-              // The idea behind slave protocols is not applicable to http
-              // and webdav protocols.
-              const QString protocol = url.protocol().toLower();
-              if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
-                  !KProtocolInfo::isKnownProtocol(protocol))
-                d->protocol = protocol;
-              else
-              {
-                d->protocol = d->url.protocol();
-                kDebug () << "slaveProtocol: " << d->protocol;
-              }
-
-              d->url = url;
-              d->proxy = proxy;
-              return d->protocol;
-           }
-        }
-     }
+    if (!proxyList.isEmpty())
+    {
+      d->url = url;
+      d->proxyList = proxyList;
+      return d->protocol;
+    }
   }
 
   d->url = url;
-  d->proxy.clear(); proxy.clear();
   d->protocol = url.protocol();
+  d->proxyList.clear();
+  proxyList.clear();
   return d->protocol;
 }
 

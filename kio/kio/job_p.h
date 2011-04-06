@@ -120,7 +120,7 @@ namespace KIO {
         // We schedule slaves based on (2) but tell the slave about (1) via
         // Slave::setProtocol().
         QString m_protocol;
-        QString m_proxy;
+        QStringList m_proxyList;
         bool m_checkOnHold;
         int m_schedSerial;
         bool m_redirectionHandlingEnabled;
