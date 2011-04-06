@@ -324,8 +324,8 @@ void CaCertificatesPage::addCertificateClicked()
 // private slot
 void CaCertificatesPage::itemChanged(QTreeWidgetItem *item, int column)
 {
-    Q_UNUSED(item);
-    Q_UNUSED(column);
+    Q_UNUSED(item)
+    Q_UNUSED(column)
 
     if (m_blockItemChanged) {
         return;
