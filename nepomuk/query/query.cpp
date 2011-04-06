@@ -559,12 +559,14 @@ KUrl Nepomuk::Query::Query::toSearchUrl( const QString& customTitle, SparqlFlags
     else
         url.addQueryItem( QLatin1String("sparql"), q.toSparqlQuery( flags ) );
 
-    if( !customTitle.isEmpty() ) {
-        url.addPath( QString::fromUtf8(customTitle.toUtf8().toPercentEncoding()) );
+    QString title(customTitle);
+    if( customTitle.isEmpty() ) {
+        title = titleFromQueryUrl( url );
     }
-    else {
-        url.addPath( titleFromQueryUrl( url ) );
-    }
+
+    // replace slashes with the "fraction slash" which is the same KIO::encodeFileName does.
+    // however, we do not want to link to KIO.
+    url.addPath( title.replace('/', QChar(0x2044)) );
 
     return url;
 }
