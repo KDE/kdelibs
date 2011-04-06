@@ -125,7 +125,7 @@ namespace KIO
 
   /**
    * Encodes (from the text displayed to the real filename)
-   * This translates % into %% and / into %2f
+   * This translates '/' into a "unicode fraction slash", QChar(0x2044).
    * Used by KIO::link, for instance.
    * @param str the file name to encode
    * @return the encoded file name
@@ -133,7 +133,8 @@ namespace KIO
   KIO_EXPORT QString encodeFileName( const QString & str );
   /**
    * Decodes (from the filename to the text displayed)
-   * This translates %2[fF] into / and %% into %
+   * This doesn't do anything anymore, it used to do the opposite of encodeFileName
+   * when encodeFileName was using %2F for '/'.
    * @param str the file name to decode
    * @return the decoded file name
    */
