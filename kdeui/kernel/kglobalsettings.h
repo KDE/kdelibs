@@ -522,6 +522,21 @@ public:
     static QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
+     * Used to obtain the QPalette that will be used to set the application palette.
+     *
+     * This is only useful for configuration modules such as krdb and should not be
+     * used in normal circumstances.
+     * @param config KConfig from which to load the colors (passed as-is to
+     * ::KColorScheme).
+     *
+     * @note The difference between this and the previous is that this never caches.
+     * @since 4.6.3
+     *
+     * @return the QPalette
+     */
+    static QPalette createNewApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
+
+    /**
      * An identifier for change signals.
      * \see emitChange
      */
