@@ -56,6 +56,8 @@ Nepomuk::Resource::Resource()
 
 Nepomuk::Resource::Resource( ResourceManager* manager )
 {
+    if(!manager)
+        manager = ResourceManager::instance();
     QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( QUrl(), QUrl() );
     if ( m_data )
@@ -83,6 +85,8 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 
 Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManager* manager )
 {
+    if(!manager)
+        manager = ResourceManager::instance();
     QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( uri, type );
     if ( m_data )
@@ -112,6 +116,8 @@ Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type, ResourceManager* manager )
 {
+    if(!manager)
+        manager = ResourceManager::instance();
     QMutexLocker lock( &manager->d->mutex );
     m_data = manager->d->data( uri, type );
     if ( m_data )
