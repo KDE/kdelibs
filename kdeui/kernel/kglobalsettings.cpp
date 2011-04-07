@@ -974,7 +974,7 @@ QPalette KGlobalSettings::Private::createApplicationPalette(const KSharedConfigP
     // by kdisplaySetPalette(), so we cache the palette to save time.
     if (!paletteCreated) {
         paletteCreated = true;
-        applicationPalette = createApplicationPalette(config);
+        applicationPalette = createNewApplicationPalette(config);
     }
 
     return applicationPalette;

@@ -530,6 +530,7 @@ public:
      * ::KColorScheme).
      *
      * @note The difference between this and the previous is that this never caches.
+     * @since 4.6.3
      *
      * @return the QPalette
      */
