@@ -518,7 +518,7 @@ void KFilePreviewGenerator::Private::requestSequenceIcon(const QModelIndex& inde
 
 void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
 {
-    if (items.count() <= 0) {
+    if (items.isEmpty()) {
         return;
     }
 
@@ -1207,26 +1207,30 @@ KFilePreviewGenerator::~KFilePreviewGenerator()
 
 void KFilePreviewGenerator::setPreviewShown(bool show)
 {
+    if (d->m_previewShown == show) {
+        return;
+    }
+
     KDirModel* dirModel = d->m_dirModel.data();
     if (show && (!d->m_viewAdapter->iconSize().isValid() || !dirModel)) {
-        // the view must provide an icon size and a directory model,
+        // The view must provide an icon size and a directory model,
         // otherwise the showing the previews will get ignored
         return;
     }
 
-    if (d->m_previewShown != show) {
-        d->m_previewShown = show;
-        if (!show) {
-            // When turning off the previews, the directory must be refreshed
-            // so that the previews get be replaced again by the MIME type icons.
-            KDirLister* dirLister = dirModel->dirLister();
-            const KUrl url = dirLister->url();
-            if (url.isValid()) {
-                dirLister->openUrl(url, KDirLister::NoFlags);
-            }
+    d->m_previewShown = show;
+    if (!show) {
+        // Clear the icon for all items so that the MIME type
+        // gets reloaded
+        KFileItemList itemList;
+        d->addItemsToList(QModelIndex(), itemList);
+
+        foreach (const KFileItem& item, itemList) {
+            const QModelIndex index = dirModel->indexForItem(item);
+            dirModel->setData(index, QIcon(), Qt::DecorationRole);
         }
-        updateIcons();
     }
+    updateIcons();
 }
 
 bool KFilePreviewGenerator::isPreviewShown() const
