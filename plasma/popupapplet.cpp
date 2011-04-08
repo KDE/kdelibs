@@ -680,6 +680,7 @@ PopupAppletPrivate::PopupAppletPrivate(PopupApplet *applet)
           popupAlignment(Qt::AlignLeft),
           savedAspectRatio(Plasma::InvalidAspectRatioMode),
           autohideTimer(0),
+          preShowStatus(UnknownStatus),
           popupLostFocus(false),
           passive(false)
 {
