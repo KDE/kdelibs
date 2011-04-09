@@ -463,9 +463,9 @@ bool KWebPage::handleReply(QNetworkReply* reply, bool isOnHold, QString* content
     if (KParts::BrowserRun::isTextExecutable(mimeType))
         mimeType = QL1S("text/plain");
 
-    kDebug(800) << "Content-disposition:" << suggestedFileName;
-    kDebug(800) << "Got unsupported content of type:" << mimeType << "URL:" << requestUrl;
-    kDebug(800) << "Error code:" << reply->error() << reply->errorString();
+    //kDebug(800) << "Content-disposition:" << suggestedFileName;
+    //kDebug(800) << "Got unsupported content of type:" << mimeType << "URL:" << requestUrl;
+    //kDebug(800) << "Error code:" << reply->error() << reply->errorString();
 
     if (isReplyStatusOk(reply)) {
         KParts::BrowserOpenOrSaveQuestion::Result result;
@@ -544,3 +544,4 @@ bool KWebPage::handleReply(QNetworkReply* reply, bool isOnHold, QString* content
 }
 
 #include "kwebpage.moc"
+

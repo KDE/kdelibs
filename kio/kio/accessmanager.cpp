@@ -196,7 +196,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         case PostOperation: {
             //kDebug( 7044 ) << "PostOperation:" << reqUrl;
             const qint64 size = sizeFromRequest(req);
-            kDebug(7044) << "PostOperation: data size=" << size;
+            //kDebug(7044) << "PostOperation: data size=" << size;
             kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
             break;
         }
@@ -443,3 +443,4 @@ void CookieJar::reparseConfiguration()
 }
 
 #include "accessmanager.moc"
+
