@@ -226,6 +226,12 @@ int AccessManagerReply::jobError(KJob* kJob)
             setError(QNetworkReply::NoError, kJob->errorText());
             //kDebug(7044) << "0 -> QNetworkReply::NoError";
             break;
+        case KIO::ERR_IS_DIRECTORY:
+            // This error condition can happen if you click on an ftp link that points
+            // to a directory instead of a file, e.g. ftp://ftp.kde.org/pub
+            setHeader(QNetworkRequest::ContentTypeHeader, "inode/directory");
+            setError(QNetworkReply::NoError, kJob->errorText());
+            break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, kJob->errorText());
             kDebug(7044) << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
