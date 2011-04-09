@@ -33,6 +33,10 @@ class KWebWallet;
 class KUrl;
 class KJob;
 
+namespace KIO {
+    class MetaData;
+}
+
 /**
  * @short An enhanced QWebPage that provides integration into the KDE environment.
  *
@@ -324,6 +328,19 @@ protected:
      * @see QWebPage::acceptNavigationRequest
      */
     virtual bool acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type);
+
+    /**
+     * Attempts to handle @ref reply and returns true on success, false otherwise.
+     *
+     * @param reply        the QNetworkReply object to be handled.
+     * @param isOnHold     if true, KIO::Scheduler::publishSlaveOnHold will be called by this
+     *                     function as needed in order to reuse the ioslave that was put on hold.
+     * @param contentType  if not null, it will be set to the content-type specified in @p reply, if any.
+     * @param metaData     if not null, it will be set to the KIO meta-data specified in @p reply, if any.
+     * @since 4.6.3
+     */
+    bool handleReply (QNetworkReply* reply, bool isOnHold = false,
+                      QString* contentType = 0, KIO::MetaData* metaData = 0);
 
 private:
     class KWebPagePrivate;
