@@ -22,10 +22,10 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <net/if.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include <net/if.h>
 
 #include <grp.h>
 #include <netdb.h>
