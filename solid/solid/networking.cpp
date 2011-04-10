@@ -59,6 +59,7 @@ Solid::Networking::Notifier::Notifier()
 void Solid::NetworkingPrivate::initialize()
 {
     QDBusPendingReply<uint> reply = iface->status();
+    reply.waitForFinished();
     if (reply.isValid()) {
         netStatus = ( Solid::Networking::Status )reply.value();
     } else {
