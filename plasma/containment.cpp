@@ -2166,7 +2166,7 @@ void Containment::destroy(bool confirm)
 
 void ContainmentPrivate::createToolBox()
 {
-    if (!toolBox) {
+    if (!toolBox && KAuthorized::authorizeKAction("plasma/containment_context_menu")) {
         toolBox = Plasma::AbstractToolBox::load(q->corona()->preferredToolBoxPlugin(type), QVariantList(), q);
 
         if (toolBox) {
