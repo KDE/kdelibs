@@ -98,6 +98,7 @@ static Atom kde_net_wm_temporary_rules        = 0;
 static Atom kde_net_wm_frame_overlap          = 0;
 static Atom kde_net_wm_activities             = 0;
 static Atom kde_net_wm_block_compositing      = 0;
+static Atom kde_net_wm_shadow                 = 0;
 
 // application protocols
 static Atom wm_protocols = 0;
@@ -255,7 +256,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 88;
+static const int netAtomCount = 89;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -354,7 +355,8 @@ static void create_netwm_atoms(Display *d) {
 
             "_NET_WM_FULL_PLACEMENT",
             "_KDE_NET_WM_ACTIVITIES",
-            "_KDE_NET_WM_BLOCK_COMPOSITING"
+            "_KDE_NET_WM_BLOCK_COMPOSITING",
+            "_KDE_NET_WM_SHADOW"
 	    };
 
     Atom atoms[netAtomCount], *atomsp[netAtomCount] =
@@ -455,6 +457,7 @@ static void create_netwm_atoms(Display *d) {
             &net_wm_full_placement,
             &kde_net_wm_activities,
             &kde_net_wm_block_compositing,
+            &kde_net_wm_shadow
 	    };
 
     assert( !netwm_atoms_created );
@@ -1297,6 +1300,10 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2BlockCompositing)
     atoms[pnum++] = kde_net_wm_block_compositing;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2KDEShadow ) {
+        atoms[pnum++] = kde_net_wm_shadow;
+    }
+
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
     XChangeProperty(p->display, p->root, net_supporting_wm_check, XA_WINDOW, 32,
@@ -1537,6 +1544,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == kde_net_wm_block_compositing )
         p->properties[ PROTOCOLS2 ] |= WM2BlockCompositing;
+
+    else if( atom == kde_net_wm_shadow )
+        p->properties[ PROTOCOLS2 ] |= WM2KDEShadow;
 }
 
 void NETRootInfo::setActiveWindow(Window window) {
@@ -3876,6 +3886,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
         dirty2 |= WM2Activities;
         else if (pe.xproperty.atom == kde_net_wm_block_compositing)
         dirty2 |= WM2BlockCompositing;
+            else if (pe.xproperty.atom == kde_net_wm_shadow)
+                dirty2 |= WM2KDEShadow;
 	    else {
 
 #ifdef    NETWMDEBUG
