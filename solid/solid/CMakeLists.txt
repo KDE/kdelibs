@@ -135,12 +135,10 @@ set(solid_LIB_SRCS
 if(NOT APPLE)
   macro_optional_find_package( HUpnp )
 
-  if ( HUPNP_FOUND AND HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9 )
-    macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+  if ( HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
     include_directories( ${HUPNP_INCLUDE_DIR} )
     message(STATUS "Building Solid UPnP backend." )
     set(solid_LIB_SRCS ${solid_LIB_SRCS}
-
        backends/upnp/upnpdevice.cpp
        backends/upnp/upnpdevicemanager.cpp
        backends/upnp/upnpdeviceinterface.cpp
@@ -148,7 +146,10 @@ if(NOT APPLE)
        backends/upnp/upnpinternetgateway.cpp
        backends/upnp/upnpcontrolpoint.cpp
     )
-  endif ( HUPNP_FOUND AND HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9 )
+  else ()
+    set(HUPNP_FOUND false)
+  endif ()
+  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
 endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
