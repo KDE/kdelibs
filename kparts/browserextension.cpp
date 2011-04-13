@@ -700,7 +700,7 @@ bool BrowserExtension::isActionEnabled( const char * name ) const
 
 void BrowserExtension::slotSetActionText( const char * name, const QString& text )
 {
-    kDebug() << "BrowserExtension::slotSetActionText " << name << " " << text;
+    //kDebug() << "BrowserExtension::slotSetActionText " << name << " " << text;
     ActionNumberMap::ConstIterator it = s_actionNumberMap->constFind( name );
     if ( it != s_actionNumberMap->constEnd() )
     {
