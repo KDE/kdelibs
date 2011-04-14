@@ -5122,12 +5122,13 @@ bool HTTPProtocol::retrieveAllData()
         const int bytesRead = readData(buffer);
 
         if (bytesRead < 0) {
-          error(ERR_ABORTED, m_request.url.host());
-          return false;
+            error(ERR_ABORTED, m_request.url.host());
+            return false;
         }
 
-        if (bytesRead == 0)
-          break;
+        if (bytesRead == 0) {
+            break;
+        }
 
         m_POSTbuf->write(buffer.constData(), buffer.size());
     }
