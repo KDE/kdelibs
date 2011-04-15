@@ -1950,34 +1950,25 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
         }
         case RFC3339Date:   // format is YYYY-MM-DDThh:mm:ss[.s]TZ
         {
-            bool dateOnly = false;
-            QRegExp rx(QString::fromLatin1("^(\\d{4})-(\\d\\d)-(\\d\\d)[Tt](\\d\\d):(\\d\\d):(\\d\\d)(?:\.(\\d+))?([Zz]|([+-])(\\d\\d):(\\d\\d))$"));
+            QRegExp rx(QString::fromLatin1("^(\\d{4})-(\\d\\d)-(\\d\\d)[Tt](\\d\\d):(\\d\\d):(\\d\\d)(?:\\.(\\d+))?([Zz]|([+-])(\\d\\d):(\\d\\d))$"));
             if (str.indexOf(rx))
                 break;
             const QStringList parts = rx.capturedTexts();
-            bool ok, ok1;
+            bool ok, ok1, ok2;
             int msecs  = 0;
             bool leapSecond = false;
             int year = parts[1].toInt(&ok);
-            if (!ok)
-                break;
-            int month = parts[2].toInt(&ok);
-            if (!ok)
-                break;
-            int day = parts[3].toInt(&ok);
-            if (!ok)
+            int month = parts[2].toInt(&ok1);
+            int day = parts[3].toInt(&ok2);
+            if (!ok || !ok1 || !ok2)
                 break;
             QDate d(year, month, day);
             if (!d.isValid())
                 break;
             int hour = parts[4].toInt(&ok);
-            if (!ok)
-                break;
-            int minute = parts[5].toInt(&ok);
-            if (!ok)
-                break;
-            int second = parts[6].toInt(&ok);
-            if (!ok)
+            int minute = parts[5].toInt(&ok1);
+            int second = parts[6].toInt(&ok2);
+            if (!ok || !ok1 || !ok2)
                 break;
             leapSecond = (second == 60);
             if (leapSecond)
@@ -2000,10 +1991,8 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             if (spec == OffsetFromUTC)
             {
                 offset = parts[10].toInt(&ok) * 3600;
-                if (!ok)
-                    break;
-                offset += parts[11].toInt(&ok) * 60;
-                if (!ok)
+                offset += parts[11].toInt(&ok1) * 60;
+                if (!ok || !ok1)
                     break;
                 if (parts[9] == QLatin1String("-"))
                 {
