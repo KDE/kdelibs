@@ -1283,6 +1283,7 @@ void Ftp::stat(const KUrl &url)
     //entry.insert( KIO::UDSEntry::UDS_NAME, UDSField( QString() ) );
     entry.insert( KIO::UDSEntry::UDS_NAME, QString::fromLatin1( "." ) );
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR );
+    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, QLatin1String("inode/directory"));
     entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
     entry.insert( KIO::UDSEntry::UDS_USER, QString::fromLatin1( "root" ) );
     entry.insert( KIO::UDSEntry::UDS_GROUP, QString::fromLatin1( "root" ) );

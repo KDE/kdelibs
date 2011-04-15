@@ -2479,12 +2479,17 @@ bool HTTPProtocol::sendQuery()
       header += QLatin1String("\r\n");
     }
 
+    // DoNotTrack feature...
+    if (config()->readEntry("DoNotTrack", true))
+      header += QLatin1String("DNT: 1\r\n");
+    else
+      header += QLatin1String("DNT: 0\r\n");
+
     // Remember that at least one failed (with 401 or 407) request/response
     // roundtrip is necessary for the server to tell us that it requires
     // authentication.
     // We proactively add authentication headers if we have cached credentials
     // to avoid the extra roundtrip where possible.
-    // (TODO: implement this caching)
     header += authenticationHeader();
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
@@ -5122,12 +5127,13 @@ bool HTTPProtocol::retrieveAllData()
         const int bytesRead = readData(buffer);
 
         if (bytesRead < 0) {
-          error(ERR_ABORTED, m_request.url.host());
-          return false;
+            error(ERR_ABORTED, m_request.url.host());
+            return false;
         }
 
-        if (bytesRead == 0)
-          break;
+        if (bytesRead == 0) {
+            break;
+        }
 
         m_POSTbuf->write(buffer.constData(), buffer.size());
     }
