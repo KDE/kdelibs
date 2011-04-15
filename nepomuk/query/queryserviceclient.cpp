@@ -207,7 +207,7 @@ bool Nepomuk::Query::QueryServiceClient::query( const Query& query )
         return true;
     }
     else {
-        kDebug() << "Could not contact query service.";
+        kDebug() << "Could not contact nepomuk query service.";
         return false;
     }
 }
@@ -228,7 +228,7 @@ bool Nepomuk::Query::QueryServiceClient::sparqlQuery( const QString& query, cons
         return true;
     }
     else {
-        kDebug() << "Could not contact query service.";
+        kDebug() << "Could not contact nepomuk query service.";
         return false;
     }
 }
@@ -248,7 +248,7 @@ bool Nepomuk::Query::QueryServiceClient::desktopQuery( const QString& query )
         return true;
     }
     else {
-        kDebug() << "Could not contact query service.";
+        kDebug() << "Could not contact nepomuk query service.";
         return false;
     }
 }
