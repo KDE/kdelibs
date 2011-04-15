@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2011 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -446,10 +446,15 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
                      *   with, if not local time, the UTC offset appended. The
                      *   time may be omitted to indicate a date-only value.
                      */
-        LocalDate   /**< Same format as Qt::LocalDate (i.e. locale dependent)
+        LocalDate,  /**< Same format as Qt::LocalDate (i.e. locale dependent)
                      *   with, if not local time, the UTC offset appended. The
                      *   time may be omitted to indicate a date-only value.
                      */
+        RFC3339Date /**< RFC 3339 format,
+                     *   i.e. "YYYY-MM-DDThh:mm:ss[.sss](Z|±hh:mm)".
+                     *   There is no valid date-only format.
+                     */
+
     };
 
     /**
@@ -1242,8 +1247,8 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * parameter, with the UTC offset appended.
      *
      * Note that if the instance has a time specification of ClockTime, the UTC
-     * offset in the result will be blank, except for RFC 2822 format in which
-     * it will be the offset for the local system time zone.
+     * offset in the result will be blank, except for RFC 2822 and RFC 3339
+     * formats in which it will be the offset for the local system time zone.
      *
      * If the instance is date-only, the time will when @p format permits be
      * omitted from the output string. This applies to @p format = QtTextDate
@@ -1272,8 +1277,9 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * present in the string:
      * - if the UTC offset is zero the result is type @c UTC.
      * - if the UTC offset is non-zero, the result is type @c OffsetFromUTC.
-     * - if there is no UTC offset, the result is by default type
-     *   @c ClockTime. You can use setFromStringDefault() to change this default.
+     * - if there is no UTC offset (when @p format permits this), the result is
+     *   by default type @c ClockTime. You can use setFromStringDefault() to
+     *   change this default.
      *
      * If no time is found in @p string, a date-only value is returned, except
      * when the specified @p format does not permit the time to be omitted, in
@@ -1281,8 +1287,8 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * ISODate when @p string includes a time zone specification, and for
      * RFCDate in all cases.
      *
-     * For RFC format strings, you should normally set @p format to
-     * RFCDate. Only set it to RFCDateDay if you want to return an error
+     * For RFC format strings (not RFC 3339), you should normally set @p format
+     * to RFCDate. Only set it to RFCDateDay if you want to return an error
      * when the day of the week is omitted.
      *
      * For @p format = ISODate or RFCDate[Day], if an invalid KDateTime is

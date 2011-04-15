@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2005,2010 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005,2011 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,6 +45,7 @@ private Q_SLOTS:
     void dstShifts();
     void strings_iso8601();
     void strings_rfc2822();
+    void strings_rfc3339();
     void strings_qttextdate();
     void strings_format();
     void cache();

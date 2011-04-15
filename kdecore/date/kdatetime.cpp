@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2010 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2011 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1265,9 +1265,9 @@ KDateTime KDateTime::currentDateTime(const Spec &spec)
         case UTC:
             return currentUtcDateTime();
         case TimeZone:
-	    if (spec.timeZone() != KSystemTimeZones::local())
+            if (spec.timeZone() != KSystemTimeZones::local())
                 break;
-	    // fall through to LocalZone
+            // fall through to LocalZone
         case LocalZone:
             return currentLocalDateTime();
         default:
@@ -1699,6 +1699,29 @@ QString KDateTime::toString(TimeFormat format) const
                 tz = KSystemTimeZones::local();
             break;
         }
+        case RFC3339Date:
+        {
+            QString s;
+            result += s.sprintf("%04d-%02d-%02dT%02d:%02d:%02d",
+                                d->date().year(), d->date().month(), d->date().day(),
+                                d->dt().time().hour(), d->dt().time().minute(), d->dt().time().second());
+            int msec = d->dt().time().msec();
+            if (msec)
+            {
+                int digits = 3;
+                if (!(msec % 10))
+                    msec /= 10, --digits;
+                if (!(msec % 10))
+                    msec /= 10, --digits;
+                result += s.sprintf(".%0*d", digits, d->dt().time().msec());
+            }
+            if (d->specType == UTC)
+                return result + QLatin1Char('Z');
+            if (d->specType == ClockTime)
+                tz = KSystemTimeZones::local();
+            tzcolon = ":"; // krazy:exclude=doublequote_chars
+            break;
+        }
         case ISODate:
         {
             // QDateTime::toString(Qt::ISODate) doesn't output fractions of a second
@@ -1731,7 +1754,6 @@ QString KDateTime::toString(TimeFormat format) const
             tzcolon = ":"; // krazy:exclude=doublequote_chars
             break;
         }
-            // fall through to QtTextDate
         case QtTextDate:
         case LocalDate:
         {
@@ -1925,6 +1947,81 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 return dt;
             }
             return result;
+        }
+        case RFC3339Date:   // format is YYYY-MM-DDThh:mm:ss[.s]TZ
+        {
+            bool dateOnly = false;
+            QRegExp rx(QString::fromLatin1("^(\\d{4})-(\\d\\d)-(\\d\\d)[Tt](\\d\\d):(\\d\\d):(\\d\\d)(?:\.(\\d+))?([Zz]|([+-])(\\d\\d):(\\d\\d))$"));
+            if (str.indexOf(rx))
+                break;
+            const QStringList parts = rx.capturedTexts();
+            bool ok, ok1;
+            int msecs  = 0;
+            bool leapSecond = false;
+            int year = parts[1].toInt(&ok);
+            if (!ok)
+                break;
+            int month = parts[2].toInt(&ok);
+            if (!ok)
+                break;
+            int day = parts[3].toInt(&ok);
+            if (!ok)
+                break;
+            QDate d(year, month, day);
+            if (!d.isValid())
+                break;
+            int hour = parts[4].toInt(&ok);
+            if (!ok)
+                break;
+            int minute = parts[5].toInt(&ok);
+            if (!ok)
+                break;
+            int second = parts[6].toInt(&ok);
+            if (!ok)
+                break;
+            leapSecond = (second == 60);
+            if (leapSecond)
+                second = 59;   // apparently a leap second - validate below, once time zone is known
+            if (!parts[7].isEmpty())
+            {
+                QString ms = parts[7] + QLatin1String("00");
+                ms.truncate(3);
+                msecs = ms.toInt(&ok);
+                if (!ok)
+                    break;
+                if (msecs && leapSecond)
+                    break;   // leap second only valid if 23:59:60.000
+            }
+            QTime t(hour, minute, second, msecs);
+            if (!t.isValid())
+                break;
+            int offset = 0;
+            SpecType spec = (parts[8].toUpper() == QLatin1String("Z")) ? UTC : OffsetFromUTC;
+            if (spec == OffsetFromUTC)
+            {
+                offset = parts[10].toInt(&ok) * 3600;
+                if (!ok)
+                    break;
+                offset += parts[11].toInt(&ok) * 60;
+                if (!ok)
+                    break;
+                if (parts[9] == QLatin1String("-"))
+                {
+                    if (!offset && leapSecond)
+                        break;      // leap second only valid if known time zone
+                    offset = -offset;
+                    if (!offset && negZero)
+                        *negZero = true;
+                }
+            }
+            if (leapSecond)
+            {
+                // Validate a leap second time. Leap seconds are inserted after 23:59:59 UTC.
+                // Convert the time to UTC and check that it is 00:00:00.
+                if ((hour*3600 + minute*60 + 60 - offset + 86400*5) % 86400)   // (max abs(offset) is 100 hours)
+                    break;    // the time isn't the last second of the day
+            }
+            return KDateTime(d, t, Spec(spec, offset));
         }
         case ISODate:
         {

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2005,2006,2010 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005,2006,2010,2011 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -3184,6 +3184,116 @@ void KDateTimeTest::strings_rfc2822()
     QVERIFY(!dtutc2.isValid());     // bad month
     dtutc2 = KDateTime::fromString(QString("11-Dec 1999 03:45 +0000"), KDateTime::RFCDate);
     QVERIFY(!dtutc2.isValid());     // only one hyphen in date
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+void KDateTimeTest::strings_rfc3339()
+{
+    KTimeZone london = KSystemTimeZones::zone("Europe/London");
+
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    bool negZero = true;
+    KDateTime dtlocal(QDate(1999,2,9), QTime(3,45,06), KDateTime::LocalZone);
+    QString s = dtlocal.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T03:45:06-08:00"));
+    KDateTime dtlocal1 = KDateTime::fromString(s, KDateTime::RFC3339Date, &negZero);
+    QCOMPARE(dtlocal1.dateTime().toUTC(), dtlocal.dateTime().toUTC());
+    QCOMPARE(dtlocal1.timeType(), KDateTime::OffsetFromUTC);
+    QCOMPARE(dtlocal1.utcOffset(), -8*3600);
+    QVERIFY(dtlocal1 == dtlocal);
+    QVERIFY(!negZero);
+    dtlocal.setDateOnly(true);
+    s = dtlocal.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T00:00:00-08:00"));
+
+    KDateTime dtzone(QDate(1999,6,9), QTime(3,45,06), london);
+    s = dtzone.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-06-09T03:45:06+01:00"));
+    KDateTime dtzone1 = KDateTime::fromString(s, KDateTime::RFC3339Date);
+    QCOMPARE(dtzone1.dateTime().toUTC(), dtzone.dateTime().toUTC());
+    QCOMPARE(dtzone1.timeType(), KDateTime::OffsetFromUTC);
+    QCOMPARE(dtzone1.utcOffset(), 3600);
+    QVERIFY(dtzone1 == dtzone);
+    dtzone.setDateOnly(true);
+    s = dtzone.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-06-09T00:00:00+01:00"));
+
+    KDateTime dtclock(QDate(1999,2,9), QTime(3,5,06), KDateTime::ClockTime);
+    s = dtclock.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T03:05:06-08:00"));
+    KDateTime dtclock1 = KDateTime::fromString(s, KDateTime::RFC3339Date, &negZero);
+    QCOMPARE(dtclock1.dateTime(), dtclock.dateTime());
+    QCOMPARE(dtclock1.timeType(), KDateTime::OffsetFromUTC);
+    QCOMPARE(dtclock1.utcOffset(), -8*3600);
+    QVERIFY(dtclock1 == dtclock);
+    QVERIFY(!negZero);
+    KDateTime dtclock2 = KDateTime::fromString(QString("1999-02-09t03:05:06-08:00"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(dtclock1 == dtclock2);
+    dtclock.setDateOnly(true);
+    s = dtclock.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T00:00:00-08:00"));
+
+    KDateTime dtutc(QDate(1999,2,9), QTime(3,45,00), KDateTime::UTC);
+    s = dtutc.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T03:45:00Z"));
+    KDateTime dtutc1 = KDateTime::fromString(s, KDateTime::RFC3339Date, &negZero);
+    QCOMPARE(dtutc1.dateTime(), dtutc.dateTime());
+    QCOMPARE(dtutc1.timeType(), KDateTime::UTC);
+    QVERIFY(dtutc1 == dtutc);
+    QVERIFY(!negZero);
+    KDateTime dtutc2 = KDateTime::fromString(QString("1999-02-09t03:45:00z"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(dtutc1 == dtutc2);
+    dtutc.setDateOnly(true);
+    s = dtutc.toString(KDateTime::RFC3339Date);
+    QCOMPARE(s, QString("1999-02-09T00:00:00Z"));
+
+    // Check '-00:00' (specifies unknown local offset)
+    dtutc2 = KDateTime::fromString(QString("1999-02-09T03:45:00-00:00"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(dtutc1 == dtutc2);
+    QVERIFY(negZero);
+    dtutc2 = KDateTime::fromString(QString("1999-02-09T03:45:00+00:00"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(dtutc1 == dtutc2);
+    QVERIFY(!negZero);
+
+    // Check leap second
+    KDateTime dt = KDateTime::fromString(QString("1999-02-09T23:59:60z"), KDateTime::RFC3339Date);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,2,9), QTime(23,59,59), Qt::UTC));
+    dt = KDateTime::fromString(QString("1999-02-09T23:59:60+00:00"), KDateTime::RFC3339Date);
+    QCOMPARE(dt.toUtc().dateTime(), QDateTime(QDate(1999,2,9), QTime(23,59,59), Qt::UTC));
+    dt = KDateTime::fromString(QString("1999-02-09T13:59:60-00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dt.isValid());
+    dt = KDateTime::fromString(QString("1999-06-11T13:59:60-10:00"), KDateTime::RFC3339Date);
+    QCOMPARE(dt.toUtc().dateTime(), QDateTime(QDate(1999,6,11), QTime(23,59,59), Qt::UTC));
+    dt = KDateTime::fromString(QString("1999-12-11T23:59:60-10:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dt.isValid());
+
+    // Check erroneous strings:
+    dtutc2 = KDateTime::fromString(QString("1999-02-09 03:45:00"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(!dtutc2.isValid());
+    dtutc2 = KDateTime::fromString(QString("1999-02-09T03:45:00B"), KDateTime::RFC3339Date, &negZero);
+    QVERIFY(!dtutc2.isValid());
+    dtutc2 = KDateTime::fromString(QString("1999-02-09T23:59:60-0000"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // no colon in UTC offset
+    dtutc2 = KDateTime::fromString(QString("19990-12-10T03:45:01+00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // bad year
+    dtutc2 = KDateTime::fromString(QString("1999-13-10T03:45:01+00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // bad month
+    dtutc2 = KDateTime::fromString(QString("1999-10-32T03:45:01+00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // bad day
+    dtutc2 = KDateTime::fromString(QString("1999-1209T03:45:00+00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // only one hyphen in date
+    dtutc2 = KDateTime::fromString(QString("1999-12T03:45:00+00:00"), KDateTime::RFC3339Date);
+    QVERIFY(!dtutc2.isValid());     // no day of month
 
     // Restore the original local time zone
     if (!originalZone)
