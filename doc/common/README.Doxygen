@@ -11,10 +11,10 @@ The files that may be overridden are:
 - doxygen.css      Stylesheet.
 - mainheader.html  Header for front page of dox. This should
                    not be terribly different from header.html.
-		   It might contain special CSS for the footer.
+                   It might contain special CSS for the footer.
 - mainfooter.html  Footer for front page of dox. This should at
                    least credit Doxygen [1] and point to the dox
-		   guidelines [2].
+                   guidelines [2].
 - header.html      Header file for regular pages.
 - footer.html      Footer file for regular pages.
 - Doxyfile.global  The global (brief) Doxyfile. For a long-style
