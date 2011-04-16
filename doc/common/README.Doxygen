@@ -11,10 +11,10 @@ The files that may be overridden are:
 - doxygen.css      Stylesheet.
 - mainheader.html  Header for front page of dox. This should
                    not be terribly different from header.html.
-		   It might contain special CSS for the footer.
+                   It might contain special CSS for the footer.
 - mainfooter.html  Footer for front page of dox. This should at
                    least credit Doxygen [1] and point to the dox
-		   guidelines [2].
+                   guidelines [2].
 - header.html      Header file for regular pages.
 - footer.html      Footer file for regular pages.
 - Doxyfile.global  The global (brief) Doxyfile. For a long-style
@@ -26,8 +26,6 @@ The tool for generating dox lives in admin/ :
                    See below for usage information.
 
 
-In a configured build directory, you can use "make apidox" to
-generate the API dox for the module -- assuming it has any, of course.
 Writing dox is beyond the scope of this README -- see the notes at
 http://techbase.kde.org/Policies/Library_Documentation_Policy .
 You can generate dox by hand -- without even having a configured
@@ -53,7 +51,7 @@ doxygen.sh [--recurse] [--modulename] [--doxdatadir=<dir>] [--installdir=<dir>]
               <modulename>-apidocs/ . You can use --no-modulename to
               suppress the <modulename> and generate the apidox in
               a subdirectory apidocs/ . Modulename is the last part of
-              the <top_srcdir> (usually a KDE SVN module name).
+              the <top_srcdir> (usually a KDE module name).
 --doxdatadir=<dir> Locate the HTML header files and support graphics.
               In kdelibs, the subdirectory doc/common/ contains these
               files (and this README). In an installed KDE system, 
@@ -68,7 +66,6 @@ doxygen.sh [--recurse] [--modulename] [--doxdatadir=<dir>] [--installdir=<dir>]
 
 
 How to generate dox manually: <TODO>
-Plan to fit these tools into ../Doxyfile.am: <TODO>
 Differences with current dox: <TODO>
 
 # A shell script that builds dox without all the tedious mucking about with
