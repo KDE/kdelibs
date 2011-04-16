@@ -136,6 +136,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KDateWidget", SIGNAL(changed (QDate)));
     s_changedMap->insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
     s_changedMap->insert( "KEditListBox", SIGNAL(changed()));
+    s_changedMap->insert( "KEditListWidget", SIGNAL(changed()));
     s_changedMap->insert( "KListWidget", SIGNAL(itemSelectionChanged()));
     s_changedMap->insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert( "KPasswordEdit", SIGNAL(textChanged(const QString &)));
