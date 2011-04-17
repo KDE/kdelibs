@@ -2480,10 +2480,8 @@ bool HTTPProtocol::sendQuery()
     }
 
     // DoNotTrack feature...
-    if (config()->readEntry("DoNotTrack", true))
+    if (config()->readEntry("DoNotTrack", false))
       header += QLatin1String("DNT: 1\r\n");
-    else
-      header += QLatin1String("DNT: 0\r\n");
 
     // Remember that at least one failed (with 401 or 407) request/response
     // roundtrip is necessary for the server to tell us that it requires
