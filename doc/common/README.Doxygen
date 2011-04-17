@@ -110,4 +110,4 @@ Differences with current dox: <TODO>
 # to "." . In non-top directories, both <!-- menu --> and <!-- gmenu -->
 # are calculated and replaced. Top directories get an empty <!-- menu -->
 # if any.
-
+# <!-- api_searchbox --> gets replaced by api.kde.org's search box.
