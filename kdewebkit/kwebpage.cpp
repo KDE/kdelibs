@@ -47,7 +47,6 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/renamedialog.h>
-#include <kio/scheduler.h>
 #include <kparts/browseropenorsavequestion.h>
 
 // Qt
@@ -304,7 +303,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
     QString mimeType;
     KIO::MetaData metaData;
 
-    if (handleReply(reply, true, &mimeType, &metaData)) {
+    if (handleReply(reply, &mimeType, &metaData)) {
         return;
     }
 
@@ -323,9 +322,6 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
                      metaData.value(QL1S("content-disposition-filename")))) {
         return;
     }
-
-    // Remove any ioslave that was put on hold...
-    KIO::Scheduler::removeSlaveOnHold();
 }
 
 QString KWebPage::sessionMetaData(const QString &key) const
@@ -432,7 +428,7 @@ bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &
     return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
-bool KWebPage::handleReply(QNetworkReply* reply, bool isOnHold, QString* contentType, KIO::MetaData* metaData)
+bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::MetaData* metaData)
 {
     // Reply url...
     const KUrl requestUrl (reply->request().url());
@@ -509,10 +505,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, bool isOnHold, QString* content
                 } else if (offer) {
                     KUrl::List list;
                     list.append(requestUrl);
-                    //kDebug(800) << "Suggested file name:" << suggestedFileName;
-                    if (offer->categories().contains(QL1S("KDE"), Qt::CaseInsensitive) && isOnHold) {
-                        KIO::Scheduler::publishSlaveOnHold();
-                    }
+                    // kDebug(800) << "Suggested file name:" << suggestedFileName;
                     KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
                     return true;
                 }
