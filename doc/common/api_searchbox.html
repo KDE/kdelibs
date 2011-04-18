@@ -1,0 +1,39 @@
+<div class="menu_box">
+  <div class="menutitle"><div><h2>Search</h2></div></div>
+  <div style="text-align: left;">
+    <form action="/mapsearcher.php" method="get">
+      <input type="text" name="class" value="search term" style="width:100%;" onClick="this.value='';"/>
+      <br />
+      <select name="module">
+        <option>ALL</option>
+        <option>kdelibs</option>
+        <option>kdepimlibs</option>
+        <option>kdebase-apps</option>
+        <option>kdebase-runtime</option>
+        <option>kdebase-workspace</option>
+        <option>kdeedu</option>
+        <option>kdegames</option>
+        <option>kdegraphics</option>
+        <option>kdemultimedia</option>
+        <option>kdenetwork</option>
+        <option>kdepim</option>
+        <option>kdepim-runtime</option>
+        <option>kdeplasma-addons</option>
+        <option>kdesdk</option>
+        <option>kdevelop</option>
+        <option>kdeutils</option>
+        <option>kdevplatform</option>
+        <option>kdewebdev</option>
+        <option>kdesupport</option>
+      </select>
+      <select name="version">
+        <option>4.x</option>
+        <option>4.5</option>
+        <option>3.5</option>
+        <option>kdesupport</option>
+        <option>ALL</option>
+      </select><br/>
+      <input type="submit" name="go" value="Go" />
+    </form>
+  </div>
+</div>

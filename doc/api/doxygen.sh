@@ -65,7 +65,7 @@ case $1 in
 	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
         echo "  --manpages       Generate man pages in addition to html"
         echo "  --qhppages       Generate pages for Qt Assistant"
-	echo "  --api-searchbox  Add api.kde.org's search box in all pages"
+	echo "  --api-searchbox  Add an api search box in all pages, like api.kde.org's"
         echo "  --searchengine   Enable search engine"
 	exit 2
 	;;
@@ -411,7 +411,7 @@ apidox_local()
 # In non-top directories, both <!-- menu --> and <!-- gmenu -->
 # are calculated and replaced. Top directories get an empty <!-- menu -->
 # if any.
-# <!-- api_searchbox --> gets replaced by api.kde.org's search box.
+# <!-- api_searchbox --> gets replaced by a search box like api.kde.org's.
 doxyndex()
 {
 	# Special case top-level to have an empty MENU.
@@ -494,56 +494,6 @@ doxyndex()
 		fi
 	fi
 
-        # API_SEARCHBOX substitution.
-        # It adds the multi-module search box found in api.kde.org's main page.
-        # FIXME: it currently only makes sense to enable it in api.kde.org's
-        #        context, as it hardcodes the list of modules and requires AKO's
-        #        mapsearcher.php to work.
-        if test "$api_searchbox" = "1"; then
-            API_SEARCHBOX='\
-<div class="menu_box"> \
-  <div class="menutitle"><div><h2>Search<\/h2><\/div><\/div> \
-  <div style="text-align: left;"> \
-    <form action="\/mapsearcher.php" method="get"> \
-      <input type="text" name="class" value="search term" style="width:100%;" onClick="this.value='';"\/> \
-      <br \/> \
-      <select name="module"> \
-        <option>ALL<\/option> \
-        <option>kdelibs<\/option> \
-        <option>kdepimlibs<\/option> \
-        <option>kdebase-apps<\/option> \
-        <option>kdebase-runtime<\/option> \
-        <option>kdebase-workspace<\/option> \
-        <option>kdeedu<\/option> \
-        <option>kdegames<\/option> \
-        <option>kdegraphics<\/option> \
-        <option>kdemultimedia<\/option> \
-        <option>kdenetwork<\/option> \
-        <option>kdepim<\/option> \
-        <option>kdepim-runtime<\/option> \
-        <option>kdeplasma-addons<\/option> \
-        <option>kdesdk<\/option> \
-        <option>kdevelop<\/option> \
-        <option>kdeutils<\/option> \
-        <option>kdevplatform<\/option> \
-        <option>kdewebdev<\/option> \
-        <option>kdesupport<\/option> \
-      <\/select> \
-      <select name="version"> \
-        <option>4.x<\/option> \
-        <option>4.5<\/option> \
-        <option>3.5<\/option> \
-        <option>kdesupport<\/option> \
-        <option>ALL<\/option> \
-      <\/select><br\/> \
-      <input type="submit" name="go" value="Go" \/> \
-    <\/form> \
-  <\/div> \
-<\/div>'
-        else
-            API_SEARCHBOX=""
-        fi
-
 	# Now substitute in the MENU in every file. This depends
 	# on HTML_HEADER (ie. header.html) containing the
 	# <!-- menu --> comment.
@@ -555,9 +505,18 @@ doxyndex()
 				-e "s+<!-- pmenu.*-->+$PMENU+" \
 				-e "s+<!-- cmenu.begin -->+$CMENUBEGIN+" \
 				-e "s+<!-- cmenu.end -->+$CMENUEND+" \
-				-e "s+<!-- api_searchbox -->+$API_SEARCHBOX+" \
 				< "$i"  | sed -e "s+@topdir@+$htmltop+g" | sed -e "s+@topname@+$TOPNAME+g" | sed -e "s+@copyright@+$COPYRIGHT+g" > "$i.new" && mv "$i.new" "$i"
 			sed -e "s+<!-- cmenu -->+$CMENU+" < "$i" > "$i.new"
+
+		        # API_SEARCHBOX substitution.
+		        # It adds the multi-module search box found in api.kde.org's main page.
+		        # FIXME: it currently only makes sense to enable it in api.kde.org's
+		        #        context, as it hardcodes the list of modules and requires AKO's
+		        #        mapsearcher.php to work.
+			if test "${api_searchbox}" = "1"; then
+			    sed -i -e "/<!-- api_searchbox -->/r ${DOXDATA}/api_searchbox.html" ${i}.new
+			fi
+
 			test -s "$i.new" && mv "$i.new" "$i"
 			echo "* Added menus to $i"
 		fi
