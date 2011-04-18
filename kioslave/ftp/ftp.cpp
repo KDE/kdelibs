@@ -119,7 +119,7 @@ namespace KIO {
         /**
          * recommended size of a data block passed to findBufferFileType()
          */
-        mimimumMimeSize =     1024
+        minimumMimeSize =     1024
     };
 
     // JPF: this helper was derived from write_all in file.cc (FileProtocol).
@@ -245,7 +245,7 @@ const char* Ftp::ftpResponse(int iOffset)
     // "nnn-text" we loop here until a final "nnn text" line is
     // reached. Only data from the final line will be stored.
     do {
-      while (!m_control->canReadLine() && m_control->waitForReadyRead()) {}
+      while (!m_control->canReadLine() && m_control->waitForReadyRead((readTimeout() * 1000))) {}
       m_lastControlLine = m_control->readLine();
       pTxt = m_lastControlLine.data();
       int iCode  = atoi(pTxt);
@@ -1506,7 +1506,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
   // get a line from the data connecetion ...
   while( true )
   {
-    while (!m_data->canReadLine() && m_data->waitForReadyRead()) {}
+    while (!m_data->canReadLine() && m_data->waitForReadyRead((readTimeout() * 1000))) {}
     QByteArray data = m_data->readLine();
     if (data.size() == 0)
       break;
@@ -1737,7 +1737,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
        ftpFolder(url.path(), false) )
   {
     // Ok it's a dir in fact
-    kDebug(7102) << "ftpGet: it is a directory in fact";
+    kDebug(7102) << "it is a directory in fact";
     iError = ERR_IS_DIRECTORY;
     return statusServerError;
   }
@@ -1746,12 +1746,12 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   if ( !resumeOffset.isEmpty() )
   {
     llOffset = resumeOffset.toLongLong();
-    kDebug(7102) << "ftpGet: got offset from metadata : " << llOffset;
+    kDebug(7102) << "got offset from metadata : " << llOffset;
   }
 
   if( !ftpOpenCommand("retr", url.path(), '?', ERR_CANNOT_OPEN_FOR_READING, llOffset) )
   {
-    kWarning(7102) << "ftpGet: Can't open for reading";
+    kWarning(7102) << "Can't open for reading";
     return statusServerError;
   }
 
@@ -1775,7 +1775,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     totalSize( m_size );  // emit the total size...
   }
 
-  kDebug(7102) << "ftpGet: starting with offset=" << llOffset;
+  kDebug(7102) << "starting with offset=" << llOffset;
   KIO::fileoffset_t processed_size = llOffset;
 
   QByteArray array;
@@ -1795,7 +1795,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     if(iBlockSize+iBufferCur > (int)sizeof(buffer))
       iBlockSize = sizeof(buffer) - iBufferCur;
     if (m_data->bytesAvailable() == 0)
-      m_data->waitForReadyRead();
+      m_data->waitForReadyRead((readTimeout() * 1000));
     int n = m_data->read( buffer+iBufferCur, iBlockSize );
     if(n <= 0)
     {   // this is how we detect EOF in case of unknown size
@@ -1812,7 +1812,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     {
       bytesLeft -= n;
       iBufferCur += n;
-      if(iBufferCur < mimimumMimeSize && bytesLeft > 0)
+      if(iBufferCur < minimumMimeSize && bytesLeft > 0)
       {
         processedSize( processed_size );
         continue;
@@ -1833,7 +1833,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     processedSize( processed_size );
   }
 
-  kDebug(7102) << "ftpGet: done";
+  kDebug(7102) << "done";
   if(iCopyFile == -1)          // must signal EOF to data pump ...
     data(array);               // array is empty and must be empty!
 
@@ -2341,7 +2341,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
       iError = ERR_CANNOT_RESUME;
       return statusClientError;                            // client side error
     }
-    kDebug(7102) << "copy: resuming at " << hCopyOffset;
+    kDebug(7102) << "resuming at " << hCopyOffset;
   }
   else {
     iCopyFile = KDE::open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
@@ -2349,7 +2349,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 
   if(iCopyFile == -1)
   {
-    kDebug(7102) << "copy: ### COULD NOT WRITE " << sCopyFile;
+    kDebug(7102) << "### COULD NOT WRITE " << sCopyFile;
     iError = (errno == EACCES) ? ERR_WRITE_ACCESS_DENIED
                                : ERR_CANNOT_OPEN_FOR_WRITING;
     return statusClientError;
@@ -2371,7 +2371,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     { // rename ".part" on success
       if ( KDE::rename( sPart, sCopyFile ) )
       {
-        kDebug(7102) << "copy: cannot rename " << sPart << " to " << sCopyFile;
+        kDebug(7102) << "cannot rename " << sPart << " to " << sCopyFile;
         iError = ERR_CANNOT_RENAME_PARTIAL;
         iRes = statusClientError;
       }
