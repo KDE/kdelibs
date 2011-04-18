@@ -47,7 +47,6 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/renamedialog.h>
-#include <kio/scheduler.h>
 #include <kparts/browseropenorsavequestion.h>
 
 // Qt
@@ -372,7 +371,6 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
                     list.append(requestUrl);
                     //kDebug(800) << "Suggested file name:" << suggestedFileName;
                     if (offer->categories().contains(QL1S("KDE"), Qt::CaseInsensitive)) {
-                        KIO::Scheduler::publishSlaveOnHold();
                         KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
                         return;
                     }
@@ -403,9 +401,6 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
             return;
         }        
     }
-    
-    // Remove any ioslave that was put on hold...
-    KIO::Scheduler::removeSlaveOnHold();
 }
 
 QString KWebPage::sessionMetaData(const QString &key) const
