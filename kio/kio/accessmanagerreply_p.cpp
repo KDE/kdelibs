@@ -25,6 +25,7 @@
 #include "accessmanagerreply_p.h"
 #include "accessmanager.h"
 #include "job.h"
+#include "scheduler.h"
 
 #include <kdebug.h>
 #include <kprotocolinfo.h>
@@ -50,10 +51,10 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
                                        QObject *parent)
                    :QNetworkReply(parent),
                     m_metaDataRead(false),
-                    m_ignoreContentDisposition(false)
+                    m_ignoreContentDisposition(false),
+                    m_kioJob(kioJob)
 
 {
-    m_kioJob = kioJob;
     setRequest(request);
     setOpenMode(QIODevice::ReadOnly);
     setUrl(request.url());
@@ -126,6 +127,10 @@ void AccessManagerReply::putOnHold()
         return;
 
     m_kioJob->putOnHold();
+    KIO::Scheduler::publishSlaveOnHold();
+
+    m_kioJob = 0;
+    finished();
 }
 
 static bool isStatusCodeSuccess(const QNetworkReply* reply)
@@ -312,7 +317,7 @@ void AccessManagerReply::slotResult(KJob *kJob)
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     if (redirectUrl.isValid() || !hasRawHeader("content-type")) {
-        readHttpResponseHeaders(m_kioJob);
+        readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     } else {
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
         if (errcode)
