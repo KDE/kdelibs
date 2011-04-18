@@ -267,7 +267,7 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
     }
 
     if (!d->socket.bytesAvailable()) {
-        const int timeout = d->isBlocking ? -1 : readTimeout();
+        const int timeout = d->isBlocking ? -1 : (readTimeout() * 1000);
         d->socket.waitForReadyRead(timeout);
     }
 #if 0
@@ -292,7 +292,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
         return -1;
     }
 
-    const int timeout = (d->isBlocking ? -1: readTimeout());
+    const int timeout = (d->isBlocking ? -1: (readTimeout() * 1000));
     ssize_t readTotal = 0;
     do {
         if (!d->socket.bytesAvailable())
