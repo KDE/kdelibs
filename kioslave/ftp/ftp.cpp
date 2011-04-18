@@ -1763,15 +1763,22 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     if (!m_size) m_size = UnknownSize;
   }
 
+  // Send the mime-type...
+  StatusCode status = ftpSendMimeType(iError, url);
+  if (status != statusSuccess) {
+      return status;
+  }
+
   KIO::filesize_t bytesLeft = 0;
-  if ( m_size != UnknownSize )
+  if ( m_size != UnknownSize ) {
     bytesLeft = m_size - llOffset;
+    totalSize( m_size );  // emit the total size...
+  }
 
   kDebug(7102) << "ftpGet: starting with offset=" << llOffset;
   KIO::fileoffset_t processed_size = llOffset;
 
   QByteArray array;
-  bool mimetypeEmitted = false;
   char buffer[maximumIpcSize];
   // start with small data chunks in case of a slow data source (modem)
   // - unfortunately this has a negative impact on performance for large
@@ -1812,19 +1819,6 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
       }
       n = iBufferCur;
       iBufferCur = 0;
-    }
-
-    // get the mime type and set the total size ...
-    if(!mimetypeEmitted)
-    {
-      mimetypeEmitted = true;
-      array = QByteArray::fromRawData(buffer, n);
-      KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
-      array.clear();
-      kDebug(7102) << "ftpGet: Emitting mimetype " << mime->name();
-      mimeType( mime->name() );
-      if( m_size != UnknownSize )	// Emit total size AFTER mimetype
-        totalSize( m_size );
     }
 
     // write output file or pass to data pump ...
@@ -2392,3 +2386,38 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   return iRes;
 }
 
+Ftp::StatusCode Ftp::ftpSendMimeType(int& iError, const KUrl& url)
+{
+  const int totalSize = ((m_size == UnknownSize || m_size > 1024) ? 1024 : m_size);
+  QByteArray buffer(totalSize, '\0');
+
+  while (true) {
+      // Wait for content to be available...
+      if (m_data->bytesAvailable() == 0 && !m_data->waitForReadyRead((readTimeout() * 1000))) {
+          iError = ERR_COULD_NOT_READ;
+          return statusServerError;
+      }
+
+      const int bytesRead = m_data->peek(buffer.data(), totalSize);
+
+      // If we got a -1, it must be an error so return an error.
+      if (bytesRead == -1) {
+          iError = ERR_COULD_NOT_READ;
+          return statusServerError;
+      }
+
+      // If m_size is unknown, peek returns 0 (0 sized file ??), or peek returns size
+      // equal to the size we want, then break.
+      if (bytesRead == 0 || bytesRead == totalSize || m_size == UnknownSize) {
+          break;
+      }
+  }
+
+  if (!buffer.isEmpty()) {
+      KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), buffer);
+      kDebug(7102) << "Emitting mimetype" << mime->name();
+      mimeType( mime->name() ); // emit the mime type...
+  }
+
+  return statusSuccess;
+}
