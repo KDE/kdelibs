@@ -8,6 +8,8 @@ override them by putting specific replacements in doc/api/ .
 This allows modules to customize their appearance as desired.
 The files that may be overridden are:
 
+- api_searchbox.html  Optional search box displayed after the rest
+                      of the footer menu. Turned on by --api-searchbox.
 - doxygen.css      Stylesheet.
 - mainheader.html  Header for front page of dox. This should
                    not be terribly different from header.html.
@@ -110,4 +112,5 @@ Differences with current dox: <TODO>
 # to "." . In non-top directories, both <!-- menu --> and <!-- gmenu -->
 # are calculated and replaced. Top directories get an empty <!-- menu -->
 # if any.
-# <!-- api_searchbox --> gets replaced by api.kde.org's search box.
+# <!-- api_searchbox --> gets replaced by api.kde.org's search box (actually,
+# by the contents of api_searchbox.html).
