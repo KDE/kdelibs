@@ -1145,7 +1145,7 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
         slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
     }
 
-    if (!slave && m_slaveOnHold) {
+    if (slave) {
         // Make sure that the job wants to do a GET or a POST, and with no offset
         const int cmd = jobPriv->m_command;
         bool canJobReuse = cmd == CMD_GET;
@@ -1160,18 +1160,14 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             }
         }
 
-        if (job->url() == m_urlOnHold) {
-            if (canJobReuse) {
-                kDebug(7006) << "HOLD: Reusing held slave for" << m_urlOnHold;
-                slave = m_slaveOnHold;
-            } else {
-                 kDebug(7006) << "HOLD: Discarding held slave (" << m_urlOnHold << ")";
-                 m_slaveOnHold->kill();
-            }
-            m_slaveOnHold = 0;
-            m_urlOnHold.clear();
+        if (canJobReuse) {
+            kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
+        } else {
+            kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
+            slave->kill();
         }
     }
+
     return slave;
 }
 
