@@ -147,7 +147,7 @@ public:
     UndoState m_undoState;
     QStack<KUrl> m_dirStack;
     QStack<KUrl> m_dirCleanupStack;
-    QStack<KUrl> m_linkCleanupStack;
+    QStack<KUrl> m_fileCleanupStack; // files and links
     QList<KUrl> m_dirsToUpdate;
     FileUndoManager::UiInterface* m_uiInterface;
 

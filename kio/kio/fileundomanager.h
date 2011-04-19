@@ -126,7 +126,13 @@ public:
      */
     UiInterface* uiInterface() const;
 
-    enum CommandType { Copy, Move, Rename, Link, Mkdir, Trash };
+    /**
+     * The type of job.
+     *
+     * Put: @since 4.7, represents the creation of a file from data in memory.
+     *                Used when pasting data from clipboard or drag-n-drop.
+     */
+    enum CommandType { Copy, Move, Rename, Link, Mkdir, Trash, Put };
 
     /**
      * Record this job while it's happening and add a command for it so that the user can undo it.

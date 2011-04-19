@@ -136,7 +136,8 @@ CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const KUrl::Li
   connect(job, SIGNAL(result(KJob*)),
           this, SLOT(slotResult(KJob*)));
 
-  if (op != FileUndoManager::Mkdir) {
+  // TODO whitelist, instead
+  if (op != FileUndoManager::Mkdir && op != FileUndoManager::Put) {
       connect(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)),
               this, SLOT(slotCopyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
       connect(job, SIGNAL(copyingLinkDone(KIO::Job *,KUrl,QString,KUrl)),
@@ -284,20 +285,22 @@ QString FileUndoManager::undoText() const
         return i18n("Und&o");
 
     FileUndoManager::CommandType t = d->m_commands.top().m_type;
-    if (t == FileUndoManager::Copy)
+    switch(t) {
+    case FileUndoManager::Copy:
         return i18n("Und&o: Copy");
-    else if (t == FileUndoManager::Link)
+    case FileUndoManager::Link:
         return i18n("Und&o: Link");
-    else if (t == FileUndoManager::Move)
+    case FileUndoManager::Move:
         return i18n("Und&o: Move");
-    else if (t == FileUndoManager::Rename)
+    case FileUndoManager::Rename:
         return i18n("Und&o: Rename");
-    else if (t == FileUndoManager::Trash)
+    case FileUndoManager::Trash:
         return i18n("Und&o: Trash");
-    else if (t == FileUndoManager::Mkdir)
+    case FileUndoManager::Mkdir:
         return i18n("Und&o: Create Folder");
-    else
-        assert(false);
+    case FileUndoManager::Put:
+        return i18n("Und&o: Create File");
+    }
     /* NOTREACHED */
     return QString();
 }
@@ -337,7 +340,7 @@ void FileUndoManager::undo()
             fileCleanupStack.append((*it).m_dst);
         }
     }
-    if (d->m_current.m_type == FileUndoManager::Mkdir) {
+    if (d->m_current.m_type == FileUndoManager::Mkdir || d->m_current.m_type == FileUndoManager::Put) {
         fileCleanupStack.append(d->m_current.m_dst);
     }
     if (!fileCleanupStack.isEmpty()) {
@@ -377,7 +380,7 @@ void FileUndoManager::undo()
         }
         else if (type == BasicOperation::Link)
         {
-            d->m_linkCleanupStack.prepend((*it).m_dst);
+            d->m_fileCleanupStack.prepend((*it).m_dst);
 
             removeBasicOperation = !d->m_current.isMoveCommand();
         }
@@ -386,6 +389,10 @@ void FileUndoManager::undo()
             it = opStack.erase(it);
         else
             ++it;
+    }
+
+    if (d->m_current.m_type == FileUndoManager::Put) {
+        d->m_fileCleanupStack.append(d->m_current.m_dst);
     }
 
     kDebug(1203) << "starting with" << undoStateToString(d->m_undoState);
@@ -397,7 +404,7 @@ void FileUndoManagerPrivate::stopUndo(bool step)
 {
     m_current.m_opStack.clear();
     m_dirCleanupStack.clear();
-    m_linkCleanupStack.clear();
+    m_fileCleanupStack.clear();
     m_undoState = REMOVINGDIRS;
     m_undoJob = 0;
 
@@ -551,9 +558,9 @@ void FileUndoManagerPrivate::stepMovingFiles()
 void FileUndoManagerPrivate::stepRemovingLinks()
 {
     kDebug(1203) << "REMOVINGLINKS";
-    if (!m_linkCleanupStack.isEmpty())
+    if (!m_fileCleanupStack.isEmpty())
     {
-        KUrl file = m_linkCleanupStack.pop();
+        KUrl file = m_fileCleanupStack.pop();
         kDebug(1203) << "file_delete" << file;
         m_currentJob = KIO::file_delete(file, KIO::HideProgressInfo);
         m_undoJob->emitDeleting(file);
