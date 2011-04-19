@@ -53,6 +53,9 @@ namespace KIO {
    * @param data the data to copy
    * @param widget parent widget to use for dialogs
    * @see pasteClipboard()
+   *
+   * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
+   * are using it in your application, then I'll reconsider.
    */
   KIO_EXPORT void pasteData( const KUrl& destURL, const QByteArray& data, QWidget* widget );
 
@@ -67,29 +70,42 @@ namespace KIO {
    * @param data the data to copy
    * @param dialogText the text to show in the dialog
    * @see pasteClipboard()
+   *
+   * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
+   * are using it in your application, then I'll reconsider.
    */
   KIO_EXPORT CopyJob *pasteDataAsync( const KUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
 
 
   /**
-   * Save the given mimesource @p data to the given destination URL
+   * Save the given mime @p data to the given destination URL
    * after offering the user to choose a data format.
    * This is the method used when handling drops (of anything else than URLs)
-   * onto dolphin and konqueror; it is also called when pasting data.
+   * onto dolphin and konqueror.
    *
-   * @param data the QMimeData (from a QDropEvent or from the clipboard when pasting)
-   * @param destURL the URL of the directory where the data will be pasted.
+   * @param data the QMimeData, usually from a QDropEvent
+   * @param destUrl the URL of the directory where the data will be pasted.
    * The filename to use in that directory is prompted by this method.
    * @param dialogText the text to show in the dialog
    * @param widget parent widget to use for dialogs
-   * @param clipboard whether the QMimeSource comes from QClipboard. If you
+   * @param clipboard whether the QMimeData comes from QClipboard. If you
    * use pasteClipboard for that case, you never have to worry about this parameter.
    *
    * @see pasteClipboard()
    */
-  KIO_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
+  KIO_EXPORT Job* pasteMimeData(const QMimeData* data, const KUrl& destUrl,
+                                const QString& dialogText, QWidget* widget);
+
+  /**
+   * @deprecated because it returns a CopyJob*, and this is better implemented
+   * without a copy job. Use pasteMimeData instead.
+   * Note that you'll have to tell the user in case of an error (no data to paste),
+   * while pasteMimeSource did that.
+   */
+  KIO_EXPORT_DEPRECATED CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
+
 
   /**
    * Returns true if pasteMimeSource finds any interesting format in @p data.

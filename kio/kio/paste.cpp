@@ -19,6 +19,7 @@
 #include "paste.h"
 #include "pastedialog.h"
 
+#include "kio/job.h"
 #include "kio/copyjob.h"
 #include "kio/deletejob.h"
 #include "kio/global.h"
@@ -38,7 +39,6 @@
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 #include <QMimeData>
-#include <QtCore/QTextIStream>
 
 static bool decodeIsCutSelection(const QMimeData *mimeData)
 {
@@ -90,7 +90,7 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destD
     return 0;
 }
 
-static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget )
+static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget, bool delIfOverwrite )
 {
   bool ok;
   QString dialogText( text );
@@ -103,8 +103,10 @@ static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& s
   KUrl myurl(u);
   myurl.addPath( file );
 
-  // Check for existing destination file. If we let CopyJob do it then we expose
-  // an ugly tempfile name as the source URL...
+  // Check for existing destination file.
+  // When we were using CopyJob, we couldn't let it do that (would expose
+  // an ugly tempfile name as the source URL)
+  // And now we're using a put job anyway, no destination checking included.
   if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, widget))
   {
       kDebug(7007) << "Paste will overwrite file.  Prompting...";
@@ -126,45 +128,53 @@ static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& s
           return KUrl();
       } else if (res == KIO::R_OVERWRITE)
       {
-          // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
-          // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files) [not true anymore]
-          // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
-          // As solution 1bis) we could use a PredefinedAnswerJobUiDelegate like in kiotesthelper.h...
-          // But well the simpler is really to delete the dest:
-          KIO::Job* delJob = KIO::del(myurl);
-          delJob->exec();
+          // Old hack. With the put job we just pass Overwrite.
+          if (delIfOverwrite) {
+              // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
+              // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files) [not true anymore]
+              // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
+              // But well the simpler is really to delete the dest:
+              KIO::Job* delJob = KIO::del(myurl);
+              delJob->exec();
+          }
       }
   }
 
   return myurl;
 }
 
+// Old solution
 // The final step: write _data to tempfile and move it to newUrl
 static KIO::CopyJob* pasteDataAsyncTo( const KUrl& newUrl, const QByteArray& _data )
 {
     // ### Bug: because we move from a tempfile to the destination,
     // if the user does "Undo" then we won't ask for confirmation, and we'll
     // move back to a tempfile, instead of just deleting.
-    // I guess we need a macro job which does copy+del?
     // A KIO::storedPut would be better but FileUndoManager would need to support it first.
     KTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
     tempFile.open();
     tempFile.write(_data.data(), _data.size());
     tempFile.flush();
-
     KUrl origUrl(tempFile.fileName());
-
     return KIO::move(origUrl, newUrl);
 }
 
-#ifndef QT_NO_MIMECLIPBOARD
-static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
+// New solution
+static KIO::Job* putDataAsyncTo(const KUrl& url, const QByteArray& data, QWidget* widget, KIO::JobFlags flags)
+{
+    KIO::Job* job = KIO::storedPut(data, url, -1, flags);
+    job->ui()->setWindow(widget);
+    return job;
+}
+
+static QByteArray chooseFormatAndUrl(const KUrl& u, const QMimeData* mimeData,
                                      const QStringList& formats,
                                      const QString& text,
                                      const QString& suggestedFileName,
                                      QWidget* widget,
-                                     bool clipboard )
+                                     bool clipboard,
+                                     KUrl* newUrl)
 {
     QStringList formatLabels;
     for ( int i = 0; i < formats.size(); ++i ) {
@@ -183,22 +193,22 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
     KIO::PasteDialog dlg( QString::null, dialogText, suggestedFileName, formatLabels, widget, clipboard ); //krazy:exclude=nullstrassign
 
     if ( dlg.exec() != KDialog::Accepted )
-        return 0;
+        return QByteArray();
 
     if ( clipboard && dlg.clipboardChanged() ) {
         KMessageBox::sorry( widget,
                             i18n( "The clipboard has changed since you used 'paste': "
                                   "the chosen data format is no longer applicable. "
                                   "Please copy again what you wanted to paste." ) );
-        return 0;
+        return QByteArray();
     }
 
     const QString result = dlg.lineEditText();
     const QString chosenFormat = formats[ dlg.comboItem() ];
 
     kDebug() << " result=" << result << " chosenFormat=" << chosenFormat;
-    KUrl newUrl( u );
-    newUrl.addPath( result );
+    *newUrl = KUrl( u );
+    newUrl->addPath( result );
     // if "data" came from QClipboard, then it was deleted already - by a nice 0-seconds timer
     // In that case, get it again. Let's hope the user didn't copy something else meanwhile :/
     // #### QT4/KDE4 TODO: check that this is still the case
@@ -206,14 +216,8 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
         mimeData = QApplication::clipboard()->mimeData();
     }
     const QByteArray ba = mimeData->data( chosenFormat );
-    KIO::CopyJob* job = pasteDataAsyncTo( newUrl, ba );
-    job->ui()->setWindow(widget);
-    return job;
+    return ba;
 }
-#endif
-
-
-#ifndef QT_NO_MIMECLIPBOARD
 
 static QStringList extractFormats(const QMimeData* mimeData)
 {
@@ -237,7 +241,7 @@ static QStringList extractFormats(const QMimeData* mimeData)
     return formats;
 }
 
-// The main method for dropping
+// The [old] main method for dropping
 KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destUrl,
                                     const QString& dialogText, QWidget* widget, bool clipboard )
 {
@@ -247,7 +251,6 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
 
   // Now check for plain text
   // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
-  QString text;
   if ( mimeData->hasText() )
   {
       ba = mimeData->text().toLocal8Bit(); // encoding OK?
@@ -259,7 +262,11 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
           return 0;
 
       if ( formats.size() > 1 ) {
-          return chooseAndPaste(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard);
+          KUrl newUrl;
+          ba = chooseFormatAndUrl(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard, &newUrl);
+          KIO::CopyJob* job = pasteDataAsyncTo(newUrl, ba);
+          job->ui()->setWindow(widget);
+          return job;
       }
       ba = mimeData->data( formats.first() );
   }
@@ -269,7 +276,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
     return 0;
   }
 
-    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget);
+    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, true);
     if (newUrl.isEmpty())
         return 0;
 
@@ -283,7 +290,41 @@ KIO_EXPORT bool KIO::canPasteMimeSource(const QMimeData* data)
     return data->hasText() || !extractFormats(data).isEmpty();
 }
 
-#endif
+KIO::Job* pasteMimeDataImpl(const QMimeData* mimeData, const KUrl& destUrl,
+                            const QString& dialogText, QWidget* widget,
+                            bool clipboard)
+{
+    QByteArray ba;
+    const QString suggestedFilename = QString::fromUtf8(mimeData->data("application/x-kde-suggestedfilename"));
+
+    // Now check for plain text
+    // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
+    if (mimeData->hasText()) {
+        ba = mimeData->text().toLocal8Bit(); // encoding OK?
+    } else {
+        const QStringList formats = extractFormats(mimeData);
+        if (formats.isEmpty()) {
+            return 0;
+        } else if (formats.size() > 1) {
+            KUrl newUrl;
+            ba = chooseFormatAndUrl(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard, &newUrl);
+            if (ba.isEmpty()) {
+                return 0;
+            }
+            return putDataAsyncTo(newUrl, ba, widget, KIO::Overwrite);
+        }
+        ba = mimeData->data(formats.first());
+    }
+    if (ba.isEmpty()) {
+        return 0;
+    }
+
+    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, false);
+    if (newUrl.isEmpty())
+        return 0;
+
+    return putDataAsyncTo(newUrl, ba, widget, KIO::Overwrite);
+}
 
 // The main method for pasting
 KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, bool move )
@@ -295,7 +336,6 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
     return 0;
   }
 
-#ifndef QT_NO_MIMECLIPBOARD
   // TODO: if we passed mimeData as argument, we could write unittests that don't
   // mess up the clipboard and that don't need QtGui.
   const QMimeData *mimeData = QApplication::clipboard()->mimeData();
@@ -309,51 +349,24 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
       }
   }
 
-  return pasteMimeSource( mimeData, destUrl, QString(), widget, true /*clipboard*/ );
-#else
-  QByteArray ba;
-  QTextStream txtStream( ba, QIODevice::WriteOnly );
-
-  const QStringList data = QApplication::clipboard()->text().split('\n', QString::SkipEmptyParts);
-
-  KUrl::List urls;
-  KURLDrag::decode(data, urls);
-  QStringList::const_iterator end(data.end());
-  for(QStringList::const_iterator it=data.begin(); it!=end; ++it)
-      txtStream << *it;
-  if ( ba.size() == 0 )
-  {
-    KMessageBox::sorry(widget, i18n("The clipboard is empty"));
-    return 0;
-  }
-  return pasteDataAsync( destUrl, ba, widget );
-#endif
+  return pasteMimeDataImpl(mimeData, destUrl, QString(), widget, true /*clipboard*/);
 }
 
 
-KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget* widget )
+KIO_EXPORT void KIO::pasteData(const KUrl& u, const QByteArray& data, QWidget* widget)
 {
-    const KUrl newUrl = getNewFileName( u, QString(), QString(), widget );
-    // We could use KIO::put here, but that would require a class
-    // for the slotData call. With NetAccess, we can do a synchronous call.
-
+    const KUrl newUrl = getNewFileName(u, QString(), QString(), widget, false);
     if (newUrl.isEmpty())
        return;
 
-    KTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.write( _data.data(), _data.size() );
-    tempFile.flush();
-
-    (void) KIO::NetAccess::upload( tempFile.fileName(), newUrl, widget );
+    KIO::Job* job = putDataAsyncTo(newUrl, data, widget, KIO::Overwrite);
+    KIO::NetAccess::synchronousRun(job, widget);
 }
 
-// KDE5 TODO: return a KIO::Job*, not a CopyJob*, in case we want to use file_move or a macro job...
-// But then the caller needs to know the destUrl too. Return a QPair?
-// KDE5: Inline in the only caller, and remove from public API; it's not used anywhere else anymore.
+// KDE5: remove
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, QWidget *widget, const QString& text )
 {
-    KUrl newUrl = getNewFileName( u, text, QString(), widget );
+    KUrl newUrl = getNewFileName(u, text, QString(), widget, true);
 
     if (newUrl.isEmpty())
        return 0;
@@ -379,4 +392,11 @@ KIO_EXPORT QString KIO::pasteActionText()
     } else {
         return QString();
     }
+}
+
+// The [new] main method for dropping
+KIO_EXPORT KIO::Job* KIO::pasteMimeData(const QMimeData* mimeData, const KUrl& destUrl,
+                                        const QString& dialogText, QWidget* widget)
+{
+    return pasteMimeDataImpl(mimeData, destUrl, dialogText, widget, false /*not clipboard*/);
 }
