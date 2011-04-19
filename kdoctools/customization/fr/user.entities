@@ -118,6 +118,9 @@
 
 <!ENTITY traducteurJeanJacquesFinazzi    '<othercredit role="translator"><firstname>Jean-Jacques</firstname><surname>Finazzi</surname><affiliation><address><email>jj.finazzi@club.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurJeanJacquesFinazzi     '<othercredit role="reviewer"><firstname>Jean-Jacques</firstname><surname>Finazzi</surname><affiliation><address><email>jj.finazzi@club.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
+<!ENTITY traducteurSylvainFloury    '<othercredit role="translator"><firstname>Sylvain</firstname><surname>Floury</surname><affiliation><address><email>contact@floury.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurSylvainFloury     '<othercredit role="reviewer"><firstname>Sylvain</firstname><surname>Floury</surname><affiliation><address><email>contact@floury.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
  
 <!ENTITY traducteurFredericFoiry    '<othercredit role="translator"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurFredericFoiry     '<othercredit role="reviewer"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -300,6 +303,7 @@
 <!ENTITY SamiFantar          'Sami Fantar <email>sami.fantar@laposte.net</email>'>
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rönningen <email>nilsfernandez@yahoo.fr</email>'>
 <!ENTITY JeanJacquesFinazzi 'Jean-Jacques Finazzi <email>jj.finazzi@club.fr</email>'>
+<!ENTITY SylvainFloury      'Sylvain Floury <email>contact@floury.org</email>'>
 <!ENTITY FredericFoiry       'Frédéric Foiry <email>frederic.foiry@wanadoo.fr</email>'>
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
 <!ENTITY SylvainGarsault  'Sylvain Garsault <email>sylvain.garsault@freesbee.fr</email>'>
