@@ -47,6 +47,7 @@
 #include <kio/directorysizejob.h>
 #include <kio/copyjob.h>
 #include <kio/deletejob.h>
+#include <kio/paste.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
 QTEST_KDEMAIN( JobTest, NoGUI )

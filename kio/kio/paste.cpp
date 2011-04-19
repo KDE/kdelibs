@@ -40,6 +40,56 @@
 #include <QMimeData>
 #include <QtCore/QTextIStream>
 
+static bool decodeIsCutSelection(const QMimeData *mimeData)
+{
+    const QByteArray data = mimeData->data("application/x-kde-cutselection");
+    return data.isEmpty() ? false : data.at(0) == '1';
+}
+
+// This could be made a public method, if there's a need for pasting only urls
+// and not random data.
+/**
+ * Pastes URLs from the clipboard. This results in a copy or move job,
+ * depending on whether the user has copied or cut the items.
+ *
+ * @param mimeData the mimeData to paste, usually QApplication::clipboard()->mimeData()
+ * @param destDir Destination directory where the items will be copied/moved.
+ * @param flags the flags are passed to KIO::copy or KIO::move.
+ * @return the copy or move job handling the operation, or 0 if there is nothing to do
+ * @since ...
+ */
+//KIO_EXPORT Job *pasteClipboardUrls(const KUrl& destDir, JobFlags flags = DefaultFlags);
+static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destDir, KIO::JobFlags flags = KIO::DefaultFlags)
+{
+    const KUrl::List urls = KUrl::List::fromMimeData(mimeData, KUrl::List::PreferLocalUrls);
+    if (!urls.isEmpty()) {
+        const bool move = decodeIsCutSelection(mimeData);
+        KIO::Job *job = 0;
+        if (move)
+            job = KIO::move(urls, destDir, flags);
+        else
+            job = KIO::copy(urls, destDir, flags);
+
+        // If moving, update the clipboard contents with the new locations
+        if (move) {
+            QApplication::clipboard()->clear();
+
+            KUrl::List newUrls;
+            Q_FOREACH(const KUrl& url, urls) {
+                KUrl dUrl = destDir;
+                dUrl.addPath(url.fileName());
+                newUrls.append(dUrl);
+            }
+
+            QMimeData* mime = new QMimeData();
+            newUrls.populateMimeData(mime);
+            QApplication::clipboard()->setMimeData(mime);
+        }
+        return job;
+    }
+    return 0;
+}
+
 static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget )
 {
   bool ok;
@@ -77,7 +127,7 @@ static KUrl getNewFileName( const KUrl &u, const QString& text, const QString& s
       } else if (res == KIO::R_OVERWRITE)
       {
           // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
-          // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files)
+          // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files) [not true anymore]
           // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
           // As solution 1bis) we could use a PredefinedAnswerJobUiDelegate like in kiotesthelper.h...
           // But well the simpler is really to delete the dest:
@@ -238,42 +288,27 @@ KIO_EXPORT bool KIO::canPasteMimeSource(const QMimeData* data)
 // The main method for pasting
 KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, bool move )
 {
+    Q_UNUSED(move);
+
   if ( !destUrl.isValid() ) {
     KMessageBox::error( widget, i18n( "Malformed URL\n%1", destUrl.prettyUrl() ) );
     return 0;
   }
 
 #ifndef QT_NO_MIMECLIPBOARD
+  // TODO: if we passed mimeData as argument, we could write unittests that don't
+  // mess up the clipboard and that don't need QtGui.
   const QMimeData *mimeData = QApplication::clipboard()->mimeData();
 
-  // First check for URLs.
-  const KUrl::List urls = KUrl::List::fromMimeData(mimeData, KUrl::List::PreferLocalUrls);
-  if ( !urls.isEmpty() ) {
-    KIO::Job *res = 0;
-    if ( move )
-      res = KIO::move( urls, destUrl );
-    else
-      res = KIO::copy( urls, destUrl );
-    res->ui()->setWindow(widget);
-
-    // If moving, update the clipboard contents with the new locations
-    if ( move ) {
-      QApplication::clipboard()->clear();
-
-      KUrl::List newUrls;
-      for (int i = 0; i < urls.size(); i++) {
-          KUrl dUrl = destUrl;
-          dUrl.addPath(urls.at(i).fileName());
-          newUrls.append(dUrl);
+  if (KUrl::List::canDecode(mimeData)) {
+      // We can ignore the bool move, KIO::paste decodes it
+      KIO::Job* job = pasteClipboardUrls(mimeData, destUrl);
+      if (job) {
+          job->ui()->setWindow(widget);
+          return job;
       }
-
-      QMimeData* mime = new QMimeData();
-      newUrls.populateMimeData(mime);
-      QApplication::clipboard()->setMimeData(mime);
-    }
-
-    return res;
   }
+
   return pasteMimeSource( mimeData, destUrl, QString(), widget, true /*clipboard*/ );
 #else
   QByteArray ba;

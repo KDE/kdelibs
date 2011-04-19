@@ -26,11 +26,8 @@ class QWidget;
 class QMimeSource;
 
 namespace KIO {
-  class Job;
-  class CopyJob;
-
-  // KDE5 TODO: move all this to libkonq? It seems only libkonq uses this.
-  // If you use this in a 3rd-party KDE app, please email me (faure at kde.org)
+    class Job;
+    class CopyJob;
 
   /**
    * Pastes the content of the clipboard to the given destination URL.
@@ -40,7 +37,7 @@ namespace KIO {
    *
    * @param destURL the URL to receive the data
    * @param widget parent widget to use for dialogs
-   * @param move true to move the data, false to copy
+   * @param move true to move the data, false to copy -- now ignored and handled automatically
    * @return the job that handles the operation
    * @see pasteData()
    */
