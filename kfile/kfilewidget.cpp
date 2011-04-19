@@ -254,6 +254,7 @@ public:
     KUrlComboBox *locationEdit;
     KDirOperator *ops;
     KFileFilterCombo *filterWidget;
+    QTimer filterDelayTimer;
 
     KFilePlacesModel *model;
 
@@ -569,6 +570,11 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->filterWidget->setWhatsThis(whatsThisText);
     d->filterLabel->setBuddy(d->filterWidget);
     connect(d->filterWidget, SIGNAL(filterChanged()), SLOT(_k_slotFilterChanged()));
+
+    d->filterDelayTimer.setSingleShot(true);
+    d->filterDelayTimer.setInterval(300);
+    connect(d->filterWidget, SIGNAL(editTextChanged(QString)), &d->filterDelayTimer, SLOT(start()));
+    connect(&d->filterDelayTimer, SIGNAL(timeout()), SLOT(_k_slotFilterChanged()));
 
     // the Automatically Select Extension checkbox
     // (the text, visibility etc. is set in updateAutoSelectExtension(), which is called by readConfig())
@@ -1371,16 +1377,22 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
 {
 //     kDebug(kfile_area);
 
+    filterDelayTimer.stop();
+
     QString filter = filterWidget->currentFilter();
     ops->clearFilter();
 
-    if ( filter.indexOf( '/' ) > -1 ) {
+    if ( filter.contains('/') ) {
         QStringList types = filter.split(' ', QString::SkipEmptyParts);
         types.prepend("inode/directory");
         ops->setMimeFilter( types );
     }
-    else
+    else if ( filter.contains('*') || filter.contains('?') || filter.contains('[') ) {
         ops->setNameFilter( filter );
+    }
+    else {
+        ops->setNameFilter('*' + filter.replace(' ', '*') + '*');
+    }
 
     ops->updateDir();
 
