@@ -637,8 +637,6 @@ void MkdirJobPrivate::slotRedirection( const KUrl &url)
          return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
-     if (m_url.hasUser() && !url.hasUser() && (m_url.host().compare(url.host(), Qt::CaseInsensitive) == 0))
-         m_redirectionURL.setUser(m_url.user()); // Preserve user
      // Tell the user that we haven't finished yet
      emit q->redirection(q, m_redirectionURL);
 }
@@ -864,8 +862,6 @@ void StatJobPrivate::slotRedirection( const KUrl &url)
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
-     if (m_url.hasUser() && !url.hasUser() && (m_url.host().compare(url.host(), Qt::CaseInsensitive) == 0))
-        m_redirectionURL.setUser(m_url.user()); // Preserve user
      // Tell the user that we haven't finished yet
      emit q->redirection(q, m_redirectionURL);
 }
@@ -1009,8 +1005,6 @@ void TransferJob::slotRedirection( const KUrl &url)
     else
     {
        d->m_redirectionURL = url; // We'll remember that when the job finishes
-       if (d->m_url.hasUser() && !url.hasUser() && (d->m_url.host().compare(url.host(), Qt::CaseInsensitive) == 0))
-          d->m_redirectionURL.setUser(d->m_url.user()); // Preserve user
        d->m_redirectionList.append(url);
        d->m_outgoingMetaData["ssl_was_in_use"] = d->m_incomingMetaData["ssl_in_use"];
        // Tell the user that we haven't finished yet
@@ -2623,8 +2617,6 @@ void ListJobPrivate::slotRedirection( const KUrl & url )
         return;
     }
     m_redirectionURL = url; // We'll remember that when the job finishes
-    if (m_url.hasUser() && !url.hasUser() && (m_url.host().compare(url.host(), Qt::CaseInsensitive) == 0))
-        m_redirectionURL.setUser(m_url.user()); // Preserve user
     emit q->redirection( q, m_redirectionURL );
 }
 
@@ -2880,8 +2872,6 @@ void MultiGetJob::slotRedirection( const KUrl &url)
      return;
   }
   d->m_redirectionURL = url;
-  if (d->m_currentEntry.url.hasUser() && !url.hasUser() && (d->m_currentEntry.url.host().compare(url.host(), Qt::CaseInsensitive) == 0))
-      d->m_redirectionURL.setUser(d->m_currentEntry.url.user()); // Preserve user
   get(d->m_currentEntry.id, d->m_redirectionURL, d->m_currentEntry.metaData); // Try again
 }
 
