@@ -747,6 +747,31 @@ QPoint Corona::popupPosition(const QGraphicsItem *item, const QSize &s, Qt::Alig
         return QPoint(0, 0);
     }
 
+    const QGraphicsItem *actualItem = item;
+
+    //its own view could be hidden, for instance if item is in an hidden Dialog
+    //try to position it using the parent applet as the item
+    if (!v->isVisible()) {
+        actualItem = item->parentItem();
+        if (!actualItem) {
+            const QGraphicsWidget *widget = qgraphicsitem_cast<const QGraphicsWidget*>(item);
+            if (widget) {
+                actualItem = qobject_cast<QGraphicsItem*>(widget->parent());
+            }
+        }
+
+        kDebug() << actualItem;
+
+        if (!v->isVisible() && actualItem) {
+            v = viewFor(actualItem);
+        }
+    }
+
+    if (!actualItem) {
+        actualItem = item;
+    }
+
+
     QPoint pos;
     QTransform sceneTransform = item->sceneTransform();
 
