@@ -114,6 +114,7 @@ bool KDateWidget::setDate( const QDate &date )
         d->m_day->setMaximum( d->m_date.daysInMonth() );
         d->m_day->setValue( d->m_date.day() );
 
+        d->m_month->clear();
         d->m_month->setMaxVisibleItems( d->m_date.monthsInYear() );
         for ( int m = 1; m <= d->m_date.monthsInYear(); ++m ) {
             d->m_month->addItem( calendar()->monthName( m, d->m_date.year() ) );
