@@ -239,7 +239,7 @@ int AccessManagerReply::jobError(KJob* kJob)
             break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
+            kDebug(7044) << "KIO::ERR_COULD_NOT_CONNECT -> QNetworkReply::ConnectionRefusedError";
             break;
         case KIO::ERR_UNKNOWN_HOST:
             setError(QNetworkReply::HostNotFoundError, kJob->errorText());
