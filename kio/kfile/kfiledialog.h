@@ -103,8 +103,9 @@ public:
       *                 Refer to the KFileWidget documentation for more information
       *                 on this parameter.
       *
-      * @param filter A shell glob or a mime-type-filter that specifies
-      *               which files to display.
+      * @param filter A shell glob or a mimetype filter that specifies
+      *               which files to display. For better consistency across applications,
+      *               it is recommended to use a mimetype filter.
       * See setFilter() and setMimeFilter() for details on how to use this argument.
       *
       * @param parent The parent widget of this dialog
@@ -218,8 +219,28 @@ public:
     /**
      * Sets the filter to be used to @p filter.
      *
-     * You can set more
-     * filters for the user to select separated by @c '\\n'. Every
+     * The filter can be either set as a space-separated list of
+     * mimetypes, which is recommended, or as a list of shell globs
+     * separated by @c '\\n'.
+     *
+     * If the filter contains an unescaped @c '/', a mimetype filter is assumed.
+     * If you would like a @c '/' visible in your filter it can be escaped with
+     * a @c '\'. You can specify multiple mimetypes like this (separated with
+     * space):
+     *
+     * \code
+     * kfile->setFilter( "image/png text/html text/plain" );
+     * \endcode
+     *
+     * When showing the filter to the user, the mimetypes will be automatically
+     * translated into their description like `PNG image'. Multiple mimetypes
+     * will be automatically summarized to a filter item `All supported files'.
+     * To add a filter item for all files matching @c '*', add @c all/allfiles
+     * as mimetype.
+     *
+     * If the filter contains no unescaped @c '/', it is assumed that
+     * the filter contains conventional shell globs. Several filter items
+     * to select from can be separated by @c '\\n'. Every
      * filter entry is defined through @c namefilter|text to display.
      * If no @c '|' is found in the expression, just the namefilter is
      * shown. Examples:
@@ -236,15 +257,8 @@ public:
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      *
-     * If the filter contains an unescaped @c '/', a mimetype-filter is assumed.
-     * If you would like a '/' visible in your filter it can be escaped with
-     * a @c '\'. You can specify multiple mimetypes like this (separated with
-     * space):
-     *
-     * \code
-     * kfile->setFilter( "image/png text/html text/plain" );
-     * kfile->setFilter( "*.cue|CUE\\/BIN Files (*.cue)" );
-     * \endcode
+     * For better consistency across applications, it is recommended to use a
+     * mimetype filter.
      *
      * @see filterChanged
      * @see setMimeFilter
@@ -344,7 +358,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -379,7 +393,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -405,7 +419,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -431,7 +445,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -457,7 +471,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -481,7 +495,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -529,7 +543,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.
@@ -553,7 +567,7 @@ public:
      * @param startDir Starting directory or @c kfiledialog:/// URL.
      *                 Refer to the KFileWidget documentation for more information
      *                 on this parameter.
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     * @param filter A shell glob or a mimetype filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
      *    provide multiple globs, see setFilter() for details.

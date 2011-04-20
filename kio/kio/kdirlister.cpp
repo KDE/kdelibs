@@ -2251,7 +2251,7 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
         return;
 
     d->prepareForSettingsChange();
-    if (mimeFilter.contains("application/octet-stream")) // all files
+    if (mimeFilter.contains(QLatin1String("application/octet-stream")) || mimeFilter.contains(QLatin1String("all/allfiles"))) // all files
         d->settings.mimeFilter.clear();
     else
         d->settings.mimeFilter = mimeFilter;

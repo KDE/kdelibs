@@ -141,17 +141,13 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     d->m_filters.clear();
     QString delim = QLatin1String(", ");
     d->hasAllSupportedFiles = false;
+    bool hasAllFilesFilter = false;
 
     d->m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
     QString allComments, allTypes;
     for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
     {
-        if ( d->m_allTypes && it != types.begin() ) {
-            allComments += delim;
-            allTypes += ' ';
-        }
-
         kDebug(kfile_area) << *it;
         KMimeType::Ptr type = KMimeType::mimeType( *it );
 
@@ -160,6 +156,15 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
             continue;
         }
 
+        if ( type->name().startsWith( QLatin1String( "all/" ) ) ) {
+            hasAllFilesFilter = true;
+            continue;
+        }
+
+        if ( d->m_allTypes && it != types.begin() ) {
+            allComments += delim;
+            allTypes += ' ';
+        }
 
         d->m_filters.append( type->name() );
         if ( d->m_allTypes )
@@ -183,6 +188,11 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
         setCurrentIndex( 0 );
 
         d->m_filters.prepend( allTypes );
+    }
+
+    if ( hasAllFilesFilter ) {
+        addItem(i18n("All Files"));
+        d->m_filters.append( QLatin1String("all/allfiles") );
     }
 
     d->lastFilter = currentText();
