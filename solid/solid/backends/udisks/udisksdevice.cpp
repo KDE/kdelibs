@@ -287,9 +287,9 @@ QString UDisksDevice::storageDescription() const
             second = QObject::tr("/HD DVD-RW", "Second item of %1%2 Drive sentence");
 
         if (drive_is_hotpluggable)
-            description = QObject::tr("External %1%2 Drive").arg(first).arg(second);
+            description = QObject::tr("External %1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
         else
-            description = QObject::tr("%1%2 Drive").arg(first).arg(second);
+            description = QObject::tr("%1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
 
         return description;
     }
