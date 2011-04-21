@@ -396,7 +396,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             // FIXME: check for overwriting, malicious archive entries (../foo) etc.
             // FIXME: KArchive should provide "safe mode" for this!
             KArchive *archive = 0;
-    
+
 
             if (mimeType->is("application/zip")) {
                 archive = new KZip(payloadfile);
@@ -546,7 +546,8 @@ void Installation::uninstall(EntryInternal entry)
                 continue;
             }
         } else {
-            if (QFile::exists(file)) {
+            QFileInfo info(file);
+            if (info.exists() || info.isSymLink()) {
                 bool worked = QFile::remove(file);
                 if (!worked) {
                     kWarning() << "unable to delete file " << file;
