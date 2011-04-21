@@ -149,10 +149,13 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         if (isLuksDevice() && !isAccessible())  // unlocked device, now mount it
             mount();
 
-        m_setupInProgress = false;
-        m_device->broadcastActionDone("setup");
+        else // Don't broadcast setupDone unless the setup is really done. (Fix kde#271156)
+        {
+            m_setupInProgress = false;
+            m_device->broadcastActionDone("setup");
 
-        slotChanged();
+            slotChanged();
+        }
     }
     else if (m_teardownInProgress)
     {
