@@ -73,13 +73,13 @@ public:
     * Copy constructor.
     */
    AuthInfo( const AuthInfo& info );
-   
+
    /**
     * Destructor
     * @since 4.1
     */ 
    ~AuthInfo();
-   
+
    /**
     * Custom assignment operator.
     */
@@ -241,7 +241,7 @@ public:
        ExtraFieldReadOnly = 1<<1,
        ExtraFieldMandatory = 1<<2
    };
-   
+
    /**
     * Set Extra Field Value. 
     * Currently supported extra-fields: 
@@ -252,20 +252,20 @@ public:
     * @since 4.1
     */
    void setExtraField(const QString &fieldName, const QVariant & value);
-   
+
    /**
     * Set Extra Field Flags
     * @since 4.1
     */
    void setExtraFieldFlags(const QString &fieldName, const FieldFlags flags);
-   
+
    /**
     * Get Extra Field Value
     * Check QVariant::isValid() to find out if the field exists.
     * @since 4.1 
     */
    QVariant getExtraField(const QString &fieldName) const;
-   
+
    /**
     * Get Extra Field Flags
     * @since 4.1
