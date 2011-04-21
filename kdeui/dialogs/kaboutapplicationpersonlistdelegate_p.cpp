@@ -57,7 +57,7 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
     KToolBar *mainLinks = new KToolBar( itemView(), false, false );
 
     KAction *emailAction = new KAction( KIcon( "internet-mail" ),
-                                        i18n( "Email contributor" ),
+                                        i18nc( "Action to send an email to a contributor", "Email contributor" ),
                                         mainLinks );
     emailAction->setVisible( false );
     mainLinks->addAction( emailAction );
