@@ -784,6 +784,11 @@ QPoint Corona::popupPosition(const QGraphicsItem *item, const QSize &s, Qt::Alig
         }
     }
 
+
+    if (!v) {
+      return QPoint(0, 0);
+    }
+
     //if the applet is rotated the popup position has to be un-transformed
     if (sceneTransform.isRotating()) {
         qreal angle = acos(sceneTransform.m11());
