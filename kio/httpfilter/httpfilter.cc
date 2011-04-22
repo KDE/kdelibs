@@ -133,12 +133,12 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
             bool zlibHeader = true;
             // Autodetect broken webservers (thanks Microsoft) who send raw-deflate
             // instead of zlib-headers-deflate when saying Content-Encoding: deflate.
-            const char firstChar = d[0];
+            const unsigned char firstChar = d[0];
             if ((firstChar & 0x0f) != 8) {
                 // In a zlib header, CM should be 8 (cf RFC 1950)
                 zlibHeader = false;
             } else if (d.size() > 1) {
-                const char flg = d[1];
+                const unsigned char flg = d[1];
                 if ((firstChar * 256 + flg) % 31 != 0) { // Not a multiple of 31? invalid zlib header then
                     zlibHeader = false;
                 }
