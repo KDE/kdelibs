@@ -1348,13 +1348,17 @@ void KRun::slotStatResult(KJob * job)
 
     }
     else {
-
         kDebug(7010) << "Finished";
-        if (!qobject_cast<KIO::StatJob*>(job)) {
+
+        KIO::StatJob* statJob = qobject_cast<KIO::StatJob*>(job);
+        if (!statJob) {
             kFatal() << "job is a " << typeid(*job).name() << " should be a StatJob";
         }
 
-        const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+        // Update our URL in case of a redirection
+        setUrl(statJob->url());
+
+        const KIO::UDSEntry entry = statJob->statResult();
         const mode_t mode = entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE);
         if (S_ISDIR(mode)) {
             d->m_bIsDirectory = true; // it's a dir
