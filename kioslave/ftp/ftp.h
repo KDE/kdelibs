@@ -138,9 +138,11 @@ private:
    * m_initialPath is set to the current working directory
    * if logging on was successful.
    *
+   * @param userChanged if not NULL, will be set to true if the user name
+   *                    was changed during login.
    * @return true on success.
    */
-  bool ftpLogin();
+  bool ftpLogin(bool* userChanged = 0);
 
   /**
    * ftpSendCmd - send a command (@p cmd) and read response
