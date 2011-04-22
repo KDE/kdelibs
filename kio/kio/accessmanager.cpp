@@ -132,20 +132,21 @@ void AccessManager::setCookieJarWindowId(WId id)
         jar->setWindowId(id);
     }
 
-    d->window = QWidget::find(id);
+    QWidget* window = QWidget::find(id);
+    d->window = window->isWindow() ? window : window->window();
 }
 
 void AccessManager::setWindow(QWidget* widget)
 {
-    if (!widget)
-        return;
-
-    if (widget->isWindow()) {
-        d->window = widget;
+    if (!widget) {
         return;
     }
 
-    d->window = widget->window();
+    d->window = widget->isWindow() ? widget : widget->window();
+
+    if (!d->window) {
+        return;
+    }
 
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar) {
@@ -256,8 +257,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
     }
 
-    // Set the window on the KIO::JobUiDelegate
-    if (d->window && d->window->isWindow()) {
+    // Set the window on the the KIO ui delegate
+    if (d->window) {
         kioJob->ui()->setWindow(d->window);
     }
 
@@ -376,10 +377,10 @@ bool KIO::Integration::sslConfigFromMetaData(const KIO::MetaData& metadata, QSsl
     bool success = false;
 
     if (metadata.contains(QL1S("ssl_in_use"))) {
-        const QSsl::SslProtocol sslProto = qSslProtocolFromString(metadata.value("ssl_protocol_version"));
+        const QSsl::SslProtocol sslProto = qSslProtocolFromString(metadata.value(QL1S("ssl_protocol_version")));
         QList<QSslCipher> cipherList;
-        cipherList << QSslCipher(metadata.value("ssl_cipher_name"), sslProto);
-        sslconfig.setCaCertificates(QSslCertificate::fromData(metadata.value("ssl_peer_chain").toUtf8()));
+        cipherList << QSslCipher(metadata.value(QL1S("ssl_cipher_name")), sslProto);
+        sslconfig.setCaCertificates(QSslCertificate::fromData(metadata.value(QL1S("ssl_peer_chain")).toUtf8()));
         sslconfig.setCiphers(cipherList);
         sslconfig.setProtocol(sslProto);
         success = sslconfig.isNull();
