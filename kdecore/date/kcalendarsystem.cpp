@@ -344,6 +344,26 @@ int KCalendarSystemPrivate::latestValidYear() const
     return 9999;
 }
 
+// Dummy version
+// This method MUST be re-implemented in any new Calendar System
+QString KCalendarSystemPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    Q_UNUSED( month );
+    Q_UNUSED( year );
+    Q_UNUSED( format );
+    Q_UNUSED( possessive );
+    return QString();
+}
+
+// Dummy version
+// This method MUST be re-implemented in any new Calendar System
+QString KCalendarSystemPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    Q_UNUSED( weekDay );
+    Q_UNUSED( format );
+    return QString();
+}
+
 // Reimplement if special maths handling required, e.g. Hebrew.
 // Works for calendars with constant number of months, or where leap month is last month of year
 // Will not work for Hebrew or others where leap month is inserted in middle of year
@@ -1641,6 +1661,34 @@ QDate KCalendarSystem::lastDayOfMonth( const QDate &date ) const
     return QDate();
 }
 
+QString KCalendarSystem::monthName( int month, int year, KCalendarSystem::MonthNameFormat format ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( !isValid( year, month, 1 ) ) {
+        return QString();
+    }
+
+    if ( format == KCalendarSystem::NarrowName ) {
+        return d->monthName( month, year, KLocale::NarrowName, false );
+    }
+
+    if ( format == KCalendarSystem::ShortNamePossessive ) {
+        return d->monthName( month, year, KLocale::ShortName, true );
+    }
+
+    if ( format == KCalendarSystem::ShortName ) {
+        return d->monthName( month, year, KLocale::ShortName, false );
+    }
+
+    if ( format == KCalendarSystem::LongNamePossessive ) {
+        return d->monthName( month, year, KLocale::LongName, true );
+    }
+
+    // KCalendarSystem::LongName or any other
+    return d->monthName( month, year, KLocale::LongName, false );
+}
+
 QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) const
 {
     if ( isValid( date ) ) {
@@ -1650,6 +1698,29 @@ QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) 
     }
 
     return QString();
+}
+
+QString KCalendarSystem::weekDayName( int weekDay, KCalendarSystem::WeekDayNameFormat format ) const
+{
+    Q_D( const KCalendarSystem );
+
+    if ( weekDay < 1 || weekDay > d->daysInWeek() ) {
+        return QString();
+    }
+
+    if ( format == KCalendarSystem::NarrowDayName ) {
+        return d->weekDayName( weekDay, KLocale::NarrowName );
+    }
+
+    if ( format == KCalendarSystem::ShortDayName ) {
+        return d->weekDayName( weekDay, KLocale::ShortName );
+    }
+
+    if ( format == KCalendarSystem::ShortDayName ) {
+        return d->weekDayName( weekDay, KLocale::ShortName );
+    }
+
+    return d->weekDayName( weekDay, KLocale::LongName );
 }
 
 QString KCalendarSystem::weekDayName( const QDate &date, WeekDayNameFormat format ) const
@@ -1899,8 +1970,9 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::LongName:
             return monthName(date, KCalendarSystem::LongName);
         case KLocale::ShortName:
-        case KLocale::NarrowName:
             return monthName(date, KCalendarSystem::ShortName);
+        case KLocale::NarrowName:
+            return monthName(date, KCalendarSystem::NarrowName);
         case KLocale::LongNumber:
             return monthString(date, KCalendarSystem::LongFormat);
         case KLocale::ShortNumber:
@@ -1910,8 +1982,9 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         }
     case KLocale::MonthName:
         switch ( format ) {
-        case KLocale::ShortName:
         case KLocale::NarrowName:
+            return monthName(date, KCalendarSystem::NarrowName);
+        case KLocale::ShortName:
         case KLocale::ShortNumber:
             return monthName(date, KCalendarSystem::ShortName);
         case KLocale::LongName:
@@ -1989,8 +2062,9 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::LongName:
             return weekDayName(date, KCalendarSystem::LongDayName);
         case KLocale::ShortName:
-        case KLocale::NarrowName:
             return weekDayName(date, KCalendarSystem::ShortDayName);
+        case KLocale::NarrowName:
+            return weekDayName(date, KCalendarSystem::NarrowDayName);
         case KLocale::LongNumber:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
@@ -1999,8 +2073,9 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         }
     case KLocale::DayOfWeekName:
         switch ( format ) {
-        case KLocale::ShortName:
         case KLocale::NarrowName:
+            return weekDayName(date, KCalendarSystem::NarrowDayName);
+        case KLocale::ShortName:
         case KLocale::ShortNumber:
             return weekDayName(date, KCalendarSystem::ShortDayName);
         case KLocale::LongName:

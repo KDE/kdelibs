@@ -34,9 +34,9 @@ protected:
                       const QString &shortEraName, const QString &longEraName );
     void testYmd( const KCalendarSystem *calendar, int y, int m, int d, int jd );
     void testWeekDayName( const KCalendarSystem *calendar, int weekDay, const QDate &date,
-                          const QString &shortName, const QString &longName );
+                          const QString &narrowName, const QString &shortName, const QString &longName );
     void testMonthName( const KCalendarSystem *calendar, int month, int year, const QDate &date,
-                        const QString &shortName, const QString &longName,
+                        const QString &narrowName, const QString &shortName, const QString &longName,
                         const QString &shortNamePossessive, const QString &longNamePossessive );
     void testGregorianCompareQDate( const KCalendarSystem *calendar, int year, int month, int day );
     void testQDateYMD( const KCalendarSystem *calendar, int y, int m, int d );

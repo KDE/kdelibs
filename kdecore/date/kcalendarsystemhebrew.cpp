@@ -256,6 +256,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
+    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 
     virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
     virtual QString stringFromInteger( int number, int padWidth = 0, QChar padChar = QLatin1Char('0') ) const;
@@ -627,6 +629,252 @@ int KCalendarSystemHebrewPrivate::monthNumberToMonthIndex( int year, int month )
     return month;
 }
 
+QString KCalendarSystemHebrewPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    // We must map month number to month index
+    int monthIndex = monthNumberToMonthIndex( year, month );
+
+    if ( format == KLocale::NarrowName ) {
+        switch ( monthIndex ) {
+        case 1:
+            return ki18nc( "Hebrew month 1 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hebrew month 2 - KLocale::NarrowName",  "H" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hebrew month 3 - KLocale::NarrowName",  "K" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hebrew month 4 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hebrew month 5 - KLocale::NarrowName",  "S" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hebrew month 6 - KLocale::NarrowName",  "A" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hebrew month 7 - KLocale::NarrowName",  "N" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hebrew month 8 - KLocale::NarrowName",  "I" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hebrew month 9 - KLocale::NarrowName",  "S" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hebrew month 10 - KLocale::NarrowName", "T" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hebrew month 11 - KLocale::NarrowName", "A" ).toString( locale() );
+        case 12:
+            return ki18nc( "Hebrew month 12 - KLocale::NarrowName", "E" ).toString( locale() );
+        case 13:
+            return ki18nc( "Hebrew month 13 - KLocale::NarrowName", "A" ).toString( locale() );
+        case 14:
+            return ki18nc( "Hebrew month 14 - KLocale::NarrowName", "A" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && possessive ) {
+        switch ( monthIndex ) {
+        case 1:
+            return ki18nc( "Hebrew month 1 - KLocale::ShortName Possessive",  "of Tis" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hebrew month 2 - KLocale::ShortName Possessive",  "of Hes" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hebrew month 3 - KLocale::ShortName Possessive",  "of Kis" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hebrew month 4 - KLocale::ShortName Possessive",  "of Tev" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hebrew month 5 - KLocale::ShortName Possessive",  "of Shv" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hebrew month 6 - KLocale::ShortName Possessive",  "of Ada" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hebrew month 7 - KLocale::ShortName Possessive",  "of Nis" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hebrew month 8 - KLocale::ShortName Possessive",  "of Iya" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hebrew month 9 - KLocale::ShortName Possessive",  "of Siv" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hebrew month 10 - KLocale::ShortName Possessive", "of Tam" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hebrew month 11 - KLocale::ShortName Possessive", "of Av"  ).toString( locale() );
+        case 12:
+            return ki18nc( "Hebrew month 12 - KLocale::ShortName Possessive", "of Elu" ).toString( locale() );
+        case 13:
+            return ki18nc( "Hebrew month 13 - KLocale::ShortName Possessive", "of Ad1" ).toString( locale() );
+        case 14:
+            return ki18nc( "Hebrew month 14 - KLocale::ShortName Possessive", "of Ad2" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && !possessive ) {
+        switch ( monthIndex ) {
+        case 1:
+            return ki18nc( "Hebrew month 1 - KLocale::ShortName",  "Tis" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hebrew month 2 - KLocale::ShortName",  "Hes" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hebrew month 3 - KLocale::ShortName",  "Kis" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hebrew month 4 - KLocale::ShortName",  "Tev" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hebrew month 5 - KLocale::ShortName",  "Shv" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hebrew month 6 - KLocale::ShortName",  "Ada" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hebrew month 7 - KLocale::ShortName",  "Nis" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hebrew month 8 - KLocale::ShortName",  "Iya" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hebrew month 9 - KLocale::ShortName",  "Siv" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hebrew month 10 - KLocale::ShortName", "Tam" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hebrew month 11 - KLocale::ShortName", "Av"  ).toString( locale() );
+        case 12:
+            return ki18nc( "Hebrew month 12 - KLocale::ShortName", "Elu" ).toString( locale() );
+        case 13:
+            return ki18nc( "Hebrew month 13 - KLocale::ShortName", "Ad1" ).toString( locale() );
+        case 14:
+            return ki18nc( "Hebrew month 14 - KLocale::ShortName", "Ad2" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::LongName && possessive ) {
+        switch ( monthIndex ) {
+        case 1:
+            return ki18nc( "Hebrew month 1 - KLocale::LongName Possessive",  "of Tishrey" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hebrew month 2 - KLocale::LongName Possessive",  "of Heshvan" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hebrew month 3 - KLocale::LongName Possessive",  "of Kislev"  ).toString( locale() );
+        case 4:
+            return ki18nc( "Hebrew month 4 - KLocale::LongName Possessive",  "of Tevet"   ).toString( locale() );
+        case 5:
+            return ki18nc( "Hebrew month 5 - KLocale::LongName Possessive",  "of Shvat"   ).toString( locale() );
+        case 6:
+            return ki18nc( "Hebrew month 6 - KLocale::LongName Possessive",  "of Adar"    ).toString( locale() );
+        case 7:
+            return ki18nc( "Hebrew month 7 - KLocale::LongName Possessive",  "of Nisan"   ).toString( locale() );
+        case 8:
+            return ki18nc( "Hebrew month 8 - KLocale::LongName Possessive",  "of Iyar"    ).toString( locale() );
+        case 9:
+            return ki18nc( "Hebrew month 9 - KLocale::LongName Possessive",  "of Sivan"   ).toString( locale() );
+        case 10:
+            return ki18nc( "Hebrew month 10 - KLocale::LongName Possessive", "of Tamuz"   ).toString( locale() );
+        case 11:
+            return ki18nc( "Hebrew month 11 - KLocale::LongName Possessive", "of Av"      ).toString( locale() );
+        case 12:
+            return ki18nc( "Hebrew month 12 - KLocale::LongName Possessive", "of Elul"    ).toString( locale() );
+        case 13:
+            return ki18nc( "Hebrew month 13 - KLocale::LongName Possessive", "of Adar I"  ).toString( locale() );
+        case 14:
+            return ki18nc( "Hebrew month 14 - KLocale::LongName Possessive", "of Adar II" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    // Default to LongName
+    switch ( monthIndex ) {
+    case 1:
+        return ki18nc( "Hebrew month 1 - KLocale::LongName",  "Tishrey" ).toString( locale() );
+    case 2:
+        return ki18nc( "Hebrew month 2 - KLocale::LongName",  "Heshvan" ).toString( locale() );
+    case 3:
+        return ki18nc( "Hebrew month 3 - KLocale::LongName",  "Kislev"  ).toString( locale() );
+    case 4:
+        return ki18nc( "Hebrew month 4 - KLocale::LongName",  "Tevet"   ).toString( locale() );
+    case 5:
+        return ki18nc( "Hebrew month 5 - KLocale::LongName",  "Shvat"   ).toString( locale() );
+    case 6:
+        return ki18nc( "Hebrew month 6 - KLocale::LongName",  "Adar"    ).toString( locale() );
+    case 7:
+        return ki18nc( "Hebrew month 7 - KLocale::LongName",  "Nisan"   ).toString( locale() );
+    case 8:
+        return ki18nc( "Hebrew month 8 - KLocale::LongName",  "Iyar"    ).toString( locale() );
+    case 9:
+        return ki18nc( "Hebrew month 9 - KLocale::LongName",  "Sivan"   ).toString( locale() );
+    case 10:
+        return ki18nc( "Hebrew month 10 - KLocale::LongName", "Tamuz"   ).toString( locale() );
+    case 11:
+        return ki18nc( "Hebrew month 11 - KLocale::LongName", "Av"      ).toString( locale() );
+    case 12:
+        return ki18nc( "Hebrew month 12 - KLocale::LongName", "Elul"    ).toString( locale() );
+    case 13:
+        return ki18nc( "Hebrew month 13 - KLocale::LongName", "Adar I"  ).toString( locale() );
+    case 14:
+        return ki18nc( "Hebrew month 14 - KLocale::LongName", "Adar II" ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+// Use Western day names for now as that's what the old version did,
+// but wouldn't it be better to use the right Hebrew names like Shabbat?
+// Could make it switchable by adding new enums to WeekDayFormat, e.g. ShortNameWestern?
+QString KCalendarSystemHebrewPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    if ( format == KLocale::NarrowName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Gregorian weekday 1 - KLocale::NarrowName ", "M" ).toString( locale() );
+        case 2:
+            return ki18nc( "Gregorian weekday 2 - KLocale::NarrowName ", "T" ).toString( locale() );
+        case 3:
+            return ki18nc( "Gregorian weekday 3 - KLocale::NarrowName ", "W" ).toString( locale() );
+        case 4:
+            return ki18nc( "Gregorian weekday 4 - KLocale::NarrowName ", "T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Gregorian weekday 5 - KLocale::NarrowName ", "F" ).toString( locale() );
+        case 6:
+            return ki18nc( "Gregorian weekday 6 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 7:
+            return ki18nc( "Gregorian weekday 7 - KLocale::NarrowName ", "S" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Gregorian weekday 1 - KLocale::ShortName", "Mon" ).toString( locale() );
+        case 2:
+            return ki18nc( "Gregorian weekday 2 - KLocale::ShortName", "Tue" ).toString( locale() );
+        case 3:
+            return ki18nc( "Gregorian weekday 3 - KLocale::ShortName", "Wed" ).toString( locale() );
+        case 4:
+            return ki18nc( "Gregorian weekday 4 - KLocale::ShortName", "Thu" ).toString( locale() );
+        case 5:
+            return ki18nc( "Gregorian weekday 5 - KLocale::ShortName", "Fri" ).toString( locale() );
+        case 6:
+            return ki18nc( "Gregorian weekday 6 - KLocale::ShortName", "Sat" ).toString( locale() );
+        case 7:
+            return ki18nc( "Gregorian weekday 7 - KLocale::ShortName", "Sun" ).toString( locale() );
+        default: return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:
+        return ki18nc( "Gregorian weekday 1 - KLocale::LongName", "Monday"    ).toString( locale() );
+    case 2:
+        return ki18nc( "Gregorian weekday 2 - KLocale::LongName", "Tuesday"   ).toString( locale() );
+    case 3:
+        return ki18nc( "Gregorian weekday 3 - KLocale::LongName", "Wednesday" ).toString( locale() );
+    case 4:
+        return ki18nc( "Gregorian weekday 4 - KLocale::LongName", "Thursday"  ).toString( locale() );
+    case 5:
+        return ki18nc( "Gregorian weekday 5 - KLocale::LongName", "Friday"    ).toString( locale() );
+    case 6:
+        return ki18nc( "Gregorian weekday 6 - KLocale::LongName", "Saturday"  ).toString( locale() );
+    case 7:
+        return ki18nc( "Gregorian weekday 7 - KLocale::LongName", "Sunday"    ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
 
 KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemHebrewPrivate( this ), KSharedConfig::Ptr(), locale ),
@@ -791,127 +1039,24 @@ bool KCalendarSystemHebrew::isLeapYear( const QDate &date ) const
     return KCalendarSystem::isLeapYear( date );
 }
 
-// ### Fixme
-// JPL Fix what?
-// Ask translators for short fomats of month names!
 QString KCalendarSystemHebrew::monthName( int month, int year, MonthNameFormat format ) const
 {
-    Q_D( const KCalendarSystemHebrew );
-
-    if ( month < 1 || month > d->monthsInYear( year ) ) {
-        return QString();
-    }
-
-    // We must map month number to month index
-    int monthIndex = d->monthNumberToMonthIndex( year, month );
-
-    if ( format == ShortNamePossessive || format == LongNamePossessive ) {
-        switch( monthIndex ) {
-        case 1:
-            return ki18n( "of Tishrey" ).toString( locale() );
-        case 2:
-            return ki18n( "of Heshvan" ).toString( locale() );
-        case 3:
-            return ki18n( "of Kislev" ).toString( locale() );
-        case 4:
-            return ki18n( "of Tevet" ).toString( locale() );
-        case 5:
-            return ki18n( "of Shvat" ).toString( locale() );
-        case 6:
-            return ki18n( "of Adar" ).toString( locale() );
-        case 7:
-            return ki18n( "of Nisan" ).toString( locale() );
-        case 8:
-            return ki18n( "of Iyar" ).toString( locale() );
-        case 9:
-            return ki18n( "of Sivan" ).toString( locale() );
-        case 10:
-            return ki18n( "of Tamuz" ).toString( locale() );
-        case 11:
-            return ki18n( "of Av" ).toString( locale() );
-        case 12:
-            return ki18n( "of Elul" ).toString( locale() );
-        case 13:
-            return ki18n( "of Adar I" ).toString( locale() );
-        case 14:
-            return ki18n( "of Adar II" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    switch( monthIndex ) {
-    case 1:
-        return ki18n( "Tishrey" ).toString( locale() );
-    case 2:
-        return ki18n( "Heshvan" ).toString( locale() );
-    case 3:
-        return ki18n( "Kislev" ).toString( locale() );
-    case 4:
-        return ki18n( "Tevet" ).toString( locale() );
-    case 5:
-        return ki18n( "Shvat" ).toString( locale() );
-    case 6:
-        return ki18n( "Adar" ).toString( locale() );
-    case 7:
-        return ki18n( "Nisan" ).toString( locale() );
-    case 8:
-        return ki18n( "Iyar" ).toString( locale() );
-    case 9:
-        return ki18n( "Sivan" ).toString( locale() );
-    case 10:
-        return ki18n( "Tamuz" ).toString( locale() );
-    case 11:
-        return ki18n( "Av" ).toString( locale() );
-    case 12:
-        return ki18n( "Elul" ).toString( locale() );
-    case 13:
-        return ki18n( "Adar I" ).toString( locale() );
-    case 14:
-        return ki18n( "Adar II" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystem::monthName( month, year, format );
 }
 
-QString KCalendarSystemHebrew::monthName( const QDate& date, MonthNameFormat format ) const
+QString KCalendarSystemHebrew::monthName( const QDate &date, MonthNameFormat format ) const
 {
-    return monthName( month( date ), year( date ), format );
+    return KCalendarSystem::monthName( date, format );
 }
 
 QString KCalendarSystemHebrew::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-    // Use Western day names for now as that's what the old version did,
-    // but wouldn't it be better to use the right Hebrew names like Shabbat?
-    // Could make it switchable by adding new enums to WeekDayFormat, e.g. ShortNameWestern?
-    if ( format == ShortDayName ) {
-        switch ( weekDay ) {
-        case 1:  return ki18nc( "Monday", "Mon" ).toString( locale() );
-        case 2:  return ki18nc( "Tuesday", "Tue" ).toString( locale() );
-        case 3:  return ki18nc( "Wednesday", "Wed" ).toString( locale() );
-        case 4:  return ki18nc( "Thursday", "Thu" ).toString( locale() );
-        case 5:  return ki18nc( "Friday", "Fri" ).toString( locale() );
-        case 6:  return ki18nc( "Saturday", "Sat" ).toString( locale() );
-        case 7:  return ki18nc( "Sunday", "Sun" ).toString( locale() );
-        default: return QString();
-        }
-    }
-
-    switch ( weekDay ) {
-    case 1:  return ki18n( "Monday" ).toString( locale() );
-    case 2:  return ki18n( "Tuesday" ).toString( locale() );
-    case 3:  return ki18n( "Wednesday" ).toString( locale() );
-    case 4:  return ki18n( "Thursday" ).toString( locale() );
-    case 5:  return ki18n( "Friday" ).toString( locale() );
-    case 6:  return ki18n( "Saturday" ).toString( locale() );
-    case 7:  return ki18n( "Sunday" ).toString( locale() );
-    default: return QString();
-    }
+    return KCalendarSystem::weekDayName( weekDay, format );
 }
 
 QString KCalendarSystemHebrew::weekDayName( const QDate &date, WeekDayNameFormat format ) const
 {
-    return weekDayName( dayOfWeek( date ), format );
+    return KCalendarSystem::weekDayName( date, format );
 }
 
 QString KCalendarSystemHebrew::yearString( const QDate &date, StringFormat format ) const

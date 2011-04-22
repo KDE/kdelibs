@@ -131,6 +131,267 @@ int KCalendarSystemCopticPrivate::latestValidYear() const
     return 9999;
 }
 
+// Names taken from Bohairic dialect transliterations in http://www.copticheritage.org/parameters/copticheritage/calendar/The_Coptic_Calendar.pdf
+// These differ from the transliterations found on Wikipedia http://en.wikipedia.org/wiki/Coptic_calendar
+// These differ from the Sahidic dialect transliterations used in Dershowitz & Reingold which went out of use in the 11th centuary
+// These differ from the Arabic transliterations found on Wikipedia
+// These differ from the transliterations used in Mac OSX 10.6 Snow Leopard
+// The Boharic was initially chosen as this is the dialect apparantly in 'common' use in the Coptic Church.
+// But it could be argued the Arabic forms should be used as they are in 'common' usage in Eqypt
+// And where did the rest come from?
+//
+//    Boharic         Wikipedia Copt   D&R Sahidic     Wikipedia Arab  Mac OSX
+//    --------------  ---------------  --------------  --------------  --------------
+//  * Thoout          Thout            Thoout          Tout            Tout
+//  * Paope           Paopi            Paope           Baba            Baba
+//  * Hathor          Hathor           Athōr           Hatour          Hatour
+//  * Kiahk           Koiak            Koiak           Kiahk           Kiahk
+//  * Tobe            Tobi             Tōbe            Touba           Toba
+//  * Meshir          Meshir           Meshir          Amshir          Amshir
+//  * Paremhotep      Paremhat         Paremotep       Baramhat        Baramhat
+//  * Parmoute        Paremoude        Paremoute       Baramouda       Baramouda
+//  * Pashons         Pashons          Pashons         Bashans         Bashans
+//  * Paone           Paoni            Paōne           Ba'ouna         Paona
+//  * Epep            Epip             Epēp            Abib            Epep
+//  * Mesore          Mesori           Mesorē          Mesra           Mesra
+//  * Kouji nabot     Pi Kogi Enavot   Epagomenē                       Nasie
+//  *
+QString KCalendarSystemCopticPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    Q_UNUSED( year );
+
+    if ( format == KLocale::NarrowName ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Coptic month 1 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic month 2 - KLocale::NarrowName",  "P" ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic month 3 - KLocale::NarrowName",  "H" ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic month 4 - KLocale::NarrowName",  "K" ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic month 5 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic month 6 - KLocale::NarrowName",  "M" ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic month 7 - KLocale::NarrowName",  "P" ).toString( locale() );
+        case 8:
+            return ki18nc( "Coptic month 8 - KLocale::NarrowName",  "P" ).toString( locale() );
+        case 9:
+            return ki18nc( "Coptic month 9 - KLocale::NarrowName",  "P" ).toString( locale() );
+        case 10:
+            return ki18nc( "Coptic month 10 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 11:
+            return ki18nc( "Coptic month 11 - KLocale::NarrowName", "E" ).toString( locale() );
+        case 12:
+            return ki18nc( "Coptic month 12 - KLocale::NarrowName", "M" ).toString( locale() );
+        case 13:
+            return ki18nc( "Coptic month 13 - KLocale::NarrowName", "K" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Coptic month 1 - KLocale::ShortName Possessive",  "of Tho" ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic month 2 - KLocale::ShortName Possessive",  "of Pao" ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic month 3 - KLocale::ShortName Possessive",  "of Hat" ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic month 4 - KLocale::ShortName Possessive",  "of Kia" ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic month 5 - KLocale::ShortName Possessive",  "of Tob" ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic month 6 - KLocale::ShortName Possessive",  "of Mes" ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic month 7 - KLocale::ShortName Possessive",  "of Par" ).toString( locale() );
+        case 8:
+            return ki18nc( "Coptic month 8 - KLocale::ShortName Possessive",  "of Pam" ).toString( locale() );
+        case 9:
+            return ki18nc( "Coptic month 9 - KLocale::ShortName Possessive",  "of Pas" ).toString( locale() );
+        case 10:
+            return ki18nc( "Coptic month 10 - KLocale::ShortName Possessive", "of Pan" ).toString( locale() );
+        case 11:
+            return ki18nc( "Coptic month 11 - KLocale::ShortName Possessive", "of Epe" ).toString( locale() );
+        case 12:
+            return ki18nc( "Coptic month 12 - KLocale::ShortName Possessive", "of Meo" ).toString( locale() );
+        case 13:
+            return ki18nc( "Coptic month 13 - KLocale::ShortName Possessive", "of Kou" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && !possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Coptic month 1 - KLocale::ShortName",  "Tho" ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic month 2 - KLocale::ShortName",  "Pao" ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic month 3 - KLocale::ShortName",  "Hat" ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic month 4 - KLocale::ShortName",  "Kia" ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic month 5 - KLocale::ShortName",  "Tob" ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic month 6 - KLocale::ShortName",  "Mes" ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic month 7 - KLocale::ShortName",  "Par" ).toString( locale() );
+        case 8:
+            return ki18nc( "Coptic month 8 - KLocale::ShortName",  "Pam" ).toString( locale() );
+        case 9:
+            return ki18nc( "Coptic month 9 - KLocale::ShortName",  "Pas" ).toString( locale() );
+        case 10:
+            return ki18nc( "Coptic month 10 - KLocale::ShortName", "Pan" ).toString( locale() );
+        case 11:
+            return ki18nc( "Coptic month 11 - KLocale::ShortName", "Epe" ).toString( locale() );
+        case 12:
+            return ki18nc( "Coptic month 12 - KLocale::ShortName", "Meo" ).toString( locale() );
+        case 13:
+            return ki18nc( "Coptic month 12 - KLocale::ShortName", "Kou" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::LongName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Coptic month 1 - KLocale::LongName Possessive",  "of Thoout"      ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic month 2 - KLocale::LongName Possessive",  "of Paope"       ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic month 3 - KLocale::LongName Possessive",  "of Hathor"      ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic month 4 - KLocale::LongName Possessive",  "of Kiahk"       ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic month 5 - KLocale::LongName Possessive",  "of Tobe"        ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic month 6 - KLocale::LongName Possessive",  "of Meshir"      ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic month 7 - KLocale::LongName Possessive",  "of Paremhotep"  ).toString( locale() );
+        case 8:
+            return ki18nc( "Coptic month 8 - KLocale::LongName Possessive",  "of Parmoute"    ).toString( locale() );
+        case 9:
+            return ki18nc( "Coptic month 9 - KLocale::LongName Possessive",  "of Pashons"     ).toString( locale() );
+        case 10:
+            return ki18nc( "Coptic month 10 - KLocale::LongName Possessive", "of Paone"       ).toString( locale() );
+        case 11:
+            return ki18nc( "Coptic month 11 - KLocale::LongName Possessive", "of Epep"        ).toString( locale() );
+        case 12:
+            return ki18nc( "Coptic month 12 - KLocale::LongName Possessive", "of Mesore"      ).toString( locale() );
+        case 13:
+            return ki18nc( "Coptic month 12 - KLocale::LongName Possessive", "of Kouji nabot" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    // Default to LongName
+    switch ( month ) {
+    case 1:
+        return ki18nc( "Coptic month 1 - KLocale::LongName",  "Thoout"      ).toString( locale() );
+    case 2:
+        return ki18nc( "Coptic month 2 - KLocale::LongName",  "Paope"       ).toString( locale() );
+    case 3:
+        return ki18nc( "Coptic month 3 - KLocale::LongName",  "Hathor"      ).toString( locale() );
+    case 4:
+        return ki18nc( "Coptic month 4 - KLocale::LongName",  "Kiahk"       ).toString( locale() );
+    case 5:
+        return ki18nc( "Coptic month 5 - KLocale::LongName",  "Tobe"        ).toString( locale() );
+    case 6:
+        return ki18nc( "Coptic month 6 - KLocale::LongName",  "Meshir"      ).toString( locale() );
+    case 7:
+        return ki18nc( "Coptic month 7 - KLocale::LongName",  "Paremhotep"  ).toString( locale() );
+    case 8:
+        return ki18nc( "Coptic month 8 - KLocale::LongName",  "Parmoute"    ).toString( locale() );
+    case 9:
+        return ki18nc( "Coptic month 9 - KLocale::LongName",  "Pashons"     ).toString( locale() );
+    case 10:
+        return ki18nc( "Coptic month 10 - KLocale::LongName", "Paone"       ).toString( locale() );
+    case 11:
+        return ki18nc( "Coptic month 11 - KLocale::LongName", "Epep"        ).toString( locale() );
+    case 12:
+        return ki18nc( "Coptic month 12 - KLocale::LongName", "Mesore"      ).toString( locale() );
+    case 13:
+        return ki18nc( "Coptic month 12 - KLocale::LongName", "Kouji nabot" ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+// Names taken from from the Sahidic dialect transliterations used in Dershowitz & Reingold which went out of use in the 11th centuary
+// Boharic or Arabic transliterations would be preferred but none could be found
+QString KCalendarSystemCopticPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    if ( format == KLocale::NarrowName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Coptic weekday 1 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic weekday 2 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic weekday 3 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic weekday 4 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic weekday 5 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic weekday 6 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic weekday 7 - KLocale::NarrowName", "T" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Coptic weekday 1 - KLocale::ShortName", "Pes" ).toString( locale() );
+        case 2:
+            return ki18nc( "Coptic weekday 2 - KLocale::ShortName", "Psh" ).toString( locale() );
+        case 3:
+            return ki18nc( "Coptic weekday 3 - KLocale::ShortName", "Pef" ).toString( locale() );
+        case 4:
+            return ki18nc( "Coptic weekday 4 - KLocale::ShortName", "Pti" ).toString( locale() );
+        case 5:
+            return ki18nc( "Coptic weekday 5 - KLocale::ShortName", "Pso" ).toString( locale() );
+        case 6:
+            return ki18nc( "Coptic weekday 6 - KLocale::ShortName", "Psa" ).toString( locale() );
+        case 7:
+            return ki18nc( "Coptic weekday 7 - KLocale::ShortName", "Tky" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:
+        return ki18nc( "Coptic weekday 1 - KLocale::LongName", "Pesnau"    ).toString( locale() );
+    case 2:
+        return ki18nc( "Coptic weekday 2 - KLocale::LongName", "Pshoment"  ).toString( locale() );
+    case 3:
+        return ki18nc( "Coptic weekday 3 - KLocale::LongName", "Peftoou"   ).toString( locale() );
+    case 4:
+        return ki18nc( "Coptic weekday 4 - KLocale::LongName", "Ptiou"     ).toString( locale() );
+    case 5:
+        return ki18nc( "Coptic weekday 5 - KLocale::LongName", "Psoou"     ).toString( locale() );
+    case 6:
+        return ki18nc( "Coptic weekday 6 - KLocale::LongName", "Psabbaton" ).toString( locale() );
+    case 7:
+        return ki18nc( "Coptic weekday 7 - KLocale::LongName", "Tkyriakē"  ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+
 KCalendarSystemCoptic::KCalendarSystemCoptic( const KLocale *locale )
                      : KCalendarSystem( *new KCalendarSystemCopticPrivate( this ), KSharedConfig::Ptr(), locale ),
                        dont_use( 0 )
@@ -291,165 +552,9 @@ bool KCalendarSystemCoptic::isLeapYear( const QDate &date ) const
     return KCalendarSystem::isLeapYear( date );
 }
 
-// Names taken from Bohairic dialect transliterations in http://www.copticheritage.org/parameters/copticheritage/calendar/The_Coptic_Calendar.pdf
-// These differ from the transliterations found on Wikipedia http://en.wikipedia.org/wiki/Coptic_calendar
-// These differ from the Sahidic dialect transliterations used in Dershowitz & Reingold which went out of use in the 11th centuary
-// These differ from the Arabic transliterations found on Wikipedia
-// These differ from the transliterations used in Mac OSX 10.6 Snow Leopard
-// The Boharic was initially chosen as this is the dialect apparantly in 'common' use in the Coptic Church.
-// But it could be argued the Arabic forms should be used as they are in 'common' usage in Eqypt
-// And where did the rest come from?
-//
-//    Boharic         Wikipedia Copt   D&R Sahidic     Wikipedia Arab  Mac OSX
-//    --------------  ---------------  --------------  --------------  --------------
-//  * Thoout          Thout            Thoout          Tout            Tout
-//  * Paope           Paopi            Paope           Baba            Baba
-//  * Hathor          Hathor           Athōr           Hatour          Hatour
-//  * Kiahk           Koiak            Koiak           Kiahk           Kiahk
-//  * Tobe            Tobi             Tōbe            Touba           Toba
-//  * Meshir          Meshir           Meshir          Amshir          Amshir
-//  * Paremhotep      Paremhat         Paremotep       Baramhat        Baramhat
-//  * Parmoute        Paremoude        Paremoute       Baramouda       Baramouda
-//  * Pashons         Pashons          Pashons         Bashans         Bashans
-//  * Paone           Paoni            Paōne           Ba'ouna         Paona
-//  * Epep            Epip             Epēp            Abib            Epep
-//  * Mesore          Mesori           Mesorē          Mesra           Mesra
-//  * Kouji nabot     Pi Kogi Enavot   Epagomenē                       Nasie
-//  *
 QString KCalendarSystemCoptic::monthName( int month, int year, MonthNameFormat format ) const
 {
-    Q_UNUSED( year );
-
-    if ( format == ShortNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Coptic month 1 - ShortNamePossessive",  "of Tho" ).toString( locale() );
-        case 2:
-            return ki18nc( "Coptic month 2 - ShortNamePossessive",  "of Pao" ).toString( locale() );
-        case 3:
-            return ki18nc( "Coptic month 3 - ShortNamePossessive",  "of Hat" ).toString( locale() );
-        case 4:
-            return ki18nc( "Coptic month 4 - ShortNamePossessive",  "of Kia" ).toString( locale() );
-        case 5:
-            return ki18nc( "Coptic month 5 - ShortNamePossessive",  "of Tob" ).toString( locale() );
-        case 6:
-            return ki18nc( "Coptic month 6 - ShortNamePossessive",  "of Mes" ).toString( locale() );
-        case 7:
-            return ki18nc( "Coptic month 7 - ShortNamePossessive",  "of Par" ).toString( locale() );
-        case 8:
-            return ki18nc( "Coptic month 8 - ShortNamePossessive",  "of Pam" ).toString( locale() );
-        case 9:
-            return ki18nc( "Coptic month 9 - ShortNamePossessive",  "of Pas" ).toString( locale() );
-        case 10:
-            return ki18nc( "Coptic month 10 - ShortNamePossessive", "of Pan" ).toString( locale() );
-        case 11:
-            return ki18nc( "Coptic month 11 - ShortNamePossessive", "of Epe" ).toString( locale() );
-        case 12:
-            return ki18nc( "Coptic month 12 - ShortNamePossessive", "of Meo" ).toString( locale() );
-        case 13:
-            return ki18nc( "Coptic month 13 - ShortNamePossessive", "of Kou" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == LongNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Coptic month 1 - LongNamePossessive",  "of Thoout" ).toString( locale() );
-        case 2:
-            return ki18nc( "Coptic month 2 - LongNamePossessive",  "of Paope" ).toString( locale() );
-        case 3:
-            return ki18nc( "Coptic month 3 - LongNamePossessive",  "of Hathor" ).toString( locale() );
-        case 4:
-            return ki18nc( "Coptic month 4 - LongNamePossessive",  "of Kiahk" ).toString( locale() );
-        case 5:
-            return ki18nc( "Coptic month 5 - LongNamePossessive",  "of Tobe" ).toString( locale() );
-        case 6:
-            return ki18nc( "Coptic month 6 - LongNamePossessive",  "of Meshir" ).toString( locale() );
-        case 7:
-            return ki18nc( "Coptic month 7 - LongNamePossessive",  "of Paremhotep" ).toString( locale() );
-        case 8:
-            return ki18nc( "Coptic month 8 - LongNamePossessive",  "of Parmoute" ).toString( locale() );
-        case 9:
-            return ki18nc( "Coptic month 9 - LongNamePossessive",  "of Pashons" ).toString( locale() );
-        case 10:
-            return ki18nc( "Coptic month 10 - LongNamePossessive", "of Paone" ).toString( locale() );
-        case 11:
-            return ki18nc( "Coptic month 11 - LongNamePossessive", "of Epep" ).toString( locale() );
-        case 12:
-            return ki18nc( "Coptic month 12 - LongNamePossessive", "of Mesore" ).toString( locale() );
-        case 13:
-            return ki18nc( "Coptic month 13 - LongNamePossessive", "of Kouji nabot" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == ShortName ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Coptic month 1 - ShortName",  "Tho" ).toString( locale() );
-        case 2:
-            return ki18nc( "Coptic month 2 - ShortName",  "Pao" ).toString( locale() );
-        case 3:
-            return ki18nc( "Coptic month 3 - ShortName",  "Hat" ).toString( locale() );
-        case 4:
-            return ki18nc( "Coptic month 4 - ShortName",  "Kia" ).toString( locale() );
-        case 5:
-            return ki18nc( "Coptic month 5 - ShortName",  "Tob" ).toString( locale() );
-        case 6:
-            return ki18nc( "Coptic month 6 - ShortName",  "Mes" ).toString( locale() );
-        case 7:
-            return ki18nc( "Coptic month 7 - ShortName",  "Par" ).toString( locale() );
-        case 8:
-            return ki18nc( "Coptic month 8 - ShortName",  "Pam" ).toString( locale() );
-        case 9:
-            return ki18nc( "Coptic month 9 - ShortName",  "Pas" ).toString( locale() );
-        case 10:
-            return ki18nc( "Coptic month 10 - ShortName", "Pan" ).toString( locale() );
-        case 11:
-            return ki18nc( "Coptic month 11 - ShortName", "Epe" ).toString( locale() );
-        case 12:
-            return ki18nc( "Coptic month 12 - ShortName", "Meo" ).toString( locale() );
-        case 13:
-            return ki18nc( "Coptic month 13 - ShortName", "Kou" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    // Default to LongName
-    switch ( month ) {
-    case 1:
-        return ki18nc( "Coptic month 1 - LongName",  "Thoout" ).toString( locale() );
-    case 2:
-        return ki18nc( "Coptic month 2 - LongName",  "Paope" ).toString( locale() );
-    case 3:
-        return ki18nc( "Coptic month 3 - LongName",  "Hathor" ).toString( locale() );
-    case 4:
-        return ki18nc( "Coptic month 4 - LongName",  "Kiahk" ).toString( locale() );
-    case 5:
-        return ki18nc( "Coptic month 5 - LongName",  "Tobe" ).toString( locale() );
-    case 6:
-        return ki18nc( "Coptic month 6 - LongName",  "Meshir" ).toString( locale() );
-    case 7:
-        return ki18nc( "Coptic month 7 - LongName",  "Paremhotep" ).toString( locale() );
-    case 8:
-        return ki18nc( "Coptic month 8 - LongName",  "Parmoute" ).toString( locale() );
-    case 9:
-        return ki18nc( "Coptic month 9 - LongName",  "Pashons" ).toString( locale() );
-    case 10:
-        return ki18nc( "Coptic month 10 - LongName", "Paone" ).toString( locale() );
-    case 11:
-        return ki18nc( "Coptic month 11 - LongName", "Epep" ).toString( locale() );
-    case 12:
-        return ki18nc( "Coptic month 12 - LongName", "Mesore" ).toString( locale() );
-    case 13:
-        return ki18nc( "Coptic month 13 - LongName", "Kouji nabot" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystem::monthName( month, year, format );
 }
 
 QString KCalendarSystemCoptic::monthName( const QDate &date, MonthNameFormat format ) const
@@ -457,33 +562,9 @@ QString KCalendarSystemCoptic::monthName( const QDate &date, MonthNameFormat for
     return KCalendarSystem::monthName( date, format );
 }
 
-// Names taken from from the Sahidic dialect transliterations used in Dershowitz & Reingold which went out of use in the 11th centuary
-// Boharic or Arabic transliterations would be preferred but none could be found
 QString KCalendarSystemCoptic::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-    if ( format == ShortDayName ) {
-        switch ( weekDay ) {
-        case 1:  return ki18nc( "Coptic weekday 1 - ShortDayName", "Pes" ).toString( locale() );
-        case 2:  return ki18nc( "Coptic weekday 2 - ShortDayName", "Psh" ).toString( locale() );
-        case 3:  return ki18nc( "Coptic weekday 3 - ShortDayName", "Pef" ).toString( locale() );
-        case 4:  return ki18nc( "Coptic weekday 4 - ShortDayName", "Pti" ).toString( locale() );
-        case 5:  return ki18nc( "Coptic weekday 5 - ShortDayName", "Pso" ).toString( locale() );
-        case 6:  return ki18nc( "Coptic weekday 6 - ShortDayName", "Psa" ).toString( locale() );
-        case 7:  return ki18nc( "Coptic weekday 7 - ShortDayName", "Tky" ).toString( locale() );
-        default: return QString();
-        }
-    }
-
-    switch ( weekDay ) {
-    case 1:  return ki18nc( "Coptic weekday 1 - LongDayName", "Pesnau" ).toString( locale() );
-    case 2:  return ki18nc( "Coptic weekday 2 - LongDayName", "Pshoment" ).toString( locale() );
-    case 3:  return ki18nc( "Coptic weekday 3 - LongDayName", "Peftoou" ).toString( locale() );
-    case 4:  return ki18nc( "Coptic weekday 4 - LongDayName", "Ptiou" ).toString( locale() );
-    case 5:  return ki18nc( "Coptic weekday 5 - LongDayName", "Psoou" ).toString( locale() );
-    case 6:  return ki18nc( "Coptic weekday 6 - LongDayName", "Psabbaton" ).toString( locale() );
-    case 7:  return ki18nc( "Coptic weekday 7 - LongDayName", "Tkyriakē" ).toString( locale() );
-    default: return QString();
-    }
+    return KCalendarSystem::weekDayName( weekDay, format );
 }
 
 QString KCalendarSystemCoptic::weekDayName( const QDate &date, WeekDayNameFormat format ) const

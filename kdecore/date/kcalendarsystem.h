@@ -56,7 +56,8 @@ public:
          ShortName,                /**< Short name format, e.g. "Dec" */
          LongName,                 /**< Long name format, e.g. "December" */
          ShortNamePossessive,      /**< Short name possessive format, e.g. "of Dec" */
-         LongNamePossessive        /**< Long name possessive format, e.g. "of December" */
+         LongNamePossessive,       /**< Long name possessive format, e.g. "of December" */
+         NarrowName                /**< Narrow name format, e.g. "D". @since 4.7 */
     };
 
     /**
@@ -64,7 +65,8 @@ public:
      */
     enum WeekDayNameFormat {
          ShortDayName,                /**< Short name format, e.g. "Fri" */
-         LongDayName                  /**< Long name format, e.g. "Friday" */
+         LongDayName,                 /**< Long name format, e.g. "Friday" */
+         NarrowDayName                /**< Narrow name format, e.g. "F". @since 4.7 */
     };
 
     //KDE5 remove

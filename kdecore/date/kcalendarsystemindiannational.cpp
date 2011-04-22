@@ -47,6 +47,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
+    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 };
 
 // Shared d pointer base class definitions
@@ -160,6 +162,228 @@ int KCalendarSystemIndianNationalPrivate::earliestValidYear() const
 int KCalendarSystemIndianNationalPrivate::latestValidYear() const
 {
     return 9999;
+}
+
+QString KCalendarSystemIndianNationalPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    Q_UNUSED( year );
+
+    if ( format == KLocale::NarrowName ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Indian National month 1 - KLocale::NarrowName",  "C" ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National month 2 - KLocale::NarrowName",  "V" ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National month 3 - KLocale::NarrowName",  "J" ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National month 4 - KLocale::NarrowName",  "Ā" ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National month 5 - KLocale::NarrowName",  "S" ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National month 6 - KLocale::NarrowName",  "B" ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National month 7 - KLocale::NarrowName",  "Ā" ).toString( locale() );
+        case 8:
+            return ki18nc( "Indian National month 8 - KLocale::NarrowName",  "K" ).toString( locale() );
+        case 9:
+            return ki18nc( "Indian National month 9 - KLocale::NarrowName",  "A" ).toString( locale() );
+        case 10:
+            return ki18nc( "Indian National month 10 - KLocale::NarrowName", "P" ).toString( locale() );
+        case 11:
+            return ki18nc( "Indian National month 11 - KLocale::NarrowName", "M" ).toString( locale() );
+        case 12:
+            return ki18nc( "Indian National month 12 - KLocale::NarrowName", "P" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Indian National month 1 - KLocale::ShortName Possessive",  "of Cha" ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National month 2 - KLocale::ShortName Possessive",  "of Vai" ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National month 3 - KLocale::ShortName Possessive",  "of Jya" ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National month 4 - KLocale::ShortName Possessive",  "of Āsh" ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National month 5 - KLocale::ShortName Possessive",  "of Shr" ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National month 6 - KLocale::ShortName Possessive",  "of Bhā" ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National month 7 - KLocale::ShortName Possessive",  "of Āsw" ).toString( locale() );
+        case 8:
+            return ki18nc( "Indian National month 8 - KLocale::ShortName Possessive",  "of Kār" ).toString( locale() );
+        case 9:
+            return ki18nc( "Indian National month 9 - KLocale::ShortName Possessive",  "of Agr" ).toString( locale() );
+        case 10:
+            return ki18nc( "Indian National month 10 - KLocale::ShortName Possessive", "of Pau" ).toString( locale() );
+        case 11:
+            return ki18nc( "Indian National month 11 - KLocale::ShortName Possessive", "of Māg" ).toString( locale() );
+        case 12:
+            return ki18nc( "Indian National month 12 - KLocale::ShortName Possessive", "of Phā" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && !possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Indian National month 1 - KLocale::ShortName",  "Cha" ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National month 2 - KLocale::ShortName",  "Vai" ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National month 3 - KLocale::ShortName",  "Jya" ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National month 4 - KLocale::ShortName",  "Āsh" ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National month 5 - KLocale::ShortName",  "Shr" ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National month 6 - KLocale::ShortName",  "Bhā" ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National month 7 - KLocale::ShortName",  "Āsw" ).toString( locale() );
+        case 8:
+            return ki18nc( "Indian National month 8 - KLocale::ShortName",  "Kār" ).toString( locale() );
+        case 9:
+            return ki18nc( "Indian National month 9 - KLocale::ShortName",  "Agr" ).toString( locale() );
+        case 10:
+            return ki18nc( "Indian National month 10 - KLocale::ShortName", "Pau" ).toString( locale() );
+        case 11:
+            return ki18nc( "Indian National month 11 - KLocale::ShortName", "Māg" ).toString( locale() );
+        case 12:
+            return ki18nc( "Indian National month 12 - KLocale::ShortName", "Phā" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::LongName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Indian National month 1 - KLocale::LongName Possessive",  "of Chaitra"    ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National month 2 - KLocale::LongName Possessive",  "of Vaishākh"   ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National month 3 - KLocale::LongName Possessive",  "of Jyaishtha"  ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National month 4 - KLocale::LongName Possessive",  "of Āshādha"    ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National month 5 - KLocale::LongName Possessive",  "of Shrāvana"   ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National month 6 - KLocale::LongName Possessive",  "of Bhādrapad"  ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National month 7 - KLocale::LongName Possessive",  "of Āshwin"     ).toString( locale() );
+        case 8:
+            return ki18nc( "Indian National month 8 - KLocale::LongName Possessive",  "of Kārtik"     ).toString( locale() );
+        case 9:
+            return ki18nc( "Indian National month 9 - KLocale::LongName Possessive",  "of Agrahayana" ).toString( locale() );
+        case 10:
+            return ki18nc( "Indian National month 10 - KLocale::LongName Possessive", "of Paush"      ).toString( locale() );
+        case 11:
+            return ki18nc( "Indian National month 11 - KLocale::LongName Possessive", "of Māgh"       ).toString( locale() );
+        case 12:
+            return ki18nc( "Indian National month 12 - KLocale::LongName Possessive", "of Phālgun"    ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    // Default to LongName
+    switch ( month ) {
+    case 1:
+        return ki18nc( "Indian National month 1 - KLocale::LongName",  "Chaitra"    ).toString( locale() );
+    case 2:
+        return ki18nc( "Indian National month 2 - KLocale::LongName",  "Vaishākh"   ).toString( locale() );
+    case 3:
+        return ki18nc( "Indian National month 3 - KLocale::LongName",  "Jyaishtha"  ).toString( locale() );
+    case 4:
+        return ki18nc( "Indian National month 4 - KLocale::LongName",  "Āshādha"    ).toString( locale() );
+    case 5:
+        return ki18nc( "Indian National month 5 - KLocale::LongName",  "Shrāvana"   ).toString( locale() );
+    case 6:
+        return ki18nc( "Indian National month 6 - KLocale::LongName",  "Bhādrapad"  ).toString( locale() );
+    case 7:
+        return ki18nc( "Indian National month 7 - KLocale::LongName",  "Āshwin"     ).toString( locale() );
+    case 8:
+        return ki18nc( "Indian National month 8 - KLocale::LongName",  "Kārtik"     ).toString( locale() );
+    case 9:
+        return ki18nc( "Indian National month 9 - KLocale::LongName",  "Agrahayana" ).toString( locale() );
+    case 10:
+        return ki18nc( "Indian National month 10 - KLocale::LongName", "Paush"      ).toString( locale() );
+    case 11:
+        return ki18nc( "Indian National month 11 - KLocale::LongName", "Māgh"       ).toString( locale() );
+    case 12:
+        return ki18nc( "Indian National month 12 - KLocale::LongName", "Phālgun"    ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+QString KCalendarSystemIndianNationalPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    if ( format == KLocale::NarrowName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Indian National weekday 1 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National weekday 2 - KLocale::NarrowName ", "M" ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National weekday 3 - KLocale::NarrowName ", "B" ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National weekday 4 - KLocale::NarrowName ", "G" ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National weekday 5 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National weekday 6 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National weekday 7 - KLocale::NarrowName ", "R" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Indian National weekday 1 - KLocale::ShortName", "Som" ).toString( locale() );
+        case 2:
+            return ki18nc( "Indian National weekday 2 - KLocale::ShortName", "Mañ" ).toString( locale() );
+        case 3:
+            return ki18nc( "Indian National weekday 3 - KLocale::ShortName", "Bud" ).toString( locale() );
+        case 4:
+            return ki18nc( "Indian National weekday 4 - KLocale::ShortName", "Gur" ).toString( locale() );
+        case 5:
+            return ki18nc( "Indian National weekday 5 - KLocale::ShortName", "Suk" ).toString( locale() );
+        case 6:
+            return ki18nc( "Indian National weekday 6 - KLocale::ShortName", "San" ).toString( locale() );
+        case 7:
+            return ki18nc( "Indian National weekday 7 - KLocale::ShortName", "Rav" ).toString( locale() );
+        default: return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:
+        return ki18nc( "Indian National weekday 1 - KLocale::LongName", "Somavãra"  ).toString( locale() );
+    case 2:
+        return ki18nc( "Indian National weekday 2 - KLocale::LongName", "Mañgalvã"  ).toString( locale() );
+    case 3:
+        return ki18nc( "Indian National weekday 3 - KLocale::LongName", "Budhavãra" ).toString( locale() );
+    case 4:
+        return ki18nc( "Indian National weekday 4 - KLocale::LongName", "Guruvãra"  ).toString( locale() );
+    case 5:
+        return ki18nc( "Indian National weekday 5 - KLocale::LongName", "Sukravãra" ).toString( locale() );
+    case 6:
+        return ki18nc( "Indian National weekday 6 - KLocale::LongName", "Sanivãra"  ).toString( locale() );
+    case 7:
+        return ki18nc( "Indian National weekday 7 - KLocale::LongName", "Raviãra"   ).toString( locale() );
+    default:
+        return QString();
+    }
 }
 
 
@@ -327,130 +551,7 @@ bool KCalendarSystemIndianNational::isLeapYear( const QDate &date ) const
 
 QString KCalendarSystemIndianNational::monthName( int month, int year, MonthNameFormat format ) const
 {
-    Q_UNUSED( year );
-
-    if ( format == ShortNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Indian National month 1 - ShortNamePossessive",  "of Cha" ).toString( locale() );
-        case 2:
-            return ki18nc( "Indian National month 2 - ShortNamePossessive",  "of Vai" ).toString( locale() );
-        case 3:
-            return ki18nc( "Indian National month 3 - ShortNamePossessive",  "of Jya" ).toString( locale() );
-        case 4:
-            return ki18nc( "Indian National month 4 - ShortNamePossessive",  "of Āsh" ).toString( locale() );
-        case 5:
-            return ki18nc( "Indian National month 5 - ShortNamePossessive",  "of Shr" ).toString( locale() );
-        case 6:
-            return ki18nc( "Indian National month 6 - ShortNamePossessive",  "of Bhā" ).toString( locale() );
-        case 7:
-            return ki18nc( "Indian National month 7 - ShortNamePossessive",  "of Āsw" ).toString( locale() );
-        case 8:
-            return ki18nc( "Indian National month 8 - ShortNamePossessive",  "of Kār" ).toString( locale() );
-        case 9:
-            return ki18nc( "Indian National month 9 - ShortNamePossessive",  "of Agr" ).toString( locale() );
-        case 10:
-            return ki18nc( "Indian National month 10 - ShortNamePossessive", "of Pau" ).toString( locale() );
-        case 11:
-            return ki18nc( "Indian National month 11 - ShortNamePossessive", "of Māg" ).toString( locale() );
-        case 12:
-            return ki18nc( "Indian National month 12 - ShortNamePossessive", "of Phā" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == LongNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Indian National month 1 - LongNamePossessive",  "of Chaitra" ).toString( locale() );
-        case 2:
-            return ki18nc( "Indian National month 2 - LongNamePossessive",  "of Vaishākh" ).toString( locale() );
-        case 3:
-            return ki18nc( "Indian National month 3 - LongNamePossessive",  "of Jyaishtha" ).toString( locale() );
-        case 4:
-            return ki18nc( "Indian National month 4 - LongNamePossessive",  "of Āshādha" ).toString( locale() );
-        case 5:
-            return ki18nc( "Indian National month 5 - LongNamePossessive",  "of Shrāvana" ).toString( locale() );
-        case 6:
-            return ki18nc( "Indian National month 6 - LongNamePossessive",  "of Bhādrapad" ).toString( locale() );
-        case 7:
-            return ki18nc( "Indian National month 7 - LongNamePossessive",  "of Āshwin" ).toString( locale() );
-        case 8:
-            return ki18nc( "Indian National month 8 - LongNamePossessive",  "of Kārtik" ).toString( locale() );
-        case 9:
-            return ki18nc( "Indian National month 9 - LongNamePossessive",  "of Agrahayana" ).toString( locale() );
-        case 10:
-            return ki18nc( "Indian National month 10 - LongNamePossessive", "of Paush" ).toString( locale() );
-        case 11:
-            return ki18nc( "Indian National month 11 - LongNamePossessive", "of Māgh" ).toString( locale() );
-        case 12:
-            return ki18nc( "Indian National month 12 - LongNamePossessive", "of Phālgun" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == ShortName ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Indian National month 1 - ShortName",  "Cha" ).toString( locale() );
-        case 2:
-            return ki18nc( "Indian National month 2 - ShortName",  "Vai" ).toString( locale() );
-        case 3:
-            return ki18nc( "Indian National month 3 - ShortName",  "Jya" ).toString( locale() );
-        case 4:
-            return ki18nc( "Indian National month 4 - ShortName",  "Āsh" ).toString( locale() );
-        case 5:
-            return ki18nc( "Indian National month 5 - ShortName",  "Shr" ).toString( locale() );
-        case 6:
-            return ki18nc( "Indian National month 6 - ShortName",  "Bhā" ).toString( locale() );
-        case 7:
-            return ki18nc( "Indian National month 7 - ShortName",  "Āsw" ).toString( locale() );
-        case 8:
-            return ki18nc( "Indian National month 8 - ShortName",  "Kār" ).toString( locale() );
-        case 9:
-            return ki18nc( "Indian National month 9 - ShortName",  "Agr" ).toString( locale() );
-        case 10:
-            return ki18nc( "Indian National month 10 - ShortName", "Pau" ).toString( locale() );
-        case 11:
-            return ki18nc( "Indian National month 11 - ShortName", "Māg" ).toString( locale() );
-        case 12:
-            return ki18nc( "Indian National month 12 - ShortName", "Phā" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    // Default to LongName
-    switch ( month ) {
-    case 1:
-        return ki18nc( "Indian National month 1 - LongName",  "Chaitra" ).toString( locale() );
-    case 2:
-        return ki18nc( "Indian National month 2 - LongName",  "Vaishākh" ).toString( locale() );
-    case 3:
-        return ki18nc( "Indian National month 3 - LongName",  "Jyaishtha" ).toString( locale() );
-    case 4:
-        return ki18nc( "Indian National month 4 - LongName",  "Āshādha" ).toString( locale() );
-    case 5:
-        return ki18nc( "Indian National month 5 - LongName",  "Shrāvana" ).toString( locale() );
-    case 6:
-        return ki18nc( "Indian National month 6 - LongName",  "Bhādrapad" ).toString( locale() );
-    case 7:
-        return ki18nc( "Indian National month 7 - LongName",  "Āshwin" ).toString( locale() );
-    case 8:
-        return ki18nc( "Indian National month 8 - LongName",  "Kārtik" ).toString( locale() );
-    case 9:
-        return ki18nc( "Indian National month 9 - LongName",  "Agrahayana" ).toString( locale() );
-    case 10:
-        return ki18nc( "Indian National month 10 - LongName", "Paush" ).toString( locale() );
-    case 11:
-        return ki18nc( "Indian National month 11 - LongName", "Māgh" ).toString( locale() );
-    case 12:
-        return ki18nc( "Indian National month 12 - LongName", "Phālgun" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystem::monthName( month, year, format );
 }
 
 QString KCalendarSystemIndianNational::monthName( const QDate &date, MonthNameFormat format ) const
@@ -460,29 +561,7 @@ QString KCalendarSystemIndianNational::monthName( const QDate &date, MonthNameFo
 
 QString KCalendarSystemIndianNational::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-    if ( format == ShortDayName ) {
-        switch ( weekDay ) {
-        case 1:  return ki18nc( "Indian National weekday 1 - ShortDayName", "Som" ).toString( locale() );
-        case 2:  return ki18nc( "Indian National weekday 2 - ShortDayName", "Mañ" ).toString( locale() );
-        case 3:  return ki18nc( "Indian National weekday 3 - ShortDayName", "Bud" ).toString( locale() );
-        case 4:  return ki18nc( "Indian National weekday 4 - ShortDayName", "Gur" ).toString( locale() );
-        case 5:  return ki18nc( "Indian National weekday 5 - ShortDayName", "Suk" ).toString( locale() );
-        case 6:  return ki18nc( "Indian National weekday 6 - ShortDayName", "San" ).toString( locale() );
-        case 7:  return ki18nc( "Indian National weekday 7 - ShortDayName", "Rav" ).toString( locale() );
-        default: return QString();
-        }
-    }
-
-    switch ( weekDay ) {
-    case 1:  return ki18nc( "Indian National weekday 1 - LongDayName", "Somavãra" ).toString( locale() );
-    case 2:  return ki18nc( "Indian National weekday 2 - LongDayName", "Mañgalvã" ).toString( locale() );
-    case 3:  return ki18nc( "Indian National weekday 3 - LongDayName", "Budhavãra" ).toString( locale() );
-    case 4:  return ki18nc( "Indian National weekday 4 - LongDayName", "Guruvãra" ).toString( locale() );
-    case 5:  return ki18nc( "Indian National weekday 5 - LongDayName", "Sukravãra" ).toString( locale() );
-    case 6:  return ki18nc( "Indian National weekday 6 - LongDayName", "Sanivãra" ).toString( locale() );
-    case 7:  return ki18nc( "Indian National weekday 7 - LongDayName", "Raviãra" ).toString( locale() );
-    default: return QString();
-    }
+    return KCalendarSystem::weekDayName( weekDay, format );
 }
 
 QString KCalendarSystemIndianNational::weekDayName( const QDate &date, WeekDayNameFormat format ) const

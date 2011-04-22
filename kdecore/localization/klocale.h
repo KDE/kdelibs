@@ -902,7 +902,7 @@ public:
         ShortNumber = 0,             /**< Number at its natural width, e.g. 2 for the 2nd*/
         LongNumber,                  /**< Number padded to a required width, e.g. 02 for the 2nd*/
         //OrdinalNumber                /**< Ordinal number format, e.g. "2nd" for the 2nd */
-        NarrowName = 3,              /**< Narrow text format, e.g. M for Monday */
+        NarrowName = 3,              /**< Narrow text format, may not be unique, e.g. M for Monday */
         ShortName,                   /**< Short text format, e.g. Mon for Monday */
         LongName                     /**< Long text format, e.g. Monday for Monday */
     };

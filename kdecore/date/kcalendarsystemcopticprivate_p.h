@@ -43,6 +43,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
+    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 };
 
 #endif // KCALENDARSYSTEMCOPTICPRIVATE_H

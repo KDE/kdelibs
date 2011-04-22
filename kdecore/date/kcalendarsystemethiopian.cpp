@@ -40,6 +40,8 @@ public:
 
     virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
+    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
+    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 };
 
 KLocale::CalendarSystem KCalendarSystemEthiopianPrivate::calendarSystem() const
@@ -55,6 +57,240 @@ void KCalendarSystemEthiopianPrivate::loadDefaultEraList()
     shortName = i18nc( "Calendar Era: Ethiopian Incarnation Era, years > 0, ShortFormat", "AM" );
     format = i18nc( "(kdedt-format) Ethiopian, AM, full era year format used for %EY, e.g. 2000 AM", "%Ey %EC" );
     addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
+}
+
+// Names taken from http://www.ethiopianembassy.at/dates_cycles.htm, alternative transliterations exist
+QString KCalendarSystemEthiopianPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    Q_UNUSED( year );
+
+    if ( format == KLocale::NarrowName ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Ethiopian month 1 - KLocale::NarrowName",  "M" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian month 2 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian month 3 - KLocale::NarrowName",  "H" ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian month 4 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian month 5 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian month 6 - KLocale::NarrowName",  "Y" ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian month 7 - KLocale::NarrowName",  "M" ).toString( locale() );
+        case 8:
+            return ki18nc( "Ethiopian month 8 - KLocale::NarrowName",  "M" ).toString( locale() );
+        case 9:
+            return ki18nc( "Ethiopian month 9 - KLocale::NarrowName",  "G" ).toString( locale() );
+        case 10:
+            return ki18nc( "Ethiopian month 10 - KLocale::NarrowName", "S" ).toString( locale() );
+        case 11:
+            return ki18nc( "Ethiopian month 11 - KLocale::NarrowName", "H" ).toString( locale() );
+        case 12:
+            return ki18nc( "Ethiopian month 12 - KLocale::NarrowName", "N" ).toString( locale() );
+        case 13:
+            return ki18nc( "Ethiopian month 13 - KLocale::NarrowName", "P" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Ethiopian month 1 - KLocale::ShortName Possessive",  "of Mes" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian month 2 - KLocale::ShortName Possessive",  "of Teq" ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian month 3 - KLocale::ShortName Possessive",  "of Hed" ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian month 4 - KLocale::ShortName Possessive",  "of Tah" ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian month 5 - KLocale::ShortName Possessive",  "of Ter" ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian month 6 - KLocale::ShortName Possessive",  "of Yak" ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian month 7 - KLocale::ShortName Possessive",  "of Mag" ).toString( locale() );
+        case 8:
+            return ki18nc( "Ethiopian month 8 - KLocale::ShortName Possessive",  "of Miy" ).toString( locale() );
+        case 9:
+            return ki18nc( "Ethiopian month 9 - KLocale::ShortName Possessive",  "of Gen" ).toString( locale() );
+        case 10:
+            return ki18nc( "Ethiopian month 10 - KLocale::ShortName Possessive", "of Sen" ).toString( locale() );
+        case 11:
+            return ki18nc( "Ethiopian month 11 - KLocale::ShortName Possessive", "of Ham" ).toString( locale() );
+        case 12:
+            return ki18nc( "Ethiopian month 12 - KLocale::ShortName Possessive", "of Neh" ).toString( locale() );
+        case 13:
+            return ki18nc( "Ethiopian month 13 - KLocale::ShortName Possessive", "of Pag" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && !possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Ethiopian month 1 - KLocale::ShortName",  "Mes" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian month 2 - KLocale::ShortName",  "Teq" ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian month 3 - KLocale::ShortName",  "Hed" ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian month 4 - KLocale::ShortName",  "Tah" ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian month 5 - KLocale::ShortName",  "Ter" ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian month 6 - KLocale::ShortName",  "Yak" ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian month 7 - KLocale::ShortName",  "Mag" ).toString( locale() );
+        case 8:
+            return ki18nc( "Ethiopian month 8 - KLocale::ShortName",  "Miy" ).toString( locale() );
+        case 9:
+            return ki18nc( "Ethiopian month 9 - KLocale::ShortName",  "Gen" ).toString( locale() );
+        case 10:
+            return ki18nc( "Ethiopian month 10 - KLocale::ShortName", "Sen" ).toString( locale() );
+        case 11:
+            return ki18nc( "Ethiopian month 11 - KLocale::ShortName", "Ham" ).toString( locale() );
+        case 12:
+            return ki18nc( "Ethiopian month 12 - KLocale::ShortName", "Neh" ).toString( locale() );
+        case 13:
+            return ki18nc( "Ethiopian month 13 - KLocale::ShortName", "Pag" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::LongName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Ethiopian month 1 - KLocale::LongName Possessive",  "of Meskerem" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian month 2 - KLocale::LongName Possessive",  "of Tequemt"  ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian month 3 - KLocale::LongName Possessive",  "of Hedar"    ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian month 4 - KLocale::LongName Possessive",  "of Tahsas"   ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian month 5 - KLocale::LongName Possessive",  "of Ter"      ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian month 6 - KLocale::LongName Possessive",  "of Yakatit"  ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian month 7 - KLocale::LongName Possessive",  "of Magabit"  ).toString( locale() );
+        case 8:
+            return ki18nc( "Ethiopian month 8 - KLocale::LongName Possessive",  "of Miyazya"  ).toString( locale() );
+        case 9:
+            return ki18nc( "Ethiopian month 9 - KLocale::LongName Possessive",  "of Genbot"   ).toString( locale() );
+        case 10:
+            return ki18nc( "Ethiopian month 10 - KLocale::LongName Possessive", "of Sene"     ).toString( locale() );
+        case 11:
+            return ki18nc( "Ethiopian month 11 - KLocale::LongName Possessive", "of Hamle"    ).toString( locale() );
+        case 12:
+            return ki18nc( "Ethiopian month 12 - KLocale::LongName Possessive", "of Nehase"   ).toString( locale() );
+        case 13:
+            return ki18nc( "Ethiopian month 13 - KLocale::LongName Possessive", "of Pagumen"  ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    // Default to LongName
+    switch ( month ) {
+    case 1:
+        return ki18nc( "Ethiopian month 1 - KLocale::LongName",  "Meskerem" ).toString( locale() );
+    case 2:
+        return ki18nc( "Ethiopian month 2 - KLocale::LongName",  "Tequemt"  ).toString( locale() );
+    case 3:
+        return ki18nc( "Ethiopian month 3 - KLocale::LongName",  "Hedar"    ).toString( locale() );
+    case 4:
+        return ki18nc( "Ethiopian month 4 - KLocale::LongName",  "Tahsas"   ).toString( locale() );
+    case 5:
+        return ki18nc( "Ethiopian month 5 - KLocale::LongName",  "Ter"      ).toString( locale() );
+    case 6:
+        return ki18nc( "Ethiopian month 6 - KLocale::LongName",  "Yakatit"  ).toString( locale() );
+    case 7:
+        return ki18nc( "Ethiopian month 7 - KLocale::LongName",  "Magabit"  ).toString( locale() );
+    case 8:
+        return ki18nc( "Ethiopian month 8 - KLocale::LongName",  "Miyazya"  ).toString( locale() );
+    case 9:
+        return ki18nc( "Ethiopian month 9 - KLocale::LongName",  "Genbot"   ).toString( locale() );
+    case 10:
+        return ki18nc( "Ethiopian month 10 - KLocale::LongName", "Sene"     ).toString( locale() );
+    case 11:
+        return ki18nc( "Ethiopian month 11 - KLocale::LongName", "Hamle"    ).toString( locale() );
+    case 12:
+        return ki18nc( "Ethiopian month 12 - KLocale::LongName", "Nehase"   ).toString( locale() );
+    case 13:
+        return ki18nc( "Ethiopian month 13 - KLocale::LongName", "Pagumen"  ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+// Names taken from http://www.ethiopianembassy.at/dates_cycles.htm, alternative transliterations exist
+QString KCalendarSystemEthiopianPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    if ( format == KLocale::NarrowName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Ethiopian weekday 1 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian weekday 2 - KLocale::NarrowName ", "M" ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian weekday 3 - KLocale::NarrowName ", "R" ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian weekday 4 - KLocale::NarrowName ", "H" ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian weekday 5 - KLocale::NarrowName ", "A" ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian weekday 6 - KLocale::NarrowName ", "Q" ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian weekday 7 - KLocale::NarrowName ", "E" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Ethiopian weekday 1 - KLocale::ShortName", "Seg" ).toString( locale() );
+        case 2:
+            return ki18nc( "Ethiopian weekday 2 - KLocale::ShortName", "Mak" ).toString( locale() );
+        case 3:
+            return ki18nc( "Ethiopian weekday 3 - KLocale::ShortName", "Rob" ).toString( locale() );
+        case 4:
+            return ki18nc( "Ethiopian weekday 4 - KLocale::ShortName", "Ham" ).toString( locale() );
+        case 5:
+            return ki18nc( "Ethiopian weekday 5 - KLocale::ShortName", "Arb" ).toString( locale() );
+        case 6:
+            return ki18nc( "Ethiopian weekday 6 - KLocale::ShortName", "Qed" ).toString( locale() );
+        case 7:
+            return ki18nc( "Ethiopian weekday 7 - KLocale::ShortName", "Ehu" ).toString( locale() );
+        default: return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:
+        return ki18nc( "Ethiopian weekday 1 - KLocale::LongName", "Segno"    ).toString( locale() );
+    case 2:
+        return ki18nc( "Ethiopian weekday 2 - KLocale::LongName", "Maksegno" ).toString( locale() );
+    case 3:
+        return ki18nc( "Ethiopian weekday 3 - KLocale::LongName", "Rob"      ).toString( locale() );
+    case 4:
+        return ki18nc( "Ethiopian weekday 4 - KLocale::LongName", "Hamus"    ).toString( locale() );
+    case 5:
+        return ki18nc( "Ethiopian weekday 5 - KLocale::LongName", "Arb"      ).toString( locale() );
+    case 6:
+        return ki18nc( "Ethiopian weekday 6 - KLocale::LongName", "Qedame"   ).toString( locale() );
+    case 7:
+        return ki18nc( "Ethiopian weekday 7 - KLocale::LongName", "Ehud"     ).toString( locale() );
+    default:
+        return QString();
+    }
 }
 
 
@@ -218,141 +454,9 @@ bool KCalendarSystemEthiopian::isLeapYear( const QDate &date ) const
     return KCalendarSystemCoptic::isLeapYear( date );
 }
 
-// Names taken from http://www.ethiopianembassy.at/dates_cycles.htm, alternative transliterations exist
 QString KCalendarSystemEthiopian::monthName( int month, int year, MonthNameFormat format ) const
 {
-    Q_UNUSED( year );
-
-    if ( format == ShortNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Ethiopian month 1 - ShortNamePossessive",  "of Mes" ).toString( locale() );
-        case 2:
-            return ki18nc( "Ethiopian month 2 - ShortNamePossessive",  "of Teq" ).toString( locale() );
-        case 3:
-            return ki18nc( "Ethiopian month 3 - ShortNamePossessive",  "of Hed" ).toString( locale() );
-        case 4:
-            return ki18nc( "Ethiopian month 4 - ShortNamePossessive",  "of Tah" ).toString( locale() );
-        case 5:
-            return ki18nc( "Ethiopian month 5 - ShortNamePossessive",  "of Ter" ).toString( locale() );
-        case 6:
-            return ki18nc( "Ethiopian month 6 - ShortNamePossessive",  "of Yak" ).toString( locale() );
-        case 7:
-            return ki18nc( "Ethiopian month 7 - ShortNamePossessive",  "of Mag" ).toString( locale() );
-        case 8:
-            return ki18nc( "Ethiopian month 8 - ShortNamePossessive",  "of Miy" ).toString( locale() );
-        case 9:
-            return ki18nc( "Ethiopian month 9 - ShortNamePossessive",  "of Gen" ).toString( locale() );
-        case 10:
-            return ki18nc( "Ethiopian month 10 - ShortNamePossessive", "of Sen" ).toString( locale() );
-        case 11:
-            return ki18nc( "Ethiopian month 11 - ShortNamePossessive", "of Ham" ).toString( locale() );
-        case 12:
-            return ki18nc( "Ethiopian month 12 - ShortNamePossessive", "of Neh" ).toString( locale() );
-        case 13:
-            return ki18nc( "Ethiopian month 13 - ShortNamePossessive", "of Pag" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == LongNamePossessive ) {
-    switch ( month ) {
-        case 1:
-            return ki18nc( "Ethiopian month 1 - LongNamePossessive",  "of Meskerem" ).toString( locale() );
-        case 2:
-            return ki18nc( "Ethiopian month 2 - LongNamePossessive",  "of Tequemt" ).toString( locale() );
-        case 3:
-            return ki18nc( "Ethiopian month 3 - LongNamePossessive",  "of Hedar" ).toString( locale() );
-        case 4:
-            return ki18nc( "Ethiopian month 4 - LongNamePossessive",  "of Tahsas" ).toString( locale() );
-        case 5:
-            return ki18nc( "Ethiopian month 5 - LongNamePossessive",  "of Ter" ).toString( locale() );
-        case 6:
-            return ki18nc( "Ethiopian month 6 - LongNamePossessive",  "of Yakatit" ).toString( locale() );
-        case 7:
-            return ki18nc( "Ethiopian month 7 - LongNamePossessive",  "of Magabit" ).toString( locale() );
-        case 8:
-            return ki18nc( "Ethiopian month 8 - LongNamePossessive",  "of Miyazya" ).toString( locale() );
-        case 9:
-            return ki18nc( "Ethiopian month 9 - LongNamePossessive",  "of Genbot" ).toString( locale() );
-        case 10:
-            return ki18nc( "Ethiopian month 10 - LongNamePossessive", "of Sene" ).toString( locale() );
-        case 11:
-            return ki18nc( "Ethiopian month 11 - LongNamePossessive", "of Hamle" ).toString( locale() );
-        case 12:
-            return ki18nc( "Ethiopian month 12 - LongNamePossessive", "of Nehase" ).toString( locale() );
-        case 13:
-            return ki18nc( "Ethiopian month 13 - LongNamePossessive", "of Pagumen" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == ShortName ) {
-        switch ( month ) {
-        case 1:
-            return ki18nc( "Ethiopian month 1 - ShortName",  "Mes" ).toString( locale() );
-        case 2:
-            return ki18nc( "Ethiopian month 2 - ShortName",  "Teq" ).toString( locale() );
-        case 3:
-            return ki18nc( "Ethiopian month 3 - ShortName",  "Hed" ).toString( locale() );
-        case 4:
-            return ki18nc( "Ethiopian month 4 - ShortName",  "Tah" ).toString( locale() );
-        case 5:
-            return ki18nc( "Ethiopian month 5 - ShortName",  "Ter" ).toString( locale() );
-        case 6:
-            return ki18nc( "Ethiopian month 6 - ShortName",  "Yak" ).toString( locale() );
-        case 7:
-            return ki18nc( "Ethiopian month 7 - ShortName",  "Mag" ).toString( locale() );
-        case 8:
-            return ki18nc( "Ethiopian month 8 - ShortName",  "Miy" ).toString( locale() );
-        case 9:
-            return ki18nc( "Ethiopian month 9 - ShortName",  "Gen" ).toString( locale() );
-        case 10:
-            return ki18nc( "Ethiopian month 10 - ShortName", "Sen" ).toString( locale() );
-        case 11:
-            return ki18nc( "Ethiopian month 11 - ShortName", "Ham" ).toString( locale() );
-        case 12:
-            return ki18nc( "Ethiopian month 12 - ShortName", "Neh" ).toString( locale() );
-        case 13:
-            return ki18nc( "Ethiopian month 13 - ShortName", "Pag" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    // Default to LongName
-    switch ( month ) {
-    case 1:
-        return ki18nc( "Ethiopian month 1 - LongName",  "Meskerem" ).toString( locale() );
-    case 2:
-        return ki18nc( "Ethiopian month 2 - LongName",  "Tequemt" ).toString( locale() );
-    case 3:
-        return ki18nc( "Ethiopian month 3 - LongName",  "Hedar" ).toString( locale() );
-    case 4:
-        return ki18nc( "Ethiopian month 4 - LongName",  "Tahsas" ).toString( locale() );
-    case 5:
-        return ki18nc( "Ethiopian month 5 - LongName",  "Ter" ).toString( locale() );
-    case 6:
-        return ki18nc( "Ethiopian month 6 - LongName",  "Yakatit" ).toString( locale() );
-    case 7:
-        return ki18nc( "Ethiopian month 7 - LongName",  "Magabit" ).toString( locale() );
-    case 8:
-        return ki18nc( "Ethiopian month 8 - LongName",  "Miyazya" ).toString( locale() );
-    case 9:
-        return ki18nc( "Ethiopian month 9 - LongName",  "Genbot" ).toString( locale() );
-    case 10:
-        return ki18nc( "Ethiopian month 10 - LongName", "Sene" ).toString( locale() );
-    case 11:
-        return ki18nc( "Ethiopian month 11 - LongName", "Hamle" ).toString( locale() );
-    case 12:
-        return ki18nc( "Ethiopian month 12 - LongName", "Nehase" ).toString( locale() );
-    case 13:
-        return ki18nc( "Ethiopian month 13 - LongName", "Pagumen" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystemCoptic::monthName( month, year, format );
 }
 
 QString KCalendarSystemEthiopian::monthName( const QDate &date, MonthNameFormat format ) const
@@ -360,32 +464,9 @@ QString KCalendarSystemEthiopian::monthName( const QDate &date, MonthNameFormat 
     return KCalendarSystemCoptic::monthName( date, format );
 }
 
-// Names taken from http://www.ethiopianembassy.at/dates_cycles.htm, alternative transliterations exist
 QString KCalendarSystemEthiopian::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-    if ( format == ShortDayName ) {
-        switch ( weekDay ) {
-        case 1:  return ki18nc( "Ethiopian weekday 1 - ShortDayName", "Seg" ).toString( locale() );
-        case 2:  return ki18nc( "Ethiopian weekday 2 - ShortDayName", "Mak" ).toString( locale() );
-        case 3:  return ki18nc( "Ethiopian weekday 3 - ShortDayName", "Rob" ).toString( locale() );
-        case 4:  return ki18nc( "Ethiopian weekday 4 - ShortDayName", "Ham" ).toString( locale() );
-        case 5:  return ki18nc( "Ethiopian weekday 5 - ShortDayName", "Arb" ).toString( locale() );
-        case 6:  return ki18nc( "Ethiopian weekday 6 - ShortDayName", "Qed" ).toString( locale() );
-        case 7:  return ki18nc( "Ethiopian weekday 7 - ShortDayName", "Ehu" ).toString( locale() );
-        default: return QString();
-        }
-    }
-
-    switch ( weekDay ) {
-    case 1:  return ki18nc( "Ethiopian weekday 1 - LongDayName", "Segno" ).toString( locale() );
-    case 2:  return ki18nc( "Ethiopian weekday 2 - LongDayName", "Maksegno" ).toString( locale() );
-    case 3:  return ki18nc( "Ethiopian weekday 3 - LongDayName", "Rob" ).toString( locale() );
-    case 4:  return ki18nc( "Ethiopian weekday 4 - LongDayName", "Hamus" ).toString( locale() );
-    case 5:  return ki18nc( "Ethiopian weekday 5 - LongDayName", "Arb" ).toString( locale() );
-    case 6:  return ki18nc( "Ethiopian weekday 6 - LongDayName", "Qedame" ).toString( locale() );
-    case 7:  return ki18nc( "Ethiopian weekday 7 - LongDayName", "Ehud" ).toString( locale() );
-    default: return QString();
-    }
+    return KCalendarSystemCoptic::weekDayName( weekDay, format );
 }
 
 QString KCalendarSystemEthiopian::weekDayName( const QDate &date, WeekDayNameFormat format ) const

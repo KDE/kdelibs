@@ -45,6 +45,8 @@ public:
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
+    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
+    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 };
 
 // Shared d pointer base class definitions
@@ -166,6 +168,228 @@ int KCalendarSystemHijriPrivate::earliestValidYear() const
 int KCalendarSystemHijriPrivate::latestValidYear() const
 {
     return 9999;
+}
+
+QString KCalendarSystemHijriPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+{
+    Q_UNUSED( year );
+
+    if ( format == KLocale::NarrowName ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Hijri month 1 - KLocale::NarrowName",  "M" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri month 2 - KLocale::NarrowName",  "S" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri month 3 - KLocale::NarrowName",  "A" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri month 4 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri month 5 - KLocale::NarrowName",  "A" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri month 6 - KLocale::NarrowName",  "T" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri month 7 - KLocale::NarrowName",  "R" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hijri month 8 - KLocale::NarrowName",  "S" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hijri month 9 - KLocale::NarrowName",  "R" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hijri month 10 - KLocale::NarrowName", "S" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hijri month 11 - KLocale::NarrowName", "Q" ).toString( locale() );
+        case 12:
+            return ki18nc( "Hijri month 12 - KLocale::NarrowName", "H" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Hijri month 1 - KLocale::ShortName Possessive",  "of Muh" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri month 2 - KLocale::ShortName Possessive",  "of Saf" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri month 3 - KLocale::ShortName Possessive",  "of R.A" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri month 4 - KLocale::ShortName Possessive",  "of R.T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri month 5 - KLocale::ShortName Possessive",  "of J.A" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri month 6 - KLocale::ShortName Possessive",  "of J.T" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri month 7 - KLocale::ShortName Possessive",  "of Raj" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hijri month 8 - KLocale::ShortName Possessive",  "of Sha" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hijri month 9 - KLocale::ShortName Possessive",  "of Ram" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hijri month 10 - KLocale::ShortName Possessive", "of Shw" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hijri month 11 - KLocale::ShortName Possessive", "of Qid" ).toString( locale() );
+        case 12:
+            return ki18nc( "Hijri month 12 - KLocale::ShortName Possessive", "of Hij" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName && !possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Hijri month 1 - KLocale::ShortName",  "Muh" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri month 2 - KLocale::ShortName",  "Saf" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri month 3 - KLocale::ShortName",  "R.A" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri month 4 - KLocale::ShortName",  "R.T" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri month 5 - KLocale::ShortName",  "J.A" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri month 6 - KLocale::ShortName",  "J.T" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri month 7 - KLocale::ShortName",  "Raj" ).toString( locale() );
+        case 8:
+            return ki18nc( "Hijri month 8 - KLocale::ShortName",  "Sha" ).toString( locale() );
+        case 9:
+            return ki18nc( "Hijri month 9 - KLocale::ShortName",  "Ram" ).toString( locale() );
+        case 10:
+            return ki18nc( "Hijri month 10 - KLocale::ShortName", "Shw" ).toString( locale() );
+        case 11:
+            return ki18nc( "Hijri month 11 - KLocale::ShortName", "Qid" ).toString( locale() );
+        case 12:
+            return ki18nc( "Hijri month 12 - KLocale::ShortName", "Hij" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::LongName && possessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18nc( "Hijri month 1 - KLocale::LongName Possessive",  "of Muharram"          ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri month 2 - KLocale::LongName Possessive",  "of Safar"             ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri month 3 - KLocale::LongName Possessive",  "of Rabi` al-Awal"     ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri month 4 - KLocale::LongName Possessive",  "of Rabi` al-Thaani"   ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri month 5 - KLocale::LongName Possessive",  "of Jumaada al-Awal"   ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri month 6 - KLocale::LongName Possessive",  "of Jumaada al-Thaani" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri month 7 - KLocale::LongName Possessive",  "of Rajab"             ).toString( locale() );
+        case 8:
+            return ki18nc( "Hijri month 8 - KLocale::LongName Possessive",  "of Sha`ban"           ).toString( locale() );
+        case 9:
+            return ki18nc( "Hijri month 9 - KLocale::LongName Possessive",  "of Ramadan"           ).toString( locale() );
+        case 10:
+            return ki18nc( "Hijri month 10 - KLocale::LongName Possessive", "of Shawwal"           ).toString( locale() );
+        case 11:
+            return ki18nc( "Hijri month 11 - KLocale::LongName Possessive", "of Thu al-Qi`dah"     ).toString( locale() );
+        case 12:
+            return ki18nc( "Hijri month 12 - KLocale::LongName Possessive", "of Thu al-Hijjah"     ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    // Default to LongName
+    switch ( month ) {
+    case 1:
+        return ki18nc( "Hijri month 1 - KLocale::LongName",  "Muharram"           ).toString( locale() );
+    case 2:
+        return ki18nc( "Hijri month 2 - KLocale::LongName",  "Safar"              ).toString( locale() );
+    case 3:
+        return ki18nc( "Hijri month 3 - KLocale::LongName",  "Rabi` al-Awal"      ).toString( locale() );
+    case 4:
+        return ki18nc( "Hijri month 4 - KLocale::LongName",  "Rabi` al-Thaani"    ).toString( locale() );
+    case 5:
+        return ki18nc( "Hijri month 5 - KLocale::LongName",  "Jumaada al-Awal"    ).toString( locale() );
+    case 6:
+        return ki18nc( "Hijri month 6 - KLocale::LongName",  "Jumaada al-Thaani"  ).toString( locale() );
+    case 7:
+        return ki18nc( "Hijri month 7 - KLocale::LongName",  "Rajab"              ).toString( locale() );
+    case 8:
+        return ki18nc( "Hijri month 8 - KLocale::LongName",  "Sha`ban"            ).toString( locale() );
+    case 9:
+        return ki18nc( "Hijri month 9 - KLocale::LongName",  "Ramadan"            ).toString( locale() );
+    case 10:
+        return ki18nc( "Hijri month 10 - KLocale::LongName", "Shawwal"            ).toString( locale() );
+    case 11:
+        return ki18nc( "Hijri month 11 - KLocale::LongName", "Thu al-Qi`dah"      ).toString( locale() );
+    case 12:
+        return ki18nc( "Hijri month 12 - KLocale::LongName", "Thu al-Hijjah"      ).toString( locale() );
+    default:
+        return QString();
+    }
+}
+
+QString KCalendarSystemHijriPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+{
+    if ( format == KLocale::NarrowName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Hijri weekday 1 - KLocale::NarrowName ", "I" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri weekday 2 - KLocale::NarrowName ", "T" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri weekday 3 - KLocale::NarrowName ", "A" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri weekday 4 - KLocale::NarrowName ", "K" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri weekday 5 - KLocale::NarrowName ", "J" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri weekday 6 - KLocale::NarrowName ", "S" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri weekday 7 - KLocale::NarrowName ", "A" ).toString( locale() );
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18nc( "Hijri weekday 1 - KLocale::ShortName", "Ith" ).toString( locale() );
+        case 2:
+            return ki18nc( "Hijri weekday 2 - KLocale::ShortName", "Thl" ).toString( locale() );
+        case 3:
+            return ki18nc( "Hijri weekday 3 - KLocale::ShortName", "Arb" ).toString( locale() );
+        case 4:
+            return ki18nc( "Hijri weekday 4 - KLocale::ShortName", "Kha" ).toString( locale() );
+        case 5:
+            return ki18nc( "Hijri weekday 5 - KLocale::ShortName", "Jum" ).toString( locale() );
+        case 6:
+            return ki18nc( "Hijri weekday 6 - KLocale::ShortName", "Sab" ).toString( locale() );
+        case 7:
+            return ki18nc( "Hijri weekday 7 - KLocale::ShortName", "Ahd" ).toString( locale() );
+        default: return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:
+        return ki18nc( "Hijri weekday 1 - KLocale::LongName", "Yaum al-Ithnain" ).toString( locale() );
+    case 2:
+        return ki18nc( "Hijri weekday 2 - KLocale::LongName", "Yau al-Thulatha" ).toString( locale() );
+    case 3:
+        return ki18nc( "Hijri weekday 3 - KLocale::LongName", "Yaum al-Arbi'a"  ).toString( locale() );
+    case 4:
+        return ki18nc( "Hijri weekday 4 - KLocale::LongName", "Yaum al-Khamees" ).toString( locale() );
+    case 5:
+        return ki18nc( "Hijri weekday 5 - KLocale::LongName", "Yaum al-Jumma"   ).toString( locale() );
+    case 6:
+        return ki18nc( "Hijri weekday 6 - KLocale::LongName", "Yaum al-Sabt"    ).toString( locale() );
+    case 7:
+        return ki18nc( "Hijri weekday 7 - KLocale::LongName", "Yaum al-Ahad"    ).toString( locale() );
+    default:
+        return QString();
+    }
 }
 
 
@@ -327,184 +551,22 @@ bool KCalendarSystemHijri::isLeapYear( const QDate &date ) const
 
 QString KCalendarSystemHijri::monthName( int month, int year, MonthNameFormat format ) const
 {
-    Q_UNUSED( year );
-
-    if ( format == ShortNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18n( "of Muharram" ).toString( locale() );
-        case 2:
-            return ki18n( "of Safar" ).toString( locale() );
-        case 3:
-            return ki18n( "of R. Awal" ).toString( locale() );
-        case 4:
-            return ki18n( "of R. Thaani" ).toString( locale() );
-        case 5:
-            return ki18n( "of J. Awal" ).toString( locale() );
-        case 6:
-            return ki18n( "of J. Thaani" ).toString( locale() );
-        case 7:
-            return ki18n( "of Rajab" ).toString( locale() );
-        case 8:
-            return ki18n( "of Sha`ban" ).toString( locale() );
-        case 9:
-            return ki18n( "of Ramadan" ).toString( locale() );
-        case 10:
-            return ki18n( "of Shawwal" ).toString( locale() );
-        case 11:
-            return ki18n( "of Qi`dah" ).toString( locale() );
-        case 12:
-            return ki18n( "of Hijjah" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == LongNamePossessive ) {
-        switch ( month ) {
-        case 1:
-            return ki18n( "of Muharram" ).toString( locale() );
-        case 2:
-            return ki18n( "of Safar" ).toString( locale() );
-        case 3:
-            return ki18n( "of Rabi` al-Awal" ).toString( locale() );
-        case 4:
-            return ki18n( "of Rabi` al-Thaani" ).toString( locale() );
-        case 5:
-            return ki18n( "of Jumaada al-Awal" ).toString( locale() );
-        case 6:
-            return ki18n( "of Jumaada al-Thaani" ).toString( locale() );
-        case 7:
-            return ki18n( "of Rajab" ).toString( locale() );
-        case 8:
-            return ki18n( "of Sha`ban" ).toString( locale() );
-        case 9:
-            return ki18n( "of Ramadan" ).toString( locale() );
-        case 10:
-            return ki18n( "of Shawwal" ).toString( locale() );
-        case 11:
-            return ki18n( "of Thu al-Qi`dah" ).toString( locale() );
-        case 12:
-            return ki18n( "of Thu al-Hijjah" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    if ( format == ShortName ) {
-        switch ( month ) {
-        case 1:
-            return ki18n( "Muharram" ).toString( locale() );
-        case 2:
-            return ki18n( "Safar" ).toString( locale() );
-        case 3:
-            return ki18n( "R. Awal" ).toString( locale() );
-        case 4:
-            return ki18n( "R. Thaani" ).toString( locale() );
-        case 5:
-            return ki18n( "J. Awal" ).toString( locale() );
-        case 6:
-            return ki18n( "J. Thaani" ).toString( locale() );
-        case 7:
-            return ki18n( "Rajab" ).toString( locale() );
-        case 8:
-            return ki18n( "Sha`ban" ).toString( locale() );
-        case 9:
-            return ki18n( "Ramadan" ).toString( locale() );
-        case 10:
-            return ki18n( "Shawwal" ).toString( locale() );
-        case 11:
-            return ki18n( "Qi`dah" ).toString( locale() );
-        case 12:
-            return ki18n( "Hijjah" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    // LongName
-    switch ( month ) {
-    case 1:
-        return ki18n( "Muharram" ).toString( locale() );
-    case 2:
-        return ki18n( "Safar" ).toString( locale() );
-    case 3:
-        return ki18n( "Rabi` al-Awal" ).toString( locale() );
-    case 4:
-        return ki18n( "Rabi` al-Thaani" ).toString( locale() );
-    case 5:
-        return ki18n( "Jumaada al-Awal" ).toString( locale() );
-    case 6:
-        return ki18n( "Jumaada al-Thaani" ).toString( locale() );
-    case 7:
-        return ki18n( "Rajab" ).toString( locale() );
-    case 8:
-        return ki18n( "Sha`ban" ).toString( locale() );
-    case 9:
-        return ki18n( "Ramadan" ).toString( locale() );
-    case 10:
-        return ki18n( "Shawwal" ).toString( locale() );
-    case 11:
-        return ki18n( "Thu al-Qi`dah" ).toString( locale() );
-    case 12:
-        return ki18n( "Thu al-Hijjah" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystem::monthName( month, year, format );
 }
 
 QString KCalendarSystemHijri::monthName( const QDate &date, MonthNameFormat format ) const
 {
-    return monthName( month( date ), year( date ), format );
+    return KCalendarSystem::monthName( date, format );
 }
 
 QString KCalendarSystemHijri::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-    if ( format == ShortDayName ) {
-        switch ( weekDay ) {
-        case 1:
-            return ki18n( "Ith" ).toString( locale() );
-        case 2:
-            return ki18n( "Thl" ).toString( locale() );
-        case 3:
-            return ki18n( "Arb" ).toString( locale() );
-        case 4:
-            return ki18n( "Kha" ).toString( locale() );
-        case 5:
-            return ki18n( "Jum" ).toString( locale() );
-        case 6:
-            return ki18n( "Sab" ).toString( locale() );
-        case 7:
-            return ki18n( "Ahd" ).toString( locale() );
-        default:
-            return QString();
-        }
-    }
-
-    // Default to LongDayName format
-    switch ( weekDay ) {
-    case 1:
-        return ki18n( "Yaum al-Ithnain" ).toString( locale() );
-    case 2:
-        return ki18n( "Yau al-Thulatha" ).toString( locale() );
-    case 3:
-        return ki18n( "Yaum al-Arbi'a" ).toString( locale() );
-    case 4:
-        return ki18n( "Yaum al-Khamees" ).toString( locale() );
-    case 5:
-        return ki18n( "Yaum al-Jumma" ).toString( locale() );
-    case 6:
-        return ki18n( "Yaum al-Sabt" ).toString( locale() );
-    case 7:
-        return ki18n( "Yaum al-Ahad" ).toString( locale() );
-    default:
-        return QString();
-    }
+    return KCalendarSystem::weekDayName( weekDay, format );
 }
 
 QString KCalendarSystemHijri::weekDayName( const QDate &date, WeekDayNameFormat format ) const
 {
-    return weekDayName( dayOfWeek( date ), format );
+    return KCalendarSystem::weekDayName( date, format );
 }
 
 QString KCalendarSystemHijri::yearString( const QDate &pDate, StringFormat format ) const
