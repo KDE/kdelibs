@@ -187,23 +187,22 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     if (!flags || (flags & KPartsIntegration))
         setPluginFactory(new KWebPluginFactory(this));
 
-    WId windowId = 0;
-    QWidget *widget = qobject_cast<QWidget*>(parent);
-    if (widget && widget->window())
-        windowId = widget->window()->winId();
+    QWidget *parentWidget = qobject_cast<QWidget*>(parent);
+    QWidget *window = parentWidget ? parentWidget->window() : 0;
 
     // KDE IO (KIO) integration...
     if (!flags || (flags & KIOIntegration)) {
         KIO::Integration::AccessManager *manager = new KIO::Integration::AccessManager(this);
         // Disable QtWebKit's internal cache to avoid duplication with the one in KIO...
         manager->setCache(0);
-        manager->setCookieJarWindowId(windowId);
+        manager->setWindow(window);
         setNetworkAccessManager(manager);
     }
 
     // KWallet integration...
-    if (!flags || (flags & KWalletIntegration))
-        setWallet(new KWebWallet(0, windowId));
+    if (!flags || (flags & KWalletIntegration)) {
+        setWallet(new KWebWallet(0, (window ? window->winId() : 0) ));
+    }
 
     action(Back)->setIcon(KIcon("go-previous"));
     action(Forward)->setIcon(KIcon("go-next"));
