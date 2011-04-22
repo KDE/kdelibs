@@ -23,17 +23,20 @@
  */
 
 #include "accessmanager.h"
+
 #include "accessmanagerreply_p.h"
+#include "job.h"
+#include "scheduler.h"
+#include "jobuidelegate.h"
 
 #include <kdebug.h>
-#include <kio/job.h>
-#include <kio/scheduler.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>
 #include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
+#include <QtGui/QWidget>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -43,6 +46,7 @@
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslConfiguration>
+
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
@@ -67,15 +71,14 @@ namespace KIO {
 class AccessManager::AccessManagerPrivate
 {
 public:
-    AccessManagerPrivate() 
-    : externalContentAllowed(true)
-    {}
+    AccessManagerPrivate() : externalContentAllowed(true), window(0) {}
 
     void setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData);
 
     bool externalContentAllowed;    
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
+    QWidget* window;
 };
 
 namespace Integration {
@@ -127,7 +130,26 @@ void AccessManager::setCookieJarWindowId(WId id)
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar) {
         jar->setWindowId(id);
-        d->sessionMetaData.insert(QL1S("window-id"), QString::number((qlonglong)id));
+    }
+
+    d->window = QWidget::find(id);
+}
+
+void AccessManager::setWindow(QWidget* widget)
+{
+    if (!widget)
+        return;
+
+    if (widget->isWindow()) {
+        d->window = widget;
+        return;
+    }
+
+    d->window = widget->window();
+
+    KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
+    if (jar) {
+        jar->setWindowId(d->window->winId());
     }
 }
 
@@ -138,6 +160,11 @@ WId AccessManager::cookieJarWindowid() const
         return jar->windowId();
 
     return 0;
+}
+
+QWidget* AccessManager::window() const
+{
+    return d->window;
 }
 
 KIO::MetaData& AccessManager::requestMetaData()
@@ -227,6 +254,11 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             kWarning(7044) << "Unsupported KIO operation requested! Defering to QNetworkAccessManager...";
             return QNetworkAccessManager::createRequest(op, req, outgoingData);
         }
+    }
+
+    // Set the window on the KIO::JobUiDelegate
+    if (d->window && d->window->isWindow()) {
+        kioJob->ui()->setWindow(d->window);
     }
 
     kioJob->setRedirectionHandlingEnabled(false);

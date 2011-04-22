@@ -29,6 +29,8 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkCookieJar>
 
+class QWidget;
+
 namespace KIO {
 
 /**
@@ -116,8 +118,23 @@ public:
      *
      * @see KIO::Integration::CookieJar::setWindowId.
      * @since 4.4
+     * @deprecated Use setWindow
      */
-    void setCookieJarWindowId(WId id);
+#ifndef KDE_NO_DEPRECATED
+    KDE_DEPRECATED void setCookieJarWindowId(WId id);
+#endif
+
+    /**
+     * Sets the window associated with this network access manager.
+     *
+     * Note that @p widget will be used as a parent for dialogs in KIO as well
+     * as the cookie jar. If @p widget is not a window, this function will
+     * invoke @ref QWidget::window() to obtain the window for the given widget.
+     *
+     * @see KIO::Integration::CookieJar::setWindow.
+     * @since 4.7
+     */
+    void setWindow(QWidget* widget);
 
     /**
      * Returns the cookiejar's window id.
@@ -129,8 +146,19 @@ public:
      *
      * @see KIO::Integration::CookieJar::windowId.
      * @since 4.4
+     * @deprecated Use KIO::Integration::CookieJar::windowId
      */
-    WId cookieJarWindowid() const;
+#ifndef KDE_NO_DEPRECATED
+    KDE_DEPRECATED WId cookieJarWindowid() const;
+#endif
+
+    /**
+     * Returns the window associated with this network access manager.
+     *
+     * @see setWindow
+     * @since 4.7
+     */
+    QWidget* window() const;
 
     /**
      * Returns a reference to the temporary meta data container.
@@ -282,7 +310,7 @@ public:
      * @internal
      */
     bool setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url);
-    
+
     /**
      * Returns true if persistent caching of cookies is disabled.
      * 
@@ -290,7 +318,7 @@ public:
      * @since 4.6
      */
     bool isCookieStorageDisabled() const;
-    
+
     /**
      * Prevent persistent storage of cookies.
      * 
@@ -306,7 +334,7 @@ private:
     class CookieJarPrivate;
     CookieJarPrivate* const d;
 };
-  
+
 }
 
 }
