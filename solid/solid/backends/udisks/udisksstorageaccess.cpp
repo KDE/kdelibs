@@ -162,42 +162,45 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         if (isLuksDevice()) // unlocked device, lock it
             callCryptoTeardown();
 
-        m_teardownInProgress = false;
-        m_device->broadcastActionDone("teardown");
-
-        if (m_device->prop("DriveIsMediaEjectable").toBool() && !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
+        else
         {
-            QString devnode = m_device->prop("DeviceFile").toString();
+            m_teardownInProgress = false;
+            m_device->broadcastActionDone("teardown");
+
+            if (m_device->prop("DriveIsMediaEjectable").toBool() && !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
+            {
+                QString devnode = m_device->prop("DeviceFile").toString();
 
 #if defined(Q_OS_OPENBSD)
-            QString program = "cdio";
-            QStringList args;
-            args << "-f" << devnode << "eject";
+                QString program = "cdio";
+                QStringList args;
+                args << "-f" << devnode << "eject";
 #elif defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD)
-            devnode.remove("/dev/").replace("([0-9]).", "\\1");
-            QString program = "cdcontrol";
-            QStringList args;
-            args << "-f" << devnode << "eject";
+                devnode.remove("/dev/").replace("([0-9]).", "\\1");
+                QString program = "cdcontrol";
+                QStringList args;
+                args << "-f" << devnode << "eject";
 #else
-            QString program = "eject";
-            QStringList args;
-            args << devnode;
+                QString program = "eject";
+                QStringList args;
+                args << devnode;
 #endif
 
-            QProcess::startDetached( program, args );
-        }
+                QProcess::startDetached( program, args );
+            }
 
-        // try to eject the (parent) drive, e.g. SD card from a reader
-        QString drivePath = m_device->prop("PartitionSlave").value<QDBusObjectPath>().path();
-        if (!drivePath.isEmpty() || drivePath != "/")
-        {
-            QDBusConnection c = QDBusConnection::systemBus();
-            QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
-            msg << QStringList();   // options, unused now
-            c.call(msg, QDBus::NoBlock);
-        }
+            // try to eject the (parent) drive, e.g. SD card from a reader
+            QString drivePath = m_device->prop("PartitionSlave").value<QDBusObjectPath>().path();
+            if (!drivePath.isEmpty() || drivePath != "/")
+            {
+                QDBusConnection c = QDBusConnection::systemBus();
+                QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
+                msg << QStringList();   // options, unused now
+                c.call(msg, QDBus::NoBlock);
+            }
 
-        slotChanged();
+            slotChanged();
+        }
     }
 }
 
