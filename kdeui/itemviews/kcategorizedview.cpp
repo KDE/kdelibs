@@ -408,7 +408,7 @@ void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, 
         if (q->layoutDirection() == Qt::LeftToRight) {
             item.topLeft.rx() = (relativeRow % maxItemsPerRow) * q->gridSize().width() + blockPos.x() + categoryDrawer->leftMargin();
         } else {
-            item.topLeft.rx() = viewportWidth() - ((relativeRow % maxItemsPerRow) + 1) * q->gridSize().width();
+            item.topLeft.rx() = viewportWidth() - ((relativeRow % maxItemsPerRow) + 1) * q->gridSize().width() + categoryDrawer->leftMargin() + categorySpacing;
         }
         item.topLeft.ry() = (relativeRow / maxItemsPerRow) * q->gridSize().height();
     } else {
@@ -419,7 +419,7 @@ void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, 
             if (q->layoutDirection() == Qt::LeftToRight) {
                 item.topLeft.rx() = (relativeRow % maxItemsPerRow) * itemSize.width() + blockPos.x() + categoryDrawer->leftMargin();
             } else {
-                item.topLeft.rx() = viewportWidth() - (relativeRow % maxItemsPerRow) * itemSize.width();
+                item.topLeft.rx() = viewportWidth() - (relativeRow % maxItemsPerRow) * itemSize.width() + categoryDrawer->leftMargin() + categorySpacing;
             }
             item.topLeft.ry() = (relativeRow / maxItemsPerRow) * itemSize.height();
         } else {
@@ -448,14 +448,14 @@ void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, 
                     if (q->layoutDirection() == Qt::LeftToRight) {
                         item.topLeft.rx() = categoryDrawer->leftMargin() + blockPos.x() + q->spacing();
                     } else {
-                        item.topLeft.rx() = viewportWidth() - currSize.width();
+                        item.topLeft.rx() = viewportWidth() - currSize.width() + categoryDrawer->leftMargin() + categorySpacing;
                     }
                     item.topLeft.ry() = (prevRect.bottomRight().y() + 1) + q->spacing() - blockPos.y();
                 } else {
                     if (q->layoutDirection() == Qt::LeftToRight) {
                         item.topLeft.rx() = (prevRect.bottomRight().x() + 1) + q->spacing();
                     } else {
-                        item.topLeft.rx() = (prevRect.bottomLeft().x() - 1) - q->spacing() - item.size.width();
+                        item.topLeft.rx() = (prevRect.bottomLeft().x() - 1) - q->spacing() - item.size.width() + categoryDrawer->leftMargin() + categorySpacing;
                     }
                     item.topLeft.ry() = prevRect.topLeft().y() - blockPos.y();
                 }
@@ -463,7 +463,7 @@ void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, 
                 if (q->layoutDirection() == Qt::LeftToRight) {
                     item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin() + q->spacing();
                 } else {
-                    item.topLeft.rx() = viewportWidth() - currSize.width();
+                    item.topLeft.rx() = viewportWidth() - currSize.width() + categoryDrawer->leftMargin() + categorySpacing;
                 }
                 item.topLeft.ry() = q->spacing();
             }
