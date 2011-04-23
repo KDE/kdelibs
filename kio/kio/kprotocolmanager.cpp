@@ -457,8 +457,10 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 
 QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
 {
-  // Do not perform a proxy lookup for all urls classified as ":local".
-  if (KProtocolInfo::protocolClass(url.protocol()).compare(QL1S(":local"), Qt::CaseInsensitive) == 0)
+  // Do not perform a proxy lookup for any url classified as a ":local" url or
+  // one that does not have a host name.
+  if (KProtocolInfo::protocolClass(url.protocol()).compare(QL1S(":local"), Qt::CaseInsensitive) == 0 ||
+      !url.hasHost())
   {
       return url.protocol();
   }
