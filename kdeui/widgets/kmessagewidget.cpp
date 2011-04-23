@@ -84,7 +84,7 @@ void KMessageWidgetPrivate::createLayout()
     buttons.clear();
 
     Q_FOREACH(QAction* action, q->actions()) {
-        QToolButton* button = new QToolButton;
+        QToolButton* button = new QToolButton(q);
         button->setDefaultAction(action);
         buttons.append(button);
     }
@@ -102,14 +102,15 @@ void KMessageWidgetPrivate::createLayout()
     } else {
         QGridLayout* layout = new QGridLayout(q);
         layout->addWidget(iconLabel, 0, 0);
-        layout->addWidget(textLabel, 0 ,1);
+        layout->addWidget(textLabel, 0, 1);
 
         QHBoxLayout* buttonLayout = new QHBoxLayout;
         buttonLayout->addStretch();
         Q_FOREACH(QToolButton* button, buttons) {
+            button->show();
             buttonLayout->addWidget(button);
         }
-        //buttonLayout->addWidget(closeButton);
+        buttonLayout->addWidget(closeButton);
         layout->addItem(buttonLayout, 1, 0, 1, 2);
     }
 }
