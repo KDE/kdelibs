@@ -123,14 +123,12 @@ void AccessManagerReply::setStatus(const QString& message, QNetworkReply::Networ
 
 void AccessManagerReply::putOnHold()
 {
-    if (!m_kioJob)
+    if (!m_kioJob || isFinished())
         return;
 
     m_kioJob->putOnHold();
     KIO::Scheduler::publishSlaveOnHold();
-
     m_kioJob = 0;
-    finished();
 }
 
 static bool isStatusCodeSuccess(const QNetworkReply* reply)
@@ -356,8 +354,14 @@ void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
 
 void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
 {
-    qulonglong bytes = job->totalAmount(KJob::Bytes);
-    emit downloadProgress(bytes * ((double)percent / 100), bytes);
+    qulonglong bytesTotal = job->totalAmount(KJob::Bytes);
+    qulonglong bytesProcessed = bytesTotal * (percent / 100);
+    if (operation() == QNetworkAccessManager::PutOperation ||
+        operation() == QNetworkAccessManager::PostOperation) {
+        emit uploadProgress(bytesProcessed, bytesTotal);
+        return;
+    }
+    emit downloadProgress(bytesProcessed, bytesTotal);
 }
 }
 
