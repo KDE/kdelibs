@@ -40,6 +40,7 @@
 class KUriFilterPrivate;
 class KUriFilterDataPrivate;
 class KCModule;
+class QHostInfo;
 
 /**
  * Class that holds information about a search provider.
@@ -745,6 +746,24 @@ protected:
      */
     QString iconNameFor(const KUrl& url, KUriFilterData::UriTypes type) const;
 
+    /**
+     * Performs a DNS lookup for @p hostname and returns the result.
+     *
+     * This function uses the KIO/KHTML DNS cache to speed up the
+     * lookup. It also avoids doing a reverse lookup if the given
+     * host name is already an ip address.
+     *
+     * \note All uri filter plugins that need to perform a hostname
+     * lookup should use this function.
+     *
+     * @param hostname   the hostname to lookup.
+     * @param timeout    the amount of time in msecs to wait for the lookup.
+     * @return the result of the host name lookup.
+     *
+     * @since 4.7
+     */
+    QHostInfo resolveName (const QString& hostname, unsigned long timeout) const;
+
 private:
     class KUriFilterPluginPrivate * const d;
 };
@@ -813,6 +832,10 @@ private:
  * localdomainfilter:
  * This is used for doing a DNS lookup to determine whether the input is a valid
  * local address.
+ *
+ * fixuphosturifilter:
+ * This is used to append "www." to the host name of a pre filtered http url
+ * if the original url cannot be resolved.
  *
  * \code
  * QString text ("kde.org");
