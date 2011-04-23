@@ -423,12 +423,12 @@ void KCategorizedView::Private::leftToRightVisualRect(const QModelIndex &index, 
             }
             item.topLeft.ry() = (relativeRow / maxItemsPerRow) * itemSize.height();
         } else {
+            const QSize currSize = q->sizeHintForIndex(index);
             if (index != block.firstIndex) {
                 const int viewportW = viewportWidth() - q->spacing();
                 QModelIndex prevIndex = proxyModel->index(index.row() - 1, q->modelColumn(), q->rootIndex());
                 QRect prevRect = q->visualRect(prevIndex);
                 prevRect = mapFromViewport(prevRect);
-                const QSize currSize = q->sizeHintForIndex(index);
                 if ((prevRect.bottomRight().x() + 1) + currSize.width() - blockPos.x() + q->spacing()  > viewportW) {
                     // we have to check the whole previous row, and see which one was the
                     // highest.
