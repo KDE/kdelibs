@@ -82,14 +82,22 @@ public Q_SLOTS:
 
     void setMessageType(KMessageWidget::MessageType);
 
+    void fadeIn();
+
 protected:
     void paintEvent(QPaintEvent*);
 
     bool event(QEvent*);
 
+    void resizeEvent(QResizeEvent*);
+
 private:
     KMessageWidgetPrivate *const d;
     friend class KMessageWidgetPrivate;
+
+private Q_SLOTS:
+    void slotTimeLineChanged(qreal);
+    void slotTimeLineFinished();
 };
 
 #endif /* KMESSAGEWIDGET_H */

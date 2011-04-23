@@ -30,6 +30,8 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPainter>
+#include <QTimeLine>
 #include <QToolButton>
 
 //---------------------------------------------------------------------
@@ -41,16 +43,17 @@ public:
     void init(KMessageWidget*);
 
     KMessageWidget* q;
+    QFrame* content;
+    QLabel* iconLabel;
+    QLabel* textLabel;
+    QToolButton* closeButton;
+    QTimeLine* timeLine;
+
     QString text;
     KMessageWidget::MessageType messageType;
     KMessageWidget::Shape shape;
-
-    QLabel* iconLabel;
-
-    QLabel* textLabel;
-
-    QToolButton* closeButton;
     QList<QToolButton*> buttons;
+    QPixmap contentSnapShot;
 
     void createLayout();
 };
@@ -61,36 +64,45 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
 
     q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
+    timeLine = new QTimeLine(500, q);
+    QObject::connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(slotTimeLineChanged(qreal)));
+    QObject::connect(timeLine, SIGNAL(finished()), q, SLOT(slotTimeLineFinished()));
+
+    content = new QFrame(q);
+    content->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     shape = KMessageWidget::LineShape;
 
-    iconLabel = new QLabel(q);
+    iconLabel = new QLabel(content);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    textLabel = new QLabel(q);
+    textLabel = new QLabel(content);
     textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     KAction* closeAction = KStandardAction::close(q, SLOT(hide()), q);
 
-    closeButton = new QToolButton(q);
+    closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);
     closeButton->setDefaultAction(closeAction);
 }
 
 void KMessageWidgetPrivate::createLayout()
 {
-    delete q->layout();
+    delete content->layout();
+
+    content->resize(q->size());
 
     qDeleteAll(buttons);
     buttons.clear();
 
     Q_FOREACH(QAction* action, q->actions()) {
-        QToolButton* button = new QToolButton(q);
+        QToolButton* button = new QToolButton(content);
         button->setDefaultAction(action);
         buttons.append(button);
     }
 
     if (shape == KMessageWidget::LineShape) {
-        QHBoxLayout* layout = new QHBoxLayout(q);
+        QHBoxLayout* layout = new QHBoxLayout(content);
         layout->addWidget(iconLabel);
         layout->addWidget(textLabel);
 
@@ -100,7 +112,7 @@ void KMessageWidgetPrivate::createLayout()
 
         layout->addWidget(closeButton);
     } else {
-        QGridLayout* layout = new QGridLayout(q);
+        QGridLayout* layout = new QGridLayout(content);
         layout->addWidget(iconLabel, 0, 0);
         layout->addWidget(textLabel, 0, 1);
 
@@ -115,6 +127,8 @@ void KMessageWidgetPrivate::createLayout()
         buttonLayout->addWidget(closeButton);
         layout->addItem(buttonLayout, 1, 0, 1, 2);
     }
+
+    q->updateGeometry();
 }
 
 
@@ -186,8 +200,8 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
     KColorScheme scheme(QPalette::Active, colorSet);
     QBrush bg = scheme.background(bgRole);
     QBrush fg = scheme.foreground(fgRole);
-    setStyleSheet(
-        QString(".KMessageWidget {"
+    d->content->setStyleSheet(
+        QString(".QFrame {"
             "background-color: %1;"
             "border-radius: 5px;"
             "border: 1px solid %2;"
@@ -207,9 +221,22 @@ bool KMessageWidget::event(QEvent* event)
     return QFrame::event(event);
 }
 
+void KMessageWidget::resizeEvent(QResizeEvent* event)
+{
+    QFrame::resizeEvent(event);
+    if (d->timeLine->state() == QTimeLine::NotRunning) {
+        d->content->resize(size());
+    }
+}
+
 void KMessageWidget::paintEvent(QPaintEvent* event)
 {
     QFrame::paintEvent(event);
+    if (d->timeLine->state() == QTimeLine::Running) {
+        QPainter painter(this);
+        painter.setOpacity(d->timeLine->currentValue() * d->timeLine->currentValue());
+        painter.drawPixmap(0, 0, d->contentSnapShot);
+    }
 }
 
 KMessageWidget::Shape KMessageWidget::shape() const
@@ -243,6 +270,37 @@ void KMessageWidget::removeAction(QAction* action)
 {
     QFrame::removeAction(action);
     d->createLayout();
+}
+
+void KMessageWidget::fadeIn()
+{
+    show();
+
+    d->content->adjustSize();
+    int wantedHeight = d->content->height();
+    d->content->resize(width(), wantedHeight);
+    d->content->move(0, -wantedHeight);
+    d->contentSnapShot = QPixmap(d->content->size());
+    d->contentSnapShot.fill(Qt::transparent);
+    d->content->render(&d->contentSnapShot, QPoint(), QRegion(), DrawChildren);
+
+    setFixedHeight(wantedHeight);
+
+    d->timeLine->setDirection(QTimeLine::Forward);
+    if (d->timeLine->state() == QTimeLine::NotRunning) {
+        d->timeLine->start();
+    }
+}
+
+void KMessageWidget::slotTimeLineChanged(qreal value)
+{
+    setFixedHeight(qMin(value * 2, 1.) * d->content->height());
+    repaint();
+}
+
+void KMessageWidget::slotTimeLineFinished()
+{
+    d->content->move(0, 0);
 }
 
 #include "kmessagewidget.moc"
