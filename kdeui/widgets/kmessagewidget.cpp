@@ -107,6 +107,8 @@ void KMessageWidgetPrivate::createLayout()
         QHBoxLayout* buttonLayout = new QHBoxLayout;
         buttonLayout->addStretch();
         Q_FOREACH(QToolButton* button, buttons) {
+            // For some reason, calling show() is necessary here, but not in
+            // LineShape.
             button->show();
             buttonLayout->addWidget(button);
         }
