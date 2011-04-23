@@ -27,10 +27,10 @@
 #include <kstandardaction.h>
 
 #include <QEvent>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QToolButton>
-#include <qgridlayout.h>
 
 //---------------------------------------------------------------------
 // KMessageWidgetPrivate
