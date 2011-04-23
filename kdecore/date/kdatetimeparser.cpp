@@ -169,11 +169,11 @@ DateTimeComponents KDateTimeParser::parseDatePosix( const QString &inputString,
                             monthYear = calendar->year( QDate::currentDate() );
                         }
                         if ( calendar->locale()->dateMonthNamePossessive() ) {
-                            shortName = calendar->monthName( j, yy, KCalendarSystem::ShortNamePossessive ).toLower();
-                            longName = calendar->monthName( j, yy, KCalendarSystem::LongNamePossessive ).toLower();
+                            shortName = calendar->monthName( j, monthYear, KCalendarSystem::ShortNamePossessive ).toLower();
+                            longName = calendar->monthName( j, monthYear, KCalendarSystem::LongNamePossessive ).toLower();
                         } else {
-                            shortName = calendar->monthName( j, yy, KCalendarSystem::ShortName ).toLower();
-                            longName = calendar->monthName( j, yy, KCalendarSystem::LongName ).toLower();
+                            shortName = calendar->monthName( j, monthYear, KCalendarSystem::ShortName ).toLower();
+                            longName = calendar->monthName( j, monthYear, KCalendarSystem::LongName ).toLower();
                         }
                         if ( str.mid( strpos, longName.length() ) == longName ) {
                             mm = j;
