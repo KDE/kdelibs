@@ -127,7 +127,6 @@ void AccessManagerReply::putOnHold()
         return;
 
     m_kioJob->putOnHold();
-    m_kioJob = 0;
 }
 
 static bool isStatusCodeSuccess(const QNetworkReply* reply)
