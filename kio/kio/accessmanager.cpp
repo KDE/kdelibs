@@ -128,12 +128,16 @@ bool AccessManager::isExternalContentAllowed() const
 #ifndef KDE_NO_DEPRECATED
 void AccessManager::setCookieJarWindowId(WId id)
 {
+    QWidget* window = QWidget::find(id);
+    if (!window) {
+        return;
+    }
+
     KIO::Integration::CookieJar *jar = qobject_cast<KIO::Integration::CookieJar *> (cookieJar());
     if (jar) {
         jar->setWindowId(id);
     }
 
-    QWidget* window = QWidget::find(id);
     d->window = window->isWindow() ? window : window->window();
 }
 #endif
