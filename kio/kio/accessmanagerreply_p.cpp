@@ -127,7 +127,6 @@ void AccessManagerReply::putOnHold()
         return;
 
     m_kioJob->putOnHold();
-    KIO::Scheduler::publishSlaveOnHold();
     m_kioJob = 0;
 }
 
