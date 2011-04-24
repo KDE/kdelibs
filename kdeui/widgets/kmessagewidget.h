@@ -82,7 +82,9 @@ public Q_SLOTS:
 
     void setMessageType(KMessageWidget::MessageType);
 
-    void fadeIn();
+    void show();
+
+    void animatedShow();
 
 protected:
     void paintEvent(QPaintEvent*);
