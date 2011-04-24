@@ -65,6 +65,7 @@ public:
       customTitle = other.customTitle;
       flags = other.flags;
       value = other.value;
+      return *this;
    }
 
     QString customTitle; // reserved for future use
