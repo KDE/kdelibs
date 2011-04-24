@@ -40,8 +40,8 @@ Cache::Cache(const QString &appName): QObject(0)
 
 QSharedPointer<Cache> Cache::getCache(const QString &appName)
 {
-    CacheHash::const_iterator it = s_caches->find(appName);
-    if ((it != s_caches->end()) && !(*it).isNull()) {
+    CacheHash::const_iterator it = s_caches->constFind(appName);
+    if ((it != s_caches->constEnd()) && !(*it).isNull()) {
         return QSharedPointer<Cache>(*it);
     }
 
