@@ -33,6 +33,7 @@
 #include <QPainter>
 #include <QTimeLine>
 #include <QToolButton>
+#include <kglobalsettings.h>
 
 //---------------------------------------------------------------------
 // KMessageWidgetPrivate
@@ -272,19 +273,33 @@ void KMessageWidget::removeAction(QAction* action)
     d->createLayout();
 }
 
-void KMessageWidget::fadeIn()
+void KMessageWidget::show()
 {
-    show();
+    QFrame::show();
+    d->content->adjustSize();
+    int wantedHeight = d->content->height();
+    d->content->resize(width(), wantedHeight);
+    setFixedHeight(wantedHeight);
+}
+
+void KMessageWidget::animatedShow()
+{
+    if (KGlobalSettings::graphicEffectsLevel() < KGlobalSettings::ComplexAnimationEffects) {
+        show();
+        return;
+    }
+
+    QFrame::show();
+    setFixedHeight(0);
 
     d->content->adjustSize();
     int wantedHeight = d->content->height();
     d->content->resize(width(), wantedHeight);
     d->content->move(0, -wantedHeight);
+
     d->contentSnapShot = QPixmap(d->content->size());
     d->contentSnapShot.fill(Qt::transparent);
     d->content->render(&d->contentSnapShot, QPoint(), QRegion(), DrawChildren);
-
-    setFixedHeight(wantedHeight);
 
     d->timeLine->setDirection(QTimeLine::Forward);
     if (d->timeLine->state() == QTimeLine::NotRunning) {
