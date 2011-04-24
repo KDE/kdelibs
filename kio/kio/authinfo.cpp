@@ -47,12 +47,29 @@ using namespace KIO;
 
 class ExtraField
 {
-public:    
+public:
+    ExtraField()
+    : flags(AuthInfo::ExtraFieldNoFlags)
+    {
+    }
+
+    ExtraField(const ExtraField& other)
+    : customTitle(other.customTitle),
+      flags (other.flags),
+      value (other.value)
+    {
+    }
+
+   ExtraField& operator=(const ExtraField& other)
+   {
+      customTitle = other.customTitle;
+      flags = other.flags;
+      value = other.value;
+   }
+
     QString customTitle; // reserved for future use
     AuthInfo::FieldFlags flags;
     QVariant value;
-
-    ExtraField() : flags(AuthInfo::ExtraFieldNoFlags) {}
 };
 Q_DECLARE_METATYPE(ExtraField)
 
@@ -87,7 +104,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ExtraField &extra
 {
     QDBusVariant value;
     int flag;
-    
+
     argument.beginStructure();
     argument >> extraField.customTitle >> flag >> value;
     argument.endStructure();
@@ -100,9 +117,6 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ExtraField &extra
 class KIO::AuthInfoPrivate  
 {
 public:
-    AuthInfoPrivate() 
-    {}
-    
     QMap<QString, ExtraField> extraFields;
 };
 
@@ -143,7 +157,7 @@ AuthInfo& AuthInfo::operator= ( const AuthInfo& info )
     readOnly = info.readOnly;
     keepPassword = info.keepPassword;
     modified = info.modified;
-    d->extraFields = info.d->extraFields; 
+    d->extraFields = info.d->extraFields;
     return *this;
 }
 

@@ -230,7 +230,7 @@ public:
     * it has been closed.
     */
    bool keepPassword;
-   
+
    /**
     * Flags for extra fields
     * @since 4.1 
@@ -279,9 +279,10 @@ public:
     * @since 4.3
     */
    static void registerMetaTypes();
-   
+
 protected:
     bool modified;
+
 private:
     friend class ::KIO::AuthInfoPrivate;
     AuthInfoPrivate * const d;
