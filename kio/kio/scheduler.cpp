@@ -1143,15 +1143,16 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 
     if (jobPriv->m_checkOnHold) {
         slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
+        kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
     }
 
-    if (slave) {
+    if (!slave && m_slaveOnHold) {
         // Make sure that the job wants to do a GET or a POST, and with no offset
         const int cmd = jobPriv->m_command;
-        bool canJobReuse = cmd == CMD_GET;
+        bool canJobReuse = (cmd == CMD_GET || cmd == CMD_MULTI_GET);
 
         if (KIO::TransferJob *tJob = qobject_cast<KIO::TransferJob *>(job)) {
-            canJobReuse = cmd == CMD_GET || cmd == CMD_SPECIAL;
+            canJobReuse = cmd == (canJobReuse || cmd == CMD_SPECIAL);
             if (canJobReuse) {
                 KIO::MetaData outgoing = tJob->outgoingMetaData();
                 const QString resume = outgoing.value("resume");
@@ -1160,11 +1161,14 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             }
         }
 
-        if (canJobReuse) {
-            kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
-        } else {
-            kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
-            slave->kill();
+        if (job->url() == m_urlOnHold) {
+            if (canJobReuse) {
+                kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
+                slave = m_slaveOnHold;
+            } else {
+                kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
+                slave->kill();
+            }
         }
     }
 
