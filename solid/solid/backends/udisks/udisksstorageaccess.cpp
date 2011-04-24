@@ -159,7 +159,8 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
     }
     else if (m_teardownInProgress)
     {
-        if (isLuksDevice()) // unlocked device, lock it
+        QString clearTextPath =  m_device->prop("LuksHolder").value<QDBusObjectPath>().path();
+        if (isLuksDevice() && clearTextPath != "/") // unlocked device, lock it
             callCryptoTeardown();
 
         else
