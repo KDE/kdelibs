@@ -266,6 +266,13 @@ namespace KIO {
 
         static void emitReparseSlaveConfiguration();
 
+        /**
+         * Returns true if there is a slave on hold for @p url.
+         *
+         * @since 4.7
+         */
+        static bool isSlaveOnHoldFor(const KUrl& url);
+
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);

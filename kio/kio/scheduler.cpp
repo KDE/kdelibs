@@ -699,6 +699,7 @@ public:
     void checkSlaveOnHold(bool b);
     void publishSlaveOnHold();
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
+    bool isSlaveOnHoldFor(const KUrl& url);
     void registerWindow(QWidget *wid);
 
     MetaData metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url);
@@ -811,6 +812,11 @@ void Scheduler::publishSlaveOnHold()
     schedulerPrivate->publishSlaveOnHold();
 }
 
+bool Scheduler::isSlaveOnHoldFor(const KUrl& url)
+{
+    return schedulerPrivate->isSlaveOnHoldFor(url);
+}
+
 KIO::Slave *Scheduler::getConnectedSlave(const KUrl &url,
         const KIO::MetaData &config )
 {
@@ -910,6 +916,9 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const
 static bool mayReturnContent(int cmd, const QString& protocol)
 {
     if (cmd == CMD_GET)
+        return true;
+
+    if (cmd == CMD_MULTI_GET)
         return true;
 
     if (cmd == CMD_SPECIAL && protocol.startsWith(QLatin1String("http"), Qt::CaseInsensitive))
@@ -1142,6 +1151,14 @@ void SchedulerPrivate::publishSlaveOnHold()
     m_slaveOnHold->hold(m_urlOnHold);
 }
 
+bool SchedulerPrivate::isSlaveOnHoldFor(const KUrl& url)
+{
+    if (!url.isValid() || !m_urlOnHold.isValid())
+        return false;
+
+    return url == m_urlOnHold;
+}
+
 Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 {
     Slave *slave = 0;
@@ -1149,9 +1166,10 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 
     if (jobPriv->m_checkOnHold) {
         slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
+        kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
     }
 
-    if (slave) {
+    if (!slave && m_slaveOnHold) {
         // Make sure that the job wants to do a GET or a POST, and with no offset
         const int cmd = jobPriv->m_command;
         bool canJobReuse = (cmd == CMD_GET || cmd == CMD_MULTI_GET);
@@ -1166,11 +1184,14 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             }
         }
 
-        if (canJobReuse) {
-            kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
-        } else {
-            kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
-            slave->kill();
+        if (job->url() == m_urlOnHold) {
+            if (canJobReuse) {
+                kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
+                slave = m_slaveOnHold;
+            } else {
+                kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
+                slave->kill();
+            }
         }
     }
 
