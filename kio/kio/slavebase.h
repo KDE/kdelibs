@@ -730,6 +730,10 @@ public:
      * \note A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
      *
+     * \note Starting with KDE 4.7, this function will no longer store the password
+     * information automatically. If you want to store the password information in
+     * a persistent storage like KWallet, then you MUST call @ref cacheAuthentication.
+     *
      * @see checkCachedAuthentication
      * @param info  See AuthInfo.
      * @param errorMsg Error message to show
@@ -767,10 +771,30 @@ public:
     bool checkCachedAuthentication( AuthInfo& info );
 
     /**
-     * Explicitly store authentication information. openPasswordDialog already
-     * stores password information automatically, you only need to call
-     * this function if you want to store authentication information that
-     * is different from the information returned by openPasswordDialog.
+     * Caches @p info in a persistent storage like KWallet.
+     *
+     * Starting with KDE 4.7, calling openPasswordDialog will no longer store
+     * passwords automatically for you. This was done to avoid accidental storage
+     * of incorrect or invalid password information.
+     *
+     * Here is a simple example of how to use cacheAuthentication:
+     *
+     * \code
+     * AuthInfo info;
+     * info.url = KUrl("http://www.foobar.org/foo/bar");
+     * info.username = "somename";
+     * info.verifyPath = true;
+     * if ( !checkCachedAuthentication( info ) ) {
+     *    if ( openPasswordDialog(info) ) {
+     *        if (info.keepPassword)  {  // user asked password be save/remembered
+     *             cacheAuthentication(info);
+     *        }
+     *    }
+     * }
+     * \endcode
+     *
+     * @param info See AuthInfo.
+     * @return @p true if @p info was successfully cached.
      */
     bool cacheAuthentication( const AuthInfo& info );
 
