@@ -57,6 +57,7 @@ public:
     QPixmap contentSnapShot;
 
     void createLayout();
+    void updateSnapShot();
 };
 
 void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
@@ -80,7 +81,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     textLabel = new QLabel(content);
     textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    KAction* closeAction = KStandardAction::close(q, SLOT(hide()), q);
+    KAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
 
     closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);
@@ -130,6 +131,13 @@ void KMessageWidgetPrivate::createLayout()
     }
 
     q->updateGeometry();
+}
+
+void KMessageWidgetPrivate::updateSnapShot()
+{
+    contentSnapShot = QPixmap(content->size());
+    contentSnapShot.fill(Qt::transparent);
+    content->render(&contentSnapShot, QPoint(), QRegion(), QWidget::DrawChildren);
 }
 
 
@@ -297,9 +305,7 @@ void KMessageWidget::animatedShow()
     d->content->resize(width(), wantedHeight);
     d->content->move(0, -wantedHeight);
 
-    d->contentSnapShot = QPixmap(d->content->size());
-    d->contentSnapShot.fill(Qt::transparent);
-    d->content->render(&d->contentSnapShot, QPoint(), QRegion(), DrawChildren);
+    d->updateSnapShot();
 
     d->timeLine->setDirection(QTimeLine::Forward);
     if (d->timeLine->state() == QTimeLine::NotRunning) {
@@ -315,7 +321,29 @@ void KMessageWidget::slotTimeLineChanged(qreal value)
 
 void KMessageWidget::slotTimeLineFinished()
 {
-    d->content->move(0, 0);
+    if (d->timeLine->direction() == QTimeLine::Forward) {
+        // Show
+        d->content->move(0, 0);
+    } else {
+        // Hide
+        hide();
+    }
+}
+
+void KMessageWidget::animatedHide()
+{
+    if (KGlobalSettings::graphicEffectsLevel() < KGlobalSettings::ComplexAnimationEffects) {
+        hide();
+        return;
+    }
+
+    d->content->move(0, -d->content->height());
+    d->updateSnapShot();
+
+    d->timeLine->setDirection(QTimeLine::Backward);
+    if (d->timeLine->state() == QTimeLine::NotRunning) {
+        d->timeLine->start();
+    }
 }
 
 #include "kmessagewidget.moc"
