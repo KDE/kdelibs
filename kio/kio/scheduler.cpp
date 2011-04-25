@@ -1167,7 +1167,9 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
                 slave = m_slaveOnHold;
             } else {
                 kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
-                slave->kill();
+                if (slave) {
+                    slave->kill();
+                }
             }
         }
     }
