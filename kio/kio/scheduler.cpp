@@ -1166,7 +1166,6 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 
     if (jobPriv->m_checkOnHold) {
         slave = Slave::holdSlave(jobPriv->m_protocol, job->url());
-        kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
     }
 
     if (!slave && m_slaveOnHold) {
@@ -1190,10 +1189,10 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
                 slave = m_slaveOnHold;
             } else {
                 kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
-                if (slave) {
-                    slave->kill();
-                }
+                m_slaveOnHold->kill();
             }
+            m_slaveOnHold = 0;
+            m_urlOnHold.clear();
         }
     }
 
