@@ -566,6 +566,19 @@ public:
 
     QList<QPersistentModelIndex> m_layoutChangePersistentIndexes;
     QModelIndexList m_proxyIndexes;
+
+    struct PendingSelectionChange
+    {
+      PendingSelectionChange() {}
+      PendingSelectionChange(const QItemSelection &selected_, const QItemSelection &deselected_)
+        : selected(selected_), deselected(deselected_)
+      {
+
+      }
+      QItemSelection selected;
+      QItemSelection deselected;
+    };
+    QVector<PendingSelectionChange> m_pendingSelectionChanges;
 };
 
 void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &sourceFirst, const QModelIndex &sourceLast,
@@ -1004,6 +1017,11 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
     m_rowsInserted = false;
     endInsertRows(parent, start, end);
     q->endInsertRows();
+    foreach(const PendingSelectionChange &pendingChange, m_pendingSelectionChanges)
+    {
+      selectionChanged(pendingChange.selected, pendingChange.deselected);
+    }
+    m_pendingSelectionChanges.clear();
 }
 
 QPair<int, int> KSelectionProxyModelPrivate::beginRemoveRows(const QModelIndex& parent, int start, int end) const
@@ -1724,6 +1742,11 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
 
     if (!q->sourceModel() || (_selected.isEmpty() && _deselected.isEmpty()))
         return;
+
+    if (m_rowsInserted || m_rowsRemoved) {
+        m_pendingSelectionChanges.append(PendingSelectionChange(_selected, _deselected));
+        return;
+    }
 
     // Any deselected indexes in the m_rootIndexList are removed. Then, any
     // indexes in the selected range which are not a descendant of one of the already selected indexes
