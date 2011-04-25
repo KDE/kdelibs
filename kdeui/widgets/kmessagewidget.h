@@ -86,6 +86,8 @@ public Q_SLOTS:
 
     void animatedShow();
 
+    void animatedHide();
+
 protected:
     void paintEvent(QPaintEvent*);
 
