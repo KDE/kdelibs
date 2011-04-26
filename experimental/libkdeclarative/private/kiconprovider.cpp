@@ -22,6 +22,7 @@
 #include <QSize>
 #include <KIcon>
 #include <KIconLoader>
+#include <KIconEffect>
 
 #include "kiconprovider_p.h"
 
@@ -33,14 +34,31 @@ KIconProvider::KIconProvider()
 
 QPixmap KIconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    // We need to handle QIcon::mode and QIcon::state
-    // Maybe we should use the id to get mode and state
+    // We need to handle QIcon::state
+    const QStringList source = id.split("/");
 
     QPixmap pixmap;
     if (requestedSize.isValid()) {
-        pixmap = KIcon(id).pixmap(requestedSize);
+        pixmap = KIcon(source.at(0)).pixmap(requestedSize);
     } else {
-        pixmap = KIcon(id).pixmap(IconSize(KIconLoader::Desktop));
+        pixmap = KIcon(source.at(0)).pixmap(IconSize(KIconLoader::Desktop));
+    }
+
+    if (source.size() == 2) {
+        KIconEffect *effect = KIconLoader::global()->iconEffect();
+        const QString state(source.at(1));
+        int finalState = KIconLoader::DefaultState;
+
+        if (state == "active") {
+            finalState = KIconLoader::ActiveState;
+        } else if (state == "disabled") {
+            finalState = KIconLoader::DisabledState;
+        } else if (state == "last") {
+            finalState = KIconLoader::LastState;
+        }
+
+        // apply the effect for state
+        pixmap = effect->apply(pixmap, KIconLoader::Desktop, finalState);
     }
 
     if (!pixmap.isNull() && size) {
