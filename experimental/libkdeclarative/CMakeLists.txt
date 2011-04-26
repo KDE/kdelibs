@@ -10,6 +10,7 @@ include_directories(
 set(kdeclarative_LIB_SRCS
     kdeclarative.cpp
     private/engineaccess.cpp
+    private/kiconprovider.cpp
     bindings/qscriptnonguibookkeeping.cpp
     bindings/i18n.cpp
     bindings/icon.cpp
