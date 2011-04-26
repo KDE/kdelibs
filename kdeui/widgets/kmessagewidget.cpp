@@ -248,6 +248,15 @@ void KMessageWidget::paintEvent(QPaintEvent* event)
     }
 }
 
+void KMessageWidget::showEvent(QShowEvent* event)
+{
+    QFrame::showEvent(event);
+    d->content->adjustSize();
+    int wantedHeight = d->content->height();
+    d->content->resize(width(), wantedHeight);
+    setFixedHeight(wantedHeight);
+}
+
 KMessageWidget::Shape KMessageWidget::shape() const
 {
     return d->shape;
@@ -281,15 +290,6 @@ void KMessageWidget::removeAction(QAction* action)
     d->createLayout();
 }
 
-void KMessageWidget::show()
-{
-    QFrame::show();
-    d->content->adjustSize();
-    int wantedHeight = d->content->height();
-    d->content->resize(width(), wantedHeight);
-    setFixedHeight(wantedHeight);
-}
-
 void KMessageWidget::animatedShow()
 {
     if (KGlobalSettings::graphicEffectsLevel() < KGlobalSettings::ComplexAnimationEffects) {
@@ -299,7 +299,6 @@ void KMessageWidget::animatedShow()
 
     QFrame::show();
     setFixedHeight(0);
-
     d->content->adjustSize();
     int wantedHeight = d->content->height();
     d->content->resize(width(), wantedHeight);

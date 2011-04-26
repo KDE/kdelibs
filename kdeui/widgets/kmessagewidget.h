@@ -82,8 +82,6 @@ public Q_SLOTS:
 
     void setMessageType(KMessageWidget::MessageType);
 
-    void show();
-
     void animatedShow();
 
     void animatedHide();
@@ -94,6 +92,8 @@ protected:
     bool event(QEvent*);
 
     void resizeEvent(QResizeEvent*);
+
+    void showEvent(QShowEvent*);
 
 private:
     KMessageWidgetPrivate *const d;
