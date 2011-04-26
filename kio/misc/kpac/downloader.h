@@ -49,6 +49,7 @@ namespace KPAC
         void setError( const QString& );
 
     private Q_SLOTS:
+        void redirection( KIO::Job*, const KUrl& );
         void data( KIO::Job*, const QByteArray& );
         void result( KJob* );
 

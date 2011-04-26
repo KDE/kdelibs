@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "downloader.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -27,8 +28,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kio/job.h>
-
-#include "downloader.moc"
 
 namespace KPAC
 {
@@ -46,6 +45,8 @@ namespace KPAC
         KIO::TransferJob* job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
                  SLOT( data( KIO::Job*, const QByteArray& ) ) );
+        connect( job, SIGNAL ( redirection( KIO::Job*, const KUrl& ) ),
+                 SLOT( redirection( KIO::Job*, const KUrl& ) ) );
         connect( job, SIGNAL( result( KJob* ) ), SLOT( result( KJob* ) ) );
     }
 
@@ -57,6 +58,11 @@ namespace KPAC
     void Downloader::setError( const QString& error )
     {
         m_error = error;
+    }
+
+    void Downloader::redirection( KIO::Job* , const KUrl& url )
+    {
+        m_scriptURL = url;
     }
 
     void Downloader::data( KIO::Job*, const QByteArray& data )
@@ -87,3 +93,4 @@ namespace KPAC
 }
 
 // vim: ts=4 sw=4 et
+#include "downloader.moc"
