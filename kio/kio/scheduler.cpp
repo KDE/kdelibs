@@ -1162,10 +1162,10 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 
         if (job->url() == m_urlOnHold) {
             if (canJobReuse) {
-                kDebug(7006) << "HOLD: Reusing held slave (" << slave << ")";
+                kDebug(7006) << "HOLD: Reusing held slave (" << m_slaveOnHold << ")";
                 slave = m_slaveOnHold;
             } else {
-                kDebug(7006) << "HOLD: Discarding held slave (" << slave << ")";
+                kDebug(7006) << "HOLD: Discarding held slave (" << m_slaveOnHold << ")";
                 m_slaveOnHold->kill();
             }
             m_slaveOnHold = 0;
