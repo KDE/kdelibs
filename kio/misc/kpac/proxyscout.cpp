@@ -30,7 +30,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
-#include <QtDBus/QtDBus>
+#include <QtCore/QFileSystemWatcher>
 
 #include <cstdlib>
 #include <ctime>
@@ -54,7 +54,8 @@ namespace KPAC
           m_downloader( 0 ),
           m_script( 0 ),
           m_suspendTime( 0 ),
-          m_debugArea (KDebug::registerArea("proxyscout"))
+          m_debugArea (KDebug::registerArea("proxyscout")),
+          m_watcher( 0 )
     {
     }
 
@@ -162,6 +163,21 @@ namespace KPAC
             try
             {
                 m_script = new Script( m_downloader->script() );
+                KUrl url ( m_downloader->scriptUrl() );
+                if (url.isLocalFile()) {
+                    if (!m_watcher) {
+                        m_watcher = new QFileSystemWatcher( this );
+                        connect (m_watcher, SIGNAL(fileChanged(QString)), SLOT(proxyScriptFileChanged(QString)));
+                    } else {
+                        m_watcher->removePaths(m_watcher->files());
+                    }
+                    m_watcher->addPath(url.path());
+                } else {
+                    if (m_watcher) {
+                        delete m_watcher;
+                        m_watcher = 0;
+                    }
+                }
             }
             catch ( const Script::Error& e )
             {
@@ -202,6 +218,11 @@ namespace KPAC
         if ( !success ) {
             m_suspendTime = std::time( 0 );
         }
+    }
+
+    void ProxyScout::proxyScriptFileChanged(const QString&)
+    {
+        downloadResult( true ); // update the configuration...
     }
 
     QStringList ProxyScout::handleRequest( const KUrl& url )

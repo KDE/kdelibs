@@ -21,15 +21,14 @@
 #ifndef KPAC_PROXYSCOUT_H
 #define KPAC_PROXYSCOUT_H
 
+#include <kdedmodule.h>
+#include <kcomponentdata.h>
+#include <kurl.h>
 
 #include <QtCore/QMap>
-
-#include <kdedmodule.h>
-#include <kurl.h>
 #include <QtDBus/QtDBus>
 
-#include <time.h>
-#include <kcomponentdata.h>
+class QFileSystemWatcher;
 
 namespace KPAC
 {
@@ -52,6 +51,7 @@ namespace KPAC
 
     private Q_SLOTS:
         void downloadResult( bool );
+        void proxyScriptFileChanged(const QString&);
 
     private:
         bool startDownload();
@@ -73,10 +73,11 @@ namespace KPAC
         typedef QList< QueuedRequest > RequestQueue;
         RequestQueue m_requestQueue;
 
-        typedef QMap< QString, time_t > BlackList;
+        typedef QMap< QString, qint64 > BlackList;
         BlackList m_blackList;
-        time_t m_suspendTime;
+        qint64 m_suspendTime;
         int m_debugArea;
+        QFileSystemWatcher* m_watcher;
     };
 }
 
