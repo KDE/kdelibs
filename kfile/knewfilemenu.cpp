@@ -431,6 +431,8 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
         QString text = entry.text;
         text.remove("..."); // the ... is fine for the menu item but not for the default filename
         text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
+        // KDE5 TODO: remove the "..." from link*.desktop files and use i18n("%1...") when making
+        // the action.
 
         KUrl defaultFile(*it);
         defaultFile.addPath(KIO::encodeFileName(text));
