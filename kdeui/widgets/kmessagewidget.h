@@ -27,7 +27,7 @@
 class KMessageWidgetPrivate;
 
 /**
- * @short An action which can alternate between two texts/icons when triggered.
+ * @short A widget to provide feedback or propose opportunistic interactions.
  *
  * KMessageWidget should be used to provide inline positive or negative
  * feedback, or to implement opportunistic interactions.
