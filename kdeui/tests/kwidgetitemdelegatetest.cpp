@@ -315,7 +315,7 @@ int main(int argc, char **argv)
     model->insertRows(0, 100);
     for (int i = 0; i < 100; ++i)
     {
-        model->setData(model->index(i, 0), "Test " + QString::number(i), Qt::DisplayRole);
+        model->setData(model->index(i, 0), QString("Test " + QString::number(i)), Qt::DisplayRole);
     }
 
     listView->setModel(model);

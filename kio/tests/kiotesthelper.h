@@ -31,7 +31,7 @@
 
 QString homeTmpDir()
 {
-    const QString dir = QFile::decodeName(getenv("KDEHOME")) + "/kiotests/";
+    const QString dir(QFile::decodeName(getenv("KDEHOME")) + "/kiotests/");
     if (!QFile::exists(dir)) {
         const bool ok = QDir().mkdir(dir);
         if ( !ok )

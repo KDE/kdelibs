@@ -44,13 +44,13 @@ KShellTest::tildeExpand()
 {
     QString me(KUser().loginName());
     QCOMPARE(KShell::tildeExpand("~"), QDir::homePath());
-    QCOMPARE(KShell::tildeExpand("~/dir"), QDir::homePath()+"/dir");
+    QCOMPARE(KShell::tildeExpand("~/dir"), QString(QDir::homePath()+"/dir"));
     QCOMPARE(KShell::tildeExpand("~" + me), QDir::homePath());
-    QCOMPARE(KShell::tildeExpand("~" + me + "/dir"), QDir::homePath()+"/dir");
+    QCOMPARE(KShell::tildeExpand("~" + me + "/dir"), QString(QDir::homePath()+"/dir"));
 #ifdef Q_OS_WIN
-    QCOMPARE(KShell::tildeExpand("^~" + me), "~" + me);
+    QCOMPARE(KShell::tildeExpand("^~" + me), QString("~" + me));
 #else
-    QCOMPARE(KShell::tildeExpand("\\~" + me), "~" + me);
+    QCOMPARE(KShell::tildeExpand("\\~" + me), QString("~" + me));
 #endif
 }
 
@@ -137,11 +137,11 @@ KShellTest::splitJoin()
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("~/\"dir\" 'text'", KShell::TildeExpand, &err),
-             QDir::homePath() + "/dir text");
+             QString(QDir::homePath() + "/dir text"));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("~ 'text' ~", KShell::TildeExpand, &err),
-             QDir::homePath() + " text " + QDir::homePath());
+             QString(QDir::homePath() + " text " + QDir::homePath()));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("\\~ blah", KShell::TildeExpand, &err),
@@ -149,7 +149,7 @@ KShellTest::splitJoin()
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("~qU4rK ~" + KUser().loginName(), KShell::TildeExpand, &err),
-             QString("'~qU4rK' ") + QDir::homePath());
+             QString("'~qU4rK' " + QDir::homePath()));
     QVERIFY(err == KShell::NoError);
 #endif
 }

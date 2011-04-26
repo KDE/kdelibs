@@ -108,7 +108,7 @@ void KDirListerTest::testOpenUrl()
     disconnect(&m_dirLister, 0, this, 0);
 
     const QString fileName = "toplevelfile_3";
-    const KUrl itemUrl = path + fileName;
+    const KUrl itemUrl(path + fileName);
     KFileItem byName = m_dirLister.findByName(fileName);
     QVERIFY(!byName.isNull());
     QCOMPARE(byName.url().url(), itemUrl.url());
@@ -124,7 +124,7 @@ void KDirListerTest::testOpenUrl()
 
     KFileItem rootByUrl = m_dirLister.findByUrl(path);
     QVERIFY(!rootByUrl.isNull());
-    QCOMPARE(rootByUrl.url().path() + '/', path);
+    QCOMPARE(QString(rootByUrl.url().path() + '/'), path);
 
     m_dirLister.clearSpies(); // for the tests that call testOpenUrl for setup
 }
@@ -200,7 +200,7 @@ void KDirListerTest::testNewItems()
     QCOMPARE(m_dirLister.spyClear.count(), 0);
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
 
-    const KUrl itemUrl = path + fileName;
+    const KUrl itemUrl(path + fileName);
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
     QCOMPARE(itemForUrl.url().url(), itemUrl.url());
@@ -220,7 +220,7 @@ void KDirListerTest::testNewItemByCopy()
 
     const QString fileName = "toplevelfile_copy";
     const KUrl itemUrl(path + fileName);
-    KIO::CopyJob* job = KIO::copyAs(path+"toplevelfile_3", itemUrl, KIO::HideProgressInfo);
+    KIO::CopyJob* job = KIO::copyAs(QString(path+"toplevelfile_3"), itemUrl, KIO::HideProgressInfo);
     job->exec();
 
     int numTries = 0;
@@ -318,7 +318,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
         }
         QCOMPARE(dirLister2.spyDeleteItem.count(), 1);
         const KFileItem item = dirLister2.spyDeleteItem[0][0].value<KFileItem>();
-        QCOMPARE(item.url().path(), symPath + '/' + fileName);
+        QCOMPARE(item.url().path(), QString(symPath + '/' + fileName));
     }
 
     // TODO: test file update.

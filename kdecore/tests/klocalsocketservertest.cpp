@@ -63,7 +63,7 @@ void tst_KLocalSocketServer::listen_data()
     QTest::newRow("null") << QString() << false;
     QTest::newRow("empty") << "" << false;
     QTest::newRow("a-dir") << "/tmp/" << false;
-    QTest::newRow("not-a-dir") << afile + QLatin1String("/foo") << false;
+    QTest::newRow("not-a-dir") << QString(afile + QLatin1String("/foo")) << false;
     QTest::newRow("not-permitted") << "/root/foo" << false;
     QTest::newRow("valid") << asocket << true;
 }

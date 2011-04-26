@@ -658,8 +658,8 @@ void KUrlTest::testSetFileName() // and addPath
   pre = "/";
 #endif
   singleFile.setFileName( "bar.bin" );
-  QCOMPARE( singleFile.path(), pre + QString("bar.bin") );
-  QCOMPARE( singleFile.pathOrUrl(), pre + QString("bar.bin") );
+  QCOMPARE( singleFile.path(), QString(pre + "bar.bin") );
+  QCOMPARE( singleFile.pathOrUrl(), QString(pre + "bar.bin") );
 }
 
 void KUrlTest::testDirectory()
@@ -1778,7 +1778,7 @@ void KUrlTest::testUtf8()
   // so it's ok to use that to encode urls as filenames (e.g. in kio_http cache)
   KUrl fractionSlash(QString("http://kde.org/a")+QChar(0x2044)+"b");
   QCOMPARE(fractionSlash.url(), QString("http://kde.org/a%E2%81%84b"));
-  QCOMPARE(fractionSlash.prettyUrl(), QString("http://kde.org/a")+QChar(0x2044)+"b");
+  QCOMPARE(fractionSlash.prettyUrl(), QString(QString("http://kde.org/a")+QChar(0x2044)+"b"));
 }
 
 void KUrlTest::testOtherEncodings()

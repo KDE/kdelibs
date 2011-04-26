@@ -272,7 +272,7 @@ void KFileItemTest::testDecodeFileName_data()
     QTest::addColumn<QString>("expectedText");
 
     QTest::newRow("simple") << "filename" << "filename";
-    QTest::newRow("/ at end") << QString("foo") + QChar(0x2044) << QString("foo") + QChar(0x2044);
+    QTest::newRow("/ at end") << QString(QString("foo") + QChar(0x2044)) << QString(QString("foo") + QChar(0x2044));
     QTest::newRow("/ at begin") << QString(QChar(0x2044)) << QString(QChar(0x2044));
 }
 
@@ -290,7 +290,7 @@ void KFileItemTest::testEncodeFileName_data()
     QTest::addColumn<QString>("expectedFileName");
 
     QTest::newRow("simple") << "filename" << "filename";
-    QTest::newRow("/ at end") << "foo/" << QString("foo") + QChar(0x2044);
+    QTest::newRow("/ at end") << "foo/" << QString(QString("foo") + QChar(0x2044));
     QTest::newRow("/ at begin") << "/" << QString(QChar(0x2044));
 }
 

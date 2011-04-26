@@ -303,25 +303,25 @@ void KDirModelTest::testItemForIndex()
     QVERIFY(!fileItem.isNull());
     QCOMPARE(fileItem.name(), QString("toplevelfile_1"));
     QVERIFY(!fileItem.isDir());
-    QCOMPARE(fileItem.url().path(), m_tempDir->name() + "toplevelfile_1");
+    QCOMPARE(fileItem.url().path(), QString(m_tempDir->name() + "toplevelfile_1"));
 
     KFileItem dirItem = m_dirModel->itemForIndex(m_dirIndex);
     QVERIFY(!dirItem.isNull());
     QCOMPARE(dirItem.name(), QString("subdir"));
     QVERIFY(dirItem.isDir());
-    QCOMPARE(dirItem.url().path(), m_tempDir->name() + "subdir");
+    QCOMPARE(dirItem.url().path(), QString(m_tempDir->name() + "subdir"));
 
     KFileItem fileInDirItem = m_dirModel->itemForIndex(m_fileInDirIndex);
     QVERIFY(!fileInDirItem.isNull());
     QCOMPARE(fileInDirItem.name(), QString("testfile"));
     QVERIFY(!fileInDirItem.isDir());
-    QCOMPARE(fileInDirItem.url().path(), m_tempDir->name() + "subdir/testfile");
+    QCOMPARE(fileInDirItem.url().path(), QString(m_tempDir->name() + "subdir/testfile"));
 
     KFileItem fileInSubdirItem = m_dirModel->itemForIndex(m_fileInSubdirIndex);
     QVERIFY(!fileInSubdirItem.isNull());
     QCOMPARE(fileInSubdirItem.name(), QString("testfile"));
     QVERIFY(!fileInSubdirItem.isDir());
-    QCOMPARE(fileInSubdirItem.url().path(), m_tempDir->name() + "subdir/subsubdir/testfile");
+    QCOMPARE(fileInSubdirItem.url().path(), QString(m_tempDir->name() + "subdir/subsubdir/testfile"));
 }
 
 void KDirModelTest::testIndexForItem()
@@ -500,8 +500,8 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                &m_eventLoop, SLOT(exitLoop()));
 
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir").isValid());
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
 
     connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             &m_eventLoop, SLOT(exitLoop()));
@@ -556,13 +556,13 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     // check renaming happened
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), newUrl.url());
     QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/testfile").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // Check the other kdirmodel got redirected
-    QCOMPARE(dirListerForExpand->url().path(), path+"subdir_renamed");
+    QCOMPARE(dirListerForExpand->url().path(), QString(path+"subdir_renamed"));
 
     kDebug() << "calling testMoveDirectory(subdir_renamed)";
 
@@ -582,14 +582,14 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
     QCOMPARE(m_dirModel->indexForUrl(url), m_dirIndex);
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir/testfile").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir/subsubdir").isValid());
-    QVERIFY(m_dirModel->indexForUrl(path + "subdir/subsubdir/testfile").isValid());
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/testfile").isValid());
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir").isValid());
-    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir/testfile")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // TODO INVESTIGATE
     // QCOMPARE(dirListerForExpand->url().path(), path+"subdir");
@@ -739,12 +739,12 @@ void KDirModelTest::testExpandToUrl()
     const QString path = m_tempDir->name();
     if (flags & CacheSubdir) {
         // This way, the listDir for subdir will find items in cache, and will schedule a CachedItemsJob
-        m_dirModel->dirLister()->openUrl(path + "subdir");
+        m_dirModel->dirLister()->openUrl(KUrl(path + "subdir"));
         QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
     }
     if (flags & ListFinalDir) {
         // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
-        m_dirModel->dirLister()->openUrl(path + "subdir/subsubdir");
+        m_dirModel->dirLister()->openUrl(KUrl(path + "subdir/subsubdir"));
         QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
     }
 
@@ -803,7 +803,7 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     KFileItem item = m_dirModelForExpand->itemForIndex(index);
     QVERIFY(!item.isNull());
     kDebug() << item.url().path();
-    QCOMPARE(item.url().path(), path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]);
+    QCOMPARE(item.url().path(), QString(path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]));
 
     // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
     if (item.url() == m_urlToExpandTo) {
@@ -965,10 +965,10 @@ void KDirModelTest::testMultipleSlashes()
     QModelIndex index = m_dirModel->indexForUrl(KUrl(path+"subdir//testfile"));
     QVERIFY(index.isValid());
 
-    index = m_dirModel->indexForUrl(path+"subdir//subsubdir//");
+    index = m_dirModel->indexForUrl(KUrl(path+"subdir//subsubdir//"));
     QVERIFY(index.isValid());
 
-    index = m_dirModel->indexForUrl(path+"subdir///subsubdir////testfile");
+    index = m_dirModel->indexForUrl(KUrl(path+"subdir///subsubdir////testfile"));
     QVERIFY(index.isValid());
 }
 
@@ -1095,7 +1095,7 @@ void KDirModelTest::testDeleteFile()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
+    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 
     // Recreate the file, for consistency in the next tests
@@ -1138,7 +1138,7 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
     QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
     QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
+    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 
     kDebug() << "Test done, recreating file";
@@ -1181,7 +1181,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
 
     QVERIFY(!m_dirModel->indexForUrl(dir).isValid());
-    QModelIndex newIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
+    QModelIndex newIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
     QVERIFY(newIndex.isValid());
     KFileItem newItem = m_dirModel->itemForIndex(newIndex);
     QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
@@ -1292,9 +1292,9 @@ void KDirModelTest::testDeleteDirectory()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex deletedDirIndex = m_dirModel->indexForUrl(path + "subdir/subsubdir");
+    QModelIndex deletedDirIndex = m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir"));
     QVERIFY(!deletedDirIndex.isValid());
-    QModelIndex dirIndex = m_dirModel->indexForUrl(path + "subdir");
+    QModelIndex dirIndex = m_dirModel->indexForUrl(KUrl(path + "subdir"));
     QVERIFY(dirIndex.isValid());
 
     // TODO!!! Bug in KDirWatch? ###
@@ -1343,7 +1343,7 @@ void KDirModelTest::testDeleteCurrentDirectory()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
+    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 }
 

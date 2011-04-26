@@ -167,19 +167,19 @@ void KStringHandlerTest::preProcessWrap_data()
 
     // Should insert a ZWSP after each '_' 
     QTest::newRow("underscores") << "foo_bar_baz"
-               << QString("foo_") + zwsp + "bar_" + zwsp + "baz";
+               << QString("foo_" + zwsp + "bar_" + zwsp + "baz");
 
     // Should insert a ZWSP after each '-' 
     QTest::newRow("hyphens") << "foo-bar-baz"
-                << QString("foo-") + zwsp + "bar-" + zwsp + "baz";
+                << QString("foo-" + zwsp + "bar-" + zwsp + "baz");
 
     // Should insert a ZWSP after each '.' 
     QTest::newRow("periods") << "foo.bar.baz"
-                << QString("foo.") + zwsp + "bar." + zwsp + "baz";
+                << QString("foo." + zwsp + "bar." + zwsp + "baz");
 
     // Should insert a ZWSP after each ',' 
     QTest::newRow("commas") << "foo,bar,baz"
-                << QString("foo,") + zwsp + "bar," + zwsp + "baz";
+                << QString("foo," + zwsp + "bar," + zwsp + "baz");
 
     // Should result in no additional breaks since the '_'s are followed by spaces 
     QTest::newRow("mixed underscores and spaces")
@@ -190,32 +190,32 @@ void KStringHandlerTest::preProcessWrap_data()
 
     // Should insert a ZWSP before '(' and after ')' 
     QTest::newRow("parens") << "foo(bar)baz" 
-                << QString("foo") + zwsp + "(bar)" + zwsp + "baz";
+                << QString("foo" + zwsp + "(bar)" + zwsp + "baz");
 
     // Should insert a ZWSP before '[' and after ']' 
     QTest::newRow("brackets") << "foo[bar]baz" 
-                << QString("foo") + zwsp + "[bar]" + zwsp + "baz";
+                << QString("foo" + zwsp + "[bar]" + zwsp + "baz");
 
     // Should insert a ZWSP before '{' and after '}' 
     QTest::newRow("curly braces") << "foo{bar}baz" 
-                << QString("foo") + zwsp + "{bar}" + zwsp + "baz";
+                << QString("foo" + zwsp + "{bar}" + zwsp + "baz");
 
     // Should insert a ZWSP before '(' but not after ')' since it's the last char 
     QTest::newRow("ends with ')'") << "foo(bar)" 
-                << QString("foo") + zwsp + "(bar)";
+                << QString("foo" + zwsp + "(bar)");
 
     // Should insert a single ZWSP between the '_' and the '(' 
     QTest::newRow("'_' followed by '('") << "foo_(bar)" 
-                << QString("foo_") + zwsp + "(bar)";
+                << QString("foo_" + zwsp + "(bar)");
 
     // Should insert ZWSP's between the '_' and the '[', between the double
     // '['s and the double ']'s, but not before and after 'bar' 
     QTest::newRow("'_' before double brackets") << "foo_[[bar]]" 
-                << QString("foo_") + zwsp + "[" + zwsp + "[bar]" + zwsp + "]";
+                << QString("foo_" + zwsp + "[" + zwsp + "[bar]" + zwsp + "]");
 
     // Should only insert ZWSP's between the double '['s and the double ']'s 
     QTest::newRow("space before double brackets") << "foo [[bar]]" 
-                << QString("foo [") + zwsp + "[bar]" + zwsp + "]";
+                << QString("foo [" + zwsp + "[bar]" + zwsp + "]");
 
     // Shouldn't result in any additional breaks since the '(' is preceeded
     // by a space, and the ')' is followed by a space.
@@ -223,7 +223,7 @@ void KStringHandlerTest::preProcessWrap_data()
     
     // Should insert a WJ (Word Joiner) before a single quote 
     const QChar wj(0x2060);
-    QTest::newRow("single quote") << "foo'bar"<< QString("foo")+ wj +"'bar" ; 
+    QTest::newRow("single quote") << "foo'bar"<< QString("foo"+ wj +"'bar");
 }
 
 static QString replaceZwsp(const QString &string)
