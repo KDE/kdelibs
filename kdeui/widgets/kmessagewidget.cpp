@@ -278,6 +278,7 @@ bool KMessageWidget::wordWrap() const
 void KMessageWidget::setWordWrap(bool wordWrap)
 {
     d->wordWrap = wordWrap;
+    d->textLabel->setWordWrap(wordWrap);
     d->updateLayout();
 }
 
