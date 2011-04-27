@@ -31,6 +31,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
+#include <QShowEvent>
 #include <QTimeLine>
 #include <QToolButton>
 #include <kglobalsettings.h>
@@ -251,10 +252,11 @@ void KMessageWidget::paintEvent(QPaintEvent* event)
 void KMessageWidget::showEvent(QShowEvent* event)
 {
     QFrame::showEvent(event);
-    d->content->adjustSize();
-    int wantedHeight = d->content->height();
-    d->content->resize(width(), wantedHeight);
-    setFixedHeight(wantedHeight);
+    if (!event->spontaneous()) {
+        int wantedHeight = d->content->sizeHint().height();
+        d->content->setGeometry(0, 0, width(), wantedHeight);
+        setFixedHeight(wantedHeight);
+    }
 }
 
 KMessageWidget::Shape KMessageWidget::shape() const
