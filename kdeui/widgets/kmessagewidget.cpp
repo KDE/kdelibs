@@ -132,6 +132,9 @@ void KMessageWidgetPrivate::createLayout()
         layout->addWidget(closeButton);
     };
 
+    if (q->isVisible()) {
+        q->setFixedHeight(content->sizeHint().height());
+    }
     q->updateGeometry();
 }
 
