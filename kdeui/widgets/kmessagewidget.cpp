@@ -105,6 +105,10 @@ void KMessageWidgetPrivate::createLayout()
         buttons.append(button);
     }
 
+    // Only set autoRaise on if there are no buttons, otherwise the close
+    // button looks weird
+    closeButton->setAutoRaise(buttons.isEmpty());
+
     if (wordWrap) {
         QGridLayout* layout = new QGridLayout(content);
         layout->addWidget(iconLabel, 0, 0);
