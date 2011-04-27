@@ -22,6 +22,7 @@
 #include <kaction.h>
 #include <kcolorscheme.h>
 #include <kdebug.h>
+#include <kglobalsettings.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kstandardaction.h>
@@ -34,7 +35,6 @@
 #include <QShowEvent>
 #include <QTimeLine>
 #include <QToolButton>
-#include <kglobalsettings.h>
 
 //---------------------------------------------------------------------
 // KMessageWidgetPrivate
