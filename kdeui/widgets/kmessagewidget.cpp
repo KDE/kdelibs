@@ -206,7 +206,7 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
         icon = KIcon("dialog-information");
         bgRole = KColorScheme::NormalBackground;
         fgRole = KColorScheme::NormalText;
-        colorSet = KColorScheme::View;
+        colorSet = KColorScheme::Tooltip;
         break;
     case WarningMessageType:
         icon = KIcon("dialog-warning");
