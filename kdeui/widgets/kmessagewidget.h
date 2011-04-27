@@ -42,11 +42,6 @@ class KDEUI_EXPORT KMessageWidget : public QFrame
 {
     Q_OBJECT
 public:
-    enum Shape {
-        LineShape,
-        RectangleShape
-    };
-
     enum MessageType {
         PositiveMessageType,
         InformationMessageType,
@@ -63,7 +58,7 @@ public:
 
     QString text() const;
 
-    KMessageWidget::Shape shape() const;
+    bool wordWrap() const;
 
     bool showCloseButton() const;
 
@@ -76,7 +71,7 @@ public:
 public Q_SLOTS:
     void setText(const QString &);
 
-    void setShape(KMessageWidget::Shape);
+    void setWordWrap(bool);
 
     void setShowCloseButton(bool);
 
