@@ -53,7 +53,7 @@ public:
 
     QString text;
     KMessageWidget::MessageType messageType;
-    KMessageWidget::Shape shape;
+    bool wordWrap;
     QList<QToolButton*> buttons;
     QPixmap contentSnapShot;
 
@@ -74,7 +74,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     content = new QFrame(q);
     content->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    shape = KMessageWidget::LineShape;
+    wordWrap = false;
 
     iconLabel = new QLabel(content);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -104,7 +104,22 @@ void KMessageWidgetPrivate::createLayout()
         buttons.append(button);
     }
 
-    if (shape == KMessageWidget::LineShape) {
+    if (wordWrap) {
+        QGridLayout* layout = new QGridLayout(content);
+        layout->addWidget(iconLabel, 0, 0);
+        layout->addWidget(textLabel, 0, 1);
+
+        QHBoxLayout* buttonLayout = new QHBoxLayout;
+        buttonLayout->addStretch();
+        Q_FOREACH(QToolButton* button, buttons) {
+            // For some reason, calling show() is necessary here, but not in
+            // wordwrap mode
+            button->show();
+            buttonLayout->addWidget(button);
+        }
+        buttonLayout->addWidget(closeButton);
+        layout->addItem(buttonLayout, 1, 0, 1, 2);
+    } else {
         QHBoxLayout* layout = new QHBoxLayout(content);
         layout->addWidget(iconLabel);
         layout->addWidget(textLabel);
@@ -114,22 +129,7 @@ void KMessageWidgetPrivate::createLayout()
         }
 
         layout->addWidget(closeButton);
-    } else {
-        QGridLayout* layout = new QGridLayout(content);
-        layout->addWidget(iconLabel, 0, 0);
-        layout->addWidget(textLabel, 0, 1);
-
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch();
-        Q_FOREACH(QToolButton* button, buttons) {
-            // For some reason, calling show() is necessary here, but not in
-            // LineShape.
-            button->show();
-            buttonLayout->addWidget(button);
-        }
-        buttonLayout->addWidget(closeButton);
-        layout->addItem(buttonLayout, 1, 0, 1, 2);
-    }
+    };
 
     q->updateGeometry();
 }
@@ -259,14 +259,14 @@ void KMessageWidget::showEvent(QShowEvent* event)
     }
 }
 
-KMessageWidget::Shape KMessageWidget::shape() const
+bool KMessageWidget::wordWrap() const
 {
-    return d->shape;
+    return d->wordWrap;
 }
 
-void KMessageWidget::setShape(KMessageWidget::Shape shape)
+void KMessageWidget::setWordWrap(bool wordWrap)
 {
-    d->shape = shape;
+    d->wordWrap = wordWrap;
     d->createLayout();
 }
 
