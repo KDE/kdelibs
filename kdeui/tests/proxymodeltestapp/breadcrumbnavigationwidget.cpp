@@ -160,7 +160,7 @@ QVariant KNavigatingProxyModel::data(const QModelIndex& index, int role) const
 {
   if ( role == Qt::DisplayRole && sourceModel()->hasChildren(mapToSource(index)))
   {
-    return "+ " + KSelectionProxyModel::data(index, role).toString();
+    return QString("+ " + KSelectionProxyModel::data(index, role).toString());
   }
   return KSelectionProxyModel::data(index, role);
 }
