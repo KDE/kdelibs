@@ -59,6 +59,7 @@ public:
 
     void createLayout();
     void updateSnapShot();
+    void updateLayout();
 };
 
 void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
@@ -132,6 +133,13 @@ void KMessageWidgetPrivate::createLayout()
     };
 
     q->updateGeometry();
+}
+
+void KMessageWidgetPrivate::updateLayout()
+{
+    if (content->layout()) {
+        createLayout();
+    }
 }
 
 void KMessageWidgetPrivate::updateSnapShot()
@@ -225,7 +233,7 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
 
 bool KMessageWidget::event(QEvent* event)
 {
-    if (event->type() == QEvent::Polish && !layout()) {
+    if (event->type() == QEvent::Polish && !d->content->layout()) {
         d->createLayout();
     }
     return QFrame::event(event);
@@ -267,7 +275,7 @@ bool KMessageWidget::wordWrap() const
 void KMessageWidget::setWordWrap(bool wordWrap)
 {
     d->wordWrap = wordWrap;
-    d->createLayout();
+    d->updateLayout();
 }
 
 bool KMessageWidget::showCloseButton() const
@@ -283,13 +291,13 @@ void KMessageWidget::setShowCloseButton(bool show)
 void KMessageWidget::addAction(QAction* action)
 {
     QFrame::addAction(action);
-    d->createLayout();
+    d->updateLayout();
 }
 
 void KMessageWidget::removeAction(QAction* action)
 {
     QFrame::removeAction(action);
-    d->createLayout();
+    d->updateLayout();
 }
 
 void KMessageWidget::animatedShow()
