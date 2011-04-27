@@ -20,9 +20,9 @@
 
 #include <QPixmap>
 #include <QSize>
-#include <KIcon>
-#include <KIconLoader>
-#include <KIconEffect>
+#include <kicon.h>
+#include <kiconloader.h>
+#include <kiconeffect.h>
 
 #include "kiconprovider_p.h"
 
