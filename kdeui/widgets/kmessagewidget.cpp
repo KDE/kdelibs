@@ -301,10 +301,8 @@ void KMessageWidget::animatedShow()
 
     QFrame::show();
     setFixedHeight(0);
-    d->content->adjustSize();
-    int wantedHeight = d->content->height();
-    d->content->resize(width(), wantedHeight);
-    d->content->move(0, -wantedHeight);
+    int wantedHeight = d->content->sizeHint().height();
+    d->content->setGeometry(0, -wantedHeight, width(), wantedHeight);
 
     d->updateSnapShot();
 
