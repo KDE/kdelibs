@@ -711,6 +711,7 @@ public:
                          const QString &host, bool connected);
 
     void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&);
+    void slotSlaveOnHoldListChanged();
 
     void slotSlaveConnected();
     void slotSlaveError(int error, const QString &errorMsg);
@@ -764,6 +765,8 @@ Scheduler::Scheduler()
                                                  QDBusConnection::ExportScriptableSignals );
     dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
                  this, SLOT(slotReparseSlaveConfiguration(QString,QDBusMessage)));
+    dbus.connect(QString(), dbusPath, dbusInterface, "slaveOnHoldListChanged",
+                 this, SLOT(slotSlaveOnHoldListChanged()));
 }
 
 Scheduler::~Scheduler()
@@ -911,6 +914,11 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const
             slave->resetHost();
         }
     }
+}
+
+void SchedulerPrivate::slotSlaveOnHoldListChanged()
+{
+    m_checkOnHold = true;
 }
 
 static bool mayReturnContent(int cmd, const QString& protocol)
@@ -1134,6 +1142,13 @@ void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
     slave->setJob(0);
     SimpleJobPrivate::get(job)->m_slave = 0;
 
+    // Remove the soon to be dead job from the queue to avoid breaking the
+    // scheduler's job accounting.
+    ProtoQueue *pq = m_protocols.value(slave->protocol());
+    if (pq) {
+        pq->removeJob(job);
+    }
+
     if (m_slaveOnHold) {
         m_slaveOnHold->kill();
     }
@@ -1149,6 +1164,7 @@ void SchedulerPrivate::publishSlaveOnHold()
        return;
 
     m_slaveOnHold->hold(m_urlOnHold);
+    emit q->slaveOnHoldListChanged();
 }
 
 bool SchedulerPrivate::isSlaveOnHoldFor(const KUrl& url)
@@ -1194,6 +1210,8 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             m_slaveOnHold = 0;
             m_urlOnHold.clear();
         }
+    } else if (slave) {
+        kDebug(7006) << "HOLD: Reusing klauncher held slave (" << slave << ")";
     }
 
     return slave;
