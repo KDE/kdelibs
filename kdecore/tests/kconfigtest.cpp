@@ -469,7 +469,7 @@ void KConfigTest::testPath()
   QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
 #endif
   QVERIFY(group.hasKey("noeol"));
-  QCOMPARE(group.readEntry("noel", QString("foo")), QString("foo"));
+  QCOMPARE(group.readEntry("noeol", QString()), QString("foo"));
 }
 
 void KConfigTest::testPersistenceOfExpandFlagForPath()
