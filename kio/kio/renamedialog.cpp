@@ -238,7 +238,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         QLabel* destInfo = createSqueezedLabel(parent, d->dest.pathOrUrl());
 
         if (mtimeDest > mtimeSrc) {
-            QLabel* warningLabel = new QLabel(i18n("Warning, the destination is newer."), this);
+            QLabel* warningLabel = new QLabel(i18n("Warning, the destination is more recent."), this);
 
             gridLayout->addWidget(titleLabel, 0, 0, 1, 2);    // takes the complete first line
             gridLayout->addWidget(warningLabel, 1, 0, 1, 2);
