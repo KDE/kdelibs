@@ -1382,7 +1382,7 @@ QString KStandardDirs::findExe( const QString& appname,
         p += appname;
         result = checkExecutable(p, options & IgnoreExecBit);
         if (!result.isEmpty()) {
-            kDebug(180) << "findExe(): returning " << result;
+            //kDebug(180) << "findExe(): returning " << result;
             return result;
         }
     }
