@@ -326,6 +326,7 @@ static int kwrapper_run( pid_t wrapped, int sock )
     }
 
     status = ((long *) buffer)[1];
+    free(buffer);
     return (int) status;
 }
 
