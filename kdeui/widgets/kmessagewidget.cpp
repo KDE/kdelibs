@@ -224,16 +224,18 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
 
     KColorScheme scheme(QPalette::Active, colorSet);
     QBrush bg = scheme.background(bgRole);
-    QBrush fg = scheme.foreground(fgRole);
+    QBrush border = scheme.foreground(fgRole);
+    QBrush fg = scheme.foreground();
     d->content->setStyleSheet(
         QString(".QFrame {"
             "background-color: %1;"
             "border-radius: 5px;"
             "border: 1px solid %2;"
             "}"
-            ".QLabel { color: %2; }"
+            ".QLabel { color: %3; }"
             )
         .arg(bg.color().name())
+        .arg(border.color().name())
         .arg(fg.color().name())
         );
 }
