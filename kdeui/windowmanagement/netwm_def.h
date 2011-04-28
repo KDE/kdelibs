@@ -694,7 +694,8 @@ public:
         WM2FrameOverlap        = 1<<18,  // NOT STANDARD
         WM2Activities          = 1<<19,  // NOT STANDARD @since 4.6
         WM2BlockCompositing    = 1<<20,  // NOT STANDARD @since 4.7
-        WM2KDEShadow           = 1<<21   // NOT Standard @since 4.7
+        WM2KDEShadow           = 1<<21,  // NOT Standard @since 4.7
+        WM2ClientListMRU       = 1<<22   // NOT Standard @since 4.7
     };
 
     /**

@@ -108,6 +108,14 @@ public:
      * @return the list of all toplevel windows in stacking order
      */
     static QList<WId> stackingOrder();
+    /**
+     * Returns the list of all toplevel windows currently managed by the
+     * window manager in the order of most recent usage. This method is
+     * specific for the KDE Workspace and non-standard.
+     * @return the list of all toplevel windows in most recently used order
+     * @since 4.7
+     **/
+    static QList<WId> mostRecentlyUsedOrder();
 
     /**
      * Returns the currently active window, or 0 if no window is active.
@@ -586,6 +594,11 @@ Q_SIGNALS:
      * can be obtained with stackingOrder().
      */
     void stackingOrderChanged();
+    /**
+     * Emitted when the order of most recently used windows changed. The new
+     * order can be obtained with mostRecentlyUsedOrder().
+     **/
+    void mostRecentlyUsedListChanged();
 
     /**
      * The window changed.

@@ -99,6 +99,7 @@ static Atom kde_net_wm_frame_overlap          = 0;
 static Atom kde_net_wm_activities             = 0;
 static Atom kde_net_wm_block_compositing      = 0;
 static Atom kde_net_wm_shadow                 = 0;
+static Atom kde_net_client_list_mru            = 0;
 
 // application protocols
 static Atom wm_protocols = 0;
@@ -256,7 +257,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 89;
+static const int netAtomCount = 90;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -356,7 +357,8 @@ static void create_netwm_atoms(Display *d) {
             "_NET_WM_FULL_PLACEMENT",
             "_KDE_NET_WM_ACTIVITIES",
             "_KDE_NET_WM_BLOCK_COMPOSITING",
-            "_KDE_NET_WM_SHADOW"
+            "_KDE_NET_WM_SHADOW",
+            "_KDE_NET_CLIENT_LIST_MRU"
 	    };
 
     Atom atoms[netAtomCount], *atomsp[netAtomCount] =
@@ -457,7 +459,8 @@ static void create_netwm_atoms(Display *d) {
             &net_wm_full_placement,
             &kde_net_wm_activities,
             &kde_net_wm_block_compositing,
-            &kde_net_wm_shadow
+            &kde_net_wm_shadow,
+            &kde_net_client_list_mru
 	    };
 
     assert( !netwm_atoms_created );
@@ -652,8 +655,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->supportwindow = supportWindow;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
-    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->clients = p->stacking = p->virtual_roots = p->clients_mru = (Window *) 0;
+    p->clients_count = p->stacking_count = p->virtual_roots_count = p->clients_mru_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -707,8 +710,8 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->supportwindow = None;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
-    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->clients = p->stacking = p->virtual_roots = p->clients_mru = (Window *) 0;
+    p->clients_count = p->stacking_count = p->virtual_roots_count = p->clients_mru_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -766,8 +769,8 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->supportwindow = None;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
-    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->clients = p->stacking = p->virtual_roots = p->clients_mru = (Window *) 0;
+    p->clients_count = p->stacking_count = p->virtual_roots_count = p->clients_mru_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -882,6 +885,23 @@ void NETRootInfo::setClientListStacking(const Window *windows, unsigned int coun
 		    p->stacking_count);
 }
 
+void NETRootInfo::setClientListMostRecentlyUsed(const Window *windows, unsigned int count) {
+    if (p->role != WindowManager) return;
+
+    p->clients_mru_count = count;
+    delete [] p->clients_mru;
+    p->clients_mru = nwindup(windows, count);
+
+#ifdef    NETWMDEBUG
+    fprintf(stderr,
+        "NETRootInfo::setClientListMostRecentlyUsed: setting list with %ld windows\n",
+        p->clients_count);
+#endif
+
+    XChangeProperty(p->display, p->root, kde_net_client_list_mru, XA_WINDOW, 32,
+            PropModeReplace, (unsigned char *) p->clients_mru,
+            p->clients_mru_count);
+}
 
 void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 
@@ -1303,6 +1323,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2KDEShadow ) {
         atoms[pnum++] = kde_net_wm_shadow;
     }
+    if (p->properties[ PROTOCOLS2 ] & WM2ClientListMRU ) {
+        atoms[pnum++] = kde_net_client_list_mru;
+    }
 
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
@@ -1547,6 +1570,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == kde_net_wm_shadow )
         p->properties[ PROTOCOLS2 ] |= WM2KDEShadow;
+
+    else if( atom == kde_net_client_list_mru )
+        p->properties[ PROTOCOLS2 ] |= WM2ClientListMRU;
 }
 
 void NETRootInfo::setActiveWindow(Window window) {
@@ -2046,6 +2072,8 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		dirty |= ClientList;
 	    else if (pe.xproperty.atom == net_client_list_stacking)
 		dirty |= ClientListStacking;
+        else if (pe.xproperty.atom == kde_net_client_list_mru)
+        dirty |= WM2ClientListMRU;
 	    else if (pe.xproperty.atom == net_desktop_names)
 		dirty |= DesktopNames;
 	    else if (pe.xproperty.atom == net_workarea)
@@ -2251,6 +2279,30 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 	    if ( data_ret )
 		XFree(data_ret);
 	}
+    }
+
+    if (dirty & WM2ClientListMRU) {
+        p->clients_mru_count = 0;
+        delete[] p->clients_mru;
+        p->clients_mru = NULL;
+        if (XGetWindowProperty(p->display, p->root, kde_net_client_list_mru,
+                   0, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
+                   &format_ret, &nitems_ret, &unused, &data_ret) == Success) {
+            if (type_ret == XA_WINDOW && format_ret == 32) {
+                Window *wins = (Window *) data_ret;
+
+                p->clients_mru_count = nitems_ret;
+                p->clients_mru = nwindup(wins, p->clients_mru_count);
+            }
+
+#ifdef    NETWMDEBUG
+            fprintf(stderr,"NETRootInfo::update: client stacking mru updated (%ld clients)\n",
+                p->clients_mru_count);
+#endif
+
+            if ( data_ret )
+                XFree(data_ret);
+        }
     }
 
     if (dirty & NumberOfDesktops) {
@@ -2676,6 +2728,15 @@ int NETRootInfo::clientListStackingCount() const {
     return p->stacking_count;
 }
 
+const Window* NETRootInfo::clientListMostRecentlyUsed() const
+{
+    return p->clients_mru;
+}
+
+int NETRootInfo::clientListMostRecentlyUsedCount() const
+{
+    return p->clients_mru_count;
+}
 
 NETSize NETRootInfo::desktopGeometry(int) const {
     return p->geometry.width != 0 ? p->geometry : p->rootSize;

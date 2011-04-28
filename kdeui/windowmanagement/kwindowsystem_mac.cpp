@@ -346,6 +346,14 @@ QList<WId> KWindowSystem::stackingOrder()
     return lst;
 }
 
+QList<WId> KWindowSystem::mostRecentlyUsedOrder()
+{
+    //TODO
+    QList<WId> lst;
+    kDebug(240) << "QList<WId> KWindowSystem::mostRecentlyUsedOrder() isn't yet implemented!";
+    return lst;
+}
+
 WId KWindowSystem::activeWindow()
 {
     //return something

@@ -292,6 +292,24 @@ public:
     int clientListStackingCount() const;
 
     /**
+       Returns an array of Window id's, which contain all managed windows in
+       most recently used order.
+
+       @return the array of Window id's in most recently used order
+
+       @see clientListMostRecentlyUsedCount()
+     **/
+    const Window *clientListMostRecentlyUsed() const;
+    /**
+       Returns the number of managed windows in the clientListMostRecentlyUsed array.
+
+       @return the number of Window id's in the client list
+
+       @see clientListMostRecentlyUsed()
+     **/
+    int clientListMostRecentlyUsedCount() const;
+
+    /**
        Returns the desktop geometry size.
 
        The desktop argument is ignored. Early drafts of the NET WM
@@ -433,6 +451,14 @@ public:
        @param count The number of windows in the array.
     **/
     void setClientListStacking(const Window *windows, unsigned int count);
+    /**
+       Sets the list of managed clients in most recently used order on the Root/Desktop window.
+
+       @param windows The array of Window id's
+
+       @param count The number of windows in the array
+     **/
+    void setClientListMostRecentlyUsed(const Window *windows, unsigned int count);
 
     /**
        Sets the current desktop to the specified desktop.

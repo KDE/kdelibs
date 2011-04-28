@@ -676,6 +676,14 @@ const QList<WId>& KWindowSystem::windows()
   return KWindowSystem::s_d_func()->stackingOrder;
 }
 
+QList<WId> KWindowSystem::mostRecentlyUsedOrder()
+{
+    //TODO
+    QList<WId> lst;
+    kDebug(240) << "QList<WId> KWindowSystem::mostRecentlyUsedOrder() isn't yet implemented!";
+    return lst;
+}
+
 void KWindowSystem::setType( WId win, NET::WindowType windowType )
 {
  //TODO

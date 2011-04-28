@@ -78,6 +78,7 @@ public:
     void activate();
     QList<WId> windows;
     QList<WId> stackingOrder;
+    QList<WId> mruOrder;
 
     struct StrutData
     {
@@ -100,6 +101,7 @@ public:
     bool x11Event( XEvent * ev );
 
     void updateStackingOrder();
+    void updateMostRecentlyUsedOrder();
     bool removeStrutWindow( WId );
 };
 
@@ -153,6 +155,9 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
 	    updateStackingOrder();
 	    emit s_q->stackingOrderChanged();
 	}
+	if ( m[PROTOCOLS2] & WM2ClientListMRU ) {
+        emit s_q->mostRecentlyUsedListChanged();
+    }
         if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
 	    emit s_q->showingDesktopChanged( showingDesktop());
         }
@@ -208,6 +213,13 @@ void KWindowSystemPrivate::updateStackingOrder()
     stackingOrder.clear();
     for ( int i = 0; i <  clientListStackingCount(); i++ )
 	stackingOrder.append( clientListStacking()[i] );
+}
+
+void KWindowSystemPrivate::updateMostRecentlyUsedOrder()
+{
+    mruOrder.clear();
+    for ( int i = 0; i <  clientListMostRecentlyUsedCount(); i++ )
+        mruOrder.append( clientListMostRecentlyUsed()[i] );
 }
 
 void KWindowSystemPrivate::addClient(Window w)
@@ -402,6 +414,12 @@ QList<WId> KWindowSystem::stackingOrder()
 {
     init( INFO_BASIC );
     return s_d_func()->stackingOrder;
+}
+
+QList<WId> KWindowSystem::mostRecentlyUsedOrder()
+{
+    init( INFO_BASIC );
+    return s_d_func()->mruOrder;
 }
 
 int KWindowSystem::currentDesktop()

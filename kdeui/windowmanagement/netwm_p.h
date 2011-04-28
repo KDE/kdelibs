@@ -97,12 +97,12 @@ struct NETRootInfoPrivate {
     NETRArray<NETRect> workarea;
     NETSize geometry;
     Window active;
-    Window *clients, *stacking, *virtual_roots;
+    Window *clients, *stacking, *virtual_roots, *clients_mru;
     NETRArray<const char *> desktop_names;
     int number_of_desktops;
     int current_desktop;
 
-    unsigned long clients_count, stacking_count, virtual_roots_count;
+    unsigned long clients_count, stacking_count, virtual_roots_count, clients_mru_count;
     bool showing_desktop;
     NET::Orientation desktop_layout_orientation;
     NET::DesktopLayoutCorner desktop_layout_corner;
