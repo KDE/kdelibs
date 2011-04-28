@@ -69,6 +69,7 @@ KDECORE_UNIT_TESTS(
  kencodingdetectortest
  qcoreapptest
  kdebug_qcoreapptest
+ kmimetype_nomimetypes
 )
 
 if(NOT KDE_NO_DEPRECATED)

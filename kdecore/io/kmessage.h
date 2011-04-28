@@ -89,7 +89,7 @@ namespace KMessage
 
     /**
      * @brief Set the current KMessageHandler
-     * Note that this method take ownership of the KMessageHandler.
+     * Note that this method takes ownership of the KMessageHandler.
      * @param handler Instance of a real KMessageHandler.
      *
      * @warning This function isn't thread-safe. You don't want to
