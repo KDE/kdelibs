@@ -206,6 +206,8 @@ int main()
     struct passwd *pw;
     const char* kdesu_lc_all;
 
+    xauthority[0] = '\0';
+
     /* Get startup parameters. */
 
     for (i=0; i<P_LAST; i++) 
@@ -395,7 +397,8 @@ int main()
 	}
 
 #ifndef QWS
-	unlink(xauthority);
+        if (*xauthority)
+            unlink(xauthority);
 #endif
 	exit(xit);
     } else 
