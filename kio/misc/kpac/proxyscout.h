@@ -50,6 +50,7 @@ namespace KPAC
         Q_SCRIPTABLE Q_NOREPLY void reset();
 
     private Q_SLOTS:
+        void disconnectNetwork();
         void downloadResult( bool );
         void proxyScriptFileChanged(const QString&);
 

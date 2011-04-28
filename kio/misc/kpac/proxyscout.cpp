@@ -29,6 +29,7 @@
 #include <kprotocolmanager.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
+#include <solid/networking.h>
 
 #include <QtCore/QFileSystemWatcher>
 
@@ -57,6 +58,7 @@ namespace KPAC
           m_debugArea (KDebug::registerArea("proxyscout")),
           m_watcher( 0 )
     {
+        connect (Solid::Networking::notifier(), SIGNAL(shouldDisconnect()), SLOT(disconnectNetwork()));
     }
 
     ProxyScout::~ProxyScout()
@@ -133,6 +135,8 @@ namespace KPAC
         m_script = 0;
         delete m_downloader;
         m_downloader = 0;
+        delete m_watcher;
+        m_watcher = 0;
         m_blackList.clear();
         m_suspendTime = 0;
         KProtocolManager::reparseConfiguration();
@@ -146,9 +150,22 @@ namespace KPAC
                 m_downloader = new Discovery( this );
                 break;
             case KProtocolManager::PACProxy:
+            {
                 m_downloader = new Downloader( this );
-                m_downloader->download( KUrl( KProtocolManager::proxyConfigScript() ) );
+                KUrl url( KProtocolManager::proxyConfigScript() );
+                if (url.isLocalFile()) {
+                    if (!m_watcher) {
+                        m_watcher = new QFileSystemWatcher( this );
+                        connect (m_watcher, SIGNAL(fileChanged(QString)), SLOT(proxyScriptFileChanged(QString)));
+                    }
+                    proxyScriptFileChanged(url.path());
+                } else {
+                    delete m_watcher;
+                    m_watcher = 0;
+                    m_downloader->download( url );
+                }
                 break;
+            }
             default:
                 return false;
         }
@@ -157,27 +174,20 @@ namespace KPAC
         return true;
     }
 
+    void ProxyScout::disconnectNetwork()
+    {
+        // NOTE: We only connect to Solid's network notifier's shouldDisconnect
+        // signal because we only want to redo WPAD when a network interface is 
+        // brought out of hibernation or restarted for whatever reason.
+        reset();
+    }
+
     void ProxyScout::downloadResult( bool success )
     {
         if ( success ) {
             try
             {
                 m_script = new Script( m_downloader->script() );
-                KUrl url ( m_downloader->scriptUrl() );
-                if (url.isLocalFile()) {
-                    if (!m_watcher) {
-                        m_watcher = new QFileSystemWatcher( this );
-                        connect (m_watcher, SIGNAL(fileChanged(QString)), SLOT(proxyScriptFileChanged(QString)));
-                    } else {
-                        m_watcher->removePaths(m_watcher->files());
-                    }
-                    m_watcher->addPath(url.path());
-                } else {
-                    if (m_watcher) {
-                        delete m_watcher;
-                        m_watcher = 0;
-                    }
-                }
             }
             catch ( const Script::Error& e )
             {
@@ -220,9 +230,22 @@ namespace KPAC
         }
     }
 
-    void ProxyScout::proxyScriptFileChanged(const QString&)
+    void ProxyScout::proxyScriptFileChanged(const QString& path)
     {
-        downloadResult( true ); // update the configuration...
+        // Should never get called if we do not have a watcher...
+        Q_ASSERT(m_watcher);
+
+        // if it does not exist, bogus file was given or it was deleted...
+        if (QFile::exists(path)) {
+            // if not contained, first attempt or file was renamed...
+            if (!m_watcher->files().contains(path)) {
+                m_watcher->removePaths(m_watcher->files());
+                m_watcher->addPath(path);
+            }
+        }
+
+        // Reload...
+        m_downloader->download( KUrl( path ) );
     }
 
     QStringList ProxyScout::handleRequest( const KUrl& url )

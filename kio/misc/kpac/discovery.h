@@ -21,9 +21,8 @@
 #ifndef KPAC_DISCOVERY_H
 #define KPAC_DISCOVERY_H
 
-#include <QtCore/QObject>
-
 #include "downloader.h"
+
 class KProcess;
 
 namespace KPAC
@@ -41,11 +40,11 @@ namespace KPAC
         void helperOutput();
 
     private:
-        bool initHostName();
+        bool initDomainName();
         bool checkDomain() const;
 
         KProcess* m_helper;
-        QString m_hostname;
+        QString m_domainName;
     };
 }
 

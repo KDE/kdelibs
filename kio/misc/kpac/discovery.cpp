@@ -41,10 +41,12 @@
 // Basically, the BSDs need this before resolv.h
 #include <sys/param.h>
 #endif
+
 #include <resolv.h>
 #include <sys/utsname.h>
 
 #include <QtCore/QTimer>
+#include <QtNetwork/QHostInfo>
 
 #include <klocale.h>
 #include <kurl.h>
@@ -66,28 +68,10 @@ namespace KPAC
             QTimer::singleShot( 0, this, SLOT( failed() ) );
     }
 
-    bool Discovery::initHostName()
+    bool Discovery::initDomainName()
     {
-        struct utsname uts;
-
-        if (uname (&uts) > -1)
-        {
-            struct hostent *hent = gethostbyname (uts.nodename);
-            if (hent != 0)
-                m_hostname = QString::fromLocal8Bit( hent->h_name );
-        }
-
-        // If no hostname, try gethostname as a last resort.
-        if (m_hostname.isEmpty())
-        {
-            char buf [256];
-            if (gethostname (buf, sizeof(buf)) == 0)
-            {
-                buf[255] = '\0';
-                m_hostname = QString::fromLocal8Bit( buf );
-            }
-        }
-        return !m_hostname.isEmpty();
+        m_domainName = QHostInfo::localDomainName();
+        return !m_domainName.isEmpty();
     }
 
     bool Discovery::checkDomain() const
@@ -100,15 +84,21 @@ namespace KPAC
             HEADER header;
             unsigned char buf[ PACKETSZ ];
         } response;
-        int len = res_query( m_hostname.toLocal8Bit(), C_IN, T_SOA,
+
+        int len = res_query( m_domainName.toLocal8Bit(), C_IN, T_SOA,
                              response.buf, sizeof( response.buf ) );
         if ( len <= int( sizeof( response.header ) ) ||
-             ntohs( response.header.ancount ) != 1 ) return true;
+             ntohs( response.header.ancount ) != 1 )
+            return true;
+
         unsigned char* pos = response.buf + sizeof( response.header );
         unsigned char* end = response.buf + len;
+
         // skip query section
         pos += dn_skipname( pos, end ) + QFIXEDSZ;
-        if ( pos >= end ) return true;
+        if ( pos >= end )
+            return true;
+
         // skip answer domain
         pos += dn_skipname( pos, end );
         short type;
@@ -123,29 +113,32 @@ namespace KPAC
         // If this is the first DNS query, initialize our host name or abort
         // on failure. Otherwise abort if the current domain (which was already
         // queried for a host called "wpad" contains a SOA record)
-        bool firstQuery = m_hostname.isEmpty();
-        if ( ( firstQuery && !initHostName() ) ||
+        const bool firstQuery = m_domainName.isEmpty();
+        if ( ( firstQuery && !initDomainName() ) ||
              ( !firstQuery && !checkDomain() ) )
         {
             emit result( false );
             return;
         }
 
-        int dot = m_hostname.indexOf( '.' );
+        const int dot = m_domainName.indexOf( '.' );
         if ( dot >= 0 )
         {
-            m_hostname.remove( 0, dot + 1 ); // remove one domain level
-            download( KUrl( "http://wpad." + m_hostname + "./wpad.dat" ) );
+            KUrl url( QLatin1String("http://wpad.") + m_domainName + QLatin1String("/wpad.dat") );
+            m_domainName.remove( 0, dot + 1 ); // remove one domain level
+            download( url );
+            return;
         }
-        else emit result( false );
+
+        emit result( false );
     }
 
     void Discovery::helperOutput()
     {
         m_helper->disconnect( this );
-        QString line;
-        line = QString::fromLocal8Bit( m_helper->readLine() );
-        download( KUrl( line.trimmed() ) );
+        const QByteArray line = m_helper->readLine();
+        const KUrl url( QString::fromLocal8Bit(line.constData(), line.length()).trimmed() );
+        download( url );
     }
 }
 
