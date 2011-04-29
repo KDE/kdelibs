@@ -488,9 +488,9 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
             d->iconSizeSlider, SLOT(setValue(int)));
 
-    KAction *furtherAction = new KAction(KIcon("zoom-out"), i18n("Zoom out"), this);
+    KAction *furtherAction = new KAction(KIcon("file-zoom-out"), i18n("Zoom out"), this);
     connect(furtherAction, SIGNAL(triggered()), SLOT(_k_zoomOutIconsSize()));
-    KAction *closerAction = new KAction(KIcon("zoom-in"), i18n("Zoom in"), this);
+    KAction *closerAction = new KAction(KIcon("file-zoom-in"), i18n("Zoom in"), this);
     connect(closerAction, SIGNAL(triggered()), SLOT(_k_zoomInIconsSize()));
 
     QWidget *midSpacer = new QWidget(this);
