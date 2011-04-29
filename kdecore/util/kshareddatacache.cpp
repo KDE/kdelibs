@@ -983,13 +983,8 @@ class KSharedDataCache::Private
                 // First make sure that the version of the cache on disk is
                 // valid.  We also need to check that version != 0 to
                 // disambiguate against an uninitialized cache.
-                // It is also possible that the cache on disk is corrupt, so
-                // any sanity checks we can add would be highly helpful.
-                if ((mapped->version != SharedMemory::PIXMAP_CACHE_VERSION &&
-                    mapped->version > 0) ||
-                    (mapped->cachePageSize() == 0) ||
-                    (mapped->cacheSize == 0)
-                   )
+                if (mapped->version != SharedMemory::PIXMAP_CACHE_VERSION &&
+                    mapped->version > 0)
                 {
                     kWarning(ksdcArea()) << "Deleting wrong version of cache" << cacheName;
 
@@ -1007,17 +1002,8 @@ class KSharedDataCache::Private
                     cacheSize = mapped->cacheSize;
                     unsigned actualPageSize = mapped->cachePageSize();
                     ::munmap(mapAddress, size);
-
-                    if (actualPageSize > 0) {
-                        size = SharedMemory::totalSize(cacheSize, actualPageSize);
-                        mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
-                    }
-                    else {
-                        kError(ksdcArea()) << "Cache" << cacheName
-                            << "was corrupt on-disk, not using.";
-                        file.remove();
-                        return;
-                    }
+                    size = SharedMemory::totalSize(cacheSize, actualPageSize);
+                    mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
                 }
             }
         }
