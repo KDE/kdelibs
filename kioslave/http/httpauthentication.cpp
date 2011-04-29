@@ -233,8 +233,6 @@ void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, co
     }
 
     m_isError = false;
-    // we could leave m_needCredentials value alone; this is just defensive coding.
-    m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
 }
