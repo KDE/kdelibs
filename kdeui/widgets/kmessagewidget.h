@@ -92,6 +92,12 @@ class KMessageWidgetPrivate;
 class KDEUI_EXPORT KMessageWidget : public QFrame
 {
     Q_OBJECT
+    Q_ENUMS(MessageType)
+
+    Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY(bool wordWrap READ wordWrap WRITE setWordWrap)
+    Q_PROPERTY(bool closeButtonVisible READ isCloseButtonVisible WRITE setCloseButtonVisible)
+    Q_PROPERTY(MessageType messageType READ messageType WRITE setMessageType)
 public:
     enum MessageType {
         PositiveMessageType,
