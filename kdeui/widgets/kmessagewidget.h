@@ -111,7 +111,7 @@ public:
 
     bool wordWrap() const;
 
-    bool showCloseButton() const;
+    bool isCloseButtonVisible() const;
 
     MessageType messageType() const;
 
@@ -124,7 +124,7 @@ public Q_SLOTS:
 
     void setWordWrap(bool);
 
-    void setShowCloseButton(bool);
+    void setCloseButtonVisible(bool);
 
     void setMessageType(KMessageWidget::MessageType);
 

@@ -288,12 +288,12 @@ void KMessageWidget::setWordWrap(bool wordWrap)
     d->updateLayout();
 }
 
-bool KMessageWidget::showCloseButton() const
+bool KMessageWidget::isCloseButtonVisible() const
 {
     return d->closeButton->isVisible();
 }
 
-void KMessageWidget::setShowCloseButton(bool show)
+void KMessageWidget::setCloseButtonVisible(bool show)
 {
     d->closeButton->setVisible(show);
 }
