@@ -7,7 +7,6 @@ include_directories (
     ${QCA2_INCLUDE_DIR} 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/frontend/secret
 )
 
 set (client_lib_SRCS
