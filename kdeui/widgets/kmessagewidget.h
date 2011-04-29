@@ -23,6 +23,7 @@
 #include <kdeui_export.h>
 
 #include <QFrame>
+#include <kmessage.h>
 
 class KMessageWidgetPrivate;
 
@@ -110,6 +111,8 @@ public:
      * Constructs a KMessageWidget with the specified parent.
      */
     explicit KMessageWidget(QWidget *parent = 0);
+
+    explicit KMessageWidget(const QString &text, QWidget *parent = 0);
 
     ~KMessageWidget();
 

@@ -88,6 +88,8 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);
     closeButton->setDefaultAction(closeAction);
+
+    q->setMessageType(KMessageWidget::InformationMessageType);
 }
 
 void KMessageWidgetPrivate::createLayout()
@@ -165,7 +167,14 @@ KMessageWidget::KMessageWidget(QWidget* parent)
 , d(new KMessageWidgetPrivate)
 {
     d->init(this);
-    setMessageType(InformationMessageType);
+}
+
+KMessageWidget::KMessageWidget(const QString& text, QWidget* parent)
+: QFrame(parent)
+, d(new KMessageWidgetPrivate)
+{
+    d->init(this);
+    setText(text);
 }
 
 KMessageWidget::~KMessageWidget()
