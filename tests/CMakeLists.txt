@@ -5,7 +5,6 @@ INCLUDE_DIRECTORIES (
     ${QCA2_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/daemon/frontend/secret
 )
 
 set( ksecretservice_client_test_SRC
