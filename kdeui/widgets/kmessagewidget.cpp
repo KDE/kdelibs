@@ -51,7 +51,6 @@ public:
     QToolButton* closeButton;
     QTimeLine* timeLine;
 
-    QString text;
     KMessageWidget::MessageType messageType;
     bool wordWrap;
     QList<QToolButton*> buttons;
@@ -175,12 +174,11 @@ KMessageWidget::~KMessageWidget()
 
 QString KMessageWidget::text() const
 {
-    return d->text;
+    return d->textLabel->text();
 }
 
 void KMessageWidget::setText(const QString& text)
 {
-    d->text = text;
     d->textLabel->setText(text);
 }
 
