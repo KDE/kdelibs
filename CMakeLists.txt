@@ -13,6 +13,7 @@ include_directories (
 set (client_lib_SRCS
     ksecretservice.cpp
     ksecretservicecollection.cpp
+    ksecretserviceprompt.cpp
     ../daemon/frontend/secret/adaptors/secret.cpp
     ../daemon/frontend/secret/adaptors/dbustypes.cpp
 )

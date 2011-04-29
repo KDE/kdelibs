@@ -125,13 +125,12 @@ void ReadEntryJob::Private::onSearchFinished(KJob* job)
 
 ////////////////////////////////
 
-WriteEntryJob::WriteEntryJob(const QString &label, const QByteArray &secret,
-                             const QVariantMap &attributes, KSecretServiceCollection *parent)
+WriteEntryJob::WriteEntryJob(const QByteArray &secret,
+                             const QVariantMap &properties, KSecretServiceCollection *parent)
     : KJob(parent)
     , m_kssc(parent)
-    , m_label(label)
     , m_secret(secret)
-    , m_attributes(attributes)
+    , m_properties(properties)
 {
 }
 
@@ -150,9 +149,7 @@ void WriteEntryJob::run()
     secret.setSession(QDBusObjectPath(m_kssc->d->kss->d->sessionInterface->path()));
     secret.setValue(m_secret);
 
-    m_attributes["Label"] = m_label;
-
-    QDBusPendingCall reply = m_kssc->d->collectionInterface->CreateItem(m_attributes, secret, true);
+    QDBusPendingCall reply = m_kssc->d->collectionInterface->CreateItem(m_properties, secret, true);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
 
     connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
@@ -322,7 +319,7 @@ public:
         , secret(other.secret) {}
     ~Data() { }
 
-    QMap< QString, QString > attributes;
+    StringStringMap attributes;
     QString label;
 
     QDateTime created;
@@ -363,7 +360,19 @@ KSecretServiceCollection::Entry::~Entry()
 
 }
 
-QMap< QString, QString > KSecretServiceCollection::Entry::attributes() const
+QVariantMap KSecretServiceCollection::Entry::properties() const
+{
+    QVariantMap result;
+    result.insert("org.freedesktop.Secret.Item.Label", label());
+    QVariant attributesVariant;
+    attributesVariant.setValue( attributes() );
+    result.insert("org.freedesktop.Secret.Item.Attributes", attributesVariant );
+    result.insert("org.freedesktop.Secret.Item.Created", created() );
+    result.insert("org.freedesktop.Secret.Item.LastModified", lastModified() );
+    return result;
+}
+
+StringStringMap KSecretServiceCollection::Entry::attributes() const
 {
     return d->attributes;
 }
@@ -449,15 +458,26 @@ ReadEntryJob* KSecretServiceCollection::readEntry(const QString& label)
     return new ReadEntryJob(label, this);
 }
 
-KJob* KSecretServiceCollection::writeEntry(const QString& label, const QByteArray& secret, const QVariantMap &attributes)
+KJob* KSecretServiceCollection::writeEntryAsync(const QByteArray& secret, const QVariantMap &properties)
 {
-    return new WriteEntryJob(label, secret, attributes, this);
+    return new WriteEntryJob(secret, properties, this);
 }
 
 bool KSecretServiceCollection::writeEntry(const KSecretServiceCollection::Entry& entry)
 {
     bool result = false;
-    // TODO: implement this
+    Secret secret;
+    secret.setSession(QDBusObjectPath(d->kss->session()->path()));
+    secret.setValue(entry.secret());
+
+    QDBusObjectPath prompt;
+    // FIXME: should we give user the chance to replace or not ?
+    bool replace = true;
+    QDBusReply<QDBusObjectPath> reply = d->collectionInterface->CreateItem( entry.properties(), secret, replace, prompt );
+    if ( reply.isValid() ) {
+        
+    }
+    
     return result;
 }
 

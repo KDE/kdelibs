@@ -29,6 +29,8 @@
 
 #include <kjob.h>
 
+#include "../daemon/frontend/secret/adaptors/dbustypes.h"
+
 class KSecretService;
 class ReadEntryJob;
 class KSecretServiceCollection : public QObject
@@ -42,7 +44,8 @@ public:
         Entry(const Entry &other);
         ~Entry();
 
-        QMap< QString, QString > attributes() const;
+        QVariantMap properties() const;
+        StringStringMap attributes() const;
         QString label() const;
 
         QDateTime created() const;
@@ -70,7 +73,7 @@ public:
 
     QStringList entries() const;
 
-    KJob *writeEntry(const QString &label, const QByteArray &secret, const QVariantMap &attributes = QVariantMap());
+    KJob *writeEntryAsync(const QByteArray &secret, const QVariantMap &properties);
     
     /**
      * This convenience overload synchronously writes an entry into this collection.

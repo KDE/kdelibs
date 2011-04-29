@@ -25,6 +25,8 @@
 
 #include <QtCore/QStringList>
 
+#include "../daemon/frontend/secret/adaptors/dbustypes.h"
+
 // Jobs
 
 class QDBusPendingCallWatcher;
@@ -58,8 +60,8 @@ class WriteEntryJob : public KJob
     Q_OBJECT
 
 public:
-    explicit WriteEntryJob(const QString &label, const QByteArray &secret,
-                           const QVariantMap &attributes, KSecretServiceCollection *parent);
+    explicit WriteEntryJob(const QByteArray &secret,
+                           const QVariantMap &properties, KSecretServiceCollection *parent);
     virtual ~WriteEntryJob();
 
     virtual void start();
@@ -71,9 +73,8 @@ private Q_SLOTS:
 private:
     KSecretServiceCollection *m_kssc;
 
-    QString m_label;
     QByteArray m_secret;
-    QVariantMap m_attributes;
+    QVariantMap m_properties;
 };
 
 class DeleteEntryJob : public KJob
