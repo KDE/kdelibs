@@ -67,7 +67,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
 {
     q = q_ptr;
 
-    q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     timeLine = new QTimeLine(500, q);
     QObject::connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(slotTimeLineChanged(qreal)));
@@ -209,6 +209,7 @@ QString KMessageWidget::text() const
 void KMessageWidget::setText(const QString& text)
 {
     d->textLabel->setText(text);
+    updateGeometry();
 }
 
 KMessageWidget::MessageType KMessageWidget::messageType() const
@@ -265,6 +266,18 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
         .arg(border.color().name())
         .arg(fg.color().name())
         );
+}
+
+QSize KMessageWidget::sizeHint() const
+{
+    ensurePolished();
+    return d->content->sizeHint();
+}
+
+QSize KMessageWidget::minimumSizeHint() const
+{
+    ensurePolished();
+    return d->content->minimumSizeHint();
 }
 
 bool KMessageWidget::event(QEvent* event)

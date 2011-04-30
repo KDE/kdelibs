@@ -128,6 +128,10 @@ public:
 
     void removeAction(QAction* action);
 
+    QSize sizeHint() const;
+
+    QSize minimumSizeHint() const;
+
 public Q_SLOTS:
     void setText(const QString &);
 
