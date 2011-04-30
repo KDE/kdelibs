@@ -1012,7 +1012,10 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
     Q_ASSERT(jobPriv->m_schedSerial);
 
     ProtoQueue *pq = m_protocols.value(jobPriv->m_protocol);
-    pq->removeJob(job);
+    if (pq) {
+       pq->removeJob(job);
+    }
+
     if (slave) {
         // If we have internal meta-data, tell existing ioslaves to reload
         // their configuration.
@@ -1120,11 +1123,13 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
     Q_ASSERT(slave);
     Q_ASSERT(!slave->isAlive());
     ProtoQueue *pq = m_protocols.value(slave->protocol());
-    if (slave->job()) {
-        pq->removeJob(slave->job());
+    if (pq) {
+       if (slave->job()) {
+           pq->removeJob(slave->job());
+       }
+       // in case this was a connected slave...
+       pq->removeSlave(slave);
     }
-    // in case this was a connected slave...
-    pq->removeSlave(slave);
     if (slave == m_slaveOnHold) {
        m_slaveOnHold = 0;
        m_urlOnHold.clear();
@@ -1269,14 +1274,14 @@ bool SchedulerPrivate::assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
     // KDE5: queueing of jobs can probably be removed, it provides very little benefit
     ProtoQueue *pq = m_protocols.value(slave->protocol());
     pq->removeJob(job);
-    return pq->m_connectedSlaveQueue.queueJob(job, slave);
+    return (pq ? pq->m_connectedSlaveQueue.queueJob(job, slave) : false);
 }
 
 bool SchedulerPrivate::disconnectSlave(KIO::Slave *slave)
 {
     kDebug(7006) << slave;
     ProtoQueue *pq = m_protocols.value(slave->protocol());
-    return pq->m_connectedSlaveQueue.removeSlave(slave);
+    return (pq ? pq->m_connectedSlaveQueue.removeSlave(slave) : false);
 }
 
 void SchedulerPrivate::checkSlaveOnHold(bool b)
