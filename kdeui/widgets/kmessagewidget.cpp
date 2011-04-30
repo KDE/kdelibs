@@ -59,6 +59,8 @@ public:
     void createLayout();
     void updateSnapShot();
     void updateLayout();
+    void slotTimeLineChanged(qreal);
+    void slotTimeLineFinished();
 };
 
 void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
@@ -156,6 +158,23 @@ void KMessageWidgetPrivate::updateSnapShot()
     contentSnapShot = QPixmap(content->size());
     contentSnapShot.fill(Qt::transparent);
     content->render(&contentSnapShot, QPoint(), QRegion(), QWidget::DrawChildren);
+}
+
+void KMessageWidgetPrivate::slotTimeLineChanged(qreal value)
+{
+    q->setFixedHeight(qMin(value * 2, 1.) * content->height());
+    q->repaint();
+}
+
+void KMessageWidgetPrivate::slotTimeLineFinished()
+{
+    if (timeLine->direction() == QTimeLine::Forward) {
+        // Show
+        content->move(0, 0);
+    } else {
+        // Hide
+        q->hide();
+    }
 }
 
 
@@ -335,23 +354,6 @@ void KMessageWidget::animatedShow()
     d->timeLine->setDirection(QTimeLine::Forward);
     if (d->timeLine->state() == QTimeLine::NotRunning) {
         d->timeLine->start();
-    }
-}
-
-void KMessageWidget::slotTimeLineChanged(qreal value)
-{
-    setFixedHeight(qMin(value * 2, 1.) * d->content->height());
-    repaint();
-}
-
-void KMessageWidget::slotTimeLineFinished()
-{
-    if (d->timeLine->direction() == QTimeLine::Forward) {
-        // Show
-        d->content->move(0, 0);
-    } else {
-        // Hide
-        hide();
     }
 }
 

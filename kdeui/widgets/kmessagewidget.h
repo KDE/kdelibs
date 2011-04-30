@@ -154,9 +154,8 @@ private:
     KMessageWidgetPrivate *const d;
     friend class KMessageWidgetPrivate;
 
-private Q_SLOTS:
-    void slotTimeLineChanged(qreal);
-    void slotTimeLineFinished();
+    Q_PRIVATE_SLOT(d, void slotTimeLineChanged(qreal))
+    Q_PRIVATE_SLOT(d, void slotTimeLineFinished())
 };
 
 #endif /* KMESSAGEWIDGET_H */
