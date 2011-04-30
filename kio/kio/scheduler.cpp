@@ -1142,13 +1142,6 @@ void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
     slave->setJob(0);
     SimpleJobPrivate::get(job)->m_slave = 0;
 
-    // Remove the soon to be dead job from the queue to avoid breaking the
-    // scheduler's job accounting.
-    ProtoQueue *pq = m_protocols.value(slave->protocol());
-    if (pq) {
-        pq->removeJob(job);
-    }
-
     if (m_slaveOnHold) {
         m_slaveOnHold->kill();
     }
