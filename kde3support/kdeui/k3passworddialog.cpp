@@ -540,7 +540,7 @@ int K3PasswordDialog::getPassword(QWidget *parent, QByteArray &password, const Q
     const QString &prompt, bool *keep)
 {
     const bool enableKeep = (keep && *keep);
-    K3PasswordDialog* const dlg = new K3PasswordDialog(Password, enableKeep,false,parent);
+    K3PasswordDialog* const dlg = new K3PasswordDialog(Password, enableKeep,KDialog::None,parent);
     dlg->setWindowTitle(caption);
     dlg->setPrompt(prompt);
     const int ret = dlg->exec();
@@ -572,7 +572,7 @@ int K3PasswordDialog::getPassword(QWidget *parent, QByteArray &password, const Q
 int K3PasswordDialog::getNewPassword(QWidget *parent, QByteArray &password, const QString &caption,
     const QString &prompt)
 {
-    K3PasswordDialog* const dlg = new K3PasswordDialog(NewPassword, false,false,parent);
+    K3PasswordDialog* const dlg = new K3PasswordDialog(NewPassword, false,KDialog::None,parent);
     dlg->setWindowTitle(caption);
     dlg->setPrompt(prompt);
     const int ret = dlg->exec();
