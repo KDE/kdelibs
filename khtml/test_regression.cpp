@@ -1530,7 +1530,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             return;
         }
 
-        KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate(filename, 0, "setUpPage(); " + functionname + "();" );
+        KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate(filename, 0, QString("setUpPage(); " + functionname + "();") );
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
         QString description = "DOMTS";
         if ( comp2.complType() == Throw ) {
