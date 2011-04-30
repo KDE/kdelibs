@@ -320,7 +320,7 @@ void KMessageWidget::removeAction(QAction* action)
 
 void KMessageWidget::animatedShow()
 {
-    if (KGlobalSettings::graphicEffectsLevel() < KGlobalSettings::SimpleAnimationEffects) {
+    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
         show();
         return;
     }
@@ -357,7 +357,7 @@ void KMessageWidget::slotTimeLineFinished()
 
 void KMessageWidget::animatedHide()
 {
-    if (KGlobalSettings::graphicEffectsLevel() < KGlobalSettings::SimpleAnimationEffects) {
+    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
         hide();
         return;
     }
