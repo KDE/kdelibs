@@ -32,6 +32,7 @@ namespace KIO
     namespace HostInfo
     {
         KIO_EXPORT void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        KIO_EXPORT QHostInfo lookupHost(const QString& hostName, unsigned long timeout);
         KIO_EXPORT QHostInfo lookupCachedHostInfoFor(const QString& hostName);
         KIO_EXPORT void cacheLookup(const QHostInfo& info);
 

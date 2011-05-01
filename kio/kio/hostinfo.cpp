@@ -25,6 +25,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QHash>
 #include <QtCore/QCache>
 #include <QtCore/QTime>
+#include <QtCore/QTimer>
 #include <QtCore/QList>
 #include <QtCore/QPair>
 #include <QtCore/QFutureWatcher>
@@ -117,6 +118,45 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     const char* member)
 {
     hostInfoAgentPrivate->lookupHost(hostName, receiver, member);
+}
+
+QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
+{
+    QHostInfo hostInfo;
+
+    // Avoid reverse name lookups...
+    QHostAddress address (hostName);
+    if (!address.isNull()) {
+        QList<QHostAddress> addressList;
+        addressList << address;
+        hostInfo.setAddresses(addressList);
+        return hostInfo;
+    }
+
+    // Look up the name in the KIO/KHTML DNS cache...
+    hostInfo = lookupCachedHostInfoFor(hostName);
+    if (!hostInfo.hostName().isEmpty() && hostInfo.error() == QHostInfo::NoError) {
+        return hostInfo;
+    }
+
+    // Do a timed multi-threaded name lookup...
+    QTimer timer;
+    timer.setSingleShot(true);
+    QFutureWatcher<QHostInfo> watcher;
+    QObject::connect (&timer, SIGNAL(timeout()), &watcher, SLOT(cancel()));
+    watcher.setFuture(QtConcurrent::run(&QHostInfo::fromName, hostName));
+    timer.start();
+    watcher.waitForFinished();
+    if (!watcher.isCanceled()) {
+        hostInfo = watcher.result();
+    }
+
+    // Cache the lookup on success...
+    if (hostInfo.error() == QHostInfo::NoError) {
+        cacheLookup(hostInfo);
+    }
+
+    return hostInfo;
 }
 
 QHostInfo HostInfo::lookupCachedHostInfoFor(const QString& hostName)
