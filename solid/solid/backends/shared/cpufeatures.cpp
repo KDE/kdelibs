@@ -92,7 +92,7 @@ Solid::Processor::InstructionSets cpuFeatures()
 #if defined( HAVE_GNU_INLINE_ASM )
 #if defined( __i386__ ) || defined( __x86_64__ )
     bool haveCPUID = false;
-    unsigned int result = 0;
+    unsigned int result = 0, result2 = 0;
 
     // First check if the CPU supports the CPUID instruction
     __asm__ __volatile__(
@@ -122,9 +122,10 @@ Solid::Processor::InstructionSets cpuFeatures()
             ASM_MOV_VAR("$1", "ax")             // Set EAX to 1 (features request)
             "cpuid                      \n\t"   // Call CPUID
             ASM_POP("bx")                       // Restore EBX
-            : "=d"(result) : : ASM_REG("ax"), ASM_REG("cx") );
+            : "=d"(result), "=c"(result2) : : ASM_REG("ax") );
 
         features = result & 0x06800000; //copy the mmx and sse bits to features
+        features |= result2 & 0x00080001; //copy the sse3 and sse4 bits to features
 
         __asm__ __volatile__ (
              ASM_PUSH("bx")
@@ -176,7 +177,7 @@ Solid::Processor::InstructionSets cpuFeatures()
                               : /* none */
                               : "r" (-1) );
         signal( SIGILL, SIG_DFL );
-        features = 0x1;
+        features = 0x2;
     }
 #endif // __i386__ || __x86_64__
 #endif //HAVE_GNU_INLINE_ASM
@@ -190,7 +191,12 @@ Solid::Processor::InstructionSets cpuFeatures()
         featureflags |= Solid::Processor::IntelSse;
     if (features & 0x04000000)
         featureflags |= Solid::Processor::IntelSse2;
-    if (features & 0x1)
+    if (features & 0x00000001) // FIXME: Only SSE3. There is no flag for SSSE3.
+        featureflags |= Solid::Processor::IntelSse3;
+    if (features & 0x00080000) // FIXME: Only SSE4.1. There is no flag for SSE4.2.
+        featureflags |= Solid::Processor::IntelSse4;
+
+    if (features & 0x2)
         featureflags |= Solid::Processor::AltiVec;
 
    return featureflags;

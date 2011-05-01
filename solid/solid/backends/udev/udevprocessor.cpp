@@ -93,14 +93,6 @@ Solid::Processor::InstructionSets Processor::instructionSets() const
 {
     static Solid::Processor::InstructionSets cpuextensions = Solid::Backends::Shared::cpuFeatures();
 
-    QStringList flaglist = flags(number());
-
-    if (flaglist.contains("pni")) // SSE3 != SSSE3 !!!
-        cpuextensions |= Solid::Processor::IntelSse3;
-
-    if (flaglist.contains("sse4_1"))
-        cpuextensions |= Solid::Processor::IntelSse4; // FIXME this should differentiate between SSE 4.1 and 4.2
-
     return cpuextensions;
 }
 
