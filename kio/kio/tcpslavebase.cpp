@@ -343,44 +343,28 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
     }
 
     KTcpSocket::SslVersion trySslVersion = KTcpSocket::TlsV1;
+    const int timeout = readTimeout() * 1000;
     while (true) {
         disconnectFromHost();  //Reset some state, even if we are already disconnected
         d->host = host;
 
-        //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
+        d->socket.connectToHost(host, port);
+        const bool connectOk = d->socket.waitForConnected(timeout > -1 ? timeout : -1);
 
-        QList<QHostAddress> addresses;
+        kDebug(7029) << ", Socket state:" << d->socket.state()
+                     << "Socket error:" << d->socket.error()
+                     << ", Connection succeeded:" << connectOk;
 
-        QHostAddress address;
-        if (address.setAddress(host)) {
-            addresses.append(address);
-        } else {
-            QHostInfo info;
-            lookupHost(host);
-            waitForHostInfo(info);
-            if (info.error() != QHostInfo::NoError) {
-                error(ERR_UNKNOWN_HOST, host);
-                return false;
-            }
-            addresses = info.addresses();
-        }
-
-        QListIterator<QHostAddress> it(addresses);
-        int timeout = connectTimeout() * 1000;
-        QTime time;
-        forever {
-            time.start();
-            d->socket.connectToHost(it.next(), port);
-            if (d->socket.waitForConnected(timeout)) {
-                break;
-            }
-            timeout -= time.elapsed();
-            if (!it.hasNext() || (timeout < 0)) {
+        if (d->socket.state() != KTcpSocket::ConnectedState) {
+            if (d->socket.error() == KTcpSocket::HostNotFoundError) {
+                error(ERR_UNKNOWN_HOST,
+                      host + QLatin1String(": ") + d->socket.errorString());
+            } else {
                 error(ERR_COULD_NOT_CONNECT,
                       host + QLatin1String(": ") + d->socket.errorString());
-                return false;
             }
-        }
+            return false;
+         }
 
         //### check for proxyAuthenticationRequiredError
 
