@@ -381,6 +381,10 @@ void KMessageWidget::animatedHide()
         return;
     }
 
+    if (!isVisible()) {
+        return;
+    }
+
     d->content->move(0, -d->content->height());
     d->updateSnapShot();
 
