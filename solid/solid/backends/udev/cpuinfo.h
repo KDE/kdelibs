@@ -38,8 +38,6 @@ namespace UDev
  */
 QString extractCpuInfoLine(int processorNumber, const QString &regExp);
 
-QStringList flags(int processorNumber);
-
 }
 }
 }

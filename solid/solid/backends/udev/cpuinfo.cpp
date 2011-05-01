@@ -68,35 +68,6 @@ QString extractCpuInfoLine(int processorNumber, const QString &regExpStr)
     return QString();
 }
 
-QStringList flags(int processorNumber)
-{
-    if (processorNumber == -1) {
-        return QStringList();
-    }
-
-    QFile cpuInfoFile("/proc/cpuinfo");
-    if (!cpuInfoFile.open(QIODevice::ReadOnly)) {
-        return QStringList();
-    }
-
-    QTextStream in(&cpuInfoFile);
-    QString line = in.readLine();
-    QStringList result;
-
-    while (!line.isNull()) {
-        if (line.startsWith("flags")) {
-            line = line.mid(line.indexOf(':') + 1);
-            result = line.split(' ', QString::SkipEmptyParts);
-            //qDebug() << "cpu flags:" << result;
-            break;
-        }
-        line = in.readLine();
-    }
-
-    cpuInfoFile.close();
-    return result;
-}
-
 }
 }
 }
