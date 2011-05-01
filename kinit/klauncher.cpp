@@ -89,7 +89,7 @@ IdleSlave::gotInput()
    if (mConn.read( &cmd, data) == -1)
    {
       // Communication problem with slave.
-      kError(7016) << "SlavePool: No communication with slave." << endl;
+      //kError(7016) << "SlavePool: No communication with slave." << endl;
       deleteLater();
    }
    else if (cmd == MSG_SLAVE_ACK)
