@@ -163,7 +163,7 @@ void KMessageWidgetPrivate::updateSnapShot()
 void KMessageWidgetPrivate::slotTimeLineChanged(qreal value)
 {
     q->setFixedHeight(qMin(value * 2, 1.) * content->height());
-    q->repaint();
+    q->update();
 }
 
 void KMessageWidgetPrivate::slotTimeLineFinished()
@@ -182,15 +182,15 @@ void KMessageWidgetPrivate::slotTimeLineFinished()
 // KMessageWidget
 //---------------------------------------------------------------------
 KMessageWidget::KMessageWidget(QWidget* parent)
-: QFrame(parent)
-, d(new KMessageWidgetPrivate)
+    : QFrame(parent)
+    , d(new KMessageWidgetPrivate)
 {
     d->init(this);
 }
 
 KMessageWidget::KMessageWidget(const QString& text, QWidget* parent)
-: QFrame(parent)
-, d(new KMessageWidgetPrivate)
+    : QFrame(parent)
+    , d(new KMessageWidgetPrivate)
 {
     d->init(this);
     setText(text);
