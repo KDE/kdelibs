@@ -23,7 +23,6 @@
 #include <kdeui_export.h>
 
 #include <QFrame>
-#include <kmessage.h>
 
 class KMessageWidgetPrivate;
 
