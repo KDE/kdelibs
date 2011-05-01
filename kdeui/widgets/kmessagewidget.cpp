@@ -357,6 +357,10 @@ void KMessageWidget::animatedShow()
         return;
     }
 
+    if (isVisible()) {
+        return;
+    }
+
     QFrame::show();
     setFixedHeight(0);
     int wantedHeight = d->content->sizeHint().height();
