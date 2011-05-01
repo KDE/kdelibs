@@ -154,7 +154,7 @@ Solid::Processor::InstructionSets cpuFeatures()
 
             // Try executing an SSE insn to see if we get a SIGILL
             if (setjmp(env))
-                features &= ~0x06000000; // The OS support test failed
+                features &= ~0x06080001; // The OS support test failed
             else
                 __asm__ __volatile__("xorps %xmm0, %xmm0");
 
