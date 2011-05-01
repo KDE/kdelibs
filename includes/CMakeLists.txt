@@ -260,6 +260,7 @@ install( FILES
   KMessageBox
   KMessageBoxMessageHandler
   KMessageHandler
+  KMessageWidget
   KMimeType
   KMimeTypeChooser
   KMimeTypeChooserDialog
