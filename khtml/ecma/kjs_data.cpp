@@ -134,7 +134,7 @@ DelayedPostMessage::DelayedPostMessage(KHTMLPart* _source,
                                        const QString& _sourceOrigin, 
                                        const QString& _targetOrigin, 
                                        JSValue* _payload):
-    source(_source), sourceOrigin(_sourceOrigin), targetOrigin(_targetOrigin), payload(_payload)
+    sourceOrigin(_sourceOrigin), targetOrigin(_targetOrigin), payload(_payload), source(_source)
 {}
 
 void DelayedPostMessage::mark()
