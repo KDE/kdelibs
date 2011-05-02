@@ -20,7 +20,7 @@
 
 #include "kbuildsycoca.h"
 #include "ksycoca_p.h"
-#include "kresourcelist.h"
+#include "ksycocaresourcelist.h"
 #include "vfolder_menu.h"
 
 #include <config.h>
