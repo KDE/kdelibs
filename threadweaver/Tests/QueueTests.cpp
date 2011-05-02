@@ -148,7 +148,7 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
 void QueueTests::deleteCollection( Job* collection )
 {
     QVERIFY( thread() == QThread::currentThread() );
-    QVERIFY( collection = autoDeleteCollection );
+    QVERIFY( collection == autoDeleteCollection );
     delete autoDeleteCollection;
     autoDeleteCollection = 0;
 }
