@@ -607,7 +607,8 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
 
         m_forceKeepAlive = true;
         const QByteArray challenge = QByteArray::fromBase64(m_challenge[0]);
-        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName())) {
+        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName(),
+                            (KNTLM::Force_V1 | KNTLM::Add_LM))) {
             kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
             m_isError = true;
             return;
