@@ -1767,9 +1767,20 @@ void KLocalePrivate::setMainCatalog(const char *catalog)
 double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
 {
     QString str = _str.trimmed();
-    bool neg = str.indexOf(negativeSign()) == 0;
-    if (neg) {
+    bool neg = false;
+
+    // Check negative or positive signs
+    // Assumes blank sign is positive even if pos sign set, unless already taken by negative
+    if (!negativeSign().isEmpty() && str.indexOf(negativeSign()) == 0) {
+        neg = true;
         str.remove(0, negativeSign().length());
+        str = str.trimmed();
+    } else if (!positiveSign().isEmpty() && str.indexOf(positiveSign()) == 0) {
+        neg = false;
+        str.remove(0, positiveSign().length());
+        str = str.trimmed();
+    } else if (negativeSign().isEmpty() && str[0].isDigit()) {
+        neg = true;
     }
 
     /* will hold the scientific notation portion of the number.
@@ -1783,6 +1794,7 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
     if (EPos != -1) {
         exponentialPart = str.mid(EPos);
         str = str.left(EPos);
+        str = str.trimmed();
     }
 
     int pos = str.indexOf(decimalSymbol());
@@ -1823,6 +1835,27 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
         return 0.0;
     }
 
+    // Check the major and minor parts are only digits
+    bool digitTest = true;
+    foreach (const QChar &ch, major) {
+        if (!ch.isDigit()) {
+            digitTest = false;
+            break;
+        }
+    }
+    foreach (const QChar &ch, minor) {
+        if (!ch.isDigit()) {
+            digitTest = false;
+            break;
+        }
+    }
+    if (!digitTest) {
+        if (ok) {
+            *ok = false;
+        }
+        return 0.0;
+    }
+
     QString tot;
     if (neg) {
         tot = QLatin1Char('-');
@@ -1855,22 +1888,43 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
         }
         return 0;
     }
-    // Then try removing negative sign from either end
-    // (with a special case for parenthesis)
-    if (negativeMonetarySignPosition() == KLocale::ParensAround) {
-        if (str[0] == QLatin1Char('(') && str[str.length()-1] == QLatin1Char(')')) {
+
+    // Then try removing sign from either end (with a special case for parenthesis)
+    if (str[0] == QLatin1Char('(') && str[str.length()-1] == QLatin1Char(')')) {
+        if (positiveMonetarySignPosition() != KLocale::ParensAround) {
             neg = true;
-            str.remove(str.length() - 1, 1);
-            str.remove(0, 1);
         }
+        str.remove(str.length() - 1, 1);
+        str.remove(0, 1);
+        str = str.trimmed();
     } else {
-        int i1 = str.indexOf(negativeSign());
-        if (i1 == 0 || i1 == (int) str.length() - 1) {
+        int len = 0;
+        QString sign;
+        int negLen = negativeSign().length();
+        QString negSign = negativeSign();
+        if (!negSign.isEmpty() && (str.left(negLen) == negSign || str.right(negSign.length()) == negSign)) {
             neg = true;
-            str.remove(i1, negativeSign().length());
+            len = negLen;
+            sign = negSign;
+        } else {
+            int posLen = positiveSign().length();
+            QString posSign = positiveSign();
+            if (!posSign.isEmpty() && (str.left(posLen) == posSign || str.right(posSign.length()) == posSign)) {
+                len = posLen;
+                sign = posSign;
+            } else if (negSign.isEmpty() && str[0].isDigit() && str[str.length() - 1].isDigit()){
+                neg = true;
+            }
+        }
+        if (!sign.isEmpty()) {
+            if (str.left(len) == sign) {
+                str.remove(0, len);
+            } else {
+                str.remove(str.length() - len, len);
+            }
+            str = str.trimmed();
         }
     }
-    if (neg) str = str.trimmed();
 
     // Finally try again for the currency symbol, if we didn't find
     // it already (because of the negative sign being in the way).
@@ -1885,12 +1939,12 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
     // And parse the rest as a number
     pos = str.indexOf(monetaryDecimalSymbol());
     QString major;
-    QString minior;
+    QString minor;
     if (pos == -1) {
         major = str;
     } else {
         major = str.left(pos);
-        minior = str.mid(pos + monetaryDecimalSymbol().length());
+        minor = str.mid(pos + monetaryDecimalSymbol().length());
     }
 
     // Remove thousand separators
@@ -1920,11 +1974,32 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
         return 0.0;
     }
 
+    // Check the major and minor parts are only digits
+    bool digitTest = true;
+    foreach (const QChar &ch, major) {
+        if (!ch.isDigit()) {
+            digitTest = false;
+            break;
+        }
+    }
+    foreach (const QChar &ch, minor) {
+        if (!ch.isDigit()) {
+            digitTest = false;
+            break;
+        }
+    }
+    if (!digitTest) {
+        if (ok) {
+            *ok = false;
+        }
+        return 0.0;
+    }
+
     QString tot;
     if (neg) {
         tot = QLatin1Char('-');
     }
-    tot += major + QLatin1Char('.') + minior;
+    tot += major + QLatin1Char('.') + minor;
     tot = toArabicDigits(tot);
     return tot.toDouble(ok);
 }

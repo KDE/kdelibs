@@ -114,6 +114,408 @@ KLocaleTest::readNumber()
 	QVERIFY(ok);
 	QCOMPARE(locale.readNumber("1.12345678912", &ok), 1.12345678912);
 	QVERIFY(ok);
+
+    locale.setPositiveSign("@");
+    locale.setNegativeSign("&");
+    QCOMPARE(locale.readNumber(QString("@123,456,789.12"), &ok), 123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("&123,456,789.12"), &ok), -123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString( "123,456,789.12"), &ok), 123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("+123,456,789.12"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("-123,456,789.12"), &ok), 0.0);
+    QVERIFY(!ok);
+    locale.setNegativeSign(QString());
+    QCOMPARE(locale.readNumber(QString( "123,456,789.12"), &ok), -123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("-123,456,789.12"), &ok), 0.0);
+    QVERIFY(!ok);
+}
+
+void KLocaleTest::formatMoney()
+{
+    KLocale locale(*KGlobal::locale());
+    locale.setPositiveSign(QString());
+    locale.setNegativeSign("-");
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    locale.setMonetaryDecimalPlaces(2);
+    locale.setMonetaryThousandsSeparator(",");
+    locale.setMonetaryDecimalSymbol(".");
+    locale.setCurrencySymbol("$");
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+
+    // Basic grouping, decimal place and rounding tests
+    QCOMPARE(locale.formatMoney(        1), QString(          "$ 1.00"));
+    QCOMPARE(locale.formatMoney(       21), QString(         "$ 21.00"));
+    QCOMPARE(locale.formatMoney(      321), QString(        "$ 321.00"));
+    QCOMPARE(locale.formatMoney(     4321), QString(      "$ 4,321.00"));
+    QCOMPARE(locale.formatMoney(    54321), QString(     "$ 54,321.00"));
+    QCOMPARE(locale.formatMoney(   654321), QString(    "$ 654,321.00"));
+    QCOMPARE(locale.formatMoney(  7654321), QString(  "$ 7,654,321.00"));
+    QCOMPARE(locale.formatMoney( 87654321), QString( "$ 87,654,321.00"));
+    QCOMPARE(locale.formatMoney(987654321), QString("$ 987,654,321.00"));
+
+    QCOMPARE(locale.formatMoney(        1.1), QString(          "$ 1.10"));
+    QCOMPARE(locale.formatMoney(       21.1), QString(         "$ 21.10"));
+    QCOMPARE(locale.formatMoney(      321.1), QString(        "$ 321.10"));
+    QCOMPARE(locale.formatMoney(     4321.1), QString(      "$ 4,321.10"));
+    QCOMPARE(locale.formatMoney(    54321.1), QString(     "$ 54,321.10"));
+    QCOMPARE(locale.formatMoney(   654321.1), QString(    "$ 654,321.10"));
+    QCOMPARE(locale.formatMoney(  7654321.1), QString(  "$ 7,654,321.10"));
+    QCOMPARE(locale.formatMoney( 87654321.1), QString( "$ 87,654,321.10"));
+    QCOMPARE(locale.formatMoney(987654321.1), QString("$ 987,654,321.10"));
+
+    QCOMPARE(locale.formatMoney(        1.12), QString(          "$ 1.12"));
+    QCOMPARE(locale.formatMoney(       21.12), QString(         "$ 21.12"));
+    QCOMPARE(locale.formatMoney(      321.12), QString(        "$ 321.12"));
+    QCOMPARE(locale.formatMoney(     4321.12), QString(      "$ 4,321.12"));
+    QCOMPARE(locale.formatMoney(    54321.12), QString(     "$ 54,321.12"));
+    QCOMPARE(locale.formatMoney(   654321.12), QString(    "$ 654,321.12"));
+    QCOMPARE(locale.formatMoney(  7654321.12), QString(  "$ 7,654,321.12"));
+    QCOMPARE(locale.formatMoney( 87654321.12), QString( "$ 87,654,321.12"));
+    QCOMPARE(locale.formatMoney(987654321.12), QString("$ 987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        1.12), QString(          "$ 1.12"));
+    QCOMPARE(locale.formatMoney(       21.12), QString(         "$ 21.12"));
+    QCOMPARE(locale.formatMoney(      321.12), QString(        "$ 321.12"));
+    QCOMPARE(locale.formatMoney(     4321.12), QString(      "$ 4,321.12"));
+    QCOMPARE(locale.formatMoney(    54321.12), QString(     "$ 54,321.12"));
+    QCOMPARE(locale.formatMoney(   654321.12), QString(    "$ 654,321.12"));
+    QCOMPARE(locale.formatMoney(  7654321.12), QString(  "$ 7,654,321.12"));
+    QCOMPARE(locale.formatMoney( 87654321.12), QString( "$ 87,654,321.12"));
+    QCOMPARE(locale.formatMoney(987654321.12), QString("$ 987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        1.123), QString(          "$ 1.12"));
+    QCOMPARE(locale.formatMoney(       21.123), QString(         "$ 21.12"));
+    QCOMPARE(locale.formatMoney(      321.123), QString(        "$ 321.12"));
+    QCOMPARE(locale.formatMoney(     4321.123), QString(      "$ 4,321.12"));
+    QCOMPARE(locale.formatMoney(    54321.123), QString(     "$ 54,321.12"));
+    QCOMPARE(locale.formatMoney(   654321.123), QString(    "$ 654,321.12"));
+    QCOMPARE(locale.formatMoney(  7654321.123), QString(  "$ 7,654,321.12"));
+    QCOMPARE(locale.formatMoney( 87654321.123), QString( "$ 87,654,321.12"));
+    QCOMPARE(locale.formatMoney(987654321.123), QString("$ 987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        1.129), QString(          "$ 1.13"));
+    QCOMPARE(locale.formatMoney(       21.129), QString(         "$ 21.13"));
+    QCOMPARE(locale.formatMoney(      321.129), QString(        "$ 321.13"));
+    QCOMPARE(locale.formatMoney(     4321.129), QString(      "$ 4,321.13"));
+    QCOMPARE(locale.formatMoney(    54321.129), QString(     "$ 54,321.13"));
+    QCOMPARE(locale.formatMoney(   654321.129), QString(    "$ 654,321.13"));
+    QCOMPARE(locale.formatMoney(  7654321.129), QString(  "$ 7,654,321.13"));
+    QCOMPARE(locale.formatMoney( 87654321.129), QString( "$ 87,654,321.13"));
+    QCOMPARE(locale.formatMoney(987654321.129), QString("$ 987,654,321.13"));
+
+    QCOMPARE(locale.formatMoney(        -1), QString(          "$ -1.00"));
+    QCOMPARE(locale.formatMoney(       -21), QString(         "$ -21.00"));
+    QCOMPARE(locale.formatMoney(      -321), QString(        "$ -321.00"));
+    QCOMPARE(locale.formatMoney(     -4321), QString(      "$ -4,321.00"));
+    QCOMPARE(locale.formatMoney(    -54321), QString(     "$ -54,321.00"));
+    QCOMPARE(locale.formatMoney(   -654321), QString(    "$ -654,321.00"));
+    QCOMPARE(locale.formatMoney(  -7654321), QString(  "$ -7,654,321.00"));
+    QCOMPARE(locale.formatMoney( -87654321), QString( "$ -87,654,321.00"));
+    QCOMPARE(locale.formatMoney(-987654321), QString("$ -987,654,321.00"));
+
+    QCOMPARE(locale.formatMoney(        -1.1), QString(          "$ -1.10"));
+    QCOMPARE(locale.formatMoney(       -21.1), QString(         "$ -21.10"));
+    QCOMPARE(locale.formatMoney(      -321.1), QString(        "$ -321.10"));
+    QCOMPARE(locale.formatMoney(     -4321.1), QString(      "$ -4,321.10"));
+    QCOMPARE(locale.formatMoney(    -54321.1), QString(     "$ -54,321.10"));
+    QCOMPARE(locale.formatMoney(   -654321.1), QString(    "$ -654,321.10"));
+    QCOMPARE(locale.formatMoney(  -7654321.1), QString(  "$ -7,654,321.10"));
+    QCOMPARE(locale.formatMoney( -87654321.1), QString( "$ -87,654,321.10"));
+    QCOMPARE(locale.formatMoney(-987654321.1), QString("$ -987,654,321.10"));
+
+    QCOMPARE(locale.formatMoney(        -1.12), QString(          "$ -1.12"));
+    QCOMPARE(locale.formatMoney(       -21.12), QString(         "$ -21.12"));
+    QCOMPARE(locale.formatMoney(      -321.12), QString(        "$ -321.12"));
+    QCOMPARE(locale.formatMoney(     -4321.12), QString(      "$ -4,321.12"));
+    QCOMPARE(locale.formatMoney(    -54321.12), QString(     "$ -54,321.12"));
+    QCOMPARE(locale.formatMoney(   -654321.12), QString(    "$ -654,321.12"));
+    QCOMPARE(locale.formatMoney(  -7654321.12), QString(  "$ -7,654,321.12"));
+    QCOMPARE(locale.formatMoney( -87654321.12), QString( "$ -87,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        -1.12), QString(          "$ -1.12"));
+    QCOMPARE(locale.formatMoney(       -21.12), QString(         "$ -21.12"));
+    QCOMPARE(locale.formatMoney(      -321.12), QString(        "$ -321.12"));
+    QCOMPARE(locale.formatMoney(     -4321.12), QString(      "$ -4,321.12"));
+    QCOMPARE(locale.formatMoney(    -54321.12), QString(     "$ -54,321.12"));
+    QCOMPARE(locale.formatMoney(   -654321.12), QString(    "$ -654,321.12"));
+    QCOMPARE(locale.formatMoney(  -7654321.12), QString(  "$ -7,654,321.12"));
+    QCOMPARE(locale.formatMoney( -87654321.12), QString( "$ -87,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        -1.123), QString(          "$ -1.12"));
+    QCOMPARE(locale.formatMoney(       -21.123), QString(         "$ -21.12"));
+    QCOMPARE(locale.formatMoney(      -321.123), QString(        "$ -321.12"));
+    QCOMPARE(locale.formatMoney(     -4321.123), QString(      "$ -4,321.12"));
+    QCOMPARE(locale.formatMoney(    -54321.123), QString(     "$ -54,321.12"));
+    QCOMPARE(locale.formatMoney(   -654321.123), QString(    "$ -654,321.12"));
+    QCOMPARE(locale.formatMoney(  -7654321.123), QString(  "$ -7,654,321.12"));
+    QCOMPARE(locale.formatMoney( -87654321.123), QString( "$ -87,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.123), QString("$ -987,654,321.12"));
+
+    QCOMPARE(locale.formatMoney(        -1.129), QString(          "$ -1.13"));
+    QCOMPARE(locale.formatMoney(       -21.129), QString(         "$ -21.13"));
+    QCOMPARE(locale.formatMoney(      -321.129), QString(        "$ -321.13"));
+    QCOMPARE(locale.formatMoney(     -4321.129), QString(      "$ -4,321.13"));
+    QCOMPARE(locale.formatMoney(    -54321.129), QString(     "$ -54,321.13"));
+    QCOMPARE(locale.formatMoney(   -654321.129), QString(    "$ -654,321.13"));
+    QCOMPARE(locale.formatMoney(  -7654321.129), QString(  "$ -7,654,321.13"));
+    QCOMPARE(locale.formatMoney( -87654321.129), QString( "$ -87,654,321.13"));
+    QCOMPARE(locale.formatMoney(-987654321.129), QString("$ -987,654,321.13"));
+
+    // Test override defaults
+    QCOMPARE(locale.formatMoney(987654321.12, "£",   0), QString(  "£ 987,654,321"));
+    QCOMPARE(locale.formatMoney(987654321.12, "USD", 4), QString("USD 987,654,321.1200"));
+
+    // Test symbol and sign position options
+    locale.setPositiveSign("+");
+    locale.setNegativeSign("-");
+
+    locale.setPositiveMonetarySignPosition(KLocale::ParensAround);
+    locale.setNegativeMonetarySignPosition(KLocale::ParensAround);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("$ (987,654,321.12)"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ (987,654,321.12)"));
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("(987,654,321.12) $"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("(987,654,321.12) $"));
+
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("$ +987,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -987,654,321.12"));
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("+987,654,321.12 $"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("-987,654,321.12 $"));
+
+    locale.setPositiveMonetarySignPosition(KLocale::AfterQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::AfterQuantityMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("$ 987,654,321.12+"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ 987,654,321.12-"));
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("987,654,321.12+ $"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("987,654,321.12- $"));
+
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("+$ 987,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("-$ 987,654,321.12"));
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("987,654,321.12 +$"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("987,654,321.12 -$"));
+
+    locale.setPositiveMonetarySignPosition(KLocale::AfterMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::AfterMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("$+ 987,654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$- 987,654,321.12"));
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString("987,654,321.12 $+"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("987,654,321.12 $-"));
+}
+
+void KLocaleTest::readMoney()
+{
+    bool ok = false;
+    KLocale locale(*KGlobal::locale());
+    locale.setPositiveSign(QString());
+    locale.setNegativeSign("-");
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    locale.setMonetaryDecimalPlaces(2);
+    locale.setMonetaryThousandsSeparator(",");
+    locale.setMonetaryDecimalSymbol(".");
+    locale.setCurrencySymbol("$");
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+
+    // Basic grouping, decimal place and rounding tests
+    QCOMPARE(locale.readMoney(          "$ 1.12", &ok),         1.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(         "$ 21.12", &ok),        21.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(        "$ 321.12", &ok),       321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(      "$ 4,321.12", &ok),      4321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(     "$ 54,321.12", &ok),     54321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(    "$ 654,321.12", &ok),    654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(  "$ 7,654,321.12", &ok),   7654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney( "$ 87,654,321.12", &ok),  87654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987,654,321.12", &ok), 987654321.12);
+    QVERIFY(ok);
+
+    QCOMPARE(locale.readMoney(          "$ -1.12", &ok),         -1.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(         "$ -21.12", &ok),        -21.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(        "$ -321.12", &ok),       -321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(      "$ -4,321.12", &ok),      -4321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(     "$ -54,321.12", &ok),     -54321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(    "$ -654,321.12", &ok),    -654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(  "$ -7,654,321.12", &ok),   -7654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney( "$ -87,654,321.12", &ok),  -87654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987,654,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    // Test incomplete formats
+    QCOMPARE(locale.readMoney(          "$ 1", &ok),         1.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(         "$ 21", &ok),        21.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(        "$ 321", &ok),       321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(      "$ 4,321", &ok),      4321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(     "$ 54,321", &ok),     54321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(    "$ 654,321", &ok),    654321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(  "$ 7,654,321", &ok),   7654321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney( "$ 87,654,321", &ok),  87654321.00);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987,654,321", &ok), 987654321.00);
+    QVERIFY(ok);
+
+    locale.setPositiveSign("@");
+    locale.setNegativeSign("&");
+    QCOMPARE(locale.readMoney(QString("$ @123,456,789.12"),  &ok),  123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12@"), &ok),  123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString("$ &123,456,789.12"),  &ok), -123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12&"), &ok), -123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12"),  &ok),  123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString("$ +123,456,789.12"),  &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12+"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readMoney(QString("$ -123,456,789.12"),  &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12-"), &ok), 0.0);
+    QVERIFY(!ok);
+    locale.setNegativeSign(QString());
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12"),  &ok), -123456789.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney(QString("$ -123,456,789.12"),  &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12-"), &ok), 0.0);
+    QVERIFY(!ok);
+
+    // Test symbol and sign position options
+    locale.setPositiveSign("+");
+    locale.setNegativeSign("-");
+
+    locale.setPositiveMonetarySignPosition(KLocale::ParensAround);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("$ (987,654,321.12)", &ok),  987654321.12);
+    QVERIFY(ok);
+    locale.setPositivePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("(987,654,321.12) $", &ok),  987654321.12);
+    QVERIFY(ok);
+
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::ParensAround);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("$ (987,654,321.12)", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("(987,654,321.12) $", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("$ +987,654,321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987,654,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("+987,654,321.12 $", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("-987,654,321.12 $", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    locale.setPositiveMonetarySignPosition(KLocale::AfterQuantityMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::AfterQuantityMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("$ 987,654,321.12+", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987,654,321.12-", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("987,654,321.12+ $", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("987,654,321.12- $", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    locale.setPositiveMonetarySignPosition(KLocale::BeforeMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::BeforeMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("+$ 987,654,321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("-$ 987,654,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("987,654,321.12 +$", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("987,654,321.12 -$", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    locale.setPositiveMonetarySignPosition(KLocale::AfterMoney);
+    locale.setNegativeMonetarySignPosition(KLocale::AfterMoney);
+    locale.setPositivePrefixCurrencySymbol(true);
+    locale.setNegativePrefixCurrencySymbol(true);
+    QCOMPARE(locale.readMoney("$+ 987,654,321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$- 987,654,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.setPositivePrefixCurrencySymbol(false);
+    locale.setNegativePrefixCurrencySymbol(false);
+    QCOMPARE(locale.readMoney("987,654,321.12 $+", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("987,654,321.12 $-", &ok), -987654321.12);
+    QVERIFY(ok);
 }
 
 void
