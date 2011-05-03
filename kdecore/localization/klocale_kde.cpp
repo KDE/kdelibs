@@ -46,6 +46,7 @@
 #include <QtCore/QLocale>
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QStringList>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
@@ -180,6 +181,7 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_decimalPlaces = rhs.m_decimalPlaces;
     m_decimalSymbol = rhs.m_decimalSymbol;
     m_thousandsSeparator = rhs.m_thousandsSeparator;
+    m_numericDigitGrouping = rhs.m_numericDigitGrouping;
     m_positiveSign = rhs.m_positiveSign;
     m_negativeSign = rhs.m_negativeSign;
     m_digitSet = rhs.m_digitSet;
@@ -193,6 +195,7 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_currencySymbol = rhs.m_currencySymbol;
     m_monetaryDecimalSymbol = rhs.m_monetaryDecimalSymbol;
     m_monetaryThousandsSeparator = rhs.m_monetaryThousandsSeparator;
+    m_monetaryDigitGrouping = rhs.m_monetaryDigitGrouping;
     m_monetaryDecimalPlaces = rhs.m_monetaryDecimalPlaces;
     m_positiveMonetarySignPosition = rhs.m_positiveMonetarySignPosition;
     m_negativeMonetarySignPosition = rhs.m_negativeMonetarySignPosition;
@@ -483,6 +486,9 @@ void KLocalePrivate::initFormat()
     readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
     readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
     m_thousandsSeparator.remove(QString::fromLatin1("$0"));
+    QString digitGroupFormat;
+    readConfigEntry("DigitGroupFormat", "3", digitGroupFormat);
+    m_numericDigitGrouping = digitGroupFormatToList(digitGroupFormat);
 
     readConfigEntry("PositiveSign", "", m_positiveSign);
     readConfigEntry("NegativeSign", "-", m_negativeSign);
@@ -503,6 +509,8 @@ void KLocalePrivate::initFormat()
     readConfigEntry("MonetaryDecimalSymbol", ".", m_monetaryDecimalSymbol);
     readConfigEntry("MonetaryThousandsSeparator", ",", m_monetaryThousandsSeparator);
     m_monetaryThousandsSeparator.remove(QString::fromLatin1("$0"));
+    readConfigEntry("MonetaryDigitGroupFormat", "3", digitGroupFormat);
+    m_monetaryDigitGrouping = digitGroupFormatToList(digitGroupFormat);
 
     readConfigEntry("PositivePrefixCurrencySymbol", true, m_positivePrefixCurrencySymbol);
     readConfigEntry("NegativePrefixCurrencySymbol", true, m_negativePrefixCurrencySymbol);
@@ -1212,6 +1220,11 @@ QString KLocalePrivate::thousandsSeparator() const
     return m_thousandsSeparator;
 }
 
+QList<int> KLocalePrivate::numericDigitGrouping() const
+{
+    return m_numericDigitGrouping;
+}
+
 QString KLocalePrivate::currencySymbol() const
 {
     return m_currencySymbol;
@@ -1225,6 +1238,11 @@ QString KLocalePrivate::monetaryDecimalSymbol() const
 QString KLocalePrivate::monetaryThousandsSeparator() const
 {
     return m_monetaryThousandsSeparator;
+}
+
+QList<int> KLocalePrivate::monetaryDigitGrouping() const
+{
+    return m_monetaryDigitGrouping;
 }
 
 QString KLocalePrivate::positiveSign() const
@@ -1282,15 +1300,87 @@ static inline void put_it_in(QChar *buffer, int &index, int number)
     buffer[index++] = number % 10 + '0';
 }
 
-// insert (thousands)-"separator"s into the non-fractional part of str
-static void _insertSeparator(QString &str, const QString &separator, const QString &decimalSymbol)
+// Convert POSIX Digit Group Format string into a Qlist<int>, e.g. "3;2" converts to (3,2)
+QList<int> KLocalePrivate::digitGroupFormatToList(const QString &digitGroupFormat) const
 {
-    // leave fractional part untouched
-    const int decimalSymbolPos = str.indexOf(decimalSymbol);
-    const int start = decimalSymbolPos == -1 ? str.length() : decimalSymbolPos;
-    for (int pos = start - 3; pos > 0; pos -= 3) {
-        str.insert(pos, separator);
+    QList<int> groupList;
+    QStringList stringList = digitGroupFormat.split(QLatin1Char(';'));
+    foreach(const QString &size, stringList) {
+        groupList.append(size.toInt());
     }
+    return groupList;
+}
+
+// Inserts all required occurrences of the group separator into a number string.
+QString KLocalePrivate::formatDigitGroup(const QString &number, const QString &groupSeparator, const QString &decimalSeperator, QList<int> groupList) const
+{
+    if (groupList.isEmpty()) {
+        return number;
+    }
+
+    QString num = number;
+    int groupCount = groupList.count();
+    int groupAt = 0;
+    int groupSize = groupList.at(groupAt);
+    int pos = num.indexOf(decimalSeperator);
+    if (pos == -1) {
+        pos = num.length();
+    }
+    pos = pos - groupSize;
+
+    while (pos > 0 && groupSize > 0) {
+        num.insert(pos, groupSeparator);
+        if (groupAt + 1 < groupCount) {
+            ++groupAt;
+            groupSize = groupList.at(groupAt);
+        }
+        pos = pos - groupSize;
+    }
+
+    return num;
+}
+
+// Strips all occurrences of the group separator from a number, returns ok if the separators were all in the valid positions
+QString KLocalePrivate::parseDigitGroup(const QString &number, const QString &groupSeparator, const QString &decimalSeparator, QList<int> groupList, bool *ok) const
+{
+    QString num = number;
+    bool valid = true;
+
+    if (!groupList.isEmpty()) {
+        int separatorSize = groupSeparator.length();
+        int groupCount = groupList.count();
+        int groupAt = 0;
+        int groupSize = groupList.at(groupAt);
+        int pos = number.indexOf(decimalSeparator);
+        if (pos == -1) {
+            pos = number.length();
+        }
+        pos = pos - groupSize - separatorSize;
+
+        while (pos > 0 && valid && groupSize > 0) {
+            if (num.mid(pos, separatorSize) == groupSeparator) {
+                num.remove(pos, separatorSize);
+                if (groupAt + 1 < groupCount) {
+                    ++groupAt;
+                    groupSize = groupList.at(groupAt);
+                }
+                pos = pos - groupSize - separatorSize;
+            } else {
+                valid = false;
+            }
+        }
+    }
+
+    if (num.contains(groupSeparator)) {
+        valid = false;
+        num = num.remove(groupSeparator);
+    }
+
+    if (ok) {
+        *ok = valid;
+    }
+
+    return num;
 }
 
 QString KLocalePrivate::formatMoney(double num, const QString &symbol, int precision) const
@@ -1312,7 +1402,7 @@ QString KLocalePrivate::formatMoney(double num, const QString &symbol, int preci
     res.replace(QLatin1Char('.'), monetaryDecimalSymbol());
 
     // Insert the thousand separators
-    _insertSeparator(res, monetaryThousandsSeparator(), monetaryDecimalSymbol());
+    res = formatDigitGroup(res, monetaryThousandsSeparator(), monetaryDecimalSymbol(), monetaryDigitGrouping());
 
     // set some variables we need later
     int signpos = neg
@@ -1505,7 +1595,7 @@ QString KLocalePrivate::formatNumber(const QString &numStr, bool round, int prec
     mantString.replace(QLatin1Char('.'), decimalSymbol());
 
     // Insert the thousand separators
-    _insertSeparator(mantString, thousandsSeparator(), decimalSymbol());
+    mantString = formatDigitGroup(mantString, thousandsSeparator(), decimalSymbol(), numericDigitGrouping());
 
     // How can we know where we should put the sign?
     mantString.prepend(neg ? negativeSign() : positiveSign());
@@ -1797,6 +1887,17 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
         str = str.trimmed();
     }
 
+    // Remove group separators
+    bool groupOk = true;
+    str = parseDigitGroup(str, thousandsSeparator(), decimalSymbol(), numericDigitGrouping(), &groupOk);
+
+    if (!groupOk) {
+        if (ok) {
+            *ok = false;
+        }
+        return 0.0;
+    }
+
     int pos = str.indexOf(decimalSymbol());
     QString major;
     QString minor;
@@ -1805,34 +1906,6 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
     } else {
         major = str.left(pos);
         minor = str.mid(pos + decimalSymbol().length());
-    }
-
-    // Remove thousand separators
-    int thlen = thousandsSeparator().length();
-    int lastpos = 0;
-    while ((pos = major.indexOf(thousandsSeparator())) > 0) {
-        // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15...
-        // i.e. (3+thlen)*N
-        int fromEnd = major.length() - pos;
-        if (fromEnd % (3 + thlen) != 0 || // Needs to be a multiple, otherwise it's an error
-            pos - lastpos > 3 ||          // More than 3 digits between two separators -> error
-            pos == 0 ||                   // Can't start with a separator
-            (lastpos > 0 && pos - lastpos != 3)) { // Must have exactly 3 digits between 2 separators
-            if (ok) {
-                *ok = false;
-            }
-            return 0.0;
-        }
-
-        lastpos = pos;
-        major.remove(pos, thlen);
-    }
-    // Must have exactly 3 digits after the last separator
-    if (lastpos > 0 && major.length() - lastpos != 3) {
-        if (ok) {
-            *ok = false;
-        }
-        return 0.0;
     }
 
     // Check the major and minor parts are only digits
@@ -1860,11 +1933,8 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
     if (neg) {
         tot = QLatin1Char('-');
     }
-
     tot += major + QLatin1Char('.') + minor + exponentialPart;
-
     tot = toArabicDigits(tot);
-
     return tot.toDouble(ok);
 }
 
@@ -1936,6 +2006,17 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
         }
     }
 
+    // Remove group separators
+    bool groupOk = true;
+    str = parseDigitGroup(str, monetaryThousandsSeparator(), monetaryDecimalSymbol(), monetaryDigitGrouping(), &groupOk);
+
+    if (!groupOk) {
+        if (ok) {
+            *ok = false;
+        }
+        return 0.0;
+    }
+
     // And parse the rest as a number
     pos = str.indexOf(monetaryDecimalSymbol());
     QString major;
@@ -1945,33 +2026,6 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
     } else {
         major = str.left(pos);
         minor = str.mid(pos + monetaryDecimalSymbol().length());
-    }
-
-    // Remove thousand separators
-    int thlen = monetaryThousandsSeparator().length();
-    int lastpos = 0;
-    while ((pos = major.indexOf(monetaryThousandsSeparator())) > 0) {
-        // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15...
-        // i.e. (3+thlen)*N
-        int fromEnd = major.length() - pos;
-        if (fromEnd % (3 + thlen) != 0 || // Needs to be a multiple, otherwise it's an error
-            pos - lastpos > 3 ||          // More than 3 digits between two separators -> error
-            pos == 0 ||                   // Can't start with a separator
-            (lastpos > 0 && pos - lastpos != 3)) { // Must have exactly 3 digits between two separators
-            if (ok) {
-                *ok = false;
-            }
-            return 0.0;
-        }
-        lastpos = pos;
-        major.remove(pos, thlen);
-    }
-    // Must have exactly 3 digits after the last separator
-    if (lastpos > 0 && major.length() - lastpos != 3) {
-        if (ok) {
-            *ok = false;
-        }
-        return 0.0;
     }
 
     // Check the major and minor parts are only digits
@@ -2701,6 +2755,11 @@ void KLocalePrivate::setThousandsSeparator(const QString &separator)
     m_thousandsSeparator = separator;
 }
 
+void KLocalePrivate::setNumericDigitGrouping(QList<int> groupList)
+{
+    m_numericDigitGrouping = groupList;
+}
+
 void KLocalePrivate::setPositiveSign(const QString &sign)
 {
     m_positiveSign = sign.trimmed();
@@ -2740,6 +2799,11 @@ void KLocalePrivate::setMonetaryThousandsSeparator(const QString &separator)
 {
     // allow spaces here
     m_monetaryThousandsSeparator = separator;
+}
+
+void KLocalePrivate::setMonetaryDigitGrouping(QList<int> groupList)
+{
+    m_monetaryDigitGrouping = groupList;
 }
 
 void KLocalePrivate::setMonetaryDecimalSymbol(const QString &symbol)

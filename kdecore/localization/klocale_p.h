@@ -689,14 +689,30 @@ public:
     /**
      * @internal Sets the separator used to group digits when formating numbers.
      * The worker of the same-name KLocale API function.
+     * KDE5 Rename to setNumericDigitGroupSeparator()
      */
     virtual void setThousandsSeparator(const QString &separator);
 
     /**
-     * @internal Returns the thousands separator used by locale.
+     * @internal Returns the digit group separator used by locale.
      * The worker of the same-name KLocale API function.
+     * KDE5 Rename to numericDigitGroupSeparator()
      */
     virtual QString thousandsSeparator() const;
+
+    /**
+     * @internal Sets the digit grouping to apply to numbers
+     * For now internal only api designed for processing efficiency, if needed publicly then may
+     * need to review if this is the best way.
+     */
+    virtual void setNumericDigitGrouping(QList<int> groupList);
+
+    /**
+     * @internal Returns the digit grouping to apply to numbers
+     * For now internal only api designed for processing efficiency, if needed publicly then may
+     * need to review if this is the best way.
+     */
+    virtual QList<int> numericDigitGrouping() const;
 
     /**
      * @internal Sets the sign used to identify a positive number.
@@ -834,14 +850,30 @@ public:
     /**
      * @internal Sets the separator used to group digits when formating monetary values.
      * The worker of the same-name KLocale API function.
+     * KDE5 Rename to setMonetaryDigitGroupSeparator()
      */
     virtual void setMonetaryThousandsSeparator(const QString &separator);
 
     /**
      * @internal Returns the monetary thousands separator used by locale.
      * The worker of the same-name KLocale API function.
+     * KDE5 Rename to monetaryDigitGroupSeparator()
      */
     virtual QString monetaryThousandsSeparator() const;
+
+    /**
+     * @internal Sets the digit grouping to apply to numbers
+     * For now internal only api designed for processing efficiency, if needed publicly then may
+     * need to review if this is the best way.
+     */
+    virtual void setMonetaryDigitGrouping(QList<int> groupList);
+
+    /**
+     * @internal Returns the digit grouping to apply to numbers
+     * For now internal only api designed for processing efficiency, if needed publicly then may
+     * need to review if this is the best way.
+     */
+    virtual QList<int> monetaryDigitGrouping() const;
 
     /**
      * @internal Sets the number of decimal places used when formating money.
@@ -1094,6 +1126,24 @@ public:
      */
     virtual QString removeAcceleratorMarker(const QString &label) const;
 
+private:
+
+    /**
+     * @internal COnvert digit group format string to digit group list
+     */
+    QList<int> digitGroupFormatToList(const QString &digitGroupFormat) const;
+
+    /**
+     * @internal Insert digit group separator
+     */
+    QString formatDigitGroup(const QString &number, const QString &groupSeparator, const QString &decimalSeperator, QList<int> groupList) const;
+
+    /**
+     * @internal Remove digit group separator, return ok if valid format
+     */
+    QString parseDigitGroup(const QString &number, const QString &groupSeparator, const QString &decimalSeperator, QList<int> groupList, bool *ok) const;
+
+public:
     // Parent KLocale, public needed for copy ctor
     KLocale *q;
 
@@ -1140,6 +1190,7 @@ private:
     int               m_decimalPlaces;
     QString           m_decimalSymbol;
     QString           m_thousandsSeparator;
+    QList<int>        m_numericDigitGrouping;
     QString           m_positiveSign;
     QString           m_negativeSign;
     KLocale::DigitSet m_digitSet;
@@ -1153,6 +1204,7 @@ private:
     QString               m_currencySymbol;
     QString               m_monetaryDecimalSymbol;
     QString               m_monetaryThousandsSeparator;
+    QList<int>            m_monetaryDigitGrouping;
     int                   m_monetaryDecimalPlaces;
     KLocale::SignPosition m_positiveMonetarySignPosition;
     KLocale::SignPosition m_negativeMonetarySignPosition;

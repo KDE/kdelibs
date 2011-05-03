@@ -59,6 +59,18 @@ KLocaleTest::formatNumbers()
 	QCOMPARE(locale.formatNumber(70.245), QString("70.25"));
 	QCOMPARE(locale.formatNumber(1234567.89123456789,8),
 		QString("1,234,567.89123457"));
+    QCOMPARE(locale.formatNumber(1234567.89123456789, 0), QString("1,234,568"));
+
+    // Test Grouping
+    locale.d->setNumericDigitGrouping(QList<int>());
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("123456789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("123456789.01"));
+    locale.d->setNumericDigitGrouping(QList<int>() << 3 << 2);
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("12,34,56,789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("12,34,56,789.01"));
+    locale.d->setNumericDigitGrouping(QList<int>() << 3 << -1);
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("123456,789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("123456,789.01"));
 }
 
 void
@@ -86,6 +98,17 @@ KLocaleTest::formatNumberStrings()
 	QCOMPARE(locale.formatNumber("1.", false, 1), QString("1.")); // no rounding -> 1. unchanged
 	QCOMPARE(locale.formatNumber("1.", false, 0), QString("1."));
         QCOMPARE(locale.formatNumber("abcd", true, 2), QString("0.00")); // invalid number
+
+    // Test Grouping
+    locale.d->setNumericDigitGrouping(QList<int>());
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123456789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("123456789.01"));
+    locale.d->setNumericDigitGrouping(QList<int>() << 3 << 2);
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("12,34,56,789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("12,34,56,789.01"));
+    locale.d->setNumericDigitGrouping(QList<int>() << 3 << -1);
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123456,789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("123456,789.01"));
 }
 
 void
@@ -115,8 +138,36 @@ KLocaleTest::readNumber()
 	QCOMPARE(locale.readNumber("1.12345678912", &ok), 1.12345678912);
 	QVERIFY(ok);
 
+    // Test Grouping
+    locale.d->setNumericDigitGrouping(QList<int>());
+    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
+    QVERIFY(!ok);
+
+    locale.d->setNumericDigitGrouping(QList<int>() << 3 << 2);
+    QCOMPARE(locale.readNumber(QString("12,34,56,789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("12,34,56,789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 0.0);
+    QVERIFY(!ok);
+
+    // Test signs
     locale.setPositiveSign("@");
     locale.setNegativeSign("&");
+    locale.d->setNumericDigitGrouping(QList<int>() << 3);
+
     QCOMPARE(locale.readNumber(QString("@123,456,789.12"), &ok), 123456789.12);
     QVERIFY(ok);
     QCOMPARE(locale.readNumber(QString("&123,456,789.12"), &ok), -123456789.12);
@@ -147,6 +198,7 @@ void KLocaleTest::formatMoney()
     locale.setCurrencySymbol("$");
     locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
     locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3);
 
     // Basic grouping, decimal place and rounding tests
     QCOMPARE(locale.formatMoney(        1), QString(          "$ 1.00"));
@@ -273,9 +325,21 @@ void KLocaleTest::formatMoney()
     QCOMPARE(locale.formatMoney(987654321.12, "£",   0), QString(  "£ 987,654,321"));
     QCOMPARE(locale.formatMoney(987654321.12, "USD", 4), QString("USD 987,654,321.1200"));
 
+    // Test Grouping
+    locale.d->setMonetaryDigitGrouping(QList<int>());
+    QCOMPARE(locale.formatMoney( 987654321.12), QString( "$ 987654321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -987654321.12"));
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << 2);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString( "$ 98,76,54,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -98,76,54,321.12"));
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << -1);
+    QCOMPARE(locale.formatMoney( 987654321.12), QString( "$ 987654,321.12"));
+    QCOMPARE(locale.formatMoney(-987654321.12), QString("$ -987654,321.12"));
+
     // Test symbol and sign position options
     locale.setPositiveSign("+");
     locale.setNegativeSign("-");
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3);
 
     locale.setPositiveMonetarySignPosition(KLocale::ParensAround);
     locale.setNegativeMonetarySignPosition(KLocale::ParensAround);
@@ -347,6 +411,7 @@ void KLocaleTest::readMoney()
     locale.setCurrencySymbol("$");
     locale.setPositiveMonetarySignPosition(KLocale::BeforeQuantityMoney);
     locale.setNegativeMonetarySignPosition(KLocale::BeforeQuantityMoney);
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3);
 
     // Basic grouping, decimal place and rounding tests
     QCOMPARE(locale.readMoney(          "$ 1.12", &ok),         1.12);
@@ -407,8 +472,28 @@ void KLocaleTest::readMoney()
     QCOMPARE(locale.readMoney("$ 987,654,321", &ok), 987654321.00);
     QVERIFY(ok);
 
+    // Test Grouping
+    locale.d->setMonetaryDigitGrouping(QList<int>());
+    QCOMPARE(locale.readMoney( "$ 987654321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987654321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << 2);
+    QCOMPARE(locale.readMoney( "$ 98,76,54,321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -98,76,54,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << -1);
+    QCOMPARE(locale.readMoney( "$ 987654,321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987654,321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+
+    // Test signs
     locale.setPositiveSign("@");
     locale.setNegativeSign("&");
+    locale.d->setMonetaryDigitGrouping(QList<int>() << 3);
+
     QCOMPARE(locale.readMoney(QString("$ @123,456,789.12"),  &ok),  123456789.12);
     QVERIFY(ok);
     QCOMPARE(locale.readMoney(QString( "$ 123,456,789.12@"), &ok),  123456789.12);
