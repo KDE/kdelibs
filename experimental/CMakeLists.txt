@@ -23,4 +23,4 @@ endif(BUILDING_EXPERIMENTAL_SEPARATELY)
 
 
 add_subdirectory(libkdeclarative)
-add_subdirectory(libkactivities)
+macro_optional_add_subdirectory(libkactivities)

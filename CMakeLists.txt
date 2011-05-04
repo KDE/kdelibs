@@ -332,6 +332,8 @@ endif(NOT WINCE)
 add_subdirectory( kunitconversion )
 add_subdirectory( kdewebkit )
 add_subdirectory( includes )
+add_subdirectory( experimental )
+
 
 macro_optional_add_subdirectory( doc  )
 
@@ -362,7 +364,5 @@ install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modu
 install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake )
 # the following will be the correct locations once cmake has the improved FIND_PACKAGE()
 # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
-
-macro_optional_add_subdirectory( experimental )
 
 macro_display_feature_log()
