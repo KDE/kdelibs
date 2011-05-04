@@ -376,11 +376,11 @@ void SlaveBase::sendAndKeepMetaData()
 
 KRemoteEncoding *SlaveBase::remoteEncoding()
 {
-   if (d->remotefile != 0)
+   if (d->remotefile)
       return d->remotefile;
 
-   QByteArray charset = metaData("Charset").toLatin1();
-   return d->remotefile = new KRemoteEncoding( charset );
+   const QByteArray charset (metaData("Charset").toLatin1());
+   return (d->remotefile = new KRemoteEncoding( charset ));
 }
 
 void SlaveBase::data( const QByteArray &data )
@@ -817,6 +817,8 @@ void SlaveBase::slave_status()
 
 void SlaveBase::reparseConfiguration()
 {
+    delete d->remotefile;
+    d->remotefile = 0;
 }
 
 bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
