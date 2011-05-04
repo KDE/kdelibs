@@ -1146,8 +1146,6 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
   // The actual functionality is in ftpRename because put needs it
   if ( ftpRename( src.path(), dst.path(), flags ) )
     finished();
-  else
-    error( ERR_CANNOT_RENAME, src.path() );
 }
 
 bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobFlags)
@@ -1161,6 +1159,7 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
             return false;
         }
     }
+
     if (ftpFolder(dst, false)) {
         error(ERR_DIR_ALREADY_EXIST, dst);
         return false;
@@ -1175,13 +1174,17 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
 
     QByteArray from_cmd = "RNFR ";
     from_cmd += remoteEncoding()->encode(src.mid(pos+1));
-    if (!ftpSendCmd(from_cmd) || (m_iRespType != 3))
+    if (!ftpSendCmd(from_cmd) || (m_iRespType != 3)) {
+        error( ERR_CANNOT_RENAME, src.path() );
         return false;
+    }
 
     QByteArray to_cmd = "RNTO ";
     to_cmd += remoteEncoding()->encode(dst);
-    if (!ftpSendCmd(to_cmd) || (m_iRespType != 2))
+    if (!ftpSendCmd(to_cmd) || (m_iRespType != 2)) {
+        error( ERR_CANNOT_RENAME, src.path() );
         return false;
+    }
 
     return true;
 }
