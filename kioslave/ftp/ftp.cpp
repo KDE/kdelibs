@@ -1175,14 +1175,14 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
     QByteArray from_cmd = "RNFR ";
     from_cmd += remoteEncoding()->encode(src.mid(pos+1));
     if (!ftpSendCmd(from_cmd) || (m_iRespType != 3)) {
-        error( ERR_CANNOT_RENAME, src.path() );
+        error( ERR_CANNOT_RENAME, src );
         return false;
     }
 
     QByteArray to_cmd = "RNTO ";
     to_cmd += remoteEncoding()->encode(dst);
     if (!ftpSendCmd(to_cmd) || (m_iRespType != 2)) {
-        error( ERR_CANNOT_RENAME, src.path() );
+        error( ERR_CANNOT_RENAME, src );
         return false;
     }
 
