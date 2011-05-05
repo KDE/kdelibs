@@ -628,14 +628,18 @@ void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ 
 
   // if data is required internally, don't finish,
   // it is processed before we finish()
-  if (!dataInternal) {
-      if ((m_request.responseCode == 204) &&
-          ((m_request.method == HTTP_GET) || (m_request.method == HTTP_POST))) {
-          error(ERR_NO_CONTENT, QString());
-      } else {
-          finished();
-      }
+  if (dataInternal) {
+      return;
   }
+
+  if (m_request.responseCode == 204 &&
+      (m_request.method == HTTP_GET || m_request.method == HTTP_POST)) {
+      infoMessage(QLatin1String(""));
+      error(ERR_NO_CONTENT, QString());
+      return;
+  }
+
+  finished();
 }
 
 bool HTTPProtocol::proceedUntilResponseHeader()
@@ -3582,7 +3586,7 @@ endParsing:
 
     // Let the app know about the mime-type iff this is not a redirection and
     // the mime-type string is not empty.
-    if (!m_isRedirection &&
+    if (!m_isRedirection && m_request.responseCode != 204 &&
         (!m_mimeType.isEmpty() || m_request.method == HTTP_HEAD) &&
         (m_isLoadingErrorPage || !authRequiresAnotherRoundtrip)) {
         kDebug(7113) << "Emitting mimetype " << m_mimeType;

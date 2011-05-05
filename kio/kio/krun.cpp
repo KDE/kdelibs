@@ -1333,19 +1333,23 @@ void KRun::slotTimeout()
 void KRun::slotStatResult(KJob * job)
 {
     d->m_job = 0L;
-    if (job->error()) {
-        d->m_showingDialog = true;
-        kError(7010) << this << "ERROR" << job->error() << job->errorString();
-        job->uiDelegate()->showErrorMessage();
-        //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
-        d->m_showingDialog = false;
+    const int errCode = job->error();
+    if (errCode) {
+        // ERR_NO_CONTENT is not an error, but an indication no further
+        // actions needs to be taken.
+        if (errCode != KIO::ERR_NO_CONTENT) {
+            d->m_showingDialog = true;
+            kError(7010) << this << "ERROR" << job->error() << job->errorString();
+            job->uiDelegate()->showErrorMessage();
+            //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
+            d->m_showingDialog = false;
+            d->m_bFault = true;
+        }
 
-        d->m_bFault = true;
         d->m_bFinished = true;
 
         // will emit the error and autodelete this
         d->startTimer();
-
     }
     else {
         kDebug(7010) << "Finished";
@@ -1399,16 +1403,21 @@ void KRun::slotScanMimeType(KIO::Job *, const QString &mimetype)
 void KRun::slotScanFinished(KJob *job)
 {
     d->m_job = 0;
-    if (job->error()) {
-        d->m_showingDialog = true;
-        kError(7010) << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
-        job->uiDelegate()->showErrorMessage();
-        //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
-        d->m_showingDialog = false;
+    const int errCode = job->error();
+    if (errCode) {
+        // ERR_NO_CONTENT is not an error, but an indication no further
+        // actions needs to be taken.
+        if (errCode != KIO::ERR_NO_CONTENT) {
+            d->m_showingDialog = true;
+            kError(7010) << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
+            job->uiDelegate()->showErrorMessage();
+            //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
+            d->m_showingDialog = false;
 
-        d->m_bFault = true;
+            d->m_bFault = true;
+        }
+
         d->m_bFinished = true;
-
         // will emit the error and autodelete this
         d->startTimer();
     }
