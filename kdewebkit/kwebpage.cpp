@@ -145,14 +145,15 @@ static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName =
     if (!destUrl.isValid())
         return false;
 
-    KIO::Job *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);
+    KIO::Job *job = KIO::file_copy(srcUrl, destUrl);
 
     if (!metaData.isEmpty())
         job->setMetaData(metaData);
 
     job->addMetaData(QL1S("MaxCacheSize"), QL1S("0")); // Don't store in http cache.
     job->addMetaData(QL1S("cache"), QL1S("cache")); // Use entry from cache if available.
-    job->uiDelegate()->setAutoErrorHandlingEnabled(true);
+    job->ui()->setWindow((parent ? parent->window() : 0));
+    job->ui()->setAutoErrorHandlingEnabled(true);
     return true;
 }
 
@@ -504,6 +505,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 destUrl.setPath(tempFile.fileName());
                 KIO::Job *job = KIO::file_copy(replyUrl, destUrl, 0600, KIO::Overwrite);
                 job->ui()->setWindow(topLevelWindow);
+                job->ui()->setAutoErrorHandlingEnabled(true);
                 connect(job, SIGNAL(result(KJob *)),
                         this, SLOT(_k_copyResultToTempFile(KJob*)));
                 return true;
