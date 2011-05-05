@@ -69,8 +69,8 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
-#define HOMEPATH QDir::homePath()+"/foo"
-#define HOMEPATHESCAPE QDir::homePath()+"/foo/$HOME"
+#define HOMEPATH QString(QDir::homePath()+"/foo")
+#define HOMEPATHESCAPE QString(QDir::homePath()+"/foo/$HOME")
 #define DOLLARGROUP "$i"
 
 void KConfigTest::initTestCase()
@@ -449,24 +449,27 @@ void KConfigTest::testPath()
               << "homePath2=file://$HOME/foo" << endl
               << "withBraces[$e]=file://${HOME}/foo" << endl
               << "URL[$e]=file://${HOME}/foo" << endl
-              << "hostname[$e]=$(hostname)" << endl;
+              << "hostname[$e]=$(hostname)" << endl
+              << "noeol=foo"; // no EOL
   }
   KConfig cf2("pathtest");
   KConfigGroup group = cf2.group("Test Group");
   QVERIFY(group.hasKey("homePath"));
   QCOMPARE(group.readPathEntry("homePath", QString()), HOMEPATH);
   QVERIFY(group.hasKey("homePath2"));
-  QCOMPARE(group.readPathEntry("homePath2", QString()), QString("file://") + HOMEPATH );
+  QCOMPARE(group.readPathEntry("homePath2", QString()), QString("file://" + HOMEPATH) );
   QVERIFY(group.hasKey("withBraces"));
-  QCOMPARE(group.readPathEntry("withBraces", QString()), QString("file://") + HOMEPATH );
+  QCOMPARE(group.readPathEntry("withBraces", QString()), QString("file://" + HOMEPATH) );
   QVERIFY(group.hasKey("URL"));
-  QCOMPARE(group.readEntry("URL", QString()), QString("file://") + HOMEPATH );
+  QCOMPARE(group.readEntry("URL", QString()), QString("file://" + HOMEPATH) );
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
   // I don't know if this will work on windows
   // This test hangs on OS X
   QVERIFY(group.hasKey("hostname"));
   QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
 #endif
+  QVERIFY(group.hasKey("noeol"));
+  QCOMPARE(group.readEntry("noeol", QString()), QString("foo"));
 }
 
 void KConfigTest::testPersistenceOfExpandFlagForPath()

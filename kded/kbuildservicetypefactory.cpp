@@ -19,7 +19,7 @@
 #include "kbuildservicetypefactory.h"
 #include "ksycoca.h"
 #include "ksycocadict_p.h"
-#include "kresourcelist.h"
+#include "ksycocaresourcelist.h"
 
 #include <kglobal.h>
 #include <kstandarddirs.h>

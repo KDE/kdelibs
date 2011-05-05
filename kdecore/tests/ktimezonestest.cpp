@@ -169,7 +169,7 @@ void KTimeZonesTest::zonetabChange()
     s_testData.writeZoneTab(true);
     QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "zonetabChanged");
     QList<QVariant> args;
-    args += mDataDir + QLatin1String("/zone.tab");
+    args += QString(mDataDir + QLatin1String("/zone.tab"));
     message.setArguments(args);
     QDBusConnection::sessionBus().send(message);
     timer.start(1000);

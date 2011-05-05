@@ -2024,7 +2024,8 @@ void FileCopyJobPrivate::startBestCopyMethod()
    {
       startCopyJob(m_dest);
    }
-   else if (m_dest.isLocalFile() && KProtocolManager::canCopyToFile(m_src))
+   else if (m_dest.isLocalFile() && KProtocolManager::canCopyToFile(m_src) &&
+            !KIO::Scheduler::isSlaveOnHoldFor(m_src))
    {
       startCopyJob(m_src);
    }

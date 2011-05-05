@@ -224,6 +224,7 @@ int AccessManagerReply::jobError(KJob* kJob)
     switch (errCode)
     {
         case 0:
+        case KIO::ERR_NO_CONTENT: // Sent by a 204 response is not an error condition.
             setError(QNetworkReply::NoError, kJob->errorText());
             //kDebug(7044) << "0 -> QNetworkReply::NoError";
             break;
@@ -262,7 +263,6 @@ int AccessManagerReply::jobError(KJob* kJob)
             setError(QNetworkReply::ContentOperationNotPermittedError, kJob->errorText());
             kDebug(7044) << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
             break;
-        case KIO::ERR_NO_CONTENT:
         case KIO::ERR_DOES_NOT_EXIST:
             setError(QNetworkReply::ContentNotFoundError, kJob->errorText());
             kDebug(7044) << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
@@ -316,7 +316,7 @@ void AccessManagerReply::slotResult(KJob *kJob)
         readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     } else {
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
-        if (errcode)
+        if (errcode && errcode != KIO::ERR_NO_CONTENT)
             emit error(error());
     }
 

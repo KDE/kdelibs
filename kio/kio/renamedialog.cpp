@@ -238,7 +238,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         QLabel* destInfo = createSqueezedLabel(parent, d->dest.pathOrUrl());
 
         if (mtimeDest > mtimeSrc) {
-            QLabel* warningLabel = new QLabel(i18n("Warning, the destination is newer."), this);
+            QLabel* warningLabel = new QLabel(i18n("Warning, the destination is more recent."), this);
 
             gridLayout->addWidget(titleLabel, 0, 0, 1, 2);    // takes the complete first line
             gridLayout->addWidget(warningLabel, 1, 0, 1, 2);
@@ -273,7 +273,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         else if (mtimeDest == mtimeSrc)
             sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrUrl());
         else
-            sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrUrl());
+            sentence1 = i18n("A more recent item named '%1' already exists.", d->dest.pathOrUrl());
 
         QLabel *lb = new KSqueezedTextLabel(sentence1, this);
         pLayout->addWidget(lb);

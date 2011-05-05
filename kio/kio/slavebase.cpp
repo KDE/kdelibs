@@ -248,6 +248,7 @@ SlaveBase::~SlaveBase()
 {
     delete d->configGroup;
     delete d->config;
+    delete d->remotefile;
     delete d;
     s_protocol = "";
 }
@@ -375,11 +376,11 @@ void SlaveBase::sendAndKeepMetaData()
 
 KRemoteEncoding *SlaveBase::remoteEncoding()
 {
-   if (d->remotefile != 0)
+   if (d->remotefile)
       return d->remotefile;
 
-   QByteArray charset = metaData("Charset").toLatin1();
-   return d->remotefile = new KRemoteEncoding( charset );
+   const QByteArray charset (metaData("Charset").toLatin1());
+   return (d->remotefile = new KRemoteEncoding( charset ));
 }
 
 void SlaveBase::data( const QByteArray &data )
@@ -816,25 +817,36 @@ void SlaveBase::slave_status()
 
 void SlaveBase::reparseConfiguration()
 {
+    delete d->remotefile;
+    d->remotefile = 0;
 }
 
 bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 {
-    const long windowId = metaData("window-id").toLong();
-    const unsigned long userTimestamp = metaData("user-timestamp").toULong();
+    const long windowId = metaData(QLatin1String("window-id")).toLong();
+    const unsigned long userTimestamp = metaData(QLatin1String("user-timestamp")).toULong();
     QString errorMessage;
-    if (metaData("no-auth-prompt").compare(QLatin1String("true"), Qt::CaseInsensitive) == 0) {
+    if (metaData(QLatin1String("no-auth-prompt")).compare(QLatin1String("true"), Qt::CaseInsensitive) == 0) {
         errorMessage = QLatin1String("<NoAuthPrompt>");
     } else {
         errorMessage = errorMsg;
     }
 
+    AuthInfo dlgInfo (info);
+    // Make sure the modified flag is not set.
+    dlgInfo.setModified(false);
+    // Prevent queryAuthInfo from caching the user supplied password since
+    // we need the ioslaves to first authenticate against the server with
+    // it to ensure it is valid.
+    dlgInfo.setExtraField(QLatin1String("skip-caching-on-query"), true);
+
     KPasswdServer srv;
-    qlonglong seqNr = srv.queryAuthInfo(info, errorMessage, windowId,
+    qlonglong seqNr = srv.queryAuthInfo(dlgInfo, errorMessage, windowId,
                                         SlaveBasePrivate::s_seqNr, userTimestamp);
     if (seqNr > 0) {
         SlaveBasePrivate::s_seqNr = seqNr;
-        if (info.isModified()) {
+        if (dlgInfo.isModified()) {
+            info = dlgInfo;
             return true;
         }
     }

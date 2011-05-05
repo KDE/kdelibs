@@ -50,14 +50,14 @@ struct QVconvertible
 template <typename T>
 struct type_toQString
 {
-  void constraint() { supported x = y; }
+  void constraint() { supported x = y; Q_UNUSED(x); }
   typename QVconvertible<T>::toQString y;
 };
 
 template <typename T>
 struct type_toQVariant
 {
-  void constraint() { supported x = y; }
+  void constraint() { supported x = y; Q_UNUSED(x); }
   typename QVconvertible<T>::toQVariant y;
 };
 

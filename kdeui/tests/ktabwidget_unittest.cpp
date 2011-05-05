@@ -62,12 +62,12 @@ private Q_SLOTS:
         w.removeTab(0);
         for (int i = 0; i < 5; ++i) {
             //kDebug() << i << w.tabText(i);
-            QCOMPARE(w.tabText(i), prefix+QString::number(i+1));
+            QCOMPARE(w.tabText(i), QString(prefix+QString::number(i+1)));
         }
         w.removeTab(0);
         for (int i = 0; i < 4; ++i) {
             //kDebug() << i << w.tabText(i);
-            QCOMPARE(w.tabText(i), prefix+QString::number(i+2));
+            QCOMPARE(w.tabText(i), QString(prefix+QString::number(i+2)));
         }
     }
     void testMoveTab()
@@ -108,10 +108,10 @@ private Q_SLOTS:
         w->moveTab(0,3);
         //for (int i = 0; i < 4; ++i)
             //kDebug() << i << w->tabText(i);
-        QCOMPARE(w->tabText(0), prefix+QString::number(1));
-        QCOMPARE(w->tabText(1), prefix+QString::number(2));
-        QCOMPARE(w->tabText(2), prefix+QString::number(3));
-        QCOMPARE(w->tabText(3), prefix+QString::number(0));
+        QCOMPARE(w->tabText(0), QString(prefix+QString::number(1)));
+        QCOMPARE(w->tabText(1), QString(prefix+QString::number(2)));
+        QCOMPARE(w->tabText(2), QString(prefix+QString::number(3)));
+        QCOMPARE(w->tabText(3), QString(prefix+QString::number(0)));
 
         // Did the focus switch to the lineEdit, due to removeTab+insertTab? Whoops.
         QCOMPARE(topLevel.focusWidget()->objectName(), lineEdits[0]->objectName());
@@ -120,7 +120,7 @@ private Q_SLOTS:
         QCOMPARE(topLevel.focusWidget()->objectName(), lineEdits[0]->objectName());
         for (int i = 0; i < 4; ++i) {
             //kDebug() << i << w->tabText(i);
-            QCOMPARE(w->tabText(i), prefix+QString::number(i));
+            QCOMPARE(w->tabText(i), QString(prefix+QString::number(i)));
         }
      }
 

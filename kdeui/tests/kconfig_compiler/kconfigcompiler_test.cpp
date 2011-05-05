@@ -68,12 +68,14 @@ static CompilerTestSet testCasesToRun =
     0
 };
 
+#if 0
 static CompilerTestSet willFailCases =
 {
 	// where is that QDir coming from?
 	//"test9.cpp", NULL
 	NULL
 };
+#endif
 
 void KConfigCompiler_Test::initTestCase()
 {

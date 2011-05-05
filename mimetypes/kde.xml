@@ -308,7 +308,7 @@ Notes:
   </mime-type>
   <mime-type type="application/x-kmplot">
     <comment>KmPlot file</comment>
-    <glob pattern="*.ftk"/>
+    <glob pattern="*.fkt"/>
   </mime-type>
   <mime-type type="application/x-kwordquiz">
     <comment>KWordQuiz vocabulary</comment>

@@ -18,6 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#undef QT_USE_FAST_OPERATOR_PLUS
+#undef QT_USE_FAST_CONCATENATION
+
 #include "krununittest.h"
 #include "krununittest.moc"
 #include <qtest_kde.h>
@@ -234,7 +237,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
 {
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
-    KRunImpl* krun = new KRunImpl(dir + "/testlink", true);
+    KRunImpl* krun = new KRunImpl(KUrl(dir + "/testlink"), true);
     QSignalSpy spyError(krun, SIGNAL(error()));
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QVERIFY(krun->mimeTypeFound().isEmpty());

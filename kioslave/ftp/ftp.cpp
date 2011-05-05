@@ -306,7 +306,7 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, quint16 _port, const QString& _user,
                    const QString& _pass )
 {
-  kDebug(7102) << _host << "port=" << _port;
+  kDebug(7102) << _host << "port=" << _port << "user=" << _user;
 
   m_proxyURL = metaData("UseProxy");
   m_bUseProxy = (m_proxyURL.isValid() && m_proxyURL.protocol() == "ftp");
@@ -336,7 +336,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   }
 
   kDebug(7102) << "ftpOpenConnection " << m_host << ":" << m_port << " "
-                << m_user << " [password hidden]";
+               << m_user << " [password hidden]";
 
   infoMessage( i18n("Opening connection to host %1", m_host) );
 
@@ -355,15 +355,38 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
     return false;          // error emitted by ftpOpenControlConnection
   infoMessage( i18n("Connected to host %1", m_host) );
 
+  bool userNameChanged = false;
   if(loginMode != loginDefered)
   {
-    m_bLoggedOn = ftpLogin();
+    m_bLoggedOn = ftpLogin(&userNameChanged);
     if( !m_bLoggedOn )
       return false;       // error emitted by ftpLogin
   }
 
   m_bTextMode = config()->readEntry("textmode", false);
   connected();
+
+  // Redirected due to credential change...
+  if (userNameChanged && m_bLoggedOn)
+  {
+    KUrl realURL;
+    realURL.setProtocol( "ftp" );
+    if (m_user != FTP_LOGIN)
+      realURL.setUser( m_user );
+    if (m_pass != FTP_PASSWD)
+      realURL.setPass( m_pass );
+    realURL.setHost( m_host );
+    if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
+      realURL.setPort( m_port );
+    if ( m_initialPath.isEmpty() )
+      m_initialPath = '/';
+    realURL.setPath( m_initialPath );
+    kDebug(7102) << "User name changed! Redirecting to" << realURL.prettyUrl();
+    redirection( realURL );
+    finished();
+    return false;
+  }
+
   return true;
 }
 
@@ -426,14 +449,14 @@ bool Ftp::ftpOpenControlConnection( const QString &host, int port )
  *
  * @return true on success.
  */
-bool Ftp::ftpLogin()
+bool Ftp::ftpLogin(bool* userChanged)
 {
   infoMessage( i18n("Sending login information") );
 
   Q_ASSERT( !m_bLoggedOn );
 
-  QString user = m_user;
-  QString pass = m_pass;
+  QString user (m_user);
+  QString pass (m_pass);
 
   if ( config()->readEntry("EnableAutoLogin", false) )
   {
@@ -445,28 +468,37 @@ bool Ftp::ftpLogin()
     }
   }
 
-  // Try anonymous login if both username/password
-  // information is blank.
-  if (user.isEmpty() && pass.isEmpty())
-  {
-    user = FTP_LOGIN;
-    pass = FTP_PASSWD;
-  }
-
   AuthInfo info;
   info.url.setProtocol( "ftp" );
   info.url.setHost( m_host );
   if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
       info.url.setPort( m_port );
-  info.url.setUser( user );
-  if( user == FTP_LOGIN )
-      info.setExtraField("anonymous", true);
-  else
-      info.setExtraField("anonymous", false);
+  if (!user.isEmpty())
+      info.url.setUser(user);
+
+  // Check for cached authentication first and fallback to
+  // anonymous login when no stored credentials are found.
+  if (!config()->readEntry("TryAnonymousLoginFirst", false) &&
+      pass.isEmpty() && checkCachedAuthentication(info))
+  {
+      user = info.username;
+      pass = info.password;
+  }
+
+  // Try anonymous login if both username/password
+  // information is blank.
+  if (user.isEmpty() && pass.isEmpty())
+  {
+      user = FTP_LOGIN;
+      pass = FTP_PASSWD;
+  }
 
   QByteArray tempbuf;
   QString lastServerResponse;
   int failedAuth = 0;
+
+  // Give the user the option to login anonymously...
+  info.setExtraField(QLatin1String("anonymous"), false);
 
   do
   {
@@ -490,10 +522,11 @@ bool Ftp::ftpLogin()
         info.username = user;
 
       info.prompt = i18n("You need to supply a username and a password "
-                          "to access this site.");
+                         "to access this site.");
       info.commentLabel = i18n( "Site:" );
       info.comment = i18n("<b>%1</b>",  m_host );
       info.keepPassword = true; // Prompt the user for persistence as well.
+      info.setModified(false);  // Default the modified flag since we reuse authinfo.
 
       bool disablePassDlg = config()->readEntry( "DisablePassDlg", false );
       if ( disablePassDlg || !openPasswordDialog( info, errorMsg ) )
@@ -503,19 +536,17 @@ bool Ftp::ftpLogin()
       }
       else
       {
-		// User can decide go anonymous using checkbox
+        // User can decide go anonymous using checkbox
         if( info.getExtraField( "anonymous" ).toBool() )
         {
-	      user = FTP_LOGIN;
-	      pass = FTP_PASSWD;
-          m_user = FTP_LOGIN;
-          m_pass = FTP_PASSWD;
-		}
-		else
-		{
-		  user = info.username;
+          user = FTP_LOGIN;
+          pass = FTP_PASSWD;
+        }
+        else
+        {
+          user = info.username;
           pass = info.password;
-	    }
+        }
       }
     }
 
@@ -556,9 +587,25 @@ bool Ftp::ftpLogin()
 
     if ( loggedIn )
     {
+      // Make sure the user name changed flag is properly set.
+      if (userChanged)
+        *userChanged = (!m_user.isEmpty() && (m_user != user));
+
       // Do not cache the default login!!
       if( user != FTP_LOGIN && pass != FTP_PASSWD )
-        cacheAuthentication( info );
+      {
+        // Update the url username in case it was changed above.
+        if (!m_user.isEmpty())
+            info.url.setUser (user);
+        if (info.keepPassword)
+            cacheAuthentication(info);
+        m_user = user; // Update the original username
+      }
+      else
+      {
+          m_user = FTP_LOGIN;
+          m_pass = FTP_PASSWD;
+      }
       failedAuth = -1;
     }
     else
@@ -1099,8 +1146,6 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
   // The actual functionality is in ftpRename because put needs it
   if ( ftpRename( src.path(), dst.path(), flags ) )
     finished();
-  else
-    error( ERR_CANNOT_RENAME, src.path() );
 }
 
 bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobFlags)
@@ -1114,6 +1159,7 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
             return false;
         }
     }
+
     if (ftpFolder(dst, false)) {
         error(ERR_DIR_ALREADY_EXIST, dst);
         return false;
@@ -1128,13 +1174,17 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
 
     QByteArray from_cmd = "RNFR ";
     from_cmd += remoteEncoding()->encode(src.mid(pos+1));
-    if (!ftpSendCmd(from_cmd) || (m_iRespType != 3))
+    if (!ftpSendCmd(from_cmd) || (m_iRespType != 3)) {
+        error( ERR_CANNOT_RENAME, src );
         return false;
+    }
 
     QByteArray to_cmd = "RNTO ";
     to_cmd += remoteEncoding()->encode(dst);
-    if (!ftpSendCmd(to_cmd) || (m_iRespType != 2))
+    if (!ftpSendCmd(to_cmd) || (m_iRespType != 2)) {
+        error( ERR_CANNOT_RENAME, src );
         return false;
+    }
 
     return true;
 }
@@ -1238,6 +1288,9 @@ void Ftp::ftpShortStatAnswer( const QString& filename, bool isDir )
     entry.insert( KIO::UDSEntry::UDS_NAME, filename );
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, isDir ? S_IFDIR : S_IFREG );
     entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+    if (isDir) {
+      entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, QLatin1String("inode/directory"));
+    }
     // No details about size, ownership, group, etc.
 
     statEntry(entry);
@@ -1404,7 +1457,7 @@ void Ftp::stat(const KUrl &url)
 
 void Ftp::listDir( const KUrl &url )
 {
-    kDebug(7102) << url;
+  kDebug(7102) << url;
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
@@ -1712,7 +1765,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 //===============================================================================
 void Ftp::get( const KUrl & url )
 {
-    kDebug(7102) << url;
+  kDebug(7102) << url;
   int iError = 0;
   ftpGet(iError, -1, url, 0);               // iError gets status
   ftpCloseCommand();                        // must close command!

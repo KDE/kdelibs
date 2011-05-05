@@ -29,7 +29,6 @@
 #include <kstandarddirs.h>
 
 #include <QtGui/QPixmap>
-#include <QtCore/QThread>
 #include <QtCore/QHashIterator>
 #include <QtCore/QStringBuilder>
 #include <QtNetwork/QHostInfo>
@@ -571,77 +570,9 @@ QString KUriFilterPlugin::iconNameFor(const KUrl& url, KUriFilterData::UriTypes 
     return lookupIconNameFor(url, type);
 }
 
-class NameLookUpThread : public QThread
-{
-public:
-    NameLookUpThread (const QString& name)
-    :QThread (0), m_hostName(name), m_started(false)
-    {
-    }
-
-    QHostInfo result() const
-    {
-      return m_hostInfo;
-    }
-
-    bool wasStarted() const
-    {
-        return m_started;
-    }
-
-    void run()
-    {
-        m_started = true;
-        m_hostInfo = QHostInfo();
-
-        // Do not perform a reverse lookup here...
-        QHostAddress address (m_hostName);
-        if (!address.isNull()) {
-            QList<QHostAddress> addressList;
-            addressList << address;
-            m_hostInfo.setAddresses(addressList);
-            return;
-        }
-
-        // Look up the name in the KIO/KHTML DNS cache...
-        m_hostInfo = KIO::HostInfo::lookupCachedHostInfoFor(m_hostName);
-        if (!m_hostInfo.hostName().isEmpty() && m_hostInfo.error() == QHostInfo::NoError) {
-            return;
-        }
-
-        // Failing all of the above, do the lookup...
-        m_hostInfo = QHostInfo::fromName(m_hostName);
-        if (!m_hostInfo.hostName().isEmpty() && m_hostInfo.error() == QHostInfo::NoError) {
-            KIO::HostInfo::cacheLookup(m_hostInfo); // cache the look up...
-        }
-    }
-
-private:
-    QHostInfo m_hostInfo;
-    QString m_hostName;
-    bool m_started;
-};
-
 QHostInfo KUriFilterPlugin::resolveName(const QString& hostname, unsigned long timeout) const
 {
-    NameLookUpThread lookupThread (hostname);
-    lookupThread.start(QThread::TimeCriticalPriority);
-
-    // Wait for it to start...
-    while (!lookupThread.wasStarted()) {
-       kDebug(7022) << "Waiting for name lookup thread to start";
-       lookupThread.wait(1000);
-    }
-
-    // Now wait for it to complete...
-    if (!lookupThread.wait(timeout)) {
-        kDebug(7022) << "Name look up for" << hostname << "failed";
-        lookupThread.terminate();
-        return QHostInfo();
-    }
-
-    //kDebug(7022) << "Name look up succeeded for" << hostname;
-    return lookupThread.result();
+    return KIO::HostInfo::lookupHost(hostname, timeout);
 }
 
 

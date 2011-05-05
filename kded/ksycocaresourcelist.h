@@ -15,8 +15,8 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
-#ifndef KDED_KRESOURCELIST_H
-#define KDED_KRESOURCELIST_H
+#ifndef KSYCOCARESOURCELIST_H
+#define KSYCOCARESOURCELIST_H
 
 #include <QtCore/QLinkedList>
 #include <QtCore/QString>
@@ -33,6 +33,7 @@ class KSycocaResourceList : public QLinkedList<KSycocaResource>
 {
 public:
    KSycocaResourceList() { }
+
    void add(const QString &resource, const QString &filter)
    {
      KSycocaResource res;

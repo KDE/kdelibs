@@ -339,6 +339,8 @@ QString KAboutApplicationPersonProfileOcsLink::prettyType() const
         return "Xing";
     case YouTube:
         return "YouTube";
+    case NUM_ATTICA_LINK_TYPES: // silence compiler warning
+        break;
     }
     return QString();
 }

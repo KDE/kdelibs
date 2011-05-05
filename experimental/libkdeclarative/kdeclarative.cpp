@@ -21,6 +21,7 @@
 #include "bindings/i18n_p.h"
 #include "private/kdeclarative_p.h"
 #include "private/engineaccess_p.h"
+#include "private/kiconprovider_p.h"
 
 #include <QtDeclarative/QDeclarativeComponent>
 #include <QtDeclarative/QDeclarativeContext>
@@ -154,6 +155,9 @@ void KDeclarative::setupBindings()
     bindI18N(engine);
     qScriptRegisterSequenceMetaType<KUrl::List>(engine);
     global.setProperty("Url", constructKUrlClass(engine));
+
+    // setup ImageProvider for KDE icons
+    d->declarativeEngine.data()->addImageProvider(QString("icon"), new KIconProvider);
 }
 
 QScriptEngine *KDeclarative::scriptEngine() const

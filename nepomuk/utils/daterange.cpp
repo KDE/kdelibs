@@ -208,7 +208,7 @@ DateRange DateRange::lastNDays( int n )
 DateRange DateRange::lastNWeeks( int n )
 {
     // This week is the first week
-    DateRange range = thisWeek( false );
+    DateRange range = thisWeek( DateRange::NoDateRangeFlags );
 
     // go into the previous week
     range.setStart( range.start().addDays( -1 ) );
@@ -231,7 +231,7 @@ DateRange DateRange::lastNWeeks( int n )
 DateRange DateRange::lastNMonths( int n )
 {
     // This month is the first month
-    DateRange range = thisMonth( false );
+    DateRange range = thisMonth( DateRange::NoDateRangeFlags );
 
     // move the start n-1 months back
     range.setStart( KGlobal::locale()->calendar()->addMonths(range.start(), n-1 ) );

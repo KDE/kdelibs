@@ -67,7 +67,7 @@ void KDateTimeTest::initTestCase()
     KConfig config("ktimezonedrc");
     KConfigGroup group(&config, "TimeZones");
     group.writeEntry("ZoneinfoDir", mDataDir);
-    group.writeEntry("Zonetab", mDataDir + QString::fromLatin1("/zone.tab"));
+    group.writeEntry("Zonetab", QString(mDataDir + QString::fromLatin1("/zone.tab")));
     group.writeEntry("LocalZone", QString::fromLatin1("America/Los_Angeles"));
     config.sync();
 }
@@ -84,7 +84,7 @@ void KDateTimeTest::cleanupTestCase()
 
 void KDateTimeTest::removeDir(const QString &subdir)
 {
-    QDir local = QDir::homePath() + QLatin1String("/.kde-unit-test/") + subdir;
+    QDir local(QDir::homePath() + QLatin1String("/.kde-unit-test/") + subdir);
     foreach(const QString &file, local.entryList(QDir::Files))
         if(!local.remove(file))
             qWarning("%s: removing failed", qPrintable( file ));

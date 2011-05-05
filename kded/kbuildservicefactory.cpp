@@ -23,7 +23,7 @@
 #include "kmimetyperepository_p.h"
 #include "ksycoca.h"
 #include "ksycocadict_p.h"
-#include "kresourcelist.h"
+#include "ksycocaresourcelist.h"
 #include "kdesktopfile.h"
 
 #include <kglobal.h>

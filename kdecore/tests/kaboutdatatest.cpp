@@ -211,7 +211,7 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenses().at(2).text(), ki18n(LicenseText).toString() );
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::ShortName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::FullName), QString("Custom") );
-    QCOMPARE( aboutData.licenses().at(3).text(), copyrightStatement.toString()+lineFeed+ki18n(LicenseFileText).toString() );
+    QCOMPARE( aboutData.licenses().at(3).text(), QString(copyrightStatement.toString()+lineFeed+ki18n(LicenseFileText).toString()) );
 }
 
 void KAboutDataTest::testSetProgramIconName()

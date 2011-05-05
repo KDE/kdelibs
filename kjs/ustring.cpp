@@ -1070,6 +1070,10 @@ double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) co
   return d;
 }
 
+#ifdef __FAST_MATH__
+# error "KJS does not work correctly with -ffast-math"
+#endif
+
 double UString::toDouble(bool tolerateTrailingJunk) const
 {
   return toDouble(tolerateTrailingJunk, true);

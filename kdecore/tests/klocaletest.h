@@ -30,6 +30,8 @@ private Q_SLOTS:
     void formatNumbers();
 	void formatNumberStrings();
 	void readNumber();
+    void formatMoney();
+    void readMoney();
 	void formatDate();
 	void readDate();
 	void formatTime();

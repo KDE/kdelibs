@@ -233,8 +233,6 @@ void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, co
     }
 
     m_isError = false;
-    // we could leave m_needCredentials value alone; this is just defensive coding.
-    m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
 }
@@ -609,7 +607,13 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
 
         m_forceKeepAlive = true;
         const QByteArray challenge = QByteArray::fromBase64(m_challenge[0]);
-        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName())) {
+
+        KNTLM::AuthFlags flags = KNTLM::Add_LM;
+        if (!m_config || !m_config->readEntry("EnableNTLMv2Auth", false)) {
+            flags |= KNTLM::Force_V1;
+        }
+
+        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName(), flags)) {
             kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
             m_isError = true;
             return;

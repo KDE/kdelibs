@@ -37,7 +37,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #define QCOMPARE_PATHS(x,y) QCOMPARE(QString(x).toLower(), QString(y).toLower())
 #define PATH_SENSITIVITY Qt::CaseInsensitive
 #else
-#define QCOMPARE_PATHS(x,y) QCOMPARE(x, y)
+#define QCOMPARE_PATHS(x,y) QCOMPARE(QString(x), QString(y))
 #define PATH_SENSITIVITY Qt::CaseSensitive
 #endif
 

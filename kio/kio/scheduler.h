@@ -279,6 +279,7 @@ namespace KIO {
 
         // DBUS
         Q_SCRIPTABLE void reparseSlaveConfiguration(const QString &);
+        Q_SCRIPTABLE void slaveOnHoldListChanged();
 
     private:
         Q_DISABLE_COPY(Scheduler)
@@ -293,6 +294,7 @@ namespace KIO {
 
         // connected to D-Bus signal:
         Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&))
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveOnHoldListChanged())
 
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveConnected())
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveError(int error, const QString &errorMsg))

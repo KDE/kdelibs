@@ -58,7 +58,7 @@ QString getString( const QByteArray &buf, const KNTLM::SecBuf &secbuf, bool unic
 
   QString str;
   const char *c = buf.data() + offset;
-  
+
   if ( unicode ) {
     str = UnicodeLE2QString( (QChar*) c, len >> 1 );
   } else {
@@ -95,7 +95,7 @@ void addBuf( QByteArray &buf, KNTLM::SecBuf &secbuf, const QByteArray &data )
   offset = (buf.size() + 1) & 0xfffffffe;
   len = data.size();
   maxlen = data.size();
-  
+
   secbuf.offset = qToLittleEndian((quint32)offset);
   secbuf.len = qToLittleEndian(len);
   secbuf.maxlen = qToLittleEndian(maxlen);
@@ -141,14 +141,15 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge,
     dom = getString( challenge, ch->targetName, unicode );
   else
     dom = domain;
-    
+
   memcpy( rbuf.data(), NTLM_SIGNATURE, sizeof(NTLM_SIGNATURE) );
   ((Auth*) rbuf.data())->msgType = qToLittleEndian( (quint32)3 );
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( ((authflags & Force_V2) && !(authflags & Force_V1)) || 
-     (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+  if (!(authflags & Force_V1) &&
+      ((authflags & Force_V2) || 
+       (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info))) /* may support NTLMv2 */) {
     bool ret = false;
     if ( qFromLittleEndian(ch->flags) & Negotiate_NTLM ) {
       if ( targetInfo.isEmpty() ) return false;

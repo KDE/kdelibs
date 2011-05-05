@@ -156,7 +156,7 @@ DateRange Nepomuk::Utils::DateFacet::Private::dateRangeCandidateToDateRange( Dat
         return DateRange(today.addDays(-1), today.addDays(-1));
 
     case ThisWeek: {
-        return DateRange::thisWeek( false );
+        return DateRange::thisWeek( DateRange::NoDateRangeFlags );
     }
 
     case LastWeek: {
@@ -164,7 +164,7 @@ DateRange Nepomuk::Utils::DateFacet::Private::dateRangeCandidateToDateRange( Dat
     }
 
     case ThisMonth: {
-        return DateRange::thisMonth( false );
+        return DateRange::thisMonth( DateRange::NoDateRangeFlags );
     }
 
     case LastMonth: {

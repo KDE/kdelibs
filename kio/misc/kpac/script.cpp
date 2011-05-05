@@ -39,6 +39,8 @@
 #include <klocalizedstring.h>
 #include <kio/hostinfo_p.h>
 
+#define QL1S(x)    QLatin1String(x)
+
 namespace
 {
     static int findString (const QString& s, const char* const* values)
@@ -699,26 +701,26 @@ namespace
     void registerFunctions(QScriptEngine* engine)
     {
         QScriptValue value = engine->globalObject();
-        value.setProperty("isPlainHostName", engine->newFunction(IsPlainHostName));
-        value.setProperty("dnsDomainIs", engine->newFunction(DNSDomainIs));
-        value.setProperty("localHostOrDomainIs", engine->newFunction(LocalHostOrDomainIs));
-        value.setProperty("isResolvable", engine->newFunction(IsResolvable));
-        value.setProperty("isInNet", engine->newFunction(IsInNet));
-        value.setProperty("dnsResolve", engine->newFunction(DNSResolve));
-        value.setProperty("myIpAddress", engine->newFunction(MyIpAddress));
-        value.setProperty("dnsDomainLevels", engine->newFunction(DNSDomainLevels));
-        value.setProperty("shExpMatch", engine->newFunction(ShExpMatch));
-        value.setProperty("weekdayRange", engine->newFunction(WeekdayRange));
-        value.setProperty("dateRange", engine->newFunction(DateRange));
-        value.setProperty("timeRange", engine->newFunction(TimeRange));
+        value.setProperty(QL1S("isPlainHostName"), engine->newFunction(IsPlainHostName));
+        value.setProperty(QL1S("dnsDomainIs"), engine->newFunction(DNSDomainIs));
+        value.setProperty(QL1S("localHostOrDomainIs"), engine->newFunction(LocalHostOrDomainIs));
+        value.setProperty(QL1S("isResolvable"), engine->newFunction(IsResolvable));
+        value.setProperty(QL1S("isInNet"), engine->newFunction(IsInNet));
+        value.setProperty(QL1S("dnsResolve"), engine->newFunction(DNSResolve));
+        value.setProperty(QL1S("myIpAddress"), engine->newFunction(MyIpAddress));
+        value.setProperty(QL1S("dnsDomainLevels"), engine->newFunction(DNSDomainLevels));
+        value.setProperty(QL1S("shExpMatch"), engine->newFunction(ShExpMatch));
+        value.setProperty(QL1S("weekdayRange"), engine->newFunction(WeekdayRange));
+        value.setProperty(QL1S("dateRange"), engine->newFunction(DateRange));
+        value.setProperty(QL1S("timeRange"), engine->newFunction(TimeRange));
 
         // Microsoft's IPv6 PAC Extensions...
-        value.setProperty("isResolvableEx", engine->newFunction(IsResolvableEx));
-        value.setProperty("isInNetEx", engine->newFunction(IsInNetEx));
-        value.setProperty("dnsResolveEx", engine->newFunction(DNSResolveEx));
-        value.setProperty("myIpAddressEx", engine->newFunction(MyIpAddressEx));
-        value.setProperty("sortIpAddressList", engine->newFunction(SortIpAddressList));
-        value.setProperty("getClientVersion", engine->newFunction(GetClientVersion));
+        value.setProperty(QL1S("isResolvableEx"), engine->newFunction(IsResolvableEx));
+        value.setProperty(QL1S("isInNetEx"), engine->newFunction(IsInNetEx));
+        value.setProperty(QL1S("dnsResolveEx"), engine->newFunction(DNSResolveEx));
+        value.setProperty(QL1S("myIpAddressEx"), engine->newFunction(MyIpAddressEx));
+        value.setProperty(QL1S("sortIpAddressList"), engine->newFunction(SortIpAddressList));
+        value.setProperty(QL1S("getClientVersion"), engine->newFunction(GetClientVersion));
     }
 }
 
@@ -742,10 +744,10 @@ namespace KPAC
 
     QString Script::evaluate(const KUrl& url)
     {
-        QScriptValue func = m_engine->globalObject().property(QLatin1String("FindProxyForURL"));
+        QScriptValue func = m_engine->globalObject().property(QL1S("FindProxyForURL"));
 
         if (!func.isValid()) {
-            func = m_engine->globalObject().property(QLatin1String("FindProxyForURLEx"));
+            func = m_engine->globalObject().property(QL1S("FindProxyForURLEx"));
             if (!func.isValid()) {
                 throw Error(i18n("Could not find 'FindProxyForURL' or 'FindProxyForURLEx'"));
                 return QString();

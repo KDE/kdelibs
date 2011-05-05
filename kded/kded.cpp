@@ -22,7 +22,6 @@
 #include "kdedadaptor.h"
 #include "kdedmodule.h"
 
-#include "kresourcelist.h"
 #include <kcrash.h>
 
 #include <unistd.h>
