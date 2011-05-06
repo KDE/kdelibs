@@ -248,14 +248,15 @@ void WallpaperPackage::pathChanged()
     guard = true;
 
     QFileInfo info(path());
-
     m_fullPackage = info.isDir();
+    removeDefinition("preferred");
+    setRequired("images", m_fullPackage);
+
     if (m_fullPackage) {
         setContentsPrefixPaths(QStringList() << "contents/");
         findBestPaper();
     } else {
         // dirty trick to support having a file passed in instead of a directory
-        removeDefinition("preferred");
         addFileDefinition("preferred", info.fileName(), i18n("Recommended wallpaper file"));
         setContentsPrefixPaths(QStringList());
         //kDebug() << "changing" << path() << "to" << info.path();
