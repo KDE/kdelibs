@@ -75,7 +75,7 @@ class KIconEngine : public QIconEngineV2
   private:
     QString mIconName;
     QStringList mOverlays;
-    KIconLoader* mIconLoader;
+    QWeakPointer<KIconLoader> mIconLoader;
 };
 
 inline KIconEngine::~KIconEngine()
