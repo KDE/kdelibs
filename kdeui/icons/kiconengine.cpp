@@ -28,9 +28,10 @@
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)
     : mIconName(iconName),
-      mIconLoader(iconLoader),
-      mOverlays(overlays)
+      mOverlays(overlays), 
+      mIconLoader(iconLoader)
 {
+    
 }
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader)
