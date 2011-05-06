@@ -27,16 +27,16 @@
 
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)
+    : mIconName(iconName),
+      mIconLoader(iconLoader),
+      mOverlays(overlays)
 {
-    mIconName = iconName;
-    mIconLoader = iconLoader;
-    mOverlays = overlays;
 }
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader)
+    : mIconName(iconName),
+      mIconLoader(iconLoader)
 {
-    mIconName = iconName;
-    mIconLoader = iconLoader;
 }
 
 static inline int qIconModeToKIconState( QIcon::Mode mode )
@@ -65,8 +65,12 @@ QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::Stat
     return QSize(iconSize, iconSize);
 }
 
-void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state )
+void KIconEngine::paint(QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state)
 {
+    if (!mIconLoader) {
+        return;
+    }
+
     Q_UNUSED(state)
 
     const int kstate = qIconModeToKIconState(mode);
@@ -80,20 +84,27 @@ void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mod
     }
 
     const int iconSize = qMin(rect.width(), rect.height());
-    const QPixmap pix = mIconLoader->loadIcon(mIconName, group, iconSize, kstate, mOverlays);
+    const QPixmap pix = mIconLoader.data()->loadIcon(mIconName, group, iconSize, kstate, mOverlays);
     painter->drawPixmap(rect, pix);
 }
 
-QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State state )
+QPixmap KIconEngine::pixmap(const QSize & size, QIcon::Mode mode, QIcon::State state)
 {
     Q_UNUSED(state)
 
+    if (!mIconLoader) {
+        QPixmap pm(size);
+        pm.fill(Qt::transparent);
+        return pm;
+    }
+
     const int kstate = qIconModeToKIconState(mode);
     const int iconSize = qMin(size.width(), size.height());
-    QPixmap pix = mIconLoader->loadIcon(mIconName, KIconLoader::Desktop, iconSize, kstate, mOverlays);
+    QPixmap pix = mIconLoader.data()->loadIcon(mIconName, KIconLoader::Desktop, iconSize, kstate, mOverlays);
 
-    if(pix.size() == size)
+    if (pix.size() == size) {
         return pix;
+    }
 
     QPixmap pix2(size);
     pix2.fill(QColor(0,0,0,0));
@@ -111,7 +122,7 @@ QString KIconEngine::key() const
 
 QIconEngineV2 *KIconEngine::clone() const
 {
-    return new KIconEngine(mIconName, mIconLoader, mOverlays);
+    return new KIconEngine(mIconName, mIconLoader.data(), mOverlays);
 }
 
 bool KIconEngine::read(QDataStream &in)
