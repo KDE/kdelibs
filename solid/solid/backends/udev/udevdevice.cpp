@@ -71,11 +71,14 @@ QString UDevDevice::vendor() const
              vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', " ");
          }  else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
              vendor = m_device.deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
-         }
-         else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
+         } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
              if (m_device.parent().isValid()) {
                  vendor = m_device.parent().deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
              }
+         }
+
+         if (vendor.isEmpty()) {
+             vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', ' ');
          }
     }
     return vendor;
@@ -110,6 +113,10 @@ QString UDevDevice::product() const
             } else if (serialIface.serialType() == Solid::SerialInterface::Usb) {
                 product.append(QLatin1String("USB Serial Port"));
             }
+        }
+
+        if (product.isEmpty()) {
+            product = m_device.deviceProperty("ID_MODEL").toString().replace('_', ' ');
         }
     }
     return product;
