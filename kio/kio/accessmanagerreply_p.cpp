@@ -308,12 +308,15 @@ void AccessManagerReply::slotResult(KJob *kJob)
     const int errcode = jobError(kJob);
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-    if (redirectUrl.isValid() || !hasRawHeader("content-type")) {
-        readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
-    } else {
+    if (!redirectUrl.isValid()) {
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
         if (errcode && errcode != KIO::ERR_NO_CONTENT)
             emit error(error());
+    }
+
+    // Make sure HTTP response headers are always set.
+    if (!m_metaDataRead) {
+        readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     }
 
     emit finished();
