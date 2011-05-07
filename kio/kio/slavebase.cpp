@@ -76,7 +76,8 @@ namespace KIO {
 class SlaveBasePrivate {
 public:
     SlaveBase* q;
-    SlaveBasePrivate(SlaveBase* owner): q(owner) {}
+    SlaveBasePrivate(SlaveBase* owner): q(owner), m_passwdServer(0) {}
+    ~SlaveBasePrivate() { delete m_passwdServer; }
 
     UDSEntryList pendingListEntries;
     int listEntryCurrentSize;
@@ -106,6 +107,8 @@ public:
     enum { Idle, InsideMethod, FinishedCalled, ErrorCalled } m_state;
     QByteArray timeoutData;
 
+    KPasswdServer* m_passwdServer;
+
     // Reconstructs configGroup from configData and mIncomingMetaData
     void rebuildConfig()
     {
@@ -128,11 +131,21 @@ public:
             kWarning(7019) << cmdName << "did not call finished() or error()! Please fix the KIO slave.";
         }
     }
+
     void verifyErrorFinishedNotCalled(const char* cmdName)
     {
         if (m_state == FinishedCalled || m_state == ErrorCalled) {
             kWarning(7019) << cmdName << "called finished() or error(), but it's not supposed to! Please fix the KIO slave.";
         }
+    }
+
+    KPasswdServer* passwdServer()
+    {
+        if (!m_passwdServer) {
+            m_passwdServer = new KPasswdServer;
+        }
+
+        return m_passwdServer;
     }
 };
 
@@ -379,7 +392,7 @@ KRemoteEncoding *SlaveBase::remoteEncoding()
    if (d->remotefile)
       return d->remotefile;
 
-   const QByteArray charset (metaData("Charset").toLatin1());
+   const QByteArray charset (metaData(QLatin1String("Charset")).toLatin1());
    return (d->remotefile = new KRemoteEncoding( charset ));
 }
 
@@ -840,14 +853,17 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     // it to ensure it is valid.
     dlgInfo.setExtraField(QLatin1String("skip-caching-on-query"), true);
 
-    KPasswdServer srv;
-    qlonglong seqNr = srv.queryAuthInfo(dlgInfo, errorMessage, windowId,
-                                        SlaveBasePrivate::s_seqNr, userTimestamp);
-    if (seqNr > 0) {
-        SlaveBasePrivate::s_seqNr = seqNr;
-        if (dlgInfo.isModified()) {
-            info = dlgInfo;
-            return true;
+    KPasswdServer* passwdServer = d->passwdServer();
+
+    if (passwdServer) {
+        qlonglong seqNr = passwdServer->queryAuthInfo(dlgInfo, errorMessage, windowId,
+                                                      SlaveBasePrivate::s_seqNr, userTimestamp);
+        if (seqNr > 0) {
+            SlaveBasePrivate::s_seqNr = seqNr;
+            if (dlgInfo.isModified()) {
+                info = dlgInfo;
+                return true;
+            }
         }
     }
 
@@ -1180,8 +1196,10 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
-    return KPasswdServer().checkAuthInfo(info, metaData("window-id").toLong(),
-                                         metaData("user-timestamp").toULong());
+    KPasswdServer* passwdServer = d->passwdServer();
+    return (passwdServer &&
+            passwdServer->checkAuthInfo(info, metaData(QLatin1String("window-id")).toLong(),
+                                        metaData(QLatin1String("user-timestamp")).toULong()));
 }
 
 void SlaveBase::dispatchOpenCommand( int command, const QByteArray &data )
@@ -1218,14 +1236,20 @@ void SlaveBase::dispatchOpenCommand( int command, const QByteArray &data )
 
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
-    KPasswdServer().addAuthInfo(info, metaData("window-id").toLongLong());
+    KPasswdServer* passwdServer = d->passwdServer();
+
+    if (!passwdServer) {
+        return false;
+    }
+
+    passwdServer->addAuthInfo(info, metaData(QLatin1String("window-id")).toLongLong());
     return true;
 }
 
 int SlaveBase::connectTimeout()
 {
     bool ok;
-    QString tmp = metaData("ConnectTimeout");
+    QString tmp = metaData(QLatin1String("ConnectTimeout"));
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
@@ -1235,7 +1259,7 @@ int SlaveBase::connectTimeout()
 int SlaveBase::proxyConnectTimeout()
 {
     bool ok;
-    QString tmp = metaData("ProxyConnectTimeout");
+    QString tmp = metaData(QLatin1String("ProxyConnectTimeout"));
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
@@ -1246,7 +1270,7 @@ int SlaveBase::proxyConnectTimeout()
 int SlaveBase::responseTimeout()
 {
     bool ok;
-    QString tmp = metaData("ResponseTimeout");
+    QString tmp = metaData(QLatin1String("ResponseTimeout"));
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
@@ -1257,7 +1281,7 @@ int SlaveBase::responseTimeout()
 int SlaveBase::readTimeout()
 {
     bool ok;
-    QString tmp = metaData("ReadTimeout");
+    QString tmp = metaData(QLatin1String("ReadTimeout"));
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
