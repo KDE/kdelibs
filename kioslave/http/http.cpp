@@ -3014,7 +3014,9 @@ endParsing:
                         if (auth->realm().isEmpty() && !auth->supportsPathMatching())
                             setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
                     }
-                    cacheAuthentication(authinfo);
+                    if (authinfo.keepPassword) {
+                        cacheAuthentication(authinfo);
+                    }
                     kDebug(7113) << "Caching authentication for" << m_request.url;
                 }
                 // Update our server connection state which includes www and proxy username and password.
