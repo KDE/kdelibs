@@ -327,8 +327,9 @@ Notes:
     <glob pattern="*.xmi.tar.bz2"/>
   </mime-type>
 
-  <mime-type type="application/x-win-lnk">
+  <mime-type type="application/x-ms-shortcut">
     <comment>Windows link</comment>
+    <alias type="application/x-win-lnk"/>
     <glob pattern="*.lnk"/>
   </mime-type>
 
