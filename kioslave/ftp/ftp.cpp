@@ -594,12 +594,16 @@ bool Ftp::ftpLogin(bool* userChanged)
       // Do not cache the default login!!
       if( user != FTP_LOGIN && pass != FTP_PASSWD )
       {
-        // Update the url username in case it was changed above.
-        if (!m_user.isEmpty())
+        // Update the username in case it was changed during login.
+        if (!m_user.isEmpty()) {
             info.url.setUser (user);
-        if (info.keepPassword)
+            m_user = user;
+        }
+
+        // Cache the password if the user requested it.
+        if (info.keepPassword) {
             cacheAuthentication(info);
-        m_user = user; // Update the original username
+        }
       }
       else
       {
