@@ -207,6 +207,13 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         return reply;
     }
 
+    // Check if the internal ignore content disposition header is set.
+    const bool ignoreContentDisposition = req.hasRawHeader("x-kdewebkit-ignore-disposition");
+
+    // Retrieve the KIO meta data...
+    KIO::MetaData metaData;
+    d->setMetaDataForRequest(req, metaData);
+
     switch (op) {
         case HeadOperation: {
             //kDebug( 7044 ) << "HeadOperation:" << reqUrl;
@@ -219,6 +226,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             else
                 kioJob = KIO::stat(reqUrl, KIO::HideProgressInfo);
+
+            // WORKAROUND: Avoid the brain damaged stuff QtWebKit does when a POST
+            // operation is redirected! See BR# 268694.
+            metaData.remove(QL1S("content-type")); // Remove the content-type from a GET/HEAD request!
             break;
         }
         case PutOperation: {
@@ -234,6 +245,16 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             const qint64 size = sizeFromRequest(req);
             //kDebug(7044) << "PostOperation: data size=" << size;
             kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
+            if (!metaData.contains(QL1S("content-type")))  {
+                const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+                if (header.isValid()) {
+                    metaData.insert(QL1S("content-type"),
+                                    (QL1S("Content-Type: ") + header.toString()));
+                } else {
+                    metaData.insert(QL1S("content-type"),
+                                    QL1S("Content-Type: application/x-www-form-urlencoded"));
+                }
+            }
             break;
         }
         case DeleteOperation: {
@@ -270,8 +291,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         kioJob->ui()->setWindow(d->window);
     }
 
+    // Disable internal automatic redirection handling
     kioJob->setRedirectionHandlingEnabled(false);
 
+    // Set the job priority
     switch (req.priority()) {
     case QNetworkRequest::HighPriority:
         KIO::Scheduler::setJobPriority(kioJob, -5);
@@ -283,24 +306,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
-    if (req.hasRawHeader("x-kdewebkit-ignore-disposition")) {
-        kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
-        reply->setIgnoreContentDisposition(true);
-    }
-
-    KIO::MetaData metaData;
-    d->setMetaDataForRequest(req, metaData);
+    // Add the meta data to the job...
     kioJob->addMetaData(metaData);
 
-    if ( op == PostOperation && !kioJob->metaData().contains(QL1S("content-type")))  {
-        const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
-        if (header.isValid())
-          kioJob->addMetaData(QL1S("content-type"),
-                              (QL1S("Content-Type: ") + header.toString()));
-        else
-          kioJob->addMetaData(QL1S("content-type"),
-                              QL1S("Content-Type: application/x-www-form-urlencoded"));
+    // Create the reply...
+    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+
+    if (ignoreContentDisposition) {
+        kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
+        reply->setIgnoreContentDisposition(ignoreContentDisposition);
     }
 
     return reply;
