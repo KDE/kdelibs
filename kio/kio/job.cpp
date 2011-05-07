@@ -1058,6 +1058,7 @@ void TransferJob::slotFinished()
                     istream >> specialcmd;
                     if (specialcmd == 1) // HTTP POST
                     {
+                      d->m_outgoingMetaData.remove(QLatin1String("content-type"));
                       addMetaData("cache","reload");
                       d->m_packedArgs.truncate(0);
                       QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
