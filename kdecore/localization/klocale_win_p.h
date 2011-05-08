@@ -41,6 +41,12 @@ public:
 protected:
 
     /**************************
+     **   System settings    **
+     **************************/
+
+    //KConfig systemFormats();
+
+    /**************************
      **   Country settings   **
      **************************/
 
