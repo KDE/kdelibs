@@ -210,9 +210,11 @@
 
  The piece of code that calls the action of the previous example is located in example/mainwindow.cpp in the on_readAction_triggered() slot. It looks like this:
  @code
+ QVariantMap args;
+ args["filename"] = filename;
  Action readAction = "org.kde.auth.example.read";
  readAction.setHelperID("org.kde.auth.example");
- readAction.arguments()["filename"] = filename;
+ readAction.setArguments(args);
 
  ActionReply reply = readAction.execute();
  if (reply.failed())
