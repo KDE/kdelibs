@@ -1,6 +1,7 @@
 [KCM Locale]
 Name=US English
 Name[bg]=Американски английски
+Name[bs]=Američki engleski
 Name[ca]=Anglès US
 Name[ca@valencia]=Anglés US
 Name[cs]=Anglický (US)
@@ -42,6 +43,7 @@ Name[sr@latin]=američki engleski
 Name[sv]=Amerikansk engelska
 Name[th]=ภาษาอังกฤษ อเมริกัน
 Name[tr]=Amerikan İngilizcesi
+Name[ug]=ئامېرىكا ئىنگلىزچە
 Name[uk]=Англійська (США)
 Name[wa]=Inglès des Estats-Unis
 Name[x-test]=xxUS Englishxx

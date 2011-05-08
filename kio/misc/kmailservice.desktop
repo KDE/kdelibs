@@ -10,6 +10,7 @@ NoDisplay=true
 # KMailService is the handler for mailto URLs
 Name=KMailService
 Name[bg]=KMailService
+Name[bs]=KMailService
 Name[ca]=KMailService
 Name[ca@valencia]=KMailService
 Name[cs]=Poštovní služba
@@ -51,6 +52,7 @@ Name[sr@latin]=Servis za poštu
 Name[sv]=Kmail-tjänst
 Name[th]=KMailService
 Name[tr]=KMailService
+Name[ug]=KMailService
 Name[uk]=Служба пошти KMail
 Name[wa]=KMailService
 Name[x-test]=xxKMailServicexx
