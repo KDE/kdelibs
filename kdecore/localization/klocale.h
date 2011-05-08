@@ -808,8 +808,10 @@ public:
      */
     enum WeekNumberSystem {
         DefaultWeekNumber = -1, /**< The system locale default */
-        IsoWeekNumber     =  0  /**< ISO Week Number */
-        //UsaWeekNumber     = 1   /**< USA Week Number */
+        IsoWeekNumber     =  0, /**< ISO Week Number */
+        FirstFullWeek     =  1, /**< Week 1 starts on the first Week Start Day in year ends after 7 days */
+        FirstPartialWeek  =  2, /**< Week 1 starts Jan 1st ends day before first Week Start Day in year */
+        SimpleWeek        =  3  /**< Week 1 starts Jan 1st ends after 7 days */
     };
 
     //KDE5 move to KDateTime namespace
@@ -1158,26 +1160,34 @@ public:
      *
      * Sets the type of Week Number System to use in this Locale
      *
-     * Currently only ISO Weeks are supported.
-     *
      * @see Klocale::WeekNumberSystem
      * @see weekNumberSystem()
      * @param weekNumberSystem the Week Number System to use
      */
     void setWeekNumberSystem(KLocale::WeekNumberSystem weekNumberSystem);
 
+    //KDE5 remove in favour of const version
     /**
      * @since 4.6
      *
      * Returns the type of Week Number System used in this Locale
-     *
-     * Currently only ISO Weeks are supported.
      *
      * @see Klocale::WeekNumberSystem
      * @see setWeekNumberSystem()
      * @returns the Week Number System used
      */
     KLocale::WeekNumberSystem weekNumberSystem();
+
+    /**
+     * @since 4.7
+     *
+     * Returns the type of Week Number System used in this Locale
+     *
+     * @see Klocale::WeekNumberSystem
+     * @see setWeekNumberSystem()
+     * @returns the Week Number System used
+     */
+    KLocale::WeekNumberSystem weekNumberSystem() const;
 
     /**
      * Converts a localized monetary string to a double.

@@ -365,6 +365,165 @@ QString KCalendarSystemPrivate::weekDayName( int weekDay, KLocale::DateTimeCompo
 }
 
 // Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::week( const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum ) const
+{
+    int y, m, d;
+    q->julianDayToDate( date.toJulianDay(), y, m, d );
+
+    switch ( weekNumberSystem ) {
+    case KLocale::IsoWeekNumber:
+        return isoWeekNumber( date, yearNum );
+    case KLocale::FirstFullWeek:
+        return regularWeekNumber( date, locale()->weekStartDay(), 0, yearNum );
+    case KLocale::FirstPartialWeek:
+        return regularWeekNumber( date, locale()->weekStartDay(), 1, yearNum );
+    case KLocale::SimpleWeek:
+        return simpleWeekNumber( date, yearNum );
+    case KLocale::DefaultWeekNumber:
+    default:
+        return week( date, locale()->weekNumberSystem(), yearNum );
+    }
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::isoWeekNumber( const QDate &date, int *yearNum ) const
+{
+    int y, m, d;
+    q->julianDayToDate( date.toJulianDay(), y, m, d );
+
+    QDate firstDayWeek1, lastDay;
+    int week;
+    int weekDay1, dayOfWeek1InYear;
+
+    // let's guess 1st day of 1st week
+    firstDayWeek1 = firstDayOfYear( y );
+    weekDay1 = dayOfWeek( firstDayWeek1 );
+
+    // iso 8601: week 1  is the first containing thursday and week starts on monday
+    if ( weekDay1 > 4 /*Thursday*/ ) {
+        firstDayWeek1 = q->addDays( firstDayWeek1 , daysInWeek() - weekDay1 + 1 ); // next monday
+    }
+
+    dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
+
+    // our date in prev year's week
+    if ( dayOfYear( date ) < dayOfWeek1InYear ) {
+        if ( yearNum ) {
+            *yearNum = addYears( y, - 1 );
+        }
+        return isoWeeksInYear( addYears( y, - 1 ) );
+    }
+
+    // let's check if its last week belongs to next year
+    lastDay = lastDayOfYear( y );
+
+    // if our date is in last week && 1st week in next year has thursday
+    if ( ( dayOfYear( date ) >= daysInYear( y ) - dayOfWeek( lastDay ) + 1 )
+            && dayOfWeek( lastDay ) < 4 ) {
+        if ( yearNum ) {
+            * yearNum = addYears( y, 1 );
+        }
+        week = 1;
+    } else {
+        // To calculate properly the number of weeks from day a to x let's make a day 1 of week
+        if( weekDay1 < 5 ) {
+            firstDayWeek1 = q->addDays( firstDayWeek1, -( weekDay1 - 1 ) );
+        }
+
+        if ( yearNum ) {
+            * yearNum = y;
+        }
+
+        week = firstDayWeek1.daysTo( date ) / daysInWeek() + 1;
+    }
+
+    return week;
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::regularWeekNumber( const QDate &date, int weekStartDay, int firstWeekNumber, int *weekYear ) const
+{
+    int y, m, d;
+    q->julianDayToDate( date.toJulianDay(), y, m, d );
+
+    int firstWeekDayOffset = ( dayOfWeek( date ) - weekStartDay + daysInWeek() ) % daysInWeek();
+    int dayInYear = date.toJulianDay() - firstDayOfYear( y ).toJulianDay(); // 0 indexed
+    int week = ( ( dayInYear - firstWeekDayOffset + daysInWeek() ) / daysInWeek() );
+
+    if ( dayOfWeek( firstDayOfYear( y ) ) != weekStartDay ) {
+        week = week + firstWeekNumber;
+    }
+
+    if ( week < 1 ) {
+        y = y - 1;
+        week = regularWeeksInYear( y, weekStartDay, firstWeekNumber );
+    }
+
+    if ( weekYear ) {
+        *weekYear = y;
+    }
+
+    return week;
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::simpleWeekNumber( const QDate &date, int *yearNum ) const
+{
+    int y, m, d;
+    q->julianDayToDate( date.toJulianDay(), y, m, d );
+    if ( yearNum ) {
+        *yearNum = y;
+    }
+    return ( ( date.toJulianDay() - firstDayOfYear( y ).toJulianDay() ) / daysInWeek() ) + 1;
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::weeksInYear( int year, KLocale::WeekNumberSystem weekNumberSystem ) const
+{
+    switch ( weekNumberSystem ) {
+    case KLocale::IsoWeekNumber:
+        return isoWeeksInYear( year );
+    case KLocale::FirstFullWeek:
+        return regularWeeksInYear( year, locale()->weekStartDay(), 0 );
+    case KLocale::FirstPartialWeek:
+        return regularWeeksInYear( year, locale()->weekStartDay(), 1 );
+    case KLocale::SimpleWeek:
+        return simpleWeeksInYear( year );
+    case KLocale::DefaultWeekNumber:
+    default:
+        return weeksInYear( year, locale()->weekNumberSystem() );
+    }
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::isoWeeksInYear( int year ) const
+{
+    QDate lastDayOfThisYear = lastDayOfYear( year );
+
+    int weekYear = year;
+    int lastWeekInThisYear = isoWeekNumber( lastDayOfThisYear, &weekYear );
+
+    // If error, or the last day of the year is in the first week of next year use the week before
+    if ( lastWeekInThisYear < 1 || weekYear != year ) {
+        lastWeekInThisYear = isoWeekNumber( q->addDays( lastDayOfThisYear, -7 ), &weekYear );
+    }
+
+    return lastWeekInThisYear;
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::regularWeeksInYear( int year, int weekStartDay, int firstWeekNumber ) const
+{
+    return regularWeekNumber( lastDayOfYear( year ), weekStartDay, firstWeekNumber, 0 );
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
+int KCalendarSystemPrivate::simpleWeeksInYear( int year ) const
+{
+    return simpleWeekNumber( lastDayOfYear( year ), 0 );
+}
+
+// Reimplement if special maths handling required, e.g. Hebrew.
 // Works for calendars with constant number of months, or where leap month is last month of year
 // Will not work for Hebrew or others where leap month is inserted in middle of year
 void KCalendarSystemPrivate::dateDifference( const QDate &fromDate, const QDate &toDate,
@@ -658,6 +817,24 @@ QString KCalendarSystemPrivate::simpleDateString( const QString &str ) const
     }
     newStr.simplified();
     return newStr;
+}
+
+int KCalendarSystemPrivate::dayOfYear( const QDate &date ) const
+{
+    int y, m, d, jdFirstDayOfYear;
+    q->julianDayToDate( date.toJulianDay(), y, m, d );
+    q->dateToJulianDay( y, 1, 1, jdFirstDayOfYear );
+    //Take the jd of the given date, and subtract the jd of the first day of that year
+    return ( date.toJulianDay() - jdFirstDayOfYear + 1 );
+}
+
+int KCalendarSystemPrivate::dayOfWeek( const QDate &date ) const
+{
+    // Makes assumption that Julian Day 0 was day 1 of week
+    // This is true for Julian/Gregorian calendar with jd 0 being Monday
+    // We add 1 for ISO compliant numbering for 7 day week
+    // Assumes we've never skipped weekdays
+    return ( ( date.toJulianDay() % daysInWeek() ) + 1 );
 }
 
 QDate KCalendarSystemPrivate::firstDayOfYear( int year ) const
@@ -1377,25 +1554,18 @@ int KCalendarSystem::weeksInYear( const QDate &date ) const
     return -1;
 }
 
-// ISO compliant week numbering, not traditional number, rename in KDE5 to isoWeeksInYear()
 int KCalendarSystem::weeksInYear( int year ) const
+{
+    return weeksInYear( year, KLocale::DefaultWeekNumber );
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::weeksInYear( int year, KLocale::WeekNumberSystem weekNumberSystem ) const
 {
     Q_D( const KCalendarSystem );
 
     if ( isValid( year, 1, 1 ) ) {
-        QDate firstDayOfThisYear = d->firstDayOfYear( year );
-        QDate lastDayOfThisYear = d->lastDayOfYear( year );
-
-        int weekYear = year;
-        int lastWeekInThisYear = weekNumber( lastDayOfThisYear, &weekYear );
-
-        // If error, or the last day of the year is in the first week of next year use the week before
-        if ( lastWeekInThisYear < 1 || weekYear != year ) {
-            lastDayOfThisYear = addDays( lastDayOfThisYear, -7 );
-            lastWeekInThisYear = weekNumber( lastDayOfThisYear );
-        }
-
-        return lastWeekInThisYear;
+        return d->weeksInYear( year, weekNumberSystem );
     }
 
     return -1;
@@ -1458,11 +1628,10 @@ int KCalendarSystem::daysInWeek( const QDate &date ) const
 
 int KCalendarSystem::dayOfYear( const QDate &date ) const
 {
-    //Take the jd of the given date, and subtract the jd of the first day of that year
     Q_D( const KCalendarSystem );
 
     if ( isValid( date ) ) {
-        return ( date.toJulianDay() - d->firstDayOfYear( year( date ) ).toJulianDay() + 1 );
+        return d->dayOfYear( date );
     }
 
     return -1;
@@ -1470,70 +1639,33 @@ int KCalendarSystem::dayOfYear( const QDate &date ) const
 
 int KCalendarSystem::dayOfWeek( const QDate &date ) const
 {
-    // Makes assumption that Julian Day 0 was day 1 of week
-    // This is true for Julian/Gregorian calendar with jd 0 being Monday
-    // We add 1 for ISO compliant numbering for 7 day week
-    // Assumes we've never skipped weekdays
     Q_D( const KCalendarSystem );
 
     if ( isValid( date ) ) {
-        return ( ( date.toJulianDay() % d->daysInWeek() ) + 1 );
+        return d->dayOfWeek( date );
     }
 
     return -1;
 }
 
-// ISO compliant week numbering, not traditional number, rename in KDE5 to isoWeekNumber()
-// JPL still need to fully clean up here
 int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
+{
+    return week( date, KLocale::IsoWeekNumber, yearNum );
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::week( const QDate &date, int *yearNum ) const
+{
+    return week( date, KLocale::DefaultWeekNumber, yearNum );
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::week( const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum ) const
 {
     Q_D( const KCalendarSystem );
 
     if ( isValid( date ) ) {
-        QDate firstDayWeek1, lastDayOfYear;
-        int y = year( date );
-        int week;
-        int weekDay1, dayOfWeek1InYear;
-
-        // let's guess 1st day of 1st week
-        firstDayWeek1 = d->firstDayOfYear( y );
-        weekDay1 = dayOfWeek( firstDayWeek1 );
-
-        // iso 8601: week 1  is the first containing thursday and week starts on monday
-        if ( weekDay1 > 4 /*Thursday*/ ) {
-            firstDayWeek1 = addDays( firstDayWeek1 , d->daysInWeek() - weekDay1 + 1 ); // next monday
-        }
-
-        dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
-
-        // our date in prev year's week
-        if ( dayOfYear( date ) < dayOfWeek1InYear ) {
-            if ( yearNum ) {
-                *yearNum = d->addYears( y, - 1 );
-            }
-            return weeksInYear( d->addYears( y, - 1 ) );
-        }
-
-        // let's check if its last week belongs to next year
-        lastDayOfYear = d->lastDayOfYear( y );
-
-        // if our date is in last week && 1st week in next year has thursday
-        if ( ( dayOfYear( date ) >= d->daysInYear( y ) - dayOfWeek( lastDayOfYear ) + 1 )
-             && dayOfWeek( lastDayOfYear ) < 4 ) {
-            if ( yearNum ) {
-                * yearNum = d->addYears( y, 1 );
-            }
-             week = 1;
-        } else {
-            // To calculate properly the number of weeks from day a to x let's make a day 1 of week
-            if( weekDay1 < 5 ) {
-                firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1 ) );
-            }
-
-            week = firstDayWeek1.daysTo( date ) / d->daysInWeek() + 1;
-        }
-
-        return week;
+        return d->week( date, weekNumberSystem, yearNum );
     }
 
     return -1;

@@ -176,6 +176,7 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_dateTimeDigitSet = rhs.m_dateTimeDigitSet;
     m_dateMonthNamePossessive = rhs.m_dateMonthNamePossessive;
     m_dayPeriods = rhs.m_dayPeriods;
+    m_weekNumberSystem = rhs.m_weekNumberSystem;
 
     // Number settings
     m_decimalPlaces = rhs.m_decimalPlaces;
@@ -534,6 +535,8 @@ void KLocalePrivate::initFormat()
     readConfigNumEntry("WeekDayOfPray", 7, m_weekDayOfPray, int);              //default to Sunday
     readConfigNumEntry("DateTimeDigitSet", KLocale::ArabicDigits,
                        m_dateTimeDigitSet, KLocale::DigitSet);
+    readConfigNumEntry("WeekNumberSystem", KLocale::IsoWeekNumber,
+                       m_weekNumberSystem, KLocale::WeekNumberSystem);
 
     // other
 #ifndef QT_NO_PRINTER

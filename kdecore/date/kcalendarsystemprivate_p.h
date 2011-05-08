@@ -69,6 +69,16 @@ public:
     virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
 
     // Virtual methods to re-implement if special maths needed
+    virtual int week( const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum ) const;
+    virtual int isoWeekNumber( const QDate &date, int *yearNum ) const;
+    virtual int regularWeekNumber( const QDate &date, int weekStartDay, int firstWeekNumber, int *weekYear ) const;
+    virtual int simpleWeekNumber( const QDate &date, int *yearNum ) const;
+    virtual int weeksInYear( int year, KLocale::WeekNumberSystem weekNumberSystem ) const;
+    virtual int isoWeeksInYear( int year ) const;
+    virtual int regularWeeksInYear( int year, int weekStartDay, int firstWeekNumber ) const;
+    virtual int simpleWeeksInYear( int year ) const;
+
+    // Virtual methods to re-implement if special maths needed
     // Currently only Hebrew may need special conversion, rest should be OK
     virtual int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
     virtual int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
@@ -87,6 +97,8 @@ public:
     int differenceYearNumbers( int fromYear, int toYear ) const;
     QDate invalidDate() const;
     QString simpleDateString( const QString &str ) const;
+    int dayOfYear( const QDate &date ) const;
+    int dayOfWeek( const QDate &date ) const;
     QDate firstDayOfYear( int year ) const;
     QDate lastDayOfYear( int year ) const;
     QDate firstDayOfMonth( int year, int month ) const;
