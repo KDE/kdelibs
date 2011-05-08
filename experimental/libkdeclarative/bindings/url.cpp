@@ -25,7 +25,7 @@
 Q_DECLARE_METATYPE(KUrl*)
 //Q_DECLARE_METATYPE(KUrl) unneeded; found in kurl.h
 
-static QScriptValue ctor(QScriptContext *ctx, QScriptEngine *eng)
+static QScriptValue urlCtor(QScriptContext *ctx, QScriptEngine *eng)
 {
     if (ctx->argumentCount() == 1)
     {
@@ -113,5 +113,5 @@ QScriptValue constructKUrlClass(QScriptEngine *eng)
     eng->setDefaultPrototype(qMetaTypeId<KUrl*>(), proto);
     eng->setDefaultPrototype(qMetaTypeId<KUrl>(), proto);
 
-    return eng->newFunction(ctor, proto);
+    return eng->newFunction(urlCtor, proto);
 }
