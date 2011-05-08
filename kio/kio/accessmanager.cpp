@@ -237,17 +237,25 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     
     KIO::MetaData metaData;
     d->setMetaDataForRequest(req, metaData);
-    kioJob->addMetaData(metaData);
     
-    if ( op == PostOperation && !kioJob->metaData().contains(QL1S("content-type")))  {
+    if ( op == PostOperation && !metaData.contains(QL1S("content-type")))  {
         const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
-        if (header.isValid())
-          kioJob->addMetaData(QL1S("content-type"),
-                              (QL1S("Content-Type: ") + header.toString()));
-        else
-          kioJob->addMetaData(QL1S("content-type"),
-                              QL1S("Content-Type: application/x-www-form-urlencoded"));
+        if (header.isValid()) {
+            metaData.insert(QL1S("content-type"),
+                            (QL1S("Content-Type: ") + header.toString()));
+        } else {
+            metaData.insert(QL1S("content-type"),
+                            QL1S("Content-Type: application/x-www-form-urlencoded"));
+        }
     }
+
+    // WORKAROUND: Remove the incorrectly included Content-Type header by QtWebKit
+    // when a POST operation gets redirected a GET (BR# 269694).
+    if ( op == GetOperation && metaData.contains(QL1S("content-type"))) {
+        metaData.remove(QL1S("content-type"));
+    }
+
+    kioJob->addMetaData(metaData);
 
     return reply;
 }
