@@ -325,8 +325,8 @@ public:
      * This method checks for the status of the action, and tries to acquire authorization
      * (if needed) if the backend being used supports client-side authorization.
      *
-     * This means this method is not reliable - its purpose it's to provide user interfaces
-     * an efficient mean to acquire authorization as early as possible, without interrupting
+     * This means this method is not reliable - its purpose is to provide user interfaces with
+     * an efficient means to acquire authorization as early as possible, without interrupting
      * the user's workflow. If the backend's authentication phase happens in the helper and the
      * action requires authentication, \c Authorized will be returned.
      *
@@ -478,8 +478,8 @@ public:
     /**
      * @brief Sets a parent widget for the authentication dialog
      *
-     * This function is used for explicitely setting a parent window for an eventual authentication dialog required when
-     * authorization is triggered. Some backends, in fact, (like polkit-1) need to have a parent explicitely set for displaying
+     * This function is used for explicitly setting a parent window for an eventual authentication dialog required when
+     * authorization is triggered. Some backends, in fact, (like polkit-1) need to have a parent explicitly set for displaying
      * the dialog correctly.
      *
      * @note If you are using KAuth through one of KDE's GUI components (KPushButton, KCModule...) you do not need and should not

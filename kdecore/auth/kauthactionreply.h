@@ -31,7 +31,7 @@
  @namespace KAuth
 
  @section kauth_intro Introduction
- The KDE Authorization API allows developers to write desktop applications that runs high-privileged tasks in an easy, secure and cross-platform way. Previously, if an application had to do administrative tasks,
+ The KDE Authorization API allows developers to write desktop applications that run high-privileged tasks in an easy, secure and cross-platform way. Previously, if an application had to do administrative tasks,
  it had to be run as root, using mechanisms such as sudo or graphical equivalents, or by setting the executable's setuid bit. This approach has some drawbacks. For example, the whole application code,
  including GUI handling and network communication, had to be done as root. More code that runs as root means more possible security holes.
 
@@ -41,7 +41,7 @@
  with the right privileges, how to exchange data with the helper, etc.. This is where the new KDE Authorization API becomes useful. Thanks to this new library, every developer can implement the
  caller/helper pattern to write application that require high privileges, with a few lines of code in an easy, secure and cross-platform way.
 
- Not only: the library can also be used to lock down some actions in your application without using an helper but just checking for authorization and verifying if the user is allowed to perform it.
+ Not only: the library can also be used to lock down some actions in your application without using a helper but just checking for authorization and verifying if the user is allowed to perform it.
 
  The KDE Authorization library uses different backends depending on the system where it's built. As far as the user authorization is concerned, it currently uses PolicyKit on linux and Authorization Services
  on Mac OSX, and a Windows backend will eventually be written, too. At the communication layer, the library uses D-Bus on every supported platform.
@@ -76,10 +76,10 @@
  @section kauth_helper Writing the helper tool
 
  The first thing you need to do before writing anything is to decide what actions you need to implement. Every action needs to be identified by a string in the reverse domain name syntax. This helps to
- avoid duplicates. An example of action id is "org.kde.datetime.change" or "org.kde.ksysguard.killprocess". Actions name can only contain lowercase letters and dots (not as the first or last char).
+ avoid duplicates. An example of action id is "org.kde.datetime.change" or "org.kde.ksysguard.killprocess". Action names can only contain lowercase letters and dots (not as the first or last char).
  You also need an identifier for your helper. An application using the KDE auth api can implement and use more than one helper, implementing different actions. An helper is uniquely identified in the
  system context with a string. It, again, is in reverse domain name syntax to avoid duplicates. A common approach is to call the helper like the common prefix of your action names.
- For example, the Date/Time kcm module could use an helper called "org.kde.datetime", to perform actions like "org.kde.datetime.changedate" and "org.kde.datetime.changetime". This naming convention
+ For example, the Date/Time kcm module could use a helper called "org.kde.datetime", to perform actions like "org.kde.datetime.changedate" and "org.kde.datetime.changetime". This naming convention
  simplifies the implementation of the helper.
 
  From the code point of view, the helper is implemented as a QObject subclass. Every action is implemented by a public slot. In the example/ directory in the source code tree you find a complete example.
@@ -89,23 +89,25 @@
  @code
  #include <kauth.h>
 
+ using namespace KAuth;
+
  class MyHelper : public QObject
  {
      Q_OBJECT
 
      public slots:
-         ActionReply read(QVariantMap args);
-         ActionReply write(QVariantMap args);
-         ActionReply longaction(QVariantMap args);
+         ActionReply read(const QVariantMap& args);
+         ActionReply write(const QVariantMap& args);
+         ActionReply longaction(const QVariantMap& args);
  };
  @endcode
 
- The slot names are the last part of the action name, without the helper's ID if its a prefix, with all the dots replaced by underscores. In this case, the helper ID is "org.kde.auth.example", so those
+ The slot names are the last part of the action name, without the helper's ID if it's a prefix, with all the dots replaced by underscores. In this case, the helper ID is "org.kde.auth.example", so those
  three slots implement the actions "org.kde.auth.example.read", "org.kde.auth.example.write" and "org.kde.auth.example.longaction". The helper ID doesn't have to appear at the beginning of the action
  name, but it's good practice. If you want to extend MyHelper to implement also a different action like "org.kde.datetime.changetime", since the helper ID doesn't match you'll have to implement a
  slot called org_kde_datetime_changetime().
 
- The slots signature is fixed: the return type is ActionReply, a class that allows you to return results, error codes and custom data to the application when your action has finished to run.
+ The slot's signature is fixed: the return type is ActionReply, a class that allows you to return results, error codes and custom data to the application when your action has finished to run.
  Please note that due to QMetaObject being picky about namespaces, you NEED to declare the return type as ActionReply and not KAuth::ActionReply. So the using declaration is compulsory
  The QVariantMap object that comes as argument contains custom data coming from the application.
 
@@ -222,8 +224,8 @@
  First of all, it creates the action object specifying the action id. Then it loads the filename (we want to read a forbidden file) into the arguments() QVariantMap, which will be directly passed to the
  helper in the read() slot's parameter. This example code uses a synchronous call to execute the action and retrieve the reply. If the reply succeeded, the reply data is retrieved from the returned QVariantMap
  object. Please note that, although the execute() method will return only when the action is completed, the GUI will remain responsive because an internal event loop is entered. This means you should be
- prepared to receive other events in the meanwhile. Also, notice that you have to set explicitely the helper ID to the action: this is done for an added safety, to prevent the caller from accidentally invoking
- an helper, and also because KAuth actions may be used without an helper attached (the default). In this case, action.execute() will return ActionSuccess if the authentication went well. This is quite useful 
+ prepared to receive other events in the meanwhile. Also, notice that you have to explicitly set the helper ID to the action: this is done for added safety, to prevent the caller from accidentally invoking
+ a helper, and also because KAuth actions may be used without a helper attached (the default). In this case, action.execute() will return ActionSuccess if the authentication went well. This is quite useful 
  if you want your user to authenticate before doing something, which however needs no privileged permissions implementation-wise.
 
 
@@ -251,7 +253,7 @@
  corresponding signals. The one used here takes an integer. Its meaning is application dependent, so you can use it as a sort of percentage. The other overload takes a QVariantMap object that is directly
  passed to the app. In this way, you can report to the application all the custom data you want.
 
- In this example code, the loop exits when the HelperSupport::isStopped() returns true. This happens when the application call the stop() method on the correponding action object. The stop() method, this
+ In this example code, the loop exits when the HelperSupport::isStopped() returns true. This happens when the application calls the stop() method on the correponding action object. The stop() method, this
  way, asks the helper to stop the action execution. It's up to the helper to obbey to this request, and if it does so, it should return from the slot, _not_ exit.
 
  The code that calls the action in the application connects a slot to the actionPerformed() signal and then call executeAsync(). The progressStep() signal is directly connected to a QProgressBar, and
@@ -296,18 +298,18 @@
  action2.execute();
  @endcode
 
- If you do, you'll get an HelperBusy reply from the second action.
+ If you do, you'll get a HelperBusy reply from the second action.
  A solution would be to launch the second action from the slot connected to the first's actionPerformed signal, but this would be very ugly. Read further to know how to solve this problem.
 
  @section kauth_other Other features
 
- To allow to easily execute several actions in sequence, you can execute them in group. This means using the Action::executeActions() static method, which takes a list of actions and asks the helper
+ To allow to easily execute several actions in sequence, you can execute them in a group. This means using the Action::executeActions() static method, which takes a list of actions and asks the helper
  to execute them with a single request. The helper will execute the actions in the specified order. All the signals will be emitted from the watchers associated with each action.
 
  Sometimes the application needs to know when a particular action has started to execute. For this purpose, you can connect to the actionStarted() signal. It is emitted immediately before the helper's
  slot is called. This isn't very useful if you call execute(), but if you use executeActions() it lets you know when individual actions in the group are started.
 
- It doesn't happen very frequently to code something that doesn't require some debugging, and you'll need some tool, even a basic one, to debug your helper code as well. For this reason, the
+ It doesn't happen very frequently that you code something that doesn't require some debugging, and you'll need some tool, even a basic one, to debug your helper code as well. For this reason, the
  KDE Authorization library provides a message handler for the Qt debugging system. This means that every call to qDebug() & co. will be reported to the application, and printed using the same qt debugging
  system, with the same debug level.
  If, in the helper code, you write something like:
@@ -352,7 +354,7 @@ namespace KAuth
 *
 * In the helper, to create an action reply object you have two choices: using the constructor, or
 * the predefined replies. For example, to create a successful reply you can use the default constructor
-* but to create an helper error reply, instead of writing <i>ActionReply(ActionReply::HelperError)</i>
+* but to create a helper error reply, instead of writing <i>ActionReply(ActionReply::HelperError)</i>
 * you could use the more convenient <i>ActionReply::HelperErrorReply</i> constant.
 *
 * You should not use the predefined error replies to create and return new errors. Replies with the
