@@ -35,7 +35,7 @@ public:
     HTMLAnchorElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc), m_hasTarget(false) {}
 
-    virtual bool isFocusable() const { return m_hasAnchor; }
+    virtual bool isFocusableImpl(FocusType ft) const;
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);

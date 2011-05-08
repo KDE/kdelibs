@@ -98,23 +98,23 @@ namespace KJS {
            BodyOnError, BodyOnMessage, BodyFocus,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
-           SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
+           SelectValue, SelectSelectedIndex, SelectLength,
            SelectRemove, SelectForm, SelectType, SelectOptions,
            SelectDisabled, SelectMultiple, SelectName, SelectSize, SelectItem,  
            OptGroupDisabled, OptGroupLabel, OptionIndex, OptionSelected,
            OptionForm, OptionText, OptionDefaultSelected, OptionDisabled,
            OptionLabel, OptionValue, InputReadOnly, InputAccept,
-           InputSize, InputDefaultValue, InputTabIndex, InputValue, InputType,
+           InputSize, InputDefaultValue, InputValue, InputType,
            InputMaxLength, InputDefaultChecked, InputDisabled,
            InputChecked, InputIndeterminate, InputForm, InputAccessKey, InputAlign, InputAlt,
            InputName, InputSrc, InputUseMap, InputSelect, InputClick,
            InputSelectionStart, InputSelectionEnd, InputSetSelectionRange, InputPlaceholder,
            TextAreaAccessKey, TextAreaName, TextAreaDefaultValue, TextAreaSelect,
            TextAreaCols, TextAreaDisabled, TextAreaForm, TextAreaType,
-           TextAreaTabIndex, TextAreaReadOnly, TextAreaRows, TextAreaValue,
+           TextAreaReadOnly, TextAreaRows, TextAreaValue,
            TextAreaSelectionStart, TextAreaSelectionEnd, TextAreaSetSelectionRange,
            TextAreaTextLength,  TextAreaPlaceholder,
-           ButtonClick, ButtonForm, ButtonTabIndex, ButtonName,
+           ButtonClick, ButtonForm, ButtonName,
            ButtonDisabled, ButtonAccessKey, ButtonType, ButtonValue, LabelHtmlFor,
            LabelForm, LabelAccessKey, FieldSetForm, LegendForm, LegendAccessKey,
            LegendAlign, UListType, UListCompact, OListStart, OListCompact,
@@ -126,19 +126,19 @@ namespace KJS {
            AnchorAccessKey, AnchorCoords, AnchorHref, AnchorProtocol, AnchorHost,
            AnchorCharset, AnchorHrefLang, AnchorHostname, AnchorType,
            AnchorPort, AnchorPathName, AnchorHash, AnchorSearch, AnchorName,
-           AnchorRev, AnchorTabIndex, AnchorTarget, AnchorText, AnchorClick,
+           AnchorRev, AnchorTarget, AnchorText, AnchorClick,
            ImageName, ImageAlign, ImageHspace, ImageVspace, ImageUseMap, ImageAlt,
            ImageLowSrc, ImageWidth, ImageIsMap, ImageBorder, ImageHeight,
            ImageLongDesc, ImageSrc, ImageX, ImageY, ImageComplete, ObjectHspace, ObjectHeight, ObjectAlign,
            ObjectBorder, ObjectCode, ObjectType, ObjectVspace, ObjectArchive,
            ObjectDeclare, ObjectForm, ObjectCodeBase, ObjectCodeType, ObjectData, ObjectGetSVGDocument,
-           ObjectName, ObjectStandby, ObjectTabIndex, ObjectUseMap, ObjectWidth, ObjectContentDocument,
+           ObjectName, ObjectStandby, ObjectUseMap, ObjectWidth, ObjectContentDocument,
            ParamName, ParamType, ParamValueType, ParamValue, AppletArchive,
            AppletAlt, AppletCode, AppletWidth, AppletAlign, AppletCodeBase,
            AppletName, AppletHeight, AppletHspace, AppletObject, AppletVspace,
            MapAreas, MapName, AreaHash, AreaHref, AreaTarget, AreaPort, AreaShape,
            AreaCoords, AreaAlt, AreaAccessKey, AreaNoHref, AreaHost, AreaProtocol,
-           AreaHostName, AreaPathName, AreaSearch, AreaTabIndex, ScriptEvent,
+           AreaHostName, AreaPathName, AreaSearch, ScriptEvent,
            ScriptType, ScriptHtmlFor, ScriptText, ScriptSrc, ScriptCharset,
            ScriptDefer, TableSummary, TableTBodies, TableTHead, TableCellPadding,
            TableDeleteCaption, TableCreateCaption, TableCaption, TableWidth,
@@ -168,8 +168,8 @@ namespace KJS {
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument,
-	   ElementChildren, ElementContentEditable, ElementIsContentEditable,
-	   ElementAll, ElementScrollIntoView };
+           ElementChildren, ElementContentEditable, ElementIsContentEditable,
+           ElementAll, ElementScrollIntoView, ElementTabIndex };
 
     DOM::HTMLElementImpl* impl() const { return static_cast<DOM::HTMLElementImpl*>(m_impl.get()); }
     JSValue* indexGetter(ExecState *exec, unsigned index);
@@ -189,7 +189,6 @@ namespace KJS {
       T_Bool,   //Boolean, return true if property is not null
       T_Int,
       T_URL,
-      T_TabIdx,   //Magic tab-index handling
       T_Res,      //Reserved, ignore sets, return empty string
       T_Coll,     //Collection, type is in attrID
       T_ReadOnly = 0x80 //Property should be handled only on read.

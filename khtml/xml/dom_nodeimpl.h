@@ -265,9 +265,19 @@ public:
  
     virtual short tabIndex() const { return 0; }
 
-    virtual bool isFocusable() const { return false; }
-    virtual bool isMouseFocusable() const { return isFocusable(); }
-    virtual bool isTabFocusable() const { return isFocusable(); }
+    enum FocusType {
+        FT_Any,
+        FT_Mouse,
+        FT_Tab
+    };
+
+    // Elements that are focusable by default should override this.
+    // Warning: if they're in a language that supports tabIndex (e.g. HTML),
+    // they must call back to the base class whenever hasTabIndex() is set.
+    virtual bool isFocusableImpl(FocusType) const { return false; }
+    bool isFocusable() const { return isFocusableImpl(FT_Any); }
+    bool isMouseFocusable() const { return isFocusableImpl(FT_Mouse); }
+    bool isTabFocusable() const { return isFocusableImpl(FT_Tab); }
 
     virtual bool isInline() const;
 

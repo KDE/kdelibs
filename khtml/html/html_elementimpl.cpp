@@ -158,8 +158,10 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_TABINDEX:
         indexstring=getAttribute(ATTR_TABINDEX);
-        if (indexstring.length())
-            setTabIndex(indexstring.toInt());
+        if (attr->val())
+            setTabIndex(attr->value().toInt());
+        else
+            setNoTabIndex();
         break;
 // i18n attributes
     case ATTR_LANG:

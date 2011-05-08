@@ -165,9 +165,8 @@ public:
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled);
 
-    virtual bool isFocusable() const;
+    virtual bool isFocusableImpl(FocusType ft) const;
     virtual bool isEnumerable() const { return false; }
-    
     virtual bool isDefault() const { return false; }
 
     bool readOnly() const { return m_readOnly; }
@@ -377,8 +376,7 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual bool isFocusable() const { return true; }
-    virtual bool isTabFocusable() const { return false; }
+    virtual bool isFocusableImpl(FocusType ft) const;
     NodeImpl* getFormElement();
 
  private:

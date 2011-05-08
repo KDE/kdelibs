@@ -1029,8 +1029,11 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     }
 }
 
-bool HTMLGenericFormElementImpl::isFocusable() const
+bool HTMLGenericFormElementImpl::isFocusableImpl(FocusType ft) const
 {
+    if (hasTabIndex())
+        return HTMLElementImpl::isFocusableImpl(ft);
+
     if (disabled())
 	return false;
 
@@ -2071,6 +2074,16 @@ void HTMLLabelElementImpl::attach()
 {
     // skip the generic handler
     HTMLElementImpl::attach();
+}
+
+
+bool HTMLLabelElementImpl::isFocusableImpl(FocusType ft) const
+{
+    if (hasTabIndex())
+        return HTMLGenericFormElementImpl::isFocusableImpl(ft);
+
+    // We want labels to accept focus on click, but not on tabbing.
+    return (ft != FT_Tab);
 }
 
 NodeImpl* HTMLLabelElementImpl::getFormElement()

@@ -102,7 +102,7 @@ public:
     bool noResize() { return noresize; }
     void setLocation( const DOMString& str );
 
-    virtual bool isFocusable() const;
+    virtual bool isFocusableImpl(FocusType ft) const;
     virtual void setFocus(bool);
 
     DocumentImpl* contentDocument() const;
