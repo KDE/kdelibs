@@ -189,8 +189,9 @@ KIO::MetaData& AccessManager::sessionMetaData()
 void AccessManager::putReplyOnHold(QNetworkReply* reply)
 {
     KDEPrivate::AccessManagerReply* r = qobject_cast<KDEPrivate::AccessManagerReply*>(reply);
-    if (!r)
+    if (!r) {
       return;
+    }
 
     r->putOnHold();
 }
@@ -277,7 +278,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             else
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
 
-            kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
+            metaData.insert(QL1S("CustomHTTPMethod"), method);
             break;
         }
         default: {
@@ -306,8 +307,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    // Add the meta data to the job...
-    kioJob->addMetaData(metaData);
+    // Set the meta data for this job...
+    kioJob->setMetaData(metaData);
 
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
@@ -362,8 +363,9 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
             customHeaders << (key + QL1S(": ") + value);
     }
 
-    if (!customHeaders.isEmpty())
+    if (!customHeaders.isEmpty()) {
         metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
+    }
 
     // Append per request meta data, if any...
     if (!requestMetaData.isEmpty()) {
@@ -373,8 +375,9 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     }
 
     // Append per session meta data, if any...
-    if (!sessionMetaData.isEmpty())
+    if (!sessionMetaData.isEmpty()) {
         metaData += sessionMetaData;
+    }
 }
 
 
@@ -382,14 +385,17 @@ using namespace KIO::Integration;
 
 static QSsl::SslProtocol qSslProtocolFromString(const QString& str)
 {
-    if (str.compare(QLatin1String("SSLv3"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("SSLv3"), Qt::CaseInsensitive) == 0) {
         return QSsl::SslV3;
+    }
 
-    if (str.compare(QLatin1String("SSLv2"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("SSLv2"), Qt::CaseInsensitive) == 0) {
         return QSsl::SslV2;
+    }
 
-    if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0) {
         return QSsl::TlsV1;
+    }
 
     return QSsl::AnyProtocol;
 }
@@ -436,24 +442,25 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
 {
     QList<QNetworkCookie> cookieList;
 
-    if (d->isEnabled) {
-        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
+    if (!d->isEnabled) {
+        return cookieList;
+    }
+    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+    QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
 
-        if (reply.isValid()) {
-            const QString cookieStr = reply.value();
-            const QStringList cookies = cookieStr.split(QL1S("; "), QString::SkipEmptyParts);
-            Q_FOREACH(const QString& cookie, cookies) {
-                const int index = cookie.indexOf(QL1C('='));
-                const QString name = cookie.left(index);
-                const QString value = cookie.right((cookie.length() - index - 1));
-                cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
-                //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
-            }
-            //kDebug(7044) << "cookie for" << url.host() << ":" << cookieStr;
-        } else {
-            kWarning(7044) << "Unable to communicate with the cookiejar!";
-        }
+    if (!reply.isValid()) {
+        kWarning(7044) << "Unable to communicate with the cookiejar!";
+        return cookieList;
+    }
+
+    const QString cookieStr = reply.value();
+    const QStringList cookies = cookieStr.split(QL1S("; "), QString::SkipEmptyParts);
+    Q_FOREACH(const QString& cookie, cookies) {
+        const int index = cookie.indexOf(QL1C('='));
+        const QString name = cookie.left(index);
+        const QString value = cookie.right((cookie.length() - index - 1));
+        cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
+        //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
     }
 
     return cookieList;
@@ -461,24 +468,25 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
 
 bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url)
 {
-    if (d->isEnabled) {
-        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
-            QByteArray cookieHeader ("Set-Cookie: ");
-            if (d->isStorageDisabled && !cookie.isSessionCookie()) {
-                QNetworkCookie sessionCookie(cookie);
-                sessionCookie.setExpirationDate(QDateTime());
-                cookieHeader += sessionCookie.toRawForm();
-            } else
-                cookieHeader += cookie.toRawForm();
-            kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
-            //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
-        }
-
-        return !kcookiejar.lastError().isValid();
+    if (!d->isEnabled) {
+        return false;
     }
 
-    return false;
+    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+    Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
+        QByteArray cookieHeader ("Set-Cookie: ");
+        if (d->isStorageDisabled && !cookie.isSessionCookie()) {
+            QNetworkCookie sessionCookie(cookie);
+            sessionCookie.setExpirationDate(QDateTime());
+            cookieHeader += sessionCookie.toRawForm();
+        } else {
+            cookieHeader += cookie.toRawForm();
+        }
+        kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
+        //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
+    }
+
+    return !kcookiejar.lastError().isValid();
 }
 
 void CookieJar::setDisableCookieStorage(bool disable)
