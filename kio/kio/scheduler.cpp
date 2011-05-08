@@ -1151,7 +1151,7 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
         bool canJobReuse = (cmd == CMD_GET || cmd == CMD_MULTI_GET);
 
         if (KIO::TransferJob *tJob = qobject_cast<KIO::TransferJob *>(job)) {
-            canJobReuse = cmd == (canJobReuse || cmd == CMD_SPECIAL);
+            canJobReuse = (canJobReuse || cmd == CMD_SPECIAL);
             if (canJobReuse) {
                 KIO::MetaData outgoing = tJob->outgoingMetaData();
                 const QString resume = outgoing.value("resume");
