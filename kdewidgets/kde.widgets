@@ -70,20 +70,45 @@ Group=Input (KDE)
 [KDatePicker]
 ToolTip=A date selection widget (KDE)
 WhatsThis=Provides a widget for calendar date input
-Group=Input (KDE)
+Group=Date/Time (KDE)
 
 [KDateTable]
 IncludeFile=kdatetable.h
-Group=Input (KDE)
+Group=Date/Time (KDE)
+
+[KDateTimeEdit]
+ToolTip=This widget can be used to display or edit the date and time. (KDE)
+IncludeFile=kdatetimeedit.h
+Group=Date/Time (KDE)
+
+[KDateEdit]
+ToolTip=This widget can be used to display or edit the date. (KDE)
+IncludeFile=kdateedit.h
+Group=Date/Time (KDE)
+
+[KTimeEdit]
+ToolTip=This widget can be used to display or edit the time. (KDE)
+IncludeFile=ktimeedit.h
+Group=Date/Time (KDE)
+
+[KDateComboBox]
+ToolTip=This widget can be used to display or edit the date. (KDE)
+IncludeFile=kdatecombobox.h
+Group=Date/Time (KDE)
+
+[KTimeComboBox]
+ToolTip=This widget can be used to display or edit the time. (KDE)
+IncludeFile=ktimecombobox.h
+Group=Date/Time (KDE)
 
 [KDateTimeWidget]
 ToolTip=This widget can be used to display or allow user selection of date and time. (KDE)
 IncludeFile=kdatetimewidget.h
-Group=Input (KDE)
+Group=Date/Time (KDE)
 
 [KDateWidget]
 ToolTip=Date preview (KDE)
-Group=Input (KDE)
+Group=Date/Time (KDE)
 
 [KDialog]
 IsContainer=true
