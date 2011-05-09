@@ -51,7 +51,8 @@ public:
     AccessManagerReply(const QNetworkAccessManager::Operation &op,
                        const QNetworkRequest &request,
                        KIO::SimpleJob *kioJob,
-                       QObject *parent);
+                       bool emitReadReadOnMetaDataChange = false,
+                       QObject *parent = 0);
 
     virtual ~AccessManagerReply();
     virtual qint64 bytesAvailable() const;
@@ -78,6 +79,7 @@ private:
     QByteArray m_data;
     bool m_metaDataRead;
     bool m_ignoreContentDisposition;
+    bool m_emitReadReadOnMetaDataChange;
     QPointer<KIO::SimpleJob> m_kioJob;
 };
 

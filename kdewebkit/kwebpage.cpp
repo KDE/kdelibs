@@ -211,6 +211,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
         // Disable QtWebKit's internal cache to avoid duplication with the one in KIO...
         manager->setCache(0);
         manager->setWindow(window);
+        manager->setEmitReadyReadOnMetaDataChange(true);
         setNetworkAccessManager(manager);
     }
 

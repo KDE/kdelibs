@@ -71,11 +71,16 @@ namespace KIO {
 class AccessManager::AccessManagerPrivate
 {
 public:
-    AccessManagerPrivate() : externalContentAllowed(true), window(0) {}
+    AccessManagerPrivate()
+      : externalContentAllowed(true),
+        emitReadReadOnMetaDataChange(false),
+        window(0)
+    {}
 
     void setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData);
 
-    bool externalContentAllowed;    
+    bool externalContentAllowed;
+    bool emitReadReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
     QWidget* window;
@@ -196,6 +201,11 @@ void AccessManager::putReplyOnHold(QNetworkReply* reply)
     r->putOnHold();
 }
 
+void AccessManager::setEmitReadyReadOnMetaDataChange(bool enable)
+{
+    d->emitReadReadOnMetaDataChange = enable;
+}
+
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
     KIO::SimpleJob *kioJob = 0;
@@ -311,7 +321,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->setMetaData(metaData);
 
     // Create the reply...
-    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
 
     if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";

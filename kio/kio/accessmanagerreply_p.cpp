@@ -48,10 +48,12 @@ namespace KDEPrivate {
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
                                        const QNetworkRequest &request,
                                        KIO::SimpleJob *kioJob,
+                                       bool emitReadReadOnMetaDataChange,
                                        QObject *parent)
                    :QNetworkReply(parent),
                     m_metaDataRead(false),
                     m_ignoreContentDisposition(false),
+                    m_emitReadReadOnMetaDataChange(emitReadReadOnMetaDataChange),
                     m_kioJob(kioJob)
 
 {
@@ -112,7 +114,7 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 
 void AccessManagerReply::setIgnoreContentDisposition(bool on)
 {
-    kDebug(7044) << on;
+    // kDebug(7044) << on;
     m_ignoreContentDisposition = on;
 }
 
@@ -126,6 +128,7 @@ void AccessManagerReply::putOnHold()
     if (!m_kioJob || isFinished())
         return;
 
+    // kDebug(7044) << m_kioJob << m_data;
     m_kioJob->putOnHold();
 }
 
@@ -305,6 +308,9 @@ void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
     //kDebug(7044) << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
+    if (m_emitReadReadOnMetaDataChange) {
+        emit readyRead();
+    }
 }
 
 void AccessManagerReply::slotResult(KJob *kJob)
