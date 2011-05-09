@@ -106,6 +106,7 @@ void KMessageWidgetPrivate::createLayout()
     Q_FOREACH(QAction* action, q->actions()) {
         QToolButton* button = new QToolButton(content);
         button->setDefaultAction(action);
+        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         buttons.append(button);
     }
 
