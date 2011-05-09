@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>KDateTimeEdit</class>
+ <widget class="QWidget" name="KDateTimeEdit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>250</width>
+    <height>33</height>
+   </rect>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="KDateComboBoxPrivate" name="m_dateEditCombo"/>
+   </item>
+   <item>
+    <widget class="KComboBox" name="m_timeEditCombo"/>
+   </item>
+   <item>
+    <widget class="KComboBox" name="m_timezoneEditCombo"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KDateComboBoxPrivate</class>
+   <extends>KComboBox</extends>
+   <header>kdatecomboboxprivate_p.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
