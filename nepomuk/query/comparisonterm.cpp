@@ -281,7 +281,11 @@ bool Nepomuk::Query::ComparisonTermPrivate::equals( const TermPrivate* other ) c
         const ComparisonTermPrivate* ctp = static_cast<const ComparisonTermPrivate*>( other );
         return( ctp->m_property == m_property &&
                 ctp->m_comparator == m_comparator &&
-                ctp->m_subTerm == m_subTerm );
+                ctp->m_subTerm == m_subTerm &&
+                ctp->m_inverted == m_inverted &&
+                ctp->m_sortOrder == m_sortOrder &&
+                ctp->m_sortWeight == m_sortWeight &&
+                ctp->m_variableName == m_variableName );
     }
     else {
         return false;
