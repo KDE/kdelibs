@@ -23,7 +23,7 @@
 #include <klineedit.h>
 #include <kurlrequester.h>
 #include <kprotocolmanager.h>
-#include <QLayout>
+#include <QFormLayout>
 #include <QLabel>
 
 class KNameAndUrlInputDialogPrivate
@@ -31,7 +31,6 @@ class KNameAndUrlInputDialogPrivate
 public:
     KNameAndUrlInputDialogPrivate(KNameAndUrlInputDialog* qq) : m_fileNameEdited(false), q(qq) {}
 
-    void _k_slotClear();
     void _k_slotNameTextChanged(const QString&);
     void _k_slotURLTextChanged(const QString&);
 
@@ -53,43 +52,35 @@ public:
 KNameAndUrlInputDialog::KNameAndUrlInputDialog(const QString& nameLabel, const QString& urlLabel, const KUrl& startDir, QWidget *parent)
     : KDialog(parent), d(new KNameAndUrlInputDialogPrivate(this))
 {
-    setButtons(Ok | Cancel | User1);
-    setButtonGuiItem(User1, KStandardGuiItem::clear());
+    setButtons(Ok | Cancel);
 
-    QFrame* plainPage = new QFrame(this);
+    QWidget* plainPage = new QWidget(this);
     setMainWidget(plainPage);
 
-    QVBoxLayout* topLayout = new QVBoxLayout(plainPage);
+    QFormLayout* topLayout = new QFormLayout(plainPage);
     topLayout->setMargin(0);
-    topLayout->setSpacing(spacingHint());
 
     // First line: filename
-    KHBox* fileNameBox = new KHBox(plainPage);
-    topLayout->addWidget(fileNameBox);
-
-    QLabel* label = new QLabel(nameLabel, fileNameBox);
-    d->m_leName = new KLineEdit(fileNameBox);
+    d->m_leName = new KLineEdit;
     d->m_leName->setMinimumWidth(d->m_leName->sizeHint().width() * 3);
-    label->setBuddy(d->m_leName);
     d->m_leName->setSelection(0, d->m_leName->text().length()); // autoselect
     connect(d->m_leName, SIGNAL(textChanged(QString)),
             SLOT(_k_slotNameTextChanged(QString)));
+    topLayout->addRow(nameLabel, d->m_leName);
 
     // Second line: url
-    KHBox* urlBox = new KHBox(plainPage);
-    topLayout->addWidget(urlBox);
-    label = new QLabel(urlLabel, urlBox);
-    d->m_urlRequester = new KUrlRequester(urlBox);
+    d->m_urlRequester = new KUrlRequester;
     d->m_urlRequester->setStartDir(startDir);
     d->m_urlRequester->setMode(KFile::File | KFile::Directory);
 
     d->m_urlRequester->setMinimumWidth(d->m_urlRequester->sizeHint().width() * 3);
     connect(d->m_urlRequester->lineEdit(), SIGNAL(textChanged(QString)),
             SLOT(_k_slotURLTextChanged(QString)));
-    label->setBuddy(d->m_urlRequester);
+    topLayout->addRow(urlLabel, d->m_urlRequester);
 
-    connect(this, SIGNAL(user1Clicked()), this, SLOT(_k_slotClear()));
     d->m_fileNameEdited = false;
+    enableButtonOk(!d->m_leName->text().isEmpty() && !d->m_urlRequester->url().isEmpty());
+    d->m_leName->setFocus();
 }
 
 KNameAndUrlInputDialog::~KNameAndUrlInputDialog()
@@ -112,13 +103,6 @@ QString KNameAndUrlInputDialog::name() const
         return d->m_leName->text();
     else
         return QString();
-}
-
-void KNameAndUrlInputDialogPrivate::_k_slotClear()
-{
-    m_leName->clear();
-    m_urlRequester->clear();
-    m_fileNameEdited = false;
 }
 
 void KNameAndUrlInputDialogPrivate::_k_slotNameTextChanged(const QString&)
