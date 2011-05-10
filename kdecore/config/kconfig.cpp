@@ -406,7 +406,7 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
             }
         }
     }
-qDebug() << theMap;
+
     return theMap;
 }
 
