@@ -27,12 +27,48 @@
 #include "kdatetime.h"
 
 class KDateTimeEditPrivate;
+class KCalendarSystem;
 
 class KDEUI_EXPORT KDateTimeEdit : public QWidget
 {
     Q_OBJECT
 
+    //Q_PROPERTY(KDateTime dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged USER true)
+    Q_PROPERTY(QDateTime dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged USER true)
+    Q_PROPERTY(QDate date READ date WRITE setDate NOTIFY dateChanged USER true)
+    Q_PROPERTY(QTime time READ time WRITE setTime NOTIFY timeChanged USER true)
+    Q_PROPERTY(KDateTime::Spec timeSpec READ timeSpec WRITE setTimeSpec)
+    Q_PROPERTY(Options options READ options WRITE setOptions)
+    Q_PROPERTY(QDateTime minimumDateTime READ minimumDateTime WRITE setMinimumDateTime RESET clearMinimumDateTime)
+    Q_PROPERTY(QDateTime maximumDateTime READ maximumDateTime WRITE setMaximumDateTime RESET clearMaximumDateTime)
+    Q_PROPERTY(QDate minimumDate READ minimumDate WRITE setMinimumDate RESET clearMinimumDate)
+    Q_PROPERTY(QDate maximumDate READ maximumDate WRITE setMaximumDate RESET clearMaximumDate)
+    Q_PROPERTY(QTime minimumTime READ minimumTime WRITE setMinimumTime RESET clearMinimumTime)
+    Q_PROPERTY(QTime maximumTime READ maximumTime WRITE setMaximumTime RESET clearMaximumTime)
+
 public:
+
+    enum Option {
+        ShowCalendar     = 0x00001,  /**< If the Calendar System edit is displayed */
+        ShowDate         = 0x00002,  /**< If the Date is displayed */
+        ShowTime         = 0x00004,  /**< If the Time is displayed */
+        ShowTimeSpec     = 0x00008,  /**< If the Timezone is displayed */
+        EditCalendar     = 0x00010,  /**< Allow the user to edit the calendar */
+        EditDate         = 0x00020,  /**< Allow the user to edit the date */
+        EditTime         = 0x00040,  /**< Allow the user to edit the time */
+        EditTimeSpec     = 0x00080,  /**< Allow the user to edit the time spec */
+        SelectCalendar   = 0x00100,  /**< Allow the user to select a calendar */
+        SelectDate       = 0x00200,  /**< Allow the user to select a date */
+        SelectTime       = 0x00400,  /**< Allow the user to select a time */
+        SelectTimeSpec   = 0x00800,  /**< Allow the user to select a time */
+        CustomDateFormat = 0x01000,  /**< If the Date edit uses a custom KLocale::DateFormat */
+        FancyDate        = 0x02000,  /**< If the Date edit accepts 'Fancy' dates, e.g. 'Tomorrow' */
+        CustomTimeFormat = 0x04000,  /**< If the Time edit uses a custom KLocale::TimeFormat */
+        ShowSeconds      = 0x08000,  /**< If the Time edit shows seconds */
+        ShowMSecs        = 0x10000,  /**< If the Time edit shows milliseconds */
+        AcceptInvalid    = 0x20000   /**< If the widget accepts invalid dates/times */
+    };
+    Q_DECLARE_FLAGS(Options, Option)
 
     /**
      * Create a new KDateTimeEdit widget
@@ -45,6 +81,13 @@ public:
     virtual ~KDateTimeEdit();
 
     /**
+     * Return the currently selected date, time and timezone
+     *
+     * @return the currently selected date, time and timezone
+     */
+    KDateTime dateTimeSpec() const;
+
+    /**
      * Return the currently selected date and time
      *
      * @return the currently selected date and time
@@ -54,9 +97,24 @@ public:
     /**
      * Return the currently selected date
      *
-     * @return the currently selected date and time
+     * @return the currently selected date
      */
     QDate date() const;
+
+    /**
+     * Returns a pointer to the Calendar System object used by this widget
+     *
+     * Usually this will be the Global Calendar System using the Global Locale,
+     * but this may have been changed to a custom Calendar System possibly
+     * using a custom Locale.
+     *
+     * Normally you will not need to access this object.
+     *
+     * @see KCalendarSystem
+     * @see setCalendar
+     * @return the current calendar system instance
+     */
+    const KCalendarSystem *calendar() const;
 
     /**
      * Return the currently selected time
@@ -71,6 +129,20 @@ public:
      * @return the currently selected timezone
      */
     KDateTime::Spec timeSpec() const;
+
+    /**
+     * Return if the current user input is valid
+     *
+     * @return if the current user input is valid
+     */
+    bool isValid()const;
+
+    /**
+     * Return the currently set widget options
+     *
+     * @return the currently set widget options
+     */
+    Options options() const;
 
     /**
      * Return the current minimum date and time
@@ -255,35 +327,27 @@ public:
     void clearTimeRange();
 
     /**
-     * Set the time interval to display in the time widget
+     * Set the time interval able to be selected in the time widget
      *
      * @param minutes the interval to display
      */
-    void setTimeInterval(int minutes);
+    void setSelectTimeInterval(int minutes);
 
     /**
-     * Return the displayed time interval
+     * Return the time interval able to be selected
      *
-     * @return the displayed time interval
+     * @return the select time intervals in minutes
      */
-    int timeInterval() const;
+    int selectTimeInterval() const;
 
     /**
-     * Set the widget to be read only
+     * Set the timezones able to be selected
      *
-     * @param readOnly if th widget is read only
+     * @param zones the timezones to display
      */
-    void setReadOnly( bool readOnly );
-
-    /**
-     * Return if the widget is read only
-     *
-     * @return if the widget is read only
-     */
-    bool isReadOnly() const;
+    void setTimeZones(const KTimeZones::ZoneMap &zones);
 
 Q_SIGNALS:
-
 
     /**
      * Signal if the date or time has been manually entered by the user.
@@ -421,6 +485,15 @@ public Q_SLOTS:
     void setDate(const QDate &date);
 
     /**
+     * Changes the calendar system to use.  Can use its own local locale if set.
+     *
+     * You retain ownership of the calendar object, it will not be destroyed with the widget.
+     *
+     * @param calendar the calendar system object to use, defaults to global
+     */
+    void setCalendar(KCalendarSystem *calendar = 0);
+
+    /**
      * Set the currently selected time
      *
      * @param time the new time
@@ -434,6 +507,13 @@ public Q_SLOTS:
      */
     void setTimeSpec(const KDateTime::Spec &spec);
 
+    /**
+     * Set the new widget options
+     *
+     * @param options the new widget options
+     */
+    void setOptions(Options options);
+
 protected:
 
     virtual bool eventFilter(QObject* object, QEvent* event);
@@ -446,6 +526,8 @@ private:
 
     KDateTimeEditPrivate *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDateTimeEdit::Options)
 
 class KDEUI_EXPORT KTimeEdit : public KDateTimeEdit
 {

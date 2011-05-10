@@ -113,26 +113,33 @@ public:
     void showDatePopup();
 
     KDateTimeEdit *const q;
+    KCalendarSystem *m_calendar;
     KDatePicker *m_datePicker;
     QWidgetAction *m_datePickerAction;
 
+    KDateTimeEdit::Options m_options;
     KDateTime m_dateTime;
     QDateTime m_minDateTime;
     QDateTime m_maxDateTime;
     QString m_minErrorMsg;
     QString m_maxErrorMsg;
 
+    KTimeZones::ZoneMap m_zones;
     int m_timeInterval;
-    bool m_readOnly;
 
     Ui::KDateTimeEdit ui;
 };
 
 KDateTimeEditPrivate::KDateTimeEditPrivate(KDateTimeEdit *q)
                      :q(q),
-                      m_timeInterval(15),
-                      m_readOnly(false)
+                      m_calendar(0),
+                      m_datePicker(0),
+                      m_datePickerAction(0),
+                      m_timeInterval(15)
 {
+    m_options = KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate |
+                KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime |
+                KDateTimeEdit::FancyDate;
     m_minDateTime = defaultMinDateTime();
     m_maxDateTime = defaultMaxDateTime();
     m_dateTime = KDateTime::currentLocalDateTime();
@@ -140,6 +147,8 @@ KDateTimeEditPrivate::KDateTimeEditPrivate(KDateTimeEdit *q)
     m_datePicker->setCloseButton(false);
     m_datePickerAction = new QWidgetAction(q);
     m_datePickerAction->setDefaultWidget(m_datePicker);
+    m_minErrorMsg = i18n("The entered date and time is before the minimum allowed date and time.");
+    m_maxErrorMsg = i18n("The entered date and time is after the maximum allowed date and time.");
 }
 
 KDateTimeEditPrivate::~KDateTimeEditPrivate()
@@ -148,7 +157,11 @@ KDateTimeEditPrivate::~KDateTimeEditPrivate()
 
 const KCalendarSystem *KDateTimeEditPrivate::calendar() const
 {
-    return KGlobal::locale()->calendar();
+    if (m_calendar) {
+        return m_calendar;
+    } else {
+        return KGlobal::locale()->calendar();
+    }
 }
 
 KLocale *KDateTimeEditPrivate::locale()
@@ -188,7 +201,7 @@ QTime KDateTimeEditPrivate::defaultMaxTime()
 
 void KDateTimeEditPrivate::initDateWidget()
 {
-    ui.m_dateEditCombo->setEditable(!m_readOnly);
+    ui.m_dateEditCombo->setEditable(true);
     ui.m_dateEditCombo->setMaxCount(1);
     ui.m_dateEditCombo->addItem(locale()->formatDate(m_dateTime.date(), KLocale::ShortDate));
     ui.m_dateEditCombo->setCurrentIndex(0);
@@ -221,9 +234,11 @@ void KDateTimeEditPrivate::updateDateWidget()
 void KDateTimeEditPrivate::initTimeWidget()
 {
     ui.m_timeEditCombo->clear();
-    ui.m_timeEditCombo->setEditable(!m_readOnly);
+    ui.m_timeEditCombo->setEditable(true);
     ui.m_timeEditCombo->setInsertPolicy(QComboBox::NoInsert);
-    ui.m_dateEditCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    ui.m_timeEditCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    //TODO localise the mask based on KLocale
+    ui.m_timeEditCombo->lineEdit()->setInputMask("09:00");
 
     QTime startTime = m_minDateTime.time();
     QTime thisTime(startTime.hour(), 0, 0, 0);
@@ -298,6 +313,11 @@ KDateTimeEdit::~KDateTimeEdit()
     delete d;
 }
 
+KDateTime KDateTimeEdit::dateTimeSpec() const
+{
+    return d->m_dateTime;
+}
+
 QDateTime KDateTimeEdit::dateTime() const
 {
     return d->m_dateTime.dateTime();
@@ -318,7 +338,19 @@ KDateTime::Spec KDateTimeEdit::timeSpec() const
     return d->m_dateTime.timeSpec();
 }
 
-void KDateTimeEdit::setDateTime( const KDateTime &dateTime )
+bool KDateTimeEdit::isValid() const
+{
+    return d->m_dateTime.isValid() &&
+           d->m_dateTime.dateTime() >= d->m_minDateTime &&
+           d->m_dateTime.dateTime() <= d->m_maxDateTime;
+}
+
+KDateTimeEdit::Options KDateTimeEdit::options() const
+{
+    return d->m_options;
+}
+
+void KDateTimeEdit::setDateTime(const KDateTime &dateTime)
 {
     if (dateTime.isValid() &&
         dateTime != d->m_dateTime &&
@@ -335,7 +367,7 @@ void KDateTimeEdit::setDateTime( const KDateTime &dateTime )
     }
 }
 
-void KDateTimeEdit::setDateTime( const QDateTime &dateTime )
+void KDateTimeEdit::setDateTime(const QDateTime &dateTime)
 {
     //TODO probably need to do tz aware compare?
     if (dateTime.isValid() &&
@@ -353,7 +385,7 @@ void KDateTimeEdit::setDateTime( const QDateTime &dateTime )
     }
 }
 
-void KDateTimeEdit::setDate( const QDate &date )
+void KDateTimeEdit::setDate(const QDate &date)
 {
     if (date.isValid() &&
         d->calendar()->isValid(date) &&
@@ -368,7 +400,17 @@ void KDateTimeEdit::setDate( const QDate &date )
     }
 }
 
-void KDateTimeEdit::setTime( const QTime &time )
+void KDateTimeEdit::setCalendar(KCalendarSystem *calendar)
+{
+    if (calendar == KGlobal::locale()->calendar()) {
+        d->m_calendar = 0;
+    } else {
+        d->m_calendar = calendar;
+    }
+    d->updateDateWidget();
+}
+
+void KDateTimeEdit::setTime(const QTime &time)
 {
     if (time.isValid() &&
         time != d->m_dateTime.time() &&
@@ -387,6 +429,11 @@ void KDateTimeEdit::setTimeSpec(const KDateTime::Spec &spec)
     if (spec.isValid()) {
         d->m_dateTime.setTimeSpec(spec);
     }
+}
+
+void KDateTimeEdit::setOptions(Options options)
+{
+    d->m_options = options;
 }
 
 QDateTime KDateTimeEdit::minimumDateTime() const
@@ -545,24 +592,19 @@ void KDateTimeEdit::clearTimeRange()
     setTimeRange(d->defaultMinTime(), d->defaultMaxTime());
 }
 
-void KDateTimeEdit::setTimeInterval(int minutes)
+void KDateTimeEdit::setSelectTimeInterval(int minutes)
 {
     d->m_timeInterval = minutes;
 }
 
-int KDateTimeEdit::timeInterval() const
+int KDateTimeEdit::selectTimeInterval() const
 {
     return d->m_timeInterval;
 }
 
-void KDateTimeEdit::setReadOnly(bool readOnly)
+void KDateTimeEdit::setTimeZones(const KTimeZones::ZoneMap &zones)
 {
-    d->m_readOnly = readOnly;
-}
-
-bool KDateTimeEdit::isReadOnly() const
-{
-    return d->m_readOnly;
+    d->m_zones = zones;
 }
 
 bool KDateTimeEdit::eventFilter(QObject *object, QEvent *event)
