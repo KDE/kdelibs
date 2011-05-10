@@ -145,7 +145,7 @@ IdleSlave::reparseConfiguration()
 }
 
 bool
-IdleSlave::match(const QString &protocol, const QString &host, bool needConnected)
+IdleSlave::match(const QString &protocol, const QString &host, bool needConnected) const
 {
    if (mOnHold || protocol != mProtocol) {
       return false;
@@ -157,14 +157,14 @@ IdleSlave::match(const QString &protocol, const QString &host, bool needConnecte
 }
 
 bool
-IdleSlave::onHold(const KUrl &url)
+IdleSlave::onHold(const KUrl &url) const
 {
    if (!mOnHold) return false;
    return (url == mUrl);
 }
 
 int
-IdleSlave::age(time_t now)
+IdleSlave::age(time_t now) const
 {
    return (int) difftime(now, mBirthDate);
 }

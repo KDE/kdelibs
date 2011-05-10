@@ -1616,11 +1616,9 @@ TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, 
 
 StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
 {
-    bool redirection = false;
     KUrl _url(url);
     if (_url.path().isEmpty())
     {
-      redirection = true;
       _url.setPath("/");
     }
 
@@ -1636,11 +1634,9 @@ StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& 
 
 StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const KUrl& url, qint64 size, JobFlags flags )
 {
-    bool redirection = false;
     KUrl _url(url);
     if (_url.path().isEmpty())
     {
-      redirection = true;
       _url.setPath("/");
     }
 
