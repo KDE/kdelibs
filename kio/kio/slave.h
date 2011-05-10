@@ -150,6 +150,13 @@ public:
    */
   static Slave* holdSlave( const QString &protocol, const KUrl& url );
 
+  /**
+   * Returns true if klauncher is holding a slave for @p url.
+   *
+   * @since 4.7
+   */
+  static bool checkForHeldSlave(const KUrl& url);
+
   // == communication with connected kioslave ==
   // whenever possible prefer these methods over the respective
   // methods in connection()

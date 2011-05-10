@@ -1204,6 +1204,16 @@ KLauncher::requestSlave(const QString &protocol,
     return pid;
 }
 
+bool KLauncher::checkForHeldSlave(const QString &url)
+{
+    Q_FOREACH (const IdleSlave *p, mSlaveList) {
+       if (p->onHold(url)) {
+          return true;
+       }
+    }
+    return false;
+}
+
 void
 KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
 {

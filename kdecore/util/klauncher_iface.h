@@ -177,6 +177,13 @@ public Q_SLOTS: // METHODS
         return callWithArgumentList(QDBus::Block, QLatin1String("waitForSlave"), argumentList);
     }
 
+    inline QDBusReply<bool> checkForHeldSlave(const QString &url)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(url);
+        return callWithArgumentList(QDBus::Block, QLatin1String("checkForHeldSlave"), argumentList);
+    }
+
 Q_SIGNALS: // SIGNALS
     void autoStart0Done();
     void autoStart1Done();

@@ -248,6 +248,11 @@ public: // remote methods, called by KLauncherAdaptor
 
     pid_t requestSlave(const QString &protocol, const QString &host,
                        const QString &app_socket, QString &error);
+    /**
+     * Return true of there is a slave held for @p url.
+     * @since 4.7
+     */
+    bool checkForHeldSlave(const QString &url);
     void waitForSlave(int pid, const QDBusMessage &msg);
     void terminate_kdeinit();
 

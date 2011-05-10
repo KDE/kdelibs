@@ -1168,10 +1168,10 @@ void SchedulerPrivate::publishSlaveOnHold()
 
 bool SchedulerPrivate::isSlaveOnHoldFor(const KUrl& url)
 {
-    if (!url.isValid() || !m_urlOnHold.isValid())
-        return false;
+    if (url.isValid() && m_urlOnHold.isValid() && url == m_urlOnHold)
+        return true;
 
-    return url == m_urlOnHold;
+    return Slave::checkForHeldSlave(url);
 }
 
 Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
