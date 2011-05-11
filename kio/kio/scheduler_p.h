@@ -63,7 +63,7 @@ public:
     bool isJobRunning(KIO::SimpleJob *job) const { return m_runningJobs.contains(job); }
 
     void queueJob(KIO::SimpleJob *job);
-    KIO::SimpleJob *nextStartingJob();
+    KIO::SimpleJob *takeFirstInQueue();
     bool removeJob(KIO::SimpleJob *job);
 
     QList<KIO::Slave *> allSlaves() const;

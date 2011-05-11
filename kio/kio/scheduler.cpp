@@ -182,7 +182,7 @@ void HostQueue::queueJob(SimpleJob *job)
     m_queuedJobs.insert(serial, job);
 }
 
-SimpleJob *HostQueue::nextStartingJob()
+SimpleJob *HostQueue::takeFirstInQueue()
 {
     Q_ASSERT(!m_queuedJobs.isEmpty());
     QMap<int, SimpleJob *>::iterator first = m_queuedJobs.begin();
@@ -594,13 +594,15 @@ void ProtoQueue::startAJob()
     if (first != m_queuesBySerial.end()) {
         // pick a job and maintain the queue invariant: lower serials first
         HostQueue *hq = first.value();
-        Q_ASSERT(first.key() == hq->lowestSerial());
-        // the following assertions should hold due to queueJob(), nextStartingJob() and
+        const int prevLowestSerial = first.key();
+        Q_UNUSED(prevLowestSerial);
+        Q_ASSERT(hq->lowestSerial() == prevLowestSerial);
+        // the following assertions should hold due to queueJob(), takeFirstInQueue() and
         // removeJob() being correct
         Q_ASSERT(hq->runningJobsCount() < m_maxConnectionsPerHost);
-        SimpleJob *startingJob = hq->nextStartingJob();
+        SimpleJob *startingJob = hq->takeFirstInQueue();
         Q_ASSERT(hq->runningJobsCount() <= m_maxConnectionsPerHost);
-        Q_ASSERT(hq->lowestSerial() != first.key());
+        Q_ASSERT(hq->lowestSerial() != prevLowestSerial);
 
         m_queuesBySerial.erase(first);
         // we've increased hq's runningJobsCount() by calling nexStartingJob()
