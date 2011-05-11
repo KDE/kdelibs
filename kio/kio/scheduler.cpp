@@ -594,7 +594,7 @@ void ProtoQueue::startAJob()
     if (first != m_queuesBySerial.end()) {
         // pick a job and maintain the queue invariant: lower serials first
         HostQueue *hq = first.value();
-        Q_ASSERT(frist.key() == hq->lowestSerial());
+        Q_ASSERT(first.key() == hq->lowestSerial());
         // the following assertions should hold due to queueJob(), nextStartingJob() and
         // removeJob() being correct
         Q_ASSERT(hq->runningJobsCount() < m_maxConnectionsPerHost);
