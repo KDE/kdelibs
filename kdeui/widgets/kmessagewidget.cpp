@@ -91,7 +91,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     closeButton->setAutoRaise(true);
     closeButton->setDefaultAction(closeAction);
 
-    q->setMessageType(KMessageWidget::InformationMessageType);
+    q->setMessageType(KMessageWidget::Information);
 }
 
 void KMessageWidgetPrivate::createLayout()
@@ -226,23 +226,23 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
     KColorScheme::ForegroundRole fgRole;
     KColorScheme::ColorSet colorSet = KColorScheme::Window;
     switch (type) {
-    case PositiveMessageType:
+    case Positive:
         icon = KIcon("dialog-ok");
         bgRole = KColorScheme::PositiveBackground;
         fgRole = KColorScheme::PositiveText;
         break;
-    case InformationMessageType:
+    case Information:
         icon = KIcon("dialog-information");
         bgRole = KColorScheme::NormalBackground;
         fgRole = KColorScheme::NormalText;
         colorSet = KColorScheme::Tooltip;
         break;
-    case WarningMessageType:
+    case Warning:
         icon = KIcon("dialog-warning");
         bgRole = KColorScheme::NeutralBackground;
         fgRole = KColorScheme::NeutralText;
         break;
-    case ErrorMessageType:
+    case Error:
         icon = KIcon("dialog-error");
         bgRole = KColorScheme::NegativeBackground;
         fgRole = KColorScheme::NegativeText;
