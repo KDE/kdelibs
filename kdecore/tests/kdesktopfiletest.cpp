@@ -43,6 +43,40 @@ void KDesktopFileTest::testRead()
     QCOMPARE(df.resource(), "apps"); // default for .desktop files
 }
 
+void KDesktopFileTest::testSuccessfulTryExec()
+{
+    KTemporaryFile file;
+    file.setPrefix("test1");
+    QVERIFY( file.open() );
+    const QString fileName = file.fileName();
+    QTextStream ts( &file );
+    ts <<
+        "[Desktop Entry]\n"
+        "TryExec=/bin/ls\n"
+        "\n";
+    file.close();
+    QVERIFY(QFile::exists(fileName));
+    KDesktopFile df(fileName);
+    QCOMPARE(df.tryExec(), true);
+}
+
+void KDesktopFileTest::testUnsuccessfulTryExec()
+{
+    KTemporaryFile file;
+    file.setPrefix("test1");
+    QVERIFY( file.open() );
+    const QString fileName = file.fileName();
+    QTextStream ts( &file );
+    ts <<
+        "[Desktop Entry]\n"
+        "TryExec=/does/not/exist\n"
+        "\n";
+    file.close();
+    QVERIFY(QFile::exists(fileName));
+    KDesktopFile df(fileName);
+    QCOMPARE(df.tryExec(), false);
+}
+
 void KDesktopFileTest::testActionGroup()
 {
     KTemporaryFile file;
