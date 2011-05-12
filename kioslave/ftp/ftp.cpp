@@ -496,6 +496,7 @@ bool Ftp::ftpLogin(bool* userChanged)
   QByteArray tempbuf;
   QString lastServerResponse;
   int failedAuth = 0;
+  bool promptForRetry = false;
 
   // Give the user the option to login anonymously...
   info.setExtraField(QLatin1String("anonymous"), false);
@@ -511,7 +512,7 @@ bool Ftp::ftpLogin(bool* userChanged)
       kDebug(7102) << "Prompting user for login info...";
 
       // Ask user if we should retry after when login fails!
-      if( failedAuth > 0 )
+      if( failedAuth > 0 && promptForRetry)
       {
         errorMsg = i18n("Message sent:\nLogin using username=%1 and "
                         "password=[hidden]\n\nServer replied:\n%2\n\n"
@@ -546,7 +547,8 @@ bool Ftp::ftpLogin(bool* userChanged)
         {
           user = info.username;
           pass = info.password;
-        }
+        }        
+        promptForRetry = true;
       }
     }
 
@@ -604,11 +606,6 @@ bool Ftp::ftpLogin(bool* userChanged)
         if (info.keepPassword) {
             cacheAuthentication(info);
         }
-      }
-      else
-      {
-          m_user = FTP_LOGIN;
-          m_pass = FTP_PASSWD;
       }
       failedAuth = -1;
     }
