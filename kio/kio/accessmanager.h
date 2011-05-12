@@ -60,10 +60,11 @@ namespace KIO {
  * code.
  *
  * <b>IMPORTANT</b>This class is not a replacement for the standard KDE API.
- * It should ONLY be used to to provide KDE integration in applications that
+ * It should ONLY be used to provide KDE integration in applications that
  * cannot use the standard KDE API directly.
  *
  * @author Urs Wolfer \<uwolfer @ kde.org\>
+ * @author Dawit Alemayehu \<adawit @ kde.org\>
  *
  * @deprecated Use the KIO::Integration::AccessManager typedef to access this class instead.
  * @since 4.3
@@ -198,7 +199,20 @@ public:
      * @see KIO::get.
      * @since 4.6
      */
-    static void putReplyOnHold(QNetworkReply* reply);    
+    static void putReplyOnHold(QNetworkReply* reply);
+
+    /**
+     * Sets the network reply object to emit readyRead when it receives meta data.
+     *
+     * Meta data is any information that is not the actual content itself, e.g.
+     * HTTP response headers of the HTTP protocol. You should only call this
+     * function, when an application does not connect to a reply object's
+     * metaDataChanged signal.
+     *
+     * @see QNetworkReply::metaDataChanged
+     * @since 4.7
+     */
+    void setEmitReadyReadOnMetaDataChange(bool);
 
 protected:
     /**

@@ -1861,6 +1861,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 destDirectory.setPath(destDirectory.directory());
                 const QString newName = KIO::RenameDialog::suggestName(destDirectory, m_currentDestURL.fileName());
 
+                m_dest.setPath(m_currentDestURL.path());
                 m_dest.setFileName(newName);
                 KIO::Job* job = KIO::stat(m_dest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
                 state = STATE_STATING;

@@ -32,7 +32,6 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 #include "kconfigdata.h"
-#include "kde_file.h"
 #include <kdebug.h>
 
 #include <QtCore/QDate>
@@ -106,8 +105,6 @@ class KConfigGroupPrivate : public QSharedData
             return aGroup;
         return fullName() + '\x1d' + aGroup;
     }
-
-    static QString expandString(const QString& value);
 
     static QExplicitlySharedDataPointer<KConfigGroupPrivate> create(KConfigBase *master,
                                                                     const QByteArray &name,
@@ -376,91 +373,6 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
 
     kWarning() << "unhandled type " << aDefault.typeName();
     return QVariant();
-}
-
-QString KConfigGroupPrivate::expandString(const QString& value)
-{
-    QString aValue = value;
-
-    // check for environment variables and make necessary translations
-    int nDollarPos = aValue.indexOf( QLatin1Char('$') );
-    while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
-        // there is at least one $
-        if( aValue[nDollarPos+1] == QLatin1Char('(') ) {
-            int nEndPos = nDollarPos+1;
-            // the next character is not $
-            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=QLatin1Char(')')) )
-                nEndPos++;
-            nEndPos++;
-            QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
-
-            QString result;
-            QByteArray oldpath = qgetenv( "PATH" );
-            QByteArray newpath;
-            if (KGlobal::hasMainComponent()) {
-                newpath = QFile::encodeName(KGlobal::dirs()->resourceDirs("exe").join(QChar::fromLatin1(KPATH_SEPARATOR)));
-                if (!newpath.isEmpty() && !oldpath.isEmpty())
-                    newpath += KPATH_SEPARATOR;
-            }
-            newpath += oldpath;
-            setenv( "PATH", newpath, 1/*overwrite*/ );
-// FIXME: wince does not have pipes
-#ifndef _WIN32_WCE
-            FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
-            if (fs) {
-                QTextStream ts(fs, QIODevice::ReadOnly);
-                result = ts.readAll().trimmed();
-                pclose(fs);
-            }
-#endif
-            setenv( "PATH", oldpath, 1/*overwrite*/ );
-            aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
-            nDollarPos += result.length();
-        } else if( aValue[nDollarPos+1] != QLatin1Char('$') ) {
-            int nEndPos = nDollarPos+1;
-            // the next character is not $
-            QString aVarName;
-            if ( aValue[nEndPos] == QLatin1Char('{') ) {
-                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos] != QLatin1Char('}')) )
-                    nEndPos++;
-                nEndPos++;
-                aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
-            } else {
-                while ( nEndPos <= aValue.length() &&
-                        (aValue[nEndPos].isNumber() ||
-                        aValue[nEndPos].isLetter() ||
-                        aValue[nEndPos] == QLatin1Char('_') ) )
-                    nEndPos++;
-                aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
-            }
-            QString env;
-            if (!aVarName.isEmpty()) {
-#ifdef Q_OS_WIN
-                if (aVarName == QLatin1String("HOME"))
-                    env = QDir::homePath();
-                else
-#endif
-                {
-                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
-                    if( !pEnv.isEmpty() )
-                    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-                    // An environment variable may contain values in 8bit
-                    // locale specified encoding or UTF8 encoding
-                        env = KStringHandler::from8Bit( pEnv );
-                }
-                aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
-                nDollarPos += env.length();
-            } else
-                aValue.remove( nDollarPos, nEndPos-nDollarPos );
-        } else {
-            // remove one of the dollar signs
-            aValue.remove( nDollarPos, 1 );
-            nDollarPos++;
-        }
-        nDollarPos = aValue.indexOf( QLatin1Char('$'), nDollarPos );
-    }
-
-    return aValue;
 }
 
 #ifdef Q_WS_WIN
@@ -763,7 +675,7 @@ QString KConfigGroup::readEntry(const char* key, const QString& aDefault) const
         aValue = aDefault;
 
     if (expand)
-        return KConfigGroupPrivate::expandString(aValue);
+        return KConfigPrivate::expandString(aValue);
 
     return aValue;
 }
@@ -885,7 +797,7 @@ QString KConfigGroup::readPathEntry(const char *key, const QString & aDefault) c
     if (aValue.isNull())
         aValue = aDefault;
 
-    return KConfigGroupPrivate::expandString(aValue);
+    return KConfigPrivate::expandString(aValue);
 }
 
 QStringList KConfigGroup::readPathEntry(const QString& pKey, const QStringList& aDefault) const

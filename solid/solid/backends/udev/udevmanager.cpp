@@ -191,7 +191,7 @@ QObject *UDevManager::createDevice(const QString &udi_)
     }
     const QString udi = udi_.right(udi_.size() - udiPrefix().size());
     UdevQt::Device device = d->m_client->deviceBySysfsPath(udi);
-    if (d->isOfInterest(device)) {
+    if (d->isOfInterest(device) || QFile::exists(udi)) {
         return new UDevDevice(device);
     }
     return 0;

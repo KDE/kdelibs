@@ -117,7 +117,7 @@ macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desk
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 
-set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.5)
+set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.6.50)
 macro_optional_find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
 macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "")
 

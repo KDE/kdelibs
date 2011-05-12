@@ -26,6 +26,8 @@ class KDesktopFileTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void testRead();
+    void testUnsuccessfulTryExec();
+    void testSuccessfulTryExec();
     void testActionGroup();
     void testIsAuthorizedDesktopFile();
 

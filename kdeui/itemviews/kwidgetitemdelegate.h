@@ -87,6 +87,11 @@ protected:
      * @note If you want to connect some widget signals to any slot, you should
      *       do it here.
      *
+     * @note If you want to know the index for which you are creating widgets, it is
+     *       available as a QModelIndex Q_PROPERTY called "goya:creatingWidgetsForIndex".
+     *       Ensure to add Q_DECLARE_METATYPE(QModelIndex) before your method definition
+     *       to tell QVariant about QModelIndex.
+     *
      * @return the list of newly created widgets which will be used to interact with an item.
      * @see updateItemWidgets()
      */

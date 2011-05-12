@@ -100,6 +100,7 @@ private Q_SLOTS:
     void testQDateDayOfWeek();
     void testQDateIsLeapYear();
     void testKLocalizedDate();
+    void testWeekNumberSystem();
 };
 
 #endif

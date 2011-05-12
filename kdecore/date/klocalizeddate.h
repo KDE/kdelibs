@@ -80,7 +80,7 @@ class KLocalizedDatePrivate;
  * instance, your KCalendarSystem instance will be deleted and all the dates
  * will be invalid!
  *
- * @see 
+ * @see
  *
  * @section formatting Date Formatting
  *
@@ -110,7 +110,7 @@ class KLocalizedDatePrivate;
  * only liberal Parsing is supported.
  *
  * The KLocale::LiberalParsing mode applies the following rules:
- * 
+ *
  * 1) You must supply a format and string containing at least one of the following combinations to
  * create a valid date:
  * @li a month and day of month
@@ -481,14 +481,9 @@ public:
      *
      * See @ref formatting for why you should never display this value.
      *
-     * Currently only the ISO Week Number is supported, but in future the US
-     * and other week number systems will be added.
-     *
-     * If you specifically require the ISO Week, you should use
-     * week(KLocale::IsoWeekNumber)
-     *
-     * ISO 8601 defines the first week of the year as the week containing the first Thursday.
-     * See http://en.wikipedia.org/wiki/ISO_8601 and http://en.wikipedia.org/wiki/ISO_week_date
+     * This may be ISO, US, or any other supported week numbering scheme.  If
+     * you specifically require the ISO Week or any other scheme, you should use
+     * the week(KLocale::WeekNumberSystem) form.
      *
      * If the date falls in the last week of the previous year or the first
      * week of the following year, then the yearNum returned will be set to the
@@ -538,9 +533,6 @@ public:
      * Returns the number of localized weeks in the currently set year.
      *
      * See @ref formatting for why you should never display this value.
-     *
-     * Currently only the ISO Week Number is supported, but in future the US
-     * and other week number systems will be added.
      *
      * If you specifically require the number of ISO Weeks, you should use
      * weeksInYear(KLocale::IsoWeekNumber)
@@ -961,7 +953,7 @@ public:
     /**
      * Returns the difference between this and another date in completed calendar years
      * in the current Calendar System.
-     * 
+     *
      * The returned value will be negative if @p toDate < this date.
      *
      * For example, the difference between 2010-06-10 and 2012-09-5 is 2 years.

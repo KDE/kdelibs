@@ -71,11 +71,16 @@ namespace KIO {
 class AccessManager::AccessManagerPrivate
 {
 public:
-    AccessManagerPrivate() : externalContentAllowed(true), window(0) {}
+    AccessManagerPrivate()
+      : externalContentAllowed(true),
+        emitReadReadOnMetaDataChange(false),
+        window(0)
+    {}
 
     void setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData);
 
-    bool externalContentAllowed;    
+    bool externalContentAllowed;
+    bool emitReadReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
     QWidget* window;
@@ -189,10 +194,16 @@ KIO::MetaData& AccessManager::sessionMetaData()
 void AccessManager::putReplyOnHold(QNetworkReply* reply)
 {
     KDEPrivate::AccessManagerReply* r = qobject_cast<KDEPrivate::AccessManagerReply*>(reply);
-    if (!r)
+    if (!r) {
       return;
+    }
 
     r->putOnHold();
+}
+
+void AccessManager::setEmitReadyReadOnMetaDataChange(bool enable)
+{
+    d->emitReadReadOnMetaDataChange = enable;
 }
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
@@ -207,6 +218,13 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         return reply;
     }
 
+    // Check if the internal ignore content disposition header is set.
+    const bool ignoreContentDisposition = req.hasRawHeader("x-kdewebkit-ignore-disposition");
+
+    // Retrieve the KIO meta data...
+    KIO::MetaData metaData;
+    d->setMetaDataForRequest(req, metaData);
+
     switch (op) {
         case HeadOperation: {
             //kDebug( 7044 ) << "HeadOperation:" << reqUrl;
@@ -219,6 +237,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             else
                 kioJob = KIO::stat(reqUrl, KIO::HideProgressInfo);
+
+            // WORKAROUND: Avoid the brain damaged stuff QtWebKit does when a POST
+            // operation is redirected! See BR# 268694.
+            metaData.remove(QL1S("content-type")); // Remove the content-type from a GET/HEAD request!
             break;
         }
         case PutOperation: {
@@ -234,6 +256,16 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             const qint64 size = sizeFromRequest(req);
             //kDebug(7044) << "PostOperation: data size=" << size;
             kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
+            if (!metaData.contains(QL1S("content-type")))  {
+                const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
+                if (header.isValid()) {
+                    metaData.insert(QL1S("content-type"),
+                                    (QL1S("Content-Type: ") + header.toString()));
+                } else {
+                    metaData.insert(QL1S("content-type"),
+                                    QL1S("Content-Type: application/x-www-form-urlencoded"));
+                }
+            }
             break;
         }
         case DeleteOperation: {
@@ -256,7 +288,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             else
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
 
-            kioJob->metaData().insert(QL1S("CustomHTTPMethod"), method);
+            metaData.insert(QL1S("CustomHTTPMethod"), method);
             break;
         }
         default: {
@@ -270,8 +302,10 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         kioJob->ui()->setWindow(d->window);
     }
 
+    // Disable internal automatic redirection handling
     kioJob->setRedirectionHandlingEnabled(false);
 
+    // Set the job priority
     switch (req.priority()) {
     case QNetworkRequest::HighPriority:
         KIO::Scheduler::setJobPriority(kioJob, -5);
@@ -283,24 +317,15 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
-    if (req.hasRawHeader("x-kdewebkit-ignore-disposition")) {
+    // Set the meta data for this job...
+    kioJob->setMetaData(metaData);
+
+    // Create the reply...
+    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+
+    if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
-        reply->setIgnoreContentDisposition(true);
-    }
-
-    KIO::MetaData metaData;
-    d->setMetaDataForRequest(req, metaData);
-    kioJob->addMetaData(metaData);
-
-    if ( op == PostOperation && !kioJob->metaData().contains(QL1S("content-type")))  {
-        const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
-        if (header.isValid())
-          kioJob->addMetaData(QL1S("content-type"),
-                              (QL1S("Content-Type: ") + header.toString()));
-        else
-          kioJob->addMetaData(QL1S("content-type"),
-                              QL1S("Content-Type: application/x-www-form-urlencoded"));
+        reply->setIgnoreContentDisposition(ignoreContentDisposition);
     }
 
     return reply;
@@ -348,8 +373,9 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
             customHeaders << (key + QL1S(": ") + value);
     }
 
-    if (!customHeaders.isEmpty())
+    if (!customHeaders.isEmpty()) {
         metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
+    }
 
     // Append per request meta data, if any...
     if (!requestMetaData.isEmpty()) {
@@ -359,8 +385,9 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     }
 
     // Append per session meta data, if any...
-    if (!sessionMetaData.isEmpty())
+    if (!sessionMetaData.isEmpty()) {
         metaData += sessionMetaData;
+    }
 }
 
 
@@ -368,14 +395,17 @@ using namespace KIO::Integration;
 
 static QSsl::SslProtocol qSslProtocolFromString(const QString& str)
 {
-    if (str.compare(QLatin1String("SSLv3"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("SSLv3"), Qt::CaseInsensitive) == 0) {
         return QSsl::SslV3;
+    }
 
-    if (str.compare(QLatin1String("SSLv2"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("SSLv2"), Qt::CaseInsensitive) == 0) {
         return QSsl::SslV2;
+    }
 
-    if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0)
+    if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0) {
         return QSsl::TlsV1;
+    }
 
     return QSsl::AnyProtocol;
 }
@@ -422,24 +452,25 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
 {
     QList<QNetworkCookie> cookieList;
 
-    if (d->isEnabled) {
-        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
+    if (!d->isEnabled) {
+        return cookieList;
+    }
+    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+    QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
 
-        if (reply.isValid()) {
-            const QString cookieStr = reply.value();
-            const QStringList cookies = cookieStr.split(QL1S("; "), QString::SkipEmptyParts);
-            Q_FOREACH(const QString& cookie, cookies) {
-                const int index = cookie.indexOf(QL1C('='));
-                const QString name = cookie.left(index);
-                const QString value = cookie.right((cookie.length() - index - 1));
-                cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
-                //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
-            }
-            //kDebug(7044) << "cookie for" << url.host() << ":" << cookieStr;
-        } else {
-            kWarning(7044) << "Unable to communicate with the cookiejar!";
-        }
+    if (!reply.isValid()) {
+        kWarning(7044) << "Unable to communicate with the cookiejar!";
+        return cookieList;
+    }
+
+    const QString cookieStr = reply.value();
+    const QStringList cookies = cookieStr.split(QL1S("; "), QString::SkipEmptyParts);
+    Q_FOREACH(const QString& cookie, cookies) {
+        const int index = cookie.indexOf(QL1C('='));
+        const QString name = cookie.left(index);
+        const QString value = cookie.right((cookie.length() - index - 1));
+        cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
+        //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
     }
 
     return cookieList;
@@ -447,24 +478,25 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
 
 bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url)
 {
-    if (d->isEnabled) {
-        QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
-        Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
-            QByteArray cookieHeader ("Set-Cookie: ");
-            if (d->isStorageDisabled && !cookie.isSessionCookie()) {
-                QNetworkCookie sessionCookie(cookie);
-                sessionCookie.setExpirationDate(QDateTime());
-                cookieHeader += sessionCookie.toRawForm();
-            } else
-                cookieHeader += cookie.toRawForm();
-            kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
-            //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
-        }
-
-        return !kcookiejar.lastError().isValid();
+    if (!d->isEnabled) {
+        return false;
     }
 
-    return false;
+    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer");
+    Q_FOREACH(const QNetworkCookie &cookie, cookieList) {
+        QByteArray cookieHeader ("Set-Cookie: ");
+        if (d->isStorageDisabled && !cookie.isSessionCookie()) {
+            QNetworkCookie sessionCookie(cookie);
+            sessionCookie.setExpirationDate(QDateTime());
+            cookieHeader += sessionCookie.toRawForm();
+        } else {
+            cookieHeader += cookie.toRawForm();
+        }
+        kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
+        //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
+    }
+
+    return !kcookiejar.lastError().isValid();
 }
 
 void CookieJar::setDisableCookieStorage(bool disable)

@@ -52,6 +52,7 @@ public Q_SLOTS: // METHODS
     void reparseConfiguration();
     int requestHoldSlave(const QString &url, const QString &app_socket);
     int requestSlave(const QString &protocol, const QString &host, const QString &app_socket, QString &error);
+    bool checkForHeldSlave (const QString &url);
     void setLaunchEnv(const QString &name, const QString &value);
     int start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);
     int start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);

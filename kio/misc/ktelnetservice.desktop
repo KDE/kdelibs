@@ -9,6 +9,7 @@ NoDisplay=true
 
 Name=KTelnetService
 Name[bg]=KTelnetService
+Name[bs]=KTelnetService
 Name[ca]=KTelnetService
 Name[ca@valencia]=KTelnetService
 Name[cs]=KTelnetService
@@ -49,6 +50,7 @@ Name[sr@latin]=KMailService
 Name[sv]=Ktelnet-tjänst
 Name[th]=KTelnetService
 Name[tr]=KTelnetService
+Name[ug]=KTelnetService
 Name[uk]=Служба telnet KTelnet
 Name[wa]=KTelnetService
 Name[x-test]=xxKTelnetServicexx

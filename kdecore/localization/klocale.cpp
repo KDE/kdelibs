@@ -717,6 +717,11 @@ KLocale::WeekNumberSystem KLocale::weekNumberSystem()
     return d->weekNumberSystem();
 }
 
+KLocale::WeekNumberSystem KLocale::weekNumberSystem() const
+{
+    return d->weekNumberSystem();
+}
+
 KLocale::KLocale(const KLocale &rhs)
         : d(new KLocalePrivate(*rhs.d))
 {

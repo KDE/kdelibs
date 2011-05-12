@@ -1058,6 +1058,7 @@ void TransferJob::slotFinished()
                     istream >> specialcmd;
                     if (specialcmd == 1) // HTTP POST
                     {
+                      d->m_outgoingMetaData.remove(QLatin1String("content-type"));
                       addMetaData("cache","reload");
                       d->m_packedArgs.truncate(0);
                       QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
@@ -1615,11 +1616,9 @@ TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, 
 
 StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
 {
-    bool redirection = false;
     KUrl _url(url);
     if (_url.path().isEmpty())
     {
-      redirection = true;
       _url.setPath("/");
     }
 
@@ -1635,11 +1634,9 @@ StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& 
 
 StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const KUrl& url, qint64 size, JobFlags flags )
 {
-    bool redirection = false;
     KUrl _url(url);
     if (_url.path().isEmpty())
     {
-      redirection = true;
       _url.setPath("/");
     }
 

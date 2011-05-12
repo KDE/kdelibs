@@ -107,6 +107,11 @@ int KLauncherAdaptor::requestSlave(const QString &protocol, const QString &host,
     return static_cast<KLauncher *>(parent())->requestSlave(protocol, host, app_socket, error);
 }
 
+bool KLauncherAdaptor::checkForHeldSlave (const QString &url)
+{
+    return static_cast<KLauncher *>(parent())->checkForHeldSlave(url);
+}
+
 void KLauncherAdaptor::setLaunchEnv(const QString &name, const QString &value)
 {
     // handle method call org.kde.KLauncher.setLaunchEnv

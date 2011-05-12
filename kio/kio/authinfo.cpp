@@ -136,6 +136,7 @@ AuthInfo::AuthInfo() : d(new AuthInfoPrivate())
 AuthInfo::AuthInfo( const AuthInfo& info ) : d(new AuthInfoPrivate())
 {
     (*this) = info;
+    AuthInfo::registerMetaTypes();
 }
 
 AuthInfo::~AuthInfo()

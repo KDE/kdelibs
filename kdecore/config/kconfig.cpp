@@ -29,6 +29,7 @@
 
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
+#include <kde_file.h>
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -150,6 +151,92 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
         otherGroup->config()->d_ptr->bDirty = true;
     }
 }
+
+QString KConfigPrivate::expandString(const QString& value)
+{
+    QString aValue = value;
+
+    // check for environment variables and make necessary translations
+    int nDollarPos = aValue.indexOf( QLatin1Char('$') );
+    while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
+        // there is at least one $
+        if( aValue[nDollarPos+1] == QLatin1Char('(') ) {
+            int nEndPos = nDollarPos+1;
+            // the next character is not $
+            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=QLatin1Char(')')) )
+                nEndPos++;
+            nEndPos++;
+            QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+
+            QString result;
+            QByteArray oldpath = qgetenv( "PATH" );
+            QByteArray newpath;
+            if (KGlobal::hasMainComponent()) {
+                newpath = QFile::encodeName(KGlobal::dirs()->resourceDirs("exe").join(QChar::fromLatin1(KPATH_SEPARATOR)));
+                if (!newpath.isEmpty() && !oldpath.isEmpty())
+                    newpath += KPATH_SEPARATOR;
+            }
+            newpath += oldpath;
+            setenv( "PATH", newpath, 1/*overwrite*/ );
+// FIXME: wince does not have pipes
+#ifndef _WIN32_WCE
+            FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
+            if (fs) {
+                QTextStream ts(fs, QIODevice::ReadOnly);
+                result = ts.readAll().trimmed();
+                pclose(fs);
+            }
+#endif
+            setenv( "PATH", oldpath, 1/*overwrite*/ );
+            aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
+            nDollarPos += result.length();
+        } else if( aValue[nDollarPos+1] != QLatin1Char('$') ) {
+            int nEndPos = nDollarPos+1;
+            // the next character is not $
+            QString aVarName;
+            if ( aValue[nEndPos] == QLatin1Char('{') ) {
+                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos] != QLatin1Char('}')) )
+                    nEndPos++;
+                nEndPos++;
+                aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+            } else {
+                while ( nEndPos <= aValue.length() &&
+                        (aValue[nEndPos].isNumber() ||
+                        aValue[nEndPos].isLetter() ||
+                        aValue[nEndPos] == QLatin1Char('_') ) )
+                    nEndPos++;
+                aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
+            }
+            QString env;
+            if (!aVarName.isEmpty()) {
+#ifdef Q_OS_WIN
+                if (aVarName == QLatin1String("HOME"))
+                    env = QDir::homePath();
+                else
+#endif
+                {
+                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
+                    if( !pEnv.isEmpty() )
+                    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+                    // An environment variable may contain values in 8bit
+                    // locale specified encoding or UTF8 encoding
+                        env = KStringHandler::from8Bit( pEnv );
+                }
+                aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
+                nDollarPos += env.length();
+            } else
+                aValue.remove( nDollarPos, nEndPos-nDollarPos );
+        } else {
+            // remove one of the dollar signs
+            aValue.remove( nDollarPos, 1 );
+            nDollarPos++;
+        }
+        nDollarPos = aValue.indexOf( QLatin1Char('$'), nDollarPos );
+    }
+
+    return aValue;
+}
+
 
 KConfig::KConfig( const QString& file, OpenFlags mode,
                   const char* resourceType)
@@ -309,8 +396,13 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
                 const QString key = QString::fromUtf8(it.key().mKey.constData());
                 // the localized entry should come first, so don't overwrite it
                 // with the non-localized entry
-                if (!theMap.contains(key))
-                    theMap.insert(key,QString::fromUtf8(it->mValue.constData()));
+                if (!theMap.contains(key)) {
+                    if (it->bExpand) {
+                        theMap.insert(key,KConfigPrivate::expandString(QString::fromUtf8(it->mValue.constData())));
+                    } else {
+                        theMap.insert(key,QString::fromUtf8(it->mValue.constData()));
+                    }
+                }
             }
         }
     }

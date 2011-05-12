@@ -504,11 +504,11 @@ void HTTPProtocol::resetSessionSettings()
   }
 
   if (config()->readEntry("SendLanguageSettings", true)) {
-      m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
-      if (!m_request.charsets.isEmpty()) {
-          m_request.charsets += QLatin1String(DEFAULT_PARTIAL_CHARSET_HEADER);
+      m_request.charsets = config()->readEntry("Charsets", DEFAULT_PARTIAL_CHARSET_HEADER);
+      if (!m_request.charsets.contains(QLatin1String("*;"), Qt::CaseInsensitive)) {
+          m_request.charsets += QLatin1String(",*;q=0.5");
       }
-      m_request.languages = config()->readEntry( "Languages", DEFAULT_LANGUAGE_HEADER );
+      m_request.languages = config()->readEntry("Languages", DEFAULT_LANGUAGE_HEADER);
   } else {
       m_request.charsets.clear();
       m_request.languages.clear();
@@ -2437,7 +2437,7 @@ bool HTTPProtocol::sendQuery()
     header += QLatin1String("\r\n");
 
     if (m_request.allowTransferCompression)
-      header += QLatin1String("Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n");
+      header += QLatin1String("Accept-Encoding: gzip, deflate, x-gzip, x-deflate\r\n");
 
     if (!m_request.charsets.isEmpty())
       header += QLatin1String("Accept-Charset: ") + m_request.charsets + QLatin1String("\r\n");
@@ -3014,7 +3014,9 @@ endParsing:
                         if (auth->realm().isEmpty() && !auth->supportsPathMatching())
                             setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
                     }
-                    cacheAuthentication(authinfo);
+                    if (authinfo.keepPassword) {
+                        cacheAuthentication(authinfo);
+                    }
                     kDebug(7113) << "Caching authentication for" << m_request.url;
                 }
                 // Update our server connection state which includes www and proxy username and password.

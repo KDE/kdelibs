@@ -2701,3 +2701,530 @@ void KCalendarTest::testKLocalizedDate()
     QCOMPARE( hijriDate.day(), hijriCalendar->day( testQDate ) );
     delete hijriCalendar;
 }
+
+void KCalendarTest::testWeekNumberSystem()
+{
+    KLocale *locale = new KLocale( *KGlobal::locale() );
+    const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar, locale );
+    int weekYear = 0;
+
+    // Test the 7 days the year can start on:
+    // Monday    == 2018
+    // Tuesday   == 2013
+    // Wednesday == 2014
+    // Thursday  == 2015
+    // Friday    == 2016
+    // Saturday  == 2011
+    // Sunday    == 2012
+
+    // ISO Week
+    // Monday    == 2018 == Week 1 2018
+    // Tuesday   == 2013 == Week 1 2013
+    // Wednesday == 2014 == Week 1 2014
+    // Thursday  == 2015 == Week 1 2015
+    // Friday    == 2016 == Week 53 2015
+    // Saturday  == 2011 == Week 52 2010
+    // Sunday    == 2012 == Week 52 2011
+
+    locale->setWeekStartDay( 1 );
+    locale->setWeekNumberSystem( KLocale::IsoWeekNumber );
+
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 53 );
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 52 );
+    QCOMPARE( weekYear, 2010 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 52 );
+    QCOMPARE( weekYear, 2011 );
+
+    QCOMPARE( calendar->week( QDate( 2014, 12, 31 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 12, 31 ), &weekYear ), 53 );
+    QCOMPARE( weekYear, 2015 );
+
+    QCOMPARE( calendar->weeksInYear( 2010 ), 52 );
+    QCOMPARE( calendar->weeksInYear( 2015 ), 53 );
+
+    // First Full Week starting Sunday, aka US Week
+    locale->setWeekStartDay( 7 );
+    locale->setWeekNumberSystem( KLocale::FirstFullWeek );
+
+    // Mon = Jan 1 2018 = Week 52 2017, Sun = Jan 7 = Week 1
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 53 );  //First Day
+    QCOMPARE( weekYear, 2017 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 6 ), &weekYear ), 53 );  //First Saturday
+    QCOMPARE( weekYear, 2017 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 7 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 13 ), &weekYear ), 1 );  //Second Saturday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 14 ), &weekYear ), 2 );  //Second Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2018 );
+
+    // Tue = Jan 1 2013 = Week 52 2012, Sun = Jan 6 = Week 1
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 53 );  //First Day
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 5 ), &weekYear ), 53 );  //First Saturday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 6 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 12 ), &weekYear ), 1 );  //Second Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 13 ), &weekYear ), 2 );  //Second Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2013 );
+
+    // Wed = Jan 1 2014 = Week 52 2013, Sun = Jan 5 = Week 1
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 52 );  //First Day
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 4 ), &weekYear ), 52 );  //First Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 5 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 11 ), &weekYear ), 1 );  //Second Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 12 ), &weekYear ), 2 );  //Second Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2014 );
+
+    // Thu = Jan 1 2015 = Week 52 2014, Sun = Jan 4 = Week 1
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 52 );  //First Day
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 3 ), &weekYear ), 52 );  //First Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 4 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 10 ), &weekYear ), 1 );  //Second Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 11 ), &weekYear ), 2 );  //Second Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2015 );
+
+    // Fri = Jan 1 2016 = Week 52 2015, Sun = Jan 3 = Week 1
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 52 );  //First Day
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 2 ), &weekYear ), 52 );  //First Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 3 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 9 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 10 ), &weekYear ), 2 );  //Second Sunday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2016 );
+
+    // Sat = Jan 1 2011 = Week 52 2010, Sun = Jan 2 = Week 1
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 52 );  //First Day, First Saturday
+    QCOMPARE( weekYear, 2010 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 2 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 8 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 9 ), &weekYear ), 2 );   //Second Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2011 );
+
+    // Sun = Jan 1 2012 = Week 1 2012, Sun = Jan 1 = Week 1
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 1 );   //First Day, First Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 7 ), &weekYear ), 1 );   //First Saturday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 8 ), &weekYear ), 2 );   //Second Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2012 );
+
+    // First Full Week starting Monday
+    locale->setWeekStartDay( 1 );
+    locale->setWeekNumberSystem( KLocale::FirstFullWeek );
+
+    // Mon = Jan 1 2018 = Week 52 2017, Mon = Jan 1 = Week 1
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 1 );    //First Day, First Monday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 7 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 8 ), &weekYear ), 2 );    //Second Monday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2018 );
+
+    // Tue = Jan 1 2013 = Week 52 2012, Mon = Jan 7 = Week 1
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 53 );   //First Day
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 6 ), &weekYear ), 53 );   //First Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 7 ), &weekYear ), 1 );    //First Monday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 13 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 14 ), &weekYear ), 2 );   //Second Monday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2013 );
+
+    // Wed = Jan 1 2014 = Week 52 2013, Mon = Jan 6 = Week 1
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 52 );   //First Day
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 5 ), &weekYear ), 52 );   //First Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 6 ), &weekYear ), 1 );    //First Monday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 12 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 13 ), &weekYear ), 2 );   //Second Monday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2014 );
+
+    // Thu = Jan 1 2015 = Week 52 2014, Mon = Jan 5 = Week 1
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 52 );   //First Day
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 4 ), &weekYear ), 52 );   //First Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 5 ), &weekYear ), 1 );    //First Monday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 11 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 12 ), &weekYear ), 2 );   //Second Monday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2015 );
+
+    // Fri = Jan 1 2016 = Week 52 2015, Mon = Jan 4 = Week 1
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 52 );   //First Day
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 3 ), &weekYear ), 52 );   //First Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 4 ), &weekYear ), 1 );    //First Monday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 10 ), &weekYear ), 1 );   //Second Saturday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 11 ), &weekYear ), 2 );   //Second Monday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2016 );
+
+    // Sat = Jan 1 2011 = Week 52 2010, Mon = Jan 3 = Week 1
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 52 );  //First Day
+    QCOMPARE( weekYear, 2010 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 2 ), &weekYear ), 52 );  //First Sunday
+    QCOMPARE( weekYear, 2010 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 3 ), &weekYear ), 1 );   //First Monday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 9 ), &weekYear ), 1 );   //Second Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 10 ), &weekYear ), 2 );  //Second Monday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 12, 31 ), &weekYear ), 52 ); //Last Day
+    QCOMPARE( weekYear, 2011 );
+
+    // Sun = Jan 1 2012 = Week 52 2011, Mon = Jan 2 = Week 1
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 52 );   //First Day, First Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 2 ), &weekYear ), 1 );    //First Monday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 8 ), &weekYear ), 1 );    //Second Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 9 ), &weekYear ), 2 );    //Second Monday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2012 );
+
+
+    // First Partial Week, second week starting Sunday
+    locale->setWeekStartDay( 7 );
+    locale->setWeekNumberSystem( KLocale::FirstPartialWeek );
+
+    // Mon = Jan 1 2018 = Week 1, Sun = Jan 7 = Week 2
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 1 );   //First Day
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 6 ), &weekYear ), 1 );   //First Saturday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 7 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 13 ), &weekYear ), 2 );  //Second Saturday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 14 ), &weekYear ), 3 );  //Second Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2018 );
+
+    // Tue = Jan 1 2013 = Week 1, Sun = Jan 6 = Week 2
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 1 );  //First Day
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 5 ), &weekYear ), 1 );  //First Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 6 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 12 ), &weekYear ), 2 );  //Second Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 13 ), &weekYear ), 3 );  //Second Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2013 );
+
+    // Wed = Jan 1 2014 = Week 1, Sun = Jan 5 = Week 2
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 1 );  //First Day
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 4 ), &weekYear ), 1 );  //First Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 5 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 11 ), &weekYear ), 2 );  //Second Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 12 ), &weekYear ), 3 );  //Second Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2014 );
+
+    // Thu = Jan 1 2015 = Week 1, Sun = Jan 4 = Week 2
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 1 );  //First Day
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 3 ), &weekYear ), 1 );  //First Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 4 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 10 ), &weekYear ), 2 );  //Second Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 11 ), &weekYear ), 3 );  //Second Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2015 );
+
+    // Fri = Jan 1 2016 = Week 1, Sun = Jan 3 = Week 2
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 1 );  //First Day
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 2 ), &weekYear ), 1 );  //First Saturday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 3 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 9 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 10 ), &weekYear ), 3 );  //Second Sunday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2016 );
+
+    // Sat = Jan 1 2011 = Week 1, Sun = Jan 2 = Week 2
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 1 );  //First Day, First Saturday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 2 ), &weekYear ), 2 );   //First Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 8 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 9 ), &weekYear ), 3 );   //Second Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2011 );
+
+    // Sun = Jan 1 2012 = Week 1, Sun = Jan 1 = Week 1
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 1 );   //First Day, First Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 7 ), &weekYear ), 1 );   //First Saturday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 8 ), &weekYear ), 2 );   //Second Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2012 );
+
+    // First Partial Week starting Monday
+    locale->setWeekStartDay( 1 );
+    locale->setWeekNumberSystem( KLocale::FirstPartialWeek );
+
+    // Mon = Jan 1 2018 = Week 1, Mon = Jan 1 = Week 2
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 1 );    //First Day, First Monday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 7 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 8 ), &weekYear ), 2 );    //Second Monday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2018 );
+
+    // Tue = Jan 1 2013 = Week 1, Mon = Jan 7 = Week 2
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 1 );    //First Day
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 6 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 7 ), &weekYear ), 2 );    //First Monday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 13 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 14 ), &weekYear ), 3 );   //Second Monday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2013 );
+
+    // Wed = Jan 1 2014 = Week 1, Mon = Jan 6 = Week 2
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 1 );    //First Day
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 5 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 6 ), &weekYear ), 2 );    //First Monday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 12 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 13 ), &weekYear ), 3 );   //Second Monday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2014 );
+
+    // Thu = Jan 1 2015 = Week 1, Mon = Jan 5 = Week 2
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 1 );    //First Day
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 4 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 5 ), &weekYear ), 2 );    //First Monday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 11 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 12 ), &weekYear ), 3 );   //Second Monday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2015 );
+
+    // Fri = Jan 1 2016 = Week 1, Mon = Jan 4 = Week 2
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 1 );    //First Day
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 3 ), &weekYear ), 1 );    //First Sunday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 4 ), &weekYear ), 2 );    //First Monday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 10 ), &weekYear ), 2 );   //Second Saturday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 11 ), &weekYear ), 3 );   //Second Monday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2016 );
+
+    // Sat = Jan 1 2011 = Week 1, Mon = Jan 3 = Week 2
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 1 );   //First Day
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 2 ), &weekYear ), 1 );   //First Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 3 ), &weekYear ), 2 );   //First Monday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 9 ), &weekYear ), 2 );   //Second Sunday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 10 ), &weekYear ), 3 );  //Second Monday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 12, 31 ), &weekYear ), 53 ); //Last Day
+    QCOMPARE( weekYear, 2011 );
+
+    // Sun = Jan 1 2012 = Week 1, Mon = Jan 2 = Week 2
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 1 );   //First Day, First Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 2 ), &weekYear ), 2 );    //First Monday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 8 ), &weekYear ), 2 );    //Second Sunday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 9 ), &weekYear ), 3 );    //Second Monday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 12, 31 ), &weekYear ), 54 ); //Last Day
+    QCOMPARE( weekYear, 2012 );
+
+    // Simple weeks starting Jan 1
+    locale->setWeekStartDay( 1 );
+    locale->setWeekNumberSystem( KLocale::SimpleWeek );
+
+    // Mon = Jan 1 2018
+    QCOMPARE( calendar->week( QDate( 2018, 1, 1 ), &weekYear ), 1 );   //First Day, Monday
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2018 );
+    QCOMPARE( calendar->week( QDate( 2018, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2018 );
+
+    // Tue = Jan 1 2013
+    QCOMPARE( calendar->week( QDate( 2013, 1, 1 ), &weekYear ), 1 );   //First Day, Tuesday
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2013 );
+    QCOMPARE( calendar->week( QDate( 2013, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2013 );
+
+    // Wed = Jan 1 2014
+    QCOMPARE( calendar->week( QDate( 2014, 1, 1 ), &weekYear ), 1 );   //First Day, Wednesday
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2014 );
+    QCOMPARE( calendar->week( QDate( 2014, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2014 );
+
+    // Thu = Jan 1 2015
+    QCOMPARE( calendar->week( QDate( 2015, 1, 1 ), &weekYear ), 1 );   //First Day, Thursday
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2015 );
+    QCOMPARE( calendar->week( QDate( 2015, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2015 );
+
+    // Fri = Jan 1 2016
+    QCOMPARE( calendar->week( QDate( 2016, 1, 1 ), &weekYear ), 1 );   //First Day, Monday
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2016 );
+    QCOMPARE( calendar->week( QDate( 2016, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2016 );
+
+    // Sat = Jan 1 2011
+    QCOMPARE( calendar->week( QDate( 2011, 1, 1 ), &weekYear ), 1 );   //First Day, Monday
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2011 );
+    QCOMPARE( calendar->week( QDate( 2011, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2011 );
+
+    // Sun = Jan 1 2012
+    QCOMPARE( calendar->week( QDate( 2012, 1, 1 ), &weekYear ), 1 );   //First Day, Monday
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 7 ), &weekYear ), 1 );
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 8 ), &weekYear ), 2 );   //Second Week
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 14 ), &weekYear ), 2 );
+    QCOMPARE( weekYear, 2012 );
+    QCOMPARE( calendar->week( QDate( 2012, 1, 15 ), &weekYear ), 3 );  //Third Week
+    QCOMPARE( weekYear, 2012 );
+
+    delete calendar;
+    delete locale;
+}

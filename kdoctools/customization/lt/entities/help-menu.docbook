@@ -5,12 +5,12 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Paalba</guimenu>
+<guimenu>Pagalba</guimenu>
 <guimenuitem>&kappname; vadovas</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Paleidžia KDE pagalbos sistemą</action> su
+&kappname; vadovu. (šis dokumentas).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -22,10 +22,10 @@
 <guimenuitem>Kas tai yra?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Pakeičia palės žymeklį į rodyklės ir klaustuko kombinaciją.
+  </action>  Paspaudus ant &kappname; objektų bus atvertas pagalbos
+langas (jei jis egzistuoja tam konkrečiam objektui), paaiškinantis objekto
+funkciją.</para></listitem>
 </varlistentry>
 
 
@@ -34,8 +34,8 @@ function.</para></listitem>
 <guimenu>Pagalba</guimenu>
 <guimenuitem>Pranešti apie ydą...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Atveria pranešimo apie ydas dialogą</action>, kuriame galite
+pranešti apie ydą arba pasiūlyti <quote>norimą</quote> programos galimybę.</para></listitem>
 </varlistentry>
 
 <varlistentry>

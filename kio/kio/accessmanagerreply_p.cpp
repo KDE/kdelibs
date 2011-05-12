@@ -48,10 +48,12 @@ namespace KDEPrivate {
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
                                        const QNetworkRequest &request,
                                        KIO::SimpleJob *kioJob,
+                                       bool emitReadReadOnMetaDataChange,
                                        QObject *parent)
                    :QNetworkReply(parent),
                     m_metaDataRead(false),
                     m_ignoreContentDisposition(false),
+                    m_emitReadReadOnMetaDataChange(emitReadReadOnMetaDataChange),
                     m_kioJob(kioJob)
 
 {
@@ -112,7 +114,7 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
 
 void AccessManagerReply::setIgnoreContentDisposition(bool on)
 {
-    kDebug(7044) << on;
+    // kDebug(7044) << on;
     m_ignoreContentDisposition = on;
 }
 
@@ -126,6 +128,7 @@ void AccessManagerReply::putOnHold()
     if (!m_kioJob || isFinished())
         return;
 
+    // kDebug(7044) << m_kioJob << m_data;
     m_kioJob->putOnHold();
 }
 
@@ -305,6 +308,9 @@ void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
     //kDebug(7044) << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
+    if (m_emitReadReadOnMetaDataChange) {
+        emit readyRead();
+    }
 }
 
 void AccessManagerReply::slotResult(KJob *kJob)
@@ -312,12 +318,15 @@ void AccessManagerReply::slotResult(KJob *kJob)
     const int errcode = jobError(kJob);
 
     const QUrl redirectUrl = attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-    if (redirectUrl.isValid() || !hasRawHeader("content-type")) {
-        readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
-    } else {
+    if (!redirectUrl.isValid()) {
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
         if (errcode && errcode != KIO::ERR_NO_CONTENT)
             emit error(error());
+    }
+
+    // Make sure HTTP response headers are always set.
+    if (!m_metaDataRead) {
+        readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     }
 
     emit finished();

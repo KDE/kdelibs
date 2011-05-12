@@ -29,7 +29,7 @@ Q_DECLARE_METATYPE(QIcon*)
 Q_DECLARE_METATYPE(KIcon)
 Q_DECLARE_METATYPE(KIcon*)
 
-static QScriptValue ctor(QScriptContext *ctx, QScriptEngine *eng)
+static QScriptValue iconCtor(QScriptContext *ctx, QScriptEngine *eng)
 {
     if (ctx->argumentCount() > 0) {
         QScriptValue v = ctx->argument(0);
@@ -97,7 +97,7 @@ QScriptValue constructIconClass(QScriptEngine *eng)
     proto.setProperty("addFile", eng->newFunction(addFile));
     proto.setProperty("null", eng->newFunction(isNull), getter);
 
-    QScriptValue ctorFun = eng->newFunction(ctor, proto);
+    QScriptValue ctorFun = eng->newFunction(iconCtor, proto);
     ADD_ENUM_VALUE(ctorFun, QIcon, Normal);
     ADD_ENUM_VALUE(ctorFun, QIcon, Disabled);
     ADD_ENUM_VALUE(ctorFun, QIcon, Active);

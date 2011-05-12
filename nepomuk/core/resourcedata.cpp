@@ -570,32 +570,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
                     }
                     it.close();
                 }
-                else if( kickOffUri.scheme() == QLatin1String("file") ) {
-                    //
-                    // This is the hard part: The file may still be saved using a filex:/ URL
-                    // We have to determine if that is the case. For that we need to look if the URL
-                    // starts with any of the mounted filesystems' mount paths and then reconstruct
-                    // the filex:/ URL. Since that is quite some work which involved Solid and, thus,
-                    // DBus calls we simply call the removable storage service directly.
-                    //
-                    // If there is no resource yet we create a new uri in store()
-                    //
-
-                    //
-                    // We create a new dbus connection to protect us from multi-thread related crashes.
-                    //
-                    KUrl resourceUri = QDBusReply<QString>( QDBusInterface(QLatin1String("org.kde.nepomuk.services.nepomukremovablestorageservice"),
-                                                                           QLatin1String("/nepomukremovablestorageservice"),
-                                                                           QLatin1String("org.kde.nepomuk.RemovableStorage"),
-                                                                           DBusConnectionPool::threadConnection())
-                                                            .call( QLatin1String("resourceUriFromLocalFileUrl"),
-                                                                   kickOffUri.url() ) ).value();
-                    if( !resourceUri.isEmpty() ) {
-                        m_uri = resourceUri;
-                    }
-
-                    m_nieUrl = kickOffUri;
-                }
                 else if( kickOffUri.scheme() == QLatin1String("nepomuk") ) {
                     // for nepomuk URIs we simply use the kickoff URI as resource URI
                     m_uri = kickOffUri;

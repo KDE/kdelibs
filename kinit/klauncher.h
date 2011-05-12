@@ -52,12 +52,12 @@ class IdleSlave : public QObject
    Q_OBJECT
 public:
    explicit IdleSlave(QObject *parent);
-   bool match( const QString &protocol, const QString &host, bool connected);
+   bool match( const QString &protocol, const QString &host, bool connected) const;
    void connect( const QString &app_socket);
    pid_t pid() const { return mPid;}
-   int age(time_t now);
+   int age(time_t now) const;
    void reparseConfiguration();
-   bool onHold(const KUrl &url);
+   bool onHold(const KUrl &url) const;
    QString protocol() const   {return mProtocol;}
 
 Q_SIGNALS:
@@ -248,6 +248,11 @@ public: // remote methods, called by KLauncherAdaptor
 
     pid_t requestSlave(const QString &protocol, const QString &host,
                        const QString &app_socket, QString &error);
+    /**
+     * Return true of there is a slave held for @p url.
+     * @since 4.7
+     */
+    bool checkForHeldSlave(const QString &url);
     void waitForSlave(int pid, const QDBusMessage &msg);
     void terminate_kdeinit();
 

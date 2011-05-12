@@ -182,7 +182,7 @@ void HostQueue::queueJob(SimpleJob *job)
     m_queuedJobs.insert(serial, job);
 }
 
-SimpleJob *HostQueue::nextStartingJob()
+SimpleJob *HostQueue::takeFirstInQueue()
 {
     Q_ASSERT(!m_queuedJobs.isEmpty());
     QMap<int, SimpleJob *>::iterator first = m_queuedJobs.begin();
@@ -593,13 +593,14 @@ void ProtoQueue::startAJob()
     QMap<int, HostQueue *>::iterator first = m_queuesBySerial.begin();
     if (first != m_queuesBySerial.end()) {
         // pick a job and maintain the queue invariant: lower serials first
-        const int prevLowestSerial = first.key();
         HostQueue *hq = first.value();
-        Q_ASSERT(prevLowestSerial == hq->lowestSerial());
-        // the following assertions should hold due to queueJob(), nextStartingJob() and
+        const int prevLowestSerial = first.key();
+        Q_UNUSED(prevLowestSerial);
+        Q_ASSERT(hq->lowestSerial() == prevLowestSerial);
+        // the following assertions should hold due to queueJob(), takeFirstInQueue() and
         // removeJob() being correct
         Q_ASSERT(hq->runningJobsCount() < m_maxConnectionsPerHost);
-        SimpleJob *startingJob = hq->nextStartingJob();
+        SimpleJob *startingJob = hq->takeFirstInQueue();
         Q_ASSERT(hq->runningJobsCount() <= m_maxConnectionsPerHost);
         Q_ASSERT(hq->lowestSerial() != prevLowestSerial);
 
@@ -1167,10 +1168,10 @@ void SchedulerPrivate::publishSlaveOnHold()
 
 bool SchedulerPrivate::isSlaveOnHoldFor(const KUrl& url)
 {
-    if (!url.isValid() || !m_urlOnHold.isValid())
-        return false;
+    if (url.isValid() && m_urlOnHold.isValid() && url == m_urlOnHold)
+        return true;
 
-    return url == m_urlOnHold;
+    return Slave::checkForHeldSlave(url);
 }
 
 Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)

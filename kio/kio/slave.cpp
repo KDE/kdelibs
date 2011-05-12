@@ -509,4 +509,9 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     return slave;
 }
 
+bool Slave::checkForHeldSlave(const KUrl &url)
+{
+    return KToolInvocation::klauncher()->checkForHeldSlave(url.url());
+}
+
 #include "slave.moc"
