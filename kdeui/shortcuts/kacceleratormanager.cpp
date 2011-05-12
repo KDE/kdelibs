@@ -905,7 +905,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kDebug(240) << "invalid index provided";
+	if (child != -1) kDebug(240) << "invalid index provided"; // NOTE: QStackedWidget emits currentChanged(-1) when it is emptied
         return;
     }
 
