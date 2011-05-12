@@ -43,6 +43,8 @@
 
 #define POOL_USAGE 0
 
+Q_DECLARE_METATYPE(QModelIndex);
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -106,7 +108,10 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
     if (d->usedWidgets.contains(index)) {
         result = d->usedWidgets[index];
     } else {
+        // ### KDE5 This sets a property on the delegate because we can't add an argument to createItemWidgets
+        d->delegate->setProperty("goya:creatingWidgetForIndex", QVariant::fromValue(index));
         result = d->delegate->createItemWidgets();
+        d->delegate->setProperty("goya:creatingWidgetForIndex", QVariant());
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
         foreach (QWidget *widget, result) {
