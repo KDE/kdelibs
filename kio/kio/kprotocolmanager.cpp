@@ -695,7 +695,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
       // Clean up unnecessary separators that could be left over from the
       // possible keyword removal above...
       agentStr.replace(QRegExp("[(]\\s*[;]\\s*"), QL1S("("));
-      agentStr.replace(QRegExp("[;]\\s*[;]\\s*"), QL1S(";"));
+      agentStr.replace(QRegExp("[;]\\s*[;]\\s*"), QL1S("; "));
       agentStr.replace(QRegExp("\\s*[;]\\s*[)]"), QL1S(")"));
     }
     else
