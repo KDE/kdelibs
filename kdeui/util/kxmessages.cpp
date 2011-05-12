@@ -73,7 +73,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P, bool 
         kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
         d->accept_atom2 = XInternAtom( QX11Info::display(), accept_broadcast_P, false );
         d->accept_atom1 = obsolete_P ? d->accept_atom2
-            : XInternAtom( QX11Info::display(), QByteArray( accept_broadcast_P ) + "_BEGIN", false );
+            : XInternAtom( QX11Info::display(), QByteArray(QByteArray( accept_broadcast_P ) + "_BEGIN").constData(), false );
         }
     else
         {
@@ -82,7 +82,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P, bool 
     d->handle = new QWidget( this );
     }
 
-KXMessages::~KXMessages()    
+KXMessages::~KXMessages()
     {
     delete d;
     }
@@ -92,12 +92,12 @@ void KXMessages::broadcastMessage( const char* msg_type_P, const QString& messag
     {
     broadcastMessage( msg_type_P, message_P, -1, true );
     }
-    
+
 void KXMessages::broadcastMessage( const char* msg_type_P, const QString& message_P,
     int screen_P, bool obsolete_P )
     {
     Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray( msg_type_P ) + "_BEGIN", false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
     Window root = screen_P == -1 ? QX11Info::appRootWindow() : QX11Info::appRootWindow( screen_P );
     send_message_internal( root, message_P, BROADCAST_MASK, QX11Info::display(),
         a1, a2, d->handle->winId());
@@ -107,28 +107,28 @@ void KXMessages::sendMessage( WId w_P, const char* msg_type_P, const QString& me
     {
     sendMessage( w_P, msg_type_P, message_P, true );
     }
-    
+
 void KXMessages::sendMessage( WId w_P, const char* msg_type_P, const QString& message_P,
     bool obsolete_P )
     {
     Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray( msg_type_P ) + "_BEGIN", false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
     send_message_internal( w_P, message_P, 0, QX11Info::display(), a1, a2, d->handle->winId());
     }
-    
+
 bool KXMessages::broadcastMessageX( Display* disp, const char* msg_type_P,
     const QString& message_P )
     {
     return broadcastMessageX( disp, msg_type_P, message_P, -1, true );
     }
-    
+
 bool KXMessages::broadcastMessageX( Display* disp, const char* msg_type_P,
     const QString& message_P, int screen_P, bool obsolete_P )
     {
     if( disp == NULL )
         return false;
     Atom a2 = XInternAtom( disp, msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( disp, QByteArray( msg_type_P ) + "_BEGIN", false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( disp, QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
     Window root = screen_P == -1 ? DefaultRootWindow( disp ) : RootWindow( disp, screen_P );
     Window win = XCreateSimpleWindow( disp, root, 0, 0, 1, 1,
         0, BlackPixel( disp, screen_P == -1 ? DefaultScreen( disp ) : screen_P ),
@@ -144,14 +144,14 @@ bool KXMessages::sendMessageX( Display* disp, WId w_P, const char* msg_type_P,
     {
     return sendMessageX( disp, w_P, msg_type_P, message_P, true );
     }
-    
+
 bool KXMessages::sendMessageX( Display* disp, WId w_P, const char* msg_type_P,
     const QString& message_P, bool obsolete_P )
     {
     if( disp == NULL )
         return false;
     Atom a2 = XInternAtom( disp, msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( disp, QByteArray( msg_type_P ) + "_BEGIN", false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( disp, QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
     Window win = XCreateSimpleWindow( disp, DefaultRootWindow( disp ), 0, 0, 1, 1,
         0, BlackPixelOfScreen( DefaultScreenOfDisplay( disp )),
         BlackPixelOfScreen( DefaultScreenOfDisplay( disp )));
@@ -159,7 +159,7 @@ bool KXMessages::sendMessageX( Display* disp, WId w_P, const char* msg_type_P,
     XDestroyWindow( disp, win );
     return true;
     }
-    
+
 void KXMessages::send_message_internal( WId w_P, const QString& msg_P, long mask_P,
     Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P )
     {

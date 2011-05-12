@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     #endif
     path = "/home/danimo/src/kde/trunk/KDE/kdelibs/";
 #endif
-    QString testpath = "file://" + path + "/kdelibs/khtml/test/";
+    QString testpath("file://" + path + "/kdelibs/khtml/test/");
 
     KJavaAppletContext *context = new KJavaAppletContext;
     KJavaAppletWidget *a = new KJavaAppletWidget;
