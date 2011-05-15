@@ -972,12 +972,10 @@ QPalette KGlobalSettings::Private::createApplicationPalette(const KSharedConfigP
 {
     // This method is typically called once by KQGuiPlatformPlugin::palette and once again
     // by kdisplaySetPalette(), so we cache the palette to save time.
-    if (!paletteCreated) {
-        paletteCreated = true;
-        applicationPalette = createNewApplicationPalette(config);
+    if (config == KGlobal::config() && paletteCreated) {
+        return applicationPalette;
     }
-
-    return applicationPalette;
+    return createNewApplicationPalette(config);
 }
 
 QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConfigPtr &config)
@@ -1018,6 +1016,12 @@ QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConf
         palette.setBrush( state, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
         palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
     }
+
+    if (config == KGlobal::config()) {
+        paletteCreated = true;
+        applicationPalette = palette;
+    }
+
     return palette;
 }
 
