@@ -326,9 +326,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
     const KUrl replyUrl (reply->url());
     QWidget* topLevelWindow = view() ? view()->window() : 0;
 
-    if (KIO::Scheduler::isSlaveOnHoldFor(replyUrl)) {
-        KIO::Scheduler::publishSlaveOnHold();
-    }
+    KIO::Scheduler::publishSlaveOnHold();
 
     // Ask KRun to handle the response when mimetype is unknown
     if (mimeType.isEmpty()) {
@@ -525,9 +523,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                     KUrl::List list;
                     list.append(replyUrl);
                     // kDebug(800) << "Suggested file name:" << suggestedFileName;
-                    if (KIO::Scheduler::isSlaveOnHoldFor(replyUrl)) {
-                        KIO::Scheduler::publishSlaveOnHold(); // publish any slave that was put on hold.
-                    }
+                    KIO::Scheduler::publishSlaveOnHold(); // publish any slave that was put on hold.
                     KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
                 }
                 return true;
