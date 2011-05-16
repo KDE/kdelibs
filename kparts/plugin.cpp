@@ -88,7 +88,7 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentDat
 
   QList<PluginInfo> plugins;
 
-  // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
+  // TODO KDE5: change * into *.rc and remove test for .desktop from the for loop below.
   const QStringList pluginDocs = componentData.dirs()->findAllResources(
     "data", componentData.componentName()+"/kpartplugins/*", KStandardDirs::Recursive );
 
@@ -216,6 +216,7 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
+  // TODO: move to a new method KGlobal::findDirectChildren, if there is more than one use of this?
   const QObjectList plugins = parent->children();
 
   QObjectList::ConstIterator it = plugins.begin();

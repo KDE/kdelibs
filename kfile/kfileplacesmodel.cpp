@@ -609,6 +609,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KBookmarkGroup group = d->bookmarkManager->root();
 
         foreach (const KUrl &url, urls) {
+            // TODO: use KIO::stat in order to get the UDS_DISPLAY_NAME too
             KMimeType::Ptr mimetype = KMimeType::mimeType(KIO::NetAccess::mimetype(url, 0));
 
             if (!mimetype) {

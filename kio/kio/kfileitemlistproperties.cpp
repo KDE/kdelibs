@@ -95,6 +95,7 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
         m_supportsMoving   = m_supportsMoving   && KProtocolManager::supportsMoving(url);
 
         // For local files we can do better: check if we have write permission in parent directory
+        // TODO: if we knew about the parent KFileItem, we could even do that for remote protocols too
         if (m_isLocal && (m_supportsDeleting || m_supportsMoving)) {
             const QString directory = url.directory();
             if (parentDirInfo.filePath() != directory) {

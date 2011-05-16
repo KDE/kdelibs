@@ -853,7 +853,7 @@ void StatJobPrivate::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJobPrivate::slotRedirection( const KUrl &url)
 {
      Q_Q(StatJob);
-     kDebug(7007) << url;
+     kDebug(7007) << m_url << "->" << url;
      if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        kWarning(7007) << "Redirection from " << m_url << " to " << url << " REJECTED!";
