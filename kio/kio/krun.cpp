@@ -1448,9 +1448,10 @@ void KRun::foundMimeType(const QString& type)
         setUrl( job->url() );
 
         job->putOnHold();
-        KIO::Scheduler::publishSlaveOnHold();
         d->m_job = 0;
     }
+
+    KIO::Scheduler::publishSlaveOnHold();
 
     Q_ASSERT(!d->m_bFinished);
 
