@@ -99,7 +99,7 @@ KLockFile::setStaleTime(int _staleTime)
 }
 
 static bool operator==( const KDE_struct_stat &st_buf1,
-			const KDE_struct_stat &st_buf2)
+            const KDE_struct_stat &st_buf2)
 {
 #define FIELD_EQ(what)       (st_buf1.what == st_buf2.what)
   return FIELD_EQ(st_dev) && FIELD_EQ(st_ino) &&
@@ -108,7 +108,7 @@ static bool operator==( const KDE_struct_stat &st_buf1,
 }
 
 static bool operator!=( const KDE_struct_stat& st_buf1,
-			const KDE_struct_stat& st_buf2 )
+            const KDE_struct_stat& st_buf2 )
 {
   return !(st_buf1 == st_buf2);
 }
@@ -118,9 +118,9 @@ static bool testLinkCountSupport(const QByteArray &fileName)
    KDE_struct_stat st_buf;
    int result = -1;
    // Check if hardlinks raise the link count at all?
-   if(!::link( fileName, fileName+".test" )) {
+   if(!::link( fileName, QByteArray(fileName+".test") )) {
      result = KDE_lstat( fileName, &st_buf );
-     ::unlink( fileName+".test" );
+     ::unlink( QByteArray(fileName+".test") );
    }
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }

@@ -507,7 +507,7 @@ KSycocaDict::save(QDataStream &str)
 
             /*kDebug(7011) << QString("Duplicate lists: Offset = %1 list_size = %2")                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count());
 */
-	    for(QList<string_entry*>::ConstIterator dup = dups->begin(); dup != dups->end(); ++dup)
+        for(QList<string_entry*>::ConstIterator dup = dups->begin(); dup != dups->end(); ++dup)
             {
                const qint32 offset = (*dup)->payload->offset();
                if (!offset) {
@@ -519,10 +519,10 @@ KSycocaDict::save(QDataStream &str)
                    }
                    // save() must have been called on the entry
                    Q_ASSERT_X( offset, "KSycocaDict::save",
-                               QByteArray("entry offset is 0, save() was not called on ")
+                               QByteArray("entry offset is 0, save() was not called on "
                                + (*dup)->payload->storageId().toLatin1()
                                + " entryPath="
-                               + (*dup)->payload->entryPath().toLatin1()
+                               + (*dup)->payload->entryPath().toLatin1())
                        );
                }
                str << offset ;                       // Positive ID
