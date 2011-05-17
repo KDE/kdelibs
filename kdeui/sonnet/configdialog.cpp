@@ -49,7 +49,7 @@ ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
     setCaption( i18n( "Spell Checking Configuration" ) );
-    setButtons( Ok /*| Apply*/ | Cancel );
+    setButtons( Help | Ok /*| Apply*/ | Cancel );
     setDefaultButton( Ok );
 
     init(config);
@@ -64,6 +64,7 @@ void ConfigDialog::init(KConfig *config)
 {
     d->ui = new ConfigWidget(config, this);
     setMainWidget(d->ui);
+    setHelp(QString(),"kcontrol/spellchecking");
     connect(this, SIGNAL(okClicked()),
             this, SLOT(slotOk()));
     /*
