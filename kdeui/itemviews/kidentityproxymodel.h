@@ -53,6 +53,12 @@ public:
   bool removeColumns(int column, int count, const QModelIndex& parent = QModelIndex());
   bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 
+  virtual bool canFetchMore(const QModelIndex& parent) const;
+  virtual void fetchMore(const QModelIndex& parent);
+  virtual QStringList mimeTypes() const;
+  virtual QMimeData* mimeData(const QModelIndexList& indexes) const;
+  virtual Qt::DropActions supportedDropActions() const;
+
 protected:
   KIdentityProxyModel(KIdentityProxyModelPrivate *privateClass, QObject* parent);
   KIdentityProxyModelPrivate * const d_ptr;
