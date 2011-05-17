@@ -519,12 +519,16 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 // header is received by the app using this class.
                 if (isMimeTypeAssociatedWithSelf(offer)) {
                     reloadRequestWithoutDisposition(reply);
-                } else if (offer) {
+                } else {
                     KUrl::List list;
                     list.append(replyUrl);
                     // kDebug(800) << "Suggested file name:" << suggestedFileName;
                     KIO::Scheduler::publishSlaveOnHold(); // publish any slave that was put on hold.
-                    KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
+                    if (offer) {
+                        KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
+                    } else {
+                        KRun::displayOpenWithDialog(list, topLevelWindow, false, suggestedFileName);
+                    }
                 }
                 return true;
             }
