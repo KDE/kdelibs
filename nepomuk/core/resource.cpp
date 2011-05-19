@@ -422,6 +422,10 @@ QString Nepomuk::Resource::genericLabel() const
         }
     }
 
+    QString hashValue = property( Vocabulary::NFO::hashValue() ).toString();
+    if( !hashValue.isEmpty() )
+        return hashValue;
+
     // ugly fallback
     return KUrl(resourceUri()).pathOrUrl();
 }

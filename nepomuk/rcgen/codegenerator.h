@@ -22,6 +22,7 @@ class AbstractCode;
 class ResourceClass;
 class QString;
 class QTextStream;
+class Property;
 
 class CodeGenerator
 {
@@ -47,7 +48,13 @@ private:
     bool writeHeader( const ResourceClass* resourceClass, QTextStream& ) const;
     bool writeSource( const ResourceClass* resourceClass, QTextStream& ) const;
     bool writeDummyClasses( const QString &folder ) const;
+    
+    bool writePropertyHeader( const Property* p, const ResourceClass* resourceClass, QTextStream& ms ) const;
+    bool writePropertySource( const Property* p, const ResourceClass* resourceClass, QTextStream& ms ) const;
 
+    void writePropertyUriHeader( const Property* p, QTextStream& ts ) const;
+    void writePropertyUriSource( const Property* p, const ResourceClass* resourceClass, QTextStream& ts ) const;
+    
     QString visibilityHeader() const;
     QString visibilityExportMacro() const;
 
