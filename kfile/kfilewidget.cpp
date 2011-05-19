@@ -2701,7 +2701,7 @@ void KFileWidget::readConfig( KConfigGroup& group )
 
 QString KFileWidgetPrivate::locationEditCurrentText() const
 {
-    return QDir::fromNativeSeparators(locationEdit->currentText());
+    return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());
 }
 
 KUrl KFileWidgetPrivate::mostLocalUrl(const KUrl &url)
