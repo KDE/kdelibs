@@ -27,7 +27,9 @@ Property::Property()
     : m_range( 0 ),
       m_isList( true ),
       m_domain( 0 ),
-      m_inverseProperty( 0 )
+      m_inverseProperty( 0 ),
+      m_maxCardinality( -1 ),
+      m_cardinality( -1 )
 {
 }
 
@@ -204,3 +206,24 @@ QString Property::literalTypeConversionMethod() const
 
     return QString();
 }
+
+void Property::setMaxCardinality(int value)
+{
+    m_maxCardinality = value;
+}
+
+int Property::maxCardinality() const
+{
+    return m_maxCardinality;
+}
+
+int Property::cardinality() const
+{
+    return m_cardinality;
+}
+
+void Property::setCardinality(int value)
+{
+    m_cardinality = value;
+}
+

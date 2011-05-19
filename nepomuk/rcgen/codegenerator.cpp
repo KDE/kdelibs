@@ -194,33 +194,28 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->literalRange().isEmpty() &&
-            !p->range() ) {
-            if ( !quiet )
-                qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
-            continue;
+        if( p->maxCardinality() == 1 || p->cardinality() == 1 ) {
+            Property * prop = const_cast<Property *>(p);
+            bool isList = prop->isList();
+            
+            prop->setIsList( true );
+            if( !writePropertyHeader( prop, resourceClass, ms ) )
+                continue;
+            
+            prop->setIsList( false );
+            if( !writePropertyHeader( prop, resourceClass, ms ) )
+                continue;
+            
+            writePropertyUriHeader( prop, ms );
+            
+            prop->setIsList( isList );
         }
-
-        if ( m_mode == SafeMode ) {
-            ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
-            ms << "        " << m_code->propertyGetterDeclaration( p, resourceClass ) << ";" << endl;
-            ms << endl;
+        else {
+            if( !writePropertyHeader( p, resourceClass, ms ) )
+                continue;
+            writePropertyUriHeader( p, ms );
         }
-
-        ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
-        ms << "        " << m_code->propertySetterDeclaration( p, resourceClass ) << ";" << endl;
-        ms << endl;
-
-        if( p->isList() ) {
-            ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
-            ms << "        " << m_code->propertyAdderDeclaration( p, resourceClass ) << ";" << endl;
-            ms << endl;
-        }
-
-        ms << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 2*4 ) << endl;
-        ms << "        " << "static QUrl " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
-        ms << endl;
-
+        
         if( !p->hasSimpleType() )
             includes.insert( p->typeString( true ) );
     }
@@ -299,6 +294,42 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
     return true;
 }
 
+bool CodeGenerator::writePropertyHeader(const Property* p, const ResourceClass* resourceClass, QTextStream& ms) const
+{
+    if( p->literalRange().isEmpty() &&
+        !p->range() ) {
+        if ( !quiet )
+            qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
+        return false;
+    }
+        
+    if ( m_mode == SafeMode ) {
+        ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+        ms << "        " << m_code->propertyGetterDeclaration( p, resourceClass ) << ";" << endl;
+        ms << endl;
+    }
+    
+    ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+    ms << "        " << m_code->propertySetterDeclaration( p, resourceClass ) << ";" << endl;
+    ms << endl;
+    
+    if( p->isList() ) {
+        ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment(), 2*4 ) << endl;
+        ms << "        " << m_code->propertyAdderDeclaration( p, resourceClass ) << ";" << endl;
+        ms << endl;
+    }
+    
+    return true;
+}
+
+void CodeGenerator::writePropertyUriHeader(const Property* p, QTextStream& ts) const
+{
+    ts << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 2*4 ) << endl;
+    ts << "        " << "static QUrl " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
+    ts << endl;
+}
+
+
 bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream& stream ) const
 {
     QString s = sourceTemplate( m_mode );
@@ -318,29 +349,31 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     while( it.hasNext() ) {
         const Property* p = it.next();
 
-        if( p->literalRange().isEmpty() &&
-            !p->range() ) {
-            if ( !quiet )
-                qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
-            continue;
+        if( p->maxCardinality() == 1 || p->cardinality() == 1 ) {
+            Property * prop = const_cast<Property *>(p);
+            bool isList = prop->isList();
+            
+            prop->setIsList( true );
+            if( !writePropertySource( prop, resourceClass, ms ) )
+                continue;
+            
+            prop->setIsList( false );
+            if( !writePropertySource( prop, resourceClass, ms ) )
+                continue;
+            
+            writePropertyUriSource( prop, resourceClass, ms );
+            
+            prop->setIsList( isList );
         }
-
+        else {
+            if( !writePropertySource( p, resourceClass, ms ) )
+                continue;
+            writePropertyUriSource( p, resourceClass, ms );
+        }
+        
         if ( !p->hasSimpleType() ) {
             includes.append( QString( "#include \"%1.h\"" ).arg( p->typeString( true ).toLower() ) );
         }
-
-        if ( m_mode == SafeMode )
-            ms << m_code->propertyGetterDefinition( p, resourceClass ) << endl;
-
-        ms << m_code->propertySetterDefinition( p, resourceClass ) << endl;
-        if( p->isList() )
-            ms << m_code->propertyAdderDefinition( p, resourceClass ) << endl;
-
-        // write the static method that returns the property's Uri
-        ms << "QUrl " << resourceClass->name( m_nameSpace ) << "::" << p->name()[0].toLower() << p->name().mid(1) << "Uri()" << endl
-           << "{" << endl
-           << "    return QUrl::fromEncoded(\"" << p->uri().toString() << "\");" << endl
-           << "}" << endl << endl;
     }
 
     it = resourceClass->allReverseProperties();
@@ -395,6 +428,32 @@ bool CodeGenerator::writeSource( const ResourceClass* resourceClass, QTextStream
     return true;
 }
 
+bool CodeGenerator::writePropertySource(const Property* p, const ResourceClass* resourceClass, QTextStream& ms) const
+{
+    if( p->literalRange().isEmpty() && !p->range() ) {
+        if ( !quiet )
+            qDebug() << "(CodeGenerator::writeSource) type not defined for property: " << p->name() << endl;
+        return false;
+    }
+
+    if ( m_mode == SafeMode )
+        ms << m_code->propertyGetterDefinition( p, resourceClass ) << endl;
+
+    ms << m_code->propertySetterDefinition( p, resourceClass ) << endl;
+    if( p->isList() )
+        ms << m_code->propertyAdderDefinition( p, resourceClass ) << endl;
+
+    return true;
+}
+
+void CodeGenerator::writePropertyUriSource(const Property* p, const ResourceClass* resourceClass, QTextStream& ts) const
+{
+    // write the static method that returns the property's Uri
+    ts << "QUrl " << resourceClass->name( m_nameSpace ) << "::" << p->name()[0].toLower() << p->name().mid(1) << "Uri()" << endl
+       << "{" << endl
+       << "    return QUrl::fromEncoded(\"" << p->uri().toString() << "\");" << endl
+       << "}" << endl << endl;
+}
 
 bool CodeGenerator::writeSources( const QString& dir )
 {
