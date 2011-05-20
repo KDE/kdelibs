@@ -200,6 +200,12 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+bool HTMLAnchorElementImpl::isFocusableImpl(FocusType ft) const {
+    if (m_hasAnchor)
+        return true;
+    return HTMLElementImpl::isFocusableImpl(ft);
+}
+
 // -------------------------------------------------------------------------
 
 NodeImpl::Id HTMLBRElementImpl::id() const

@@ -1040,7 +1040,7 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
             srv = findExe(QLatin1String("lnusertemp"));
         if (!srv.isEmpty())
         {
-            if (system(QFile::encodeName(srv) + ' ' + type) == -1) {
+            if (system(QByteArray(QFile::encodeName(srv) + ' ' + type)) == -1) {
                 fprintf(stderr, "Error: unable to launch lnusertemp command" );
             }
             result = readlink(QFile::encodeName(dir).constData(), link, 1023);
@@ -1152,8 +1152,8 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                  pit != prefixList->end();
                  ++pit)
             {
-	        if((*pit)!=installprefix||installdir.isEmpty())
-	        {
+            if((*pit)!=installprefix||installdir.isEmpty())
+            {
                     for (QStringList::ConstIterator it = dirs.constBegin();
                          it != dirs.constEnd(); ++it)
                     {
@@ -1172,14 +1172,14 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     }
                     local = false;
                 }
-	        else
-	        {
+            else
+            {
                     // we have a custom install path, so use this instead of <installprefix>/<relative dir>
-	            testdir.setPath(installdir);
+                testdir.setPath(installdir);
                     if(testdir.exists() && ! candidates.contains(installdir))
                         candidates.append(installdir);
-	        }
-	    }
+            }
+        }
         }
 
         // make sure we find the path where it's installed

@@ -31,7 +31,7 @@
 #define CACHE_REVISION                  "9\n"           // Cache version
 
 // DEFAULT USER AGENT KEY - ENABLES OS NAME
-#define DEFAULT_USER_AGENT_KEYS         "o"             // Show OS
+#define DEFAULT_USER_AGENT_KEYS         "om"            // Show OS, Machine
 
 // MAXIMUM AMOUNT OF DATA THAT CAN BE SAFELY SENT OVER IPC
 #define MAX_IPC_SIZE                    1024*8

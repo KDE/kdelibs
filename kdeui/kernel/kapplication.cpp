@@ -640,11 +640,11 @@ void KApplication::enableSessionManagement() {
   // seems to fix it.
   if( mySmcConnection ) {
         SmcRequestSaveYourself( mySmcConnection, SmSaveLocal, False,
-				SmInteractStyleAny,
-				False, False );
+                SmInteractStyleAny,
+                False, False );
 
-	// flush the request
-	IceFlush(SmcGetIceConnection(mySmcConnection));
+    // flush the request
+    IceFlush(SmcGetIceConnection(mySmcConnection));
   }
 #endif
 }
@@ -741,15 +741,15 @@ void KApplication::saveState( QSessionManager& sm )
 
     if ( !d->bSessionManagement ) {
         sm.setRestartHint( QSessionManager::RestartNever );
-	d->session_save = false;
+    d->session_save = false;
         return;
     }
     else
-	sm.setRestartHint( QSessionManager::RestartIfRunning );
+    sm.setRestartHint( QSessionManager::RestartIfRunning );
 
     if ( firstTime ) {
         firstTime = false;
-	d->session_save = false;
+    d->session_save = false;
         return; // no need to save the state.
     }
 
@@ -802,7 +802,7 @@ void KApplication::saveState( QSessionManager& sm )
         discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", d->sessionConfigName());
         sm.setDiscardCommand( discard );
     } else {
-	sm.setDiscardCommand( QStringList( QLatin1String("") ) );
+    sm.setDiscardCommand( QStringList( QLatin1String("") ) );
     }
 
     if ( canceled )
@@ -869,7 +869,7 @@ void KApplicationPrivate::parseCommandLine( )
         unsigned long length, after;
         unsigned char *data;
         while ( XGetWindowProperty( QX11Info::display(), QX11Info::appRootWindow(), atom_NetSupported,
-				    0, 1, false, AnyPropertyType, &type, &format,
+                    0, 1, false, AnyPropertyType, &type, &format,
                                     &length, &after, &data ) != Success || !length ) {
             if ( data )
                 XFree( data );
@@ -1172,15 +1172,15 @@ void KApplicationPrivate::_k_slot_KToolInvocation_hook(QStringList& envs,QByteAr
 #ifdef Q_WS_X11
     if (QX11Info::display()) {
         QByteArray dpystring(XDisplayString(QX11Info::display()));
-        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
+        envs << QLatin1String("DISPLAY=") + dpystring;
     } else {
         const QByteArray dpystring( qgetenv( "DISPLAY" ));
         if(!dpystring.isEmpty())
-            envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
+            envs << QLatin1String("DISPLAY=") + dpystring;
     }
 
     if(startup_id.isEmpty())
-    	startup_id = KStartupInfo::createNewStartupId();
+        startup_id = KStartupInfo::createNewStartupId();
 #else
     Q_UNUSED(envs);
     Q_UNUSED(startup_id);

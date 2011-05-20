@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2008,2011 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -304,7 +304,7 @@ class KTimeZoneDataPrivate
 class KTimeZonePrivate : public QSharedData
 {
 public:
-    KTimeZonePrivate() : source(0), data(0), refCount(1) {}
+    KTimeZonePrivate() : source(0), data(0), refCount(1), cachedTransitionIndex(-1) {}
     KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
                      const QString &country, float lat, float lon, const QString &cmnt);
     KTimeZonePrivate(const KTimeZonePrivate &);
@@ -320,7 +320,11 @@ public:
     float   latitude;
     float   longitude;
     mutable KTimeZoneData *data;
-    int refCount; // holds the number of KTimeZoneBackend instances using the KTimeZonePrivate instance as a d-pointer.
+    int     refCount; // holds the number of KTimeZoneBackend instances using the KTimeZonePrivate instance as a d-pointer.
+    int       cachedTransitionIndex;
+    QDateTime cachedTransitionStartZoneTime;
+    QDateTime cachedTransitionEndZoneTime;
+    bool      cachedTransitionTimesValid;
 
 private:
     static KTimeZoneSource *mUtcSource;
@@ -338,7 +342,8 @@ KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
     latitude(lat),
     longitude(lon),
     data(0),
-    refCount(1)
+    refCount(1),
+    cachedTransitionIndex(-1)
 {
     // Detect duff values.
     if (latitude > 90 || latitude < -90)
@@ -355,7 +360,11 @@ KTimeZonePrivate::KTimeZonePrivate(const KTimeZonePrivate &rhs)
     comment(rhs.comment),
     latitude(rhs.latitude),
     longitude(rhs.longitude),
-    refCount(1)
+    refCount(1),
+    cachedTransitionIndex(rhs.cachedTransitionIndex),
+    cachedTransitionStartZoneTime(rhs.cachedTransitionStartZoneTime),
+    cachedTransitionEndZoneTime(rhs.cachedTransitionEndZoneTime),
+    cachedTransitionTimesValid(rhs.cachedTransitionTimesValid)
 {
     if (rhs.data)
         data = rhs.data->clone();
@@ -373,6 +382,10 @@ KTimeZonePrivate &KTimeZonePrivate::operator=(const KTimeZonePrivate &rhs)
     comment     = rhs.comment;
     latitude    = rhs.latitude;
     longitude   = rhs.longitude;
+    cachedTransitionIndex         = rhs.cachedTransitionIndex;
+    cachedTransitionStartZoneTime = rhs.cachedTransitionStartZoneTime;
+    cachedTransitionEndZoneTime   = rhs.cachedTransitionEndZoneTime;
+    cachedTransitionTimesValid    = rhs.cachedTransitionTimesValid;
     delete data;
     if (rhs.data)
         data = rhs.data->clone();
@@ -456,44 +469,92 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
             *secondOffset = 0;
         return 0;
     }
+    QList<KTimeZone::Transition> transitions = caller->transitions();
+    int index = d->cachedTransitionIndex;
+    if (index >= 0 && index < transitions.count())
+    {
+        // There is a cached transition - check whether zoneDateTime uses it.
+        // Caching is used because this method has been found to consume
+        // significant CPU in real life applications.
+        if (!d->cachedTransitionTimesValid)
+        {
+            int offset = transitions[index].phase().utcOffset();
+	    int preoffset = (index > 0) ? transitions[index - 1].phase().utcOffset() : d->data ? d->data->previousUtcOffset() : 0;
+            d->cachedTransitionStartZoneTime = transitions[index].time().addSecs(qMax(offset, preoffset));
+            if (index + 1 < transitions.count())
+	    {
+                int postoffset = transitions[index + 1].phase().utcOffset();
+                d->cachedTransitionEndZoneTime = transitions[index + 1].time().addSecs(qMin(offset, postoffset));
+	    }
+            d->cachedTransitionTimesValid = true;
+        }
+        QDateTime dtutc = zoneDateTime;
+        dtutc.setTimeSpec(Qt::UTC);
+        if (dtutc >= d->cachedTransitionStartZoneTime
+        &&  (index + 1 >= transitions.count() || dtutc < d->cachedTransitionEndZoneTime))
+        {
+            // The time falls within the cached transition limits, so return its UTC offset
+            int offset = transitions[index].phase().utcOffset();
+            if (secondOffset)
+                *secondOffset = offset;
+#ifdef COMPILING_TESTS
+            qDebug("-> Using cache");
+#endif
+            return offset;
+        }
+    }
+
+    // The time doesn't fall within the cached transition, or there isn't a cached transition
+#ifdef COMPILING_TESTS
+    qDebug("-> No cache");
+#endif
     bool validTime;
+    int secondIndex = -1;
+    index = caller->transitionIndex(zoneDateTime, (secondOffset ? &secondIndex : 0), &validTime);
+    const KTimeZone::Transition* tr = (index >= 0) ? &transitions[index] : 0;
+    int offset = tr ? tr->phase().utcOffset()
+                    : validTime ? (d->data ? d->data->previousUtcOffset() : 0)
+                                : KTimeZone::InvalidOffset;
     if (secondOffset)
-    {
-        const KTimeZone::Transition *tr2;
-        const KTimeZone::Transition *tr = caller->transition(zoneDateTime, &tr2, &validTime);
-        if (!tr)
-        {
-            if (!validTime)
-                *secondOffset = KTimeZone::InvalidOffset;
-            else
-                *secondOffset = d->data ? d->data->previousUtcOffset() : 0;
-            return *secondOffset;
-        }
-        int offset = tr->phase().utcOffset();
-        *secondOffset = tr2 ? tr2->phase().utcOffset() : offset;
-        return offset;
-    }
-    else
-    {
-        const KTimeZone::Transition *tr = caller->transition(zoneDateTime, 0, &validTime);
-        if (!tr)
-        {
-            if (!validTime)
-                return KTimeZone::InvalidOffset;
-            return d->data ? d->data->previousUtcOffset() : 0;
-        }
-        return tr->phase().utcOffset();
-    }
+        *secondOffset = (secondIndex >= 0) ? transitions[secondIndex].phase().utcOffset() : offset;
+
+    // Cache transition data for subsequent date/time values which occur after the same transition.
+    d->cachedTransitionIndex = index;
+    d->cachedTransitionTimesValid = false;
+    return offset;
 }
 
 int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return 0;
-    const KTimeZone::Transition *tr = caller->transition(utcDateTime);
-    if (!tr)
-        return d->data ? d->data->previousUtcOffset() : 0;
-    return tr->phase().utcOffset();
+    QList<KTimeZone::Transition> transitions = caller->transitions();
+    int index = d->cachedTransitionIndex;
+    if (index >= 0 && index < transitions.count())
+    {
+        // There is a cached transition - check whether utcDateTime uses it.
+        int offset = transitions[index].phase().utcOffset();
+        if (utcDateTime >= transitions[index].time()
+        &&  (index + 1 >= transitions.count()
+             || utcDateTime < transitions[index + 1].time()))
+        {
+            // The time falls within the cached transition, so return its UTC offset
+#ifdef COMPILING_TESTS
+            qDebug("Using cache");
+#endif
+            return offset;
+        }
+    }
+
+    // The time doesn't fall within the cached transition, or there isn't a cached transition
+#ifdef COMPILING_TESTS
+    qDebug("No cache");
+#endif
+    index = caller->transitionIndex(utcDateTime);
+    d->cachedTransitionIndex = index;   // cache transition data
+    d->cachedTransitionTimesValid = false;
+    const KTimeZone::Transition* tr = (index >= 0) ? &transitions[index] : 0;
+    return tr ? tr->phase().utcOffset() : (d->data ? d->data->previousUtcOffset() : 0);
 }
 
 int KTimeZoneBackend::offset(const KTimeZone* caller, time_t t) const

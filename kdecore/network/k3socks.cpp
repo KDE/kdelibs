@@ -333,7 +333,7 @@ KSocks::KSocks(const KConfigGroup *config)
    for (QList<QByteArray>::const_iterator it  = d->_libNames.constBegin();
                               it != d->_libNames.constEnd();
                               ++it) {
-      d->_socksLib = ll->library(QString::fromLatin1(*pit + *it));
+      d->_socksLib = ll->library(QLatin1String(*pit) + QLatin1String(*it));
       if (d->_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
             d-> _socksLib->resolveFunction("S5LogShowThreadIDS") != 0L) {  // NEC SOCKS

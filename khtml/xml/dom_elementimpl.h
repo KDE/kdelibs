@@ -209,7 +209,7 @@ public:
     AttrImpl* getAttributeNodeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
     Attr setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode );
 
-    //Commonly supported extensions
+    // At this level per WAI-ARIA
     void blur();
     void focus();
 
@@ -237,6 +237,8 @@ public:
 
     virtual short tabIndex() const;
     void setTabIndex(short _tabIndex);
+    void setNoTabIndex();
+    bool hasTabIndex() const;
 
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const;
@@ -330,7 +332,7 @@ public:
     virtual DOMString toString() const;
     virtual DOMString selectionToString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
 
-    virtual bool isFocusable() const;
+    virtual bool isFocusableImpl(FocusType ft) const;
     virtual bool isContentEditable() const;
     void setContentEditable(bool enabled);
 

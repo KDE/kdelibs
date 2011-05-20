@@ -22,6 +22,7 @@
 #include "kidentityproxymodel.h"
 
 #include <QtGui/QItemSelection>
+#include <QtCore/QStringList>
 
 class KIdentityProxyModelPrivate
 {
@@ -143,6 +144,17 @@ KIdentityProxyModel::~KIdentityProxyModel()
 /*!
     \reimp
  */
+bool KIdentityProxyModel::canFetchMore(const QModelIndex& parent) const
+{
+    if (!sourceModel())
+        return 0;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
+    return sourceModel()->canFetchMore(mapToSource(parent));
+}
+
+/*!
+    \\reimp
+ */
 int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 {
     if (!sourceModel())
@@ -153,6 +165,17 @@ int KIdentityProxyModel::columnCount(const QModelIndex& parent) const
 
 /*!
     \reimp
+ */
+void KIdentityProxyModel::fetchMore(const QModelIndex& parent)
+{
+    if (!sourceModel())
+        return;
+    Q_ASSERT(parent.isValid() ? parent.model() == this : true);
+    sourceModel()->fetchMore(mapToSource(parent));
+}
+
+/*!
+    \\reimp
  */
 bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
@@ -170,7 +193,7 @@ QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& p
     if (!sourceModel())
         return QModelIndex();
     Q_ASSERT(parent.isValid() ? parent.model() == this : true);
-    if (!hasIndex(row, column, parent))
+    if (row < 0 || column < 0 || !hasIndex(row, column, parent))
         return QModelIndex();
     const QModelIndex sourceParent = mapToSource(parent);
     const QModelIndex sourceIndex = sourceModel()->index(row, column, sourceParent);
@@ -300,6 +323,30 @@ QModelIndexList KIdentityProxyModel::match(const QModelIndex& start, int role, c
 
 /*!
     \reimp
+ */
+QStringList KIdentityProxyModel::mimeTypes() const
+{
+    if (sourceModel())
+        return sourceModel()->mimeTypes();
+    else
+        return QAbstractProxyModel::mimeTypes();
+}
+
+QMimeData* KIdentityProxyModel::mimeData(const QModelIndexList& indexes) const
+{
+    if (!sourceModel())
+        return QAbstractProxyModel::mimeData(indexes);
+
+    QModelIndexList proxyIndexes;
+    foreach(const QModelIndex &index, indexes)
+        proxyIndexes.append(mapToSource(index));
+
+    return sourceModel()->mimeData(proxyIndexes);
+}
+
+
+/*!
+    \\reimp
  */
 QModelIndex KIdentityProxyModel::parent(const QModelIndex& child) const
 {
@@ -452,6 +499,14 @@ void KIdentityProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
     }
 
     endResetModel();
+}
+
+Qt::DropActions KIdentityProxyModel::supportedDropActions() const
+{
+    if (sourceModel())
+        return sourceModel()->supportedDropActions();
+    else
+        return QAbstractProxyModel::supportedDropActions();
 }
 
 void KIdentityProxyModelPrivate::_k_sourceColumnsAboutToBeInserted(const QModelIndex &parent, int start, int end)

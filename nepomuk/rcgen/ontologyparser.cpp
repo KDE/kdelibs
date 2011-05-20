@@ -164,7 +164,14 @@ bool OntologyParser::parse( const QString& filename, const QString& serializatio
         }
         else if( s.predicate().uri() == Soprano::Vocabulary::NRL::maxCardinality() ||
                  s.predicate().uri() == Soprano::Vocabulary::NRL::cardinality() ) {
-            d->getProperty(s.subject().uri())->setIsList( s.object().literal().toInt() > 1 );
+            Property * p = d->getProperty(s.subject().uri());
+            int cValue = s.object().literal().toInt();
+            
+            p->setIsList( cValue > 1 );
+            if( s.predicate().uri() == Soprano::Vocabulary::NRL::maxCardinality() )
+                p->setMaxCardinality( cValue );
+            else
+                p->setCardinality( cValue );
         }
         else if( s.predicate().uri() == Soprano::Vocabulary::RDFS::comment() ) {
             d->comments[s.subject().uri()] = s.object().literal().toString();

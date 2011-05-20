@@ -366,10 +366,11 @@ public:
     ElementRareDataImpl();
     void resetComputedStyle();
     short tabIndex() const { return m_tabIndex; }
-    void setTabIndex(short _tabIndex) { m_tabIndex = _tabIndex; }
+    void setTabIndex(short _tabIndex) { m_tabIndex = _tabIndex; m_hasTabIndex = true; }
 
     RenderStyle* m_computedStyle;
     signed short m_tabIndex;
+    bool m_hasTabIndex;
 };
 
 typedef WTF::HashMap<const ElementImpl*, ElementRareDataImpl*> ElementRareDataMap;
@@ -386,7 +387,7 @@ static ElementRareDataImpl* rareDataFromMap(const ElementImpl* element)
 }
 
 inline ElementRareDataImpl::ElementRareDataImpl()
-    : m_computedStyle(0), m_tabIndex(0)
+    : m_computedStyle(0), m_tabIndex(0), m_hasTabIndex(false)
 {}
 
 void ElementRareDataImpl::resetComputedStyle()
@@ -825,6 +826,18 @@ void ElementImpl::setTabIndex(short _tabIndex)
     createRareData()->setTabIndex(_tabIndex);
 }
 
+void ElementImpl::setNoTabIndex()
+{
+    if (!m_elementHasRareData)
+        return;
+    rareData()->m_hasTabIndex = false;
+}
+
+bool ElementImpl::hasTabIndex() const
+{
+    return m_elementHasRareData ? rareData()->m_hasTabIndex : false;
+}
+
 void ElementImpl::defaultEventHandler(EventImpl *e)
 {
     if (!e->defaultHandled() && document()->part() && e->id() == EventImpl::KEYPRESS_EVENT && e->isKeyRelatedEvent()) {
@@ -1023,10 +1036,22 @@ void ElementImpl::recalcStyle( StyleChange change )
     setHasChangedChild( false );
 }
 
-bool ElementImpl::isFocusable() const
+bool ElementImpl::isFocusableImpl(FocusType ft) const
 {
     if (m_render && m_render->scrollsOverflow())
         return true;
+
+    // See WAI-ARIA 1.0, UA implementor's guide, 3.1 for the rules this
+    // implements.
+    if (hasTabIndex()) {
+        int ti = tabIndex();
+
+        // Negative things are focusable, but not in taborder
+        if (ti < 0)
+            return (ft != FT_Tab);
+        else // ... while everything else is completely focusable
+            return true;
+    }
 
     // Only make editable elements selectable if its parent element
     // is not editable. FIXME: this is not 100% right as non-editable elements

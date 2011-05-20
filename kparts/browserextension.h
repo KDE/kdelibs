@@ -288,7 +288,7 @@ private:
   * actions are provided by the browser, but implemented by the part
   * (for the actions it supports).
   *
-  * The following standard actions are defined by the host of the view :
+  * The following standard actions are defined by the host of the view:
   *
   * [selection-dependent actions]
   * @li @p cut : Copy selected items to clipboard and store 'not cut' in clipboard.

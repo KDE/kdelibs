@@ -84,13 +84,15 @@ public:
      * which override those provided to addConfigSources(), which override the
      * global sources.  The exception is that if a key or group is marked as
      * being immutable, it will not be overridden.
+     *
+     * Note that all values other than IncludeGlobals and CascadeConfig are
+     * convenience definitions for the basic mode.
+     * Do @em not combine them with anything.
      */
     enum OpenFlag {
         IncludeGlobals  = 0x01, ///< Blend kdeglobals into the config object.
         CascadeConfig   = 0x02, ///< Cascade to system-wide config files.
 
-        /// The following are convenience definitions for the basic mode.
-        /// Do @em not combine them with anything.
         SimpleConfig    = 0x00, ///< Just a single config file.
         NoCascade       = IncludeGlobals, ///< Include user's globals, but omit system settings.
         NoGlobals       = CascadeConfig, ///< Cascade to system settings, but omit user's globals.

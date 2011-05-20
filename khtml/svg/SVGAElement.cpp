@@ -172,35 +172,15 @@ bool SVGAElement::supportsFocus() const
     return isFocusable() || (document() && !document()->haveStylesheetsLoaded());
 }
 
-bool SVGAElement::isFocusable() const
+bool SVGAElement::isFocusableImpl(FocusType ft) const
 {
+    if (ft == FT_Mouse)
+        return false;
+
     if (isContentEditable())
-        return SVGStyledTransformableElement::isFocusable();
-    
-    // FIXME: Even if we are not visible, we might have a child that is visible.
-    // Dave wants to fix that some day with a "has visible content" flag or the like.
-    if (!renderer() || !(renderer()->style()->visibility() == VISIBLE))
-        return false;
-    
-    //khtml FIXME return !renderer()->absoluteClippedOverflowRect().isEmpty();
-    return false;
-}
+        return SVGStyledTransformableElement::isFocusableImpl(ft);
 
-bool SVGAElement::isMouseFocusable() const
-{
-    return false;
-}
-
-bool SVGAElement::isKeyboardFocusable(DOM::KeyboardEventImpl* event) const
-{
-    Q_UNUSED(event);
-    if (!isFocusable())
-        return false;
-    
-    if (!document()->view())
-        return false;
-    
-    //khtml FIXME return document()->view()->eventHandler()->tabsToLinks(event);
+    // TODO: implement focus rules for SVG
     return false;
 }
 

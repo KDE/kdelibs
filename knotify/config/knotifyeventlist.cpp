@@ -58,7 +58,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QStyledItemDelegate::paint(painter, option, index);
 
-// 	kDebug(300) << prstring;
+// 	kDebug() << prstring;
 
 	QRect rect=option.rect;
 

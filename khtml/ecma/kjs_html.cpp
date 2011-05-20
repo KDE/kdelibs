@@ -707,6 +707,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
   document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
+  tabIndex      KJS::HTMLElement::ElementTabIndex  DontDelete
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
   all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
@@ -804,7 +805,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   multiple	KJS::HTMLElement::SelectMultiple	DontDelete
   name		KJS::HTMLElement::SelectName	DontDelete
   size		KJS::HTMLElement::SelectSize	DontDelete
-  tabIndex	KJS::HTMLElement::SelectTabIndex	DontDelete
 @end
 @begin HTMLSelectElementProtoTable 4
   add		KJS::HTMLElement::SelectAdd	DontDelete|Function 2
@@ -842,7 +842,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   readOnly	KJS::HTMLElement::InputReadOnly		DontDelete
   size		KJS::HTMLElement::InputSize		DontDelete
   src		KJS::HTMLElement::InputSrc		DontDelete
-  tabIndex	KJS::HTMLElement::InputTabIndex		DontDelete
   type		KJS::HTMLElement::InputType		DontDelete
   useMap	KJS::HTMLElement::InputUseMap		DontDelete
   value		KJS::HTMLElement::InputValue		DontDelete
@@ -864,7 +863,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   name		KJS::HTMLElement::TextAreaName		DontDelete
   readOnly	KJS::HTMLElement::TextAreaReadOnly	DontDelete
   rows		KJS::HTMLElement::TextAreaRows		DontDelete
-  tabIndex	KJS::HTMLElement::TextAreaTabIndex	DontDelete
   type		KJS::HTMLElement::TextAreaType		DontDelete|ReadOnly
   value		KJS::HTMLElement::TextAreaValue		DontDelete
   selectionStart KJS::HTMLElement::TextAreaSelectionStart DontDelete
@@ -881,7 +879,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   accessKey	KJS::HTMLElement::ButtonAccessKey	DontDelete
   disabled	KJS::HTMLElement::ButtonDisabled	DontDelete
   name		KJS::HTMLElement::ButtonName		DontDelete
-  tabIndex	KJS::HTMLElement::ButtonTabIndex	DontDelete
   type		KJS::HTMLElement::ButtonType		DontDelete|ReadOnly
   value		KJS::HTMLElement::ButtonValue		DontDelete
 @end
@@ -981,7 +978,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   rev		KJS::HTMLElement::AnchorRev		DontDelete
   search	KJS::HTMLElement::AnchorSearch		DontDelete
   shape		KJS::HTMLElement::AnchorShape		DontDelete
-  tabIndex	KJS::HTMLElement::AnchorTabIndex	DontDelete
   target	KJS::HTMLElement::AnchorTarget		DontDelete
   text		KJS::HTMLElement::AnchorText		DontDelete|ReadOnly
   type		KJS::HTMLElement::AnchorType		DontDelete
@@ -1021,7 +1017,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   hspace	  KJS::HTMLElement::ObjectHspace	  DontDelete
   name		  KJS::HTMLElement::ObjectName		  DontDelete
   standby	  KJS::HTMLElement::ObjectStandby	  DontDelete
-  tabIndex	  KJS::HTMLElement::ObjectTabIndex	  DontDelete
   type		  KJS::HTMLElement::ObjectType		  DontDelete
   useMap	  KJS::HTMLElement::ObjectUseMap	  DontDelete
   vspace	  KJS::HTMLElement::ObjectVspace	  DontDelete
@@ -1069,7 +1064,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   search	KJS::HTMLElement::AreaSearch		DontDelete|ReadOnly
   noHref	KJS::HTMLElement::AreaNoHref		DontDelete
   shape		KJS::HTMLElement::AreaShape		DontDelete
-  tabIndex	KJS::HTMLElement::AreaTabIndex		DontDelete
   target	KJS::HTMLElement::AreaTarget		DontDelete
 @end
 @begin HTMLScriptElementTable 7
@@ -1378,7 +1372,6 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_SELECT, SelectDisabled, T_Bool,  ATTR_DISABLED},
   {ID_SELECT, SelectMultiple, T_Bool,  ATTR_MULTIPLE},
   {ID_SELECT, SelectSize,     T_Int,   ATTR_SIZE}, //toInt on attr, then number
-  {ID_SELECT, SelectTabIndex, T_TabIdx, NotApplicable},
   {ID_OPTGROUP, OptGroupDisabled, T_Bool, ATTR_DISABLED},
   {ID_OPTGROUP, OptGroupLabel,    T_String, ATTR_LABEL},
   {ID_OPTION, OptionDefaultSelected, T_Bool, ATTR_SELECTED},
@@ -1395,18 +1388,15 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_INPUT,  InputReadOnly,  T_Bool,   ATTR_READONLY},
   {ID_INPUT,  InputSize,      T_Int,    ATTR_SIZE},
   {ID_INPUT,  InputSrc,       T_URL,    ATTR_SRC},
-  {ID_INPUT,  InputTabIndex,  T_TabIdx, NotApplicable},
   {ID_INPUT,  InputUseMap,    T_String, ATTR_USEMAP},
   {ID_TEXTAREA, TextAreaAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_TEXTAREA, TextAreaCols, T_Int, ATTR_COLS},
   {ID_TEXTAREA, TextAreaDisabled, T_Bool, ATTR_DISABLED},
   {ID_TEXTAREA, TextAreaReadOnly, T_Bool, ATTR_READONLY},
   {ID_TEXTAREA, TextAreaRows, T_Int,  ATTR_ROWS},
-  {ID_TEXTAREA, TextAreaTabIndex, T_TabIdx, NotApplicable},
   {ID_BUTTON,   ButtonAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_BUTTON,   ButtonDisabled, T_Bool  , ATTR_DISABLED},
   {ID_BUTTON,   ButtonName,     T_String, ATTR_NAME},
-  {ID_BUTTON,   ButtonTabIndex, T_TabIdx, NotApplicable},
   {ID_BUTTON,   ButtonValue,    T_String, ATTR_VALUE},
   {ID_LABEL,    LabelAccessKey, T_String, ATTR_ACCESSKEY},
   {ID_LABEL,    LabelHtmlFor,   T_String, ATTR_FOR},
@@ -1450,7 +1440,6 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_A,        AnchorRel,        T_String, ATTR_REL},
   {ID_A,        AnchorRev,        T_String, ATTR_REV},
   {ID_A,        AnchorShape,      T_String, ATTR_SHAPE},
-  {ID_A,        AnchorTabIndex,   T_Int,    ATTR_TABINDEX}, //### not ->tabIndex??
   {ID_A,        AnchorTarget,     T_String, ATTR_TARGET},
   {ID_A,        AnchorType,       T_String, ATTR_TYPE},
   {ID_IMG,      ImageName,        T_String, ATTR_NAME},
@@ -1475,7 +1464,6 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_OBJECT,   ObjectHspace,     T_Int,    ATTR_HSPACE},
   {ID_OBJECT,   ObjectName,       T_String, ATTR_NAME},
   {ID_OBJECT,   ObjectStandby,    T_String, ATTR_STANDBY},
-  {ID_OBJECT,   ObjectTabIndex,   T_Int,    ATTR_TABINDEX}, //### not element's tabindex?
   {ID_OBJECT,   ObjectType,       T_String, ATTR_TYPE},
   {ID_OBJECT,   ObjectUseMap,     T_String, ATTR_USEMAP},
   {ID_OBJECT,   ObjectVspace,     T_Int,    ATTR_VSPACE},
@@ -1503,7 +1491,6 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_AREA,     AreaHref,         T_URL,    ATTR_HREF},
   {ID_AREA,     AreaNoHref,       T_Bool,   ATTR_NOHREF},
   {ID_AREA,     AreaShape,        T_String, ATTR_SHAPE},
-  {ID_AREA,     AreaTabIndex,     T_Int,    ATTR_TABINDEX},
   {ID_AREA,     AreaTarget,       T_String, ATTR_TARGET},
   {ID_SCRIPT,   ScriptHtmlFor,    T_Res,    NotApplicable},
   {ID_SCRIPT,   ScriptEvent,      T_Res,    NotApplicable},
@@ -1649,8 +1636,6 @@ JSValue* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
       return jsNumber(impl()->getAttribute(prop->attrId).toInt());
     case T_URL:
       return jsString(getURLArg(prop->attrId));
-    case T_TabIdx:
-      return jsNumber(impl()->tabIndex());
     case T_Res:
       return jsString("");
     case T_Coll:
@@ -2042,6 +2027,8 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL));
     else // Enabled but hidden by default
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL), true);
+  case ElementTabIndex:
+      return jsNumber(element.tabIndex());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   case ElementContentEditable:
       return jsString(element.contentEditable());
@@ -2458,9 +2445,6 @@ bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, JSValue* val
     case T_Bool:
       impl()->setAttribute(prop->attrId, value->toBoolean(exec) ? "" : 0);
       return true;
-    case T_TabIdx:
-      impl()->setTabIndex(value->toInteger(exec));
-      return true;
     case T_Res: //ignored
       return true;
   }
@@ -2677,6 +2661,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
     return;
   case ElementContentEditable:
     element.setContentEditable(str);
+    return;
+  case ElementTabIndex:
+    element.setTabIndex(value->toInteger(exec));
     return;
   default:
     kDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string();

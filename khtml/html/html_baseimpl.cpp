@@ -453,9 +453,11 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
         setNeedComputeContent(); // otherwise, request it.. 
 }
 
-bool HTMLFrameElementImpl::isFocusable() const
+bool HTMLFrameElementImpl::isFocusableImpl(FocusType ft) const
 {
-    return m_render!=0;
+    if (m_render!=0)
+        return true;
+    return HTMLPartContainerElementImpl::isFocusableImpl(ft);
 }
 
 void HTMLFrameElementImpl::setFocus(bool received)

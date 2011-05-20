@@ -478,76 +478,76 @@ void KXmlGui_UnitTest::testUiStandardsMerging_data()
     // Merging an empty menu (or a menu with only non-existing actions) would make
     // the empty menu appear at the end after all other menus (fixed for KDE-4.2)
     QTest::newRow("empty file menu, implicit settings menu")
-        << xmlBegin + "<Menu name=\"file\"/>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\"/>\n" + xmlEnd)
         << (QStringList() << "options_configure_toolbars")
         << (QStringList() << "settings");
     QTest::newRow("file menu with non existing action, implicit settings menu")
-        << xmlBegin + "<Menu name=\"file\"><Action name=\"foo\"/></Menu>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\"><Action name=\"foo\"/></Menu>\n" + xmlEnd)
         << (QStringList() << "options_configure_toolbars")
         << (QStringList() << "settings");
     QTest::newRow("file menu with existing action, implicit settings menu")
-        << xmlBegin + "<Menu name=\"file\"><Action name=\"open\"/></Menu>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\"><Action name=\"open\"/></Menu>\n" + xmlEnd)
         << (QStringList() << "open" << "options_configure_toolbars")
         << (QStringList() << "file" << "settings");
     QTest::newRow("implicit file and settings menu")
-        << xmlBegin + xmlEnd
+        << QByteArray(xmlBegin + xmlEnd)
         << (QStringList() << "file_open" << "options_configure_toolbars")
         << (QStringList() << "file" << "settings"); // we could check that file_open is in the mainToolBar, too
 
     // Check that unknown non-empty menus are added at the "MergeLocal" position (before settings).
     QTest::newRow("foo menu added at the end")
-        << xmlBegin + "<Menu name=\"foo\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"foo\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd)
         << (QStringList() << "file_open" << "options_configure_toolbars" << "foo_action")
         << (QStringList() << "file" << "foo" << "settings");
 
     QTest::newRow("Bille's testcase: menu patch + menu edit")
-        << xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
+        << QByteArray(xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
         + "<Menu name=\"edit\"><Action name=\"edit_foo\"/></Menu>\n"
-        + xmlEnd
+        + xmlEnd)
         << (QStringList() << "file_open" << "patch_generate" << "edit_foo")
         << (QStringList() << "file" << "edit" << "patch");
     QTest::newRow("Bille's testcase: menu patch + menu edit, lowercase tag")
-        << xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
+        << QByteArray(xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
         + "<menu name=\"edit\"><Action name=\"edit_foo\"/></menu>\n"
-        + xmlEnd
+        + xmlEnd)
         << (QStringList() << "file_open" << "patch_generate" << "edit_foo")
         << (QStringList() << "file" << "edit" << "patch");
 
     // Check that <Menu append="..."> allows to insert menus at specific positions
     QTest::newRow("Menu append")
-        << xmlBegin + "<Menu name=\"foo\" append=\"settings_merge\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"foo\" append=\"settings_merge\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd)
         << (QStringList() << "file_open" << "options_configure_toolbars" << "foo_action" << "help_contents")
         << (QStringList() << "file" << "settings" << "foo" << "help");
     QTest::newRow("Custom first menu")
-        << xmlBegin + "<Menu name=\"foo\" append=\"first_menu\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"foo\" append=\"first_menu\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd)
         << (QStringList() << "edit_undo" << "foo_action" << "help_contents")
         << (QStringList() << "foo" << "edit" << "help");
 
     // Tests for noMerge="1"
     QTest::newRow("noMerge empty file menu, implicit settings menu")
-        << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n" + xmlEnd)
         << (QStringList() << "file_open" << "options_configure_toolbars")
         << (QStringList() << "file" << "settings"); // we keep empty menus, see #186382
     QTest::newRow("noMerge empty file menu, file_open moved elsewhere")
-        << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd)
         << (QStringList() << "file_open")
         << (QStringList() << "file" << "foo");
     QTest::newRow("noMerge file menu with open before new")
-        << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" noMerge=\"1\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd)
         << (QStringList() << "file_open" << "file_new")
         << (QStringList() << "file"); // TODO check the order of the actions in the menu? how?
 
     // Tests for deleted="true"
     QTest::newRow("deleted file menu, implicit settings menu")
-        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n" + xmlEnd)
         << (QStringList() << "file_open" << "options_configure_toolbars")
         << (QStringList() << "settings");
     QTest::newRow("deleted file menu, file_open moved elsewhere")
-        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd)
         << (QStringList() << "file_open")
         << (QStringList() << "foo");
     QTest::newRow("deleted file menu with actions (contradiction)")
-        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd
+        << QByteArray(xmlBegin + "<Menu name=\"file\" deleted=\"true\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd)
         << (QStringList() << "file_open" << "file_new")
         << (QStringList());
 
