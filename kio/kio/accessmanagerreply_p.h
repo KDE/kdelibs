@@ -66,6 +66,7 @@ protected:
     virtual qint64 readData(char *data, qint64 maxSize);
     void readHttpResponseHeaders(KIO::Job *);
     int jobError(KJob *kJob);
+    bool ignoreContentDisposition(KIO::Job* job);
 
 private Q_SLOTS:
     void slotData(KIO::Job *kioJob, const QByteArray &data);

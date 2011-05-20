@@ -112,6 +112,25 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
     return length;
 }
 
+bool AccessManagerReply::ignoreContentDisposition (KIO::Job* job)
+{
+    if (m_ignoreContentDisposition) {
+        return true;
+    }
+
+    if (job->queryMetaData(QL1S("content-disposition-type")).isEmpty()) {
+        return true;
+    }
+
+    bool ok = false;
+    const int statusCode = attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(&ok);
+    if (!ok || statusCode < 200 || statusCode > 299) {
+        return true;
+    }
+
+    return false;
+}
+
 void AccessManagerReply::setIgnoreContentDisposition(bool on)
 {
     // kDebug(7044) << on;
@@ -130,15 +149,6 @@ void AccessManagerReply::putOnHold()
 
     // kDebug(7044) << m_kioJob << m_data;
     m_kioJob->putOnHold();
-}
-
-static bool isStatusCodeSuccess(const QNetworkReply* reply)
-{
-    bool ok = false;
-    const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(&ok);
-    if (!ok || statusCode < 200 || statusCode > 299)
-        return false;
-    return true;
 }
 
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
@@ -176,15 +186,18 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         if (index == -1) {
             // Except for the status line, all HTTP header must be an nvpair of
             // type "<name>:<value>"
-            if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive))
-              continue;
+            if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive)) {
+                continue;
+            }
 
             QStringList statusLineAttrs (httpHeader.split(QL1C(' '), QString::SkipEmptyParts));
-            if (statusLineAttrs.count() > 1)
+            if (statusLineAttrs.count() > 1) {
                 setAttribute(QNetworkRequest::HttpStatusCodeAttribute, statusLineAttrs.at(1));
+            }
 
-            if (statusLineAttrs.count() > 2)
+            if (statusLineAttrs.count() > 2) {
                 setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, statusLineAttrs.at(2));
+            }
 
             continue;
         }
@@ -193,12 +206,14 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         QString headerValue = httpHeader.mid(index+1);
 
         // Skip setting cookies since they are automatically handled by kio_http...
-        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive))
+        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive)) {
             continue;
+        }
 
         if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
-            (m_ignoreContentDisposition || !isStatusCodeSuccess(this)))
+            ignoreContentDisposition(job)) {
             continue;
+        }
 
         // Without overridding the corrected mime-type sent by kio_http, add
         // back the "charset=" portion of the content-type header if present.
@@ -206,10 +221,11 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
             if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
                 index = headerValue.indexOf(QL1C(';'));
-                if (index == -1)
+                if (index == -1) {
                     headerValue = mimeType;
-                else
+                } else {
                     headerValue.replace(0, index, mimeType);
+                }
                 //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
             }
         }
