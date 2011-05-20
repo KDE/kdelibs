@@ -326,8 +326,6 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
     const KUrl replyUrl (reply->url());
     QWidget* topLevelWindow = view() ? view()->window() : 0;
 
-    KIO::Scheduler::publishSlaveOnHold();
-
     // Ask KRun to handle the response when mimetype is unknown
     if (mimeType.isEmpty()) {
         (void)new KRun(replyUrl, topLevelWindow, 0 , replyUrl.isLocalFile());
@@ -522,12 +520,16 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 } else {
                     KUrl::List list;
                     list.append(replyUrl);
+                    bool success = false;
                     // kDebug(800) << "Suggested file name:" << suggestedFileName;
-                    KIO::Scheduler::publishSlaveOnHold(); // publish any slave that was put on hold.
                     if (offer) {
-                        KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
+                        success = KRun::run(*offer, list, topLevelWindow , false, suggestedFileName);
                     } else {
-                        KRun::displayOpenWithDialog(list, topLevelWindow, false, suggestedFileName);
+                        success = KRun::displayOpenWithDialog(list, topLevelWindow, false, suggestedFileName);
+                    }
+                    // For non KIO apps and cancelled Open With dialog, remove slave on hold.
+                    if (!success || (offer && !offer->categories().contains(QL1S("KDE")))) {
+                        KIO::Scheduler::removeSlaveOnHold(); // Remove any slave-on-hold...
                     }
                 }
                 return true;

@@ -149,6 +149,7 @@ void AccessManagerReply::putOnHold()
 
     // kDebug(7044) << m_kioJob << m_data;
     m_kioJob->putOnHold();
+    KIO::Scheduler::publishSlaveOnHold();
 }
 
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
