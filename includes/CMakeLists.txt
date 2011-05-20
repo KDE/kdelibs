@@ -1040,7 +1040,6 @@ install(FILES
   Plasma/ConfigLoader
   Plasma/Containment
   Plasma/ContainmentActions
-  Plasma/Context
   Plasma/Corona
   Plasma/Credentials
   Plasma/DataContainer
