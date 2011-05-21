@@ -38,13 +38,13 @@ typedef QList<QVariantList> SignalList;
 
 Q_DECLARE_METATYPE( SignalList )
 
-enum PROXYMODELTESTSUITE_EXPORT Persistence
+enum Persistence
 {
   LazyPersistence,
   ImmediatePersistence
 };
 
-enum PROXYMODELTESTSUITE_EXPORT SourceModel
+enum SourceModel
 {
   DynamicTree,
   IntermediateProxy
