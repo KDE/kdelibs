@@ -29,7 +29,10 @@
 #include <kprotocolmanager.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
+
+#ifndef KIO_NO_SOLID
 #include <solid/networking.h>
+#endif
 
 #include <QtCore/QFileSystemWatcher>
 
@@ -58,7 +61,9 @@ namespace KPAC
           m_debugArea (KDebug::registerArea("proxyscout")),
           m_watcher( 0 )
     {
+#ifndef KIO_NO_SOLID
         connect (Solid::Networking::notifier(), SIGNAL(shouldDisconnect()), SLOT(disconnectNetwork()));
+#endif
     }
 
     ProxyScout::~ProxyScout()
