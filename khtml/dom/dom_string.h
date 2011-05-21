@@ -130,7 +130,11 @@ public:
      */
     DOMStringImpl *implementation() const { return impl; }
 
-    static DOMString format(const char* format, ...);
+    static DOMString format(const char* format, ...)
+#if defined(__GNUC__)
+    __attribute__ ((format (printf, 1, 2)))
+#endif
+     ;
 
 protected:
     DOMStringImpl *impl;
