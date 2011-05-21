@@ -240,7 +240,6 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         // Make a copy to avoid a dead reference
         QString _type = type;
         job->putOnHold();
-        KIO::Scheduler::publishSlaveOnHold();
         setJob( 0 );
 
         mimeTypeDetermined( _type );
@@ -319,6 +318,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
         return Handled;
     }
 
+    KIO::SimpleJob::removeOnHold(); // Kill any slave that was put on hold.
     return NotHandled;
 }
 
