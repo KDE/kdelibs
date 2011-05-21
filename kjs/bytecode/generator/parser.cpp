@@ -35,6 +35,11 @@
 Parser::Parser(istream* stream): tokenLoaded(false), hadError(false), lexer(new Lexer(stream))
 {}
 
+Parser::~Parser()
+{
+    delete lexer;
+}
+
 string Parser::matchIdentifier()
 {
     Lexer::Token tok = getNext();
