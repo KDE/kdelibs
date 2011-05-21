@@ -332,9 +332,8 @@ endif(NOT WINCE)
 add_subdirectory( kunitconversion )
 add_subdirectory( kdewebkit )
 add_subdirectory( includes )
-add_subdirectory( experimental )
 
-
+macro_optional_add_subdirectory( experimental )
 macro_optional_add_subdirectory( doc  )
 
 ################# write dependency file which will be installed #################
