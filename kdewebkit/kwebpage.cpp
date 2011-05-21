@@ -47,7 +47,6 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/renamedialog.h>
-#include <kio/scheduler.h>
 #include <kparts/browseropenorsavequestion.h>
 
 // Qt
@@ -529,7 +528,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                     }
                     // For non KIO apps and cancelled Open With dialog, remove slave on hold.
                     if (!success || (offer && !offer->categories().contains(QL1S("KDE")))) {
-                        KIO::Scheduler::removeSlaveOnHold(); // Remove any slave-on-hold...
+                        KIO::SimpleJob::removeOnHold(); // Remove any slave-on-hold...
                     }
                 }
                 return true;
