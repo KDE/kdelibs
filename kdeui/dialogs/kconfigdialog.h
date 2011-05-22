@@ -115,7 +115,10 @@ public:
    * @param page - Pointer to the page that is to be added to the dialog.
    * This object is reparented.
    * @param itemName - Name of the page.
-   * @param pixmapName - Name of the pixmap that should be used if needed.
+   * @param pixmapName - Name of the icon that should be used, if needed, when
+   *        displaying the page. The string may either be the name of a themed
+   *        icon (e.g. "document-save"), which the internal icon loader will be
+   *        used to retrieve, or an absolute path to the pixmap on disk.
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
    * @param manage - Whether KConfigDialogManager should manage the page or not.
@@ -136,7 +139,10 @@ public:
    * This object is reparented.
    * @param config - Config object containing corresponding settings.
    * @param itemName - Name of the page.
-   * @param pixmapName - Name of the pixmap that should be used if needed.
+   * @param pixmapName - Name of the icon that should be used, if needed, when
+   *        displaying the page. The string may either be the name of a themed
+   *        icon (e.g. "document-save"), which the internal icon loader will be
+   *        used to retrieve, or an absolute path to the pixmap on disk.
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
    * @returns The KPageWidgetItem associated with the page.
