@@ -363,6 +363,28 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
         renderer->render(&renderPainter, actualElementId, finalRect);
     }
 
+    QString opacityMask;
+    if (elementRect("opacitymask-" % elementId).isValid()) {
+        opacityMask = "opacitymask-" % elementId;
+    } else if ("opacitymask") {
+        opacityMask = "opacitymask";
+    }
+
+    if (!opacityMask.isEmpty()) {
+        renderPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        if (elementRect("tile-" % opacityMask).isValid()) {
+            QRect tileRect(QRect(QPoint(0,0), elementRect(opacityMask).size().toSize()));
+            QPixmap pix(tileRect.size());
+            QPainter buffPainter(&pix);
+            renderer->render(&buffPainter, opacityMask, tileRect);
+            buffPainter.end();
+            renderPainter.drawTiledPixmap(finalRect, pix);
+        } else {
+            renderer->render(&renderPainter, opacityMask, finalRect);
+        }
+        renderPainter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    }
+
     renderPainter.end();
 
     // Apply current color scheme if the svg asks for it
