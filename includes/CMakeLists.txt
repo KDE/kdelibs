@@ -323,6 +323,7 @@ install( FILES
   KPushButton
   KRandom
   KRandomSequence
+  KRatingWidget
   KRecentDocument
   KRecentFilesAction
   KRemoteEncoding
