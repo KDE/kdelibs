@@ -324,6 +324,9 @@ DateTimeComponents KDateTimeParser::parseDateUnicode(const QString &inputString,
                                                      const KLocale *locale,
                                                      KLocale::DigitSet digitSet) const
 {
+    Q_UNUSED(calendar);
+    Q_UNUSED(locale);
+    Q_UNUSED(digitSet);
     QString str = inputString.simplified().toLower();
     QString fmt = formatString.simplified();
     int dd = -1;
@@ -337,7 +340,7 @@ DateTimeComponents KDateTimeParser::parseDateUnicode(const QString &inputString,
     int dayOfIsoWeek = -1;
     int strpos = 0;
     int fmtpos = 0;
-    int readLength; // Temporary variable used when reading input
+    //int readLength; // Temporary variable used when reading input
     bool error = false;
 
     DateTimeComponents result;
