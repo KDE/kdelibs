@@ -334,7 +334,6 @@ install( FILES
   KRichTextWidget
   KRuler
   KRun
-  KShortcutsEditor
   KSambaShare
   KSambaShareData
   KSaveFile
@@ -358,6 +357,8 @@ install( FILES
   KShellCompletion
   KShortcut
   KShortcutsDialog
+  KShortcutsEditor
+  KShortcutWidget
   KSocks
   KSortableItem
   KSortableList
