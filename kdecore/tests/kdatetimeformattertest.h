@@ -34,7 +34,7 @@ class KDateTimeFormatterTest : public QObject
     Q_OBJECT
 
 protected:
-    void compareFormatUnicode( KDateTimeFormatter formatter, const KDateTime &testDateTime, const QString &testFormat );
+    void compareFormatUnicode(KDateTimeFormatter formatter, const KDateTime &testDateTime, const QString &testFormat);
 
 private Q_SLOTS:
     void testFormatDateTimePosix();
