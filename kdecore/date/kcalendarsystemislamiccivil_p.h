@@ -1,6 +1,6 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-    Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+    Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
     Copyright 2007, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
@@ -19,35 +19,33 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMGREGORIAN_H
-#define KCALENDARSYSTEMGREGORIAN_H
+#ifndef KCALENDARSYSTEMISLAMICCIVIL_H
+#define KCALENDARSYSTEMISLAMICCIVIL_H
 
 #include "kcalendarsystem.h"
 
-class KCalendarSystemGregorianPrivate;
+class KCalendarSystemIslamicCivilPrivate;
 
 /**
  * @internal
- * This is the Gregorian calendar implementation.
+ * This is the Islamic Civil calendar implementation.
  *
- * The Gregorian calendar is the most used calendar today. The first year in
- * the calendar is set to the birth of Christ.
+ * The Islamic or Hijri calendar is the traditional calendar used in the Middle
+ * East.  This implementation is of the civil calculation that does not take
+ * observed sunset into account and so may vary from actual dates by 1-2 days.
  *
- * WARNING: This is not a pure Gregorian calendar, it copies the QDate method
- * of using the Julian Calendar for dates before 15 October 1582.
- *
- * @b license GNU-GPL v.2
+ * @b license GNU-LGPL v2+
  *
  * @see KLocale,KCalendarSystem
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
  */
-class KCalendarSystemGregorian: public KCalendarSystem
+class KCalendarSystemIslamicCivil : public KCalendarSystem
 {
 public:
-    explicit KCalendarSystemGregorian(const KLocale *locale = 0);
-    explicit KCalendarSystemGregorian(const KSharedConfig::Ptr config, const KLocale *locale = 0);
-    virtual ~KCalendarSystemGregorian();
+    explicit KCalendarSystemIslamicCivil(const KLocale *locale = 0);
+    explicit KCalendarSystemIslamicCivil(const KSharedConfig::Ptr config, const KLocale *locale = 0);
+    virtual ~KCalendarSystemIslamicCivil();
 
     virtual QString calendarType() const;
 
@@ -115,13 +113,13 @@ public:
 protected:
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
-    KCalendarSystemGregorian(KCalendarSystemGregorianPrivate &dd,
-                             const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                             const KLocale *locale = 0);
+    KCalendarSystemIslamicCivil(KCalendarSystemIslamicCivilPrivate &dd,
+                         const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                         const KLocale *locale = 0);
 
 private:
-    Q_DECLARE_PRIVATE(KCalendarSystemGregorian)
-    KCalendarSystemGregorianPrivate * const dont_use; // KDE5 remove, use shared d
+    Q_DECLARE_PRIVATE(KCalendarSystemIslamicCivil)
+    KCalendarSystemIslamicCivilPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
-#endif
+#endif // KCALENDARSYSTEMISLAMICCIVIL_H

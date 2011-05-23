@@ -33,15 +33,15 @@
 #include "kcalendarera_p.h"
 #include "kcalendarsystemcoptic_p.h"
 #include "kcalendarsystemethiopian_p.h"
-#include "kcalendarsystemgregorian_p.h"
 #include "kcalendarsystemgregorianproleptic_p.h"
 #include "kcalendarsystemhebrew_p.h"
-#include "kcalendarsystemhijri_p.h"
 #include "kcalendarsystemindiannational_p.h"
+#include "kcalendarsystemislamiccivil_p.h"
 #include "kcalendarsystemjalali_p.h"
 #include "kcalendarsystemjapanese_p.h"
 #include "kcalendarsystemjulian_p.h"
 #include "kcalendarsystemminguo_p.h"
+#include "kcalendarsystemqdate_p.h"
 #include "kcalendarsystemthai_p.h"
 
 KCalendarSystem *KCalendarSystem::create(const QString &calendarType, const KLocale *locale)
@@ -95,7 +95,7 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
 {
     switch (calendarSystem) {
     case KLocale::QDateCalendar:
-        return new KCalendarSystemGregorian(config, locale);
+        return new KCalendarSystemQDate(config, locale);
     case KLocale::CopticCalendar:
         return new KCalendarSystemCoptic(config, locale);
     case KLocale::EthiopianCalendar:
@@ -104,10 +104,10 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
         return new KCalendarSystemGregorianProleptic(config, locale);
     case KLocale::HebrewCalendar:
         return new KCalendarSystemHebrew(config, locale);
-    case KLocale::IslamicCivilCalendar:
-        return new KCalendarSystemHijri(config, locale);
     case KLocale::IndianNationalCalendar:
         return new KCalendarSystemIndianNational(config, locale);
+    case KLocale::IslamicCivilCalendar:
+        return new KCalendarSystemIslamicCivil(config, locale);
     case KLocale::JalaliCalendar:
         return new KCalendarSystemJalali(config, locale);
     case KLocale::JapaneseCalendar:
@@ -119,7 +119,7 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
     case KLocale::ThaiCalendar:
         return new KCalendarSystemThai(config, locale);
     default:
-        return new KCalendarSystemGregorian(config, locale);
+        return new KCalendarSystemQDate(config, locale);
     }
 }
 

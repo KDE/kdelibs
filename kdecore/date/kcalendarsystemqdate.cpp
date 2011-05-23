@@ -19,9 +19,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-// Derived gregorian kde calendar class
+// Derived QDate kde calendar class
 
-#include "kcalendarsystemgregorian_p.h"
+#include "kcalendarsystemqdate_p.h"
 #include "kcalendarsystemprivate_p.h"
 #include "kcalendarera_p.h"
 
@@ -33,12 +33,12 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 
-class KCalendarSystemGregorianPrivate : public KCalendarSystemPrivate
+class KCalendarSystemQDatePrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemGregorianPrivate(KCalendarSystemGregorian *q);
+    explicit KCalendarSystemQDatePrivate(KCalendarSystemQDate *q);
 
-    virtual ~KCalendarSystemGregorianPrivate();
+    virtual ~KCalendarSystemQDatePrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
@@ -62,23 +62,23 @@ public:
 
 // Shared d pointer implementations
 
-KCalendarSystemGregorianPrivate::KCalendarSystemGregorianPrivate(KCalendarSystemGregorian *q)
-                               : KCalendarSystemPrivate(q),
-                                 m_useCommonEra(false)
+KCalendarSystemQDatePrivate::KCalendarSystemQDatePrivate(KCalendarSystemQDate *q)
+                           : KCalendarSystemPrivate(q),
+                             m_useCommonEra(false)
 
 {
 }
 
-KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
+KCalendarSystemQDatePrivate::~KCalendarSystemQDatePrivate()
 {
 }
 
-KLocale::CalendarSystem KCalendarSystemGregorianPrivate::calendarSystem() const
+KLocale::CalendarSystem KCalendarSystemQDatePrivate::calendarSystem() const
 {
     return KLocale::QDateCalendar;
 }
 
-void KCalendarSystemGregorianPrivate::loadDefaultEraList()
+void KCalendarSystemQDatePrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
@@ -107,65 +107,65 @@ void KCalendarSystemGregorianPrivate::loadDefaultEraList()
     addEra('+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format);
 }
 
-int KCalendarSystemGregorianPrivate::monthsInYear(int year) const
+int KCalendarSystemQDatePrivate::monthsInYear(int year) const
 {
     Q_UNUSED(year)
     return 12;
 }
 
-int KCalendarSystemGregorianPrivate::daysInMonth(int year, int month) const
+int KCalendarSystemQDatePrivate::daysInMonth(int year, int month) const
 {
     QDate tempDate(year, month, 1);
     return tempDate.daysInMonth();
 }
 
-int KCalendarSystemGregorianPrivate::daysInYear(int year) const
+int KCalendarSystemQDatePrivate::daysInYear(int year) const
 {
     QDate tempDate(year, 1, 1);
     return tempDate.daysInYear();
 }
 
-int KCalendarSystemGregorianPrivate::daysInWeek() const
+int KCalendarSystemQDatePrivate::daysInWeek() const
 {
     return 7;
 }
 
-bool KCalendarSystemGregorianPrivate::isLeapYear(int year) const
+bool KCalendarSystemQDatePrivate::isLeapYear(int year) const
 {
     return QDate::isLeapYear(year);
 }
 
-bool KCalendarSystemGregorianPrivate::hasLeapMonths() const
+bool KCalendarSystemQDatePrivate::hasLeapMonths() const
 {
     return false;
 }
 
-bool KCalendarSystemGregorianPrivate::hasYearZero() const
+bool KCalendarSystemQDatePrivate::hasYearZero() const
 {
     return false;
 }
 
-int KCalendarSystemGregorianPrivate::maxDaysInWeek() const
+int KCalendarSystemQDatePrivate::maxDaysInWeek() const
 {
     return 7;
 }
 
-int KCalendarSystemGregorianPrivate::maxMonthsInYear() const
+int KCalendarSystemQDatePrivate::maxMonthsInYear() const
 {
     return 12;
 }
 
-int KCalendarSystemGregorianPrivate::earliestValidYear() const
+int KCalendarSystemQDatePrivate::earliestValidYear() const
 {
     return -4712;
 }
 
-int KCalendarSystemGregorianPrivate::latestValidYear() const
+int KCalendarSystemQDatePrivate::latestValidYear() const
 {
     return 9999;
 }
 
-QString KCalendarSystemGregorianPrivate::monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const
+QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const
 {
     Q_UNUSED(year);
 
@@ -324,7 +324,7 @@ QString KCalendarSystemGregorianPrivate::monthName(int month, int year, KLocale:
     }
 }
 
-QString KCalendarSystemGregorianPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
+QString KCalendarSystemQDatePrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
     if (format == KLocale::NarrowName) {
         switch (weekDay) {
@@ -388,51 +388,51 @@ QString KCalendarSystemGregorianPrivate::weekDayName(int weekDay, KLocale::DateT
 }
 
 
-KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale *locale)
-                        : KCalendarSystem(*new KCalendarSystemGregorianPrivate(this), KSharedConfig::Ptr(), locale),
-                          dont_use(0)
+KCalendarSystemQDate::KCalendarSystemQDate(const KLocale *locale)
+                    : KCalendarSystem(*new KCalendarSystemQDatePrivate(this), KSharedConfig::Ptr(), locale),
+                      dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemGregorian::KCalendarSystemGregorian(const KSharedConfig::Ptr config, const KLocale *locale)
-                        : KCalendarSystem(*new KCalendarSystemGregorianPrivate(this), config, locale),
-                          dont_use(0)
+KCalendarSystemQDate::KCalendarSystemQDate(const KSharedConfig::Ptr config, const KLocale *locale)
+                    : KCalendarSystem(*new KCalendarSystemQDatePrivate(this), config, locale),
+                      dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemGregorian::KCalendarSystemGregorian(KCalendarSystemGregorianPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale)
-                        : KCalendarSystem(dd, config, locale),
-                          dont_use(0)
+KCalendarSystemQDate::KCalendarSystemQDate(KCalendarSystemQDatePrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale)
+                    : KCalendarSystem(dd, config, locale),
+                      dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemGregorian::~KCalendarSystemGregorian()
+KCalendarSystemQDate::~KCalendarSystemQDate()
 {
     delete dont_use;
 }
 
-QString KCalendarSystemGregorian::calendarType() const
+QString KCalendarSystemQDate::calendarType() const
 {
     return QLatin1String("gregorian");
 }
 
-QDate KCalendarSystemGregorian::epoch() const
+QDate KCalendarSystemQDate::epoch() const
 {
     // 1 Jan 1 AD in Julian
     return QDate::fromJulianDay(1721424);
 }
 
-QDate KCalendarSystemGregorian::earliestValidDate() const
+QDate KCalendarSystemQDate::earliestValidDate() const
 {
     // 1 Jan 4712 BC, no year zero, cant be 4713BC due to error in QDate that day 0 is not valid
     // and we really need the first in each year to be valid for the date maths
     return QDate::fromJulianDay(366);
 }
 
-QDate KCalendarSystemGregorian::latestValidDate() const
+QDate KCalendarSystemQDate::latestValidDate() const
 {
     // Set to last day of year 9999 until confirm date formats & widets support > 9999
     // In Gregorian this is 9999-12-31, which is  is jd 5373484
@@ -440,7 +440,7 @@ QDate KCalendarSystemGregorian::latestValidDate() const
     return QDate::fromJulianDay(5373484);
 }
 
-bool KCalendarSystemGregorian::isValid(int year, int month, int day) const
+bool KCalendarSystemQDate::isValid(int year, int month, int day) const
 {
     // Limit to max year 9999 for now, QDate allows to be greater
     if (year <= 9999) {
@@ -450,208 +450,208 @@ bool KCalendarSystemGregorian::isValid(int year, int month, int day) const
     return false;
 }
 
-bool KCalendarSystemGregorian::isValid(const QDate &date) const
+bool KCalendarSystemQDate::isValid(const QDate &date) const
 {
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemGregorian::setDate(QDate &date, int year, int month, int day) const
+bool KCalendarSystemQDate::setDate(QDate &date, int year, int month, int day) const
 {
     return KCalendarSystem::setDate(date, year, month, day);
 }
 
 // Deprecated
-bool KCalendarSystemGregorian::setYMD(QDate &date, int y, int m, int d) const
+bool KCalendarSystemQDate::setYMD(QDate &date, int y, int m, int d) const
 {
     return KCalendarSystem::setDate(date, y, m, d);
 }
 
-int KCalendarSystemGregorian::year(const QDate &date) const
+int KCalendarSystemQDate::year(const QDate &date) const
 {
     return date.year();
 }
 
-int KCalendarSystemGregorian::month(const QDate &date) const
+int KCalendarSystemQDate::month(const QDate &date) const
 {
     return date.month();
 }
 
-int KCalendarSystemGregorian::day(const QDate &date) const
+int KCalendarSystemQDate::day(const QDate &date) const
 {
     return date.day();
 }
 
-QDate KCalendarSystemGregorian::addYears(const QDate &date, int nyears) const
+QDate KCalendarSystemQDate::addYears(const QDate &date, int nyears) const
 {
     return KCalendarSystem::addYears(date, nyears);
 }
 
-QDate KCalendarSystemGregorian::addMonths(const QDate &date, int nmonths) const
+QDate KCalendarSystemQDate::addMonths(const QDate &date, int nmonths) const
 {
     return KCalendarSystem::addMonths(date, nmonths);
 }
 
-QDate KCalendarSystemGregorian::addDays(const QDate &date, int ndays) const
+QDate KCalendarSystemQDate::addDays(const QDate &date, int ndays) const
 {
     return KCalendarSystem::addDays(date, ndays);
 }
 
-int KCalendarSystemGregorian::monthsInYear(const QDate &date) const
+int KCalendarSystemQDate::monthsInYear(const QDate &date) const
 {
     return KCalendarSystem::monthsInYear(date);
 }
 
-int KCalendarSystemGregorian::weeksInYear(const QDate &date) const
+int KCalendarSystemQDate::weeksInYear(const QDate &date) const
 {
     return KCalendarSystem::weeksInYear(date);
 }
 
-int KCalendarSystemGregorian::weeksInYear(int year) const
+int KCalendarSystemQDate::weeksInYear(int year) const
 {
     return KCalendarSystem::weeksInYear(year);
 }
 
-int KCalendarSystemGregorian::daysInYear(const QDate &date) const
+int KCalendarSystemQDate::daysInYear(const QDate &date) const
 {
     return date.daysInYear();
 }
 
-int KCalendarSystemGregorian::daysInMonth(const QDate &date) const
+int KCalendarSystemQDate::daysInMonth(const QDate &date) const
 {
     return date.daysInMonth();
 }
 
-int KCalendarSystemGregorian::daysInWeek(const QDate &date) const
+int KCalendarSystemQDate::daysInWeek(const QDate &date) const
 {
     return KCalendarSystem::daysInWeek(date);
 }
 
-int KCalendarSystemGregorian::dayOfYear(const QDate &date) const
+int KCalendarSystemQDate::dayOfYear(const QDate &date) const
 {
     return date.dayOfYear();
 }
 
-int KCalendarSystemGregorian::dayOfWeek(const QDate &date) const
+int KCalendarSystemQDate::dayOfWeek(const QDate &date) const
 {
     return date.dayOfWeek();
 }
 
-int KCalendarSystemGregorian::weekNumber(const QDate &date, int * yearNum) const
+int KCalendarSystemQDate::weekNumber(const QDate &date, int * yearNum) const
 {
     return KCalendarSystem::weekNumber(date, yearNum);
 }
 
-bool KCalendarSystemGregorian::isLeapYear(int year) const
+bool KCalendarSystemQDate::isLeapYear(int year) const
 {
     return QDate::isLeapYear(year);
 }
 
-bool KCalendarSystemGregorian::isLeapYear(const QDate &date) const
+bool KCalendarSystemQDate::isLeapYear(const QDate &date) const
 {
     return QDate::isLeapYear(date.year());
 }
 
-QString KCalendarSystemGregorian::monthName(int month, int year, MonthNameFormat format) const
+QString KCalendarSystemQDate::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);
 }
 
-QString KCalendarSystemGregorian::monthName(const QDate &date, MonthNameFormat format) const
+QString KCalendarSystemQDate::monthName(const QDate &date, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(date, format);
 }
 
-QString KCalendarSystemGregorian::weekDayName(int weekDay, WeekDayNameFormat format) const
+QString KCalendarSystemQDate::weekDayName(int weekDay, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(weekDay, format);
 }
 
-QString KCalendarSystemGregorian::weekDayName(const QDate &date, WeekDayNameFormat format) const
+QString KCalendarSystemQDate::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
 }
 
-QString KCalendarSystemGregorian::yearString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemQDate::yearString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::yearString(pDate, format);
 }
 
-QString KCalendarSystemGregorian::monthString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemQDate::monthString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::monthString(pDate, format);
 }
 
-QString KCalendarSystemGregorian::dayString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemQDate::dayString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::dayString(pDate, format);
 }
 
-int KCalendarSystemGregorian::yearStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemQDate::yearStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::yearStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemGregorian::monthStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemQDate::monthStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::monthStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemGregorian::dayStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemQDate::dayStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::dayStringToInteger(sNum, iLength);
 }
 
-QString KCalendarSystemGregorian::formatDate(const QDate &date, KLocale::DateFormat format) const
+QString KCalendarSystemQDate::formatDate(const QDate &date, KLocale::DateFormat format) const
 {
     return KCalendarSystem::formatDate(date, format);
 }
 
-QDate KCalendarSystemGregorian::readDate(const QString &str, bool *ok) const
+QDate KCalendarSystemQDate::readDate(const QString &str, bool *ok) const
 {
     return KCalendarSystem::readDate(str, ok);
 }
 
-QDate KCalendarSystemGregorian::readDate(const QString &intstr, const QString &fmt, bool *ok) const
+QDate KCalendarSystemQDate::readDate(const QString &intstr, const QString &fmt, bool *ok) const
 {
     return KCalendarSystem::readDate(intstr, fmt, ok);
 }
 
-QDate KCalendarSystemGregorian::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
+QDate KCalendarSystemQDate::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
 {
     return KCalendarSystem::readDate(str, flags, ok);
 }
 
-int KCalendarSystemGregorian::weekStartDay() const
+int KCalendarSystemQDate::weekStartDay() const
 {
     return KCalendarSystem::weekStartDay();
 }
 
-int KCalendarSystemGregorian::weekDayOfPray() const
+int KCalendarSystemQDate::weekDayOfPray() const
 {
     return 7; // sunday
 }
 
-bool KCalendarSystemGregorian::isLunar() const
+bool KCalendarSystemQDate::isLunar() const
 {
     return false;
 }
 
-bool KCalendarSystemGregorian::isLunisolar() const
+bool KCalendarSystemQDate::isLunisolar() const
 {
     return false;
 }
 
-bool KCalendarSystemGregorian::isSolar() const
+bool KCalendarSystemQDate::isSolar() const
 {
     return true;
 }
 
-bool KCalendarSystemGregorian::isProleptic() const
+bool KCalendarSystemQDate::isProleptic() const
 {
     return false;
 }
 
-bool KCalendarSystemGregorian::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemQDate::julianDayToDate(int jd, int &year, int &month, int &day) const
 {
     QDate date = QDate::fromJulianDay(jd);
 
@@ -660,7 +660,7 @@ bool KCalendarSystemGregorian::julianDayToDate(int jd, int &year, int &month, in
     return date.isValid();
 }
 
-bool KCalendarSystemGregorian::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemQDate::dateToJulianDay(int year, int month, int day, int &jd) const
 {
     QDate date;
 

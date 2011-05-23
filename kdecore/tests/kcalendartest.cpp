@@ -1169,7 +1169,7 @@ QDate KCalendarTest::setEraDate( const KCalendarSystem * calendar, const QString
     return resultDate;
 }
 
-void KCalendarTest::testGregorian()
+void KCalendarTest::testQDateCalendar()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     QDate testDate( 2005, 9, 10 );
@@ -1232,7 +1232,7 @@ void KCalendarTest::testHebrew()
     delete calendar;
 }
 
-void KCalendarTest::testHijri()
+void KCalendarTest::testIslamicCivil()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
 
@@ -1340,7 +1340,7 @@ void KCalendarTest::testIndianNational()
     delete calendar;
 }
 
-void KCalendarTest::testGregorianBasic()
+void KCalendarTest::testQDateCalendarBasic()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
 
@@ -1389,14 +1389,14 @@ void KCalendarTest::testGregorianBasic()
     delete calendar;
 }
 
-void KCalendarTest::testGregorianYmd()
+void KCalendarTest::testQDateCalendarYmd()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::QDateCalendar );
     testYmd( calendar, 2007, 1, 1, QDate( 2007, 1, 1 ).toJulianDay() );
     delete calendar;
 }
 
-void KCalendarTest::testGregorianSpecialCases()
+void KCalendarTest::testQDateCalendarSpecialCases()
 {
     KConfigGroup lcg( KGlobal::config(), QString( "Locale" ) );
     KConfigGroup cg = lcg.group( QString( "KCalendarSystem %1" ).arg( "gregorian" ) );
@@ -1556,9 +1556,9 @@ void KCalendarTest::testHebrewCompare()
 */
 }
 
-// Test Hijri Calendar System
+// Test Islamic Civil Calendar System
 
-void KCalendarTest::testHijriBasic()
+void KCalendarTest::testIslamicCivilBasic()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
     QDate testDate;
@@ -1608,7 +1608,7 @@ void KCalendarTest::testHijriBasic()
     delete calendar;
 }
 
-void KCalendarTest::testHijriYmd()
+void KCalendarTest::testIslamicCivilYmd()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::IslamicCivilCalendar );
     testYmd( calendar, 1426, 8, 6, QDate( 2005, 9, 10 ).toJulianDay() );

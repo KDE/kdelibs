@@ -1,6 +1,6 @@
 /*
     Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-    Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
+    Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
     Copyright 2007, 2010 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
@@ -19,32 +19,31 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMHIJRI_H
-#define KCALENDARSYSTEMHIJRI_H
+#ifndef KCALENDARSYSTEMQDATE_H
+#define KCALENDARSYSTEMQDATE_H
 
 #include "kcalendarsystem.h"
 
-class KCalendarSystemHijriPrivate;
+class KCalendarSystemQDatePrivate;
 
 /**
  * @internal
- * This is the Hijri calendar implementation.
+ * This is the QDate calendar implementation which combines the Julian and Gregorian
+ * calculations into a single calendar.  It should always be used by default in Qt
+ * applications for consistency.
  *
- * The Hijri calendar is the traditional Islamic calendar used in the Middle
- * East.
- *
- * @b license GNU-LGPL v2+
+ * @b license GNU-LGPL v.2+
  *
  * @see KLocale,KCalendarSystem
  *
- * @author Carlos Moro <cfmoro@correo.uniovi.es>
+ * @author John Layt <john@layt.net>
  */
-class KCalendarSystemHijri : public KCalendarSystem
+class KCalendarSystemQDate: public KCalendarSystem
 {
 public:
-    explicit KCalendarSystemHijri(const KLocale *locale = 0);
-    explicit KCalendarSystemHijri(const KSharedConfig::Ptr config, const KLocale *locale = 0);
-    virtual ~KCalendarSystemHijri();
+    explicit KCalendarSystemQDate(const KLocale *locale = 0);
+    explicit KCalendarSystemQDate(const KSharedConfig::Ptr config, const KLocale *locale = 0);
+    virtual ~KCalendarSystemQDate();
 
     virtual QString calendarType() const;
 
@@ -112,13 +111,13 @@ public:
 protected:
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
-    KCalendarSystemHijri(KCalendarSystemHijriPrivate &dd,
-                         const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                         const KLocale *locale = 0);
+    KCalendarSystemQDate(KCalendarSystemQDatePrivate &dd,
+                             const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                             const KLocale *locale = 0);
 
 private:
-    Q_DECLARE_PRIVATE(KCalendarSystemHijri)
-    KCalendarSystemHijriPrivate * const dont_use; // KDE5 remove, use shared d
+    Q_DECLARE_PRIVATE(KCalendarSystemQDate)
+    KCalendarSystemQDatePrivate * const dont_use; // KDE5 remove, use shared d
 };
 
-#endif // KCALENDARSYSTEMHIJRI_H
+#endif

@@ -19,17 +19,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcalendarsystemhijri_p.h"
+#include "kcalendarsystemislamiccivil_p.h"
 #include "kcalendarsystemprivate_p.h"
 
 #include <QtCore/QDate>
 
-class KCalendarSystemHijriPrivate : public KCalendarSystemPrivate
+class KCalendarSystemIslamicCivilPrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemHijriPrivate(KCalendarSystemHijri *q);
+    explicit KCalendarSystemIslamicCivilPrivate(KCalendarSystemIslamicCivil *q);
 
-    virtual ~KCalendarSystemHijriPrivate();
+    virtual ~KCalendarSystemIslamicCivilPrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
@@ -51,21 +51,21 @@ public:
 
 // Shared d pointer base class definitions
 
-KCalendarSystemHijriPrivate::KCalendarSystemHijriPrivate(KCalendarSystemHijri *q)
-                           : KCalendarSystemPrivate(q)
+KCalendarSystemIslamicCivilPrivate::KCalendarSystemIslamicCivilPrivate(KCalendarSystemIslamicCivil *q)
+                                  : KCalendarSystemPrivate(q)
 {
 }
 
-KCalendarSystemHijriPrivate::~KCalendarSystemHijriPrivate()
+KCalendarSystemIslamicCivilPrivate::~KCalendarSystemIslamicCivilPrivate()
 {
 }
 
-KLocale::CalendarSystem KCalendarSystemHijriPrivate::calendarSystem() const
+KLocale::CalendarSystem KCalendarSystemIslamicCivilPrivate::calendarSystem() const
 {
     return KLocale::IslamicCivilCalendar;
 }
 
-void KCalendarSystemHijriPrivate::loadDefaultEraList()
+void KCalendarSystemIslamicCivilPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Islamic Era, Anno Hegirae, "Year of the Hijra".
@@ -75,13 +75,13 @@ void KCalendarSystemHijriPrivate::loadDefaultEraList()
     addEra('+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format);
 }
 
-int KCalendarSystemHijriPrivate::monthsInYear(int year) const
+int KCalendarSystemIslamicCivilPrivate::monthsInYear(int year) const
 {
     Q_UNUSED(year)
     return 12;
 }
 
-int KCalendarSystemHijriPrivate::daysInMonth(int year, int month) const
+int KCalendarSystemIslamicCivilPrivate::daysInMonth(int year, int month) const
 {
     if (month == 12 && isLeapYear(year)) {
         return 30;
@@ -94,7 +94,7 @@ int KCalendarSystemHijriPrivate::daysInMonth(int year, int month) const
     }
 }
 
-int KCalendarSystemHijriPrivate::daysInYear(int year) const
+int KCalendarSystemIslamicCivilPrivate::daysInYear(int year) const
 {
     if (isLeapYear(year)) {
         return 355;
@@ -103,12 +103,12 @@ int KCalendarSystemHijriPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemHijriPrivate::daysInWeek() const
+int KCalendarSystemIslamicCivilPrivate::daysInWeek() const
 {
     return 7;
 }
 
-bool KCalendarSystemHijriPrivate::isLeapYear(int year) const
+bool KCalendarSystemIslamicCivilPrivate::isLeapYear(int year) const
 {
     // Years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 of the 30 year cycle
 
@@ -140,37 +140,37 @@ bool KCalendarSystemHijriPrivate::isLeapYear(int year) const
     // if ( ( ( ( 11 * year ) + 1 ) % 30 ) < 11 ) {
 }
 
-bool KCalendarSystemHijriPrivate::hasLeapMonths() const
+bool KCalendarSystemIslamicCivilPrivate::hasLeapMonths() const
 {
     return false;
 }
 
-bool KCalendarSystemHijriPrivate::hasYearZero() const
+bool KCalendarSystemIslamicCivilPrivate::hasYearZero() const
 {
     return false;
 }
 
-int KCalendarSystemHijriPrivate::maxDaysInWeek() const
+int KCalendarSystemIslamicCivilPrivate::maxDaysInWeek() const
 {
     return 7;
 }
 
-int KCalendarSystemHijriPrivate::maxMonthsInYear() const
+int KCalendarSystemIslamicCivilPrivate::maxMonthsInYear() const
 {
     return 12;
 }
 
-int KCalendarSystemHijriPrivate::earliestValidYear() const
+int KCalendarSystemIslamicCivilPrivate::earliestValidYear() const
 {
     return 1;
 }
 
-int KCalendarSystemHijriPrivate::latestValidYear() const
+int KCalendarSystemIslamicCivilPrivate::latestValidYear() const
 {
     return 9999;
 }
 
-QString KCalendarSystemHijriPrivate::monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const
+QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const
 {
     Q_UNUSED(year);
 
@@ -329,7 +329,7 @@ QString KCalendarSystemHijriPrivate::monthName(int month, int year, KLocale::Dat
     }
 }
 
-QString KCalendarSystemHijriPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
+QString KCalendarSystemIslamicCivilPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
     if (format == KLocale::NarrowName) {
         switch (weekDay) {
@@ -393,265 +393,265 @@ QString KCalendarSystemHijriPrivate::weekDayName(int weekDay, KLocale::DateTimeC
 }
 
 
-KCalendarSystemHijri::KCalendarSystemHijri(const KLocale *locale)
-                    : KCalendarSystem(*new KCalendarSystemHijriPrivate(this), KSharedConfig::Ptr(), locale),
-                      dont_use(0)
+KCalendarSystemIslamicCivil::KCalendarSystemIslamicCivil(const KLocale *locale)
+                           : KCalendarSystem(*new KCalendarSystemIslamicCivilPrivate(this), KSharedConfig::Ptr(), locale),
+                             dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemHijri::KCalendarSystemHijri(const KSharedConfig::Ptr config, const KLocale *locale)
-                    : KCalendarSystem(*new KCalendarSystemHijriPrivate(this), config, locale),
-                      dont_use(0)
+KCalendarSystemIslamicCivil::KCalendarSystemIslamicCivil(const KSharedConfig::Ptr config, const KLocale *locale)
+                           : KCalendarSystem(*new KCalendarSystemIslamicCivilPrivate(this), config, locale),
+                             dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemHijri::KCalendarSystemHijri(KCalendarSystemHijriPrivate &dd,
-                                           const KSharedConfig::Ptr config, const KLocale *locale)
-                    : KCalendarSystem(dd, config, locale),
-                      dont_use(0)
+KCalendarSystemIslamicCivil::KCalendarSystemIslamicCivil(KCalendarSystemIslamicCivilPrivate &dd,
+                                                         const KSharedConfig::Ptr config, const KLocale *locale)
+                           : KCalendarSystem(dd, config, locale),
+                             dont_use(0)
 {
     d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemHijri::~KCalendarSystemHijri()
+KCalendarSystemIslamicCivil::~KCalendarSystemIslamicCivil()
 {
     delete dont_use;
 }
 
-QString KCalendarSystemHijri::calendarType() const
+QString KCalendarSystemIslamicCivil::calendarType() const
 {
     return QLatin1String("hijri");
 }
 
-QDate KCalendarSystemHijri::epoch() const
+QDate KCalendarSystemIslamicCivil::epoch() const
 {
     // 16 July 622 in the Julian calendar
     return QDate::fromJulianDay(1948440);
 }
 
-QDate KCalendarSystemHijri::earliestValidDate() const
+QDate KCalendarSystemIslamicCivil::earliestValidDate() const
 {
     return epoch();
 }
 
-QDate KCalendarSystemHijri::latestValidDate() const
+QDate KCalendarSystemIslamicCivil::latestValidDate() const
 {
     // Set to last day of year 9999
-    // Last day of Hijri year 9999 is 9999-12-29
+    // Last day of Islamic Civil year 9999 is 9999-12-29
     return QDate::fromJulianDay(5491751);
 }
 
-bool KCalendarSystemHijri::isValid(int year, int month, int day) const
+bool KCalendarSystemIslamicCivil::isValid(int year, int month, int day) const
 {
     return KCalendarSystem::isValid(year, month, day);
 }
 
-bool KCalendarSystemHijri::isValid(const QDate &date) const
+bool KCalendarSystemIslamicCivil::isValid(const QDate &date) const
 {
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemHijri::setDate(QDate &date, int year, int month, int day) const
+bool KCalendarSystemIslamicCivil::setDate(QDate &date, int year, int month, int day) const
 {
     return KCalendarSystem::setDate(date, year, month, day);
 }
 
 // Deprecated
-bool KCalendarSystemHijri::setYMD(QDate &date, int year, int month, int day) const
+bool KCalendarSystemIslamicCivil::setYMD(QDate &date, int year, int month, int day) const
 {
     return KCalendarSystem::setYMD(date, year, month, day);
 }
 
-int KCalendarSystemHijri::year(const QDate &date) const
+int KCalendarSystemIslamicCivil::year(const QDate &date) const
 {
     return KCalendarSystem::year(date);
 }
 
-int KCalendarSystemHijri::month(const QDate &date) const
+int KCalendarSystemIslamicCivil::month(const QDate &date) const
 {
     return KCalendarSystem::month(date);
 }
 
-int KCalendarSystemHijri::day(const QDate &date) const
+int KCalendarSystemIslamicCivil::day(const QDate &date) const
 {
     return KCalendarSystem::day(date);
 }
 
-QDate KCalendarSystemHijri::addYears(const QDate &date, int nyears) const
+QDate KCalendarSystemIslamicCivil::addYears(const QDate &date, int nyears) const
 {
     return KCalendarSystem::addYears(date, nyears);
 }
 
-QDate KCalendarSystemHijri::addMonths(const QDate &date, int nmonths) const
+QDate KCalendarSystemIslamicCivil::addMonths(const QDate &date, int nmonths) const
 {
     return KCalendarSystem::addMonths(date, nmonths);
 }
 
-QDate KCalendarSystemHijri::addDays(const QDate &date, int ndays) const
+QDate KCalendarSystemIslamicCivil::addDays(const QDate &date, int ndays) const
 {
     return KCalendarSystem::addDays(date, ndays);
 }
 
-int KCalendarSystemHijri::monthsInYear(const QDate &date) const
+int KCalendarSystemIslamicCivil::monthsInYear(const QDate &date) const
 {
     return KCalendarSystem::monthsInYear(date);
 }
 
-int KCalendarSystemHijri::weeksInYear(const QDate &date) const
+int KCalendarSystemIslamicCivil::weeksInYear(const QDate &date) const
 {
     return KCalendarSystem::weeksInYear(date);
 }
 
-int KCalendarSystemHijri::weeksInYear(int year) const
+int KCalendarSystemIslamicCivil::weeksInYear(int year) const
 {
     return KCalendarSystem::weeksInYear(year);
 }
 
-int KCalendarSystemHijri::daysInYear(const QDate &date) const
+int KCalendarSystemIslamicCivil::daysInYear(const QDate &date) const
 {
     return KCalendarSystem::daysInYear(date);
 }
 
-int KCalendarSystemHijri::daysInMonth(const QDate &date) const
+int KCalendarSystemIslamicCivil::daysInMonth(const QDate &date) const
 {
     return KCalendarSystem::daysInMonth(date);
 }
 
-int KCalendarSystemHijri::daysInWeek(const QDate &date) const
+int KCalendarSystemIslamicCivil::daysInWeek(const QDate &date) const
 {
     return KCalendarSystem::daysInWeek(date);
 }
 
-int KCalendarSystemHijri::dayOfYear(const QDate &date) const
+int KCalendarSystemIslamicCivil::dayOfYear(const QDate &date) const
 {
     return KCalendarSystem::dayOfYear(date);
 }
 
-int KCalendarSystemHijri::dayOfWeek(const QDate &date) const
+int KCalendarSystemIslamicCivil::dayOfWeek(const QDate &date) const
 {
     return KCalendarSystem::dayOfWeek(date);
 }
 
-int KCalendarSystemHijri::weekNumber(const QDate &date, int *yearNum) const
+int KCalendarSystemIslamicCivil::weekNumber(const QDate &date, int *yearNum) const
 {
     return KCalendarSystem::weekNumber(date, yearNum);
 }
 
-bool KCalendarSystemHijri::isLeapYear(int year) const
+bool KCalendarSystemIslamicCivil::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);
 }
 
-bool KCalendarSystemHijri::isLeapYear(const QDate &date) const
+bool KCalendarSystemIslamicCivil::isLeapYear(const QDate &date) const
 {
     return KCalendarSystem::isLeapYear(date);
 }
 
-QString KCalendarSystemHijri::monthName(int month, int year, MonthNameFormat format) const
+QString KCalendarSystemIslamicCivil::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);
 }
 
-QString KCalendarSystemHijri::monthName(const QDate &date, MonthNameFormat format) const
+QString KCalendarSystemIslamicCivil::monthName(const QDate &date, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(date, format);
 }
 
-QString KCalendarSystemHijri::weekDayName(int weekDay, WeekDayNameFormat format) const
+QString KCalendarSystemIslamicCivil::weekDayName(int weekDay, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(weekDay, format);
 }
 
-QString KCalendarSystemHijri::weekDayName(const QDate &date, WeekDayNameFormat format) const
+QString KCalendarSystemIslamicCivil::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
 }
 
-QString KCalendarSystemHijri::yearString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemIslamicCivil::yearString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::yearString(pDate, format);
 }
 
-QString KCalendarSystemHijri::monthString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemIslamicCivil::monthString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::monthString(pDate, format);
 }
 
-QString KCalendarSystemHijri::dayString(const QDate &pDate, StringFormat format) const
+QString KCalendarSystemIslamicCivil::dayString(const QDate &pDate, StringFormat format) const
 {
     return KCalendarSystem::dayString(pDate, format);
 }
 
-int KCalendarSystemHijri::yearStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemIslamicCivil::yearStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::yearStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemHijri::monthStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemIslamicCivil::monthStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::monthStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemHijri::dayStringToInteger(const QString &sNum, int &iLength) const
+int KCalendarSystemIslamicCivil::dayStringToInteger(const QString &sNum, int &iLength) const
 {
     return KCalendarSystem::dayStringToInteger(sNum, iLength);
 }
 
-QString KCalendarSystemHijri::formatDate(const QDate &date, KLocale::DateFormat format) const
+QString KCalendarSystemIslamicCivil::formatDate(const QDate &date, KLocale::DateFormat format) const
 {
     return KCalendarSystem::formatDate(date, format);
 }
 
-QDate KCalendarSystemHijri::readDate(const QString &str, bool *ok) const
+QDate KCalendarSystemIslamicCivil::readDate(const QString &str, bool *ok) const
 {
     return KCalendarSystem::readDate(str, ok);
 }
 
-QDate KCalendarSystemHijri::readDate(const QString &intstr, const QString &fmt, bool *ok) const
+QDate KCalendarSystemIslamicCivil::readDate(const QString &intstr, const QString &fmt, bool *ok) const
 {
     return KCalendarSystem::readDate(intstr, fmt, ok);
 }
 
-QDate KCalendarSystemHijri::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
+QDate KCalendarSystemIslamicCivil::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
 {
     return KCalendarSystem::readDate(str, flags, ok);
 }
 
-int KCalendarSystemHijri::weekStartDay() const
+int KCalendarSystemIslamicCivil::weekStartDay() const
 {
     return KCalendarSystem::weekStartDay();
 }
 
-int KCalendarSystemHijri::weekDayOfPray() const
+int KCalendarSystemIslamicCivil::weekDayOfPray() const
 {
     return 5; // Friday
 }
 
-bool KCalendarSystemHijri::isLunar() const
+bool KCalendarSystemIslamicCivil::isLunar() const
 {
     return true;
 }
 
-bool KCalendarSystemHijri::isLunisolar() const
+bool KCalendarSystemIslamicCivil::isLunisolar() const
 {
     return false;
 }
 
-bool KCalendarSystemHijri::isSolar() const
+bool KCalendarSystemIslamicCivil::isSolar() const
 {
     return false;
 }
 
-bool KCalendarSystemHijri::isProleptic() const
+bool KCalendarSystemIslamicCivil::isProleptic() const
 {
     return false;
 }
 
-bool KCalendarSystemHijri::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemIslamicCivil::julianDayToDate(int jd, int &year, int &month, int &day) const
 {
-    Q_D(const KCalendarSystemHijri);
+    Q_D(const KCalendarSystemIslamicCivil);
 
     /*
     The following C++ code is translated from the Lisp code
@@ -711,7 +711,7 @@ bool KCalendarSystemHijri::julianDayToDate(int jd, int &year, int &month, int &d
     */
 }
 
-bool KCalendarSystemHijri::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemIslamicCivil::dateToJulianDay(int year, int month, int day, int &jd) const
 {
     /*
     The following C++ code is translated from the Lisp code

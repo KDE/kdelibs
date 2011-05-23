@@ -39,7 +39,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include "kcalendarsystemgregorian_p.h"
+#include "kcalendarsystemqdate_p.h"
 #include <ksystemtimezone.h>
 #include <kdebug.h>
 
@@ -1427,7 +1427,7 @@ QString KDateTime::toString(const QString &format) const
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystemGregorian calendar(locale);
+    KCalendarSystemQDate calendar(locale);
     QString result;
     QString s;
     int num, numLength, zone;
@@ -2484,7 +2484,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystemGregorian calendar(locale);
+    KCalendarSystemQDate calendar(locale);
     int zone;
     int s = 0;
     int send = str.length();

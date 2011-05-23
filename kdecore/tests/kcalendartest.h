@@ -38,7 +38,7 @@ protected:
     void testMonthName( const KCalendarSystem *calendar, int month, int year, const QDate &date,
                         const QString &narrowName, const QString &shortName, const QString &longName,
                         const QString &shortNamePossessive, const QString &longNamePossessive );
-    void testGregorianCompareQDate( const KCalendarSystem *calendar, int year, int month, int day );
+    void testQDateCompareQDate( const KCalendarSystem *calendar, int year, int month, int day );
     void testQDateYMD( const KCalendarSystem *calendar, int y, int m, int d );
 
     void testStrings( KLocale::DigitSet testDigitSet );
@@ -69,19 +69,19 @@ private Q_SLOTS:
     void testDateDifference();
     void testFirstLast();
     void testEra();
-    void testGregorian();
+    void testQDateCalendar();
     void testHebrew();
-    void testHijri();
     void testIndianNational();
-    void testGregorianBasic();
-    void testGregorianYmd();
-    void testGregorianSpecialCases();
+    void testIslamicCivil();
+    void testQDateCalendarBasic();
+    void testQDateCalendarYmd();
+    void testQDateCalendarSpecialCases();
     void testGregorianProlepticBasic();
     void testHebrewBasic();
     void testHebrewYmd();
     void testHebrewCompare();
-    void testHijriBasic();
-    void testHijriYmd();
+    void testIslamicCivilBasic();
+    void testIslamicCivilYmd();
     void testJalaliBasic();
     void testJalaliYmd();
     void testJapanese();
