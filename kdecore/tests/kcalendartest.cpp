@@ -1425,7 +1425,7 @@ void KCalendarTest::testQDateCalendarSpecialCases()
 }
 
 
-void KCalendarTest::testGregorianProlepticBasic()
+void KCalendarTest::testGregorianBasic()
 {
     const KCalendarSystem *calendar = KCalendarSystem::create( KLocale::GregorianCalendar );
 

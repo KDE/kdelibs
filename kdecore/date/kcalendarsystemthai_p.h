@@ -20,7 +20,7 @@
 #ifndef KCALENDARSYSTEMTHAI_H
 #define KCALENDARSYSTEMTHAI_H
 
-#include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemgregorian_p.h"
 
 class KCalendarSystemThaiPrivate;
 
@@ -35,7 +35,7 @@ class KCalendarSystemThaiPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KCalendarSystemThai: public KCalendarSystemGregorianProleptic
+class KCalendarSystemThai: public KCalendarSystemGregorian
 {
 public:
     explicit KCalendarSystemThai(const KLocale *locale = 0);

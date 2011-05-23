@@ -1616,7 +1616,7 @@ private:
     //Required for shared d-pointer as already private, remove in KDE5
     friend class KCalendarSystemCoptic;
     friend class KCalendarSystemEthiopian;
-    friend class KCalendarSystemGregorianProleptic;
+    friend class KCalendarSystemGregorian;
     friend class KCalendarSystemHebrew;
     friend class KCalendarSystemIndianNational;
     friend class KCalendarSystemIslamicCivil;

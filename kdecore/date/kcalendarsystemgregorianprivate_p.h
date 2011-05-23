@@ -17,19 +17,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
-#define KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+#ifndef KCALENDARSYSTEMGREGORIANPRIVATE_H
+#define KCALENDARSYSTEMGREGORIANPRIVATE_H
 
 // Derived gregorian kde calendar class
 
 #include "kcalendarsystemprivate_p.h"
 
-class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
+class KCalendarSystemGregorianPrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemGregorianProlepticPrivate(KCalendarSystemGregorianProleptic *q);
+    explicit KCalendarSystemGregorianPrivate(KCalendarSystemGregorian *q);
 
-    virtual ~KCalendarSystemGregorianProlepticPrivate();
+    virtual ~KCalendarSystemGregorianPrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
@@ -51,4 +51,4 @@ public:
     bool m_useCommonEra;
 };
 
-#endif // KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+#endif // KCALENDARSYSTEMGREGORIANPRIVATE_H

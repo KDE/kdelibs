@@ -76,7 +76,7 @@ private Q_SLOTS:
     void testQDateCalendarBasic();
     void testQDateCalendarYmd();
     void testQDateCalendarSpecialCases();
-    void testGregorianProlepticBasic();
+    void testGregorianBasic();
     void testHebrewBasic();
     void testHebrewYmd();
     void testHebrewCompare();

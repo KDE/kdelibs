@@ -20,7 +20,7 @@
 #ifndef KCALENDARSYSTEMMINGUO_H
 #define KCALENDARSYSTEMMINGUO_H
 
-#include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemgregorian_p.h"
 
 class KCalendarSystemMinguoPrivate;
 
@@ -35,7 +35,7 @@ class KCalendarSystemMinguoPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KCalendarSystemMinguo: public KCalendarSystemGregorianProleptic
+class KCalendarSystemMinguo: public KCalendarSystemGregorian
 {
 public:
     explicit KCalendarSystemMinguo(const KLocale *locale = 0);

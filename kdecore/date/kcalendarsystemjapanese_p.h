@@ -20,7 +20,7 @@
 #ifndef KCALENDARSYSTEMJAPANESE_H
 #define KCALENDARSYSTEMJAPANESE_H
 
-#include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemgregorian_p.h"
 
 class KCalendarSystemJapanesePrivate;
 
@@ -35,7 +35,7 @@ class KCalendarSystemJapanesePrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KCalendarSystemJapanese: public KCalendarSystemGregorianProleptic
+class KCalendarSystemJapanese: public KCalendarSystemGregorian
 {
 public:
     explicit KCalendarSystemJapanese(const KLocale *locale = 0);

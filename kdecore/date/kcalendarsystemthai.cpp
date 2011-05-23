@@ -18,15 +18,15 @@
 */
 
 #include "kcalendarsystemthai_p.h"
-#include "kcalendarsystemgregorianprolepticprivate_p.h"
+#include "kcalendarsystemgregorianprivate_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
 
 #include <QtCore/QDate>
 
-//Reuse the Gregorian Proleptic private implementation
-class KCalendarSystemThaiPrivate : public KCalendarSystemGregorianProlepticPrivate
+//Reuse the Gregorian private implementation
+class KCalendarSystemThaiPrivate : public KCalendarSystemGregorianPrivate
 {
 public:
     explicit KCalendarSystemThaiPrivate(KCalendarSystemThai *q);
@@ -39,10 +39,10 @@ public:
     virtual int earliestValidYear() const;
 };
 
-//Override only a few of the Gregorian Proleptic private methods
+//Override only a few of the Gregorian private methods
 
 KCalendarSystemThaiPrivate::KCalendarSystemThaiPrivate(KCalendarSystemThai *q)
-                          : KCalendarSystemGregorianProlepticPrivate(q)
+                          : KCalendarSystemGregorianPrivate(q)
 {
 }
 
@@ -67,7 +67,7 @@ void KCalendarSystemThaiPrivate::loadDefaultEraList()
 
 bool KCalendarSystemThaiPrivate::isLeapYear(int year) const
 {
-    return KCalendarSystemGregorianProlepticPrivate::isLeapYear(year - 543);
+    return KCalendarSystemGregorianPrivate::isLeapYear(year - 543);
 }
 
 bool KCalendarSystemThaiPrivate::hasYearZero() const
@@ -82,20 +82,20 @@ int KCalendarSystemThaiPrivate::earliestValidYear() const
 
 
 KCalendarSystemThai::KCalendarSystemThai(const KLocale *locale)
-                   : KCalendarSystemGregorianProleptic(*new KCalendarSystemThaiPrivate(this), KSharedConfig::Ptr(), locale)
+                   : KCalendarSystemGregorian(*new KCalendarSystemThaiPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemThai::KCalendarSystemThai(const KSharedConfig::Ptr config, const KLocale *locale)
-                   : KCalendarSystemGregorianProleptic(*new KCalendarSystemThaiPrivate(this), config, locale)
+                   : KCalendarSystemGregorian(*new KCalendarSystemThaiPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemThai::KCalendarSystemThai(KCalendarSystemThaiPrivate &dd,
                                          const KSharedConfig::Ptr config, const KLocale *locale)
-                   : KCalendarSystemGregorianProleptic(dd, config, locale)
+                   : KCalendarSystemGregorian(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
@@ -129,183 +129,183 @@ QDate KCalendarSystemThai::latestValidDate() const
 
 bool KCalendarSystemThai::isValid(int year, int month, int day) const
 {
-    return KCalendarSystemGregorianProleptic::isValid(year, month, day);
+    return KCalendarSystemGregorian::isValid(year, month, day);
 }
 
 bool KCalendarSystemThai::isValid(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::isValid(date);
+    return KCalendarSystemGregorian::isValid(date);
 }
 
 bool KCalendarSystemThai::setDate(QDate &date, int year, int month, int day) const
 {
-    return KCalendarSystemGregorianProleptic::setDate(date, year, month, day);
+    return KCalendarSystemGregorian::setDate(date, year, month, day);
 }
 
 // Deprecated
 bool KCalendarSystemThai::setYMD(QDate &date, int y, int m, int d) const
 {
-    return KCalendarSystemGregorianProleptic::setDate(date, y, m, d);
+    return KCalendarSystemGregorian::setDate(date, y, m, d);
 }
 
 int KCalendarSystemThai::year(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::year(date);
+    return KCalendarSystemGregorian::year(date);
 }
 
 int KCalendarSystemThai::month(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::month(date);
+    return KCalendarSystemGregorian::month(date);
 }
 
 int KCalendarSystemThai::day(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::day(date);
+    return KCalendarSystemGregorian::day(date);
 }
 
 QDate KCalendarSystemThai::addYears(const QDate &date, int nyears) const
 {
-    return KCalendarSystemGregorianProleptic::addYears(date, nyears);
+    return KCalendarSystemGregorian::addYears(date, nyears);
 }
 
 QDate KCalendarSystemThai::addMonths(const QDate &date, int nmonths) const
 {
-    return KCalendarSystemGregorianProleptic::addMonths(date, nmonths);
+    return KCalendarSystemGregorian::addMonths(date, nmonths);
 }
 
 QDate KCalendarSystemThai::addDays(const QDate &date, int ndays) const
 {
-    return KCalendarSystemGregorianProleptic::addDays(date, ndays);
+    return KCalendarSystemGregorian::addDays(date, ndays);
 }
 
 int KCalendarSystemThai::monthsInYear(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::monthsInYear(date);
+    return KCalendarSystemGregorian::monthsInYear(date);
 }
 
 int KCalendarSystemThai::weeksInYear(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::weeksInYear(date);
+    return KCalendarSystemGregorian::weeksInYear(date);
 }
 
 int KCalendarSystemThai::weeksInYear(int year) const
 {
-    return KCalendarSystemGregorianProleptic::weeksInYear(year);
+    return KCalendarSystemGregorian::weeksInYear(year);
 }
 
 int KCalendarSystemThai::daysInYear(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::daysInYear(date);
+    return KCalendarSystemGregorian::daysInYear(date);
 }
 
 int KCalendarSystemThai::daysInMonth(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::daysInMonth(date);
+    return KCalendarSystemGregorian::daysInMonth(date);
 }
 
 int KCalendarSystemThai::daysInWeek(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::daysInWeek(date);
+    return KCalendarSystemGregorian::daysInWeek(date);
 }
 
 int KCalendarSystemThai::dayOfYear(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::dayOfYear(date);
+    return KCalendarSystemGregorian::dayOfYear(date);
 }
 
 int KCalendarSystemThai::dayOfWeek(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::dayOfWeek(date);
+    return KCalendarSystemGregorian::dayOfWeek(date);
 }
 
 int KCalendarSystemThai::weekNumber(const QDate &date, int * yearNum) const
 {
-    return KCalendarSystemGregorianProleptic::weekNumber(date, yearNum);
+    return KCalendarSystemGregorian::weekNumber(date, yearNum);
 }
 
 bool KCalendarSystemThai::isLeapYear(int year) const
 {
-    return KCalendarSystemGregorianProleptic::isLeapYear(year);
+    return KCalendarSystemGregorian::isLeapYear(year);
 }
 
 bool KCalendarSystemThai::isLeapYear(const QDate &date) const
 {
-    return KCalendarSystemGregorianProleptic::isLeapYear(date);
+    return KCalendarSystemGregorian::isLeapYear(date);
 }
 
 QString KCalendarSystemThai::monthName(int month, int year, MonthNameFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::monthName(month, year, format);
+    return KCalendarSystemGregorian::monthName(month, year, format);
 }
 
 QString KCalendarSystemThai::monthName(const QDate &date, MonthNameFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::monthName(date, format);
+    return KCalendarSystemGregorian::monthName(date, format);
 }
 
 QString KCalendarSystemThai::weekDayName(int weekDay, WeekDayNameFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::weekDayName(weekDay, format);
+    return KCalendarSystemGregorian::weekDayName(weekDay, format);
 }
 
 QString KCalendarSystemThai::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::weekDayName(date, format);
+    return KCalendarSystemGregorian::weekDayName(date, format);
 }
 
 QString KCalendarSystemThai::yearString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::yearString(pDate, format);
+    return KCalendarSystemGregorian::yearString(pDate, format);
 }
 
 QString KCalendarSystemThai::monthString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::monthString(pDate, format);
+    return KCalendarSystemGregorian::monthString(pDate, format);
 }
 
 QString KCalendarSystemThai::dayString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::dayString(pDate, format);
+    return KCalendarSystemGregorian::dayString(pDate, format);
 }
 
 int KCalendarSystemThai::yearStringToInteger(const QString &sNum, int &iLength) const
 {
-    return KCalendarSystemGregorianProleptic::yearStringToInteger(sNum, iLength);
+    return KCalendarSystemGregorian::yearStringToInteger(sNum, iLength);
 }
 
 int KCalendarSystemThai::monthStringToInteger(const QString &sNum, int &iLength) const
 {
-    return KCalendarSystemGregorianProleptic::monthStringToInteger(sNum, iLength);
+    return KCalendarSystemGregorian::monthStringToInteger(sNum, iLength);
 }
 
 int KCalendarSystemThai::dayStringToInteger(const QString &sNum, int &iLength) const
 {
-    return KCalendarSystemGregorianProleptic::dayStringToInteger(sNum, iLength);
+    return KCalendarSystemGregorian::dayStringToInteger(sNum, iLength);
 }
 
 QString KCalendarSystemThai::formatDate(const QDate &date, KLocale::DateFormat format) const
 {
-    return KCalendarSystemGregorianProleptic::formatDate(date, format);
+    return KCalendarSystemGregorian::formatDate(date, format);
 }
 
 QDate KCalendarSystemThai::readDate(const QString &str, bool *ok) const
 {
-    return KCalendarSystemGregorianProleptic::readDate(str, ok);
+    return KCalendarSystemGregorian::readDate(str, ok);
 }
 
 QDate KCalendarSystemThai::readDate(const QString &intstr, const QString &fmt, bool *ok) const
 {
-    return KCalendarSystemGregorianProleptic::readDate(intstr, fmt, ok);
+    return KCalendarSystemGregorian::readDate(intstr, fmt, ok);
 }
 
 QDate KCalendarSystemThai::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
 {
-    return KCalendarSystemGregorianProleptic::readDate(str, flags, ok);
+    return KCalendarSystemGregorian::readDate(str, flags, ok);
 }
 
 int KCalendarSystemThai::weekStartDay() const
 {
-    return KCalendarSystemGregorianProleptic::weekStartDay();
+    return KCalendarSystemGregorian::weekStartDay();
 }
 
 int KCalendarSystemThai::weekDayOfPray() const
@@ -315,17 +315,17 @@ int KCalendarSystemThai::weekDayOfPray() const
 
 bool KCalendarSystemThai::isLunar() const
 {
-    return KCalendarSystemGregorianProleptic::isLunar();
+    return KCalendarSystemGregorian::isLunar();
 }
 
 bool KCalendarSystemThai::isLunisolar() const
 {
-    return KCalendarSystemGregorianProleptic::isLunisolar();
+    return KCalendarSystemGregorian::isLunisolar();
 }
 
 bool KCalendarSystemThai::isSolar() const
 {
-    return KCalendarSystemGregorianProleptic::isSolar();
+    return KCalendarSystemGregorian::isSolar();
 }
 
 bool KCalendarSystemThai::isProleptic() const
@@ -335,13 +335,13 @@ bool KCalendarSystemThai::isProleptic() const
 
 bool KCalendarSystemThai::julianDayToDate(int jd, int &year, int &month, int &day) const
 {
-    bool result = KCalendarSystemGregorianProleptic::julianDayToDate(jd, year, month, day);
+    bool result = KCalendarSystemGregorian::julianDayToDate(jd, year, month, day);
     year = year + 543;
     return result;
 }
 
 bool KCalendarSystemThai::dateToJulianDay(int year, int month, int day, int &jd) const
 {
-    return KCalendarSystemGregorianProleptic::dateToJulianDay(year - 543, month, day, jd);
+    return KCalendarSystemGregorian::dateToJulianDay(year - 543, month, day, jd);
 }
 

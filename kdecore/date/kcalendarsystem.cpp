@@ -33,7 +33,7 @@
 #include "kcalendarera_p.h"
 #include "kcalendarsystemcoptic_p.h"
 #include "kcalendarsystemethiopian_p.h"
-#include "kcalendarsystemgregorianproleptic_p.h"
+#include "kcalendarsystemgregorian_p.h"
 #include "kcalendarsystemhebrew_p.h"
 #include "kcalendarsystemindiannational_p.h"
 #include "kcalendarsystemislamiccivil_p.h"
@@ -101,7 +101,7 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
     case KLocale::EthiopianCalendar:
         return new KCalendarSystemEthiopian(config, locale);
     case KLocale::GregorianCalendar:
-        return new KCalendarSystemGregorianProleptic(config, locale);
+        return new KCalendarSystemGregorian(config, locale);
     case KLocale::HebrewCalendar:
         return new KCalendarSystemHebrew(config, locale);
     case KLocale::IndianNationalCalendar:

@@ -185,7 +185,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemcoptic.cpp
    date/kcalendarsystemethiopian.cpp
    date/kcalendarsystemqdate.cpp
-   date/kcalendarsystemgregorianproleptic.cpp
+   date/kcalendarsystemgregorian.cpp
    date/kcalendarsystemislamiccivil.cpp
    date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemindiannational.cpp

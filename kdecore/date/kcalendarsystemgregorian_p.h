@@ -17,12 +17,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMGREGORIANPROLEPTIC_H
-#define KCALENDARSYSTEMGREGORIANPROLEPTIC_H
+#ifndef KCALENDARSYSTEMGREGORIAN_H
+#define KCALENDARSYSTEMGREGORIAN_H
 
 #include "kcalendarsystem.h"
 
-class KCalendarSystemGregorianProlepticPrivate;
+class KCalendarSystemGregorianPrivate;
 
 /**
  * @internal
@@ -39,12 +39,12 @@ class KCalendarSystemGregorianProlepticPrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KCalendarSystemGregorianProleptic: public KCalendarSystem
+class KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
-    explicit KCalendarSystemGregorianProleptic(const KLocale *locale = 0);
-    explicit KCalendarSystemGregorianProleptic(const KSharedConfig::Ptr config, const KLocale *locale = 0);
-    virtual ~KCalendarSystemGregorianProleptic();
+    explicit KCalendarSystemGregorian(const KLocale *locale = 0);
+    explicit KCalendarSystemGregorian(const KSharedConfig::Ptr config, const KLocale *locale = 0);
+    virtual ~KCalendarSystemGregorian();
 
     virtual QString calendarType() const;
 
@@ -112,14 +112,14 @@ public:
 protected:
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
-    KCalendarSystemGregorianProleptic(KCalendarSystemGregorianProlepticPrivate &dd,
+    KCalendarSystemGregorian(KCalendarSystemGregorianPrivate &dd,
                                       const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
                                       const KLocale *locale = 0);
 
 private:
     friend class KCalendarSystemIndianNational;  // To allow access to julianDayToDate() and dateToJulianDay()
-    Q_DECLARE_PRIVATE(KCalendarSystemGregorianProleptic)
-    KCalendarSystemGregorianProlepticPrivate * const dont_use; // KDE5 remove, use shared d
+    Q_DECLARE_PRIVATE(KCalendarSystemGregorian)
+    KCalendarSystemGregorianPrivate * const dont_use; // KDE5 remove, use shared d
 };
 
-#endif // KCALENDARSYSTEMGREGORIANPROLEPTIC_H
+#endif // KCALENDARSYSTEMGREGORIAN_H
