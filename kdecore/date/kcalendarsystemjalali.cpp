@@ -35,32 +35,32 @@
 class KCalendarSystemJalaliPrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q );
+    explicit KCalendarSystemJalaliPrivate(KCalendarSystemJalali *q);
 
     virtual ~KCalendarSystemJalaliPrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
-    virtual int monthsInYear( int year ) const;
-    virtual int daysInMonth( int year, int month ) const;
-    virtual int daysInYear( int year ) const;
+    virtual int monthsInYear(int year) const;
+    virtual int daysInMonth(int year, int month) const;
+    virtual int daysInYear(int year) const;
     virtual int daysInWeek() const;
-    virtual bool isLeapYear( int year ) const;
+    virtual bool isLeapYear(int year) const;
     virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
-    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
-    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
+    virtual QString monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const;
+    virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const;
 };
 
 // Shared d pointer base class definitions
 
-KCalendarSystemJalaliPrivate::KCalendarSystemJalaliPrivate( KCalendarSystemJalali *q )
-                             :KCalendarSystemPrivate( q )
+KCalendarSystemJalaliPrivate::KCalendarSystemJalaliPrivate(KCalendarSystemJalali *q)
+                            : KCalendarSystemPrivate(q)
 {
 }
 
@@ -77,38 +77,38 @@ void KCalendarSystemJalaliPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
     // Islamic Era (Hijri), Anno Persico.
-    name = i18nc( "Calendar Era: Jalali Islamic Era, years > 0, LongFormat", "Anno Persico" );
-    shortName = i18nc( "Calendar Era: Jalali Islamic Era, years > 0, ShortFormat", "AP" );
-    format = i18nc( "(kdedt-format) Jalali, AP, full era year format used for %EY, e.g. 2000 AP", "%Ey %EC" );
-    addEra( '+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format );
+    name = i18nc("Calendar Era: Jalali Islamic Era, years > 0, LongFormat", "Anno Persico");
+    shortName = i18nc("Calendar Era: Jalali Islamic Era, years > 0, ShortFormat", "AP");
+    format = i18nc("(kdedt-format) Jalali, AP, full era year format used for %EY, e.g. 2000 AP", "%Ey %EC");
+    addEra('+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format);
 }
 
-int KCalendarSystemJalaliPrivate::monthsInYear( int year ) const
+int KCalendarSystemJalaliPrivate::monthsInYear(int year) const
 {
-    Q_UNUSED( year )
+    Q_UNUSED(year)
     return 12;
 }
 
-int KCalendarSystemJalaliPrivate::daysInMonth( int year, int month ) const
+int KCalendarSystemJalaliPrivate::daysInMonth(int year, int month) const
 {
-    if ( month == 12 ) {
-        if ( isLeapYear( year ) ) {
+    if (month == 12) {
+        if (isLeapYear(year)) {
             return 30;
         } else {
             return 29;
         }
     }
 
-    if ( month <= 6  ) {
+    if (month <= 6) {
         return 31;
     }
 
     return 30;
 }
 
-int KCalendarSystemJalaliPrivate::daysInYear( int year ) const
+int KCalendarSystemJalaliPrivate::daysInYear(int year) const
 {
-    if ( isLeapYear( year ) ) {
+    if (isLeapYear(year)) {
         return 366;
     } else {
         return 365;
@@ -120,26 +120,26 @@ int KCalendarSystemJalaliPrivate::daysInWeek() const
     return 7;
 }
 
-bool KCalendarSystemJalaliPrivate::isLeapYear( int year ) const
+bool KCalendarSystemJalaliPrivate::isLeapYear(int year) const
 {
     // From formilab Public Domain code http://www.fourmilab.ch/documents/calendar/
     // Use Birashk algorithm as it matches the to/from jd code below
 
     // Birashk algorithm is incorrect in two years in period AP 1244 to 1531,
     // 1403/1404 and 1436/1437, and so catch them here first
-    if ( year == 1403 || year == 1436 ) {
+    if (year == 1403 || year == 1436) {
         return true;
-    } else if ( year == 1404 || year == 1437 ) {
+    } else if (year == 1404 || year == 1437) {
         return false;
     }
 
-    if ( year >= 0 ) {
+    if (year >= 0) {
         year = year - 474;
     } else {
         year = year - 473;
     }
 
-    if ( ( ( ( ( ( year % 2820 ) + 474 ) + 38 ) * 682 ) % 2816 ) < 682 ) {
+    if ((((((year % 2820) + 474) + 38) * 682) % 2816) < 682) {
         return true;
     } else {
         return false;
@@ -176,249 +176,249 @@ int KCalendarSystemJalaliPrivate::latestValidYear() const
     return 1530;
 }
 
-QString KCalendarSystemJalaliPrivate::monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const
+QString KCalendarSystemJalaliPrivate::monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const
 {
-    Q_UNUSED( year );
+    Q_UNUSED(year);
 
-    if ( format == KLocale::NarrowName ) {
-        switch ( month ) {
+    if (format == KLocale::NarrowName) {
+        switch (month) {
         case 1:
-            return ki18nc( "Jalali month 1 - KLocale::NarrowName",  "F" ).toString( locale() );
+            return ki18nc("Jalali month 1 - KLocale::NarrowName",  "F").toString(locale());
         case 2:
-            return ki18nc( "Jalali month 2 - KLocale::NarrowName",  "O" ).toString( locale() );
+            return ki18nc("Jalali month 2 - KLocale::NarrowName",  "O").toString(locale());
         case 3:
-            return ki18nc( "Jalali month 3 - KLocale::NarrowName",  "K" ).toString( locale() );
+            return ki18nc("Jalali month 3 - KLocale::NarrowName",  "K").toString(locale());
         case 4:
-            return ki18nc( "Jalali month 4 - KLocale::NarrowName",  "T" ).toString( locale() );
+            return ki18nc("Jalali month 4 - KLocale::NarrowName",  "T").toString(locale());
         case 5:
-            return ki18nc( "Jalali month 5 - KLocale::NarrowName",  "M" ).toString( locale() );
+            return ki18nc("Jalali month 5 - KLocale::NarrowName",  "M").toString(locale());
         case 6:
-            return ki18nc( "Jalali month 6 - KLocale::NarrowName",  "S" ).toString( locale() );
+            return ki18nc("Jalali month 6 - KLocale::NarrowName",  "S").toString(locale());
         case 7:
-            return ki18nc( "Jalali month 7 - KLocale::NarrowName",  "M" ).toString( locale() );
+            return ki18nc("Jalali month 7 - KLocale::NarrowName",  "M").toString(locale());
         case 8:
-            return ki18nc( "Jalali month 8 - KLocale::NarrowName",  "A" ).toString( locale() );
+            return ki18nc("Jalali month 8 - KLocale::NarrowName",  "A").toString(locale());
         case 9:
-            return ki18nc( "Jalali month 9 - KLocale::NarrowName",  "A" ).toString( locale() );
+            return ki18nc("Jalali month 9 - KLocale::NarrowName",  "A").toString(locale());
         case 10:
-            return ki18nc( "Jalali month 10 - KLocale::NarrowName", "D" ).toString( locale() );
+            return ki18nc("Jalali month 10 - KLocale::NarrowName", "D").toString(locale());
         case 11:
-            return ki18nc( "Jalali month 11 - KLocale::NarrowName", "B" ).toString( locale() );
+            return ki18nc("Jalali month 11 - KLocale::NarrowName", "B").toString(locale());
         case 12:
-            return ki18nc( "Jalali month 12 - KLocale::NarrowName", "E" ).toString( locale() );
+            return ki18nc("Jalali month 12 - KLocale::NarrowName", "E").toString(locale());
         default:
             return QString();
         }
     }
 
-    if ( format == KLocale::ShortName && possessive ) {
-        switch ( month ) {
+    if (format == KLocale::ShortName && possessive) {
+        switch (month) {
         case 1:
-            return ki18nc( "Jalali month 1 - KLocale::ShortName Possessive",  "of Far" ).toString( locale() );
+            return ki18nc("Jalali month 1 - KLocale::ShortName Possessive",  "of Far").toString(locale());
         case 2:
-            return ki18nc( "Jalali month 2 - KLocale::ShortName Possessive",  "of Ord" ).toString( locale() );
+            return ki18nc("Jalali month 2 - KLocale::ShortName Possessive",  "of Ord").toString(locale());
         case 3:
-            return ki18nc( "Jalali month 3 - KLocale::ShortName Possessive",  "of Kho" ).toString( locale() );
+            return ki18nc("Jalali month 3 - KLocale::ShortName Possessive",  "of Kho").toString(locale());
         case 4:
-            return ki18nc( "Jalali month 4 - KLocale::ShortName Possessive",  "of Tir" ).toString( locale() );
+            return ki18nc("Jalali month 4 - KLocale::ShortName Possessive",  "of Tir").toString(locale());
         case 5:
-            return ki18nc( "Jalali month 5 - KLocale::ShortName Possessive",  "of Mor" ).toString( locale() );
+            return ki18nc("Jalali month 5 - KLocale::ShortName Possessive",  "of Mor").toString(locale());
         case 6:
-            return ki18nc( "Jalali month 6 - KLocale::ShortName Possessive",  "of Sha" ).toString( locale() );
+            return ki18nc("Jalali month 6 - KLocale::ShortName Possessive",  "of Sha").toString(locale());
         case 7:
-            return ki18nc( "Jalali month 7 - KLocale::ShortName Possessive",  "of Meh" ).toString( locale() );
+            return ki18nc("Jalali month 7 - KLocale::ShortName Possessive",  "of Meh").toString(locale());
         case 8:
-            return ki18nc( "Jalali month 8 - KLocale::ShortName Possessive",  "of Aba" ).toString( locale() );
+            return ki18nc("Jalali month 8 - KLocale::ShortName Possessive",  "of Aba").toString(locale());
         case 9:
-            return ki18nc( "Jalali month 9 - KLocale::ShortName Possessive",  "of Aza" ).toString( locale() );
+            return ki18nc("Jalali month 9 - KLocale::ShortName Possessive",  "of Aza").toString(locale());
         case 10:
-            return ki18nc( "Jalali month 10 - KLocale::ShortName Possessive", "of Dei" ).toString( locale() );
+            return ki18nc("Jalali month 10 - KLocale::ShortName Possessive", "of Dei").toString(locale());
         case 11:
-            return ki18nc( "Jalali month 11 - KLocale::ShortName Possessive", "of Bah" ).toString( locale() );
+            return ki18nc("Jalali month 11 - KLocale::ShortName Possessive", "of Bah").toString(locale());
         case 12:
-            return ki18nc( "Jalali month 12 - KLocale::ShortName Possessive", "of Esf" ).toString( locale() );
+            return ki18nc("Jalali month 12 - KLocale::ShortName Possessive", "of Esf").toString(locale());
         default:
             return QString();
         }
     }
 
-    if ( format == KLocale::ShortName && !possessive ) {
-        switch ( month ) {
+    if (format == KLocale::ShortName && !possessive) {
+        switch (month) {
         case 1:
-            return ki18nc( "Jalali month 1 - KLocale::ShortName",  "Far" ).toString( locale() );
+            return ki18nc("Jalali month 1 - KLocale::ShortName",  "Far").toString(locale());
         case 2:
-            return ki18nc( "Jalali month 2 - KLocale::ShortName",  "Ord" ).toString( locale() );
+            return ki18nc("Jalali month 2 - KLocale::ShortName",  "Ord").toString(locale());
         case 3:
-            return ki18nc( "Jalali month 3 - KLocale::ShortName",  "Kho" ).toString( locale() );
+            return ki18nc("Jalali month 3 - KLocale::ShortName",  "Kho").toString(locale());
         case 4:
-            return ki18nc( "Jalali month 4 - KLocale::ShortName",  "Tir" ).toString( locale() );
+            return ki18nc("Jalali month 4 - KLocale::ShortName",  "Tir").toString(locale());
         case 5:
-            return ki18nc( "Jalali month 5 - KLocale::ShortName",  "Mor" ).toString( locale() );
+            return ki18nc("Jalali month 5 - KLocale::ShortName",  "Mor").toString(locale());
         case 6:
-            return ki18nc( "Jalali month 6 - KLocale::ShortName",  "Sha" ).toString( locale() );
+            return ki18nc("Jalali month 6 - KLocale::ShortName",  "Sha").toString(locale());
         case 7:
-            return ki18nc( "Jalali month 7 - KLocale::ShortName",  "Meh" ).toString( locale() );
+            return ki18nc("Jalali month 7 - KLocale::ShortName",  "Meh").toString(locale());
         case 8:
-            return ki18nc( "Jalali month 8 - KLocale::ShortName",  "Aba" ).toString( locale() );
+            return ki18nc("Jalali month 8 - KLocale::ShortName",  "Aba").toString(locale());
         case 9:
-            return ki18nc( "Jalali month 9 - KLocale::ShortName",  "Aza" ).toString( locale() );
+            return ki18nc("Jalali month 9 - KLocale::ShortName",  "Aza").toString(locale());
         case 10:
-            return ki18nc( "Jalali month 10 - KLocale::ShortName", "Dei" ).toString( locale() );
+            return ki18nc("Jalali month 10 - KLocale::ShortName", "Dei").toString(locale());
         case 11:
-            return ki18nc( "Jalali month 11 - KLocale::ShortName", "Bah" ).toString( locale() );
+            return ki18nc("Jalali month 11 - KLocale::ShortName", "Bah").toString(locale());
         case 12:
-            return ki18nc( "Jalali month 12 - KLocale::ShortName", "Esf" ).toString( locale() );
+            return ki18nc("Jalali month 12 - KLocale::ShortName", "Esf").toString(locale());
         default:
             return QString();
         }
     }
 
-    if ( format == KLocale::LongName && possessive ) {
-        switch ( month ) {
+    if (format == KLocale::LongName && possessive) {
+        switch (month) {
         case 1:
-            return ki18nc( "Jalali month 1 - KLocale::LongName Possessive",  "of Farvardin"   ).toString( locale() );
+            return ki18nc("Jalali month 1 - KLocale::LongName Possessive",  "of Farvardin").toString(locale());
         case 2:
-            return ki18nc( "Jalali month 2 - KLocale::LongName Possessive",  "of Ordibehesht" ).toString( locale() );
+            return ki18nc("Jalali month 2 - KLocale::LongName Possessive",  "of Ordibehesht").toString(locale());
         case 3:
-            return ki18nc( "Jalali month 3 - KLocale::LongName Possessive",  "of Khordad"     ).toString( locale() );
+            return ki18nc("Jalali month 3 - KLocale::LongName Possessive",  "of Khordad").toString(locale());
         case 4:
-            return ki18nc( "Jalali month 4 - KLocale::LongName Possessive",  "of Tir"         ).toString( locale() );
+            return ki18nc("Jalali month 4 - KLocale::LongName Possessive",  "of Tir").toString(locale());
         case 5:
-            return ki18nc( "Jalali month 5 - KLocale::LongName Possessive",  "of Mordad"      ).toString( locale() );
+            return ki18nc("Jalali month 5 - KLocale::LongName Possessive",  "of Mordad").toString(locale());
         case 6:
-            return ki18nc( "Jalali month 6 - KLocale::LongName Possessive",  "of Shahrivar"   ).toString( locale() );
+            return ki18nc("Jalali month 6 - KLocale::LongName Possessive",  "of Shahrivar").toString(locale());
         case 7:
-            return ki18nc( "Jalali month 7 - KLocale::LongName Possessive",  "of Mehr"        ).toString( locale() );
+            return ki18nc("Jalali month 7 - KLocale::LongName Possessive",  "of Mehr").toString(locale());
         case 8:
-            return ki18nc( "Jalali month 8 - KLocale::LongName Possessive",  "of Aban"        ).toString( locale() );
+            return ki18nc("Jalali month 8 - KLocale::LongName Possessive",  "of Aban").toString(locale());
         case 9:
-            return ki18nc( "Jalali month 9 - KLocale::LongName Possessive",  "of Azar"        ).toString( locale() );
+            return ki18nc("Jalali month 9 - KLocale::LongName Possessive",  "of Azar").toString(locale());
         case 10:
-            return ki18nc( "Jalali month 10 - KLocale::LongName Possessive", "of Dei"         ).toString( locale() );
+            return ki18nc("Jalali month 10 - KLocale::LongName Possessive", "of Dei").toString(locale());
         case 11:
-            return ki18nc( "Jalali month 11 - KLocale::LongName Possessive", "of Bahman"      ).toString( locale() );
+            return ki18nc("Jalali month 11 - KLocale::LongName Possessive", "of Bahman").toString(locale());
         case 12:
-            return ki18nc( "Jalali month 12 - KLocale::LongName Possessive", "of Esfand"      ).toString( locale() );
+            return ki18nc("Jalali month 12 - KLocale::LongName Possessive", "of Esfand").toString(locale());
         default:
             return QString();
         }
     }
 
     // Default to LongName
-    switch ( month ) {
+    switch (month) {
     case 1:
-        return ki18nc( "Jalali month 1 - KLocale::LongName",  "Farvardin"   ).toString( locale() );
+        return ki18nc("Jalali month 1 - KLocale::LongName",  "Farvardin").toString(locale());
     case 2:
-        return ki18nc( "Jalali month 2 - KLocale::LongName",  "Ordibehesht" ).toString( locale() );
+        return ki18nc("Jalali month 2 - KLocale::LongName",  "Ordibehesht").toString(locale());
     case 3:
-        return ki18nc( "Jalali month 3 - KLocale::LongName",  "Khordad"     ).toString( locale() );
+        return ki18nc("Jalali month 3 - KLocale::LongName",  "Khordad").toString(locale());
     case 4:
-        return ki18nc( "Jalali month 4 - KLocale::LongName",  "Tir"         ).toString( locale() );
+        return ki18nc("Jalali month 4 - KLocale::LongName",  "Tir").toString(locale());
     case 5:
-        return ki18nc( "Jalali month 5 - KLocale::LongName",  "Mordad"      ).toString( locale() );
+        return ki18nc("Jalali month 5 - KLocale::LongName",  "Mordad").toString(locale());
     case 6:
-        return ki18nc( "Jalali month 6 - KLocale::LongName",  "Shahrivar"   ).toString( locale() );
+        return ki18nc("Jalali month 6 - KLocale::LongName",  "Shahrivar").toString(locale());
     case 7:
-        return ki18nc( "Jalali month 7 - KLocale::LongName",  "Mehr"        ).toString( locale() );
+        return ki18nc("Jalali month 7 - KLocale::LongName",  "Mehr").toString(locale());
     case 8:
-        return ki18nc( "Jalali month 8 - KLocale::LongName",  "Aban"        ).toString( locale() );
+        return ki18nc("Jalali month 8 - KLocale::LongName",  "Aban").toString(locale());
     case 9:
-        return ki18nc( "Jalali month 9 - KLocale::LongName",  "Azar"        ).toString( locale() );
+        return ki18nc("Jalali month 9 - KLocale::LongName",  "Azar").toString(locale());
     case 10:
-        return ki18nc( "Jalali month 10 - KLocale::LongName", "Dei"         ).toString( locale() );
+        return ki18nc("Jalali month 10 - KLocale::LongName", "Dei").toString(locale());
     case 11:
-        return ki18nc( "Jalali month 11 - KLocale::LongName", "Bahman"      ).toString( locale() );
+        return ki18nc("Jalali month 11 - KLocale::LongName", "Bahman").toString(locale());
     case 12:
-        return ki18nc( "Jalali month 12 - KLocale::LongName", "Esfand"      ).toString( locale() );
+        return ki18nc("Jalali month 12 - KLocale::LongName", "Esfand").toString(locale());
     default:
         return QString();
     }
 }
 
-QString KCalendarSystemJalaliPrivate::weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const
+QString KCalendarSystemJalaliPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
-    if ( format == KLocale::NarrowName ) {
-        switch ( weekDay ) {
+    if (format == KLocale::NarrowName) {
+        switch (weekDay) {
         case 1:
-            return ki18nc( "Jalali weekday 1 - KLocale::NarrowName ", "2" ).toString( locale() );
+            return ki18nc("Jalali weekday 1 - KLocale::NarrowName ", "2").toString(locale());
         case 2:
-            return ki18nc( "Jalali weekday 2 - KLocale::NarrowName ", "3" ).toString( locale() );
+            return ki18nc("Jalali weekday 2 - KLocale::NarrowName ", "3").toString(locale());
         case 3:
-            return ki18nc( "Jalali weekday 3 - KLocale::NarrowName ", "4" ).toString( locale() );
+            return ki18nc("Jalali weekday 3 - KLocale::NarrowName ", "4").toString(locale());
         case 4:
-            return ki18nc( "Jalali weekday 4 - KLocale::NarrowName ", "5" ).toString( locale() );
+            return ki18nc("Jalali weekday 4 - KLocale::NarrowName ", "5").toString(locale());
         case 5:
-            return ki18nc( "Jalali weekday 5 - KLocale::NarrowName ", "J" ).toString( locale() );
+            return ki18nc("Jalali weekday 5 - KLocale::NarrowName ", "J").toString(locale());
         case 6:
-            return ki18nc( "Jalali weekday 6 - KLocale::NarrowName ", "S" ).toString( locale() );
+            return ki18nc("Jalali weekday 6 - KLocale::NarrowName ", "S").toString(locale());
         case 7:
-            return ki18nc( "Jalali weekday 7 - KLocale::NarrowName ", "1" ).toString( locale() );
+            return ki18nc("Jalali weekday 7 - KLocale::NarrowName ", "1").toString(locale());
         default:
             return QString();
         }
     }
 
-    if ( format == KLocale::ShortName  || format == KLocale:: ShortNumber ) {
-        switch ( weekDay ) {
+    if (format == KLocale::ShortName  || format == KLocale:: ShortNumber) {
+        switch (weekDay) {
         case 1:
-            return ki18nc( "Jalali weekday 1 - KLocale::ShortName", "2sh" ).toString( locale() );
+            return ki18nc("Jalali weekday 1 - KLocale::ShortName", "2sh").toString(locale());
         case 2:
-            return ki18nc( "Jalali weekday 2 - KLocale::ShortName", "3sh" ).toString( locale() );
+            return ki18nc("Jalali weekday 2 - KLocale::ShortName", "3sh").toString(locale());
         case 3:
-            return ki18nc( "Jalali weekday 3 - KLocale::ShortName", "4sh" ).toString( locale() );
+            return ki18nc("Jalali weekday 3 - KLocale::ShortName", "4sh").toString(locale());
         case 4:
-            return ki18nc( "Jalali weekday 4 - KLocale::ShortName", "5sh" ).toString( locale() );
+            return ki18nc("Jalali weekday 4 - KLocale::ShortName", "5sh").toString(locale());
         case 5:
-            return ki18nc( "Jalali weekday 5 - KLocale::ShortName", "Jom" ).toString( locale() );
+            return ki18nc("Jalali weekday 5 - KLocale::ShortName", "Jom").toString(locale());
         case 6:
-            return ki18nc( "Jalali weekday 6 - KLocale::ShortName", "Shn" ).toString( locale() );
+            return ki18nc("Jalali weekday 6 - KLocale::ShortName", "Shn").toString(locale());
         case 7:
-            return ki18nc( "Jalali weekday 7 - KLocale::ShortName", "1sh" ).toString( locale() );
+            return ki18nc("Jalali weekday 7 - KLocale::ShortName", "1sh").toString(locale());
         default: return QString();
         }
     }
 
-    switch ( weekDay ) {
+    switch (weekDay) {
     case 1:
-        return ki18nc( "Jalali weekday 1 - KLocale::LongName", "Do shanbe"     ).toString( locale() );
+        return ki18nc("Jalali weekday 1 - KLocale::LongName", "Do shanbe").toString(locale());
     case 2:
-        return ki18nc( "Jalali weekday 2 - KLocale::LongName", "Se shanbe"     ).toString( locale() );
+        return ki18nc("Jalali weekday 2 - KLocale::LongName", "Se shanbe").toString(locale());
     case 3:
-        return ki18nc( "Jalali weekday 3 - KLocale::LongName", "Chahar shanbe" ).toString( locale() );
+        return ki18nc("Jalali weekday 3 - KLocale::LongName", "Chahar shanbe").toString(locale());
     case 4:
-        return ki18nc( "Jalali weekday 4 - KLocale::LongName", "Panj shanbe"   ).toString( locale() );
+        return ki18nc("Jalali weekday 4 - KLocale::LongName", "Panj shanbe").toString(locale());
     case 5:
-        return ki18nc( "Jalali weekday 5 - KLocale::LongName", "Jumee"         ).toString( locale() );
+        return ki18nc("Jalali weekday 5 - KLocale::LongName", "Jumee").toString(locale());
     case 6:
-        return ki18nc( "Jalali weekday 6 - KLocale::LongName", "Shanbe"        ).toString( locale() );
+        return ki18nc("Jalali weekday 6 - KLocale::LongName", "Shanbe").toString(locale());
     case 7:
-        return ki18nc( "Jalali weekday 7 - KLocale::LongName", "Yek-shanbe"    ).toString( locale() );
+        return ki18nc("Jalali weekday 7 - KLocale::LongName", "Yek-shanbe").toString(locale());
     default:
         return QString();
     }
 }
 
 
-KCalendarSystemJalali::KCalendarSystemJalali( const KLocale *locale )
-                     : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), KSharedConfig::Ptr(), locale ),
-                       dont_use( 0 )
+KCalendarSystemJalali::KCalendarSystemJalali(const KLocale *locale)
+                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), KSharedConfig::Ptr(), locale),
+                       dont_use(0)
 {
-    d_ptr->loadConfig( calendarType() );
+    d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemJalali::KCalendarSystemJalali( const KSharedConfig::Ptr config, const KLocale *locale )
-                     : KCalendarSystem( *new KCalendarSystemJalaliPrivate( this ), config, locale ),
-                       dont_use( 0 )
+KCalendarSystemJalali::KCalendarSystemJalali(const KSharedConfig::Ptr config, const KLocale *locale)
+                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), config, locale),
+                       dont_use(0)
 {
-    d_ptr->loadConfig( calendarType() );
+    d_ptr->loadConfig(calendarType());
 }
 
-KCalendarSystemJalali::KCalendarSystemJalali( KCalendarSystemJalaliPrivate &dd,
-                                              const KSharedConfig::Ptr config, const KLocale *locale )
-                     : KCalendarSystem( dd, config, locale ),
-                       dont_use( 0 )
+KCalendarSystemJalali::KCalendarSystemJalali(KCalendarSystemJalaliPrivate &dd,
+                                             const KSharedConfig::Ptr config, const KLocale *locale)
+                     : KCalendarSystem(dd, config, locale),
+                       dont_use(0)
 {
-    d_ptr->loadConfig( calendarType() );
+    d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJalali::~KCalendarSystemJalali()
@@ -428,204 +428,204 @@ KCalendarSystemJalali::~KCalendarSystemJalali()
 
 QString KCalendarSystemJalali::calendarType() const
 {
-    return QLatin1String( "jalali" );
+    return QLatin1String("jalali");
 }
 
 QDate KCalendarSystemJalali::epoch() const
 {
     // 19 March 622 in the Julian calendar
-    return QDate::fromJulianDay( 1948321 );
+    return QDate::fromJulianDay(1948321);
 }
 
 QDate KCalendarSystemJalali::earliestValidDate() const
 {
     // Using the Birashk formula which is accurate in period AP 1244 to 1530 (AD 1865 to 2152)
     // 1244-01-01 Jalali 1865-03-21 Gregorian
-    return QDate::fromJulianDay( 2402317 );
+    return QDate::fromJulianDay(2402317);
 }
 
 QDate KCalendarSystemJalali::latestValidDate() const
 {
     // Using the Birashk formula which is accurate in period AP 1244 to 1530 (AD 1865 to 2152)
     // 1530-12-29 Jalali 2152-03-19 Gregorian
-    return QDate::fromJulianDay( 2507140 );
+    return QDate::fromJulianDay(2507140);
 }
 
-bool KCalendarSystemJalali::isValid( int year, int month, int day ) const
+bool KCalendarSystemJalali::isValid(int year, int month, int day) const
 {
-    return KCalendarSystem::isValid( year, month, day );
+    return KCalendarSystem::isValid(year, month, day);
 }
 
-bool KCalendarSystemJalali::isValid( const QDate &date ) const
+bool KCalendarSystemJalali::isValid(const QDate &date) const
 {
-    return KCalendarSystem::isValid( date );
+    return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemJalali::setDate( QDate &date, int year, int month, int day ) const
+bool KCalendarSystemJalali::setDate(QDate &date, int year, int month, int day) const
 {
-    return KCalendarSystem::setDate( date, year, month, day );
+    return KCalendarSystem::setDate(date, year, month, day);
 }
 
 // Deprecated
-bool KCalendarSystemJalali::setYMD( QDate &date, int year, int month, int day ) const
+bool KCalendarSystemJalali::setYMD(QDate &date, int year, int month, int day) const
 {
-    return KCalendarSystem::setYMD( date, year, month, day );
+    return KCalendarSystem::setYMD(date, year, month, day);
 }
 
-int KCalendarSystemJalali::year( const QDate &date ) const
+int KCalendarSystemJalali::year(const QDate &date) const
 {
-    return KCalendarSystem::year( date );
+    return KCalendarSystem::year(date);
 }
 
-int KCalendarSystemJalali::month ( const QDate& date ) const
+int KCalendarSystemJalali::month(const QDate& date) const
 
 {
-    return KCalendarSystem::month( date );
+    return KCalendarSystem::month(date);
 }
 
-int KCalendarSystemJalali::day( const QDate &date ) const
+int KCalendarSystemJalali::day(const QDate &date) const
 {
-    return KCalendarSystem::day( date );
+    return KCalendarSystem::day(date);
 }
 
-QDate KCalendarSystemJalali::addYears( const QDate &date, int nyears ) const
+QDate KCalendarSystemJalali::addYears(const QDate &date, int nyears) const
 {
-    return KCalendarSystem::addYears( date, nyears );
+    return KCalendarSystem::addYears(date, nyears);
 }
 
-QDate KCalendarSystemJalali::addMonths( const QDate &date, int nmonths ) const
+QDate KCalendarSystemJalali::addMonths(const QDate &date, int nmonths) const
 {
-    return KCalendarSystem::addMonths( date, nmonths );
+    return KCalendarSystem::addMonths(date, nmonths);
 }
 
-QDate KCalendarSystemJalali::addDays( const QDate &date, int ndays ) const
+QDate KCalendarSystemJalali::addDays(const QDate &date, int ndays) const
 {
-    return KCalendarSystem::addDays( date, ndays );
+    return KCalendarSystem::addDays(date, ndays);
 }
 
-int KCalendarSystemJalali::monthsInYear( const QDate &date ) const
+int KCalendarSystemJalali::monthsInYear(const QDate &date) const
 {
-    return KCalendarSystem::monthsInYear( date );
+    return KCalendarSystem::monthsInYear(date);
 }
 
-int KCalendarSystemJalali::weeksInYear( const QDate &date ) const
+int KCalendarSystemJalali::weeksInYear(const QDate &date) const
 {
-    return KCalendarSystem::weeksInYear( date );
+    return KCalendarSystem::weeksInYear(date);
 }
 
-int KCalendarSystemJalali::weeksInYear( int year ) const
+int KCalendarSystemJalali::weeksInYear(int year) const
 {
-    return KCalendarSystem::weeksInYear( year );
+    return KCalendarSystem::weeksInYear(year);
 }
 
-int KCalendarSystemJalali::daysInYear( const QDate &date ) const
+int KCalendarSystemJalali::daysInYear(const QDate &date) const
 {
-    return KCalendarSystem::daysInYear( date );
+    return KCalendarSystem::daysInYear(date);
 }
 
-int KCalendarSystemJalali::daysInMonth( const QDate &date ) const
+int KCalendarSystemJalali::daysInMonth(const QDate &date) const
 {
-    return KCalendarSystem::daysInMonth( date );
+    return KCalendarSystem::daysInMonth(date);
 }
 
-int KCalendarSystemJalali::daysInWeek( const QDate &date ) const
+int KCalendarSystemJalali::daysInWeek(const QDate &date) const
 {
-    return KCalendarSystem::daysInWeek( date );
+    return KCalendarSystem::daysInWeek(date);
 }
 
-int KCalendarSystemJalali::dayOfYear( const QDate &date ) const
+int KCalendarSystemJalali::dayOfYear(const QDate &date) const
 {
-    return KCalendarSystem::dayOfYear( date );
+    return KCalendarSystem::dayOfYear(date);
 }
 
-int KCalendarSystemJalali::dayOfWeek( const QDate &date ) const
+int KCalendarSystemJalali::dayOfWeek(const QDate &date) const
 {
-    return KCalendarSystem::dayOfWeek( date );
+    return KCalendarSystem::dayOfWeek(date);
 }
 
-int KCalendarSystemJalali::weekNumber( const QDate &date, int *yearNum ) const
+int KCalendarSystemJalali::weekNumber(const QDate &date, int *yearNum) const
 {
-    return KCalendarSystem::weekNumber( date, yearNum );
+    return KCalendarSystem::weekNumber(date, yearNum);
 }
 
-bool KCalendarSystemJalali::isLeapYear( int year ) const
+bool KCalendarSystemJalali::isLeapYear(int year) const
 {
-    return KCalendarSystem::isLeapYear( year );
+    return KCalendarSystem::isLeapYear(year);
 }
 
-bool KCalendarSystemJalali::isLeapYear( const QDate &date ) const
+bool KCalendarSystemJalali::isLeapYear(const QDate &date) const
 {
-    return KCalendarSystem::isLeapYear( date );
+    return KCalendarSystem::isLeapYear(date);
 }
 
-QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat format ) const
+QString KCalendarSystemJalali::monthName(int month, int year, MonthNameFormat format) const
 {
-    return KCalendarSystem::monthName( month, year, format );
+    return KCalendarSystem::monthName(month, year, format);
 }
 
-QString KCalendarSystemJalali::monthName( const QDate &date, MonthNameFormat format ) const
+QString KCalendarSystemJalali::monthName(const QDate &date, MonthNameFormat format) const
 {
-    return KCalendarSystem::monthName( date, format );
+    return KCalendarSystem::monthName(date, format);
 }
 
-QString KCalendarSystemJalali::weekDayName( int weekDay, WeekDayNameFormat format ) const
+QString KCalendarSystemJalali::weekDayName(int weekDay, WeekDayNameFormat format) const
 {
-    return KCalendarSystem::weekDayName( weekDay, format );
+    return KCalendarSystem::weekDayName(weekDay, format);
 }
 
-QString KCalendarSystemJalali::weekDayName( const QDate &date, WeekDayNameFormat format ) const
+QString KCalendarSystemJalali::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
-    return KCalendarSystem::weekDayName( date, format );
+    return KCalendarSystem::weekDayName(date, format);
 }
 
-QString KCalendarSystemJalali::yearString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemJalali::yearString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystem::yearString( pDate, format );
+    return KCalendarSystem::yearString(pDate, format);
 }
 
-QString KCalendarSystemJalali::monthString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemJalali::monthString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystem::monthString( pDate, format );
+    return KCalendarSystem::monthString(pDate, format);
 }
 
-QString KCalendarSystemJalali::dayString( const QDate &pDate, StringFormat format ) const
+QString KCalendarSystemJalali::dayString(const QDate &pDate, StringFormat format) const
 {
-    return KCalendarSystem::dayString( pDate, format );
+    return KCalendarSystem::dayString(pDate, format);
 }
 
-int KCalendarSystemJalali::yearStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemJalali::yearStringToInteger(const QString &sNum, int &iLength) const
 {
-    return KCalendarSystem::yearStringToInteger( sNum, iLength );
+    return KCalendarSystem::yearStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemJalali::monthStringToInteger( const QString &sNum, int &iLength ) const
+int KCalendarSystemJalali::monthStringToInteger(const QString &sNum, int &iLength) const
 {
-    return KCalendarSystem::monthStringToInteger( sNum, iLength );
+    return KCalendarSystem::monthStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemJalali::dayStringToInteger( const QString & sNum, int & iLength ) const
+int KCalendarSystemJalali::dayStringToInteger(const QString & sNum, int & iLength) const
 {
-    return KCalendarSystem::dayStringToInteger( sNum, iLength );
+    return KCalendarSystem::dayStringToInteger(sNum, iLength);
 }
 
-QString KCalendarSystemJalali::formatDate( const QDate &date, KLocale::DateFormat format ) const
+QString KCalendarSystemJalali::formatDate(const QDate &date, KLocale::DateFormat format) const
 {
-    return KCalendarSystem::formatDate( date, format );
+    return KCalendarSystem::formatDate(date, format);
 }
 
-QDate KCalendarSystemJalali::readDate( const QString &str, bool *ok ) const
+QDate KCalendarSystemJalali::readDate(const QString &str, bool *ok) const
 {
-    return KCalendarSystem::readDate( str, ok );
+    return KCalendarSystem::readDate(str, ok);
 }
 
-QDate KCalendarSystemJalali::readDate( const QString &intstr, const QString &fmt, bool *ok ) const
+QDate KCalendarSystemJalali::readDate(const QString &intstr, const QString &fmt, bool *ok) const
 {
-    return KCalendarSystem::readDate( intstr, fmt, ok );
+    return KCalendarSystem::readDate(intstr, fmt, ok);
 }
 
-QDate KCalendarSystemJalali::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
+QDate KCalendarSystemJalali::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
 {
-    return KCalendarSystem::readDate( str, flags, ok );
+    return KCalendarSystem::readDate(str, flags, ok);
 }
 
 int KCalendarSystemJalali::weekStartDay() const
@@ -658,20 +658,20 @@ bool KCalendarSystemJalali::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int &day ) const
+bool KCalendarSystemJalali::julianDayToDate(int jd, int &year, int &month, int &day) const
 {
     // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
     // This results in a leap day being added to the end of 1404 instead of 1403
     // and to the end of 1437 instead of 1436.  Check for these dates first and
     // return accordingly.  Relies on later use of dateToJulianDay() to correctly
     // calculate firstDayOfYear in 1404 and 1437, so no other adjustments needed.
-    if ( jd == 2460755 ) {
+    if (jd == 2460755) {
         year = 1403;
         month = 12;
         day = 30;
         return true;
     }
-    if ( jd == 2472808 ) {
+    if (jd == 2472808) {
         year = 1436;
         month = 12;
         day = 30;
@@ -686,54 +686,54 @@ bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int 
     int cycle;
     int dayInCycle;
     int yearInCycle;
-    dateToJulianDay( 475, 1, 1, jdCycleStart );
+    dateToJulianDay(475, 1, 1, jdCycleStart);
     daysSinceCycleStart = jd - jdCycleStart;
     cycle = daysSinceCycleStart / 1029983;
     dayInCycle = daysSinceCycleStart % 1029983;
-    if ( dayInCycle == 1029982 ) {
+    if (dayInCycle == 1029982) {
         yearInCycle = 2820;
     } else {
         int aux1 = dayInCycle / 366;
         int aux2 = dayInCycle % 366;
-        yearInCycle = ( ( ( 2134 * aux1 ) + ( 2816 * aux2 ) + 2815 ) / 1028522 ) + aux1 + 1;
+        yearInCycle = (((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) + aux1 + 1;
     }
-    year = yearInCycle + ( 2820 * cycle ) + 474;
-    if ( year <= 0 ) {
+    year = yearInCycle + (2820 * cycle) + 474;
+    if (year <= 0) {
         year = year - 1;
     }
 
     int firstDayOfYear;
-    dateToJulianDay( year, 1, 1, firstDayOfYear );
+    dateToJulianDay(year, 1, 1, firstDayOfYear);
     int dayinYear = jd - firstDayOfYear + 1;
-    if( dayinYear <= 186 ) {
-        month = ( ( dayinYear - 1 ) / 31 ) + 1;
-        day = dayinYear - ( ( month - 1 ) * 31 );
+    if (dayinYear <= 186) {
+        month = ((dayinYear - 1) / 31) + 1;
+        day = dayinYear - ((month - 1) * 31);
     } else {
-        month = ( ( dayinYear - 7 ) / 30 ) + 1;
-        day = dayinYear - ( ( month - 1 ) * 30 ) - 6;
+        month = ((dayinYear - 7) / 30) + 1;
+        day = dayinYear - ((month - 1) * 30) - 6;
     }
 
     return true;
 }
 
-bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &jd ) const
+bool KCalendarSystemJalali::dateToJulianDay(int year, int month, int day, int &jd) const
 {
-    Q_D( const KCalendarSystemJalali );
+    Q_D(const KCalendarSystemJalali);
 
     // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
     // This results in a leap day being added to the end of 1404 instead of 1403
     // and to the end of 1437 instead of 1436.  Thus all dates in 1404 and 1437
     // are off by 1 JD.  Check for these dates first and adjust accordingly.
-    if ( year == 1403 && month == 12 && day == 30 ) {
+    if (year == 1403 && month == 12 && day == 30) {
         jd = 2460755;
         return true;
     }
-    if ( year == 1436 && month == 12 && day == 30 ) {
+    if (year == 1436 && month == 12 && day == 30) {
         jd = 2472808;
         return true;
     }
-    if ( year == 1404 || year == 1437 ) {
-        if ( month < 12 && day + 1 > d->daysInMonth( year, month ) ) {
+    if (year == 1404 || year == 1437) {
+        if (month < 12 && day + 1 > d->daysInMonth(year, month)) {
             day = 1;
             month = month + 1;
         } else {
@@ -747,24 +747,24 @@ bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &
     long epyear;
     long monthDays;
 
-    if ( year >= 0 ) {
+    if (year >= 0) {
         epbase = year - 474;
     } else {
         epbase = year - 473;
     }
 
-    epyear = 474 + ( epbase % 2820 );
+    epyear = 474 + (epbase % 2820);
 
-    if ( month <= 7 ) {
-        monthDays = ( month - 1 ) * 31;
+    if (month <= 7) {
+        monthDays = (month - 1) * 31;
     } else {
-        monthDays = ( ( month - 1 ) * 30 ) + 6;
+        monthDays = ((month - 1) * 30) + 6;
     }
 
-    jd = ( epoch().toJulianDay() - 1 ) +          // days before epoch
-         ( epyear - 1 ) * 365 +                   // normal days in previous years
-         ( ( ( epyear * 682 ) - 110 ) / 2816 ) +  // leap days in previous years
-         ( epbase / 2820 ) * 1029983 +
+    jd = (epoch().toJulianDay() - 1) +            // days before epoch
+         (epyear - 1) * 365 +                     // normal days in previous years
+         (((epyear * 682) - 110) / 2816) +        // leap days in previous years
+         (epbase / 2820) * 1029983 +
          monthDays +                              // days in previous months this year
          day;                                     // days in this month
 

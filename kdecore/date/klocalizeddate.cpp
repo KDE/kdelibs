@@ -42,22 +42,22 @@ public:
 };
 
 KLocalizedDatePrivate::KLocalizedDatePrivate(const QDate &date, const KCalendarSystem *calendar, bool manageCalendar)
-            : QSharedData(),
-              m_date(date),
-              m_calendar(calendar),
-              m_manageCalendar(manageCalendar)
+                     : QSharedData(),
+                       m_date(date),
+                       m_calendar(calendar),
+                       m_manageCalendar(manageCalendar)
 {
 }
 
 KLocalizedDatePrivate::KLocalizedDatePrivate(const KLocalizedDatePrivate &rhs)
-            : QSharedData(rhs),
-              m_date(rhs.m_date),
-              m_calendar(rhs.m_calendar),
-              m_manageCalendar(rhs.m_manageCalendar)
+                     : QSharedData(rhs),
+                       m_date(rhs.m_date),
+                       m_calendar(rhs.m_calendar),
+                       m_manageCalendar(rhs.m_manageCalendar)
 {
     // If we're managing the calendar object, then take a copy,
     // i.e. user called setCalendarSystem() rather than passing a custom one into the constructor
-    if(m_manageCalendar) {
+    if (m_manageCalendar) {
         m_calendar =  KCalendarSystem::create(m_calendar->calendarSystem(), new KLocale(*m_calendar->locale()));
     }
 }
@@ -69,7 +69,7 @@ KLocalizedDatePrivate &KLocalizedDatePrivate::operator=(const KLocalizedDatePriv
     m_manageCalendar = rhs.m_manageCalendar;
     // If we're managing the calendar object, then take a copy,
     // i.e. user called setCalendarSystem() rather than passing a custom one into the constructor
-    if(rhs.m_manageCalendar) {
+    if (rhs.m_manageCalendar) {
         m_calendar =  KCalendarSystem::create(m_calendar->calendarSystem(), new KLocale(*m_calendar->locale()));
     }
     return *this;
@@ -91,18 +91,18 @@ KLocalizedDatePrivate::~KLocalizedDatePrivate()
  *****************************************************************************/
 
 KLocalizedDate::KLocalizedDate(const QDate &date, const KCalendarSystem *calendarSystem)
-     : d(new KLocalizedDatePrivate(date, calendarSystem, false))
+              : d(new KLocalizedDatePrivate(date, calendarSystem, false))
 {
 }
 
 KLocalizedDate::KLocalizedDate(int year, int month, int day, const KCalendarSystem *calendarSystem)
-     : d(new KLocalizedDatePrivate(QDate(), calendarSystem, false))
+              : d(new KLocalizedDatePrivate(QDate(), calendarSystem, false))
 {
     setDate(year, month, day);
 }
 
 KLocalizedDate::KLocalizedDate(const KLocalizedDate &rhs)
-     : d(new KLocalizedDatePrivate(*rhs.d))
+              : d(new KLocalizedDatePrivate(*rhs.d))
 {
 }
 
@@ -148,7 +148,7 @@ KLocale::CalendarSystem KLocalizedDate::calendarSystem()
 
 const KCalendarSystem *KLocalizedDate::calendar() const
 {
-    if ( d->m_calendar ) {
+    if (d->m_calendar) {
         return d->m_calendar;
     }
     return  KGlobal::locale()->calendar();
@@ -167,7 +167,7 @@ bool KLocalizedDate::isNull() const
 
 bool KLocalizedDate::isValid() const
 {
-    return calendar()->isValid( date() );
+    return calendar()->isValid(date());
 }
 
 /*****************************************************************************
@@ -454,13 +454,13 @@ bool KLocalizedDate::addDaysTo(int days)
 }
 
 void KLocalizedDate::dateDifference(const KLocalizedDate &toDate,
-                           int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const
+                                    int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const
 {
     dateDifference(toDate.date(), yearsDiff, monthsDiff, daysDiff, direction);
 }
 
 void KLocalizedDate::dateDifference(const QDate &toDate,
-                           int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const
+                                    int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const
 {
     calendar()->dateDifference(date(), toDate, yearsDiff, monthsDiff, daysDiff, direction);
 }

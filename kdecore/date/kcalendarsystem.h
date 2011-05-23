@@ -45,28 +45,28 @@ public:
      * Format for returned year number / month number / day number as string.
      */
     enum StringFormat {
-         ShortFormat,      /**< Short string format, e.g. 2000 = "00" or 6 = "6" */
-         LongFormat        /**< Long string format, e.g. 2000 = "2000" or 6 = "06" */
+        ShortFormat,      /**< Short string format, e.g. 2000 = "00" or 6 = "6" */
+        LongFormat        /**< Long string format, e.g. 2000 = "2000" or 6 = "06" */
     };
 
     /**
      * Format for returned month / day name.
      */
     enum MonthNameFormat {
-         ShortName,                /**< Short name format, e.g. "Dec" */
-         LongName,                 /**< Long name format, e.g. "December" */
-         ShortNamePossessive,      /**< Short name possessive format, e.g. "of Dec" */
-         LongNamePossessive,       /**< Long name possessive format, e.g. "of December" */
-         NarrowName                /**< Narrow name format, e.g. "D". @since 4.7 */
+        ShortName,                /**< Short name format, e.g. "Dec" */
+        LongName,                 /**< Long name format, e.g. "December" */
+        ShortNamePossessive,      /**< Short name possessive format, e.g. "of Dec" */
+        LongNamePossessive,       /**< Long name possessive format, e.g. "of December" */
+        NarrowName                /**< Narrow name format, e.g. "D". @since 4.7 */
     };
 
     /**
      * Format for returned month / day name.
      */
     enum WeekDayNameFormat {
-         ShortDayName,                /**< Short name format, e.g. "Fri" */
-         LongDayName,                 /**< Long name format, e.g. "Friday" */
-         NarrowDayName                /**< Narrow name format, e.g. "F". @since 4.7 */
+        ShortDayName,                /**< Short name format, e.g. "Fri" */
+        LongDayName,                 /**< Long name format, e.g. "Friday" */
+        NarrowDayName                /**< Narrow name format, e.g. "F". @since 4.7 */
     };
 
     //KDE5 remove
@@ -80,8 +80,8 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create( const QString & calType = QLatin1String( "gregorian" ),
-                                     const KLocale * locale = 0 );
+    static KCalendarSystem *create(const QString & calType = QLatin1String("gregorian"),
+                                   const KLocale * locale = 0);
 
     //KDE5 remove
     /**
@@ -98,8 +98,8 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create( const QString & calType, KSharedConfig::Ptr config,
-                                    const KLocale * locale = 0 );
+    static KCalendarSystem *create(const QString & calType, KSharedConfig::Ptr config,
+                                   const KLocale * locale = 0);
 
     //KDE5 add default value to calendarSystem
     /**
@@ -111,8 +111,8 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create( KLocale::CalendarSystem calendarSystem,
-                                    const KLocale *locale = 0 );
+    static KCalendarSystem *create(KLocale::CalendarSystem calendarSystem,
+                                   const KLocale *locale = 0);
 
     /**
      * @since 4.6
@@ -126,8 +126,8 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create( KLocale::CalendarSystem calendarSystem, KSharedConfig::Ptr config,
-                                    const KLocale *locale = 0 );
+    static KCalendarSystem *create(KLocale::CalendarSystem calendarSystem, KSharedConfig::Ptr config,
+                                   const KLocale *locale = 0);
 
     //KDE5 remove
     /**
@@ -160,7 +160,7 @@ public:
      *
      * @return label for calendar
      */
-    static QString calendarLabel( const QString &calendarType );
+    static QString calendarLabel(const QString &calendarType);
 
     /**
      * @since 4.6
@@ -174,7 +174,7 @@ public:
      * @param locale the locale to use for the label, defaults to global
      * @return label for calendar
      */
-    static QString calendarLabel( KLocale::CalendarSystem calendarSystem, const KLocale *locale = KGlobal::locale() );
+    static QString calendarLabel(KLocale::CalendarSystem calendarSystem, const KLocale *locale = KGlobal::locale());
 
     /**
      * @since 4.6
@@ -185,14 +185,14 @@ public:
      * @param calendarType the calendar type to convert
      * @return calendar system for calendar type
      */
-    static KLocale::CalendarSystem calendarSystemForCalendarType( const QString &calendarType );
+    static KLocale::CalendarSystem calendarSystemForCalendarType(const QString &calendarType);
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.
      *
      * @param locale locale to use for translations. The global locale is used if null.
      */
-    explicit KCalendarSystem( const KLocale *locale = 0 );
+    explicit KCalendarSystem(const KLocale *locale = 0);
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.
@@ -202,7 +202,7 @@ public:
                      if null.
      * @param locale locale to use for translations. The global locale is used if null.
      */
-    explicit KCalendarSystem( const KSharedConfig::Ptr config, const KLocale *locale = 0 );
+    explicit KCalendarSystem(const KSharedConfig::Ptr config, const KLocale *locale = 0);
 
     /**
      * Destructor.
@@ -285,7 +285,7 @@ public:
      * @param day the day portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool isValid( int year, int month, int day ) const = 0;
+    virtual bool isValid(int year, int month, int day) const = 0;
 
     //KDE5 make virtual?
     /**
@@ -297,7 +297,7 @@ public:
      * @param dayOfYear the day of year portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool isValid( int year, int dayOfYear ) const;
+    bool isValid(int year, int dayOfYear) const;
 
     //KDE5 make virtual?
     /**
@@ -311,7 +311,7 @@ public:
      * @param day the Day portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool isValid( const QString &eraName, int yearInEra, int month, int day ) const;
+    bool isValid(const QString &eraName, int yearInEra, int month, int day) const;
 
     //KDE5 make virtual?
     /**
@@ -324,7 +324,7 @@ public:
      * @param dayOfIsoWeek the day of week portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool isValidIsoWeekDate( int year, int isoWeekNumber, int dayOfIsoWeek ) const;
+    bool isValidIsoWeekDate(int year, int isoWeekNumber, int dayOfIsoWeek) const;
 
     /**
      * Returns whether a given date is valid in this calendar system.
@@ -332,7 +332,7 @@ public:
      * @param date the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool isValid( const QDate &date ) const;
+    virtual bool isValid(const QDate &date) const;
 
     /**
      * Changes the date's year, month and day. The range of the year, month
@@ -346,7 +346,7 @@ public:
      * @param day day of month
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool setDate( QDate &date, int year, int month, int day ) const;
+    virtual bool setDate(QDate &date, int year, int month, int day) const;
 
     //KDE5 make virtual?
     /**
@@ -359,7 +359,7 @@ public:
      * @param dayOfYear day of year
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool setDate( QDate &date, int year, int dayOfYear ) const;
+    bool setDate(QDate &date, int year, int dayOfYear) const;
 
     //KDE5 make virtual?
     /**
@@ -374,7 +374,7 @@ public:
      * @param day Day Of Month number
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool setDate( QDate &date, QString eraName, int yearInEra, int month, int day ) const;
+    bool setDate(QDate &date, QString eraName, int yearInEra, int month, int day) const;
 
     //KDE5 make virtual?
     /**
@@ -388,7 +388,7 @@ public:
      * @param dayOfIsoWeek day of week Mon..Sun (1..7)
      * @return @c true if the date is valid, @c false otherwise
      */
-    bool setDateIsoWeek( QDate &date, int year, int isoWeekNumber, int dayOfIsoWeek ) const;
+    bool setDateIsoWeek(QDate &date, int year, int isoWeekNumber, int dayOfIsoWeek) const;
 
     /**
      * @deprecated
@@ -410,7 +410,7 @@ public:
      * @param d Day of month
      * @return true if the date is valid; otherwise returns false.
      */
-    virtual bool setYMD( QDate &date, int y, int m, int d ) const;
+    virtual bool setYMD(QDate &date, int y, int m, int d) const;
 
     //KDE5 make virtual?
     /**
@@ -423,7 +423,7 @@ public:
      * @param month month number returned in this variable
      * @param day day of month returned in this variable
      */
-    void getDate( const QDate date, int *year, int *month, int *day ) const;
+    void getDate(const QDate date, int *year, int *month, int *day) const;
 
     /**
      * Returns the year portion of a given date in the current calendar system
@@ -431,7 +431,7 @@ public:
      * @param date date to return year for
      * @return year, 0 if input date is invalid
      */
-    virtual int year( const QDate &date ) const;
+    virtual int year(const QDate &date) const;
 
     /**
      * Returns the month portion of a given date in the current calendar system
@@ -439,7 +439,7 @@ public:
      * @param date date to return month for
      * @return month of year, 0 if input date is invalid
      */
-    virtual int month( const QDate &date ) const;
+    virtual int month(const QDate &date) const;
 
     /**
      * Returns the day portion of a given date in the current calendar system
@@ -447,7 +447,7 @@ public:
      * @param date date to return day for
      * @return day of the month, 0 if input date is invalid
      */
-    virtual int day( const QDate &date ) const;
+    virtual int day(const QDate &date) const;
 
     //KDE5 make virtual?
     /**
@@ -460,7 +460,7 @@ public:
      * @param format format to return, either short or long
      * @return era name, empty string if input date is invalid
      */
-    QString eraName( const QDate &date, StringFormat format = ShortFormat ) const;
+    QString eraName(const QDate &date, StringFormat format = ShortFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -473,7 +473,7 @@ public:
      * @param format format to return, either short or long
      * @return era name, empty string if input date is invalid
      */
-    QString eraYear( const QDate &date, StringFormat format = ShortFormat ) const;
+    QString eraYear(const QDate &date, StringFormat format = ShortFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -485,7 +485,7 @@ public:
      * @param date date to return Year In Era for
      * @return Year In Era, -1 if input date is invalid
      */
-    int yearInEra( const QDate &date ) const;
+    int yearInEra(const QDate &date) const;
 
     /**
      * Returns a QDate containing a date @p nyears years later.
@@ -494,7 +494,7 @@ public:
      * @param nyears The number of years to add
      * @return The new date, null date if any errors
      */
-    virtual QDate addYears( const QDate &date, int nyears ) const;
+    virtual QDate addYears(const QDate &date, int nyears) const;
 
     /**
      * Returns a QDate containing a date @p nmonths months later.
@@ -503,7 +503,7 @@ public:
      * @param nmonths number of months to add
      * @return The new date, null date if any errors
      */
-    virtual QDate addMonths( const QDate &date, int nmonths ) const;
+    virtual QDate addMonths(const QDate &date, int nmonths) const;
 
     /**
      * Returns a QDate containing a date @p ndays days later.
@@ -512,7 +512,7 @@ public:
      * @param ndays number of days to add
      * @return The new date, null date if any errors
      */
-    virtual QDate addDays( const QDate &date, int ndays ) const;
+    virtual QDate addDays(const QDate &date, int ndays) const;
 
     //KDE5 make virtual?
     /**
@@ -533,8 +533,8 @@ public:
      * @param daysDiff Returns number of days difference
      * @param direction Returns direction of difference, 1 if fromDate <= toDate, -1 otherwise
      */
-    void dateDifference( const QDate &fromDate, const QDate &toDate,
-                         int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction ) const;
+    void dateDifference(const QDate &fromDate, const QDate &toDate,
+                        int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const;
 
     //KDE5 make virtual?
     /**
@@ -547,7 +547,7 @@ public:
     * @param toDate The date to end at
     * @return The number of years difference
     */
-    int yearsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    int yearsDifference(const QDate &fromDate, const QDate &toDate) const;
 
     //KDE5 make virtual?
     /**
@@ -562,7 +562,7 @@ public:
      * @param toDate The date to end at
      * @return The number of months difference
      */
-    int monthsDifference( const QDate &fromDate, const QDate &toDate ) const;
+    int monthsDifference(const QDate &fromDate, const QDate &toDate) const;
 
     //KDE5 make virtual?
     /**
@@ -573,7 +573,7 @@ public:
      * @param toDate The date to end at
      * @return The number of days difference
      */
-    int daysDifference( const QDate &fromDate, const QDate &toDate ) const;
+    int daysDifference(const QDate &fromDate, const QDate &toDate) const;
 
     /**
      * Returns number of months in the given year
@@ -581,7 +581,7 @@ public:
      * @param date the date to obtain year from
      * @return number of months in the year, -1 if input date invalid
      */
-    virtual int monthsInYear( const QDate &date ) const;
+    virtual int monthsInYear(const QDate &date) const;
 
     //KDE5 make virtual?
     /**
@@ -592,7 +592,7 @@ public:
      * @param year the required year
      * @return number of months in the year, -1 if input date invalid
      */
-    int monthsInYear( int year ) const;
+    int monthsInYear(int year) const;
 
     /**
      * Returns the number of localized weeks in the given year.
@@ -600,7 +600,7 @@ public:
      * @param date the date to obtain year from
      * @return number of weeks in the year, -1 if input date invalid
      */
-    virtual int weeksInYear( const QDate &date ) const;
+    virtual int weeksInYear(const QDate &date) const;
 
     //KDE5 Merge with virtual weeksInYear with default
     /**
@@ -617,7 +617,7 @@ public:
      * @param weekNumberSystem the week number system to use
      * @return number of weeks in the year, -1 if  date invalid
      */
-    int weeksInYear( const QDate &date, KLocale::WeekNumberSystem weekNumberSystem ) const;
+    int weeksInYear(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem) const;
 
     /**
      * Returns the number of localized weeks in the given year.
@@ -625,7 +625,7 @@ public:
      * @param year the year
      * @return number of weeks in the year, -1 if input date invalid
      */
-    virtual int weeksInYear( int year ) const;
+    virtual int weeksInYear(int year) const;
 
     //KDE5 Merge with virtual weeksInYear with default
     /**
@@ -642,7 +642,7 @@ public:
      * @param weekNumberSystem the week number system to use
      * @return number of weeks in the year, -1 if  date invalid
      */
-    int weeksInYear( int year, KLocale::WeekNumberSystem weekNumberSystem ) const;
+    int weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem) const;
 
     /**
      * Returns the number of days in the given year.
@@ -650,7 +650,7 @@ public:
      * @param date the date to obtain year from
      * @return number of days in year, -1 if input date invalid
      */
-    virtual int daysInYear( const QDate &date ) const;
+    virtual int daysInYear(const QDate &date) const;
 
     //KDE5 make virtual?
     /**
@@ -661,7 +661,7 @@ public:
      * @param year the year
      * @return number of days in year, -1 if input date invalid
      */
-    int daysInYear( int year ) const;
+    int daysInYear(int year) const;
 
     /**
      * Returns the number of days in the given month.
@@ -669,7 +669,7 @@ public:
      * @param date the date to obtain month from
      * @return number of days in month, -1 if input date invalid
      */
-    virtual int daysInMonth( const QDate &date ) const;
+    virtual int daysInMonth(const QDate &date) const;
 
     //KDE5 make virtual?
     /**
@@ -681,7 +681,7 @@ public:
      * @param month the month
      * @return number of days in month, -1 if input date invalid
      */
-    int daysInMonth( int year, int month ) const;
+    int daysInMonth(int year, int month) const;
 
     /**
      * Returns the number of days in the given week.
@@ -689,7 +689,7 @@ public:
      * @param date the date to obtain week from
      * @return number of days in week, -1 if input date invalid
      */
-    virtual int daysInWeek( const QDate &date ) const;
+    virtual int daysInWeek(const QDate &date) const;
 
     /**
      * Returns the day number of year for the given date
@@ -699,7 +699,7 @@ public:
      * @param date the date to obtain day from
      * @return day of year number, -1 if input date not valid
      */
-    virtual int dayOfYear( const QDate &date ) const;
+    virtual int dayOfYear(const QDate &date) const;
 
     /**
      * Returns the weekday number for the given date
@@ -711,7 +711,7 @@ public:
      * @param date the date to obtain day from
      * @return day of week number, -1 if input date not valid
      */
-    virtual int dayOfWeek( const QDate &date ) const;
+    virtual int dayOfWeek(const QDate &date) const;
 
     /**
      * @deprecated
@@ -728,7 +728,7 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return ISO week number, -1 if input date invalid
      */
-    virtual int weekNumber( const QDate &date, int *yearNum = 0 ) const;
+    virtual int weekNumber(const QDate &date, int *yearNum = 0) const;
 
     //KDE5 Make virtual?
     /**
@@ -748,7 +748,7 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return localized week number, -1 if input date invalid
      */
-    int week( const QDate &date, int *yearNum = 0 ) const;
+    int week(const QDate &date, int *yearNum = 0) const;
 
     //KDE5 Make virtual?
     /**
@@ -771,7 +771,7 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return week number, -1 if input date invalid
      */
-    int week( const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum = 0) const;
+    int week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum = 0) const;
 
     /**
      * Returns whether a given year is a leap year.
@@ -782,7 +782,7 @@ public:
      * @param year the year to check
      * @return @c true if the year is a leap year, @c false otherwise
      */
-    virtual bool isLeapYear( int year ) const = 0;
+    virtual bool isLeapYear(int year) const = 0;
 
     /**
      * Returns whether a given date falls in a leap year.
@@ -793,7 +793,7 @@ public:
      * @param date the date to check
      * @return @c true if the date falls in a leap year, @c false otherwise
      */
-    virtual bool isLeapYear( const QDate &date ) const;
+    virtual bool isLeapYear(const QDate &date) const;
 
     //KDE5 Make virtual?
     /**
@@ -804,7 +804,7 @@ public:
      * @param date The year to return the date for
      * @return The first day of the year
      */
-    QDate firstDayOfYear( int year ) const;
+    QDate firstDayOfYear(int year) const;
 
     //KDE5 Make virtual?
     /**
@@ -815,7 +815,7 @@ public:
      * @param date The year to return the date for
      * @return The last day of the year
      */
-    QDate lastDayOfYear( int year ) const;
+    QDate lastDayOfYear(int year) const;
 
     //KDE5 Make virtual?
     /**
@@ -826,7 +826,7 @@ public:
      * @param date The year to return the date for, defaults to today
      * @return The first day of the year
      */
-    QDate firstDayOfYear( const QDate &date = QDate::currentDate() ) const;
+    QDate firstDayOfYear(const QDate &date = QDate::currentDate()) const;
 
     //KDE5 Make virtual?
     /**
@@ -837,7 +837,7 @@ public:
      * @param date The year to return the date for, defaults to today
      * @return The last day of the year
      */
-    QDate lastDayOfYear( const QDate &date = QDate::currentDate() ) const;
+    QDate lastDayOfYear(const QDate &date = QDate::currentDate()) const;
 
     //KDE5 Make virtual?
     /**
@@ -848,7 +848,7 @@ public:
      * @param date The month to return the date for, defaults to today
      * @return The first day of the month
      */
-    QDate firstDayOfMonth( int year, int month ) const;
+    QDate firstDayOfMonth(int year, int month) const;
 
     //KDE5 Make virtual?
     /**
@@ -859,7 +859,7 @@ public:
      * @param date The month to return the date for, defaults to today
      * @return The last day of the month
      */
-    QDate lastDayOfMonth( int year, int month ) const;
+    QDate lastDayOfMonth(int year, int month) const;
 
     //KDE5 Make virtual?
     /**
@@ -870,7 +870,7 @@ public:
      * @param date The month to return the date for, defaults to today
      * @return The first day of the month
      */
-    QDate firstDayOfMonth( const QDate &date = QDate::currentDate() ) const;
+    QDate firstDayOfMonth(const QDate &date = QDate::currentDate()) const;
 
     //KDE5 Make virtual?
     /**
@@ -881,7 +881,7 @@ public:
      * @param date The month to return the date for, defaults to today
      * @return The last day of the month
      */
-    QDate lastDayOfMonth( const QDate &date = QDate::currentDate() ) const;
+    QDate lastDayOfMonth(const QDate &date = QDate::currentDate()) const;
 
     /**
      * Gets specific calendar type month name for a given month number
@@ -892,7 +892,7 @@ public:
      * @param format specifies whether the short month name or long month name should be used
      * @return name of the month, empty string if any error
      */
-    virtual QString monthName( int month, int year, MonthNameFormat format = LongName ) const = 0;
+    virtual QString monthName(int month, int year, MonthNameFormat format = LongName) const = 0;
 
     /**
      * Gets specific calendar type month name for a given date
@@ -901,7 +901,7 @@ public:
      * @param format specifies whether the short month name or long month name should be used
      * @return name of the month, empty string if any error
      */
-    virtual QString monthName( const QDate &date, MonthNameFormat format = LongName ) const;
+    virtual QString monthName(const QDate &date, MonthNameFormat format = LongName) const;
 
     /**
      * Gets specific calendar type week day name.
@@ -911,7 +911,7 @@ public:
      * @param format specifies whether the short month name or long month name should be used
      * @return day name, empty string if any error
      */
-    virtual QString weekDayName( int weekDay, WeekDayNameFormat format = LongDayName ) const = 0;
+    virtual QString weekDayName(int weekDay, WeekDayNameFormat format = LongDayName) const = 0;
 
     /**
      * Gets specific calendar type week day name.
@@ -920,7 +920,7 @@ public:
      * @param format specifies whether the short month name or long month name should be used
      * @return day name, empty string if any error
      */
-    virtual QString weekDayName( const QDate &date, WeekDayNameFormat format = LongDayName ) const;
+    virtual QString weekDayName(const QDate &date, WeekDayNameFormat format = LongDayName) const;
 
     /**
      * Converts a date into a year literal
@@ -930,7 +930,7 @@ public:
      * @return year literal of the date, empty string if any error
      * @see year()
      */
-    virtual QString yearString( const QDate &date, StringFormat format = LongFormat ) const;
+    virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const;
 
     /**
      * Converts a date into a month literal
@@ -940,7 +940,7 @@ public:
      * @return The month literal of the date, empty string if any error
      * @see month()
      */
-    virtual QString monthString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    virtual QString monthString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     /**
      * Converts a date into a day literal
@@ -950,7 +950,7 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see day()
      */
-    virtual QString dayString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    virtual QString dayString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -962,7 +962,7 @@ public:
      * @param format format to return, either short or long
      * @return Year In Era literal of the date, empty string if any error
      */
-    QString yearInEraString( const QDate &date, StringFormat format = ShortFormat ) const;
+    QString yearInEraString(const QDate &date, StringFormat format = ShortFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -975,7 +975,7 @@ public:
      * @return The day of year literal of the date, empty string if any error
      * @see dayOfYear()
      */
-    QString dayOfYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString dayOfYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -987,7 +987,7 @@ public:
      * @return The day of week literal of the date, empty string if any error
      * @see dayOfWeek()
      */
-    QString dayOfWeekString( const QDate &pDate ) const;
+    QString dayOfWeekString(const QDate &pDate) const;
 
     //KDE5 make virtual?
     /**
@@ -1000,7 +1000,7 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see weekNumber()
      */
-    QString weekNumberString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString weekNumberString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1013,7 +1013,7 @@ public:
      * @return The months in year literal of the date, empty string if any error
      * @see monthsInYear()
      */
-    QString monthsInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString monthsInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1026,7 +1026,7 @@ public:
      * @return The weeks in year literal of the date, empty string if any error
      * @see weeksInYear()
      */
-    QString weeksInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString weeksInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1039,7 +1039,7 @@ public:
      * @return The days in year literal of the date, empty string if any error
      * @see daysInYear()
      */
-    QString daysInYearString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString daysInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1052,7 +1052,7 @@ public:
      * @return The days in month literal of the date, empty string if any error
      * @see daysInMonth()
      */
-    QString daysInMonthString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    QString daysInMonthString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1064,7 +1064,7 @@ public:
      * @return The days in week literal of the date, empty string if any error
      * @see daysInWeek()
      */
-    QString daysInWeekString( const QDate &date ) const;
+    QString daysInWeekString(const QDate &date) const;
 
     //KDE5 make protected or remove?
     /**
@@ -1076,7 +1076,7 @@ public:
      * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
      * @return An integer corresponding to the year
      */
-    virtual int yearStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual int yearStringToInteger(const QString &sNum, int &iLength) const;
 
     //KDE5 make protected or remove?
     /**
@@ -1088,7 +1088,7 @@ public:
      * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
      * @return An integer corresponding to the month
      */
-    virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual int monthStringToInteger(const QString &sNum, int &iLength) const;
 
     //KDE5 make protected or remove?
     /**
@@ -1100,7 +1100,7 @@ public:
      * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
      * @return An integer corresponding to the day
      */
-    virtual int dayStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual int dayStringToInteger(const QString &sNum, int &iLength) const;
 
     /**
      * Returns a string formatted to the current locale's conventions
@@ -1118,7 +1118,7 @@ public:
      *
      * @return The date as a string
      */
-    virtual QString formatDate( const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate ) const;
+    virtual QString formatDate(const QDate &fromDate, KLocale::DateFormat toFormat = KLocale::LongDate) const;
 
     //KDE5 Make virtual
     /**
@@ -1237,8 +1237,8 @@ public:
      *
      * @return The date as a string
      */
-    QString formatDate( const QDate &fromDate, const QString &toFormat,
-                        KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat ) const;
+    QString formatDate(const QDate &fromDate, const QString &toFormat,
+                       KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat) const;
 
     //KDE5 Make virtual
     /**
@@ -1257,8 +1257,8 @@ public:
      *
      * @return The date as a string
      */
-    QString formatDate( const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
-                        KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat ) const;
+    QString formatDate(const QDate &fromDate, const QString &toFormat, KLocale::DigitSet digitSet,
+                       KLocale::DateTimeFormatStandard formatStandard = KLocale::KdeFormat) const;
 
     //KDE5 Make virtual
     /**
@@ -1299,7 +1299,7 @@ public:
      *
      * @return the string converted to a QDate
      */
-    virtual QDate readDate( const QString &str, bool *ok = 0 ) const;
+    virtual QDate readDate(const QString &str, bool *ok = 0) const;
 
     /**
      * Converts a localized date string to a QDate.
@@ -1319,7 +1319,7 @@ public:
      *
      * @return the string converted to a QDate
      */
-    virtual QDate readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0 ) const;
+    virtual QDate readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0) const;
 
     /**
      * Converts a localized date string to a QDate, using the specified @p format.
@@ -1334,7 +1334,7 @@ public:
      * @see formatDate
      * @see KLocale::readDate
      */
-    virtual QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok = 0 ) const;
+    virtual QDate readDate(const QString &dateString, const QString &dateFormat, bool *ok = 0) const;
 
     //KDE5 Make virtual
     /**
@@ -1396,8 +1396,8 @@ public:
      * @see formatDate
      * @see KLocale::readDate
      */
-    QDate readDate( const QString &dateString, const QString &dateFormat, bool *ok,
-                    KLocale::DateTimeFormatStandard formatStandard ) const;
+    QDate readDate(const QString &dateString, const QString &dateFormat, bool *ok,
+                   KLocale::DateTimeFormatStandard formatStandard) const;
 
     //KDE5 Make virtual
     /**
@@ -1448,7 +1448,7 @@ public:
      * @param inputYear the year number to apply the year window to
      * @return the year number after applying the year window
      */
-    int applyShortYearWindow( int inputYear ) const;
+    int applyShortYearWindow(int inputYear) const;
 
     /**
      * Use this to determine which day is the first day of the week.
@@ -1524,7 +1524,7 @@ protected:
      * @param day day of month returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const = 0;
+    virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const = 0;
 
     /**
      * Internal method to convert YMD values for this calendar system into a
@@ -1542,7 +1542,7 @@ protected:
      * @param jd Julian day number returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool dateToJulianDay( int year, int month, int day, int &jd ) const = 0;
+    virtual bool dateToJulianDay(int year, int month, int day, int &jd) const = 0;
 
     /**
      * Returns the locale used for translations and formats for this
@@ -1575,7 +1575,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    void setMaxMonthsInYear( int maxMonths );
+    void setMaxMonthsInYear(int maxMonths);
 
     /**
      * @deprecated
@@ -1584,7 +1584,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    void setMaxDaysInWeek( int maxDays );
+    void setMaxDaysInWeek(int maxDays);
 
     /**
      * @deprecated
@@ -1595,7 +1595,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    void setHasYear0( bool hasYear0 );
+    void setHasYear0(bool hasYear0);
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.
@@ -1606,9 +1606,9 @@ protected:
                      if null.
      * @param locale locale to use for translations. The global locale is used if null.
      */
-    KCalendarSystem( KCalendarSystemPrivate &dd,
-                     const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                     const KLocale *locale = 0 );
+    KCalendarSystem(KCalendarSystemPrivate &dd,
+                    const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
+                    const KLocale *locale = 0);
 
 private:
     //Required for shared d-pointer as already private, remove in KDE5
@@ -1630,12 +1630,12 @@ private:
 
     // Era functions needed by friends, may be made public later if needed in KCM
     QList<KCalendarEra> *eraList() const;
-    KCalendarEra era( const QDate &eraDate ) const;
-    KCalendarEra era( const QString &eraName, int yearInEra ) const;
+    KCalendarEra era(const QDate &eraDate) const;
+    KCalendarEra era(const QString &eraName, int yearInEra) const;
 
-    Q_DISABLE_COPY( KCalendarSystem )
+    Q_DISABLE_COPY(KCalendarSystem)
     KCalendarSystemPrivate * const d_ptr; // KDE5 make protected
-    Q_DECLARE_PRIVATE( KCalendarSystem )
+    Q_DECLARE_PRIVATE(KCalendarSystem)
 };
 
 #endif
