@@ -167,10 +167,10 @@ public:
      *
      * Returns a localized label to display for the required Calendar System type.
      *
-     * Use with calendarSystemsList() to populate selction lists of available
+     * Use with calendarSystemsList() to populate selection lists of available
      * calendar systems.
      *
-     * @param calendarType the specific calendar type to return the label for
+     * @param calendarSystem the specific calendar type to return the label for
      * @param locale the locale to use for the label, defaults to global
      * @return label for calendar
      */
@@ -305,7 +305,7 @@ public:
      *
      * Returns whether a given date is valid in this calendar system.
      *
-     * @param era the Era Name portion of the date to check
+     * @param eraName the Era Name portion of the date to check
      * @param yearInEra the Year In Era portion of the date to check
      * @param month the Month portion of the date to check
      * @param day the Day portion of the date to check
@@ -369,7 +369,7 @@ public:
      *
      * @param date date to change
      * @param eraName Era string
-     * @param year Year In Era number
+     * @param yearInEra Year In Era number
      * @param month Month number
      * @param day Day Of Month number
      * @return @c true if the date is valid, @c false otherwise
@@ -801,7 +801,7 @@ public:
      *
      * Returns a QDate containing the first day of the year
      *
-     * @param date The year to return the date for
+     * @param year The year to return the date for
      * @return The first day of the year
      */
     QDate firstDayOfYear(int year) const;
@@ -812,7 +812,7 @@ public:
      *
      * Returns a QDate containing the last day of the year
      *
-     * @param date The year to return the date for
+     * @param year The year to return the date for
      * @return The last day of the year
      */
     QDate lastDayOfYear(int year) const;
@@ -845,7 +845,8 @@ public:
      *
      * Returns a QDate containing the first day of the month
      *
-     * @param date The month to return the date for, defaults to today
+     * @param year The year to return the date for
+     * @param month The month to return the date for
      * @return The first day of the month
      */
     QDate firstDayOfMonth(int year, int month) const;
@@ -856,7 +857,8 @@ public:
      *
      * Returns a QDate containing the last day of the month
      *
-     * @param date The month to return the date for, defaults to today
+     * @param year The year to return the date for
+     * @param month The month to return the date for
      * @return The last day of the month
      */
     QDate lastDayOfMonth(int year, int month) const;

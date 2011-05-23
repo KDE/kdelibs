@@ -492,7 +492,7 @@ QString KDateTimeFormatter::formatDateTimePosix(const KDateTime &fromDateTime,
             case 'S':   // Long seconds
                 invalidModifier = false;
                 if ((timeOptions & KLocale::TimeWithoutSeconds) == KLocale::TimeWithoutSeconds) {
-                    //TODO strip the preceeding/following punctuation
+                    //TODO strip the preceding/following punctuation
                 } else {
                     componentInteger = fromDateTime.time().second();
                     if (modifierChar == QLatin1Char(':')) {    // Only if not 00 seconds
@@ -519,7 +519,7 @@ QString KDateTimeFormatter::formatDateTimePosix(const KDateTime &fromDateTime,
             case 'p':   // AM/PM symbol
             case 'P':   // AM/PM symbol in lowercase
                 if ((timeOptions & KLocale::TimeWithoutAmPm) == KLocale::TimeWithoutAmPm) {
-                    //TODO strip the preceeding/following punctuation
+                    //TODO strip the preceding/following punctuation
                 } else {
                     if (modifierChar == QLatin1Char(':')) {
                         invalidModifier = false;

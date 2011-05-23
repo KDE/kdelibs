@@ -298,7 +298,7 @@ DateTimeComponents KDateTimeParser::parseDatePosix(const QString &inputString,
         result.month = -1;
         result.year = 0;
         result.parsedYear = false;
-        result.eraName = QString();
+        result.eraName.clear();
         result.yearInEra = -1;
         result.dayInYear = -1;
         result.isoWeekNumber = -1;
@@ -349,7 +349,7 @@ DateTimeComponents KDateTimeParser::parseDateUnicode(const QString &inputString,
         result.month = -1;
         result.year = 0;
         result.parsedYear = false;
-        result.eraName = QString();
+        result.eraName.clear();
         result.yearInEra = -1;
         result.dayInYear = -1;
         result.isoWeekNumber = -1;

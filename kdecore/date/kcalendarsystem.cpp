@@ -1007,7 +1007,7 @@ int KCalendarSystemPrivate::applyShortYearWindow(int inputYear) const
 
 void KCalendarSystemPrivate::loadShortYearWindowStartYear(const KConfigGroup & cg)
 {
-    // Default to 2000 for backwards compatability
+    // Default to 2000 for backwards compatibility
     // as that's the old readDate() default value
     int startYear = 2000;
     if (cg.exists()) {
