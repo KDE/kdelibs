@@ -17,14 +17,28 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktimeedit.h"
+#ifndef KTIMECOMBOBOXTEST_H
+#define KTIMECOMBOBOXTEST_H
 
-KTimeEdit::KTimeEdit(QWidget *parent)
-          :KDateTimeEdit(parent)
-{
-    setOptions(KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime);
-}
+#include <QtGui/QWidget>
 
-KTimeEdit::~KTimeEdit()
+class KTimeComboBox;
+
+class KTimeComboBoxTest : public QWidget
 {
-}
+  Q_OBJECT
+
+private Q_SLOTS:
+  void testDefaults();
+  void testTimeRange();
+  void testTimeListInterval();
+  void testTimeList();
+  void testOptions();
+  void testDisplayFormat();
+
+private:
+
+  KTimeComboBox* m_combo;
+};
+
+#endif

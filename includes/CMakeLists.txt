@@ -145,7 +145,6 @@ install( FILES
   KDataToolAction
   KDataToolInfo
   KDateComboBox
-  KDateEdit
   KDatePicker
   KDateTable
   KDateTime
@@ -394,7 +393,6 @@ install( FILES
   KTextBrowser
   KTextEdit
   KTimeComboBox
-  KTimeEdit
   KTimeZone
   KTimeZoneData
   KTimeZoneSource

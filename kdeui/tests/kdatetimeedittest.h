@@ -17,14 +17,32 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kdateedit.h"
+#ifndef KDATECOMBOBOXTEST_H
+#define KDATECOMBOBOXTEST_H
 
-KDateEdit::KDateEdit(QWidget *parent)
-          :KDateTimeEdit(parent)
-{
-    setOptions(KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate);
-}
+#include <QtGui/QWidget>
 
-KDateEdit::~KDateEdit()
+class KDateTimeEdit;
+
+class KDateTimeEditTest : public QWidget
 {
-}
+  Q_OBJECT
+
+private Q_SLOTS:
+  void testDefaults();
+  void testDateTimeRange();
+  void testOptions();
+  void testDateDisplayFormat();
+  void testDateList();
+  void testTimeListInterval();
+  void testTimeList();
+  void testTimeDisplayFormat();
+  void testCalendarSystem();
+  void testTimeSpec();
+
+private:
+
+  KDateTimeEdit* m_edit;
+};
+
+#endif // KDATECOMBOBOXTEST_H
