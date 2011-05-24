@@ -46,13 +46,13 @@
 
 KCalendarSystem *KCalendarSystem::create(const QString &calendarType, const KLocale *locale)
 {
-    return create(calendarSystemForCalendarType(calendarType), locale);
+    return create(calendarSystem(calendarType), locale);
 }
 
 KCalendarSystem *KCalendarSystem::create(const QString &calendarType, KSharedConfig::Ptr config,
                                          const KLocale *locale)
 {
-    return create(calendarSystemForCalendarType(calendarType), config, locale);
+    return create(calendarSystem(calendarType), config, locale);
 }
 
 QStringList KCalendarSystem::calendarSystems()
@@ -77,8 +77,8 @@ QStringList KCalendarSystem::calendarSystems()
 
 QString KCalendarSystem::calendarLabel(const QString &calendarType)
 {
-    if (calendarSystems().contains(calendarType)) {
-        return KCalendarSystem::calendarLabel(KCalendarSystem::calendarSystemForCalendarType(calendarType));
+    if (calendarSystemsList().contains(calendarSystem(calendarType))) {
+        return KCalendarSystem::calendarLabel(KCalendarSystem::calendarSystem(calendarType));
     } else {
         return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(KGlobal::locale());
     }
@@ -175,7 +175,12 @@ QString KCalendarSystem::calendarLabel(KLocale::CalendarSystem calendarSystem, c
     return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(locale);
 }
 
-KLocale::CalendarSystem KCalendarSystem::calendarSystemForCalendarType(const QString &calendarType)
+KLocale::CalendarSystem KCalendarSystem::calendarSystemForCalendarType(const QString &calendarType )
+{
+    return calendarSystem( calendarType );
+}
+
+KLocale::CalendarSystem KCalendarSystem::calendarSystem(const QString &calendarType )
 {
     if (calendarType == QLatin1String("coptic")) {
         return KLocale::CopticCalendar;
@@ -203,6 +208,37 @@ KLocale::CalendarSystem KCalendarSystem::calendarSystemForCalendarType(const QSt
         return KLocale::ThaiCalendar;
     } else {
         return KLocale::QDateCalendar;
+    }
+}
+
+QString KCalendarSystem::calendarType(KLocale::CalendarSystem calendarSystem)
+{
+    if (calendarSystem == KLocale::QDateCalendar) {
+        return QLatin1String("gregorian");
+    } else if (calendarSystem == KLocale::CopticCalendar) {
+        return QLatin1String("coptic");
+    } else if (calendarSystem == KLocale::EthiopianCalendar) {
+        return QLatin1String("ethiopian");
+    } else if (calendarSystem == KLocale::GregorianCalendar) {
+        return QLatin1String("gregorian-proleptic");
+    } else if (calendarSystem == KLocale::HebrewCalendar) {
+        return QLatin1String("hebrew");
+    } else if (calendarSystem == KLocale::IndianNationalCalendar) {
+        return QLatin1String("indian-national");
+    } else if (calendarSystem == KLocale::IslamicCivilCalendar) {
+        return QLatin1String("hijri");
+    } else if (calendarSystem == KLocale::JalaliCalendar) {
+        return QLatin1String("jalali");
+    } else if (calendarSystem == KLocale::JapaneseCalendar) {
+        return QLatin1String("japanese");
+    } else if (calendarSystem == KLocale::JulianCalendar) {
+        return QLatin1String("julian");
+    } else if (calendarSystem == KLocale::MinguoCalendar) {
+        return QLatin1String("minguo");
+    } else if (calendarSystem == KLocale::ThaiCalendar) {
+        return QLatin1String("thai");
+    } else {
+        return QLatin1String("gregorian");
     }
 }
 
@@ -1549,16 +1585,24 @@ int KCalendarSystem::monthsInYear(int year) const
 
 int KCalendarSystem::weeksInYear(const QDate &date) const
 {
-    if (isValid(date)) {
-        return weeksInYear(year(date));
-    }
-
-    return -1;
+    return weeksInYear(date, KLocale::DefaultWeekNumber);
 }
 
 int KCalendarSystem::weeksInYear(int year) const
 {
     return weeksInYear(year, KLocale::DefaultWeekNumber);
+}
+
+// NOT VIRTUAL - Uses shared-d instead
+int KCalendarSystem::weeksInYear(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem) const
+{
+    Q_D(const KCalendarSystem);
+
+    if (isValid(date)) {
+        return d->weeksInYear(year(date), weekNumberSystem);
+    }
+
+    return -1;
 }
 
 // NOT VIRTUAL - Uses shared-d instead
@@ -1869,27 +1913,27 @@ QString KCalendarSystem::weekDayName(const QDate &date, WeekDayNameFormat format
 QString KCalendarSystem::yearString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%y"));
+        return formatDate(date, KLocale::Year, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%Y"));
+        return formatDate(date, KLocale::Year, KLocale::LongNumber);
     }
 }
 
 QString KCalendarSystem::monthString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%n"));
+        return formatDate(date, KLocale::Month, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%m"));
+        return formatDate(date, KLocale::Month, KLocale::LongNumber);
     }
 }
 
 QString KCalendarSystem::dayString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%e"));
+        return formatDate(date, KLocale::Day, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%d"));
+        return formatDate(date, KLocale::Day, KLocale::LongNumber);
     }
 }
 
@@ -1897,9 +1941,9 @@ QString KCalendarSystem::dayString(const QDate &date, StringFormat format) const
 QString KCalendarSystem::yearInEraString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%Ey"));
+        return formatDate(date, KLocale::YearInEra, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%4Ey"));
+        return formatDate(date, KLocale::YearInEra, KLocale::LongNumber);
     }
 }
 
@@ -1907,82 +1951,72 @@ QString KCalendarSystem::yearInEraString(const QDate &date, StringFormat format)
 QString KCalendarSystem::dayOfYearString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%-j"));
+        return formatDate(date, KLocale::DayOfYear, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%j"));
+        return formatDate(date, KLocale::DayOfYear, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::dayOfWeekString(const QDate &date) const
 {
-    return formatDate(date, QLatin1String("%-u"));
+    return formatDate(date, KLocale::DayOfWeek, KLocale::ShortNumber);
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weekNumberString(const QDate &date, StringFormat format) const
 {
     if (format == ShortFormat) {
-        return formatDate(date, QLatin1String("%-V"));
+        return formatDate(date, KLocale::Week, KLocale::ShortNumber);
     } else {
-        return formatDate(date, QLatin1String("%V"));
+        return formatDate(date, KLocale::Week, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::monthsInYearString(const QDate &date, StringFormat format) const
 {
-    Q_D(const KCalendarSystem);
-
     if (format == ShortFormat) {
-        return d->stringFromInteger(monthsInYear(date), 0, QLatin1Char('0'));
+        return formatDate(date, KLocale::MonthsInYear, KLocale::ShortNumber);
     } else {
-        return d->stringFromInteger(monthsInYear(date), 2, QLatin1Char('0'));
+        return formatDate(date, KLocale::MonthsInYear, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::weeksInYearString(const QDate &date, StringFormat format) const
 {
-    Q_D(const KCalendarSystem);
-
     if (format == ShortFormat) {
-        return d->stringFromInteger(weeksInYear(date), 0, QLatin1Char('0'));
+        return formatDate(date, KLocale::WeeksInYear, KLocale::ShortNumber);
     } else {
-        return d->stringFromInteger(weeksInYear(date), 2, QLatin1Char('0'));
+        return formatDate(date, KLocale::WeeksInYear, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInYearString(const QDate &date, StringFormat format) const
 {
-    Q_D(const KCalendarSystem);
-
     if (format == ShortFormat) {
-        return d->stringFromInteger(daysInYear(date), 0, QLatin1Char('0'));
+        return formatDate(date, KLocale::DaysInYear, KLocale::ShortNumber);
     } else {
-        return d->stringFromInteger(daysInYear(date), 3, QLatin1Char('0'));
+        return formatDate(date, KLocale::DaysInYear, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInMonthString(const QDate &date, StringFormat format) const
 {
-    Q_D(const KCalendarSystem);
-
     if (format == ShortFormat) {
-        return d->stringFromInteger(daysInMonth(date), 0, QLatin1Char('0'));
+        return formatDate(date, KLocale::DaysInMonth, KLocale::ShortNumber);
     } else {
-        return d->stringFromInteger(daysInMonth(date), 2, QLatin1Char('0'));
+        return formatDate(date, KLocale::DaysInMonth, KLocale::LongNumber);
     }
 }
 
 // NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::daysInWeekString(const QDate &date) const
 {
-    Q_D(const KCalendarSystem);
-    Q_UNUSED(date);
-    return d->stringFromInteger(d->daysInWeek(), 0);
+    return formatDate(date, KLocale::DaysInWeek, KLocale::ShortNumber);
 }
 
 int KCalendarSystem::yearStringToInteger(const QString &yearString, int &readLength) const
@@ -2083,7 +2117,6 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
                                     KLocale::WeekNumberSystem weekNumberSystem) const
 {
     Q_D(const KCalendarSystem);
-    Q_UNUSED(weekNumberSystem);
 
     switch (component) {
     case KLocale::Year:
@@ -2092,12 +2125,12 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
-            return yearString(date, KCalendarSystem::ShortFormat);
+            return formatDate(date, QLatin1String("%y"));
         case KLocale::LongNumber:
         case KLocale::LongName:
         case KLocale::DefaultComponentFormat:
         default:
-            return yearString(date, KCalendarSystem::LongFormat);
+            return formatDate(date, QLatin1String("%Y"));
         }
     case KLocale::Month:
         switch (format) {
@@ -2108,11 +2141,11 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::NarrowName:
             return monthName(date, KCalendarSystem::NarrowName);
         case KLocale::LongNumber:
-            return monthString(date, KCalendarSystem::LongFormat);
+            return formatDate(date, QLatin1String("%m"));
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return monthString(date, KCalendarSystem::ShortFormat);
+            return formatDate(date, QLatin1String("%n"));
         }
     case KLocale::MonthName:
         switch (format) {
@@ -2132,13 +2165,13 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return dayString(date, KCalendarSystem::LongFormat);
+            return formatDate(date, QLatin1String("%d"));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return dayString(date, KCalendarSystem::ShortFormat);
+            return formatDate(date, QLatin1String("%e"));
         }
     case KLocale::JulianDay:
         return d->stringFromInteger(date.toJulianDay(), 0);
@@ -2170,26 +2203,26 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return yearInEraString(date, KCalendarSystem::LongFormat);
+            return formatDate(date, QLatin1String("%4Ey"));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return yearInEraString(date, KCalendarSystem::ShortFormat);
+            return formatDate(date, QLatin1String("%Ey"));
         }
     case KLocale::DayOfYear:
     case KLocale::DayOfYearName:
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return dayOfYearString(date, KCalendarSystem::LongFormat);
+            return formatDate(date, QLatin1String("%j"));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return dayOfYearString(date, KCalendarSystem::ShortFormat);
+            return formatDate(date, QLatin1String("%-j"));
         }
     case KLocale::DayOfWeek:
         switch (format) {
@@ -2203,7 +2236,7 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return dayOfWeekString(date);
+            return formatDate(date, QLatin1String("%-u"));
         }
     case KLocale::DayOfWeekName:
         switch (format) {
@@ -2222,18 +2255,18 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return weekNumberString(date, KCalendarSystem::LongFormat);
+            return d->stringFromInteger(week(date, weekNumberSystem, 0), 2, QLatin1Char('0'));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return weekNumberString(date, KCalendarSystem::ShortFormat);
+            return d->stringFromInteger(week(date, weekNumberSystem, 0), 0, QLatin1Char('0'));
         }
     case KLocale::WeekYear: {
         int weekYear;
         QDate yearDate;
-        weekNumber(date, &weekYear);
+        week(date, weekNumberSystem, &weekYear);
         setDate(yearDate, weekYear, 1, 1);
         return formatDate(yearDate, KLocale::Year, format);
     }
@@ -2241,49 +2274,49 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return monthsInYearString(date, KCalendarSystem::LongFormat);
+            return d->stringFromInteger(monthsInYear(date), 2, QLatin1Char('0'));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return monthsInYearString(date, KCalendarSystem::ShortFormat);
+            return d->stringFromInteger(monthsInYear(date), 0, QLatin1Char('0'));
         }
     case KLocale::WeeksInYear:
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return weeksInYearString(date, KCalendarSystem::LongFormat);
+            return d->stringFromInteger(weeksInYear(date), 2, QLatin1Char('0'));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return weeksInYearString(date, KCalendarSystem::ShortFormat);
+            return d->stringFromInteger(weeksInYear(date), 0, QLatin1Char('0'));
         }
     case KLocale::DaysInYear:
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return daysInYearString(date, KCalendarSystem::LongFormat);
+            return d->stringFromInteger(daysInYear(date), 3, QLatin1Char('0'));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return daysInYearString(date, KCalendarSystem::ShortFormat);
+            return d->stringFromInteger(daysInYear(date), 0, QLatin1Char('0'));
         }
     case KLocale::DaysInMonth:
         switch (format) {
         case KLocale::LongNumber:
         case KLocale::LongName:
-            return daysInMonthString(date, KCalendarSystem::LongFormat);
+            return d->stringFromInteger(daysInMonth(date), 2, QLatin1Char('0'));
         case KLocale::ShortName:
         case KLocale::NarrowName:
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return daysInMonthString(date, KCalendarSystem::ShortFormat);
+            return d->stringFromInteger(daysInMonth(date), 0, QLatin1Char('0'));
         }
     case KLocale::DaysInWeek:
         switch (format) {
@@ -2294,7 +2327,7 @@ QString KCalendarSystem::formatDate(const QDate &date, KLocale::DateTimeComponen
         case KLocale::ShortNumber:
         case KLocale::DefaultComponentFormat:
         default:
-            return daysInWeekString(date);
+            return d->stringFromInteger(d->daysInWeek(), 0);
         }
     default:
         return QString();

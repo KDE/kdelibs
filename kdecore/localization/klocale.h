@@ -468,7 +468,7 @@ public:
      *
      * @return Default number of fractional digits used by locale.
      */
-    int fracDigits() const;
+    KDE_DEPRECATED int fracDigits() const;
 
     /**
      * @since 4.4
@@ -760,7 +760,7 @@ public:
      *
      * @return If nouns are declined
      */
-    bool nounDeclension() const;
+    KDE_DEPRECATED bool nounDeclension() const;
 
     //KDE5 move to KDateTime namespace
     /**
@@ -1120,7 +1120,7 @@ public:
      * @see calendarSystem()
      * @return the name of the calendar system
      */
-    QString calendarType() const;
+    KDE_DEPRECATED QString calendarType() const;
 
     /**
      * @since 4.6
@@ -1143,7 +1143,7 @@ public:
      * @see setCalendarSystem()
      * @param calendarType the name of the calendar type
      */
-    void setCalendar(const QString & calendarType);
+    KDE_DEPRECATED void setCalendar(const QString & calendarType);
 
     /**
      * @since 4.6
@@ -1689,7 +1689,7 @@ public:
      *
      * @param digits The default number of digits to use.
      */
-    void setFracDigits(int digits);
+    KDE_DEPRECATED void setFracDigits(int digits);
 
     /**
      * @since 4.4

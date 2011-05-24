@@ -297,13 +297,12 @@ int KLocalizedDate::dayOfWeek() const
 
 int KLocalizedDate::week(int *yearNum) const
 {
-    return calendar()->weekNumber(date(), yearNum);
+    return calendar()->week(date(), yearNum);
 }
 
 int KLocalizedDate::week(KLocale::WeekNumberSystem weekNumberSystem, int *yearNum) const
 {
-    Q_UNUSED(weekNumberSystem);
-    return calendar()->weekNumber(date(), yearNum);
+    return calendar()->week(date(), weekNumberSystem, yearNum);
 }
 
 int KLocalizedDate::monthsInYear() const
@@ -318,8 +317,7 @@ int KLocalizedDate::weeksInYear() const
 
 int KLocalizedDate::weeksInYear(KLocale::WeekNumberSystem weekNumberSystem) const
 {
-    Q_UNUSED(weekNumberSystem);
-    return calendar()->weeksInYear(date());
+    return calendar()->weeksInYear(date(), weekNumberSystem);
 }
 
 int KLocalizedDate::daysInYear() const
@@ -606,7 +604,7 @@ QDataStream &operator>>(QDataStream &in, KLocalizedDate &date)
 
 QDebug operator<<(QDebug dbg, const KLocalizedDate &date)
 {
-    if (date.calendar()->calendarType() == QLatin1String("gregorian")) {
+    if (date.calendar()->calendarSystem() == KLocale::QDateCalendar) {
         dbg.nospace() << "KLocalizedDate(" << date.formatDate(KLocale::IsoDate) << ", "
                       << date.calendar()->calendarLabel() << ')';
     } else {

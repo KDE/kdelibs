@@ -385,13 +385,13 @@ QString KDateTimeFormatter::formatDateTimePosix(const KDateTime &fromDateTime,
                 break;
             case 'V':  //Long ISO week of year numeric, default 0 pad to 2 places no sign
                 if (modifierChar != QLatin1Char(':')) {
-                    componentInteger = calendar->weekNumber(fromDateTime.date());
+                    componentInteger = calendar->week(fromDateTime.date(), KLocale::IsoWeekNumber);
                     minWidth = 2;
                 }
                 break;
             case 'G':  //Long year of ISO week of year numeric, default 0 pad to 4 places with sign
                 if (modifierChar != QLatin1Char(':')) {
-                    calendar->weekNumber(fromDateTime.date(), &isoWeekYear);
+                    calendar->week(fromDateTime.date(), KLocale::IsoWeekNumber, &isoWeekYear);
                     calendar->setDate(yearDate, isoWeekYear, 1, 1);
                     componentInteger = qAbs(isoWeekYear);
                     minWidth = 4;
@@ -402,7 +402,7 @@ QString KDateTimeFormatter::formatDateTimePosix(const KDateTime &fromDateTime,
                 break;
             case 'g':  //Short year of ISO week of year numeric, default 0 pad to 2 places with sign
                 if (modifierChar != QLatin1Char(':')) {
-                    calendar->weekNumber(fromDateTime.date(), &isoWeekYear);
+                    calendar->week(fromDateTime.date(), KLocale::IsoWeekNumber, &isoWeekYear);
                     calendar->setDate(yearDate, isoWeekYear, 1, 1);
                     componentInteger = qAbs(isoWeekYear) % 100;
                     minWidth = 2;
@@ -625,14 +625,14 @@ QString KDateTimeFormatter::formatDateTimePosix(const KDateTime &fromDateTime,
 
 void KDateTimeFormatter::initEnglish(const KCalendarSystem *calendar, const KLocale *locale) const
 {
-    if (!m_englishCalendar || m_englishCalendar->calendarType() != calendar->calendarType()) {
+    if (!m_englishCalendar || m_englishCalendar->calendarSystem() != calendar->calendarSystem()) {
         // Set up an English locale and calendar for use with ':' modifier which forces English names
         if (!m_englishLocale) {
             m_englishLocale = new KLocale(*locale);
             m_englishLocale->setLanguage(QStringList() << QString::fromLatin1("en_US"));
         }
         delete m_englishCalendar;
-        m_englishCalendar = KCalendarSystem::create(calendar->calendarType(), m_englishLocale);
+        m_englishCalendar = KCalendarSystem::create(calendar->calendarSystem(), m_englishLocale);
     }
 }
 

@@ -75,7 +75,7 @@ void KCalendarSystemJulianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
-    KConfigGroup cg(config(), QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType()));
+    KConfigGroup cg(config(), QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType(q->calendarSystem())));
     m_useCommonEra = cg.readEntry("UseCommonEra", false);
 
     if (m_useCommonEra) {

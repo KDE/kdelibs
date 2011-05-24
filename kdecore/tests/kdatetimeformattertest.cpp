@@ -42,7 +42,7 @@ QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KDateTimeFormatterTest, "kdecalendarsystem
 void KDateTimeFormatterTest::testFormatDateTimePosix()
 {
     KGlobal::locale()->setLanguage(QStringList("en_US"));
-    KGlobal::locale()->setCalendar("gregorian");
+    KGlobal::locale()->setCalendarSystem(KLocale::QDateCalendar);
     KGlobal::locale()->setDateFormatShort("%y-%m-%d");
 
     KDateTimeFormatter formatter;
@@ -338,7 +338,7 @@ void KDateTimeFormatterTest::testFormatDateTimePosix()
 void KDateTimeFormatterTest::testFormatUnicode()
 {
     KGlobal::locale()->setLanguage(QStringList("en_US"));
-    KGlobal::locale()->setCalendar("gregorian");
+    KGlobal::locale()->setCalendarSystem(KLocale::QDateCalendar);
     KGlobal::locale()->setDateFormatShort("%y-%m-%d");
 
     KDateTimeFormatter formatter;
