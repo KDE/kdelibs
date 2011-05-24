@@ -433,7 +433,13 @@ QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
     QString basename = oldName;
     const QChar spacer(' ');
 
+    //ignore dots at the beginning, that way "..aFile.tar.gz" will become "..aFile 1.tar.gz" instead of " 1..aFile.tar.gz"
     int index = basename.indexOf('.');
+    int continous = 0;
+    while (continous == index) {
+        index = basename.indexOf('.', index + 1);
+        ++continous;
+    }
 
     if (index != -1) {
         dotSuffix = basename.mid(index);
