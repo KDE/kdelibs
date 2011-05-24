@@ -403,30 +403,26 @@ QString KCalendarSystemJulianPrivate::weekDayName(int weekDay, KLocale::DateTime
 
 
 KCalendarSystemJulian::KCalendarSystemJulian(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), KSharedConfig::Ptr(), locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJulian::KCalendarSystemJulian(const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJulian::KCalendarSystemJulian(KCalendarSystemJulianPrivate &dd,
                                              const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(dd, config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJulian::~KCalendarSystemJulian()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemJulian::calendarType() const
@@ -463,92 +459,6 @@ bool KCalendarSystemJulian::isValid(const QDate &date) const
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemJulian::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemJulian::setYMD(QDate &date, int y, int m, int d) const
-{
-    return KCalendarSystem::setDate(date, y, m, d);
-}
-
-int KCalendarSystemJulian::year(const QDate &date) const
-{
-    return KCalendarSystem::year(date);
-}
-
-int KCalendarSystemJulian::month(const QDate &date) const
-{
-    return KCalendarSystem::month(date);
-}
-
-int KCalendarSystemJulian::day(const QDate &date) const
-{
-    return KCalendarSystem::day(date);
-}
-
-QDate KCalendarSystemJulian::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystem::addYears(date, nyears);
-}
-
-QDate KCalendarSystemJulian::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystem::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemJulian::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystem::addDays(date, ndays);
-}
-
-int KCalendarSystemJulian::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystem::monthsInYear(date);
-}
-
-int KCalendarSystemJulian::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystem::weeksInYear(date);
-}
-
-int KCalendarSystemJulian::weeksInYear(int year) const
-{
-    return KCalendarSystem::weeksInYear(year);
-}
-
-int KCalendarSystemJulian::daysInYear(const QDate &date) const
-{
-    return KCalendarSystem::daysInYear(date);
-}
-
-int KCalendarSystemJulian::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystem::daysInMonth(date);
-}
-
-int KCalendarSystemJulian::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystem::daysInWeek(date);
-}
-
-int KCalendarSystemJulian::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystem::dayOfYear(date);
-}
-
-int KCalendarSystemJulian::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystem::dayOfWeek(date);
-}
-
-int KCalendarSystemJulian::weekNumber(const QDate &date, int * yearNum) const
-{
-    return KCalendarSystem::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemJulian::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);
@@ -577,61 +487,6 @@ QString KCalendarSystemJulian::weekDayName(int weekDay, WeekDayNameFormat format
 QString KCalendarSystemJulian::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
-}
-
-QString KCalendarSystemJulian::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::yearString(pDate, format);
-}
-
-QString KCalendarSystemJulian::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::monthString(pDate, format);
-}
-
-QString KCalendarSystemJulian::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::dayString(pDate, format);
-}
-
-int KCalendarSystemJulian::yearStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::yearStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemJulian::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemJulian::dayStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemJulian::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystem::formatDate(date, format);
-}
-
-QDate KCalendarSystemJulian::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, ok);
-}
-
-QDate KCalendarSystemJulian::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystem::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemJulian::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, flags, ok);
-}
-
-int KCalendarSystemJulian::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
 }
 
 int KCalendarSystemJulian::weekDayOfPray() const

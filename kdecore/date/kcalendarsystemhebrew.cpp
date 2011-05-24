@@ -877,30 +877,26 @@ QString KCalendarSystemHebrewPrivate::weekDayName(int weekDay, KLocale::DateTime
 
 
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), KSharedConfig::Ptr(), locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemHebrew::KCalendarSystemHebrew(KCalendarSystemHebrewPrivate &dd,
                                              const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(dd, config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemHebrew::calendarType() const
@@ -938,82 +934,6 @@ bool KCalendarSystemHebrew::isValid(const QDate &date) const
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemHebrew::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemHebrew::setYMD(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setYMD(date, year, month, day);
-}
-
-int KCalendarSystemHebrew::year(const QDate &date) const
-{
-    return KCalendarSystem::year(date);
-}
-
-int KCalendarSystemHebrew::month(const QDate &date) const
-{
-    return KCalendarSystem::month(date);
-}
-
-int KCalendarSystemHebrew::day(const QDate &date) const
-{
-    return KCalendarSystem::day(date);
-}
-
-QDate KCalendarSystemHebrew::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystem::addYears(date, nyears);
-}
-
-QDate KCalendarSystemHebrew::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystem::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemHebrew::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystem::addDays(date, ndays);
-}
-
-int KCalendarSystemHebrew::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystem::monthsInYear(date);
-}
-
-int KCalendarSystemHebrew::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystem::weeksInYear(date);
-}
-
-int KCalendarSystemHebrew::weeksInYear(int year) const
-{
-    return KCalendarSystem::weeksInYear(year);
-}
-
-int KCalendarSystemHebrew::daysInYear(const QDate &date) const
-{
-    return KCalendarSystem::daysInYear(date);
-}
-
-int KCalendarSystemHebrew::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystem::daysInMonth(date);
-}
-
-int KCalendarSystemHebrew::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystem::daysInWeek(date);
-}
-
-int KCalendarSystemHebrew::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystem::dayOfYear(date);
-}
-
 int KCalendarSystemHebrew::dayOfWeek(const QDate &date) const
 {
     class h_date * sd = toHebrew(date);
@@ -1022,11 +942,6 @@ int KCalendarSystemHebrew::dayOfWeek(const QDate &date) const
     } else {
         return (sd->hd_dw);
     }
-}
-
-int KCalendarSystemHebrew::weekNumber(const QDate &date, int *yearNum) const
-{
-    return KCalendarSystem::weekNumber(date, yearNum);
 }
 
 bool KCalendarSystemHebrew::isLeapYear(int year) const
@@ -1059,21 +974,6 @@ QString KCalendarSystemHebrew::weekDayName(const QDate &date, WeekDayNameFormat 
     return KCalendarSystem::weekDayName(date, format);
 }
 
-QString KCalendarSystemHebrew::yearString(const QDate &date, StringFormat format) const
-{
-    return KCalendarSystem::yearString(date, format);
-}
-
-QString KCalendarSystemHebrew::monthString(const QDate &date, StringFormat format) const
-{
-    return KCalendarSystem::monthString(date, format);
-}
-
-QString KCalendarSystemHebrew::dayString(const QDate &date, StringFormat format) const
-{
-    return KCalendarSystem::dayString(date, format);
-}
-
 int KCalendarSystemHebrew::yearStringToInteger(const QString &string, int &readLength) const
 {
     int result = KCalendarSystem::yearStringToInteger(string, readLength);
@@ -1092,44 +992,9 @@ int KCalendarSystemHebrew::yearStringToInteger(const QString &string, int &readL
     return result;
 }
 
-int KCalendarSystemHebrew::monthStringToInteger(const QString &string, int &readLength) const
-{
-    return KCalendarSystem::monthStringToInteger(string, readLength);
-}
-
-int KCalendarSystemHebrew::dayStringToInteger(const QString &string, int &readLength) const
-{
-    return KCalendarSystem::yearStringToInteger(string, readLength);
-}
-
-QString KCalendarSystemHebrew::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystem::formatDate(date, format);
-}
-
-QDate KCalendarSystemHebrew::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, ok);
-}
-
-QDate KCalendarSystemHebrew::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystem::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemHebrew::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, flags, ok);
-}
-
 int KCalendarSystemHebrew::weekDayOfPray() const
 {
     return 6; // Saturday
-}
-
-int KCalendarSystemHebrew::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
 }
 
 bool KCalendarSystemHebrew::isLunar() const

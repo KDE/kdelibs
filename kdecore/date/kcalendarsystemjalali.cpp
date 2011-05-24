@@ -400,30 +400,26 @@ QString KCalendarSystemJalaliPrivate::weekDayName(int weekDay, KLocale::DateTime
 
 
 KCalendarSystemJalali::KCalendarSystemJalali(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), KSharedConfig::Ptr(), locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali(const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJalali::KCalendarSystemJalali(KCalendarSystemJalaliPrivate &dd,
                                              const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(dd, config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemJalali::~KCalendarSystemJalali()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemJalali::calendarType() const
@@ -461,93 +457,6 @@ bool KCalendarSystemJalali::isValid(const QDate &date) const
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemJalali::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemJalali::setYMD(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setYMD(date, year, month, day);
-}
-
-int KCalendarSystemJalali::year(const QDate &date) const
-{
-    return KCalendarSystem::year(date);
-}
-
-int KCalendarSystemJalali::month(const QDate& date) const
-
-{
-    return KCalendarSystem::month(date);
-}
-
-int KCalendarSystemJalali::day(const QDate &date) const
-{
-    return KCalendarSystem::day(date);
-}
-
-QDate KCalendarSystemJalali::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystem::addYears(date, nyears);
-}
-
-QDate KCalendarSystemJalali::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystem::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemJalali::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystem::addDays(date, ndays);
-}
-
-int KCalendarSystemJalali::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystem::monthsInYear(date);
-}
-
-int KCalendarSystemJalali::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystem::weeksInYear(date);
-}
-
-int KCalendarSystemJalali::weeksInYear(int year) const
-{
-    return KCalendarSystem::weeksInYear(year);
-}
-
-int KCalendarSystemJalali::daysInYear(const QDate &date) const
-{
-    return KCalendarSystem::daysInYear(date);
-}
-
-int KCalendarSystemJalali::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystem::daysInMonth(date);
-}
-
-int KCalendarSystemJalali::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystem::daysInWeek(date);
-}
-
-int KCalendarSystemJalali::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystem::dayOfYear(date);
-}
-
-int KCalendarSystemJalali::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystem::dayOfWeek(date);
-}
-
-int KCalendarSystemJalali::weekNumber(const QDate &date, int *yearNum) const
-{
-    return KCalendarSystem::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemJalali::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);
@@ -576,61 +485,6 @@ QString KCalendarSystemJalali::weekDayName(int weekDay, WeekDayNameFormat format
 QString KCalendarSystemJalali::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
-}
-
-QString KCalendarSystemJalali::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::yearString(pDate, format);
-}
-
-QString KCalendarSystemJalali::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::monthString(pDate, format);
-}
-
-QString KCalendarSystemJalali::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::dayString(pDate, format);
-}
-
-int KCalendarSystemJalali::yearStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::yearStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemJalali::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemJalali::dayStringToInteger(const QString & sNum, int & iLength) const
-{
-    return KCalendarSystem::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemJalali::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystem::formatDate(date, format);
-}
-
-QDate KCalendarSystemJalali::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, ok);
-}
-
-QDate KCalendarSystemJalali::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystem::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemJalali::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, flags, ok);
-}
-
-int KCalendarSystemJalali::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
 }
 
 int KCalendarSystemJalali::weekDayOfPray() const

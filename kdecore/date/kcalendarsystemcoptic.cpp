@@ -393,30 +393,26 @@ QString KCalendarSystemCopticPrivate::weekDayName(int weekDay, KLocale::DateTime
 
 
 KCalendarSystemCoptic::KCalendarSystemCoptic(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), KSharedConfig::Ptr(), locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic(const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemCoptic::KCalendarSystemCoptic(KCalendarSystemCopticPrivate &dd,
                                              const KSharedConfig::Ptr config, const KLocale *locale)
-                     : KCalendarSystem(dd, config, locale),
-                       dont_use(0)
+                     : KCalendarSystem(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemCoptic::~KCalendarSystemCoptic()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemCoptic::calendarType() const
@@ -456,92 +452,6 @@ bool KCalendarSystemCoptic::isValid(const QDate &date) const
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemCoptic::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemCoptic::setYMD(QDate &date, int y, int m, int d) const
-{
-    return KCalendarSystem::setDate(date, y, m, d);
-}
-
-int KCalendarSystemCoptic::year(const QDate &date) const
-{
-    return KCalendarSystem::year(date);
-}
-
-int KCalendarSystemCoptic::month(const QDate &date) const
-{
-    return KCalendarSystem::month(date);
-}
-
-int KCalendarSystemCoptic::day(const QDate &date) const
-{
-    return KCalendarSystem::day(date);
-}
-
-QDate KCalendarSystemCoptic::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystem::addYears(date, nyears);
-}
-
-QDate KCalendarSystemCoptic::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystem::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemCoptic::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystem::addDays(date, ndays);
-}
-
-int KCalendarSystemCoptic::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystem::monthsInYear(date);
-}
-
-int KCalendarSystemCoptic::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystem::weeksInYear(date);
-}
-
-int KCalendarSystemCoptic::weeksInYear(int year) const
-{
-    return KCalendarSystem::weeksInYear(year);
-}
-
-int KCalendarSystemCoptic::daysInYear(const QDate &date) const
-{
-    return KCalendarSystem::daysInYear(date);
-}
-
-int KCalendarSystemCoptic::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystem::daysInMonth(date);
-}
-
-int KCalendarSystemCoptic::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystem::daysInWeek(date);
-}
-
-int KCalendarSystemCoptic::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystem::dayOfYear(date);
-}
-
-int KCalendarSystemCoptic::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystem::dayOfWeek(date);
-}
-
-int KCalendarSystemCoptic::weekNumber(const QDate &date, int * yearNum) const
-{
-    return KCalendarSystem::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemCoptic::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);
@@ -570,61 +480,6 @@ QString KCalendarSystemCoptic::weekDayName(int weekDay, WeekDayNameFormat format
 QString KCalendarSystemCoptic::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
-}
-
-QString KCalendarSystemCoptic::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::yearString(pDate, format);
-}
-
-QString KCalendarSystemCoptic::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::monthString(pDate, format);
-}
-
-QString KCalendarSystemCoptic::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::dayString(pDate, format);
-}
-
-int KCalendarSystemCoptic::yearStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::yearStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemCoptic::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemCoptic::dayStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemCoptic::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystem::formatDate(date, format);
-}
-
-QDate KCalendarSystemCoptic::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, ok);
-}
-
-QDate KCalendarSystemCoptic::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystem::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemCoptic::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, flags, ok);
-}
-
-int KCalendarSystemCoptic::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
 }
 
 int KCalendarSystemCoptic::weekDayOfPray() const

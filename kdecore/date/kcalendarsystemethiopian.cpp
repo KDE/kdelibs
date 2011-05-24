@@ -293,30 +293,26 @@ QString KCalendarSystemEthiopianPrivate::weekDayName(int weekDay, KLocale::DateT
 
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian(const KLocale *locale)
-                        : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), KSharedConfig::Ptr(), locale),
-                          dont_use(0)
+                        : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian(const KSharedConfig::Ptr config, const KLocale *locale)
-                        : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), config, locale),
-                          dont_use(0)
+                        : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemEthiopian::KCalendarSystemEthiopian(KCalendarSystemEthiopianPrivate &dd,
                                                    const KSharedConfig::Ptr config, const KLocale *locale)
-                        : KCalendarSystemCoptic(dd, config, locale),
-                          dont_use(0)
+                        : KCalendarSystemCoptic(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemEthiopian::~KCalendarSystemEthiopian()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemEthiopian::calendarType() const
@@ -356,92 +352,6 @@ bool KCalendarSystemEthiopian::isValid(const QDate &date) const
     return KCalendarSystemCoptic::isValid(date);
 }
 
-bool KCalendarSystemEthiopian::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystemCoptic::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemEthiopian::setYMD(QDate &date, int y, int m, int d) const
-{
-    return KCalendarSystemCoptic::setDate(date, y, m, d);
-}
-
-int KCalendarSystemEthiopian::year(const QDate &date) const
-{
-    return KCalendarSystemCoptic::year(date);
-}
-
-int KCalendarSystemEthiopian::month(const QDate &date) const
-{
-    return KCalendarSystemCoptic::month(date);
-}
-
-int KCalendarSystemEthiopian::day(const QDate &date) const
-{
-    return KCalendarSystemCoptic::day(date);
-}
-
-QDate KCalendarSystemEthiopian::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystemCoptic::addYears(date, nyears);
-}
-
-QDate KCalendarSystemEthiopian::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystemCoptic::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemEthiopian::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystemCoptic::addDays(date, ndays);
-}
-
-int KCalendarSystemEthiopian::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystemCoptic::monthsInYear(date);
-}
-
-int KCalendarSystemEthiopian::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystemCoptic::weeksInYear(date);
-}
-
-int KCalendarSystemEthiopian::weeksInYear(int year) const
-{
-    return KCalendarSystemCoptic::weeksInYear(year);
-}
-
-int KCalendarSystemEthiopian::daysInYear(const QDate &date) const
-{
-    return KCalendarSystemCoptic::daysInYear(date);
-}
-
-int KCalendarSystemEthiopian::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystemCoptic::daysInMonth(date);
-}
-
-int KCalendarSystemEthiopian::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystemCoptic::daysInWeek(date);
-}
-
-int KCalendarSystemEthiopian::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystemCoptic::dayOfYear(date);
-}
-
-int KCalendarSystemEthiopian::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystemCoptic::dayOfWeek(date);
-}
-
-int KCalendarSystemEthiopian::weekNumber(const QDate &date, int * yearNum) const
-{
-    return KCalendarSystemCoptic::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemEthiopian::isLeapYear(int year) const
 {
     return KCalendarSystemCoptic::isLeapYear(year);
@@ -470,61 +380,6 @@ QString KCalendarSystemEthiopian::weekDayName(int weekDay, WeekDayNameFormat for
 QString KCalendarSystemEthiopian::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystemCoptic::weekDayName(date, format);
-}
-
-QString KCalendarSystemEthiopian::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemCoptic::yearString(pDate, format);
-}
-
-QString KCalendarSystemEthiopian::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemCoptic::monthString(pDate, format);
-}
-
-QString KCalendarSystemEthiopian::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemCoptic::dayString(pDate, format);
-}
-
-int KCalendarSystemEthiopian::yearStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystemCoptic::yearStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemEthiopian::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystemCoptic::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemEthiopian::dayStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystemCoptic::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemEthiopian::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystemCoptic::formatDate(date, format);
-}
-
-QDate KCalendarSystemEthiopian::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystemCoptic::readDate(str, ok);
-}
-
-QDate KCalendarSystemEthiopian::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystemCoptic::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemEthiopian::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystemCoptic::readDate(str, flags, ok);
-}
-
-int KCalendarSystemEthiopian::weekStartDay() const
-{
-    return KCalendarSystemCoptic::weekStartDay();
 }
 
 int KCalendarSystemEthiopian::weekDayOfPray() const

@@ -157,92 +157,6 @@ bool KCalendarSystemJapanese::isValid(const QDate &date) const
     return KCalendarSystemGregorian::isValid(date);
 }
 
-bool KCalendarSystemJapanese::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystemGregorian::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemJapanese::setYMD(QDate &date, int y, int m, int d) const
-{
-    return KCalendarSystemGregorian::setDate(date, y, m, d);
-}
-
-int KCalendarSystemJapanese::year(const QDate &date) const
-{
-    return KCalendarSystemGregorian::year(date);
-}
-
-int KCalendarSystemJapanese::month(const QDate &date) const
-{
-    return KCalendarSystemGregorian::month(date);
-}
-
-int KCalendarSystemJapanese::day(const QDate &date) const
-{
-    return KCalendarSystemGregorian::day(date);
-}
-
-QDate KCalendarSystemJapanese::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystemGregorian::addYears(date, nyears);
-}
-
-QDate KCalendarSystemJapanese::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystemGregorian::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemJapanese::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystemGregorian::addDays(date, ndays);
-}
-
-int KCalendarSystemJapanese::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystemGregorian::monthsInYear(date);
-}
-
-int KCalendarSystemJapanese::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystemGregorian::weeksInYear(date);
-}
-
-int KCalendarSystemJapanese::weeksInYear(int year) const
-{
-    return KCalendarSystemGregorian::weeksInYear(year);
-}
-
-int KCalendarSystemJapanese::daysInYear(const QDate &date) const
-{
-    return KCalendarSystemGregorian::daysInYear(date);
-}
-
-int KCalendarSystemJapanese::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystemGregorian::daysInMonth(date);
-}
-
-int KCalendarSystemJapanese::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystemGregorian::daysInWeek(date);
-}
-
-int KCalendarSystemJapanese::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystemGregorian::dayOfYear(date);
-}
-
-int KCalendarSystemJapanese::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystemGregorian::dayOfWeek(date);
-}
-
-int KCalendarSystemJapanese::weekNumber(const QDate &date, int * yearNum) const
-{
-    return KCalendarSystemGregorian::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemJapanese::isLeapYear(int year) const
 {
     return KCalendarSystemGregorian::isLeapYear(year);
@@ -273,21 +187,6 @@ QString KCalendarSystemJapanese::weekDayName(const QDate &date, WeekDayNameForma
     return KCalendarSystemGregorian::weekDayName(date, format);
 }
 
-QString KCalendarSystemJapanese::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemGregorian::yearString(pDate, format);
-}
-
-QString KCalendarSystemJapanese::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemGregorian::monthString(pDate, format);
-}
-
-QString KCalendarSystemJapanese::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystemGregorian::dayString(pDate, format);
-}
-
 int KCalendarSystemJapanese::yearStringToInteger(const QString &sNum, int &iLength) const
 {
     QString gannen = i18nc("Japanese year 1 of era", "Gannen");
@@ -297,41 +196,6 @@ int KCalendarSystemJapanese::yearStringToInteger(const QString &sNum, int &iLeng
     } else {
         return KCalendarSystemGregorian::yearStringToInteger(sNum, iLength);
     }
-}
-
-int KCalendarSystemJapanese::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystemGregorian::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemJapanese::dayStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystemGregorian::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemJapanese::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystemGregorian::formatDate(date, format);
-}
-
-QDate KCalendarSystemJapanese::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystemGregorian::readDate(str, ok);
-}
-
-QDate KCalendarSystemJapanese::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystemGregorian::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemJapanese::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystemGregorian::readDate(str, flags, ok);
-}
-
-int KCalendarSystemJapanese::weekStartDay() const
-{
-    return KCalendarSystemGregorian::weekStartDay();
 }
 
 int KCalendarSystemJapanese::weekDayOfPray() const

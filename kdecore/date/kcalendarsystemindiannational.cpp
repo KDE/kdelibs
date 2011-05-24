@@ -388,15 +388,13 @@ QString KCalendarSystemIndianNationalPrivate::weekDayName(int weekDay, KLocale::
 
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational(const KLocale *locale)
-                             : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), KSharedConfig::Ptr(), locale),
-                               dont_use(0)
+                             : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), KSharedConfig::Ptr(), locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemIndianNational::KCalendarSystemIndianNational(const KSharedConfig::Ptr config, const KLocale *locale)
-                             : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), config, locale),
-                               dont_use(0)
+                             : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
@@ -404,15 +402,13 @@ KCalendarSystemIndianNational::KCalendarSystemIndianNational(const KSharedConfig
 KCalendarSystemIndianNational::KCalendarSystemIndianNational(KCalendarSystemIndianNationalPrivate &dd,
                                                              const KSharedConfig::Ptr config,
                                                              const KLocale *locale)
-                             : KCalendarSystem(dd, config, locale),
-                               dont_use(0)
+                             : KCalendarSystem(dd, config, locale)
 {
     d_ptr->loadConfig(calendarType());
 }
 
 KCalendarSystemIndianNational::~KCalendarSystemIndianNational()
 {
-    delete dont_use;
 }
 
 QString KCalendarSystemIndianNational::calendarType() const
@@ -453,92 +449,6 @@ bool KCalendarSystemIndianNational::isValid(const QDate &date) const
     return KCalendarSystem::isValid(date);
 }
 
-bool KCalendarSystemIndianNational::setDate(QDate &date, int year, int month, int day) const
-{
-    return KCalendarSystem::setDate(date, year, month, day);
-}
-
-// Deprecated
-bool KCalendarSystemIndianNational::setYMD(QDate &date, int y, int m, int d) const
-{
-    return KCalendarSystem::setDate(date, y, m, d);
-}
-
-int KCalendarSystemIndianNational::year(const QDate &date) const
-{
-    return KCalendarSystem::year(date);
-}
-
-int KCalendarSystemIndianNational::month(const QDate &date) const
-{
-    return KCalendarSystem::month(date);
-}
-
-int KCalendarSystemIndianNational::day(const QDate &date) const
-{
-    return KCalendarSystem::day(date);
-}
-
-QDate KCalendarSystemIndianNational::addYears(const QDate &date, int nyears) const
-{
-    return KCalendarSystem::addYears(date, nyears);
-}
-
-QDate KCalendarSystemIndianNational::addMonths(const QDate &date, int nmonths) const
-{
-    return KCalendarSystem::addMonths(date, nmonths);
-}
-
-QDate KCalendarSystemIndianNational::addDays(const QDate &date, int ndays) const
-{
-    return KCalendarSystem::addDays(date, ndays);
-}
-
-int KCalendarSystemIndianNational::monthsInYear(const QDate &date) const
-{
-    return KCalendarSystem::monthsInYear(date);
-}
-
-int KCalendarSystemIndianNational::weeksInYear(const QDate &date) const
-{
-    return KCalendarSystem::weeksInYear(date);
-}
-
-int KCalendarSystemIndianNational::weeksInYear(int year) const
-{
-    return KCalendarSystem::weeksInYear(year);
-}
-
-int KCalendarSystemIndianNational::daysInYear(const QDate &date) const
-{
-    return KCalendarSystem::daysInYear(date);
-}
-
-int KCalendarSystemIndianNational::daysInMonth(const QDate &date) const
-{
-    return KCalendarSystem::daysInMonth(date);
-}
-
-int KCalendarSystemIndianNational::daysInWeek(const QDate &date) const
-{
-    return KCalendarSystem::daysInWeek(date);
-}
-
-int KCalendarSystemIndianNational::dayOfYear(const QDate &date) const
-{
-    return KCalendarSystem::dayOfYear(date);
-}
-
-int KCalendarSystemIndianNational::dayOfWeek(const QDate &date) const
-{
-    return KCalendarSystem::dayOfWeek(date);
-}
-
-int KCalendarSystemIndianNational::weekNumber(const QDate &date, int * yearNum) const
-{
-    return KCalendarSystem::weekNumber(date, yearNum);
-}
-
 bool KCalendarSystemIndianNational::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);
@@ -567,61 +477,6 @@ QString KCalendarSystemIndianNational::weekDayName(int weekDay, WeekDayNameForma
 QString KCalendarSystemIndianNational::weekDayName(const QDate &date, WeekDayNameFormat format) const
 {
     return KCalendarSystem::weekDayName(date, format);
-}
-
-QString KCalendarSystemIndianNational::yearString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::yearString(pDate, format);
-}
-
-QString KCalendarSystemIndianNational::monthString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::monthString(pDate, format);
-}
-
-QString KCalendarSystemIndianNational::dayString(const QDate &pDate, StringFormat format) const
-{
-    return KCalendarSystem::dayString(pDate, format);
-}
-
-int KCalendarSystemIndianNational::yearStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::yearStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemIndianNational::monthStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::monthStringToInteger(sNum, iLength);
-}
-
-int KCalendarSystemIndianNational::dayStringToInteger(const QString &sNum, int &iLength) const
-{
-    return KCalendarSystem::dayStringToInteger(sNum, iLength);
-}
-
-QString KCalendarSystemIndianNational::formatDate(const QDate &date, KLocale::DateFormat format) const
-{
-    return KCalendarSystem::formatDate(date, format);
-}
-
-QDate KCalendarSystemIndianNational::readDate(const QString &str, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, ok);
-}
-
-QDate KCalendarSystemIndianNational::readDate(const QString &intstr, const QString &fmt, bool *ok) const
-{
-    return KCalendarSystem::readDate(intstr, fmt, ok);
-}
-
-QDate KCalendarSystemIndianNational::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
-{
-    return KCalendarSystem::readDate(str, flags, ok);
-}
-
-int KCalendarSystemIndianNational::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
 }
 
 int KCalendarSystemIndianNational::weekDayOfPray() const
