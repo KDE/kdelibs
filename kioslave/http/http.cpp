@@ -64,6 +64,7 @@
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
+#include <kmessagebox.h>
 
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
@@ -4229,6 +4230,26 @@ void HTTPProtocol::slotData(const QByteArray &_d)
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
+  // Security check against bogus username intended to fool the user into
+  // visiting a site they did not meant to.
+  if ((!m_request.url.user().isEmpty() && m_request.responseCode != 401) ||
+      (!m_request.proxyUrl.user().isEmpty() && m_request.responseCode != 407)) {
+      const int result = messageBox(WarningYesNo,
+                                    i18nc("@warning: Security check on url "
+                                          "being accessed", "You are about to "
+                                          "log in to the site \"%1\" with the "
+                                          "username \"%2\", but the website "
+                                          "does not require authentication. "
+                                          "This may be an attempt to trick you."
+                                          "<p>Is \"%1\" the site you want to visit?",
+                                          m_request.url.host(), m_request.url.user()),
+                                    i18nc("@title:window", "Confirm Website Access"));
+      if (result == KMessageBox::No) {
+        error(ERR_USER_CANCELED, m_request.url.url());
+        return false;
+      }
+  }
+
   // special case for reading cached body since we also do it in this function. oh well.
   if (!canHaveResponseBody(m_request.responseCode, m_request.method) &&
       !(m_request.cacheTag.ioMode == ReadFromCache && m_request.responseCode == 304 &&
