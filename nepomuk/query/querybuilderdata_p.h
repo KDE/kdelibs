@@ -79,7 +79,7 @@ namespace Nepomuk {
             QStack<GroupTermPropertyCache> m_groupTermStack;
 
             /// full text search terms with depth 0 for which bif:search_excerpt will be used
-            QHash<QString, QString> m_fullTextSearchTerms;
+            QHash<QString, QStringList> m_fullTextSearchTerms;
 
         public:
             inline QueryBuilderData( const QueryPrivate* query, Query::SparqlFlags flags )
@@ -158,8 +158,8 @@ namespace Nepomuk {
 
             /// used by LiteralTerm and ComparisonTerm
             /// states that "varName" is a value matching the full text search "text"
-            inline void addFullTextSearchTerm( const QString& varName, const QString& text ) {
-                m_fullTextSearchTerms.insert( varName, text );
+            inline void addFullTextSearchTerm( const QString& varName, const QStringList& terms ) {
+                m_fullTextSearchTerms.insert( varName, terms );
             }
 
             /// used by AndTermPrivate and OrTermPrivate in toSparqlGraphPattern
@@ -225,13 +225,11 @@ namespace Nepomuk {
             inline QString buildSearchExcerptExpression() const {
                 if( !m_fullTextSearchTerms.isEmpty() ) {
                     QStringList excerptParts;
-                    for( QHash<QString, QString>::const_iterator it = m_fullTextSearchTerms.constBegin();
+                    for( QHash<QString, QStringList>::const_iterator it = m_fullTextSearchTerms.constBegin();
                          it != m_fullTextSearchTerms.constEnd(); ++it ) {
                         const QString& varName = it.key();
-                        const QString& text = it.value();
-                        // bif:search_excerpt wants a vector of all search terms, thus, we split by spaces
-                        // and remove the quotes added by LiteralTermPrivate::queryText()
-                        const QStringList terms = text.mid(1, text.length()-2).split(' ');
+                        const QStringList& terms = it.value();
+                        // bif:search_excerpt wants a vector of all search terms
                         excerptParts
                             << QString::fromLatin1("bif:search_excerpt(bif:vector('%1'), %2)")
                             .arg( terms.join(QLatin1String("','")),

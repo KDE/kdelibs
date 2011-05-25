@@ -94,11 +94,9 @@ QString prepareRegexText( const QString& text )
 
 QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString& varName, const QString& text, Nepomuk::Query::QueryBuilderData* qbd )
 {
-    Q_UNUSED( qbd );
-
     if( text.isEmpty() )
         return QString();
-    
+
     // each token with a negation flag
     QList<QPair<QString, bool> > containsTokens;
     QList<QPair<QString, bool> > regexTokens;
@@ -178,18 +176,23 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
     // convert the tokens into SPARQL filters
     QStringList filters;
     QStringList containsFilterTokens;
+    QStringList fullTextTerms;
     for( int i = 0; i < containsTokens.count(); ++i ) {
         QString containsFilterToken;
         if( containsTokens[i].second )
             containsFilterToken += QLatin1String("NOT ");
         containsFilterToken += QString::fromLatin1("'%1'").arg(containsTokens[i].first);
         containsFilterTokens << containsFilterToken;
+
+        fullTextTerms << containsTokens[i].first;
     }
     if( !containsFilterTokens.isEmpty() ) {
         filters << QString::fromLatin1("bif:contains(%1, \"%2\")")
                    .arg( varName,
                          containsFilterTokens.join( isUnion ? QLatin1String(" OR ") : QLatin1String(" AND ")) );
+        qbd->addFullTextSearchTerm( varName, fullTextTerms );
     }
+
     QStringList regexFilters;
     for( int i = 0; i < regexTokens.count(); ++i ) {
         QString regexFilter;
