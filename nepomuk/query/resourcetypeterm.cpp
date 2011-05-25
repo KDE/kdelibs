@@ -31,7 +31,7 @@ bool Nepomuk::Query::ResourceTypeTermPrivate::equals( const TermPrivate* other )
 {
     if ( other->m_type == m_type ) {
         const ResourceTypeTermPrivate* rtp = static_cast<const ResourceTypeTermPrivate*>( other );
-        return rtp->m_class == m_class;
+        return rtp->m_types == m_types;
     }
     else {
         return false;
@@ -39,15 +39,28 @@ bool Nepomuk::Query::ResourceTypeTermPrivate::equals( const TermPrivate* other )
 }
 
 
-QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, const TermPrivate* parentTerm, QueryBuilderData* ) const
+QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
     Q_UNUSED(parentTerm);
 
     // we are using the crappy inferencing provided by the nepomuk ontology service where
     // each class is also a subclass of itself.
-    return QString::fromLatin1("%1 a %2 . ")
-        .arg( resName,
-              Soprano::Node::resourceToN3( m_class.uri() ) );
+    if(m_types.count() == 1) {
+        return QString::fromLatin1("%1 a %2 . ")
+                .arg( resName,
+                      Soprano::Node::resourceToN3( m_types.begin()->uri() ) );
+    }
+    else {
+        QStringList typeN3s;
+        foreach(const Types::Class& type, m_types) {
+            typeN3s.append(Soprano::Node::resourceToN3(type.uri()));
+        }
+
+        return QString::fromLatin1("%1 a %2 . FILTER(%2 in (%3)) . ")
+                .arg( resName,
+                      qbd->uniqueVarName(),
+                      typeN3s.join(QLatin1String(",")));
+    }
 }
 
 
@@ -79,12 +92,17 @@ Nepomuk::Query::ResourceTypeTerm& Nepomuk::Query::ResourceTypeTerm::operator=( c
 Nepomuk::Types::Class Nepomuk::Query::ResourceTypeTerm::type() const
 {
     N_D_CONST( ResourceTypeTerm );
-    return d->m_class;
+    if(!d->m_types.isEmpty())
+        return *d->m_types.begin();
+    else
+        return Types::Class();
 }
 
 
 void Nepomuk::Query::ResourceTypeTerm::setType( const Nepomuk::Types::Class& type )
 {
     N_D( ResourceTypeTerm );
-    d->m_class = type;
+    d->m_types.clear();
+    if(type.isValid())
+        d->m_types.insert(type);
 }

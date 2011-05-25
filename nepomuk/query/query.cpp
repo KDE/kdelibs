@@ -31,6 +31,7 @@
 #include "negationterm.h"
 #include "comparisonterm.h"
 #include "resourcetypeterm.h"
+#include "resourcetypeterm_p.h"
 #include "optionalterm.h"
 #include "queryserializer.h"
 #include "queryparser.h"
@@ -97,6 +98,75 @@ QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourc
     }
 }
 
+Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeEvenMore(const Nepomuk::Query::Term& term) const
+{
+    using namespace Nepomuk::Query;
+
+    //
+    // Merge ResourceTypeTerms which are combined in an OrTerm
+    //
+    if(term.type() == Term::Or) {
+        QList<Term> subTerms = term.toOrTerm().subTerms();
+        QList<ResourceTypeTerm> typeTerms;
+        QList<Term>::iterator it = subTerms.begin();
+        while(it != subTerms.end()) {
+            if(it->type() == Term::ResourceType) {
+                typeTerms << it->toResourceTypeTerm();
+                it = subTerms.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        if(typeTerms.count() > 1) {
+            ResourceTypeTerm newTypeTerm;
+            foreach(const ResourceTypeTerm& rtt, typeTerms) {
+                static_cast<ResourceTypeTermPrivate*>(newTypeTerm.d_ptr.data())->m_types << rtt.type();
+            }
+            subTerms << newTypeTerm;
+        }
+        else if(typeTerms.count() == 1) {
+            subTerms += typeTerms.first();
+        }
+
+        if(subTerms.count() > 1)
+            return OrTerm(subTerms);
+        else if(subTerms.count() == 1)
+            return subTerms.first();
+        else
+            return OrTerm();
+    }
+
+    //
+    // For AndTerms we simply need to optimize the subterms
+    //
+    else if(term.type() == Term::And) {
+        AndTerm newAndTerm;
+        foreach(const Term& subTerm, term.toAndTerm().subTerms()) {
+            newAndTerm.addSubTerm(optimizeEvenMore(subTerm));
+        }
+        return newAndTerm;
+    }
+
+    //
+    // For OptionalTerms we simply need to optimize the subterm
+    //
+    else if(term.type() == Term::Optional) {
+        return OptionalTerm::optionalizeTerm(optimizeEvenMore(term.toOptionalTerm().subTerm()));
+    }
+
+    //
+    // For NegationTerms we simply need to optimize the subterm
+    //
+    else if(term.type() == Term::Negation) {
+        return NegationTerm::negateTerm(optimizeEvenMore(term.toNegationTerm().subTerm()));
+    }
+
+    else {
+        return term;
+    }
+}
 
 
 class Nepomuk::Query::Query::RequestProperty::Private : public QSharedData
@@ -317,6 +387,10 @@ bool Nepomuk::Query::Query::operator!=( const Query& other ) const
 }
 
 
+namespace {
+
+}
+
 QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 {
     Term term = d->m_term;
@@ -357,6 +431,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     // optimize whatever we can
     term = term.optimized();
 
+    // perform internal optimizations
+    term = d->optimizeEvenMore(term);
 
     // actually build the SPARQL query patterns
     QueryBuilderData qbd( d.constData(), sparqlFlags );

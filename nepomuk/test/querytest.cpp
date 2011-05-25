@@ -358,6 +358,10 @@ void QueryTest::testToSparql_data()
             << Query(AndTerm(ResourceTerm(QUrl("nepomuk:/A")), ResourceTerm(QUrl("nepomuk:/B")), ResourceTerm(QUrl("nepomuk:/C"))))
             << QString::fromLatin1("select distinct ?r where { { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . ?r a ?v2 . FILTER(?r=<nepomuk:/B>) . ?r a ?v3 . FILTER(?r=<nepomuk:/C>) . } . }");
 
+    QTest::newRow("query several types")
+            << Query(OrTerm(ResourceTypeTerm(QUrl("onto:/typeA")), ResourceTypeTerm(QUrl("onto:/typeB"))))
+            << QString(QLatin1String("select distinct ?r where { ?r a ?v1 . FILTER(?v1 in (<onto:/typeA>,<onto:/typeB>)) . }"));
+
     //
     // A more complex example
     //
