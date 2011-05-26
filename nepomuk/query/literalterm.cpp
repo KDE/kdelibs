@@ -173,8 +173,7 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
         ++i;
     }
 
-    // convert the tokens into SPARQL filters
-    QStringList filters;
+    // add optional NOT terms to the contains tokens and build the search excerpts terms
     QStringList containsFilterTokens;
     QStringList fullTextTerms;
     for( int i = 0; i < containsTokens.count(); ++i ) {
@@ -184,16 +183,18 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
         containsFilterToken += QString::fromLatin1("'%1'").arg(containsTokens[i].first);
         containsFilterTokens << containsFilterToken;
 
-        fullTextTerms << containsTokens[i].first;
+        // we only want to show excerpt with the actually searched terms
+        if( !containsTokens[i].second )
+            fullTextTerms << containsTokens[i].first;
     }
-    if( !containsFilterTokens.isEmpty() ) {
-        filters << QString::fromLatin1("bif:contains(%1, \"%2\")")
-                   .arg( varName,
-                         containsFilterTokens.join( isUnion ? QLatin1String(" OR ") : QLatin1String(" AND ")) );
-        qbd->addFullTextSearchTerm( varName, fullTextTerms );
+    if( !fullTextTerms.isEmpty() ) {
+        qbd->addFullTextSearchTerms( varName, fullTextTerms );
     }
 
-    QStringList regexFilters;
+    const QString finalContainsToken = containsFilterTokens.join( isUnion ? QLatin1String(" OR ") : QLatin1String(" AND "));
+
+    // convert the regex tokens into SPARQL filters
+    QStringList filters;
     for( int i = 0; i < regexTokens.count(); ++i ) {
         QString regexFilter;
         if( regexTokens[i].second )
@@ -204,7 +205,33 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
         filters << regexFilter;
     }
 
-    return QString( QLatin1String("FILTER(") + filters.join( isUnion ? QLatin1String(" || ") : QLatin1String(" && ") ) + QLatin1String(") . ") );
+    //
+    // with the current filter design we can only support full-text scoring if we either
+    // only have contains pattern or if isUnion is false. In the latter case we can simply
+    // use a normal graph pattern and a FILTER.
+    //
+    QString containsPattern;
+    if( !containsFilterTokens.isEmpty() &&
+            qbd->query()->m_fullTextScoringEnabled &&
+            (regexTokens.isEmpty() || !isUnion) ) {
+        containsPattern = QString::fromLatin1("%1 bif:contains \"%2\" OPTION (score %3) . ")
+                .arg( varName,
+                      finalContainsToken,
+                      qbd->createScoringVariable() );
+    }
+
+    //
+    // The fallback is to add bif:contains as a filter. This syntax does not support scoring though.
+    //
+    else if( !containsFilterTokens.isEmpty() ) {
+        filters << QString::fromLatin1("bif:contains(%1, \"%2\")").arg( varName, finalContainsToken );
+    }
+
+    QString filterPattern;
+    if(!filters.isEmpty())
+        filterPattern = QString( QLatin1String("FILTER(") + filters.join( isUnion ? QLatin1String(" || ") : QLatin1String(" && ") ) + QLatin1String(") . ") );
+
+    return filterPattern + containsPattern;
 }
 
 

@@ -157,8 +157,8 @@ namespace Nepomuk {
             }
 
             /// used by LiteralTerm and ComparisonTerm
-            /// states that "varName" is a value matching the full text search "text"
-            inline void addFullTextSearchTerm( const QString& varName, const QStringList& terms ) {
+            /// states that "varName" is a value matching the given full text search terms
+            inline void addFullTextSearchTerms( const QString& varName, const QStringList& terms ) {
                 m_fullTextSearchTerms.insert( varName, terms );
             }
 
