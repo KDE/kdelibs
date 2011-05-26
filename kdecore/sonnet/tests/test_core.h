@@ -19,6 +19,8 @@
 #ifndef TEST_CORE_H
 #define TEST_CORE_H
 
+#include <QtCore/QObject>
+
 class SonnetCoreTest : public QObject
 {
     Q_OBJECT

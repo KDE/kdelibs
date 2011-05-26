@@ -1,3 +1,4 @@
+// krazy:excludeall=spelling
 /**
  * test.cpp
  *

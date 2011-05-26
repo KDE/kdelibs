@@ -63,19 +63,19 @@ void KAboutDataTest::testConstructorWithDefaults()
     QCOMPARE( aboutData.otherText(), QString() );
 // We don't know the default text, do we?
 //     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.license(), QString(WarningText) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
 // We don't know the default text, do we?
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
     QCOMPARE( aboutData.copyrightStatement(), QString() );
     QCOMPARE( aboutData.shortDescription(), QString() );
     QCOMPARE( aboutData.customAuthorPlainText(), QString() );
@@ -106,19 +106,19 @@ void KAboutDataTest::testConstructor()
     QVERIFY( aboutData.translators().isEmpty() );
     QCOMPARE( aboutData.otherText(), QString(Text) );
 //     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.license(), QString(WarningText) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
 // We don't know the default text, do we?
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
     QCOMPARE( aboutData.copyrightStatement(), ki18n(CopyrightStatement).toString() );
     QCOMPARE( aboutData.shortDescription(), ki18n(ShortDescription).toString() );
     QCOMPARE( aboutData.customAuthorPlainText(), QString() );
@@ -150,30 +150,30 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v2") );
     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.license(), QString(GPL2Text) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v2") );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL2Text) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
 
     // set to Unknown again
     aboutData.setLicense( KAboutData::License_Unknown );
 
 //     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenseName(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenseName(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.license(), QString(WarningText) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
 // We don't know the default text, do we?
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::ShortName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).name(KAboutData::FullName) != QString() );
+    QVERIFY( !aboutData.licenses().at(0).name(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(WarningText) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
 
     // add GPL3
     aboutData.addLicense( KAboutData::License_GPL_V3 );
@@ -181,12 +181,12 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v3") );
     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.license(), QString(GPL3Text) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v3") );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL3Text) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
 
     // add GPL2, Custom and File
     aboutData.addLicense( KAboutData::License_GPL_V2 );
@@ -196,16 +196,16 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v3") );
     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.license(), QString(GPL3Text) );
-    QVERIFY( aboutData.license() != QString() );
+    QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 4 );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v3") );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL3Text) );
-    QVERIFY( aboutData.licenses().at(0).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
     QCOMPARE( aboutData.licenses().at(1).name(KAboutData::ShortName), QString("GPL v2") );
     QCOMPARE( aboutData.licenses().at(1).name(KAboutData::FullName), QString("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.licenses().at(1).text(), QString(GPL2Text) );
-    QVERIFY( aboutData.licenses().at(1).text() != QString() );
+    QVERIFY( !aboutData.licenses().at(1).text().isEmpty() );
     QCOMPARE( aboutData.licenses().at(2).name(KAboutData::ShortName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(2).name(KAboutData::FullName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(2).text(), ki18n(LicenseText).toString() );

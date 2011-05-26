@@ -746,7 +746,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       ++args;
    }
    if ((args == s->argsList->end()) &&
-       (optv.startsWith('-') && !optv.startsWith("--")))
+       (optv.startsWith('-') && !optv.startsWith("--"))) // krazy:exclude=strings
    {
       // Option not found check if it is a valid option
       // in the style of -Pprinter1 or ps -aux

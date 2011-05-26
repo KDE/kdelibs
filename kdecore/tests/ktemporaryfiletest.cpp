@@ -4,13 +4,14 @@ This file is part of the KDE libraries
 This file has been placed in the Public Domain.
 */
 
+#include "ktemporaryfiletest.h"
+
 #include "qtest_kde.h"
 
 #include <QtCore/QDir>
 
 #include "kstandarddirs.h"
 
-#include "ktemporaryfiletest.h"
 #include "ktemporaryfile.h"
 #include "ktemporaryfiletest.moc"
 
@@ -50,7 +51,7 @@ void KTemporaryFileTest::testKTemporaryFile()
         KTemporaryFile file;
         QVERIFY(file.open());
         QVERIFY(file.fileName().startsWith(kdeTempDir + componentName));
-        QVERIFY(file.fileName().endsWith(".tmp"));
+        QVERIFY(file.fileName().endsWith(QLatin1String(".tmp")));
         QVERIFY(QFile::exists(file.fileName()));
         first = file.fileName();
     }
@@ -69,7 +70,7 @@ void KTemporaryFileTest::testKTemporaryFile()
         file.setPrefix("foo/");
         QVERIFY(file.open());
         QVERIFY(file.fileName().startsWith(kdeTempDir + "foo/"));
-        QVERIFY(file.fileName().endsWith(".tmp"));
+        QVERIFY(file.fileName().endsWith(QLatin1String(".tmp")));
         QVERIFY(QFile::exists(file.fileName()));
     }
 
@@ -80,7 +81,7 @@ void KTemporaryFileTest::testKTemporaryFile()
         file.setSuffix("eggs");
         QVERIFY(file.open());
         QVERIFY(file.fileName().startsWith(kdeTempDir + "spam"));
-        QVERIFY(file.fileName().endsWith("eggs"));
+        QVERIFY(file.fileName().endsWith(QLatin1String("eggs")));
         QVERIFY(QFile::exists(file.fileName()));
     }
 
@@ -89,7 +90,7 @@ void KTemporaryFileTest::testKTemporaryFile()
         KTemporaryFile file;
         file.setSuffix("eggs");
         QVERIFY(file.open());
-        QVERIFY(file.fileName().endsWith("eggs"));
+        QVERIFY(file.fileName().endsWith(QLatin1String("eggs")));
         QVERIFY(QFile::exists(file.fileName()));
     }
 

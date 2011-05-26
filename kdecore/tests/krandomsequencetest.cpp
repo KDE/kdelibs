@@ -72,25 +72,25 @@ main( /*int argc, char *argv[]*/ )
    list.append(QString("F"));
    list.append(QString("G"));
 
-   for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
+   for(QList<QString>::Iterator str = list.begin(); str != list.end(); ++str)
       printf("%s", str->toLatin1().data());
    printf("\n");
 
    seq.randomize(list);
 
-   for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
+   for(QList<QString>::Iterator str = list.begin(); str != list.end(); ++str)
       printf("%s", str->toLatin1().data());
    printf("\n");
 
    seq.randomize(list);
 
-   for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
+   for(QList<QString>::Iterator str = list.begin(); str != list.end(); ++str)
       printf("%s", str->toLatin1().data());
    printf("\n");
 
    seq.randomize(list);
 
-   for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
+   for(QList<QString>::Iterator str = list.begin(); str != list.end(); ++str)
       printf("%s", str->toLatin1().data());
    printf("\n");
 }

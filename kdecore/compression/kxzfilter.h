@@ -20,8 +20,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLZMAFILTER_H
-#define KLZMAFILTER_H
+#ifndef KXZFILTER_H
+#define KXZFILTER_H
 
 #include <config.h>
 
@@ -58,4 +58,4 @@ private:
 
 #endif
 
-#endif // KLZMAFILTER_H
+#endif // KXZFILTER_H

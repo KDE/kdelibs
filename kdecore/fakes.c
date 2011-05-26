@@ -7,7 +7,7 @@
    Copyright (c) 2007 Rafael Fernández López <ereslibre@kde.org>
 
    unsetenv() taken from the GNU C Library.
-   Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc.
+   Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc. <gnu@gnu.org>
 
    getgrouplist() taken from the FreeBSD libc. The copyright notice
    in the file /usr/src/lib/libc/gen/getgrouplist.c on FreeBSD is out
@@ -18,7 +18,7 @@
    Copyright (c) 1991, 1993
         The Regents of the University of California.  All rights reserved.
 
- 
+
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -398,7 +398,7 @@ KDECORE_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsi
  * $FreeBSD: src/lib/libc/string/strlcat.c,v 1.2.4.2 2001/07/09 23:30:06 obrien Exp $
  * $DragonFly: src/sys/libkern/strlcat.c,v 1.5 2007/06/07 23:45:02 dillon Exp $
  */
- 
+
 /*
  * Appends src to string dst of size siz (unlike strncat, siz is the
  * full size of dst, not space left).  At most siz-1 characters
@@ -419,7 +419,7 @@ KDECORE_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long s
     const char *s = src;
     unsigned long n = siz;
     unsigned long dlen;
-    
+
     /* Find the end of dst and adjust bytes left but don't go past end */
     while (n-- != 0 && *d != '\0')
         d++;

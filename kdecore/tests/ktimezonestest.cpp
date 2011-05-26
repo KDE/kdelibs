@@ -17,15 +17,16 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktimezonestest_p.h"
+
 #include <stdio.h>
 #include <qtest_kde.h>
 #include <QtCore/QDir>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
-#include "config.h" // for HAVE_TM_GMTOFF
+#include <config.h> // for HAVE_TM_GMTOFF
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
-#include "ktimezonestest_p.h"
 #include "ktimezonestest.moc"
 
 QTEST_KDEMAIN_CORE(KTimeZonesTest)
@@ -217,7 +218,7 @@ void KTimeZonesTest::zonetabChange()
 
 void KTimeZonesTest::currentOffset()
 {
-    QString tzfile = ":" + mDataDir + "/Europe/Paris";
+    QString tzfile = ':' + mDataDir + "/Europe/Paris";
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
     ::setenv("TZ", tzfile.toLatin1().data(), 1);
     ::tzset();

@@ -1,3 +1,4 @@
+// krazy:excludeall=i18ncheckarg
 /*  This file is part of the KDE libraries
     Copyright (C) 2006 Chusslove Illich <caslav.ilic@gmx.net>
 
@@ -17,11 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "klocalizedstringtest.h"
+
+#include <config.h>
 
 #include <locale.h>
 
-#include "klocalizedstringtest.h"
 #include <kdebug.h>
 #include "qtest_kde.h"
 
@@ -252,7 +254,7 @@ void KLocalizedStringTest::testThreads()
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
     futures << QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench);
     KGlobal::locale()->removeCatalog("kdelibs4");
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }

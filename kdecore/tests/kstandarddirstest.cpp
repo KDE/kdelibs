@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
 #include "kstandarddirstest.h"
+
+#include "qtest_kde.h"
 #include "kstandarddirstest.moc"
 
 QTEST_KDEMAIN_CORE( KStandarddirsTest )
@@ -27,7 +28,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kconfig.h>
 #include <kglobal.h>
 #include <ktempdir.h>
-#include "config-prefix.h"
+#include <config-prefix.h>
 #include <QtCore/QDebug>
 #include <kconfiggroup.h>
 #include <config.h>
@@ -104,7 +105,7 @@ void KStandarddirsTest::testFindResource()
 
     const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
     QVERIFY( !data.isEmpty() );
-    QVERIFY( data.endsWith( "share/apps/katepart/syntax/sql.xml" ) );
+    QVERIFY( data.endsWith( QLatin1String("share/apps/katepart/syntax/sql.xml") ) );
     QVERIFY( !QDir::isRelativePath(data) );
 }
 
@@ -205,7 +206,7 @@ void KStandarddirsTest::testFindResourceDir()
 
     const QString configDir = KGlobal::dirs()->findResourceDir( "config", "kdebugrc" );
     QVERIFY( !configDir.isEmpty() );
-    QVERIFY( configDir.endsWith( "/config/" ) );
+    QVERIFY( configDir.endsWith( QLatin1String( "/config/" ) ) );
 }
 
 void KStandarddirsTest::testFindExe()
@@ -258,7 +259,7 @@ void KStandarddirsTest::testFindExe()
     // findExe for a binary not part of KDE
     const QString ls = KGlobal::dirs()->findExe( "ls" );
     QVERIFY( !ls.isEmpty() );
-    QVERIFY( ls.endsWith( "bin/ls" ) );
+    QVERIFY( ls.endsWith( QLatin1String( "bin/ls" ) ) );
 #endif
 
     // findExe with no result
@@ -461,6 +462,6 @@ void KStandarddirsTest::testThreads()
     futures << QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources);
     futures << QtConcurrent::run(this, &KStandarddirsTest::testLocate);
     futures << QtConcurrent::run(this, &KStandarddirsTest::testRelativeLocation);
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 }

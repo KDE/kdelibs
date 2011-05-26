@@ -1173,7 +1173,7 @@ QDataStream KDECORE_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &d
 /**
  * Data stream input operator
  *
- * @param out the datastream to read from
+ * @param in the datastream to read from
  * @param date the date to read from the stream
  */
 QDataStream KDECORE_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
@@ -1181,7 +1181,7 @@ QDataStream KDECORE_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
 /**
  * Debug stream output operator
  *
- * @param out the debug datastream to write to
+ * @param debug the debug datastream to write to
  * @param date the date to write to the stream
  */
 QDebug KDECORE_EXPORT operator<<(QDebug debug, const KLocalizedDate &date);

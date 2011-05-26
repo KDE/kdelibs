@@ -1,3 +1,4 @@
+// krazy:excludeall=spelling
 /**
  *
  * Copyright 2007  Zack Rusin <zack@kde.org>
@@ -17,9 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
+
+#include "test_core.h"
 #include "speller.h"
 #include "globals.h"
-#include "test_core.h"
 
 #include <qtest_kde.h>
 #include <kdebug.h>
@@ -104,7 +106,7 @@ void SonnetCoreTest::testCore2()
     Speller dict("de_DE");
     if (!dict.availableDictionaries().contains("German")) {
         QSKIP("This test requires a german spelling dictionary", SkipSingle);
-        return; 
+        return;
     }
     kDebug()<< "Clients are "   << dict.availableBackends();
     kDebug()<< "Languages are " << dict.availableLanguages();

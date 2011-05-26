@@ -76,7 +76,7 @@ private Q_SLOTS:
         QList<QFuture<void> > futures;
         futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
         futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
-        Q_FOREACH(QFuture<void> f, futures)
+        Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
             f.waitForFinished();
     }
 

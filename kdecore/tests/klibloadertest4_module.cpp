@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kpluginfactory.h> // K_PLUGIN_FACTORY
 #include "klibloadertest4_module.h"
+
+#include <kpluginfactory.h> // K_PLUGIN_FACTORY
 
 K_PLUGIN_FACTORY(KLibLoaderTestFactory,
                  registerPlugin<KLibLoaderTestObject>();

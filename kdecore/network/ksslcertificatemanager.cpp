@@ -18,8 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
 #include "ksslcertificatemanager.h"
+#include "ksslcertificatemanager_p.h"
+
 #include "ktcpsocket.h"
 #include "ktcpsocket_p.h"
 #include <kconfig.h>
@@ -33,7 +34,6 @@
 #include <QtDBus/QtDBus>
 
 #include "kssld/kssld_interface.h"
-#include "ksslcertificatemanager_p.h"
 
 /*
   Config file format:
@@ -350,7 +350,7 @@ void KSslCertificateManagerPrivate::setAllCertificates(const QList<KSslCaCertifi
     qSort(in.begin(), in.end(), certLessThan);
     qSort(old.begin(), old.end(), certLessThan);
 
-    for (int ii = 0, oi = 0; ii < in.size() || oi < old.size(); ii++, oi++) {
+    for (int ii = 0, oi = 0; ii < in.size() || oi < old.size(); ++ii, ++oi) {
         // look at all elements in both lists, even if we reach the end of one early.
         if (ii >= in.size()) {
             removeCertificate(old.at(oi));

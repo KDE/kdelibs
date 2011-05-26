@@ -120,7 +120,7 @@ void KRandomSequence::Private::draw()
     lngSeed2 = lngSeed1;
 
     // Load the shuffle table after 8 warm-ups
-    for ( j = s_nShuffleTableSize + 7; j >= 0; j-- )
+    for ( j = s_nShuffleTableSize + 7; j >= 0; --j )
     {
       k = lngSeed1 / sQ1;
       lngSeed1 = sA1 * ( lngSeed1 - k*sQ1) - k*sR1;

@@ -1326,7 +1326,7 @@ int main( int argc, char **argv )
 #endif
     baseDir.append("/");
 
-  if (!codegenFilename.endsWith(".kcfgc"))
+  if (!codegenFilename.endsWith(QLatin1String(".kcfgc")))
   {
     cerr << "Codegen options file must have extension .kcfgc" << endl;
     return 1;

@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDEBUGTEST_H
-#define KDEBUGTEST_H
+#ifndef KDEBUG_UNITTEST_H
+#define KDEBUG_UNITTEST_H
 
 #include <QtCore/QObject>
 
@@ -44,4 +44,4 @@ private:
     void compareLines(const QList<QByteArray>& expectedLines, const char* fileName = "kdebug.dbg");
 };
 
-#endif
+#endif //KDEBUG_UNITTEST_H

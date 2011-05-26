@@ -19,6 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "ksavefiletest.h"
+
 #include <QtCore/QDebug>
 #include <QtCore/QTextStream>
 
@@ -31,7 +33,6 @@
 #include <ksavefile.h>
 
 #include <qtest_kde.h>
-#include "ksavefiletest.h"
 
 QTEST_KDEMAIN_CORE( KSaveFileTest )
 

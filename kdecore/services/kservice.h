@@ -354,7 +354,7 @@ public:
      * (including in context menus).
      * @return true if the service should be shown.
      *
-     * KMimeTypeTrader honours this and removes such services
+     * KMimeTypeTrader honors this and removes such services
      * from its results.
      *
      * @since 4.5

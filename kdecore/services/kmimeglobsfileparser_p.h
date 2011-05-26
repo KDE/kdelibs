@@ -62,7 +62,7 @@ public:
                     return true;
             return false;
         }
-        // "noglobs" is very rare occurence, so it's ok if it's slow
+        // "noglobs" is very rare occurrence, so it's ok if it's slow
         void removeMime(const QString& mime) {
             QMutableListIterator<Glob> it(*this);
             while (it.hasNext()) {

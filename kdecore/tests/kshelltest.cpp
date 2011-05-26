@@ -45,12 +45,12 @@ KShellTest::tildeExpand()
     QString me(KUser().loginName());
     QCOMPARE(KShell::tildeExpand("~"), QDir::homePath());
     QCOMPARE(KShell::tildeExpand("~/dir"), QString(QDir::homePath()+"/dir"));
-    QCOMPARE(KShell::tildeExpand("~" + me), QDir::homePath());
-    QCOMPARE(KShell::tildeExpand("~" + me + "/dir"), QString(QDir::homePath()+"/dir"));
+    QCOMPARE(KShell::tildeExpand('~' + me), QDir::homePath());
+    QCOMPARE(KShell::tildeExpand('~' + me + "/dir"), QString(QDir::homePath()+"/dir"));
 #ifdef Q_OS_WIN
-    QCOMPARE(KShell::tildeExpand("^~" + me), QString("~" + me));
+    QCOMPARE(KShell::tildeExpand("^~" + me), QString('~' + me));
 #else
-    QCOMPARE(KShell::tildeExpand("\\~" + me), QString("~" + me));
+    QCOMPARE(KShell::tildeExpand("\\~" + me), QString('~' + me));
 #endif
 }
 

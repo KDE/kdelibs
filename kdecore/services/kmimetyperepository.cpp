@@ -722,7 +722,7 @@ static int mimeDataBaseVersion()
 
         while (!file.atEnd()) {
             const QByteArray line = file.readLine().simplified();
-            if (!line.startsWith("Version")) {
+            if (!line.startsWith("Version")) { // krazy:exclude=strings
                 continue;
             }
             QRegExp versionRe(QString::fromLatin1("Version: (\\d+)\\.(\\d+)(\\.(\\d+))?"));

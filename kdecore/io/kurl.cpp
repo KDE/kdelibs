@@ -1185,7 +1185,7 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
 
 KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
 {
-  if ( str.startsWith( "file:" ) )
+  if ( str.startsWith( "file:" ) ) // krazy:exclude=strings
     return KUrl( str /*, QTextCodec::codecForLocale()->mibEnum()*/ );
 
   return KUrl( str /*, 106*/ ); // 106 is mib enum for utf8 codec;
