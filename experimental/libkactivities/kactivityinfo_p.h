@@ -16,8 +16,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIVITY_INFO_PH
-#define ACTIVITY_INFO_PH
+#ifndef KACTIVITYINFO_P_H
+#define KACTIVITYINFO_P_H
 
 #include "activitymanager_interface.h"
 #include "kactivityinfo.h"
@@ -39,4 +39,4 @@ public:
     QString id;
 };
 
-#endif // ACTIVITY_INFO_PH
+#endif // KACTIVITYINFO_P_H
