@@ -20,6 +20,8 @@
 #ifndef HTTPHEADERDISPOSITIONTEST_H
 #define HTTPHEADERDISPOSITIONTEST_H
 
+#include <QtCore/QObject>
+
 class HeaderDispositionTest : public QObject
 {
     Q_OBJECT

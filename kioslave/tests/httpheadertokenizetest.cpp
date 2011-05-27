@@ -17,16 +17,16 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "httpheadertokenizetest.h"
+
 #include <qtest_kde.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QHash>
-#include <QtCore/QObject>
 #include <kdebug.h>
 
 #include <parsinghelpers.h>
 
-#include "httpheadertokenizetest.h"
 #include "httpheadertokenizetest.moc"
 
 #include <parsinghelpers.cpp>
@@ -52,7 +52,7 @@ QTEST_KDEMAIN(HeaderTokenizeTest, NoGUI)
         {"last-modified", false},
         {"link", false}, //RFC 2068, multi-valued with ";" separator
         {"location", false},
-*/  
+*/
 
 //no use testing many different headers, just a couple each of the multi-valued
 //and the single-valued group to make sure that corner cases work both if there
@@ -108,7 +108,7 @@ void HeaderTokenizeTest::testMessyHeader()
     HeaderTokenizer tokenizer(buffer);
     int tokenizeEnd = tokenizer.tokenize(0, strlen(messyHeader));
     QCOMPARE(tokenizeEnd, (int)(strlen(messyHeader) - 1));
-    
+
     // If the output of the tokenizer contains all the terms that should be there and
     // exactly the number of terms that should be there then it's exactly correct.
     // We are lax wrt trailing whitespace, by the way. It does neither explicitly matter
@@ -128,7 +128,7 @@ void HeaderTokenizeTest::testMessyHeader()
         foreach (const intPair &be, tokenizer.value(key).beginEnd) {
             comparisonValues.append(QByteArray(buffer + be.first, be.second - be.first));
         }
-        
+
         QCOMPARE(comparisonValues.count(), values.count());
         for (int i = 0; i < values.count(); i++) {
             QVERIFY(comparisonValues[i].startsWith(values[i]));
