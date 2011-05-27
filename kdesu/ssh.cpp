@@ -200,7 +200,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
             }
 
             // Match "Password: " with the regex ^[^:]+:[\w]*$.
-            for (i=0,j=0,colon=0; i<len; i++)
+            for (i=0,j=0,colon=0; i<len; ++i)
             {
                 if (line[i] == ':')
                 {

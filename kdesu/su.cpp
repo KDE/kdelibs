@@ -280,7 +280,7 @@ int SuProcess::ConverseSU(const char *password)
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.
                 const uint len = line.length();
-                for (i=0,j=0,colon=0; i<len; i++)
+                for (i=0,j=0,colon=0; i<len; ++i)
                 {
                     if (line[i] == ':')
                     {
@@ -312,7 +312,7 @@ int SuProcess::ConverseSU(const char *password)
                     break;
                 }
                 const uint len = line.length();
-                for (i=0; i< len; i++)
+                for (i=0; i< len; ++i)
                     {
                 if (s[i] != '*')
                     return error;
