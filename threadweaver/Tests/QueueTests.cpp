@@ -116,7 +116,7 @@ void QueueTests::QueueFromSecondThreadTest()
 }
 
 void QueueTests::deleteJob( ThreadWeaver::Job* job)
-{   // test that signals are properly emited (asynchroneously, that is):
+{   // test that signals are properly emitted (asynchronously, that is):
     QVERIFY( thread() == QThread::currentThread() );
     QVERIFY( job == autoDeleteJob );
     delete job;

@@ -274,7 +274,7 @@ bool KCurrencyCode::isValid( const QString &isoCurrencyCode, CurrencyStatusFlags
     return test.isValid() && ( currencyStatusFlags & test.status() );
 }
 
-QStringList KCurrencyCode::allCurrencyCodesList( KCurrencyCode::CurrencyStatusFlags currencyStatus )
+QStringList KCurrencyCode::allCurrencyCodesList( CurrencyStatusFlags currencyStatus )
 {
     QStringList currencyCodes;
 

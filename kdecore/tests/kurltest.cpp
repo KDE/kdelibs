@@ -1,3 +1,4 @@
+// krazy:excludeall=qclasses
 /* This file is part of the KDE libraries
     Copyright (c) 1999-2005 Waldo Bastian <bastian@kde.org>
     Copyright (c) 2000-2005 David Faure <faure@kde.org>
@@ -18,8 +19,9 @@
 */
 // -*- mode: c++; c-basic-offset: 2 -*-
 
-#include "qtest_kde.h"
 #include "kurltest.h"
+
+#include "qtest_kde.h"
 #include "kurltest.moc"
 
 QTEST_KDEMAIN_CORE( KUrlTest )
@@ -655,7 +657,7 @@ void KUrlTest::testSetFileName() // and addPath
   QString pre;
 #ifdef Q_OS_WIN
   // On Windows we explicitly prepend a slash, see KUrl::setPath
-  pre = "/";
+  pre = '/';
 #endif
   singleFile.setFileName( "bar.bin" );
   QCOMPARE( singleFile.path(), QString(pre + "bar.bin") );
@@ -1211,17 +1213,17 @@ void KUrlTest::testSubURL()
   //QCOMPARE( url1.htmlRef(), QString("myref") );
   QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
-  const KUrl::List splitted = KUrl::split( url1 );
-  QCOMPARE( splitted.count(), 3 );
-  //kDebug() << splitted.toStringList();
-  QCOMPARE( splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz#myref") );
-  QCOMPARE( splitted[1].url(), QString("gzip:/#myref") );
-  QCOMPARE( splitted[2].url(), QString("tar:/#myref") );
+  const KUrl::List splitList = KUrl::split( url1 );
+  QCOMPARE( splitList.count(), 3 );
+  //kDebug() << splitList.toStringList();
+  QCOMPARE( splitList[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz#myref") );
+  QCOMPARE( splitList[1].url(), QString("gzip:/#myref") );
+  QCOMPARE( splitList[2].url(), QString("tar:/#myref") );
 
 #if QT_VERSION < 0x040500
   QSKIP( "Multiple sub urls not supported with Qt < 4.5", SkipSingle );
 #endif
-  KUrl rejoined = KUrl::join(splitted);
+  KUrl rejoined = KUrl::join(splitList);
   QCOMPARE(rejoined.url(), url1.url());
 
   u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";

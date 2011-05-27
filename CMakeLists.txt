@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 6)
-set (KDE_VERSION_RELEASE 41)
+set (KDE_VERSION_RELEASE 80)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.7 >= 20110106)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (4.7 Beta1)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -332,9 +332,8 @@ endif(NOT WINCE)
 add_subdirectory( kunitconversion )
 add_subdirectory( kdewebkit )
 add_subdirectory( includes )
-add_subdirectory( experimental )
 
-
+macro_optional_add_subdirectory( experimental )
 macro_optional_add_subdirectory( doc  )
 
 ################# write dependency file which will be installed #################

@@ -16,12 +16,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kautostarttest.h"
+
 #include "kstandarddirs.h"
 #include <kdebug.h>
 
 #include <qtest_kde.h>
 
-#include "kautostarttest.h"
 #include "kautostarttest.moc"
 
 #include <QtCore/QFile>

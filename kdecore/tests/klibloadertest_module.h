@@ -22,6 +22,7 @@
 #include <QtCore/QObject>
 class KLibLoaderTestObject : public QObject
 {
+    Q_OBJECT
 public:
     KLibLoaderTestObject( QObject* parent, const QStringList& );
     ~KLibLoaderTestObject();

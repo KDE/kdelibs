@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNOTIFICATIONRESTRECTIONSTEST_H
-#define KNOTIFICATIONRESTRECTIONSTEST_H
+#ifndef KAUTOSTARTTEST_H
+#define KAUTOSTARTTEST_H
 
 #include <QtCore/QObject>
 
@@ -38,4 +38,4 @@ private Q_SLOTS:
 };
 
 
-#endif
+#endif //KAUTOSTARTTEST_H

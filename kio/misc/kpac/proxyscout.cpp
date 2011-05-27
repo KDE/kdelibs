@@ -20,6 +20,8 @@
 
 #include "proxyscout.h"
 
+#include "config-kpac.h"
+
 #include "discovery.h"
 #include "script.h"
 
@@ -29,7 +31,10 @@
 #include <kprotocolmanager.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
+
+#ifndef KPAC_NO_SOLID
 #include <solid/networking.h>
+#endif
 
 #include <QtCore/QFileSystemWatcher>
 
@@ -58,7 +63,9 @@ namespace KPAC
           m_debugArea (KDebug::registerArea("proxyscout")),
           m_watcher( 0 )
     {
+#ifndef KPAC_NO_SOLID
         connect (Solid::Networking::notifier(), SIGNAL(shouldDisconnect()), SLOT(disconnectNetwork()));
+#endif
     }
 
     ProxyScout::~ProxyScout()

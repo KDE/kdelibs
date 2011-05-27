@@ -197,7 +197,7 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QS
         ;
     if (!sl)
         return 0;
-    typename QHash<QString,VT>::const_iterator it = 
+    typename QHash<QString,VT>::const_iterator it =
         macromap.constFind( str.mid( pos, sl ) );
     if (it != macromap.constEnd()) {
         ret += it.value();
@@ -226,7 +226,7 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; isIdentifier( str.unicode()[rpos + sl].unicode() ); sl++)
+        for (sl = 0; isIdentifier( str.unicode()[rpos + sl].unicode() ); ++sl)
             ;
         rsl = sl + 1;
     }
@@ -300,7 +300,7 @@ KWordMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; isIdentifier( str.unicode()[rpos + sl].unicode() ); sl++)
+        for (sl = 0; isIdentifier( str.unicode()[rpos + sl].unicode() ); ++sl)
             ;
         rsl = sl + 1;
     }

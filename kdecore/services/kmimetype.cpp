@@ -26,7 +26,6 @@
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocale.h>
-#include <kmimetyperepository_p.h>
 #include <kprotocolinfo.h>
 #include <kprotocolinfofactory.h>
 #include <kstandarddirs.h>

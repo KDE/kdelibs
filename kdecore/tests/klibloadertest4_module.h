@@ -16,15 +16,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLIBLOADERTEST_MODULE_H
-#define KLIBLOADERTEST_MODULE_H
+#ifndef KLIBLOADERTEST4_MODULE_H
+#define KLIBLOADERTEST4_MODULE_H
 
 #include <QtCore/QObject>
 class KLibLoaderTestObject : public QObject
 {
+    Q_OBJECT
 public:
     KLibLoaderTestObject( QObject* parent, const QList<QVariant>& );
     ~KLibLoaderTestObject();
 };
 
-#endif
+#endif //KLIBLOADERTEST4_MODULE_H

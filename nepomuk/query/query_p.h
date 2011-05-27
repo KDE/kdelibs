@@ -49,6 +49,14 @@ namespace Nepomuk {
             }
 
             QString createFolderFilter( const QString& resourceVarName, QueryBuilderData* ) const;
+
+            /**
+             * Optimizations that cannot be done in Term::optimized() since they use internal
+             * features of some of the term types.
+             * We might expose some of them in the next major KDE release.
+             */
+            Nepomuk::Query::Term optimizeEvenMore(const Nepomuk::Query::Term& term) const;
+
             QStringList buildRequestPropertyVariableList() const;
             QString buildRequestPropertyPatterns() const;
 

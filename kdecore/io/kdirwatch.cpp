@@ -44,7 +44,7 @@
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
 
-#include "io/config-kdirwatch.h"
+#include <io/config-kdirwatch.h>
 #include <config.h>
 
 #include <sys/stat.h>
@@ -385,7 +385,7 @@ void KDirWatchPrivate::inotifyEventReceived()
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               }
               int counter = 0;
-              Q_FOREACH(client, e->m_clients) {
+              Q_FOREACH(client, e->m_clients) { // krazy:exclude=foreach
                   if (client->m_watchModes & flag) {
                         counter++;
                   }
@@ -1590,7 +1590,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // Add entry to parent dir to notice if the entry gets recreated
           addEntry(0, e->parentDirectory(), e, true /*isDir*/);
         } else {
-            // A file in this directory has been removed, and wasn't explicitely watched.
+            // A file in this directory has been removed, and wasn't explicitly watched.
             // We could still inform clients, like inotify does? But stat can't.
             // For now we just marked e dirty and slotRescan will emit the dir as dirty.
             //kDebug(7001) << "Got FAMDeleted for" << QFile::decodeName(fe->filename) << "in" << e->path << ". Absolute path -> NOOP!";

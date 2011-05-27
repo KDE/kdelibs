@@ -55,6 +55,7 @@ class Parser
 {
 public:
     Parser(istream* stream);
+    ~Parser();
 
     void parse();
 private:

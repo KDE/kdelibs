@@ -64,7 +64,7 @@ void KSycocaEntry::read( QDataStream &s, QString &str )
           b += 2;
       }
   } else {
-      str = QString();
+      str.clear();
   }
 }
 

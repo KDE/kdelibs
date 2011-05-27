@@ -1,3 +1,4 @@
+// krazy:excludeall=qclasses
 /*
  *  Copyright (C) 2006 Dirk Stoecker <kde@dstoecker.de>
  *

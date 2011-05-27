@@ -485,7 +485,7 @@ void KServiceTest::testReaderThreads()
     futures << QtConcurrent::run(this, &KServiceTest::testHasServiceType1);
     futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
     futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
@@ -501,6 +501,6 @@ void KServiceTest::testThreads()
     while (m_sycocaUpdateDone == 0) // not using a bool, just to silence helgrind
         QTest::qWait(100); // process D-Bus events!
     kDebug() << "Joining all threads";
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 }

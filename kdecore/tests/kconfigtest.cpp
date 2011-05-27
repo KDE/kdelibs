@@ -17,8 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
 #include "kconfigtest.h"
+
+#include <qtest_kde.h>
 #include <ktempdir.h>
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
@@ -108,13 +109,13 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "stringEntry5", STRINGENTRY5 );
   cg.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   cg.deleteEntry( "stringEntry5" );
-  cg.deleteEntry( "stringEntry6" ); // deleting a nonexistant entry
+  cg.deleteEntry( "stringEntry6" ); // deleting a nonexistent entry
   cg.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
                  KConfig::Global|KConfig::Persistent );
   cg.writeEntry( "doubleEntry1", DOUBLEENTRY );
   cg.writeEntry( "floatEntry1", FLOATENTRY );
 
-  sc.deleteGroup("deleteMe"); // deleting a nonexistant group
+  sc.deleteGroup("deleteMe"); // deleting a nonexistent group
 
   cg = KConfigGroup(&sc, "Complex Types");
   cg.writeEntry( "rectEntry", RECTENTRY );
@@ -727,7 +728,7 @@ void KConfigTest::testDelete()
 
   int count=0;
   foreach(const QByteArray& item, readLines())
-      if (item.startsWith("devices|"))
+      if (item.startsWith("devices|")) // krazy:exclude=strings
           count++;
   QCOMPARE(count, 2);
   cg.deleteEntry("devices|manual|/mnt/ipod");
@@ -1563,6 +1564,6 @@ void KConfigTest::testThreads()
     // QEXPECT_FAIL triggers race conditions, it should be fixed to use QThreadStorage...
     //futures << QtConcurrent::run(this, &KConfigTest::testDeleteWhenLocalized);
     //futures << QtConcurrent::run(this, &KConfigTest::testEntryMap);
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 }

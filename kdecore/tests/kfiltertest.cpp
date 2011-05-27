@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "kfiltertest.h"
+
 #include "qtest_kde.h"
 
 #include "kfilterdev.h"
@@ -25,7 +27,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <kdebug.h>
-#include "kfiltertest.h"
 #include <kgzipfilter.h>
 #include <krandom.h>
 #include <QtCore/QDir>

@@ -156,7 +156,7 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
     // It's probably to late to check this because service.library() is used
     // above.
     if (!service.isValid()) {
-        d->errorString = i18n("The provided service is not valid", service.entryPath());
+        d->errorString = i18n("The provided service is not valid");
         return;
     }
 

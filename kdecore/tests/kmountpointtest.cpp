@@ -59,7 +59,7 @@ void KMountPointTest::testCurrentMountPoints()
     KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
     QVERIFY(found);
     QCOMPARE(found->mountPoint(), mountWithDevice->mountPoint());
-    found = mountPoints.findByDevice("/I/Dont/Exist");
+    found = mountPoints.findByDevice("/I/Dont/Exist"); // krazy:exclude=spelling
     QVERIFY(!found);
 
     // Check findByPath
@@ -118,7 +118,7 @@ void KMountPointTest::testPossibleMountPoints()
     const KMountPoint::Ptr rootMountPoint = mountPoints.findByPath("/");
     QVERIFY(rootMountPoint);
     QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
-    QVERIFY(rootMountPoint->realDeviceName().startsWith("/dev")); // portable?
+    QVERIFY(rootMountPoint->realDeviceName().startsWith(QLatin1String("/dev"))); // portable?
     QVERIFY(!rootMountPoint->mountOptions().contains("noauto")); // how would this work?
     QVERIFY(!rootMountPoint->probablySlow());
 #endif

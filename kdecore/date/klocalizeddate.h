@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDATE_H
-#define KDATE_H
+#ifndef KLOCALIZEDDATE_H
+#define KLOCALIZEDDATE_H
 
 #include <QtCore/QString>
 #include <QtCore/QDate>
@@ -151,7 +151,7 @@ public:
      * See @ref custom for more details on using custom Calendar Systems.
      *
      * @param date the QDate to set the KLocalizedDate to, defaults to invalid date
-     * @param locale the locale to use for date formats, defaults to the global
+     * @param calendar the calendar system to use, defaults to the global
      */
     explicit KLocalizedDate(const QDate &date = QDate(), const KCalendarSystem *calendar = 0);
 
@@ -169,6 +169,7 @@ public:
      * @param year the year to set the KLocalizedDate to
      * @param month the month to set the KLocalizedDate to
      * @param day the day to set the KLocalizedDate to
+     * @param calendar the calendar system to use, defaults to the global
      */
     KLocalizedDate(int year, int month, int day, const KCalendarSystem *calendar = 0);
 
@@ -297,7 +298,7 @@ public:
      * @see eraName()
      * @see yearInEra()
      * @param eraName Era string
-     * @param year Year In Era number
+     * @param yearInEra Year In Era number
      * @param month Month number
      * @param day Day Of Month number
      * @return @c true if the date is valid, @c false otherwise
@@ -421,7 +422,6 @@ public:
      * See @ref formatting for more details on Date Formatting.
      *
      * @see formatDate()
-     * @param format format to return, either short or long
      * @return the localized era name, empty string if date is invalid
      */
     QString eraName() const;
@@ -433,7 +433,6 @@ public:
      * See @ref formatting for more details on Date Formatting.
      *
      * @see formatDate()
-     * @param format format to return, either short or long
      * @return the localized era year string, empty string if date is invalid
      */
     QString eraYear() const;
@@ -1166,22 +1165,25 @@ Q_DECLARE_METATYPE(KLocalizedDate)
 /**
  * Data stream output operator
  *
- * @param other the date to compare
+ * @param out the datastream to write to
+ * @param date the date to write to the stream
  */
 QDataStream KDECORE_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &date);
 
 /**
  * Data stream input operator
  *
- * @param other the date to compare
+ * @param in the datastream to read from
+ * @param date the date to read from the stream
  */
 QDataStream KDECORE_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
 
 /**
  * Debug stream output operator
  *
- * @param other the date to print
+ * @param debug the debug datastream to write to
+ * @param date the date to write to the stream
  */
-QDebug KDECORE_EXPORT operator<<(QDebug, const KLocalizedDate &);
+QDebug KDECORE_EXPORT operator<<(QDebug debug, const KLocalizedDate &date);
 
-#endif // KDATE_H
+#endif // KLOCALIZEDDATE_H

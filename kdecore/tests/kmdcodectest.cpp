@@ -198,14 +198,14 @@ void MD5_timeTrial ()
          << TEST_BLOCK_LEN << "-byte..." << endl;
 
     // Initialize block
-    for (i = 0; i < TEST_BLOCK_LEN; i++)
+    for (i = 0; i < TEST_BLOCK_LEN; ++i)
         block[i] = (quint8)(i & 0xff);
 
     // Start timer
     time (&startTime);
 
     // Digest blocks
-    for (i = 0; i < TEST_BLOCK_COUNT; i++)
+    for (i = 0; i < TEST_BLOCK_COUNT; ++i)
         context.update (block, TEST_BLOCK_LEN);
 
     // Stop timer

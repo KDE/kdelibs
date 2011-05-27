@@ -1894,6 +1894,222 @@ void KDateTimeTest::set()
 
 
 /////////////////////////////////////////////////////////
+// operator==()
+/////////////////////////////////////////////////////////
+
+void KDateTimeTest::equal()
+{
+    KTimeZone london = KSystemTimeZones::zone("Europe/London");
+    KTimeZone cairo  = KSystemTimeZones::zone("Africa/Cairo");
+
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    // Date/time values
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,2,28), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,2,29), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,2), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,3), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,3), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,2,28), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,2,29), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,2), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,3), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,2), KDateTime::UTC)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), KDateTime::UTC) == KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), QTime(17,45,2), KDateTime::LocalZone));
+
+    // Date/time : date-only
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(0,0,0), cairo) == KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo) == KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo) == KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(0,0,0), cairo) == KDateTime(QDate(2004,3,2), cairo)));
+
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(0,0,0), cairo) == KDateTime(QDate(2004,3,1), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) == KDateTime(QDate(2004,3,1), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo) == KDateTime(QDate(2004,3,1), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo) == KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(0,0,0), cairo) == KDateTime(QDate(2004,3,2), london)));
+
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo) == KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo) == KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(10,0,1), cairo) == KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(9,59,59,999), cairo) == KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(10,0,0), cairo) == KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+
+    // Date-only : date/time
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(0,0,0), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,3), QTime(0,0,0), cairo)));
+
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(0,0,0), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(3,45,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), QTime(23,59,59,999), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,1), QTime(23,59,59,999), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,3), QTime(0,0,0), london)));
+
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::LocalZone) == KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::LocalZone) == KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::LocalZone) == KDateTime(QDate(2004,3,3), QTime(9,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::LocalZone) == KDateTime(QDate(2004,3,3), QTime(10,0,0), cairo)));
+
+    // Date-only values
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(2*3600))));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), london) == KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(3*3600))));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) == KDateTime(QDate(2004,3,1), KDateTime::Spec::OffsetFromUTC(2*3600)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,1), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(3*3600)) == KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) == KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(2*3600)) == KDateTime(QDate(2004,3,1), cairo)));
+    // Compare days when daylight savings changes occur
+    QVERIFY(KDateTime(QDate(2005,3,27), london) == KDateTime(QDate(2005,3,27), london));
+    QVERIFY(!(KDateTime(QDate(2005,3,27), london) == KDateTime(QDate(2005,3,27), KDateTime::Spec::OffsetFromUTC(0))));
+    QVERIFY(KDateTime(QDate(2005,3,27), KDateTime::Spec::OffsetFromUTC(0)) == KDateTime(QDate(2005,3,27), KDateTime::Spec::OffsetFromUTC(0)));
+    QVERIFY(!(KDateTime(QDate(2005,3,27), KDateTime::Spec::OffsetFromUTC(0)) == KDateTime(QDate(2005,3,27), london)));
+    QVERIFY(KDateTime(QDate(2005,10,30), KDateTime::UTC) == KDateTime(QDate(2005,10,30), KDateTime::UTC));
+    QVERIFY(!(KDateTime(QDate(2005,10,30), london) == KDateTime(QDate(2005,10,30), KDateTime::UTC)));
+    QVERIFY(!(KDateTime(QDate(2005,10,30), KDateTime::UTC) == KDateTime(QDate(2005,10,30), london)));
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+
+/////////////////////////////////////////////////////////
+// operator<()
+/////////////////////////////////////////////////////////
+
+void KDateTimeTest::lessThan()
+{
+    KTimeZone london = KSystemTimeZones::zone("Europe/London");
+    KTimeZone cairo  = KSystemTimeZones::zone("Africa/Cairo");
+
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    // Date/time values
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,2,28), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,2,29), QTime(3,45,3), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,1), QTime(3,45,3), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,3), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,3), QTime(3,45,3), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,3), cairo) < KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(3,45,1), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,2,28), QTime(3,45,3), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,2,29), QTime(3,45,3), london)));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,1), QTime(3,45,3), london));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,3), london));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,3), QTime(3,45,3), london));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), london) < KDateTime(QDate(2004,2,28), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), london) < KDateTime(QDate(2004,2,29), QTime(3,45,3), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), london) < KDateTime(QDate(2004,3,1), QTime(3,45,3), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), london) < KDateTime(QDate(2004,3,2), QTime(3,45,3), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), london) < KDateTime(QDate(2004,3,3), QTime(3,45,3), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,1), QTime(3,45,2), KDateTime::UTC));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), QTime(3,45,2), KDateTime::UTC) < KDateTime(QDate(2004,3,1), QTime(3,45,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,1), QTime(17,45,2), KDateTime::LocalZone)));
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,1), QTime(17,45,3), KDateTime::LocalZone));
+
+    // Date/time : date-only
+    QVERIFY(KDateTime(QDate(2004,2,29), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(23,59,59,999), cairo) < KDateTime(QDate(2004,3,2), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(23,59,59,999), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,4), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,5), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), cairo)));
+
+    QVERIFY(KDateTime(QDate(2004,2,29), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), london));
+    QVERIFY(KDateTime(QDate(2004,3,1), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), london));
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(1,59,59,999), cairo) < KDateTime(QDate(2004,3,2), london));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(2,0,0), cairo) < KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo) < KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(23,59,59,999), cairo) < KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,4), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,5), QTime(0,0,0), cairo) < KDateTime(QDate(2004,3,2), london)));
+
+    QVERIFY(KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo) < KDateTime(QDate(2004,3,2), KDateTime::LocalZone));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo) < KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), QTime(10,0,1), cairo) < KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(9,59,59,999), cairo) < KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), QTime(10,0,0), cairo) < KDateTime(QDate(2004,3,2), KDateTime::LocalZone)));
+
+    // Date-only : date/time
+    QVERIFY(KDateTime(QDate(2004,2,28), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo));
+    QVERIFY(KDateTime(QDate(2004,2,29), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,2), QTime(23,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), cairo) < KDateTime(QDate(2004,3,2), QTime(23,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,4), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,5), cairo) < KDateTime(QDate(2004,3,2), QTime(0,0,0), cairo)));
+
+    QVERIFY(KDateTime(QDate(2004,2,28), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london));
+    QVERIFY(KDateTime(QDate(2004,2,29), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,2), QTime(3,45,2), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,1), QTime(21,59,59,999), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), cairo) < KDateTime(QDate(2004,3,1), QTime(21,59,59,999), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,4), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,5), cairo) < KDateTime(QDate(2004,3,1), QTime(22,0,0), london)));
+
+    QVERIFY(KDateTime(QDate(2004,2,28), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo));
+    QVERIFY(KDateTime(QDate(2004,2,29), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo)));
+    QVERIFY(KDateTime(QDate(2004,3,1), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(9,59,59,999), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,3), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,6), KDateTime::LocalZone) < KDateTime(QDate(2004,3,2), QTime(10,0,0), cairo)));
+
+    // Date-only values
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,2), cairo));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(2*3600)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), london) < KDateTime(QDate(2004,3,2), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(3*3600))));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,3), KDateTime::Spec::OffsetFromUTC(3*3600)));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,4), KDateTime::Spec::OffsetFromUTC(3*3600)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,1), KDateTime::Spec::OffsetFromUTC(2*3600))));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,5), london));
+    QVERIFY(KDateTime(QDate(2004,3,1), cairo) < KDateTime(QDate(2004,3,2), london));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,1), london)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(3*3600)) < KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), cairo) < KDateTime(QDate(2004,3,1), cairo)));
+    QVERIFY(!(KDateTime(QDate(2004,3,2), KDateTime::Spec::OffsetFromUTC(2*3600)) < KDateTime(QDate(2004,3,1), cairo)));
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+
+/////////////////////////////////////////////////////////
 // compare()
 /////////////////////////////////////////////////////////
 

@@ -38,56 +38,56 @@ public:
 
     virtual ~KDateTimeFormatter();
 
-    virtual QString formatDate( const QDate &fromDate,
-                                const QString &toFormat,
-                                const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                                const KLocale *locale = KGlobal::locale(),
-                                KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
-                                KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
+    virtual QString formatDate(const QDate &fromDate,
+                               const QString &toFormat,
+                               const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
+                               const KLocale *locale = KGlobal::locale(),
+                               KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                               KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
-    virtual QString formatTime( const QTime &fromTime,
-                                const QString &toFormat,
-                                KLocale::TimeFormatOptions timeOptions = 0,
-                                const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                                const KLocale *locale = KGlobal::locale(),
-                                KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
-                                KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
+    virtual QString formatTime(const QTime &fromTime,
+                               const QString &toFormat,
+                               KLocale::TimeFormatOptions timeOptions = 0,
+                               const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
+                               const KLocale *locale = KGlobal::locale(),
+                               KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                               KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
-    virtual QString formatDateTime( const KDateTime &fromDateTime,
-                                    const QString &toFormat,
-                                    KLocale::TimeFormatOptions timeOptions = 0,
-                                    const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                                    const KLocale *locale = KGlobal::locale(),
-                                    KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
-                                    KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
+    virtual QString formatDateTime(const KDateTime &fromDateTime,
+                                   const QString &toFormat,
+                                   KLocale::TimeFormatOptions timeOptions = 0,
+                                   const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
+                                   const KLocale *locale = KGlobal::locale(),
+                                   KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                                   KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
 private:
-    virtual QString formatDateTimePosix( const KDateTime &fromDateTime,
-                                         const QString &toFormat,
-                                         KLocale::TimeFormatOptions timeOptions,
-                                         const KCalendarSystem *calendar,
-                                         const KLocale *locale,
-                                         KLocale::DigitSet digitSet,
-                                         KLocale::DateTimeFormatStandard standard ) const;
+    virtual QString formatDateTimePosix(const KDateTime &fromDateTime,
+                                        const QString &toFormat,
+                                        KLocale::TimeFormatOptions timeOptions,
+                                        const KCalendarSystem *calendar,
+                                        const KLocale *locale,
+                                        KLocale::DigitSet digitSet,
+                                        KLocale::DateTimeFormatStandard standard) const;
 
-    virtual void initEnglish( const KCalendarSystem *calendar, const KLocale *locale ) const;
+    virtual void initEnglish(const KCalendarSystem *calendar, const KLocale *locale) const;
 
-    virtual QString formatDateTimeUnicode( const KDateTime &fromDateTime,
-                                           const QString &toFormat,
-                                           KLocale::TimeFormatOptions timeOptions,
-                                           const KCalendarSystem *calendar,
-                                           const KLocale *locale,
-                                           KLocale::DigitSet digitSet ) const;
+    virtual QString formatDateTimeUnicode(const KDateTime &fromDateTime,
+                                          const QString &toFormat,
+                                          KLocale::TimeFormatOptions timeOptions,
+                                          const KCalendarSystem *calendar,
+                                          const KLocale *locale,
+                                          KLocale::DigitSet digitSet) const;
 
-    virtual QString getUnicodeString( const KDateTime &fromDateTime,
-                                      const QString &toFormat,
-                                      KLocale::TimeFormatOptions timeOptions,
-                                      const KCalendarSystem *calendar,
-                                      const KLocale *locale,
-                                      KLocale::DigitSet digitSet ) const;
+    virtual QString getUnicodeString(const KDateTime &fromDateTime,
+                                     const QString &toFormat,
+                                     KLocale::TimeFormatOptions timeOptions,
+                                     const KCalendarSystem *calendar,
+                                     const KLocale *locale,
+                                     KLocale::DigitSet digitSet) const;
 
-    virtual QString stringFromInteger( int number, int padWidth, QChar padChar, QChar signChar,
-                                       KLocale::DigitSet digitSet, const KLocale *locale ) const;
+    virtual QString stringFromInteger(int number, int padWidth, QChar padChar, QChar signChar,
+                                      KLocale::DigitSet digitSet, const KLocale *locale) const;
 
     // Is private class, but if ever made public need to move these into a d->
     // Some format modifiers force English names to be returned

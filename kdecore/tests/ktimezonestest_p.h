@@ -17,8 +17,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef KTIMEZONESTEST_P_H
+#define KTIMEZONESTEST_P_H
+
 #include <kconfiggroup.h>
 #include <QDebug>
+#include <QtCore/QDir>
+#include "qtest_kde.h"
 
 class TimeZoneTestData
 {
@@ -101,3 +106,5 @@ public:
 
     QString mDataDir;
 };
+
+#endif //KTIMEZONESTEST_P_H

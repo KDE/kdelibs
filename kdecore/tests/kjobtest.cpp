@@ -17,8 +17,9 @@
 
 */
 
-#include "qtest_kde.h"
 #include "kjobtest.h"
+
+#include "qtest_kde.h"
 
 #include <QtCore/QTimer>
 #include <QtTest/QSignalSpy>
@@ -87,7 +88,7 @@ void KJobTest::testProgressTracking()
     QSignalSpy percent_spy( job, SIGNAL( percent( KJob*, unsigned long ) ) );
 
 
-    /* Process a first item. Corresponding signal should be emited.
+    /* Process a first item. Corresponding signal should be emitted.
      * Total size didn't change.
      * Since the total size is unknown, no percent signal is emitted.
      */

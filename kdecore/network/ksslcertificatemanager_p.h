@@ -18,7 +18,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef KSSLCERTIFICATEMANAGER_P_H
+#define KSSLCERTIFICATEMANAGER_P_H
+
 #include <QMutex>
+
+#include "kconfig.h"
 
 struct KSslCaCertificate
 {
@@ -59,7 +64,7 @@ class KSslCertificateManagerPrivate
 public:
     KSslCertificateManagerPrivate();
     ~KSslCertificateManagerPrivate();
-    
+
     static KSslCertificateManagerPrivate *get(KSslCertificateManager *q)
         { return q->d; }
 
@@ -70,10 +75,10 @@ public:
     bool removeCertificate(const KSslCaCertificate &old);
     bool updateCertificateBlacklisted(const KSslCaCertificate &cert);
     bool setCertificateBlacklisted(const QByteArray &certHash, bool isBlacklisted);
-    
+
     void setAllCertificates(const QList<KSslCaCertificate> &certsIn);
     QList<KSslCaCertificate> allCertificates() const;
-    
+
     KConfig config;
     org::kde::KSSLDInterface *iface;
     QHash<QString, KSslError::Error> stringToSslError;
@@ -92,3 +97,5 @@ public:
 KDECORE_EXPORT QList<KSslCaCertificate> _allKsslCaCertificates(KSslCertificateManager *cm);
 KDECORE_EXPORT void _setAllKsslCaCertificates(KSslCertificateManager *cm,
                                               const QList<KSslCaCertificate> &certsIn);
+
+#endif //KSSLCERTIFICATEMANAGER_P_H

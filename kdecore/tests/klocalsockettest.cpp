@@ -19,6 +19,9 @@
  */
 
 #include "klocalsockettest.h"
+
+#include "qtest_kde.h"
+
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 #include <QtCore/QThread>

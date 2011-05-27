@@ -228,7 +228,7 @@ public:
      *
      * This will start a nested QEventLoop internally. Nested event loop can be dangerous and
      * can have unintended side effects, you should avoid calling exec() whenever you can and use the
-     * asyncronous interface of KJob instead.
+     * asynchronous interface of KJob instead.
      *
      * Should you indeed call this method, you need to make sure that all callers are reentrant,
      * so that events delivered by the inner event loop don't cause non-reentrant functions to be
