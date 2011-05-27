@@ -36,6 +36,8 @@
 #include <kurl.h>
 #include <kurifilter.h>
 
+#include "kwebpage.h"
+
 #define QL1S(x)   QLatin1String(x)
 
 template <class T>
