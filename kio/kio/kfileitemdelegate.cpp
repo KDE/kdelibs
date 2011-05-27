@@ -1647,13 +1647,15 @@ bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
             return true;
 
         case Qt::Key_Enter:
-        case Qt::Key_Return:
-            if (editor->toPlainText().isEmpty())
+        case Qt::Key_Return: {
+            const QString text = editor->toPlainText();
+            if (text.isEmpty() || (text == QLatin1String(".")) || (text == QLatin1String("..")))
                 return true; // So a newline doesn't get inserted
 
             emit commitData(editor);
             emit closeEditor(editor, SubmitModelCache);
             return true;
+        }
 
         case Qt::Key_Escape:
             emit closeEditor(editor, RevertModelCache);
