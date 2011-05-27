@@ -781,10 +781,10 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
             const KFileItem& item = node->item();
             const QString newName = value.toString();
-            if (newName.isEmpty() || newName == item.text())
+            if (newName.isEmpty() || newName == item.text() || (newName == QLatin1String(".")) || (newName == QLatin1String("..")))
                 return true;
             KUrl newurl(item.url());
-            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + newName);
+            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + KIO::encodeFileName(newName));
             KIO::Job * job = KIO::moveAs(item.url(), newurl, newurl.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
             // undo handling
