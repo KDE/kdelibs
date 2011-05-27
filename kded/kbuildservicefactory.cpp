@@ -254,7 +254,7 @@ void KBuildServiceFactory::populateServiceTypes()
             } else {
                 KMimeType::Ptr mime = KMimeType::mimeType(stName, KMimeType::ResolveAliases);
                 if (!mime) {
-                    if (stName.startsWith("x-scheme-handler/")) {
+                    if (stName.startsWith(QLatin1String("x-scheme-handler/"))) {
                         // Create those on demand
                         m_mimeTypeFactory->createFakeMimeType(stName);
                     } else {
