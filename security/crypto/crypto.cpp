@@ -456,11 +456,11 @@ QString whatstr;
   yourSSLPass->setEnabled(false);
   connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
   btnsLay->addWidget(yourSSLPass);
-  
+
   btnsLay->addStretch(1);
 
 //   yourLay->addWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert));
-  
+
   QHBoxLayout* certLay=new QHBoxLayout();
   yourLay->addLayout(certLay);
   ySubject = new KSslCertificateBox(tabYourSSLCert);
@@ -634,7 +634,7 @@ QString whatstr;
       otherSSLRemove->setEnabled(false);
 
 //   mainOther->addWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert));
-  
+
   grid=new QGridLayout();
   mainOther->addLayout(grid);
   oSubject = new KSslCertificateBox(tabOtherSSLCert);
@@ -2314,7 +2314,7 @@ SSL_METHOD *meth;
   ssl = SSL_new(ctx);
   if (!ssl) return false;
 
-  for (i=0; ; i++) {
+  for (i=0; ; ++i) {
     int j, k;
     SSL_CIPHER *sc;
     sc = (meth->get_cipher)(i);
