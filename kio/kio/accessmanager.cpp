@@ -370,6 +370,10 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
         request.setRawHeader("Content-Type", QByteArray());
     }
 
+    if (request.attribute(QNetworkRequest::AuthenticationReuseAttribute) == QNetworkRequest::Manual) {
+        metaData.insert(QL1S("no-preemptive-auth-reuse"), QL1S("true"));
+    }
+
     request.setRawHeader("Content-Length", QByteArray());
     request.setRawHeader("Connection", QByteArray());
     request.setRawHeader("If-None-Match", QByteArray());

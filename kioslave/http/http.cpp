@@ -2481,9 +2481,8 @@ bool HTTPProtocol::sendQuery()
 
     // Remember that at least one failed (with 401 or 407) request/response
     // roundtrip is necessary for the server to tell us that it requires
-    // authentication.
-    // We proactively add authentication headers if we have cached credentials
-    // to avoid the extra roundtrip where possible.
+    // authentication. However, we proactively add authentication headers if when
+    // we have cached credentials to avoid the extra roundtrip where possible.
     header += authenticationHeader();
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
@@ -5171,7 +5170,8 @@ QString HTTPProtocol::authenticationHeader()
         // If no relam metadata, then make sure path matching is turned on.
         authinfo.verifyPath = (authinfo.realmValue.isEmpty());
 
-        if (checkCachedAuthentication(authinfo)) {
+        const bool useCachedAuth = (m_request.responseCode == 401 || !(config()->readEntry("no-preemptive-auth-reuse", false)));
+        if (useCachedAuth && checkCachedAuthentication(authinfo)) {
             const QByteArray cachedChallenge = authinfo.digestInfo.toLatin1();
             if (!cachedChallenge.isEmpty()) {
                 m_wwwAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
