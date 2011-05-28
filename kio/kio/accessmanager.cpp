@@ -338,16 +338,26 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map)
         metaData += userMetaData.toMap();
 
-    metaData.insert("PropagateHttpHeader", "true");
+    metaData.insert(QL1S("PropagateHttpHeader"), QL1S("true"));
 
     if (request.hasRawHeader("User-Agent")) {
-        metaData.insert("UserAgent", request.rawHeader("User-Agent"));
+        metaData.insert(QL1S("UserAgent"), request.rawHeader("User-Agent"));
         request.setRawHeader("User-Agent", QByteArray());
     }
 
     if (request.hasRawHeader("Accept")) {
-        metaData.insert("accept", request.rawHeader("Accept"));
+        metaData.insert(QL1S("accept"), request.rawHeader("Accept"));
         request.setRawHeader("Accept", QByteArray());
+    }
+
+    if (request.hasRawHeader("Accept-Charset")) {
+        metaData.insert(QL1S("Charsets"), request.rawHeader("Accept-Charset"));
+        request.setRawHeader("Accept-Charset", QByteArray());
+    }
+
+    if (request.hasRawHeader("Accept-Language")) {
+        metaData.insert(QL1S("Languages"), request.rawHeader("Accept-Language"));
+        request.setRawHeader("Accept-Language", QByteArray());
     }
 
     if (request.hasRawHeader("Referer")) {
@@ -374,7 +384,7 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     }
 
     if (!customHeaders.isEmpty()) {
-        metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
+        metaData.insert(QL1S("customHTTPHeader"), customHeaders.join("\r\n"));
     }
 
     // Append per request meta data, if any...
