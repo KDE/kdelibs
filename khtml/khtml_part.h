@@ -1751,7 +1751,7 @@ private:
   QString requestFrameName();
 
   // Requests loading of a frame or iframe element
-  bool loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
+  void loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
                          const QStringList &args = QStringList(), bool isIFrame = false );
 
   // Requests loading of an object or embed element. Returns true if
