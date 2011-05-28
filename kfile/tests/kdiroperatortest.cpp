@@ -67,6 +67,28 @@ private Q_SLOTS:
         QVERIFY(qobject_cast<QTreeView*>(dirOp->view()));
         delete dirOp;
     }
+
+    /**
+     * testBug187066 does the following:
+     * 
+     * 1. Open a KDirOperator in kdelibs/kfile
+     * 2. Set the current item to "file:///"
+     * 3. Set the current item to "file:///.../kdelibs/kfile/tests/kdiroperatortest.cpp"
+     *
+     * This may result in a crash, see https://bugs.kde.org/show_bug.cgi?id=187066
+     */
+    
+    void testBug187066()
+    {
+        const KUrl kFileDirUrl(KUrl(KDESRCDIR).upUrl());
+
+        KDirOperator dirOp(kFileDirUrl);
+        dirOp.setView(KFile::DetailTree);
+        QTest::kWaitForSignal(dirOp.dirLister(), SIGNAL(completed()));
+        dirOp.setCurrentItem("file:///");
+        dirOp.setCurrentItem(KDESRCDIR "kdiroperatortest.cpp");
+        QTest::kWaitForSignal(dirOp.dirLister(), SIGNAL(completed()));
+    }
 };
 
 QTEST_KDEMAIN( KDirOperatorTest, GUI )
