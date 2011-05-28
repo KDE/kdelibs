@@ -397,12 +397,9 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 
     // restrict to files if we are a file query
     if( d->m_isFileQuery ) {
-        //
-        // we do not use ResourceTypeTerm since we do not want to use crappy inference every time. All files have nfo:FileDataObject type anyway
-        //
         Term fileModeTerm;
-        ComparisonTerm fileTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::FileDataObject()), ComparisonTerm::Equal );
-        ComparisonTerm folderTerm( Soprano::Vocabulary::RDF::type(), ResourceTerm(Vocabulary::NFO::Folder()), ComparisonTerm::Equal );
+        ResourceTypeTerm fileTerm( Vocabulary::NFO::FileDataObject() );
+        ResourceTypeTerm folderTerm( Vocabulary::NFO::Folder() );
         if( d->m_fileMode == FileQuery::QueryFiles )
             fileModeTerm = AndTerm( fileTerm, NegationTerm::negateTerm( folderTerm ) );
         else if( d->m_fileMode == FileQuery::QueryFolders )

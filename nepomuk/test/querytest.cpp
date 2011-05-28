@@ -316,36 +316,32 @@ void QueryTest::testToSparql_data()
     FileQuery emptyFileQuery;
     QTest::newRow( "empty file query" )
         << Query(emptyFileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 %2 . } UNION { ?r %1 %3 . } . }")
-        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(?v1 in (%1,%2)) . }")
+        .arg( Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
 
     FileQuery fileQuery( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm(QUrl("nepomuk:/res/foobar")) ) );
     QTest::newRow( "file query" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . { ?r %2 %3 . } UNION { ?r %2 %4 . } . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a ?v1 . FILTER(?v1 in (%2,%3)) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
     fileQuery.setFileMode(FileQuery::QueryFiles);
     QTest::newRow( "file query (only files)" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a %2 . FILTER(!bif:exists((select (1) where { ?r a %3 . }))) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
 
     fileQuery.setFileMode(FileQuery::QueryFolders);
     QTest::newRow( "file query (only folders)" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a %2 . FILTER(!bif:exists((select (1) where { ?r a %3 . }))) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
