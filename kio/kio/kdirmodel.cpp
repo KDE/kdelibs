@@ -489,6 +489,11 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
                 kWarning(7008) << "No node found for item that was just removed:" << url;
                 continue;
             }
+            if (!node->parent()) {
+                // The root node has been deleted, but it was not first in the list 'items'.
+                // see https://bugs.kde.org/show_bug.cgi?id=196695
+                return;
+            }
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
         removeFromNodeHash(node, url);
