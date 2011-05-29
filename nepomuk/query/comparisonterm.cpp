@@ -150,7 +150,8 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
                 .arg( resourceVarName, prop, ov );
     }
 
-    else if ( m_property.literalRangeType().isValid() ) {
+    // when using Regexp comparator with a resource range property we match the resource URI to the regular expression
+    else if ( m_property.literalRangeType().isValid() || m_comparator == ComparisonTerm::Regexp ) {
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ) {
