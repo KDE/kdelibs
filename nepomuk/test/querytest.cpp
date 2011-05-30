@@ -357,8 +357,8 @@ void QueryTest::testToSparql_data()
                                "?r %4 ?reqProp1 . "
                                "?r %1 <nepomuk:/res/foobar> . "
                                "?r a ?v1 . FILTER(?v1 in (%2,%3)) . "
-                               "?r %4 ?reqProp1 . FILTER(REGEX(STR(?reqProp1), '(^file:///home/test/includeme/)', 'i')) . "
-                               "?r %4 ?reqProp1 . FILTER(!REGEX(STR(?reqProp1), '^(file:///home/test/includeme/excludeme/)', 'i')) . } . }")
+                               "FILTER(REGEX(STR(?reqProp1), '(^file:///home/test/includeme/)', 'i')) . "
+                               "FILTER(!REGEX(STR(?reqProp1), '^(file:///home/test/includeme/excludeme/)', 'i')) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),

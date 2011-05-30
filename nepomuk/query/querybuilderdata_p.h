@@ -128,7 +128,7 @@ namespace Nepomuk {
             /// In one group term we can use the same variable name for comparisons on the same property with a
             /// cardinality of 1. This reduces the number of match candidates for Virtuoso, thus, significantly
             /// speeding up the query.
-            inline QString uniqueVarName( const Types::Property& property = Types::Property() ) {
+            inline QString uniqueVarName( const Types::Property& property = Types::Property(), bool* firstUse = 0 ) {
                 if( property.isValid() &&
                     property.maxCardinality() == 1 &&
                     !m_groupTermStack.isEmpty() ) {
@@ -138,13 +138,19 @@ namespace Nepomuk {
                     if( it == gpc.variableNameHash.constEnd() ) {
                         const QString v = QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
                         gpc.variableNameHash.insert( property, v );
+                        if(firstUse)
+                            *firstUse = true;
                         return v;
                     }
                     else {
+                        if(firstUse)
+                            *firstUse = false;
                         return *it;
                     }
                 }
                 else {
+                    if(firstUse)
+                        *firstUse = true;
                     return QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
                 }
             }
