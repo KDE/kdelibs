@@ -55,6 +55,7 @@
 Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
 using namespace Nepomuk::Query;
+using namespace Nepomuk::Vocabulary;
 
 
 // this is a tricky one as we nee to match the variable names and order of the queries exactly.
@@ -346,6 +347,24 @@ void QueryTest::testToSparql_data()
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
 
+    fileQuery.setFileMode(FileQuery::QueryFilesAndFolders);
+    fileQuery.addIncludeFolder(KUrl(QLatin1String("/home/test/includeme")));
+    fileQuery.addExcludeFolder(KUrl(QLatin1String("/home/test/includeme/excludeme")));
+    fileQuery.addRequestProperty(Query::RequestProperty(NIE::url(), false));
+    QTest::newRow( "file query with include folder" )
+        << Query(fileQuery)
+        << QString::fromLatin1("select distinct ?r ?reqProp1 where { { "
+                               "?r %4 ?reqProp1 . "
+                               "?r %1 <nepomuk:/res/foobar> . "
+                               "?r a ?v1 . FILTER(?v1 in (%2,%3)) . "
+                               "?r %4 ?reqProp1 . FILTER(REGEX(STR(?reqProp1), '(^file:///home/test/includeme/)', 'i')) . "
+                               "?r %4 ?reqProp1 . FILTER(!REGEX(STR(?reqProp1), '^(file:///home/test/includeme/excludeme/)', 'i')) . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NIE::url()) );
+
+
     QTest::newRow( "Query one resource" )
             << Query(ResourceTerm(QUrl("nepomuk:/A")))
             << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . }");
@@ -386,9 +405,10 @@ void QueryTest::testToSparql_data()
     mainTerm.addSubTerm(ct.inverted());
 
     QString sparql = QString::fromLatin1("select distinct ?r count(?v3) as ?cnt where { { "
+                                         "?v3 ?v2 ?r . "
                                          "?r a ?v4 . FILTER(?v4 in (%2,%1)) . "
                                          "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v1 ?r . }))) . "
-                                         "?v3 ?v2 ?r . } . } ORDER BY DESC ( ?cnt )")
+                                         "} . } ORDER BY DESC ( ?cnt )")
                      .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));
 

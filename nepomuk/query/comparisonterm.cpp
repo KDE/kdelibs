@@ -345,6 +345,8 @@ QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilder
     QString v;
     QString sortVar;
     if( !m_variableName.isEmpty() ) {
+        qbd->registerVarName( m_property, QLatin1String("?") + m_variableName );
+
         sortVar = QLatin1String("?") + m_variableName;
         if( m_aggregateFunction == ComparisonTerm::NoAggregateFunction ) {
             v = sortVar;

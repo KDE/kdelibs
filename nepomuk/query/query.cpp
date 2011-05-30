@@ -71,32 +71,36 @@ ORDER BY  desc (?
 */
 
 
-QString Nepomuk::Query::QueryPrivate::createFolderFilter( const QString& resourceVarName, QueryBuilderData* qbd ) const
+Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::createFolderFilter() const
 {
-    if ( m_includeFolders.count() + m_excludeFolders.count() ) {
-        QString uriVarName = qbd->uniqueVarName();
-        QString filter = resourceVarName + ' ' + Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ) + ' ' + uriVarName + QLatin1String( " . " );
-        if ( !m_includeFolders.isEmpty() ) {
-            QStringList includeFilter;
-            for( QHash<KUrl, bool>::ConstIterator it = m_includeFolders.constBegin();
-                it != m_includeFolders.constEnd(); ++it ) {
-                const QString urlStr = it.key().url(KUrl::AddTrailingSlash);
-                if( it.value() )
-                    includeFilter.append( QString::fromLatin1("(^%1)").arg( urlStr ) );
-                else
-                    includeFilter.append( QString::fromLatin1("(^%1[^/]*$)").arg( urlStr ) );
-            }
-            filter += QString::fromLatin1( " FILTER(REGEX(STR(%1), \"%2\")) ." ).arg( uriVarName ).arg( includeFilter.join( "|" ) );
+    Term mainTerm;
+
+    if ( !m_includeFolders.isEmpty() ) {
+        QStringList includeFilter;
+        for( QHash<KUrl, bool>::ConstIterator it = m_includeFolders.constBegin();
+             it != m_includeFolders.constEnd(); ++it ) {
+            const QString urlStr = it.key().url(KUrl::AddTrailingSlash);
+            if( it.value() )
+                includeFilter.append( QString::fromLatin1("(^%1)").arg( urlStr ) );
+            else
+                includeFilter.append( QString::fromLatin1("(^%1[^/]*$)").arg( urlStr ) );
         }
-        if ( !m_excludeFolders.isEmpty() ) {
-            filter += QString::fromLatin1( " FILTER(!REGEX(STR(%1), \"^(%2)\")) ." ).arg( uriVarName ).arg( m_excludeFolders.toStringList(KUrl::AddTrailingSlash).join( "|" ) );
-        }
-        return filter;
+        mainTerm = mainTerm && ComparisonTerm(
+                    Nepomuk::Vocabulary::NIE::url(),
+                    LiteralTerm(includeFilter.join( "|" )),
+                    ComparisonTerm::Regexp);
     }
-    else {
-        return QString();
+
+    if ( !m_excludeFolders.isEmpty() ) {
+        mainTerm = mainTerm && NegationTerm::negateTerm(
+                    ComparisonTerm(
+                        Nepomuk::Vocabulary::NIE::url(),
+                        LiteralTerm(QString::fromLatin1("^(%1)").arg( m_excludeFolders.toStringList(KUrl::AddTrailingSlash).join( "|" ) )),
+                        ComparisonTerm::Regexp));
     }
+    return mainTerm;
 }
+
 
 Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeEvenMore(const Nepomuk::Query::Term& term) const
 {
@@ -143,7 +147,22 @@ Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::optimizeEvenMore(const Nepomu
     //
     else if(term.type() == Term::And) {
         AndTerm newAndTerm;
-        foreach(const Term& subTerm, term.toAndTerm().subTerms()) {
+        //
+        // Another small optimization: we sort all the ComparisonTerms which have a variable name set
+        // at the beginning. This allows to force this variable name in other ComparisonTerms that use
+        // the same property (for details see QueryBuilderData::uniqueVarName)
+        //
+        QList<Term> sortedSubTerms;
+        foreach( const Nepomuk::Query::Term &t, term.toAndTerm().subTerms() ) {
+            if(t.isComparisonTerm() && !t.toComparisonTerm().variableName().isEmpty()) {
+                sortedSubTerms.prepend(t);
+            }
+            else {
+                sortedSubTerms.append(t);
+            }
+        }
+
+        foreach(const Term& subTerm, sortedSubTerms) {
             newAndTerm.addSubTerm(optimizeEvenMore(subTerm));
         }
         return newAndTerm;
@@ -387,10 +406,6 @@ bool Nepomuk::Query::Query::operator!=( const Query& other ) const
 }
 
 
-namespace {
-
-}
-
 QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 {
     Term term = d->m_term;
@@ -406,7 +421,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
             fileModeTerm = AndTerm( folderTerm, NegationTerm::negateTerm( fileTerm ) );
         else
             fileModeTerm = OrTerm( fileTerm, folderTerm );
-        term = AndTerm( term, fileModeTerm );
+        term = AndTerm( term, fileModeTerm, d->createFolderFilter() );
     }
 
 
@@ -474,9 +489,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     }
 
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "where { %1 %2 %3 }" )
+    QString queryBase = QString::fromLatin1( "where { %1 %2 }" )
                         .arg( termGraphPattern,
-                              d->createFolderFilter( QLatin1String( "?r" ), &qbd ),
                               userVisibilityRestriction );
 
     // build the final query
