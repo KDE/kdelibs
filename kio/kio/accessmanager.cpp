@@ -320,6 +320,26 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     // Set the meta data for this job...
     kioJob->setMetaData(metaData);
 
+    // Always set the "cookies" meta-data to manual so we can determine when
+    // to send and not send cookies. We do this to ensure QNetworkRequest's
+    // built-in protection against cross-domain cookies are properly honored.
+    metaData.insert(QL1S("cookies"), QL1S("manual"));
+
+    if (req.attribute(QNetworkRequest::CookieLoadControlAttribute) != QNetworkRequest::Manual) {
+        const QNetworkCookieJar* jar = cookieJar();
+        Q_ASSERT(jar);
+        if (jar && !metaData.contains(QL1S("setcookies"))) {
+            QStringList cookies;
+            Q_FOREACH(const QNetworkCookie& cookie, jar->cookiesForUrl(req.url())) {
+                cookies << (cookie.name() + QL1S("=") + cookie.value());
+            }
+            if (!cookies.isEmpty()) {
+                const QString cookieStr = QL1S("Cookie: ") + cookies.join(QL1S(";"));
+                metaData.insert(QL1S("setcookies"), cookieStr);
+            }
+        }
+    }
+
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
 
@@ -338,16 +358,26 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     if (userMetaData.isValid() && userMetaData.type() == QVariant::Map)
         metaData += userMetaData.toMap();
 
-    metaData.insert("PropagateHttpHeader", "true");
+    metaData.insert(QL1S("PropagateHttpHeader"), QL1S("true"));
 
     if (request.hasRawHeader("User-Agent")) {
-        metaData.insert("UserAgent", request.rawHeader("User-Agent"));
+        metaData.insert(QL1S("UserAgent"), request.rawHeader("User-Agent"));
         request.setRawHeader("User-Agent", QByteArray());
     }
 
     if (request.hasRawHeader("Accept")) {
-        metaData.insert("accept", request.rawHeader("Accept"));
+        metaData.insert(QL1S("accept"), request.rawHeader("Accept"));
         request.setRawHeader("Accept", QByteArray());
+    }
+
+    if (request.hasRawHeader("Accept-Charset")) {
+        metaData.insert(QL1S("Charsets"), request.rawHeader("Accept-Charset"));
+        request.setRawHeader("Accept-Charset", QByteArray());
+    }
+
+    if (request.hasRawHeader("Accept-Language")) {
+        metaData.insert(QL1S("Languages"), request.rawHeader("Accept-Language"));
+        request.setRawHeader("Accept-Language", QByteArray());
     }
 
     if (request.hasRawHeader("Referer")) {
@@ -358,6 +388,10 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     if (request.hasRawHeader("Content-Type")) {
         metaData.insert(QL1S("content-type"), request.rawHeader("Content-Type"));
         request.setRawHeader("Content-Type", QByteArray());
+    }
+
+    if (request.attribute(QNetworkRequest::AuthenticationReuseAttribute) == QNetworkRequest::Manual) {
+        metaData.insert(QL1S("no-preemptive-auth-reuse"), QL1S("true"));
     }
 
     request.setRawHeader("Content-Length", QByteArray());
@@ -374,7 +408,7 @@ void AccessManager::AccessManagerPrivate::setMetaDataForRequest(QNetworkRequest 
     }
 
     if (!customHeaders.isEmpty()) {
-        metaData.insert("customHTTPHeader", customHeaders.join("\r\n"));
+        metaData.insert(QL1S("customHTTPHeader"), customHeaders.join("\r\n"));
     }
 
     // Append per request meta data, if any...
