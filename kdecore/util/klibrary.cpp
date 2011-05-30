@@ -114,7 +114,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
     {
 #ifdef Q_OS_WIN
         // a backup for cases when developer has set lib prefix for a plugin name (she should not...)
-        if (!factoryname.startsWith(QLatin1String("lib")))
+        if (!factoryname.startsWith(QByteArray("lib")))
             return kde3Factory(lib, QByteArray("lib")+symname.mid(5 /*"init_"*/));
 #endif
         kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer an"

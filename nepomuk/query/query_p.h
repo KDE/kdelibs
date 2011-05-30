@@ -48,7 +48,7 @@ namespace Nepomuk {
                   m_fileMode( FileQuery::QueryFilesAndFolders ) {
             }
 
-            QString createFolderFilter( const QString& resourceVarName, QueryBuilderData* ) const;
+            Term createFolderFilter() const;
 
             /**
              * Optimizations that cannot be done in Term::optimized() since they use internal

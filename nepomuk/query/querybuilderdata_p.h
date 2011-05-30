@@ -109,6 +109,18 @@ namespace Nepomuk {
                 --m_depth;
             }
 
+            /// used by ComparisonTerm to register var names set via ComparisonTerm::setVariableName
+            /// to allow them to be reused in the same way auto-generated variables are reused in
+            /// uniqueVarName()
+            inline void registerVarName( const Types::Property& property, const QString& varName ) {
+                if( property.isValid() &&
+                    property.maxCardinality() == 1 &&
+                    !m_groupTermStack.isEmpty() ) {
+                    GroupTermPropertyCache& gpc = m_groupTermStack.top();
+                    gpc.variableNameHash[property] = varName;
+                }
+            }
+
             /// used by different implementations of TermPrivate::toSparqlGraphPattern and Query::toSparqlQuery
             ///
             /// we use a simple query optimization trick here that Virtuoso cannot pull itself since it does
@@ -124,7 +136,7 @@ namespace Nepomuk {
                     GroupTermPropertyCache& gpc = m_groupTermStack.top();
                     QHash<Types::Property, QString>::const_iterator it = gpc.variableNameHash.constFind( property );
                     if( it == gpc.variableNameHash.constEnd() ) {
-                        QString v = QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
+                        const QString v = QLatin1String( "?v" ) + QString::number( ++m_varNameCnt );
                         gpc.variableNameHash.insert( property, v );
                         return v;
                     }
