@@ -793,7 +793,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
   if ( ok ) {
     systemVersion = QString::number(versioninfo.dwMajorVersion);
     systemVersion +=  QL1C('.');
-    systemVersion += QString::number(versioninfo.dwMinorVersion));
+    systemVersion += QString::number(versioninfo.dwMinorVersion);
   }
 #else
   systemName = unameBuf.sysname;
