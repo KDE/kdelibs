@@ -89,7 +89,7 @@ void KSecretService::CreateCollectionJob::run()
 
     m_properties["Label"] = m_label;
 
-    QDBusPendingReply< QDBusVariant, QDBusObjectPath > reply = m_kss->d->serviceInterface->CreateCollection(m_properties);
+    QDBusPendingReply< QDBusVariant, QDBusObjectPath > reply = m_kss->d->serviceInterface->CreateCollection(m_properties, m_label);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
 
@@ -297,7 +297,7 @@ KSecretServiceCollection * KSecretService::createCollection(const QString& label
     QVariantMap collectionProps = properties;
     collectionProps.insert("Label", label);
     QDBusObjectPath promptPath;
-    QDBusReply<QDBusObjectPath> collPathReply = service()->CreateCollection( collectionProps, promptPath );
+    QDBusReply<QDBusObjectPath> collPathReply = service()->CreateCollection( collectionProps, label, promptPath );
     QString collectionPath = collPathReply.value().path();
     if ( collectionPath == "/" ) {
         collectionPath.clear();
