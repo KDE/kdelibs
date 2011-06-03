@@ -4319,8 +4319,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
   // Security check against bogus username intended to fool the user into
   // visiting a site they did not meant to.
-  if ((!m_request.url.user().isEmpty() && m_request.responseCode != 401) ||
-      (!m_request.proxyUrl.user().isEmpty() && m_request.responseCode != 407)) {
+  if ((!m_request.url.user().isEmpty() && m_request.prevResponseCode != 401 && m_request.responseCode != 401) ||
+      (!m_request.proxyUrl.user().isEmpty() && m_request.prevResponseCode != 407 && m_request.responseCode != 407)) {
       const int result = messageBox(WarningYesNo,
                                     i18nc("@warning: Security check on url "
                                           "being accessed", "You are about to "

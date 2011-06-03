@@ -479,9 +479,6 @@ QVariant KConfigDialogManager::property(QWidget *w) const
 
     QByteArray userproperty = getCustomProperty(w);
     if (userproperty.isEmpty()) {
-        userproperty = getUserProperty(w);
-    }
-    if (userproperty.isEmpty()) {
         QComboBox *cb = qobject_cast<QComboBox *>(w);
         if (cb) {
             if (cb->isEditable()) {
@@ -490,6 +487,11 @@ QVariant KConfigDialogManager::property(QWidget *w) const
                 return QVariant(cb->currentIndex());
             }
         }
+    }
+    if (userproperty.isEmpty()) {
+        userproperty = getUserProperty(w);
+    }
+    if (userproperty.isEmpty()) {
         kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
         return QVariant();
     }

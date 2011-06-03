@@ -1066,6 +1066,27 @@ void KDirModelTest::testSmb()
     }
 }
 
+class MyDirLister : public KDirLister
+{
+public:
+    void emitItemsDeleted(const KFileItemList& items) { emit itemsDeleted(items); }
+};
+
+void KDirModelTest::testBug196695()
+{
+    KFileItem rootItem(KUrl(m_tempDir->name()), QString(), KFileItem::Unknown);
+    KFileItem childItem(KUrl(QString(m_tempDir->name() + "toplevelfile_1")), QString(), KFileItem::Unknown);
+
+    KFileItemList list;
+    // Important: the root item must not be first in the list to trigger bug 196695
+    list << childItem << rootItem;
+
+    MyDirLister* dirLister = static_cast<MyDirLister*>(m_dirModel->dirLister());
+    dirLister->emitItemsDeleted(list);
+
+    fillModel(true);
+}
+
 void KDirModelTest::testDeleteFile()
 {
     fillModel(false);

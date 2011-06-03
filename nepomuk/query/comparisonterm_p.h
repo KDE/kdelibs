@@ -53,7 +53,7 @@ namespace Nepomuk {
              * return m_variableName and register it with qbd
              * or ask the latter to create a new variable.
              */
-            QString getMainVariableName( QueryBuilderData* qbd ) const;
+            QString getMainVariableName( QueryBuilderData* qbd, bool* firstUse ) const;
 
             /**
              * return the N3 form of m_property or a new variable

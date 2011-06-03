@@ -43,7 +43,7 @@
 
 <refnamediv>
 <refname><command>kdeinit4</command></refname>
-<refpurpose>Start all other &kde; programs and kdeinit loadable modules (KLMs).</refpurpose>
+<refpurpose>&kde; process launcher.</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

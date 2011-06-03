@@ -2526,7 +2526,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
             const KUrl url = *it;
             if (url.isParentOf(item.url())) {
                 const KFileItem _item = dirLister->findByUrl(url);
-                if (_item.isDir()) {
+                if (!_item.isNull() && _item.isDir()) {
                     const QModelIndex _index = dirModel->indexForItem(_item);
                     const QModelIndex _proxyIndex = proxyModel->mapFromSource(_index);
                     treeView->expand(_proxyIndex);

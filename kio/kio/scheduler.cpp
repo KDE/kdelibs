@@ -741,6 +741,11 @@ Scheduler *Scheduler::self()
     return schedulerPrivate->q;
 }
 
+SchedulerPrivate *Scheduler::d_func()
+{
+    return schedulerPrivate;
+}
+
 //static
 Scheduler *scheduler()
 {
@@ -755,7 +760,7 @@ Slave *heldSlaveForJob(SimpleJob *job)
 
 
 Scheduler::Scheduler()
- : d(0)
+ : removeMe(0)
 {
     setObjectName( "scheduler" );
 
