@@ -337,6 +337,13 @@ public:
    *
    * The action can be retrieved later from the collection by its standard name as per
    * KStandardAction::stdName.
+   *
+   * @param actionType The standard action type of the action to create.
+   * @param receiver The QObject to connect the triggered(bool) signal to.  Leave 0 if no
+   *                 connection is desired.
+   * @param member The SLOT to connect the triggered(bool) signal to.  Leave 0 if no
+   *               connection is desired.
+   * @return new action of the given type ActionType.
    */
   KAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
 
@@ -349,6 +356,14 @@ public:
    * triggered(bool) to be used, see KStandardAction for more information.
    *
    * The action can be retrieved later from the collection by the specified name.
+   *
+   * @param actionType The standard action type of the action to create.
+   * @param name The name by which the action be retrieved again from the collection.
+   * @param receiver The QObject to connect the triggered(bool) signal to.  Leave 0 if no
+   *                 connection is desired.
+   * @param member The SLOT to connect the triggered(bool) signal to.  Leave 0 if no
+   *               connection is desired.
+   * @return new action of the given type ActionType.
    */
   KAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
                      const QObject *receiver = 0, const char *member = 0);
@@ -369,7 +384,11 @@ public:
    * the other action in the collection.
    *
    * @param name The name by which the action be retrieved again from the collection.
-   * @param action The action to add.
+   * @param receiver The QObject to connect the triggered(bool) signal to.  Leave 0 if no
+   *                 connection is desired.
+   * @param member The SLOT to connect the triggered(bool) signal to.  Leave 0 if no
+   *               connection is desired.
+   * @return new action of the given type ActionType.
    */
   KAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
