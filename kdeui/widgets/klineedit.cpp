@@ -1439,6 +1439,8 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
                  SLOT(userCancelled( const QString& )) );
         connect( d->completionBox, SIGNAL(activated(QString)),
                  SIGNAL(completionBoxActivated(QString)) );
+        connect( d->completionBox, SIGNAL(activated(QString)),
+                 SIGNAL(textEdited(QString)) );
     }
 }
 
@@ -1687,7 +1689,6 @@ void KLineEdit::_k_slotCompletionBoxTextChanged( const QString& text )
     {
         setText( text );
         setModified(true);
-        emit textEdited(text);
         end( false ); // force cursor at end
     }
 }
