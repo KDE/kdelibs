@@ -947,7 +947,7 @@ public:
     virtual QString weekDayName(const QDate &date, WeekDayNameFormat format = LongDayName) const;
 
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * Converts a date into a year literal
      *
@@ -959,7 +959,7 @@ public:
     KDE_DEPRECATED virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const;
 
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * Converts a date into a month literal
      *
@@ -971,7 +971,7 @@ public:
     KDE_DEPRECATED virtual QString monthString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * Converts a date into a day literal
      *
@@ -984,7 +984,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.5
      *
@@ -998,7 +998,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1013,7 +1013,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1027,7 +1027,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1042,7 +1042,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1057,7 +1057,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1072,7 +1072,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1087,7 +1087,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
@@ -1102,7 +1102,7 @@ public:
 
     //KDE5 make virtual?
     /**
-     * @deprecated use formatDate(QDate, KLocale::DateTimeComponant, KLocale::DateTimeComponentFormat)
+     * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
      *
      * @since 4.4
      *
