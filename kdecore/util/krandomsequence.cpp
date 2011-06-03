@@ -20,8 +20,6 @@
 
 #include "krandomsequence.h"
 #include "krandom.h"
-#include <string.h>
-#include <config.h>
 
 static const int s_nShuffleTableSize = 32;
 
