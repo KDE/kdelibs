@@ -102,7 +102,6 @@ network/                          Thiago Macieira <thiago@kde.org>
   k3socks.cpp
   k3sockssocketdevice.cpp
   k3streamsocket.cpp
-  kidna.cpp
   klocalsocket.cpp
   klocalsocket_unix.cpp
   klocalsocket_win.cpp
