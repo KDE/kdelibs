@@ -828,13 +828,7 @@ bool KUrlCompletionPrivate::exeCompletion (const KUrlCompletionPrivate::MyURL& u
 
     QStringList dirList;
 
-    if (!QDir::isRelativePath (directory)) {
-        // complete path in url
-        dirList.append (directory);
-    } else if (!directory.isEmpty() && !cwd.isEmpty()) {
-        // current directory
-        dirList.append (cwd + QLatin1Char ('/') + directory);
-    } else if (!url.file().isEmpty()) {
+    if (!url.file().isEmpty()) {
         // $PATH
         dirList = QString::fromLocal8Bit (qgetenv ("PATH")).split (
                       KPATH_SEPARATOR, QString::SkipEmptyParts);
@@ -843,6 +837,12 @@ bool KUrlCompletionPrivate::exeCompletion (const KUrlCompletionPrivate::MyURL& u
 
         for (; it != dirList.end(); ++it)
             it->append (QLatin1Char ('/'));
+    } else if (!QDir::isRelativePath (directory)) {
+        // complete path in url
+        dirList.append (directory);
+    } else if (!directory.isEmpty() && !cwd.isEmpty()) {
+        // current directory
+        dirList.append (cwd + QLatin1Char ('/') + directory);
     }
 
     // No hidden files unless the user types "."
@@ -1315,9 +1315,9 @@ void KUrlCompletion::customEvent (QEvent* e)
             stop();
             clear();
             d->addMatches (matchEvent->completionThread()->matches());
+        } else {
+            d->setListedUrl (CTUser);
         }
-
-        d->setListedUrl (CTUser);
 
         if (d->userListThread == matchEvent->completionThread())
             d->userListThread = 0;
