@@ -35,85 +35,48 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
-#include <QTextStream>
-#include <QMutex>
-#include <QDebug>
+#include <QtCore/QTextIStream>
 
 #include "krandom.h"
 #include "kglobal.h"
 #include "kcomponentdata.h"
 #include "ktemporaryfile.h"
 #include "kde_file.h"
-#include "kmountpoint.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-
-// Related reading:
-// http://www.spinnaker.de/linux/nfs-locking.html
-// http://en.wikipedia.org/wiki/File_locking
-// http://apenwarr.ca/log/?m=201012
-
-// Related source code:
-// * lockfile-create, from the lockfile-progs package, uses the link() trick from lockFileWithLink below,
-//    so it fails on FAT32 too.
-// * the flock program, which uses flock(LOCK_EX), works on local filesystems (including FAT32), but not NFS.
-//    Note about flock: don't unlink, it creates a race. http://world.std.com/~swmcd/steven/tech/flock.html
-
-// My attempts with fcntl(F_SETLK) require K_GLOBAL_STATIC(mutex + qset of filenames) in order
-// to lock out other threads, not just other processes, and unlocks when just
-// reading the file in the same process (!). See the apenwarr.ca article above.
-
-// Simpler: O_EXCL. http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=144
+// TODO: http://www.spinnaker.de/linux/nfs-locking.html
 
 class KLockFile::Private
 {
 public:
     Private(const KComponentData &c)
-        : staleTime(30), // 30 seconds
-          isLocked(false),
-          recoverLock(false),
-          linkCountSupport(true),
-          m_pid(-1),
-          m_componentData(c)
+        : componentData(c)
     {
     }
 
-    // The main method
-    KLockFile::LockResult lockFile(KDE_struct_stat &st_buf);
-
-    // Three different implementations
-    KLockFile::LockResult lockFileOExcl(KDE_struct_stat &st_buf);
-    KLockFile::LockResult lockFileFcntl(KDE_struct_stat &st_buf);
-    KLockFile::LockResult lockFileWithLink(KDE_struct_stat &st_buf);
-
-    KLockFile::LockResult deleteStaleLock();
-    KLockFile::LockResult deleteStaleLockWithLink();
-
-    void writeIntoLockFile(QFile& file, const KComponentData& componentData);
-    void readLockFile();
-    bool isNfs() const;
-
-    QFile m_file;
-    QString m_fileName;
+    QString file;
     int staleTime;
     bool isLocked;
     bool recoverLock;
     bool linkCountSupport;
     QTime staleTimer;
     KDE_struct_stat statBuf;
-    int m_pid;
-    QString m_hostname;
-    QString m_componentName;
+    int pid;
+    QString hostname;
+    QString instance;
     QString lockRecoverFile;
-    KComponentData m_componentData;
+    KComponentData componentData;
 };
 
 
+// 30 seconds
 KLockFile::KLockFile(const QString &file, const KComponentData &componentData)
     : d(new Private(componentData))
 {
-  d->m_fileName = file;
+  d->file = file;
+  d->staleTime = 30;
+  d->isLocked = false;
+  d->recoverLock = false;
+  d->linkCountSupport = true;
 }
 
 KLockFile::~KLockFile()
@@ -162,58 +125,31 @@ static bool testLinkCountSupport(const QByteArray &fileName)
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }
 
-void KLockFile::Private::writeIntoLockFile(QFile& file, const KComponentData& componentData)
+static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf,
+        bool &linkCountSupport, const KComponentData &componentData)
 {
-  file.setPermissions(QFile::ReadUser|QFile::WriteUser|QFile::ReadGroup|QFile::ReadOther);
+  QByteArray lockFileName = QFile::encodeName( lockFile );
+  int result = KDE_lstat( lockFileName, &st_buf );
+  if (result == 0)
+     return KLockFile::LockFail;
+
+  KTemporaryFile uniqueFile(componentData);
+  uniqueFile.setFileTemplate(lockFile);
+  if (!uniqueFile.open())
+     return KLockFile::LockError;
+  uniqueFile.setPermissions(QFile::ReadUser|QFile::WriteUser|QFile::ReadGroup|QFile::ReadOther);
 
   char hostname[256];
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  m_hostname = QString::fromLocal8Bit(hostname);
-  m_componentName = componentData.componentName();
+  QString componentName = componentData.componentName();
 
-  QTextStream stream(&file);
-  m_pid = getpid();
-
-  stream << QString::number(m_pid) << endl
-      << m_componentName << endl
-      << m_hostname << endl;
+  QTextStream stream(&uniqueFile);
+  stream << QString::number(getpid()) << endl
+      << componentName << endl
+      << hostname << endl;
   stream.flush();
-}
-
-void KLockFile::Private::readLockFile()
-{
-    m_pid = -1;
-    m_hostname.clear();
-    m_componentName.clear();
-
-    QFile file(m_fileName);
-    if (file.open(QIODevice::ReadOnly))
-    {
-        QTextStream ts(&file);
-        if (!ts.atEnd())
-            m_pid = ts.readLine().toInt();
-        if (!ts.atEnd())
-            m_componentName = ts.readLine();
-        if (!ts.atEnd())
-            m_hostname = ts.readLine();
-    }
-}
-
-KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_buf)
-{
-  const QByteArray lockFileName = QFile::encodeName( m_fileName );
-  int result = KDE_lstat( lockFileName, &st_buf );
-  if (result == 0)
-     return KLockFile::LockFail;
-
-  KTemporaryFile uniqueFile(m_componentData);
-  uniqueFile.setFileTemplate(m_fileName);
-  if (!uniqueFile.open())
-     return KLockFile::LockError;
-
-  writeIntoLockFile(uniqueFile, m_componentData);
 
   QByteArray uniqueName = QFile::encodeName( uniqueFile.fileName() );
 
@@ -251,113 +187,20 @@ KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_b
   return KLockFile::LockOK;
 }
 
-bool KLockFile::Private::isNfs() const
+static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport, const KComponentData &componentData)
 {
-    // Note: Qt's isLikelyToBeNfs() in corelib/io/qsettings.cpp seems faster
-    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(m_fileName);
-    const bool slow = mp ? mp->probablySlow() : false;
-    return slow;
-}
+   // This is dangerous, we could be deleting a new lock instead of
+   // the old stale one, let's be very careful
 
-KLockFile::LockResult KLockFile::Private::lockFile(KDE_struct_stat &st_buf)
-{
-    if (isNfs()) {
-        return lockFileWithLink(st_buf);
-    }
+   // Create temp file
+   KTemporaryFile *ktmpFile = new KTemporaryFile(componentData);
+   ktmpFile->setFileTemplate(lockFile);
+   if (!ktmpFile->open())
+      return KLockFile::LockError;
 
-    //return lockFileFcntl(st_buf);
-    return lockFileOExcl(st_buf);
-}
-
-class LocksInThisProcess
-{
-public:
-    QSet<QString> m_fileNames;
-    QMutex m_mutex;
-};
-K_GLOBAL_STATIC(LocksInThisProcess, s_locksInThisProcess)
-
-KLockFile::LockResult KLockFile::Private::lockFileOExcl(KDE_struct_stat &st_buf)
-{
-    const QByteArray lockFileName = QFile::encodeName( m_fileName );
-
-    int fd = KDE_open(lockFileName.constData(), O_WRONLY | O_CREAT | O_EXCL);
-    if (fd < 0) {
-        if (errno == EEXIST) {
-            // File already exists
-            return LockFail;
-        } else {
-            return LockError;
-        }
-    }
-    // We hold the lock, continue.
-    if (!m_file.open(fd, QIODevice::WriteOnly)) {
-        return LockError;
-    }
-    writeIntoLockFile(m_file, m_componentData);
-    const int result = KDE_lstat(QFile::encodeName(m_fileName), &st_buf);
-    if (result != 0)
-        return KLockFile::LockError;
-    return KLockFile::LockOK;
-}
-
-KLockFile::LockResult KLockFile::Private::lockFileFcntl(KDE_struct_stat &st_buf)
-{
-    m_file.setFileName(m_fileName);
-    // fcntl locking requires the file to remain open as long as the lock is held
-    if (m_file.open(QIODevice::WriteOnly)) {
-
-        struct flock fl;
-        fl.l_whence = SEEK_SET;
-        fl.l_start = 0;
-        fl.l_len = 1;
-        fl.l_type = F_WRLCK; // exclusive lock
-        //const int cmd = (options & NoBlockFlag) ? F_SETLK : F_SETLKW; // waiting is implemented in the caller
-        const int cmd = F_SETLK;
-        if (fcntl(m_file.handle(), cmd, &fl) == 0) {
-            writeIntoLockFile(m_file, m_componentData);
-            s_locksInThisProcess->m_fileNames.insert(m_fileName);
-
-            const int result = KDE_lstat(QFile::encodeName(m_fileName), &st_buf);
-            if (result != 0)
-                return KLockFile::LockError;
-
-            return KLockFile::LockOK;
-        }
-        return KLockFile::LockFail;
-    }
-    return KLockFile::LockError;
-}
-
-KLockFile::LockResult KLockFile::Private::deleteStaleLock()
-{
-    if (isNfs())
-        return deleteStaleLockWithLink();
-
-    // I see no way to prevent the race condition here, where we could
-    // delete a new lock file that another process just got after we
-    // decided the old one was too stale for us too.
-    qWarning("WARNING: deleting stale lockfile %s", qPrintable(m_fileName));
-    QFile::remove(m_fileName);
-    return LockOK;
-}
-
-KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
-{
-    // This is dangerous, we could be deleting a new lock instead of
-    // the old stale one, let's be very careful
-
-    // Create temp file
-    KTemporaryFile *ktmpFile = new KTemporaryFile(m_componentData);
-    ktmpFile->setFileTemplate(m_fileName);
-    if (!ktmpFile->open()) {
-        delete ktmpFile;
-        return KLockFile::LockError;
-    }
-
-    const QByteArray lckFile = QFile::encodeName(m_fileName);
-    const QByteArray tmpFile = QFile::encodeName(ktmpFile->fileName());
-    delete ktmpFile;
+   QByteArray lckFile = QFile::encodeName(lockFile);
+   QByteArray tmpFile = QFile::encodeName(ktmpFile->fileName());
+   delete ktmpFile;
 
    // link to lock file
    if (::link(lckFile, tmpFile) != 0)
@@ -367,7 +210,7 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
    // and if the lock file still matches
    KDE_struct_stat st_buf1;
    KDE_struct_stat st_buf2;
-   memcpy(&st_buf1, &statBuf, sizeof(KDE_struct_stat));
+   memcpy(&st_buf1, &st_buf, sizeof(KDE_struct_stat));
    st_buf1.st_nlink++;
    if ((KDE_lstat(tmpFile, &st_buf2) == 0) && st_buf1 == st_buf2)
    {
@@ -417,18 +260,8 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
   int n = 5;
   while(true)
   {
-        KDE_struct_stat st_buf;
-        bool lockedByThisProcess = false;
-        QMutexLocker locker(&s_locksInThisProcess->m_mutex);
-        // TODO turn relative paths into absolute?
-        if (s_locksInThisProcess->m_fileNames.contains(d->m_fileName)) {
-            lockedByThisProcess = true;
-            result = KLockFile::LockFail;
-        } else {
-            // Try to create the lock file
-            result = d->lockFile(st_buf);
-        }
-
+     KDE_struct_stat st_buf;
+     result = lockFile(d->file, st_buf, d->linkCountSupport, d->componentData);
      if (result == KLockFile::LockOK)
      {
         d->staleTimer = QTime();
@@ -452,13 +285,25 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            memcpy(&(d->statBuf), &st_buf, sizeof(KDE_struct_stat));
            d->staleTimer.start();
 
-           if (!lockedByThisProcess) {
-               d->readLockFile();
+           d->pid = -1;
+           d->hostname.clear();
+           d->instance.clear();
+
+           QFile file(d->file);
+           if (file.open(QIODevice::ReadOnly))
+           {
+              QTextStream ts(&file);
+              if (!ts.atEnd())
+                 d->pid = ts.readLine().toInt();
+              if (!ts.atEnd())
+                 d->instance = ts.readLine();
+              if (!ts.atEnd())
+                 d->hostname = ts.readLine();
            }
         }
 
         bool isStale = false;
-        if (!lockedByThisProcess && (d->m_pid > 0) && !d->m_hostname.isEmpty())
+        if ((d->pid > 0) && !d->hostname.isEmpty())
         {
            // Check if hostname is us
            char hostname[256];
@@ -466,12 +311,12 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            gethostname(hostname, 255);
            hostname[255] = 0;
 
-           if (d->m_hostname == QLatin1String(hostname))
+           if (d->hostname == QLatin1String(hostname))
            {
               // Check if pid still exists
-              int res = ::kill(d->m_pid, 0);
+              int res = ::kill(d->pid, 0);
               if ((res == -1) && (errno == ESRCH))
-                  isStale = true; // pid does not exist
+                 isStale = true;
            }
         }
         if (d->staleTimer.elapsed() > (d->staleTime*1000))
@@ -482,7 +327,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            if ((options & ForceFlag) == 0)
               return KLockFile::LockStale;
 
-           result = d->deleteStaleLock();
+           result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport, d->componentData);
 
            if (result == KLockFile::LockOK)
            {
@@ -522,20 +367,17 @@ void KLockFile::unlock()
 {
   if (d->isLocked)
   {
-     ::unlink(QFile::encodeName(d->m_fileName));
-     s_locksInThisProcess->m_fileNames.remove(d->m_fileName);
-     d->m_file.close();
-     d->m_pid = -1;
+     ::unlink(QFile::encodeName(d->file));
      d->isLocked = false;
   }
 }
 
 bool KLockFile::getLockInfo(int &pid, QString &hostname, QString &appname)
 {
-  if (d->m_pid == -1)
+  if (d->pid == -1)
      return false;
-  pid = d->m_pid;
-  hostname = d->m_hostname;
-  appname = d->m_componentName;
+  pid = d->pid;
+  hostname = d->hostname;
+  appname = d->instance;
   return true;
 }
