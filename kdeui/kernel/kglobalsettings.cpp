@@ -25,10 +25,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kcharsets.h>
-#include <klocale.h>
 #include <kprotocolinfo.h>
-#include <kcomponentdata.h>
 #include <kcolorscheme.h>
 
 #include <kstyle.h>
