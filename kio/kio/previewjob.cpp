@@ -42,7 +42,6 @@
 #include <QtCore/QRegExp>
 
 #include <kfileitem.h>
-#include <kapplication.h>
 #include <kde_file.h>
 #include <ktemporaryfile.h>
 #include <kservicetypetrader.h>

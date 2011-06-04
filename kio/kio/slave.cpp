@@ -28,7 +28,6 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#include <QtCore/QBool>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
@@ -38,8 +37,6 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
-#include <ktemporaryfile.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 #include <klibrary.h>

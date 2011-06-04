@@ -18,7 +18,6 @@
 #include <kbuttongroup.h>
 #include <kcombobox.h>
 #include <klistwidgetsearchline.h>
-#include <kapplication.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
@@ -28,6 +27,7 @@
 #include <ksvgrenderer.h>
 #endif
 
+#include <QtGui/QApplication>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtCore/QTimer>

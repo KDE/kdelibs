@@ -18,7 +18,6 @@
 
 #include "kdbusservicestarter.h"
 #include "kservicetypetrader.h"
-#include <kapplication.h>
 #include "kservice.h"
 #include <kdebug.h>
 #include <klocale.h>

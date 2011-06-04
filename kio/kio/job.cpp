@@ -40,7 +40,6 @@ extern "C" {
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kglobal.h>
 #include <klocale.h>

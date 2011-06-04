@@ -19,10 +19,8 @@
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
 
-#include <kapplication.h>
 #include <kglobalsettings.h>
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kstandarddirs.h>

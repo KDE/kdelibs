@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <limits.h>
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>
 #include <QtCore/QTimer>
@@ -41,7 +42,6 @@
 #include <QtCore/QThread>
 #include <QtGui/QActionEvent>
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <kurl.h>
@@ -49,6 +49,7 @@
 #include <kprotocolmanager.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kde_file.h>
 
 #include <sys/types.h>

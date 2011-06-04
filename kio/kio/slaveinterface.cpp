@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <klocale.h>
-#include <kapplication.h>
 #include <ksslinfodialog.h>
 #include <kmessagebox.h>
 #include <time.h>

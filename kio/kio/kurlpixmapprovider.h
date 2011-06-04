@@ -23,7 +23,6 @@
 
 #include <kio/kio_export.h>
 #include <kpixmapprovider.h>
-#include <kmimetype.h>
 
 /**
  * Implementation of KPixmapProvider.

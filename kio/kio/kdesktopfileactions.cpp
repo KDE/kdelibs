@@ -27,7 +27,6 @@
 #include <kdirnotify.h>
 #include <kmountpoint.h>
 
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
