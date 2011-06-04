@@ -208,6 +208,7 @@ set(kdecore_LIB_SRCS
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kdirwatch.cpp
+   io/kfilesystemtype_p.cpp
    io/klimitediodevice.cpp
    io/kmessage.cpp
    io/kmountpoint.cpp
