@@ -22,14 +22,12 @@
 #include "deletejob.h"
 
 #include "kdirlister.h"
-#include "kmimetype.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
 #include "jobuidelegate.h"
 #include <kdirnotify.h>
 
-#include <kauthorized.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kde_file.h>

@@ -41,7 +41,6 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
-#include <kstringhandler.h>
 #include <kurl.h>
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory.h>

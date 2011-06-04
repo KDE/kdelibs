@@ -15,7 +15,6 @@
 
 #include <kio/kio_export.h>
 
-#include <kbuttongroup.h>
 #include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <klocale.h>
@@ -28,6 +27,7 @@
 #endif
 
 #include <QtGui/QApplication>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtCore/QTimer>

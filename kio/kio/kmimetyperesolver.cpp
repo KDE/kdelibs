@@ -23,7 +23,6 @@
 #include "defaultviewadapter_p.h"
 #include <kdirmodel.h>
 #include <kfileitem.h>
-#include <kdirlister.h>
 #include <QAbstractItemView>
 #include <QAbstractProxyModel>
 #include <QScrollBar>

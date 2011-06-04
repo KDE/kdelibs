@@ -84,7 +84,6 @@ extern "C" {
 
 #include <kauthorized.h>
 #include <kdialog.h>
-#include <kdirwatch.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
 #include <kdebug.h>

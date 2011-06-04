@@ -37,7 +37,6 @@
 #include <kpushbutton.h>
 #include <config-kfile.h>
 #include <krecentdocument.h>
-#include <kimagefilepreview.h>
 #include <kdebug.h>
 #include <kwindowsystem.h>
 #include "kabstractfilewidget.h"

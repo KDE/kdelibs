@@ -28,12 +28,10 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kcharsets.h>
 #include <kprotocolmanager.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
 
-#include <kdesu/client.h>
 #include <kio/slaveconfig.h>
 #include <kio/http_slave_defaults.h>
 

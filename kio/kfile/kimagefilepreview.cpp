@@ -22,11 +22,8 @@
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kiconloader.h>
-#include <kpushbutton.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kfiledialog.h>
 #include <kfileitem.h>
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>

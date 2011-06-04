@@ -45,7 +45,6 @@
 #include "kservice.h"
 #include <kio/global.h>
 #include "kio/connection.h"
-#include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 
 #include "slaveinterface_p.h"
