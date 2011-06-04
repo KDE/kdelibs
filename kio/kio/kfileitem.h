@@ -424,8 +424,12 @@ public:
      *
      * @param maxcount the maximum number of entries shown
      * @return the tool tip string
+     *
+     * @deprecated File Managers implement more complete tooltips.
      */
-    QString getToolTipText(int maxcount = 6) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE_DEPRECATED QString getToolTipText(int maxcount = 6) const;
+#endif
 
     /**
      * Returns true if files can be dropped over this item.
