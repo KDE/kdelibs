@@ -148,9 +148,10 @@ class KDEUI_EXPORT KStringListValidator : public QValidator
  *
  * The fixup will simply remove all non-token characters.
  *
+ * @deprecated
  * @author Marc Mutz <mutz@kde.org>
  **/
-class KDEUI_EXPORT KMimeTypeValidator : public QValidator
+class KDEUI_EXPORT_DEPRECATED KMimeTypeValidator : public QValidator
 {
   Q_OBJECT
 
