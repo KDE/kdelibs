@@ -33,3 +33,6 @@
 #cmakedefine HAVE_FUNC_ISINF 1
 #cmakedefine HAVE_FUNC_ISNAN 1
 #cmakedefine HAVE_FUNC_POSIX_MEMALIGN 1
+
+/* Defined to 1 if you have a tm_gmtoff member in struct tm */
+#cmakedefine HAVE_TM_GMTOFF 1

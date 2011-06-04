@@ -176,17 +176,7 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 #cmakedefine GETMNTINFO_USES_STATVFS 1
 
-#cmakedefine SIZEOF_TIME_T ${SIZEOF_TIME_T}
-
-/* Defined to 1 if you have a tm_gmtoff member in struct tm */
-#cmakedefine HAVE_TM_GMTOFF 1
-
-/* Defined to 1 if you have a tm_zone member in struct tm */
-#cmakedefine HAVE_STRUCT_TM_TM_ZONE 1
-
 /* Defined to 1 if you have a d_type member in struct dirent */
 #cmakedefine HAVE_DIRENT_D_TYPE 1
 
-
 #include "kdecore/kdefakes.h"
-

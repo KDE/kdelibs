@@ -24,7 +24,11 @@ configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config
 include(network/ConfigureChecks.cmake)
 configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
+
+# Configure checks for date/
+include(date/ConfigureChecks.cmake)
+configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
 # This file handles all the logic for compiling KAuth's backends
 include(auth/ConfigureChecks.cmake)
@@ -40,6 +44,8 @@ include_directories( ${QT_INCLUDES} )
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
