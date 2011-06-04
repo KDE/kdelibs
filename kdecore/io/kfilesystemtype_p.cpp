@@ -43,7 +43,7 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
 {
     struct statfs buf;
     if (statfs(path.constData(), &buf) != 0)
-        return Unknown;
+        return KFileSystemType::Unknown;
     return kde_typeFromName(buf.f_fstypename);
 }
 
