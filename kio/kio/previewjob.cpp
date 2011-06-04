@@ -25,9 +25,6 @@
 #include <kdebug.h>
 
 #include <sys/stat.h>
-#ifdef __FreeBSD__
-    #include <machine/param.h>
-#endif
 #include <sys/types.h>
 
 #ifdef Q_OS_UNIX
