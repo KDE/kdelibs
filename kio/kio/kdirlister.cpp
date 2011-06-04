@@ -31,13 +31,9 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kmessagebox.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
 #include "kprotocolmanager.h"
 #include "kmountpoint.h"
-#include <sys/stat.h>
 
-#include <assert.h>
 #include <QFile>
 
 // Enable this to get printDebug() called often, to see the contents of the cache

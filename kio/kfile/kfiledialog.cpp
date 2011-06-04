@@ -38,8 +38,6 @@
 #include <config-kfile.h>
 #include <krecentdocument.h>
 #include <kimagefilepreview.h>
-#include <kpluginloader.h>
-#include <kpluginfactory.h>
 #include <kdebug.h>
 #include <kwindowsystem.h>
 #include "kabstractfilewidget.h"

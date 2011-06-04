@@ -23,7 +23,7 @@
 #include <QtGui/QDrag>
 
 #include <kdebug.h>
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmimetype.h>
