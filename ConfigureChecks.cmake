@@ -20,16 +20,6 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
-#check for libz using the cmake supplied FindZLIB.cmake
-macro_bool_to_01(ZLIB_FOUND HAVE_LIBZ)                  # zlib is required
-
-macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore
-if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
-   set(NEED_BZ2_PREFIX 1)
-endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
-
-macro_bool_to_01(LIBLZMA_FOUND HAVE_XZ_SUPPORT)         # kdecore
-
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs

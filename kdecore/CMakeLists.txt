@@ -30,6 +30,11 @@ include(date/ConfigureChecks.cmake)
 configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
+# Configure checks for compression/
+include(compression/ConfigureChecks.cmake)
+configure_file(compression/config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/compression/config-compression.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/compression )
+
 # This file handles all the logic for compiling KAuth's backends
 include(auth/ConfigureChecks.cmake)
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
