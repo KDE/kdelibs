@@ -24,7 +24,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
-#include <config.h> // for HAVE_TM_GMTOFF
+#include <config-date.h> // for HAVE_TM_GMTOFF
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
