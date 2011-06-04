@@ -70,7 +70,6 @@
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
-#cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
@@ -104,7 +103,6 @@
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
 #cmakedefine   HAVE_SETMNTENT 1
-#cmakedefine   HAVE_SETPRIORITY 1
 #cmakedefine   HAVE_SRANDOM 1
 #cmakedefine   HAVE_STRCMP 1
 #cmakedefine   HAVE_STRLCPY 1
@@ -135,10 +133,6 @@
 #else
 #cmakedefine WORDS_BIGENDIAN
 #endif
-
-/********* structs ******************/
-
-#cmakedefine HAVE_STRUCT_UCRED 1
 
 /*********************/
 

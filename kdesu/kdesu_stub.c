@@ -40,6 +40,7 @@
  */
 
 #include <config.h>
+#include <config-kdesu.h>
 
 #include <stdio.h>
 #include <stdlib.h>

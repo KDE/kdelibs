@@ -106,7 +106,6 @@ check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
-check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
 # on previous versions so don't do the check on APPLE.
 if(NOT APPLE)
@@ -120,7 +119,6 @@ if(NOT WIN32)
   check_function_exists(readdir_r     HAVE_READDIR_R)                 # kio
 endif(NOT WIN32)
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
-check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
@@ -233,7 +231,7 @@ endif (UNIX)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
-check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
+check_function_exists(initgroups HAVE_INITGROUPS)        # kde3support/k3process, kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
 check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
 check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
@@ -274,11 +272,6 @@ check_prototype_exists(seteuid unistd.h             HAVE_SETEUID_PROTO)
 check_prototype_exists(trunc math.h                 HAVE_TRUNC)
 
 # check for existing datatypes
-
-set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
-check_type_size("struct ucred" STRUCT_UCRED)              # kdesu
-
-set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 check_cxx_source_compiles("
   #include <sys/types.h>
