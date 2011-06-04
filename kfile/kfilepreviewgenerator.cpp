@@ -19,7 +19,7 @@
 
 #include "kfilepreviewgenerator.h"
 
-#include "../kio/kio/defaultviewadapter_p.h"
+#include "../kio/kio/defaultviewadapter_p.h" // KDE5 TODO: move this class here
 #include "../kio/kio/imagefilter_p.h"
 #include <config.h> // for HAVE_XRENDER
 #include <kconfiggroup.h>
