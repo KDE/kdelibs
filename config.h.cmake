@@ -4,9 +4,6 @@
    Otherwise please prefer adding to the relevant config-foo.h.cmake file,
    to minimize recompilations and increase modularity. */
 
-/* if setgroups() takes short *as second arg */
-#cmakedefine HAVE_SHORTSETGROUPS 1 
-
 /****************************/
 
 #define kde_socklen_t socklen_t
