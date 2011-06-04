@@ -31,7 +31,7 @@
 /**
  * \deprecated Use KDiskFreeSpaceInfo
  */
-class KIO_EXPORT KDiskFreeSpace : public QObject
+class KIO_EXPORT_DEPRECATED KDiskFreeSpace : public QObject
 {
     Q_OBJECT
 
@@ -40,7 +40,7 @@ public:
     /**
      * Constructor
      */
-    KDE_DEPRECATED explicit KDiskFreeSpace( QObject *parent = 0 );
+    explicit KDiskFreeSpace( QObject *parent = 0 );
 
     /**
      * Destructor - this object autodeletes itself when it's done
@@ -60,7 +60,7 @@ public:
      * the request for one mount point and then auto-deletes itself.
      * Suicidal objects are not reusable...
      */
-    KDE_DEPRECATED bool readDF( const QString & mountPoint );
+    bool readDF( const QString & mountPoint );
 
     /**
      * Call this to fire a search on the disk usage information
@@ -69,7 +69,7 @@ public:
      * if this mount point is found, with the info requested.
      * The done() signal is emitted in any case.
      */
-     KDE_DEPRECATED static KDiskFreeSpace * findUsageInfo( const QString & path );
+     static KDiskFreeSpace * findUsageInfo( const QString & path );
 
 Q_SIGNALS:
     /**
