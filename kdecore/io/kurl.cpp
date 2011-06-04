@@ -30,7 +30,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kshell.h>
-#include <kstringhandler.h>
 
 #include <stdio.h>
 #include <assert.h>
