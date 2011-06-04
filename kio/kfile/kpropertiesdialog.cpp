@@ -47,6 +47,8 @@
 
 #include <config.h>
 #include <config-acl.h>
+#include <config-getgrouplist.h>
+
 extern "C" {
 #include <pwd.h>
 #include <grp.h>

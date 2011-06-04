@@ -69,6 +69,10 @@ if (NOT KIO_NO_STRIGI)
    configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
 endif (NOT KIO_NO_STRIGI)
 
+check_symbol_exists(getgrouplist   "unistd.h;grp.h"  HAVE_GETGROUPLIST)
+#check_function_exists(getgrouplist HAVE_GETGROUPLIST) #duplicates the previous line
+configure_file(kfile/config-getgrouplist.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kfile/config-getgrouplist.h )
+
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 

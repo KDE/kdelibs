@@ -115,7 +115,6 @@
 #cmakedefine   HAVE_VSNPRINTF 1
 #cmakedefine   HAVE_NSGETENVIRON 1
 #cmakedefine   HAVE_GETTIMEOFDAY 1
-#cmakedefine   HAVE_GETGROUPLIST 1
 #cmakedefine   HAVE_TRUNC 1
 
 #cmakedefine HAVE_S_ISSOCK 1

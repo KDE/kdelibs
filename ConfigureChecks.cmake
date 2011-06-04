@@ -101,7 +101,6 @@ check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)    
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
 check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
-check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
@@ -122,7 +121,6 @@ check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
-check_function_exists(getgrouplist    HAVE_GETGROUPLIST)              # kio
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
