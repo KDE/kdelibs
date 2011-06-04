@@ -28,13 +28,13 @@
 #include <QPointer>
 #include <QTime>
 
-#include "kdebug.h"
-#include "kcomponentdata.h"
-#include "kglobal.h"
-#include "klocale.h"
-#include "kstandarddirs.h"
-#include "ktemporaryfile.h"
-#include "kurl.h"
+#include <kdebug.h>
+#include <kcomponentdata.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
+#include <ktemporaryfile.h>
+#include <kurl.h>
 
 using namespace KIO;
 

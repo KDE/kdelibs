@@ -20,8 +20,8 @@
 
 #include "kfilewriteplugin.h"
 #include "kfilewriteplugin_p.h"
-#include "kglobal.h"
-#include "kservicetypetrader.h"
+#include <kglobal.h>
+#include <kservicetypetrader.h>
 #include <QHash>
 #include <QDebug>
 
