@@ -82,7 +82,7 @@ class KSocketBasePrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KSocketBase
+class KDECORE_EXPORT_DEPRECATED KSocketBase
 {
 public:
   /**
@@ -458,7 +458,7 @@ private:
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
+class KDECORE_EXPORT_DEPRECATED KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
   Q_OBJECT
 public:
@@ -771,7 +771,7 @@ protected:
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KPassiveSocketBase: virtual public KSocketBase
+class KDECORE_EXPORT_DEPRECATED KPassiveSocketBase: virtual public KSocketBase
 {
 public:
   /**
