@@ -31,7 +31,7 @@
  * so you can use QSvgRenderer instead of KSvgRenderer in new code, and
  * replace KSvgRenderer by QSvgRenderer in old code without any regressions.
  */
-class KDEUI_EXPORT KSvgRenderer : public QSvgRenderer
+class KDEUI_EXPORT_DEPRECATED KSvgRenderer : public QSvgRenderer
 {
     Q_OBJECT
 
