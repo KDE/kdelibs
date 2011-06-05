@@ -267,10 +267,10 @@ void KArchiveTest::setupData()
     QTest::addColumn<QString>("mimeType");
 
     QTest::newRow(".tar.gz") << "karchivetest.tar.gz" << "application/x-gzip";
-#if defined (HAVE_BZIP2_SUPPORT)
+#if HAVE_BZIP2_SUPPORT
     QTest::newRow(".tar.bz2") << "karchivetest.tar.bz2" << "application/x-bzip";
 #endif
-#if defined (HAVE_XZ_SUPPORT)
+#if HAVE_XZ_SUPPORT
     QTest::newRow(".tar.lzma") << "karchivetest.tar.lzma" << "application/x-lzma";
     QTest::newRow(".tar.xz") << "karchivetest.tar.xz" << "application/x-xz";
 #endif
