@@ -411,10 +411,12 @@ int KUniqueApplication::newInstance()
     return 0; // do nothing in default implementation
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KUniqueApplication::setHandleAutoStarted()
 {
     Private::s_handleAutoStarted = false;
 }
+#endif
 
 ////
 
