@@ -742,7 +742,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   QString path (_path);
   if (path.isEmpty()
 #ifndef Q_WS_WIN
-     || ((path.startsWith(QLatin1String("/dev/")) || (path == QLatin1String("/dev")) && !path.startsWith(QLatin1String("/dev/."))))
+     || path == QLatin1String("/dev")
+     || (path.startsWith(QLatin1String("/dev/")) && !path.startsWith(QLatin1String("/dev/.")))
 #endif
   )
     return; // Don't even go there.
