@@ -27,7 +27,7 @@
 
 namespace KIO  {
 
-
+// KDE5 TODO: remove the KIO_EXPORT and rename to _p.h, this is really internal only
 
 /**
  * @internal
@@ -44,7 +44,7 @@ public:
                                 const QString &host );
     virtual void reset();
 
-    struct AuthData;
+//    struct AuthData;
 
 private:
     class AuthDataList;
