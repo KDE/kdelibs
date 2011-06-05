@@ -50,7 +50,6 @@
 
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
-#cmakedefine HAVE_CARBON_CARBON_H 1
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1

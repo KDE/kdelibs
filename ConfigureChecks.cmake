@@ -20,8 +20,6 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
-macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
-
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!
