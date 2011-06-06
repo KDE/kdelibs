@@ -194,6 +194,19 @@ public:
     bool inPrivateBrowsingMode;
 };
 
+static void setActionIcon(QAction* action, const QIcon& icon)
+{
+    if (action) {
+        action->setIcon(icon);
+    }
+}
+
+static void setActionShortcut(QAction* action, const KShortcut& shortcut)
+{
+    if (action) {
+        action->setShortcuts(shortcut.toList());
+    }
+}
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
@@ -220,41 +233,41 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
         setWallet(new KWebWallet(0, (window ? window->winId() : 0) ));
     }
 
-    action(Back)->setIcon(KIcon("go-previous"));
-    action(Forward)->setIcon(KIcon("go-next"));
-    action(Reload)->setIcon(KIcon("view-refresh"));
-    action(Stop)->setIcon(KIcon("process-stop"));
-    action(Cut)->setIcon(KIcon("edit-cut"));
-    action(Copy)->setIcon(KIcon("edit-copy"));
-    action(Paste)->setIcon(KIcon("edit-paste"));
-    action(Undo)->setIcon(KIcon("edit-undo"));
-    action(Redo)->setIcon(KIcon("edit-redo"));
-    action(InspectElement)->setIcon(KIcon("view-process-all"));
-    action(OpenLinkInNewWindow)->setIcon(KIcon("window-new"));
-    action(OpenFrameInNewWindow)->setIcon(KIcon("window-new"));
-    action(OpenImageInNewWindow)->setIcon(KIcon("window-new"));
-    action(CopyLinkToClipboard)->setIcon(KIcon("edit-copy"));
-    action(CopyImageToClipboard)->setIcon(KIcon("edit-copy"));
-    action(ToggleBold)->setIcon(KIcon("format-text-bold"));
-    action(ToggleItalic)->setIcon(KIcon("format-text-italic"));
-    action(ToggleUnderline)->setIcon(KIcon("format-text-underline"));
-    action(DownloadLinkToDisk)->setIcon(KIcon("document-save"));
-    action(DownloadImageToDisk)->setIcon(KIcon("document-save"));
+    setActionIcon(action(Back), KIcon("go-previous"));
+    setActionIcon(action(Forward), KIcon("go-next"));
+    setActionIcon(action(Reload), KIcon("view-refresh"));
+    setActionIcon(action(Stop), KIcon("process-stop"));
+    setActionIcon(action(Cut), KIcon("edit-cut"));
+    setActionIcon(action(Copy), KIcon("edit-copy"));
+    setActionIcon(action(Paste), KIcon("edit-paste"));
+    setActionIcon(action(Undo), KIcon("edit-undo"));
+    setActionIcon(action(Redo), KIcon("edit-redo"));
+    setActionIcon(action(InspectElement), KIcon("view-process-all"));
+    setActionIcon(action(OpenLinkInNewWindow), KIcon("window-new"));
+    setActionIcon(action(OpenFrameInNewWindow), KIcon("window-new"));
+    setActionIcon(action(OpenImageInNewWindow), KIcon("window-new"));
+    setActionIcon(action(CopyLinkToClipboard), KIcon("edit-copy"));
+    setActionIcon(action(CopyImageToClipboard), KIcon("edit-copy"));
+    setActionIcon(action(ToggleBold), KIcon("format-text-bold"));
+    setActionIcon(action(ToggleItalic), KIcon("format-text-italic"));
+    setActionIcon(action(ToggleUnderline), KIcon("format-text-underline"));
+    setActionIcon(action(DownloadLinkToDisk), KIcon("document-save"));
+    setActionIcon(action(DownloadImageToDisk), KIcon("document-save"));
 
     settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
     settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
     settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
 
-    action(Back)->setShortcut(KStandardShortcut::back().primary());
-    action(Forward)->setShortcut(KStandardShortcut::forward().primary());
-    action(Reload)->setShortcut(KStandardShortcut::reload().primary());
-    action(Stop)->setShortcut(QKeySequence(Qt::Key_Escape));
-    action(Cut)->setShortcut(KStandardShortcut::cut().primary());
-    action(Copy)->setShortcut(KStandardShortcut::copy().primary());
-    action(Paste)->setShortcut(KStandardShortcut::paste().primary());
-    action(Undo)->setShortcut(KStandardShortcut::undo().primary());
-    action(Redo)->setShortcut(KStandardShortcut::redo().primary());
-    action(SelectAll)->setShortcut(KStandardShortcut::selectAll().primary());
+    setActionShortcut(action(Back), KStandardShortcut::back());
+    setActionShortcut(action(Forward), KStandardShortcut::forward());
+    setActionShortcut(action(Reload), KStandardShortcut::reload());
+    setActionShortcut(action(Stop), KShortcut(QKeySequence(Qt::Key_Escape)));
+    setActionShortcut(action(Cut), KStandardShortcut::cut());
+    setActionShortcut(action(Copy), KStandardShortcut::copy());
+    setActionShortcut(action(Paste), KStandardShortcut::paste());
+    setActionShortcut(action(Undo), KStandardShortcut::undo());
+    setActionShortcut(action(Redo), KStandardShortcut::redo());
+    setActionShortcut(action(SelectAll), KStandardShortcut::selectAll());
 }
 
 KWebPage::~KWebPage()
