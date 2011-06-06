@@ -28,7 +28,6 @@
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 
-#include <QtGui/QPixmap>
 #include <QtCore/QHashIterator>
 #include <QtCore/QStringBuilder>
 #include <QtNetwork/QHostInfo>

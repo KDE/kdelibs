@@ -44,7 +44,7 @@ enum KSycocaType { KST_KSycocaEntry = 0, KST_KService = 1, KST_KServiceType = 2,
 enum KSycocaFactoryId { KST_KServiceFactory = 1,
                         KST_KServiceTypeFactory = 2,
                         KST_KServiceGroupFactory = 3,
-                        KST_KImageIO = 4,
+                        KST_KImageIO = 4, // unused, KDE5: remove
                         KST_KProtocolInfoFactory = 5,
                         KST_KMimeTypeFactory = 6,
                         KST_CTimeInfo = 100 };
