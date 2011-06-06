@@ -165,12 +165,13 @@ private Q_SLOTS:
         w.completionBox()->down(); // select 2nd item
         QCOMPARE(w.text(), items.at(1));
 
-        // Selecting an item in the popup completion changes the lineedit text and emits all 3 signals
+        // Selecting an item in the popup completion changes the lineedit text
+        // and emits textChanged and userTextChanged, but not textEdited.
 #ifndef KDE_NO_DEPRECATED
         QCOMPARE(userTextChangedSpy.count(), 2);
 #endif
         QCOMPARE(textChangedSpy.count(), 2);
-        QCOMPARE(textEditedSpy.count(), 2);
+        QCOMPARE(textEditedSpy.count(), 0);
 #ifndef KDE_NO_DEPRECATED
         userTextChangedSpy.clear();
 #endif
