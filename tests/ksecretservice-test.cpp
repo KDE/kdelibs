@@ -19,19 +19,19 @@
  */
 
 #include "ksecretservice-test.h"
-#include "../ksecretservice.h"
-#include "../../daemon/frontend/secret/adaptors/secret.h"
-#include "session_interface.h"
 
 #include <qtest_kde.h>
 #include <ktoolinvocation.h>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtTest/QTest>
+#include "../ksecretsservicecollection.h"
 
 QTEST_KDEMAIN_CORE(KSecretServiceTest)
 
-#define SERVICE_NAME "org.freedesktop.Secret"
+#define SERVICE_NAME "org.freedesktop.secrets"
+
+using namespace KSecretsService;
 
 KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 {
@@ -55,12 +55,7 @@ void KSecretServiceTest::initTestCase()
 
 void KSecretServiceTest::testSession()
 {
-    QVERIFY( !KSecretService::instance()->isConnected() );
-    OrgFreedesktopSecretSessionInterface *session = KSecretService::instance()->session();
-    QVERIFY2( session != 0, "Cannot get session interface" );
-    QDBusPendingReply<> closeReply = session->Close();
-    closeReply.waitForFinished();
-    QVERIFY2( !closeReply.isError(), "Error closing session" );
+    Collection::FindCollectionJob *createCollJob = Collection::findCollection( "test collection" );
 }
 
 void KSecretServiceTest::cleanupTestCase()

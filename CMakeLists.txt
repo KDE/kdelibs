@@ -10,6 +10,10 @@ include_directories (
 )
 
 set (client_lib_SRCS
+    ksecretsserviceitem.cpp
+    ksecretsservicesecret.cpp
+    ksecretsservicecollection.cpp
+    ksecretsservicejob.cpp
     ../daemon/frontend/secret/adaptors/secret.cpp
     ../daemon/frontend/secret/adaptors/dbustypes.cpp
 )
@@ -26,18 +30,14 @@ kde4_add_library(ksecretserviceclient ${client_lib_SRCS})
 
 TARGET_LINK_LIBRARIES (ksecretserviceclient ${KDE4_KDECORE_LIBS} ${QCA2_LIBRARIES})
 
-SET(ksecretserviceclient_xml 
-    org.freedesktop.Secret.Collection.xml
-    org.freedesktop.Secret.Item.xml
-    org.freedesktop.Secret.Prompt.xml
-    org.freedesktop.Secret.Service.xml
-    org.freedesktop.Secret.Session.xml
-)
 INSTALL(FILES 
     ${ksecretserviceclient_xml} 
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 INSTALL(FILES
-    ksecretservice.h
+    ksecretsservicecollection.h
+    ksecretsserviceobject.h
+    ksecretsserviceitem.h
+    ksecretsservicejob.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretservice COMPONENT Devel 
 )
