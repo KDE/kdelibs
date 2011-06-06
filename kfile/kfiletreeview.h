@@ -31,7 +31,7 @@
 /**
  * The file treeview offers a treeview on the filesystem.
  */
-class KFILE_EXPORT KFileTreeView : public QTreeView
+class KFILE_EXPORT KFileTreeView : public QTreeView  // KDE5: remove KFILE_EXPORT? Seems internal only.
 {
     Q_OBJECT
 
