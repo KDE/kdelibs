@@ -160,7 +160,7 @@ void KGlobal::insertCatalog(const QString& catalog)
 {
     PRIVATE_DATA;
     if (d->locale) {
-        d->locale->insertCatalog(catalog);
+        locale()->insertCatalog(catalog);
     } else {
         d->catalogsToInsert.append(catalog);
     }
@@ -238,7 +238,7 @@ void KGlobal::setActiveComponent(const KComponentData &c)
     PRIVATE_DATA;
     d->activeComponent = c;
     if (c.isValid() && d->locale) {
-        d->locale->setActiveCatalog(c.catalogName());
+        locale()->setActiveCatalog(c.catalogName());
     }
 }
 
@@ -252,13 +252,13 @@ void KGlobal::newComponentData(const KComponentData &c)
     KGlobal::setActiveComponent(c);
 }
 
-void KGlobal::setLocale(KLocale *locale, CopyCatalogs copy)
+void KGlobal::setLocale(KLocale *newLocale, CopyCatalogs copy)
 {
     PRIVATE_DATA;
     if (copy == DoCopyCatalogs && d->locale)
-        d->locale->copyCatalogsTo(locale);
+        locale()->copyCatalogsTo(newLocale);
     delete d->locale;
-    d->locale = locale;
+    d->locale = newLocale;
 }
 
 /**
