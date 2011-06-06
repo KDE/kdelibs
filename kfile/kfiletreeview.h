@@ -71,6 +71,11 @@ class KFILE_EXPORT KFileTreeView : public QTreeView
          * @since 4.3
          */
         bool showHiddenFiles() const;
+
+    /**
+     * @reimplemented
+     */
+    QSize sizeHint() const;
         
     public Q_SLOTS:
         /**
