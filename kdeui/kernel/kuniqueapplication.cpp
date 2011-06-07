@@ -287,11 +287,14 @@ KUniqueApplication::start(StartFlags flags)
          new_asn_id = id.id();
 #endif
 
-     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", QDBusConnection::sessionBus());
-     QDBusReply<int> reply;
-     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
+     QDBusMessage msg = QDBusMessage::createMethodCall(appName, "/MainApplication", "org.kde.KUniqueApplication",
+                                                       "newInstance");
+     msg << new_asn_id << saved_args;
+     QDBusReply<int> reply = QDBusConnection::sessionBus().call(msg, QDBus::Block, INT_MAX);
+
+     if (!reply.isValid())
      {
-       QDBusError err = iface.lastError();
+         QDBusError err = reply.error();
         kError() << "Communication problem with " << KCmdLineArgs::aboutData()->appName() << ", it probably crashed." << endl
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
