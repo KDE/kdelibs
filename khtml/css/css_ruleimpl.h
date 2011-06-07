@@ -76,7 +76,7 @@ public:
 
     DOMString encoding() const { return m_encoding; }
     void setEncoding(DOMString _encoding) { m_encoding = _encoding; }
-    virtual DOM::DOMString cssText() const { return DOMString("@charset \"") + m_encoding + "\";"; }
+    virtual DOM::DOMString cssText() const { return DOMString("@charset \"") + m_encoding + DOMString("\";"); }
 protected:
     DOMString m_encoding;
 };

@@ -98,7 +98,7 @@ DOMString QualifiedName::tagName() const
     DOMString localName = m_localName.toString();
     if (prefix.isEmpty())
         return localName;
-    return prefix + ":" + localName;
+    return prefix + DOMString(":") + localName;
 }
 
 DOMString QualifiedName::prefix() const
@@ -118,7 +118,7 @@ DOMString QualifiedName::namespaceURI() const
 
 DOMString QualifiedName::toString() const
 {
-    return prefix() + ":" + localName();
+    return prefix() + DOMString(":") + localName();
 }
 
 }

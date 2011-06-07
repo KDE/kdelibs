@@ -313,7 +313,7 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
 DOMString CommentImpl::toString() const
 {
     // FIXME: substitute entity references as needed!
-    return DOMString("<!--") + nodeValue() + "-->";
+    return DOMString("<!--") + nodeValue() + DOMString("-->");
 }
 
 // ---------------------------------------------------------------------------
@@ -636,7 +636,7 @@ TextImpl *CDATASectionImpl::createNew(DOMStringImpl *_str)
 
 DOMString CDATASectionImpl::toString() const
 {
-    return DOMString("<![CDATA[") + nodeValue() + "]]>";
+    return DOMString("<![CDATA[") + nodeValue() + DOMString("]]>");
 }
 
 // ---------------------------------------------------------------------------

@@ -416,13 +416,13 @@ DOMString CSSSelector::selectorText() const
     if ( cs->tagHistory ) {
         DOMString tagHistoryText = cs->tagHistory->selectorText();
         if ( cs->relation == DirectAdjacent )
-            str = tagHistoryText + " + " + str;
+            str = tagHistoryText + DOMString(" + ") + str;
         else if ( cs->relation == IndirectAdjacent )
-            str = tagHistoryText + " ~ " + str;
+            str = tagHistoryText + DOMString(" ~ ") + str;
         else if ( cs->relation == Child )
-            str = tagHistoryText + " > " + str;
+            str = tagHistoryText + DOMString(" > ") + str;
         else // Descendant
-            str = tagHistoryText + " " + str;
+            str = tagHistoryText + DOMString(" ") + str;
     }
     return str;
 }
