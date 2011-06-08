@@ -404,6 +404,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
   d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
+  d->m_paFindAheadText->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   d->m_paFindAheadText->setHelpText(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
   connect( d->m_paFindAheadText, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadText()) );
 
