@@ -61,6 +61,9 @@ void KServiceTest::initTestCase()
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
+        kDebug() << "waiting for signal";
+        QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
+        kDebug() << "got signal";
     }
 
 }
