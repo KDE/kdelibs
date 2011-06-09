@@ -2653,6 +2653,15 @@ void HTTPProtocol::fixupResponseMimetype()
             m_mimeType = QLatin1String("application/x-gzpostscript");
     }
 
+    // Prefer application/x-xz-compressed-tar over application/x-xz for LMZA compressed
+    // tar files. Arch Linux AUR servers notoriously send the wrong mimetype for this.
+    else if(m_mimeType == QLatin1String("application/x-xz")) {
+        if (m_request.url.path().endsWith(QLatin1String(".tar.xz")) ||
+            m_request.url.path().endsWith(QLatin1String(".txz"))) {
+            m_mimeType = QLatin1String("application/x-xz-compressed-tar");
+        }
+    }
+
     // Some webservers say "text/plain" when they mean "application/x-bzip"
     else if ((m_mimeType == QLatin1String("text/plain")) || (m_mimeType == QLatin1String("application/octet-stream"))) {
         const QString ext = QFileInfo(m_request.url.path()).suffix().toUpper();
