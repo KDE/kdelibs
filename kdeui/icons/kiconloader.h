@@ -445,6 +445,15 @@ public:
      */
     bool extraDesktopThemesAdded() const;
 
+    /**
+     * Draws overlays on the specified pixmap, it takes the width and height
+     * of the pixmap into consideration
+     * @param overlays to draw
+     * @param pixmap to draw on
+     * @since 4.8
+     */
+    void drawOverlays(const QStringList &overlays, QPixmap &pixmap, KIconLoader::Group group, int state = KIconLoader::DefaultState) const;
+
  public Q_SLOTS:
    /**
     * Re-initialize the global icon loader
