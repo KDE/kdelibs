@@ -50,7 +50,6 @@
 
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
-#cmakedefine HAVE_CARBON_CARBON_H 1
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
@@ -102,23 +101,12 @@
 #cmakedefine   HAVE_VSNPRINTF 1
 #cmakedefine   HAVE_NSGETENVIRON 1
 #cmakedefine   HAVE_GETTIMEOFDAY 1
+#cmakedefine   HAVE_GETGROUPLIST 1
 #cmakedefine   HAVE_TRUNC 1
 
 #cmakedefine HAVE_S_ISSOCK 1
 
 #cmakedefine TIME_WITH_SYS_TIME 1
-
-/* When building universal binaries, you must determine endianness at compile-time */
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-#define WORDS_BIGENDIAN 1
-#else
-#undef WORDS_BIGENDIAN
-#endif
-
-#else
-#cmakedefine WORDS_BIGENDIAN
-#endif
 
 /*********************/
 

@@ -33,7 +33,6 @@ namespace KIO {
 
     class Slave;
     class SlaveConfig;
-    class SessionData;
 
     class SchedulerPrivate;
     /**

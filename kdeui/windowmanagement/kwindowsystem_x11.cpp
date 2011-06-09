@@ -23,11 +23,12 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kuniqueapplication.h>
 #include <kdebug.h>
+#include <ksystemeventfilter.h>
 #include <kxerrorhandler.h>
 #include <kxutils.h>
 #include <netwm.h>
+#include <QtGui/QApplication>
 #include <QtGui/QBitmap>
 #include <QDesktopWidget>
 #include <QtGui/QDialog>
@@ -111,8 +112,7 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
       strutSignalConnected( false ),
       what( _what )
 {
-    if (kapp)
-        kapp->installX11EventFilter( this );
+    KSystemEventFilter::installEventFilter(this);
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 }
 
@@ -531,7 +531,6 @@ void KWindowSystem::activateWindow( WId win, long time )
         time = QX11Info::appUserTime();
     info.setActiveWindow( win, NET::FromApplication, time,
         qApp->activeWindow() ? qApp->activeWindow()->winId() : 0 );
-    KUniqueApplication::setHandleAutoStarted();
 }
 
 void KWindowSystem::forceActiveWindow( WId win, long time )
@@ -540,7 +539,6 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
     if( time == 0 )
         time = QX11Info::appTime();
     info.setActiveWindow( win, NET::FromTool, time, 0 );
-    KUniqueApplication::setHandleAutoStarted();
 }
 
 void KWindowSystem::demandAttention( WId win, bool set )

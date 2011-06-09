@@ -28,7 +28,6 @@
 #include "ksharedconfig.h"
 #include "kstringhandler.h"
 #include "kcomponentdata.h"
-#include "kstandarddirs.h"
 #include "kconfigdata.h"
 #include <kdebug.h>
 

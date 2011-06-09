@@ -146,7 +146,7 @@ DOMString AttrImpl::name() const
 
     DOMString p = m_prefix.toString();
     if (!p.isEmpty())
-        return p + ":" + n;
+        return p + DOMString(":") + n;
 
     return n;
 }
@@ -493,7 +493,7 @@ DOMString ElementImpl::tagName() const
 
     DOMString prefix = m_prefix.toString();
     if (!prefix.isEmpty())
-        return prefix + ":" + tn;
+        return prefix + DOMString(":") + tn;
 
     return tn;
 }
@@ -504,7 +504,7 @@ DOMString ElementImpl::nonCaseFoldedTagName() const
 
     DOMString prefix = m_prefix.toString();
     if (!prefix.isEmpty())
-        return prefix + ":" + tn;
+        return prefix + DOMString(":") + tn;
 
     return tn;
 }
@@ -1254,7 +1254,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
             PrefixName prefix = attribute.m_prefix;
             DOMString current;
             if (prefix.id())
-                current = prefix.toString() + ":" + attribute.localName();
+                current = prefix.toString() + DOMString(":") + attribute.localName();
             else
                 current = attribute.localName();
             if (m_htmlCompat)

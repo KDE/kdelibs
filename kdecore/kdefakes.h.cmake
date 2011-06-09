@@ -34,6 +34,7 @@
      mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
      mkstemp, mkstemps (prefer to use QTemporaryfile instead)
      trunc
+     getgrouplist
 */
 
 #cmakedefine HAVE_STRLCAT_PROTO 1
@@ -179,5 +180,18 @@ double trunc(double);
 }
 #endif
 #endif
+
+#cmakedefine HAVE_GETGROUPLIST 1
+#if !defined(HAVE_GETGROUPLIST)
+#include <sys/types.h> /* for gid_t */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int getgrouplist(const char *, gid_t , gid_t *, int *);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 
 #endif /* KDEFAKES_H */

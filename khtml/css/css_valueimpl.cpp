@@ -849,10 +849,10 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
         if (positionXProp->value()->isValueList() || positionYProp->value()->isValueList())
             positionValue = getLayeredShortHandValue(properties, 2);
         else
-            positionValue = positionXProp->value()->cssText() + " " + positionYProp->value()->cssText();
+            positionValue = positionXProp->value()->cssText() + DOMString(" ") + positionYProp->value()->cssText();
         result += DOMString("background-position: ") + positionValue
                                                      + DOMString((positionXProp->isImportant() ? " !important" : ""))
-                                                     + "; ";
+                                                     + DOMString("; ");
     } else {
         if (positionXProp)
             result += positionXProp->cssText();
@@ -1264,10 +1264,10 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
         {
             RectImpl* rectVal = getRectValue();
             text = "rect(";
-            text += rectVal->top()->cssText() + " ";
-            text += rectVal->right()->cssText() + " ";
-            text += rectVal->bottom()->cssText() + " ";
-            text += rectVal->left()->cssText() + ")";
+            text += rectVal->top()->cssText() + DOMString(" ");
+            text += rectVal->right()->cssText() + DOMString(" ");
+            text += rectVal->bottom()->cssText() + DOMString(" ");
+            text += rectVal->left()->cssText() + DOMString(")");
             break;
         }
 	case CSSPrimitiveValue::CSS_RGBCOLOR:

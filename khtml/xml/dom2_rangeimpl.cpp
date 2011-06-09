@@ -1070,7 +1070,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		 in_li = true;
 		 break;
 	  }
-          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"
+          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text; // prepends "<tagname key=value>"
       }
       startdepth--;
     }
@@ -1119,7 +1119,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_THEAD:
 		    if(num_tables>0) {
 		        if(elementId == ID_TABLE) num_tables--;
-			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 			text += "</";
 			text += static_cast<ElementImpl *>(n)->tagName();
 			text += ">";
@@ -1129,7 +1129,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 
                 case ID_LI:
 		    if(!in_li) break;
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
 		    text += ">";
@@ -1155,7 +1155,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_H5:
 		    //should small, etc be here?   so hard to decide.  this is such a hack :(
 		    //There's probably tons of others you'd want here.
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
 		    text += ">";
@@ -1166,7 +1166,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     }
 
 
-    if(!hasBodyTag) text = DOMString("<body>") + text + "</body>";
+    if(!hasBodyTag) text = DOMString("<body>") + text + DOMString("</body>");
     else if(!hasHtmlTag) {
       text = DOMString("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
 		      "<head>\n"
@@ -1174,7 +1174,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		      "<meta name=\"Generator\" content=\"KHTML, the KDE Web Page Viewer\" />\n"
 		      "</head>\n") +
 	    text +
-	    "</html>";
+	    DOMString("</html>");
     }
     text = DOMString("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n") + text;
 

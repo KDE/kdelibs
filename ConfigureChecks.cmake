@@ -20,8 +20,6 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
-macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
-
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!
@@ -91,6 +89,7 @@ check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)    
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
 check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
+check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
@@ -111,6 +110,7 @@ check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
+check_function_exists(getgrouplist    HAVE_GETGROUPLIST)              # kio
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
@@ -271,9 +271,7 @@ check_cxx_source_compiles("
   }
 " GETMNTINFO_USES_STATVFS )
 
-check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE) # kdecore, kded
-include(TestBigEndian)
-test_big_endian(WORDS_BIGENDIAN)
+check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE) # kdecore, kioslave/file
 
 # TODO: for the more capable cmake authors: we need at least gcc's and MSVC's version in here
 set (KDE_COMPILER_VERSION ${CMAKE_C_COMPILER})

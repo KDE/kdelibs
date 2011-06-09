@@ -101,12 +101,12 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
     return kde_typeFromName(buf.f_basetype);
 #endif
 }
+#endif
 #else
 KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
 {
     return KFileSystemType::Unknown;
 }
-#endif
 #endif
 
 KFileSystemType::Type KFileSystemType::fileSystemType(const QString& path)

@@ -105,7 +105,7 @@ class KServerSocketPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KServerSocket: public QObject, public KPassiveSocketBase
+class KDECORE_EXPORT_DEPRECATED KServerSocket: public QObject, public KPassiveSocketBase
 {
   Q_OBJECT
 public:

@@ -1225,6 +1225,7 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
         KFileItemList itemList;
         d->addItemsToList(QModelIndex(), itemList);
 
+        KFilePreviewGenerator::Private::DataChangeObtainer obt (d);
         foreach (const KFileItem& item, itemList) {
             const QModelIndex index = dirModel->indexForItem(item);
             dirModel->setData(index, QIcon(), Qt::DecorationRole);

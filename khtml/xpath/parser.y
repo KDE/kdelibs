@@ -201,7 +201,7 @@ NodeTest:
 	|
 	NODETYPE '(' ')'
 	{
-		$$ = new DOMString( *$1 + "()" );
+		$$ = new DOMString( *$1 + DOMString("()") );
 	}
 	|
 	PI '(' ')'

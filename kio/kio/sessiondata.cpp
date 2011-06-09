@@ -38,6 +38,7 @@
 namespace KIO {
 
 /***************************** SessionData::AuthData ************************/
+#if 0
 struct SessionData::AuthData
 {
 
@@ -62,6 +63,7 @@ public:
   QByteArray group;
   bool persist;
 };
+#endif
 
 /********************************* SessionData ****************************/
 

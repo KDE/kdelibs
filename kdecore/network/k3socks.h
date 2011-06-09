@@ -46,7 +46,7 @@ struct sockaddr;
  * @short Access to a SOCKS Proxy.
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KSocks {
+class KDECORE_EXPORT_DEPRECATED KSocks {
 public:
 
    /**

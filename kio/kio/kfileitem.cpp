@@ -1069,6 +1069,7 @@ QString KFileItem::getStatusBarInfo() const
     return text;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KFileItem::getToolTipText(int maxcount) const
 {
     // we can return QString() if no tool tip should be shown
@@ -1144,6 +1145,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     return tip;
 }
+#endif
 
 void KFileItem::run( QWidget* parentWidget ) const
 {
