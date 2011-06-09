@@ -39,8 +39,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 
-#include "kmimetypetrader.h"
-#include "kmimetype.h"
+#include <kmimetypetrader.h>
+#include <kmimetype.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
 #include "kio/job.h"
 #include "kio/jobuidelegate.h"

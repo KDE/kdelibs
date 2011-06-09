@@ -47,6 +47,8 @@
 
 #include <config.h>
 #include <config-acl.h>
+#include <config-getgrouplist.h>
+
 extern "C" {
 #include <pwd.h>
 #include <grp.h>
@@ -82,7 +84,6 @@ extern "C" {
 
 #include <kauthorized.h>
 #include <kdialog.h>
-#include <kdirwatch.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
 #include <kdebug.h>

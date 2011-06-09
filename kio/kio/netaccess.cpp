@@ -35,7 +35,6 @@
 #include <QtCore/QMetaClassInfo>
 #include <QtCore/QTextIStream>
 
-#include <kapplication.h>
 #include <klocale.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>

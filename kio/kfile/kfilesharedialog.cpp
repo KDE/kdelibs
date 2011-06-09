@@ -26,17 +26,11 @@
 #include <QtGui/QButtonGroup>
 #include <QtGui/QLayout>
 #include <klocale.h>
-#include <kglobalsettings.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 #include <kio/kfileshare.h>
 #include <kseparator.h>
 #include <QtGui/QPushButton>
-#include <kapplication.h>
-#include <kconfig.h>
 #include <kmessagebox.h>
 
 class KFileSharePropsPlugin::Private

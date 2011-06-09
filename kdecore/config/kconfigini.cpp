@@ -22,10 +22,6 @@
 
 #include "kconfigini_p.h"
 
-#include <config.h>
-
-#include <fcntl.h>
-
 #include "kconfig.h"
 #include "kconfigbackend.h"
 #include "bufferfragment_p.h"

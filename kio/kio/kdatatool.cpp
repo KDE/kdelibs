@@ -24,9 +24,7 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <kcomponentdata.h>
-#include <ktoggleaction.h>
 #include <kactioncollection.h>
-#include <kactionmenu.h>
 
 #include <kservicetypetrader.h>
 

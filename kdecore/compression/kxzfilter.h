@@ -23,9 +23,9 @@
 #ifndef KXZFILTER_H
 #define KXZFILTER_H
 
-#include <config.h>
+#include <config-compression.h>
 
-#if defined( HAVE_XZ_SUPPORT )
+#if HAVE_XZ_SUPPORT
 
 #include "kfilterbase.h"
 

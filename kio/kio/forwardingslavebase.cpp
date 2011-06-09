@@ -24,7 +24,6 @@
 
 #include <kdebug.h>
 #include <kmimetype.h>
-#include <kprotocolinfo.h>
 
 #include <QtGui/QApplication>
 #include <QtCore/QEventLoop>

@@ -21,6 +21,7 @@
 #include "kdatetime.h"
 
 #include <config.h>
+#include <config-date.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>

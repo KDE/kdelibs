@@ -23,7 +23,6 @@
 #include <QtGui/QLayout>
 
 #include <kfiledialog.h>
-#include <kguiitem.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <krecentdocument.h>

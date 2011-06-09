@@ -20,6 +20,7 @@
 
 #include "qtest_kde.h"
 
+#include <config-compression.h>
 #include "kfilterdev.h"
 #include "kfilterbase.h"
 #include <unistd.h>
@@ -31,7 +32,6 @@
 #include <krandom.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <config.h>
 #include <zlib.h>
 #include <httpfilter.h>
 
@@ -70,13 +70,13 @@ void KFilterTest::test_block_write()
     test_block_write(pathgz, testData);
     QCOMPARE( QFileInfo( pathgz ).size(), 33LL ); // size of test.gz
 
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     kDebug() << " -- test_block_write bzip2 -- ";
     test_block_write(pathbz2, testData);
     QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
 #endif
 
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     kDebug() << " -- test_block_write xz -- ";
     test_block_write(pathxz, testData);
     QCOMPARE( QFileInfo( pathxz ).size(), 64LL ); // size of test.lzma
@@ -150,11 +150,11 @@ void KFilterTest::test_block_read()
 {
     kDebug() << " -- test_block_read gzip -- ";
     test_block_read(pathgz);
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     kDebug() << " -- test_block_read bzip2 -- ";
     test_block_read(pathbz2);
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     kDebug() << " -- test_block_read lzma -- ";
     test_block_read(pathxz);
 #endif
@@ -181,11 +181,11 @@ void KFilterTest::test_getch()
 {
     kDebug() << " -- test_getch gzip -- ";
     test_getch(pathgz);
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     kDebug() << " -- test_getch bzip2 -- ";
     test_getch(pathbz2);
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     kDebug() << " -- test_getch lzma -- ";
     test_getch(pathxz);
 #endif
@@ -210,11 +210,11 @@ void KFilterTest::test_textstream()
 {
     kDebug() << " -- test_textstream gzip -- ";
     test_textstream(pathgz);
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     kDebug() << " -- test_textstream bzip2 -- ";
     test_textstream(pathbz2);
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     kDebug() << " -- test_textstream lzma -- ";
     test_textstream(pathxz);
 #endif
@@ -237,11 +237,11 @@ void KFilterTest::test_readall()
 {
     kDebug() << " -- test_readall gzip -- ";
     test_readall(pathgz, QString::fromLatin1("application/x-gzip"), testData);
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     kDebug() << " -- test_readall bzip2 -- ";
     test_readall(pathbz2, QString::fromLatin1("application/x-bzip"), testData);
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     kDebug() << " -- test_readall lzma -- ";
     test_readall(pathxz, QString::fromLatin1("application/x-xz"), testData);
 #endif
@@ -271,7 +271,7 @@ void KFilterTest::test_findFilterByMimeType_data()
 
     // direct mimetype name
     QTest::newRow("application/x-gzip") << QString::fromLatin1("application/x-gzip") << true;
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << true;
     QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << true;
 #else

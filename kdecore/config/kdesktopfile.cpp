@@ -26,7 +26,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
-#include <config.h>
 #include "kconfig_p.h"
 #include "kdebug.h"
 #include "kurl.h"

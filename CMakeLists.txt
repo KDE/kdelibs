@@ -99,11 +99,6 @@ if(X11_FOUND)
   endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
 endif(X11_FOUND)
 
-macro_optional_find_package(BZip2)
-macro_log_feature(BZIP2_FOUND "BZip2" "Support for BZip2 compressed files and data streams" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED")
-
-macro_optional_find_package(LibLZMA)
-macro_log_feature(LIBLZMA_FOUND "LZMA/XZ" "Support for xz compressed files and data streams" "http://tukaani.org/xz/" FALSE "" "")
 
 macro_optional_find_package(OpenSSL)
 macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communications (SSL and TLS)" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS")

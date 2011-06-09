@@ -2,7 +2,6 @@
 
 #include <QtCore/QMutableStringListIterator>
 #include <kfiledialog.h>
-#include <kapplication.h>
 #include <kmessagebox.h>
 #include <QtCore/QTimer>
 

@@ -53,10 +53,7 @@
 #include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
 
-#include <kapplication.h>
 #include <ktoolinvocation.h>
-#include <ksocketfactory.h>
-#include <kprotocolmanager.h>
 
 using namespace KIO;
 //using namespace KNetwork;

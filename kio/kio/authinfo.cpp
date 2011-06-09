@@ -37,7 +37,6 @@
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <ksavefile.h>
 
 #define NETRC_READ_BUF_SIZE 4096
 

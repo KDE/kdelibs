@@ -27,11 +27,6 @@
 #include <QtGui/QImage>
 #include <QtGui/QIcon>
 
-#include <kiconeffect.h>
-#include <kiconloader.h>
-#include <klocale.h>
-#include <kstandarddirs.h>
-
 class KRatingWidget::Private
 {
 public:

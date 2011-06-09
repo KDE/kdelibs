@@ -38,12 +38,10 @@
 #include <QtCore/QList>
 #include <QtCore/QDateTime>
 
-#include <kapplication.h>
 #include <kcrash.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kde_file.h>
-#include <kdesu/client.h>
 #include <klocale.h>
 
 #include "kremoteencoding.h"

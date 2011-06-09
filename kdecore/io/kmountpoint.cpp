@@ -515,8 +515,6 @@ bool KMountPoint::probablySlow() const
 {
     bool nfs = d->mountType == QLatin1String("nfs");
     bool autofs = d->mountType == QLatin1String("autofs") || d->mountType == QLatin1String("subfs");
-    // TODO add smbfs here?
-    //
     //bool pid = d->mountPoint.contains(":(pid");
     // The "pid" thing was in kde3's KIO::probably_slow_mounted, with obscure logic
     // (looks like it used state from the previous line or something...)

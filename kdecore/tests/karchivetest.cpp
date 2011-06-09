@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
+#include <config-compression.h>
 
 #include "karchivetest.h"
 #include <kmimetype.h>

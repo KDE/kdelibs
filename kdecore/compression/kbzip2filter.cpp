@@ -19,9 +19,9 @@
 
 #include "kbzip2filter.h"
 
-#include <config.h>
+#include <config-compression.h>
 
-#if defined( HAVE_BZIP2_SUPPORT )
+#if HAVE_BZIP2_SUPPORT
 
 // we don't need that
 #define BZ_NO_STDIO
@@ -29,7 +29,7 @@ extern "C" {
 	#include <bzlib.h>
 }
 
-#ifdef NEED_BZ2_PREFIX
+#if NEED_BZ2_PREFIX
         #define bzDecompressInit(x,y,z) BZ2_bzDecompressInit(x,y,z)
         #define bzDecompressEnd(x) BZ2_bzDecompressEnd(x)
         #define bzCompressEnd(x)  BZ2_bzCompressEnd(x)

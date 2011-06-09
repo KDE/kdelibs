@@ -29,12 +29,9 @@
 #include <QtGui/QLabel>
 #include <QtGui/QListWidget>
 
-#include <kapplication.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpushbutton.h>
-#include <kstandardguiitem.h>
 #include <kseparator.h>
 #include <kdebug.h>
 

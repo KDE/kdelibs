@@ -43,6 +43,7 @@
 
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
+#include "kfilesystemtype_p.h"
 
 #include <io/config-kdirwatch.h>
 #include <config.h>
@@ -62,7 +63,6 @@
 #include <kglobal.h>
 #include <kde_file.h>
 #include <kconfiggroup.h>
-#include "kmountpoint.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -709,9 +709,7 @@ bool KDirWatchPrivate::useQFSWatch(Entry* e)
 
 bool KDirWatchPrivate::useStat(Entry* e)
 {
-  KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(e->path);
-  const bool slow = mp ? mp->probablySlow() : false;
-  if (slow)
+  if (KFileSystemType::fileSystemType(e->path) == KFileSystemType::Nfs) // TODO: or Smbfs?
     useFreq(e, m_nfsPollInterval);
   else
     useFreq(e, m_PollInterval);
@@ -904,8 +902,7 @@ void KDirWatchPrivate::addWatch(Entry* e)
   // are made locally. #177892.
   KDirWatch::Method preferredMethod = m_preferredMethod;
   if (m_nfsPreferredMethod != m_preferredMethod) {
-    KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByPath(e->path);
-    if (mountPoint && mountPoint->probablySlow()) {
+    if (KFileSystemType::fileSystemType(e->path) == KFileSystemType::Nfs) {
       preferredMethod = m_nfsPreferredMethod;
     }
   }

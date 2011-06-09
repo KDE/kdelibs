@@ -44,7 +44,6 @@
 #include <stdio.h>
 #include "kcomponentdata.h"
 #include "kconfiggroup.h"
-#include "klocale.h"
 
 class KActionCollectionPrivate
 {

@@ -26,11 +26,8 @@
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 
-#include <kguiitem.h>
 #include <klocale.h>
 #include <kurl.h>
-#include <kpushbutton.h>
-#include <kstandardguiitem.h>
 
 using namespace KIO;
 

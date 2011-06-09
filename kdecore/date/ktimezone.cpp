@@ -19,12 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-// This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
-// This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
-
 #include "ktimezone.h"
 
 #include <config.h>
+#include <config-date.h> // SIZEOF_TIME_T
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>

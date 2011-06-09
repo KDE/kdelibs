@@ -15,6 +15,7 @@ check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
 check_include_files(ieeefp.h      HAVE_IEEEFP_H)
 check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
 check_include_files(valgrind/memcheck.h   HAVE_MEMCHECK_H)
+check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)
 
 macro_push_required_vars()
 if(NOT WIN32)

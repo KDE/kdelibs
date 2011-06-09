@@ -32,9 +32,7 @@
 #include <QtGui/QTreeWidget>
 
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <klocale.h>
-#include <ktoolbar.h>
 
 class KTreeWidgetSearchLine::Private
 {
@@ -187,8 +185,6 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible(QTreeWidget *tre
         }
     }
 }
-
-#include <kvbox.h>
 
 /** Check whether \p item, its siblings and their descendants should be shown. Show or hide the items as necessary.
  *

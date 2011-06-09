@@ -19,7 +19,6 @@
 #include "dataprotocol.h"
 
 #include <kdebug.h>
-#include <kcodecs.h>
 #include <kurl.h>
 #include "global.h"
 #include <kglobal.h>

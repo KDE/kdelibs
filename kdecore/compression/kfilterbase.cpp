@@ -18,16 +18,16 @@
 */
 
 #include "kfilterbase.h"
-#include <config.h>
+#include <config-compression.h>
 
 #include <kdebug.h>
 #include <QtCore/QIODevice>
 #include <kmimetype.h>
 #include "kgzipfilter.h"
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
 #include "kbzip2filter.h"
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
 #include "kxzfilter.h"
 #endif
 
@@ -78,13 +78,13 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
     {
         return new KGzipFilter;
     }
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     if ( fileName.endsWith( QLatin1String(".bz2"), Qt::CaseInsensitive ) )
     {
         return new KBzip2Filter;
     }
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     if ( fileName.endsWith( QLatin1String(".lzma"), Qt::CaseInsensitive ) || fileName.endsWith( QLatin1String(".xz"), Qt::CaseInsensitive ) )
     {
         return new KXzFilter;
@@ -105,14 +105,14 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     if (mimeType == QLatin1String("application/x-gzip")) {
         return new KGzipFilter;
     }
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
     if (mimeType == QLatin1String("application/x-bzip")
         || mimeType == QLatin1String("application/x-bzip2") // old name, kept for compatibility
        ) {
         return new KBzip2Filter;
     }
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
     if ( mimeType == QLatin1String( "application/x-lzma" ) // legacy name, still used
         || mimeType == QLatin1String( "application/x-xz" ) // current naming
        ) {
@@ -124,12 +124,12 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
         if (mime->is(QString::fromLatin1("application/x-gzip"))) {
             return new KGzipFilter;
         }
-#ifdef HAVE_BZIP2_SUPPORT
+#if HAVE_BZIP2_SUPPORT
         if (mime->is(QString::fromLatin1("application/x-bzip"))) {
             return new KBzip2Filter;
         }
 #endif
-#ifdef HAVE_XZ_SUPPORT
+#if HAVE_XZ_SUPPORT
         if (mime->is(QString::fromLatin1("application/x-lzma"))) {
             return new KXzFilter;
         }

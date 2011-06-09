@@ -28,21 +28,6 @@ class KCalendarSystem;
 class KCalendarEra;
 class KLocale;
 
-struct DateComponents {
-    int day;
-    int month;
-    int year;
-    bool parsedYear;
-    QString eraName;
-    int yearInEra;
-    int dayInYear;
-    int isoWeekNumber;
-    int dayOfIsoWeek;
-    int inputPosition;
-    int formatPosition;
-    bool error;
-};
-
 class KCalendarSystemPrivate
 {
 public:

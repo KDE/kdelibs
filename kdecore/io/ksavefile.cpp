@@ -25,16 +25,17 @@
 
 #include <config.h>
 
-#include <QtCore/QDir>
+#include <QDir>
 #include <QProcess>
 #include <QTemporaryFile>
 
-#include <kconfig.h>
 #include <kde_file.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+
+// Only used by the backup file feature:
+#include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kcomponentdata.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -48,10 +49,8 @@ public:
     QFile::FileError error;
     QString errorString;
     bool wasFinalized;
-    KComponentData componentData;
 
-    Private(const KComponentData &c)
-        : componentData(c)
+    Private()
     {
         error = QFile::NoError;
         wasFinalized = false;
@@ -59,12 +58,13 @@ public:
 };
 
 KSaveFile::KSaveFile()
- : d(new Private(KGlobal::mainComponent()))
+ : d(new Private())
 {
 }
 
-KSaveFile::KSaveFile(const QString &filename, const KComponentData &componentData)
- : d(new Private(componentData))
+class KComponentData;
+KSaveFile::KSaveFile(const QString &filename, const KComponentData & /*TODO REMOVE*/)
+ : d(new Private())
 {
     KSaveFile::setFileName(filename);
 }

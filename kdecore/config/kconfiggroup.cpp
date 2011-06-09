@@ -23,8 +23,6 @@
 #include "kconfiggroup.h"
 #include "kconfiggroup_p.h"
 
-#include <config.h>
-
 #include "kconfig.h"
 #include "kconfig_p.h"
 #include "ksharedconfig.h"

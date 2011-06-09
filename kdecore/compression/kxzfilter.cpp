@@ -22,9 +22,9 @@
 
 #include "kxzfilter.h"
 
-#include <config.h>
+#include <config-compression.h>
 
-#if defined( HAVE_XZ_SUPPORT )
+#if HAVE_XZ_SUPPORT
 extern "C" {
 	#include <lzma.h>
 }

@@ -33,16 +33,8 @@
 #include <QtCore/Q_PID>
 #include <QtNetwork/QSslCertificate>
 
-#include <kcombobox.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kguiitem.h>
-#include <kiconloader.h>
 #include <klocale.h>
-#include <kpushbutton.h>
-#include <ksqueezedtextlabel.h>
-#include <kstandardguiitem.h>
-#include <ktoolinvocation.h>
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"

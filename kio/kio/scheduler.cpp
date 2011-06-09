@@ -29,11 +29,9 @@
 #include "job_p.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <assert.h>
-#include <kdesu/client.h>
 
 #include <QtCore/QHash>
 #include <QtGui/QWidget>

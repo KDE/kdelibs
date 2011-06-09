@@ -23,10 +23,7 @@
 
 #include <kmimetypetrader.h>
 #include <kstandarddirs.h>
-#include <kglobal.h>
-#include <kdebug.h>
 #include <kconfig.h>
-#include <kstringhandler.h>
 #include <kconfiggroup.h>
 
 //

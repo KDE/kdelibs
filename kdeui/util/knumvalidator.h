@@ -101,7 +101,7 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
 */
-class KDEUI_EXPORT KFloatValidator : public QValidator {
+class KDEUI_EXPORT_DEPRECATED KFloatValidator : public QValidator {
 
   public:
     /**

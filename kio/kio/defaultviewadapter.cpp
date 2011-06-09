@@ -18,7 +18,6 @@
  *******************************************************************************/
 
 #include "defaultviewadapter_p.h"
-#include "kmimetyperesolver.h"
 
 #include <QAbstractItemView>
 #include <QScrollBar>

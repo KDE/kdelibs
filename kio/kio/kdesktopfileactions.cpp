@@ -27,12 +27,11 @@
 #include <kdirnotify.h>
 #include <kmountpoint.h>
 
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
-#include "kservice.h"
+#include <kservice.h>
 
 #ifndef KIO_NO_SOLID
 //Solid

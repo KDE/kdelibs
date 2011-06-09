@@ -44,7 +44,6 @@
 #include "kdeversion.h"
 #include "kcomponentdata.h"
 #include "kglobal.h"
-#include "kstringhandler.h"
 #include "kurl.h"
 
 #include "kuitsemantics_p.h" // for escaping arguments in i18n

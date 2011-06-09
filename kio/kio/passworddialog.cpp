@@ -23,13 +23,8 @@
 #include <QTextDocument>
 #include <QTextLayout>
 
-#include <kapplication.h>
-#include <kcombobox.h>
 #include <kconfig.h>
-#include <kiconloader.h>
-#include <klineedit.h>
 #include <klocale.h>
-#include <khbox.h>
 
 using namespace KIO;
 

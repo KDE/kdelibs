@@ -25,7 +25,6 @@
 
 #include <kabstractfilewidget.h>
 #include <kcombobox.h>
-#include <ktoolbar.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
