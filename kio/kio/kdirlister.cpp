@@ -2152,6 +2152,10 @@ void KDirLister::Private::emitChanges()
     // Mark all items that are currently visible
     Q_FOREACH(const KUrl& dir, lstDirs) {
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        if (!itemList) {
+            continue;
+        }
+
         KFileItemList::iterator kit = itemList->begin();
         const KFileItemList::iterator kend = itemList->end();
         for (; kit != kend; ++kit) {
@@ -2168,6 +2172,10 @@ void KDirLister::Private::emitChanges()
         KFileItemList deletedItems;
 
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        if (!itemList) {
+            continue;
+        }
+
         KFileItemList::iterator kit = itemList->begin();
         const KFileItemList::iterator kend = itemList->end();
         for (; kit != kend; ++kit) {
