@@ -645,6 +645,8 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         icon = iconEffect->apply(icon, KIconLoader::Desktop, KIconLoader::DisabledState);
     }
 
+    KIconLoader::global()->drawOverlays(item.overlays(), icon, KIconLoader::Desktop);
+
     // remember the preview and URL, so that it can be applied to the model
     // in KFilePreviewGenerator::dispatchIconUpdateQueue()
     ItemInfo preview;
