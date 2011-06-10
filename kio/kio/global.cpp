@@ -661,8 +661,8 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       errorName = i18n( "File or Folder Does Not Exist" );
       description = i18n( "The specified file or folder <strong>%1</strong> "
         "does not exist." , path );
-      causes << cBug;
-      solutions << sUpdate << sSysadmin;
+      causes << cExists;
+      solutions << sExists;
       break;
 
     case  KIO::ERR_FILE_ALREADY_EXIST:
