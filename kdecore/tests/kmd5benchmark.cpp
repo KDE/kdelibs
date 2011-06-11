@@ -63,10 +63,27 @@ private Q_SLOTS:
         }
     }
 
+    void benchmarkKMd5WithReset_data()
+    {
+        makeData();
+    }
+
+    void benchmarkKMd5WithReset()
+    {
+        QFETCH( QByteArray, input );
+        KMD5 md5;
+        QBENCHMARK {
+            md5.reset();
+            md5.update( input );
+	    md5.rawDigest();
+        }
+    }
+
     void benchmarkQCH_data()
     {
         makeData();
     }
+
     void benchmarkQCH()
     {
         QFETCH( QByteArray, input );
@@ -76,6 +93,23 @@ private Q_SLOTS:
             h.result();
         }
     }
+
+    void benchmarkQCHWithReset_data()
+    {
+        makeData();
+    }
+
+    void benchmarkQCHWithReset()
+    {
+        QFETCH( QByteArray, input );
+        QCryptographicHash h( QCryptographicHash::Md5 );
+        QBENCHMARK {
+            h.reset();
+            h.addData( input );
+            h.result();
+        }
+    }
+
 };
 
 QTEST_KDEMAIN_CORE( KMd5Test )
