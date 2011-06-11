@@ -23,6 +23,7 @@
 
 #include "qtest_kde.h"
 #include "kdebug.h"
+#include "klineedit.h"
 #include <ktimecombobox.h>
 
 QTEST_KDEMAIN(KTimeComboBoxTest, GUI)
@@ -39,6 +40,21 @@ void KTimeComboBoxTest::testDefaults()
     QCOMPARE(m_combo->options(), KTimeComboBox::EditTime | KTimeComboBox::SelectTime);
     QCOMPARE(m_combo->timeListInterval(), 15);
     QCOMPARE(m_combo->displayFormat(), KLocale::TimeDefault);
+    delete m_combo;
+}
+
+void KTimeComboBoxTest::testValidNull()
+{
+    m_combo = new KTimeComboBox(0);
+    QCOMPARE(m_combo->isValid(), true);
+    QCOMPARE(m_combo->isNull(), false);
+    m_combo->setTime(QTime());
+    QCOMPARE(m_combo->isValid(), false);
+    QCOMPARE(m_combo->isNull(), true);
+    m_combo->setTime(QTime(0, 0, 0));
+    m_combo->lineEdit()->setText("99:99");
+    QCOMPARE(m_combo->isValid(), false);
+    QCOMPARE(m_combo->isNull(), false);
     delete m_combo;
 }
 

@@ -75,9 +75,20 @@ public:
     /**
      * Return if the current user input is valid
      *
+     * If the user input is null then it is not valid
+     *
+     * @see isNull()
      * @return if the current user input is valid
      */
-    bool isValid()const;
+    bool isValid() const;
+
+    /**
+     * Return if the current user input is null
+     *
+     * @see isValid()
+     * @return if the current user input is null
+     */
+    bool isNull() const;
 
     /**
      * Return the currently set widget options
@@ -93,7 +104,7 @@ public:
      *
      * @return the currently set time format
      */
-    KLocale::TimeFormatOptions displayFormat();
+    KLocale::TimeFormatOptions displayFormat() const;
 
     /**
      * Return the current minimum time

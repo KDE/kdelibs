@@ -85,7 +85,7 @@ public:
      * @see setCalendarSystem()
      * @return the Calendar System currently used
      */
-    KLocale::CalendarSystem calendarSystem();
+    KLocale::CalendarSystem calendarSystem() const;
 
     /**
      * Returns a pointer to the Calendar System object used by this widget
@@ -105,9 +105,20 @@ public:
     /**
      * Return if the current user input is valid
      *
+     * If the user input is null then it is not valid
+     *
+     * @see isNull()
      * @return if the current user input is valid
      */
-    bool isValid()const;
+    bool isValid() const;
+
+    /**
+     * Return if the current user input is null
+     *
+     * @see isValid()
+     * @return if the current user input is null
+     */
+    bool isNull() const;
 
     /**
      * Return the currently set widget options
@@ -123,7 +134,7 @@ public:
      *
      * @return the currently set date format
      */
-    KLocale::DateFormat displayFormat();
+    KLocale::DateFormat displayFormat() const;
 
     /**
      * Return the current minimum date

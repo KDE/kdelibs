@@ -298,14 +298,16 @@ void KDateComboBox::assignDate(const QDate &date)
     d->m_date = date;
 }
 
-KLocale::CalendarSystem KDateComboBox::calendarSystem()
+KLocale::CalendarSystem KDateComboBox::calendarSystem() const
 {
     return d->m_date.calendarSystem();
 }
 
 void KDateComboBox::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
 {
-    assignCalendarSystem(calendarSystem);
+    if (calendarSystem != d->m_date.calendarSystem()) {
+        assignCalendarSystem(calendarSystem);
+    }
 }
 
 void KDateComboBox::assignCalendarSystem(KLocale::CalendarSystem calendarSystem)
@@ -325,9 +327,15 @@ void KDateComboBox::setCalendar(KCalendarSystem *calendar)
 
 bool KDateComboBox::isValid() const
 {
+    d->parseDate();
     return d->m_date.isValid() &&
            d->m_date >= d->m_minDate &&
            d->m_date <= d->m_maxDate;
+}
+
+bool KDateComboBox::isNull() const
+{
+    return lineEdit()->text().isEmpty();
 }
 
 KDateComboBox::Options KDateComboBox::options() const
@@ -337,9 +345,11 @@ KDateComboBox::Options KDateComboBox::options() const
 
 void KDateComboBox::setOptions(Options options)
 {
-    d->m_options = options;
-    d->initDateWidget();
-    d->updateDateWidget();
+    if (options != d->m_options) {
+        d->m_options = options;
+        d->initDateWidget();
+        d->updateDateWidget();
+    }
 }
 
 QDate KDateComboBox::minimumDate() const
@@ -374,17 +384,20 @@ void KDateComboBox::resetMaximumDate()
 
 void KDateComboBox::setDateRange(const QDate &minDate,
                                  const QDate &maxDate,
-                                 const QString &minErrorMsg,
-                                 const QString &maxErrorMsg)
+                                 const QString &minWarnMsg,
+                                 const QString &maxWarnMsg)
 {
     if (!minDate.isValid() || !maxDate.isValid() || minDate > maxDate) {
         return;
-   }
+    }
 
-    d->m_minDate = minDate;
-    d->m_maxDate = maxDate;
-    d->m_minWarnMsg = minErrorMsg;
-    d->m_maxWarnMsg = maxErrorMsg;
+    if (minDate != d->m_minDate || maxDate != d->m_maxDate ||
+        minWarnMsg != d->m_minWarnMsg || maxWarnMsg != d->m_maxWarnMsg) {
+        d->m_minDate = minDate;
+        d->m_maxDate = maxDate;
+        d->m_minWarnMsg = minWarnMsg;
+        d->m_maxWarnMsg = maxWarnMsg;
+    }
 }
 
 void KDateComboBox::resetDateRange()
@@ -392,16 +405,18 @@ void KDateComboBox::resetDateRange()
     setDateRange(d->defaultMinDate(), d->defaultMaxDate(), QString(), QString());
 }
 
-KLocale::DateFormat KDateComboBox::displayFormat()
+KLocale::DateFormat KDateComboBox::displayFormat() const
 {
     return d->m_displayFormat;
 }
 
 void KDateComboBox::setDisplayFormat(KLocale::DateFormat format)
 {
-    d->m_displayFormat = format;
-    d->initDateWidget();
-    d->updateDateWidget();
+    if (format != d->m_displayFormat) {
+        d->m_displayFormat = format;
+        d->initDateWidget();
+        d->updateDateWidget();
+    }
 }
 
 QMap<QDate, QString> KDateComboBox::dateMap() const
@@ -411,9 +426,11 @@ QMap<QDate, QString> KDateComboBox::dateMap() const
 
 void KDateComboBox::setDateMap(QMap<QDate, QString> dateMap)
 {
-    d->m_dateMap.clear();
-    d->m_dateMap = dateMap;
-    d->initDateWidget();
+    if (dateMap != d->m_dateMap) {
+        d->m_dateMap.clear();
+        d->m_dateMap = dateMap;
+        d->initDateWidget();
+    }
 }
 
 bool KDateComboBox::eventFilter(QObject *object, QEvent *event)

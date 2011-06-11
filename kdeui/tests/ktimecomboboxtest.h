@@ -30,6 +30,7 @@ class KTimeComboBoxTest : public QWidget
 
 private Q_SLOTS:
   void testDefaults();
+  void testValidNull();
   void testTimeRange();
   void testTimeListInterval();
   void testTimeList();

@@ -25,6 +25,7 @@
 #include "kdebug.h"
 #include "kdatecombobox.h"
 #include "kcalendarsystem.h"
+#include "klineedit.h"
 
 QTEST_KDEMAIN(KDateComboBoxTest, GUI)
 
@@ -37,8 +38,24 @@ void KDateComboBoxTest::testDefaults()
     QCOMPARE(m_combo->minimumDate(), KGlobal::locale()->calendar()->earliestValidDate());
     QCOMPARE(m_combo->maximumDate(), KGlobal::locale()->calendar()->latestValidDate());
     QCOMPARE(m_combo->isValid(), true);
+    QCOMPARE(m_combo->isNull(), false);
     QCOMPARE(m_combo->options(), KDateComboBox::EditDate | KDateComboBox::SelectDate | KDateComboBox::DatePicker | KDateComboBox::DateKeywords);
     QCOMPARE(m_combo->displayFormat(), KLocale::ShortDate);
+    delete m_combo;
+}
+
+void KDateComboBoxTest::testValidNull()
+{
+    m_combo = new KDateComboBox(0);
+    QCOMPARE(m_combo->isValid(), true);
+    QCOMPARE(m_combo->isNull(), false);
+    m_combo->setDate(QDate());
+    QCOMPARE(m_combo->isValid(), false);
+    QCOMPARE(m_combo->isNull(), true);
+    m_combo->setDate(QDate(2000, 1, 1));
+    m_combo->lineEdit()->setText("invalid");
+    QCOMPARE(m_combo->isValid(), false);
+    QCOMPARE(m_combo->isNull(), false);
     delete m_combo;
 }
 

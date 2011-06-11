@@ -98,7 +98,7 @@ public:
      * @see setCalendarSystem()
      * @return the Calendar System currently used
      */
-    KLocale::CalendarSystem calendarSystem();
+    KLocale::CalendarSystem calendarSystem() const;
 
     /**
      * Returns a pointer to the Calendar System object used by this widget
@@ -141,7 +141,7 @@ public:
      *
      * @param calendars the list of calendar systems to display
      */
-    QList<KLocale::CalendarSystem> calendarSystemsList();
+    QList<KLocale::CalendarSystem> calendarSystemsList() const;
 
     /**
      * Return the current minimum date and time
@@ -164,7 +164,7 @@ public:
      *
      * @return the currently set date format
      */
-    KLocale::DateFormat dateDisplayFormat();
+    KLocale::DateFormat dateDisplayFormat() const;
 
     /**
      * Return the map of dates listed in the drop-down and their displayed
@@ -182,7 +182,7 @@ public:
      *
      * @return the currently set time format
      */
-    KLocale::TimeFormatOptions timeDisplayFormat();
+    KLocale::TimeFormatOptions timeDisplayFormat() const;
 
     /**
      * Return the time list interval able to be selected
@@ -206,28 +206,60 @@ public:
      *
      * @param zones the time zones to display
      */
-    KTimeZones::ZoneMap timeZones();
+    KTimeZones::ZoneMap timeZones() const;
 
     /**
      * Return if the current user input is valid
      *
+     * If the user input is null then it is not valid
+     *
+     * @see isNull()
      * @return if the current user input is valid
      */
-    bool isValid()const;
+    bool isValid() const;
+
+    /**
+     * Return if the current user input is null
+     *
+     * @see isValid()
+     * @return if the current user input is null
+     */
+    bool isNull() const;
 
     /**
      * Return if the current user input date is valid
      *
-     * @return if the current user input is valid
+     * If the user input date is null then it is not valid
+     *
+     * @see isNullDate()
+     * @return if the current user input date is valid
      */
-    bool isValidDate()const;
+    bool isValidDate() const;
 
+    /**
+     * Return if the current user input date is null
+     *
+     * @see isValidDate()
+     * @return if the current user input date is null
+     */
+    bool isNullDate() const;
     /**
      * Return if the current user input time is valid
      *
-     * @return if the current user input is valid
+     * If the user input time is null then it is not valid
+     *
+     * @see isNullTime()
+     * @return if the current user input time is valid
      */
-    bool isValidTime()const;
+    bool isValidTime() const;
+
+    /**
+     * Return if the current user input time is null
+     *
+     * @see isValidTime()
+     * @return if the current user input time is null
+     */
+    bool isNullTime() const;
 
 Q_SIGNALS:
 

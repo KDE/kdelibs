@@ -34,15 +34,28 @@ QTEST_KDEMAIN(KDateTimeEditTest, GUI)
 void KDateTimeEditTest::testDefaults()
 {
     m_edit = new KDateTimeEdit(0);
+    QCOMPARE(m_edit->dateTime(), KDateTime(QDate::currentDate(), QTime(0, 0, 0)));
     QCOMPARE(m_edit->date(), QDate::currentDate());
-    QCOMPARE(m_edit->time(), QTime(0, 0, 0, 0));
+    QCOMPARE(m_edit->time(), QTime(0, 0, 0));
     QCOMPARE(m_edit->minimumDateTime(), KDateTime(KGlobal::locale()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
     QCOMPARE(m_edit->maximumDateTime(), KDateTime(KGlobal::locale()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
+    QCOMPARE(m_edit->isNull(), false);
     QCOMPARE(m_edit->options(), KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate | KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords | KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime);
     QCOMPARE(m_edit->dateDisplayFormat(), KLocale::ShortDate);
     QCOMPARE(m_edit->timeListInterval(), 15);
     QCOMPARE(m_edit->timeDisplayFormat(), KLocale::TimeDefault);
+    delete m_edit;
+}
+
+void KDateTimeEditTest::testValidNull()
+{
+    m_edit = new KDateTimeEdit(0);
+    QCOMPARE(m_edit->isValid(), true);
+    QCOMPARE(m_edit->isNull(), false);
+    m_edit->setDateTime(KDateTime());
+    QCOMPARE(m_edit->isValid(), false);
+    QCOMPARE(m_edit->isNull(), true);
     delete m_edit;
 }
 

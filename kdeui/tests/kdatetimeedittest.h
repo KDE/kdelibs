@@ -30,6 +30,7 @@ class KDateTimeEditTest : public QWidget
 
 private Q_SLOTS:
   void testDefaults();
+  void testValidNull();
   void testDateTimeRange();
   void testOptions();
   void testDateDisplayFormat();

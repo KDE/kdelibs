@@ -122,16 +122,16 @@ void KDateTimeEditPrivate::initDateWidget()
     ui.m_dateCombo->blockSignals(true);
     ui.m_dateCombo->setVisible((m_options &KDateTimeEdit::ShowDate) == KDateTimeEdit::ShowDate);
     KDateComboBox::Options options;
-    if ((m_options &KDateTimeEdit::EditDate) == KDateTimeEdit::EditDate) {
+    if ((m_options & KDateTimeEdit::EditDate) == KDateTimeEdit::EditDate) {
         options = options | KDateComboBox::EditDate;
     }
-    if ((m_options &KDateTimeEdit::SelectDate) == KDateTimeEdit::SelectDate) {
+    if ((m_options & KDateTimeEdit::SelectDate) == KDateTimeEdit::SelectDate) {
         options = options | KDateComboBox::SelectDate;
     }
-    if ((m_options &KDateTimeEdit::DatePicker) == KDateTimeEdit::DatePicker) {
+    if ((m_options & KDateTimeEdit::DatePicker) == KDateTimeEdit::DatePicker) {
         options = options | KDateComboBox::DatePicker;
     }
-    if ((m_options &KDateTimeEdit::DateKeywords) == KDateTimeEdit::DateKeywords) {
+    if ((m_options & KDateTimeEdit::DateKeywords) == KDateTimeEdit::DateKeywords) {
         options = options | KDateComboBox::DateKeywords;
     }
     ui.m_dateCombo->setOptions(options);
@@ -293,7 +293,7 @@ KDateTime KDateTimeEdit::dateTime() const
     return d->m_dateTime;
 }
 
-KLocale::CalendarSystem KDateTimeEdit::calendarSystem()
+KLocale::CalendarSystem KDateTimeEdit::calendarSystem() const
 {
    return d-> ui.m_dateCombo->calendarSystem();
 }
@@ -320,9 +320,19 @@ bool KDateTimeEdit::isValid() const
            d->m_dateTime <= d->m_maxDateTime;
 }
 
+bool KDateTimeEdit::isNull() const
+{
+    return isNullDate() && isNullTime();
+}
+
 bool KDateTimeEdit::isValidDate() const
 {
     return d->ui.m_dateCombo->isValid();
+}
+
+bool KDateTimeEdit::isNullDate() const
+{
+    return d->ui.m_dateCombo->isNull();
 }
 
 bool KDateTimeEdit::isValidTime() const
@@ -330,10 +340,17 @@ bool KDateTimeEdit::isValidTime() const
     return d->ui.m_timeCombo->isValid();
 }
 
+bool KDateTimeEdit::isNullTime() const
+{
+    return d->ui.m_timeCombo->isNull();
+}
+
 void KDateTimeEdit::setOptions(Options options)
 {
-    d->m_options = options;
-    d->initWidgets();
+    if (options != d->m_options) {
+        d->m_options = options;
+        d->initWidgets();
+    }
 }
 
 KDateTimeEdit::Options KDateTimeEdit::options() const
@@ -343,14 +360,12 @@ KDateTimeEdit::Options KDateTimeEdit::options() const
 
 void KDateTimeEdit::setDateTime(const KDateTime &dateTime)
 {
-    if (dateTime == d->m_dateTime) {
-        return;
+    if (dateTime != d->m_dateTime) {
+        assignDateTime(dateTime);
+        emit dateTimeChanged(d->m_dateTime);
+        emit dateChanged(d->m_dateTime.date());
+        emit timeChanged(d->m_dateTime.time());
     }
-
-    assignDateTime(dateTime);
-    emit dateTimeChanged(d->m_dateTime);
-    emit dateChanged(d->m_dateTime.date());
-    emit timeChanged(d->m_dateTime.time());
 }
 
 void KDateTimeEdit::assignDateTime(const KDateTime &dateTime)
@@ -362,13 +377,11 @@ void KDateTimeEdit::assignDateTime(const KDateTime &dateTime)
 
 void KDateTimeEdit::setDate(const QDate &date)
 {
-    if (date == d->m_dateTime.date()) {
-        return;
+    if (date != d->m_dateTime.date()) {
+        assignDate(date);
+        emit dateTimeChanged(d->m_dateTime);
+        emit dateChanged(d->m_dateTime.date());
     }
-
-    assignDate(date);
-    emit dateTimeChanged(d->m_dateTime);
-    emit dateChanged(d->m_dateTime.date());
 }
 
 void KDateTimeEdit::assignDate(const QDate &date)
@@ -402,13 +415,11 @@ void KDateTimeEdit::setCalendar(KCalendarSystem *calendar)
 
 void KDateTimeEdit::setTime(const QTime &time)
 {
-    if (time == d->m_dateTime.time()) {
-        return;
+    if (time != d->m_dateTime.time()) {
+        assignTime(time);
+        emit dateTimeChanged(d->m_dateTime);
+        emit timeChanged(d->m_dateTime.time());
     }
-
-    assignTime(time);
-    emit dateTimeChanged(d->m_dateTime);
-    emit timeChanged(d->m_dateTime.time());
 }
 
 void KDateTimeEdit::assignTime(const QTime &time)
@@ -474,10 +485,12 @@ void KDateTimeEdit::setDateTimeRange(const KDateTime &minDateTime,
         minDateTime <= maxDateTime &&
         d->calendar()->isValid(minDateTime.date()) &&
         d->calendar()->isValid(maxDateTime.date())) {
+
         d->m_minDateTime = minDateTime;
         d->m_minWarnMsg = minErrorMsg;
         d->m_maxDateTime = maxDateTime;
         d->m_maxWarnMsg = maxErrorMsg;
+
     }
 }
 
@@ -488,11 +501,13 @@ void KDateTimeEdit::resetDateTimeRange()
 
 void KDateTimeEdit::setCalendarSystemsList(QList<KLocale::CalendarSystem> calendars)
 {
-    d->m_calendarSystems = calendars;
-    d->updateCalendarWidget();
+    if (calendars != d->m_calendarSystems) {
+        d->m_calendarSystems = calendars;
+        d->updateCalendarWidget();
+    }
 }
 
-QList<KLocale::CalendarSystem> KDateTimeEdit::calendarSystemsList()
+QList<KLocale::CalendarSystem> KDateTimeEdit::calendarSystemsList() const
 {
     return d->m_calendarSystems;
 }
@@ -502,7 +517,7 @@ void KDateTimeEdit::setDateDisplayFormat(KLocale::DateFormat format)
     d->ui.m_dateCombo->setDisplayFormat(format);
 }
 
-KLocale::DateFormat KDateTimeEdit::dateDisplayFormat()
+KLocale::DateFormat KDateTimeEdit::dateDisplayFormat() const
 {
     return d->ui.m_dateCombo->displayFormat();
 }
@@ -522,7 +537,7 @@ void KDateTimeEdit::setTimeDisplayFormat(KLocale::TimeFormatOptions formatOption
     d->ui.m_timeCombo->setDisplayFormat(formatOptions);
 }
 
-KLocale::TimeFormatOptions KDateTimeEdit::timeDisplayFormat()
+KLocale::TimeFormatOptions KDateTimeEdit::timeDisplayFormat() const
 {
     return d->ui.m_timeCombo->displayFormat();
 }
@@ -551,11 +566,13 @@ QList<QTime> KDateTimeEdit::timeList() const
 
 void KDateTimeEdit::setTimeZones(const KTimeZones::ZoneMap &zones)
 {
-    d->m_zones = zones;
-    d->updateTimeSpecWidget();
+    if (zones != d->m_zones) {
+        d->m_zones = zones;
+        d->updateTimeSpecWidget();
+    }
 }
 
-KTimeZones::ZoneMap KDateTimeEdit::timeZones()
+KTimeZones::ZoneMap KDateTimeEdit::timeZones() const
 {
     return d->m_zones;
 }

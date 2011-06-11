@@ -39,7 +39,7 @@ public:
     QTime defaultMinTime();
     QTime defaultMaxTime();
 
-    QString timeFormatToInputMask(const QString &format);
+    QString timeFormatToInputMask(const QString &format, bool nullMask = false);
     QTime nearestIntervalTime(const QTime &time);
     QString formatTime(const QTime &time);
     QString convertDigits(const QString &digits);
@@ -62,6 +62,7 @@ public:
     QTime m_maxTime;
     QString m_minWarnMsg;
     QString m_maxWarnMsg;
+    QString m_nullString;
     bool m_warningShown;
     KLocale::TimeFormatOptions m_displayFormat;
     int m_timeListInterval;
@@ -94,14 +95,19 @@ QTime KTimeComboBoxPrivate::defaultMaxTime()
     return QTime(23, 59, 59, 999);
 }
 
-QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format)
+QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format, bool nullMask)
 {
     //TODO not sure this will always work, does it support DigitSets, am/pm is dodgy?
     QString mask = formatTime(QTime(12,34,56,789));
+    QString null = mask;
     mask.replace(convertDigits(QLatin1String("12")), QLatin1String("09"));
+    null.replace(convertDigits(QLatin1String("12")), QLatin1String(""));
     mask.replace(convertDigits(QLatin1String("34")), QLatin1String("99"));
+    null.replace(convertDigits(QLatin1String("34")), QLatin1String(""));
     mask.replace(convertDigits(QLatin1String("56")), QLatin1String("99"));
+    null.replace(convertDigits(QLatin1String("56")), QLatin1String(""));
     mask.replace(convertDigits(QLatin1String("789")), QLatin1String("900"));
+    null.replace(convertDigits(QLatin1String("789")), QLatin1String(""));
     if (format.contains(QLatin1String("%p")) ||
         format.contains(QLatin1String("%P"))) {
         QString am = KGlobal::locale()->dayPeriodText(QTime(0, 0, 0));
@@ -112,8 +118,14 @@ QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format)
             ampmMask.append(QLatin1Char('a'));
         }
         mask.replace(pm, ampmMask);
+        null.replace(pm, QLatin1String(""));
     }
-    return mask;
+
+    if (nullMask) {
+        return null;
+    } else {
+        return mask;
+    }
 }
 
 QTime KTimeComboBoxPrivate::nearestIntervalTime(const QTime &time)
@@ -148,6 +160,7 @@ void KTimeComboBoxPrivate::initTimeWidget()
 
     // Set the input mask from the current format
     q->lineEdit()->setInputMask(timeFormatToInputMask(KGlobal::locale()->timeFormat()));
+    m_nullString = timeFormatToInputMask(KGlobal::locale()->timeFormat(), true);
 
     // If EditTime then set the line edit
     q->lineEdit()->setReadOnly((m_options &KTimeComboBox::EditTime) != KTimeComboBox::EditTime);
@@ -320,6 +333,11 @@ bool KTimeComboBox::isValid() const
            d->m_time <= d->m_maxTime;
 }
 
+bool KTimeComboBox::isNull() const
+{
+    return lineEdit()->text() == d->m_nullString;
+}
+
 KTimeComboBox::Options KTimeComboBox::options() const
 {
     return d->m_options;
@@ -327,9 +345,11 @@ KTimeComboBox::Options KTimeComboBox::options() const
 
 void KTimeComboBox::setOptions(Options options)
 {
-    d->m_options = options;
-    d->initTimeWidget();
-    d->updateTimeWidget();
+    if (options != d->m_options) {
+        d->m_options = options;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
 QTime KTimeComboBox::minimumTime() const
@@ -369,12 +389,15 @@ void KTimeComboBox::setTimeRange(const QTime &minTime, const QTime &maxTime,
         return;
     }
 
-    d->m_minTime = minTime;
-    d->m_maxTime = maxTime;
-    d->m_minWarnMsg = minWarnMsg;
-    d->m_maxWarnMsg = maxWarnMsg;
-    d->initTimeWidget();
-    d->updateTimeWidget();
+    if (minTime != d->m_minTime || maxTime != d->m_maxTime ||
+        minWarnMsg != d->m_minWarnMsg || maxWarnMsg != d->m_maxWarnMsg) {
+        d->m_minTime = minTime;
+        d->m_maxTime = maxTime;
+        d->m_minWarnMsg = minWarnMsg;
+        d->m_maxWarnMsg = maxWarnMsg;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
 void KTimeComboBox::resetTimeRange()
@@ -382,16 +405,18 @@ void KTimeComboBox::resetTimeRange()
     setTimeRange(d->defaultMinTime(), d->defaultMaxTime(), QString(), QString());
 }
 
-KLocale::TimeFormatOptions KTimeComboBox::displayFormat()
+KLocale::TimeFormatOptions KTimeComboBox::displayFormat() const
 {
     return d->m_displayFormat;
 }
 
 void KTimeComboBox::setDisplayFormat(KLocale::TimeFormatOptions format)
 {
-    d->m_displayFormat = format;
-    d->initTimeWidget();
-    d->updateTimeWidget();
+    if (format != d->m_displayFormat) {
+        d->m_displayFormat = format;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
 int KTimeComboBox::timeListInterval() const
@@ -401,19 +426,21 @@ int KTimeComboBox::timeListInterval() const
 
 void KTimeComboBox::setTimeListInterval(int minutes)
 {
-    //Must be able to exactly divide the valid time period
-    int lowMins = (d->m_minTime.hour() * 60) + d->m_minTime.minute();
-    int hiMins = (d->m_maxTime.hour() * 60) + d->m_maxTime.minute();
-    if (d->m_minTime.minute() == 0 && d->m_maxTime.minute() == 59) {
-        ++hiMins;
+    if (minutes != d->m_timeListInterval) {
+        //Must be able to exactly divide the valid time period
+        int lowMins = (d->m_minTime.hour() * 60) + d->m_minTime.minute();
+        int hiMins = (d->m_maxTime.hour() * 60) + d->m_maxTime.minute();
+        if (d->m_minTime.minute() == 0 && d->m_maxTime.minute() == 59) {
+            ++hiMins;
+        }
+        if ((hiMins - lowMins) % minutes == 0) {
+            d->m_timeListInterval = minutes;
+            d->m_timeList.clear();
+        } else {
+            return;
+        }
+        d->initTimeWidget();
     }
-    if ((hiMins - lowMins) % minutes == 0) {
-        d->m_timeListInterval = minutes;
-        d->m_timeList.clear();
-    } else {
-        return;
-    }
-    d->initTimeWidget();
 }
 
 QList<QTime> KTimeComboBox::timeList() const
@@ -430,16 +457,18 @@ QList<QTime> KTimeComboBox::timeList() const
 void KTimeComboBox::setTimeList(QList<QTime> timeList,
                                 const QString &minWarnMsg, const QString &maxWarnMsg)
 {
-    d->m_timeList.clear();
-    foreach (const QTime &time, timeList) {
-        if (time.isValid() && !d->m_timeList.contains(time)) {
-            d->m_timeList.append(time);
+    if (timeList != d->m_timeList) {
+        d->m_timeList.clear();
+        foreach (const QTime &time, timeList) {
+            if (time.isValid() && !d->m_timeList.contains(time)) {
+                d->m_timeList.append(time);
+            }
         }
+        qSort(d->m_timeList);
+        // Does the updateTimeWidget call for us
+        setTimeRange(d->m_timeList.first(), d->m_timeList.last(),
+                    minWarnMsg, maxWarnMsg);
     }
-    qSort(d->m_timeList);
-    // Does the updateTimeWidget call for us
-    setTimeRange(d->m_timeList.first(), d->m_timeList.last(),
-                 minWarnMsg, maxWarnMsg);
 }
 
 bool KTimeComboBox::eventFilter(QObject *object, QEvent *event)

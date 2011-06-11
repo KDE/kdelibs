@@ -30,6 +30,7 @@ class KDateComboBoxTest : public QWidget
 
 private Q_SLOTS:
   void testDefaults();
+  void testValidNull();
   void testDateRange();
   void testDateList();
   void testOptions();
