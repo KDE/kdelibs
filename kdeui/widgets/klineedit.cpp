@@ -276,7 +276,6 @@ void KLineEdit::init()
     setStyle(d->style.data());
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
-
 }
 
 QString KLineEdit::clickMessage() const
@@ -798,6 +797,28 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
+        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
+            const bool trap = (d->completionBox && d->completionBox->isVisible());
+            const bool stopEvent = (trap || (d->grabReturnKeyEvents &&
+                                    (e->modifiers() == Qt::NoButton ||
+                                     e->modifiers() == Qt::KeypadModifier)));
+
+            if (trap) {
+                d->completionBox->hide();
+                deselect();
+                setCursorPosition(text().length());
+            }
+
+            emit returnPressed( displayText() );
+
+            // Eat the event if the user asked for it, or if a completionbox was visible
+            if (stopEvent) {
+                emit QLineEdit::returnPressed();
+                e->accept();
+                return;
+            }
+        }
+
         const KeyBindingMap keys = getKeyBindings();
         const KGlobalSettings::Completion mode = completionMode();
         const bool noModifier = (e->modifiers() == Qt::NoButton ||
@@ -1344,37 +1365,6 @@ bool KLineEdit::event( QEvent* ev )
         if (d->overrideShortcut(e)) {
             ev->accept();
         }
-    } else if( ev->type() == QEvent::KeyPress ) {
-        // Hmm -- all this could be done in keyPressEvent too...
-
-        QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
-            const bool trap = d->completionBox && d->completionBox->isVisible();
-
-            const bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                      (e->modifiers() == Qt::NoButton ||
-                                       e->modifiers() == Qt::KeypadModifier));
-
-            // Qt will emit returnPressed() itself if we return false
-            if (stopEvent) {
-                emit QLineEdit::returnPressed();
-                e->accept();
-            }
-
-            emit returnPressed( displayText() );
-
-            if (trap) {
-                d->completionBox->hide();
-                deselect();
-                setCursorPosition(text().length());
-            }
-
-            // Eat the event if the user asked for it, or if a completionbox was visible
-            if (stopEvent) {
-                return true;
-            }
-        }
     } else if (ev->type() == QEvent::ApplicationPaletteChange
                || ev->type() == QEvent::PaletteChange) {
         // Assume the widget uses the application's palette
@@ -1889,4 +1879,3 @@ void KLineEdit::doCompletion(const QString& txt)
 
 #include "klineedit.moc"
 #include "klineedit_p.moc"
-
