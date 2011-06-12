@@ -51,7 +51,7 @@ public:
         EditTime         = 0x0001,  /**< Allow the user to manually edit the time in the combo line edit */
         SelectTime       = 0x0002,  /**< Allow the user to select the time from a drop-down menu */
         ForceTime        = 0x0004,  /**< Any set or entered time will be forced to one of the drop-down times */
-        WarnOnInvalid    = 0x0008,  /**< Show a warning box on focus out if the user enters an invalid time */
+        WarnOnInvalid    = 0x0008   /**< Show a warning box on focus out if the user enters an invalid time */
     };
     Q_DECLARE_FLAGS(Options, Option)
 
