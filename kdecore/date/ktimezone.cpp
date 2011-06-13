@@ -38,6 +38,7 @@
 #include <QtCore/QCoreApplication>
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 int gmtoff(time_t t);   // defined in ksystemtimezone.cpp
 
@@ -411,9 +412,13 @@ void KTimeZonePrivate::cleanup()
 
 /******************************************************************************/
 
+K_GLOBAL_STATIC(KTimeZonePrivate, s_emptyTimeZonePrivate)
+
 KTimeZoneBackend::KTimeZoneBackend()
-  : d(new KTimeZonePrivate)
-{}
+  : d(&*s_emptyTimeZonePrivate)
+{
+    ++d->refCount;
+}
 
 KTimeZoneBackend::KTimeZoneBackend(const QString &name)
   : d(new KTimeZonePrivate(KTimeZonePrivate::utcSource(), name, QString(), KTimeZone::UNKNOWN, KTimeZone::UNKNOWN, QString()))
@@ -614,7 +619,7 @@ KTimeZone::KTimeZone(KTimeZoneBackend *impl)
   : d(impl)
 {
     // 'impl' should be a newly constructed object, with refCount = 1
-    Q_ASSERT(d->d->refCount == 1);
+    Q_ASSERT(d->d->refCount == 1 || d->d == &*s_emptyTimeZonePrivate);
 }
 
 KTimeZone &KTimeZone::operator=(const KTimeZone &tz)
