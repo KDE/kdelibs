@@ -1454,12 +1454,26 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
     }
 }
 
+/*
+ * Set the line edit text without changing the modified flag. By default
+ * calling setText resets the modified flag to false.
+ */
+static void setEditText(KLineEdit* edit, const QString& text)
+{
+    if (!edit) {
+        return;
+    }
+
+    const bool wasModified = edit->isModified();
+    edit->setText(text);
+    edit->setModified(wasModified);
+}
+
 void KLineEdit::userCancelled(const QString & cancelText)
 {
     if ( completionMode() != KGlobalSettings::CompletionPopupAuto )
     {
-      // TODO: this sets modified==false. But maybe it was true before...
-      setText(cancelText);
+      setEditText(this, cancelText);
     }
     else if (hasSelectedText() )
     {
@@ -1469,8 +1483,8 @@ void KLineEdit::userCancelled(const QString & cancelText)
       {
         d->autoSuggest=false;
         const int start = selectionStart() ;
-        const QString s=text().remove(selectionStart(), selectedText().length());
-        setText(s);
+        const QString s = text().remove(selectionStart(), selectedText().length());
+        setEditText(this, s);
         setCursorPosition(start);
         d->autoSuggest=true;
       }
