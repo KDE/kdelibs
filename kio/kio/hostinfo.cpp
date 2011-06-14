@@ -175,7 +175,7 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
 QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
 {
     NameLookUpThread lookupThread (hostName);
-    lookupThread.start(QThread::TimeCriticalPriority);
+    lookupThread.start();
 
     // Wait for it to start...
     while (!lookupThread.wasStarted()) {
@@ -190,7 +190,7 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
         return QHostInfo();
     }
 
-    //kDebug(7022) << "Name look up succeeded for" << hostname;
+    //kDebug(7022) << "Name look up succeeded for" << hostName;
     return lookupThread.result();
 }
 
