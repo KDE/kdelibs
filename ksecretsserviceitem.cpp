@@ -20,10 +20,68 @@
 
 #include "ksecretsserviceitem.h"
 #include "ksecretsserviceitem_p.h"
+#include <QDateTime>
 
 namespace KSecretsService {
     
-    
+KJob* SecretItem::deleteItem()
+{
+    // TODO: implement this
+    return NULL;
+}
+
+SecretItem::GetSecretJob* SecretItem::getSecret() const
+{
+    // TODO: implement this
+    return NULL;
+}
+
+KJob* SecretItem::setSecret(const Secret& secret)
+{
+    // TODO: implement this
+    return NULL;
+}
+
+QStringStringMap SecretItem::attributes() const
+{
+    // TODO: implement this
+    return QStringStringMap();
+}
+
+void SecretItem::setAttributes(const QMap< QString, QString >& attributes)
+{
+    // TODO: implement this
+}
+
+bool SecretItem::isLocked() const
+{
+    // TODO: implement this
+    return false;
+}
+
+QString SecretItem::label() const
+{
+    // TODO: implement this
+    return "";
+}
+
+QDateTime SecretItem::createdTime() const
+{
+    // TODO: implement this
+    return QDateTime();
+}
+
+QDateTime SecretItem::modifiedTime() const
+{
+    // TODO: implement this
+    return QDateTime();
+}
+
+void SecretItem::setLabel(const QString& label)
+{
+    // TODO: implement this
+}
+
 
 };
 

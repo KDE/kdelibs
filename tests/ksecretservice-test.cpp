@@ -55,7 +55,7 @@ void KSecretServiceTest::initTestCase()
 
 void KSecretServiceTest::testSession()
 {
-    Collection::FindCollectionJob *createCollJob = Collection::findCollection( "test collection" );
+    Collection *coll = Collection::findCollection( "test collection" );
 }
 
 void KSecretServiceTest::cleanupTestCase()

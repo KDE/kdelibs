@@ -1,4 +1,4 @@
-PROJECT( ksecretserviceclient )
+PROJECT( ksecretsserviceclient )
 
 add_subdirectory(tests)
 
@@ -13,7 +13,7 @@ set (client_lib_SRCS
     ksecretsserviceitem.cpp
     ksecretsservicesecret.cpp
     ksecretsservicecollection.cpp
-    ksecretsservicejob.cpp
+    ksecretscollectionjobs.cpp
     ../daemon/frontend/secret/adaptors/secret.cpp
     ../daemon/frontend/secret/adaptors/dbustypes.cpp
 )
@@ -26,18 +26,17 @@ kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Prompt.xml prompt_
 kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Service.xml service_interface )
 kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Session.xml session_interface )
 
-kde4_add_library(ksecretserviceclient ${client_lib_SRCS})
+kde4_add_library(ksecretsserviceclient ${client_lib_SRCS})
 
-TARGET_LINK_LIBRARIES (ksecretserviceclient ${KDE4_KDECORE_LIBS} ${QCA2_LIBRARIES})
+TARGET_LINK_LIBRARIES (ksecretsserviceclient ${KDE4_KDECORE_LIBS} ${QCA2_LIBRARIES})
 
 INSTALL(FILES 
-    ${ksecretserviceclient_xml} 
+    ${ksecretsserviceclient_xml} 
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 INSTALL(FILES
     ksecretsservicecollection.h
-    ksecretsserviceobject.h
     ksecretsserviceitem.h
     ksecretsservicejob.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretservice COMPONENT Devel 
+    DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel 
 )

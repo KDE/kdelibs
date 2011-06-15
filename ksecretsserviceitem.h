@@ -22,13 +22,13 @@
 #define KSECRETSITEM_H
 
 #include "ksecretsservicesecret.h"
-#include "ksecretsservicejob.h"
 
-class KJob;
+#include <kjob.h>
 
 namespace KSecretsService {
 
-class SecretsJobBase;
+typedef QMap< QString, QString > QStringStringMap;
+
    
 /**
  */
@@ -62,11 +62,29 @@ public:
      */
     void setAttributes( const QMap< QString, QString > &attributes );
 
+    /**
+     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     */
     bool isLocked() const;
+    
+    /**
+     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     */
     QString label() const;
+    
+    /**
+     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     */
     QDateTime createdTime() const;
+    
+    /**
+     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     */
     QDateTime modifiedTime() const;
     
+    /**
+     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     */
     void setLabel( const QString &label );
     
 private:
@@ -75,7 +93,7 @@ private:
     QSharedDataPointer< Private > d;
 };
 
-class SecretItem::GetSecretJob : public SecretsJobBase {
+class SecretItem::GetSecretJob : public KJob {
     Q_OBJECT
     Q_DISABLE_COPY(GetSecretJob)
 public:

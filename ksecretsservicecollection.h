@@ -22,15 +22,16 @@
 #define KSECRETSCOLLECTION_H
 
 #include "ksecretsservicesecret.h"
-#include "ksecretsservicejob.h"
 
 #include <QObject>
 #include <QMap>
 #include <kjob.h>
+#include <kcompositejob.h>
 
 namespace KSecretsService {
 
 class SecretItem;
+class CollectionPrivate;
 
 typedef QMap< QString, QString > QStringStringMap;
 
@@ -135,71 +136,23 @@ public:
      */
     void setLabel( const QString &label );
     
+    
 Q_SIGNALS:
     void itemCreated( const SecretItem& ); 
     void itemDeleted( const QString& itemLabel );
     void itemChanged( const SecretItem& );
+
     
 protected:
+    explicit Collection();
     
 private:
+    friend class CollectionJob; // to give access to Private class
     
-    class Private; 
-    Private *d;
+    CollectionPrivate *d;
 };
 
 
-class Collection::SearchItemsJob : public SecretsJobBase {
-    Q_OBJECT
-    Q_DISABLE_COPY(SearchItemsJob)
-public:
-    explicit SearchItemsJob( QObject *parent );
-    
-    QList< SecretItem > &items() const;
-    
-private:
-    class Private;
-    Private *d;
-};
-
-class Collection::SearchSecretsJob : public SecretsJobBase {
-    Q_OBJECT
-    Q_DISABLE_COPY(SearchSecretsJob)
-public:
-    explicit SearchSecretsJob( QObject* parent );
-    
-    QList< Secret >  secrets() const;
-    
-private:
-    class Private;
-    Private *d;
-};
-
-class Collection::CreateItemJob : public SecretsJobBase {
-    Q_OBJECT
-    Q_DISABLE_COPY(CreateItemJob)
-public:
-    explicit CreateItemJob( QObject *parent );
-    
-    SecretItem item() const;
-    
-private:
-    class Private;
-    Private *d;
-};
-
-class Collection::ReadItemsJob : public SecretsJobBase {
-    Q_OBJECT
-    Q_DISABLE_COPY(ReadItemsJob)
-public:
-    explicit ReadItemsJob( QObject *parent );
-    
-    QList< SecretItem* > items() const;
-    
-private:
-    class Private;
-    Private *d;
-};
 
 }; // namespace
 

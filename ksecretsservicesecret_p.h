@@ -18,16 +18,20 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSECRET_H
-#define KSECRETSSECRET_H
+#ifndef KSECRETSSECRET_P_H
+#define KSECRETSSECRET_P_H
 
 #include "ksecretsservicesecret.h"
+
 #include <QtDBus/QDBusObjectPath>
 
 namespace KSecretsService {
 
-class Secret::Private {
-public:
+struct Secret::Private : public QSharedData {
+    Private();
+    Private( const Private& that );
+    ~Private();
+    
     QDBusObjectPath sessionPath;
     QByteArray      parameters;
     QVariant        value;
@@ -36,4 +40,4 @@ public:
 
 };
 
-#endif // KSECRETSSECRET_H
+#endif // KSECRETSSECRET_P_H

@@ -18,30 +18,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSECRET_H
-#define KSECRETSSECRET_H
-
-#include <QObject>
-#include <QVariant>
-#include <QSharedDataPointer>
+#include "ksecretscollectionjobs.h"
 
 namespace KSecretsService {
     
-struct Secret {
+CollectionJob::CollectionJob(Collection *collection, QObject* parent) : 
+            KCompositeJob( parent ), 
+            cd( collection->d ) {
+    Q_ASSERT( cd != 0 );
+    // the collection job must work on a valid collection from the backend (currently dbus)
+    // if its not yed valid, then add the necessary subjob to get it connected
+    if ( ! cd->isValid() ) {
+        FindCollectionJob *findJob = new FindCollectionJob( collection, cd->collectioName, cd->findOptions, this );
+        connect( findJob, SIGNAL(finished(KJob*)), this, SLOT(findCollectionFinished(KJob*)) );
+        addSubjob( findJob );
+    }
+}
 
-    Secret( const Secret & that );
-    virtual ~Secret();
-    
-    QVariant value() const;
-    
-    void setValue( const QVariant &value, const QString &contentType );
-    void setValue( const QVariant &value );
-    
-private:
-    struct Private;
-    QSharedDataPointer< Private > d;
-};
 
-};
+} // namespace
 
-#endif // KSECRETSSECRET_H
+#include "ksecretscollectionjobs.moc"

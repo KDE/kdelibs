@@ -1,0 +1,4 @@
+- Client API should be able to access secret store without going through d-bus, 
+as some systems don't provide it. See :
+http://lists.freedesktop.org/archives/authentication/2009-July/000010.html
+

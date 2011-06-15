@@ -20,8 +20,8 @@ kss_add_dbus_interface( ksecretservice_client_test_SRC ../org.freedesktop.Secret
 KDE4_ADD_EXECUTABLE( ksecretservice_client_test ${ksecretservice_client_test_SRC} )
 
 TARGET_LINK_LIBRARIES (ksecretservice_client_test
-    ksecretserviceclient
-   ${QT_QTTEST_LIBRARIES}
+    ksecretsserviceclient
+    ${QT_QTTEST_LIBRARIES}
 )
 
 ADD_TEST( KSecretServiceTest ksecretservice_client_test )

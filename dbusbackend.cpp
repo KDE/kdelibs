@@ -18,30 +18,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSJOB_H
-#define KSECRETSJOB_H
+#include "dbusbackend.h"
 
-#include <kjob.h>
+#include <QtDBus/QDBusConnection>
 
 namespace KSecretsService {
 
-/**
- * This is the base class for the SecretsJob template class.
- * It's rationale is to get signals and slots on it, as moc
- * won't support template classes. @see SecretsJob
- */
-class SecretsJobBase : public KJob {
-    Q_OBJECT
-    Q_DISABLE_COPY(SecretsJobBase)
-public:
-    explicit SecretsJobBase( QObject *parent =0 );
-    ~SecretsJobBase();
-    
-protected:
-    class Private;
-    Private *d;
-};
+#define SERVICE_NAME "org.freedesktop.secrets"
 
-};
+bool KSecretsService::DBusSession::startDaemon()
+{
+    // launch the daemon if it's not yet started
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+    {
+        QString error;
+        // FIXME: find out why this is not working
+        int ret = KToolInvocation::startServiceByDesktopPath("ksecretserviced.desktop", QStringList(), &error);
+        QVERIFY2( ret == 0, qPrintable( error ) );
+        
+        QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
+                 "Secret Service was started but the service is not registered on the DBus");
+    }
 
-#endif // KSECRETSJOB_H
+}
+
+}
+

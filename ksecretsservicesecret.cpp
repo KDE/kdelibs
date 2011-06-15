@@ -23,6 +23,36 @@
 
 namespace KSecretsService {
     
+Secret::Secret( const Secret& that ) {
+    // TODO: implement this
+}
+
+Secret::~Secret() {
+    // TODO: implement this
+}
+
+QVariant Secret::value() const {
+    // TODO: implement this
+    return QVariant();
+}
+
+void Secret::setValue( const QVariant &value, const QString &contentType ) {
+    // TODO: implement this
+}
+
+void Secret::setValue( const QVariant &value ) {
+    // TODO: implement this
+}
+
+Secret::Private::Private() {
+}
+
+Secret::Private::Private( const Private &that ) :
+        QSharedData( that ) {
+}
+    
+Secret::Private::~Private() {
+}
 
 }; // namespace 
 

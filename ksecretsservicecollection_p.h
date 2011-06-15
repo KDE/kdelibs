@@ -22,11 +22,38 @@
 #define KSECRETSCOLLECTION_P_H
 
 #include "ksecretsservicecollection.h"
+#include "dbusbackend.h"
+
 
 namespace KSecretsService {
+
+class CollectionPrivate {
+public:
+    CollectionPrivate();
+    ~CollectionPrivate();
+
+    void setPendingFindCollection(const QString &collName, Collection::FindCollectionOptions options);
+    bool isValid() const;
+    bool isNewlyCreated() const;
     
-class Collection::Private {
+
+protected:
+    friend class Collection;
+    friend class CollectionJob;
+    
+    enum FindStatus {
+        Invalid         =0,
+        PendingFind     =1,
+        FoundExisting   =2,
+        NewlyCreated    =3
+    };
+    
+    QString                                             collectioName;
+    KSecretsService::Collection::FindCollectionOptions  findOptions;
+    FindStatus                                          findStatus;
+    DBusSession                                         *dbusSession;
 };
+
 
 };
 

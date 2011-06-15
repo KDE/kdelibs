@@ -18,16 +18,30 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
-#include "ksecretsservicejob.h"
+#ifndef DBUSBACKEND_H
+#define DBUSBACKEND_H
 
 namespace KSecretsService {
     
-SecretsJobBase::SecretsJobBase(QObject* parent): KJob(parent)
-{
-}
+class OrgFreedesktopSecretCollectionInterface;
+class OrgFreedesktopSecretServiceInterface;
 
+/**
+ * Current implementation of the client API uses the public DBus interface exposed by the
+ * daemon. As such, it'll allow this library to interface with gnome-keyring if needed
+ * 
+ * NOTE: this class is not intended to be part of the client public API
+ */
+class DBusSession {
+public:
+    
+protected:
+    bool startDaemon();
+    
+private:
     
 };
 
-#include "ksecretsservicejob.moc"
+}
+
+#endif // DBUSBACKEND_H
