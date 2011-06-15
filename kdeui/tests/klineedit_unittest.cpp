@@ -211,7 +211,7 @@ private Q_SLOTS:
         completion.setSoundsEnabled(false);
         w.setCompletionObject(&completion);
         QStringList items;
-        items << "/home/" << "/hold/";
+        items << "/home/" << "/hold/" << "/hole/";
         completion.setItems(items);
         QTest::keyClick(&w, 'h');
         QCOMPARE(w.text(), QString::fromLatin1("/h"));
@@ -220,15 +220,15 @@ private Q_SLOTS:
         QTest::keyClick(&w, 'o');
         QCOMPARE(w.text(), QString::fromLatin1("/ho"));
         QCOMPARE(w.completionBox()->currentRow(), -1);
-        w.completionBox()->up(); // no-op
-        QCOMPARE(w.text(), QString::fromLatin1("/ho"));
         w.completionBox()->down(); // select 1st item
         QCOMPARE(w.text(), items.at(0));
         w.completionBox()->down(); // select 2nd item
         QCOMPARE(w.text(), items.at(1));
         w.completionBox()->up();   // select 1st item again
         QCOMPARE(w.text(), items.at(0));
-        w.completionBox()->up(); // no-op
+        w.completionBox()->up();   // select last item
+        QCOMPARE(w.text(), items.at(2));
+        w.completionBox()->down(); // select 1st item again
         QCOMPARE(w.text(), items.at(0));
 
         QStringList newItems;
