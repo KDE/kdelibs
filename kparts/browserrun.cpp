@@ -318,7 +318,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
         return Handled;
     }
 
-    KIO::SimpleJob::removeOnHold(); // Kill any slave that was put on hold.
+    KIO::Scheduler::publishSlaveOnHold(); // publish any slave on hold so it can be reused.
     return NotHandled;
 }
 
