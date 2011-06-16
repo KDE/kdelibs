@@ -37,6 +37,6 @@ INSTALL(FILES
 INSTALL(FILES
     ksecretsservicecollection.h
     ksecretsserviceitem.h
-    ksecretsservicejob.h
+    ksecretsservicesecret.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel 
 )
