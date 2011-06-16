@@ -87,12 +87,12 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
             _effects[Intensity] = cfg.readEntry( "IntensityEffect",
                                                  (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
             _effects[Color]     = cfg.readEntry(     "ColorEffect",
-                                                     (int)(state == QPalette::Disabled ?  ColorNoEffect : ColorFade));
+                                                     (int)(state == QPalette::Disabled ?  ColorNoEffect : ColorDesaturate));
             _effects[Contrast]  = cfg.readEntry(  "ContrastEffect",
                                                   (int)(state == QPalette::Disabled ?  ContrastFade : ContrastTint));
-            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 : 0.0 );
-            _amount[Color]      = cfg.readEntry(     "ColorAmount", state == QPalette::Disabled ?  0.0 : 0.025 );
-            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.10 );
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 :  0.0 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", state == QPalette::Disabled ?  0.0 : -0.9 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 :  0.25 );
             if (_effects[Color] > ColorNoEffect)
                 _color = cfg.readEntry( "Color", state == QPalette::Disabled ?  QColor(56, 56, 56) : QColor(112, 111, 110));
         }
@@ -167,7 +167,7 @@ struct DecoDefaultColors {
 SetDefaultColors defaultViewColors = {
     { 255, 255, 255 }, // Background
     { 248, 247, 246 }, // Alternate
-    {  24,  22,  21 }, // Normal
+    {  31,  28,  27 }, // Normal
     { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
@@ -179,9 +179,9 @@ SetDefaultColors defaultViewColors = {
 
 
 SetDefaultColors defaultWindowColors = {
-    { 213, 209, 207 }, // Background
+    { 214, 210, 208 }, // Background
     { 218, 217, 216 }, // Alternate
-    {  27,  25,  24 }, // Normal
+    {  34,  31,  30 }, // Normal
     { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
@@ -193,9 +193,9 @@ SetDefaultColors defaultWindowColors = {
 
 
 SetDefaultColors defaultButtonColors = {
-    { 207, 204, 201 }, // Background
+    { 223, 220, 217 }, // Background
     { 224, 223, 222 }, // Alternate
-    {  27,  25,  24 }, // Normal
+    {  34,  31,  30 }, // Normal
     { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
@@ -221,9 +221,9 @@ SetDefaultColors defaultSelectionColors = {
 
 
 SetDefaultColors defaultTooltipColors = {
-    { 190, 223, 255 }, // Background
+    {  24,  21,  19 }, // Background
     { 196, 224, 255 }, // Alternate
-    {  37,  35,  33 }, // Normal
+    { 231, 253, 255 }, // Normal
     { 137, 136, 135 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
