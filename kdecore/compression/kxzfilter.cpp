@@ -29,7 +29,7 @@ extern "C" {
 	#include <lzma.h>
 }
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <qiodevice.h>
 

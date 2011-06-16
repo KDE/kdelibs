@@ -530,6 +530,7 @@ install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    kdecore_export.h
    compression/kfilterbase.h
+   compression/karchive_export.h
    compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h

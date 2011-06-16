@@ -21,7 +21,7 @@
 
 #include <time.h>
 #include <zlib.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/QIODevice>
 
 
@@ -86,16 +86,19 @@ void KGzipFilter::init(int mode, Flag flag)
                                MAX_WBITS + 32 /* auto-detect and eat gzip header */
                                : MAX_WBITS /*zlib header*/;
         const int result = inflateInit2(&d->zStream, windowBits);
-        if ( result != Z_OK )
-            kDebug(7005) << "inflateInit2 returned " << result;
-        // No idea what to do with result :)
+        if ( result != Z_OK ) {
+            qDebug() << "inflateInit2 returned " << result;
+            // TODO return false
+        }
     } else if ( mode == QIODevice::WriteOnly )
     {
         int result = deflateInit2(&d->zStream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
-        if ( result != Z_OK )
-            kDebug(7005) << "deflateInit returned " << result;
+        if ( result != Z_OK ) {
+            qDebug() << "deflateInit returned " << result;
+            // TODO return false
+        }
     } else {
-        kWarning(7005) << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        qWarning() << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
     }
     d->mode = mode;
     d->compressed = true;
@@ -114,13 +117,17 @@ void KGzipFilter::terminate()
     if ( d->mode == QIODevice::ReadOnly )
     {
         int result = inflateEnd(&d->zStream);
-        if ( result != Z_OK )
-            kDebug(7005) << "inflateEnd returned " << result;
+        if ( result != Z_OK ) {
+            qDebug() << "inflateEnd returned " << result;
+            // TODO return false
+        }
     } else if ( d->mode == QIODevice::WriteOnly )
     {
         int result = deflateEnd(&d->zStream);
-        if ( result != Z_OK )
-            kDebug(7005) << "deflateEnd returned " << result;
+        if ( result != Z_OK ) {
+            qDebug() << "deflateEnd returned " << result;
+            // TODO return false
+        }
     }
     d->isInitialized = false;
 }
@@ -131,12 +138,16 @@ void KGzipFilter::reset()
     if ( d->mode == QIODevice::ReadOnly )
     {
         int result = inflateReset(&d->zStream);
-        if ( result != Z_OK )
-            kDebug(7005) << "inflateReset returned " << result;
+        if ( result != Z_OK ) {
+            qDebug() << "inflateReset returned " << result;
+            // TODO return false
+        }
     } else if ( d->mode == QIODevice::WriteOnly ) {
         int result = deflateReset(&d->zStream);
-        if ( result != Z_OK )
-            kDebug(7005) << "deflateReset returned " << result;
+        if ( result != Z_OK ) {
+            qDebug() << "deflateReset returned " << result;
+            // TODO return false
+        }
         d->headerWritten = false;
         d->footerWritten = false;
     }
@@ -148,7 +159,7 @@ bool KGzipFilter::readHeader()
     // We just use this method to check if the data is actually compressed.
 
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "avail=" << d->zStream.avail_in;
+    qDebug() << "avail=" << d->zStream.avail_in;
 #endif
     // Assume not compressed until we see a gzip header
     d->compressed = false;
@@ -156,11 +167,11 @@ bool KGzipFilter::readHeader()
     int i = d->zStream.avail_in;
     if ((i -= 10)  < 0) return false; // Need at least 10 bytes
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "first byte is " << QString::number(*p,16);
+    qDebug() << "first byte is " << QString::number(*p,16);
 #endif
     if (*p++ != 0x1f) return false; // GZip magic
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "second byte is " << QString::number(*p,16);
+    qDebug() << "second byte is " << QString::number(*p,16);
 #endif
     if (*p++ != 0x8b) return false;
 
@@ -180,7 +191,7 @@ bool KGzipFilter::readHeader()
     if ((flags & ORIG_NAME) != 0) // skip original file name
     {
 #ifdef DEBUG_GZIP
-        kDebug(7005) << "ORIG_NAME=" << (char*)p;
+        qDebug() << "ORIG_NAME=" << (char*)p;
 #endif
         while( (i > 0) && (*p))
         {
@@ -210,7 +221,7 @@ bool KGzipFilter::readHeader()
 
     d->compressed = true;
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "header OK";
+    qDebug() << "header OK";
 #endif
     return true;
 }
@@ -254,13 +265,12 @@ bool KGzipFilter::writeHeader( const QByteArray & fileName )
 void KGzipFilter::writeFooter()
 {
     Q_ASSERT( d->headerWritten );
-    if (!d->headerWritten) kDebug(7005) << kBacktrace();
     Q_ASSERT(!d->footerWritten);
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
-    //kDebug(7005) << "avail_out=" << i << "writing CRC=" << QString::number(d->crc, 16) << "at p=" << p;
+    //qDebug() << "avail_out=" << i << "writing CRC=" << QString::number(d->crc, 16) << "at p=" << p;
     put_long( d->crc );
-    //kDebug(7005) << "writing totalin=" << d->zStream.total_in << "at p=" << p;
+    //qDebug() << "writing totalin=" << d->zStream.total_in << "at p=" << p;
     put_long( d->zStream.total_in );
     i -= p - d->zStream.next_out;
     d->zStream.next_out = p;
@@ -276,7 +286,7 @@ void KGzipFilter::setOutBuffer( char * data, uint maxlen )
 void KGzipFilter::setInBuffer( const char * data, uint size )
 {
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "avail_in=" << size;
+    qDebug() << "avail_in=" << size;
 #endif
     d->zStream.avail_in = size;
     d->zStream.next_in = (Bytef*) data;
@@ -310,27 +320,30 @@ KGzipFilter::Result KGzipFilter::uncompress_noop()
 KGzipFilter::Result KGzipFilter::uncompress()
 {
 #ifndef NDEBUG
-    if (d->mode == 0)
-        kFatal() << "mode==0; KGzipFilter::init was not called!";
-    else if (d->mode == QIODevice::WriteOnly)
-        kFatal() << "uncompress called but the filter was opened for writing!";
+    if (d->mode == 0) {
+        qWarning() << "mode==0; KGzipFilter::init was not called!";
+        return KFilterBase::Error;
+    } else if (d->mode == QIODevice::WriteOnly) {
+        qWarning() << "uncompress called but the filter was opened for writing!";
+        return KFilterBase::Error;
+    }
     Q_ASSERT ( d->mode == QIODevice::ReadOnly );
 #endif
 
     if ( d->compressed )
     {
 #ifdef DEBUG_GZIP
-        kDebug(7005) << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
-        kDebug(7005) << "    next_in=" << d->zStream.next_in;
+        qDebug() << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
+        qDebug() << "    next_in=" << d->zStream.next_in;
 #endif
         int result = inflate(&d->zStream, Z_SYNC_FLUSH);
 #ifdef DEBUG_GZIP
-        kDebug(7005) << " -> inflate returned " << result;
-        kDebug(7005) << " now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
-        kDebug(7005) << "     next_in=" << d->zStream.next_in;
+        qDebug() << " -> inflate returned " << result;
+        qDebug() << " now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
+        qDebug() << "     next_in=" << d->zStream.next_in;
 #else
         if ( result != Z_OK && result != Z_STREAM_END )
-            kDebug(7005) << "Warning: inflate() returned " << result;
+            qDebug() << "Warning: inflate() returned " << result;
 #endif
         return ( result == Z_OK ? KFilterBase::Ok : ( result == Z_STREAM_END ? KFilterBase::End : KFilterBase::Error ) );
     } else
@@ -345,25 +358,26 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     Bytef* p = d->zStream.next_in;
     ulong len = d->zStream.avail_in;
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
+    qDebug() << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
 #endif
     const int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
-    if ( result != Z_OK && result != Z_STREAM_END )
-        kDebug(7005) << "  deflate returned " << result;
+    if ( result != Z_OK && result != Z_STREAM_END ) {
+        qDebug() << "  deflate returned " << result;
+    }
     if ( d->headerWritten )
     {
-        //kDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes";
+        //qDebug() << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes";
         d->crc = crc32(d->crc, p, len - d->zStream.avail_in);
     }
     KGzipFilter::Result callerResult = result == Z_OK ? KFilterBase::Ok : (Z_STREAM_END ? KFilterBase::End : KFilterBase::Error);
 
     if (result == Z_STREAM_END && d->headerWritten && !d->footerWritten) {
         if (d->zStream.avail_out >= 8 /*footer size*/) {
-            //kDebug(7005) << "finished, write footer";
+            //qDebug() << "finished, write footer";
             writeFooter();
         } else {
             // No room to write the footer (#157706/#188415), we'll have to do it on the next pass.
-            //kDebug(7005) << "finished, but no room for footer yet";
+            //qDebug() << "finished, but no room for footer yet";
             callerResult = KFilterBase::Ok;
         }
     }
