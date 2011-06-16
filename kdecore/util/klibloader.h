@@ -196,7 +196,7 @@ public:
      *              error codes defined by ComponentLoadingError if there was an error
      * @return a pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type
-     * @deprecated Use KService::createInstance() or KPluginFactory instead
+     * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
     static KDE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
@@ -242,7 +242,7 @@ public:
      *              error codes defined by ComponentLoadingError if there was an error
      * @return a pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type
-     * @deprecated Use KService::createInstance() or KPluginFactory instead
+     * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
     static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
