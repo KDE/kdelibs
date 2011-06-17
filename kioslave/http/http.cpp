@@ -2637,6 +2637,8 @@ void HTTPProtocol::fixupResponseMimetype()
         m_mimeType = QLatin1String("audio/mpeg");
     else if (m_mimeType == QLatin1String("audio/microsoft-wave"))
         m_mimeType = QLatin1String("audio/x-wav");
+    else if (m_mimeType == QLatin1String("image/x-ms-bmp"))
+        m_mimeType = QLatin1String("image/bmp");
 
     // Crypto ones....
     else if (m_mimeType == QLatin1String("application/pkix-cert") ||
