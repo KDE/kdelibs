@@ -85,6 +85,39 @@ int writeLangFile( const QString &fname, const QString &dtdPath,
    return( 0 );
 }
 
+int writeLangFileNew( const QString &fname, const QString &dtdPath,
+                      const LangListType &langMap ) {
+
+   QFile outFile( fname );
+   if ( ! outFile.open( QIODevice::WriteOnly ) ) {
+      qCritical() << QString( "Could not write %1" )
+                     .arg( outFile.fileName() );
+      return( 1 );
+   }
+
+   QTextStream outStream( &outFile );
+   outStream << "<?xml version='1.0'?>" << endl;
+   outStream << QString( "<!DOCTYPE l:i18n SYSTEM \"%1\">" )
+               .arg( dtdPath ) << endl;
+
+   if ( langMap.size() > 0 ) {
+      outStream
+         << "<l:i18n xmlns:l=\"http://docbook.sourceforge.net/xmlns/l10n/1.0\">"
+         << endl;
+      LangListType::const_iterator i = langMap.constBegin();
+      while ( i != langMap.constEnd() ) {
+         outStream << QString( "<l:l10n language=\"%1\" href=\"%2\"/>" )
+                      .arg( (*i).first ).arg( (*i).second ) << endl;
+         ++i;
+      }
+      outStream << "</l:i18n>" << endl;
+   }
+
+   outFile.close();
+
+   return( 0 );
+}
+
 inline const QString addTrailingSlash( const QString &p ) {
    return p.endsWith( "/" ) ? p : p + "/";
 }
@@ -199,11 +232,20 @@ int main( int argc, char **argv ) {
       ++i;
    }
 
+   int res = 0;
 
-   int res = writeLangFile( all10nFName, l10nDir + "common/l10n.dtd",
-                            allLangs );
-   res += writeLangFile( customl10nFName, l10nDir + "common/l10n.dtd",
-                         customLangs );
+   if ( foundRxEntity ) {
+      /* old style (docbook-xsl<=1.75) */
+      res = writeLangFile( all10nFName, l10nDir + "common/l10n.dtd",
+                           allLangs );
+      res += writeLangFile( customl10nFName, l10nDir + "common/l10n.dtd",
+                            customLangs );
+   } else {
+      res = writeLangFileNew( all10nFName, l10nDir + "common/l10n.dtd",
+                              allLangs );
+      res += writeLangFileNew( customl10nFName, l10nDir + "common/l10n.dtd",
+                               customLangs );
+   }
 
    return( res );
 }
