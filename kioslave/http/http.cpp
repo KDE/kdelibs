@@ -188,6 +188,16 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
   return sanitizedHeaders;
 }
 
+static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, const KConfigGroup* config)
+{
+    // kDebug(7113) << request.url << "response code: " << request.responseCode << "previous response code:" << request.prevResponseCode;
+    if (!request.url.user().isEmpty()) {
+        const QString userName = config->readEntry(QLatin1String("LastSpoofedUserName"), QString());
+        return ((userName.isEmpty() || userName != request.url.user()) && request.responseCode != 401 && request.prevResponseCode != 401);
+    }
+    return false;
+}
+
 // for a given response code, conclude if the response is going to/likely to have a response body
 static bool canHaveResponseBody(int responseCode, KIO::HTTP_METHOD method)
 {
@@ -2857,6 +2867,27 @@ try_again:
 
     // immediately act on most response codes...
 
+    // Protect users against bogus username intended to fool them into visiting
+    // sites they had no intention of visiting.
+    if (isPotentialSpoofingAttack(m_request, config())) {
+        // kDebug(7113) << "**** POTENTIAL ADDRESS SPOOFING:" << m_request.url;
+        const int result = messageBox(WarningYesNo,
+                                      i18nc("@warning: Security check on url "
+                                            "being accessed", "You are about to "
+                                            "log in to the site \"%1\" with the "
+                                            "username \"%2\", but the website "
+                                            "does not require authentication. "
+                                            "This may be an attempt to trick you."
+                                            "<p>Is \"%1\" the site you want to visit?",
+                                            m_request.url.host(), m_request.url.user()),
+                                      i18nc("@title:window", "Confirm Website Access"));
+        if (result == KMessageBox::No) {
+            error(ERR_USER_CANCELED, m_request.url.url());
+            return false;
+        }
+        setMetaData(QLatin1String("{internal~currenthost}LastSpoofedUserName"), m_request.url.user());
+    }
+
     if (m_request.responseCode != 200 && m_request.responseCode != 304) {
         m_request.cacheTag.ioMode = NoCache;
     }
@@ -4232,26 +4263,6 @@ void HTTPProtocol::slotData(const QByteArray &_d)
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
-  // Security check against bogus username intended to fool the user into
-  // visiting a site they did not meant to.
-  if ((!m_request.url.user().isEmpty() && m_request.prevResponseCode != 401 && m_request.responseCode != 401) ||
-      (!m_request.proxyUrl.user().isEmpty() && m_request.prevResponseCode != 407 && m_request.responseCode != 407)) {
-      const int result = messageBox(WarningYesNo,
-                                    i18nc("@warning: Security check on url "
-                                          "being accessed", "You are about to "
-                                          "log in to the site \"%1\" with the "
-                                          "username \"%2\", but the website "
-                                          "does not require authentication. "
-                                          "This may be an attempt to trick you."
-                                          "<p>Is \"%1\" the site you want to visit?",
-                                          m_request.url.host(), m_request.url.user()),
-                                    i18nc("@title:window", "Confirm Website Access"));
-      if (result == KMessageBox::No) {
-        error(ERR_USER_CANCELED, m_request.url.url());
-        return false;
-      }
-  }
-
   // special case for reading cached body since we also do it in this function. oh well.
   if (!canHaveResponseBody(m_request.responseCode, m_request.method) &&
       !(m_request.cacheTag.ioMode == ReadFromCache && m_request.responseCode == 304 &&
