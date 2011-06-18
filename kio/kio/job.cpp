@@ -599,6 +599,13 @@ void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
         else
             d->m_incomingMetaData.insert(it.key(), it.value());
     }
+
+    // Update the internal meta-data values as soon as possible. Waiting until
+    // the ioslave is finished has unintended consequences if the client starts
+    // a new connection without waiting for the ioslave to finish.
+    if (!d->m_internalMetaData.isEmpty()) {
+        Scheduler::updateInternalMetaData(this);
+    }
 }
 
 void SimpleJob::storeSSLSessionFromJob(const KUrl &redirectionURL)

@@ -700,6 +700,7 @@ public:
     void publishSlaveOnHold();
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
     void registerWindow(QWidget *wid);
+    void updateInternalMetaData(SimpleJob* job);
 
     MetaData metaDataFor(const QString &protocol, const QString &proxy, const KUrl &url);
     void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
@@ -809,6 +810,11 @@ void Scheduler::removeSlaveOnHold()
 void Scheduler::publishSlaveOnHold()
 {
     schedulerPrivate->publishSlaveOnHold();
+}
+
+void Scheduler::updateInternalMetaData(SimpleJob* job)
+{
+    schedulerPrivate->updateInternalMetaData(job);
 }
 
 KIO::Slave *Scheduler::getConnectedSlave(const KUrl &url,
@@ -978,19 +984,6 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
 
-    // Preserve all internal meta-data so they can be sent back to the
-    // ioslaves as needed...
-    const KUrl jobUrl = job->url();
-    QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
-    while (it.hasNext()) {
-        it.next();
-        if (it.key().startsWith(QLatin1String("{internal~currenthost}"), Qt::CaseInsensitive)) {
-            SlaveConfig::self()->setConfigData(jobUrl.protocol(), jobUrl.host(), it.key().mid(22), it.value());
-        } else if (it.key().startsWith(QLatin1String("{internal~allhosts}"), Qt::CaseInsensitive)) {
-            SlaveConfig::self()->setConfigData(jobUrl.protocol(), QString(), it.key().mid(19), it.value());
-        }
-    }
-
     // make sure that we knew about the job!
     Q_ASSERT(jobPriv->m_schedSerial);
 
@@ -1007,7 +1000,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
                 while (it.hasNext()) {
                     Slave* runningSlave = it.next();
                     if (slave->host() == runningSlave->host()) {
-                        slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxy, jobUrl));
+                        slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxy, job->url()));
                         kDebug(7006) << "Updated configuration of" << slave->protocol()
                                      << "ioslave, pid=" << slave->slave_pid();
                     }
@@ -1288,6 +1281,25 @@ void SchedulerPrivate::slotUnregisterWindow(QObject *obj)
    QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
        call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
 }
+
+void SchedulerPrivate::updateInternalMetaData(SimpleJob* job)
+{
+    KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+    // Preserve all internal meta-data so they can be sent back to the
+    // ioslaves as needed...
+    const KUrl jobUrl = job->url();
+    kDebug(7006) << job << jobPriv->m_internalMetaData;
+    QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
+    while (it.hasNext()) {
+        it.next();
+        if (it.key().startsWith(QLatin1String("{internal~currenthost}"), Qt::CaseInsensitive)) {
+            SlaveConfig::self()->setConfigData(jobUrl.protocol(), jobUrl.host(), it.key().mid(22), it.value());
+        } else if (it.key().startsWith(QLatin1String("{internal~allhosts}"), Qt::CaseInsensitive)) {
+            SlaveConfig::self()->setConfigData(jobUrl.protocol(), QString(), it.key().mid(19), it.value());
+        }
+    }
+}
+
 
 #include "scheduler.moc"
 #include "scheduler_p.moc"
