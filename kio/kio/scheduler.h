@@ -272,6 +272,13 @@ namespace KIO {
          */
         static bool isSlaveOnHoldFor(const KUrl& url);
 
+        /**
+         * Updates the internal metadata from job.
+         *
+         * @since 4.6.5
+         */
+        static void updateInternalMetaData(SimpleJob* job);
+
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
