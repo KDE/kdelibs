@@ -195,11 +195,17 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, const KConfigGroup* config)
 {
     // kDebug(7113) << request.url << "response code: " << request.responseCode << "previous response code:" << request.prevResponseCode;
-    if (!request.url.user().isEmpty()) {
-        const QString userName = config->readEntry(QLatin1String("LastSpoofedUserName"), QString());
-        return ((userName.isEmpty() || userName != request.url.user()) && request.responseCode != 401 && request.prevResponseCode != 401);
+    if (request.url.user().isEmpty()) {
+        return false;
     }
-    return false;
+
+    // We already have cached authentication.
+    if (config->readEntry(QLatin1String("cached-www-auth"), false)) {
+        return false;
+    }
+
+    const QString userName = config->readEntry(QLatin1String("LastSpoofedUserName"), QString());
+    return ((userName.isEmpty() || userName != request.url.user()) && request.responseCode != 401 && request.prevResponseCode != 401);
 }
 
 // for a given response code, conclude if the response is going to/likely to have a response body
