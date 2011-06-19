@@ -99,7 +99,7 @@ void FindCollectionJob::start()
                 // TODO: implement this
             }
             else {
-                Q_ASSERT( 0, "Unknown findOtions" );
+                Q_ASSERT( 0 ); // "Unknown findOtions" );
             }
     }
     else {

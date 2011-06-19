@@ -162,6 +162,7 @@ protected:
     
 private:
     friend class CollectionJob; // to give access to Private class
+    friend class FindCollectionJob;
     
     CollectionPrivate *d;
 };

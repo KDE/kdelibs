@@ -40,6 +40,7 @@ public:
 protected:
     friend class Collection;
     friend class CollectionJob;
+    friend class FindCollectionJob;
     
     QString                             collectioName;
     Collection::FindCollectionOptions   findOptions;

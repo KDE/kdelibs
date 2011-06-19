@@ -19,6 +19,8 @@
  */
 
 #include "dbusbackend.h"
+#include "service_interface.h"
+#include "collection_interface.h"
 
 #include <QtDBus/QDBusConnection>
 
@@ -28,19 +30,28 @@ namespace KSecretsService {
 
 bool KSecretsService::DBusSession::startDaemon()
 {
+    // TODO: implement this
     // launch the daemon if it's not yet started
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
-    {
-        QString error;
-        // FIXME: find out why this is not working
-        int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
-        QVERIFY2( ret == 0, qPrintable( error ) );
-        
-        QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
-                 "Secret Service was started but the service is not registered on the DBus");
-    }
+//     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+//     {
+//         QString error;
+//         // FIXME: find out why this is not working
+//         int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
+//         QVERIFY2( ret == 0, qPrintable( error ) );
+//         
+//         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
+//                  "Secret Service was started but the service is not registered on the DBus");
+//     }
 
+    return false;
 }
 
+OrgFreedesktopSecretServiceInterface* DBusSession::service()
+{
+    // TODO: implement this
+    return NULL;
 }
+
+
+} // namespace
 

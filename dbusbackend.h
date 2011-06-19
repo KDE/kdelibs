@@ -21,10 +21,11 @@
 #ifndef DBUSBACKEND_H
 #define DBUSBACKEND_H
 
-namespace KSecretsService {
-    
 class OrgFreedesktopSecretCollectionInterface;
 class OrgFreedesktopSecretServiceInterface;
+
+namespace KSecretsService {
+    
 
 /**
  * Current implementation of the client API uses the public DBus interface exposed by the
@@ -34,6 +35,8 @@ class OrgFreedesktopSecretServiceInterface;
  */
 class DBusSession {
 public:
+    
+    static OrgFreedesktopSecretServiceInterface *service();
     
 protected:
     static bool startDaemon();
