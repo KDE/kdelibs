@@ -28,10 +28,13 @@
 #include <kcompositejob.h>
 #include <QTimer>
 #include <kjob.h>
+#include <kdebug.h>
 
 namespace KSecretsService {
 
-Collection::Collection(): QObject()
+Collection::Collection(): 
+        QObject(),
+        d( new CollectionPrivate() )
 {
     // nothing to do
 }
@@ -46,6 +49,11 @@ Collection * KSecretsService::Collection::findCollection(const QString& collecti
     return collection;
 }
 
+Collection::FindStatus Collection::findStatus() const
+{
+    return d->findStatus;
+}
+
 KJob* Collection::deleteCollection()
 {
     return new DeleteCollectionJob( this );
@@ -54,23 +62,27 @@ KJob* Collection::deleteCollection()
 KJob* Collection::renameCollection(const QString& newName)
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return NULL;
 }
 
 Collection::SearchItemsJob* Collection::searchItems(const QStringStringMap& attributes)
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return NULL;
 }
 
 Collection::SearchSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return NULL;
 }
 
 Collection::CreateItemJob* KSecretsService::Collection::createItem(const QMap< QString, QString >& attributes, const Secret& secret)
 {
+    Q_ASSERT(0);
     // TODO: call the dbus method
     // if it returns item with "/" path, then it must have returned a prompt object
     //      use the prompt 
@@ -83,90 +95,65 @@ Collection::CreateItemJob* KSecretsService::Collection::createItem(const QMap< Q
 Collection::ReadItemsJob* Collection::items() const
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return NULL;
 }
 
 bool Collection::isLocked() const
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return false;
 }
 
 QString Collection::label() const
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return "";
 }
 
 QDateTime Collection::createdTime() const
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return QDateTime();
 }
 
 QDateTime Collection::modifiedTime() const
 {
     // TODO: implement this
+    Q_ASSERT(0);
     return QDateTime();
 }
 
 void Collection::setLabel(const QString& label)
 {
     // TODO: implement this
+    Q_ASSERT(0);
 }
-
-
-
-Collection::SearchItemsJob::SearchItemsJob( Collection *collection,
-                                            QObject *parent ) :
-    CollectionJob( collection, parent ) 
-{
-}
-
-
-Collection::SearchSecretsJob::SearchSecretsJob( Collection* collection, QObject* parent ) : 
-    CollectionJob( collection, parent )
-{
-}
-
-Collection::CreateItemJob::CreateItemJob( Collection *collection,
-                                          QObject *parent ) :
-    CollectionJob( collection, parent )
-{
-}
-
-Collection::ReadItemsJob::ReadItemsJob( Collection *collection,
-                                        QObject *parent ) :
-    CollectionJob( collection, parent )
-{
-}
-    
-QList< Secret > Collection::SearchSecretsJob::secrets() const
-{
-    // TODO: implement this
-    return QList< Secret >();
-}
-
-
 
 
 
 CollectionPrivate::CollectionPrivate() :
         findOptions( Collection::OpenOnly ),
-        findStatus( Invalid ) 
+        findStatus( Collection::Invalid )
 {
 }
 
 void CollectionPrivate::setPendingFindCollection( const QString &collName, 
-                                               Collection::FindCollectionOptions options ) 
+                                               Collection::FindCollectionOptions opts ) 
 {
-    // TODO: implemement this
+    collectioName = collName;
+    findOptions = opts;
+    findStatus = Collection::PendingFind;
 }
 
 bool CollectionPrivate::isValid() const 
 {
-    // TODO: implemement this
-    return false;
+    return 
+        findStatus == Collection::FoundExisting ||
+        findStatus == Collection::NewlyCreated;
 }
 
 #include "ksecretsservicecollection.moc"

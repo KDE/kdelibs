@@ -37,6 +37,7 @@ typedef QMap< QString, QString > QStringStringMap;
 
 class Collection : public QObject {
     Q_OBJECT
+    Q_DISABLE_COPY(Collection)
 public:
 
     /**
@@ -45,6 +46,13 @@ public:
     enum FindCollectionOptions {
         OpenOnly         =0,    /// this will only try to open the collection without creating it if not found
         CreateCollection =1     /// the collection will be created if not found
+    };
+    
+    enum FindStatus {
+        Invalid         =0,     /// the collection objet is freshly initialized and none of it's methods have been called
+        PendingFind     =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
+        FoundExisting   =2,     /// this object is connected to an existing backend connection
+        NewlyCreated    =3      /// this object is connected to a newly created connection
     };
     
     /**
@@ -57,6 +65,12 @@ public:
      */
     static Collection * findCollection( const QString &collectionName, 
                                                FindCollectionOptions options = CreateCollection );
+
+    /**
+     * This will get the actual findStatus of this collection
+     * @return FindStatus
+     */
+    FindStatus findStatus() const;
     
     /**
      * Try to delete this collection. The user might be prompted to confirm that 
