@@ -36,7 +36,7 @@ class DBusSession {
 public:
     
 protected:
-    bool startDaemon();
+    static bool startDaemon();
     
 private:
     

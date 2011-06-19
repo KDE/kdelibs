@@ -7,8 +7,7 @@ INCLUDE_DIRECTORIES (
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set( ksecretservice_client_test_SRC
-   ksecretservice-test.cpp
+set( ksecretsservice_client_test_SRC ksecretsservice-test.cpp
 )
 
 kss_add_dbus_interface( ksecretservice_client_test_SRC ../org.freedesktop.Secret.Service.xml service_interface )
@@ -17,11 +16,11 @@ kss_add_dbus_interface( ksecretservice_client_test_SRC ../org.freedesktop.Secret
 kss_add_dbus_interface( ksecretservice_client_test_SRC ../org.freedesktop.Secret.Item.xml item_interface )
 kss_add_dbus_interface( ksecretservice_client_test_SRC ../org.freedesktop.Secret.Prompt.xml prompt_interface )
 
-KDE4_ADD_EXECUTABLE( ksecretservice_client_test ${ksecretservice_client_test_SRC} )
+KDE4_ADD_EXECUTABLE( ksecretservice_client_test ${ksecretsservice_client_test_SRC} )
 
-TARGET_LINK_LIBRARIES (ksecretservice_client_test
+TARGET_LINK_LIBRARIES (ksecretsservice_client_test
     ksecretsserviceclient
     ${QT_QTTEST_LIBRARIES}
 )
 
-ADD_TEST( KSecretServiceTest ksecretservice_client_test )
+ADD_TEST( KSecrestServiceTest ksecretsservice_client_test )

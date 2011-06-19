@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ksecretservice-test.h"
+#include "ksecretsservice-test.h"
 
 #include <qtest_kde.h>
 #include <ktoolinvocation.h>
@@ -41,25 +41,27 @@ KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 void KSecretServiceTest::initTestCase()
 {
     // launch the daemon if it's not yet started
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+/*    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
     {
         QString error;
         // FIXME: find out why this is not working
-        int ret = KToolInvocation::startServiceByDesktopPath("ksecretserviced.desktop", QStringList(), &error);
+        int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
         QVERIFY2( ret == 0, qPrintable( error ) );
         
         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
                  "Secret Service was started but the service is not registered on the DBus");
-    }
+    }*/
 }
 
 void KSecretServiceTest::testSession()
 {
     Collection *coll = Collection::findCollection( "test collection" );
+    KJob* deleteJob = coll->deleteCollection();
+    deleteJob->exec();
 }
 
 void KSecretServiceTest::cleanupTestCase()
 {
 }
 
-#include "ksecretservice-test.moc"
+#include "ksecretsservice-test.moc"

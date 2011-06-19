@@ -19,23 +19,184 @@
  */
 
 #include "ksecretscollectionjobs.h"
+#include "ksecretscollectionjobs_p.h"
+#include "ksecretsservicecollection_p.h"
+#include "service_interface.h"
 
-namespace KSecretsService {
-    
-CollectionJob::CollectionJob(Collection *collection, QObject* parent) : 
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
+#include <kdebug.h>
+
+using namespace KSecretsService;
+
+CollectionJob::CollectionJob(Collection *collection, QObject* parent, bool shouldTriggerFind) : 
             KCompositeJob( parent ), 
-            cd( collection->d ) {
-    Q_ASSERT( cd != 0 );
-    // the collection job must work on a valid collection from the backend (currently dbus)
-    // if its not yed valid, then add the necessary subjob to get it connected
-    if ( ! cd->isValid() ) {
-        FindCollectionJob *findJob = new FindCollectionJob( collection, cd->collectioName, cd->findOptions, this );
-        connect( findJob, SIGNAL(finished(KJob*)), this, SLOT(findCollectionFinished(KJob*)) );
-        addSubjob( findJob );
+            collection( collection ),
+            _error( UndefinedError ) 
+{
+}
+
+void CollectionJob::startFindCollection()
+{
+    if ( !collection->d->isValid() ) {
+        FindCollectionJob *findJob = new FindCollectionJob( collection, collection->d->collectioName, collection->d->findOptions, this );
+        if ( addSubjob( findJob ) ) {
+            findJob->start();
+        }
+        else {
+            kDebug() << "FindCollectionJob failed to start";
+            setError( InternalError );
+            emitResult();
+        }
+    }
+    else {
+        // collection was already found or created, just trigger this 
+        onFindCollectionFinished();
     }
 }
 
+void CollectionJob::slotResult(KJob* job)
+{
+    KCompositeJob::slotResult(job);
+    // TODO: check if the subjob result here
+    FindCollectionJob *findJob = dynamic_cast< FindCollectionJob* >( job );
+    Q_ASSERT( findJob != 0 );
+    // FIXME: see if this call should transport error codes
+    onFindCollectionFinished();
+}
 
-} // namespace
+void CollectionJob::onFindCollectionFinished()
+{
+    // nothing to do in this base implementation
+}
+
+
+FindCollectionJob::FindCollectionJob(   Collection *collection, 
+                                        const QString& collName,
+                                        Collection::FindCollectionOptions options,
+                                        QObject *parent ) : 
+            CollectionJob( collection, parent, false ), // give false here to avoid infinite loops
+            d( new FindCollectionJobPrivate() )
+{
+    d->collectionName = collName;
+    d->findCollectionOptions = options;
+}
+
+void FindCollectionJob::start() 
+{
+    // meanwhile another findJob instance would have already connected our collection object
+    if ( ! collection->d->isValid() ) {
+        if ( collection->d->findOptions == Collection::CreateCollection ) {
+            OrgFreedesktopSecretServiceInterface *service = DBusSession::service();
+            QVariantMap creationProperties;
+            QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = service->CreateCollection(
+                creationProperties, collection->d->collectioName );
+            QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
+            connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
+        }
+        else 
+            if ( collection->d->findOptions == Collection::CreateCollection ) {
+                // TODO: implement this
+            }
+            else {
+                Q_ASSERT( 0, "Unknown findOtions" );
+            }
+    }
+    else {
+        setError( 0 );
+        emitResult();
+    }
+}
+
+FindCollectionJobPrivate::FindCollectionJobPrivate() :
+        findCollectionOptions( Collection::OpenOnly )
+{
+}
+
+
+
+
+DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :
+        CollectionJob( collection, parent),
+        d( new DeleteCollectionJobPrivate(this) )
+{
+}
+    
+void DeleteCollectionJob::start() 
+{
+    startFindCollection();
+    // this will trigger onFindCollectionFinished
+}
+
+void DeleteCollectionJob::onFindCollectionFinished() 
+{
+    // now performe the real delete operation on the backend
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( d->deleteReply, this );
+    connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), d.data(), SLOT( callFinished(QDBusPendingCallWatcher*) ) );
+    connect( d.data(), SIGNAL( deleteIsDone( CollectionError, const QString & ) ), d.data(), SLOT( deleteIsDone( CollectionError, const QString & ) ) );
+}
+
+void KSecretsService::DeleteCollectionJob::deleteIsDone(CollectionJob::CollectionError err, const QString& errMsg )
+{
+    _error = err;
+    setError( (int)err ); 
+    setErrorText( errMsg );
+    emitResult();
+}
+
+DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( QObject* parent ) : QObject( parent )
+{
+}
+
+void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher* /* watcher */ ) 
+{
+    Q_ASSERT( deleteReply.isFinished() );
+
+    CollectionJob::CollectionError err = CollectionJob::NoError;
+    QString msg;
+    
+    if ( deleteReply.isError() ) {
+        err = CollectionJob::DeleteError;
+        const QDBusError &dbusErr = deleteReply.error();
+        msg = QString("d-bus error %1 (%2)").arg( QDBusError::errorString( dbusErr.type() ) ).arg( dbusErr.message() );
+    }
+
+    kDebug() << "callFinished with err=" << (int)err << " and msg='" << msg << "'";
+    emit deleteIsDone( err, msg );
+}
+
+
+Collection::SearchItemsJob::SearchItemsJob( Collection *collection,
+                                            QObject *parent ) :
+    CollectionJob( collection, parent ) 
+{
+}
+
+
+Collection::SearchSecretsJob::SearchSecretsJob( Collection* collection, QObject* parent ) : 
+    CollectionJob( collection, parent )
+{
+}
+
+Collection::CreateItemJob::CreateItemJob( Collection *collection,
+                                          QObject *parent ) :
+    CollectionJob( collection, parent )
+{
+}
+
+Collection::ReadItemsJob::ReadItemsJob( Collection *collection,
+                                        QObject *parent ) :
+    CollectionJob( collection, parent )
+{
+}
+    
+QList< Secret > Collection::SearchSecretsJob::secrets() const
+{
+    // TODO: implement this
+    return QList< Secret >();
+}
+
+
 
 #include "ksecretscollectionjobs.moc"
+#include "ksecretscollectionjobs_p.moc"

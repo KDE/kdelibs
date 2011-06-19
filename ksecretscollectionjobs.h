@@ -22,11 +22,12 @@
 #define COLLECTIONJOB_H
 
 #include "ksecretsservicecollection.h"
-#include "ksecretsservicecollection_p.h"
 
 #include <kcompositejob.h>
-#include <QDBusPendingCallWatcher>
-#include <QDBusPendingReply>
+#include <qsharedpointer.h>
+
+class DeleteCollectionJobPrivate;
+class FindCollectionJobPrivate;
 
 namespace KSecretsService {
     
@@ -42,35 +43,49 @@ namespace KSecretsService {
  */
 class CollectionJob : public KCompositeJob {
     Q_OBJECT
+    Q_DISABLE_COPY(CollectionJob)
 public:
-    explicit CollectionJob(Collection *collection, QObject* parent = 0);
+    explicit CollectionJob( Collection *collection, QObject* parent = 0, bool shouldTriggerFind = true );
+    
+    enum CollectionError {
+        UndefinedError =-1, /// this error should never be encountered
+        NoError =0,
+        InternalError,
+        CollectionNotFound,
+        CreateError,
+        DeleteError
+    };
+
+    /**
+     * Returns the CollectionError corresponding to the outcome of the job
+     * @see KCompositJob::errorString()
+     */
+    CollectionError error() const { return _error; }
     
 protected:
-    CollectionPrivate *cd;
+    virtual void startFindCollection();
+    virtual void slotResult( KJob* job ); /// override  of the KCompositeJob::slotResult 
+    virtual void onFindCollectionFinished();
+    
+protected:
+    Collection      *collection;
+    CollectionError _error;
 };
 
 class DeleteCollectionJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(DeleteCollectionJob)
 public:
-    explicit DeleteCollectionJob( Collection* collection, QObject* parent =0 ) :
-        CollectionJob( collection, parent) {
-    }
+    explicit DeleteCollectionJob( Collection* collection, QObject* parent =0 );
     
-    virtual void start() {
-        // the job is already started by now, as we're handling a dbus call
-        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( deleteReply, this );
-        connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), this, SLOT( callFinished(QDBusPendingCallWatcher*) ) );
-    }
+    virtual void start();
+
+protected Q_SLOTS:
+    virtual void onFindCollectionFinished();
+    void deleteIsDone( CollectionError error, const QString &errorString );
     
-    void callFinished( QDBusPendingCallWatcher* /* watcher */ ) {
-        Q_ASSERT( deleteReply.isFinished() );
-        if ( deleteReply.isError() ) {
-            
-        }
-        else {
-        }
-    }
-    
-    QDBusPendingReply<QDBusObjectPath> deleteReply;
+private:
+    QSharedPointer< DeleteCollectionJobPrivate > d;
 };
 
 class FindCollectionJob : public CollectionJob {
@@ -80,25 +95,12 @@ public:
     FindCollectionJob( Collection *collection, 
                        const QString& collName,
                        Collection::FindCollectionOptions options,
-                       QObject *parent =0 ) : 
-            CollectionJob( collection, parent ),
-            collectionName( collName ),
-            findCollectionOptions( options ) {
-    }
-    virtual void start() {
-        // meanwhile another findJob instance would have already connected our collection object
-        if ( ! cd->isValid() ) {
-            // TODO: implement by checking that the collection is already connected
-        }
-        else {
-            setError( 0 );
-            emitResult();
-        }
-    }
+                       QObject *parent =0 );
+    
+    virtual void start();
     
 private:
-    QString                                              collectionName;
-    KSecretsService::Collection::FindCollectionOptions   findCollectionOptions;
+    QSharedPointer< FindCollectionJobPrivate > d;
 };
 
 class Collection::SearchItemsJob : public CollectionJob {

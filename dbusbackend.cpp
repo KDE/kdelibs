@@ -33,7 +33,7 @@ bool KSecretsService::DBusSession::startDaemon()
     {
         QString error;
         // FIXME: find out why this is not working
-        int ret = KToolInvocation::startServiceByDesktopPath("ksecretserviced.desktop", QStringList(), &error);
+        int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
         QVERIFY2( ret == 0, qPrintable( error ) );
         
         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),

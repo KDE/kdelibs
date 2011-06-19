@@ -41,17 +41,9 @@ protected:
     friend class Collection;
     friend class CollectionJob;
     
-    enum FindStatus {
-        Invalid         =0,
-        PendingFind     =1,
-        FoundExisting   =2,
-        NewlyCreated    =3
-    };
-    
-    QString                                             collectioName;
-    KSecretsService::Collection::FindCollectionOptions  findOptions;
-    FindStatus                                          findStatus;
-    DBusSession                                         *dbusSession;
+    QString                             collectioName;
+    Collection::FindCollectionOptions   findOptions;
+    Collection::FindStatus              findStatus;
 };
 
 
