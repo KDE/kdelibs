@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="uk" english-language-name="Ukranian">
+<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+<l:l10n language="uk" english-language-name="Ukranian">
 
    <l:gentext key="Bibliography" text="&#1051;&#1110;&#1090;&#1077;&#1088;&#1072;&#1090;&#1091;&#1088;&#1072;"/>
    <l:gentext key="bibliography" text="&#1083;&#1110;&#1090;&#1077;&#1088;&#1072;&#1090;&#1091;&#1088;&#1072;"/>
@@ -33,3 +33,4 @@
    <l:gentext key="footer-doc-teamname" text="&#1050;&#1086;&#1084;&#1072;&#1085;&#1076;&#1080; &#1079; &#1076;&#1086;&#1082;&#1091;&#1084;&#1077;&#1085;&#1090;&#1091;&#1074;&#1072;&#1085;&#1085;&#1103; KDE"/>
 
 </l:l10n>
+</l:i18n>
