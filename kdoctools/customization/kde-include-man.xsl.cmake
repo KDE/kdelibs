@@ -7,6 +7,5 @@
    <xsl:output method="text" encoding="UTF-8" indent="no"/>
 
    <xsl:param name="l10n.xml" select="document('xsl/all-l10n.xml')"/>
-   <xsl:param name="local.l10n.xml" select="document('xsl/kde-custom-l10n.xml')"/>
 
 </xsl:stylesheet>

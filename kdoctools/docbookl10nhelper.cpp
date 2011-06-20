@@ -238,13 +238,9 @@ int main( int argc, char **argv ) {
       /* old style (docbook-xsl<=1.75) */
       res = writeLangFile( all10nFName, l10nDir + "common/l10n.dtd",
                            allLangs );
-      res += writeLangFile( customl10nFName, l10nDir + "common/l10n.dtd",
-                            customLangs );
    } else {
       res = writeLangFileNew( all10nFName, l10nDir + "common/l10n.dtd",
                               allLangs );
-      res += writeLangFileNew( customl10nFName, l10nDir + "common/l10n.dtd",
-                               customLangs );
    }
 
    return( res );

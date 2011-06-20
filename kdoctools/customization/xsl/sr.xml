@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0"
-        language="sr"
+<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+<l:l10n language="sr"
         english-language-name="Serbian">
 
 <l:gentext key="Abstract" text="Сажетак"/>
@@ -692,3 +691,4 @@
 <l:l i="56">z</l:l>
 </l:letters>
 </l:l10n>
+</l:i18n>
