@@ -142,11 +142,11 @@ void KDateComboBoxPrivate::initDateWidget()
             if (m_dateMap.isEmpty()) {
                 addMenuAction(i18nc("@option next year",  "Next Year" ), m_date.addYears(1).date());
                 addMenuAction(i18nc("@option next month", "Next Month"), m_date.addMonths(1).date());
-                addMenuAction(i18nc("@option next week",  "Next week" ), m_date.addDays(m_date.daysInWeek()).date());
+                addMenuAction(i18nc("@option next week",  "Next Week" ), m_date.addDays(m_date.daysInWeek()).date());
                 addMenuAction(i18nc("@option tomorrow",   "Tomorrow"  ), m_date.addDays(1).date());
                 addMenuAction(i18nc("@option today",      "Today"     ), m_date.date());
                 addMenuAction(i18nc("@option yesterday",  "Yesterday" ), m_date.addDays(-1).date());
-                addMenuAction(i18nc("@option last week",  "Last week" ), m_date.addDays(-m_date.daysInWeek()).date());
+                addMenuAction(i18nc("@option last week",  "Last Week" ), m_date.addDays(-m_date.daysInWeek()).date());
                 addMenuAction(i18nc("@option last month", "Last Month"), m_date.addMonths(-1).date());
                 addMenuAction(i18nc("@option last year",  "Last Year" ), m_date.addYears(-1).date());
                 m_dateMenu->addSeparator();
@@ -227,7 +227,7 @@ void KDateComboBoxPrivate::warnDate()
         (m_options &KDateComboBox::WarnOnInvalid) == KDateComboBox::WarnOnInvalid) {
         QString warnMsg;
         if (!m_date.date().isValid()) {
-            warnMsg = i18n("The date you entered is invalid");
+            warnMsg = i18nc("@info", "The date you entered is invalid");
         } else if (m_date.date() < m_minDate) {
             if (m_minWarnMsg.isEmpty()) {
                 warnMsg = i18nc("@info", "Date cannot be earlier than %1", formatDate(m_minDate));

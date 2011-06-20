@@ -192,8 +192,8 @@ void KDateTimeEditPrivate::initTimeSpecWidget()
 {
     ui.m_timeSpecCombo->blockSignals(true);
     ui.m_timeSpecCombo->clear();
-    ui.m_timeSpecCombo->addItem(i18n("UTC"), "UTC");
-    ui.m_timeSpecCombo->addItem(i18n("Floating"), "Floating");
+    ui.m_timeSpecCombo->addItem(i18nc("UTC time zone", "UTC"), "UTC");
+    ui.m_timeSpecCombo->addItem(i18nc("No specific time zone", "Floating"), "Floating");
     QStringList keys = m_zones.keys();
     QMap<QString, QString> names;
     foreach (const QString &key, keys) {
@@ -240,7 +240,7 @@ void KDateTimeEditPrivate::warnDateTime()
             if (m_minWarnMsg.isEmpty()) {
                 //TODO Add datetime to string
                 //warnMsg = i18nc("@info", "Date and time cannot be earlier than %1", formatDate(m_minDate));
-                warnMsg = i18n("The entered date and time is before the minimum allowed date and time.");
+                warnMsg = i18nc("@info", "The entered date and time is before the minimum allowed date and time.");
             } else {
                 warnMsg = m_minWarnMsg;
                 //TODO localize properly
@@ -250,7 +250,7 @@ void KDateTimeEditPrivate::warnDateTime()
             if (m_maxWarnMsg.isEmpty()) {
                 //TODO Add datetime to string
                 //warnMsg = i18nc("@info", "Date cannot be later than %1", formatDate(m_maxDate));
-                warnMsg = i18n("The entered date and time is after the maximum allowed date and time.");
+                warnMsg = i18nc("@info", "The entered date and time is after the maximum allowed date and time.");
             } else {
                 warnMsg = m_maxWarnMsg;
                 warnMsg.replace("%1", KGlobal::locale()->formatDateTime(m_maxDateTime));

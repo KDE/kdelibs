@@ -256,7 +256,7 @@ void KTimeComboBoxPrivate::warnTime()
         (m_options &KTimeComboBox::WarnOnInvalid) == KTimeComboBox::WarnOnInvalid) {
         QString warnMsg;
         if (!m_time.isValid()) {
-            warnMsg = i18n("The time you entered is invalid");
+            warnMsg = i18nc("@info", "The time you entered is invalid");
         } else if (m_time < m_minTime) {
             if (m_minWarnMsg.isEmpty()) {
                 warnMsg = i18nc("@info", "Time cannot be earlier than %1", formatTime(m_minTime));
