@@ -69,7 +69,6 @@
 #cmakedefine HAVE_XRENDER 1
 
 #cmakedefine   HAVE_BACKTRACE 1
-#cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_INITGROUPS 1

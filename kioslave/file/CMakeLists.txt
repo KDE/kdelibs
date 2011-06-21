@@ -3,6 +3,9 @@ project(kioslave-file)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+include(ConfigureChecks.cmake)
+configure_file(config-kioslave-file.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-file.h )
+
 
 ########### next target ###############
 

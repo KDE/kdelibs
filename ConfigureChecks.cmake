@@ -90,7 +90,6 @@ check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)  
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 
-check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
