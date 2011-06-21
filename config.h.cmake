@@ -12,9 +12,6 @@
 
 /****************************/
 
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#cmakedefine   HAVE_DLFCN_H 1
-
 /* Define to 1 if you have stdio.h */
 #cmakedefine   HAVE_STDIO_H 1
 
