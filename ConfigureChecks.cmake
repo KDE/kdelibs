@@ -39,7 +39,6 @@ check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
 check_include_files(string.h      HAVE_STRING_H)                       # various
 check_include_files(strings.h     HAVE_STRINGS_H)                      # various
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
-check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
 
