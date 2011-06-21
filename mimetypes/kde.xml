@@ -65,7 +65,6 @@ Notes:
     <comment>mime encapsulated web archive</comment>
     <glob pattern="*.mhtml"/>
     <glob pattern="*.mht"/>
-    <glob pattern="*.eml"/>
   </mime-type>
   <mime-type type="application/x-nzb"> <!-- fdo #10029 -->
     <comment>NewzBin usenet index</comment>
