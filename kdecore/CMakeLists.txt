@@ -42,6 +42,9 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
 # Configure a small file to tell BackendsManager what to use
 configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
 
+# Configure checks for localization
+configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
