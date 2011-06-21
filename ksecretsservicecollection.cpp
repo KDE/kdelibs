@@ -156,6 +156,11 @@ bool CollectionPrivate::isValid() const
         findStatus == Collection::NewlyCreated;
 }
 
+void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
+{
+    // TODO: implement this
+}
+
 #include "ksecretsservicecollection.moc"
 
     

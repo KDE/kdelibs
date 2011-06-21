@@ -28,6 +28,7 @@
 
 class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
+class CollectionJobPrivate;
 
 namespace KSecretsService {
     
@@ -45,12 +46,13 @@ class CollectionJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(CollectionJob)
 public:
-    explicit CollectionJob( Collection *collection, QObject* parent = 0, bool shouldTriggerFind = true );
+    explicit CollectionJob( Collection *collection, QObject* parent = 0 );
     
     enum CollectionError {
-        UndefinedError =-1, /// this error should never be encountered
+        UndefinedError =-1,             /// this error should never be encountered
         NoError =0,
         InternalError,
+        OperationCancelledByTheUser,    /// the user choose to cancel ther operation during a message prompt
         CollectionNotFound,
         CreateError,
         DeleteError
@@ -60,16 +62,29 @@ public:
      * Returns the CollectionError corresponding to the outcome of the job
      * @see KCompositJob::errorString()
      */
-    CollectionError error() const { return _error; }
+    CollectionError error() const;
+    
+    /**
+     * Get a pointer to the collection wich started this job
+     */
+    Collection *collection() const;
+    
+    /**
+     * This override is intended to make it public and as such let subjob additions from other classes in this client implementation
+     */
+    virtual bool addSubjob( KJob* ); // override
     
 protected:
+    void finishedWithError( CollectionError err, const QString &errTxt );
+    void finishedOk();
     virtual void startFindCollection();
     virtual void slotResult( KJob* job ); /// override  of the KCompositeJob::slotResult 
     virtual void onFindCollectionFinished();
-    
+
 protected:
-    Collection      *collection;
-    CollectionError _error;
+    friend class FindCollectionJobPrivate;
+    friend class ::FindCollectionJobPrivate;
+    CollectionJobPrivate *d;
 };
 
 class DeleteCollectionJob : public CollectionJob {
@@ -92,14 +107,11 @@ class FindCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(FindCollectionJob)
 public:
-    FindCollectionJob( Collection *collection, 
-                       const QString& collName,
-                       Collection::FindCollectionOptions options,
-                       QObject *parent =0 );
+    FindCollectionJob( Collection *collection, QObject *parent =0 );
     
     virtual void start();
-    
 private:
+    friend class ::FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
@@ -110,7 +122,7 @@ public:
     explicit SearchItemsJob( Collection* collection,  QObject *parent =0 );
     
     QList< SecretItem > &items() const;
-    
+
 private:
     class Private;
     Private *d;

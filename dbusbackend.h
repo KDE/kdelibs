@@ -20,12 +20,25 @@
 
 #ifndef DBUSBACKEND_H
 #define DBUSBACKEND_H
+#include <kjob.h>
 
 class OrgFreedesktopSecretCollectionInterface;
 class OrgFreedesktopSecretServiceInterface;
+class OrgFreedesktopSecretSessionInterface;
 
-namespace KSecretsService {
+class OpenSessionJob : public KJob {
+    Q_OBJECT
+public:
+    explicit OpenSessionJob( QObject *parent =0 );
     
+    virtual void start();
+    
+    OrgFreedesktopSecretServiceInterface *serviceInterface() const;
+    
+private:
+    OrgFreedesktopSecretSessionInterface *sessionIf;
+    OrgFreedesktopSecretServiceInterface *serviceIf;
+};
 
 /**
  * Current implementation of the client API uses the public DBus interface exposed by the
@@ -36,15 +49,18 @@ namespace KSecretsService {
 class DBusSession {
 public:
     
-    static OrgFreedesktopSecretServiceInterface *service();
+    static OpenSessionJob * service();
     
 protected:
     static bool startDaemon();
+    static bool isValid();
     
 private:
-    
-};
+    friend class OpenSessionJob;
 
-}
+    static const QString                        encryptionAlgorithm;
+    static OrgFreedesktopSecretSessionInterface *sessionIf;
+    static OrgFreedesktopSecretServiceInterface *serviceIf;
+};
 
 #endif // DBUSBACKEND_H

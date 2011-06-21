@@ -24,6 +24,7 @@
 #include "ksecretsservicecollection.h"
 #include "dbusbackend.h"
 
+#include <QDBusObjectPath>
 
 namespace KSecretsService {
 
@@ -35,6 +36,7 @@ public:
     void setPendingFindCollection(const QString &collName, Collection::FindCollectionOptions options);
     bool isValid() const;
     bool isNewlyCreated() const;
+    void setDBusPath(const QDBusObjectPath &collPath);
     
 
 protected:
@@ -45,6 +47,7 @@ protected:
     QString                             collectioName;
     Collection::FindCollectionOptions   findOptions;
     Collection::FindStatus              findStatus;
+    QDBusObjectPath                     dbusPath;
 };
 
 

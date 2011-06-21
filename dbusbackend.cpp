@@ -21,14 +21,19 @@
 #include "dbusbackend.h"
 #include "service_interface.h"
 #include "collection_interface.h"
+#include "session_interface.h"
 
 #include <QtDBus/QDBusConnection>
+#include <kdebug.h>
 
-namespace KSecretsService {
 
 #define SERVICE_NAME "org.freedesktop.secrets"
 
-bool KSecretsService::DBusSession::startDaemon()
+const QString DBusSession::encryptionAlgorithm = "dh-ietf1024-aes128-cbc-pkcs7";
+OrgFreedesktopSecretServiceInterface *DBusSession::serviceIf = 0;
+OrgFreedesktopSecretSessionInterface *DBusSession::sessionIf = 0;
+
+bool DBusSession::startDaemon()
 {
     // TODO: implement this
     // launch the daemon if it's not yet started
@@ -46,12 +51,60 @@ bool KSecretsService::DBusSession::startDaemon()
     return false;
 }
 
-OrgFreedesktopSecretServiceInterface* DBusSession::service()
+OpenSessionJob* DBusSession::service()
 {
-    // TODO: implement this
-    return NULL;
+    return new OpenSessionJob();
 }
 
+bool DBusSession::isValid()
+{
+    return sessionIf != 0 && sessionIf->isValid();
+}
 
-} // namespace
+OpenSessionJob::OpenSessionJob(QObject* parent): 
+            KJob(parent),
+            sessionIf(0),
+            serviceIf(0)
+{
+}
 
+void OpenSessionJob::start()
+{
+    if ( DBusSession::isValid() ) {
+        setError(0);
+        emitResult();
+    }
+    else {
+        serviceIf = new OrgFreedesktopSecretServiceInterface( SERVICE_NAME, 
+                                                              "/org/freedesktop/secrets", 
+                                                              QDBusConnection::sessionBus() );
+        
+        QCA::KeyGenerator keygen;
+        QCA::DLGroup dhDlgroup(keygen.createDLGroup(QCA::IETF_1024));
+        if ( dhDlgroup.isNull() ) {
+            QString errorTxt = "Cannot create DL Group for dbus session open";
+            kDebug() << errorTxt;
+            setError(1); // FIXME: use error codes here
+            setErrorText( errorTxt );
+            emitResult();
+        }
+        else {
+            QCA::PrivateKey dhPrivkey(keygen.createDH(dhDlgroup));
+            QCA::PublicKey dhPubkey(dhPrivkey);
+            QByteArray dhBytePub(dhPubkey.toDH().y().toArray().toByteArray());
+            
+            QDBusPendingReply< QDBusVariant, QDBusObjectPath > openSessionReply = serviceIf->OpenSession( 
+                DBusSession::encryptionAlgorithm,
+                QDBusVariant(dhBytePub)
+            );
+            QDBusPendingCallWatcher *openSessionWatcher = new QDBusPendingCallWatcher( openSessionReply, this );
+            connect( openSessionWatcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(openSessionFinished(QDBusPendingCallWatcher*)) );
+        }
+    }
+}
+
+OrgFreedesktopSecretServiceInterface* OpenSessionJob::serviceInterface() const
+{
+    // FIXME: should we check it or not?
+    return DBusSession::serviceIf;
+}

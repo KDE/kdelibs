@@ -28,6 +28,14 @@
 
 using namespace KSecretsService;
 
+class CollectionJobPrivate {
+public:
+    CollectionJobPrivate();
+    
+    Collection      *collection;
+    CollectionJob::CollectionError error;
+};
+
 /**
  * Internal DeleteCollectionJob implementation, based on DBus
  */
@@ -48,16 +56,40 @@ protected Q_SLOTS:
     void callFinished( QDBusPendingCallWatcher* );
 };
 
-class FindCollectionJobPrivate  {
-    
+class FindCollectionJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(FindCollectionJobPrivate)
 public:
     friend class FindCollectionJob;
     
-    FindCollectionJobPrivate();
-    FindCollectionJobPrivate( QString collName, KSecretsService::Collection::FindCollectionOptions opts );
+    FindCollectionJobPrivate( FindCollectionJob*, CollectionPrivate* );
+
+    void startCreateCollection();
+    void startOpenCollection();
     
+private Q_SLOTS:
+    void openSessionFinished(KJob*);
+    void createFinished(QDBusPendingCallWatcher*);
+    void createPromptFinished(KJob*);
+    
+public:
+    FindCollectionJob                                    *findJob;
     QString                                              collectionName;
     KSecretsService::Collection::FindCollectionOptions   findCollectionOptions;
+    CollectionPrivate                                    *collectionPrivate;
 };
+
+class PromptJob : public KJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(PromptJob)
+public:
+    PromptJob( const QDBusObjectPath &path, QObject *parent );
+    QDBusVariant operationResult() const { return opResult; }
     
+    virtual void start();
+    
+private:
+    QDBusVariant    opResult;
+};
+
 #endif // KSECRETSCOLLECTIONJOBS_P_H
