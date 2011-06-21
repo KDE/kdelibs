@@ -450,7 +450,7 @@ public:
      * of the pixmap into consideration
      * @param overlays to draw
      * @param pixmap to draw on
-     * @since 4.8
+     * @since 4.7
      */
     void drawOverlays(const QStringList &overlays, QPixmap &pixmap, KIconLoader::Group group, int state = KIconLoader::DefaultState) const;
 
