@@ -1083,12 +1083,9 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
 bool Ftp::ftpCloseCommand()
 {
-    // first close data sockets (if opened), then read response that
-    // we got for whatever was used in ftpOpenCommand ( should be 226 )
-    delete m_data;
-    m_data = NULL;
-    delete m_server;
-    m_server = NULL;
+  // first close data sockets (if opened), then read response that
+  // we got for whatever was used in ftpOpenCommand ( should be 226 )
+  ftpCloseDataConnection();
 
   if(!m_bBusy)
     return true;
@@ -1818,9 +1815,11 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   }
 
   // Send the mime-type...
-  StatusCode status = ftpSendMimeType(iError, url);
-  if (status != statusSuccess) {
-      return status;
+  if (iCopyFile == -1) {
+    StatusCode status = ftpSendMimeType(iError, url);
+    if (status != statusSuccess) {
+        return status;
+    }
   }
 
   KIO::filesize_t bytesLeft = 0;
