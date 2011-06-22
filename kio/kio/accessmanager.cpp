@@ -317,9 +317,6 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    // Set the meta data for this job...
-    kioJob->setMetaData(metaData);
-
     // Always set the "cookies" meta-data to manual so we can determine when
     // to send and not send cookies. We do this to ensure QNetworkRequest's
     // built-in protection against cross-domain cookies are properly honored.
@@ -339,6 +336,9 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             }
         }
     }
+
+    // Set the meta data for this job...
+    kioJob->setMetaData(metaData);
 
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
