@@ -206,6 +206,11 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         const QString headerName = httpHeader.left(index);
         QString headerValue = httpHeader.mid(index+1);
 
+        // Ignore cookie header since it is handled by the http ioslave.
+        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive)) {
+            continue;
+        }
+
         if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
             ignoreContentDisposition(job)) {
             continue;

@@ -317,26 +317,6 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    // Always set the "cookies" meta-data to manual so we can determine when
-    // to send and not send cookies. We do this to ensure QNetworkRequest's
-    // built-in protection against cross-domain cookies are properly honored.
-    metaData.insert(QL1S("cookies"), QL1S("manual"));
-
-    if (req.attribute(QNetworkRequest::CookieLoadControlAttribute) != QNetworkRequest::Manual) {
-        const QNetworkCookieJar* jar = cookieJar();
-        Q_ASSERT(jar);
-        if (jar && !metaData.contains(QL1S("setcookies"))) {
-            QStringList cookies;
-            Q_FOREACH(const QNetworkCookie& cookie, jar->cookiesForUrl(req.url())) {
-                cookies << (cookie.name() + QL1S("=") + cookie.value());
-            }
-            if (!cookies.isEmpty()) {
-                const QString cookieStr = QL1S("Cookie: ") + cookies.join(QL1S(";"));
-                metaData.insert(QL1S("setcookies"), cookieStr);
-            }
-        }
-    }
-
     // Set the meta data for this job...
     kioJob->setMetaData(metaData);
 
