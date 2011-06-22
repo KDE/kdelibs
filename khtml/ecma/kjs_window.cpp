@@ -2723,8 +2723,15 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
         str = str.mid(1);
 
       // Note that we want to do gotoAnchor even when the hash is already set, so we
-      // scroll the destination into view
-      url.setRef(str);
+      // scroll the destination into view.
+
+      // Setting this must always provide a ref, even if just ; see
+      // HTML5 2.6.
+      if (str.isEmpty()) {
+        url.setHTMLRef("");
+      } else {
+        url.setRef(str);
+      }
       break;
     case Host: {
       QString host = str.left(str.indexOf(":"));
