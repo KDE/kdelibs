@@ -1489,11 +1489,11 @@ QString KUrl::htmlRef() const
 {
   if ( !hasSubUrl() )
   {
-      return QUrl::fromPercentEncoding( ref().toLatin1() );
+      return fragment();
   }
 
   const List lst = split( *this );
-  return QUrl::fromPercentEncoding( (*lst.begin()).ref().toLatin1() );
+  return (*lst.begin()).fragment();
 }
 
 QString KUrl::encodedHtmlRef() const
@@ -1865,8 +1865,8 @@ bool KUrl::hasRef() const
 
 void KUrl::setRef( const QString& fragment )
 {
-  if ( fragment.isNull() )
-    setFragment( fragment ); // pass null, not empty
+  if ( fragment.isEmpty() ) // empty or null
+    setFragment( fragment );
   else
     setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) );
 }

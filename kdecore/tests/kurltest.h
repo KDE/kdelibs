@@ -29,6 +29,7 @@ private Q_SLOTS:
     void testEmptyURL();
     void testIsValid();
     void testSetQuery();
+    void testEmptyNullReference();
     void testSetRef();
     void testSetHTMLRef();
     void testDirectory();
