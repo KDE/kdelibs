@@ -35,14 +35,6 @@
 #define QL1S(x)  QLatin1String(x)
 #define QL1C(x)  QLatin1Char(x)
 
-
-static bool isLocalRequest(const KUrl& url)
-{
-    const QString scheme (url.protocol());
-    return (KProtocolInfo::isKnownProtocol(scheme) &&
-            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
-}
-
 namespace KDEPrivate {
 
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,

@@ -84,6 +84,15 @@ private:
     QPointer<KIO::SimpleJob> m_kioJob;
 };
 
+
+static bool isLocalRequest(const KUrl& url)
+{
+    const QString scheme (url.protocol());
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
+
 }
 
 #endif // KIO_ACCESSMANAGERREPLY_P_H
