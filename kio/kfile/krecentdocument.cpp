@@ -25,10 +25,11 @@
  * SUCH DAMAGE.
  *
  */
-#include <krecentdocument.h>
-#include <kconfig.h>
+
+#include "krecentdocument.h"
+
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <kmimetype.h>
@@ -42,6 +43,7 @@
 
 #include <sys/types.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 QString KRecentDocument::recentDocumentDirectory()
 {

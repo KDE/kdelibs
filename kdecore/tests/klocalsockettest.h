@@ -20,8 +20,7 @@
 #ifndef KLOCALSOCKETTEST_H
 #define KLOCALSOCKETTEST_H
 
-#include <QtCore/QBool>
-#include <QtTest>
+#include <QtCore/QObject>
 
 class KLocalSocketServer;
 class tst_KLocalSocket : public QObject

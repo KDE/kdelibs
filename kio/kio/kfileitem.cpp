@@ -37,12 +37,12 @@
 #include <QtCore/QFile>
 #include <QtCore/QMap>
 #include <QtGui/QApplication>
+#include <QtGui/QPalette>
 #include <QTextDocument>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmimetype.h>
@@ -1069,6 +1069,7 @@ QString KFileItem::getStatusBarInfo() const
     return text;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KFileItem::getToolTipText(int maxcount) const
 {
     // we can return QString() if no tool tip should be shown
@@ -1144,6 +1145,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     return tip;
 }
+#endif
 
 void KFileItem::run( QWidget* parentWidget ) const
 {

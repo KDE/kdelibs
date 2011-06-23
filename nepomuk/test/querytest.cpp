@@ -55,6 +55,7 @@
 Q_DECLARE_METATYPE( Nepomuk::Query::Query )
 
 using namespace Nepomuk::Query;
+using namespace Nepomuk::Vocabulary;
 
 
 // this is a tricky one as we nee to match the variable names and order of the queries exactly.
@@ -67,46 +68,50 @@ void QueryTest::testToSparql_data()
     simpleLiteralQuery.setFullTextScoringEnabled( true );
     QTest::newRow( "simple literal query" )
         << simpleLiteralQuery
-        << QString::fromLatin1( "select distinct ?r max(?v5) as ?_n_f_t_m_s_ where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } "
-                                "UNION { ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello'\" OPTION (score ?v5) . } . } ORDER BY DESC ( ?_n_f_t_m_s_ )" )
+        << QString::fromLatin1( "select distinct ?r max(?v5) as ?_n_f_t_m_s_ where { { ?r ?v1 ?v3 . ?v3 bif:contains \"'Hello'\" OPTION (score ?v5) . } "
+                                "UNION { ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . ?v3 bif:contains \"'Hello'\" OPTION (score ?v5) . } . } ORDER BY DESC ( ?_n_f_t_m_s_ )" )
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 
 
-    QString helloWorldQuery = QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello World'\" . } "
-                                                   "UNION "
-                                                   "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello World'\" . } . }" )
-                              .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
-                                    Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
     QTest::newRow( "simple literal query with space" )
         << Query( LiteralTerm( "Hello World" ) )
-        << helloWorldQuery;
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v3 . FILTER(bif:contains(?v3, \"'Hello' AND 'World'\")) . } "
+                                "UNION "
+                                "{ ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . FILTER(bif:contains(?v3, \"'Hello' AND 'World'\")) . } . }" )
+           .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
+                 Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
+    const QString helloWorldQuery = QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v3 . FILTER(bif:contains(?v3, \"'Hello World'\")) . } "
+                                                         "UNION "
+                                                         "{ ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . FILTER(bif:contains(?v3, \"'Hello World'\")) . } . }" )
+            .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
+                  Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
     QTest::newRow( "simple literal query with space and quotes" )
         << Query( LiteralTerm( "'Hello World'" ) )
         << helloWorldQuery;
-    QTest::newRow( "simple literal query with space and quotes" )
+    QTest::newRow( "simple literal query with space and double quotes" )
         << Query( LiteralTerm( "\"Hello World\"" ) )
         << helloWorldQuery;
 
     QTest::newRow( "simple literal query with wildcard 1" )
         << Query( LiteralTerm( "Hello*" ) )
-        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . ?v2 bif:contains \"'Hello*'\" . } "
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v3 . FILTER(bif:contains(?v3, \"'Hello*'\")) . } "
                                 "UNION "
-                                "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . ?v2 bif:contains \"'Hello*'\" . } . }" )
+                                "{ ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . FILTER(bif:contains(?v3, \"'Hello*'\")) . } . }" )
            .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
                  Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
     QTest::newRow( "simple literal query with wildcard 2" )
         << Query( LiteralTerm( "*Hello" ) )
-        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . FILTER(REGEX(?v2, \".*Hello\")) . } "
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v3 . FILTER(REGEX(?v3, \".*Hello\")) . } "
                                 "UNION "
-                                "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . FILTER(REGEX(?v2, \".*Hello\")) . } . }" )
+                                "{ ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . FILTER(REGEX(?v3, \".*Hello\")) . } . }" )
            .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
                  Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
     QTest::newRow( "simple literal query with wildcard 3" )
         << Query( LiteralTerm( "Hel?o" ) )
-        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v2 . FILTER(REGEX(?v2, \"Hel.o\")) . } "
+        << QString::fromLatin1( "select distinct ?r where { { ?r ?v1 ?v3 . FILTER(REGEX(?v3, \"Hel.o\")) . } "
                                 "UNION "
-                                "{ ?r ?v1 ?v3 . ?v3 ?v4 ?v2 . ?v4 %1 %2 . FILTER(REGEX(?v2, \"Hel.o\")) . } . }" )
+                                "{ ?r ?v1 ?v4 . ?v4 ?v2 ?v3 . ?v2 %1 %2 . FILTER(REGEX(?v3, \"Hel.o\")) . } . }" )
            .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
                  Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 
@@ -145,7 +150,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "hastag with literal term" )
         << Query( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), LiteralTerm( QLatin1String("nepomuk")) ) )
-        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . ?v3 bif:contains \"'nepomuk'\" . }")
+        << QString::fromLatin1("select distinct ?r where { ?r %1 ?v1 . ?v1 ?v2 ?v3 . ?v2 %2 %3 . FILTER(bif:contains(?v3, \"'nepomuk'\")) . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()))
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
@@ -219,7 +224,7 @@ void QueryTest::testToSparql_data()
     setVarNameTerm2.setVariableName( "myvar" );
     QTest::newRow( "set variable name 2" )
         << Query( setVarNameTerm2 )
-        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . ?myvar ?v1 ?v2 . ?v1 %2 %3 . ?v2 bif:contains \"'nepomuk'\" . }")
+        << QString::fromLatin1("select distinct ?r ?myvar where { ?r %1 ?myvar . ?myvar ?v1 ?v2 . ?v1 %2 %3 . FILTER(bif:contains(?v2, \"'nepomuk'\")) . }")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()));
@@ -261,7 +266,7 @@ void QueryTest::testToSparql_data()
 
     QTest::newRow( "order by 3" )
         << Query( AndTerm( orderByTerm1, orderByTerm2 ) )
-        << QString::fromLatin1("select distinct ?r ?v1 ?v2 where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . ?v2 bif:contains \"'hello'\" . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
+        << QString::fromLatin1("select distinct ?r ?v1 ?v2 where { { ?r %1 ?v1 . FILTER(?v1<\"4\"^^%2) . ?r %3 ?v2 . FILTER(bif:contains(?v2, \"'hello'\")) . } . } ORDER BY ASC ( ?v2 ) DESC ( ?v1 )")
         .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::numericRating()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::XMLSchema::xsdInt()),
              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()) );
@@ -312,38 +317,52 @@ void QueryTest::testToSparql_data()
     FileQuery emptyFileQuery;
     QTest::newRow( "empty file query" )
         << Query(emptyFileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 %2 . } UNION { ?r %1 %3 . } . }")
-        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+        << QString::fromLatin1("select distinct ?r where { ?r a ?v1 . FILTER(?v1 in (%1,%2)) . }")
+        .arg( Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
 
     FileQuery fileQuery( ComparisonTerm( Soprano::Vocabulary::NAO::hasTag(), ResourceTerm(QUrl("nepomuk:/res/foobar")) ) );
     QTest::newRow( "file query" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . { ?r %2 %3 . } UNION { ?r %2 %4 . } . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a ?v1 . FILTER(?v1 in (%2,%3)) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
-              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
 
     fileQuery.setFileMode(FileQuery::QueryFiles);
     QTest::newRow( "file query (only files)" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a %2 . FILTER(!bif:exists((select (1) where { ?r a %3 . }))) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()) );
 
     fileQuery.setFileMode(FileQuery::QueryFolders);
     QTest::newRow( "file query (only folders)" )
         << Query(fileQuery)
-        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r %2 %3 . FILTER(!bif:exists((select (1) where { ?r %2 %4 . }))) . } . }")
+        << QString::fromLatin1("select distinct ?r where { { ?r %1 <nepomuk:/res/foobar> . ?r a %2 . FILTER(!bif:exists((select (1) where { ?r a %3 . }))) . } . }")
         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
-              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDF::type()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
               Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()) );
+
+
+    fileQuery.setFileMode(FileQuery::QueryFilesAndFolders);
+    fileQuery.addIncludeFolder(KUrl(QLatin1String("/home/test/includeme")));
+    fileQuery.addExcludeFolder(KUrl(QLatin1String("/home/test/includeme/excludeme")));
+    fileQuery.addRequestProperty(Query::RequestProperty(NIE::url(), false));
+    QTest::newRow( "file query with include folder" )
+        << Query(fileQuery)
+        << QString::fromLatin1("select distinct ?r ?reqProp1 where { { "
+                               "?r %4 ?reqProp1 . "
+                               "?r %1 <nepomuk:/res/foobar> . "
+                               "?r a ?v1 . FILTER(?v1 in (%2,%3)) . "
+                               "FILTER(REGEX(STR(?reqProp1), '(^file:///home/test/includeme/)', 'i')) . "
+                               "FILTER(!REGEX(STR(?reqProp1), '^(file:///home/test/includeme/excludeme/)', 'i')) . } . }")
+        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::hasTag()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Folder()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::FileDataObject()),
+              Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NIE::url()) );
 
 
     QTest::newRow( "Query one resource" )
@@ -357,6 +376,10 @@ void QueryTest::testToSparql_data()
     QTest::newRow( "Pointless but correct: Query several resources resource 2" )
             << Query(AndTerm(ResourceTerm(QUrl("nepomuk:/A")), ResourceTerm(QUrl("nepomuk:/B")), ResourceTerm(QUrl("nepomuk:/C"))))
             << QString::fromLatin1("select distinct ?r where { { ?r a ?v1 . FILTER(?r=<nepomuk:/A>) . ?r a ?v2 . FILTER(?r=<nepomuk:/B>) . ?r a ?v3 . FILTER(?r=<nepomuk:/C>) . } . }");
+
+    QTest::newRow("query several types")
+            << Query(OrTerm(ResourceTypeTerm(QUrl("onto:/typeA")), ResourceTypeTerm(QUrl("onto:/typeB"))))
+            << QString(QLatin1String("select distinct ?r where { ?r a ?v1 . FILTER(?v1 in (<onto:/typeA>,<onto:/typeB>)) . }"));
 
     //
     // A more complex example
@@ -382,9 +405,10 @@ void QueryTest::testToSparql_data()
     mainTerm.addSubTerm(ct.inverted());
 
     QString sparql = QString::fromLatin1("select distinct ?r count(?v3) as ?cnt where { { "
-                                         "{ ?r a %1 . } UNION { ?r a %2 . } . "
+                                         "?v3 ?v2 ?r . "
+                                         "?r a ?v4 . FILTER(?v4 in (%2,%1)) . "
                                          "FILTER(!bif:exists((select (1) where { <nepomuk:/res/foobar> ?v1 ?r . }))) . "
-                                         "?v3 ?v2 ?r . } . } ORDER BY DESC ( ?cnt )")
+                                         "} . } ORDER BY DESC ( ?cnt )")
                      .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::RasterImage()),
                           Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NFO::Audio()));
 
@@ -447,6 +471,38 @@ void QueryTest::testToSparql_data()
 }
 
 
+namespace {
+/**
+ * Changes the ordering of ?vN variables in the given query string
+ * to always start at 1 and go up from there depending on the first
+ * occurrence.
+ *
+ * This allows to use an arbitrary variable naming in the tests and
+ * in the SPARQL query generation code.
+ */
+QString normalizeVariables(const QString& s) {
+    QList<int> variableNumbers;
+    QRegExp varExp(QLatin1String("\\?v(\\d+)"));
+    int pos = -1;
+
+    // extract all generated variables
+    while((pos = s.indexOf(varExp, pos+1)) >= 0) {
+        const int varNum = varExp.cap(1).toInt();
+        if( !variableNumbers.contains(varNum) ) {
+            variableNumbers << varNum;
+        }
+    }
+
+    // replace all generated var numbers with a normalized order
+    QString newQuery(s);
+    for(int i = 0; i < variableNumbers.count(); ++i) {
+        newQuery.replace(QString::fromLatin1("?v%1").arg(variableNumbers[i]), QString::fromLatin1("?$$%1").arg(i+1));
+    }
+    newQuery.replace(QLatin1String("?$$"), QLatin1String("?v"));
+
+    return newQuery;
+}
+}
 void QueryTest::testToSparql()
 {
     QFETCH( Nepomuk::Query::Query, query );
@@ -455,17 +511,7 @@ void QueryTest::testToSparql()
     // we test without result restrictions which always look the same anyway
     query.setQueryFlags( Query::NoResultRestrictions|Query::WithoutFullTextExcerpt );
 
-    QEXPECT_FAIL("simple literal query", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("simple literal query with space", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("simple literal query with space and quotes", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("simple literal query with wildcard 1", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("simple literal query with wildcard 2", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("simple literal query with wildcard 3", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("literal query with depth 2", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("hastag with literal term", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("set variable name 2", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QEXPECT_FAIL("order by 3", "Query API is a bit broken at the moment - I will fix that (trueg)", Abort);
-    QCOMPARE( query.toSparqlQuery().simplified(), queryString );
+    QCOMPARE( normalizeVariables(query.toSparqlQuery().simplified()), normalizeVariables(queryString) );
 
     // test fromQueryUrl
     QCOMPARE( Query::fromQueryUrl(query.toSearchUrl()), query );

@@ -33,7 +33,6 @@ namespace KIO {
 
     class Slave;
     class SlaveConfig;
-    class SessionData;
 
     class SchedulerPrivate;
     /**
@@ -273,6 +272,13 @@ namespace KIO {
          */
         static bool isSlaveOnHoldFor(const KUrl& url);
 
+        /**
+         * Updates the internal metadata from job.
+         *
+         * @since 4.6.5
+         */
+        static void updateInternalMetaData(SimpleJob* job);
+
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
@@ -288,20 +294,21 @@ namespace KIO {
 
         static Scheduler *self();
 
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveDied(KIO::Slave *slave))
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
+        Q_PRIVATE_SLOT(d_func(), void slotSlaveDied(KIO::Slave *slave))
+        Q_PRIVATE_SLOT(d_func(), void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                                                const QString &host, bool connected))
 
         // connected to D-Bus signal:
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&))
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveOnHoldListChanged())
+        Q_PRIVATE_SLOT(d_func(), void slotReparseSlaveConfiguration(const QString &, const QDBusMessage&))
+        Q_PRIVATE_SLOT(d_func(), void slotSlaveOnHoldListChanged())
 
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveConnected())
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveError(int error, const QString &errorMsg))
-        Q_PRIVATE_SLOT(schedulerPrivate, void slotUnregisterWindow(QObject *))
+        Q_PRIVATE_SLOT(d_func(), void slotSlaveConnected())
+        Q_PRIVATE_SLOT(d_func(), void slotSlaveError(int error, const QString &errorMsg))
+        Q_PRIVATE_SLOT(d_func(), void slotUnregisterWindow(QObject *))
     private:
         friend class SchedulerPrivate;
-        SchedulerPrivate *const d;
+        SchedulerPrivate *const removeMe; // for BC only, KDE5: remove
+        SchedulerPrivate *d_func();
 };
 
 }

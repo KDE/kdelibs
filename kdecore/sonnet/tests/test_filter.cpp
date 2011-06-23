@@ -18,8 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "filter_p.h"
+
 #include "test_filter.h"
+#include "filter_p.h"
 
 #include <qtest_kde.h>
 #include <kdebug.h>

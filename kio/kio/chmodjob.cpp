@@ -24,8 +24,6 @@
 #include "job.h"
 #include "jobuidelegate.h"
 
-#include <kglobal.h>
-
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>

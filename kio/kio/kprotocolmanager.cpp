@@ -41,7 +41,6 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
-#include <kstringhandler.h>
 #include <kurl.h>
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory.h>
@@ -793,7 +792,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
   if ( ok ) {
     systemVersion = QString::number(versioninfo.dwMajorVersion);
     systemVersion +=  QL1C('.');
-    systemVersion += QString::number(versioninfo.dwMinorVersion));
+    systemVersion += QString::number(versioninfo.dwMinorVersion);
   }
 #else
   systemName = unameBuf.sysname;

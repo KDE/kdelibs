@@ -197,4 +197,10 @@ bool KFileTreeView::showHiddenFiles() const
     return d->mSourceModel->dirLister()->showingDotFiles();
 }
 
+QSize KFileTreeView::sizeHint() const
+{
+    // This size makes KDirSelectDialog pop up just under 800x600 by default :-)
+    return QSize(680, 500);
+}
+
 #include "kfiletreeview.moc"

@@ -23,7 +23,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kfileitem.h>
-#include <kglobal.h>
 #include <klocale.h>
 
 #include <QGridLayout>

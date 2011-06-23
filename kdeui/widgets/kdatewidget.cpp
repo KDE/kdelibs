@@ -173,7 +173,7 @@ bool KDateWidget::setCalendar( KCalendarSystem *newCalendar )
 
 bool KDateWidget::setCalendar( const QString &newCalendarType )
 {
-    return setCalendarSystem( KCalendarSystem::calendarSystemForCalendarType( newCalendarType ) );
+    return setCalendarSystem( KCalendarSystem::calendarSystem( newCalendarType ) );
 }
 
 bool KDateWidget::setCalendarSystem( KLocale::CalendarSystem newCalendarSystem )

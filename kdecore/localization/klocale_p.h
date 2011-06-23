@@ -38,7 +38,7 @@ public:
      * Constructors
      *
      * This class should not be instantited directly, it is intended as a base class for each
-     * platform to provide a common KDE fallback implemenation.  Instead use the relevent
+     * platform to provide a common KDE fallback implementation.  Instead use the relevant
      * derived system class for Unix, Win, or Mac which will prefer the local platform settings
      * where possible.
      */
@@ -98,7 +98,7 @@ protected:
 protected:
 
     /**
-     * @internal Initializes the country if not already explicity set when calling the constructor
+     * @internal Initializes the country if not already explicitly set when calling the constructor
      * Will default to any value set in the config, otherwise will attempt to use the host system
      * country, or finally fall back to the default C.
      */
@@ -175,7 +175,9 @@ protected:
      * list of languages that the user picks in kcontrol. The config object should be valid and
      * contain the global entries.
      *
+     * @param language The defualt language to use
      * @param configLanguages The "Language" setting from the current config
+     * @param useEnv Whether to use the envvars
      */
     virtual void initLanguageList(const QString &language, const QString &configLanguages, bool useEnv);
 

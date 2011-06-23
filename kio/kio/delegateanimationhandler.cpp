@@ -29,7 +29,6 @@
 
 #include <cmath>
 #include "kdirmodel.h"
-#include <kglobalsettings.h>
 #include <kdebug.h>
 #include <qabstractproxymodel.h>
 

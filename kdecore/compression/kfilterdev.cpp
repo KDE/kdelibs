@@ -18,7 +18,7 @@
 
 #include "kfilterdev.h"
 #include "kfilterbase.h"
-#include <kdebug.h>
+#include <QDebug>
 #include <stdio.h> // for EOF
 #include <stdlib.h>
 #include <assert.h>
@@ -97,7 +97,7 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 bool KFilterDev::open( QIODevice::OpenMode mode )
 {
     if (isOpen()) {
-        kWarning(7005) << "already open";
+        qWarning() << "KFilterDev::open: device is already open";
         return true; // QFile returns false, but well, the device -is- open...
     }
     //kDebug(7005) << mode;
@@ -118,7 +118,7 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     d->result = KFilterBase::Ok;
 
     if ( !ret )
-        kWarning(7005) << "KFilterDev::open: Couldn't open underlying device";
+        qWarning() << "KFilterDev::open: Couldn't open underlying device";
     else
         setOpenMode( mode );
 
@@ -244,7 +244,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
 
         if (d->result == KFilterBase::Error)
         {
-            kWarning(7005) << "KFilterDev: Error when uncompressing data";
+            qWarning() << "KFilterDev: Error when uncompressing data";
             break;
         }
 
@@ -252,7 +252,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         uint outReceived = availOut - filter->outBufferAvailable();
         //kDebug(7005) << "avail_out = " << filter->outBufferAvailable() << " result=" << d->result << " outReceived=" << outReceived;
         if( availOut < (uint)filter->outBufferAvailable() )
-            kWarning(7005) << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !";
+            qWarning() << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !";
 
         dataReceived += outReceived;
         if ( !d->bIgnoreData )  // Move on in the output buffer
@@ -303,7 +303,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 
         if (d->result == KFilterBase::Error)
         {
-            kWarning(7005) << "KFilterDev: Error when compressing data";
+            qWarning() << "KFilterDev: Error when compressing data";
             // What to do ?
             break;
         }
@@ -335,7 +335,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
                 // Write compressed data to underlying device
                 int size = filter->device()->write( d->buffer.data(), towrite );
                 if ( size != towrite ) {
-                    kWarning(7005) << "KFilterDev::write. Could only write " << size << " out of " << towrite << " bytes";
+                    qWarning() << "KFilterDev::write. Could only write " << size << " out of " << towrite << " bytes";
                     return 0; // indicate an error (happens on disk full)
                 }
                 //else

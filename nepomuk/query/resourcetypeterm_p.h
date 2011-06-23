@@ -26,6 +26,7 @@
 #include "class.h"
 
 #include <QtCore/QUrl>
+#include <QtCore/QSet>
 
 namespace Nepomuk {
     namespace Query {
@@ -39,10 +40,10 @@ namespace Nepomuk {
             TermPrivate* clone() const { return new ResourceTypeTermPrivate( *this ); }
 
             bool equals( const TermPrivate* other ) const;
-            bool isValid() const { return m_class.isValid(); }
+            bool isValid() const { return !m_types.isEmpty(); }
             QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const;
 
-            Types::Class m_class;
+            QSet<Types::Class> m_types;
         };
     }
 }

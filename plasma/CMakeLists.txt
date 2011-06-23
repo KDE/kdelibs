@@ -12,6 +12,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${KDE4_KDECORE_INCLUDES}
                     ${KDE4_KDEUI_INCLUDES}
                     ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative
+                    ${CMAKE_BINARY_DIR}/experimental/libkdeclarative
                     ${CMAKE_SOURCE_DIR}/threadweaver/
                     ${CMAKE_SOURCE_DIR}/plasma/extenders
                     ${CMAKE_SOURCE_DIR}/plasma/remote
@@ -57,6 +58,9 @@ set(plasmagik_SRCS
     packagestructure.cpp
     package.cpp
     )
+
+#to make the Temporary solution to not link to libkdeclarative work, disable the exports of libkdeclarative  
+add_definitions(-DKDECLARATIVE_EXPORT=)
 
 set(plasma_LIB_SRCS
     ${plasmagik_SRCS}
@@ -205,6 +209,15 @@ set(plasma_LIB_SRCS
     private/qtjolie-branch/qtjolie/pendingreply.cpp
     private/qtjolie-branch/qtjolie/server.cpp
     private/qtjolie-branch/qtjolie/serverthread.cpp
+
+    #Temporary solution to not link to libkdeclarative
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/kdeclarative.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/private/engineaccess.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/private/kiconprovider.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/bindings/qscriptnonguibookkeeping.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/bindings/i18n.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/bindings/icon.cpp
+    ${CMAKE_SOURCE_DIR}/experimental/libkdeclarative/bindings/url.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -245,9 +258,10 @@ endif(PHONON_FOUND)
 
 kde4_add_library(plasma ${LIBRARY_TYPE} ${plasma_LIB_SRCS})
 
+#add kdeclarative after the 4.7 release
 target_link_libraries(plasma ${QT_QTUITOOLS_LIBRARY} ${QT_QTWEBKIT_LIBRARY}
                              ${QT_QTSCRIPT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSQL_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY}
-                             ${KDE4_KDEUI_LIBS} kdnssd threadweaver kdeclarative ${PLASMA_EXTRA_LIBS})
+                             ${KDE4_KDEUI_LIBS} kdnssd threadweaver ${PLASMA_EXTRA_LIBS})
 
 if(QCA2_FOUND)
    target_link_libraries(plasma ${QCA2_LIBRARIES})

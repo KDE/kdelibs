@@ -66,6 +66,7 @@
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
+#include <kmessagebox.h>
 
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
@@ -189,6 +190,22 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
   sanitizedHeaders.chop(2);
 
   return sanitizedHeaders;
+}
+
+static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, const KConfigGroup* config)
+{
+    // kDebug(7113) << request.url << "response code: " << request.responseCode << "previous response code:" << request.prevResponseCode;
+    if (request.url.user().isEmpty()) {
+        return false;
+    }
+
+    // We already have cached authentication.
+    if (config->readEntry(QLatin1String("cached-www-auth"), false)) {
+        return false;
+    }
+
+    const QString userName = config->readEntry(QLatin1String("LastSpoofedUserName"), QString());
+    return ((userName.isEmpty() || userName != request.url.user()) && request.responseCode != 401 && request.prevResponseCode != 401);
 }
 
 // for a given response code, conclude if the response is going to/likely to have a response body
@@ -1602,7 +1619,6 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     url = m_request.url.url();
 
   QString action, errorString;
-  KIO::Error kError;
 
   // for 412 Precondition Failed
   QString ow = i18n( "Otherwise, the request would have succeeded." );
@@ -1653,7 +1669,6 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   }
 
   // default error message if the following code fails
-  kError = ERR_INTERNAL;
   errorString = i18nc("%1: code, %2: request type", "An unexpected error (%1) occurred "
                       "while attempting to %2.", code, action);
 
@@ -1661,7 +1676,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   {
     case -2:
       // internal error: OPTIONS request did not specify DAV compliance
-      kError = ERR_UNSUPPORTED_PROTOCOL;
+      // ERR_UNSUPPORTED_PROTOCOL
       errorString = i18n("The server does not support the WebDAV protocol.");
       break;
     case 207:
@@ -1717,50 +1732,46 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     case 403:
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
       break;
     case 405:
       // 405 Method Not Allowed
-      if ( m_request.method == DAV_MKCOL )
-      {
-        kError = ERR_DIR_ALREADY_EXIST;
+      if ( m_request.method == DAV_MKCOL ) {
+        // ERR_DIR_ALREADY_EXIST
         errorString = i18n("The specified folder already exists.");
       }
       break;
     case 409:
       // 409 Conflict
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18n("A resource cannot be created at the destination "
                   "until one or more intermediate collections (folders) "
                   "have been created.");
       break;
     case 412:
       // 412 Precondition failed
-      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE )
-      {
-        kError = ERR_ACCESS_DENIED;
+      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
+        // ERR_ACCESS_DENIED
         errorString = i18n("The server was unable to maintain the liveness of "
                            "the properties listed in the propertybehavior XML "
                            "element or you attempted to overwrite a file while "
                            "requesting that files are not overwritten. %1",
                              ow );
 
-      }
-      else if ( m_request.method == DAV_LOCK )
-      {
-        kError = ERR_ACCESS_DENIED;
+      } else if ( m_request.method == DAV_LOCK ) {
+        // ERR_ACCESS_DENIED
         errorString = i18n("The requested lock could not be granted. %1",  ow );
       }
       break;
     case 415:
       // 415 Unsupported Media Type
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18n("The server does not support the request type of the body.");
       break;
     case 423:
       // 423 Locked
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
       break;
     case 425:
@@ -1769,16 +1780,15 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       break;
     case 502:
       // 502 Bad Gateway
-      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE )
-      {
-        kError = ERR_WRITE_ACCESS_DENIED;
+      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
+        // ERR_WRITE_ACCESS_DENIED
         errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
                            "to accept the file or folder.",  action );
       }
       break;
     case 507:
       // 507 Insufficient Storage
-      kError = ERR_DISK_FULL;
+      // ERR_DISK_FULL
       errorString = i18n("The destination resource does not have sufficient space "
                          "to record the state of the resource after the execution "
                          "of this method.");
@@ -1797,7 +1807,6 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 void HTTPProtocol::httpPutError()
 {
   QString action, errorString;
-  KIO::Error kError;
 
   switch ( m_request.method ) {
     case HTTP_PUT:
@@ -1810,7 +1819,6 @@ void HTTPProtocol::httpPutError()
   }
 
   // default error message if the following code fails
-  kError = ERR_INTERNAL;
   errorString = i18nc("%1: response code, %2: request type",
                       "An unexpected error (%1) occurred while attempting to %2.",
                        m_request.responseCode, action);
@@ -1822,30 +1830,30 @@ void HTTPProtocol::httpPutError()
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       // 405 Method Not Allowed
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
       break;
     case 409:
       // 409 Conflict
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18n("A resource cannot be created at the destination "
                   "until one or more intermediate collections (folders) "
                   "have been created.");
       break;
     case 423:
       // 423 Locked
-      kError = ERR_ACCESS_DENIED;
+      // ERR_ACCESS_DENIED
       errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
       break;
     case 502:
       // 502 Bad Gateway
-      kError = ERR_WRITE_ACCESS_DENIED;
+      // ERR_WRITE_ACCESS_DENIED;
       errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
-                         "to accept the file or folder.",  action );
+                           "to accept the file or folder.",  action );
       break;
     case 507:
       // 507 Insufficient Storage
-      kError = ERR_DISK_FULL;
+      // ERR_DISK_FULL
       errorString = i18n("The destination resource does not have sufficient space "
                          "to record the state of the resource after the execution "
                          "of this method.");
@@ -2489,9 +2497,8 @@ bool HTTPProtocol::sendQuery()
 
     // Remember that at least one failed (with 401 or 407) request/response
     // roundtrip is necessary for the server to tell us that it requires
-    // authentication.
-    // We proactively add authentication headers if we have cached credentials
-    // to avoid the extra roundtrip where possible.
+    // authentication. However, we proactively add authentication headers if when
+    // we have cached credentials to avoid the extra roundtrip where possible.
     header += authenticationHeader();
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
@@ -2646,6 +2653,8 @@ void HTTPProtocol::fixupResponseMimetype()
         m_mimeType = QLatin1String("audio/mpeg");
     else if (m_mimeType == QLatin1String("audio/microsoft-wave"))
         m_mimeType = QLatin1String("audio/x-wav");
+    else if (m_mimeType == QLatin1String("image/x-ms-bmp"))
+        m_mimeType = QLatin1String("image/bmp");
 
     // Crypto ones....
     else if (m_mimeType == QLatin1String("application/pkix-cert") ||
@@ -2660,6 +2669,15 @@ void HTTPProtocol::fixupResponseMimetype()
             m_mimeType = QLatin1String("application/x-compressed-tar");
         if ((m_request.url.path().endsWith(QLatin1String(".ps.gz"))))
             m_mimeType = QLatin1String("application/x-gzpostscript");
+    }
+
+    // Prefer application/x-xz-compressed-tar over application/x-xz for LMZA compressed
+    // tar files. Arch Linux AUR servers notoriously send the wrong mimetype for this.
+    else if(m_mimeType == QLatin1String("application/x-xz")) {
+        if (m_request.url.path().endsWith(QLatin1String(".tar.xz")) ||
+            m_request.url.path().endsWith(QLatin1String(".txz"))) {
+            m_mimeType = QLatin1String("application/x-xz-compressed-tar");
+        }
     }
 
     // Some webservers say "text/plain" when they mean "application/x-bzip"
@@ -2766,7 +2784,6 @@ try_again:
                                     // This is also true if we ask to upgrade and
                                     // the server accepts, since we are now
                                     // committed to doing so
-    bool canUpgrade = false;        // The server offered an upgrade //### currently not queried
     bool noHeadersFound = false;
 
     m_request.cacheTag.charset.clear();
@@ -2829,8 +2846,6 @@ try_again:
     kDebug(7103) << QByteArray(buffer, bufPos).trimmed();
 
     HTTP_REV httpRev = HTTP_None;
-    int headerSize = 0;
-
     int idx = 0;
 
     if (idx != bufPos && buffer[idx] == '<') {
@@ -2891,6 +2906,27 @@ try_again:
     // (don't bother parsing the "OK", what do we do if it isn't there anyway?)
 
     // immediately act on most response codes...
+
+    // Protect users against bogus username intended to fool them into visiting
+    // sites they had no intention of visiting.
+    if (isPotentialSpoofingAttack(m_request, config())) {
+        // kDebug(7113) << "**** POTENTIAL ADDRESS SPOOFING:" << m_request.url;
+        const int result = messageBox(WarningYesNo,
+                                      i18nc("@warning: Security check on url "
+                                            "being accessed", "You are about to "
+                                            "log in to the site \"%1\" with the "
+                                            "username \"%2\", but the website "
+                                            "does not require authentication. "
+                                            "This may be an attempt to trick you."
+                                            "<p>Is \"%1\" the site you want to visit?",
+                                            m_request.url.host(), m_request.url.user()),
+                                      i18nc("@title:window", "Confirm Website Access"));
+        if (result == KMessageBox::No) {
+            error(ERR_USER_CANCELED, m_request.url.url());
+            return false;
+        }
+        setMetaData(QLatin1String("{internal~currenthost}LastSpoofedUserName"), m_request.url.user());
+    }
 
     if (m_request.responseCode != 200 && m_request.responseCode != 304) {
         m_request.cacheTag.ioMode = NoCache;
@@ -3037,7 +3073,7 @@ endParsing:
         //     either we have a http response line -> try to parse the header, fail if it doesn't work
         //     or we have garbage -> fail.
         HeaderTokenizer tokenizer(buffer);
-        headerSize = tokenizer.tokenize(idx, sizeof(buffer));
+        tokenizer.tokenize(idx, sizeof(buffer));
 
         // Note that not receiving "accept-ranges" means that all bets are off
         // wrt the server supporting ranges.
@@ -3221,9 +3257,6 @@ endParsing:
                         upgradeRequired = true;
                     } else if (upgradeRequired) {  // 426
                         // Nothing to do since we did it above already
-                    } else {
-                        // Just an offer to upgrade - no need to take it
-                        canUpgrade = true;
                     }
                 }
             }
@@ -5165,7 +5198,8 @@ QString HTTPProtocol::authenticationHeader()
         // If no relam metadata, then make sure path matching is turned on.
         authinfo.verifyPath = (authinfo.realmValue.isEmpty());
 
-        if (checkCachedAuthentication(authinfo)) {
+        const bool useCachedAuth = (m_request.responseCode == 401 || !(config()->readEntry("no-preemptive-auth-reuse", false)));
+        if (useCachedAuth && checkCachedAuthentication(authinfo)) {
             const QByteArray cachedChallenge = authinfo.digestInfo.toLatin1();
             if (!cachedChallenge.isEmpty()) {
                 m_wwwAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());

@@ -27,6 +27,7 @@
 #include "kdebug.h"
 #include "klocale.h"
 #include "kcombobox.h"
+#include "kmessagebox.h"
 
 class KTimeComboBoxPrivate
 {
@@ -38,6 +39,11 @@ public:
     QTime defaultMinTime();
     QTime defaultMaxTime();
 
+    QString timeFormatToInputMask(const QString &format, bool nullMask = false);
+    QTime nearestIntervalTime(const QTime &time);
+    QString formatTime(const QTime &time);
+    QString convertDigits(const QString &digits);
+
     void initTimeWidget();
     void updateTimeWidget();
 
@@ -46,6 +52,7 @@ public:
     void editTime(const QString &text);
     void enterTime(const QTime &time);
     void parseTime();
+    void warnTime();
 
     KTimeComboBox *const q;
 
@@ -53,25 +60,25 @@ public:
     KTimeComboBox::Options m_options;
     QTime m_minTime;
     QTime m_maxTime;
-    QString m_minErrorMsg;
-    QString m_maxErrorMsg;
+    QString m_minWarnMsg;
+    QString m_maxWarnMsg;
+    QString m_nullString;
+    bool m_warningShown;
     KLocale::TimeFormatOptions m_displayFormat;
-    int m_timeInterval;
+    int m_timeListInterval;
+    QList<QTime> m_timeList;
 };
 
 KTimeComboBoxPrivate::KTimeComboBoxPrivate(KTimeComboBox *q)
                      :q(q),
+                      m_time(QTime(0, 0, 0)),
+                      m_warningShown(false),
                       m_displayFormat(KLocale::TimeDefault),
-                      m_timeInterval(15)
+                      m_timeListInterval(15)
 {
+    m_options = KTimeComboBox::EditTime | KTimeComboBox::SelectTime;
     m_minTime = defaultMinTime();
     m_maxTime = defaultMaxTime();
-    m_minErrorMsg = i18n("The entered time is before the minimum allowed time.");
-    m_maxErrorMsg = i18n("The entered time is after the maximum allowed time.");
-    QString stringFreeze;
-    stringFreeze = i18nc( "@info", "Time cannot be earlier than %1", QString() );
-    stringFreeze = i18nc( "@info", "Time cannot be later than %1", QString() );
-    stringFreeze = i18n("The time you entered is invalid");
 }
 
 KTimeComboBoxPrivate::~KTimeComboBoxPrivate()
@@ -88,50 +95,135 @@ QTime KTimeComboBoxPrivate::defaultMaxTime()
     return QTime(23, 59, 59, 999);
 }
 
+QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format, bool nullMask)
+{
+    //TODO not sure this will always work, does it support DigitSets, am/pm is dodgy?
+    QString mask = formatTime(QTime(12,34,56,789));
+    QString null = mask;
+    mask.replace(convertDigits(QLatin1String("12")), QLatin1String("09"));
+    null.replace(convertDigits(QLatin1String("12")), QLatin1String(""));
+    mask.replace(convertDigits(QLatin1String("34")), QLatin1String("99"));
+    null.replace(convertDigits(QLatin1String("34")), QLatin1String(""));
+    mask.replace(convertDigits(QLatin1String("56")), QLatin1String("99"));
+    null.replace(convertDigits(QLatin1String("56")), QLatin1String(""));
+    mask.replace(convertDigits(QLatin1String("789")), QLatin1String("900"));
+    null.replace(convertDigits(QLatin1String("789")), QLatin1String(""));
+    if (format.contains(QLatin1String("%p")) ||
+        format.contains(QLatin1String("%P"))) {
+        QString am = KGlobal::locale()->dayPeriodText(QTime(0, 0, 0));
+        QString pm = KGlobal::locale()->dayPeriodText(QTime(12, 0, 0));
+        int ampmLen = qMax(am.length(), pm.length());
+        QString ampmMask;
+        for (int i = 0; i < ampmLen; ++i) {
+            ampmMask.append(QLatin1Char('a'));
+        }
+        mask.replace(pm, ampmMask);
+        null.replace(pm, QLatin1String(""));
+    }
+
+    if (nullMask) {
+        return null;
+    } else {
+        return mask;
+    }
+}
+
+QTime KTimeComboBoxPrivate::nearestIntervalTime(const QTime &time)
+{
+    int i = 0;
+    while (q->itemData(i).toTime() < time) {
+        ++i;
+    }
+    QTime before = q->itemData(i).toTime();
+    QTime after = q->itemData(i + 1).toTime();
+    if (before.secsTo(time) <= time.secsTo(after)) {
+        return before;
+    } else {
+        return after;
+    }
+}
+
+QString KTimeComboBoxPrivate::formatTime(const QTime &time)
+{
+    return KGlobal::locale()->formatTime(time, m_displayFormat);
+}
+
+QString KTimeComboBoxPrivate::convertDigits(const QString &digits)
+{
+    return KGlobal::locale()->convertDigits(digits, KGlobal::locale()->dateTimeDigitSet());
+}
+
 void KTimeComboBoxPrivate::initTimeWidget()
 {
+    q->blockSignals(true);
     q->clear();
-    q->setEditable(true);
-    q->setInsertPolicy(QComboBox::NoInsert);
-    q->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    //TODO localise the mask based on KLocale
-    q->lineEdit()->setInputMask("09:99");
 
-    QTime startTime = m_time;
-    QTime thisTime(startTime.hour(), 0, 0, 0);
-    while (thisTime.isValid() && thisTime <= startTime) {
-        thisTime = thisTime.addSecs(m_timeInterval * 60);
+    // Set the input mask from the current format
+    q->lineEdit()->setInputMask(timeFormatToInputMask(KGlobal::locale()->timeFormat()));
+    m_nullString = timeFormatToInputMask(KGlobal::locale()->timeFormat(), true);
+
+    // If EditTime then set the line edit
+    q->lineEdit()->setReadOnly((m_options &KTimeComboBox::EditTime) != KTimeComboBox::EditTime);
+
+    // If SelectTime then make list items visible
+    if ((m_options &KTimeComboBox::SelectTime) == KTimeComboBox::SelectTime) {
+        q->setMaxVisibleItems(10);
+    } else {
+        q->setMaxVisibleItems(0);
     }
-    QTime endTime = m_maxTime;
-    q->addItem(KGlobal::locale()->formatTime(startTime), startTime);
-    while (thisTime.isValid() && thisTime < endTime) {
-        q->addItem(KGlobal::locale()->formatTime(thisTime), thisTime);
-        QTime newTime = thisTime.addSecs(m_timeInterval * 60);
-        if (newTime.isValid() && newTime > thisTime) {
-            thisTime = newTime;
-        } else {
-            thisTime = QTime();
+
+    // Populate the drop-down time list
+    // If no time list set the use the time interval
+    if (m_timeList.isEmpty()) {
+        QTime startTime = m_minTime;
+        QTime thisTime(startTime.hour(), 0, 0, 0);
+        while (thisTime.isValid() && thisTime <= startTime) {
+            thisTime = thisTime.addSecs(m_timeListInterval * 60);
+        }
+        QTime endTime = m_maxTime;
+        q->addItem(formatTime(startTime), startTime);
+        while (thisTime.isValid() && thisTime < endTime) {
+            q->addItem(formatTime(thisTime), thisTime);
+            QTime newTime = thisTime.addSecs(m_timeListInterval * 60);
+            if (newTime.isValid() && newTime > thisTime) {
+                thisTime = newTime;
+            } else {
+                thisTime = QTime();
+            }
+        }
+        q->addItem(formatTime(endTime), endTime);
+    } else {
+        foreach (const QTime &thisTime, m_timeList) {
+            if (thisTime.isValid() && thisTime >= m_minTime && thisTime <= m_maxTime) {
+                q->addItem(formatTime(thisTime), thisTime);
+            }
         }
     }
-    q->addItem(KGlobal::locale()->formatTime(endTime), endTime);
+    q->blockSignals(false);
 }
 
 void KTimeComboBoxPrivate::updateTimeWidget()
 {
     q->blockSignals(true);
-    int pos = 0;
-    if (q->lineEdit()) {
-        pos = q->lineEdit()->cursorPosition();
-        q->lineEdit()->setText(KGlobal::locale()->formatTime(m_time));
-    }
+    int pos = q->lineEdit()->cursorPosition();
+    //Set index before setting text otherwise it overwrites
     int i = 0;
-    while (q->itemData(i).toTime() < m_time) {
-        ++i;
+    if (!m_time.isValid() || m_time < m_minTime) {
+        i = 0;
+    } else if (m_time > m_maxTime) {
+        i = q->count() - 1;
+    } else {
+        while (q->itemData(i).toTime() < m_time && i < q->count() - 1) {
+            ++i;
+        }
     }
     q->setCurrentIndex(i);
-    if (q->lineEdit()) {
-        q->lineEdit()->setCursorPosition(pos);
+    if (m_time.isValid()) {
+        q->lineEdit()->setText(formatTime(m_time));
+    } else {
+        q->lineEdit()->setText(QString());
     }
+    q->lineEdit()->setCursorPosition(pos);
     q->blockSignals(false);
 }
 
@@ -140,28 +232,58 @@ void KTimeComboBoxPrivate::selectTime(int index)
     enterTime(q->itemData(index).toTime());
 }
 
-//TODO sure we want to uptime during edit, should we wait for either exit widget or call to time()?
 void KTimeComboBoxPrivate::editTime(const QString &text)
 {
-    //TODO read the text and set it
-    //enterTime(KGlobal::locale()->readTime(q->lineEdit()->text()));
+    m_warningShown = false;
+    emit q->timeEdited(KGlobal::locale()->readTime(text));
 }
 
 void KTimeComboBoxPrivate::parseTime()
 {
-    enterTime(KGlobal::locale()->readTime(q->lineEdit()->text()));
+    m_time = KGlobal::locale()->readTime(q->lineEdit()->text());
 }
 
 void KTimeComboBoxPrivate::enterTime(const QTime &time)
 {
     q->setTime(time);
+    warnTime();
     emit q->timeEntered(m_time);
+}
+
+void KTimeComboBoxPrivate::warnTime()
+{
+    if (!m_warningShown && !q->isValid() &&
+        (m_options &KTimeComboBox::WarnOnInvalid) == KTimeComboBox::WarnOnInvalid) {
+        QString warnMsg;
+        if (!m_time.isValid()) {
+            warnMsg = i18nc("@info", "The time you entered is invalid");
+        } else if (m_time < m_minTime) {
+            if (m_minWarnMsg.isEmpty()) {
+                warnMsg = i18nc("@info", "Time cannot be earlier than %1", formatTime(m_minTime));
+            } else {
+                warnMsg = m_minWarnMsg;
+                warnMsg.replace("%1", formatTime(m_minTime));
+            }
+        } else if (m_time > m_maxTime) {
+            if (m_maxWarnMsg.isEmpty()) {
+                warnMsg = i18nc("@info", "Time cannot be later than %1", formatTime(m_maxTime));
+            } else {
+                warnMsg = m_maxWarnMsg;
+                warnMsg.replace("%1", formatTime(m_maxTime));
+            }
+        }
+        m_warningShown = true;
+        KMessageBox::sorry(q, warnMsg);
+    }
 }
 
 KTimeComboBox::KTimeComboBox(QWidget *parent)
               :KComboBox(parent),
                d(new KTimeComboBoxPrivate(this))
 {
+    setEditable(true);
+    setInsertPolicy(QComboBox::NoInsert);
+    setSizeAdjustPolicy(QComboBox::AdjustToContents);
     d->initTimeWidget();
     d->updateTimeWidget();
 
@@ -188,7 +310,12 @@ void KTimeComboBox::setTime(const QTime &time)
         return;
     }
 
-    assignTime(time);
+    if ((d->m_options &KTimeComboBox::ForceTime) == KTimeComboBox::ForceTime) {
+        assignTime(d->nearestIntervalTime(time));
+    } else {
+        assignTime(time);
+    }
+
     d->updateTimeWidget();
     emit timeChanged(d->m_time);
 }
@@ -200,12 +327,15 @@ void KTimeComboBox::assignTime(const QTime &time)
 
 bool KTimeComboBox::isValid() const
 {
-    if (d->m_minTime.isValid() && d->m_maxTime.isValid()) {
-        return d->m_time.isValid() &&
-               d->m_time >= d->m_minTime &&
-               d->m_time <= d->m_maxTime;
-    }
-    return d->m_time.isValid();
+    d->parseTime();
+    return d->m_time.isValid() &&
+           d->m_time >= d->m_minTime &&
+           d->m_time <= d->m_maxTime;
+}
+
+bool KTimeComboBox::isNull() const
+{
+    return lineEdit()->text() == d->m_nullString;
 }
 
 KTimeComboBox::Options KTimeComboBox::options() const
@@ -215,7 +345,11 @@ KTimeComboBox::Options KTimeComboBox::options() const
 
 void KTimeComboBox::setOptions(Options options)
 {
-    d->m_options = options;
+    if (options != d->m_options) {
+        d->m_options = options;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
 QTime KTimeComboBox::minimumTime() const
@@ -223,69 +357,117 @@ QTime KTimeComboBox::minimumTime() const
     return d->m_minTime;
 }
 
+void KTimeComboBox::setMinimumTime(const QTime &minTime, const QString &minWarnMsg)
+{
+    setTimeRange(minTime, d->m_maxTime, minWarnMsg, d->m_maxWarnMsg);
+}
+
+void KTimeComboBox::resetMinimumTime()
+{
+    setTimeRange(d->defaultMinTime(), d->m_maxTime, QString(), d->m_maxWarnMsg);
+}
+
 QTime KTimeComboBox::maximumTime() const
 {
     return d->m_maxTime;
 }
 
-void KTimeComboBox::setTimeRange(const QTime &minTime,
-                                 const QTime &maxTime,
-                                 const QString &minErrorMsg,
-                                 const QString &maxErrorMsg)
+void KTimeComboBox::setMaximumTime(const QTime &maxTime, const QString &maxWarnMsg)
 {
-    if (minTime.isValid() != maxTime.isValid()) {
-        return;
-    }
-
-    if (minTime <= maxTime) {
-        d->m_minTime = minTime;
-        d->m_maxTime = maxTime;
-        d->m_minErrorMsg = minErrorMsg;
-        d->m_maxErrorMsg = maxErrorMsg;
-    }
-}
-
-void KTimeComboBox::resetMinimumTime()
-{
-    d->m_minTime = d->defaultMinTime();
+    setTimeRange(d->m_minTime, maxTime, d->m_minWarnMsg, maxWarnMsg);
 }
 
 void KTimeComboBox::resetMaximumTime()
 {
-    d->m_maxTime = d->defaultMaxTime();
+    setTimeRange(d->m_minTime, d->defaultMaxTime(), d->m_minWarnMsg, QString());
+}
+
+void KTimeComboBox::setTimeRange(const QTime &minTime, const QTime &maxTime,
+                                 const QString &minWarnMsg, const QString &maxWarnMsg)
+{
+    if (!minTime.isValid() || !maxTime.isValid() || minTime > maxTime) {
+        return;
+    }
+
+    if (minTime != d->m_minTime || maxTime != d->m_maxTime ||
+        minWarnMsg != d->m_minWarnMsg || maxWarnMsg != d->m_maxWarnMsg) {
+        d->m_minTime = minTime;
+        d->m_maxTime = maxTime;
+        d->m_minWarnMsg = minWarnMsg;
+        d->m_maxWarnMsg = maxWarnMsg;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
 void KTimeComboBox::resetTimeRange()
 {
-    setTimeRange(d->defaultMinTime(), d->defaultMaxTime());
+    setTimeRange(d->defaultMinTime(), d->defaultMaxTime(), QString(), QString());
 }
 
-void KTimeComboBox::clearTimeRange()
-{
-    resetMinimumTime();
-    resetMaximumTime();
-}
-
-KLocale::TimeFormatOptions KTimeComboBox::displayFormat()
+KLocale::TimeFormatOptions KTimeComboBox::displayFormat() const
 {
     return d->m_displayFormat;
 }
 
 void KTimeComboBox::setDisplayFormat(KLocale::TimeFormatOptions format)
 {
-    d->m_displayFormat = format;
+    if (format != d->m_displayFormat) {
+        d->m_displayFormat = format;
+        d->initTimeWidget();
+        d->updateTimeWidget();
+    }
 }
 
-int KTimeComboBox::timeInterval() const
+int KTimeComboBox::timeListInterval() const
 {
-    return d->m_timeInterval;
+    return d->m_timeListInterval;
 }
 
-void KTimeComboBox::setTimeInterval(int minutes)
+void KTimeComboBox::setTimeListInterval(int minutes)
 {
-    //Must be able to exactly divide the day
-    if (1440 % minutes == 0) {
-        d->m_timeInterval = minutes;
+    if (minutes != d->m_timeListInterval) {
+        //Must be able to exactly divide the valid time period
+        int lowMins = (d->m_minTime.hour() * 60) + d->m_minTime.minute();
+        int hiMins = (d->m_maxTime.hour() * 60) + d->m_maxTime.minute();
+        if (d->m_minTime.minute() == 0 && d->m_maxTime.minute() == 59) {
+            ++hiMins;
+        }
+        if ((hiMins - lowMins) % minutes == 0) {
+            d->m_timeListInterval = minutes;
+            d->m_timeList.clear();
+        } else {
+            return;
+        }
+        d->initTimeWidget();
+    }
+}
+
+QList<QTime> KTimeComboBox::timeList() const
+{
+    //Return the drop down list as it is what can be selected currently
+    QList<QTime> list;
+    int c = count();
+    for (int i = 0; i < c; ++i) {
+        list.append(itemData(i).toTime());
+    }
+    return list;
+}
+
+void KTimeComboBox::setTimeList(QList<QTime> timeList,
+                                const QString &minWarnMsg, const QString &maxWarnMsg)
+{
+    if (timeList != d->m_timeList) {
+        d->m_timeList.clear();
+        foreach (const QTime &time, timeList) {
+            if (time.isValid() && !d->m_timeList.contains(time)) {
+                d->m_timeList.append(time);
+            }
+        }
+        qSort(d->m_timeList);
+        // Does the updateTimeWidget call for us
+        setTimeRange(d->m_timeList.first(), d->m_timeList.last(),
+                    minWarnMsg, maxWarnMsg);
     }
 }
 
@@ -296,29 +478,33 @@ bool KTimeComboBox::eventFilter(QObject *object, QEvent *event)
 
 void KTimeComboBox::keyPressEvent(QKeyEvent *keyEvent)
 {
+    QTime temp;
     switch (keyEvent->key()) {
     case Qt::Key_Down:
-        d->enterTime(d->m_time.addSecs(-60));
+        temp = d->m_time.addSecs(-60);
         break;
     case Qt::Key_Up:
-        d->enterTime(d->m_time.addSecs(60));
+        temp = d->m_time.addSecs(60);
         break;
     case Qt::Key_PageDown:
-        d->enterTime(d->m_time.addSecs(-3600));
+        temp = d->m_time.addSecs(-3600);
         break;
     case Qt::Key_PageUp:
-        d->enterTime(d->m_time.addSecs(3600));
+        temp = d->m_time.addSecs(3600);
         break;
     default:
         KComboBox::keyPressEvent(keyEvent);
+        return;
+    }
+    if (temp.isValid() && temp >= d->m_minTime && temp <= d->m_maxTime) {
+        d->enterTime(temp);
     }
 }
 
 void KTimeComboBox::focusOutEvent(QFocusEvent *event)
 {
-    if (event->type() == QEvent::FocusOut) {
-        d->parseTime();
-    }
+    d->parseTime();
+    d->warnTime();
     KComboBox::focusOutEvent(event);
 }
 

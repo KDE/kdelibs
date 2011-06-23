@@ -19,7 +19,7 @@
 
 #include "kfilepreviewgenerator.h"
 
-#include "../kio/kio/defaultviewadapter_p.h"
+#include "../kio/kio/defaultviewadapter_p.h" // KDE5 TODO: move this class here
 #include "../kio/kio/imagefilter_p.h"
 #include <config.h> // for HAVE_XRENDER
 #include <kconfiggroup.h>
@@ -645,6 +645,8 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         icon = iconEffect->apply(icon, KIconLoader::Desktop, KIconLoader::DisabledState);
     }
 
+    KIconLoader::global()->drawOverlays(item.overlays(), icon, KIconLoader::Desktop);
+
     // remember the preview and URL, so that it can be applied to the model
     // in KFilePreviewGenerator::dispatchIconUpdateQueue()
     ItemInfo preview;
@@ -1225,6 +1227,7 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
         KFileItemList itemList;
         d->addItemsToList(QModelIndex(), itemList);
 
+        KFilePreviewGenerator::Private::DataChangeObtainer obt (d);
         foreach (const KFileItem& item, itemList) {
             const QModelIndex index = dirModel->indexForItem(item);
             dirModel->setData(index, QIcon(), Qt::DecorationRole);

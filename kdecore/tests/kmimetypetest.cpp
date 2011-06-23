@@ -18,9 +18,10 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "kmimetypetest.h"
+
 #include <config.h>
 #include <kdefakes.h>
-#include "kmimetypetest.h"
 #include <kde_file.h>
 #include <kprocess.h>
 #include <kmimetype.h>
@@ -38,7 +39,6 @@
 #include <kservicetypetrader.h>
 #include <kmimetyperepository_p.h>
 #include <ktemporaryfile.h>
-#include <ktempdir.h>
 #include <kdesktopfile.h>
 
 void KMimeTypeTest::initTestCase()
@@ -214,9 +214,13 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
-    QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
-    QTest::newRow("png image") << fh << "image/png";
+    if (KStandardDirs::locate("icon", "oxygen/").isEmpty()) {
+        kWarning() << "oxygen not found";
+    } else {
+        QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
+        QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
+        QTest::newRow("png image") << fh << "image/png";
+    }
 
     QString exePath = KStandardDirs::findExe( "kioexec" );
     if ( exePath.isEmpty() )
@@ -516,7 +520,7 @@ void KMimeTypeTest::testMimeTypeParent()
     QCOMPARE(directory->parentMimeTypes().count(), 0);
     QVERIFY(!directory->is("application/octet-stream"));
 
-    // Check that text/x-patch knows that it inherits from text/plain (it says so explicitely)
+    // Check that text/x-patch knows that it inherits from text/plain (it says so explicitly)
     const KMimeType::Ptr plain = KMimeType::mimeType( "text/plain" );
     const KMimeType::Ptr derived = KMimeType::mimeType( "text/x-patch" );
     QVERIFY( derived );
@@ -928,7 +932,7 @@ void KMimeTypeTest::testThreads()
     futures << QtConcurrent::run(this, &KMimeTypeTest::testFromThread);
     futures << QtConcurrent::run(this, &KMimeTypeTest::testHelperProtocols);
     kDebug() << "Joining all threads";
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 }
 

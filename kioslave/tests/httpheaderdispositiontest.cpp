@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "httpheaderdispositiontest.h"
+
 #include <qtest_kde.h>
 
 #include <QtCore/QByteArray>
@@ -24,7 +26,6 @@
 
 #include <parsinghelpers.h>
 
-#include "httpheaderdispositiontest.h"
 #include "httpheaderdispositiontest.moc"
 
 #include <parsinghelpers.cpp>

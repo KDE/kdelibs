@@ -29,6 +29,8 @@
 
 #include <config.h>
 #include <config-acl.h>
+#include <config-kioslave-file.h>
+
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -314,7 +316,7 @@ void FileProtocol::get( const KUrl& url )
         return;
     }
 
-#ifdef HAVE_FADVISE
+#if HAVE_FADVISE
     posix_fadvise( fd, 0, 0, POSIX_FADV_SEQUENTIAL);
 #endif
 

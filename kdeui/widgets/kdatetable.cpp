@@ -470,7 +470,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
             //Determine various characteristics of the cell date
             bool selectedDay = ( cellDate == date() );
             bool currentDay = ( cellDate == QDate::currentDate() );
-            bool dayOfPray = ( cellDate.dayOfWeek() == calendar()->weekDayOfPray() );
+            bool dayOfPray = ( cellDate.dayOfWeek() == calendar()->locale()->weekDayOfPray() );
             bool customDay = ( d->m_useCustomColors && d->m_customPaintingModes.contains(cellDate.toJulianDay()) );
 
             //Default values for a normal cell
@@ -799,7 +799,7 @@ bool KDateTable::setCalendar( KCalendarSystem *newCalendar )
 
 bool KDateTable::setCalendar( const QString &newCalendarType )
 {
-    return setCalendarSystem( KCalendarSystem::calendarSystemForCalendarType( newCalendarType ) );
+    return setCalendarSystem( KCalendarSystem::calendarSystem( newCalendarType ) );
 }
 
 bool KDateTable::setCalendarSystem( KLocale::CalendarSystem newCalendarSystem )

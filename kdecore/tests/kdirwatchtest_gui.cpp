@@ -1,3 +1,4 @@
+// krazy:excludeall=qclasses
 /*
  *  Copyright (C) 2006 Dirk Stoecker <kde@dstoecker.de>
  *
@@ -33,7 +34,7 @@
 
 int main(int argc, char **argv)
 {
-    KAboutData about(QByteArray("KDirWatchTest_GUI"), QByteArray(), ki18n("KDirWatchTest_GUI"), 
+    KAboutData about(QByteArray("KDirWatchTest_GUI"), QByteArray(), ki18n("KDirWatchTest_GUI"),
             QByteArray("0.1"),
         ki18n("KDirWatchTest_GUI"), KAboutData::License_LGPL,
         ki18n("(C) 2006 Dirk Stoecker"), KLocalizedString(), QByteArray(),
@@ -135,17 +136,17 @@ void KDirWatchTest_GUI::slotNewClicked()
 
 void KDirWatchTest_GUI::slotDirty(const QString& path)
 {
-    m_eventBrowser->append( "Dirty(" + sender()->objectName() + "): " + path + "\n" );
+    m_eventBrowser->append( "Dirty(" + sender()->objectName() + "): " + path + '\n' );
 }
 
 void KDirWatchTest_GUI::slotCreated(const QString& path)
 {
-    m_eventBrowser->append( "Created(" + sender()->objectName() + "): " + path + "\n" );
+    m_eventBrowser->append( "Created(" + sender()->objectName() + "): " + path + '\n' );
 }
 
 void KDirWatchTest_GUI::slotDeleted(const QString& path)
 {
-    m_eventBrowser->append( "Deleted(" + sender()->objectName() + "): " + path + "\n" );
+    m_eventBrowser->append( "Deleted(" + sender()->objectName() + "): " + path + '\n' );
 }
 
 #include "kdirwatchtest_gui.moc"

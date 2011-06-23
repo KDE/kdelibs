@@ -41,7 +41,7 @@ class KHttpProxySocketDevicePrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KHttpProxySocketDevice: public KSocketDevice
+class KDECORE_EXPORT_DEPRECATED KHttpProxySocketDevice: public KSocketDevice
 {
 public:
   /**

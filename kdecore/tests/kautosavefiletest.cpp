@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kautosavefiletest.h"
+
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
@@ -24,7 +26,6 @@
 #include <kautosavefile.h>
 
 #include <qtest_kde.h>
-#include "kautosavefiletest.h"
 
 QTEST_KDEMAIN_CORE( KAutoSaveFileTest )
 

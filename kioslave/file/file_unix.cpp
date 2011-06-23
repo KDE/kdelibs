@@ -28,6 +28,7 @@
 #include "file.h"
 
 #include <config.h>
+#include <config-kioslave-file.h>
 
 #include <QtCore/QFile>
 
@@ -154,7 +155,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
 	return;
     }
 
-#ifdef HAVE_FADVISE
+#if HAVE_FADVISE
     posix_fadvise(src_fd,0,0,POSIX_FADV_SEQUENTIAL);
 #endif
     // WABA: Make sure that we keep writing permissions ourselves,
@@ -177,7 +178,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
         return;
     }
 
-#ifdef HAVE_FADVISE
+#if HAVE_FADVISE
     posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
 #endif
 

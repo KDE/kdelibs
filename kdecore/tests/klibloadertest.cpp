@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
 #include "klibloadertest.h"
+
+#include <qtest_kde.h>
 #include "klibloadertest.moc"
 
 QTEST_KDEMAIN_CORE( KLibLoaderTest )

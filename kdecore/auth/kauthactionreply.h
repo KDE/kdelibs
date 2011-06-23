@@ -227,7 +227,7 @@
  helper in the read() slot's parameter. This example code uses a synchronous call to execute the action and retrieve the reply. If the reply succeeded, the reply data is retrieved from the returned QVariantMap
  object. Please note that, although the execute() method will return only when the action is completed, the GUI will remain responsive because an internal event loop is entered. This means you should be
  prepared to receive other events in the meanwhile. Also, notice that you have to explicitly set the helper ID to the action: this is done for added safety, to prevent the caller from accidentally invoking
- a helper, and also because KAuth actions may be used without a helper attached (the default). In this case, action.execute() will return ActionSuccess if the authentication went well. This is quite useful 
+ a helper, and also because KAuth actions may be used without a helper attached (the default). In this case, action.execute() will return ActionSuccess if the authentication went well. This is quite useful
  if you want your user to authenticate before doing something, which however needs no privileged permissions implementation-wise.
 
 
@@ -286,8 +286,8 @@
  {
      //...
 
-     if (reply.succeded())
-        this->statusBar()->showMessage("Action succeded", 10000);
+     if (reply.succeeded())
+        this->statusBar()->showMessage("Action succeeded", 10000);
      else
         this->statusBar()->showMessage(QString("Could not execute the long action: %1").arg(reply.errorCode()), 10000);
  }

@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <kdebug.h>
-#include <kstandarddirs.h>
 //#include <kuser.h>
 
 #include <QtCore/QMap>

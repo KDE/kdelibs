@@ -17,38 +17,38 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
-#define KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+#ifndef KCALENDARSYSTEMGREGORIANPRIVATE_H
+#define KCALENDARSYSTEMGREGORIANPRIVATE_H
 
 // Derived gregorian kde calendar class
 
 #include "kcalendarsystemprivate_p.h"
 
-class KCalendarSystemGregorianProlepticPrivate : public KCalendarSystemPrivate
+class KCalendarSystemGregorianPrivate : public KCalendarSystemPrivate
 {
 public:
-    explicit KCalendarSystemGregorianProlepticPrivate( KCalendarSystemGregorianProleptic *q );
+    explicit KCalendarSystemGregorianPrivate(KCalendarSystemGregorian *q);
 
-    virtual ~KCalendarSystemGregorianProlepticPrivate();
+    virtual ~KCalendarSystemGregorianPrivate();
 
     // Virtual methods each calendar system must re-implement
     virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
-    virtual int monthsInYear( int year ) const;
-    virtual int daysInMonth( int year, int month ) const;
-    virtual int daysInYear( int year ) const;
+    virtual int monthsInYear(int year) const;
+    virtual int daysInMonth(int year, int month) const;
+    virtual int daysInYear(int year) const;
     virtual int daysInWeek() const;
-    virtual bool isLeapYear( int year ) const;
+    virtual bool isLeapYear(int year) const;
     virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
     virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
-    virtual QString monthName( int month, int year, KLocale::DateTimeComponentFormat format, bool possessive ) const;
-    virtual QString weekDayName( int weekDay, KLocale::DateTimeComponentFormat format ) const;
+    virtual QString monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const;
+    virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const;
 
     bool m_useCommonEra;
 };
 
-#endif // KCALENDARSYSTEMGREGORIANPROLEPTICPRIVATE_H
+#endif // KCALENDARSYSTEMGREGORIANPRIVATE_H

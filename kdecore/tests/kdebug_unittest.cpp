@@ -92,7 +92,7 @@ void KDebugTest::compareLines(const QList<QByteArray>& expectedLines, const char
     QList<QByteArray> lines = readLines(fileName);
     //qDebug() << lines;
     QCOMPARE(lines.count(), expectedLines.count());
-    QVERIFY(lines[0].endsWith("\n"));
+    QVERIFY(lines[0].endsWith('\n'));
     for (int i = 0; i < lines.count(); ++i) {
         QByteArray line = lines[i];
         if (expectedLines[i].contains("[...]")) {
@@ -319,7 +319,7 @@ void KDebugTest::testMultipleThreads()
     QList<QFuture<void> > futures;
     for (int threadNum = 0; threadNum < 10; ++threadNum)
         futures << QtConcurrent::run(&tester, &KDebugThreadTester::doDebugs);
-    Q_FOREACH(QFuture<void> f, futures)
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 
     QVERIFY(QFile::exists("kdebug.dbg"));

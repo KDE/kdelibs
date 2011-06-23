@@ -381,7 +381,7 @@ void KBugReportPrivate::_k_slotSetFrom()
   m_process = 0;
   m_configureEmail->setEnabled(true);
 
-  // ### KDE4: why oh why is KEmailSettings in kio?
+  // ### KDE4: why oh why is KEMailSettings in kio?
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
 
   KConfigGroup cg(&emailConf, "Defaults");

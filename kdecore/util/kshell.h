@@ -50,7 +50,7 @@ namespace KShell {
          * Put the parser into full shell mode and bail out if a too complex
          * construct is encoutered.
          * A particular purpose of this flag is finding out whether the
-         * command line being splitted would be executable directly (via
+         * command line being split would be executable directly (via
          * KProcess::setProgram()) or whether it needs to be run through
          * a real shell (via KProcess::setShellCommand()). Note, however,
          * that shell builtins are @em not recognized - you need to do that

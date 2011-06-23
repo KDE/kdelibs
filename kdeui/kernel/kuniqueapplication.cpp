@@ -96,9 +96,10 @@ static QDBusConnectionInterface *tryToInitDBusConnection()
 {
     // Check the D-Bus connection health
     QDBusConnectionInterface* dbusService = 0;
-    if (!QDBusConnection::sessionBus().isConnected() || !(dbusService = QDBusConnection::sessionBus().interface()))
+    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+    if (!sessionBus.isConnected() || !(dbusService = sessionBus.interface()))
     {
-        kError() << "KUniqueApplication: Cannot find the D-Bus session server: " << QDBusConnection::sessionBus().lastError().message() << endl;
+        kError() << "KUniqueApplication: Cannot find the D-Bus session server: " << sessionBus.lastError().message() << endl;
         ::exit(255);
     }
     return dbusService;
@@ -287,11 +288,14 @@ KUniqueApplication::start(StartFlags flags)
          new_asn_id = id.id();
 #endif
 
-     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", QDBusConnection::sessionBus());
-     QDBusReply<int> reply;
-     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
+     QDBusMessage msg = QDBusMessage::createMethodCall(appName, "/MainApplication", "org.kde.KUniqueApplication",
+                                                       "newInstance");
+     msg << new_asn_id << saved_args;
+     QDBusReply<int> reply = QDBusConnection::sessionBus().call(msg, QDBus::Block, INT_MAX);
+
+     if (!reply.isValid())
      {
-       QDBusError err = iface.lastError();
+         QDBusError err = reply.error();
         kError() << "Communication problem with " << KCmdLineArgs::aboutData()->appName() << ", it probably crashed." << endl
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
@@ -410,10 +414,12 @@ int KUniqueApplication::newInstance()
     return 0; // do nothing in default implementation
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KUniqueApplication::setHandleAutoStarted()
 {
     Private::s_handleAutoStarted = false;
 }
+#endif
 
 ////
 

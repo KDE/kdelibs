@@ -34,10 +34,11 @@ class KDEUI_EXPORT KTimeComboBox : public KComboBox
     Q_OBJECT
 
     Q_PROPERTY(QTime time READ time WRITE setTime NOTIFY timeChanged USER true)
-    Q_PROPERTY(QTime minimumTime READ minimumTime RESET resetMinimumTime)
-    Q_PROPERTY(QTime maximumTime READ maximumTime RESET resetMaximumTime)
+    Q_PROPERTY(QTime minimumTime READ minimumTime WRITE setMinimumTime RESET resetMinimumTime)
+    Q_PROPERTY(QTime maximumTime READ maximumTime WRITE setMaximumTime RESET resetMaximumTime)
+    Q_PROPERTY(int timeListInterval READ timeListInterval WRITE setTimeListInterval)
     Q_PROPERTY(Options options READ options WRITE setOptions)
-    //Q_PROPERTY(KLocale::TimeFormatOptions displayFormat READ displayFormat WRITE setDisplayFormat)
+    Q_FLAGS(Options)
 
 public:
 
@@ -49,9 +50,8 @@ public:
     enum Option {
         EditTime         = 0x0001,  /**< Allow the user to manually edit the time in the combo line edit */
         SelectTime       = 0x0002,  /**< Allow the user to select the time from a drop-down menu */
-        ForceInterval    = 0x0004,  /**< The entered time can only be a selected interval */
-        WarnOnInvalid    = 0x0010,  /**< Show a warning on focus out if the time is invalid */
-        ErrorOnInvalid   = 0x0020   /**< Show an error on focus out if the time is invalid */
+        ForceTime        = 0x0004,  /**< Any set or entered time will be forced to one of the drop-down times */
+        WarnOnInvalid    = 0x0008   /**< Show a warning box on focus out if the user enters an invalid time */
     };
     Q_DECLARE_FLAGS(Options, Option)
 
@@ -75,9 +75,20 @@ public:
     /**
      * Return if the current user input is valid
      *
+     * If the user input is null then it is not valid
+     *
+     * @see isNull()
      * @return if the current user input is valid
      */
-    bool isValid()const;
+    bool isValid() const;
+
+    /**
+     * Return if the current user input is null
+     *
+     * @see isValid()
+     * @return if the current user input is null
+     */
+    bool isNull() const;
 
     /**
      * Return the currently set widget options
@@ -93,7 +104,7 @@ public:
      *
      * @return the currently set time format
      */
-    KLocale::TimeFormatOptions displayFormat();
+    KLocale::TimeFormatOptions displayFormat() const;
 
     /**
      * Return the current minimum time
@@ -103,7 +114,7 @@ public:
     QTime minimumTime() const;
 
     /**
-     * Reset the minimum time to the default
+     * Reset the minimum time to the default of 00:00:00.000
      */
     void resetMinimumTime();
 
@@ -115,26 +126,24 @@ public:
     QTime maximumTime() const;
 
     /**
-     * Reset the maximum time to the default
+     * Reset the maximum time to the default of 23:59:59.999
      */
     void resetMaximumTime();
 
     /**
      * Set the minimum and maximum time range.
      *
-     * To enable time range checking provide two valid times.
-     * To disable time range checking provide two invalid times, or call
-     * clearTimeRange;
+     * If either time is invalid, or min > max then the range will not be set.
      *
      * @param minTime the minimum time
      * @param maxTime the maximum time
-     * @param minErrorMsg the minimum error message
-     * @param maxErrorMsg the maximum error message
+     * @param minWarnMsg the minimum warning message
+     * @param maxWarnMsg the maximum warning message
      */
     void setTimeRange(const QTime &minTime,
                       const QTime &maxTime,
-                      const QString &minErrorMsg = QString(),
-                      const QString &maxErrorMsg = QString());
+                      const QString &minWarnMsg = QString(),
+                      const QString &maxWarnMsg = QString());
 
     /**
      * Reset the minimum and maximum time to the default values.
@@ -142,16 +151,24 @@ public:
     void resetTimeRange();
 
     /**
-     * Clear the minimum and maximum time, i.e. disable time range checking.
+     * Return the interval between select time list entries if set by setTimeListInterval().
+     *
+     * Returns -1 if not set.
+     *
+     * @see setTimeListInterval()
+     * @return the select time list interval in minutes
      */
-    void clearTimeRange();
+    int timeListInterval() const;
 
     /**
-     * Return the time interval able to be selected
+     * Return the list of times able to be selected in the drop-down.
      *
-     * @return the select time intervals in minutes
+     * @see setTimeList()
+     * @see timeListInterval()
+     * @see setTimeListInterval()
+     * @return the select time list
      */
-    int timeInterval() const;
+    QList<QTime> timeList() const;
 
 Q_SIGNALS:
 
@@ -212,16 +229,76 @@ public Q_SLOTS:
     void setDisplayFormat(KLocale::TimeFormatOptions formatOptions);
 
     /**
-     * Set the time interval able to be selected in the time widget
+     * Set the minimum allowed time.
      *
-     * If the ForceInterval option is set then any entered date will be
-     * forced to the nearest interval.
+     * If the time is invalid, or greater than current maximum,
+     * then the minimum will not be set.
      *
-     * This interval must be an exact divisor of 60 minutes.
-     *
-     * @param minutes the interval to display
+     * @see minimumTime()
+     * @see maximumTime()
+     * @see setMaximumTime()
+     * @see setTimeRange()
+     * @param minTime the minimum time
+     * @param minWarnMsg the minimum warning message
      */
-    void setTimeInterval(int minutes);
+    void setMinimumTime(const QTime &minTime, const QString &minWarnMsg = QString());
+
+    /**
+     * Set the maximum allowed time.
+     *
+     * If the time is invalid, or less than current minimum,
+     * then the maximum will not be set.
+     *
+     * @see minimumTime()
+     * @see maximumTime()
+     * @see setMaximumTime()
+     * @see setTimeRange()
+     * @param maxTime the maximum time
+     * @param maxWarnMsg the maximum warning message
+     */
+    void setMaximumTime(const QTime &maxTime, const QString &maxWarnMsg = QString());
+
+    /**
+     * Set the interval between times able to be selected from the drop-down.
+     *
+     * The combo drop-down will be populated with times every @param minutes
+     * apart, starting from the minimumTime() and ending at maximumTime().
+     *
+     * If the ForceInterval option is set then any time manually typed into the
+     * combo line edit will be forced to the nearest interval.
+     *
+     * This interval must be an exact divisor of the valid time range hours.
+     * For example with the default 24 hour range @p interval must divide 1440
+     * minutes exactly, meaning 1, 6 and 90 are valid but 7, 31 and 91 are not.
+     *
+     * Setting the time list interval will override any time list previously set
+     * via setTimeList().
+     *
+     * @see timeListInterval()
+     * @param minutes the time list interval to display
+     */
+    void setTimeListInterval(int minutes);
+
+    /**
+     * Set the list of times able to be selected from the drop-down.
+     *
+     * Setting the time list will override any time interval previously set via
+     * setTimeListInterval().
+     *
+     * Any invalid or duplicate times will be ignored, and the list will be
+     * sorted.
+     *
+     * The minimum and maximum time will automatically be set to the earliest
+     * and latest value in the list.
+     *
+     * @see timeList()
+     * @param timeList the list of times able to be selected
+     * @param minWarnMsg the minimum warning message
+     * @param maxWarnMsg the maximum warning message
+     */
+    void setTimeList(QList<QTime> timeList,
+                     const QString &minWarnMsg = QString(),
+                     const QString &maxWarnMsg = QString());
 
 protected:
 

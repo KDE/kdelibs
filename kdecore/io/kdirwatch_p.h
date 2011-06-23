@@ -27,7 +27,7 @@
 #ifndef KDIRWATCH_P_H
 #define KDIRWATCH_P_H
 
-#include "io/config-kdirwatch.h"
+#include <io/config-kdirwatch.h>
 #include "kdirwatch.h"
 
 #ifndef QT_NO_FILESYSTEMWATCHER

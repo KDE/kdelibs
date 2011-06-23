@@ -750,7 +750,7 @@ void KFontChooser::Private::_k_size_value_slot(double dval)
     QString style = qtStyles[styleListBox->currentItem()->text()];
 
     // Reset current size slot in list if it was customized.
-    if (sizeListBox->currentRow() == customSizeRow) {
+    if (customSizeRow >= 0 && sizeListBox->currentRow() == customSizeRow) {
         sizeListBox->item(customSizeRow)->setText(standardSizeAtCustom);
         customSizeRow = -1;
     }

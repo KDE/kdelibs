@@ -17,9 +17,11 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include <QtTest>
-#include <QtCore/QThread>
+
 #include "klocalsocketservertest.h"
+
+#include "qtest_kde.h"
+#include <QtCore/QThread>
 #include "klocalsocket.h"
 
 static const char afile[] = "/tmp/afile";

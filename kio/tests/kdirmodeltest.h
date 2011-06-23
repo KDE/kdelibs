@@ -60,6 +60,7 @@ private Q_SLOTS:
     void testRemoteUrlWithHost();
     void testZipFile();
     void testSmb();
+    void testBug196695();
 
     // These tests must be done last
     void testDeleteFile();

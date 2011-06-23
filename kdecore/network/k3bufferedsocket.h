@@ -55,7 +55,7 @@ class KBufferedSocketPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KBufferedSocket: public KStreamSocket
+class KDECORE_EXPORT_DEPRECATED KBufferedSocket: public KStreamSocket
 {
   Q_OBJECT
 public:

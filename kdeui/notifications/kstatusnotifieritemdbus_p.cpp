@@ -174,7 +174,9 @@ KStatusNotifierItemDBus::KStatusNotifierItemDBus(KStatusNotifierItem *parent)
 
 KStatusNotifierItemDBus::~KStatusNotifierItemDBus()
 {
+    m_dbus.unregisterObject("/StatusNotifierItem");
     m_dbus.unregisterService(m_service);
+    m_dbus.disconnectFromBus(m_service);
 }
 
 QDBusConnection KStatusNotifierItemDBus::dbusConnection() const

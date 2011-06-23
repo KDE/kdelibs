@@ -303,7 +303,7 @@ class PLASMA_EXPORT Containment : public Applet
         /**
          * Sets the open or closed state of the Containment's toolbox
          *
-         * @arg open true to open the ToolBox, false to close it
+         * @param open true to open the ToolBox, false to close it
          */
         void setToolBoxOpen(bool open);
 
@@ -523,7 +523,7 @@ Q_SIGNALS:
          * it will be removed nicely and deleted.
          * Its configuration will also be deleted.
          *
-         * @arg confirm whether or not confirmation from the user should be requested
+         * @param confirm whether or not confirmation from the user should be requested
          */
         void destroy(bool confirm);
 
@@ -644,7 +644,6 @@ Q_SIGNALS:
         Q_PRIVATE_SLOT(d, void appletDestroyed(Plasma::Applet*))
         Q_PRIVATE_SLOT(d, void appletAppearAnimationComplete())
         Q_PRIVATE_SLOT(d, void triggerShowAddWidgets())
-        Q_PRIVATE_SLOT(d, void handleDisappeared(AppletHandle *handle))
         Q_PRIVATE_SLOT(d, void positionToolBox())
         Q_PRIVATE_SLOT(d, void requestConfiguration())
         Q_PRIVATE_SLOT(d, void updateToolBoxVisibility())

@@ -1645,7 +1645,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 203 "parser.y"
     {
-		(yyval.str) = new DOMString( *(yyvsp[(1) - (3)].str) + "()" );
+		(yyval.str) = new DOMString( *(yyvsp[(1) - (3)].str) + DOMString("()") );
 	;}
     break;
 

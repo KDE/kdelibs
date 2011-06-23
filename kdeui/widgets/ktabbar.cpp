@@ -20,23 +20,13 @@
 */
 
 #include "ktabbar.h"
-#include "ktabwidget.h"
 
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QCursor>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPushButton>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOption>
 
 #include <kglobalsettings.h>
-#include <kicon.h>
-#include <kiconeffect.h>
-#include <kiconloader.h>
-#include <klocale.h>
-#include <kstyle.h>
 
 class KTabBar::Private
 {
@@ -72,7 +62,9 @@ KTabBar::KTabBar( QWidget *parent )
   d->mActivateDragSwitchTabTimer = new QTimer( this );
   d->mActivateDragSwitchTabTimer->setSingleShot( true );
   connect( d->mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
+#ifndef KDE_NO_DEPRECATED
   connect( this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(closeRequest(int))); // just for backward compatibility, KDE5 remove
+#endif
 
   //connect( this, SIGNAL( layoutChanged() ), SLOT( onLayoutChange() ) );
 }

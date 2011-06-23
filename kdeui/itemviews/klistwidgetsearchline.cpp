@@ -24,7 +24,6 @@
 #include <QtGui/QKeyEvent>
 #include <QtCore/QEvent>
 
-#include <klocale.h>
 #include <QtCore/QTimer>
 #include <kdebug.h>
 

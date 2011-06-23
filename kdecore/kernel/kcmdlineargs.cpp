@@ -44,7 +44,6 @@
 #include "kdeversion.h"
 #include "kcomponentdata.h"
 #include "kglobal.h"
-#include "kstringhandler.h"
 #include "kurl.h"
 
 #include "kuitsemantics_p.h" // for escaping arguments in i18n
@@ -746,7 +745,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       ++args;
    }
    if ((args == s->argsList->end()) &&
-       (optv.startsWith('-') && !optv.startsWith("--")))
+       (optv.startsWith('-') && !optv.startsWith("--"))) // krazy:exclude=strings
    {
       // Option not found check if it is a valid option
       // in the style of -Pprinter1 or ps -aux

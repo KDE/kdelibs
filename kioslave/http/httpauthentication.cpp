@@ -446,7 +446,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
             info.qop.clear();
         }
     } else if (info.qop == "auth-int") {
-        kWarning(7113) << "Unsupported digest authentication qop paramter:" << info.qop;
+        kWarning(7113) << "Unsupported digest authentication qop parameter:" << info.qop;
         info.qop.clear();
     }
 

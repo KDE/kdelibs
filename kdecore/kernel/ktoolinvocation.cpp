@@ -112,7 +112,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;
 
-    QDBusMessage reply = QDBusConnection::sessionBus().call(msg);
+    QDBusMessage reply = QDBusConnection::sessionBus().call(msg, QDBus::Block, INT_MAX);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
         QDBusReply<QString> replyObj(reply);

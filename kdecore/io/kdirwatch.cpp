@@ -43,8 +43,9 @@
 
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
+#include "kfilesystemtype_p.h"
 
-#include "io/config-kdirwatch.h"
+#include <io/config-kdirwatch.h>
 #include <config.h>
 
 #include <sys/stat.h>
@@ -62,7 +63,6 @@
 #include <kglobal.h>
 #include <kde_file.h>
 #include <kconfiggroup.h>
-#include "kmountpoint.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -385,7 +385,7 @@ void KDirWatchPrivate::inotifyEventReceived()
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               }
               int counter = 0;
-              Q_FOREACH(client, e->m_clients) {
+              Q_FOREACH(client, e->m_clients) { // krazy:exclude=foreach
                   if (client->m_watchModes & flag) {
                         counter++;
                   }
@@ -709,9 +709,7 @@ bool KDirWatchPrivate::useQFSWatch(Entry* e)
 
 bool KDirWatchPrivate::useStat(Entry* e)
 {
-  KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(e->path);
-  const bool slow = mp ? mp->probablySlow() : false;
-  if (slow)
+  if (KFileSystemType::fileSystemType(e->path) == KFileSystemType::Nfs) // TODO: or Smbfs?
     useFreq(e, m_nfsPollInterval);
   else
     useFreq(e, m_PollInterval);
@@ -744,7 +742,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   QString path (_path);
   if (path.isEmpty()
 #ifndef Q_WS_WIN
-     || ((path.startsWith(QLatin1String("/dev/")) || (path == QLatin1String("/dev")) && !path.startsWith(QLatin1String("/dev/."))))
+     || path == QLatin1String("/dev")
+     || (path.startsWith(QLatin1String("/dev/")) && !path.startsWith(QLatin1String("/dev/.")))
 #endif
   )
     return; // Don't even go there.
@@ -904,8 +903,7 @@ void KDirWatchPrivate::addWatch(Entry* e)
   // are made locally. #177892.
   KDirWatch::Method preferredMethod = m_preferredMethod;
   if (m_nfsPreferredMethod != m_preferredMethod) {
-    KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByPath(e->path);
-    if (mountPoint && mountPoint->probablySlow()) {
+    if (KFileSystemType::fileSystemType(e->path) == KFileSystemType::Nfs) {
       preferredMethod = m_nfsPreferredMethod;
     }
   }
@@ -1590,7 +1588,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // Add entry to parent dir to notice if the entry gets recreated
           addEntry(0, e->parentDirectory(), e, true /*isDir*/);
         } else {
-            // A file in this directory has been removed, and wasn't explicitely watched.
+            // A file in this directory has been removed, and wasn't explicitly watched.
             // We could still inform clients, like inotify does? But stat can't.
             // For now we just marked e dirty and slotRescan will emit the dir as dirty.
             //kDebug(7001) << "Got FAMDeleted for" << QFile::decodeName(fe->filename) << "in" << e->path << ". Absolute path -> NOOP!";

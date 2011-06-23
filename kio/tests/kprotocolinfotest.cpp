@@ -18,12 +18,13 @@
 
 
 #include <kstandarddirs.h>
+#include <QApplication>
 #include <QFile>
 #include <kprotocolmanager.h>
-#include <kapplication.h>
 #include <kglobalsettings.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <assert.h>
 

@@ -20,7 +20,6 @@
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
-#include <kapplication.h>
 #include <QtDBus/QtDBus>
 
 class KBuildSycocaProgressDialogPrivate

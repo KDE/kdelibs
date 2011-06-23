@@ -22,14 +22,14 @@
 
 #include "kxzfilter.h"
 
-#include <config.h>
+#include <config-compression.h>
 
-#if defined( HAVE_XZ_SUPPORT )
+#if HAVE_XZ_SUPPORT
 extern "C" {
 	#include <lzma.h>
 }
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <qiodevice.h>
 
@@ -80,7 +80,7 @@ void KXzFilter::init( int mode )
         result = lzma_easy_encoder(&d->zStream, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC32);
     	//kDebug(7131) << "lzma_easy_encoder returned " << result;
     } else
-        kWarning(7131) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
     d->mode = mode;
     d->isInitialized = true;
 }
@@ -95,7 +95,7 @@ void KXzFilter::terminate()
     if (d->mode == QIODevice::ReadOnly || d->mode == QIODevice::WriteOnly) {
         lzma_end(&d->zStream);
     } else {
-        kWarning(7131) << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
     }
     d->isInitialized = false;
 }
@@ -103,7 +103,7 @@ void KXzFilter::terminate()
 
 void KXzFilter::reset()
 {
-    kDebug(7131) << "KXzFilter::reset";
+    //kDebug(7131) << "KXzFilter::reset";
     // liblzma doesn't have a reset call...
     terminate();
     init( d->mode );
@@ -137,8 +137,8 @@ KXzFilter::Result KXzFilter::uncompress()
     lzma_ret result = lzma_code(&d->zStream, LZMA_RUN);
     if ( result != LZMA_OK )
     {
-        kDebug(7131) << "lzma_code returned " << result;
-        kDebug(7131) << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
+        qDebug() << "lzma_code returned " << result;
+        qDebug() << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
     }
 
     switch (result) {
@@ -161,11 +161,11 @@ KXzFilter::Result KXzFilter::compress( bool finish )
                 return KFilterBase::Ok;
                 break;
         case LZMA_STREAM_END:
-                kDebug(7131) << "  lzma_code returned " << result;
+                qDebug() << "  lzma_code returned " << result;
                 return KFilterBase::End;
 		break;
         default:
-                kDebug(7131) << "  lzma_code returned " << result;
+                qDebug() << "  lzma_code returned " << result;
                 return KFilterBase::Error;
                 break;
     }

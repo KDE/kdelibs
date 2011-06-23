@@ -1514,6 +1514,9 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * the result cannot be guaranteed to be correct, since by definition they
      * contain no information about time zones or daylight savings changes.
      *
+     * If one instance is date-only and the other is date/time, they are
+     * considered unequal.
+     *
      * If both instances are date-only, they are considered simultaneous if both
      * their start of day and end of day times are simultaneous with each
      * other. (Both start and end of day times need to be considered in case a

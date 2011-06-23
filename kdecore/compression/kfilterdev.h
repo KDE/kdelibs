@@ -18,7 +18,7 @@
 #ifndef __kfilterdev_h
 #define __kfilterdev_h
 
-#include <kdecore_export.h>
+#include <karchive_export.h>
 #include <QtCore/QIODevice>
 #include <QtCore/QString>
 
@@ -33,7 +33,7 @@ class KFilterBase;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDECORE_EXPORT KFilterDev : public QIODevice
+class KARCHIVE_EXPORT KFilterDev : public QIODevice
 {
 public:
     /**

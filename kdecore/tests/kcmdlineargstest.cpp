@@ -84,7 +84,7 @@ main(int argc, char *argv[])
    u = KCmdLineArgs::makeURL("a:b");
    qDebug() << u.toLocalFile();
    assert(u.isLocalFile());
-   assert(u.toLocalFile().endsWith("a:b"));
+   assert(u.toLocalFile().endsWith(QLatin1String("a:b")));
 
    args->clear(); // Free up memory.
 

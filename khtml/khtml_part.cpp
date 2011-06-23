@@ -253,7 +253,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
     if (!parentPart()) {
         d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
-        d->m_paViewDocument->setShortcutContext( Qt::WidgetWithChildrenShortcut );
     }
 
     d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
@@ -261,14 +260,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
     if (!parentPart()) {
         d->m_paViewFrame->setShortcut( QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U) );
-        d->m_paViewFrame->setShortcutContext( Qt::WidgetWithChildrenShortcut );
     }
 
     d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
     actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
     if (!parentPart()) {
         d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
-        d->m_paViewInfo->setShortcutContext( Qt::WidgetWithChildrenShortcut );
     }
     connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
 
@@ -378,18 +375,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
           // Nobody else does it...
           d->m_paIncZoomFactor->setShortcut( KShortcut("CTRL++; CTRL+=") );
           d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
-          d->m_paIncZoomFactor->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-          d->m_paDecZoomFactor->setShortcutContext( Qt::WidgetWithChildrenShortcut );
       }
   }
 
   d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
-  d->m_paFind->setShortcutContext( Qt::WidgetWithChildrenShortcut ); // default context conflicts when splitting konqueror
   d->m_paFind->setWhatsThis( i18n( "<qt>Find text<br /><br />"
                                    "Shows a dialog that allows you to find text on the displayed page.</qt>" ) );
 
   d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
-  d->m_paFindNext->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   d->m_paFindNext->setWhatsThis( i18n( "<qt>Find next<br /><br />"
                                        "Find the next occurrence of the text that you "
                                        "have found using the <b>Find Text</b> function.</qt>" ) );
@@ -440,14 +433,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // can't for the same reason.
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
-  d->m_paSelectAll->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   if ( parentPart() ) // Only the frameset has the shortcut, but the slot uses the current frame.
       d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
   actionCollection()->addAction( "caretMode", d->m_paToggleCaretMode );
   d->m_paToggleCaretMode->setShortcut( QKeySequence(Qt::Key_F7) );
-  d->m_paToggleCaretMode->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
@@ -487,6 +478,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       KHTMLPartPrivate::s_dnsInitialised = true;
   }
 
+  // all shortcuts should only be active, when this part has focus
+  foreach ( QAction *action, actionCollection ()->actions () ) {
+      action->setShortcutContext ( Qt::WidgetWithChildrenShortcut );
+  }
   actionCollection()->associateWidget(view);
 
   connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );

@@ -79,8 +79,8 @@ class KPluginLoaderPrivate;
 class KDECORE_EXPORT KPluginLoader : public QPluginLoader
 {
     Q_OBJECT
-    Q_PROPERTY(QString fileName READ fileName)
-    Q_PROPERTY(QString pluginName READ fileName)
+    Q_PROPERTY(QString fileName READ fileName) // KDE5: REMOVE?
+    Q_PROPERTY(QString pluginName READ pluginName) // KDE5: REMOVE?
 public:
     /**
      * Used this constructor to load a plugin with a given library name. Plugin libraries shouldn't have a 'lib' prefix.

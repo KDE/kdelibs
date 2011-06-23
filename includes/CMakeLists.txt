@@ -145,7 +145,6 @@ install( FILES
   KDataToolAction
   KDataToolInfo
   KDateComboBox
-  KDateEdit
   KDatePicker
   KDateTable
   KDateTime
@@ -323,6 +322,7 @@ install( FILES
   KPushButton
   KRandom
   KRandomSequence
+  KRatingWidget
   KRecentDocument
   KRecentFilesAction
   KRemoteEncoding
@@ -333,7 +333,6 @@ install( FILES
   KRichTextWidget
   KRuler
   KRun
-  KShortcutsEditor
   KSambaShare
   KSambaShareData
   KSaveFile
@@ -357,6 +356,8 @@ install( FILES
   KShellCompletion
   KShortcut
   KShortcutsDialog
+  KShortcutsEditor
+  KShortcutWidget
   KSocks
   KSortableItem
   KSortableList
@@ -392,7 +393,6 @@ install( FILES
   KTextBrowser
   KTextEdit
   KTimeComboBox
-  KTimeEdit
   KTimeZone
   KTimeZoneData
   KTimeZoneSource
@@ -1016,6 +1016,7 @@ install(FILES
   Nepomuk/Vocabulary/NMM
   Nepomuk/Vocabulary/PIMO
   Nepomuk/Vocabulary/TMO
+  Nepomuk/Vocabulary/NEXIF
   Nepomuk/Vocabulary/NUAO
   Nepomuk/Vocabulary/NDO
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Vocabulary COMPONENT Devel)

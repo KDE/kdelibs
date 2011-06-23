@@ -178,13 +178,13 @@ public:
     KUrlCompletion *completionObject() const;
 
     /**
-     * @returns an object, suitable for use with KEditListBox. It allows you
-     * to put this KUrlRequester into a KEditListBox.
+     * @returns an object, suitable for use with KEditListWidget. It allows you
+     * to put this KUrlRequester into a KEditListWidget.
      * Basically, do it like this:
      * \code
      * KUrlRequester *req = new KUrlRequester( someWidget );
      * [...]
-     * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
+     * KEditListWidget *editListWidget = new KEditListWidget( req->customEditor(), someWidget );
      * \endcode
      */
 #ifndef KDE_NO_DEPRECATED

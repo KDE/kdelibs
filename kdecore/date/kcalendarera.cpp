@@ -71,21 +71,21 @@ int KCalendarEra::direction() const
     return m_direction;
 }
 
-bool KCalendarEra::isInEra( const QDate &date ) const
+bool KCalendarEra::isInEra(const QDate &date) const
 {
-    if ( m_endDate < m_startDate ) {
-        return ( date >= m_endDate && date <= m_startDate );
+    if (m_endDate < m_startDate) {
+        return (date >= m_endDate && date <= m_startDate);
     } else {
-        return ( date >= m_startDate && date <= m_endDate );
+        return (date >= m_startDate && date <= m_endDate);
     }
 }
 
-int KCalendarEra::yearInEra( int year ) const
+int KCalendarEra::yearInEra(int year) const
 {
-    return ( ( year - m_startYear ) * m_direction ) + m_offset;
+    return ((year - m_startYear) * m_direction) + m_offset;
 }
 
-int KCalendarEra::year( int yearInEra ) const
+int KCalendarEra::year(int yearInEra) const
 {
-    return ( ( yearInEra - m_offset ) / m_direction ) + m_startYear;
+    return ((yearInEra - m_offset) / m_direction) + m_startYear;
 }

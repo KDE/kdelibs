@@ -40,9 +40,7 @@ extern "C" {
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 
-#include <kapplication.h>
 #include <kauthorized.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -569,6 +567,13 @@ void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
             d->m_internalMetaData.insert(it.key(), it.value());
         else
             d->m_incomingMetaData.insert(it.key(), it.value());
+    }
+
+    // Update the internal meta-data values as soon as possible. Waiting until
+    // the ioslave is finished has unintended consequences if the client starts
+    // a new connection without waiting for the ioslave to finish.
+    if (!d->m_internalMetaData.isEmpty()) {
+        Scheduler::updateInternalMetaData(this);
     }
 }
 

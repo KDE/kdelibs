@@ -489,6 +489,11 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
                 kWarning(7008) << "No node found for item that was just removed:" << url;
                 continue;
             }
+            if (!node->parent()) {
+                // The root node has been deleted, but it was not first in the list 'items'.
+                // see https://bugs.kde.org/show_bug.cgi?id=196695
+                return;
+            }
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
         removeFromNodeHash(node, url);
@@ -776,10 +781,10 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
             const KFileItem& item = node->item();
             const QString newName = value.toString();
-            if (newName.isEmpty() || newName == item.text())
+            if (newName.isEmpty() || newName == item.text() || (newName == QLatin1String(".")) || (newName == QLatin1String("..")))
                 return true;
             KUrl newurl(item.url());
-            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + newName);
+            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + KIO::encodeFileName(newName));
             KIO::Job * job = KIO::moveAs(item.url(), newurl, newurl.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
             // undo handling

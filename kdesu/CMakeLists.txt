@@ -3,6 +3,15 @@ project(kdesu)
 
 include_directories( ${KDE4_KPTY_INCLUDES} )
 
+check_function_exists(setpriority HAVE_SETPRIORITY)
+check_function_exists(getpeereid HAVE_GETPEEREID)
+
+set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
+check_type_size("struct ucred" STRUCT_UCRED) #defines HAVE_STRUCT_UCRED (bool) and STRUCT_UCRED (size, unused)
+set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
+
+configure_file(config-kdesu.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdesu.h )
+
 ########### next target ###############
 
 set(kdesu_LIB_SRCS

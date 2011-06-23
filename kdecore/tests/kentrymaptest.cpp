@@ -17,8 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
 #include "kentrymaptest.h"
+
+#include <qtest_kde.h>
 #include "kconfigdata.h"
 
 #include "kentrymaptest.moc"

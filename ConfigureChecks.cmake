@@ -20,18 +20,6 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
-#check for libz using the cmake supplied FindZLIB.cmake
-macro_bool_to_01(ZLIB_FOUND HAVE_LIBZ)                  # zlib is required
-
-macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore
-if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
-   set(NEED_BZ2_PREFIX 1)
-endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
-
-macro_bool_to_01(LIBLZMA_FOUND HAVE_XZ_SUPPORT)         # kdecore
-
-macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
-
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!
@@ -51,7 +39,6 @@ check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
 check_include_files(string.h      HAVE_STRING_H)                       # various
 check_include_files(strings.h     HAVE_STRINGS_H)                      # various
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
-check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
 
@@ -103,10 +90,8 @@ check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)  
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 
-check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
-check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
 # on previous versions so don't do the check on APPLE.
 if(NOT APPLE)
@@ -120,7 +105,6 @@ if(NOT WIN32)
   check_function_exists(readdir_r     HAVE_READDIR_R)                 # kio
 endif(NOT WIN32)
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
-check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
@@ -233,7 +217,7 @@ endif (UNIX)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
-check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
+check_function_exists(initgroups HAVE_INITGROUPS)        # kde3support/k3process, kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
 check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
 check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
@@ -275,12 +259,6 @@ check_prototype_exists(trunc math.h                 HAVE_TRUNC)
 
 # check for existing datatypes
 
-set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
-check_type_size("struct ucred" STRUCT_UCRED)              # kdesu
-check_type_size(time_t SIZEOF_TIME_T)                          # kdecore
-
-set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
-
 check_cxx_source_compiles("
   #include <sys/types.h>
   #include <sys/statvfs.h>
@@ -291,11 +269,7 @@ check_cxx_source_compiles("
   }
 " GETMNTINFO_USES_STATVFS )
 
-check_struct_member(tm tm_zone time.h HAVE_STRUCT_TM_TM_ZONE)  # kdecore
-check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)        # kdecore
-check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE) # kdecore, kded
-include(TestBigEndian)
-test_big_endian(WORDS_BIGENDIAN)
+check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE) # kdecore, kioslave/file
 
 # TODO: for the more capable cmake authors: we need at least gcc's and MSVC's version in here
 set (KDE_COMPILER_VERSION ${CMAKE_C_COMPILER})

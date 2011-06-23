@@ -31,8 +31,7 @@ class QTime;
 class KDateTime;
 class KCalendarSystem;
 
-struct DateTimeComponents
-{
+struct DateTimeComponents {
     int day;
     int month;
     int year;
@@ -54,28 +53,28 @@ public:
 
     virtual ~KDateTimeParser();
 
-    virtual QDate parseDate( const QString &dateString,
-                             const QString &format,
-                             const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                             const KLocale *locale = KGlobal::locale(),
-                             KLocale::DigitSet digitSet = KLocale::ArabicDigits,
-                             KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat ) const;
+    virtual QDate parseDate(const QString &dateString,
+                            const QString &format,
+                            const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
+                            const KLocale *locale = KGlobal::locale(),
+                            KLocale::DigitSet digitSet = KLocale::ArabicDigits,
+                            KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
 private:
-    virtual DateTimeComponents parseDatePosix( const QString &dateString,
-                                               const QString &format,
-                                               const KCalendarSystem *calendar,
-                                               const KLocale *locale,
-                                               KLocale::DigitSet digitSet,
-                                               KLocale::DateTimeFormatStandard standard ) const;
+    virtual DateTimeComponents parseDatePosix(const QString &dateString,
+                                              const QString &format,
+                                              const KCalendarSystem *calendar,
+                                              const KLocale *locale,
+                                              KLocale::DigitSet digitSet,
+                                              KLocale::DateTimeFormatStandard standard) const;
 
-    virtual DateTimeComponents parseDateUnicode( const QString &inputString,
-                                                 const QString &format,
-                                                 const KCalendarSystem *calendar,
-                                                 const KLocale *locale,
-                                                 KLocale::DigitSet digitSet ) const;
+    virtual DateTimeComponents parseDateUnicode(const QString &inputString,
+                                                const QString &format,
+                                                const KCalendarSystem *calendar,
+                                                const KLocale *locale,
+                                                KLocale::DigitSet digitSet) const;
 
-    virtual int integerFromString( const QString &string, int maxLength, int &readLength ) const;
+    virtual int integerFromString(const QString &string, int maxLength, int &readLength) const;
 };
 
 #endif // KDATETIMEPARSER_H

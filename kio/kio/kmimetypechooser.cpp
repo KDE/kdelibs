@@ -18,8 +18,6 @@
 
 #include "kmimetypechooser.h"
 
-#include <kconfig.h>
-#include <kiconloader.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kshell.h>

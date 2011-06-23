@@ -20,7 +20,7 @@
 #ifndef __kfilterbase__h
 #define __kfilterbase__h
 
-#include <kdecore_export.h>
+#include <karchive_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -33,7 +33,7 @@ class QIODevice;
  * Don't use directly, use KFilterDev instead.
  * @internal
  */
-class KDECORE_EXPORT KFilterBase
+class KARCHIVE_EXPORT KFilterBase
 {
 public:
     KFilterBase();
@@ -54,7 +54,7 @@ public:
      */
     QIODevice * device();
     /** \internal */
-    virtual void init( int mode ) = 0;
+    virtual void init( int mode ) = 0;   // KDE5 TODO: return a bool
     /** \internal */
     virtual int mode() const = 0;
     /** \internal */

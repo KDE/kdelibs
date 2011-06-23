@@ -43,7 +43,7 @@ public:
                           QByteArray &stdOut, QByteArray &stdErr);
     static QString testparmParamValue(const QString &parameterName);
 
-    QByteArray getNetUserShareInfo() const;
+    QByteArray getNetUserShareInfo();
     QStringList shareNames() const;
     QStringList sharedDirs() const;
     KSambaShareData getShareByName(const QString &shareName) const;
@@ -69,6 +69,7 @@ private:
     QMap<QString, KSambaShareData> data;
     QString smbConf;
     QString userSharePath;
+    bool skipUserShare;
 };
 
 #endif

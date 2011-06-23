@@ -495,7 +495,7 @@ public:
 
     /**
      * reads the configuration for this widget from the given config group
-     * @param group the KConfiGroup to read from
+     * @param group the KConfigGroup to read from
      * @since 4.4
      */
     void readConfig( KConfigGroup& group );

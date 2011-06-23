@@ -23,7 +23,6 @@
 #include "ksslkeygen_p.h"
 #include "ui_keygenwizard.h"
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>

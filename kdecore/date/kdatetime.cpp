@@ -21,6 +21,7 @@
 #include "kdatetime.h"
 
 #include <config.h>
+#include <config-date.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -39,7 +40,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include "kcalendarsystemgregorian_p.h"
+#include "kcalendarsystemqdate_p.h"
 #include <ksystemtimezone.h>
 #include <kdebug.h>
 
@@ -1289,7 +1290,7 @@ QTime KDateTime::currentLocalTime()
 KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
 {
     QDateTime start1, start2;
-    bool conv = (!d->equalSpec(*other.d) || d->secondOccurrence() != other.d->secondOccurrence());
+    const bool conv = (!d->equalSpec(*other.d) || d->secondOccurrence() != other.d->secondOccurrence());
     if (conv)
     {
         // Different time specs or one is a time which occurs twice,
@@ -1371,12 +1372,12 @@ bool KDateTime::operator==(const KDateTime &other) const
             return d->secondOccurrence() == other.d->secondOccurrence()
                &&  d->dt() == other.d->dt();
     }
+    // Don't waste time converting to UTC if the dates aren't close enough.
+    if (qAbs(d->date().daysTo(other.d->date())) > 2)
+        return false;
     if (d->dateOnly())
     {
         // Date-only values are equal if both the start and end of day times are equal.
-        // Don't waste time converting to UTC if the dates aren't very close.
-        if (qAbs(d->date().daysTo(other.d->date())) > 2)
-            return false;
         if (d->toUtc() != other.d->toUtc())
             return false;    // start-of-day times differ
         KDateTime end1(*this);
@@ -1402,10 +1403,19 @@ bool KDateTime::operator<(const KDateTime &other) const
         // One is the second occurrence of a date/time, during a change from
         // daylight saving to standard time, so only do a direct comparison
         // if the dates are more than 1 day apart.
-        int diff = d->dt().date().daysTo(other.d->dt().date());
-        if (diff > 1)
+        const int dayDiff = d->date().daysTo(other.d->date());
+        if (dayDiff > 1)
             return true;
-        if (diff < -1)
+        if (dayDiff < -1)
+            return false;
+    }
+    else
+    {
+        // Don't waste time converting to UTC if the dates aren't close enough.
+        const int dayDiff = d->date().daysTo(other.d->date());
+        if (dayDiff > 2)
+            return true;
+        if (dayDiff < -2)
             return false;
     }
     if (d->dateOnly())
@@ -1427,7 +1437,7 @@ QString KDateTime::toString(const QString &format) const
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystemGregorian calendar(locale);
+    KCalendarSystemQDate calendar(locale);
     QString result;
     QString s;
     int num, numLength, zone;
@@ -2484,7 +2494,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystemGregorian calendar(locale);
+    KCalendarSystemQDate calendar(locale);
     int zone;
     int s = 0;
     int send = str.length();

@@ -16,10 +16,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <kdebug.h>
-
 #include "kactivityinfo.h"
 #include "kactivityinfo_p.h"
+
+#include <kdebug.h>
+
 #include "kactivitymanager_p.h"
 
 // Private

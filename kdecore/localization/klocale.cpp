@@ -410,8 +410,8 @@ QTime KLocale::readTime(const QString &intstr, KLocale::ReadTimeFlags flags, boo
     return d->readTime(intstr, flags, ok);
 }
 
-QTime KLocale::readLocaleTime(const QString &intstr, bool *ok, KLocale::TimeFormatOptions options,
-                              KLocale::TimeProcessingOptions processing) const
+QTime KLocale::readLocaleTime(const QString &intstr, bool *ok, TimeFormatOptions options,
+                              TimeProcessingOptions processing) const
 {
     return d->readLocaleTime(intstr, ok, options, processing);
 }
@@ -421,7 +421,7 @@ QString KLocale::formatTime(const QTime &time, bool includeSecs, bool isDuration
     return d->formatTime(time, includeSecs, isDuration);
 }
 
-QString KLocale::formatLocaleTime(const QTime &time, KLocale::TimeFormatOptions options) const
+QString KLocale::formatLocaleTime(const QTime &time, TimeFormatOptions options) const
 {
     return d->formatLocaleTime(time, options);
 }

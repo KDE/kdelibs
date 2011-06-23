@@ -38,12 +38,10 @@
 #include <QtCore/QList>
 #include <QtCore/QDateTime>
 
-#include <kapplication.h>
 #include <kcrash.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kde_file.h>
-#include <kdesu/client.h>
 #include <klocale.h>
 
 #include "kremoteencoding.h"
@@ -313,7 +311,7 @@ void SlaveBase::dispatchLoop()
 
         //I think we get here when we were killed in dispatch() and not in select()
         if (wasKilled()) {
-            kDebug(7019)<<" dispatchLoop() slave was killed, returning";
+            kDebug(7019) << "slave was killed, returning";
             return;
         }
     }
@@ -325,7 +323,7 @@ void SlaveBase::connectSlave(const QString &address)
 
     if (!d->appConnection.inited())
     {
-        kDebug(7019) << "SlaveBase: failed to connect to" << address << endl
+        kDebug(7019) << "failed to connect to" << address << endl
 		      << "Reason:" << d->appConnection.errorString();
         exit();
         return;

@@ -49,7 +49,7 @@ class KResolverEntry;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KDatagramPacket //krazy:exclude=dpointer,inline (lightweight; kde3)
+class KDECORE_EXPORT_DEPRECATED KDatagramPacket //krazy:exclude=dpointer,inline (lightweight; kde3)
 {
   QByteArray m_data;
   KSocketAddress m_address;
@@ -179,7 +179,7 @@ class KDatagramSocketPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KDatagramSocket: public KClientSocketBase
+class KDECORE_EXPORT_DEPRECATED KDatagramSocket: public KClientSocketBase
 {
   Q_OBJECT
 

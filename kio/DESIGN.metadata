@@ -83,6 +83,7 @@ errorPage       bool            Flag that indicates that an errorPage() is prefe
 
 no-auth         bool            Flag that indicates that no authentication attempts should be made.
 no-auth-prompt  bool            Flag that indicates that only cached authentication tokens should be used.
+no-preemptive-auth-reuse  bool  Flag that indicates whether cached credentials should be preemptively sent to the server.
 
 ssl_activate_warnings bool      Flag that disables SSL warning dialogs if set to false.  (default: true)
 

@@ -19,12 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-// This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
-// This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
-
 #include "ktimezone.h"
 
 #include <config.h>
+#include <config-date.h> // SIZEOF_TIME_T
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -40,6 +38,7 @@
 #include <QtCore/QCoreApplication>
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 int gmtoff(time_t t);   // defined in ksystemtimezone.cpp
 
@@ -413,9 +412,13 @@ void KTimeZonePrivate::cleanup()
 
 /******************************************************************************/
 
+K_GLOBAL_STATIC(KTimeZonePrivate, s_emptyTimeZonePrivate)
+
 KTimeZoneBackend::KTimeZoneBackend()
-  : d(new KTimeZonePrivate)
-{}
+  : d(&*s_emptyTimeZonePrivate)
+{
+    ++d->refCount;
+}
 
 KTimeZoneBackend::KTimeZoneBackend(const QString &name)
   : d(new KTimeZonePrivate(KTimeZonePrivate::utcSource(), name, QString(), KTimeZone::UNKNOWN, KTimeZone::UNKNOWN, QString()))
@@ -498,7 +501,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
             if (secondOffset)
                 *secondOffset = offset;
 #ifdef COMPILING_TESTS
-            qDebug("-> Using cache");
+            qDebug("-> Using cache");   // test output requires qDebug instead of kDebug
 #endif
             return offset;
         }
@@ -506,7 +509,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
 
     // The time doesn't fall within the cached transition, or there isn't a cached transition
 #ifdef COMPILING_TESTS
-    qDebug("-> No cache");
+    qDebug("-> No cache");   // test output requires qDebug instead of kDebug
 #endif
     bool validTime;
     int secondIndex = -1;
@@ -540,7 +543,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
         {
             // The time falls within the cached transition, so return its UTC offset
 #ifdef COMPILING_TESTS
-            qDebug("Using cache");
+            qDebug("Using cache");   // test output requires qDebug instead of kDebug
 #endif
             return offset;
         }
@@ -548,7 +551,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
 
     // The time doesn't fall within the cached transition, or there isn't a cached transition
 #ifdef COMPILING_TESTS
-    qDebug("No cache");
+    qDebug("No cache");   // test output requires qDebug instead of kDebug
 #endif
     index = caller->transitionIndex(utcDateTime);
     d->cachedTransitionIndex = index;   // cache transition data
@@ -616,7 +619,7 @@ KTimeZone::KTimeZone(KTimeZoneBackend *impl)
   : d(impl)
 {
     // 'impl' should be a newly constructed object, with refCount = 1
-    Q_ASSERT(d->d->refCount == 1);
+    Q_ASSERT(d->d->refCount == 1 || d->d == &*s_emptyTimeZonePrivate);
 }
 
 KTimeZone &KTimeZone::operator=(const KTimeZone &tz)

@@ -19,16 +19,11 @@
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
 
-#include <kapplication.h>
 #include <kglobalsettings.h>
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kiconloader.h>
-#include <kpushbutton.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kfiledialog.h>
 #include <kfileitem.h>
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>

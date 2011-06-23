@@ -16,11 +16,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktempdirtest.h"
+
 #include "qtest_kde.h"
 
 #include <QtCore/QDir>
 
-#include "ktempdirtest.h"
 #include "ktempdir.h"
 #include "ktempdirtest.moc"
 

@@ -167,8 +167,8 @@ QTime KDayPeriod::time(int hip, int minute, int second, int millisecond) const
         }
         int hour;
         if (periodStart() <= periodEnd() ||
-            (hip >= hourInPeriod(periodStart()) &&
-             hip <= hourInPeriod(QTime(23, 59, 59, 999)))) {
+                (hip >= hourInPeriod(periodStart()) &&
+                 hip <= hourInPeriod(QTime(23, 59, 59, 999)))) {
             hour = hip + periodStart().hour() - d->m_offsetFromStart;
         } else {
             hour = hip;
@@ -197,7 +197,7 @@ bool KDayPeriod::isValid(const QTime &time) const
             return time >= periodStart() && time <= periodEnd();
         } else {
             return ((time >= periodStart() && time <= QTime(23, 59, 59, 999)) ||
-                    (time >= QTime( 0, 0, 0 ) && time <= periodEnd()));
+                    (time >= QTime(0, 0, 0) && time <= periodEnd()));
         }
     } else {
         return false;

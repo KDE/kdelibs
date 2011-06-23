@@ -41,7 +41,7 @@ class PLASMA_EXPORT Slider : public QGraphicsProxyWidget
     Q_OBJECT
 
     Q_PROPERTY(QGraphicsWidget *parentWidget READ parentWidget)
-    Q_PROPERTY(int maximum READ maximum WRITE setMinimum)
+    Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
     Q_PROPERTY(int minimum READ minimum WRITE setMinimum)
     Q_PROPERTY(int value READ value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
@@ -75,7 +75,7 @@ public:
     /**
      * Sets the stylesheet used to control the visual display of this Slider
      *
-     * @arg stylesheet a CSS string
+     * @param stylesheet a CSS string
      */
     void setStyleSheet(const QString &stylesheet);
 

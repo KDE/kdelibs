@@ -17,15 +17,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
+#include "kiconprovider_p.h"
 
 #include <QPixmap>
 #include <QSize>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
-
-#include "kiconprovider_p.h"
-
 
 KIconProvider::KIconProvider()
   : QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
@@ -35,7 +33,7 @@ KIconProvider::KIconProvider()
 QPixmap KIconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
     // We need to handle QIcon::state
-    const QStringList source = id.split("/");
+    const QStringList source = id.split('/');
 
     QPixmap pixmap;
     if (requestedSize.isValid()) {

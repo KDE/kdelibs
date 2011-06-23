@@ -24,7 +24,16 @@ configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config
 include(network/ConfigureChecks.cmake)
 configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
+
+# Configure checks for date/
+include(date/ConfigureChecks.cmake)
+configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
+
+# Configure checks for compression/
+include(compression/ConfigureChecks.cmake)
+configure_file(compression/config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/compression/config-compression.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/compression )
 
 # This file handles all the logic for compiling KAuth's backends
 include(auth/ConfigureChecks.cmake)
@@ -33,6 +42,9 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
 # Configure a small file to tell BackendsManager what to use
 configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
 
+# Configure checks for localization
+configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
@@ -40,6 +52,8 @@ include_directories( ${QT_INCLUDES} )
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
@@ -184,9 +198,9 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystem.cpp
    date/kcalendarsystemcoptic.cpp
    date/kcalendarsystemethiopian.cpp
+   date/kcalendarsystemqdate.cpp
    date/kcalendarsystemgregorian.cpp
-   date/kcalendarsystemgregorianproleptic.cpp
-   date/kcalendarsystemhijri.cpp
+   date/kcalendarsystemislamiccivil.cpp
    date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemindiannational.cpp
    date/kcalendarsystemjalali.cpp
@@ -208,6 +222,7 @@ set(kdecore_LIB_SRCS
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kdirwatch.cpp
+   io/kfilesystemtype_p.cpp
    io/klimitediodevice.cpp
    io/kmessage.cpp
    io/kmountpoint.cpp
@@ -518,6 +533,7 @@ install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    kdecore_export.h
    compression/kfilterbase.h
+   compression/karchive_export.h
    compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h

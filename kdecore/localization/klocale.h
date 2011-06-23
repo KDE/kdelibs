@@ -83,7 +83,7 @@ public:
      *
      * If you specify a configuration file, it has to be valid until the KLocale
      * object is destroyed.  Note that a setLocale() will be performed on the
-     * config using the current locale langauge, which may cause a sync()
+     * config using the current locale language, which may cause a sync()
      * and reparseConfiguration() which will save any changes you have made and
      * load any changes other shared copies have made.
      *
@@ -101,7 +101,7 @@ public:
      * country of this locale.
      *
      * If you specify a configuration file, a setLocale() will be performed on
-     * the config using the current locale langauge, which may cause a sync()
+     * the config using the current locale language, which may cause a sync()
      * and reparseConfiguration() which will save any changes you have made.
      *
      * @param catalog  the name of the main language file
@@ -468,7 +468,7 @@ public:
      *
      * @return Default number of fractional digits used by locale.
      */
-    int fracDigits() const;
+    KDE_DEPRECATED int fracDigits() const;
 
     /**
      * @since 4.4
@@ -760,7 +760,7 @@ public:
      *
      * @return If nouns are declined
      */
-    bool nounDeclension() const;
+    KDE_DEPRECATED bool nounDeclension() const;
 
     //KDE5 move to KDateTime namespace
     /**
@@ -787,7 +787,7 @@ public:
         //IslamicUmAlQuraCalendar = 13, /**< Islamic Lunar Calendar, Um Al Qura varient used in Saudi Arabia */
         IndianNationalCalendar = 14, /**< Indian National Calendar, not the Lunar Calendar */
         //Iso8601Calendar = 15, /**< ISO 8601 Standard Calendar */
-        JalaliCalendar = 16, /**< Jalali Calendar, aka Persian or Iranian, also used in Afganistan */
+        JalaliCalendar = 16, /**< Jalali Calendar, aka Persian or Iranian, also used in Afghanistan */
         //JalaliBirashkCalendar = 17, /**< Jalali Calendar, Birashk Algorythm variant */
         //Jalali33YearCalendar = 18, /**< Jalali Calendar, 33 Year cycle variant */
         JapaneseCalendar= 19, /**< Japanese Calendar, Gregorian calculation using Japanese Era (Nengô) */
@@ -1067,6 +1067,7 @@ public:
      * Returns the Day Period matching the time given
      *
      * @param time the time to return the day period for
+     * @param format the format to return teh day period in
      * @return the Day Period for the given time
      */
     QString dayPeriodText(const QTime &time, DateTimeComponentFormat format = DefaultComponentFormat) const;
@@ -1119,7 +1120,7 @@ public:
      * @see calendarSystem()
      * @return the name of the calendar system
      */
-    QString calendarType() const;
+    KDE_DEPRECATED QString calendarType() const;
 
     /**
      * @since 4.6
@@ -1142,7 +1143,7 @@ public:
      * @see setCalendarSystem()
      * @param calendarType the name of the calendar type
      */
-    void setCalendar(const QString & calendarType);
+    KDE_DEPRECATED void setCalendar(const QString & calendarType);
 
     /**
      * @since 4.6
@@ -1688,7 +1689,7 @@ public:
      *
      * @param digits The default number of digits to use.
      */
-    void setFracDigits(int digits);
+    KDE_DEPRECATED void setFracDigits(int digits);
 
     /**
      * @since 4.4
@@ -1992,7 +1993,7 @@ public:
      * An empty country value will set the country to the system default.
      *
      * If you specify a configuration file, a setLocale() will be performed on
-     * the config using the current locale langauge, which may cause a sync()
+     * the config using the current locale language, which may cause a sync()
      * and reparseConfiguration() which will save any changes you have made.
      *
      * @param country the ISO 3166 country code
@@ -2027,7 +2028,7 @@ public:
      * configuration as well.
      *
      * If you specify a configuration file, a setLocale() will be performed on
-     * the config using the current locale langauge, which may cause a sync()
+     * the config using the current locale language, which may cause a sync()
      * and reparseConfiguration() which will save any changes you have made.
      *
      * @param language the language code

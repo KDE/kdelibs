@@ -100,14 +100,14 @@ public:
      * Default constructor.
      */
     KSaveFile();
-   
+
     /**
      * Creates a new KSaveFile and sets the target file to @p filename.
      *
      * @param filename the path of the file
-     * @param componentData The KComponentData to use for the temporary file.
+     * @param componentData unused
      */
-    explicit KSaveFile(const QString &filename, const KComponentData &componentData = KGlobal::mainComponent());
+    explicit KSaveFile(const QString &filename, const KComponentData &componentData = KGlobal::mainComponent()); // KDE5 TODO: remove KComponentData
 
     /**
      * Destructor.

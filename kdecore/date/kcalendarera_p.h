@@ -56,9 +56,9 @@ public:
     int direction() const;
     int offset() const;
 
-    bool isInEra( const QDate &date ) const;
-    int yearInEra( int year ) const;
-    int year( int yearInEra ) const;
+    bool isInEra(const QDate &date) const;
+    int yearInEra(int year) const;
+    int year(int yearInEra) const;
 
 private:
     friend class KCalendarSystemPrivate;

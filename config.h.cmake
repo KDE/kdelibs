@@ -4,9 +4,6 @@
    Otherwise please prefer adding to the relevant config-foo.h.cmake file,
    to minimize recompilations and increase modularity. */
 
-/* if setgroups() takes short *as second arg */
-#cmakedefine HAVE_SHORTSETGROUPS 1 
-
 /****************************/
 
 #define kde_socklen_t socklen_t
@@ -14,19 +11,6 @@
 #define KDELIBSUFF "${KDELIBSUFF}"
 
 /****************************/
-
-#cmakedefine   HAVE_BZIP2_SUPPORT 1
-/* Define if the libbz2 functions need the BZ2_ prefix */
-#cmakedefine   NEED_BZ2_PREFIX 1
-
-/* Define if you have libz */
-#cmakedefine   HAVE_LIBZ 1
-
-/* Define if you have xz */
-#cmakedefine   HAVE_XZ_SUPPORT 1
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#cmakedefine   HAVE_DLFCN_H 1
 
 /* Define to 1 if you have stdio.h */
 #cmakedefine   HAVE_STDIO_H 1
@@ -63,18 +47,15 @@
 
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
-#cmakedefine HAVE_CARBON_CARBON_H 1
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
-#cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
-#cmakedefine HAVE_LANGINFO_H 1
 
 #cmakedefine HAVE_XTEST 1
 
@@ -88,7 +69,6 @@
 #cmakedefine HAVE_XRENDER 1
 
 #cmakedefine   HAVE_BACKTRACE 1
-#cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_INITGROUPS 1
@@ -104,7 +84,6 @@
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
 #cmakedefine   HAVE_SETMNTENT 1
-#cmakedefine   HAVE_SETPRIORITY 1
 #cmakedefine   HAVE_SRANDOM 1
 #cmakedefine   HAVE_STRCMP 1
 #cmakedefine   HAVE_STRLCPY 1
@@ -123,22 +102,6 @@
 #cmakedefine HAVE_S_ISSOCK 1
 
 #cmakedefine TIME_WITH_SYS_TIME 1
-
-/* When building universal binaries, you must determine endianness at compile-time */
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-#define WORDS_BIGENDIAN 1
-#else
-#undef WORDS_BIGENDIAN
-#endif
-
-#else
-#cmakedefine WORDS_BIGENDIAN
-#endif
-
-/********* structs ******************/
-
-#cmakedefine HAVE_STRUCT_UCRED 1
 
 /*********************/
 
@@ -176,17 +139,7 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 #cmakedefine GETMNTINFO_USES_STATVFS 1
 
-#cmakedefine SIZEOF_TIME_T ${SIZEOF_TIME_T}
-
-/* Defined to 1 if you have a tm_gmtoff member in struct tm */
-#cmakedefine HAVE_TM_GMTOFF 1
-
-/* Defined to 1 if you have a tm_zone member in struct tm */
-#cmakedefine HAVE_STRUCT_TM_TM_ZONE 1
-
 /* Defined to 1 if you have a d_type member in struct dirent */
 #cmakedefine HAVE_DIRENT_D_TYPE 1
 
-
 #include "kdecore/kdefakes.h"
-

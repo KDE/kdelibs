@@ -24,7 +24,6 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kuniqueapplication.h>
 #include <kxerrorhandler.h>
 #include <QtGui/QBitmap>
 #include <QDesktopWidget>

@@ -31,13 +31,9 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kmessagebox.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
 #include "kprotocolmanager.h"
 #include "kmountpoint.h"
-#include <sys/stat.h>
 
-#include <assert.h>
 #include <QFile>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
@@ -592,6 +588,10 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
             kDebug(7004) << lister << " item moved into cache: " << url;
             itemsCached.insert( urlStr, item );
 
+            // TODO(afiestas): remove use of KMountPoint+manually_mounted and port to Solid:
+            // 1) find Volume for the local path "item->url.toLocalFile()" (which could be anywhere
+            // under the mount point) -- probably needs a new operator in libsolid query parser
+            // 2) [**] becomes: if (Drive is hotpluggable or Volume is removable) "set to dirty" else "keep watch"
             const KMountPoint::List possibleMountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedMountOptions);
 
             // Should we forget the dir for good, or keep a watch on it?
@@ -614,7 +614,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
                 }
             }
 
-            if ( isManuallyMounted || containsManuallyMounted )
+            if ( isManuallyMounted || containsManuallyMounted ) // [**]
             {
                 kDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
                     ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" );
@@ -2152,6 +2152,10 @@ void KDirLister::Private::emitChanges()
     // Mark all items that are currently visible
     Q_FOREACH(const KUrl& dir, lstDirs) {
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        if (!itemList) {
+            continue;
+        }
+
         KFileItemList::iterator kit = itemList->begin();
         const KFileItemList::iterator kend = itemList->end();
         for (; kit != kend; ++kit) {
@@ -2168,6 +2172,10 @@ void KDirLister::Private::emitChanges()
         KFileItemList deletedItems;
 
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        if (!itemList) {
+            continue;
+        }
+
         KFileItemList::iterator kit = itemList->begin();
         const KFileItemList::iterator kend = itemList->end();
         for (; kit != kend; ++kit) {

@@ -41,7 +41,7 @@
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KIOBufferBase //krazy:exclude=inline (mainly virtual; simple implementations; KDE3 compat)
+class KDECORE_EXPORT_DEPRECATED KIOBufferBase //krazy:exclude=inline (mainly virtual; simple implementations; KDE3 compat)
 {
 public:
   /**

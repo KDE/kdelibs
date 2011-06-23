@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kgenericfactory.h>
 #include "klibloadertest_module.h"
+#include <kgenericfactory.h>
 
 typedef KGenericFactory<KLibLoaderTestObject> KLibLoaderTestFactory;
 K_EXPORT_COMPONENT_FACTORY( klibloadertestmodule, KLibLoaderTestFactory("klibloadertestfactory") )

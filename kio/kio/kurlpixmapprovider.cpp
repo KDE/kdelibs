@@ -19,6 +19,7 @@
 */
 
 #include "kurlpixmapprovider.h"
+#include <kurl.h>
 #include <kio/global.h>
 
 KUrlPixmapProvider::KUrlPixmapProvider()

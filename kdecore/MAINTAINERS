@@ -20,12 +20,12 @@ config/
   ksharedconfig.cpp
 
 date/
+  kcalendarera.cpp                John Layt <john@layt.net>
   kcalendarsystem.cpp             John Layt <john@layt.net>
-  kcalendarsystemfactory.cpp      John Layt <john@layt.net>
-  kcalendarsystemgregorian.cpp    John Layt <john@layt.net>
-  kcalendarsystemhebrew.cpp       John Layt <john@layt.net>
-  kcalendarsystemhijri.cpp        John Layt <john@layt.net>
-  kcalendarsystemjalali.cpp       John Layt <john@layt.net>
+  kdatetimeformatter.cpp          John Layt <john@layt.net>
+  kdatetimeparser.cpp             John Layt <john@layt.net>
+  kdayperiod.cpp                  John Layt <john@layt.net>
+  klocalizeddate.cpp              John Layt <john@layt.net>
   kdatetime.cpp                   David Jarvie <djarvie@kde.org>
   ksystemtimezone.cpp
   ktimezone.cpp
@@ -102,7 +102,6 @@ network/                          Thiago Macieira <thiago@kde.org>
   k3socks.cpp
   k3sockssocketdevice.cpp
   k3streamsocket.cpp
-  kidna.cpp
   klocalsocket.cpp
   klocalsocket_unix.cpp
   klocalsocket_win.cpp

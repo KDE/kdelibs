@@ -47,7 +47,7 @@ class KClientSocketBasePrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT KClientSocketBase : public KActiveSocketBase
+class KDECORE_EXPORT_DEPRECATED KClientSocketBase : public KActiveSocketBase
 {
   Q_OBJECT
 

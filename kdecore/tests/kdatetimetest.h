@@ -38,6 +38,8 @@ private Q_SLOTS:
     void toZone();
     void toTimeSpec();
     void set();
+    void equal();
+    void lessThan();
     void compare();
     void addSubtract();
     void addMSecs();

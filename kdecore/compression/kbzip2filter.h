@@ -20,9 +20,9 @@
 #ifndef __kbzip2filter__h
 #define __kbzip2filter__h
 
-#include <config.h>
+#include <config-compression.h>
 
-#if defined( HAVE_BZIP2_SUPPORT )
+#if HAVE_BZIP2_SUPPORT
 
 #include "kfilterbase.h"
 

@@ -25,11 +25,11 @@
  * SUCH DAMAGE.
  *
  */
-#include <krecentdirs.h>
+#include "krecentdirs.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <kstandarddirs.h>
+#include <kglobal.h>
 #include <kglobalsettings.h>
 
 #define MAX_DIR_HISTORY 3

@@ -16,8 +16,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef JAVASCRIPTBINDI18N_H
-#define JAVASCRIPTBINDI18N_H
+#ifndef I18N_P_H
+#define I18N_P_H
 
 #include <QtScript/QScriptValue>
 
@@ -30,5 +30,5 @@ QScriptValue jsi18np(QScriptContext *context, QScriptEngine *engine);
 QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine);
 void bindI18N(QScriptEngine *engine);
 
-#endif
+#endif //I18N_P_H
 
