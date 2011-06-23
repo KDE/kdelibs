@@ -255,6 +255,8 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
+     *
+     * @deprecated use the StatSide enum instead of the bool source
      */
 #ifndef KDE_NO_DEPRECATED
     static KDE_DEPRECATED bool exists(const KUrl& url, bool source, QWidget* window);
