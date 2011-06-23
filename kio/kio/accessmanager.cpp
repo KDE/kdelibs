@@ -204,7 +204,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     KIO::SimpleJob *kioJob = 0;
     const KUrl reqUrl (req.url());
 
-    if (!d->externalContentAllowed && !isLocalRequest(reqUrl)) {
+    if (!d->externalContentAllowed && !KDEPrivate::AccessManager_isLocalRequest(reqUrl)) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
         KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
         reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);

@@ -37,6 +37,13 @@
 
 namespace KDEPrivate {
 
+bool AccessManager_isLocalRequest(const KUrl& url)
+{
+    const QString scheme (url.protocol());
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
                                        const QNetworkRequest &request,
                                        KIO::SimpleJob *kioJob,
@@ -152,7 +159,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     const KIO::MetaData& metaData = job->metaData();
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
-        if (isLocalRequest(url())) {
+        if (AccessManager_isLocalRequest(url())) {
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
             emit metaDataChanged();
