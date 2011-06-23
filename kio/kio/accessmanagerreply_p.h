@@ -84,6 +84,8 @@ private:
     QPointer<KIO::SimpleJob> m_kioJob;
 };
 
+bool AccessManager_isLocalRequest(const KUrl&);
+
 }
 
 #endif // KIO_ACCESSMANAGERREPLY_P_H
