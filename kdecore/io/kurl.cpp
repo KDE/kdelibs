@@ -191,6 +191,13 @@ KUrl::List::List(const QList<KUrl> &list)
 {
 }
 
+KUrl::List::List(const QList<QUrl> &list)
+{
+    foreach(const QUrl& url, list) {
+        append(KUrl(url));
+    }
+}
+
 KUrl::List::List(const QStringList &list)
 {
   for (QStringList::ConstIterator it = list.begin();
@@ -367,6 +374,15 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
 KUrl::List::operator QVariant() const
 {
   return qVariantFromValue(*this);
+}
+
+KUrl::List::operator QList<QUrl>() const
+{
+    QList<QUrl> list;
+    foreach(const KUrl& url, *this) {
+        list << url;
+    }
+    return list;
 }
 
 ///
