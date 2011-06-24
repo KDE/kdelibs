@@ -319,12 +319,13 @@ public:
      */
     KTimeZone zone(const QString &name) const;
 
+    /** Map of KTimeZone instances, indexed by time zone name. */
     typedef QMap<QString, KTimeZone> ZoneMap;
 
     /**
      * Returns all the time zones defined in this collection.
      *
-     * @return time zone collection
+     * @return time zone collection, indexed by time zone name
      */
     const ZoneMap zones() const;
 
