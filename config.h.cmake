@@ -52,7 +52,6 @@
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H

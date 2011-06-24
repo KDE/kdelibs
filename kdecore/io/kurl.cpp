@@ -191,6 +191,13 @@ KUrl::List::List(const QList<KUrl> &list)
 {
 }
 
+KUrl::List::List(const QList<QUrl> &list)
+{
+    foreach(const QUrl& url, list) {
+        append(KUrl(url));
+    }
+}
+
 KUrl::List::List(const QStringList &list)
 {
   for (QStringList::ConstIterator it = list.begin();
@@ -367,6 +374,15 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
 KUrl::List::operator QVariant() const
 {
   return qVariantFromValue(*this);
+}
+
+KUrl::List::operator QList<QUrl>() const
+{
+    QList<QUrl> list;
+    foreach(const KUrl& url, *this) {
+        list << url;
+    }
+    return list;
 }
 
 ///
@@ -1489,11 +1505,11 @@ QString KUrl::htmlRef() const
 {
   if ( !hasSubUrl() )
   {
-      return QUrl::fromPercentEncoding( ref().toLatin1() );
+      return fragment();
   }
 
   const List lst = split( *this );
-  return QUrl::fromPercentEncoding( (*lst.begin()).ref().toLatin1() );
+  return (*lst.begin()).fragment();
 }
 
 QString KUrl::encodedHtmlRef() const
@@ -1865,8 +1881,8 @@ bool KUrl::hasRef() const
 
 void KUrl::setRef( const QString& fragment )
 {
-  if ( fragment.isNull() )
-    setFragment( fragment ); // pass null, not empty
+  if ( fragment.isEmpty() ) // empty or null
+    setFragment( fragment );
   else
     setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) );
 }
