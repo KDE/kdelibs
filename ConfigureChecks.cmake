@@ -244,7 +244,6 @@ check_prototype_exists(unsetenv stdlib.h            HAVE_UNSETENV_PROTO)
 check_prototype_exists(usleep unistd.h              HAVE_USLEEP_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 check_prototype_exists(setreuid unistd.h            HAVE_SETREUID_PROTO)
-check_prototype_exists(seteuid unistd.h             HAVE_SETEUID_PROTO)
 check_prototype_exists(trunc math.h                 HAVE_TRUNC)
 
 # check for existing datatypes
