@@ -94,11 +94,6 @@ if(NOT APPLE)
 endif(NOT APPLE)
 check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
 
-if(NOT WIN32)
-  # we don't have it on windows but need to export it to be backward compatible
-  # can be removed when 4.1 is out
-  check_function_exists(readdir_r     HAVE_READDIR_R)                 # kio
-endif(NOT WIN32)
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h

@@ -75,7 +75,6 @@
 #cmakedefine   HAVE_MKSTEMP 1
 #cmakedefine   HAVE_MKDTEMP 1
 #cmakedefine   HAVE_RANDOM 1
-#cmakedefine   HAVE_READDIR_R 1
 #cmakedefine   HAVE_SENDFILE 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
