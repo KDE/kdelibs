@@ -66,9 +66,6 @@ check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
 check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
 check_include_files(langinfo.h    HAVE_LANGINFO_H)                     # kdecore
 
-check_include_files(arpa/nameser_compat.h HAVE_ARPA_NAMESER_COMPAT_H) # kio
-check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
-
 macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                                   # kdecore
 macro_bool_to_01(X11_Xcursor_FOUND HAVE_XCURSOR)                                               # kdeui
 macro_bool_to_01(X11_Xfixes_FOUND HAVE_XFIXES)                                                 # kdeui
