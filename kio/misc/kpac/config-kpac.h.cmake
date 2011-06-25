@@ -1,3 +1,4 @@
 #cmakedefine KPAC_NO_SOLID
 #cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
+#cmakedefine HAVE_NETINET_IN_H 1

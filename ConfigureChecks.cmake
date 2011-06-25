@@ -57,7 +57,6 @@ check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # solid, 
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
 check_include_files(stdint.h      HAVE_STDINT_H)                       # various
-check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
 check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio
 
 check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, errno.h is used in many places, but only guarded in kjs/
