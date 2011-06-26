@@ -29,7 +29,7 @@ public:
     
 private Q_SLOTS:
     void initTestCase();
-    void testSession();
+    void testCreateAndDelete();
     void cleanupTestCase();
 
 };

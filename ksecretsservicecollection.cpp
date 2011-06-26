@@ -22,6 +22,7 @@
 #include "ksecretsservicecollection_p.h"
 #include "dbusbackend.h"
 #include "ksecretscollectionjobs.h"
+#include "collection_interface.h"
 
 #include <QDateTime>
 #include <QtDBus/QDBusPendingReply>
@@ -39,13 +40,14 @@ Collection::Collection():
     // nothing to do
 }
 
-Collection * KSecretsService::Collection::findCollection(const QString& collectionName, 
+Collection * KSecretsService::Collection::findCollection(const WId &promptParentWindowId,
+                                                         const QString& collectionName, 
                                                          KSecretsService::Collection::FindCollectionOptions options)
 {
     // this will simply return the C++ collection objet, without trying to connect to the daemon
     // this will be handled later on, when first calls to other methods will happen
     Collection *collection = new Collection();
-    collection->d->setPendingFindCollection( collectionName, options );
+    collection->d->setPendingFindCollection( promptParentWindowId, collectionName, options );
     return collection;
 }
 
@@ -141,12 +143,14 @@ CollectionPrivate::CollectionPrivate() :
 {
 }
 
-void CollectionPrivate::setPendingFindCollection( const QString &collName, 
-                                               Collection::FindCollectionOptions opts ) 
+void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
+                                                  const QString &collName, 
+                                                  Collection::FindCollectionOptions opts ) 
 {
     collectioName = collName;
     findOptions = opts;
     findStatus = Collection::PendingFind;
+    promptParentWindowId = promptParentId;
 }
 
 bool CollectionPrivate::isValid() const 
@@ -158,7 +162,20 @@ bool CollectionPrivate::isValid() const
 
 void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
 {
-    // TODO: implement this
+    collectionIf = DBusSession::createCollection( path );
+    if ( collectionIf->isValid() ) {
+        findStatus = (findOptions & Collection::CreateCollection) ? Collection::NewlyCreated : Collection::FoundExisting;
+        kDebug() << "SUCCESS opening collection " << path.path();
+    }
+    else {
+        findStatus = Collection::NotFound;
+        kDebug() << "ERROR opening collection " << path.path();
+    }
+}
+
+const WId & CollectionPrivate::promptParentId() const 
+{
+    return promptParentWindowId;
 }
 
 #include "ksecretsservicecollection.moc"

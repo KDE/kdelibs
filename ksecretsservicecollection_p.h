@@ -26,6 +26,8 @@
 
 #include <QDBusObjectPath>
 
+class OrgFreedesktopSecretCollectionInterface;
+
 namespace KSecretsService {
 
 class CollectionPrivate {
@@ -33,21 +35,19 @@ public:
     CollectionPrivate();
     ~CollectionPrivate();
 
-    void setPendingFindCollection(const QString &collName, Collection::FindCollectionOptions options);
+    void setPendingFindCollection(const WId &promptParentId, const QString &collName, Collection::FindCollectionOptions options);
     bool isValid() const;
     bool isNewlyCreated() const;
     void setDBusPath(const QDBusObjectPath &collPath);
+    const WId &promptParentId() const;
     
 
-protected:
-    friend class Collection;
-    friend class CollectionJob;
-    friend class FindCollectionJob;
-    
-    QString                             collectioName;
-    Collection::FindCollectionOptions   findOptions;
-    Collection::FindStatus              findStatus;
-    QDBusObjectPath                     dbusPath;
+public:
+    WId                                     promptParentWindowId;
+    QString                                 collectioName;
+    Collection::FindCollectionOptions       findOptions;
+    Collection::FindStatus                  findStatus;
+    OrgFreedesktopSecretCollectionInterface *collectionIf;
 };
 
 

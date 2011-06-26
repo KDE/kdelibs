@@ -26,6 +26,8 @@
 #include <QObject>
 #include <QDBusPendingReply>
 
+class OrgFreedesktopSecretPromptInterface;
+
 using namespace KSecretsService;
 
 class CollectionJobPrivate {
@@ -43,17 +45,20 @@ class DeleteCollectionJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(DeleteCollectionJobPrivate);
 public:
-    explicit DeleteCollectionJobPrivate( QObject *parent =0 );
+    explicit DeleteCollectionJobPrivate( CollectionPrivate *coll, QObject *parent =0 );
+
+    void startDelete();
     
     friend class DeleteCollectionJob;
-    
-    QDBusPendingReply<QDBusObjectPath> deleteReply;
     
 Q_SIGNALS:
     void deleteIsDone( CollectionJob::CollectionError error, const QString& message );
     
 protected Q_SLOTS:
     void callFinished( QDBusPendingCallWatcher* );
+
+protected:
+    CollectionPrivate    *cp;
 };
 
 class FindCollectionJobPrivate : public QObject {
@@ -83,12 +88,21 @@ class PromptJob : public KJob {
     Q_OBJECT
     Q_DISABLE_COPY(PromptJob)
 public:
-    PromptJob( const QDBusObjectPath &path, QObject *parent );
-    QDBusVariant operationResult() const { return opResult; }
+    PromptJob( const QDBusObjectPath &path, const WId &parentWindowId, QObject *parent );
     
     virtual void start();
+
+    bool isDismissed() const { return dismissed; }
+    const QDBusVariant & result() const { return opResult; }
+    
+private Q_SLOTS:
+    void promptCompleted(bool dismissed, const QDBusVariant &result);
     
 private:
+    QDBusObjectPath promptPath;
+    WId             parentWindowId;
+    OrgFreedesktopSecretPromptInterface *promptIf;
+    bool            dismissed;
     QDBusVariant    opResult;
 };
 

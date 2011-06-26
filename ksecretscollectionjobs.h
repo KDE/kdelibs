@@ -82,8 +82,8 @@ protected:
     virtual void onFindCollectionFinished();
 
 protected:
-    friend class FindCollectionJobPrivate;
     friend class ::FindCollectionJobPrivate;
+    friend class ::DeleteCollectionJobPrivate;
     CollectionJobPrivate *d;
 };
 
@@ -97,7 +97,7 @@ public:
 
 protected Q_SLOTS:
     virtual void onFindCollectionFinished();
-    void deleteIsDone( CollectionError error, const QString &errorString );
+    void deleteIsDone( CollectionJob::CollectionError error, const QString &errorString );
     
 private:
     QSharedPointer< DeleteCollectionJobPrivate > d;

@@ -26,6 +26,10 @@
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 #include <kdebug.h>
+#include <prompt_interface.h>
+#include <kapplication.h>
+#include <QWidget>
+#include <collection_interface.h>
 
 using namespace KSecretsService;
 
@@ -92,11 +96,12 @@ void CollectionJob::startFindCollection()
 void CollectionJob::slotResult(KJob* job)
 {
     KCompositeJob::slotResult(job);
-    // TODO: check if the subjob result here
-    FindCollectionJob *findJob = dynamic_cast< FindCollectionJob* >( job );
-    Q_ASSERT( findJob != 0 );
-    // FIXME: see if this call should transport error codes
-    onFindCollectionFinished();
+    if ( job->error() == 0 ) {
+        FindCollectionJob *findJob = dynamic_cast< FindCollectionJob* >( job );
+        if ( findJob != 0 ) {
+            onFindCollectionFinished();
+        }
+    }
 }
 
 void CollectionJob::onFindCollectionFinished()
@@ -158,7 +163,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
         if ( collPath.path().compare("/") == 0 ) {
             // we need prompting
             Q_ASSERT( promptPath.path().compare("/") ); // we should have a prompt path here
-            PromptJob *promptJob = new PromptJob( promptPath, this );
+            PromptJob *promptJob = new PromptJob( promptPath, collectionPrivate->promptParentId(), this );
             if ( findJob->addSubjob( promptJob ) ) {
                 connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(createPromptFinished(KJob*)) );
                 promptJob->start();
@@ -180,33 +185,46 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
 {
     PromptJob *promptJob = dynamic_cast< PromptJob* >( job );
     if ( promptJob->error() == 0 ) {
-        QDBusVariant promptResult = promptJob->operationResult();
-        QDBusObjectPath collPath = promptResult.variant().value< QDBusObjectPath >();
-        collectionPrivate->setDBusPath( collPath );
-        findJob->finishedOk();
+        if ( !promptJob->isDismissed() ) {
+            QDBusVariant promptResult = promptJob->result();
+            QDBusObjectPath collPath = promptResult.variant().value< QDBusObjectPath >();
+            collectionPrivate->setDBusPath( collPath );
+            findJob->finishedOk();
+        }
+        else {
+            findJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, "The operation was cancelled by the user" );
+        }
     }
     else {
-        findJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, "The operation was cancelled by the user" );
+        findJob->finishedWithError( CollectionJob::InternalError, "Error encountered when trying to prompt the user" );
     }
 }
 
 
 void FindCollectionJobPrivate::startCreateCollection()
 {
-    OpenSessionJob *openSessionJob = DBusSession::service();
-    findJob->addSubjob( openSessionJob );
-    connect( openSessionJob, SIGNAL(finished(KJob*)), this, SLOT(openSessionFinished(KJOb*)) );
-    openSessionJob->start();
+    OpenSessionJob *openSessionJob = DBusSession::openSession();
+    if ( findJob->addSubjob( openSessionJob ) ) {
+        connect( openSessionJob, SIGNAL(finished(KJob*)), this, SLOT(openSessionFinished(KJob*)) );
+        openSessionJob->start();
+    }
+    else {
+        kDebug() << "Cannot OpenSessionJob subjob";
+        findJob->finishedWithError( CollectionJob::InternalError, "Cannot open session" );
+    }
 }
 
 void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
 {
-    OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
-    QVariantMap creationProperties;
-    QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = openSessionJob->serviceInterface()->CreateCollection(
-        creationProperties, collectionName );
-    QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
-    connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
+    if ( !theJob->error() ) {
+        OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
+        QVariantMap creationProperties;
+        creationProperties.insert("org.freedesktop.Secret.Collection.Label", collectionName);
+        QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = openSessionJob->serviceInterface()->CreateCollection(
+            creationProperties, collectionName );
+        QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
+        connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
+    }
 }
 
 void FindCollectionJobPrivate::startOpenCollection()
@@ -217,37 +235,47 @@ void FindCollectionJobPrivate::startOpenCollection()
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :
         CollectionJob( collection, parent),
-        d( new DeleteCollectionJobPrivate(this) )
+        d( new DeleteCollectionJobPrivate( collection->d, this ) )
 {
 }
     
 void DeleteCollectionJob::start() 
 {
-    startFindCollection();
+    // ensure we have the connection to the daemon and we have a valid collection
     // this will trigger onFindCollectionFinished
+    startFindCollection();
 }
 
 void DeleteCollectionJob::onFindCollectionFinished() 
 {
+    connect( d.data(), SIGNAL( deleteIsDone( CollectionJob::CollectionError, const QString & ) ), this, SLOT( deleteIsDone( CollectionJob::CollectionError, const QString & ) ) );
     // now performe the real delete operation on the backend
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( d->deleteReply, this );
-    connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), d.data(), SLOT( callFinished(QDBusPendingCallWatcher*) ) );
-    connect( d.data(), SIGNAL( deleteIsDone( CollectionError, const QString & ) ), d.data(), SLOT( deleteIsDone( CollectionError, const QString & ) ) );
+    d->startDelete();
 }
 
-void KSecretsService::DeleteCollectionJob::deleteIsDone(CollectionJob::CollectionError err, const QString& errMsg )
+void KSecretsService::DeleteCollectionJob::deleteIsDone(CollectionError err, const QString& errMsg )
 {
     finishedWithError( err, errMsg );
 }
 
-DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( QObject* parent ) : QObject( parent )
+DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( CollectionPrivate* collp, QObject* parent ) : 
+        QObject( parent ),
+        cp( collp )
 {
 }
 
-void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher* /* watcher */ ) 
+void DeleteCollectionJobPrivate::startDelete() 
 {
-    Q_ASSERT( deleteReply.isFinished() );
+    QDBusPendingReply<QDBusObjectPath> deleteReply = cp->collectionIf->Delete();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( deleteReply, this );
+    connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), this, SLOT( callFinished(QDBusPendingCallWatcher*) ) );
+}
 
+void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher*  watcher ) 
+{
+    Q_ASSERT( watcher->isFinished() );
+
+    QDBusPendingReply< QDBusObjectPath > deleteReply = *watcher;
     CollectionJob::CollectionError err = CollectionJob::NoError;
     QString msg;
     
@@ -292,13 +320,40 @@ QList< Secret > Collection::SearchSecretsJob::secrets() const
     return QList< Secret >();
 }
 
-PromptJob::PromptJob( const QDBusObjectPath &path, QObject *parent ) : KJob( parent )
+PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
+            KJob( parent ),
+            promptPath( path ),
+            parentWindowId( parentId )
 {
 }
 
 void PromptJob::start()
 {
-    // TODO: implement this
+    promptIf = DBusSession::createPrompt( promptPath );
+    if ( promptIf->isValid() ) {
+        connect( promptIf, SIGNAL(Completed(bool,const QDBusVariant&)), this, SLOT(promptCompleted(bool,const QDBusVariant&)) );
+        // TODO: place a timer here to avoid hanging up if the prompt never calls promptCompleted
+        // NOTE: however, care should be taken to avoid problems when user is too slow interacting with the prompt.
+        //       a sensible timeout value should be chosen
+        
+        QDBusPendingReply<> promptReply = promptIf->Prompt( QString("%1").arg( parentWindowId ) );
+        // NOTE: ne need to wait for promptReply to finish. The prompt will call promptCompleted when user interaction takes end
+    }
+    else {
+        kDebug() << "ERROR instantiating prompt " << promptPath.path();
+        setError(1); // FIXME: use enumerated error codes here
+        setErrorText( QString("ERROR instantiating prompt with path '%1'").arg( promptPath.path() ) );
+        emitResult();
+    }
+}
+
+void PromptJob::promptCompleted(bool dism, const QDBusVariant &res)
+{
+    kDebug() << "dismissed = " << dism << ", result = " << res.variant().toString();
+    dismissed = dism;
+    opResult = res;
+    setError(0);
+    emitResult();
 }
 
 

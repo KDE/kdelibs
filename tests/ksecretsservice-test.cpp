@@ -19,13 +19,14 @@
  */
 
 #include "ksecretsservice-test.h"
+#include "../ksecretsservicecollection.h"
 
 #include <qtest_kde.h>
 #include <ktoolinvocation.h>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtTest/QTest>
-#include "../ksecretsservicecollection.h"
+#include <kdebug.h>
 
 QTEST_KDEMAIN_CORE(KSecretServiceTest)
 
@@ -53,11 +54,12 @@ void KSecretServiceTest::initTestCase()
     }*/
 }
 
-void KSecretServiceTest::testSession()
+void KSecretServiceTest::testCreateAndDelete()
 {
-    Collection *coll = Collection::findCollection( "test collection" );
+    Collection *coll = Collection::findCollection( 0, "test collection" );
     KJob* deleteJob = coll->deleteCollection();
     deleteJob->exec();
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
 }
 
 void KSecretServiceTest::cleanupTestCase()

@@ -27,6 +27,7 @@
 #include <QMap>
 #include <kjob.h>
 #include <kcompositejob.h>
+#include <qwindowdefs.h>
 
 namespace KSecretsService {
 
@@ -52,19 +53,22 @@ public:
         Invalid         =0,     /// the collection objet is freshly initialized and none of it's methods have been called
         PendingFind     =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
         FoundExisting   =2,     /// this object is connected to an existing backend connection
-        NewlyCreated    =3      /// this object is connected to a newly created connection
+        NewlyCreated    =3,     /// this object is connected to a newly created connection
+        NotFound        =4      /// the collection was not found
     };
     
     /**
      * This will try to find a collection given its name. If not found, it'll create it depending on the
      * options given. Please note that for the sake of asynchronous behaviour, this actual collection finding
      * or creation will be postponed until you'll call one of the methods of the returned object.
+     * @param promptParentWindowId identifies the applications window to be used as a parent for prompt windows
      * @param collectionName collection name to be found
      * @param options @see FindCollectionOptions
      * maps to readAlias dbus method
      */
-    static Collection * findCollection( const QString &collectionName, 
-                                               FindCollectionOptions options = CreateCollection );
+    static Collection * findCollection( const WId &promptParentWindowId,
+                                        const QString &collectionName, 
+                                        FindCollectionOptions options = CreateCollection );
 
     /**
      * This will get the actual findStatus of this collection
@@ -163,6 +167,7 @@ protected:
 private:
     friend class CollectionJob; // to give access to Private class
     friend class FindCollectionJob;
+    friend class DeleteCollectionJob;
     
     CollectionPrivate *d;
 };

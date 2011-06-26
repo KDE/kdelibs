@@ -21,10 +21,13 @@
 #ifndef DBUSBACKEND_H
 #define DBUSBACKEND_H
 #include <kjob.h>
+#include <QDBusObjectPath>
 
 class OrgFreedesktopSecretCollectionInterface;
 class OrgFreedesktopSecretServiceInterface;
 class OrgFreedesktopSecretSessionInterface;
+class OrgFreedesktopSecretPromptInterface;
+class QDBusPendingCallWatcher;
 
 class OpenSessionJob : public KJob {
     Q_OBJECT
@@ -34,6 +37,10 @@ public:
     virtual void start();
     
     OrgFreedesktopSecretServiceInterface *serviceInterface() const;
+    OrgFreedesktopSecretSessionInterface *sessionInterface() const;
+    
+private Q_SLOTS:
+    void openSessionFinished(QDBusPendingCallWatcher*);
     
 private:
     OrgFreedesktopSecretSessionInterface *sessionIf;
@@ -48,19 +55,20 @@ private:
  */
 class DBusSession {
 public:
+
+    /**
+     * This @return a job allowing connection to the KSecretsService deamon via dbus
+     */
+    static OpenSessionJob * openSession();
     
-    static OpenSessionJob * service();
-    
-protected:
-    static bool startDaemon();
-    static bool isValid();
+    static OrgFreedesktopSecretPromptInterface * createPrompt( const QDBusObjectPath &path );
+    static OrgFreedesktopSecretCollectionInterface * createCollection( const QDBusObjectPath &path );
     
 private:
     friend class OpenSessionJob;
 
-    static const QString                        encryptionAlgorithm;
-    static OrgFreedesktopSecretSessionInterface *sessionIf;
-    static OrgFreedesktopSecretServiceInterface *serviceIf;
+    static const QString    encryptionAlgorithm;
+    static OpenSessionJob   openSessionJob;
 };
 
 #endif // DBUSBACKEND_H
