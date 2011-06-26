@@ -418,6 +418,7 @@ int main(int argc, char **argv)
        }
 
    arg_count = argc;
+   env_count = 0;
 
    size += sizeof(long); /* Number of arguments*/
 
@@ -437,7 +438,6 @@ int main(int argc, char **argv)
          cwd[0] = '\0';
       size += strlen(cwd)+1;
 
-      env_count = 0;
       size += sizeof(long); /* Number of env.vars. */
 
       for(; environ[env_count] ; env_count++)
