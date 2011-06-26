@@ -29,8 +29,8 @@ public:
     
 private Q_SLOTS:
     void initTestCase();
-    void testCreateCollection();
     void testCreateAndDelete();
+    void testRenameCollection();
     void cleanupTestCase();
 
 };

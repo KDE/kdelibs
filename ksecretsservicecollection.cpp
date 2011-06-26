@@ -63,9 +63,7 @@ KJob* Collection::deleteCollection()
 
 KJob* Collection::renameCollection(const QString& newName)
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return NULL;
+    return new RenameCollectionJob( this, newName, this );
 }
 
 Collection::SearchItemsJob* Collection::searchItems(const QStringStringMap& attributes)
@@ -110,9 +108,7 @@ bool Collection::isLocked() const
 
 QString Collection::label() const
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return "";
+    return d->collectionIf->property( "Label" ).toString();
 }
 
 QDateTime Collection::createdTime() const

@@ -291,6 +291,46 @@ void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher*  watcher
 }
 
 
+RenameCollectionJob::RenameCollectionJob( Collection *coll, const QString &newName, QObject *parent ) : 
+            CollectionJob( coll, parent ),
+            d( new RenameCollectionJobPrivate( coll->d, this ) )
+{
+    d->newName = newName;
+}
+
+void RenameCollectionJob::start()
+{
+    startFindCollection(); // this will trigger onFindCollectionFinished if collection exists
+}
+
+void RenameCollectionJob::onFindCollectionFinished()
+{
+    connect( d.data(), SIGNAL( renameIsDone( CollectionJob::CollectionError, const QString& ) ), this, SLOT( renameIsDone( CollectionJob::CollectionError, const QString& ) ) );
+    d->startRename();
+}
+
+void RenameCollectionJob::renameIsDone( CollectionJob::CollectionError err, const QString& msg)
+{
+    finishedWithError( err, msg );
+    // FIXME: should we change the status of newly created collections here? consider the opened status, for example.
+}
+
+RenameCollectionJobPrivate::RenameCollectionJobPrivate( CollectionPrivate *collPrivate, QObject *parent ) :
+            QObject( parent ),
+            collectionPrivate( collPrivate )
+{
+}
+
+void RenameCollectionJobPrivate::startRename()
+{
+    if ( collectionPrivate->collectionIf->setProperty( "Label", QVariant( newName ) ) ) {
+        emit renameIsDone( CollectionJob::NoError, "" );
+    }
+    else {
+        emit renameIsDone( CollectionJob::RenameError, QString( "Cannot rename collection to %1" ).arg( newName ) );
+    }
+}
+
 Collection::SearchItemsJob::SearchItemsJob( Collection *collection,
                                             QObject *parent ) :
     CollectionJob( collection, parent ) 

@@ -84,6 +84,24 @@ public:
     CollectionPrivate                                    *collectionPrivate;
 };
 
+class RenameCollectionJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(RenameCollectionJobPrivate)
+public:
+    friend class RenameCollectionJob;
+    
+    explicit RenameCollectionJobPrivate( CollectionPrivate*, QObject *parent =0 );
+    void startRename();
+
+Q_SIGNALS:
+    void renameIsDone( CollectionJob::CollectionError error, const QString& message );
+    
+public:
+    RenameCollectionJob *renameJob;
+    CollectionPrivate   *collectionPrivate;
+    QString             newName;
+};
+
 class PromptJob : public KJob {
     Q_OBJECT
     Q_DISABLE_COPY(PromptJob)

@@ -29,6 +29,7 @@
 class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
 class CollectionJobPrivate;
+class RenameCollectionJobPrivate;
 
 namespace KSecretsService {
     
@@ -55,7 +56,8 @@ public:
         OperationCancelledByTheUser,    /// the user choose to cancel ther operation during a message prompt
         CollectionNotFound,
         CreateError,
-        DeleteError
+        DeleteError,
+        RenameError
     };
 
     /**
@@ -107,12 +109,29 @@ class FindCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(FindCollectionJob)
 public:
-    FindCollectionJob( Collection *collection, QObject *parent =0 );
+    explicit FindCollectionJob( Collection *collection, QObject *parent =0 );
     
     virtual void start();
 private:
     friend class ::FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;
+};
+
+class RenameCollectionJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(RenameCollectionJob)
+public:
+    RenameCollectionJob( Collection *coll, const QString& newName, QObject *parent =0 );
+    
+    virtual void start();
+    
+protected Q_SLOTS:
+    virtual void onFindCollectionFinished();
+    void renameIsDone( CollectionJob::CollectionError, const QString& );
+    
+private:
+    friend class ::RenameCollectionJobPrivate;
+    QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
 class Collection::SearchItemsJob : public CollectionJob {

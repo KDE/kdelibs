@@ -97,9 +97,9 @@ void OpenSessionJob::start()
             }
         }
         else {
-            kDebug() << "ERROR wheng trying to bind to " SERVICE_NAME " daemon";
+            kDebug() << "ERROR when trying to bind to " SERVICE_NAME " daemon";
             setError( 3 ); // FIXME: use error codes here
-            setErrorText( "ERROR wheng trying to bind to " SERVICE_NAME " daemon" );
+            setErrorText( "ERROR when trying to bind to " SERVICE_NAME " daemon. Check dbus configuration." );
             emitResult();
         }
     }

@@ -54,17 +54,21 @@ void KSecretServiceTest::initTestCase()
     }*/
 }
 
-void KSecretServiceTest::testCreateCollection()
-{
-    Collection *coll = Collection::findCollection(0, "test-created-collection" );
-}
-
 void KSecretServiceTest::testCreateAndDelete()
 {
     Collection *coll = Collection::findCollection( 0, "test collection" );
     KJob* deleteJob = coll->deleteCollection();
     deleteJob->exec();
     QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
+}
+
+void KSecretServiceTest::testRenameCollection()
+{
+    Collection *coll = Collection::findCollection( 0, "test name1" );
+    KJob *renameJob = coll->renameCollection( "test name2" );
+    renameJob->exec();
+    QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
+    QVERIFY2( (coll->label() == "test name2"), "Collection won't change it's name!" );
 }
 
 void KSecretServiceTest::cleanupTestCase()
