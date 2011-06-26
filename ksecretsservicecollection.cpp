@@ -51,9 +51,9 @@ Collection * KSecretsService::Collection::findCollection(const WId &promptParent
     return collection;
 }
 
-Collection::FindStatus Collection::findStatus() const
+Collection::Status Collection::status() const
 {
-    return d->findStatus;
+    return d->collectionStatus;
 }
 
 KJob* Collection::deleteCollection()
@@ -139,7 +139,7 @@ void Collection::setLabel(const QString& label)
 
 CollectionPrivate::CollectionPrivate() :
         findOptions( Collection::OpenOnly ),
-        findStatus( Collection::Invalid )
+        collectionStatus( Collection::Invalid )
 {
 }
 
@@ -149,26 +149,26 @@ void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
 {
     collectioName = collName;
     findOptions = opts;
-    findStatus = Collection::PendingFind;
+    collectionStatus = Collection::PendingFind;
     promptParentWindowId = promptParentId;
 }
 
 bool CollectionPrivate::isValid() const 
 {
     return 
-        findStatus == Collection::FoundExisting ||
-        findStatus == Collection::NewlyCreated;
+        collectionStatus == Collection::FoundExisting ||
+        collectionStatus == Collection::NewlyCreated;
 }
 
 void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
 {
     collectionIf = DBusSession::createCollection( path );
     if ( collectionIf->isValid() ) {
-        findStatus = (findOptions & Collection::CreateCollection) ? Collection::NewlyCreated : Collection::FoundExisting;
+        collectionStatus = (findOptions & Collection::CreateCollection) ? Collection::NewlyCreated : Collection::FoundExisting;
         kDebug() << "SUCCESS opening collection " << path.path();
     }
     else {
-        findStatus = Collection::NotFound;
+        collectionStatus = Collection::NotFound;
         kDebug() << "ERROR opening collection " << path.path();
     }
 }

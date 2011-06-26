@@ -49,14 +49,15 @@ public:
         CreateCollection =1     /// the collection will be created if not found
     };
     
-    enum FindStatus {
+    enum Status {
         Invalid         =0,     /// the collection objet is freshly initialized and none of it's methods have been called
         PendingFind     =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
         FoundExisting   =2,     /// this object is connected to an existing backend connection
         NewlyCreated    =3,     /// this object is connected to a newly created connection
-        NotFound        =4      /// the collection was not found
+        NotFound        =4,     /// the collection was not found
+        Deleted         =5      /// the collection was deleted. Calling methods in such a collection would lead to unpredictable results
     };
-    
+
     /**
      * This will try to find a collection given its name. If not found, it'll create it depending on the
      * options given. Please note that for the sake of asynchronous behaviour, this actual collection finding
@@ -72,9 +73,9 @@ public:
 
     /**
      * This will get the actual findStatus of this collection
-     * @return FindStatus
+     * @return Status
      */
-    FindStatus findStatus() const;
+    Status status() const;
     
     /**
      * Try to delete this collection. The user might be prompted to confirm that 

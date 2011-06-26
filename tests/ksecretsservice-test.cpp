@@ -54,6 +54,11 @@ void KSecretServiceTest::initTestCase()
     }*/
 }
 
+void KSecretServiceTest::testCreateCollection()
+{
+    Collection *coll = Collection::findCollection(0, "test-created-collection" );
+}
+
 void KSecretServiceTest::testCreateAndDelete()
 {
     Collection *coll = Collection::findCollection( 0, "test collection" );

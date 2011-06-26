@@ -46,7 +46,7 @@ public:
     WId                                     promptParentWindowId;
     QString                                 collectioName;
     Collection::FindCollectionOptions       findOptions;
-    Collection::FindStatus                  findStatus;
+    Collection::Status                      collectionStatus;
     OrgFreedesktopSecretCollectionInterface *collectionIf;
 };
 

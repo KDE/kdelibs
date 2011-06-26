@@ -256,6 +256,7 @@ void DeleteCollectionJob::onFindCollectionFinished()
 void KSecretsService::DeleteCollectionJob::deleteIsDone(CollectionError err, const QString& errMsg )
 {
     finishedWithError( err, errMsg );
+    d->cp->collectionStatus = Collection::Deleted;
 }
 
 DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( CollectionPrivate* collp, QObject* parent ) : 

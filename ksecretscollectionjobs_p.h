@@ -57,7 +57,7 @@ Q_SIGNALS:
 protected Q_SLOTS:
     void callFinished( QDBusPendingCallWatcher* );
 
-protected:
+public:
     CollectionPrivate    *cp;
 };
 
