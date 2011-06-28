@@ -480,10 +480,13 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
     bool wasFilled = false;
 
     Q_FOREACH (const KWebWallet::WebForm& form, forms) {
-        Q_FOREACH(const KWebWallet::WebForm::WebField& field, form.fields)
+        Q_FOREACH(const KWebWallet::WebForm::WebField& field, form.fields) {
+            QString value = field.second;
+            value.replace(QLatin1Char('\\'), QLatin1String("\\\\"));
             script += QString::fromLatin1("document.forms[\"%1\"].elements[\"%2\"].value=\"%3\";\n")
                         .arg(form.name.isEmpty() ? form.index : form.name)
-                        .arg(field.first).arg(field.second);
+                        .arg(field.first).arg(value);
+        }
     }
 
     if (!script.isEmpty()) {
