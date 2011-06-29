@@ -539,8 +539,8 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
   KToggleAction *ret = new KToggleAction(i18n( "Show St&atusbar" ), parent);
   ret->setObjectName(name(ShowStatusbar));
 
-  ret->setWhatsThis( i18n( "Show Statusbar<br /><br />"
-                           "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
+  ret->setWhatsThis( i18n( "Show Statusbar<p>"
+                           "Shows the statusbar, which is the bar at the bottom of the window used for status information.</p>" ) );
 
   ret->setChecked( true );
 
