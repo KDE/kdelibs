@@ -19,7 +19,7 @@
 
 
 if (NOT DEFINED Soprano_FOUND)
-  find_package(Soprano ${SOPRANO_MIN_VERSION})
+    find_package(Soprano ${SOPRANO_MIN_VERSION} PLUGIN_REDLANDBACKEND PLUGIN_RAPTORPARSER)
 endif (NOT DEFINED Soprano_FOUND)
 
 if (NOT DEFINED SHAREDDESKTOPONTOLOGIES_FOUND)
@@ -82,7 +82,7 @@ include(FindPackageHandleStandardArgs)
 if(NOT WINCE)
 find_package_handle_standard_args(Nepomuk  DEFAULT_MSG
                                   NEPOMUK_LIBRARIES NEPOMUK_INCLUDE_DIR NEPOMUK_ADDONTOLOGYCLASSES_FILE
-                                  Soprano_FOUND SOPRANO_PLUGIN_RAPTORPARSER_FOUND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND
+                                  Soprano_FOUND
                                   SHAREDDESKTOPONTOLOGIES_FOUND
                                   )
 else(NOT WINCE)
