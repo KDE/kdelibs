@@ -1,116 +1,148 @@
-# - Try to find ffmpeg
-# Once done this will define
+# vim: ts=2 sw=2
+# - Try to find the required ffmpeg components(default: AVFORMAT, AVUTIL, AVCODEC)
 #
-#  FFMPEG_FOUND - system has ffmpeg
-#  FFMPEG_INCLUDE_DIR - Include directory necessary for using the ffmpeg headers
-#  FFMPEG_LIBRARIES - Link these to use ffmpeg
-#  FFMPEG_DEFINITIONS - Compiler switches required for using ffmpeg
-
+# Once done this will define
+#  FFMPEG_FOUND         - System has the all required components.
+#  FFMPEG_INCLUDE_DIRS  - Include directory necessary for using the required components headers.
+#  FFMPEG_LIBRARIES     - Link these to use the required ffmpeg components.
+#  FFMPEG_DEFINITIONS   - Compiler switches required for using the required ffmpeg components.
+#
+# For each of the components it will additionaly set.
+#   - AVCODEC
+#   - AVDEVICE
+#   - AVFORMAT
+#   - AVUTIL
+#   - POSTPROCESS
+#   - SWSCALE
+# the following variables will be defined
+#  <component>_FOUND        - System has <component>
+#  <component>_INCLUDE_DIRS - Include directory necessary for using the <component> headers
+#  <component>_LIBRARIES    - Link these to use <component>
+#  <component>_DEFINITIONS  - Compiler switches required for using <component>
+#  <component>_VERSION      - The components version
+#
 # Copyright (c) 2006, Matthias Kretz, <kretz@kde.org>
 # Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
+# Copyright (c) 2011, Michael Jansen, <kde@michael-jansen.biz>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
+include(FindPackageHandleStandardArgs)
 
-if (FFMPEG_LIBRARIES)
+# The default components were taken from a survey over other FindFFMPEG.cmake files
+if (NOT FFmpeg_FIND_COMPONENTS)
+  set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL)
+endif ()
 
-  # in cache already
-  set(FFMPEG_FOUND TRUE)
+#
+### Macro: set_component_found
+#
+# Marks the given component as found if both *_LIBRARIES AND *_INCLUDE_DIRS is present.
+#
+macro(set_component_found _component )
+  if (${_component}_LIBRARIES AND ${_component}_INCLUDE_DIRS)
+    # message(STATUS "  - ${_component} found.")
+    set(${_component}_FOUND TRUE)
+  else ()
+    # message(STATUS "  - ${_component} not found.")
+  endif ()
+endmacro()
 
-else (FFMPEG_LIBRARIES)
+#
+### Macro: find_component
+#
+# Checks for the given component by invoking pkgconfig and then looking up the libraries and
+# include directories.
+#
+macro(find_component _component _pkgconfig _library _header)
 
-if (NOT WIN32)
-   # use pkg-config to get the directories and then use these values
-   # in the FIND_PATH() and FIND_LIBRARY() calls
-   find_package(PkgConfig)
-   pkg_check_modules(PC_LIBAVCODEC libavcodec)
-   set(FFMPEG_DEFINITIONS ${PC_LIBAVCODEC_CFLAGS_OTHER})
+  if (NOT WIN32)
+     # use pkg-config to get the directories and then use these values
+     # in the FIND_PATH() and FIND_LIBRARY() calls
+     find_package(PkgConfig)
+     if (PKG_CONFIG_FOUND)
+       pkg_check_modules(PC_${_component} ${_pkgconfig})
+     endif ()
+  endif (NOT WIN32)
 
-endif (NOT WIN32)
-
-  #
-  # #include <libXXXX/XXXX.h> is the new style for FFMPEG headers
-  # This has been verified at least since 0.4.9
-  # Please do not change to the old format, since this will break for
-  # people who are using newer versions. Instead, upgrade your ffmpeg
-  # installation.
-  #
-  find_path(FFMPEG_INCLUDE_DIR libavcodec/avcodec.h
+  find_path(${_component}_INCLUDE_DIRS ${_header}
     HINTS
-    ${PC_LIBAVCODEC_INCLUDEDIR}
-    ${PC_LIBAVCODEC_INCLUDE_DIRS}
+      ${PC_LIB${_component}_INCLUDEDIR}
+      ${PC_LIB${_component}_INCLUDE_DIRS}
+    PATH_SUFFIXES
+      ffmpeg
   )
 
-  # also search for the old style include dir, just for the purpose
-  # of giving a useful error message if an old libavcodec is installed
-  # and the user might wonder why it is not found
-  find_path(FFMPEG_INCLUDE_DIR_OLD_STYLE ffmpeg/avcodec.h
-    HINTS
-    ${PC_LIBAVCODEC_INCLUDEDIR}
-    ${PC_LIBAVCODEC_INCLUDE_DIRS}
+  find_library(${_component}_LIBRARIES NAMES ${_library}
+      HINTS
+      ${PC_LIB${_component}_LIBDIR}
+      ${PC_LIB${_component}_LIBRARY_DIRS}
   )
 
-  find_library(AVCODEC_LIBRARIES NAMES avcodec
-    HINTS
-    ${PC_LIBAVCODEC_LIBDIR}
-    ${PC_LIBAVCODEC_LIBRARY_DIRS}
-  )
+  set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
+  set(${_component}_VERSION      ${PC_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
 
-  find_library(AVFORMAT_LIBRARIES NAMES avformat
-    HINTS
-    ${PC_LIBAVCODEC_LIBDIR}
-    ${PC_LIBAVCODEC_LIBRARY_DIRS}
-  )
+  set_component_found(${_component})
 
-  find_library(AVUTIL_LIBRARIES NAMES avutil
-    HINTS
-    ${PC_LIBAVCODEC_LIBDIR}
-    ${PC_LIBAVCODEC_LIBRARY_DIRS}
-  )
+  mark_as_advanced(
+    ${_component}_INCLUDE_DIRS
+    ${_component}_LIBRARIES
+    ${_component}_DEFINITIONS
+    ${_component}_VERSION)
+
+endmacro()
 
 
+# Check for cached results. If there are skip the costly part.
+if (NOT FFMPEG_LIBRARIES)
 
-  set(FFMPEG_LIBRARIES )
-  if (AVCODEC_LIBRARIES)
-    set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${AVCODEC_LIBRARIES})
-  endif (AVCODEC_LIBRARIES)
+  # Check for all possible component.
+  find_component(AVCODEC  libavcodec  avcodec  libavcodec/avcodec.h)
+  find_component(AVFORMAT libavformat avformat libavformat/avformat.h)
+  find_component(AVDEVICE libavdevice avdevice libavdevice/avdevice.h)
+  find_component(AVUTIL   libavutil   avutil   libavutil/avutil.h)
+  find_component(SWSCALE  libswscale  swscale  libswscale/swscale.h)
+  find_component(POSTPROC libpostproc postproc libpostproc/postprocess.h)
 
-  if (AVFORMAT_LIBRARIES)
-    set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${AVFORMAT_LIBRARIES})
-  endif (AVFORMAT_LIBRARIES)
+  # Check if the required components were found and add their stuff to the FFMPEG_* vars.
+  foreach (_component ${FFmpeg_FIND_COMPONENTS})
+    if (${_component}_FOUND)
+      # message(STATUS "Required component ${_component} present.")
+      set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
+      set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
+      list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
+    else ()
+      # message(STATUS "Required component ${_component} missing.")
+    endif ()
+  endforeach ()
 
-  if (AVUTIL_LIBRARIES)
-    set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${AVUTIL_LIBRARIES})
-  endif (AVUTIL_LIBRARIES)
+  # Build the include path with duplicates removed.
+  if (FFMPEG_INCLUDE_DIRS)
+    list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
+  endif ()
 
-  if (FFMPEG_LIBRARIES  AND  FFMPEG_INCLUDE_DIR)
-     set(FFMPEG_FOUND TRUE)
-  endif (FFMPEG_LIBRARIES  AND  FFMPEG_INCLUDE_DIR)
+  # cache the vars.
+  set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
+  set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
+  set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  CACHE STRING "The FFmpeg cflags." FORCE)
 
-  if (FFMPEG_FOUND)
-    if (NOT FFmpeg_FIND_QUIETLY)
-      message(STATUS "Found FFMPEG: ${FFMPEG_LIBRARIES} ${FFMPEG_INCLUDE_DIR}")
-    endif (NOT FFmpeg_FIND_QUIETLY)
-  else (FFMPEG_FOUND)
-    # only an old libavcodec was found ?
-    if (FFMPEG_INCLUDE_DIR_OLD_STYLE  AND NOT  FFMPEG_INCLUDE_DIR  AND NOT  FFmpeg_FIND_QUIETLY)
-      message(STATUS "Found old version of libavcodec, but a newer version is required.")
-    endif (FFMPEG_INCLUDE_DIR_OLD_STYLE  AND NOT  FFMPEG_INCLUDE_DIR  AND NOT  FFmpeg_FIND_QUIETLY)
+  mark_as_advanced(FFMPEG_INCLUDE_DIRS
+                   FFMPEG_LIBRARIES
+                   FFMPEG_DEFINITIONS)
 
-    if (FFmpeg_FIND_REQUIRED)
-      message(FATAL_ERROR "Could NOT find FFMPEG")
-    else (FFmpeg_FIND_REQUIRED)
-      if (NOT FFmpeg_FIND_QUIETLY)
-        message(STATUS "Could NOT find FFMPEG")
-      endif (NOT FFmpeg_FIND_QUIETLY)
-    endif (FFmpeg_FIND_REQUIRED)
-  endif (FFMPEG_FOUND)
+endif ()
 
-  mark_as_advanced(AVCODEC_LIBRARIES 
-                   AVFORMAT_LIBRARIES
-                   AVUTIL_LIBRARIES
-                   FFMPEG_INCLUDE_DIR
-                   FFMPEG_INCLUDE_DIR_OLD_STYLE)
+# Now set the noncached _FOUND vars for the components.
+foreach (_component AVCODEC AVDEVICE AVFORMAT AVUTIL POSTPROCESS SWSCALE)
+  set_component_found(${_component})
+endforeach ()
 
-endif (FFMPEG_LIBRARIES)# AND FFMPEG_DEFINITIONS)
+# Compile the list of required vars
+set(_FFmpeg_REQUIRED_VARS FFMPEG_LIBRARIES FFMPEG_INCLUDE_DIRS)
+foreach (_component ${FFmpeg_FIND_COMPONENTS})
+  list(APPEND _FFmpeg_REQUIRED_VARS ${_component}_LIBRARIES ${_component}_INCLUDE_DIRS)
+endforeach ()
+
+# Give a nice error message if some of the required vars are missing.
+find_package_handle_standard_args(FFmpeg DEFAULT_MSG ${_FFmpeg_REQUIRED_VARS})
