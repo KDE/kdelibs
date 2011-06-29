@@ -1,7 +1,8 @@
 # Once done this will define
 #
 #  NEPOMUK_FOUND - system has Nepomuk
-#  NEPOMUK_INCLUDE_DIR - the Nepomuk include directory
+#  NEPOMUK_INCLUDE_DIRS - all include directories needed to compile Nepomuk
+#  NEPOMUK_INCLUDE_DIR - the Nepomuk include directory (do not use. only for compatibility)
 #  NEPOMUK_LIBRARIES - Link these to use Nepomuk
 #  NEPOMUK_QUERY_LIBRARIES - Link these to use Nepomuk query
 #  NEPOMUK_UTILS_LIBRARIES - Link these to use Nepomuk utils
@@ -39,6 +40,11 @@ find_path(NEPOMUK_INCLUDE_DIR
   ${INCLUDE_INSTALL_DIR}
   )
 
+set(NEPOMUK_INCLUDE_DIRS ${NEPOMUK_INCLUDE_DIR}
+  CACHE
+  STRING
+  "include directories needed for nepomuk")
+
 find_library(NEPOMUK_LIBRARIES
   NAMES
   nepomuk
@@ -70,7 +76,7 @@ find_file(NEPOMUK_ADDONTOLOGYCLASSES_FILE NepomukAddOntologyClasses.cmake
 
 include("${NEPOMUK_ADDONTOLOGYCLASSES_FILE}" OPTIONAL)
 
-mark_as_advanced(NEPOMUK_INCLUDE_DIR NEPOMUK_LIBRARIES NEPOMUK_QUERY_LIBRARIES NEPOMUK_UTILS_LIBRARIES NEPOMUK_ADDONTOLOGIES_FILE)
+mark_as_advanced(NEPOMUK_INCLUDE_DIR NEPOMUK_INCLUDE_DIRS NEPOMUK_LIBRARIES NEPOMUK_QUERY_LIBRARIES NEPOMUK_UTILS_LIBRARIES NEPOMUK_ADDONTOLOGIES_FILE)
 
 include(FindPackageHandleStandardArgs)
 # List all nepomuk and also all necessary soprano variables here, to make it
