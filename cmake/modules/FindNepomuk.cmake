@@ -20,14 +20,10 @@
 
 if (NOT DEFINED Soprano_FOUND)
   find_package(Soprano ${SOPRANO_MIN_VERSION})
-  include(MacroLogFeature)
-  macro_log_feature(Soprano_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 endif (NOT DEFINED Soprano_FOUND)
 
 if (NOT DEFINED SHAREDDESKTOPONTOLOGIES_FOUND)
   find_package(SharedDesktopOntologies)
-  include(MacroLogFeature)
-  macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "" "")
 endif (NOT DEFINED SHAREDDESKTOPONTOLOGIES_FOUND)
 
 # Check for the following stuff independent from whether soprano has been found
