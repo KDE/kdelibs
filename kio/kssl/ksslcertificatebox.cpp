@@ -36,6 +36,10 @@ KSslCertificateBox::KSslCertificateBox(QWidget *parent)
    d(new KSslCertificateBoxPrivate())
 {
     d->ui.setupUi(this);
+    // No fooling us with html tags
+    Q_FOREACH(QLabel* label, qFindChildren<QLabel *>(this)) {
+        label->setTextFormat(Qt::PlainText);
+    }
 }
 
 
