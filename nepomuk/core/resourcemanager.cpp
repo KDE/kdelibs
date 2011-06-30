@@ -47,9 +47,11 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusServiceWatcher>
+#include <QtGui/QApplication>
 
 using namespace Soprano;
 
+Nepomuk::ResourceManager* Nepomuk::ResourceManager::s_instance = 0;
 
 Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manager )
     : mainModel( 0 ),
@@ -293,6 +295,10 @@ Nepomuk::ResourceManager::~ResourceManager()
     delete d->resourceFilterModel;
     delete d->mainModel;
     delete d;
+
+    if(s_instance == this) {
+        s_instance = 0;
+    }
 }
 
 
@@ -302,16 +308,13 @@ void Nepomuk::ResourceManager::deleteInstance()
 }
 
 
-class Nepomuk::ResourceManagerHelper
-{
-    public:
-        Nepomuk::ResourceManager q;
-};
-K_GLOBAL_STATIC(Nepomuk::ResourceManagerHelper, instanceHelper)
-
 Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 {
-    return &instanceHelper->q;
+    if(!s_instance) {
+        s_instance = new ResourceManager();
+        s_instance->setParent(qApp);
+    }
+    return s_instance;
 }
 
 
