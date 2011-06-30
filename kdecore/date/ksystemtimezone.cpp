@@ -337,6 +337,8 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     if (!init)
         config.reparseConfiguration();
     KConfigGroup group(&config, "TimeZones");
+    if (!group.exists())
+        kError(161) << "No time zone information obtained from ktimezoned";
     m_zoneinfoDir   = group.readEntry("ZoneinfoDir");
     m_zonetab       = group.readEntry("Zonetab");
     m_localZoneName = group.readEntry("LocalZone");
