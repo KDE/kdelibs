@@ -266,12 +266,13 @@ namespace Nepomuk {
         void slotStoreChanged();
 
     private:
-        friend class Nepomuk::ResourceManagerHelper;
         friend class Nepomuk::Resource;
         friend class Nepomuk::ResourceManagerPrivate;
 
         ResourceManager();
         ~ResourceManager();
+
+        static ResourceManager* s_instance;
 
         ResourceManagerPrivate* const d;
 
