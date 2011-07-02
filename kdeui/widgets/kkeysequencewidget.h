@@ -189,16 +189,6 @@ public:
 		bool isModifierlessAllowed();
 
 		/**
-		 * Test if the shift modifier should be recorded for a given key.
-		 *
-		 * For example, if shift+5 produces '%' Qt wants ctrl+shift+5 recorded as ctrl+% and
-		 * in that case this function would return false.
-		 *
-		 * @since 4.8
-		 */
-		static bool isShiftAsModifierAllowed(int keyQt);
-
-		/**
 		 * Set whether a small button to set an empty key sequence should be displayed next to the
 		 * main input widget. The default is to show the clear button.
 		 */
