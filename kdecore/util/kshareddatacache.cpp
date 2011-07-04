@@ -743,15 +743,11 @@ struct SharedMemory
             return pageTableSize();
         }
 
-        // To avoid calling findEmptyPages() all the time we will figure out
-        // the minimum number of pages required to fulfill the request if the
-        // page table were perfectly defragmented, and remove at least that
-        // amount first. If the cache free space is large enough we will
-        // defragment first instead since it's likely we're highly fragmented.
-        uint freedPagesRequired = 0;
-        if (numberNeeded > cacheAvail) {
-            freedPagesRequired = numberNeeded - cacheAvail;
-        }
+        // If the cache free space is large enough we will defragment first
+        // instead since it's likely we're highly fragmented.
+        // Otherwise, we will (eventually) simply remove entries per the
+        // eviction order set for the cache until there is enough room
+        // available to hold the number of pages we need.
 
         kDebug(ksdcArea()) << "Removing old entries to free up" << numberNeeded << "pages,"
                     << cacheAvail << "are already theoretically available.";
