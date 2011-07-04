@@ -44,10 +44,10 @@
 #include <QtCore/QMutexLocker>
 #include <QtCore/QUuid>
 #include <QtCore/QMutableHashIterator>
+#include <QtCore/QCoreApplication>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusServiceWatcher>
-#include <QtGui/QApplication>
 
 using namespace Soprano;
 
@@ -312,7 +312,7 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 {
     if(!s_instance) {
         s_instance = new ResourceManager();
-        s_instance->setParent(qApp);
+        s_instance->setParent(QCoreApplication::instance());
     }
     return s_instance;
 }
