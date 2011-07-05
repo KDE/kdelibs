@@ -206,7 +206,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     if (!d->externalContentAllowed && !KDEPrivate::AccessManager_isLocalRequest(reqUrl) && reqUrl.scheme() != QL1S("data")) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
-        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
         reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);
         return reply;
     }
@@ -271,7 +271,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
 
             if (method.isEmpty()) {
-                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
                 reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
                 return reply;
             }
