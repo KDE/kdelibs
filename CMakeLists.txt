@@ -10,11 +10,12 @@ INCLUDE_DIRECTORIES (
 ADD_SUBDIRECTORY (tests)
 
 SET (ksecretservice_lib_SRCS
-   jobqueue.cpp
-   queuedjob.cpp
-   secrettool.cpp
+    jobqueue.cpp
+    queuedjob.cpp
+    secrettool.cpp
+    secretcodec.cpp
 )
 
-KDE4_ADD_LIBRARY (ksecretservicelib STATIC ${ksecretservice_lib_SRCS})
-TARGET_LINK_LIBRARIES (ksecretservicelib ${QT_QTCORE_LIBRARY})
+KDE4_ADD_LIBRARY (ksecretsservicelib STATIC ${ksecretservice_lib_SRCS})
+TARGET_LINK_LIBRARIES (ksecretsservicelib ${QT_QTCORE_LIBRARY})
 
