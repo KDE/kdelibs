@@ -66,30 +66,21 @@ KJob* Collection::renameCollection(const QString& newName)
     return new RenameCollectionJob( this, newName, this );
 }
 
-Collection::SearchItemsJob* Collection::searchItems(const QStringStringMap& attributes)
+KJob* Collection::searchItems(const QStringStringMap& attributes)
+{
+    return new SearchItemsJob( this, attributes, this );
+}
+
+SearchSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
 {
     // TODO: implement this
     Q_ASSERT(0);
     return NULL;
 }
 
-Collection::SearchSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
+CreateItemJob* Collection::createItem(const QMap< QString, QString >& attributes, const Secret& secret, bool replace /* =false */)
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return NULL;
-}
-
-Collection::CreateItemJob* KSecretsService::Collection::createItem(const QMap< QString, QString >& attributes, const Secret& secret)
-{
-    Q_ASSERT(0);
-    // TODO: call the dbus method
-    // if it returns item with "/" path, then it must have returned a prompt object
-    //      use the prompt 
-    //      get the create item (from the prompt ?)
-    // if not, return the corresponding item+
-    return NULL;
-
+    return new CreateItemJob( this, attributes, secret, replace );
 }
 
 Collection::ReadItemsJob* Collection::items() const

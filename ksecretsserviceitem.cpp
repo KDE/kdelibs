@@ -20,21 +20,44 @@
 
 #include "ksecretsserviceitem.h"
 #include "ksecretsserviceitem_p.h"
+#include "dbusbackend.h"
+#include "item_interface.h"
+
 #include <QDateTime>
 
 namespace KSecretsService {
-    
+
+SecretItem::SecretItem() :
+    d( new SecretItemPrivate() )
+{
+}
+
+SecretItem::SecretItem( SecretItemPrivate * thatPrivate ) :
+    d( thatPrivate )
+{
+}
+
 KJob* SecretItem::deleteItem()
 {
     // TODO: implement this
     return NULL;
 }
 
-SecretItem::GetSecretJob* SecretItem::getSecret() const
+GetSecretJob* SecretItem::getSecret() const
 {
     // TODO: implement this
     return NULL;
 }
+
+
+GetSecretJob::GetSecretJob(const GetSecretJob& ): KJob()
+{
+
+}
+
+
+
+
 
 KJob* SecretItem::setSecret(const Secret& secret)
 {
@@ -82,6 +105,20 @@ void SecretItem::setLabel(const QString& label)
     // TODO: implement this
 }
 
+SecretItemPrivate::SecretItemPrivate()
+{
+}
+
+SecretItemPrivate::SecretItemPrivate( const QDBusObjectPath &dbusPath ) :
+    itemIf(0)
+{
+    itemIf = DBusSession::createItem( dbusPath );
+}
+
+bool SecretItemPrivate::isValid() const
+{
+    return itemIf && itemIf->isValid();
+}
 
 };
 

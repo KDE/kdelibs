@@ -21,7 +21,12 @@
 #include "ksecretscollectionjobs.h"
 #include "ksecretscollectionjobs_p.h"
 #include "ksecretsservicecollection_p.h"
+#include "ksecretsserviceitem_p.h"
 #include "service_interface.h"
+#include "collection_interface.h"
+#include "item_interface.h"
+#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "ksecretsservicesecret_p.h"
 
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
@@ -29,12 +34,11 @@
 #include <prompt_interface.h>
 #include <kapplication.h>
 #include <QWidget>
-#include <collection_interface.h>
 
 using namespace KSecretsService;
 
 CollectionJobPrivate::CollectionJobPrivate() :
-    collection( 0 ), error( CollectionJob::NoError )
+    collection( 0 )
 {
 }
 
@@ -43,11 +47,6 @@ CollectionJob::CollectionJob(Collection *collection, QObject* parent) :
             d( new CollectionJobPrivate() )
 {
     d->collection = collection;
-}
-
-CollectionJob::CollectionError CollectionJob::error() const 
-{ 
-    return d->error; 
 }
 
 Collection *CollectionJob::collection() const 
@@ -331,31 +330,127 @@ void RenameCollectionJobPrivate::startRename()
     }
 }
 
-Collection::SearchItemsJob::SearchItemsJob( Collection *collection,
-                                            QObject *parent ) :
-    CollectionJob( collection, parent ) 
-{
-}
-
-
-Collection::SearchSecretsJob::SearchSecretsJob( Collection* collection, QObject* parent ) : 
+SearchItemsJob::SearchItemsJob( Collection *collection, 
+                                const QStringStringMap &,
+                                QObject *parent ) :
     CollectionJob( collection, parent )
 {
 }
 
-Collection::CreateItemJob::CreateItemJob( Collection *collection,
-                                          QObject *parent ) :
+void SearchItemsJob::start()
+{
+    // TODO: implement this
+}
+
+SearchSecretsJob::SearchSecretsJob( Collection* collection, QObject* parent ) : 
     CollectionJob( collection, parent )
 {
 }
 
-Collection::ReadItemsJob::ReadItemsJob( Collection *collection,
+CreateItemJob::CreateItemJob( Collection *collection,
+                              const QMap< QString, QString >& attributes, 
+                              const Secret& secret,
+                              bool replace
+                            ) :
+            CollectionJob( collection, collection ),
+            d( new CreateItemJobPrivate( collection->d, collection ) )
+{
+    d->attributes = attributes;
+    d->secretPrivate = secret.d;
+    d->replace = replace;
+}
+
+
+void CreateItemJob::start()
+{
+    startFindCollection();
+}
+
+void CreateItemJob::onFindCollectionFinished()
+{
+    connect( d.data(), SIGNAL(createIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(createIsDone( CollectionJob::CollectionError, const QString& )) );
+    d->startCreateItem();
+}
+
+void CreateItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
+{
+    finishedWithError( err, msg );
+}
+
+CreateItemJobPrivate::CreateItemJobPrivate( CollectionPrivate *cp, QObject *parent ) :
+        QObject( parent ),
+        collectionPrivate( cp )
+{
+}
+
+void CreateItemJobPrivate::startCreateItem()
+{
+    QVariantMap varMap;
+    foreach( QString attr, attributes ) {
+        QString val = attributes[ attr ];
+        varMap[ attr ] = QVariant(val);
+    }
+    SecretStruct secretStruct;
+    if ( secretPrivate->toSecretStruct( secretStruct ) ) {
+        QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = collectionPrivate->collectionIf->CreateItem( varMap, secretStruct, replace );
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( createReply );
+        connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createItemReply(QDBusPendingCallWatcher*)) );
+    }
+    else {
+        kDebug() << "ERROR preparing SecretStruct";
+        emit createIsDone( CollectionJob::CreateError, "Cannot prepare secret structure" );
+    }
+}
+
+void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
+{
+    QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = *watcher;
+    if ( !createReply.isError() ) {
+        QDBusObjectPath itemPath = createReply.argumentAt<0>();
+        QDBusObjectPath promptPath = createReply.argumentAt<1>();
+        if ( itemPath.path().compare("/") == 0 ) {
+            PromptJob *promptJob = new PromptJob( promptPath, collectionPrivate->promptParentWindowId, this );
+            if ( createItemJob->addSubjob( promptJob ) ) {
+                connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(createPromptFinished(KJob*)) );
+                promptJob->start();
+            }
+            else {
+                kDebug() << "ERROR creating prompt job for " << promptPath.path();
+                emit createIsDone( CollectionJob::CreateError, "Cannot create prompt job!" );
+            }
+        }
+        else {
+            QSharedDataPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
+            if ( itemPrivate->isValid() ) {
+                item = new SecretItem( itemPrivate );
+                emit createIsDone( CollectionJob::NoError, "" );
+            }
+            else {
+                item = NULL;
+                kDebug() << "ERROR creating item, as it's invalid. path = " << itemPath.path();
+                emit createIsDone( CollectionJob::CreateError, "The backend returned an invalid item path or it's no longer present" );
+            }
+        }
+    }
+    else {
+        kDebug() << "ERROR trying to create item : " << createReply.error().message();
+        emit createIsDone( CollectionJob::CreateError, "Backend communication error" );
+    }
+}
+
+void CreateItemJobPrivate::createPromptFinished(KJob*)
+{
+    // TODO: implement this
+}
+
+
+ReadItemsJob::ReadItemsJob( Collection *collection,
                                         QObject *parent ) :
     CollectionJob( collection, parent )
 {
 }
     
-QList< Secret > Collection::SearchSecretsJob::secrets() const
+QList< Secret > SearchSecretsJob::secrets() const
 {
     // TODO: implement this
     return QList< Secret >();

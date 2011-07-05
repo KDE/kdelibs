@@ -20,9 +20,15 @@
 
 #include "ksecretsservicesecret.h"
 #include "ksecretsservicesecret_p.h"
+#include "dbusbackend.h"
 
 namespace KSecretsService {
-    
+
+Secret::Secret() :
+    d( new SecretPrivate() )
+{
+}
+
 Secret::Secret( const Secret& that ) {
     // TODO: implement this
 }
@@ -44,14 +50,24 @@ void Secret::setValue( const QVariant &value ) {
     // TODO: implement this
 }
 
-Secret::Private::Private() {
+SecretPrivate::SecretPrivate() 
+{
 }
 
-Secret::Private::Private( const Private &that ) :
-        QSharedData( that ) {
+SecretPrivate::SecretPrivate( const SecretPrivate &that )
+{
+    contentType = that.contentType;
+    value = that.value;
 }
     
-Secret::Private::~Private() {
+SecretPrivate::~SecretPrivate() 
+{
+}
+
+bool SecretPrivate::toSecretStruct( SecretStruct &secretStruct ) const {
+    secretStruct.m_session = DBusSession::sessionPath();
+    secretStruct.m_contentType = contentType;
+    return DBusSession::encrypt( value, secretStruct );
 }
 
 }; // namespace 

@@ -34,6 +34,10 @@ QTEST_KDEMAIN_CORE(KSecretServiceTest)
 
 using namespace KSecretsService;
 
+#define DONT_TEST_CREATEANDDELETE 
+#define DONT_TEST_RENAMECOLLECTION 
+//#define DONT_TEST_CREATEITEM 
+
 KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 {
 
@@ -56,19 +60,41 @@ void KSecretServiceTest::initTestCase()
 
 void KSecretServiceTest::testCreateAndDelete()
 {
+#ifndef DONT_TEST_CREATEANDDELETE
     Collection *coll = Collection::findCollection( 0, "test collection" );
     KJob* deleteJob = coll->deleteCollection();
     deleteJob->exec();
     QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
+#endif // DONT_TEST_CREATEANDDELETE
 }
 
 void KSecretServiceTest::testRenameCollection()
 {
+#ifndef DONT_TEST_RENAMECOLLECTION
     Collection *coll = Collection::findCollection( 0, "test name1" );
     KJob *renameJob = coll->renameCollection( "test name2" );
     renameJob->exec();
     QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
     QVERIFY2( (coll->label() == "test name2"), "Collection won't change it's name!" );
+#endif // DONT_TEST_RENAMECOLLECTION
+}
+
+void KSecretServiceTest::testCreateItem()
+{
+#ifndef DONT_TEST_CREATEITEM
+    Collection *coll = Collection::findCollection( 0, "test collection" );
+    QStringStringMap attributes;
+    attributes.insert( "test-attribute", "test-attribute-value" );
+    Secret secret;
+    secret.setValue( QVariant("test-secret") );
+    KSecretsService::CreateItemJob *createItemJob = coll->createItem( attributes, secret );
+    QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
+    
+    // finally, delete the collection
+    KJob *deleteJob = coll->deleteCollection();
+    deleteJob->exec();
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
+#endif 
 }
 
 void KSecretServiceTest::cleanupTestCase()

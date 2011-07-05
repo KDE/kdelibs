@@ -20,19 +20,26 @@
 
 #ifndef DBUSBACKEND_H
 #define DBUSBACKEND_H
+
+#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "../lib/secretcodec.h"
+
 #include <kjob.h>
 #include <QDBusObjectPath>
+#include <qca_publickey.h>
 
 class OrgFreedesktopSecretCollectionInterface;
 class OrgFreedesktopSecretServiceInterface;
 class OrgFreedesktopSecretSessionInterface;
 class OrgFreedesktopSecretPromptInterface;
+class OrgFreedesktopSecretItemInterface;
 class QDBusPendingCallWatcher;
 
 class OpenSessionJob : public KJob {
     Q_OBJECT
 public:
     explicit OpenSessionJob( QObject *parent =0 );
+    virtual ~OpenSessionJob();
     
     virtual void start();
     
@@ -43,8 +50,12 @@ private Q_SLOTS:
     void openSessionFinished(QDBusPendingCallWatcher*);
     
 private:
+    friend class DBusSession;
     OrgFreedesktopSecretSessionInterface *sessionIf;
     OrgFreedesktopSecretServiceInterface *serviceIf;
+    SecretCodec             secretCodec;
+    QCA::DLGroup            *dhDlgroup;
+    QCA::PrivateKey         *dhPrivkey;
 };
 
 /**
@@ -63,12 +74,18 @@ public:
     
     static OrgFreedesktopSecretPromptInterface * createPrompt( const QDBusObjectPath &path );
     static OrgFreedesktopSecretCollectionInterface * createCollection( const QDBusObjectPath &path );
+    static OrgFreedesktopSecretItemInterface * createItem( const QDBusObjectPath &path );
+    static QDBusObjectPath sessionPath();
+    static bool encrypt( const QVariant& value, SecretStruct& secretStruct );
     
 private:
     friend class OpenSessionJob;
 
-    static const QString    encryptionAlgorithm;
-    static OpenSessionJob   openSessionJob;
+    DBusSession();
+    
+    static DBusSession          staticInstance;
+    static const QString        encryptionAlgorithm;
+    static OpenSessionJob       openSessionJob;
 };
 
 #endif // DBUSBACKEND_H

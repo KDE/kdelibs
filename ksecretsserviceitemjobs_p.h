@@ -18,33 +18,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSECRET_H
-#define KSECRETSSECRET_H
+#ifndef KSECRETSSERVICEITEMJOBS_P_H
+#define KSECRETSSERVICEITEMJOBS_P_H
 
-#include <QObject>
-#include <QVariant>
-#include <QSharedPointer>
+#include <QSharedData>
 
-namespace KSecretsService {
-
-class SecretPrivate;
-
-struct Secret {
-    Secret();
-    Secret( const Secret & that );
-    virtual ~Secret();
-    
-    QVariant value() const;
-    
-    void setValue( const QVariant &value, const QString &contentType );
-    void setValue( const QVariant &value );
-    
-private:
-    friend class CreateItemJob;
-    
-    QSharedPointer< SecretPrivate > d;
+class GetSecretItemJobPrivate : public QSharedData {
+public:
+    GetSecretItemJobPrivate();
 };
 
-};
-
-#endif // KSECRETSSECRET_H
+#endif // KSECRETSSERVICEITEMJOBS_P_H

@@ -22,20 +22,27 @@
 #define KSECRETSSECRET_P_H
 
 #include "ksecretsservicesecret.h"
+#include "../daemon/frontend/secret/adaptors/secretstruct.h"
 
 #include <QtDBus/QDBusObjectPath>
 
 namespace KSecretsService {
 
-struct Secret::Private : public QSharedData {
-    Private();
-    Private( const Private& that );
-    ~Private();
+class SecretPrivate {
+public:
+    SecretPrivate();
+    SecretPrivate( const SecretPrivate& that );
+    ~SecretPrivate();
+
     
-    QDBusObjectPath sessionPath;
-    QByteArray      parameters;
-    QVariant        value;
-    QString         contentType;
+    /**
+     * This will obtain a properly encrpyted SecretStruct ready to be transmitted over the dbus 
+     * to the daemon
+     */
+    bool toSecretStruct( SecretStruct &secretStruct ) const;
+
+    QString contentType;
+    QVariant value;
 };
 
 };

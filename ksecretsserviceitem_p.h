@@ -22,10 +22,27 @@
 #define KSECRETSITEM_P_H
 
 #include "ksecretsserviceitem.h"
+#include <QDBusObjectPath>
+
+class OrgFreedesktopSecretItemInterface;
 
 namespace KSecretsService {
     
-class SecretItem::Private {
+class SecretItemPrivate : public QSharedData {
+public:
+    SecretItemPrivate();
+    SecretItemPrivate( const QDBusObjectPath &dbusPath );
+
+    bool isValid() const;
+    
+    OrgFreedesktopSecretItemInterface   *itemIf;
+};
+
+class GetSecretJobPrivate : public QSharedData {
+public:
+    GetSecretJobPrivate();
+    
+    
 };
 
 };

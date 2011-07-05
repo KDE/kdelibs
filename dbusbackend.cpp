@@ -23,8 +23,10 @@
 #include "collection_interface.h"
 #include "session_interface.h"
 #include "prompt_interface.h"
+#include "item_interface.h"
 
 #include <QtDBus/QDBusConnection>
+#include <QtCrypto/QtCrypto>
 #include <kdebug.h>
 
 
@@ -32,18 +34,29 @@
 
 const QString DBusSession::encryptionAlgorithm = "dh-ietf1024-aes128-cbc-pkcs7";
 OpenSessionJob DBusSession::openSessionJob(0);
+DBusSession DBusSession::staticInstance;
 
+DBusSession::DBusSession()
+{
+    openSessionJob.setAutoDelete(false);
+}
 
 OpenSessionJob* DBusSession::openSession()
 {
-    return new OpenSessionJob();
+    return &openSessionJob;
 }
 
 OpenSessionJob::OpenSessionJob(QObject* parent): 
             KJob(parent),
             sessionIf(0),
-            serviceIf(0)
+            serviceIf(0),
+            dhPrivkey(0)
 {
+}
+
+OpenSessionJob::~OpenSessionJob()
+{
+    delete dhPrivkey;
 }
 
 void OpenSessionJob::start()
@@ -53,6 +66,8 @@ void OpenSessionJob::start()
         emitResult();
     }
     else {
+        qDBusRegisterMetaType<SecretStruct>();
+        
         serviceIf = new OrgFreedesktopSecretServiceInterface( SERVICE_NAME, 
                                                               "/org/freedesktop/secrets", 
                                                               QDBusConnection::sessionBus() );
@@ -68,15 +83,10 @@ void OpenSessionJob::start()
                 kDebug() << "Cannot get SERVICE information";
             }
             
-            static bool qcaInitialized = false;
-            if ( !qcaInitialized ) {
-                QCA::init();
-                qcaInitialized = true;
-            }
-            
+
             QCA::KeyGenerator keygen;
-            QCA::DLGroup dhDlgroup(keygen.createDLGroup(QCA::IETF_1024));
-            if ( dhDlgroup.isNull() ) {
+            dhDlgroup = new QCA::DLGroup(keygen.createDLGroup(QCA::IETF_1024));
+            if ( dhDlgroup->isNull() ) {
                 QString errorTxt = "Cannot create DL Group for dbus session open";
                 kDebug() << errorTxt;
                 setError(1); // FIXME: use error codes here
@@ -84,8 +94,8 @@ void OpenSessionJob::start()
                 emitResult();
             }
             else {
-                QCA::PrivateKey dhPrivkey(keygen.createDH(dhDlgroup));
-                QCA::PublicKey dhPubkey(dhPrivkey);
+                dhPrivkey = new QCA::PrivateKey(keygen.createDH(*dhDlgroup));
+                QCA::PublicKey dhPubkey(*dhPrivkey);
                 QByteArray dhBytePub(dhPubkey.toDH().y().toArray().toByteArray());
                 
                 QDBusPendingReply< QDBusVariant, QDBusObjectPath > openSessionReply = serviceIf->OpenSession( 
@@ -116,6 +126,12 @@ void OpenSessionJob::openSessionFinished(QDBusPendingCallWatcher* watcher)
         emitResult();
     }
     else {
+        QVariant dhOutputVar = reply.argumentAt<0>().variant();
+        QByteArray dhOutput = dhOutputVar.toByteArray();
+        QCA::DHPublicKey dhServiceKey(*dhDlgroup, QCA::BigInteger(QCA::SecureArray(dhOutput)));
+        QCA::SymmetricKey dhSharedKey(dhPrivkey->deriveKey(dhServiceKey));
+        QCA::Cipher *dhCipher = new QCA::Cipher("aes128", QCA::Cipher::CBC, QCA::Cipher::PKCS7);
+        
         QDBusObjectPath sessionPath = reply.argumentAt<1>();
         kDebug() << "SESSION path is " << sessionPath.path();
         sessionIf = new OrgFreedesktopSecretSessionInterface( SERVICE_NAME, sessionPath.path(), QDBusConnection::sessionBus() );
@@ -133,7 +149,7 @@ OrgFreedesktopSecretServiceInterface* OpenSessionJob::serviceInterface() const
 
 OrgFreedesktopSecretSessionInterface* OpenSessionJob::sessionInterface() const
 {
-    Q_ASSERT( serviceIf != 0 ); // you should call openSession first and start the job it returns before calling this method
+    Q_ASSERT( sessionIf != 0 ); // you should call openSession first and start the job it returns before calling this method
     return sessionIf;
 }
 
@@ -145,4 +161,26 @@ OrgFreedesktopSecretPromptInterface* DBusSession::createPrompt(const QDBusObject
 OrgFreedesktopSecretCollectionInterface* DBusSession::createCollection(const QDBusObjectPath& path)
 {
     return new OrgFreedesktopSecretCollectionInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
+}
+
+OrgFreedesktopSecretItemInterface* DBusSession::createItem(const QDBusObjectPath& path)
+{
+    return new OrgFreedesktopSecretItemInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
+}
+
+QDBusObjectPath DBusSession::sessionPath()
+{
+    Q_ASSERT( openSessionJob.sessionInterface()->isValid() );
+    return QDBusObjectPath( openSessionJob.sessionInterface()->path() );
+}
+
+bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
+{
+    QCA::SecureArray valueArray( value.toByteArray() );
+    QCA::SecureArray encryptedArray;
+    bool result = openSessionJob.secretCodec.encryptClient( valueArray , encryptedArray, secretStruct.m_parameters );
+    if ( result ) {
+        secretStruct.m_value = encryptedArray.toByteArray();
+    }
+    return result;
 }

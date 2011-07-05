@@ -18,10 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef COLLECTIONJOB_H
-#define COLLECTIONJOB_H
+#ifndef KSECRETSCOLLECTIONJOBS_H
+#define KSECRETSCOLLECTIONJOBS_H
 
 #include "ksecretsservicecollection.h"
+#include "ksecretsserviceitem.h"
 
 #include <kcompositejob.h>
 #include <qsharedpointer.h>
@@ -30,10 +31,14 @@ class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
 class CollectionJobPrivate;
 class RenameCollectionJobPrivate;
+class SearchItemsJobPrivate;
+class CreateItemJobPrivate;
 
 namespace KSecretsService {
     
-    
+class Collection;
+typedef QMap< QString, QString > QStringStringMap;
+
 /**
  * Collection handling related jobs all inherit from this class.
  * It's main purpose it to get 'lazy connect' feature where a collection
@@ -60,12 +65,6 @@ public:
         RenameError
     };
 
-    /**
-     * Returns the CollectionError corresponding to the outcome of the job
-     * @see KCompositJob::errorString()
-     */
-    CollectionError error() const;
-    
     /**
      * Get a pointer to the collection wich started this job
      */
@@ -134,20 +133,21 @@ private:
     QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
-class Collection::SearchItemsJob : public CollectionJob {
+class SearchItemsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchItemsJob)
 public:
-    explicit SearchItemsJob( Collection* collection,  QObject *parent =0 );
+    explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     
     QList< SecretItem > &items() const;
+    virtual void start();
 
 private:
-    class Private;
-    Private *d;
+    friend class ::SearchItemsJobPrivate;
+    QSharedPointer<SearchItemsJobPrivate> d;
 };
 
-class Collection::SearchSecretsJob : public CollectionJob {
+class SearchSecretsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchSecretsJob)
 public:
@@ -160,20 +160,25 @@ private:
     Private *d;
 };
 
-class Collection::CreateItemJob : public CollectionJob {
+class CreateItemJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(CreateItemJob)
 public:
-    explicit CreateItemJob( Collection* collection,  QObject *parent =0 );
+    explicit CreateItemJob( Collection* collection,  const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     
+    virtual void start();
     SecretItem item() const;
     
+protected Q_SLOTS:
+    virtual void onFindCollectionFinished();
+    void createIsDone( CollectionJob::CollectionError, const QString& );
+    
 private:
-    class Private;
-    Private *d;
+    friend class ::CreateItemJobPrivate;
+    QSharedPointer< CreateItemJobPrivate > d;
 };
 
-class Collection::ReadItemsJob : public CollectionJob {
+class ReadItemsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(ReadItemsJob)
 public:
@@ -186,18 +191,12 @@ private:
     Private *d;
 };
 
-class Collection::SearchItemsJob::Private {
+class SearchSecretsJob::Private {
 };
 
-class Collection::SearchSecretsJob::Private {
-};
-
-class Collection::ReadItemsJob::Private {
-};
-
-class Collection::CreateItemJob::Private {
+class ReadItemsJob::Private {
 };
 
 }
 
-#endif // COLLECTIONJOB_H
+#endif // KSECRETSCOLLECTIONJOBS_H

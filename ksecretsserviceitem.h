@@ -22,25 +22,28 @@
 #define KSECRETSITEM_H
 
 #include "ksecretsservicesecret.h"
+#include "ksecretsserviceitemjobs.h"
 
 #include <kjob.h>
+
 
 namespace KSecretsService {
 
 typedef QMap< QString, QString > QStringStringMap;
 
+class SecretItemPrivate;
    
 /**
  */
 class SecretItem {
+protected:
+    SecretItem();
 public:
-    class DeleteItemJob;
+    SecretItem( SecretItemPrivate * );
     
     /**
      */
     KJob * deleteItem();
-
-    class GetSecretJob;
 
     /**
      * Read the data held by the SecretItem
@@ -88,22 +91,10 @@ public:
     void setLabel( const QString &label );
     
 private:
-    
-    class Private;
-    QSharedDataPointer< Private > d;
+    friend class SecretItemPrivate;
+    QSharedDataPointer< SecretItemPrivate > d;
 };
 
-class SecretItem::GetSecretJob : public KJob {
-    Q_OBJECT
-    Q_DISABLE_COPY(GetSecretJob)
-public:
-    
-    Secret secret() const;
-    
-private:
-    class Private;
-    QSharedDataPointer< Private > *d;
-};
 
 
 };

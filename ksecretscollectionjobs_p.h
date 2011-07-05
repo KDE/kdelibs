@@ -22,9 +22,15 @@
 #define KSECRETSCOLLECTIONJOBS_P_H
 
 #include "ksecretscollectionjobs.h"
+#include "../daemon/frontend/secret/adaptors/secretstruct.h"
 
 #include <QObject>
 #include <QDBusPendingReply>
+
+namespace KSecretsService {
+class SecretItem;
+class SecretPrivate;
+}
 
 class OrgFreedesktopSecretPromptInterface;
 
@@ -35,7 +41,6 @@ public:
     CollectionJobPrivate();
     
     Collection      *collection;
-    CollectionJob::CollectionError error;
 };
 
 /**
@@ -97,9 +102,43 @@ Q_SIGNALS:
     void renameIsDone( CollectionJob::CollectionError error, const QString& message );
     
 public:
-    RenameCollectionJob *renameJob;
     CollectionPrivate   *collectionPrivate;
     QString             newName;
+};
+
+class SearchItemsJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(SearchItemsJobPrivate)
+public:
+    explicit SearchItemsJobPrivate( CollectionPrivate*, QObject *parent =0 );
+    
+public:
+    CollectionPrivate   *collectionPrivate;
+    QStringStringMap attributes;
+};
+
+class CreateItemJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(CreateItemJobPrivate)
+public:
+    explicit CreateItemJobPrivate( CollectionPrivate*, QObject *parent =0 );
+
+    void startCreateItem();
+    
+protected Q_SLOTS:
+    void createItemReply(QDBusPendingCallWatcher*);
+    void createPromptFinished(KJob*);
+    
+Q_SIGNALS:
+    void createIsDone( CollectionJob::CollectionError, const QString& );
+    
+public:
+    CollectionPrivate                   *collectionPrivate;
+    CreateItemJob                       *createItemJob;
+    QMap< QString, QString >            attributes;
+    QSharedPointer< SecretPrivate >     secretPrivate;
+    bool                                replace;
+    SecretItem                          *item;
 };
 
 class PromptJob : public KJob {
@@ -123,5 +162,6 @@ private:
     bool            dismissed;
     QDBusVariant    opResult;
 };
+
 
 #endif // KSECRETSCOLLECTIONJOBS_P_H

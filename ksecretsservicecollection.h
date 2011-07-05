@@ -18,10 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSCOLLECTION_H
-#define KSECRETSCOLLECTION_H
+#ifndef KSECRETSSERVICECOLLECTION_H
+#define KSECRETSSERVICECOLLECTION_H
 
 #include "ksecretsservicesecret.h"
+#include "ksecretscollectionjobs.h"
 
 #include <QObject>
 #include <QMap>
@@ -33,6 +34,8 @@ namespace KSecretsService {
 
 class SecretItem;
 class CollectionPrivate;
+class CreateItemJob;
+class SearchSecretsJob;
 
 typedef QMap< QString, QString > QStringStringMap;
 
@@ -96,27 +99,23 @@ public:
     KJob * renameCollection( const QString& newName );
     
     
-    class SearchItemsJob;
-    
     /**
      * Search for the items matching the specified attributes
      */
-    SearchItemsJob * searchItems( const QStringStringMap &attributes );
-    
-    class SearchSecretsJob;
+    KJob * searchItems( const QStringStringMap &attributes );
     
     /**
      * Use this method to get several secrets without getting through getting items
      */
     SearchSecretsJob * searchSecrets( const QStringStringMap &attributes );
     
-    class CreateItemJob;
     /**
      * Create a new item inside the current collection
      * @param properties holds an map of property names / property values
      * @param secret the secret the newly created item should hold
+     * @param replace true if the and eventually existing secret is to be replaced by the on specified here
      */
-    CreateItemJob * createItem( const QStringStringMap &attributes, const Secret &secret );
+    CreateItemJob * createItem( const QStringStringMap &attributes, const Secret &secret, bool replace =false );
 
     class ReadItemsJob;
     
@@ -127,31 +126,31 @@ public:
 
     /**
      * Retrieve the lock status of this collection
-     * FIXME: should this method be asynchronous
+     * FIXME: should this method be asynchronous?
      */
     bool isLocked() const;
     
     /**
      * Retrieve this collection's label
-     * FIXME: should this method be asynchronous
+     * FIXME: should this method be asynchronous?
      */
     QString label() const;
     
     /**
      * Get the creation timestamps of this collection
-     * FIXME: should this method be asynchronous
+     * FIXME: should this method be asynchronous?
      */
     QDateTime createdTime() const;
     
     /**
      * Get the last modified timestamp of this collection
-     * FIXME: should this method be asynchronous
+     * FIXME: should this method be asynchronous?
      */
     QDateTime modifiedTime() const;
 
     /**
      * Change this collection's label
-     * FIXME: should this method be asynchronous
+     * FIXME: should this method be asynchronous?
      */
     void setLabel( const QString &label );
     
@@ -170,6 +169,7 @@ private:
     friend class FindCollectionJob;
     friend class DeleteCollectionJob;
     friend class RenameCollectionJob;
+    friend class CreateItemJob;
     
     CollectionPrivate *d;
 };
@@ -178,4 +178,4 @@ private:
 
 }; // namespace
 
-#endif // KSECRETSCOLLECTION_H
+#endif // KSECRETSSERVICECOLLECTION_H
