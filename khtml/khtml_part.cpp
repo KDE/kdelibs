@@ -1627,6 +1627,8 @@ DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
 void KHTMLPart::slotInfoMessage(KJob* kio_job, const QString& msg)
 {
   assert(d->m_job == kio_job);
+  Q_ASSERT(kio_job);
+  Q_UNUSED(kio_job);
 
   if (!parentPart())
     setStatusBarText(msg, BarDefaultText);
@@ -1640,6 +1642,8 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
   assert ( d->m_job == kio_job );
+  Q_ASSERT(kio_job);
+  Q_UNUSED(kio_job);
 
   //kDebug( 6050 ) << "slotData: " << data.size();
   // The first data ?

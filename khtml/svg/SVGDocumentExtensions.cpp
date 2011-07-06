@@ -121,6 +121,7 @@ void SVGDocumentExtensions::reportError(const String& message)
 void SVGDocumentExtensions::addPendingResource(const AtomicString& id, SVGStyledElement* obj)
 {
     ASSERT(obj);
+    Q_UNUSED(obj);
 
     if (id.isEmpty())
         return;

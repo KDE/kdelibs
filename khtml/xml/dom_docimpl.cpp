@@ -2824,6 +2824,7 @@ void DocumentImpl::dispatchImageLoadEventsNow()
 void DocumentImpl::timerEvent(QTimerEvent *e)
 {
     assert(e->timerId() == m_imageLoadEventTimer);
+    Q_UNUSED(e);
     dispatchImageLoadEventsNow();
 }
 

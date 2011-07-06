@@ -37,7 +37,7 @@
 #include <QtCore/QDate>
 
 
-Nepomuk::Query::Query Nepomuk::Query::standardQuery( StandardQuery query, const Term& subterm )
+Nepomuk::Query::Query Nepomuk::Query::standardQuery( StandardQuery query, const Term& /*subterm*/ )
 {
     switch( query ) {
     case LastModifiedFilesQuery: {

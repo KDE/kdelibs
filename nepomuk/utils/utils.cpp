@@ -200,7 +200,7 @@ Nepomuk::Resource Nepomuk::Utils::createCopyEvent( const KUrl& srcUrl, const KUr
 }
 
 
-void Nepomuk::Utils::finishCopyEvent( Resource& eventResource, const QDateTime& endTime )
+void Nepomuk::Utils::finishCopyEvent( Resource& /*eventResource*/, const QDateTime& /*endTime*/ )
 {
     // FIXME: NUAO doesn't have end() yet.
     // eventResource.setProperty(Nepomuk::Vocabulary::NUAO::end(), endTime);

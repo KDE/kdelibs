@@ -101,7 +101,7 @@ void CompileState::localFlushAll(CodeBlock& block)
     }
 }
 
-void CompileState::flushLocal(CodeBlock& block, Register regNum)
+void CompileState::flushLocal(CodeBlock& /*block*/, Register regNum)
 {
     if (locals[regNum] && locals[regNum]->live()) {
         OpValue localVal;

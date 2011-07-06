@@ -112,7 +112,7 @@ HTMLDocument DOMImplementation::createHTMLDocument( const DOMString& title )
     return static_cast<DOMImplementationImpl*>(impl)->createHTMLDocument(title);
 }
 
-DOMImplementation DOMImplementation::getInterface(const DOMString &feature) const
+DOMImplementation DOMImplementation::getInterface(const DOMString &/*feature*/) const
 {
     if (!impl)
         throw DOMException(DOMException::NOT_FOUND_ERR);

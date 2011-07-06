@@ -404,6 +404,7 @@ KJS_IMPLEMENT_PROTOFUNC(PluginsFunc)
 JSValue *Plugins::getValueProperty(ExecState*, int token) const
 {
   assert(token == Plugins_Length);
+  Q_UNUSED(token);
   if (pluginsEnabled())
     return jsNumber(plugins->count());
   else
@@ -555,6 +556,7 @@ JSValue *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 JSValue *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
 {
   assert(token == MimeTypes_Length);
+  Q_UNUSED(token);
   if (pluginsEnabled())
     return jsNumber(mimes->count());
   else
