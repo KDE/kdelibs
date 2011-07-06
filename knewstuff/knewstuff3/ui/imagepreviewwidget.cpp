@@ -56,7 +56,7 @@ void ImagePreviewWidget::resizeEvent(QResizeEvent* event)
     repaint();
 }
 
-void ImagePreviewWidget::paintEvent(QPaintEvent *event)
+void ImagePreviewWidget::paintEvent(QPaintEvent * /*event*/)
 {
     if (m_image.isNull()) {
         return;

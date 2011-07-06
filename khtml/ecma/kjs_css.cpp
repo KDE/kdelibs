@@ -1165,6 +1165,7 @@ DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveVal
 JSValue *DOMCSSPrimitiveValue::getValueProperty(ExecState*, int token)
 {
   assert(token == PrimitiveType);
+  Q_UNUSED(token);
   return jsNumber(static_cast<CSSPrimitiveValueImpl *>(impl())->primitiveType());
 }
 

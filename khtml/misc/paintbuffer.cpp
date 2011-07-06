@@ -40,6 +40,7 @@ public:
     
     void timerEvent(QTimerEvent* e) {
         assert( m_timer == e->timerId() );
+        Q_UNUSED(e);
         if (m_reset) {
             m_reset = false;
             return;
@@ -143,6 +144,7 @@ void PaintBuffer::release( QPixmap *px )
 {
     if (s_full && s_full->count()) {
         assert( px == s_full->top() );
+        Q_UNUSED(px);
         delete s_full->top();
         s_full->pop();
         return;
@@ -155,6 +157,7 @@ void PaintBuffer::release( QPixmap *px )
 void PaintBuffer::timerEvent(QTimerEvent* e)
 {
     assert( m_timer == e->timerId() );
+    Q_UNUSED(e);
     if (m_grabbed)
         return;
     if (m_renewTimer) {

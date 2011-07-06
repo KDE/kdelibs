@@ -57,7 +57,7 @@ void Nepomuk::Utils::SearchLineEdit::Private::updateCurrentQuery()
 }
 
 
-void Nepomuk::Utils::SearchLineEdit::Private::_k_queryStringChanged( const QString& queryString )
+void Nepomuk::Utils::SearchLineEdit::Private::_k_queryStringChanged( const QString& /*queryString*/ )
 {
     emit q->queryChanged( q->query() );
 }

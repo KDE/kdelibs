@@ -815,7 +815,7 @@ KACL KACLListView::getDefaultACL()
     return itemsToACL( true );
 }
 
-void KACLListView::contentsMousePressEvent( QMouseEvent * e )
+void KACLListView::contentsMousePressEvent( QMouseEvent * /*e*/ )
 {
     /*
     QTreeWidgetItem *clickedItem = itemAt( e->pos() );

@@ -737,6 +737,8 @@ void KTcpSocket::setVerificationPeerName(const QString& hostName)
 {
 #if QT_VERSION >= 0x040800
     d->sock.setPeerVerifyName(hostName);
+#else
+    Q_UNUSED(hostName);
 #endif
 }
 

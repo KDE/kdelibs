@@ -95,7 +95,7 @@ bool pluginRootGet(ExecState* exec, ScriptableExtension* ext, const KJS::Identif
     return ok;
 }
 
-bool pluginRootPut(ExecState* exec, ScriptableExtension* ext, const KJS::Identifier& i, JSValue* v)
+bool pluginRootPut(ExecState* /*exec*/, ScriptableExtension* ext, const KJS::Identifier& i, JSValue* v)
 {
     ScriptableExtension::Object rootObj = grabRoot(ext);
     if (!rootObj.owner)
@@ -114,7 +114,7 @@ bool pluginRootPut(ExecState* exec, ScriptableExtension* ext, const KJS::Identif
 
 const ClassInfo WrapScriptableObject::info = { " WrapScriptableObject", 0, 0, 0 };
 
-WrapScriptableObject::WrapScriptableObject(ExecState* exec, Type t,
+WrapScriptableObject::WrapScriptableObject(ExecState* /*exec*/, Type t,
                                            ScriptableExtension* owner, quint64 objId,
                                            const QString& field):
     objExtension(owner), objId(objId), field(field), type(t), refsByUs(1), tableKey(owner)
@@ -247,7 +247,7 @@ void WrapScriptableObject::releaseArgs(ScriptableExtension::ArgList& a)
         ScriptableOperations::releaseValue(a[p]);
 }
 
-JSValue* WrapScriptableObject::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+JSValue* WrapScriptableObject::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
 {
     QVariant res;
 
@@ -365,7 +365,7 @@ JSObject* ScriptableOperations::importObject(ExecState* exec, const QVariant& v,
 // which loses the this-binding in the native case.  We do keep the pair in the
 // external case, inside the wrapper,  since the method might not have an own
 // name, and we'd like to be able to refer to it.
-JSValue* ScriptableOperations::importFunctionRef(ExecState* exec, const QVariant& v, bool alreadyRefd)
+JSValue* ScriptableOperations::importFunctionRef(ExecState* exec, const QVariant& v, bool /*alreadyRefd*/)
 {
     ScriptableExtension::FunctionRef fr = v.value<ScriptableExtension::FunctionRef>();
 
@@ -901,7 +901,7 @@ bool KHTMLPartScriptable::isScriptLanguageSupported(ScriptLanguage lang) const
     return lang == ECMAScript;
 }
 
-bool KHTMLPartScriptable::setException(ScriptableExtension* caller,
+bool KHTMLPartScriptable::setException(ScriptableExtension* /*caller*/,
                                        const QString& message)
 {
     kWarning(6031) << "ignoring:" << message;

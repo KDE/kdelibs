@@ -1483,6 +1483,7 @@ short RenderText::baselinePosition( bool firstLine ) const
 InlineBox* RenderText::createInlineBox(bool, bool isRootLineBox)
 {
     KHTMLAssert( !isRootLineBox );
+    Q_UNUSED(isRootLineBox);
     InlineTextBox* textBox = new (renderArena()) InlineTextBox(this);
     if (!m_firstTextBox)
         m_firstTextBox = m_lastTextBox = textBox;

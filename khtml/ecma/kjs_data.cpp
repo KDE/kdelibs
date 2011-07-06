@@ -121,7 +121,7 @@ DOM::MessageEventImpl::Data* encapsulateMessageEventData(ExecState* exec, Interp
         return new JSMessageData(copy);
 }
 
-JSValue* getMessageEventData(ExecState* exec, DOM::MessageEventImpl::Data* data)
+JSValue* getMessageEventData(ExecState* /*exec*/, DOM::MessageEventImpl::Data* data)
 {
     if (data && data->messageDataType() == DOM::MessageEventImpl::JS_VALUE)
         return static_cast<JSMessageData*>(data)->m_value.get();
