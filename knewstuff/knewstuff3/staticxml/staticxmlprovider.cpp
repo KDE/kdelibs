@@ -150,7 +150,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         XmlLoader * loader = new XmlLoader(this);
         connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
-        
+
         mFeedLoaders.insert(request.sortMode, loader);
 
         loader->load(url);
@@ -192,18 +192,6 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
         kWarning() << "Loader not found!";
         emit loadingFailed(mCurrentRequest);
         return;
-    }
-
-    // we have a loader, so see which sortmode it was used for
-    QStringList::ConstIterator it;
-    SortMode mode;
-
-    foreach(const SortMode &sortMode, mFeedLoaders.keys()){
-        if (loader == mFeedLoaders.value(sortMode))
-        {
-            mode = sortMode;
-            break;
-        }
     }
 
     // load all the entries from the domdocument given
@@ -256,7 +244,7 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) co
             return false;
         }
     }
-    
+
     if (mCurrentRequest.searchTerm.isEmpty()) {
         return true;
     }
