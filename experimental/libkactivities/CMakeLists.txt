@@ -10,10 +10,11 @@ include_directories(
 set(
    kactivities_LIB_SRCS
 
-   kactivityconsumer.cpp
-   kactivitycontroller.cpp
-   kactivityinfo.cpp
-   kactivitymanager_p.cpp
+   consumer.cpp
+   controller.cpp
+   info.cpp
+   manager_p.cpp
+   resourceinstance.cpp
    )
 
 qt4_add_dbus_interface(
@@ -45,14 +46,29 @@ target_link_libraries(
 
 set(
    kactivities_LIB_HEADERS
-   kactivityconsumer.h
-   kactivitycontroller.h
-   kactivityinfo.h
+   consumer.h
+   controller.h
+   info.h
+   resourceinstance.h
+   )
+
+set(
+   kactivities_LIB_PRETTY_HEADERS
+   includes/Activities/Consumer
+   includes/Activities/Controller
+   includes/Activities/Info
+   includes/Activities/ResourceInstance
    )
 
 install(
    FILES ${kactivities_LIB_HEADERS}
-   DESTINATION ${INCLUDE_INSTALL_DIR}/
+   DESTINATION ${INCLUDE_INSTALL_DIR}/kactivities
+   COMPONENT Devel
+   )
+
+install(
+   FILES ${kactivities_LIB_PRETTY_HEADERS}
+   DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Activities
    COMPONENT Devel
    )
 

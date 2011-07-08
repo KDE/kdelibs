@@ -16,22 +16,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "kactivityconsumer.h"
-#include "kactivityconsumer_p.h"
-#include "kactivitymanager_p.h"
+#include "consumer.h"
+#include "consumer_p.h"
+#include "manager_p.h"
 
 #include <kdebug.h>
 
-KActivityConsumer::KActivityConsumer(QObject * parent)
-    : QObject(parent), d(new KActivityConsumerPrivate())
+namespace Activities {
+
+Consumer::Consumer(QObject * parent)
+    : QObject(parent), d(new ConsumerPrivate())
 {
     connect(
-        KActivityManager::self(), SIGNAL(CurrentActivityChanged(const QString &)),
+        Manager::self(), SIGNAL(CurrentActivityChanged(const QString &)),
         this,                     SIGNAL(currentActivityChanged(const QString &))
     );
 }
 
-KActivityConsumer::~KActivityConsumer()
+Consumer::~Consumer()
 {
     delete d;
 }
@@ -51,36 +53,38 @@ KActivityConsumer::~KActivityConsumer()
         return DEFAULT;                                       \
     }
 
-QString KActivityConsumer::currentActivity() const
+QString Consumer::currentActivity() const
 {
     KACTIVITYCONSUMER_DBUS_RETURN(
-        QString, KActivityManager::self()->CurrentActivity(), QString() );
+        QString, Manager::self()->CurrentActivity(), QString() );
 }
 
-QStringList KActivityConsumer::listActivities(KActivityInfo::State state) const
+QStringList Consumer::listActivities(Info::State state) const
 {
     KACTIVITYCONSUMER_DBUS_RETURN(
-        QStringList, KActivityManager::self()->ListActivities(state), QStringList() );
+        QStringList, Manager::self()->ListActivities(state), QStringList() );
 }
 
-QStringList KActivityConsumer::listActivities() const
+QStringList Consumer::listActivities() const
 {
     KACTIVITYCONSUMER_DBUS_RETURN(
-        QStringList, KActivityManager::self()->ListActivities(), QStringList() );
+        QStringList, Manager::self()->ListActivities(), QStringList() );
 }
 
 #undef KACTIVITYCONSUMER_DBUS_RETURN
 
-KActivityConsumer::ServiceStatus KActivityConsumer::serviceStatus()
+Consumer::ServiceStatus Consumer::serviceStatus()
 {
-    if (!KActivityManager::isActivityServiceRunning()) {
+    if (!Manager::isActivityServiceRunning()) {
         return NotRunning;
     }
 
-    if (!KActivityManager::self()->IsBackstoreAvailable()) {
+    if (!Manager::self()->IsBackstoreAvailable()) {
         return BareFunctionality;
     }
 
     return FullFunctionality;
 }
+
+} // namespace Activities
 

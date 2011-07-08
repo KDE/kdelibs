@@ -23,23 +23,6 @@
       <arg name="id" type="s" direction="out"/>
       <arg name="state" type="i" direction="out"/>
     </signal>
-    <signal name="ResourceAccessed">
-      <arg name="application" type="s" direction="out"/>
-      <arg name="uri" type="s" direction="out"/>
-    </signal>
-    <signal name="ResourceOpened">
-      <arg name="application" type="s" direction="out"/>
-      <arg name="windowId" type="u" direction="out"/>
-      <arg name="uri" type="s" direction="out"/>
-    </signal>
-    <signal name="ResourceModified">
-      <arg name="windowId" type="u" direction="out"/>
-      <arg name="uri" type="s" direction="out"/>
-    </signal>
-    <signal name="ResourceClosed">
-      <arg name="windowId" type="u" direction="out"/>
-      <arg name="uri" type="s" direction="out"/>
-    </signal>
     <method name="Start">
     </method>
     <method name="Stop">
@@ -102,26 +85,16 @@
     <method name="IsBackstoreAvailable">
       <arg type="b" direction="out"/>
     </method>
-    <method name="NotifyResourceAccessed">
-      <arg name="application" type="s" direction="in"/>
-      <arg name="uri" type="s" direction="in"/>
-    </method>
-    <method name="NotifyResourceOpened">
+    <method name="RegisterResourceEvent">
       <arg name="application" type="s" direction="in"/>
       <arg name="windowId" type="u" direction="in"/>
       <arg name="uri" type="s" direction="in"/>
+      <arg name="event" type="u" direction="in"/>
+      <arg name="reason" type="u" direction="in"/>
     </method>
-    <method name="NotifyResourceModified">
-      <arg name="windowId" type="u" direction="in"/>
+    <method name="RegisterResourceMimeType">
       <arg name="uri" type="s" direction="in"/>
-    </method>
-    <method name="NotifyResourceClosed">
-      <arg name="windowId" type="u" direction="in"/>
-      <arg name="uri" type="s" direction="in"/>
-    </method>
-    <method name="ActivitiesForResource">
-      <arg type="as" direction="out"/>
-      <arg name="uri" type="s" direction="in"/>
+      <arg name="mimetype" type="s" direction="in"/>
     </method>
   </interface>
 </node>

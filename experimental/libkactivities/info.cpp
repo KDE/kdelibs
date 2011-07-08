@@ -16,25 +16,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "kactivityinfo.h"
-#include "kactivityinfo_p.h"
-
 #include <kdebug.h>
 
-#include "kactivitymanager_p.h"
+#include "info.h"
+#include "info_p.h"
+#include "manager_p.h"
+
+namespace Activities {
 
 // Private
 
-KActivityInfo::Private::Private(KActivityInfo *info, const QString &activityId)
+InfoPrivate::InfoPrivate(Info *info, const QString &activityId)
     : q(info),
-      state(KActivityInfo::Invalid),
+      state(Info::Invalid),
       id(activityId)
 {
-    KActivityManager::self();
+    Manager::self();
 }
 
 #define IMPLEMENT_SIGNAL_HANDLER(ORIGINAL, INTERNAL) \
-    void KActivityInfo::Private::INTERNAL(const QString & _id) const  \
+    void InfoPrivate::INTERNAL(const QString & _id) const  \
     {                                                                 \
         if (id == _id) emit q->INTERNAL();                            \
     }
@@ -47,45 +48,45 @@ IMPLEMENT_SIGNAL_HANDLER(ActivityChanged, infoChanged)
 
 #undef IMPLEMENT_SIGNAL_HANDLER
 
-void KActivityInfo::Private::activityStateChanged(const QString & idChanged, int newState)
+void InfoPrivate::activityStateChanged(const QString & idChanged, int newState)
 {
     if (idChanged == id) {
-        state = static_cast<KActivityInfo::State>(newState);
+        state = static_cast<Info::State>(newState);
         emit q->stateChanged(state);
     }
 }
 
-// KActivityInfo
-KActivityInfo::KActivityInfo(const QString &activityId, QObject *parent)
+// Info
+Info::Info(const QString &activityId, QObject *parent)
     : QObject(parent),
-      d(new Private(this, activityId))
+      d(new InfoPrivate(this, activityId))
 {
     d->id = activityId;
-    connect(KActivityManager::self(), SIGNAL(ActivityStateChanged(const QString &, int)),
+    connect(Manager::self(), SIGNAL(ActivityStateChanged(const QString &, int)),
             this, SLOT(activityStateChanged(const QString &, int)));
 
-    connect(KActivityManager::self(), SIGNAL(ActivityChanged(const QString &)),
+    connect(Manager::self(), SIGNAL(ActivityChanged(const QString &)),
             this, SLOT(infoChanged(const QString &)));
 
-    connect(KActivityManager::self(), SIGNAL(ActivityAdded(const QString &)),
+    connect(Manager::self(), SIGNAL(ActivityAdded(const QString &)),
             this, SLOT(added(const QString &)));
 
-    connect(KActivityManager::self(), SIGNAL(ActivityRemoved(const QString &)),
+    connect(Manager::self(), SIGNAL(ActivityRemoved(const QString &)),
             this, SLOT(removed(const QString &)));
 
-    connect(KActivityManager::self(), SIGNAL(ActivityStarted(const QString &)),
+    connect(Manager::self(), SIGNAL(ActivityStarted(const QString &)),
             this, SLOT(started(const QString &)));
 
-    connect(KActivityManager::self(), SIGNAL(ActivityStopped(const QString &)),
+    connect(Manager::self(), SIGNAL(ActivityStopped(const QString &)),
             this, SLOT(stopped(const QString &)));
 }
 
-KActivityInfo::~KActivityInfo()
+Info::~Info()
 {
     delete d;
 }
 
-bool KActivityInfo::isValid() const
+bool Info::isValid() const
 {
     return (state() != Invalid);
 }
@@ -103,7 +104,7 @@ bool KActivityInfo::isValid() const
     }
 
 
-KUrl KActivityInfo::uri() const
+KUrl Info::uri() const
 {
     // TODO:
     return KUrl();
@@ -111,7 +112,7 @@ KUrl KActivityInfo::uri() const
     //     QString, KUrl, Private::s_store->uri(d->id));
 }
 
-KUrl KActivityInfo::resourceUri() const
+KUrl Info::resourceUri() const
 {
     // TODO:
     return KUrl();
@@ -119,27 +120,27 @@ KUrl KActivityInfo::resourceUri() const
     //     QString, KUrl, Private::s_store->resourceUri(d->id));
 }
 
-QString KActivityInfo::id() const
+QString Info::id() const
 {
     return d->id;
 }
 
-QString KActivityInfo::name() const
+QString Info::name() const
 {
     KACTIVITYINFO_DBUS_CAST_RETURN(
-        QString, QString, KActivityManager::self()->ActivityName(d->id));
+        QString, QString, Manager::self()->ActivityName(d->id));
 }
 
-QString KActivityInfo::icon() const
+QString Info::icon() const
 {
     KACTIVITYINFO_DBUS_CAST_RETURN(
-        QString, QString, KActivityManager::self()->ActivityIcon(d->id));
+        QString, QString, Manager::self()->ActivityIcon(d->id));
 }
 
-KActivityInfo::State KActivityInfo::state() const
+Info::State Info::state() const
 {
     if (d->state == Invalid) {
-        QDBusReply < int > dbusReply = KActivityManager::self()->ActivityState(d->id);
+        QDBusReply < int > dbusReply = Manager::self()->ActivityState(d->id);
 
         if (dbusReply.isValid()) {
             d->state = (State)(dbusReply.value());
@@ -149,26 +150,26 @@ KActivityInfo::State KActivityInfo::state() const
     return d->state;
 }
 
-QString KActivityInfo::name(const QString & id)
+QString Info::name(const QString & id)
 {
     KACTIVITYINFO_DBUS_CAST_RETURN(
-            QString, QString, KActivityManager::self()->ActivityName(id));
+            QString, QString, Manager::self()->ActivityName(id));
 }
 
 #undef KACTIVITYINFO_DBUS_CAST_RETURN
 
-KActivityInfo::Availability KActivityInfo::availability() const
+Info::Availability Info::availability() const
 {
     Availability result = Nothing;
 
-    if (!KActivityManager::isActivityServiceRunning()) {
+    if (!Manager::isActivityServiceRunning()) {
         return result;
     }
 
-    if (KActivityManager::self()->ListActivities().value().contains(d->id)) {
+    if (Manager::self()->ListActivities().value().contains(d->id)) {
         result = BasicInfo;
 
-        if (KActivityManager::self()->IsBackstoreAvailable()) {
+        if (Manager::self()->IsBackstoreAvailable()) {
             result = Everything;
         }
     }
@@ -176,5 +177,7 @@ KActivityInfo::Availability KActivityInfo::availability() const
     return result;
 }
 
-#include "kactivityinfo.moc"
+} // namespace Activities
+
+#include "info.moc"
 
