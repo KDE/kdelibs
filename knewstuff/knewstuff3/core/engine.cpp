@@ -73,6 +73,7 @@ Engine::Engine(QObject* parent)
     , m_numPictureJobs(0)
     , m_numInstallJobs(0)
     , m_atticaProviderManager(0)
+    , m_cache(0)
 {
     m_searchTimer->setSingleShot(true);
     m_searchTimer->setInterval(1000);
@@ -84,7 +85,9 @@ Engine::Engine(QObject* parent)
 
 Engine::~Engine()
 {
-    m_cache->writeRegistry();
+    if (m_cache) {
+      m_cache->writeRegistry();
+    }
     delete m_atticaProviderManager;
     delete m_searchTimer;
     delete m_installation;
