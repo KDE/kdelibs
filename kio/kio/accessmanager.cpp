@@ -37,6 +37,7 @@
 
 #include <QtCore/QUrl>
 #include <QtGui/QWidget>
+#include <QtCore/QEventLoop>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -51,6 +52,11 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
+#if QT_VERSION >= 0x040800
+static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = QNetworkRequest::SynchronousRequestAttribute;
+#else // QtWebkit hack to use the internal attribute
+static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = static_cast<QNetworkRequest::Attribute>(QNetworkRequest::HttpPipeliningWasUsedAttribute + 7);
+#endif
 
 static qint64 sizeFromRequest(const QNetworkRequest& req)
 {
@@ -316,6 +322,17 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+
+    /*
+     * NOTE: Since QtWebkit >= v2.2 no longer spins in its own even loop, we
+     * are forced to create our own local event loop here to handle the very
+     * rare but still in use synchronous XHR calls, e.g. http://webchat.freenode.net/
+     */
+    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
+        QEventLoop eventLoop;
+        connect (reply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
+        eventLoop.exec();
+    }
 
     if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
