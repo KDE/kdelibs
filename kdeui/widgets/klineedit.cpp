@@ -1116,7 +1116,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     if  ( (e->button() == Qt::LeftButton ||
            e->button() == Qt::MidButton ) &&
           d->clearButton ) {
-        d->clickInClear = d->clearButton == childAt( e->pos() );
+        d->clickInClear = ( d->clearButton == childAt(e->pos()) || d->clearButton->underMouse() );
 
         if ( d->clickInClear ) {
             d->possibleTripleClick = false;
@@ -1145,7 +1145,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     if ( d->clickInClear ) {
-        if ( d->clearButton == childAt( e->pos() ) ) {
+        if ( d->clearButton == childAt(e->pos()) || d->clearButton->underMouse() ) {
             QString newText;
             if ( e->button() == Qt::MidButton ) {
                 newText = QApplication::clipboard()->text( QClipboard::Selection );
