@@ -59,6 +59,7 @@ public:
 
     void _k_queryComponentChanged();
     void _k_listingFinished();
+    void _k_forwardCurrentChanged( const QModelIndex &, const QModelIndex &);
 
     SearchLineEdit *m_queryEdit;
     KPushButton *m_queryButton;
