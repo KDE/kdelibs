@@ -1432,7 +1432,7 @@ JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
     }
   }
 
-  JSEventListener *existingListener = jsEventListeners[QPair<void*, bool>(thisObject, html)];
+  JSEventListener *existingListener = jsEventListeners.value(QPair<void*, bool>(thisObject, html));
   if (existingListener) {
     assert( existingListener->isHTMLEventListener() == html );
     return existingListener;
