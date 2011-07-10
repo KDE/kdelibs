@@ -139,6 +139,10 @@ void AccessManagerReply::setIgnoreContentDisposition(bool on)
 void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
 {
     setError(code, message);
+    if (code != QNetworkReply::NoError) {
+        QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection, Q_ARG(QNetworkReply::NetworkError, code));
+    }
+    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
 }
 
 void AccessManagerReply::putOnHold()
