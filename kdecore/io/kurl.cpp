@@ -872,6 +872,12 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         urlWithoutHost.setHost(QString());
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
+#warning FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.
+#ifndef Q_WS_WIN
+    if (isLocalFile()) {
+        return trailingSlash(trailing, QUrl::path());
+    }
+#endif
     return trailingSlash(trailing, QUrl::toLocalFile());
 }
 
