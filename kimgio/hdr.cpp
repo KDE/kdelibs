@@ -14,7 +14,6 @@
 #include <QtCore/QDataStream>
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 typedef Q_UINT8 uchar;
 
