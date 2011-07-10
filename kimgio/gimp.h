@@ -21,7 +21,7 @@
  *
  */
 
-#include <kglobal.h>
+typedef unsigned char uchar;
 
 /*
  * These are the constants and functions I extracted from The GIMP source
