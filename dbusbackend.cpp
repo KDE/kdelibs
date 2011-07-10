@@ -66,7 +66,13 @@ void OpenSessionJob::start()
         emitResult();
     }
     else {
+        qRegisterMetaType<SecretStruct>();
+        qRegisterMetaType<StringStringMap>();
+        
         qDBusRegisterMetaType<SecretStruct>();
+        qDBusRegisterMetaType<StringStringMap>();
+        qDBusRegisterMetaType<ObjectPathSecretMap>();
+        qDBusRegisterMetaType<StringVariantMap>();
         
         serviceIf = new OrgFreedesktopSecretServiceInterface( SERVICE_NAME, 
                                                               "/org/freedesktop/secrets", 
@@ -139,6 +145,7 @@ void OpenSessionJob::openSessionFinished(QDBusPendingCallWatcher* watcher)
         setErrorText("OK");
         emitResult();
     }
+    watcher->deleteLater();
 }
 
 OrgFreedesktopSecretServiceInterface* OpenSessionJob::serviceInterface() const
@@ -183,4 +190,19 @@ bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
         secretStruct.m_value = encryptedArray.toByteArray();
     }
     return result;
+}
+
+bool DBusSession::decrypt(const SecretStruct& secretStruct, QVariant& value)
+{
+    QCA::SecureArray valueArray;
+    bool result = openSessionJob.secretCodec.decryptClient( secretStruct.m_value, secretStruct.m_parameters, valueArray );
+    if ( result ) {
+        value = valueArray.toByteArray();
+    }
+    return result;
+}
+
+OrgFreedesktopSecretServiceInterface* DBusSession::serviceIf()
+{
+    return openSessionJob.serviceIf;
 }

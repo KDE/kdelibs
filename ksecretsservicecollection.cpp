@@ -73,14 +73,12 @@ KJob* Collection::searchItems(const QStringStringMap& attributes)
 
 SearchSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return NULL;
+    return new SearchSecretsJob( this, attributes, this );
 }
 
-CreateItemJob* Collection::createItem(const QMap< QString, QString >& attributes, const Secret& secret, bool replace /* =false */)
+CreateItemJob* Collection::createItem(const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace /* =false */)
 {
-    return new CreateItemJob( this, attributes, secret, replace );
+    return new CreateItemJob( this, label, attributes, secret, replace );
 }
 
 Collection::ReadItemsJob* Collection::items() const

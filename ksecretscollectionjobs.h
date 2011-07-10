@@ -33,8 +33,10 @@ class CollectionJobPrivate;
 class RenameCollectionJobPrivate;
 class SearchItemsJobPrivate;
 class CreateItemJobPrivate;
+class SearchSecretsJobPrivate;
 
 namespace KSecretsService {
+
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -62,7 +64,8 @@ public:
         CollectionNotFound,
         CreateError,
         DeleteError,
-        RenameError
+        RenameError,
+        MissingParameterError
     };
 
     /**
@@ -151,20 +154,25 @@ class SearchSecretsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchSecretsJob)
 public:
-    explicit SearchSecretsJob( Collection* collection, QObject* parent =0 );
+    explicit SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent =0 );
     
+    virtual void start();
     QList< Secret >  secrets() const;
     
+protected Q_SLOTS:
+    virtual void onFindCollectionFinished();
+    void searchIsDone( CollectionJob::CollectionError, const QString& );
+    
 private:
-    class Private;
-    Private *d;
+    friend class ::SearchSecretsJobPrivate;
+    QSharedPointer<SearchSecretsJobPrivate> d;
 };
 
 class CreateItemJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(CreateItemJob)
 public:
-    explicit CreateItemJob( Collection* collection,  const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
+    explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     
     virtual void start();
     SecretItem item() const;
@@ -189,9 +197,6 @@ public:
 private:
     class Private;
     Private *d;
-};
-
-class SearchSecretsJob::Private {
 };
 
 class ReadItemsJob::Private {

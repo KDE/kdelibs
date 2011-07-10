@@ -34,6 +34,11 @@ typedef QMap< QString, QString > QStringStringMap;
 class SecretItemPrivate;
    
 /**
+ * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
+ * The central part of a SecretItem is the secret it holds. The secret is actually a structure named @ref SecretStruct["(SecretStruct)"]
+ * SecretItems can be qualified using attributes. These attributes are used internally by KSecretsService to uniquely identify them inside the collection.
+ * The attributes list always contain at least one item, named "Label". It's content is up to the client application.
+ * The "Label" attribute can also be read by calling the @ref attribute method and set by @ref setLabel method.
  */
 class SecretItem {
 protected:
@@ -62,6 +67,7 @@ public:
     
     /**
      * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @param attributes a map containing the new attributes; it must contain at least one attribute, under the name "Label"
      */
     void setAttributes( const QMap< QString, QString > &attributes );
 

@@ -30,6 +30,8 @@
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
 
+typedef QMap< QString, QString > StringStringMap;
+
 namespace KSecretsService {
 
 class SecretItem;
@@ -37,7 +39,6 @@ class CollectionPrivate;
 class CreateItemJob;
 class SearchSecretsJob;
 
-typedef QMap< QString, QString > QStringStringMap;
 
 class Collection : public QObject {
     Q_OBJECT
@@ -102,20 +103,23 @@ public:
     /**
      * Search for the items matching the specified attributes
      */
-    KJob * searchItems( const QStringStringMap &attributes );
+    KJob * searchItems( const StringStringMap &attributes );
     
     /**
      * Use this method to get several secrets without getting through getting items
      */
-    SearchSecretsJob * searchSecrets( const QStringStringMap &attributes );
+    SearchSecretsJob * searchSecrets( const StringStringMap &attributes );
     
     /**
      * Create a new item inside the current collection
-     * @param properties holds an map of property names / property values
+     * @param label holds the item's label; this label will be automatically added to the attributes map under the index "Label" and it'll eventually replace an existing item on that slot
+     * @param attributes holds an map of property names / property values
      * @param secret the secret the newly created item should hold
      * @param replace true if the and eventually existing secret is to be replaced by the on specified here
+     *
+     * @see SecretItem
      */
-    CreateItemJob * createItem( const QStringStringMap &attributes, const Secret &secret, bool replace =false );
+    CreateItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, bool replace =false );
 
     class ReadItemsJob;
     
@@ -170,6 +174,7 @@ private:
     friend class DeleteCollectionJob;
     friend class RenameCollectionJob;
     friend class CreateItemJob;
+    friend class SearchSecretsJob;
     
     CollectionPrivate *d;
 };

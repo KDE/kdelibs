@@ -178,6 +178,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
             findJob->finishedOk();
         }
     }
+    watcher->deleteLater();
 }
 
 void FindCollectionJobPrivate::createPromptFinished( KJob* job )
@@ -287,6 +288,7 @@ void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher*  watcher
 
     kDebug() << "callFinished with err=" << (int)err << " and msg='" << msg << "'";
     emit deleteIsDone( err, msg );
+    watcher->deleteLater();
 }
 
 
@@ -342,12 +344,101 @@ void SearchItemsJob::start()
     // TODO: implement this
 }
 
-SearchSecretsJob::SearchSecretsJob( Collection* collection, QObject* parent ) : 
-    CollectionJob( collection, parent )
+SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
+    CollectionJob( collection, parent ),
+    d( new SearchSecretsJobPrivate( collection->d, attributes ) )
 {
 }
 
+QList< Secret > SearchSecretsJob::secrets() const
+{
+    QList< Secret > result;
+    foreach( QSharedPointer< SecretPrivate > sp, d->secretsList ) {
+        result.append( Secret( sp ) );
+    }
+    return result;
+}
+
+void SearchSecretsJob::start()
+{
+    startFindCollection(); // this will trigger onFindCollectionFinished
+}
+
+void SearchSecretsJob::onFindCollectionFinished()
+{
+    connect( d.data(), SIGNAL(searchIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(searchIsDone( CollectionJob::CollectionError, const QString&)) );
+    d->startSearchSecrets();
+}
+
+void SearchSecretsJob::searchIsDone( CollectionJob::CollectionError err, const QString& msg)
+{
+    finishedWithError( err, msg );
+}
+
+SearchSecretsJobPrivate::SearchSecretsJobPrivate( CollectionPrivate *cp, const QStringStringMap &attrs, QObject *parent ) :
+    QObject( parent ),
+    collectionPrivate( cp ),
+    attributes( attrs )
+{
+}
+
+void SearchSecretsJobPrivate::startSearchSecrets()
+{
+    QDBusPendingReply<QList<QDBusObjectPath> > searchReply = collectionPrivate->collectionIf->SearchItems( attributes );
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( searchReply, this );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchSecretsReply(QDBusPendingCallWatcher*)));
+}
+
+void SearchSecretsJobPrivate::searchSecretsReply( QDBusPendingCallWatcher *watcher )
+{
+    Q_ASSERT( watcher );
+    QDBusPendingReply<QList<QDBusObjectPath> > searchReply = *watcher;
+    if ( !searchReply.isError() ) {
+        QList< QDBusObjectPath > pathList = searchReply.value();
+        kDebug() << "FOUND " << pathList.count() << " secrets";
+        if ( pathList.count() >0 ) {
+            QDBusPendingReply<ObjectPathSecretMap> getReply = DBusSession::serviceIf()->GetSecrets( pathList, DBusSession::sessionPath() );
+            QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( getReply );
+            connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(getSecretsReply(QDBusPendingCallWatcher*)) );
+        }
+        else {
+           emit searchIsDone( CollectionJob::NoError, "" ); 
+        }
+    }
+    else {
+        kDebug() << "ERROR searching items";
+        emit searchIsDone( CollectionJob::InternalError, "ERROR searching items" );
+    }
+    watcher->deleteLater();
+}
+
+void SearchSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher* watcher)
+{
+    Q_ASSERT(watcher != 0);
+    QDBusPendingReply<ObjectPathSecretMap> getReply = *watcher;
+    if ( !getReply.isError() ) {
+        foreach (SecretStruct secret, getReply.value()) {
+            SecretPrivate *sp =0;
+            if ( SecretPrivate::fromSecretStrut( secret, sp ) ) {
+                secretsList.append( QSharedPointer<SecretPrivate>( sp ) );
+            }
+            else {
+                kDebug() << "ERROR decrypting the secret";
+                emit searchIsDone( CollectionJob::InternalError, "ERROR decrypting the secret" );
+            }
+        }
+        emit searchIsDone( CollectionJob::NoError, "" );
+    }
+    else {
+        kDebug() << "ERROR trying to retrieve the secrets";
+        emit searchIsDone( CollectionJob::InternalError, "ERROR trying to retrieve the secrets" );
+    }
+    watcher->deleteLater();
+}
+
+
 CreateItemJob::CreateItemJob( Collection *collection,
+                              const QString& label,
                               const QMap< QString, QString >& attributes, 
                               const Secret& secret,
                               bool replace
@@ -355,6 +446,7 @@ CreateItemJob::CreateItemJob( Collection *collection,
             CollectionJob( collection, collection ),
             d( new CreateItemJobPrivate( collection->d, collection ) )
 {
+    d->label = label;
     d->attributes = attributes;
     d->secretPrivate = secret.d;
     d->replace = replace;
@@ -363,7 +455,11 @@ CreateItemJob::CreateItemJob( Collection *collection,
 
 void CreateItemJob::start()
 {
-    startFindCollection();
+    if ( d->label.length() == 0) {
+        finishedWithError( CollectionJob::MissingParameterError, "Please specifify an item propert" );
+    }
+    else
+        startFindCollection();
 }
 
 void CreateItemJob::onFindCollectionFinished()
@@ -386,10 +482,11 @@ CreateItemJobPrivate::CreateItemJobPrivate( CollectionPrivate *cp, QObject *pare
 void CreateItemJobPrivate::startCreateItem()
 {
     QVariantMap varMap;
-    foreach( QString attr, attributes ) {
-        QString val = attributes[ attr ];
-        varMap[ attr ] = QVariant(val);
-    }
+    varMap["Label"] = label;
+    attributes["Label"] = label;
+    QVariant varAttrs;
+    varAttrs.setValue<StringStringMap>(attributes);
+    varMap["Attributes"] = varAttrs;
     SecretStruct secretStruct;
     if ( secretPrivate->toSecretStruct( secretStruct ) ) {
         QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = collectionPrivate->collectionIf->CreateItem( varMap, secretStruct, replace );
@@ -436,6 +533,7 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
         kDebug() << "ERROR trying to create item : " << createReply.error().message();
         emit createIsDone( CollectionJob::CreateError, "Backend communication error" );
     }
+    watcher->deleteLater();
 }
 
 void CreateItemJobPrivate::createPromptFinished(KJob*)
@@ -450,12 +548,6 @@ ReadItemsJob::ReadItemsJob( Collection *collection,
 {
 }
     
-QList< Secret > SearchSecretsJob::secrets() const
-{
-    // TODO: implement this
-    return QList< Secret >();
-}
-
 PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
             KJob( parent ),
             promptPath( path ),

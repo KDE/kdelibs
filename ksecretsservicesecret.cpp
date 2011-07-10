@@ -29,25 +29,36 @@ Secret::Secret() :
 {
 }
 
-Secret::Secret( const Secret& that ) {
-    // TODO: implement this
+Secret::Secret( const Secret& that ) :
+    d( that.d )
+{
+}
+
+Secret::Secret( const QSharedPointer<SecretPrivate> &sp) :
+    d( sp )
+{
 }
 
 Secret::~Secret() {
-    // TODO: implement this
 }
 
 QVariant Secret::value() const {
-    // TODO: implement this
-    return QVariant();
+    return d->value;
 }
 
 void Secret::setValue( const QVariant &value, const QString &contentType ) {
-    // TODO: implement this
+    d->value = value;
+    d->contentType = contentType;
 }
 
-void Secret::setValue( const QVariant &value ) {
-    // TODO: implement this
+void Secret::setValue( const QVariant &val ) {
+    d->value = val;
+    d->contentType = "QVariant";
+}
+
+bool Secret::operator==(const Secret& that) const
+{
+    return *d == *that.d;
 }
 
 SecretPrivate::SecretPrivate() 
@@ -59,15 +70,43 @@ SecretPrivate::SecretPrivate( const SecretPrivate &that )
     contentType = that.contentType;
     value = that.value;
 }
-    
+
+SecretPrivate::SecretPrivate( const SecretStruct &that )
+{
+    value = that.m_value;
+    contentType = that.m_contentType;
+}
+
 SecretPrivate::~SecretPrivate() 
 {
 }
 
-bool SecretPrivate::toSecretStruct( SecretStruct &secretStruct ) const {
+bool SecretPrivate::toSecretStruct( SecretStruct &secretStruct ) const 
+{
     secretStruct.m_session = DBusSession::sessionPath();
     secretStruct.m_contentType = contentType;
     return DBusSession::encrypt( value, secretStruct );
+}
+
+bool SecretPrivate::fromSecretStrut( const SecretStruct &secretStruct, SecretPrivate*& sp)
+{
+    bool result = false;
+    sp = 0;
+    QVariant value;
+    if ( DBusSession::decrypt( secretStruct, value ) ) {
+        sp = new SecretPrivate();
+        sp->value = value;
+        sp->contentType = secretStruct.m_contentType;
+        result = true;
+    }
+    return result;
+}
+
+bool SecretPrivate::operator == ( const SecretPrivate &that )  const
+{
+    bool result = contentType == that.contentType;
+    result &= value == that.value;
+    return result;
 }
 
 }; // namespace 

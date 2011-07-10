@@ -32,6 +32,7 @@ class SecretPrivate {
 public:
     SecretPrivate();
     SecretPrivate( const SecretPrivate& that );
+    SecretPrivate( const SecretStruct& secretStruct );
     ~SecretPrivate();
 
     
@@ -40,6 +41,9 @@ public:
      * to the daemon
      */
     bool toSecretStruct( SecretStruct &secretStruct ) const;
+    static bool fromSecretStrut( const SecretStruct &secretStruct, SecretPrivate*& );
+    
+    bool operator == ( const SecretPrivate &that ) const;
 
     QString contentType;
     QVariant value;

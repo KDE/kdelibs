@@ -46,7 +46,7 @@ KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 void KSecretServiceTest::initTestCase()
 {
     // launch the daemon if it's not yet started
-/*    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
     {
         QString error;
         // FIXME: find out why this is not working
@@ -55,46 +55,52 @@ void KSecretServiceTest::initTestCase()
         
         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
                  "Secret Service was started but the service is not registered on the DBus");
-    }*/
+    }
 }
 
 void KSecretServiceTest::testCreateAndDelete()
 {
-#ifndef DONT_TEST_CREATEANDDELETE
     Collection *coll = Collection::findCollection( 0, "test collection" );
     KJob* deleteJob = coll->deleteCollection();
     deleteJob->exec();
     QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
-#endif // DONT_TEST_CREATEANDDELETE
 }
 
 void KSecretServiceTest::testRenameCollection()
 {
-#ifndef DONT_TEST_RENAMECOLLECTION
     Collection *coll = Collection::findCollection( 0, "test name1" );
     KJob *renameJob = coll->renameCollection( "test name2" );
     renameJob->exec();
     QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
     QVERIFY2( (coll->label() == "test name2"), "Collection won't change it's name!" );
-#endif // DONT_TEST_RENAMECOLLECTION
 }
 
 void KSecretServiceTest::testCreateItem()
 {
-#ifndef DONT_TEST_CREATEITEM
     Collection *coll = Collection::findCollection( 0, "test collection" );
     QStringStringMap attributes;
     attributes.insert( "test-attribute", "test-attribute-value" );
-    Secret secret;
-    secret.setValue( QVariant("test-secret") );
-    KSecretsService::CreateItemJob *createItemJob = coll->createItem( attributes, secret );
+    Secret newSecret;
+    newSecret.setValue( QVariant("test-secret"), "stringVariant" );
+    KSecretsService::CreateItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
+    
+    KSecretsService::SearchSecretsJob *searchJob = coll->searchSecrets( attributes );
+    QVERIFY2( searchJob->exec(), qPrintable( searchJob->errorText() ) );
+
+    bool found = false;
+    foreach( Secret secret, searchJob->secrets() ) {
+        if ( secret == newSecret ) {
+            found = true;
+            break;
+        }
+    }
+    QVERIFY2( found, "The new secret was not found in the collection !");
     
     // finally, delete the collection
     KJob *deleteJob = coll->deleteCollection();
     deleteJob->exec();
     QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
-#endif 
 }
 
 void KSecretServiceTest::cleanupTestCase()

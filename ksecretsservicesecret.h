@@ -32,12 +32,15 @@ class SecretPrivate;
 struct Secret {
     Secret();
     Secret( const Secret & that );
+    explicit Secret( const QSharedPointer<SecretPrivate> & sp );
     virtual ~Secret();
     
     QVariant value() const;
     
     void setValue( const QVariant &value, const QString &contentType );
     void setValue( const QVariant &value );
+    
+    bool operator == ( const Secret& that ) const;
     
 private:
     friend class CreateItemJob;

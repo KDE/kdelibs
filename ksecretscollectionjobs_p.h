@@ -135,11 +135,34 @@ Q_SIGNALS:
 public:
     CollectionPrivate                   *collectionPrivate;
     CreateItemJob                       *createItemJob;
+    QString                             label;
     QMap< QString, QString >            attributes;
     QSharedPointer< SecretPrivate >     secretPrivate;
     bool                                replace;
     SecretItem                          *item;
 };
+
+class SearchSecretsJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(SearchSecretsJobPrivate)
+public:
+    explicit SearchSecretsJobPrivate( CollectionPrivate*, const QStringStringMap &attrs, QObject *parent =0);
+    
+    void startSearchSecrets();
+    
+protected Q_SLOTS:
+    void searchSecretsReply(QDBusPendingCallWatcher*);
+    void getSecretsReply(QDBusPendingCallWatcher*);
+    
+Q_SIGNALS:
+    void searchIsDone( CollectionJob::CollectionError, const QString& );
+    
+public:
+    CollectionPrivate   *collectionPrivate;
+    QStringStringMap    attributes;
+    QList< QSharedPointer<SecretPrivate> > secretsList;
+};
+
 
 class PromptJob : public KJob {
     Q_OBJECT
