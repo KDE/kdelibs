@@ -195,7 +195,10 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
 
     // FIXME: ### make this more useful, i.e. outsource to separate file
-    defMap.insert( "DomXml", input.readEntry( "DomXML" ).replace( '\"', "\\\"" ) );
+    defMap.insert( "DomXml", input.readEntry( "DomXML",
+                QString("<widget class=\"%1\" name=\"%2\"/>").
+                arg(name,name.toLower())
+                ).replace( '\"', "\\\"" ));
     defMap.insert( "CodeTemplate", input.readEntry( "CodeTemplate" ) );
     defMap.insert( "CreateWidget", input.readEntry( "CreateWidget",
       QString( "\n\t\treturn new %1%2;" )
