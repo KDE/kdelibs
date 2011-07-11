@@ -70,6 +70,7 @@ KDECORE_UNIT_TESTS(
  qcoreapptest
  kdebug_qcoreapptest
  kmimetype_nomimetypes
+ kmd5benchmark
 )
 
 if(NOT KDE_NO_DEPRECATED)

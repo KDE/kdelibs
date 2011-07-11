@@ -211,14 +211,13 @@ public:
    /**
     * Enables/disables the popup (context) menu.
     *
-    * Note that when this function is invoked with its argument
-    * set to @p true, then both the context menu and the completion
-    * menu item are enabled.  If you do not want to the completion
-    * item to be visible simply invoke hideModechanger() right
-    * after calling this method.  Also by default, the context
-    * menu is automatically created if this widget is editable. Thus
-    * you need to call this function with the argument set to false
-    * if you do not want this behavior.
+    * This method only works if this widget is editable, i.e. read-write and
+    * allows you to enable/disable the context menu. It does nothing if invoked
+    * for a none-editable combo-box.
+    *
+    * By default, the context menu is created if this widget is editable.
+    * Call this function with the argument set to false to disable the popup
+    * menu.
     *
     * @param showMenu If @p true, show the context menu.
     * @deprecated use setContextMenuPolicy

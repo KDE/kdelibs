@@ -281,9 +281,9 @@ namespace KJSEmbed
 
     /**
     * Method callback signature.
-    * @arg exec - The execution state.
-    * @arg object - The current object that the method is working on (equivelent of "this")
-    * @arg args - A KJS::List of KJS::JSValue objects that represents the arguments that where
+    * @param exec The execution state.
+    * @param object The current object that the method is working on (equivelent of "this")
+    * @param args A KJS::List of KJS::JSValue objects that represents the arguments that where
     * passed in from the javascript function signature.
     */
     typedef KJS::JSValue *(*callMethod)(KJS::ExecState*, KJS::JSObject *, const KJS::List&);
@@ -328,16 +328,16 @@ namespace KJSEmbed
 
     /**
     * Bind signature
-    * @arg exec - the execution context
-    * @arg ptr - A PointerBase that points to a Pointer object that contains
+    * @param exec the execution context
+    * @param ptr A PointerBase that points to a Pointer object that contains
     * a pointer to the object to provide a javascript binding for.
     */
     typedef KJS::JSObject *(*callBind)(KJS::ExecState*, PointerBase&);
 
     /**
     * Constructor signature
-    * @arg exec - the execution context
-    * @arg args - A KJS::List of KJS::JSValue objects that represents the arguments that where
+    * @param exec the execution context
+    * @param args A KJS::List of KJS::JSValue objects that represents the arguments that where
     * passed in from the javascript function signature.
     */
     typedef KJS::JSObject *(*callConstructor)(KJS::ExecState*, const KJS::List&);

@@ -63,7 +63,7 @@ namespace KIO {
      * Example:
      * \code
      *    TransferJob *job = KIO::get(KUrl("http://www.kde.org"));
-     *    KIO::Scheduler::scheduleJob(job);
+     *    KIO::Scheduler::setJobPriority(job, 1);
      * \endcode
      *
      * <h3>3. Connection Oriented</h3>
@@ -114,14 +114,15 @@ namespace KIO {
         /**
          * Register @p job with the scheduler.
          * The default is to create a new slave for the job if no slave
-         * is available. This can be changed by calling scheduleJob.
+         * is available. This can be changed by calling setJobPriority.
          * @param job the job to register
          */
         static void doJob(SimpleJob *job);
 
         /**
-         * Schedules @p job scheduled for later
-         * execution. This just sets the job's priority to 1 now.
+         * Schedules @p job scheduled for later execution.
+         * This method is deprecated and just sets the job's priority to 1. It is
+         * recommended to replace calls to scheduleJob(job) with setJobPriority(job, 1).
          * @param job the job to schedule
          */
 #ifndef KDE_NO_DEPRECATED
@@ -271,6 +272,13 @@ namespace KIO {
          * @since 4.7
          */
         static bool isSlaveOnHoldFor(const KUrl& url);
+
+        /**
+         * Updates the internal metadata from job.
+         *
+         * @since 4.6.5
+         */
+        static void updateInternalMetaData(SimpleJob* job);
 
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);

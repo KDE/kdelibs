@@ -984,6 +984,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 @begin HTMLAnchorElementProtoTable 3
   click		KJS::HTMLElement::AnchorClick		DontDelete|Function 0
+  toString      KJS::HTMLElement::AnchorToString        DontDelete|Function 0
 @end
 @begin HTMLImageElementTable 15
   name		KJS::HTMLElement::ImageName		DontDelete
@@ -2257,6 +2258,8 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       if (id == KJS::HTMLElement::AnchorClick) {
         anchor.click();
         return jsUndefined();
+      } else if (id == KJS::HTMLElement::AnchorToString) {
+        return jsString(static_cast<KJS::HTMLElement *>(thisObj)->toString(exec));
       }
     }
     break;

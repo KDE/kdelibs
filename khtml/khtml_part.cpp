@@ -1627,6 +1627,8 @@ DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
 void KHTMLPart::slotInfoMessage(KJob* kio_job, const QString& msg)
 {
   assert(d->m_job == kio_job);
+  Q_ASSERT(kio_job);
+  Q_UNUSED(kio_job);
 
   if (!parentPart())
     setStatusBarText(msg, BarDefaultText);
@@ -1640,6 +1642,8 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
   assert ( d->m_job == kio_job );
+  Q_ASSERT(kio_job);
+  Q_UNUSED(kio_job);
 
   //kDebug( 6050 ) << "slotData: " << data.size();
   // The first data ?
@@ -4126,7 +4130,7 @@ KParts::ScriptableExtension *KHTMLPart::scriptableExtension( const DOM::NodeImpl
     return 0L;
 }
 
-bool KHTMLPart::loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
+void KHTMLPart::loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
                                   const QString &frameName, const QStringList &params, bool isIFrame )
 {
     //kDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )";
@@ -4160,20 +4164,18 @@ bool KHTMLPart::loadFrameElement( DOM::HTMLPartContainerElementImpl *frame, cons
         // ### load event on the kid?
         navigateLocalProtocol(child, part, KUrl("about:blank"));
         connectToChildPart(child, part, "text/html" /* mimetype of the part, not what's being loaded */);
-  }
+    }
 
-  KUrl u = url.isEmpty() ? KUrl() : completeURL( url );
+    KUrl u = url.isEmpty() ? KUrl() : completeURL( url );
 
-  // Since we don't specify args here a KHTMLRun will be used to determine the
-  // mimetype, which will then be  passed down at the bottom of processObjectRequest
-  // inside URLArgs to the part. In our particular case, this means that we can
-  // use that inside KHTMLPart::openUrl to route things appropriately.
-  child->m_bCompleted = false;
-  if (!requestObject( child, u ) && !child->m_run) {
-      child->m_bCompleted = true;
-      return false;
-  }
-  return true;
+    // Since we don't specify args here a KHTMLRun will be used to determine the
+    // mimetype, which will then be  passed down at the bottom of processObjectRequest
+    // inside URLArgs to the part. In our particular case, this means that we can
+    // use that inside KHTMLPart::openUrl to route things appropriately.
+    child->m_bCompleted = false;
+    if (!requestObject( child, u ) && !child->m_run) {
+        child->m_bCompleted = true;
+    }
 }
 
 QString KHTMLPart::requestFrameName()
@@ -4294,11 +4296,12 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     // though -> the reference becomes invalid -> crash is likely
     KUrl url( _url );
 
-    // If we are not permitting anything remote, or khtmlrun called us with
-    // empty url + mimetype to indicate a loading error, we obviosuly failed
+    // khtmlrun called us with empty url + mimetype to indicate a loading error,
+    // we obviosuly failed; but we can return true here since we don't want it
+    // doing anything more, while childLoadFailure is enough to notify our kid.
     if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) ) {
         childLoadFailure(child);
-        return false;
+        return true;
     }
 
     // we also want to ignore any spurious requests due to closing when parser is being cleared. These should be

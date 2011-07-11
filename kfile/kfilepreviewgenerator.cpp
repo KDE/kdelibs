@@ -480,11 +480,20 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     connect(m_changedItemsTimer, SIGNAL(timeout()),
             q, SLOT(delayedIconUpdate()));
 
-    const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+    KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
     m_enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
                                                          << "directorythumbnail"
                                                          << "imagethumbnail"
                                                          << "jpegthumbnail");
+
+    // If the user is upgrading from KDE <= 4.6, we must check if he had the 'jpegrotatedthumbnail' plugin enabled.
+    // This plugin does not exist any more in KDE >= 4.7, so we have to replace it with the 'jpegthumbnail' plugin.
+    if(m_enabledPlugins.contains(QLatin1String("jpegrotatedthumbnail"))) {
+        m_enabledPlugins.removeAll(QLatin1String("jpegrotatedthumbnail"));
+        m_enabledPlugins.append(QLatin1String("jpegthumbnail"));
+        globalConfig.writeEntry("Plugins", m_enabledPlugins);
+        globalConfig.sync();
+    }
 }
 
 KFilePreviewGenerator::Private::~Private()
@@ -644,6 +653,8 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
         icon = iconEffect->apply(icon, KIconLoader::Desktop, KIconLoader::DisabledState);
     }
+
+    KIconLoader::global()->drawOverlays(item.overlays(), icon, KIconLoader::Desktop);
 
     // remember the preview and URL, so that it can be applied to the model
     // in KFilePreviewGenerator::dispatchIconUpdateQueue()

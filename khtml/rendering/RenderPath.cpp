@@ -51,7 +51,7 @@ namespace WebCore {
 RenderPath::RenderPath(RenderStyle* style, SVGStyledTransformableElement* node)
     : RenderObject(node)
 {
-    ASSERT(style != 0);
+    ASSERT(style != 0); Q_UNUSED(style);
     ASSERT(static_cast<SVGElement*>(node)->isStyledTransformable());
 }
 

@@ -340,9 +340,19 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
         } else {
             const KService::Ptr htmlApp = KMimeTypeTrader::self()->preferredService(QLatin1String("text/html"));
             if (htmlApp) {
+                // WORKAROUND: For bugs 264562 and 265474:
+                // In order to correctly handle non-HTML urls we change the service
+                // desktop file name to "kfmclient.desktop" whenever the above query
+                // returns "kfmclient_html.desktop".Otherwise, the hard coded mime-type
+                // "text/html" mime-type parameter in the kfmclient_html will cause all
+                // URLs to be treated as if they are HTML page.
+                QString entryPath = htmlApp->entryPath();
+                if (entryPath.endsWith(QLatin1String("kfmclient_html.desktop"))) {
+                    entryPath.remove(entryPath.length()-13, 5);
+                }
                 QString error;
                 int pid = 0;
-                int err = startServiceByDesktopPath(htmlApp->entryPath(), url, &error, 0, &pid, startup_id);
+                int err = startServiceByDesktopPath(entryPath, url, &error, 0, &pid, startup_id);
                 if (err != 0) {
                     KMessage::message(KMessage::Error,
                                       // TODO: i18n("Could not launch %1:\n\n%2", htmlApp->exec(), error),

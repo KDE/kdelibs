@@ -40,6 +40,9 @@ QTEST_KDEMAIN_CORE( KUrlTest )
 #include <stdio.h>
 #include <stdlib.h>
 
+//QCOMPARE cannot be used to strictly check for empty or null QString as it treats QString("") == QString()
+#define QSTREMPTY(_str) QVERIFY(!_str.isNull() && _str.isEmpty())
+
 void KUrlTest::testEmptyURL()
 {
   KUrl emptyURL;
@@ -106,6 +109,23 @@ void KUrlTest::testSetQuery()
   QCOMPARE( url1.query(), QString() );
 }
 
+void KUrlTest::testEmptyNullReference()
+{
+  KUrl url1 = KUrl("http://www.kde.org");
+  QVERIFY( !url1.hasRef() );
+  QVERIFY( !url1.hasHTMLRef() );
+  QVERIFY( url1.ref().isNull() );
+  QVERIFY( url1.htmlRef().isNull() );
+  QVERIFY( url1.encodedHtmlRef().isNull() );
+
+  url1 = "http://www.kde.org#";
+  QVERIFY( url1.hasRef() );
+  QVERIFY( url1.hasHTMLRef() );
+  QSTREMPTY( url1.ref() );
+  QSTREMPTY( url1.htmlRef() );
+  QSTREMPTY( url1.encodedHtmlRef() );
+}
+
 void KUrlTest::testSetRef()
 {
   KUrl url1 = KUrl( QByteArray( "http://www.kde.org/foo.cgi#foo=bar" ) );
@@ -119,9 +139,9 @@ void KUrlTest::testSetRef()
   QCOMPARE( url1.ref(), QString("#" ) );
 #endif
   url1.setRef( "" );
-  QCOMPARE( url1.ref(), QString("" ) );
+  QSTREMPTY( url1.ref() );
   url1.setRef( QString() );
-  QCOMPARE( url1.ref(), QString() );
+  QVERIFY( url1.ref().isNull() );
 }
 
 void KUrlTest::testSetHTMLRef()
@@ -136,9 +156,9 @@ void KUrlTest::testSetHTMLRef()
   QCOMPARE( url1.htmlRef(), QString("#") );
   QCOMPARE( url1.ref(), QString("%23") ); // it's encoded
   url1.setHTMLRef( "" );
-  QCOMPARE( url1.htmlRef(), QString("") );
+  QSTREMPTY( url1.htmlRef() );
   url1.setHTMLRef( QString() );
-  QCOMPARE( url1.htmlRef(), QString() );
+  QVERIFY( url1.htmlRef().isNull() );
 }
 
 void KUrlTest::testQUrl()
@@ -412,7 +432,7 @@ void KUrlTest::testEmptyQueryOrRef()
   QVERIFY( waba1.hasRef() );
   QVERIFY( waba1.hasFragment() );
   QVERIFY( waba1.hasHTMLRef() );
-  QCOMPARE( waba1.encodedHtmlRef(), QString() );
+  QSTREMPTY( waba1.encodedHtmlRef() );
   //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
   //QCOMPARE( qurl.toEncoded(), QByteArray("http://www.kde.org/cgi/test.cgi#") );
 
@@ -1240,7 +1260,7 @@ void KUrlTest::testSubURL()
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
-  QCOMPARE( url1.htmlRef(), QString("") );
+  QVERIFY( url1.htmlRef().isNull() );
   QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
   u1 = "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
@@ -1249,7 +1269,7 @@ void KUrlTest::testSubURL()
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
-  QCOMPARE( url1.htmlRef(), QString("") );
+  QVERIFY( url1.htmlRef().isNull() );
   QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
 #if 0
@@ -1260,7 +1280,7 @@ void KUrlTest::testSubURL()
   QVERIFY( !url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
-  QCOMPARE( url1.htmlRef(), QString("") );
+  QVERIFY( url1.htmlRef().isNull() );
   QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
 #endif
 
@@ -1270,7 +1290,7 @@ void KUrlTest::testSubURL()
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
-  QCOMPARE( url1.htmlRef(), QString("") );
+  QVERIFY( url1.htmlRef().isNull() );
   const KUrl::List url1Splitted = KUrl::split( url1 );
   QCOMPARE( url1Splitted.count(), 3 );
   //kDebug() << url1Splitted.toStringList();

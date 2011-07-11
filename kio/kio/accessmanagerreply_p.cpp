@@ -35,15 +35,14 @@
 #define QL1S(x)  QLatin1String(x)
 #define QL1C(x)  QLatin1Char(x)
 
+namespace KDEPrivate {
 
-static bool isLocalRequest(const KUrl& url)
+bool AccessManager_isLocalRequest(const KUrl& url)
 {
     const QString scheme (url.protocol());
     return (KProtocolInfo::isKnownProtocol(scheme) &&
             KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
 }
-
-namespace KDEPrivate {
 
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
                                        const QNetworkRequest &request,
@@ -140,6 +139,10 @@ void AccessManagerReply::setIgnoreContentDisposition(bool on)
 void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
 {
     setError(code, message);
+    if (code != QNetworkReply::NoError) {
+        QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection, Q_ARG(QNetworkReply::NetworkError, code));
+    }
+    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
 }
 
 void AccessManagerReply::putOnHold()
@@ -148,7 +151,9 @@ void AccessManagerReply::putOnHold()
         return;
 
     // kDebug(7044) << m_kioJob << m_data;
+    m_kioJob->disconnect(this);
     m_kioJob->putOnHold();
+    m_kioJob = 0;
     KIO::Scheduler::publishSlaveOnHold();
 }
 
@@ -160,7 +165,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     const KIO::MetaData& metaData = job->metaData();
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
-        if (isLocalRequest(url())) {
+        if (AccessManager_isLocalRequest(url())) {
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
             emit metaDataChanged();
@@ -205,6 +210,11 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
         const QString headerName = httpHeader.left(index);
         QString headerValue = httpHeader.mid(index+1);
+
+        // Ignore cookie header since it is handled by the http ioslave.
+        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive)) {
+            continue;
+        }
 
         if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
             ignoreContentDisposition(job)) {

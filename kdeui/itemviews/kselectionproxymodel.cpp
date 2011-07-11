@@ -1248,6 +1248,7 @@ static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersist
 {
     if (!startWithChildTrees) {
         Q_ASSERT(rootIndexList.size() > row);
+        Q_UNUSED(rootIndexList);
     } else {
 
         Q_ASSERT(!mappedFirstChildren.isEmpty());

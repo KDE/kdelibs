@@ -277,15 +277,13 @@ public:
     /**
     * Enables or disable the popup (context) menu.
     *
-    * This method only works if this widget is editable, i.e.
-    * read-write and allows you to enable/disable the context
-    * menu.  It does nothing if invoked for a none-editable
-    * combo-box.  Note that by default the mode changer item
-    * is made visiable whenever the context menu is enabled.
-    * Use hideModechanger() if you want to hide this
-    * item.    Also by default, the context menu is created if
-    * this widget is editable. Call this function with the
-    * argument set to false to disable the popup menu.
+    * This method only works if this widget is editable, i.e. read-write and
+    * allows you to enable/disable the context menu. It does nothing if invoked
+    * for a none-editable combo-box.
+    *
+    * By default, the context menu is created if this widget is editable.
+    * Call this function with the argument set to false to disable the popup
+    * menu.
     *
     * @param showMenu If @p true, show the context menu.
     * @deprecated use setContextMenuPolicy

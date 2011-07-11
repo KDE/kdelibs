@@ -42,6 +42,14 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
 # Configure a small file to tell BackendsManager what to use
 configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
 
+# Configure checks for localization
+configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
+
+# Configure checks for util
+include(util/ConfigureChecks.cmake)
+configure_file(util/config-util.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-util.h)
+
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
@@ -530,6 +538,7 @@ install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    kdecore_export.h
    compression/kfilterbase.h
+   compression/karchive_export.h
    compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h

@@ -463,7 +463,8 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
         if( width < 24 || height < 24 )
             size = ICON_SMALL;
         HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
-        pm = QPixmap::fromWinHICON( hIcon );
+        if(hIcon != NULL)
+            pm = QPixmap::fromWinHICON( hIcon );
     }
     if( scale )
         pm = pm.scaled( width, height );

@@ -16,8 +16,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIVITY_INFO_H
-#define ACTIVITY_INFO_H
+#ifndef ACTIVITIES_INFO_H_
+#define ACTIVITIES_INFO_H_
 
 #include <QObject>
 #include <QWidget>
@@ -27,15 +27,19 @@
 #include <kurl.h>
 #include <kdemacros.h>
 
+namespace Activities {
+
+class InfoPrivate;
+
 /**
  * This class provides info about an activity. Most methods in it
  * require a Nepomuk backend running.
  *
- * @see KActivityConsumer for info about activities
+ * @see Consumer for info about activities
  *
  * @since 4.5
  */
-class KDE_EXPORT KActivityInfo: public QObject
+class KDE_EXPORT Info: public QObject
 {
     Q_OBJECT
 
@@ -45,8 +49,8 @@ class KDE_EXPORT KActivityInfo: public QObject
     Q_PROPERTY(QString name READ name)
 
 public:
-    explicit KActivityInfo(const QString & activityId, QObject *parent=0);
-    ~KActivityInfo();
+    explicit Info(const QString & activityId, QObject *parent=0);
+    ~Info();
 
     /**
      * @return true if the activity represented by this object exists and is valid
@@ -74,7 +78,7 @@ public:
     };
 
     /**
-     * @returns what info is provided by this instance of KActivityInfo
+     * @returns what info is provided by this instance of Info
      */
     Availability availability() const;
 
@@ -152,11 +156,10 @@ Q_SIGNALS:
      * Emitted when the activity changes state
      * @param state new state of the activity
      */
-    void stateChanged(KActivityInfo::State state);
+    void stateChanged(Info::State state);
 
 private:
-    class Private;
-    Private * const d;
+    InfoPrivate * const d;
 
     Q_PRIVATE_SLOT(d, void activityStateChanged(const QString &, int))
     Q_PRIVATE_SLOT(d, void added(const QString &))
@@ -164,6 +167,10 @@ private:
     Q_PRIVATE_SLOT(d, void started(const QString &))
     Q_PRIVATE_SLOT(d, void stopped(const QString &))
     Q_PRIVATE_SLOT(d, void infoChanged(const QString &))
+
+    friend class InfoPrivate;
 };
 
-#endif // ACTIVITY_INFO_H
+} // namespace Activities
+
+#endif // ACTIVITIES_INFO_H_

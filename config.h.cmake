@@ -12,9 +12,6 @@
 
 /****************************/
 
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#cmakedefine   HAVE_DLFCN_H 1
-
 /* Define to 1 if you have stdio.h */
 #cmakedefine   HAVE_STDIO_H 1
 
@@ -53,13 +50,8 @@
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
-#cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_UNISTD_H 1
-#cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
-#cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
-#cmakedefine HAVE_LANGINFO_H 1
 
 #cmakedefine HAVE_XTEST 1
 
@@ -73,7 +65,6 @@
 #cmakedefine HAVE_XRENDER 1
 
 #cmakedefine   HAVE_BACKTRACE 1
-#cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_INITGROUPS 1
@@ -84,7 +75,6 @@
 #cmakedefine   HAVE_MKSTEMP 1
 #cmakedefine   HAVE_MKDTEMP 1
 #cmakedefine   HAVE_RANDOM 1
-#cmakedefine   HAVE_READDIR_R 1
 #cmakedefine   HAVE_SENDFILE 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1

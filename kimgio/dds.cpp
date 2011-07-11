@@ -25,7 +25,6 @@
 #include <QtGui/QImage>
 #include <QtCore/QDataStream>
 
-#include <kglobal.h>
 #include <kdebug.h>
 
 #include <math.h> // sqrtf

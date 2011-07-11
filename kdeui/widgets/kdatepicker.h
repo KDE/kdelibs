@@ -7,12 +7,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -98,25 +98,25 @@ public:
 
     /**
      * Returns the currently selected calendar system.
-     * 
+     *
      * @returns a KCalendarSystem object
      */
     const KCalendarSystem *calendar() const;
 
     /**
      * Changes the calendar system to use.  Can use its own local locale if set.
-     * 
+     *
      * @param calendar the calendar system object to use, defaults to global
-     * 
+     *
      * @return @c true if the calendar system was successfully set, @c false otherwise
      */
     bool setCalendar( KCalendarSystem *calendar = 0 );
 
     /**
      * Changes the calendar system to use.  Will always use global locale.
-     * 
+     *
      * @param calendarType the calendar system type to use
-     * 
+     *
      * @return @c true if the calendar system was successfully set, @c false otherwise
      */
     bool setCalendar( const QString &calendarType );

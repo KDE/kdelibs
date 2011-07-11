@@ -1,7 +1,8 @@
 # Once done this will define
 #
 #  NEPOMUK_FOUND - system has Nepomuk
-#  NEPOMUK_INCLUDE_DIR - the Nepomuk include directory
+#  NEPOMUK_INCLUDE_DIRS - all include directories needed to compile Nepomuk
+#  NEPOMUK_INCLUDE_DIR - the Nepomuk include directory (do not use. only for compatibility)
 #  NEPOMUK_LIBRARIES - Link these to use Nepomuk
 #  NEPOMUK_QUERY_LIBRARIES - Link these to use Nepomuk query
 #  NEPOMUK_UTILS_LIBRARIES - Link these to use Nepomuk utils
@@ -18,15 +19,11 @@
 
 
 if (NOT DEFINED Soprano_FOUND)
-  find_package(Soprano ${SOPRANO_MIN_VERSION})
-  include(MacroLogFeature)
-  macro_log_feature(Soprano_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
+    find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_REDLANDBACKEND PLUGIN_RAPTORPARSER)
 endif (NOT DEFINED Soprano_FOUND)
 
 if (NOT DEFINED SHAREDDESKTOPONTOLOGIES_FOUND)
   find_package(SharedDesktopOntologies)
-  include(MacroLogFeature)
-  macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "" "")
 endif (NOT DEFINED SHAREDDESKTOPONTOLOGIES_FOUND)
 
 # Check for the following stuff independent from whether soprano has been found
@@ -39,6 +36,11 @@ find_path(NEPOMUK_INCLUDE_DIR
   ${INCLUDE_INSTALL_DIR}
   )
 
+set(NEPOMUK_INCLUDE_DIRS ${NEPOMUK_INCLUDE_DIR} ${SOPRANO_INCLUDE_DIR}
+  CACHE
+  STRING
+  "include directories needed for nepomuk")
+
 find_library(NEPOMUK_LIBRARIES
   NAMES
   nepomuk
@@ -46,6 +48,8 @@ find_library(NEPOMUK_LIBRARIES
   ${KDE4_LIB_DIR}
   ${LIB_INSTALL_DIR}
   )
+
+set(NEPOMUK_LIBRARIES ${NEPOMUK_LIBRARIES} ${SOPRANO_LIBRARIES})
 
 find_library(NEPOMUK_QUERY_LIBRARIES
   NAMES
@@ -70,7 +74,7 @@ find_file(NEPOMUK_ADDONTOLOGYCLASSES_FILE NepomukAddOntologyClasses.cmake
 
 include("${NEPOMUK_ADDONTOLOGYCLASSES_FILE}" OPTIONAL)
 
-mark_as_advanced(NEPOMUK_INCLUDE_DIR NEPOMUK_LIBRARIES NEPOMUK_QUERY_LIBRARIES NEPOMUK_UTILS_LIBRARIES NEPOMUK_ADDONTOLOGIES_FILE)
+mark_as_advanced(NEPOMUK_INCLUDE_DIR NEPOMUK_INCLUDE_DIRS NEPOMUK_LIBRARIES NEPOMUK_QUERY_LIBRARIES NEPOMUK_UTILS_LIBRARIES NEPOMUK_ADDONTOLOGIES_FILE)
 
 include(FindPackageHandleStandardArgs)
 # List all nepomuk and also all necessary soprano variables here, to make it
@@ -78,7 +82,7 @@ include(FindPackageHandleStandardArgs)
 if(NOT WINCE)
 find_package_handle_standard_args(Nepomuk  DEFAULT_MSG
                                   NEPOMUK_LIBRARIES NEPOMUK_INCLUDE_DIR NEPOMUK_ADDONTOLOGYCLASSES_FILE
-                                  Soprano_FOUND SOPRANO_PLUGIN_RAPTORPARSER_FOUND SOPRANO_PLUGIN_REDLANDBACKEND_FOUND
+                                  Soprano_FOUND
                                   SHAREDDESKTOPONTOLOGIES_FOUND
                                   )
 else(NOT WINCE)

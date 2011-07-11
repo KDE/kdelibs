@@ -112,44 +112,6 @@ public:
     }
 
 
-    bool isShiftAsModifierAllowed(int keyQt)
-    {
-        // Shift only works as a modifier with certain keys. It's not possible
-        // to enter the SHIFT+5 key sequence for me because this is handled as
-        // '%' by qt on my keyboard.
-        // The working keys are all hardcoded here :-(
-        if (keyQt >= Qt::Key_F1 && keyQt <= Qt::Key_F35)
-            return true;
-
-        if (QChar(keyQt).isLetter())
-            return true;
-
-        switch (keyQt) {
-            case Qt::Key_Return:
-            case Qt::Key_Space:
-            case Qt::Key_Backspace:
-            case Qt::Key_Escape:
-            case Qt::Key_Print:
-            case Qt::Key_ScrollLock:
-            case Qt::Key_Pause:
-            case Qt::Key_PageUp:
-            case Qt::Key_PageDown:
-            case Qt::Key_Insert:
-            case Qt::Key_Delete:
-            case Qt::Key_Home:
-            case Qt::Key_End:
-            case Qt::Key_Up:
-            case Qt::Key_Down:
-            case Qt::Key_Left:
-            case Qt::Key_Right:
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-
     bool promptStealShortcutSystemwide(
             QWidget *parent,
             const QHash<QKeySequence, QList<KGlobalShortcutInfo> > &shortcuts,
@@ -796,7 +758,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
             if ((keyQt == Qt::Key_Backtab) && (d->modifierKeys & Qt::SHIFT)) {
                 keyQt = Qt::Key_Tab | d->modifierKeys;
             }
-            else if (d->isShiftAsModifierAllowed(keyQt)) {
+            else if (KKeyServer::isShiftAsModifierAllowed(keyQt)) {
                 keyQt |= d->modifierKeys;
             }
             else

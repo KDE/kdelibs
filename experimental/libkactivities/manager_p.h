@@ -17,17 +17,19 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef ACTIVITY_MANAGER_P_
-#define ACTIVITY_MANAGER_P_
+#ifndef ACTIVITIES_MANAGER_P_
+#define ACTIVITIES_MANAGER_P_
 
 #include "activitymanager_interface.h"
 
 #include <QDBusServiceWatcher>
 
-class KActivityManager: public org::kde::ActivityManager {
+namespace Activities {
+
+class Manager: public org::kde::ActivityManager {
     Q_OBJECT
 public:
-    static KActivityManager * self();
+    static Manager * self();
 
     static bool isActivityServiceRunning();
 
@@ -38,12 +40,13 @@ Q_SIGNALS:
     void presenceChanged(bool present);
 
 private:
-    KActivityManager();
+    Manager();
 
     QDBusServiceWatcher m_watcher;
 
-    static KActivityManager * s_instance;
+    static Manager * s_instance;
 };
 
+} // namespace Activities
 
-#endif // ACTIVITY_MANAGER_P_
+#endif // ACTIVITIES_MANAGER_P_

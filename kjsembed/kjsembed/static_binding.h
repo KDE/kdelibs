@@ -52,8 +52,8 @@ public:
     /**
     * Publishes an array of Methods to an object.  You should only ever need this method
     * to add methods to a binding.
-    * @arg object - the object to add the methods to
-    * @arg methods - an array of Method objects.
+    * @param object the object to add the methods to
+    * @param methods an array of Method objects.
     */
     static void publish( KJS::ExecState *exec, KJS::JSObject *object, const Method *methods );
 

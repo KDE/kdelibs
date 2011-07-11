@@ -1,10 +1,18 @@
 project(kdeclarative)
 
+if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+    set(KDECLARATIVE_NO_KIO TRUE)
+endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kdeclarative.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeclarative.h)
+
+
 include_directories(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_BINARY_DIR}
    ${KDE4_INCLUDES}
    ${KDE4_KIO_INCLUDES}
+   ${CMAKE_SOURCE_DIR}/kio
    )
 
 set(kdeclarative_LIB_SRCS

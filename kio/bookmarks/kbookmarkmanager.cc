@@ -648,7 +648,7 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url )
     return true;
 }
 
-void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl )
+void KBookmarkManager::updateFavicon( const QString &url, const QString &/*faviconurl*/ )
 {
     d->m_map.update(this);
     QList<KBookmark> list = d->m_map.find(url);

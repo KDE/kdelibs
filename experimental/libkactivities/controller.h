@@ -16,37 +16,41 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIVITY_CONTROLLER_H
-#define ACTIVITY_CONTROLLER_H
+#ifndef ACTIVITIES_CONTROLLER_H_
+#define ACTIVITIES_CONTROLLER_H_
 
 #include <QObject>
 #include <QWidget>
 #include <QString>
 #include <QStringList>
 
-#include "kactivityconsumer.h"
+#include "consumer.h"
 
 #include <kurl.h>
 #include <kdemacros.h>
+
+namespace Activities {
+
+class ControllerPrivate;
 
 /**
  * This class provides methods for controlling and managing
  * the activities.
  *
- * @see KActivityConsumer for info about activities
+ * @see Consumer for info about activities
  *
  * @since 4.5
  */
-class KDE_EXPORT KActivityController: public KActivityConsumer
+class KDE_EXPORT Controller: public Consumer
 {
     Q_OBJECT
 
     Q_PROPERTY(QString currentActivity READ currentActivity WRITE setCurrentActivity)
 
 public:
-    explicit KActivityController(QObject * parent = 0);
+    explicit Controller(QObject * parent = 0);
 
-    ~KActivityController();
+    ~Controller();
 
     /**
      * Sets the name of the specified activity
@@ -110,8 +114,9 @@ Q_SIGNALS:
     void activityRemoved(const QString & id);
 
 private:
-    class Private;
-    Private * const d;
+    ControllerPrivate * const d;
 };
 
-#endif // ACTIVITY_CONTROLLER_H
+} // namespace Activities
+
+#endif // ACTIVITIES_CONTROLLER_H_

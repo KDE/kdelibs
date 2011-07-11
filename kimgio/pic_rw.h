@@ -30,7 +30,6 @@
 
 #define PIC_MAGIC_NUMBER  0x5380f634
 
-#include <kdebug.h>
 #include <QtCore/QFile>
 #include <QtGui/QImageIOPlugin>
 #include <QtGui/QColor>

@@ -68,6 +68,9 @@ KDEUI_UNIT_TESTS(
   krichtextedittest
   kselectaction_unittest
   klistwidgetsearchlinetest
+  ktimecomboboxtest
+  kdatecomboboxtest
+  kdatetimeedittest
 )
 
 KDEUI_PROXYMODEL_TESTS(

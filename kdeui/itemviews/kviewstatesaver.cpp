@@ -89,7 +89,7 @@ public:
     return 0;
   }
 
-  void rowsInserted( const QModelIndex &index, int start, int end )
+  void rowsInserted( const QModelIndex &/*index*/, int /*start*/, int /*end*/ )
   {
     Q_Q(KViewStateSaver);
     processPendingChanges();

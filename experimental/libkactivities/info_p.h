@@ -16,15 +16,17 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KACTIVITYINFO_P_H
-#define KACTIVITYINFO_P_H
+#ifndef KACTIVITIESINFO_P_H_
+#define KACTIVITIESINFO_P_H_
 
 #include "activitymanager_interface.h"
-#include "kactivityinfo.h"
+#include "info.h"
 
-class KActivityInfo::Private {
+namespace Activities {
+
+class InfoPrivate {
 public:
-    Private(KActivityInfo *info, const QString &activityId);
+    InfoPrivate(Info * info, const QString & activityId);
 
     void activityStateChanged(const QString &, int);
 
@@ -34,9 +36,11 @@ public:
     void stopped(const QString &) const;
     void infoChanged(const QString &) const;
 
-    KActivityInfo *q;
-    KActivityInfo::State state;
+    Info *q;
+    Info::State state;
     QString id;
 };
 
-#endif // KACTIVITYINFO_P_H
+} // namespace Activities
+
+#endif // ACTIVITIES_INFO_P_H_

@@ -37,6 +37,7 @@
 
 #include <QtCore/QUrl>
 #include <QtGui/QWidget>
+#include <QtCore/QEventLoop>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -51,12 +52,11 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-static bool isLocalRequest(const KUrl& url)
-{
-    const QString scheme (url.protocol());
-    return (KProtocolInfo::isKnownProtocol(scheme) &&
-            (KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0 || scheme == QL1S("data")));
-}
+#if QT_VERSION >= 0x040800
+static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = QNetworkRequest::SynchronousRequestAttribute;
+#else // QtWebkit hack to use the internal attribute
+static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = static_cast<QNetworkRequest::Attribute>(QNetworkRequest::HttpPipeliningWasUsedAttribute + 7);
+#endif
 
 static qint64 sizeFromRequest(const QNetworkRequest& req)
 {
@@ -211,9 +211,9 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     KIO::SimpleJob *kioJob = 0;
     const KUrl reqUrl (req.url());
 
-    if (!d->externalContentAllowed && !isLocalRequest(reqUrl)) {
+    if (!d->externalContentAllowed && !KDEPrivate::AccessManager_isLocalRequest(reqUrl) && reqUrl.scheme() != QL1S("data")) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
-        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
         reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);
         return reply;
     }
@@ -278,7 +278,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
 
             if (method.isEmpty()) {
-                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
                 reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
                 return reply;
             }
@@ -320,28 +320,19 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     // Set the meta data for this job...
     kioJob->setMetaData(metaData);
 
-    // Always set the "cookies" meta-data to manual so we can determine when
-    // to send and not send cookies. We do this to ensure QNetworkRequest's
-    // built-in protection against cross-domain cookies are properly honored.
-    metaData.insert(QL1S("cookies"), QL1S("manual"));
-
-    if (req.attribute(QNetworkRequest::CookieLoadControlAttribute) != QNetworkRequest::Manual) {
-        const QNetworkCookieJar* jar = cookieJar();
-        Q_ASSERT(jar);
-        if (jar && !metaData.contains(QL1S("setcookies"))) {
-            QStringList cookies;
-            Q_FOREACH(const QNetworkCookie& cookie, jar->cookiesForUrl(req.url())) {
-                cookies << (cookie.name() + QL1S("=") + cookie.value());
-            }
-            if (!cookies.isEmpty()) {
-                const QString cookieStr = QL1S("Cookie: ") + cookies.join(QL1S(";"));
-                metaData.insert(QL1S("setcookies"), cookieStr);
-            }
-        }
-    }
-
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+
+    /*
+     * NOTE: Since QtWebkit >= v2.2 no longer spins in its own even loop, we
+     * are forced to create our own local event loop here to handle the very
+     * rare but still in use synchronous XHR calls, e.g. http://webchat.freenode.net/
+     */
+    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
+        QEventLoop eventLoop;
+        connect (reply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
+        eventLoop.exec();
+    }
 
     if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";

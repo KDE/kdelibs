@@ -30,6 +30,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QPair>
 #include <QtCore/QThread>
 #include <QtCore/QFutureWatcher>
+#include <QtCore/QMetaType>
 #include <QtCore/QtConcurrentRun>
 #include <QtNetwork/QHostInfo>
 #include "kdebug.h"
@@ -45,6 +46,8 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #define TTL 300
+
+Q_DECLARE_METATYPE(QHostInfo)
 
 namespace KIO
 {
@@ -175,7 +178,7 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
 QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
 {
     NameLookUpThread lookupThread (hostName);
-    lookupThread.start(QThread::TimeCriticalPriority);
+    lookupThread.start();
 
     // Wait for it to start...
     while (!lookupThread.wasStarted()) {
@@ -190,7 +193,7 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
         return QHostInfo();
     }
 
-    //kDebug(7022) << "Name look up succeeded for" << hostname;
+    //kDebug(7022) << "Name look up succeeded for" << hostName;
     return lookupThread.result();
 }
 
@@ -224,7 +227,9 @@ HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)
       dnsCache(cacheSize),
       resolvConfMTime(0),
       ttl(TTL)
-{}
+{
+      qRegisterMetaType<QHostInfo>();
+}
 
 void HostInfoAgentPrivate::lookupHost(const QString& hostName,
     QObject* receiver, const char* member)

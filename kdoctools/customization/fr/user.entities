@@ -125,6 +125,9 @@
 <!ENTITY traducteurFredericFoiry    '<othercredit role="translator"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurFredericFoiry     '<othercredit role="reviewer"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurJoseFournier    '<othercredit role="translator"><firstname>José</firstname><surname>Fournier</surname><affiliation><address><email>jaaf.forums@zoraldia.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurJoseFournier     '<othercredit role="reviewer"><firstname>José</firstname><surname>Fournier</surname><affiliation><address><email>jaaf.forums@zoraldia.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurJeanJacquesFreulon    '<othercredit role="translator"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurJeanJacquesFreulon     '<othercredit role="reviewer"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -305,6 +308,7 @@
 <!ENTITY JeanJacquesFinazzi 'Jean-Jacques Finazzi <email>jj.finazzi@club.fr</email>'>
 <!ENTITY SylvainFloury      'Sylvain Floury <email>contact@floury.org</email>'>
 <!ENTITY FredericFoiry       'Frédéric Foiry <email>frederic.foiry@wanadoo.fr</email>'>
+<!ENTITY JoseFournier        'José Fournier <email>jaaf.forums@zoraldia.com</email>'>
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
 <!ENTITY SylvainGarsault  'Sylvain Garsault <email>sylvain.garsault@freesbee.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>

@@ -17,20 +17,22 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "kactivitymanager_p.h"
+#include "manager_p.h"
 
 #include <QDBusConnection>
 
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 
-KActivityManager * KActivityManager::s_instance = NULL;
+namespace Activities {
+
+Manager * Manager::s_instance = NULL;
 
 // #define ACTIVITY_MANAGER_DBUS_PATH   "org.kde.ActivityManager"
 #define ACTIVITY_MANAGER_DBUS_PATH   "org.kde.kactivitymanagerd"
 #define ACTIVITY_MANAGER_DBUS_OBJECT "/ActivityManager"
 
-KActivityManager::KActivityManager()
+Manager::Manager()
     : org::kde::ActivityManager(
             ACTIVITY_MANAGER_DBUS_PATH,
             ACTIVITY_MANAGER_DBUS_OBJECT,
@@ -41,7 +43,7 @@ KActivityManager::KActivityManager()
             this, SLOT(serviceOwnerChanged(const QString &, const QString &, const QString &)));
 }
 
-KActivityManager * KActivityManager::self()
+Manager * Manager::self()
 {
     if (!s_instance) {
         // check if the activity manager is already running
@@ -63,21 +65,25 @@ KActivityManager * KActivityManager::self()
         }
 
         // creating a new instance of the class
-        s_instance = new KActivityManager();
+        s_instance = new Manager();
     }
 
     return s_instance;
 }
 
-bool KActivityManager::isActivityServiceRunning()
+bool Manager::isActivityServiceRunning()
 {
     return QDBusConnection::sessionBus().interface()->isServiceRegistered(ACTIVITY_MANAGER_DBUS_PATH);
 }
 
-void KActivityManager::serviceOwnerChanged(const QString & serviceName, const QString & oldOwner, const QString & newOwner)
+void Manager::serviceOwnerChanged(const QString & serviceName, const QString & oldOwner, const QString & newOwner)
 {
+    Q_UNUSED(oldOwner)
+
     if (serviceName == ACTIVITY_MANAGER_DBUS_PATH) {
         emit presenceChanged(!newOwner.isEmpty());
     }
 }
+
+} // namespace Activities
 

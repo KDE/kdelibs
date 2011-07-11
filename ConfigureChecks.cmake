@@ -39,7 +39,6 @@ check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
 check_include_files(string.h      HAVE_STRING_H)                       # various
 check_include_files(strings.h     HAVE_STRINGS_H)                      # various
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
-check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
 
@@ -48,7 +47,6 @@ check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kd
 check_include_files(limits.h      HAVE_LIMITS_H)                       # various
 check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
-check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)          # kdecore
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)                     # various
 check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)                    # kio
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
@@ -59,7 +57,6 @@ check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # solid, 
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
 check_include_files(stdint.h      HAVE_STDINT_H)                       # various
-check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
 check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio
 
 check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, errno.h is used in many places, but only guarded in kjs/
@@ -67,9 +64,6 @@ check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
 check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
 check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
 check_include_files(langinfo.h    HAVE_LANGINFO_H)                     # kdecore
-
-check_include_files(arpa/nameser_compat.h HAVE_ARPA_NAMESER_COMPAT_H) # kio
-check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
 macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                                   # kdecore
 macro_bool_to_01(X11_Xcursor_FOUND HAVE_XCURSOR)                                               # kdeui
@@ -91,7 +85,6 @@ check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)  
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 
-check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
@@ -101,11 +94,6 @@ if(NOT APPLE)
 endif(NOT APPLE)
 check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
 
-if(NOT WIN32)
-  # we don't have it on windows but need to export it to be backward compatible
-  # can be removed when 4.1 is out
-  check_function_exists(readdir_r     HAVE_READDIR_R)                 # kio
-endif(NOT WIN32)
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
@@ -256,7 +244,6 @@ check_prototype_exists(unsetenv stdlib.h            HAVE_UNSETENV_PROTO)
 check_prototype_exists(usleep unistd.h              HAVE_USLEEP_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 check_prototype_exists(setreuid unistd.h            HAVE_SETREUID_PROTO)
-check_prototype_exists(seteuid unistd.h             HAVE_SETEUID_PROTO)
 check_prototype_exists(trunc math.h                 HAVE_TRUNC)
 
 # check for existing datatypes

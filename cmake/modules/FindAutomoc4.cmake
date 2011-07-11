@@ -39,18 +39,11 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 
-# check if we are inside KDESupport and automoc is enabled
-if("${KDESupport_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-   # when building this project as part of kdesupport
-   include("${KDESupport_SOURCE_DIR}/automoc/Automoc4Config.cmake")
-else("${KDESupport_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-   # when building this project outside kdesupport
-   # use the new "config-mode" of cmake 2.6, which searches the installed Automoc4Config.cmake file
-   # see the man page for details
-   set(_Automoc4_FIND_QUIETLY ${Automoc4_FIND_QUIETLY})
-   find_package(Automoc4 QUIET NO_MODULE)
-   set(Automoc4_FIND_QUIETLY ${_Automoc4_FIND_QUIETLY})
-endif("${KDESupport_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+# use the new "config-mode" of cmake 2.6, which searches the installed Automoc4Config.cmake file
+# see the man page for details
+set(_Automoc4_FIND_QUIETLY ${Automoc4_FIND_QUIETLY})
+find_package(Automoc4 QUIET NO_MODULE)
+set(Automoc4_FIND_QUIETLY ${_Automoc4_FIND_QUIETLY})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Automoc4 "Did not find automoc4 (Automoc4Config.cmake, part of kdesupport)." AUTOMOC4_EXECUTABLE)
+find_package_handle_standard_args(Automoc4 "Did not find automoc4 (Automoc4Config.cmake, install git://anongit.kde.org/automoc)." AUTOMOC4_EXECUTABLE)

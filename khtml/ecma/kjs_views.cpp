@@ -56,6 +56,7 @@ DOMAbstractView::~DOMAbstractView()
 JSValue *DOMAbstractView::getValueProperty(ExecState *exec, int token)
 {
     assert(token == Document);
+    Q_UNUSED(token);
     return getDOMNode(exec, impl()->document());
 }
 

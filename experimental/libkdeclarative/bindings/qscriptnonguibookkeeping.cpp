@@ -20,12 +20,18 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 
+#include <config-kdeclarative.h>
+
 #include <kconfiggroup.h>
+#include <kjob.h>
+#ifndef KDECLARATIVE_NO_KIO
 #include <kio/global.h>
 #include <kio/job.h>
+#endif
 #include <ksharedconfig.h>
 
 Q_DECLARE_METATYPE(KConfigGroup)
+
 Q_DECLARE_METATYPE(KJob *)
 
 typedef KJob* KJobPtr;
@@ -40,6 +46,7 @@ void qKJobFromQScriptValue(const QScriptValue &scriptValue, KJobPtr &job)
     job = static_cast<KJob *>(obj);
 }
 
+#ifndef KDECLARATIVE_NO_KIO
 Q_DECLARE_METATYPE(KIO::Job *)
 typedef KIO::Job* KioJobPtr;
 QScriptValue qScriptValueFromKIOJob(QScriptEngine *engine, const KioJobPtr &job)
@@ -52,6 +59,7 @@ void qKIOJobFromQScriptValue(const QScriptValue &scriptValue, KioJobPtr &job)
     QObject *obj = scriptValue.toQObject();
     job = static_cast<KIO::Job *>(obj);
 }
+#endif
 
 QScriptValue qScriptValueFromKConfigGroup(QScriptEngine *engine, const KConfigGroup &config)
 {
@@ -100,6 +108,8 @@ void registerNonGuiMetaTypes(QScriptEngine *engine)
 {
     qScriptRegisterMetaType<KConfigGroup>(engine, qScriptValueFromKConfigGroup, kConfigGroupFromScriptValue, QScriptValue());
     qScriptRegisterMetaType<KJob *>(engine, qScriptValueFromKJob, qKJobFromQScriptValue);
+#ifndef KDECLARATIVE_NO_KIO
     qScriptRegisterMetaType<KIO::Job *>(engine, qScriptValueFromKIOJob, qKIOJobFromQScriptValue);
+#endif
 }
 

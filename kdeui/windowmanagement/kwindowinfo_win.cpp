@@ -168,7 +168,12 @@ NET::WindowType KWindowInfo::windowType( int supported_types ) const
 
 QString KWindowInfo::visibleNameWithState() const
 {
-    return name();
+    QString s = visibleName();
+    if ( isMinimized() ) {
+        s.prepend(QLatin1Char('('));
+        s.append(QLatin1Char(')'));
+    }
+    return s;
 }
 
 QString KWindowInfo::visibleName() const

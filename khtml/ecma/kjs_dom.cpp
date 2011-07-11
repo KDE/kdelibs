@@ -2132,7 +2132,7 @@ DOMComment::DOMComment(ExecState *exec, DOM::CommentImpl* d)
     setPrototype(DOMCommentProto::self(exec));
  }
 
-JSValue* DOMCommentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+JSValue* DOMCommentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List & /*args*/)
 {
   KJS_CHECK_THIS( KJS::DOMComment, thisObj );
   return jsUndefined();

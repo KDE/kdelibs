@@ -384,6 +384,7 @@ void KUrlNavigatorButton::startSubDirsJob()
 void KUrlNavigatorButton::addEntriesToSubDirs(KIO::Job* job, const KIO::UDSEntryList& entries)
 {
     Q_ASSERT(job == m_subDirsJob);
+    Q_UNUSED(job);
 
     foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {

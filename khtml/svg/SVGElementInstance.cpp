@@ -143,6 +143,7 @@ void SVGElementInstance::updateInstance(SVGElement* element)
 {
     ASSERT(element == m_element);
     ASSERT(m_shadowTreeElement);
+    Q_UNUSED(element);
 
     // TODO: Eventually come up with a more optimized updating logic for the cases below:
     //

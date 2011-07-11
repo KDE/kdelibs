@@ -229,7 +229,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatecombobox.cpp
  widgets/kdatepicker.cpp
  widgets/kdatetable.cpp
- widgets/kdateedit.cpp
  widgets/kdatetimeedit.cpp
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
@@ -267,7 +266,6 @@ set(kdeui_LIB_SRCS
  widgets/ktextbrowser.cpp
  widgets/ktextedit.cpp
  widgets/ktimecombobox.cpp
- widgets/ktimeedit.cpp
  widgets/ktimezonewidget.cpp
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
@@ -636,7 +634,6 @@ install( FILES
  widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kdatetable.h
- widgets/kdateedit.h
  widgets/kdatetimeedit.h
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
@@ -669,7 +666,6 @@ install( FILES
  widgets/ktextbrowser.h
  widgets/ktextedit.h
  widgets/ktimecombobox.h
- widgets/ktimeedit.h
  widgets/ktimezonewidget.h
  widgets/ktitlewidget.h
  widgets/ktabbar.h

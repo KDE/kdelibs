@@ -16,20 +16,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIVITY_CONSUMER_H
-#define ACTIVITY_CONSUMER_H
+#ifndef ACTIVITIES_CONSUMER_H_
+#define ACTIVITIES_CONSUMER_H_
 
 #include <QObject>
 #include <QWidget>
 #include <QString>
 #include <QStringList>
 
-#include "kactivityinfo.h"
+#include "info.h"
 
 #include <kurl.h>
 #include <kdemacros.h>
 
-class KActivityConsumerPrivate;
+namespace Activities {
+
+class ConsumerPrivate;
+
 /**
  * Contextual information can be, from the user's point of view, divided
  * into three aspects - "who am I?", "where am I?" (what are my surroundings?)
@@ -46,7 +49,7 @@ class KActivityConsumerPrivate;
  * Every activity can have applications, documents, or other types of resources
  * assigned to it.
  *
- * KActivityConsumer provides an entry-level API for supporting activities in an
+ * Consumer provides an entry-level API for supporting activities in an
  * application - to react to the changes to the current activity as well as
  * registering the resources with its windows.
  *
@@ -55,7 +58,7 @@ class KActivityConsumerPrivate;
  *
  * @since 4.5
  */
-class KDE_EXPORT KActivityConsumer: public QObject {
+class KDE_EXPORT Consumer: public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString currentActivity READ currentActivity)
@@ -71,9 +74,9 @@ public:
         FullFunctionality  ///< Service is running, and a backend is available
     };
 
-    explicit KActivityConsumer(QObject * parent = 0);
+    explicit Consumer(QObject * parent = 0);
 
-    ~KActivityConsumer();
+    ~Consumer();
 
     /**
      * @returns the id of the current activity
@@ -84,7 +87,7 @@ public:
      * @returns the list of activities filtered by state
      * @param state state of the activity
      */
-    QStringList listActivities(KActivityInfo::State state) const;
+    QStringList listActivities(Info::State state) const;
 
     /**
      * @returns the list of all existing activities
@@ -109,10 +112,12 @@ Q_SIGNALS:
      * goes online or offline
      * @param status new status of the service
      */
-    void serviceStatusChanged(KActivityConsumer::ServiceStatus status);
+    void serviceStatusChanged(Consumer::ServiceStatus status);
 
 private:
-    KActivityConsumerPrivate * const d;
+    ConsumerPrivate * const d;
 };
 
-#endif // ACTIVITY_CONSUMER_H
+} // namespace Activities
+
+#endif // ACTIVITIES_CONSUMER_H_

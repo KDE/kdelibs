@@ -56,6 +56,7 @@ KSambaSharePrivate::KSambaSharePrivate(KSambaShare *parent)
     , data()
     , smbConf()
     , userSharePath()
+    , skipUserShare(false)
 {
     setUserSharePath();
     findSmbConf();
@@ -157,9 +158,9 @@ QString KSambaSharePrivate::testparmParamValue(const QString &parameterName)
     return QString();
 }
 
-QByteArray KSambaSharePrivate::getNetUserShareInfo() const
+QByteArray KSambaSharePrivate::getNetUserShareInfo()
 {
-    if (!isSambaInstalled()) {
+    if (skipUserShare || !isSambaInstalled()) {
         return QByteArray();
     }
 
@@ -171,12 +172,16 @@ QByteArray KSambaSharePrivate::getNetUserShareInfo() const
 
     runProcess(QLatin1String("net"), args, stdOut, stdErr);
 
-    //TODO: parse and process error messages.
     if (!stdErr.isEmpty()) {
-        // create a parser for the error output and
-        // send error message somewhere
-        kWarning() << "We got some errors while running 'net usershare info'";
-        kWarning() << stdErr;
+        if (stdErr.contains("You do not have permission to create a usershare")) {
+            skipUserShare = true;
+        } else {
+            //TODO: parse and process other error messages.
+            // create a parser for the error output and
+            // send error message somewhere
+            kWarning() << "We got some errors while running 'net usershare info'";
+            kWarning() << stdErr;
+        }
     }
 
     return stdOut;

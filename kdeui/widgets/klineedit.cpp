@@ -276,7 +276,6 @@ void KLineEdit::init()
     setStyle(d->style.data());
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
-
 }
 
 QString KLineEdit::clickMessage() const
@@ -798,6 +797,28 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
+        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
+            const bool trap = (d->completionBox && d->completionBox->isVisible());
+            const bool stopEvent = (trap || (d->grabReturnKeyEvents &&
+                                    (e->modifiers() == Qt::NoButton ||
+                                     e->modifiers() == Qt::KeypadModifier)));
+
+            if (trap) {
+                d->completionBox->hide();
+                deselect();
+                setCursorPosition(text().length());
+            }
+
+            emit returnPressed( displayText() );
+
+            // Eat the event if the user asked for it, or if a completionbox was visible
+            if (stopEvent) {
+                emit QLineEdit::returnPressed();
+                e->accept();
+                return;
+            }
+        }
+
         const KeyBindingMap keys = getKeyBindings();
         const KGlobalSettings::Completion mode = completionMode();
         const bool noModifier = (e->modifiers() == Qt::NoButton ||
@@ -1095,7 +1116,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     if  ( (e->button() == Qt::LeftButton ||
            e->button() == Qt::MidButton ) &&
           d->clearButton ) {
-        d->clickInClear = d->clearButton == childAt( e->pos() );
+        d->clickInClear = ( d->clearButton == childAt(e->pos()) || d->clearButton->underMouse() );
 
         if ( d->clickInClear ) {
             d->possibleTripleClick = false;
@@ -1108,13 +1129,23 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         return;
     }
 
+    // if middle clicking and if text is present in the clipboard then clear the selection
+    // to prepare paste operation
+    if ( e->button() == Qt::MidButton ) {
+        if ( hasSelectedText() ) {
+            if ( QApplication::clipboard()->text( QClipboard::Selection ).length() >0 ) {
+                backspace();
+            }
+        }
+    }
+
     QLineEdit::mousePressEvent( e );
 }
 
 void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     if ( d->clickInClear ) {
-        if ( d->clearButton == childAt( e->pos() ) ) {
+        if ( d->clearButton == childAt(e->pos()) || d->clearButton->underMouse() ) {
             QString newText;
             if ( e->button() == Qt::MidButton ) {
                 newText = QApplication::clipboard()->text( QClipboard::Selection );
@@ -1334,37 +1365,6 @@ bool KLineEdit::event( QEvent* ev )
         if (d->overrideShortcut(e)) {
             ev->accept();
         }
-    } else if( ev->type() == QEvent::KeyPress ) {
-        // Hmm -- all this could be done in keyPressEvent too...
-
-        QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
-            const bool trap = d->completionBox && d->completionBox->isVisible();
-
-            const bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                      (e->modifiers() == Qt::NoButton ||
-                                       e->modifiers() == Qt::KeypadModifier));
-
-            // Qt will emit returnPressed() itself if we return false
-            if (stopEvent) {
-                emit QLineEdit::returnPressed();
-                e->accept();
-            }
-
-            emit returnPressed( displayText() );
-
-            if (trap) {
-                d->completionBox->hide();
-                deselect();
-                setCursorPosition(text().length());
-            }
-
-            // Eat the event if the user asked for it, or if a completionbox was visible
-            if (stopEvent) {
-                return true;
-            }
-        }
     } else if (ev->type() == QEvent::ApplicationPaletteChange
                || ev->type() == QEvent::PaletteChange) {
         // Assume the widget uses the application's palette
@@ -1444,12 +1444,26 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
     }
 }
 
+/*
+ * Set the line edit text without changing the modified flag. By default
+ * calling setText resets the modified flag to false.
+ */
+static void setEditText(KLineEdit* edit, const QString& text)
+{
+    if (!edit) {
+        return;
+    }
+
+    const bool wasModified = edit->isModified();
+    edit->setText(text);
+    edit->setModified(wasModified);
+}
+
 void KLineEdit::userCancelled(const QString & cancelText)
 {
     if ( completionMode() != KGlobalSettings::CompletionPopupAuto )
     {
-      // TODO: this sets modified==false. But maybe it was true before...
-      setText(cancelText);
+      setEditText(this, cancelText);
     }
     else if (hasSelectedText() )
     {
@@ -1459,8 +1473,8 @@ void KLineEdit::userCancelled(const QString & cancelText)
       {
         d->autoSuggest=false;
         const int start = selectionStart() ;
-        const QString s=text().remove(selectionStart(), selectedText().length());
-        setText(s);
+        const QString s = text().remove(selectionStart(), selectedText().length());
+        setEditText(this, s);
         setCursorPosition(start);
         d->autoSuggest=true;
       }
@@ -1865,4 +1879,3 @@ void KLineEdit::doCompletion(const QString& txt)
 
 #include "klineedit.moc"
 #include "klineedit_p.moc"
-

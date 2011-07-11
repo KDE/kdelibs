@@ -15,7 +15,7 @@
 <!ENTITY FDLFCTTitles "LISTADOS"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "los textos de la portada estando &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "textos que no estén en la cubierta">
+<!ENTITY FDLFrontCoverText "textos que no estén en la portada">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTADOS SUS TITULOS"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "los textos en la contraportada estando &FDLBCTTitles;">

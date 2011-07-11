@@ -20,7 +20,7 @@
 #include "kfilterbase.h"
 #include <config-compression.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/QIODevice>
 #include <kmimetype.h>
 #include "kgzipfilter.h"
@@ -94,7 +94,7 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
     {
         // not a warning, since this is called often with other mimetypes (see #88574)...
         // maybe we can avoid that though?
-        kDebug(7005) << "KFilterBase::findFilterByFileName : no filter found for " << fileName;
+        //qDebug() << "KFilterBase::findFilterByFileName : no filter found for " << fileName;
     }
 
     return 0;
@@ -142,7 +142,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 
     // not a warning, since this is called often with other mimetypes (see #88574)...
     // maybe we can avoid that though?
-    kDebug(7005) << "no filter found for" << mimeType;
+    //qDebug() << "no filter found for" << mimeType;
     return 0;
 }
 

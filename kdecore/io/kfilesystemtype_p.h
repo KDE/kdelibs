@@ -33,6 +33,6 @@ namespace KFileSystemType
 
    Type fileSystemType(const QString& path);
 
-};
+}
 
 #endif

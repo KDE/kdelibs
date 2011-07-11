@@ -16,12 +16,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIVITYCONSUMER_P_H
-#define ACTIVITYCONSUMER_P_H
+#ifndef ACTIVITIES_CONSUMER_P_H_
+#define ACTIVITIES_CONSUMER_P_H_
 
 #include "activitymanager_interface.h"
 
-class KActivityConsumerPrivate {
+namespace Activities {
+
+class ConsumerPrivate {
 };
 
-#endif // ACTIVITY_CONSUMER_H
+} // namespace Activities
+
+#endif // ACTIVITIES_CONSUMER_P_H_

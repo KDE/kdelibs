@@ -360,7 +360,9 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         return;
     }
 
-    const int iconSize = pix.size().width();
+    const int width = pix.size().width();
+    const int height = pix.size().height();
+    const int iconSize = qMin(width, height);
     int overlaySize;
 
     if (iconSize < 32) {
@@ -400,16 +402,16 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         switch (count) {
         case 0:
             // bottom left corner
-            startPoint = QPoint(2, iconSize - overlaySize - 2);
+            startPoint = QPoint(2, height - overlaySize - 2);
             break;
         case 1:
             // bottom right corner
-            startPoint = QPoint(iconSize - overlaySize - 2,
-                                iconSize - overlaySize - 2);
+            startPoint = QPoint(width - overlaySize - 2,
+                                height - overlaySize - 2);
             break;
         case 2:
             // top right corner
-            startPoint = QPoint(iconSize - overlaySize - 2, 2);
+            startPoint = QPoint(width - overlaySize - 2, 2);
             break;
         case 3:
             // top left corner
@@ -698,6 +700,11 @@ void KIconLoader::addExtraDesktopThemes()
 bool KIconLoader::extraDesktopThemesAdded() const
 {
     return d->extraDesktopIconsLoaded;
+}
+
+void KIconLoader::drawOverlays(const QStringList &overlays, QPixmap &pixmap, KIconLoader::Group group, int state) const
+{
+    d->drawOverlays(this, group, state, pixmap, overlays);
 }
 
 QString KIconLoaderPrivate::removeIconExtension(const QString &name) const

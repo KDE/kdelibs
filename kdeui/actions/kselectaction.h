@@ -73,7 +73,7 @@ public:
 
     /**
      * Constructs a selection action with text; a shortcut may be specified by
-     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
      *
      * This is the most common KSelectAction used when you do not have a
      * corresponding icon (note that it won't appear in the current version
@@ -87,7 +87,7 @@ public:
 
     /**
      * Constructs a selection action with text and an icon; a shortcut may be specified by
-     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
      *
      * This is the other common KSelectAction used.  Use it when you
      * \e do have a corresponding icon.

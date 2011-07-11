@@ -168,6 +168,12 @@ public:
        */
       List(const QList<KUrl> &list);
       /**
+       * Creates a list that contains the URLs from the given QList<KUrl>.
+       * @param list the list containing the URLs
+       * @since 4.7
+       */
+      List(const QList<QUrl> &list);
+      /**
        * Converts the URLs of this list to a list of strings.
        * @return the list of strings
        */
@@ -189,6 +195,12 @@ public:
        * in QVariant() constructor
        */
       operator QVariant() const;
+
+      /**
+       * Converts this KUrl::List into a list of QUrl instances.
+       * @since 4.7
+       */
+      operator QList<QUrl>() const;
 
       /**
        * Adds URLs data into the given QMimeData.

@@ -36,30 +36,33 @@ class KDEUI_EXPORT KDateComboBox : public KComboBox
     Q_OBJECT
 
     Q_PROPERTY(QDate date READ date WRITE setDate NOTIFY dateChanged USER true)
-    Q_PROPERTY(QDate minimumDate READ minimumDate RESET resetMinimumDate)
-    Q_PROPERTY(QDate maximumDate READ maximumDate RESET resetMaximumDate)
+    Q_PROPERTY(QDate minimumDate READ minimumDate WRITE setMinimumDate RESET resetMinimumDate)
+    Q_PROPERTY(QDate maximumDate READ maximumDate WRITE setMaximumDate RESET resetMaximumDate)
     Q_PROPERTY(Options options READ options WRITE setOptions)
-    //Q_PROPERTY(KLocale::DateFormat displayFormat READ displayFormat WRITE setDisplayFormat)
+    Q_FLAGS(Options)
 
 public:
 
     /**
      * Options provided by the widget
-     * @see options
-     * @see setOptions
+     * @see options()
+     * @see setOptions()
      */
     enum Option {
         EditDate         = 0x0001,  /**< Allow the user to manually edit the date in the combo line edit */
         SelectDate       = 0x0002,  /**< Allow the user to select the date from a drop-down menu */
         DatePicker       = 0x0004,  /**< Show a date picker in the drop-down */
         DateKeywords     = 0x0008,  /**< Show date keywords in the drop-down */
-        WarnOnInvalid    = 0x0010,  /**< Show a warning on focus out if the date is invalid */
-        ErrorOnInvalid   = 0x0020   /**< Show an error on focus out if the date is invalid */
+        WarnOnInvalid    = 0x0010   /**< Show a warning on focus out if the date is invalid */
     };
     Q_DECLARE_FLAGS(Options, Option)
 
     /**
      * Create a new KDateComboBox widget
+     *
+     * By default the EditDate, SelectDate, DatePicker and DateKeywords options
+     * are enabled, the ShortDate format is used and the date is set to the
+     * current date.
      */
     explicit KDateComboBox(QWidget *parent = 0);
 
@@ -82,7 +85,7 @@ public:
      * @see setCalendarSystem()
      * @return the Calendar System currently used
      */
-    KLocale::CalendarSystem calendarSystem();
+    KLocale::CalendarSystem calendarSystem() const;
 
     /**
      * Returns a pointer to the Calendar System object used by this widget
@@ -102,9 +105,20 @@ public:
     /**
      * Return if the current user input is valid
      *
+     * If the user input is null then it is not valid
+     *
+     * @see isNull()
      * @return if the current user input is valid
      */
-    bool isValid()const;
+    bool isValid() const;
+
+    /**
+     * Return if the current user input is null
+     *
+     * @see isValid()
+     * @return if the current user input is null
+     */
+    bool isNull() const;
 
     /**
      * Return the currently set widget options
@@ -114,13 +128,13 @@ public:
     Options options() const;
 
     /**
-     * Return the currently set date format
+     * Return the currently set date display format
      *
      * By default this is the Short Date
      *
      * @return the currently set date format
      */
-    KLocale::DateFormat displayFormat();
+    KLocale::DateFormat displayFormat() const;
 
     /**
      * Return the current minimum date
@@ -130,11 +144,6 @@ public:
     QDate minimumDate() const;
 
     /**
-     * Reset the minimum date to the default
-     */
-    void resetMinimumDate();
-
-    /**
      * Return the current maximum date
      *
      * @return the current maximum date
@@ -142,45 +151,13 @@ public:
     QDate maximumDate() const;
 
     /**
-     * Reset the maximum date to the default
-     */
-    void resetMaximumDate();
-
-    /**
-     * Set the minimum and maximum date range.
+     * Return the map of dates listed in the drop-down and their displayed
+     * string forms.
      *
-     * To enable date range checking provide two valid dates.
-     * To disable date range checking provide two invalid dates, or call
-     * clearDateRange;
-     *
-     * @param minDate the minimum date
-     * @param maxDate the maximum date
-     * @param minErrorMsg the minimum error message
-     * @param maxErrorMsg the maximum error message
+     * @see setDateMap()
+     * @return the select date map
      */
-    void setDateRange(const QDate &minDate,
-                      const QDate &maxDate,
-                      const QString &minErrorMsg = QString(),
-                      const QString &maxErrorMsg = QString());
-
-    /**
-     * Reset the minimum and maximum date to the default values.
-     */
-    void resetDateRange();
-
-    /**
-     * Clear the minimum and maximum date, i.e. disable date range checking.
-     */
-    void clearDateRange();
-
-    /**
-     * Changes the calendar system to use.  Can use its own local locale if set.
-     *
-     * You retain ownership of the calendar object, it will not be destroyed with the widget.
-     *
-     * @param calendar the calendar system object to use, defaults to global
-     */
-    void setCalendar(KCalendarSystem *calendar = 0);
+    QMap<QDate, QString> dateMap() const;
 
 Q_SIGNALS:
 
@@ -234,6 +211,15 @@ public Q_SLOTS:
     void setCalendarSystem(KLocale::CalendarSystem calendarSystem);
 
     /**
+     * Changes the calendar system to use.  Can use its own local locale if set.
+     *
+     * You retain ownership of the calendar object, it will not be destroyed with the widget.
+     *
+     * @param calendar the calendar system object to use, defaults to global
+     */
+    void setCalendar(KCalendarSystem *calendar = 0);
+
+    /**
      * Set the new widget options
      *
      * @param options the new widget options
@@ -248,6 +234,85 @@ public Q_SLOTS:
      * @param format the date format to use
      */
     void setDisplayFormat(KLocale::DateFormat format);
+
+    /**
+     * Set the valid date range to be applied by isValid().
+     *
+     * Both dates must be valid and the minimum date must be less than or equal
+     * to the maximum date, otherwise the date range will not be set.
+     *
+     * @param minDate the minimum date
+     * @param maxDate the maximum date
+     * @param minWarnMsg the minimum warning message
+     * @param maxWarnMsg the maximum warning message
+     */
+    void setDateRange(const QDate &minDate,
+                      const QDate &maxDate,
+                      const QString &minWarnMsg = QString(),
+                      const QString &maxWarnMsg = QString());
+
+    /**
+     * Reset the minimum and maximum date to the default values.
+     * @see setDateRange()
+     */
+    void resetDateRange();
+
+    /**
+     * Set the minimum allowed date.
+     *
+     * If the date is invalid, or greater than current maximum,
+     * then the minimum will not be set.
+     *
+     * @see minimumDate()
+     * @see maximumDate()
+     * @see setMaximumDate()
+     * @see setDateRange()
+     * @param minDate the minimum date
+     * @param minWarnMsg the minimum warning message
+     */
+    void setMinimumDate(const QDate &minTime, const QString &minWarnMsg = QString());
+
+    /**
+     * Reset the minimum date to the default
+     */
+    void resetMinimumDate();
+
+    /**
+     * Set the maximum allowed date.
+     *
+     * If the date is invalid, or less than current minimum,
+     * then the maximum will not be set.
+     *
+     * @see minimumDate()
+     * @see maximumDate()
+     * @see setMaximumDate()
+     * @see setDateRange()
+     * @param maxDate the maximum date
+     * @param maxWarnMsg the maximum warning message
+     */
+    void setMaximumDate(const QDate &maxDate, const QString &maxWarnMsg = QString());
+
+    /**
+     * Reset the maximum date to the default
+     */
+    void resetMaximumDate();
+
+    /**
+     * Set the list of dates able to be selected from the drop-down and the
+     * string form to display for those dates, e.g. "2010-01-01" and "Yesterday".
+     *
+     * Any invalid or duplicate dates will be used, the list will NOT be
+     * sorted, and the minimum and maximum date will not be affected.
+     *
+     * The @p dateMap is keyed by the date to be listed and the value is the
+     * string to be displayed.  If you want the date to be displayed in the
+     * default date format then the string should be null.  If you want a
+     * separator to be displayed then set the string to "seperator".
+     *
+     * @see dateMap()
+     * @param dateMap the map of dates able to be selected
+     */
+    void setDateMap(QMap<QDate, QString> dateMap);
 
 protected:
 
@@ -284,7 +349,8 @@ private:
     friend class KDateComboBoxPrivate;
     KDateComboBoxPrivate *const d;
 
-    Q_PRIVATE_SLOT(d, void selectDate(int index))
+    Q_PRIVATE_SLOT(d, void clickDate())
+    Q_PRIVATE_SLOT(d, void selectDate(QAction*))
     Q_PRIVATE_SLOT(d, void editDate(const QString&))
     Q_PRIVATE_SLOT(d, void enterDate(const QDate&))
     Q_PRIVATE_SLOT(d, void parseDate())

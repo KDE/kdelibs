@@ -66,7 +66,7 @@ public:
 class ModelWrapper : public QAbstractItemModel
 {
 public:
-    ModelWrapper( QAbstractItemModel *model, QObject* parent = 0)
+    ModelWrapper( QAbstractItemModel */*model*/, QObject* parent = 0)
       : QAbstractItemModel(parent)
     {
 
@@ -76,11 +76,11 @@ public:
       return persistentIndexList();
     }
 
-    virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const { return QModelIndex(); }
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const { return 0; }
-    virtual QModelIndex parent(const QModelIndex& child) const { return QModelIndex(); }
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const {return 0; }
-    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const { return QVariant(); }
+    virtual QModelIndex index(int /*row*/, int /*column*/, const QModelIndex& /*parent*/ = QModelIndex()) const { return QModelIndex(); }
+    virtual int rowCount(const QModelIndex& /*parent*/ = QModelIndex()) const { return 0; }
+    virtual QModelIndex parent(const QModelIndex& /*child*/) const { return QModelIndex(); }
+    virtual int columnCount(const QModelIndex& /*parent*/ = QModelIndex()) const {return 0; }
+    virtual QVariant data(const QModelIndex& /*index*/, int /*role*/ = Qt::DisplayRole) const { return QVariant(); }
 };
 
 
@@ -245,7 +245,7 @@ void ModelEventLogger::dataChanged(const QModelIndex& topLeft, const QModelIndex
   m_events.append(QVariant::fromValue(static_cast<QObject*>(modelEvent)));
 }
 
-void ModelEventLogger::persistChildren(const QModelIndex &parent)
+void ModelEventLogger::persistChildren(const QModelIndex &/*parent*/)
 {
 }
 

@@ -403,17 +403,29 @@ QSize KCompletionBox::sizeHint() const
 
 void KCompletionBox::down()
 {
-    const int i = currentRow();
-    if (i < count() - 1) {
-        setCurrentRow(i + 1);
+    const int row = currentRow();
+    const int lastRow = count() - 1;
+    if (row < lastRow) {
+        setCurrentRow(row + 1);
+        return;
+    }
+
+    if (lastRow > -1) {
+        setCurrentRow(0);
     }
 }
 
 void KCompletionBox::up()
 {
-    const int i = currentRow();
-    if (i > 0) {
-        setCurrentRow(i - 1);
+    const int row = currentRow();
+    if (row > 0) {
+        setCurrentRow(row - 1);
+        return;
+    }
+
+    const int lastRow = count() - 1;
+    if (lastRow > 0) {
+        setCurrentRow(lastRow);
     }
 }
 

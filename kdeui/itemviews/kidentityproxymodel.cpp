@@ -87,7 +87,7 @@ class KIdentityProxyModelPrivate
     This also provides a way to change the data in the case where a source model is supplied by a third party which can not be modified.
 
     \code
-      class DateFormatProxyModel : public QIdentityProxyModel
+      class DateFormatProxyModel : public KIdentityProxyModel
       {
         // ...
 
