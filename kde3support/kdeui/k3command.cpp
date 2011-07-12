@@ -82,6 +82,7 @@ K3MacroCommand::K3MacroCommand( const QString & name )
 K3MacroCommand::~K3MacroCommand()
 {
     qDeleteAll( d->commands );
+    delete d;
 }
 
 void K3MacroCommand::addCommand( K3Command *command )
