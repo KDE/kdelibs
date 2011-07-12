@@ -40,7 +40,7 @@ __inline int toInt(WId wid)
 class ResourceInstancePrivate {
 public:
     WId wid;
-    ResourceInstance::OpenReason reason;
+    ResourceInstance::AccessReason reason;
     QUrl uri;
     QString mimetype;
     QString application;
@@ -57,7 +57,7 @@ public:
         FocusedOut = 5
     };
 
-    static void registerResourceEvent(const QString &application, WId wid, const QUrl &uri, Type event, ResourceInstance::OpenReason reason)
+    static void registerResourceEvent(const QString &application, WId wid, const QUrl &uri, Type event, ResourceInstance::AccessReason reason)
     {
         Manager::self()->RegisterResourceEvent(application, toInt(wid), uri.toString(), uint(event), uint(reason));
     }
@@ -73,7 +73,7 @@ void ResourceInstancePrivate::openResource()
     registerResourceEvent(application, wid, uri, Opened, reason);
 }
 
-ResourceInstance::ResourceInstance(WId wid, OpenReason reason, const QString &application, QObject *parent)
+ResourceInstance::ResourceInstance(WId wid, AccessReason reason, const QString &application, QObject *parent)
     : QObject(parent), d(new ResourceInstancePrivate())
 {
     d->wid = wid;
@@ -82,7 +82,7 @@ ResourceInstance::ResourceInstance(WId wid, OpenReason reason, const QString &ap
 
 }
 
-ResourceInstance::ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype, OpenReason reason, const QString &application, QObject *parent)
+ResourceInstance::ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype, AccessReason reason, const QString &application, QObject *parent)
     : QObject(parent), d(new ResourceInstancePrivate())
 {
     d->wid = wid;
@@ -151,7 +151,7 @@ WId ResourceInstance::winId() const
     return d->wid;
 }
 
-ResourceInstance::OpenReason ResourceInstance::openReason() const
+ResourceInstance::AccessReason ResourceInstance::accessReason() const
 {
     return d->reason;
 }

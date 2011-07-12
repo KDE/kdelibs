@@ -57,20 +57,20 @@ class KDE_EXPORT ResourceInstance: public QObject
     Q_PROPERTY(QUrl uri READ uri WRITE setUri)
     Q_PROPERTY(QString mimetype READ mimetype WRITE setMimetype)
     Q_PROPERTY(WId winId READ winId)
-    Q_PROPERTY(OpenReason openReason READ openReason)
+    Q_PROPERTY(AccessReason accessReason READ accessReason)
 
 public:
     /***
      * The reason for opening the resource
      */
-    enum OpenReason {
+    enum AccessReason {
          User = 0,      ///< Due to an explicit user request
          Scheduled = 1, ///< As a result of a user-scheduled action
          Heuristic = 2, ///< Deduced from user's activity, or indirectly requested
          System = 3,    ///< Due to a system event
          World = 4      ///< Due to an action performed by an external entity
     };
-    Q_ENUMS(OpenReason)
+    Q_ENUMS(AccessReason)
 
     /**
      * Creates a new resource instance
@@ -80,7 +80,7 @@ public:
      *        If not specified, QCoreApplication::applicationName is used
      * @param parent pointer to the parent object
      */
-    ResourceInstance(WId wid, OpenReason reason = User, const QString &application = QString(), QObject *parent = 0);
+    ResourceInstance(WId wid, AccessReason reason = User, const QString &application = QString(), QObject *parent = 0);
 
     /**
      * Creates a new resource instance and automatically
@@ -104,7 +104,7 @@ public:
      *        If not specified, QCoreApplication::applicationName is used
      * @param parent pointer to the parent object
      */
-    ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype = QString(), OpenReason reason = User, const QString &application = QString(), QObject *parent = 0);
+    ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype = QString(), AccessReason reason = User, const QString &application = QString(), QObject *parent = 0);
 
     /**
      * Destroys the ResourceInstance and notifies the system
@@ -177,9 +177,9 @@ public:
     WId winId() const;
 
     /**
-     * @returns the reason for opening the resource
+     * @returns the reason for accessing the resource
      */
-    OpenReason openReason() const;
+    AccessReason accessReason() const;
 
     /**
      * If there's no way to tell for how long an application is keeping
