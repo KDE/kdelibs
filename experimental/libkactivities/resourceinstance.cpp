@@ -53,11 +53,11 @@ public:
         Opened = 1,
         Modified = 2,
         Closed = 3,
-        FocussedIn = 4,
-        FocussedOut = 5
+        FocusedIn = 4,
+        FocusedOut = 5
     };
 
-    static void registerResourceEvent(const QString & application, WId wid, const QUrl & uri, Type event, ResourceInstance::OpenReason reason)
+    static void registerResourceEvent(const QString &application, WId wid, const QUrl &uri, Type event, ResourceInstance::OpenReason reason)
     {
         Manager::self()->RegisterResourceEvent(application, toInt(wid), uri.toString(), uint(event), uint(reason));
     }
@@ -73,7 +73,7 @@ void ResourceInstancePrivate::openResource()
     registerResourceEvent(application, wid, uri, Opened, reason);
 }
 
-ResourceInstance::ResourceInstance(WId wid, OpenReason reason, const QString & application, QObject * parent)
+ResourceInstance::ResourceInstance(WId wid, OpenReason reason, const QString &application, QObject *parent)
     : QObject(parent), d(new ResourceInstancePrivate())
 {
     d->wid = wid;
@@ -82,7 +82,7 @@ ResourceInstance::ResourceInstance(WId wid, OpenReason reason, const QString & a
 
 }
 
-ResourceInstance::ResourceInstance(WId wid, QUrl resourceUri, const QString & mimetype, OpenReason reason, const QString & application, QObject * parent)
+ResourceInstance::ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype, OpenReason reason, const QString &application, QObject *parent)
     : QObject(parent), d(new ResourceInstancePrivate())
 {
     d->wid = wid;
@@ -105,17 +105,17 @@ void ResourceInstance::notifyModified()
     d->registerResourceEvent(d->application, d->wid, d->uri, ResourceInstancePrivate::Modified, d->reason);
 }
 
-void ResourceInstance::notifyFocussedIn()
+void ResourceInstance::notifyFocusedIn()
 {
-    d->registerResourceEvent(d->application, d->wid, d->uri, ResourceInstancePrivate::FocussedIn, d->reason);
+    d->registerResourceEvent(d->application, d->wid, d->uri, ResourceInstancePrivate::FocusedIn, d->reason);
 }
 
-void ResourceInstance::notifyFocussedOut()
+void ResourceInstance::notifyFocusedOut()
 {
-    d->registerResourceEvent(d->application, d->wid, d->uri, ResourceInstancePrivate::FocussedOut, d->reason);
+    d->registerResourceEvent(d->application, d->wid, d->uri, ResourceInstancePrivate::FocusedOut, d->reason);
 }
 
-void ResourceInstance::setUri(const QUrl & newUri)
+void ResourceInstance::setUri(const QUrl &newUri)
 {
     if (d->uri == newUri)
         return;
@@ -129,14 +129,14 @@ void ResourceInstance::setUri(const QUrl & newUri)
     d->openResource();
 }
 
-void ResourceInstance::setMimetype(const QString & mimetype)
+void ResourceInstance::setMimetype(const QString &mimetype)
 {
     d->mimetype = mimetype;
     // TODO: update the service info
     Manager::self()->RegisterResourceMimeType(d->uri.toString(), mimetype);
 }
 
-QUrl ResourceInstance::uri()
+QUrl ResourceInstance::uri() const
 {
     return d->uri;
 }
@@ -156,7 +156,7 @@ ResourceInstance::OpenReason ResourceInstance::openReason() const
     return d->reason;
 }
 
-void ResourceInstance::notifyAccessed(const QUrl & uri, const QString & application)
+void ResourceInstance::notifyAccessed(const QUrl &uri, const QString &application)
 {
     ResourceInstancePrivate::registerResourceEvent(
             application.isEmpty() ? QCoreApplication::instance()->applicationName() : application,

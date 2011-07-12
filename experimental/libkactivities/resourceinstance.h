@@ -50,7 +50,8 @@ class ResourceInstancePrivate;
  * systems - everything is done under-the-hood automatically.
  *
  */
-class KDE_EXPORT ResourceInstance: public QObject {
+class KDE_EXPORT ResourceInstance: public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(QUrl uri READ uri WRITE setUri)
@@ -69,6 +70,7 @@ public:
          System = 3,    ///< Due to a system event
          World = 4      ///< Due to an action performed by an external entity
     };
+    Q_ENUMS(OpenReason)
 
     /**
      * Creates a new resource instance
@@ -78,7 +80,7 @@ public:
      *        If not specified, QCoreApplication::applicationName is used
      * @param parent pointer to the parent object
      */
-    ResourceInstance(WId wid, OpenReason reason = User, const QString & application = QString(), QObject * parent = 0);
+    ResourceInstance(WId wid, OpenReason reason = User, const QString &application = QString(), QObject *parent = 0);
 
     /**
      * Creates a new resource instance and automatically
@@ -102,7 +104,7 @@ public:
      *        If not specified, QCoreApplication::applicationName is used
      * @param parent pointer to the parent object
      */
-    ResourceInstance(WId wid, QUrl resourceUri, const QString & mimetype = QString(), OpenReason reason = User, const QString & application = QString(), QObject * parent = 0);
+    ResourceInstance(WId wid, QUrl resourceUri, const QString &mimetype = QString(), OpenReason reason = User, const QString &application = QString(), QObject *parent = 0);
 
     /**
      * Destroys the ResourceInstance and notifies the system
@@ -122,26 +124,26 @@ public Q_SLOTS:
      * has the focus in your application
      * @note You only need to call this in MDI applications
      */
-    void notifyFocussedIn();
+    void notifyFocusedIn();
 
     /**
      * Call this method to notify the system that the resource
      * lost the focus in your application
      * @note You only need to call this in MDI applications
      */
-    void notifyFocussedOut();
+    void notifyFocusedOut();
 
     /**
      * This is a convenience method that sets the new URI.
      * This is usually handled by sending the close event for
      * the previous URI, and an open event for the new one.
      */
-    void setUri(const QUrl & newUri);
+    void setUri(const QUrl &newUri);
 
     /**
      * Sets the mimetype for this resource
      */
-    void setMimetype(const QString & mimetype);
+    void setMimetype(const QString &mimetype);
 
 Q_SIGNALS:
     /**
@@ -162,7 +164,7 @@ public:
      * You need to reimplement it only for the applications with
      * frequently updated URIs.
      */
-    virtual QUrl uri();
+    virtual QUrl uri() const;
 
     /**
      * @returns mimetype of the resource
@@ -189,7 +191,7 @@ public:
      *        If not specified, QCoreApplication::applicationName is used
      *
      */
-    static void  notifyAccessed(const QUrl & uri, const QString & application = QString());
+    static void  notifyAccessed(const QUrl &uri, const QString &application = QString());
 
 private:
     ResourceInstancePrivate * const d;
