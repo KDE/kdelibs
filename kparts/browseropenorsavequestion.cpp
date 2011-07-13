@@ -98,6 +98,7 @@ public:
         }
         QLabel* mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
+        mimeTypeLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         textVLayout->addWidget(mimeTypeLabel);
 
         hLayout->addLayout(textVLayout,5);
@@ -196,6 +197,7 @@ static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
 BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
 {
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
+    d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
 
     KGuiItem openWithDialogItem(i18nc("@label:button", "&Open with..."), "document-open");
@@ -289,6 +291,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
     d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
 
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
+    d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
     const QString dontAskAgain = QLatin1String("askEmbedOrSave")+ d->mimeType; // KEEP IN SYNC!!!
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
@@ -307,6 +310,7 @@ void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFil
 {
     if (!suggestedFileName.isEmpty()) {
         d->fileNameLabel->setText(i18nc("@label File name", "Name: %1", suggestedFileName));
+        d->fileNameLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         d->fileNameLabel->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
         d->fileNameLabel->show();
     }
