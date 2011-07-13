@@ -33,8 +33,8 @@ kde4_add_library(
 set_target_properties(
    kactivities
    PROPERTIES
-   VERSION ${KDE_NON_GENERIC_LIB_VERSION}
-   SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+   VERSION 6.0.0
+   SOVERSION 6
    )
 
 target_link_libraries(

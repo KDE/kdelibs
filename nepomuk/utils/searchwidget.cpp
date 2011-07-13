@@ -97,6 +97,20 @@ void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::_k_listingFinished()
     // TODO: disable busy indicator
 }
 
+void Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::_k_forwardCurrentChanged(
+        const QModelIndex & previous, const QModelIndex & current )
+{
+    Resource prevRes;
+    Resource currRes;
+    if ( previous.isValid() ) {
+        prevRes = previous.data(Utils::ResourceModel::ResourceRole).value<Resource>();
+    }
+    if ( current.isValid() ) {
+        currRes = current.data(Utils::ResourceModel::ResourceRole).value<Resource>();
+    }
+
+    emit q->currentResourceChanged(prevRes,currRes);
+}
 
 Nepomuk::Query::Query Nepomuk::Utils::SearchWidget::SearchWidgetPrivate::currentQuery( bool withBaseQuery ) const
 {
@@ -134,6 +148,8 @@ Nepomuk::Utils::SearchWidget::SearchWidget(QWidget *parent)
     d->m_resourceModel = new Utils::SimpleResourceModel(this);
     d->m_itemWidget->setModel(d->m_resourceModel);
     connect(d->m_itemWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SIGNAL(selectionChanged()));
+    connect(d->m_itemWidget->selectionModel(), SIGNAL(currentChanged( const QModelIndex &,const QModelIndex&)),
+            this, SLOT(_k_forwardCurrentChanged(const QModelIndex &, const QModelIndex &)));
 
     //facets widget
     d->m_facetWidget = new Nepomuk::Utils::FacetWidget(this);

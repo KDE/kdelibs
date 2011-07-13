@@ -116,7 +116,7 @@ class KFileItemDelegate::Private
 
         void gotNewIcon(const QModelIndex& index);
 
-        void paintJobTransfers(QPainter* painter, const qreal& jobAnimationAngle, const QPoint& iconPos, QStyleOptionViewItemV4 opt);
+        void paintJobTransfers(QPainter* painter, const qreal& jobAnimationAngle, const QPoint& iconPos, const QStyleOptionViewItemV4& opt);
 
     public:
         KFileItemDelegate::InformationList informationList;
@@ -866,7 +866,7 @@ void KFileItemDelegate::Private::initStyleOption(QStyleOptionViewItemV4 *option,
     option->showDecorationSelected = true;
 }
 
-void KFileItemDelegate::Private::paintJobTransfers(QPainter *painter, const qreal &jobAnimationAngle, const QPoint &iconPos, QStyleOptionViewItemV4 opt)
+void KFileItemDelegate::Private::paintJobTransfers(QPainter *painter, const qreal &jobAnimationAngle, const QPoint &iconPos, const QStyleOptionViewItemV4& opt)
 {
     painter->save();
     QSize iconSize = opt.icon.actualSize(opt.decorationSize);
