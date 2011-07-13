@@ -110,9 +110,11 @@ void Nepomuk::Utils::SimpleResourceModel::setResources( const QList<Nepomuk::Res
 
 void Nepomuk::Utils::SimpleResourceModel::addResources( const QList<Nepomuk::Resource>& resources )
 {
-    beginInsertRows( QModelIndex(), d->resources.count(), d->resources.count() + resources.count() - 1 );
-    d->resources << resources;
-    endInsertRows();
+    if(!resources.isEmpty()) {
+        beginInsertRows( QModelIndex(), d->resources.count(), d->resources.count() + resources.count() - 1 );
+        d->resources << resources;
+        endInsertRows();
+    }
 }
 
 
