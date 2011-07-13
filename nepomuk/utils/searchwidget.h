@@ -188,12 +188,21 @@ namespace Nepomuk {
              */
             void selectionChanged();
 
+            /**
+             * \brief Emited when current resource is changed
+             */
+            void currentResourceChanged(const Nepomuk::Resource & previous, const Nepomuk::Resource & current );
+
+
         private:
             class SearchWidgetPrivate;
             SearchWidgetPrivate * const d_ptr;
 
             Q_DECLARE_PRIVATE(SearchWidget)
 
+            /*! \brief Convert QModelIndex to Nepomuk::Resource and emit currentResourceChanged signal
+             */
+            Q_PRIVATE_SLOT( d_ptr, void _k_forwardCurrentChanged( const QModelIndex &, const QModelIndex &));
             Q_PRIVATE_SLOT( d_ptr, void _k_queryComponentChanged() )
             Q_PRIVATE_SLOT( d_ptr, void _k_listingFinished() )
         };
