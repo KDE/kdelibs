@@ -237,8 +237,9 @@ public:
     static QString zoneinfoDir();
 
     /**
-     * Return whether the KDE time zone daemon, ktimezoned, is available. If
-     * not, UTC will be the only recognized time zone.
+     * Return whether the KDE time zone daemon, ktimezoned, appears to be
+     * available and working. If not, UTC will be the only recognized time
+     * zone.
      * @since 4.6
      */
     static bool isTimeZoneDaemonAvailable();
