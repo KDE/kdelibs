@@ -38,6 +38,7 @@ class SecretItem;
 class CollectionPrivate;
 class CreateItemJob;
 class SearchSecretsJob;
+class SearchItemsJob;
 
 
 class Collection : public QObject {
@@ -103,7 +104,7 @@ public:
     /**
      * Search for the items matching the specified attributes
      */
-    KJob * searchItems( const StringStringMap &attributes );
+    SearchItemsJob * searchItems( const StringStringMap &attributes );
     
     /**
      * Use this method to get several secrets without getting through getting items
@@ -175,6 +176,7 @@ private:
     friend class RenameCollectionJob;
     friend class CreateItemJob;
     friend class SearchSecretsJob;
+    friend class SearchItemsJob;
     
     CollectionPrivate *d;
 };

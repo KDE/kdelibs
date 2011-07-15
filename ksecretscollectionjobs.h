@@ -55,7 +55,8 @@ class CollectionJob : public KCompositeJob {
     Q_DISABLE_COPY(CollectionJob)
 public:
     explicit CollectionJob( Collection *collection, QObject* parent = 0 );
-    
+
+    // TODO: rename this to CollectionJobError
     enum CollectionError {
         UndefinedError =-1,             /// this error should never be encountered
         NoError =0,
@@ -126,9 +127,11 @@ public:
     RenameCollectionJob( Collection *coll, const QString& newName, QObject *parent =0 );
     
     virtual void start();
+
+protected:
+    virtual void onFindCollectionFinished();
     
 protected Q_SLOTS:
-    virtual void onFindCollectionFinished();
     void renameIsDone( CollectionJob::CollectionError, const QString& );
     
 private:
@@ -142,8 +145,11 @@ class SearchItemsJob : public CollectionJob {
 public:
     explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     
-    QList< SecretItem > &items() const;
+    QList< SecretItem > items() const;
     virtual void start();
+
+protected:
+    virtual void onFindCollectionFinished();
 
 private:
     friend class ::SearchItemsJobPrivate;

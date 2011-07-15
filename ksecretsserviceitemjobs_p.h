@@ -21,11 +21,36 @@
 #ifndef KSECRETSSERVICEITEMJOBS_P_H
 #define KSECRETSSERVICEITEMJOBS_P_H
 
-#include <QSharedData>
+#include "ksecretsserviceitemjobs.h"
+#include "../daemon/frontend/secret/adaptors/secretstruct.h"
 
-class GetSecretItemJobPrivate : public QSharedData {
+namespace KSecretsService {
+    class GetSecretItemSecretJob;
+};
+using namespace KSecretsService;
+
+class QDBusPendingCallWatcher;
+class SecretItemPrivate;
+
+class GetSecretItemSecretJobPrivate  : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(GetSecretItemSecretJobPrivate)
 public:
-    GetSecretItemJobPrivate();
+    GetSecretItemSecretJobPrivate( KSecretsService::GetSecretItemSecretJob * );
+
+    void start();
+    
+    SecretStruct secret;
+    SecretItemPrivate *secretItemPrivate;
+    
+private Q_SLOTS:
+    void getSecretReply( QDBusPendingCallWatcher* watcher );
+    
+Q_SIGNALS:
+    void getSecretFinished( SecretItemJob::ItemJobError, const QString& );
+    
+private:
+    GetSecretItemSecretJob *job;
 };
 
 #endif // KSECRETSSERVICEITEMJOBS_P_H

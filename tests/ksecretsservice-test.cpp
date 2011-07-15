@@ -20,6 +20,7 @@
 
 #include "ksecretsservice-test.h"
 #include "../ksecretsservicecollection.h"
+#include "../ksecretsservicesecret.h"
 
 #include <qtest_kde.h>
 #include <ktoolinvocation.h>
@@ -46,7 +47,7 @@ KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 void KSecretServiceTest::initTestCase()
 {
     // launch the daemon if it's not yet started
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+/*    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
     {
         QString error;
         // FIXME: find out why this is not working
@@ -55,7 +56,7 @@ void KSecretServiceTest::initTestCase()
         
         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
                  "Secret Service was started but the service is not registered on the DBus");
-    }
+    }*/
 }
 
 void KSecretServiceTest::testCreateAndDelete()
@@ -73,6 +74,11 @@ void KSecretServiceTest::testRenameCollection()
     renameJob->exec();
     QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
     QVERIFY2( (coll->label() == "test name2"), "Collection won't change it's name!" );
+    
+    // finally, delete the collection
+    KJob *deleteJob = coll->deleteCollection();
+    deleteJob->exec();
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
 }
 
 void KSecretServiceTest::testCreateItem()
@@ -85,6 +91,7 @@ void KSecretServiceTest::testCreateItem()
     KSecretsService::CreateItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
     
+    // first, try to directly read the SecretStruct
     KSecretsService::SearchSecretsJob *searchJob = coll->searchSecrets( attributes );
     QVERIFY2( searchJob->exec(), qPrintable( searchJob->errorText() ) );
 
@@ -95,7 +102,21 @@ void KSecretServiceTest::testCreateItem()
             break;
         }
     }
-    QVERIFY2( found, "The new secret was not found in the collection !");
+    QVERIFY2( found, "The new secret was not found in the collection (via searchSecrets) !");
+    
+    // second, try to read the SecretItem
+    KSecretsService::SearchItemsJob *searchItemsJob = coll->searchItems( attributes );
+    QVERIFY2( searchItemsJob->exec(), qPrintable( searchItemsJob->errorText() ) );
+    
+    foreach ( SecretItem item, searchItemsJob->items() ) {
+        KSecretsService::GetSecretItemSecretJob *getSecretJob = item.getSecret();
+        QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );
+        if ( getSecretJob->secret() == newSecret ) {
+            found = true;
+            break;
+        }
+    }
+    QVERIFY2( found, "The new secret was not found in the collection (via searchItems) !");
     
     // finally, delete the collection
     KJob *deleteJob = coll->deleteCollection();

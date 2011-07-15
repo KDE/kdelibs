@@ -22,10 +22,15 @@
 #include "ksecretsservicesecret_p.h"
 #include "dbusbackend.h"
 
-namespace KSecretsService {
+using namespace KSecretsService;
 
 Secret::Secret() :
     d( new SecretPrivate() )
+{
+}
+
+Secret::Secret(SecretPrivate* sp) :
+    d( sp )
 {
 }
 
@@ -109,6 +114,5 @@ bool SecretPrivate::operator == ( const SecretPrivate &that )  const
     return result;
 }
 
-}; // namespace 
 
 #include "ksecretsservicesecret.moc"

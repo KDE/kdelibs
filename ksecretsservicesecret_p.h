@@ -26,8 +26,6 @@
 
 #include <QtDBus/QDBusObjectPath>
 
-namespace KSecretsService {
-
 class SecretPrivate {
 public:
     SecretPrivate();
@@ -49,6 +47,5 @@ public:
     QVariant value;
 };
 
-};
 
 #endif // KSECRETSSECRET_P_H

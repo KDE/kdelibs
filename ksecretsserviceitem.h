@@ -26,12 +26,13 @@
 
 #include <kjob.h>
 
+class SecretItemPrivate;
 
 namespace KSecretsService {
 
 typedef QMap< QString, QString > QStringStringMap;
 
-class SecretItemPrivate;
+class GetSecretItemSecretJob;
    
 /**
  * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
@@ -53,7 +54,7 @@ public:
     /**
      * Read the data held by the SecretItem
      */
-    GetSecretJob * getSecret() const;
+    GetSecretItemSecretJob * getSecret() const;
 
     /**
      * Modify the item's stored data
@@ -98,7 +99,9 @@ public:
     
 private:
     friend class SecretItemPrivate;
-    QSharedDataPointer< SecretItemPrivate > d;
+    friend class GetSecretItemSecretJob;
+    
+    QSharedPointer< SecretItemPrivate > d;
 };
 
 

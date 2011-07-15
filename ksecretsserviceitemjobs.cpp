@@ -20,7 +20,78 @@
 
 #include "ksecretsserviceitemjobs.h"
 #include "ksecretsserviceitemjobs_p.h"
+#include "ksecretsserviceitem_p.h"
+#include "ksecretsservicesecret_p.h"
+#include "dbusbackend.h"
+
+#include <item_interface.h>
+#include <kdebug.h>
+#include <QDBusPendingCallWatcher>
+
+using namespace KSecretsService;
+
+
+SecretItemJob::SecretItemJob(SecretItem* item): 
+    secretItem( item )
+{
+}
+
+void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg)
+{
+    KJob::setError( err );
+    KJob::setErrorText( msg );
+    emitResult();
+}
 
 
 
-//#include "ksecretsitemjobs.moc"
+
+GetSecretItemSecretJob::GetSecretItemSecretJob( KSecretsService::SecretItem* item ) :
+    SecretItemJob( item ),
+    d( new GetSecretItemSecretJobPrivate( this ) )
+{
+    d->secretItemPrivate = item->d.data();
+}
+
+
+void GetSecretItemSecretJob::start()
+{
+    d->start();
+}
+
+Secret GetSecretItemSecretJob::secret() const
+{
+    return Secret( new SecretPrivate( d->secret ) );
+}
+
+
+GetSecretItemSecretJobPrivate::GetSecretItemSecretJobPrivate(GetSecretItemSecretJob * j) :
+    job( j )
+{
+}
+
+void GetSecretItemSecretJobPrivate::start()
+{
+    QDBusPendingReply<SecretStruct> reply = job->d->secretItemPrivate->itemIf->GetSecret( DBusSession::sessionPath() );
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(getSecretReply(QDBusPendingCallWatcher*)) );
+}
+
+void GetSecretItemSecretJobPrivate::getSecretReply( QDBusPendingCallWatcher *watcher )
+{
+    Q_ASSERT(watcher != 0);
+    QDBusPendingReply<SecretStruct> reply = *watcher;
+    if ( !reply.isError() ) {
+        secret = reply.argumentAt<0>();
+        job->finished( SecretItemJob::NoError );
+    }
+    else {
+        kDebug() << "ERROR calling GetSecret";
+        job->finished( SecretItemJob::InternalError, "ERROR calling GetSecret" );
+    }
+    watcher->deleteLater();
+}
+
+
+#include "ksecretsserviceitemjobs.moc"
+#include "ksecretsserviceitemjobs_p.moc"

@@ -333,16 +333,65 @@ void RenameCollectionJobPrivate::startRename()
 }
 
 SearchItemsJob::SearchItemsJob( Collection *collection, 
-                                const QStringStringMap &,
+                                const QStringStringMap &attributes,
                                 QObject *parent ) :
-    CollectionJob( collection, parent )
+    CollectionJob( collection, parent ),
+    d( new SearchItemsJobPrivate( collection->d, this ) )
 {
+    d->attributes = attributes;
 }
 
 void SearchItemsJob::start()
 {
-    // TODO: implement this
+    startFindCollection(); // this will trigger onFindCollectionFinished
 }
+
+QList< SecretItem > SearchItemsJob::items() const
+{
+    QList< SecretItem > items;
+    foreach( SecretItemPrivate ip, d->items ) {
+        items.append( SecretItem( new SecretItemPrivate( ip ) ) );
+    }
+    return items;
+}
+
+void SearchItemsJob::onFindCollectionFinished()
+{
+    d->startSearchItems();
+}
+
+SearchItemsJobPrivate::SearchItemsJobPrivate( CollectionPrivate* cp, SearchItemsJob *job ) :
+    QObject( job ),
+    collectionPrivate( cp ),
+    searchItemJob( job )
+{
+}
+
+void SearchItemsJobPrivate::startSearchItems()
+{
+    QDBusPendingReply< QList< QDBusObjectPath > > reply = collectionPrivate->collectionIf->SearchItems( attributes );
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchFinished(QDBusPendingCallWatcher*) ) );
+}
+
+void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
+{
+    Q_ASSERT(watcher != 0);
+    QDBusPendingReply< QList< QDBusObjectPath > > reply = *watcher;
+    if ( !reply.isError() ) {
+        QList< QDBusObjectPath > itemList = reply.argumentAt<0>();
+        foreach( QDBusObjectPath itemPath, itemList ) {
+            items.append( SecretItemPrivate( itemPath ) );
+        }
+        searchItemJob->finishedOk();
+    }
+    else {
+        kDebug() << "ERROR searching items";
+        searchItemJob->finishedWithError( CollectionJob::InternalError, "ERROR searching items");
+    }
+    watcher->deleteLater();
+}
+
 
 SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
     CollectionJob( collection, parent ),
@@ -517,9 +566,9 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
             }
         }
         else {
-            QSharedDataPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
+            QSharedPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
             if ( itemPrivate->isValid() ) {
-                item = new SecretItem( itemPrivate );
+                item = new SecretItem( itemPrivate.data() );
                 emit createIsDone( CollectionJob::NoError, "" );
             }
             else {

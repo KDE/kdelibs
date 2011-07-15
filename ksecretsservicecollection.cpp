@@ -66,7 +66,7 @@ KJob* Collection::renameCollection(const QString& newName)
     return new RenameCollectionJob( this, newName, this );
 }
 
-KJob* Collection::searchItems(const QStringStringMap& attributes)
+SearchItemsJob* Collection::searchItems(const QStringStringMap& attributes)
 {
     return new SearchItemsJob( this, attributes, this );
 }

@@ -26,20 +26,48 @@
 #include <kjob.h>
 #include <QSharedPointer>
 
-class GetSecretJobPrivate;
+class GetSecretItemSecretJobPrivate;
 
 namespace KSecretsService {
-    
-class GetSecretJob : public KJob {
+
+class SecretItem;
+
+class SecretItemJob : public KJob {
     Q_OBJECT
-    Q_DISABLE_COPY(GetSecretJob)
+    Q_DISABLE_COPY(SecretItemJob)
 public:
+    enum ItemJobError {
+        UndefinedError =-1,             /// this error should never be encountered
+        NoError =0,
+        InternalError,
+        OperationCancelledByTheUser,    /// the user choose to cancel ther operation during a message prompt
+        CollectionNotFound,
+        CreateError,
+        DeleteError,
+        RenameError,
+        MissingParameterError
+    };
     
+    explicit SecretItemJob( SecretItem * item );
+    
+protected:
+    void finished( ItemJobError, const QString& msg ="");
+    
+protected:
+    SecretItem  *secretItem;
+};
+
+class GetSecretItemSecretJob : public SecretItemJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(GetSecretItemSecretJob)
+public:
+    explicit GetSecretItemSecretJob( SecretItem* );
+    virtual void start();
     Secret secret() const;
     
 private:
-    friend class ::GetSecretJobPrivate;
-    QSharedPointer< GetSecretJobPrivate > d;
+    friend class ::GetSecretItemSecretJobPrivate;
+    QSharedPointer< GetSecretItemSecretJobPrivate > d;
 };
 
 }; // namespace

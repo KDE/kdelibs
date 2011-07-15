@@ -20,12 +20,13 @@
 
 #include "ksecretsserviceitem.h"
 #include "ksecretsserviceitem_p.h"
+#include "ksecretsserviceitemjobs.h"
 #include "dbusbackend.h"
 #include "item_interface.h"
 
 #include <QDateTime>
 
-namespace KSecretsService {
+using namespace KSecretsService;
 
 SecretItem::SecretItem() :
     d( new SecretItemPrivate() )
@@ -43,20 +44,10 @@ KJob* SecretItem::deleteItem()
     return NULL;
 }
 
-GetSecretJob* SecretItem::getSecret() const
+GetSecretItemSecretJob* SecretItem::getSecret() const
 {
-    // TODO: implement this
-    return NULL;
+    return new GetSecretItemSecretJob( const_cast< SecretItem*>( this ));
 }
-
-
-GetSecretJob::GetSecretJob(const GetSecretJob& ): KJob()
-{
-
-}
-
-
-
 
 
 KJob* SecretItem::setSecret(const Secret& secret)
@@ -120,6 +111,5 @@ bool SecretItemPrivate::isValid() const
     return itemIf && itemIf->isValid();
 }
 
-};
 
 #include "ksecretsserviceitem.moc"

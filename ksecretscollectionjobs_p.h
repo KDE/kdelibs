@@ -29,10 +29,10 @@
 
 namespace KSecretsService {
 class SecretItem;
-class SecretPrivate;
 }
 
 class OrgFreedesktopSecretPromptInterface;
+class SecretPrivate;
 
 using namespace KSecretsService;
 
@@ -110,11 +110,21 @@ class SearchItemsJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(SearchItemsJobPrivate)
 public:
-    explicit SearchItemsJobPrivate( CollectionPrivate*, QObject *parent =0 );
+    explicit SearchItemsJobPrivate( CollectionPrivate*, SearchItemsJob* );
+    
+    void startSearchItems();
+    
+Q_SIGNALS:
+    void searchIsDone(CollectionJob::CollectionError, const QString& );
+
+protected Q_SLOTS:
+    void searchFinished(QDBusPendingCallWatcher*);
     
 public:
-    CollectionPrivate   *collectionPrivate;
-    QStringStringMap attributes;
+    CollectionPrivate           *collectionPrivate;
+    SearchItemsJob              *searchItemJob;
+    QStringStringMap            attributes;
+    QList< SecretItemPrivate >  items;
 };
 
 class CreateItemJobPrivate : public QObject {
