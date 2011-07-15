@@ -39,6 +39,7 @@ class CollectionPrivate;
 class CreateItemJob;
 class SearchSecretsJob;
 class SearchItemsJob;
+class ReadItemsJob;
 
 
 class Collection : public QObject {
@@ -122,8 +123,6 @@ public:
      */
     CreateItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, bool replace =false );
 
-    class ReadItemsJob;
-    
     /** 
      * Retrieve items stored inside this collection
      */
@@ -177,8 +176,9 @@ private:
     friend class CreateItemJob;
     friend class SearchSecretsJob;
     friend class SearchItemsJob;
+    friend class ReadItemsJob;
     
-    CollectionPrivate *d;
+    QSharedPointer< CollectionPrivate > d;
 };
 
 

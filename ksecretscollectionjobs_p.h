@@ -173,6 +173,17 @@ public:
     QList< QSharedPointer<SecretPrivate> > secretsList;
 };
 
+class ReadItemsJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(ReadItemsJobPrivate)
+public:
+    explicit ReadItemsJobPrivate( CollectionPrivate* );
+
+    QList< SecretItemPrivate > readItems() const;
+    
+public:
+    CollectionPrivate   *collectionPrivate;
+};
 
 class PromptJob : public KJob {
     Q_OBJECT

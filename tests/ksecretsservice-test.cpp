@@ -91,7 +91,7 @@ void KSecretServiceTest::testCreateItem()
     KSecretsService::CreateItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
     
-    // first, try to directly read the SecretStruct
+    // first method, try to directly read the SecretStruct
     KSecretsService::SearchSecretsJob *searchJob = coll->searchSecrets( attributes );
     QVERIFY2( searchJob->exec(), qPrintable( searchJob->errorText() ) );
 
@@ -102,9 +102,9 @@ void KSecretServiceTest::testCreateItem()
             break;
         }
     }
-    QVERIFY2( found, "The new secret was not found in the collection (via searchSecrets) !");
+    QVERIFY2( found, "The new secret was not found in the collection (via searchSecrets()) !");
     
-    // second, try to read the SecretItem
+    // second method, try to read the SecretItem
     KSecretsService::SearchItemsJob *searchItemsJob = coll->searchItems( attributes );
     QVERIFY2( searchItemsJob->exec(), qPrintable( searchItemsJob->errorText() ) );
     
@@ -116,7 +116,22 @@ void KSecretServiceTest::testCreateItem()
             break;
         }
     }
-    QVERIFY2( found, "The new secret was not found in the collection (via searchItems) !");
+    QVERIFY2( found, "The new secret was not found in the collection (via searchItems()) !");
+    
+    // third method, use the items() method
+    KSecretsService::ReadItemsJob *readItemsJob = coll->items();
+    QVERIFY2( readItemsJob->exec(), qPrintable( readItemsJob->errorText() ) );
+    
+    foreach ( SecretItem item, readItemsJob->items() ) {
+        KSecretsService::GetSecretItemSecretJob *getSecretJob = item.getSecret();
+        QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );
+        if ( getSecretJob->secret() == newSecret ) {
+            found = true;
+            break;
+        }
+    }
+    QVERIFY2( found, "The new secret was not found in the collection (via items()) !");
+   
     
     // finally, delete the collection
     KJob *deleteJob = coll->deleteCollection();

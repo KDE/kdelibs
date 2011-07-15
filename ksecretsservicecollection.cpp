@@ -81,11 +81,9 @@ CreateItemJob* Collection::createItem(const QString& label, const QMap< QString,
     return new CreateItemJob( this, label, attributes, secret, replace );
 }
 
-Collection::ReadItemsJob* Collection::items() const
+ReadItemsJob* Collection::items() const
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return NULL;
+    return new ReadItemsJob( const_cast< Collection* >(this) );
 }
 
 bool Collection::isLocked() const
@@ -125,6 +123,10 @@ void Collection::setLabel(const QString& label)
 CollectionPrivate::CollectionPrivate() :
         findOptions( Collection::OpenOnly ),
         collectionStatus( Collection::Invalid )
+{
+}
+
+CollectionPrivate::~CollectionPrivate()
 {
 }
 

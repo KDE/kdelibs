@@ -112,7 +112,7 @@ void CollectionJob::onFindCollectionFinished()
 FindCollectionJob::FindCollectionJob(   Collection *collection, 
                                         QObject *parent ) : 
             CollectionJob( collection, parent ),
-            d( new FindCollectionJobPrivate( this, collection->d ) )
+            d( new FindCollectionJobPrivate( this, collection->d.data() ) )
 {
     d->collectionName = collection->d->collectioName;
     d->findCollectionOptions = collection->d->findOptions;
@@ -235,7 +235,7 @@ void FindCollectionJobPrivate::startOpenCollection()
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :
         CollectionJob( collection, parent),
-        d( new DeleteCollectionJobPrivate( collection->d, this ) )
+        d( new DeleteCollectionJobPrivate( collection->d.data(), this ) )
 {
 }
     
@@ -294,7 +294,7 @@ void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher*  watcher
 
 RenameCollectionJob::RenameCollectionJob( Collection *coll, const QString &newName, QObject *parent ) : 
             CollectionJob( coll, parent ),
-            d( new RenameCollectionJobPrivate( coll->d, this ) )
+            d( new RenameCollectionJobPrivate( coll->d.data(), this ) )
 {
     d->newName = newName;
 }
@@ -336,7 +336,7 @@ SearchItemsJob::SearchItemsJob( Collection *collection,
                                 const QStringStringMap &attributes,
                                 QObject *parent ) :
     CollectionJob( collection, parent ),
-    d( new SearchItemsJobPrivate( collection->d, this ) )
+    d( new SearchItemsJobPrivate( collection->d.data(), this ) )
 {
     d->attributes = attributes;
 }
@@ -395,7 +395,7 @@ void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
 
 SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
     CollectionJob( collection, parent ),
-    d( new SearchSecretsJobPrivate( collection->d, attributes ) )
+    d( new SearchSecretsJobPrivate( collection->d.data(), attributes ) )
 {
 }
 
@@ -493,7 +493,7 @@ CreateItemJob::CreateItemJob( Collection *collection,
                               bool replace
                             ) :
             CollectionJob( collection, collection ),
-            d( new CreateItemJobPrivate( collection->d, collection ) )
+            d( new CreateItemJobPrivate( collection->d.data(), collection ) )
 {
     d->label = label;
     d->attributes = attributes;
@@ -593,10 +593,42 @@ void CreateItemJobPrivate::createPromptFinished(KJob*)
 
 ReadItemsJob::ReadItemsJob( Collection *collection,
                                         QObject *parent ) :
-    CollectionJob( collection, parent )
+    CollectionJob( collection, parent ),
+    d( new ReadItemsJobPrivate( collection->d.data() ) )
 {
 }
-    
+
+void ReadItemsJob::start()
+{
+    // this is a property read - Qt seems to read properties synchrounously
+    setError( 0 );
+    setErrorText( "" );
+    emitResult();
+}
+
+QList< SecretItem > ReadItemsJob::items() const 
+{
+    QList< SecretItem > result;
+    foreach( SecretItemPrivate ip, d->readItems() ) {
+        result.append( SecretItem( new SecretItemPrivate( ip ) ) );
+    }
+    return result;
+}
+
+ReadItemsJobPrivate::ReadItemsJobPrivate( CollectionPrivate *cp ) :
+    collectionPrivate( cp )
+{
+}
+
+QList< SecretItemPrivate > ReadItemsJobPrivate::readItems() const 
+{
+    QList< SecretItemPrivate > result;
+    foreach( QDBusObjectPath path, collectionPrivate->collectionIf->items() ) {
+        result.append( SecretItemPrivate( path ) );
+    }
+    return result;
+}
+
 PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
             KJob( parent ),
             promptPath( path ),

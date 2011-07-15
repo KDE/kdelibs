@@ -34,6 +34,7 @@ class RenameCollectionJobPrivate;
 class SearchItemsJobPrivate;
 class CreateItemJobPrivate;
 class SearchSecretsJobPrivate;
+class ReadItemsJobPrivate;
 
 namespace KSecretsService {
 
@@ -197,15 +198,13 @@ class ReadItemsJob : public CollectionJob {
     Q_DISABLE_COPY(ReadItemsJob)
 public:
     explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
-    
+
+    virtual void start();
     QList< SecretItem > items() const;
     
 private:
-    class Private;
-    Private *d;
-};
-
-class ReadItemsJob::Private {
+    friend class ::ReadItemsJobPrivate;
+    QSharedPointer< ReadItemsJobPrivate > d;
 };
 
 }
