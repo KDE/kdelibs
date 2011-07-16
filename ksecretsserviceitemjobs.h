@@ -23,17 +23,19 @@
 
 #include "ksecretsservicesecret.h"
 
-#include <kjob.h>
 #include <QSharedPointer>
+#include <kcompositejob.h>
+#include <qwindowdefs.h>
 
 class GetSecretItemSecretJobPrivate;
 class SetSecretItemSecretJobPrivate;
+class SecretItemDeleteJobPrivate;
 
 namespace KSecretsService {
 
 class SecretItem;
 
-class SecretItemJob : public KJob {
+class SecretItemJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(SecretItemJob)
 public:
@@ -82,6 +84,19 @@ public:
 private:
     friend class ::SetSecretItemSecretJobPrivate;
     QSharedPointer< SetSecretItemSecretJobPrivate > d;
+};
+
+class SecretItemDeleteJob : public SecretItemJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(SecretItemDeleteJob)
+public:
+    SecretItemDeleteJob( SecretItem*, const WId &promptParentWindowId );
+    
+    virtual void start();
+    
+private:
+    friend class ::SecretItemDeleteJobPrivate;
+    QSharedPointer< SecretItemDeleteJobPrivate > d;
 };
 
 }; // namespace

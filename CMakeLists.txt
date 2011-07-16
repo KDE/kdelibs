@@ -16,6 +16,7 @@ set (client_lib_SRCS
     ksecretsservicecollection.cpp
     ksecretscollectionjobs.cpp
     dbusbackend.cpp
+    promptjob.cpp
     ../daemon/frontend/secret/adaptors/dbustypes.cpp
 )
 

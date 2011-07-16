@@ -27,6 +27,7 @@
 #include "item_interface.h"
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
 #include "ksecretsservicesecret_p.h"
+#include "promptjob.h"
 
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
@@ -631,42 +632,6 @@ QList< SecretItemPrivate > ReadItemsJobPrivate::readItems() const
         result.append( SecretItemPrivate( path ) );
     }
     return result;
-}
-
-PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
-            KJob( parent ),
-            promptPath( path ),
-            parentWindowId( parentId )
-{
-}
-
-void PromptJob::start()
-{
-    promptIf = DBusSession::createPrompt( promptPath );
-    if ( promptIf->isValid() ) {
-        connect( promptIf, SIGNAL(Completed(bool,const QDBusVariant&)), this, SLOT(promptCompleted(bool,const QDBusVariant&)) );
-        // TODO: place a timer here to avoid hanging up if the prompt never calls promptCompleted
-        // NOTE: however, care should be taken to avoid problems when user is too slow interacting with the prompt.
-        //       a sensible timeout value should be chosen
-        
-        QDBusPendingReply<> promptReply = promptIf->Prompt( QString("%1").arg( parentWindowId ) );
-        // NOTE: ne need to wait for promptReply to finish. The prompt will call promptCompleted when user interaction takes end
-    }
-    else {
-        kDebug() << "ERROR instantiating prompt " << promptPath.path();
-        setError(1); // FIXME: use enumerated error codes here
-        setErrorText( QString("ERROR instantiating prompt with path '%1'").arg( promptPath.path() ) );
-        emitResult();
-    }
-}
-
-void PromptJob::promptCompleted(bool dism, const QDBusVariant &res)
-{
-    kDebug() << "dismissed = " << dism << ", result = " << res.variant().toString();
-    dismissed = dism;
-    opResult = res;
-    setError(0);
-    emitResult();
 }
 
 

@@ -44,15 +44,14 @@ SecretItem::SecretItem( SecretItemPrivate* sip ) :
 }
 
 
-KJob* SecretItem::deleteItem()
+SecretItemDeleteJob * SecretItem::deleteItem( const WId &promptParentWindowId )
 {
-    // TODO: implement this
-    return NULL;
+    return new SecretItemDeleteJob( this, promptParentWindowId );
 }
 
 GetSecretItemSecretJob* SecretItem::getSecret() const
 {
-    return new GetSecretItemSecretJob( const_cast< SecretItem*>( this ));
+    return new GetSecretItemSecretJob( const_cast< SecretItem*>( this ) );
 }
 
 
@@ -63,13 +62,12 @@ SetSecretItemSecretJob* SecretItem::setSecret(const Secret& secret)
 
 QStringStringMap SecretItem::attributes() const
 {
-    // TODO: implement this
-    return QStringStringMap();
+    return d->itemIf->attributes();
 }
 
 void SecretItem::setAttributes(const QMap< QString, QString >& attributes)
 {
-    // TODO: implement this
+    d->itemIf->setAttributes( attributes );
 }
 
 bool SecretItem::isLocked() const

@@ -34,6 +34,7 @@ typedef QMap< QString, QString > QStringStringMap;
 
 class GetSecretItemSecretJob;
 class SetSecretItemSecretJob;
+class SecretItemDeleteJob;
    
 /**
  * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
@@ -51,7 +52,7 @@ public:
     
     /**
      */
-    KJob * deleteItem();
+    SecretItemDeleteJob * deleteItem( const WId &promptParentWindowId );
 
     /**
      * Read the data held by the SecretItem
@@ -103,6 +104,7 @@ private:
     friend class SecretItemPrivate;
     friend class GetSecretItemSecretJob;
     friend class SetSecretItemSecretJob;
+    friend class SecretItemDeleteJob;
     
     QSharedPointer< SecretItemPrivate > d;
 };

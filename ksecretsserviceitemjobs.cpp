@@ -27,6 +27,7 @@
 #include <item_interface.h>
 #include <kdebug.h>
 #include <QDBusPendingCallWatcher>
+#include "promptjob.h"
 
 using namespace KSecretsService;
 
@@ -139,6 +140,77 @@ void SetSecretItemSecretJobPrivate::setSecretReply( QDBusPendingCallWatcher *wat
     }
 }
 
+
+SecretItemDeleteJob::SecretItemDeleteJob( SecretItem * item, const WId &promptParentWindowId ) :
+    SecretItemJob( item ),
+    d( new SecretItemDeleteJobPrivate( this ) )
+{
+    d->secretItemPrivate = item->d.data();
+    d->promptWinId = promptParentWindowId;
+}
+
+void SecretItemDeleteJob::start()
+{
+    d->startDelete();
+}
+
+SecretItemDeleteJobPrivate::SecretItemDeleteJobPrivate( SecretItemDeleteJob *j ) :
+    job( j )
+{
+}
+    
+void SecretItemDeleteJobPrivate::startDelete()
+{
+    QDBusPendingReply< QDBusObjectPath > reply =  secretItemPrivate->itemIf->Delete();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(deleteItemReply(QDBusPendingCallWatcher*)) );
+}
+
+void SecretItemDeleteJobPrivate::deleteItemReply( QDBusPendingCallWatcher *watcher )
+{
+    Q_ASSERT( watcher );
+    QDBusPendingReply< QDBusObjectPath > reply = *watcher;
+    if ( ! reply.isError() ) {
+        QDBusObjectPath promptPath = reply.argumentAt<0>();
+        if ( promptPath.path().compare( "/" ) == 0 ) {
+            job->finished( SecretItemJob::NoError );
+        }
+        else {
+            PromptJob *promptjob = new PromptJob( promptPath, promptWinId, this );
+            if ( job->addSubjob( promptjob ) ) {
+                connect( promptjob, SIGNAL(finished(KJob*)), this, SLOT(deletePromptFinished(KJob*)) );
+                promptjob->start();
+            }
+            else {
+                promptjob->deleteLater();
+                kDebug() << "Cannot add subjob for prompt " << promptPath.path();
+                job->finished( SecretItemJob::InternalError, "Cannot start prompt job for the delete operation!" );
+            }
+        }
+    }
+    else {
+        kDebug() << "ERROR when calling item.Delete() : " << reply.error().message();
+        job->finished( SecretItemJob::InternalError, reply.error().message() );
+    }
+    watcher->deleteLater();
+}
+
+void SecretItemDeleteJobPrivate::deletePromptFinished( KJob* j)
+{
+    PromptJob *promptJob = dynamic_cast< PromptJob* >( j );
+    if ( promptJob->error() == 0 ) {
+        if ( !promptJob->isDismissed() ) {
+            // TODO: should we read some result here or simply checking isDismissed is enough ?
+            job->finished( SecretItemJob::NoError );
+        }
+        else {
+            job->finished( SecretItemJob::OperationCancelledByTheUser, "The operation was cancelled by the user" );
+        }
+    }
+    else {
+        job->finished( SecretItemJob::InternalError, "Error encountered when trying to prompt the user" );
+    }
+}
 
 #include "ksecretsserviceitemjobs.moc"
 #include "ksecretsserviceitemjobs_p.moc"

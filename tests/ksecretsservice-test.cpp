@@ -165,6 +165,15 @@ void KSecretServiceTest::testItems()
     getSecretJob = createdItem->getSecret();
     QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );
     QVERIFY( getSecretJob->secret() == secondSecret );
+    
+    // try to delete the item
+    KSecretsService::SecretItemDeleteJob *itemDeleteJob = createdItem->deleteItem( 0 );
+    QVERIFY2( itemDeleteJob->exec(), qPrintable( itemDeleteJob->errorText() ) );
+    
+    // finally, delete the collection
+    KJob *deleteJob = coll->deleteCollection();
+    deleteJob->exec();
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
 }
 
 void KSecretServiceTest::cleanupTestCase()

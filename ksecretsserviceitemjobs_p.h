@@ -24,6 +24,7 @@
 #include "ksecretsserviceitemjobs.h"
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
 #include <qdbusconnection.h>
+#include <qwindowdefs.h>
 
 namespace KSecretsService {
     class GetSecretItemSecretJob;
@@ -69,6 +70,24 @@ public:
     Secret secret;
     SecretItemPrivate *secretItemPrivate;
     SecretPrivate *secretPrivate;
+};
+
+class SecretItemDeleteJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(SecretItemDeleteJobPrivate)
+public:
+    SecretItemDeleteJobPrivate( SecretItemDeleteJob* );
+    
+    void startDelete();
+    
+private Q_SLOTS:
+    void deleteItemReply( QDBusPendingCallWatcher *watcher );
+    void deletePromptFinished(KJob*);
+    
+public:
+    SecretItemDeleteJob *job;
+    SecretItemPrivate   *secretItemPrivate;
+    WId                 promptWinId;
 };
 
 #endif // KSECRETSSERVICEITEMJOBS_P_H
