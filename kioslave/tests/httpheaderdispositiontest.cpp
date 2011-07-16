@@ -194,6 +194,20 @@ static const struct {
       "filename\tfoo-ä-€.html" },
 // missing closing quote, so parameter is broken
     { "attachment; filename=\"bar",
+      "type\tattachment" },
+// we ignore any path given in the header and use only the filename
+    { "attachment; filename=\"/etc/shadow\"",
+      "type\tattachment\n"
+      "filename\tshadow" },
+// we ignore any path given in the header and use only the filename even if there is an error later
+      { "attachment; filename=\"/etc/shadow\"; foo=\"baz\"; foo=\"bar\"",
+      "type\tattachment\n"
+      "filename\tshadow" },
+// control characters are forbidden in the quoted string
+      { "attachment; filename=\"foo\003\"",
+      "type\tattachment" },
+// duplicate keys must be ignored
+      { "attachment; filename=\"bar\"; filename*0=\"foo.\"; filename*1=\"html\"",
       "type\tattachment" }
 };
 
