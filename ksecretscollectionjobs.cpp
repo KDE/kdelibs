@@ -501,6 +501,10 @@ CreateItemJob::CreateItemJob( Collection *collection,
     d->replace = replace;
 }
 
+SecretItem * CreateItemJob::item() const 
+{
+    return d->item;
+}
 
 void CreateItemJob::start()
 {
@@ -568,7 +572,7 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
         else {
             QSharedPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
             if ( itemPrivate->isValid() ) {
-                item = new SecretItem( itemPrivate.data() );
+                item = new SecretItem( itemPrivate );
                 emit createIsDone( CollectionJob::NoError, "" );
             }
             else {

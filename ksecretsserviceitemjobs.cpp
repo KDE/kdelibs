@@ -93,5 +93,52 @@ void GetSecretItemSecretJobPrivate::getSecretReply( QDBusPendingCallWatcher *wat
 }
 
 
+SetSecretItemSecretJob::SetSecretItemSecretJob( SecretItem* item, const Secret &s ) :
+    SecretItemJob( item ),
+    d( new SetSecretItemSecretJobPrivate( this, s ) )
+{
+    d->secretItemPrivate = item->d.data();
+    d->secretPrivate = s.d.data();
+}
+
+void SetSecretItemSecretJob::start()
+{
+    d->start();
+}
+
+SetSecretItemSecretJobPrivate::SetSecretItemSecretJobPrivate( SetSecretItemSecretJob *j, const Secret &s ) :
+    job( j ),
+    secret( s )
+{
+}
+    
+void SetSecretItemSecretJobPrivate::start()
+{
+    SecretStruct secretStruct;
+    if ( secretPrivate->toSecretStruct( secretStruct ) ) {
+        QDBusPendingReply< void > reply = secretItemPrivate->itemIf->SetSecret( secretStruct );
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+        connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(setSecretReply(QDBusPendingCallWatcher*)) );
+    }
+    else {
+        kDebug() << "ERROR building SecretStruct";
+        job->finished( SecretItemJob::InternalError, "ERROR building SecretStruct" );
+    }
+}
+
+void SetSecretItemSecretJobPrivate::setSecretReply( QDBusPendingCallWatcher *watcher )
+{
+    Q_ASSERT(watcher != 0);
+    QDBusPendingReply< void > reply = *watcher;
+    if ( reply.isError() ) {
+        kDebug() << "ERROR calling setSecret : " << reply.error().message();
+        job->finished( SecretItemJob::InternalError, reply.error().message() );
+    }
+    else {
+        job->finished( SecretItemJob::NoError );
+    }
+}
+
+
 #include "ksecretsserviceitemjobs.moc"
 #include "ksecretsserviceitemjobs_p.moc"

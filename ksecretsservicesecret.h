@@ -45,6 +45,7 @@ struct Secret {
     
 private:
     friend class CreateItemJob;
+    friend class SetSecretItemSecretJob;
     
     QSharedPointer< ::SecretPrivate > d;
 };

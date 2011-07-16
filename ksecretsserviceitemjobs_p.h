@@ -23,6 +23,7 @@
 
 #include "ksecretsserviceitemjobs.h"
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include <qdbusconnection.h>
 
 namespace KSecretsService {
     class GetSecretItemSecretJob;
@@ -36,21 +37,38 @@ class GetSecretItemSecretJobPrivate  : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(GetSecretItemSecretJobPrivate)
 public:
-    GetSecretItemSecretJobPrivate( KSecretsService::GetSecretItemSecretJob * );
+    GetSecretItemSecretJobPrivate( GetSecretItemSecretJob * );
 
     void start();
-    
-    SecretStruct secret;
-    SecretItemPrivate *secretItemPrivate;
     
 private Q_SLOTS:
     void getSecretReply( QDBusPendingCallWatcher* watcher );
     
 Q_SIGNALS:
     void getSecretFinished( SecretItemJob::ItemJobError, const QString& );
-    
-private:
+
+public:
     GetSecretItemSecretJob *job;
+    SecretStruct secret;
+    SecretItemPrivate *secretItemPrivate;
+};
+
+class SetSecretItemSecretJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(SetSecretItemSecretJobPrivate)
+public:
+    SetSecretItemSecretJobPrivate( SetSecretItemSecretJob*, const Secret & );
+    
+    void start();
+    
+private Q_SLOTS:
+    void setSecretReply( QDBusPendingCallWatcher* watcher );
+
+public:
+    SetSecretItemSecretJob *job;
+    Secret secret;
+    SecretItemPrivate *secretItemPrivate;
+    SecretPrivate *secretPrivate;
 };
 
 #endif // KSECRETSSERVICEITEMJOBS_P_H

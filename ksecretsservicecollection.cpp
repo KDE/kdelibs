@@ -88,34 +88,27 @@ ReadItemsJob* Collection::items() const
 
 bool Collection::isLocked() const
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return false;
+    return d->collectionIf->locked();
 }
 
 QString Collection::label() const
 {
-    return d->collectionIf->property( "Label" ).toString();
+    return d->collectionIf->label();
 }
 
 QDateTime Collection::createdTime() const
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return QDateTime();
+    return QDateTime::fromTime_t( d->collectionIf->created() );
 }
 
 QDateTime Collection::modifiedTime() const
 {
-    // TODO: implement this
-    Q_ASSERT(0);
-    return QDateTime();
+    return QDateTime::fromTime_t( d->collectionIf->modified() );
 }
 
 void Collection::setLabel(const QString& label)
 {
-    // TODO: implement this
-    Q_ASSERT(0);
+    d->collectionIf->setLabel( label );
 }
 
 

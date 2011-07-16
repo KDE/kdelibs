@@ -33,10 +33,16 @@ SecretItem::SecretItem() :
 {
 }
 
-SecretItem::SecretItem( SecretItemPrivate * thatPrivate ) :
+SecretItem::SecretItem( const QSharedPointer< SecretItemPrivate > & thatPrivate ) :
     d( thatPrivate )
 {
 }
+
+SecretItem::SecretItem( SecretItemPrivate* sip ) :
+    d( sip )
+{
+}
+
 
 KJob* SecretItem::deleteItem()
 {
@@ -50,10 +56,9 @@ GetSecretItemSecretJob* SecretItem::getSecret() const
 }
 
 
-KJob* SecretItem::setSecret(const Secret& secret)
+SetSecretItemSecretJob* SecretItem::setSecret(const Secret& secret)
 {
-    // TODO: implement this
-    return NULL;
+    return new SetSecretItemSecretJob( this, secret );
 }
 
 QStringStringMap SecretItem::attributes() const
@@ -69,34 +74,31 @@ void SecretItem::setAttributes(const QMap< QString, QString >& attributes)
 
 bool SecretItem::isLocked() const
 {
-    // TODO: implement this
-    return false;
+    return d->itemIf->locked();
 }
 
 QString SecretItem::label() const
 {
-    // TODO: implement this
-    return "";
+    return d->itemIf->label();
 }
 
 QDateTime SecretItem::createdTime() const
 {
-    // TODO: implement this
-    return QDateTime();
+    return QDateTime::fromTime_t( d->itemIf->created() );
 }
 
 QDateTime SecretItem::modifiedTime() const
 {
-    // TODO: implement this
-    return QDateTime();
+    return QDateTime::fromTime_t( d->itemIf->modified() );
 }
 
 void SecretItem::setLabel(const QString& label)
 {
-    // TODO: implement this
+    d->itemIf->setLabel( label );
 }
 
-SecretItemPrivate::SecretItemPrivate()
+SecretItemPrivate::SecretItemPrivate() :
+    itemIf(0)
 {
 }
 

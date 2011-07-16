@@ -33,6 +33,7 @@ namespace KSecretsService {
 typedef QMap< QString, QString > QStringStringMap;
 
 class GetSecretItemSecretJob;
+class SetSecretItemSecretJob;
    
 /**
  * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
@@ -45,6 +46,7 @@ class SecretItem {
 protected:
     SecretItem();
 public:
+    SecretItem( const QSharedPointer< SecretItemPrivate > & );
     SecretItem( SecretItemPrivate * );
     
     /**
@@ -59,7 +61,7 @@ public:
     /**
      * Modify the item's stored data
      */
-    KJob* setSecret( const Secret &secret );
+    SetSecretItemSecretJob* setSecret( const Secret &secret );
 
     /**
      * FIXME: This methods accesses a dbus property. should it be asynchronous ?
@@ -100,6 +102,7 @@ public:
 private:
     friend class SecretItemPrivate;
     friend class GetSecretItemSecretJob;
+    friend class SetSecretItemSecretJob;
     
     QSharedPointer< SecretItemPrivate > d;
 };

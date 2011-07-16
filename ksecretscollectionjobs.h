@@ -182,7 +182,7 @@ public:
     explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     
     virtual void start();
-    SecretItem item() const;
+    SecretItem * item() const;
     
 protected Q_SLOTS:
     virtual void onFindCollectionFinished();

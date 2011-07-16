@@ -27,6 +27,7 @@
 #include <QSharedPointer>
 
 class GetSecretItemSecretJobPrivate;
+class SetSecretItemSecretJobPrivate;
 
 namespace KSecretsService {
 
@@ -53,7 +54,7 @@ public:
 protected:
     void finished( ItemJobError, const QString& msg ="");
     
-protected:
+public:
     SecretItem  *secretItem;
 };
 
@@ -68,6 +69,19 @@ public:
 private:
     friend class ::GetSecretItemSecretJobPrivate;
     QSharedPointer< GetSecretItemSecretJobPrivate > d;
+};
+
+class SetSecretItemSecretJob : public SecretItemJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(SetSecretItemSecretJob)
+public:
+    SetSecretItemSecretJob( SecretItem*, const Secret& );
+    
+    virtual void start();
+    
+private:
+    friend class ::SetSecretItemSecretJobPrivate;
+    QSharedPointer< SetSecretItemSecretJobPrivate > d;
 };
 
 }; // namespace
