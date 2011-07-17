@@ -278,16 +278,28 @@ public:
 
   virtual void reparseConfiguration();
 
-  virtual void closeConnection(); // Forced close of connection
+  /**
+   * Forced close of connection
+   */
+  virtual void closeConnection();
 
   void post( const KUrl& url, qint64 size = -1 );
   void multiGet(const QByteArray &data);
   bool maybeSetRequestUrl(const KUrl &);
 
-  void httpPutError(); // Generate error message based on response code
-  bool sendErrorPageNotification(); // Call SlaveBase::errorPage() and remember that we've called it
+  /**
+   * Generate error message based on response code
+   */
+  void httpPutError();
+  /**
+   * Call SlaveBase::errorPage() and remember that we've called it
+   */
+  bool sendErrorPageNotification();
 
-  bool isOffline(); // Check network status
+  /**
+   * Check network status
+   */
+  bool isOffline();
 
 protected Q_SLOTS:
   void slotData(const QByteArray &);
@@ -297,9 +309,9 @@ protected Q_SLOTS:
   void saveProxyAuthenticationForSocket();
 
 protected:
-  int readChunked();    // Read a chunk
-  int readLimited();    // Read maximum m_iSize bytes.
-  int readUnlimited();  // Read as much as possible.
+  int readChunked();    ///< Read a chunk
+  int readLimited();    ///< Read maximum m_iSize bytes.
+  int readUnlimited();  ///< Read as much as possible.
 
   /**
     * A thin wrapper around TCPSlaveBase::write() that will retry writing as
@@ -319,23 +331,49 @@ protected:
 
   // The methods between here and sendQuery() are helpers for sendQuery().
 
-  // Return true if the request is already "done", false otherwise.
-  // *sucesss will be set to true if the page was found, false otherwise.
+  /**
+   * Return true if the request is already "done", false otherwise.
+   *
+   * @p cacheHasPage will be set to true if the page was found, false otherwise.
+   */
   bool satisfyRequestFromCache(bool *cacheHasPage);
   QString formatRequestUri() const;
-  // create HTTP authentications response(s), if any
+  /**
+   * create HTTP authentications response(s), if any
+   */
   QString authenticationHeader();
   bool sendQuery();
 
-  void httpClose(bool keepAlive);  // Close transfer
-  bool httpOpenConnection();   // Open connection
-  void httpCloseConnection();  // Close connection
-  bool httpShouldCloseConnection();  // Check whether to keep or close the connection.
+  /**
+   * Close transfer
+   */
+  void httpClose(bool keepAlive);
+  /**
+   * Open connection
+   */
+  bool httpOpenConnection();
+  /**
+   * Close connection
+   */
+  void httpCloseConnection();
+  /**
+   * Check whether to keep or close the connection.
+   */
+  bool httpShouldCloseConnection();
 
   void forwardHttpResponseHeader(bool forwardImmediately = true);
 
-  // Helpers for readResponseHeader - fix common mimetype/content-encoding errors by webservers.
+  /**
+   * fix common mimetype errors by webservers.
+   *
+   * Helper for readResponseHeader().
+   */
   void fixupResponseMimetype();
+  /**
+   * fix common content-encoding errors by webservers.
+   *
+   * Helper for readResponseHeader().
+   */
   void fixupResponseContentEncoding();
 
   bool readResponseHeader();
@@ -395,9 +433,13 @@ protected:
   QByteArray cacheFileReadPayload(int maxLength);
   void cacheFileWritePayload(const QByteArray &d);
   void cacheFileWriteTextHeader();
-  // check URL to guard against hash collisions, and load the etag for validation
+  /**
+   * check URL to guard against hash collisions, and load the etag for validation
+   */
   bool cacheFileReadTextHeader1(const KUrl &desiredUrl);
-  // load the rest of the text fields
+  /**
+   * load the rest of the text fields
+   */
   bool cacheFileReadTextHeader2();
   void setCacheabilityMetadata(bool cachingAllowed);
 
@@ -405,9 +447,10 @@ protected:
    * Do everything proceedUntilResponseHeader does, and also get the response body.
    * This is being used as a replacement for proceedUntilResponseHeader() in
    * situations where we actually expect the response to have a body / payload data.
+   *
+   * where dataInternal == true, the content is to be made available
+   * to an internal function.
    */
-  // where dataInternal == true, the content is to be made available
-  // to an internal function.
   void proceedUntilResponseContent( bool dataInternal = false );
 
   /**
@@ -460,21 +503,21 @@ protected:
   QList<HTTPRequest> m_requestQueue;
 
   // Processing related
-  KIO::filesize_t m_iSize; // Expected size of message
+  KIO::filesize_t m_iSize; ///< Expected size of message
   KIO::filesize_t m_iPostDataSize;
-  KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
-  KIO::filesize_t m_iContentLeft; // # of content bytes left
-  QByteArray m_receiveBuf; // Receive buffer
-  bool m_dataInternal; // Data is for internal consumption
-  bool m_isChunked; // Chunked transfer encoding
+  KIO::filesize_t m_iBytesLeft; ///< # of bytes left to receive in this message.
+  KIO::filesize_t m_iContentLeft; ///< # of content bytes left
+  QByteArray m_receiveBuf; ///< Receive buffer
+  bool m_dataInternal; ///< Data is for internal consumption
+  bool m_isChunked; ///< Chunked transfer encoding
 
-  bool m_isBusy; // Busy handling request queue.
+  bool m_isBusy; ///< Busy handling request queue.
   bool m_isEOF;
   bool m_isEOD;
 
 //--- Settings related to a single response only
-  bool m_isRedirection; // Indicates current request is a redirection
-  QStringList m_responseHeaders; // All headers
+  bool m_isRedirection; ///< Indicates current request is a redirection
+  QStringList m_responseHeaders; ///< All headers
 
 
   // Language/Encoding related
@@ -504,10 +547,10 @@ protected:
   QIODevice* m_POSTbuf;
 
   // Cache related
-  int m_maxCacheAge; // Maximum age of a cache entry.
-  long m_maxCacheSize; // Maximum cache size in Kb.
-  QString m_strCacheDir; // Location of the cache.
-  QLocalSocket m_cacheCleanerConnection; // Connection to the cache cleaner process
+  int m_maxCacheAge; ///< Maximum age of a cache entry in seconds.
+  long m_maxCacheSize; ///< Maximum cache size in Kb.
+  QString m_strCacheDir; ///< Location of the cache.
+  QLocalSocket m_cacheCleanerConnection; ///< Connection to the cache cleaner process
 
   // Operation mode
   QByteArray m_protocol;
