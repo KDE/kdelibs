@@ -41,10 +41,6 @@
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
 
-// HeaderTokenizer declarations
-#include "parsinghelpers.h"
-// KHttpAuthentication & KHttpAuthenticationOutcome declarations
-#include "httpauthentication.h"
 
 class QDomNodeList;
 class QFile;
@@ -53,6 +49,9 @@ class QIODevice;
 namespace KIO {
     class AuthInfo;
 }
+
+class HeaderTokenizer;
+class KAbstractHttpAuthentication;
 
 class HTTPProtocol : public QObject, public KIO::TCPSlaveBase
 {
