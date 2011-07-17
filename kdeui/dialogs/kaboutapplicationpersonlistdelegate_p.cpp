@@ -263,7 +263,7 @@ QString KAboutApplicationPersonListDelegate::buildTextForProfile( const KAboutAp
 {
     QString text;
     text += QLatin1String("<b>");
-    text += profile.name();
+    text += i18nc("@item Contributor name in about dialog.", "%1", profile.name());
     text += QLatin1String("</b>");
 
     if( !profile.task().isEmpty() ) {
