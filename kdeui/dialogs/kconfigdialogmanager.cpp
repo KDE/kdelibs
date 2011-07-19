@@ -462,12 +462,15 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
             }
             return;
         }
-        kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
-        return;
     }
     if (userproperty.isEmpty()) {
         userproperty = getUserProperty(w);
     }
+    if (userproperty.isEmpty()) {
+        kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
+        return;
+    }
+
     w->setProperty(userproperty, v);
 }
 
