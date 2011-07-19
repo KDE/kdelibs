@@ -1063,7 +1063,6 @@ install(FILES
   Plasma/LineEdit
   Plasma/Meter
   Plasma/Package
-  Plasma/PackageMetadata
   Plasma/PackageStructure
   Plasma/PaintUtils
   Plasma/Plasma
