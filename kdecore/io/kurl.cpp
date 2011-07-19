@@ -872,7 +872,9 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         urlWithoutHost.setHost(QString());
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
+#ifdef __GNUC__
 #warning FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.
+#endif
 #ifndef Q_WS_WIN
     if (isLocalFile()) {
         return trailingSlash(trailing, QUrl::path());
