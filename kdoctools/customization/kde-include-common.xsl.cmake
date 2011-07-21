@@ -5,6 +5,5 @@
    <xsl:import href="@DOCBOOKXSL_DIR@/html/chunk.xsl"/>
 
    <xsl:param name="l10n.xml" select="document('xsl/all-l10n.xml')"/>
-   <xsl:param name="local.l10n.xml" select="document('xsl/kde-custom-l10n.xml')"/>
-        
+   <xsl:param name="local.l10n.xml" select="document(concat('xsl/',/*/@lang,'.xml'))"/>
 </xsl:stylesheet>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="el" english-language-name="Greek">
+<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+<l:l10n language="el" english-language-name="Greek">
 
    <l:gentext key="nav-home" text="Περιεχόμενα"/>
    
@@ -55,3 +55,4 @@
       <l:template name="Sun" text="Κυρ"/>
    </l:context>
 </l:l10n>
+</l:i18n>

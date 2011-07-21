@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="sl" english-language-name="Slovenian">
+<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+<l:l10n language="sl" english-language-name="Slovenian">
 
    <l:gentext key="PubDate" text="Datum objave"/>
    <l:gentext key="pubdate" text="Datum objave"/>
@@ -119,3 +119,4 @@
    </l:context>
 
 </l:l10n>
+</l:i18n>

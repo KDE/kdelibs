@@ -28,6 +28,7 @@ include_directories( ${KDE4_KIO_INCLUDES} ${ZLIB_INCLUDE_DIR} ${CMAKE_SOURCE_DIR
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 
 add_subdirectory( kcookiejar )
+add_subdirectory( tests )
 
 ########### next target ###############
 

@@ -41,31 +41,59 @@ public:
     KAbstractHttpAuthentication(KConfigGroup *config = 0);
     virtual ~KAbstractHttpAuthentication();
 
+    /**
+     * Choose the best authentication mechanism from the offered ones
+     *
+     * This will return the most secure mechanism from the list of
+     * mechanisms retuned by the server.
+     */
     static QByteArray bestOffer(const QList<QByteArray> &offers);
     static KAbstractHttpAuthentication *newAuth(const QByteArray &offer, KConfigGroup *config = 0);
 
-    // reset to state after default construction.
+    /**
+     * reset to state after default construction.
+     */
     void reset();
-    // the authentication scheme: "Negotiate", "Digest", "Basic", "NTLM"
+    /**
+     * the authentication scheme: "Negotiate", "Digest", "Basic", "NTLM"
+     */
     virtual QByteArray scheme() const = 0;
-    // initiate authentication with challenge string (from HTTP header) c
+    /**
+     * initiate authentication with challenge string (from HTTP header)
+     */
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
-    // return value updated by setChallenge(); if this is false user and password passed
-    // to generateResponse will be ignored and may be empty.
+    /**
+     * return value updated by setChallenge()
+     *
+     * if this is false user and password passed to generateResponse
+     * will be ignored and may be empty.
+     */
     bool needCredentials() const { return m_needCredentials; }
-    // KIO compatible data to find cached credentials. Note that username and/or password
-    // as well as UI text will NOT be filled in.
+    /**
+     * KIO compatible data to find cached credentials.
+     *
+     * Note that username and/or password as well as UI text will NOT be filled in.
+     */
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const = 0;
-    // what to do in response to challenge
+    /**
+     * what to do in response to challenge
+     */
     virtual void generateResponse(const QString &user,
                                   const QString &password) = 0;
 
-    // returns true when the final stage of authentication is reached. Unless
-    // the authentication scheme requires multiple stages like NTLM this
-    // function will always return true.
+    /**
+     * returns true when the final stage of authentication is reached.
+     *
+     * Unless the authentication scheme requires multiple stages like NTLM this
+     * function will always return true.
+     */
     bool wasFinalStage() const { return m_finalAuthStage; }
-    // Returns true if the authentication scheme supports path matching to identify
-    // resources that belong to the same protection space (relam). See RFC 2617.
+    /**
+     * Returns true if the authentication scheme supports path matching to identify
+     * resources that belong to the same protection space (realm).
+     *
+     * See RFC 2617.
+     */
     virtual bool supportsPathMatching() const { return false; }
 
     // the following accessors return useful data after generateResponse() has been called.
@@ -73,14 +101,27 @@ public:
 
     // malformed challenge and similar problems - it is advisable to reconnect
     bool isError() const { return m_isError; }
-    // force keep-alive connection because the authentication method requires it
+    /**
+     * force keep-alive connection because the authentication method requires it
+     */
     bool forceKeepAlive() const { return m_forceKeepAlive; }
-    // force disconnection because the authentication method requires it
+    /**
+     * force disconnection because the authentication method requires it
+     */
     bool forceDisconnect() const { return m_forceDisconnect; }
 
-    // insert this into the next request header after "Authorization: " or "Proxy-Authorization: "
+    /**
+     * insert this into the next request header after "Authorization: "
+     * or "Proxy-Authorization: "
+     */
     QByteArray headerFragment() const { return m_headerFragment; }
-    // this is mainly for GUI shown to the user
+    /**
+     * Returns the realm sent by the server.
+     *
+     * This is mainly for GUI shown to the user. This is the identification of
+     * the protected area on the server (e.g. "Konquis home directory" or
+     * "KDE files").
+     */
     QString realm() const;
 
 protected:
@@ -89,7 +130,7 @@ protected:
     void generateResponseCommon(const QString &user, const QString &password);
 
     KConfigGroup *m_config;
-    QByteArray m_scheme;    // this is parsed from the header and not necessarily == scheme().
+    QByteArray m_scheme;    ///< this is parsed from the header and not necessarily == scheme().
     QByteArray m_challengeText;
     QList<QByteArray> m_challenge;
     KUrl m_resource;
