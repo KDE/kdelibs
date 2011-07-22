@@ -637,7 +637,7 @@ QString KIconDialog::openDialog()
             return name;
         }
         QFileInfo fi(name);
-        return fi.baseName();
+        return fi.completeBaseName();
     }
     return QString();
 }
