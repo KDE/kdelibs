@@ -1027,7 +1027,6 @@ FindSelectionResult RenderTable::checkSelectionPoint( int _x, int _y, int _tx, i
 
 RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
     : RenderBox(node)
-    , containsSpansZero(false)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1170,7 +1169,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 		if ( !cRowHeight.isPercent() ||
 		     (cRowHeight.isPercent() && cRowHeight.rawValue() < height.rawValue() ) )
 		    grid[cRow].height = height;
-		     break;
+		break;
 	    case Fixed:
 		if ( cRowHeight.type() < Percent ||
 		     ( cRowHeight.isFixed() && cRowHeight.value() < height.value() ) )
@@ -1213,7 +1212,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 
     //check whether we need to update any of the cells with span = 0
     QList< int > columnsToAvoid;
-    if( containsSpansZero ) {
+    if( !cellsWithColSpanZero.isEmpty() ) {
         //Update any column which its last span update was in a previous column
         int lowestCol = cellsWithColSpanZero.lowerBound( 0 ).key();
         if( lowestCol < cCol ) {
@@ -1240,6 +1239,9 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
                 lowestCol = cellsWithColSpanZero.lowerBound( 0 ).key();
             }
         }
+    }
+
+    if( !cellsWithRowSpanZero.isEmpty() ) {
         if( cellsWithRowSpanZero.contains( cRow ) ) {
             //No need to check if we have enough columns, we already found the first cell 
             //when rowspan="0", and as such, we've already inserted it
@@ -1280,7 +1282,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 
             const int finalSpan = colgroup->span() - alreadyUsedSpan;
             cell->setColSpan( finalSpan );
-            
+
             //We know exactly the cSpan so we can handle the cell as a normal cell
             //unless, of course, the rowspan is also 0
             cSpan = finalSpan;
@@ -1295,7 +1297,6 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
             cell->setColSpan( finalSpan );
 
             cellsWithColSpanZero.insertMulti( cCol + finalSpan - 1, cell );
-            containsSpansZero = true;
         }
     }
 
@@ -1306,7 +1307,6 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 
         //mark it to be inserted in next row
         cellsWithRowSpanZero.insertMulti( cRow + 1, cell );
-        containsSpansZero = true;
     }
 
     while ( cSpan ) {

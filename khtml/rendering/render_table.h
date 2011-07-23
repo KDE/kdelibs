@@ -278,8 +278,6 @@ public:
     QMap< int, RenderTableCell* > cellsWithColSpanZero;
     //QMap< nextRowToInsert, cell >
     QMap< int, RenderTableCell* > cellsWithRowSpanZero;
-    //True if any of the cells has a span of 0
-    bool containsSpansZero;
 
     int cRow;
     int cCol;
