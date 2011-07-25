@@ -171,6 +171,7 @@ Q_SIGNALS:
     
 protected:
     explicit Collection();
+    explicit Collection( CollectionPrivate* );
     
 private:
     friend class CollectionJob; // to give access to Private class

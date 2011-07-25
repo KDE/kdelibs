@@ -74,8 +74,7 @@ public:
     
     FindCollectionJobPrivate( FindCollectionJob*, CollectionPrivate* );
 
-    void startCreateCollection();
-    void startOpenCollection();
+    void startCreateOrOpenCollection();
     
 private Q_SLOTS:
     void openSessionFinished(KJob*);

@@ -123,16 +123,7 @@ void FindCollectionJob::start()
 {
     // meanwhile another findJob instance would have already connected our collection object
     if ( ! collection()->d->isValid() ) {
-        if ( collection()->d->findOptions == Collection::CreateCollection ) {
-            d->startCreateCollection();
-        }
-        else 
-            if ( collection()->d->findOptions == Collection::OpenOnly ) {
-                d->startOpenCollection();
-            }
-            else {
-                Q_ASSERT( 0 ); // "Unknown findOtions" );
-            }
+        d->startCreateOrOpenCollection();
     }
     else {
         setError( 0 );
@@ -189,7 +180,7 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
         if ( !promptJob->isDismissed() ) {
             QDBusVariant promptResult = promptJob->result();
             QDBusObjectPath collPath = promptResult.variant().value< QDBusObjectPath >();
-            collectionPrivate->setDBusPath( collPath );
+            findJob->d->collectionPrivate->setDBusPath( collPath );
             findJob->finishedOk();
         }
         else {
@@ -203,7 +194,7 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
 }
 
 
-void FindCollectionJobPrivate::startCreateCollection()
+void FindCollectionJobPrivate::startCreateOrOpenCollection()
 {
     OpenSessionJob *openSessionJob = DBusSession::openSession();
     if ( findJob->addSubjob( openSessionJob ) ) {
@@ -219,21 +210,33 @@ void FindCollectionJobPrivate::startCreateCollection()
 void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
 {
     if ( !theJob->error() ) {
-        OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
-        QVariantMap creationProperties;
-        creationProperties.insert("org.freedesktop.Secret.Collection.Label", collectionName);
-        QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = openSessionJob->serviceInterface()->CreateCollection(
-            creationProperties, collectionName );
-        QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
-        connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
+        if ( collectionPrivate->findOptions == Collection::CreateCollection ) {
+            OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
+            QVariantMap creationProperties;
+            creationProperties.insert("org.freedesktop.Secret.Collection.Label", collectionName);
+            QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = openSessionJob->serviceInterface()->CreateCollection(
+                creationProperties, collectionName );
+            QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
+            connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
+        }
+        else 
+            if ( collectionPrivate->findOptions == Collection::OpenOnly ) {
+                QList< QDBusObjectPath > collPaths = DBusSession::serviceIf()->collections();
+                foreach ( QDBusObjectPath collPath, collPaths ) {
+                    OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( collPath );
+                    coll->deleteLater();
+                    if ( coll->label() == collectionName ) {
+                        findJob->d->collectionPrivate->setDBusPath( collPath );
+                        findJob->finishedOk();
+                        break;
+                    }
+                }
+            }
+            else {
+                Q_ASSERT(0);
+            }
     }
 }
-
-void FindCollectionJobPrivate::startOpenCollection()
-{
-    // TODO: implement this
-}
-
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :
         CollectionJob( collection, parent),
