@@ -59,7 +59,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	bool isInitialized() const { return mInitialized; }\n"
                                 "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
                                 "	QString codeTemplate() const { return QLatin1String(\"%CodeTemplate\");}\n"
-                                "	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
+                                "	QString domXml() const { return %DomXml; }\n"
                                 "	QString group() const { return QLatin1String(\"%Group\"); }\n"
                                 "	QString includeFile() const { return QLatin1String(\"%IncludeFile\"); }\n"
                                 "	QString name() const { return QLatin1String(\"%Class\"); }\n"
@@ -195,10 +195,16 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
 
     // FIXME: ### make this more useful, i.e. outsource to separate file
-    defMap.insert( "DomXml", input.readEntry( "DomXML",
-                QString("<widget class=\"%1\" name=\"%2\"/>").
-                arg(name,name.toLower())
-                ).replace( '\"', "\\\"" ));
+    QString domXml = input.readEntry("DomXML", QString());
+    // If domXml is empty then we shoud call base class function
+    if ( domXml.isEmpty() ) {
+        domXml = QLatin1String("QDesignerCustomWidgetInterface::domXml()");
+    }
+    else {
+        // Wrap domXml value into QLatin1String
+        domXml = QString(QLatin1String("QLatin1String(\"%1\")")).arg(domXml.replace( '\"', "\\\"" ));
+    }
+    defMap.insert( "DomXml", domXml  );
     defMap.insert( "CodeTemplate", input.readEntry( "CodeTemplate" ) );
     defMap.insert( "CreateWidget", input.readEntry( "CreateWidget",
       QString( "\n\t\treturn new %1%2;" )
