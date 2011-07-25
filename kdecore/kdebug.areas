@@ -678,10 +678,10 @@
 51005   KFACE
 
 # KMAP - KDE wrapper for world map widgets
-51006   KMAP
+51006   KGEOMAP
 
 # MEDIAWIKI - KDE C++ interface for mediawiki based web service
-51007   KMAP
+51007   MEDIAWIKI
 
 # Network Management
 51010   Network Management (internals)
