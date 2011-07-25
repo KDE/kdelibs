@@ -20,6 +20,7 @@
 
 #include "ksecretsservice-test.h"
 #include "../ksecretsservicecollection.h"
+#include "../ksecretscollectionjobs.h"
 #include "../ksecretsservicesecret.h"
 #include "../ksecretsserviceitem.h"
 
@@ -62,10 +63,17 @@ void KSecretServiceTest::initTestCase()
 
 void KSecretServiceTest::testCreateAndDelete()
 {
-/*    Collection *coll = Collection::findCollection( 0, "test collection" );
-    KJob* deleteJob = coll->deleteCollection();
+    Collection *createdColl = Collection::findCollection( 0, "test collection" );
+    ReadPropertyJob *isValidJob = createdColl->isValid();
+    QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
+    
+    Collection *existingColl = Collection::findCollection( 0, "test collection", Collection::OpenOnly );
+    isValidJob = existingColl->isValid();
+    QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
+    
+    KJob* deleteJob = createdColl->deleteCollection();
     deleteJob->exec();
-    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );*/
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
 }
 
 void KSecretServiceTest::testRenameCollection()
@@ -143,7 +151,7 @@ void KSecretServiceTest::testCreateItem()
 
 void KSecretServiceTest::testItems()
 {
-    Collection *coll = Collection::findCollection( 0, "test collection" );
+/*    Collection *coll = Collection::findCollection( 0, "test collection" );
     QStringStringMap attributes;
     attributes.insert( "test-attribute", "test-attribute-value" );
     Secret newSecret;
@@ -173,7 +181,7 @@ void KSecretServiceTest::testItems()
     // finally, delete the collection
     KJob *deleteJob = coll->deleteCollection();
     deleteJob->exec();
-    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
+    QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );*/
 }
 
 void KSecretServiceTest::cleanupTestCase()

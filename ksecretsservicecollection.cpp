@@ -30,12 +30,13 @@
 #include <QTimer>
 #include <kjob.h>
 #include <kdebug.h>
+#include "ksecretscollectionjobs_p.h"
 
 namespace KSecretsService {
 
 Collection::Collection(): 
         QObject(),
-        d( new CollectionPrivate() )
+        d( new CollectionPrivate( this ) )
 {
     // nothing to do
 }
@@ -86,36 +87,38 @@ ReadItemsJob* Collection::items() const
     return new ReadItemsJob( const_cast< Collection* >(this) );
 }
 
-bool Collection::isLocked() const
+ReadPropertyJob* Collection::isLocked() const
 {
-    return d->collectionIf->locked();
+    return new ReadPropertyJob( const_cast< Collection* >(this), "Locked" );
 }
 
-QString Collection::label() const
+ReadPropertyJob* Collection::label() const
 {
-    return d->collectionIf->label();
+    return new ReadPropertyJob( const_cast< Collection* >(this), "Label" );
 }
 
-QDateTime Collection::createdTime() const
+ReadPropertyJob* Collection::createdTime() const
 {
-    return QDateTime::fromTime_t( d->collectionIf->created() );
+    return new ReadPropertyJob( const_cast< Collection* >(this), "Created" );
 }
 
-QDateTime Collection::modifiedTime() const
+ReadPropertyJob* Collection::modifiedTime() const
 {
-    return QDateTime::fromTime_t( d->collectionIf->modified() );
+    return new ReadPropertyJob( const_cast< Collection* >(this), "Modified" );
 }
 
-void Collection::setLabel(const QString& label)
+WritePropertyJob* Collection::setLabel(const QString& label)
 {
-    d->collectionIf->setLabel( label );
+    return new WritePropertyJob( this, "Label", QVariant( label ) );
 }
 
 
 
-CollectionPrivate::CollectionPrivate() :
+CollectionPrivate::CollectionPrivate( Collection *coll ) :
+        collection( coll ),
         findOptions( Collection::OpenOnly ),
-        collectionStatus( Collection::Invalid )
+        collectionStatus( Collection::Invalid ),
+        collectionIf( 0 )
 {
 }
 
@@ -133,11 +136,13 @@ void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
     promptParentWindowId = promptParentId;
 }
 
-bool CollectionPrivate::isValid() const 
+bool CollectionPrivate::isValid()
 {
+    // NOTE: do not call collectionInterface() to get the interface pointer, if not you'll get an infinite recursive call
     return 
-        collectionStatus == Collection::FoundExisting ||
-        collectionStatus == Collection::NewlyCreated;
+        collectionIf && collectionIf->isValid() && (
+            collectionStatus == Collection::FoundExisting ||
+            collectionStatus == Collection::NewlyCreated );
 }
 
 void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
@@ -156,6 +161,27 @@ void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
 const WId & CollectionPrivate::promptParentId() const 
 {
     return promptParentWindowId;
+}
+
+OrgFreedesktopSecretCollectionInterface *CollectionPrivate::collectionInterface()
+{
+    if ( (collectionIf == 0) || ( !collectionIf->isValid() ) ) {
+        // well, some attribute read method is now happening and we should now really open or find the collection
+        // the only problem is that we'll be forced to call findJob->exec() to do this and it's evil :-)
+        FindCollectionJob *findJob = new FindCollectionJob( collection, 0 );
+        findJob->exec();
+    }
+    return collectionIf;
+}
+
+ReadPropertyJob* Collection::isValid()
+{
+    return new ReadPropertyJob( this, &Collection::readIsValid, this );
+}
+
+void Collection::readIsValid( ReadPropertyJob *readPropertyJob)
+{
+    readPropertyJob->d->value = d->isValid();
 }
 
 #include "ksecretsservicecollection.moc"

@@ -199,6 +199,7 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
     else {
         findJob->finishedWithError( CollectionJob::InternalError, "Error encountered when trying to prompt the user" );
     }
+    job->deleteLater();
 }
 
 
@@ -268,7 +269,7 @@ DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( CollectionPrivate* collp
 
 void DeleteCollectionJobPrivate::startDelete() 
 {
-    QDBusPendingReply<QDBusObjectPath> deleteReply = cp->collectionIf->Delete();
+    QDBusPendingReply<QDBusObjectPath> deleteReply = cp->collectionInterface()->Delete();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( deleteReply, this );
     connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), this, SLOT( callFinished(QDBusPendingCallWatcher*) ) );
 }
@@ -325,7 +326,7 @@ RenameCollectionJobPrivate::RenameCollectionJobPrivate( CollectionPrivate *collP
 
 void RenameCollectionJobPrivate::startRename()
 {
-    if ( collectionPrivate->collectionIf->setProperty( "Label", QVariant( newName ) ) ) {
+    if ( collectionPrivate->collectionInterface()->setProperty( "Label", QVariant( newName ) ) ) {
         emit renameIsDone( CollectionJob::NoError, "" );
     }
     else {
@@ -370,7 +371,7 @@ SearchItemsJobPrivate::SearchItemsJobPrivate( CollectionPrivate* cp, SearchItems
 
 void SearchItemsJobPrivate::startSearchItems()
 {
-    QDBusPendingReply< QList< QDBusObjectPath > > reply = collectionPrivate->collectionIf->SearchItems( attributes );
+    QDBusPendingReply< QList< QDBusObjectPath > > reply = collectionPrivate->collectionInterface()->SearchItems( attributes );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
     connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchFinished(QDBusPendingCallWatcher*) ) );
 }
@@ -434,7 +435,7 @@ SearchSecretsJobPrivate::SearchSecretsJobPrivate( CollectionPrivate *cp, const Q
 
 void SearchSecretsJobPrivate::startSearchSecrets()
 {
-    QDBusPendingReply<QList<QDBusObjectPath> > searchReply = collectionPrivate->collectionIf->SearchItems( attributes );
+    QDBusPendingReply<QList<QDBusObjectPath> > searchReply = collectionPrivate->collectionInterface()->SearchItems( attributes );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( searchReply, this );
     connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchSecretsReply(QDBusPendingCallWatcher*)));
 }
@@ -496,6 +497,7 @@ CreateItemJob::CreateItemJob( Collection *collection,
             CollectionJob( collection, collection ),
             d( new CreateItemJobPrivate( collection->d.data(), collection ) )
 {
+    d->createItemJob = this;
     d->label = label;
     d->attributes = attributes;
     d->secretPrivate = secret.d;
@@ -522,10 +524,10 @@ void CreateItemJob::onFindCollectionFinished()
     d->startCreateItem();
 }
 
-void CreateItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
-{
-    finishedWithError( err, msg );
-}
+// void CreateItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
+// {
+//     finishedWithError( err, msg );
+// }
 
 CreateItemJobPrivate::CreateItemJobPrivate( CollectionPrivate *cp, QObject *parent ) :
         QObject( parent ),
@@ -543,13 +545,13 @@ void CreateItemJobPrivate::startCreateItem()
     varMap["Attributes"] = varAttrs;
     SecretStruct secretStruct;
     if ( secretPrivate->toSecretStruct( secretStruct ) ) {
-        QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = collectionPrivate->collectionIf->CreateItem( varMap, secretStruct, replace );
+        QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = collectionPrivate->collectionInterface()->CreateItem( varMap, secretStruct, replace );
         QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( createReply );
         connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createItemReply(QDBusPendingCallWatcher*)) );
     }
     else {
         kDebug() << "ERROR preparing SecretStruct";
-        emit createIsDone( CollectionJob::CreateError, "Cannot prepare secret structure" );
+        createItemJob->finishedWithError( CollectionJob::CreateError, "Cannot prepare secret structure" );
     }
 }
 
@@ -567,25 +569,25 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
             }
             else {
                 kDebug() << "ERROR creating prompt job for " << promptPath.path();
-                emit createIsDone( CollectionJob::CreateError, "Cannot create prompt job!" );
+                createItemJob->finishedWithError( CollectionJob::CreateError, "Cannot create prompt job!" );
             }
         }
         else {
             QSharedPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
             if ( itemPrivate->isValid() ) {
                 item = new SecretItem( itemPrivate );
-                emit createIsDone( CollectionJob::NoError, "" );
+                createItemJob->finishedOk();
             }
             else {
                 item = NULL;
                 kDebug() << "ERROR creating item, as it's invalid. path = " << itemPath.path();
-                emit createIsDone( CollectionJob::CreateError, "The backend returned an invalid item path or it's no longer present" );
+                createItemJob->finishedWithError( CollectionJob::CreateError, "The backend returned an invalid item path or it's no longer present" );
             }
         }
     }
     else {
         kDebug() << "ERROR trying to create item : " << createReply.error().message();
-        emit createIsDone( CollectionJob::CreateError, "Backend communication error" );
+        createItemJob->finishedWithError( CollectionJob::CreateError, "Backend communication error" );
     }
     watcher->deleteLater();
 }
@@ -628,10 +630,89 @@ ReadItemsJobPrivate::ReadItemsJobPrivate( CollectionPrivate *cp ) :
 QList< SecretItemPrivate > ReadItemsJobPrivate::readItems() const 
 {
     QList< SecretItemPrivate > result;
-    foreach( QDBusObjectPath path, collectionPrivate->collectionIf->items() ) {
+    foreach( QDBusObjectPath path, collectionPrivate->collectionInterface()->items() ) {
         result.append( SecretItemPrivate( path ) );
     }
     return result;
+}
+
+ReadPropertyJob::ReadPropertyJob( Collection *coll, const char *propName, QObject *parent ) :
+    CollectionJob( coll, parent ),
+    d( new ReadPropertyJobPrivate( coll->d.data(), this ) ),
+    propertyReadMember(0)
+{
+    d->propertyName = propName;
+}
+
+ReadPropertyJob::ReadPropertyJob( Collection *coll, void (Collection::*propReadMember)( ReadPropertyJob* ), QObject *parent ) :
+    CollectionJob( coll, parent ),
+    d( new ReadPropertyJobPrivate( coll->d.data(), this ) ),
+    propertyReadMember( propReadMember )
+{
+}
+
+void ReadPropertyJob::start()
+{
+    startFindCollection(); // this will trigger onFindCollectionFinished
+}
+
+void ReadPropertyJob::onFindCollectionFinished()
+{
+    if ( propertyReadMember ) {
+        (collection()->*propertyReadMember)( this );
+        finishedOk();
+    }
+    else {
+        d->startReadingProperty();
+    }
+}
+
+const QVariant& ReadPropertyJob::propertyValue() const
+{
+    return d->value;
+}
+
+ReadPropertyJobPrivate::ReadPropertyJobPrivate( CollectionPrivate *cp, ReadPropertyJob *job ) :
+    collectionPrivate( cp ),
+    readPropertyJob( job )
+{
+}
+    
+void ReadPropertyJobPrivate::startReadingProperty()
+{
+    value = collectionPrivate->collectionInterface()->property( propertyName );
+    readPropertyJob->finishedOk();
+}
+
+
+WritePropertyJob::WritePropertyJob( Collection *coll, const char *propName, const QVariant& value, QObject *parent ) :
+    CollectionJob( coll, parent ),
+    d( new WritePropertyJobPrivate( coll->d.data(), this ) )
+{
+    d->propertyName = propName;
+    d->value = value;
+}
+
+void WritePropertyJob::start()
+{
+    startFindCollection(); // this will trigger onFindCollectionFinished
+}
+
+void WritePropertyJob::onFindCollectionFinished()
+{
+    d->startWritingProperty();
+}
+
+WritePropertyJobPrivate::WritePropertyJobPrivate( CollectionPrivate *cp, WritePropertyJob *job ) :
+    collectionPrivate( cp ),
+    writePropertyJob( job )
+{
+}
+    
+void WritePropertyJobPrivate::startWritingProperty()
+{
+    value = collectionPrivate->collectionInterface()->setProperty( propertyName, value );
+    writePropertyJob->finishedOk();
 }
 
 

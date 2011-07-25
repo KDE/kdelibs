@@ -40,7 +40,8 @@ class CreateItemJob;
 class SearchSecretsJob;
 class SearchItemsJob;
 class ReadItemsJob;
-
+class ReadPropertyJob;
+class WritePropertyJob;
 
 class Collection : public QObject {
     Q_OBJECT
@@ -130,34 +131,37 @@ public:
 
     /**
      * Retrieve the lock status of this collection
-     * FIXME: should this method be asynchronous?
+     * @Note returned ReadPropertyJob::propertyValue is boolean
      */
-    bool isLocked() const;
+    ReadPropertyJob* isLocked() const;
     
     /**
      * Retrieve this collection's label
-     * FIXME: should this method be asynchronous?
+     * @Note returned ReadPropertyJob::propertyValue is QString
      */
-    QString label() const;
+    ReadPropertyJob* label() const;
     
     /**
      * Get the creation timestamps of this collection
-     * FIXME: should this method be asynchronous?
+     * @Note returned ReadPropertyJob::propertyValue is a time_t
      */
-    QDateTime createdTime() const;
+    ReadPropertyJob* createdTime() const;
     
     /**
      * Get the last modified timestamp of this collection
-     * FIXME: should this method be asynchronous?
+     * @Note returned ReadPropertyJob::propertyValue is a time_t
      */
-    QDateTime modifiedTime() const;
+    ReadPropertyJob* modifiedTime() const;
 
     /**
      * Change this collection's label
-     * FIXME: should this method be asynchronous?
      */
-    void setLabel( const QString &label );
+    WritePropertyJob* setLabel( const QString &label );
     
+    /**
+     * @return true if the collection was actually found or created into the KSecretsService infrastructure
+     */
+    ReadPropertyJob* isValid();
     
 Q_SIGNALS:
     void itemCreated( const SecretItem& ); 
@@ -177,6 +181,10 @@ private:
     friend class SearchSecretsJob;
     friend class SearchItemsJob;
     friend class ReadItemsJob;
+    friend class ReadPropertyJob;
+    friend class WritePropertyJob;
+    
+    void readIsValid( ReadPropertyJob* );
     
     QSharedPointer< CollectionPrivate > d;
 };

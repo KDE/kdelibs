@@ -32,21 +32,24 @@ namespace KSecretsService {
 
 class CollectionPrivate {
 public:
-    CollectionPrivate();
+    explicit CollectionPrivate( Collection * );
     ~CollectionPrivate();
 
     void setPendingFindCollection(const WId &promptParentId, const QString &collName, Collection::FindCollectionOptions options);
-    bool isValid() const;
+    bool isValid();
     bool isNewlyCreated() const;
     void setDBusPath(const QDBusObjectPath &collPath);
     const WId &promptParentId() const;
-    
+    OrgFreedesktopSecretCollectionInterface *collectionInterface();
 
 public:
+    Collection                              *collection;
     WId                                     promptParentWindowId;
     QString                                 collectioName;
     Collection::FindCollectionOptions       findOptions;
     Collection::Status                      collectionStatus;
+    
+private:
     OrgFreedesktopSecretCollectionInterface *collectionIf;
 };
 

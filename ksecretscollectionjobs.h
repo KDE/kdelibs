@@ -35,6 +35,8 @@ class SearchItemsJobPrivate;
 class CreateItemJobPrivate;
 class SearchSecretsJobPrivate;
 class ReadItemsJobPrivate;
+class ReadPropertyJobPrivate;
+class WritePropertyJobPrivate;
 
 namespace KSecretsService {
 
@@ -141,8 +143,6 @@ private:
 };
 
 class SearchItemsJob : public CollectionJob {
-    Q_OBJECT
-    Q_DISABLE_COPY(SearchItemsJob)
 public:
     explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     
@@ -176,17 +176,13 @@ private:
 };
 
 class CreateItemJob : public CollectionJob {
-    Q_OBJECT
-    Q_DISABLE_COPY(CreateItemJob)
 public:
     explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     
     virtual void start();
     SecretItem * item() const;
     
-protected Q_SLOTS:
     virtual void onFindCollectionFinished();
-    void createIsDone( CollectionJob::CollectionError, const QString& );
     
 private:
     friend class ::CreateItemJobPrivate;
@@ -194,8 +190,6 @@ private:
 };
 
 class ReadItemsJob : public CollectionJob {
-    Q_OBJECT
-    Q_DISABLE_COPY(ReadItemsJob)
 public:
     explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
 
@@ -207,6 +201,35 @@ private:
     QSharedPointer< ReadItemsJobPrivate > d;
 };
 
+class ReadPropertyJob : public CollectionJob {
+    explicit ReadPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
+    explicit ReadPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadPropertyJob* ), QObject *parent =0 );
+    friend class Collection; // only Collection class can instantiated us
+public:
+    
+    virtual void start();
+    virtual void onFindCollectionFinished();
+    const QVariant& propertyValue() const;
+    
+private:
+    friend class ::ReadPropertyJobPrivate;
+    QSharedPointer< ReadPropertyJobPrivate > d;
+    void (Collection::*propertyReadMember)( ReadPropertyJob* );
+};
+
+class WritePropertyJob : public CollectionJob {
+public:
+    explicit WritePropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
+    
+    virtual void start();
+    virtual void onFindCollectionFinished();
+    
+private:
+    friend class ::WritePropertyJobPrivate;
+    QSharedPointer< WritePropertyJobPrivate > d;
+};
+
+    
 }
 
 #endif // KSECRETSCOLLECTIONJOBS_H

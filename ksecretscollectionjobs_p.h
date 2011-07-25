@@ -139,9 +139,6 @@ protected Q_SLOTS:
     void createItemReply(QDBusPendingCallWatcher*);
     void createPromptFinished(KJob*);
     
-Q_SIGNALS:
-    void createIsDone( CollectionJob::CollectionError, const QString& );
-    
 public:
     CollectionPrivate                   *collectionPrivate;
     CreateItemJob                       *createItemJob;
@@ -185,5 +182,28 @@ public:
     CollectionPrivate   *collectionPrivate;
 };
 
+class ReadPropertyJobPrivate : public QObject {
+public:
+    explicit ReadPropertyJobPrivate( CollectionPrivate* cp, ReadPropertyJob* );
+    
+    void startReadingProperty();
+    
+    CollectionPrivate *collectionPrivate;
+    ReadPropertyJob *readPropertyJob;
+    const char *propertyName;
+    QVariant value;
+};
+
+class WritePropertyJobPrivate : public QObject {
+public:
+    explicit WritePropertyJobPrivate( CollectionPrivate *cp, WritePropertyJob* );
+    
+    void startWritingProperty();
+    
+    CollectionPrivate *collectionPrivate;
+    WritePropertyJob *writePropertyJob;
+    const char *propertyName;
+    QVariant value;
+};
 
 #endif // KSECRETSCOLLECTIONJOBS_P_H
