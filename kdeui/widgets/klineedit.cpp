@@ -335,25 +335,22 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         return;
     }
 
-    int clearButtonState = KIconLoader::DefaultState;
+    // set proper icon if necessary
+    if (d->clearButton->pixmap().isNull()) {
+        const int clearButtonState = KIconLoader::DefaultState;
+        if (layoutDirection() == Qt::LeftToRight) {
+            d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-rtl", 0, clearButtonState));
+        } else {
+            d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
+        }
+    }
 
+    // trigger animation
     if (d->wideEnoughForClear && text.length() > 0) {
         d->clearButton->animateVisible(true);
     } else {
         d->clearButton->animateVisible(false);
     }
-
-    if (!d->clearButton->pixmap().isNull()) {
-        return;
-    }
-
-    if (layoutDirection() == Qt::LeftToRight) {
-        d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-rtl", 0, clearButtonState));
-    } else {
-        d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
-    }
-
-    d->clearButton->setVisible(text.length() > 0);
 }
 
 // Determine geometry of clear button. Called initially, and on resizeEvent.
