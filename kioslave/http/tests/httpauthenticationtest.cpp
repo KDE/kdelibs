@@ -107,9 +107,12 @@ void HTTPAuthenticationTest::testAuthenticationSelection()
 
     QByteArray bestOffer;
     QList<QByteArray> authHeaders;
-    authHeaders << "NTLM" << "Basic" << "Negotiate" << "Digest" << "UnsupportedAuth";
+    authHeaders << "NTLM" << "Basic" << "Digest" << "UnsupportedAuth";
+#ifdef HAVE_LIBGSSAPI
+    authHeaders << "Negotiate";
     testAuthBestOffer(authHeaders, "Negotiate", &bestOffer);
     authHeaders.removeOne(bestOffer);
+#endif
     testAuthBestOffer(authHeaders, "Digest", &bestOffer);
     authHeaders.removeOne(bestOffer);
     testAuthBestOffer(authHeaders, "NTLM", &bestOffer);
