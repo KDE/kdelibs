@@ -271,7 +271,9 @@ struct SharedLock
 {
     union
     {
+#if defined(KSDC_THREAD_PROCESS_SHARED_SUPPORTED)
         pthread_mutex_t mutex;
+#endif
 #if defined(KSDC_SEMAPHORES_SUPPORTED)
         sem_t semaphore;
 #endif
