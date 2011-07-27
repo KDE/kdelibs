@@ -23,6 +23,7 @@
 #include <QUrl>
 
 #include <kcodecs.h>
+#include <kdebug.h>
 
 // Advance *pos beyond spaces / tabs
 static void skipSpace(const char input[], int *pos, int end)
@@ -408,7 +409,7 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
     }
 }
 
-static QMap<QString, QString> contentDispositionParser(const QString &disposition)
+static QMap<QString, QString> contentDispositionParserInternal(const QString &disposition)
 {
     kDebug(7113) << "disposition: " << disposition;
     int pos = 0;
@@ -430,7 +431,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         if( key.isEmpty() ) {
             // parse error in this key: do not parse more, but add up
             // everything we already got
-            kDebug(7113) << "parse error, abort parsing";
+            kDebug(7113) << "parse error in key, abort parsing";
             break;
         }
 
@@ -442,7 +443,7 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
 
         if( val.isEmpty() ) {
             if( pos == -1 ) {
-                kDebug(7113) << "parse error, abort parsing";
+                kDebug(7113) << "parse error in value, abort parsing";
                 break;
             }
             continue;
@@ -556,6 +557,13 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
             parameters.insert( i.key(), val );
         }
     }
+
+    return parameters;
+}
+
+static QMap<QString, QString> contentDispositionParser(const QString &disposition)
+{
+    QMap<QString, QString> parameters = contentDispositionParserInternal(disposition);
 
     const QLatin1String fn("filename");
     if( parameters.contains(fn) ) {
