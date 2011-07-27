@@ -46,7 +46,7 @@ int ksdcArea();
 #warning "No support for POSIX timeouts -- application hangs are possible if the cache is corrupt"
 #endif
 
-#if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED == 0) || (_POSIX_THREAD_PROCESS_SHARED >= 200112L))
+#if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED == 0) || (_POSIX_THREAD_PROCESS_SHARED >= 200112L)) && !defined(__APPLE__)
 #include <pthread.h>
 #define KSDC_THREAD_PROCESS_SHARED_SUPPORTED 1
 #endif
