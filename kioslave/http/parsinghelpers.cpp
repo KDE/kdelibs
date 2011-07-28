@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2008 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2010,2011 Rolf Eike Beer <kde@opensource.sf-tec.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -533,23 +534,17 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
                 valid = (rawval.at(j) >= 32);
             }
 
-            if (valid) {
-                val = QString::fromAscii(rawval.constData());
-            } else {
-                val.clear();
-            }
+            if (!valid)
+                continue;
+            val = QString::fromAscii(rawval.constData());
         } else {
             QTextCodec *codec = QTextCodec::codecForName(charset.toAscii());
-            if (codec) {
-                val = codec->toUnicode(rawval);
-            } else {
-                val.clear();
-            }
+            if (!codec)
+                continue;
+            val = codec->toUnicode(rawval);
         }
 
-        if (!val.isEmpty()) {
-            parameters.insert(i.key(), val);
-        }
+        parameters.insert(i.key(), val);
     }
 
     return parameters;
