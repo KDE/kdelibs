@@ -89,11 +89,30 @@ void HTTPAuthenticationTest::testHeaderParsing()
     // Tests cases from http://greenbytes.de/tech/tc/httpauth/
     testAuthHeaderFormats("Basic realm=\"foo\"", "Basic", toByteArrayList("realm,foo"));
     testAuthHeaderFormats("Basic realm=foo", "Basic", toByteArrayList("realm,foo"));
+    // missing comma between fields
+    testAuthHeaderFormats("Basic realm=foo bar=baz", "Basic", toByteArrayList("realm,foo"));
+    // missing comma between fields
+    testAuthHeaderFormats("Basic realm=\"foo\" bar=baz", "Basic", toByteArrayList("realm,foo"));
+    // empty fields
+    testAuthHeaderFormats("Basic realm=foo , , ,  ,, bar=\"baz\"\t,", "Basic", toByteArrayList("realm,foo,bar,baz"));
     testAuthHeaderFormats("Basic", "Basic", QList<QByteArray>());
     testAuthHeaderFormats("Basic realm = \"foo\"", "Basic", toByteArrayList("realm,foo"));
-    // FIXME: Deal with quoted and escaped values...
-    //testAuthHeaderFormats("Basic realm=\"\\f\\o\\o\"", "Basic", toByteArrayList("realm,foo"));
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\"\"", "Basic", toByteArrayList("realm,foo"));
+    // only opening quote
+    testAuthHeaderFormats("Basic realm=\"", "Basic", QList<QByteArray>());
+    // every character needlessly quoted
+    testAuthHeaderFormats("Basic realm=\"\\f\\o\\o\"", "Basic", toByteArrayList("realm,foo"));
+    // quotes around text
+    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\"\"", "Basic", toByteArrayList("realm,\"foo\""));
+    // quotes around text, every character needlessly quoted
+    testAuthHeaderFormats("Basic realm=\"\\\"\\f\\o\\o\\\"\"", "Basic", toByteArrayList("realm,\"foo\""));
+    // quotes around text, quoted backslashes
+    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\\\"", "Basic", toByteArrayList("realm,\"foo\\\\"));
+    // quotes around text, quoted backslashes, quote hidden behind them
+    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\"\"", "Basic", toByteArrayList("realm,\"foo\\\""));
+    // invalid quoted text
+    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\"", "Basic", QList<QByteArray>());
+    // ends in backslash without quoted value
+    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\", "Basic", QList<QByteArray>());
     testAuthHeaderFormats("Basic realm=\"foo\", bar=\"xyz\"", "Basic", toByteArrayList("realm,foo,bar,xyz"));
     testAuthHeaderFormats("Basic bar=\"xyz\", realm=\"foo\"", "Basic", toByteArrayList("bar,xyz,realm,foo"));
     testAuthHeaderFormats("bAsic bar\t =\t\"baz\", realm =\t\"foo\"", "bAsic", toByteArrayList("bar,baz,realm,foo"));
