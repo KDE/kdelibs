@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2010 Rolf Eike Beer <kde@opensource.sf-tec.de>
+    Copyright (C) 2010,2011 Rolf Eike Beer <kde@opensource.sf-tec.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -150,6 +150,15 @@ static const struct {
     { "attachment; filename*1=\"html\"; filename*0*=us-ascii''foo.",
       "type\tattachment\n"
       "filename\tfoo.html" },
+// unknown charset
+    { "attachment; filename*=unknown''foo",
+      "type\tattachment" },
+// no apostrophs
+    { "attachment; filename*=foo",
+      "type\tattachment" },
+// only one apostroph
+    { "attachment; filename*=us-ascii'foo",
+      "type\tattachment" },
 // duplicate filename, both should be ignored and parsing should stop
     { "attachment; filename=foo; filename=bar; foo=bar",
       "type\tattachment" },
