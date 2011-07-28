@@ -621,6 +621,20 @@ Q_SIGNALS:
      */
     void showingDesktopChanged( bool showing );
 
+    /**
+     * Compositing was enabled or disabled.
+     *
+     * Note that this signal may be emitted before any compositing plugins
+     * have been initialized in the window manager.
+     *
+     * If you need to check if a specific compositing plugin such as the
+     * blur effect is enabled, you should track that separately rather
+     * than test for it in a slot connected to this signal.
+     *
+     * @since 4.7.1
+     */
+    void compositingChanged( bool enabled );
+
 protected:
     virtual void connectNotify( const char* signal );
 

@@ -36,6 +36,12 @@
 #include <QtGui/QX11Info>
 #include <X11/Xatom.h>
 
+#include <config.h>
+
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#endif
+
 class KWindowSystemStaticContainer {
 public:
     KWindowSystemStaticContainer() : d(0) {}
@@ -46,6 +52,8 @@ public:
 
 K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
+static Atom net_wm_cm;
+static void create_atoms( Display* dpy = QX11Info::display() );
 
 static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
                                      NET::Supported |
@@ -92,7 +100,10 @@ public:
     QList<StrutData> strutWindows;
     QList<WId> possibleStrutWindows;
     bool strutSignalConnected;
+    bool compositingEnabled;
+    bool haveXfixes;
     int what;
+    int xfixesEventBase;
     bool mapViewport();
 
     void addClient(Window);
@@ -110,10 +121,23 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
                    _what >= KWindowSystem::INFO_WINDOWS ? windows_properties : desktop_properties,
                    2, -1, false ),
       strutSignalConnected( false ),
+      haveXfixes( false ),
       what( _what )
 {
     KSystemEventFilter::installEventFilter(this);
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
+
+#ifdef HAVE_XFIXES
+    int errorBase;
+    if ((haveXfixes = XFixesQueryExtension(QX11Info::display(), &xfixesEventBase, &errorBase))) {
+        create_atoms();
+        XFixesSelectSelectionInput(QX11Info::display(), winId(), net_wm_cm,
+                                   XFixesSetSelectionOwnerNotifyMask |
+                                   XFixesSelectionWindowDestroyNotifyMask |
+                                   XFixesSelectionClientCloseNotifyMask);
+        compositingEnabled = XGetSelectionOwner(QX11Info::display(), net_wm_cm) != None;
+    }
+#endif
 }
 
 // not virtual, but it's called directly only from init()
@@ -126,6 +150,18 @@ void KWindowSystemPrivate::activate()
 bool KWindowSystemPrivate::x11Event( XEvent * ev )
 {
     KWindowSystem* s_q = KWindowSystem::self();
+
+#ifdef HAVE_XFIXES
+    if ( ev->type == xfixesEventBase + XFixesSelectionNotify && ev->xany.window == winId() ) {
+        XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
+        bool haveOwner = event->owner != None;
+        if (compositingEnabled != haveOwner) {
+            compositingEnabled = haveOwner;
+            emit s_q->compositingChanged( compositingEnabled );
+        }
+        return true;
+    }
+#endif
 
     if ( ev->xany.window == QX11Info::appRootWindow() ) {
         int old_current_desktop = currentDesktop();
@@ -273,9 +309,8 @@ static bool atoms_created = false;
 static Atom kde_wm_change_state;
 static Atom _wm_protocols;
 static Atom kwm_utf8_string;
-static Atom net_wm_cm;
 
-static void create_atoms( Display* dpy = QX11Info::display()) {
+static void create_atoms( Display* dpy ) {
     if (!atoms_created){
 	const int max = 20;
 	Atom* atoms[max];
@@ -759,8 +794,13 @@ void KWindowSystem::lowerWindow( WId win )
 bool KWindowSystem::compositingActive()
 {
     if( QX11Info::display()) {
-        create_atoms();
-        return XGetSelectionOwner( QX11Info::display(), net_wm_cm ) != None;
+        init( INFO_BASIC );
+        if (s_d_func()->haveXfixes) {
+            return s_d_func()->compositingEnabled;
+        } else {
+            create_atoms();
+            return XGetSelectionOwner( QX11Info::display(), net_wm_cm );
+        }
     } else { // work even without QApplication instance
         Display* dpy = XOpenDisplay( NULL );
         create_atoms( dpy );
