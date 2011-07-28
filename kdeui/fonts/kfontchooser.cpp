@@ -292,7 +292,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     }
     // Populate usual styles, to determine minimum list width;
     // will be replaced later with correct styles.
-    d->styleListBox->addItem(i18nc("@item font","Regular"));
+    d->styleListBox->addItem(I18NC_NOX("QFontDatabase", "Normal"));
     d->styleListBox->addItem(i18nc("@item font","Italic"));
     d->styleListBox->addItem(i18nc("@item font","Oblique"));
     d->styleListBox->addItem(i18nc("@item font","Bold"));
@@ -617,17 +617,12 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
             continue;
         }
 
-        // We don't like Qt's name for some styles.
-        QString styleMod = style;
-        if (style == I18NC_NOX("QFontDatabase", "Normal"))
-            styleMod = i18nc("@item font", "Regular");
-
         // i18n: Filtering message, so that translators can script the
         // style string according to the font family name (e.g. may need
         // noun-adjective congruence wrt. gender of the family name).
         // The message provides the dynamic context 'family', which is
         // the family name to which the style string corresponds.
-        QString fstyle = ki18nc("@item Font style", "%1").subs(styleMod).inContext("family", pureFamily).toString();
+        QString fstyle = ki18nc("@item Font style", "%1").subs(style).inContext("family", pureFamily).toString();
         if (!filteredStyles.contains(fstyle)) {
             filteredStyles.append(fstyle);
             qtStyles.insert(fstyle, style);
@@ -637,7 +632,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     styleListBox->addItems(filteredStyles);
 
     // Try to set the current style in the listbox to that previous.
-    int listPos = filteredStyles.indexOf(selectedStyle.isEmpty() ?  i18nc("@item font", "Regular") : selectedStyle);
+    int listPos = filteredStyles.indexOf(selectedStyle.isEmpty() ?  I18NC_NOX("QFontDatabase", "Normal") : selectedStyle);
     if (listPos < 0) {
         // Make extra effort to have Italic selected when Oblique was chosen,
         // and vice versa, as that is what the user would probably want.
