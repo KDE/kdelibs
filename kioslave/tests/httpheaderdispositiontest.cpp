@@ -144,7 +144,15 @@ static const struct {
 // "wrong" element ordering and encoding
     { "attachment; filename*1=\"html\"; filename*0*=us-ascii''foo.",
       "type\tattachment\n"
-      "filename\tfoo.html" }
+      "filename\tfoo.html" },
+// we ignore any path given in the header and use only the filename
+    { "attachment; filename=\"/etc/shadow\"",
+      "type\tattachment\n"
+      "filename\tshadow" },
+// we ignore any path given in the header and use only the filename even if there is an error later
+      { "attachment; filename=\"/etc/shadow\"; foo",
+      "type\tattachment\n"
+      "filename\tshadow" }
 };
 
 #if 0

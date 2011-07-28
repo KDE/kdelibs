@@ -22,6 +22,7 @@
 #include <QUrl>
 
 #include <kcodecs.h>
+#include <kdebug.h>
 
 // Advance *pos beyond spaces / tabs
 static void skipSpace(const char input[], int *pos, int end)
@@ -385,7 +386,7 @@ static QString extractMaybeQuotedUntil(const QString &str, QChar term, int &pos)
     }
 }
 
-static QMap<QString, QString> contentDispositionParser(const QString &disposition)
+static QMap<QString, QString> contentDispositionParserInternal(const QString &disposition)
 {
     kDebug(7113) << "disposition: " << disposition;
     int pos = 0;
@@ -515,6 +516,13 @@ static QMap<QString, QString> contentDispositionParser(const QString &dispositio
         if( !val.isEmpty() )
             parameters.insert( i.key(), val );
     }
+
+    return parameters;
+}
+
+static QMap<QString, QString> contentDispositionParser(const QString &disposition)
+{
+    QMap<QString, QString> parameters = contentDispositionParserInternal(disposition);
 
     const QLatin1String fn("filename");
     if( parameters.contains(fn) ) {
