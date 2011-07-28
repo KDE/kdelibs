@@ -77,8 +77,8 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
 
     while (end < len) {
         start = end;
-        // parse key
-        while (start < len && isWhiteSpace(b[start])) {
+        // parse key, skip empty fields
+        while (start < len && (isWhiteSpace(b[start]) || b[start] == ',')) {
             start++;
         }
         end = start;
@@ -107,41 +107,63 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         while (start < len && isWhiteSpace(b[start])) {
             start++;
         }
-        if (start + 1 < len && b[start] == '"') {
+        if (b[start] == '"') {
+            bool hasBs = false;
+            bool hasErr = false;
+
             end = ++start;
-            while (start + 1 < len && b[start] == '\\' && b[start+1] == '"') {
-                start += 2;
-                end = start;
+
+            while (end < len) {
+                if (b[end] == '\\') {
+                    if (++end + 1 >= len) {
+                        hasErr = true;
+                        break;
+                    } else {
+                        hasBs = true;
+                        end++;
+                    }
+                } else if (b[end] == '"') {
+                    break;
+                } else {
+                    end++;
+                }
             }
-            //quoted string
-            while (end < len && b[end] != '"') {
-                end++;
+            if (hasErr || (end == len)) {
+                // remove the key we already inserted
+                kDebug(7113) << "error in quoted text for key" << values.last();
+                values.removeLast();
+                break;
+             }
+
+            QByteArray value = QByteArray(b + start, end - start);
+            if (hasBs) {
+                // skip over the next character, it might be an escaped backslash
+                int i = -1;
+                while ( (i = value.indexOf('\\', i + 1)) >= 0 ) {
+                    value.remove(i, 1);
+                }
             }
-            pos = end; // save the end position
-            if (end-1 > start && b[end-1] == '\\') {
-                end--; // ignore escape char
-            }
-            values.append(QByteArray(b + start, end - start));
-            end = pos; // restore the end position
-            //the quoted string has ended, but only a comma ends a key-value pair
-            while (end < len && b[end] != ',') {
-                end++;
-            }
+
+            values.append(value);
+            end++;
         } else {
             end = start;
             //unquoted string
-            while (end < len && b[end] != ',') {
+            while (end < len && b[end] != ',' && !isWhiteSpace(b[end])) {
                 end++;
             }
-            pos = end; // save the end position
-            while (end - 1 > start && isWhiteSpace(b[end - 1])) { // trim whitespace
-                end--;
-            }
             values.append(QByteArray(b + start, end - start));
-            end = pos; // restore the end position
         }
-        // end may point beyond the buffer already here
-        end++;  // skip comma
+
+        //the quoted string has ended, but only a comma ends a key-value pair
+        while (end < len && isWhiteSpace(b[end]))
+            end++;
+
+        // garbage
+        if (end < len && b[end] != ',') {
+            kDebug(7113) << "unexpected character" << b[end] << "found in WWW-authentication header where token boundary (,) was expected";
+            break;
+        }
     }
     // ensure every key has a value
     // WARNING: Do not remove the > 1 check or parsing a Type 1 NTLM
