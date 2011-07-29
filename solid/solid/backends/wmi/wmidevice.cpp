@@ -172,7 +172,7 @@ public:
     {
         QStringList list = DeviceInterface::toStringList(type);
         QString value = list.size() > 0 ? list[0] : QString();
-        qDebug() << value;
+//         qDebug() << value;
         return value;
     }
 
@@ -477,7 +477,7 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
 #if 1
-        qDebug() << " has to be implemented";
+//         qDebug() << " has to be implemented";
         return true;
 #else
         return property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume")
