@@ -52,6 +52,7 @@ install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 set(kio_http_PART_SRCS
    http.cpp
+   httpauthentication.cpp
    ${httpfilter_STAT_SRCS}
    ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
    )

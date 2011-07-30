@@ -148,6 +148,7 @@ class KGlobalSettings::Private
         Private(KGlobalSettings *q)
             : q(q), activated(false), paletteCreated(false)
         {
+            kdeFullSession = !qgetenv("KDE_FULL_SESSION").isEmpty();
         }
 
         QPalette createApplicationPalette(const KSharedConfigPtr &config);
@@ -181,6 +182,7 @@ class KGlobalSettings::Private
         KGlobalSettings *q;
         bool activated;
         bool paletteCreated;
+        bool kdeFullSession;
         QPalette applicationPalette;
 };
 
@@ -1024,10 +1026,9 @@ QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConf
 
 void KGlobalSettings::Private::kdisplaySetPalette()
 {
-    // Added by Sam/Harald (TT) for Mac OS X initially, but why?
-    KConfigGroup cg( KGlobal::config(), "General" );
-    if (cg.readEntry("nopaletteChange", false))
+    if (!kdeFullSession) {
         return;
+    }
 
     if (qApp->type() == QApplication::GuiClient) {
         QApplication::setPalette( q->createApplicationPalette() );
@@ -1039,6 +1040,10 @@ void KGlobalSettings::Private::kdisplaySetPalette()
 
 void KGlobalSettings::Private::kdisplaySetFont()
 {
+    if (!kdeFullSession) {
+        return;
+    }
+
     if (qApp->type() == QApplication::GuiClient) {
         KGlobalSettingsData* data = KGlobalSettingsData::self();
 

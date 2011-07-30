@@ -37,6 +37,7 @@ using namespace KIO;
 	void DataSlave::dispatch_##type() { \
 	  if (_suspended) { \
 	    QueueStruct q(Queue_##type); \
+	    q.size = -1; \
 	    dispatchQueue.push_back(q); \
 	    if (!timer->isActive()) timer->start(KIO_DATA_POLL_INTERVAL); \
 	  } else \
@@ -92,6 +93,7 @@ void DataSlave::resume() {
 // TransferJob::start can delete the job even before the end of the method
 void DataSlave::dispatch_finished() {
     QueueStruct q(Queue_finished);
+    q.size = -1;
     dispatchQueue.push_back(q);
     if (!timer->isActive()) timer->start(KIO_DATA_POLL_INTERVAL);
 }

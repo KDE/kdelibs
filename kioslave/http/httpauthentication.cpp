@@ -17,59 +17,112 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 #include "httpauthentication.h"
 
+#ifdef HAVE_LIBGSSAPI
+#ifdef GSSAPI_MIT
+#include <gssapi/gssapi.h>
+#else
+#include <gssapi.h>
+#endif /* GSSAPI_MIT */
+
+// Catch uncompatible crap (BR86019)
+#if defined(GSS_RFC_COMPLIANT_OIDS) && (GSS_RFC_COMPLIANT_OIDS == 0)
+#include <gssapi/gssapi_generic.h>
+#define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
+#endif
+
+#endif /* HAVE_LIBGSSAPI */
+
+#include <krandom.h>
+#include <kdebug.h>
+#include <klocale.h>
+#include <kglobal.h>
+#include <kcodecs.h>
+#include <kconfiggroup.h>
+#include <kio/authinfo.h>
+#include <misc/kntlm/kntlm.h>
+
+#include <QtNetwork/QHostInfo>
+#include <QtCore/QTextCodec>
+
+
+static bool isWhiteSpace(char ch)
+{
+    return (ch == ' ' || ch == '\t' || ch == '\v' || ch == '\f');
+}
 
 // keys on even indexes, values on odd indexes. Reduces code expansion for the templated
 // alternatives.
-static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme = 0)
+static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme, QByteArray* nextAuth = 0)
 {
     QList<QByteArray> values;
     const int len = ba.count();
     const char *b = ba.constData();
     int start = 0;
     int end = 0;
+    int pos = 0;
 
     // parse scheme
-    while (start < len && (b[start] == ' ' || b[start] == '\t')) {
+    while (start < len && isWhiteSpace(b[start])) {
         start++;
     }
     end = start;
-    while (end < len && (b[end] != ' ' && b[end] != '\t')) {
+    while (end < len && !isWhiteSpace(b[end])) {
         end++;
     }
-    if (scheme) {
-        *scheme = QByteArray(b + start, end - start);
-    }
+
+    Q_ASSERT(scheme);
+    *scheme = QByteArray(b + start, end - start);
 
     while (end < len) {
         start = end;
         // parse key
-        while (start < len && (b[start] == ' ' || b[start] == '\t')) {
+        while (start < len && isWhiteSpace(b[start])) {
             start++;
         }
         end = start;
         while (end < len && b[end] != '=') {
             end++;
         }
-        values.append(QByteArray(b + start, end - start));
+        pos = end; // save the end position
+        while (end - 1 > start && isWhiteSpace(b[end - 1])) { // trim whitespace
+            end--;
+        }
+        const QByteArray key (b + start, end - start);
+        if (key.contains(' ') || key.contains('\t')) {
+            if (nextAuth) {
+                *nextAuth = QByteArray (b + start);
+            }
+            break;  // break on start of next scheme.
+        }
+        values.append(key);
+        end = pos; // restore the end position
         if (end == len) {
             break;
         }
 
         // parse value
         start = end + 1;    //skip '='
-        while (start < len && (b[start] == ' ' || b[start] == '\t')) {
+        while (start < len && isWhiteSpace(b[start])) {
             start++;
         }
         if (start + 1 < len && b[start] == '"') {
             end = ++start;
+            while (start + 1 < len && b[start] == '\\' && b[start+1] == '"') {
+                start += 2;
+                end = start;
+            }
             //quoted string
             while (end < len && b[end] != '"') {
                 end++;
             }
+            pos = end; // save the end position
+            if (end-1 > start && b[end-1] == '\\') {
+                end--; // ignore escape char
+            }
             values.append(QByteArray(b + start, end - start));
+            end = pos; // restore the end position
             //the quoted string has ended, but only a comma ends a key-value pair
             while (end < len && b[end] != ',') {
                 end++;
@@ -80,7 +133,12 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
             while (end < len && b[end] != ',') {
                 end++;
             }
+            pos = end; // save the end position
+            while (end - 1 > start && isWhiteSpace(b[end - 1])) { // trim whitespace
+                end--;
+            }
             values.append(QByteArray(b + start, end - start));
+            end = pos; // restore the end position
         }
         // end may point beyond the buffer already here
         end++;  // skip comma
@@ -123,52 +181,74 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
     QByteArray ntlmOffer;
     QByteArray basicOffer;
     Q_FOREACH (const QByteArray &offer, offers) {
-        QByteArray scheme = offer.mid(0, 10).toLower();
+        const QByteArray scheme = offer.mid(0, offer.indexOf(' ')).toLower();
 #ifdef HAVE_LIBGSSAPI
-        if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
+        if (scheme == "negotiate") { // krazy:exclude=strings
             negotiateOffer = offer;
         } else
 #endif
-        if (scheme.startsWith("digest")) { // krazy:exclude=strings
+        if (scheme == "digest") { // krazy:exclude=strings
             digestOffer = offer;
-        } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
+        } else if (scheme == "ntlm") { // krazy:exclude=strings
             ntlmOffer = offer;
-        } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
+        } else if (scheme == "basic") { // krazy:exclude=strings
             basicOffer = offer;
         }
     }
 
     if (!negotiateOffer.isEmpty()) {
         return negotiateOffer;
-    } else if (!digestOffer.isEmpty()) {
+    }
+
+    if (!digestOffer.isEmpty()) {
         return digestOffer;
-    } else if (!ntlmOffer.isEmpty()) {
+    }
+
+    if (!ntlmOffer.isEmpty()) {
         return ntlmOffer;
     }
+
     return basicOffer;  //empty or not...
 }
 
 
 KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArray &offer, KConfigGroup* config)
 {
-    QByteArray scheme = offer.mid(0, 10).toLower();
+    const QByteArray scheme = offer.mid(0, offer.indexOf(' ')).toLower();
 #ifdef HAVE_LIBGSSAPI
-    if (scheme.startsWith("negotiate")) { // krazy:exclude=strings
+    if (scheme == "negotiate") { // krazy:exclude=strings
         return new KHttpNegotiateAuthentication(config);
     } else
-#else
-    Q_UNUSED(config);
 #endif
-    if (scheme.startsWith("digest")) { // krazy:exclude=strings
+    if (scheme == "digest") { // krazy:exclude=strings
         return new KHttpDigestAuthentication();
-    } else if (scheme.startsWith("ntlm")) { // krazy:exclude=strings
-        return new KHttpNtlmAuthentication();
-    } else if (scheme.startsWith("basic")) { // krazy:exclude=strings
+    } else if (scheme == "ntlm") { // krazy:exclude=strings
+        return new KHttpNtlmAuthentication(config);
+    } else if (scheme == "basic") { // krazy:exclude=strings
         return new KHttpBasicAuthentication();
     }
     return 0;
 }
 
+QList< QByteArray > KAbstractHttpAuthentication::splitOffers(const QList< QByteArray >& offers)
+{
+    // first detect if one entry may contain multiple offers
+    QList<QByteArray> alloffers;
+    for(int i=0, count=offers.count(); i < count; ++i) {
+        QByteArray scheme, cont, offer = offers.at(i);
+        parseChallenge(offer, &scheme, &cont);
+
+        while (!cont.isEmpty()) {
+            offer.chop(cont.length());
+            alloffers << offer;
+            offer = cont;
+            cont.clear();
+            parseChallenge(offer, &scheme, &cont);
+        }
+        alloffers << offer;
+    }
+    return alloffers;
+}
 
 void KAbstractHttpAuthentication::reset()
 {
@@ -202,11 +282,12 @@ void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &
 QString KAbstractHttpAuthentication::realm() const
 {
     const QByteArray realm = valueForKey(m_challenge, "realm");
+    // TODO: Find out what this is supposed to address. The site mentioned below does not exist.
     if (KGlobal::locale()->language().contains(QLatin1String("ru"))) {
         //for sites like lib.homelinux.org
         return QTextCodec::codecForName("CP1251")->toUnicode(realm);
     }
-    return QString::fromLatin1(realm);
+    return QString::fromLatin1(realm.constData(), realm.length());
 }
 
 void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
@@ -248,7 +329,6 @@ void KHttpBasicAuthentication::fillKioAuthInfo(KIO::AuthInfo *ai) const
 {
     authInfoBoilerplate(ai);
 }
-
 
 void KHttpBasicAuthentication::generateResponse(const QString &user, const QString &password)
 {
@@ -402,7 +482,11 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     info.qop = "";
 
     // cnonce is recommended to contain about 64 bits of entropy
+#ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
+    info.cnonce = m_nonce;
+#else
     info.cnonce = KRandom::randomString(16).toLatin1();
+#endif
 
     // HACK: Should be fixed according to RFC 2617 section 3.2.2
     info.nc = "00000001";
@@ -547,6 +631,13 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     // note that auth already contains \r\n
     m_headerFragment = auth;
 }
+
+#ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
+void KHttpDigestAuthentication::setDigestNonceValue(const QByteArray& nonce)
+{
+    m_nonce = nonce;
+}
+#endif
 
 
 QByteArray KHttpNtlmAuthentication::scheme() const

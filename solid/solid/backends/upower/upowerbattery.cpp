@@ -112,6 +112,9 @@ Solid::Battery::ChargeState Battery::chargeState() const
 
 void Battery::slotChanged()
 {
+    if (!m_device)
+        return;
+
     const bool old_isPlugged = m_isPlugged;
     const int old_chargePercent = m_chargePercent;
     const Solid::Battery::ChargeState old_chargeState = m_chargeState;

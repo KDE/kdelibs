@@ -22,12 +22,11 @@
 
 #include <config-gssapi.h>
 
-#ifndef HTTP_H_ // if we're included from http.cpp all necessary headers are already included
+#include <kurl.h>
+
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtCore/QList>
-#include <kio/authinfo.h>
-#endif
 
 namespace KIO {
 class AuthInfo;
@@ -48,7 +47,22 @@ public:
      * mechanisms retuned by the server.
      */
     static QByteArray bestOffer(const QList<QByteArray> &offers);
+
+    /**
+     * Returns authentication object instance appropriate for @p offer.
+     *
+     * @param offer   the header from which an authentication object is created.
+     * @param config  the config object to read stored authentication information.
+     */
     static KAbstractHttpAuthentication *newAuth(const QByteArray &offer, KConfigGroup *config = 0);
+
+    /**
+     * Split all headers containing multiple authentication offers.
+     *
+     * @param offers the offers from multiple HTTP authentication header lines.
+     * @return a list where each entry contains only a single offer
+     */
+    static QList<QByteArray> splitOffers(const QList<QByteArray> &offers);
 
     /**
      * reset to state after default construction.
@@ -124,6 +138,11 @@ public:
      */
     QString realm() const;
 
+#ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
+    // NOTE: FOR USE in unit testing ONLY.
+    virtual void setDigestNonceValue(const QByteArray&) {}
+#endif
+
 protected:
     void authInfoBoilerplate(KIO::AuthInfo *a) const;
     virtual QByteArray authDataToCache() const { return QByteArray(); }
@@ -172,12 +191,19 @@ public:
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
     virtual bool supportsPathMatching() const { return true; }
+#ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
+    virtual void setDigestNonceValue(const QByteArray&);
+#endif
+
 protected:
     virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpDigestAuthentication(KConfigGroup *config = 0)
      : KAbstractHttpAuthentication(config) {}
+#ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
+     QByteArray m_nonce;
+#endif
 };
 
 

@@ -80,7 +80,7 @@ using namespace Solid::Backends::Wmi;
 
 QString WmiQuery::Item::getProperty(const QString &property )
 {
-    qDebug() << "start property:" << property;
+//    qDebug() << "start property:" << property;
     QString prop = property;
     if (property == "voule.ignore")
         return "false";
@@ -100,7 +100,7 @@ QString WmiQuery::Item::getProperty(const QString &property )
 
     VariantClear(&vtProp);
     m_p->Release();
-    qDebug() << "end result:" << result;
+//    qDebug() << "end result:" << result;
     return result;
 }
 

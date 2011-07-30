@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2010 Rolf Eike Beer <kde@opensource.sf-tec.de>
+    Copyright (C) 2010,2011 Rolf Eike Beer <kde@opensource.sf-tec.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -150,6 +150,15 @@ static const struct {
     { "attachment; filename*1=\"html\"; filename*0*=us-ascii''foo.",
       "type\tattachment\n"
       "filename\tfoo.html" },
+// unknown charset
+    { "attachment; filename*=unknown''foo",
+      "type\tattachment" },
+// no apostrophs
+    { "attachment; filename*=foo",
+      "type\tattachment" },
+// only one apostroph
+    { "attachment; filename*=us-ascii'foo",
+      "type\tattachment" },
 // duplicate filename, both should be ignored and parsing should stop
     { "attachment; filename=foo; filename=bar; foo=bar",
       "type\tattachment" },
@@ -194,6 +203,20 @@ static const struct {
       "filename\tfoo-ä-€.html" },
 // missing closing quote, so parameter is broken
     { "attachment; filename=\"bar",
+      "type\tattachment" },
+// we ignore any path given in the header and use only the filename
+    { "attachment; filename=\"/etc/shadow\"",
+      "type\tattachment\n"
+      "filename\tshadow" },
+// we ignore any path given in the header and use only the filename even if there is an error later
+      { "attachment; filename=\"/etc/shadow\"; foo=\"baz\"; foo=\"bar\"",
+      "type\tattachment\n"
+      "filename\tshadow" },
+// control characters are forbidden in the quoted string
+      { "attachment; filename=\"foo\003\"",
+      "type\tattachment" },
+// duplicate keys must be ignored
+      { "attachment; filename=\"bar\"; filename*0=\"foo.\"; filename*1=\"html\"",
       "type\tattachment" }
 };
 

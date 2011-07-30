@@ -50,7 +50,6 @@
 #include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
-#include <QtNetwork/QHostInfo>
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -60,7 +59,6 @@
 #include <kservice.h>
 #include <kdatetime.h>
 #include <kcomponentdata.h>
-#include <krandom.h>
 #include <kmimetype.h>
 #include <ktoolinvocation.h>
 #include <kstandarddirs.h>
@@ -75,32 +73,18 @@
 
 #include <solid/networking.h>
 
-#ifdef HAVE_LIBGSSAPI
-#ifdef GSSAPI_MIT
-#include <gssapi/gssapi.h>
-#else
-#include <gssapi.h>
-#endif /* GSSAPI_MIT */
-
-// Catch uncompatible crap (BR86019)
-#if defined(GSS_RFC_COMPLIANT_OIDS) && (GSS_RFC_COMPLIANT_OIDS == 0)
-#include <gssapi/gssapi_generic.h>
-#define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
-#endif
-
-#endif /* HAVE_LIBGSSAPI */
-
-#include <misc/kntlm/kntlm.h>
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kde_file.h>
 #include <ktemporaryfile.h>
 
+#include "httpauthentication.h"
+
+// HeaderTokenizer declarations
+#include "parsinghelpers.h"
 //string parsing helpers and HeaderTokenizer implementation
 #include "parsinghelpers.cpp"
-//authentication handlers
-#include "httpauthentication.cpp"
 
 
 // see filenameFromUrl(): a sha1 hash is 160 bits
@@ -3375,7 +3359,7 @@ endParsing:
                 authinfo.commentLabel = i18n("Proxy:");
             }
 
-            QList<QByteArray> authTokens = tIt.all();
+            QList<QByteArray> authTokens = KAbstractHttpAuthentication::splitOffers(tIt.all());
             // Workaround brain dead server responses that violate the spec and
             // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
             // header fields. See bug 215736...

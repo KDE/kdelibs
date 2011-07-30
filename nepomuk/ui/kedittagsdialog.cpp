@@ -219,12 +219,23 @@ void KEditTagsDialog::deleteTag()
     const KGuiItem deleteItem(i18nc("@action:button", "Delete"), KIcon("edit-delete"));
     const KGuiItem cancelItem(i18nc("@action:button", "Cancel"), KIcon("dialog-cancel"));
     if (KMessageBox::warningYesNo(this, text, caption, deleteItem, cancelItem) == KMessageBox::Yes) {
+        int row = m_tagsList->row( m_deleteCandidate );
+
         const QString label = m_deleteCandidate->data(Qt::UserRole).toString();
         Nepomuk::Tag tag(label);
         tag.remove();
 
         delete m_deleteCandidate;
         m_deleteCandidate = 0;
+
+        // Give the delete Candidate an appropriate value.
+        // This is required cause when the mouse button doesn't move at all then m_deleteCandidate
+        // stays 0 and clicking on the delete button executes deleteTag() which then asserts.
+        if( row == m_tagsList->count() )
+            row = m_tagsList->count() - 1;
+
+        // The deleteCandidate is now the next item in the row
+        m_deleteCandidate = m_tagsList->item( row );
     }
 }
 
@@ -246,13 +257,7 @@ void KEditTagsDialog::loadTags()
         QListWidgetItem* item = new QListWidgetItem(label, m_tagsList);
         item->setData(Qt::UserRole, label);
 
-        bool check = false;
-        foreach (const Nepomuk::Tag& selectedTag, m_tags) {
-            if (selectedTag == tag) {
-                check = true;
-                break;
-            }
-        }
+        const bool check = m_tags.contains( tag );
         item->setCheckState(check ? Qt::Checked : Qt::Unchecked);
     }
 }

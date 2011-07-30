@@ -945,29 +945,26 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *l;
     if (!mimeComment.isEmpty() && !isTrash) {
         l = new QLabel(i18n("Type:"), d->m_frame );
+        grid->addWidget(l, curRow, 0, Qt::AlignRight | Qt::AlignTop);
 
-        grid->addWidget(l, curRow, 0, Qt::AlignRight);
-
-        KHBox *box = new KHBox(d->m_frame);
-        box->setSpacing(20); // ### why 20?
+        KVBox *box = new KVBox(d->m_frame);
+        box->setSpacing(2); // without that spacing the button literally “sticks” to the label ;)
         l = new QLabel(mimeComment, box );
+        grid->addWidget(box, curRow++, 2);
 
         QPushButton *button = new QPushButton(box);
-
+        button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Minimum still makes the button grow to the entire layout width
         button->setIcon( KIcon(QString::fromLatin1("configure")) );
-        const int pixmapSize = button->style()->pixelMetric(QStyle::PM_SmallIconSize);
-        button->setFixedSize( pixmapSize+8, pixmapSize+8 );
+
         if ( d->mimeType == KMimeType::defaultMimeType() )
-            button->setToolTip(i18n("Create new file type"));
+            button->setText(i18n("Create New File Type"));
         else
-            button->setToolTip(i18n("Edit file type"));
+            button->setText(i18n("File Type Options"));
 
         connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
         if (!KAuthorized::authorizeKAction("editfiletype"))
             button->hide();
-
-        grid->addWidget(box, curRow++, 2);
     }
 
     if ( !magicMimeComment.isEmpty() && magicMimeComment != mimeComment )

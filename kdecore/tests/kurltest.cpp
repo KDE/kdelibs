@@ -140,8 +140,11 @@ void KUrlTest::testSetRef()
 #endif
   url1.setRef( "" );
   QSTREMPTY( url1.ref() );
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi#") );
+
   url1.setRef( QString() );
   QVERIFY( url1.ref().isNull() );
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi") );
 }
 
 void KUrlTest::testSetHTMLRef()
@@ -157,8 +160,11 @@ void KUrlTest::testSetHTMLRef()
   QCOMPARE( url1.ref(), QString("%23") ); // it's encoded
   url1.setHTMLRef( "" );
   QSTREMPTY( url1.htmlRef() );
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi#") );
+
   url1.setHTMLRef( QString() );
   QVERIFY( url1.htmlRef().isNull() );
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi") );
 }
 
 void KUrlTest::testQUrl()
