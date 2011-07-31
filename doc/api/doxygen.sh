@@ -210,7 +210,7 @@ fi
 #
 preprocess_sources()
 {
-	for dir in `find $top_srcdir/$subdir -type d | grep -v ".svn"`; do
+	for dir in `find $top_srcdir/$subdir -type d | grep -v ".svn" | grep -v ".git"`; do
 		# execute global preprocessing modules
 		local preproc_base="`dirname $0`"
 		for proc in `find "$preproc_base" -name "doxygen-preprocess-*.sh"`; do
