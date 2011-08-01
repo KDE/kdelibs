@@ -165,7 +165,7 @@ UnitPtr Converter::unit(int unitId) const
             return unitClass;
         }
     }
-    return category[InvalidCategory]->defaultUnit();
+    return d->categories[InvalidCategory]->defaultUnit();
 }
 
 UnitCategory* Converter::category(const QString& category) const
