@@ -639,27 +639,27 @@ QList< SecretItemPrivate > ReadItemsJobPrivate::readItems() const
     return result;
 }
 
-ReadPropertyJob::ReadPropertyJob( Collection *coll, const char *propName, QObject *parent ) :
+ReadCollectionPropertyJob::ReadCollectionPropertyJob( Collection *coll, const char *propName, QObject *parent ) :
     CollectionJob( coll, parent ),
-    d( new ReadPropertyJobPrivate( coll->d.data(), this ) ),
+    d( new ReadCollectionPropertyJobPrivate( coll->d.data(), this ) ),
     propertyReadMember(0)
 {
     d->propertyName = propName;
 }
 
-ReadPropertyJob::ReadPropertyJob( Collection *coll, void (Collection::*propReadMember)( ReadPropertyJob* ), QObject *parent ) :
+ReadCollectionPropertyJob::ReadCollectionPropertyJob( Collection *coll, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent ) :
     CollectionJob( coll, parent ),
-    d( new ReadPropertyJobPrivate( coll->d.data(), this ) ),
+    d( new ReadCollectionPropertyJobPrivate( coll->d.data(), this ) ),
     propertyReadMember( propReadMember )
 {
 }
 
-void ReadPropertyJob::start()
+void ReadCollectionPropertyJob::start()
 {
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-void ReadPropertyJob::onFindCollectionFinished()
+void ReadCollectionPropertyJob::onFindCollectionFinished()
 {
     if ( propertyReadMember ) {
         (collection()->*propertyReadMember)( this );
@@ -670,49 +670,49 @@ void ReadPropertyJob::onFindCollectionFinished()
     }
 }
 
-const QVariant& ReadPropertyJob::propertyValue() const
+const QVariant& ReadCollectionPropertyJob::propertyValue() const
 {
     return d->value;
 }
 
-ReadPropertyJobPrivate::ReadPropertyJobPrivate( CollectionPrivate *cp, ReadPropertyJob *job ) :
+ReadCollectionPropertyJobPrivate::ReadCollectionPropertyJobPrivate( CollectionPrivate *cp, ReadCollectionPropertyJob *job ) :
     collectionPrivate( cp ),
     readPropertyJob( job )
 {
 }
     
-void ReadPropertyJobPrivate::startReadingProperty()
+void ReadCollectionPropertyJobPrivate::startReadingProperty()
 {
     value = collectionPrivate->collectionInterface()->property( propertyName );
     readPropertyJob->finishedOk();
 }
 
 
-WritePropertyJob::WritePropertyJob( Collection *coll, const char *propName, const QVariant& value, QObject *parent ) :
+WriteCollectionPropertyJob::WriteCollectionPropertyJob( Collection *coll, const char *propName, const QVariant& value, QObject *parent ) :
     CollectionJob( coll, parent ),
-    d( new WritePropertyJobPrivate( coll->d.data(), this ) )
+    d( new WriteCollectionPropertyJobPrivate( coll->d.data(), this ) )
 {
     d->propertyName = propName;
     d->value = value;
 }
 
-void WritePropertyJob::start()
+void WriteCollectionPropertyJob::start()
 {
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-void WritePropertyJob::onFindCollectionFinished()
+void WriteCollectionPropertyJob::onFindCollectionFinished()
 {
     d->startWritingProperty();
 }
 
-WritePropertyJobPrivate::WritePropertyJobPrivate( CollectionPrivate *cp, WritePropertyJob *job ) :
+WriteCollectionPropertyJobPrivate::WriteCollectionPropertyJobPrivate( CollectionPrivate *cp, WriteCollectionPropertyJob *job ) :
     collectionPrivate( cp ),
     writePropertyJob( job )
 {
 }
     
-void WritePropertyJobPrivate::startWritingProperty()
+void WriteCollectionPropertyJobPrivate::startWritingProperty()
 {
     value = collectionPrivate->collectionInterface()->setProperty( propertyName, value );
     writePropertyJob->finishedOk();

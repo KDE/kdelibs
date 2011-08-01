@@ -90,4 +90,29 @@ public:
     WId                 promptWinId;
 };
 
+class ReadItemPropertyJobPrivate : public QObject {
+public:
+    explicit ReadItemPropertyJobPrivate( SecretItemPrivate*, ReadItemPropertyJob* );
+    
+    void startReadingProperty();
+    
+    SecretItemPrivate *itemPrivate;
+    ReadItemPropertyJob *readPropertyJob;
+    const char *propertyName;
+    QVariant value;
+};
+
+class WriteItemPropertyJobPrivate : public QObject {
+public:
+    explicit WriteItemPropertyJobPrivate( SecretItemPrivate*, WriteItemPropertyJob* );
+    
+    void startWritingProperty();
+    
+    SecretItemPrivate *itemPrivate;
+    WriteItemPropertyJob *writePropertyJob;
+    const char *propertyName;
+    QVariant value;
+};
+
+
 #endif // KSECRETSSERVICEITEMJOBS_P_H

@@ -212,5 +212,77 @@ void SecretItemDeleteJobPrivate::deletePromptFinished( KJob* j)
     }
 }
 
+
+ReadItemPropertyJob::ReadItemPropertyJob( SecretItem *item, const char *propName ) :
+    SecretItemJob( item ),
+    d( new ReadItemPropertyJobPrivate( item->d.data(), this ) ),
+    propertyReadMember(0)
+{
+    d->propertyName = propName;
+}
+
+ReadItemPropertyJob::ReadItemPropertyJob( SecretItem *item, void (SecretItem::*propReadMember)( ReadItemPropertyJob* ) ) :
+    SecretItemJob( item ),
+    d( new ReadItemPropertyJobPrivate( item->d.data(), this ) ),
+    propertyReadMember( propReadMember )
+{
+}
+
+void ReadItemPropertyJob::start()
+{
+    if ( propertyReadMember ) {
+        (secretItem->*propertyReadMember)( this );
+        finished( NoError );
+    }
+    else {
+        d->startReadingProperty();
+    }
+}
+
+const QVariant& ReadItemPropertyJob::propertyValue() const
+{
+    return d->value;
+}
+
+ReadItemPropertyJobPrivate::ReadItemPropertyJobPrivate( SecretItemPrivate *it, ReadItemPropertyJob *job ) :
+    itemPrivate( it ),
+    readPropertyJob( job )
+{
+}
+    
+void ReadItemPropertyJobPrivate::startReadingProperty()
+{
+    value = itemPrivate->itemIf->property( propertyName );
+    readPropertyJob->finished( SecretItemJob::NoError );
+}
+
+
+WriteItemPropertyJob::WriteItemPropertyJob( SecretItem *item, const char *propName, const QVariant& value ) :
+    SecretItemJob( item ),
+    d( new WriteItemPropertyJobPrivate( item->d.data(), this ) )
+{
+    d->propertyName = propName;
+    d->value = value;
+}
+
+void WriteItemPropertyJob::start()
+{
+    d->startWritingProperty();
+}
+
+WriteItemPropertyJobPrivate::WriteItemPropertyJobPrivate( SecretItemPrivate *cp, WriteItemPropertyJob *job ) :
+    itemPrivate( cp ),
+    writePropertyJob( job )
+{
+}
+    
+void WriteItemPropertyJobPrivate::startWritingProperty()
+{
+    value = itemPrivate->itemIf->setProperty( propertyName, value );
+    writePropertyJob->finished( SecretItemJob::NoError );
+}
+
+
+
 #include "ksecretsserviceitemjobs.moc"
 #include "ksecretsserviceitemjobs_p.moc"

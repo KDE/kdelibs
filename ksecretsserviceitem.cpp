@@ -60,39 +60,41 @@ SetSecretItemSecretJob* SecretItem::setSecret(const Secret& secret)
     return new SetSecretItemSecretJob( this, secret );
 }
 
-QStringStringMap SecretItem::attributes() const
+ReadItemPropertyJob * SecretItem::attributes() const
 {
-    return d->itemIf->attributes();
+    return new ReadItemPropertyJob( const_cast<SecretItem*>(this), "Attributes" );
 }
 
-void SecretItem::setAttributes(const QMap< QString, QString >& attributes)
+WriteItemPropertyJob * SecretItem::setAttributes(const QMap< QString, QString >& attributes)
 {
-    d->itemIf->setAttributes( attributes );
+    QVariant value;
+    value.setValue<QMap<QString, QString > >(attributes);
+    return new WriteItemPropertyJob( const_cast<SecretItem*>(this), "Attributes", value );
 }
 
-bool SecretItem::isLocked() const
+ReadItemPropertyJob * SecretItem::isLocked() const
 {
-    return d->itemIf->locked();
+    return new ReadItemPropertyJob( const_cast<SecretItem*>(this), "Locked" );
 }
 
-QString SecretItem::label() const
+ReadItemPropertyJob * SecretItem::label() const
 {
-    return d->itemIf->label();
+    return new ReadItemPropertyJob( const_cast<SecretItem*>(this), "Label" );
 }
 
-QDateTime SecretItem::createdTime() const
+ReadItemPropertyJob * SecretItem::createdTime() const
 {
-    return QDateTime::fromTime_t( d->itemIf->created() );
+    return new ReadItemPropertyJob( const_cast<SecretItem*>(this), "Created" );
 }
 
-QDateTime SecretItem::modifiedTime() const
+ReadItemPropertyJob * SecretItem::modifiedTime() const
 {
-    return QDateTime::fromTime_t( d->itemIf->modified() );
+    return new ReadItemPropertyJob( const_cast<SecretItem*>(this), "Modified" );
 }
 
-void SecretItem::setLabel(const QString& label)
+WriteItemPropertyJob * SecretItem::setLabel(const QString& label)
 {
-    d->itemIf->setLabel( label );
+    return new WriteItemPropertyJob( this, "Label", QVariant( label ) );
 }
 
 SecretItemPrivate::SecretItemPrivate() :

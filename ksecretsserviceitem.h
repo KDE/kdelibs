@@ -35,6 +35,8 @@ typedef QMap< QString, QString > QStringStringMap;
 class GetSecretItemSecretJob;
 class SetSecretItemSecretJob;
 class SecretItemDeleteJob;
+class ReadItemPropertyJob;
+class WriteItemPropertyJob;
    
 /**
  * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
@@ -65,46 +67,47 @@ public:
     SetSecretItemSecretJob* setSecret( const Secret &secret );
 
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @note returned ReadItemPropertyJob::value is a QMap< QString, QString>
      */
-    QMap< QString, QString> attributes() const;
+    ReadItemPropertyJob * attributes() const;
     
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
      * @param attributes a map containing the new attributes; it must contain at least one attribute, under the name "Label"
      */
-    void setAttributes( const QMap< QString, QString > &attributes );
+    WriteItemPropertyJob * setAttributes( const QMap< QString, QString > &attributes );
 
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @note returned ReadItemPropertyJob::value is a bool
      */
-    bool isLocked() const;
+    ReadItemPropertyJob * isLocked() const;
     
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @note returned ReadItemPropertyJob::value is a QString
      */
-    QString label() const;
+    ReadItemPropertyJob * label() const;
     
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @note returned ReadItemPropertyJob::value is a time_t
      */
-    QDateTime createdTime() const;
+    ReadItemPropertyJob * createdTime() const;
     
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * @note returned ReadItemPropertyJob::value is a time_t
      */
-    QDateTime modifiedTime() const;
+    ReadItemPropertyJob * modifiedTime() const;
     
     /**
-     * FIXME: This methods accesses a dbus property. should it be asynchronous ?
+     * Sets the item's label
      */
-    void setLabel( const QString &label );
+    WriteItemPropertyJob * setLabel( const QString &label );
     
 private:
     friend class SecretItemPrivate;
     friend class GetSecretItemSecretJob;
     friend class SetSecretItemSecretJob;
     friend class SecretItemDeleteJob;
+    friend class ReadItemPropertyJob;
+    friend class WriteItemPropertyJob;
     
     QSharedPointer< SecretItemPrivate > d;
 };

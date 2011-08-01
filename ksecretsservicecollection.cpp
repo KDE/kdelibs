@@ -87,29 +87,29 @@ ReadItemsJob* Collection::items() const
     return new ReadItemsJob( const_cast< Collection* >(this) );
 }
 
-ReadPropertyJob* Collection::isLocked() const
+ReadCollectionPropertyJob* Collection::isLocked() const
 {
-    return new ReadPropertyJob( const_cast< Collection* >(this), "Locked" );
+    return new ReadCollectionPropertyJob( const_cast< Collection* >(this), "Locked" );
 }
 
-ReadPropertyJob* Collection::label() const
+ReadCollectionPropertyJob* Collection::label() const
 {
-    return new ReadPropertyJob( const_cast< Collection* >(this), "Label" );
+    return new ReadCollectionPropertyJob( const_cast< Collection* >(this), "Label" );
 }
 
-ReadPropertyJob* Collection::createdTime() const
+ReadCollectionPropertyJob* Collection::createdTime() const
 {
-    return new ReadPropertyJob( const_cast< Collection* >(this), "Created" );
+    return new ReadCollectionPropertyJob( const_cast< Collection* >(this), "Created" );
 }
 
-ReadPropertyJob* Collection::modifiedTime() const
+ReadCollectionPropertyJob* Collection::modifiedTime() const
 {
-    return new ReadPropertyJob( const_cast< Collection* >(this), "Modified" );
+    return new ReadCollectionPropertyJob( const_cast< Collection* >(this), "Modified" );
 }
 
-WritePropertyJob* Collection::setLabel(const QString& label)
+WriteCollectionPropertyJob* Collection::setLabel(const QString& label)
 {
-    return new WritePropertyJob( this, "Label", QVariant( label ) );
+    return new WriteCollectionPropertyJob( this, "Label", QVariant( label ) );
 }
 
 
@@ -174,12 +174,12 @@ OrgFreedesktopSecretCollectionInterface *CollectionPrivate::collectionInterface(
     return collectionIf;
 }
 
-ReadPropertyJob* Collection::isValid()
+ReadCollectionPropertyJob* Collection::isValid()
 {
-    return new ReadPropertyJob( this, &Collection::readIsValid, this );
+    return new ReadCollectionPropertyJob( this, &Collection::readIsValid, this );
 }
 
-void Collection::readIsValid( ReadPropertyJob *readPropertyJob)
+void Collection::readIsValid( ReadCollectionPropertyJob *readPropertyJob)
 {
     readPropertyJob->d->value = d->isValid();
 }

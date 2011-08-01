@@ -30,6 +30,8 @@
 class GetSecretItemSecretJobPrivate;
 class SetSecretItemSecretJobPrivate;
 class SecretItemDeleteJobPrivate;
+class ReadItemPropertyJobPrivate;
+class WriteItemPropertyJobPrivate;
 
 namespace KSecretsService {
 
@@ -98,6 +100,36 @@ private:
     friend class ::SecretItemDeleteJobPrivate;
     QSharedPointer< SecretItemDeleteJobPrivate > d;
 };
+
+class ReadItemPropertyJob : public SecretItemJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(ReadItemPropertyJob)
+public:
+    ReadItemPropertyJob( SecretItem *, const char *propName);
+    ReadItemPropertyJob( SecretItem *, void (SecretItem::*propReadMember)( ReadItemPropertyJob * ) );
+    
+    virtual void start();
+    const QVariant& propertyValue() const;
+    
+private:
+    friend class ::ReadItemPropertyJobPrivate;
+    QSharedPointer<ReadItemPropertyJobPrivate> d;
+    void (SecretItem::*propertyReadMember)( ReadItemPropertyJob * );
+};
+
+class WriteItemPropertyJob : public SecretItemJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(WriteItemPropertyJob)
+public:
+    explicit WriteItemPropertyJob(SecretItem* item, const char *propName, const QVariant &value);
+    
+    virtual void start();
+    
+private:
+    friend class ::WriteItemPropertyJobPrivate;
+    QSharedPointer<WriteItemPropertyJobPrivate> d;
+};
+
 
 }; // namespace
 

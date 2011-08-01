@@ -35,8 +35,8 @@ class SearchItemsJobPrivate;
 class CreateItemJobPrivate;
 class SearchSecretsJobPrivate;
 class ReadItemsJobPrivate;
-class ReadPropertyJobPrivate;
-class WritePropertyJobPrivate;
+class ReadCollectionPropertyJobPrivate;
+class WriteCollectionPropertyJobPrivate;
 
 namespace KSecretsService {
 
@@ -201,9 +201,9 @@ private:
     QSharedPointer< ReadItemsJobPrivate > d;
 };
 
-class ReadPropertyJob : public CollectionJob {
-    explicit ReadPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
-    explicit ReadPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadPropertyJob* ), QObject *parent =0 );
+class ReadCollectionPropertyJob : public CollectionJob {
+    explicit ReadCollectionPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
+    explicit ReadCollectionPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent =0 );
     friend class Collection; // only Collection class can instantiated us
 public:
     
@@ -212,21 +212,21 @@ public:
     const QVariant& propertyValue() const;
     
 private:
-    friend class ::ReadPropertyJobPrivate;
-    QSharedPointer< ReadPropertyJobPrivate > d;
-    void (Collection::*propertyReadMember)( ReadPropertyJob* );
+    friend class ::ReadCollectionPropertyJobPrivate;
+    QSharedPointer< ReadCollectionPropertyJobPrivate > d;
+    void (Collection::*propertyReadMember)( ReadCollectionPropertyJob* );
 };
 
-class WritePropertyJob : public CollectionJob {
+class WriteCollectionPropertyJob : public CollectionJob {
 public:
-    explicit WritePropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
+    explicit WriteCollectionPropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
     
     virtual void start();
     virtual void onFindCollectionFinished();
     
 private:
-    friend class ::WritePropertyJobPrivate;
-    QSharedPointer< WritePropertyJobPrivate > d;
+    friend class ::WriteCollectionPropertyJobPrivate;
+    QSharedPointer< WriteCollectionPropertyJobPrivate > d;
 };
 
     

@@ -40,8 +40,8 @@ class CreateItemJob;
 class SearchSecretsJob;
 class SearchItemsJob;
 class ReadItemsJob;
-class ReadPropertyJob;
-class WritePropertyJob;
+class ReadCollectionPropertyJob;
+class WriteCollectionPropertyJob;
 
 class Collection : public QObject {
     Q_OBJECT
@@ -131,37 +131,37 @@ public:
 
     /**
      * Retrieve the lock status of this collection
-     * @Note returned ReadPropertyJob::propertyValue is boolean
+     * @Note returned ReadCollectionPropertyJob::propertyValue is boolean
      */
-    ReadPropertyJob* isLocked() const;
+    ReadCollectionPropertyJob* isLocked() const;
     
     /**
      * Retrieve this collection's label
-     * @Note returned ReadPropertyJob::propertyValue is QString
+     * @Note returned ReadCollectionPropertyJob::propertyValue is QString
      */
-    ReadPropertyJob* label() const;
+    ReadCollectionPropertyJob* label() const;
     
     /**
      * Get the creation timestamps of this collection
-     * @Note returned ReadPropertyJob::propertyValue is a time_t
+     * @Note returned ReadCollectionPropertyJob::propertyValue is a time_t
      */
-    ReadPropertyJob* createdTime() const;
+    ReadCollectionPropertyJob* createdTime() const;
     
     /**
      * Get the last modified timestamp of this collection
-     * @Note returned ReadPropertyJob::propertyValue is a time_t
+     * @Note returned ReadCollectionPropertyJob::propertyValue is a time_t
      */
-    ReadPropertyJob* modifiedTime() const;
+    ReadCollectionPropertyJob* modifiedTime() const;
 
     /**
      * Change this collection's label
      */
-    WritePropertyJob* setLabel( const QString &label );
+    WriteCollectionPropertyJob* setLabel( const QString &label );
     
     /**
      * @return true if the collection was actually found or created into the KSecretsService infrastructure
      */
-    ReadPropertyJob* isValid();
+    ReadCollectionPropertyJob* isValid();
     
 Q_SIGNALS:
     void itemCreated( const SecretItem& ); 
@@ -182,10 +182,10 @@ private:
     friend class SearchSecretsJob;
     friend class SearchItemsJob;
     friend class ReadItemsJob;
-    friend class ReadPropertyJob;
-    friend class WritePropertyJob;
+    friend class ReadCollectionPropertyJob;
+    friend class WriteCollectionPropertyJob;
     
-    void readIsValid( ReadPropertyJob* );
+    void readIsValid( ReadCollectionPropertyJob* );
     
     QSharedPointer< CollectionPrivate > d;
 };

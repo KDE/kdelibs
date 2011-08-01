@@ -64,7 +64,7 @@ void KSecretServiceTest::initTestCase()
 void KSecretServiceTest::testCreateAndDelete()
 {
     Collection *createdColl = Collection::findCollection( 0, "test collection" );
-    ReadPropertyJob *isValidJob = createdColl->isValid();
+    ReadCollectionPropertyJob *isValidJob = createdColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     
     Collection *existingColl = Collection::findCollection( 0, "test collection", Collection::OpenOnly );
@@ -82,7 +82,7 @@ void KSecretServiceTest::testRenameCollection()
     KJob *renameJob = coll->renameCollection( "test name2" );
     renameJob->exec();
     QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
-    ReadPropertyJob *readLabelJob = coll->label();
+    ReadCollectionPropertyJob *readLabelJob = coll->label();
     QVERIFY2( readLabelJob->exec(), qPrintable( readLabelJob->errorText() ) );
     QVERIFY2( (readLabelJob->propertyValue() == "test name2"), "Collection won't change it's name!" );
     
@@ -162,7 +162,9 @@ void KSecretServiceTest::testItems()
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
 
     SecretItem * createdItem = createItemJob->item();
-    QVERIFY( createdItem->label() == "test label" );
+    ReadItemPropertyJob * readLabelJob = createdItem->label();
+    QVERIFY( readLabelJob->exec() );
+    QVERIFY( readLabelJob->propertyValue() == "test label" );
     
     KSecretsService::GetSecretItemSecretJob *getSecretJob = createdItem->getSecret();
     QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );

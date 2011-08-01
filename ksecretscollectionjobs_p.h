@@ -181,26 +181,26 @@ public:
     CollectionPrivate   *collectionPrivate;
 };
 
-class ReadPropertyJobPrivate : public QObject {
+class ReadCollectionPropertyJobPrivate : public QObject {
 public:
-    explicit ReadPropertyJobPrivate( CollectionPrivate* cp, ReadPropertyJob* );
+    explicit ReadCollectionPropertyJobPrivate( CollectionPrivate* cp, ReadCollectionPropertyJob* );
     
     void startReadingProperty();
     
     CollectionPrivate *collectionPrivate;
-    ReadPropertyJob *readPropertyJob;
+    ReadCollectionPropertyJob *readPropertyJob;
     const char *propertyName;
     QVariant value;
 };
 
-class WritePropertyJobPrivate : public QObject {
+class WriteCollectionPropertyJobPrivate : public QObject {
 public:
-    explicit WritePropertyJobPrivate( CollectionPrivate *cp, WritePropertyJob* );
+    explicit WriteCollectionPropertyJobPrivate( CollectionPrivate *cp, WriteCollectionPropertyJob* );
     
     void startWritingProperty();
     
     CollectionPrivate *collectionPrivate;
-    WritePropertyJob *writePropertyJob;
+    WriteCollectionPropertyJob *writePropertyJob;
     const char *propertyName;
     QVariant value;
 };
