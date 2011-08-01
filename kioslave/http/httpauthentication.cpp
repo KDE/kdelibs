@@ -52,16 +52,36 @@ static bool isWhiteSpace(char ch)
     return (ch == ' ' || ch == '\t' || ch == '\v' || ch == '\f');
 }
 
+static bool isWhiteSpaceOrComma(char ch)
+{
+    return (ch == ',' || isWhiteSpace(ch));
+}
+
+static bool containsScheme(const char input[], int start, int end)
+{
+    // skip any comma or white space
+    while (start < end && isWhiteSpaceOrComma(input[start])) {
+        start++;
+    }
+
+    while (start < end) {
+        if (isWhiteSpace(input[start])) {
+            return true;
+        }
+        start++;
+    }
+
+    return false;
+}
+
 // keys on even indexes, values on odd indexes. Reduces code expansion for the templated
 // alternatives.
 static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme, QByteArray* nextAuth = 0)
 {
     QList<QByteArray> values;
-    const int len = ba.count();
     const char *b = ba.constData();
-    int start = 0;
-    int end = 0;
-    int pos = 0;
+    const int len = ba.count();
+    int start = 0, end = 0, pos = 0;
 
     // parse scheme
     while (start < len && isWhiteSpace(b[start])) {
@@ -89,14 +109,16 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         while (end - 1 > start && isWhiteSpace(b[end - 1])) { // trim whitespace
             end--;
         }
-        const QByteArray key (b + start, end - start);
-        if (key.contains(' ') || key.contains('\t')) {
+        if (containsScheme(b, start, end) || (b[pos] != '=' && pos == len)) {
             if (nextAuth) {
                 *nextAuth = QByteArray (b + start);
             }
             break;  // break on start of next scheme.
         }
-        values.append(key);
+        while (start < len && isWhiteSpaceOrComma(b[start])) {
+            start++;
+        }
+        values.append(QByteArray (b + start, end - start));
         end = pos; // restore the end position
         if (end == len) {
             break;
@@ -107,15 +129,16 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         while (start < len && isWhiteSpace(b[start])) {
             start++;
         }
+
         if (b[start] == '"') {
+            //quoted string
             bool hasBs = false;
             bool hasErr = false;
-
             end = ++start;
-
             while (end < len) {
                 if (b[end] == '\\') {
-                    if (++end + 1 >= len) {
+                    end++;
+                    if (end + 1 >= len) {
                         hasErr = true;
                         break;
                     } else {
@@ -130,11 +153,9 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
             }
             if (hasErr || (end == len)) {
                 // remove the key we already inserted
-                kDebug(7113) << "error in quoted text for key" << values.last();
                 values.removeLast();
                 break;
              }
-
             QByteArray value = QByteArray(b + start, end - start);
             if (hasBs) {
                 // skip over the next character, it might be an escaped backslash
@@ -143,12 +164,11 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
                     value.remove(i, 1);
                 }
             }
-
             values.append(value);
             end++;
         } else {
-            end = start;
             //unquoted string
+            end = start;
             while (end < len && b[end] != ',' && !isWhiteSpace(b[end])) {
                 end++;
             }
@@ -156,12 +176,12 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         }
 
         //the quoted string has ended, but only a comma ends a key-value pair
-        while (end < len && isWhiteSpace(b[end]))
+        while (end < len && isWhiteSpace(b[end])) {
             end++;
+        }
 
-        // garbage
+        // if we did not reach the end or end with ',', quit loop
         if (end < len && b[end] != ',') {
-            kDebug(7113) << "unexpected character" << b[end] << "found in WWW-authentication header where token boundary (,) was expected";
             break;
         }
     }
@@ -262,7 +282,7 @@ QList< QByteArray > KAbstractHttpAuthentication::splitOffers(const QList< QByteA
 
         while (!cont.isEmpty()) {
             offer.chop(cont.length());
-            alloffers << offer;
+            alloffers << offer.trimmed();
             offer = cont;
             cont.clear();
             parseChallenge(offer, &scheme, &cont);

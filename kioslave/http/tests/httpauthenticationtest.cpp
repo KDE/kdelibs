@@ -17,7 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 #include "httpauthenticationtest.h"
 
 #include <qtest_kde.h>
@@ -31,129 +30,125 @@
 #include <QtCore/QByteArray>
 #include <QtNetwork/QHostInfo>
 
+#define ENABLE_HTTP_AUTH_NONCE_SETTER
 #include "httpauthentication.cpp"
+
+#define QTEST_HTTPAUTH_PARSING(input, scheme, result) \
+        do { QByteArray chosenHeader, chosenScheme; \
+             QList<QByteArray> parsingResult, expectedResult; \
+             parseAuthHeader(QByteArray(input), &chosenHeader, &chosenScheme, &parsingResult); \
+             QCOMPARE(QByteArray(scheme), chosenScheme); \
+             QByteArray r(result); if (!r.isEmpty()) expectedResult = r.split(','); \
+             qDebug() << QByteArray(input) << ":  GOT" << parsingResult << ", EXPECTED" << expectedResult; \
+             QCOMPARE(parsingResult, expectedResult); } \
+        while(0)
+
+#define QTEST_HTTPAUTH_SELECTION(input, expectedOffer) \
+        do { QByteArray offer; \
+            parseAuthHeader(QByteArray(input), &offer, 0, 0); \
+            QCOMPARE(offer, QByteArray(expectedOffer)); } \
+        while(0)
+
+#define QTEST_HTTPAUTH_RESPONSE(input, expectedResponse, user, pass, url, cnonce) \
+        do { QByteArray bestOffer; \
+             parseAuthHeader(QByteArray(input), &bestOffer, 0, 0); \
+             KAbstractHttpAuthentication* authObj = KAbstractHttpAuthentication::newAuth(bestOffer); \
+             QVERIFY(authObj); \
+             if (!QByteArray(cnonce).isEmpty()) authObj->setDigestNonceValue(QByteArray(cnonce)); \
+             authObj->setChallenge(bestOffer, KUrl(url), "GET"); \
+             authObj->generateResponse(QString(user), QString(pass)); \
+             QCOMPARE(authObj->headerFragment().trimmed(), QByteArray(expectedResponse)); \
+             delete authObj; } \
+        while(0)
 
 QTEST_KDEMAIN(HTTPAuthenticationTest, NoGUI)
 
-static void testAuthHeaderFormats(const QByteArray& authHeader,
-                                  const QByteArray& expectedScheme,
-                                  const QList<QByteArray> expectedValues)
+static void parseAuthHeader(const QByteArray& header,
+                            QByteArray* bestOffer,
+                            QByteArray* scheme,
+                            QList<QByteArray>* result)
 {
-    const QList<QByteArray> authHeaders = KAbstractHttpAuthentication::splitOffers(QList<QByteArray>() << authHeader);
-    const QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authHeaders);
+    const QList<QByteArray> authHeaders = KAbstractHttpAuthentication::splitOffers(QList<QByteArray>() << header);
+    QByteArray chosenHeader = KAbstractHttpAuthentication::bestOffer(authHeaders);
 
-    QByteArray scheme;
-    const QList<QByteArray> values = parseChallenge(bestOffer, &scheme);
-    QCOMPARE(scheme, expectedScheme);
-    QCOMPARE(values, expectedValues);
-}
-
-static void testGeneratedAuthResponse(const QByteArray& authHeader,
-                                      const QByteArray& expectedResponse,
-                                      const QString& user, const QString& password,
-                                      const KUrl& resource = KUrl(),
-                                      const QByteArray& httpMethod = "GET",
-                                      const QByteArray& cnonce = QByteArray())
-{
-    const QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(QList<QByteArray>() << authHeader);
-    KAbstractHttpAuthentication* authObj = KAbstractHttpAuthentication::newAuth(bestOffer);
-    QVERIFY(authObj);
-    if (!cnonce.isEmpty()) {
-        authObj->setDigestNonceValue(cnonce);
+    if (bestOffer) {
+        *bestOffer = chosenHeader;
     }
-    authObj->setChallenge(bestOffer, resource, httpMethod);
-    authObj->generateResponse(user, password);
-    QCOMPARE(authObj->headerFragment().trimmed(), expectedResponse);
-    delete authObj;
-}
 
-static void testAuthBestOffer(const QList<QByteArray>& offers,
-                              const QByteArray& expectedBestOffer,
-                              QByteArray* offer = 0)
-{
-    const QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(offers);
-    QCOMPARE(bestOffer, expectedBestOffer);
-    if (offer) {
-        *offer = bestOffer;
+    if (!scheme && !result) {
+      return;
     }
-}
 
+    QByteArray authScheme;
+    const QList<QByteArray> parseResult = parseChallenge(chosenHeader, &authScheme);
 
-static QList<QByteArray> toByteArrayList(const QByteArray& value)
-{
-    return value.split(',');
+    if (scheme) {
+        *scheme = authScheme;
+    }
+
+    if (result) {
+        *result = parseResult;
+    }
 }
 
 void HTTPAuthenticationTest::testHeaderParsing()
 {
     // Tests cases from http://greenbytes.de/tech/tc/httpauth/
-    testAuthHeaderFormats("Basic realm=\"foo\"", "Basic", toByteArrayList("realm,foo"));
-    testAuthHeaderFormats("Basic realm=foo", "Basic", toByteArrayList("realm,foo"));
-    // missing comma between fields
-    testAuthHeaderFormats("Basic realm=foo bar=baz", "Basic", toByteArrayList("realm,foo"));
-    // missing comma between fields
-    testAuthHeaderFormats("Basic realm=\"foo\" bar=baz", "Basic", toByteArrayList("realm,foo"));
-    // empty fields
-    testAuthHeaderFormats("Basic realm=foo , , ,  ,, bar=\"baz\"\t,", "Basic", toByteArrayList("realm,foo,bar,baz"));
-    testAuthHeaderFormats("Basic", "Basic", QList<QByteArray>());
-    testAuthHeaderFormats("Basic realm = \"foo\"", "Basic", toByteArrayList("realm,foo"));
-    // only opening quote
-    testAuthHeaderFormats("Basic realm=\"", "Basic", QList<QByteArray>());
-    // every character needlessly quoted
-    testAuthHeaderFormats("Basic realm=\"\\f\\o\\o\"", "Basic", toByteArrayList("realm,foo"));
-    // quotes around text
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\"\"", "Basic", toByteArrayList("realm,\"foo\""));
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"foo\"", "Basic", "realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic realm=foo", "Basic", "realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic , realm=\"foo\"", "Basic", "realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic, realm=\"foo\"", "", "");
+    QTEST_HTTPAUTH_PARSING("Basic", "Basic", "");
+    QTEST_HTTPAUTH_PARSING("Basic realm = \"foo\"", "Basic", "realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\f\\o\\o\"", "Basic", "realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"foo\\\"\"", "Basic", "realm,\"foo\"");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"foo\", bar=\"xyz\"", "Basic", "realm,foo,bar,xyz");
+    QTEST_HTTPAUTH_PARSING("Basic bar=\"xyz\", realm=\"foo\"", "Basic", "bar,xyz,realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"basic\", Newauth realm=\"newauth\"", "Basic", "realm,basic");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"basic\", Newauth realm=\"newauth\"", "Basic", "realm,basic");
+
+    // Misc. test cases
+    QTEST_HTTPAUTH_PARSING("NTLM   ", "NTLM", "");
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"", "Basic", "");
+    QTEST_HTTPAUTH_PARSING("bAsic bar\t =\t\"baz\", realm =\t\"foo\"", "bAsic", "bar,baz,realm,foo");
+    QTEST_HTTPAUTH_PARSING("Basic realm=foo , , ,  ,, bar=\"baz\"\t,", "Basic", "realm,foo,bar,baz");
+    QTEST_HTTPAUTH_PARSING("Basic realm=foo, bar = baz", "Basic", "realm,foo,bar,baz");
+    QTEST_HTTPAUTH_PARSING("Basic realm=foo bar = baz", "Basic", "realm,foo");
     // quotes around text, every character needlessly quoted
-    testAuthHeaderFormats("Basic realm=\"\\\"\\f\\o\\o\\\"\"", "Basic", toByteArrayList("realm,\"foo\""));
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"\\f\\o\\o\\\"\"", "Basic", "realm,\"foo\"");
     // quotes around text, quoted backslashes
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\\\"", "Basic", toByteArrayList("realm,\"foo\\\\"));
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"foo\\\\\\\\\"", "Basic", "realm,\"foo\\\\");
     // quotes around text, quoted backslashes, quote hidden behind them
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\"\"", "Basic", toByteArrayList("realm,\"foo\\\""));
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"foo\\\\\\\"\"", "Basic", "realm,\"foo\\\"");
     // invalid quoted text
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\\"", "Basic", QList<QByteArray>());
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"foo\\\\\\\"", "Basic", "");
     // ends in backslash without quoted value
-    testAuthHeaderFormats("Basic realm=\"\\\"foo\\\\\\", "Basic", QList<QByteArray>());
-    testAuthHeaderFormats("Basic realm=\"foo\", bar=\"xyz\"", "Basic", toByteArrayList("realm,foo,bar,xyz"));
-    testAuthHeaderFormats("Basic bar=\"xyz\", realm=\"foo\"", "Basic", toByteArrayList("bar,xyz,realm,foo"));
-    testAuthHeaderFormats("bAsic bar\t =\t\"baz\", realm =\t\"foo\"", "bAsic", toByteArrayList("bar,baz,realm,foo"));
+    QTEST_HTTPAUTH_PARSING("Basic realm=\"\\\"foo\\\\\\", "Basic", "");
 }
 
 void HTTPAuthenticationTest::testAuthenticationSelection()
 {
-    // Tests cases from http://greenbytes.de/tech/tc/httpauth/
-    testAuthHeaderFormats("Basic realm=\"basic\", Newauth realm=\"newauth\"", "Basic", toByteArrayList("realm,basic"));
-    testAuthHeaderFormats("Basic realm=\"basic\", Newauth realm=\"newauth\"", "Basic", toByteArrayList("realm,basic"));
-
-    QByteArray bestOffer;
-    QList<QByteArray> authHeaders;
-    authHeaders << "NTLM" << "Basic" << "Digest" << "UnsupportedAuth";
 #ifdef HAVE_LIBGSSAPI
-    authHeaders << "Negotiate";
-    testAuthBestOffer(authHeaders, "Negotiate", &bestOffer);
-    authHeaders.removeOne(bestOffer);
+    QTEST_HTTPAUTH_SELECTION("Negotiate , Digest , NTLM , Basic", "Negotiate");
 #endif
-    testAuthBestOffer(authHeaders, "Digest", &bestOffer);
-    authHeaders.removeOne(bestOffer);
-    testAuthBestOffer(authHeaders, "NTLM", &bestOffer);
-    authHeaders.removeOne(bestOffer);
-    testAuthBestOffer(authHeaders, "Basic", &bestOffer);
-    authHeaders.removeOne(bestOffer);
-    testAuthBestOffer(authHeaders, "", &bestOffer); // Unknown scheme should always return blank!
-    QVERIFY(!authHeaders.isEmpty());
-    QCOMPARE(authHeaders.first(), QByteArray("UnsupportedAuth"));
+    QTEST_HTTPAUTH_SELECTION("Digest , NTLM , Basic , NewAuth", "Digest");
+    QTEST_HTTPAUTH_SELECTION("NTLM , Basic , NewAuth", "NTLM");
+    QTEST_HTTPAUTH_SELECTION("Basic , NewAuth", "Basic");
+    QTEST_HTTPAUTH_SELECTION("NTLM   , Basic realm=foo, bar = baz, NTLM", "NTLM");
+
+    // Unknown schemes always return blank, i.e. auth request should be ignored
+    QTEST_HTTPAUTH_SELECTION("Newauth realm=\"newauth\"", "");
+    QTEST_HTTPAUTH_SELECTION("NewAuth , NewAuth2", "");
 }
 
 void HTTPAuthenticationTest::testAuthentication()
 {
     // Test cases from  RFC 2617...
-    testGeneratedAuthResponse("Basic realm=\"WallyWorld\"",
-                              "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
-                              QLatin1String("Aladdin"),
-                              QLatin1String("open sesame"));
-    testGeneratedAuthResponse("Digest realm=\"testrealm@host.com\", qop=\"auth,auth-int\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"",
-                              "Digest username=\"Mufasa\", realm=\"testrealm@host.com\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", uri=\"/dir/index.html\", "
-                              "algorithm=MD5, qop=auth, cnonce=\"0a4f113b\", nc=00000001, response=\"6629fae49393a05397450978507c4ef1\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"",
-                              QLatin1String("Mufasa"),
-                              QLatin1String("Circle Of Life"),
-                              KUrl("http://www.nowhere.org/dir/index.html"), "GET", "0a4f113b");
+    QTEST_HTTPAUTH_RESPONSE("Basic realm=\"WallyWorld\"",
+                            "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
+                            "Aladdin", "open sesame",,);
+    QTEST_HTTPAUTH_RESPONSE("Digest realm=\"testrealm@host.com\", qop=\"auth,auth-int\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"",
+                            "Digest username=\"Mufasa\", realm=\"testrealm@host.com\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", uri=\"/dir/index.html\", algorithm=MD5, qop=auth, cnonce=\"0a4f113b\", nc=00000001, response=\"6629fae49393a05397450978507c4ef1\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"",
+                            "Mufasa", "Circle Of Life",
+                            "http://www.nowhere.org/dir/index.html", "0a4f113b");
 }

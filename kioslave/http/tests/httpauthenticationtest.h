@@ -19,8 +19,6 @@
 
 #include <QtCore/QObject>
 
-#define ENABLE_HTTP_AUTH_NONCE_SETTER
-
 class HTTPAuthenticationTest : public QObject
 {
     Q_OBJECT
