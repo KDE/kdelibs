@@ -28,6 +28,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtCrypto/QtCrypto>
 #include <kdebug.h>
+#include <klocalizedstring.h>
 
 
 #define SERVICE_NAME "org.freedesktop.secrets"
@@ -93,7 +94,7 @@ void OpenSessionJob::start()
             QCA::KeyGenerator keygen;
             dhDlgroup = new QCA::DLGroup(keygen.createDLGroup(QCA::IETF_1024));
             if ( dhDlgroup->isNull() ) {
-                QString errorTxt = "Cannot create DL Group for dbus session open";
+                QString errorTxt = i18n("Cannot create DL Group for dbus session open");
                 kDebug() << errorTxt;
                 setError(1); // FIXME: use error codes here
                 setErrorText( errorTxt );
@@ -115,7 +116,7 @@ void OpenSessionJob::start()
         else {
             kDebug() << "ERROR when trying to bind to " SERVICE_NAME " daemon";
             setError( 3 ); // FIXME: use error codes here
-            setErrorText( "ERROR when trying to bind to " SERVICE_NAME " daemon. Check dbus configuration." );
+            setErrorText( ki18n( "ERROR when trying to bind to %1 daemon. Check dbus configuration." ).subs(SERVICE_NAME).toString() );
             emitResult();
         }
     }
@@ -142,7 +143,7 @@ void OpenSessionJob::openSessionFinished(QDBusPendingCallWatcher* watcher)
         kDebug() << "SESSION path is " << sessionPath.path();
         sessionIf = new OrgFreedesktopSecretSessionInterface( SERVICE_NAME, sessionPath.path(), QDBusConnection::sessionBus() );
         setError(0);
-        setErrorText("OK");
+        setErrorText( i18n("OK") );
         emitResult();
     }
     watcher->deleteLater();

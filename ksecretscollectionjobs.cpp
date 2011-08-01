@@ -35,6 +35,7 @@
 #include <prompt_interface.h>
 #include <kapplication.h>
 #include <QWidget>
+#include <klocalizedstring.h>
 
 using namespace KSecretsService;
 
@@ -162,7 +163,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
             else {
                 promptJob->deleteLater();
                 kDebug() << "cannot add prompt subjob!";
-                findJob->finishedWithError( CollectionJob::InternalError, "Cannot add prompt job" );
+                findJob->finishedWithError( CollectionJob::InternalError, i18n("Cannot add prompt job") );
             }
         }
         else {
@@ -184,11 +185,11 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
             findJob->finishedOk();
         }
         else {
-            findJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, "The operation was cancelled by the user" );
+            findJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, i18n("The operation was cancelled by the user") );
         }
     }
     else {
-        findJob->finishedWithError( CollectionJob::InternalError, "Error encountered when trying to prompt the user" );
+        findJob->finishedWithError( CollectionJob::InternalError, i18n("Error encountered when trying to prompt the user") );
     }
     job->deleteLater();
 }
@@ -203,7 +204,7 @@ void FindCollectionJobPrivate::startCreateOrOpenCollection()
     }
     else {
         kDebug() << "Cannot OpenSessionJob subjob";
-        findJob->finishedWithError( CollectionJob::InternalError, "Cannot open session" );
+        findJob->finishedWithError( CollectionJob::InternalError, i18n("Cannot open session") );
     }
 }
 
@@ -392,7 +393,7 @@ void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
     }
     else {
         kDebug() << "ERROR searching items";
-        searchItemJob->finishedWithError( CollectionJob::InternalError, "ERROR searching items");
+        searchItemJob->finishedWithError( CollectionJob::InternalError, i18n("ERROR searching items") );
     }
     watcher->deleteLater();
 }
@@ -515,7 +516,7 @@ SecretItem * CreateItemJob::item() const
 void CreateItemJob::start()
 {
     if ( d->label.length() == 0) {
-        finishedWithError( CollectionJob::MissingParameterError, "Please specifify an item propert" );
+        finishedWithError( CollectionJob::MissingParameterError, i18n("Please specifify an item propert") );
     }
     else
         startFindCollection();
@@ -554,7 +555,7 @@ void CreateItemJobPrivate::startCreateItem()
     }
     else {
         kDebug() << "ERROR preparing SecretStruct";
-        createItemJob->finishedWithError( CollectionJob::CreateError, "Cannot prepare secret structure" );
+        createItemJob->finishedWithError( CollectionJob::CreateError, i18n("Cannot prepare secret structure") );
     }
 }
 
@@ -572,7 +573,7 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
             }
             else {
                 kDebug() << "ERROR creating prompt job for " << promptPath.path();
-                createItemJob->finishedWithError( CollectionJob::CreateError, "Cannot create prompt job!" );
+                createItemJob->finishedWithError( CollectionJob::CreateError, i18n("Cannot create prompt job!") );
             }
         }
         else {
@@ -584,13 +585,13 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
             else {
                 item = NULL;
                 kDebug() << "ERROR creating item, as it's invalid. path = " << itemPath.path();
-                createItemJob->finishedWithError( CollectionJob::CreateError, "The backend returned an invalid item path or it's no longer present" );
+                createItemJob->finishedWithError( CollectionJob::CreateError, i18n("The backend returned an invalid item path or it's no longer present") );
             }
         }
     }
     else {
         kDebug() << "ERROR trying to create item : " << createReply.error().message();
-        createItemJob->finishedWithError( CollectionJob::CreateError, "Backend communication error" );
+        createItemJob->finishedWithError( CollectionJob::CreateError, i18n("Backend communication error") );
     }
     watcher->deleteLater();
 }

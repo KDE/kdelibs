@@ -83,8 +83,21 @@ public:
     virtual bool addSubjob( KJob* ); // override
     
 protected:
+    /**
+     * Request job abort on error
+     * @param err is the error code
+     * @param errTxt is the internationalized error message user might see
+     */
     void finishedWithError( CollectionError err, const QString &errTxt );
+    
+    /**
+     * Request job finish without error condition
+     */
     void finishedOk();
+    
+    /**
+     * Start the actual collection search. Current implementation would trigger DBus connection to the daemon
+     */
     virtual void startFindCollection();
     virtual void slotResult( KJob* job ); /// override  of the KCompositeJob::slotResult 
     virtual void onFindCollectionFinished();

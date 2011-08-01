@@ -24,6 +24,7 @@
 #include "prompt_interface.h"
 
 #include <kdebug.h>
+#include <klocalizedstring.h>
 
 
 PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
@@ -48,7 +49,7 @@ void PromptJob::start()
     else {
         kDebug() << "ERROR instantiating prompt " << promptPath.path();
         setError(1); // FIXME: use enumerated error codes here
-        setErrorText( QString("ERROR instantiating prompt with path '%1'").arg( promptPath.path() ) );
+        setErrorText( i18n("ERROR instantiating prompt with path '%1'", promptPath.path() ) );
         emitResult();
     }
 }
