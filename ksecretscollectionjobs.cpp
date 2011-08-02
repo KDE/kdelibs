@@ -516,7 +516,7 @@ SecretItem * CreateItemJob::item() const
 void CreateItemJob::start()
 {
     if ( d->label.length() == 0) {
-        finishedWithError( CollectionJob::MissingParameterError, i18n("Please specifify an item propert") );
+        finishedWithError( CollectionJob::MissingParameterError, i18n("Please specify an item properly") );
     }
     else
         startFindCollection();
