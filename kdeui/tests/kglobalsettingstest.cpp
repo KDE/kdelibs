@@ -41,6 +41,11 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 
 void KGlobalSettingsTest::initTestCase()
 {
+    // Some signals are only emitted when we are running a full KDE session. If
+    // we are not then KDE applications follow the platform palette and font
+    // settings.
+    qputenv("KDE_FULL_SESSION", "1");
+
     QDBusConnectionInterface *bus = 0;
     if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
         QFAIL("Session bus not found");
