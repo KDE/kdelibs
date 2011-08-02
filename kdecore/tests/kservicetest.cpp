@@ -49,13 +49,47 @@ void KServiceTest::initTestCase()
     m_hasKde4Konsole = false;
 
 
-    // Create fake service for some tests below.
+    // Create some fake services for the tests below, and ensure they are in ksycoca.
+
+    // fakeservice: deleted and recreated by testKSycocaUpdate, don't use in other tests
     bool mustUpdateKSycoca = !KService::serviceByDesktopPath("fakeservice.desktop");
     const QString fakeService = KStandardDirs::locateLocal("services", "fakeservice.desktop");
-    const bool mustCreateFakeService = !QFile::exists(fakeService);
-    if (mustCreateFakeService) {
+    if (!QFile::exists(fakeService)) {
         mustUpdateKSycoca = true;
         createFakeService();
+    }
+
+    // fakepart: a readwrite part, like katepart
+    if (!KService::serviceByDesktopPath("fakepart.desktop")) {
+        mustUpdateKSycoca = true;
+    }
+    const QString fakePart = KStandardDirs::locateLocal("services", "fakepart.desktop");
+    if (!QFile::exists(fakePart)) {
+        mustUpdateKSycoca = true;
+	KDesktopFile file(fakePart);
+	KConfigGroup group = file.desktopGroup();
+	group.writeEntry("Name", "FakePart");
+	group.writeEntry("Type", "Service");
+	group.writeEntry("X-KDE-Library", "fakepart");
+	group.writeEntry("X-KDE-Protocols", "http,ftp");
+	group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart,Browser/View,KParts/ReadWritePart");
+	group.writeEntry("MimeType", "text/plain;");
+    }
+
+    // faketextplugin: a ktexteditor plugin
+    if (!KService::serviceByDesktopPath("faketextplugin.desktop")) {
+        mustUpdateKSycoca = true;
+    }
+    const QString fakeTextplugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
+    if (!QFile::exists(fakeTextplugin)) {
+        mustUpdateKSycoca = true;
+	KDesktopFile file(fakeTextplugin);
+	KConfigGroup group = file.desktopGroup();
+	group.writeEntry("Name", "FakeTextPlugin");
+	group.writeEntry("Type", "Service");
+	group.writeEntry("X-KDE-Library", "faketextplugin");
+	group.writeEntry("X-KDE-ServiceTypes", "KTextEditor/Plugin");
+	group.writeEntry("MimeType", "text/plain;");
     }
 
     if ( mustUpdateKSycoca ) {
@@ -100,10 +134,10 @@ void KServiceTest::testProperty()
     QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
 
     // Test property("X-KDE-Protocols"), which triggers the KServiceReadProperty code.
-    KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
-    QVERIFY(fakeService); // see initTestCase; it should be found.
-    QVERIFY(fakeService->propertyNames().contains("X-KDE-Protocols"));
-    const QStringList protocols = fakeService->property("X-KDE-Protocols").toStringList();
+    KService::Ptr fakePart = KService::serviceByDesktopPath("fakepart.desktop");
+    QVERIFY(fakePart); // see initTestCase; it should be found.
+    QVERIFY(fakePart->propertyNames().contains("X-KDE-Protocols"));
+    const QStringList protocols = fakePart->property("X-KDE-Protocols").toStringList();
     QCOMPARE(protocols, QStringList() << "http" << "ftp");
 }
 
@@ -229,8 +263,9 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 
     m_firstOffer = offers[0]->entryPath();
 
-    // Only test for parts provided by kdelibs:
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    // Only test for parts provided by kdelibs, or better, by this unittest:
+    QVERIFY( offerListHasService( offers, "fakepart.desktop" ) );
+
     QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) );
     QVERIFY( offerListHasService( offers, "khtml.desktop" ) );
     QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
@@ -255,8 +290,8 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 
     // Now look for any KTextEditor/Plugin
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
-    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
-    QVERIFY( offerListHasService( offers, "ktexteditor_kdatatool.desktop" ) );
+    QVERIFY( offerListHasService( offers, "fakeservice.desktop" ) );
+    QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 }
 
 void KServiceTest::testTraderConstraints()
@@ -264,9 +299,9 @@ void KServiceTest::testTraderConstraints()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'ktexteditor_insertfile'");
+    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
     QCOMPARE(offers.count(), 1);
-    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+    QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
     // A test with an invalid query, to test for memleaks
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "A == B OR C == D AND OR Foo == 'Parse Error'");
@@ -275,30 +310,30 @@ void KServiceTest::testTraderConstraints()
 
 void KServiceTest::testHasServiceType1() // with services constructed with a full path (rare)
 {
-    QString katepartPath = KStandardDirs::locate( "services", "katepart.desktop" );
-    QVERIFY( !katepartPath.isEmpty() );
-    KService katepart( katepartPath );
-    QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
-    QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
+    QString fakepartPath = KStandardDirs::locate( "services", "fakepart.desktop" );
+    QVERIFY( !fakepartPath.isEmpty() );
+    KService fakepart( fakepartPath );
+    QVERIFY( fakepart.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( fakepart.hasServiceType( "KParts/ReadWritePart" ) );
 
-    QString ktexteditor_insertfilePath = KStandardDirs::locate( "services", "ktexteditor_insertfile.desktop" );
-    QVERIFY( !ktexteditor_insertfilePath.isEmpty() );
-    KService ktexteditor_insertfile( ktexteditor_insertfilePath );
-    QVERIFY( ktexteditor_insertfile.hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_insertfile.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QString faketextPluginPath = KStandardDirs::locate( "services", "faketextplugin.desktop" );
+    QVERIFY( !faketextPluginPath.isEmpty() );
+    KService faketextPlugin( faketextPluginPath );
+    QVERIFY( faketextPlugin.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !faketextPlugin.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KServiceTest::testHasServiceType2() // with services coming from ksycoca
 {
-    KService::Ptr katepart = KService::serviceByDesktopPath( "katepart.desktop" );
-    QVERIFY( !katepart.isNull() );
-    QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
-    QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
+    KService::Ptr fakepart = KService::serviceByDesktopPath( "fakepart.desktop" );
+    QVERIFY( !fakepart.isNull() );
+    QVERIFY( fakepart->hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( fakepart->hasServiceType( "KParts/ReadWritePart" ) );
 
-    KService::Ptr ktexteditor_insertfile = KService::serviceByDesktopPath( "ktexteditor_insertfile.desktop" );
-    QVERIFY( !ktexteditor_insertfile.isNull() );
-    QVERIFY( ktexteditor_insertfile->hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
+    KService::Ptr faketextPlugin = KService::serviceByDesktopPath( "faketextplugin.desktop" );
+    QVERIFY( !faketextPlugin.isNull() );
+    QVERIFY( faketextPlugin->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !faketextPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KServiceTest::testWriteServiceTypeProfile()
@@ -306,7 +341,7 @@ void KServiceTest::testWriteServiceTypeProfile()
     const QString serviceType = "KParts/ReadOnlyPart";
     KService::List services, disabledServices;
     services.append(KService::serviceByDesktopPath("khtmlimage.desktop"));
-    services.append(KService::serviceByDesktopPath("katepart.desktop"));
+    services.append(KService::serviceByDesktopPath("fakepart.desktop"));
     disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
 
     KService::List::ConstIterator servit = services.constBegin();
@@ -330,7 +365,7 @@ void KServiceTest::testWriteServiceTypeProfile()
 
     QVERIFY( offers.count() >= 3 ); // at least 3, even
     QCOMPARE( offers[0]->entryPath(), QString("khtmlimage.desktop") );
-    QCOMPARE( offers[1]->entryPath(), QString("katepart.desktop") );
+    QCOMPARE( offers[1]->entryPath(), QString("fakepart.desktop") );
     QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) ); // should still be somewhere in there
     QVERIFY( !offerListHasService( offers, "khtml.desktop" ) ); // it got disabled above
 }
@@ -420,6 +455,7 @@ void KServiceTest::testServiceGroups()
 
 void KServiceTest::testKSycocaUpdate()
 {
+    kWarning();
     KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
     QVERIFY(fakeService); // see initTestCase; it should be found.
 
@@ -464,8 +500,7 @@ void KServiceTest::createFakeService()
     KConfigGroup group = file.desktopGroup();
     group.writeEntry("Name", "FakePlugin");
     group.writeEntry("Type", "Service");
-    group.writeEntry("X-KDE-Library", "faketextplugin");
-    group.writeEntry("X-KDE-Protocols", "http,ftp");
+    group.writeEntry("X-KDE-Library", "fakeservice");
     group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
     group.writeEntry("MimeType", "text/plain;");
 }
