@@ -151,6 +151,10 @@ void KStatusNotifierItem::setTitle(const QString &title)
 
 void KStatusNotifierItem::setStatus(const ItemStatus status)
 {
+    if (d->status == status) {
+        return;
+    }
+
     d->status = status;
     emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
 
@@ -165,6 +169,10 @@ void KStatusNotifierItem::setStatus(const ItemStatus status)
 
 void KStatusNotifierItem::setIconByName(const QString &name)
 {
+    if (d->iconName == name) {
+        return;
+    }
+
     d->serializedIcon = KDbusImageVector();
     d->iconName = name;
     emit d->statusNotifierItemDBus->NewIcon();
@@ -180,6 +188,10 @@ QString KStatusNotifierItem::iconName() const
 
 void KStatusNotifierItem::setIconByPixmap(const QIcon &icon)
 {
+    if (d->icon.cacheKey() == icon.cacheKey()) {
+        return;
+    }
+
     d->iconName.clear();
     d->serializedIcon = d->iconToVector(icon);
     emit d->statusNotifierItemDBus->NewIcon();
@@ -197,6 +209,10 @@ QIcon KStatusNotifierItem::iconPixmap() const
 
 void KStatusNotifierItem::setOverlayIconByName(const QString &name)
 {
+    if (d->overlayIconName == name) {
+        return;
+    }
+
     d->overlayIconName = name;
     emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
@@ -218,6 +234,10 @@ QString KStatusNotifierItem::overlayIconName() const
 
 void KStatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 {
+    if (d->overlayIcon.cacheKey() == icon.cacheKey()) {
+        return;
+    }
+
     d->serializedOverlayIcon = d->iconToVector(icon);
     emit d->statusNotifierItemDBus->NewOverlayIcon();
 
@@ -242,6 +262,10 @@ QIcon KStatusNotifierItem::overlayIconPixmap() const
 
 void KStatusNotifierItem::setAttentionIconByName(const QString &name)
 {
+    if (d->attentionIconName == name) {
+        return;
+    }
+
     d->serializedAttentionIcon = KDbusImageVector();
     d->attentionIconName = name;
     emit d->statusNotifierItemDBus->NewAttentionIcon();
@@ -254,6 +278,10 @@ QString KStatusNotifierItem::attentionIconName() const
 
 void KStatusNotifierItem::setAttentionIconByPixmap(const QIcon &icon)
 {
+    if (d->attentionIcon.cacheKey() == icon.cacheKey()) {
+        return;
+    }
+
     d->attentionIconName.clear();
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
@@ -293,22 +321,51 @@ QString KStatusNotifierItem::attentionMovieName() const
 
 void KStatusNotifierItem::setToolTip(const QString &iconName, const QString &title, const QString &subTitle)
 {
-    setToolTipIconByName(iconName);
-    setToolTipTitle(title);
-    setToolTipSubTitle(subTitle);
+    if (d->toolTipIconName == iconName &&
+        d->toolTipTitle == title &&
+        d->toolTipSubTitle == subTitle) {
+        return;
+    }
+
+    d->serializedToolTipIcon = KDbusImageVector();
+    d->toolTipIconName = iconName;
+
+    d->toolTipTitle = title;
+    if (d->systemTrayIcon) {
+        d->systemTrayIcon->setToolTip(title);
+    }
+
+    d->toolTipSubTitle = subTitle;
     emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KStatusNotifierItem::setToolTip(const QIcon &icon, const QString &title, const QString &subTitle)
 {
-    setToolTipIconByPixmap(icon);
-    setToolTipTitle(title);
-    setToolTipSubTitle(subTitle);
+    if (d->toolTipIcon.cacheKey() == icon.cacheKey() &&
+        d->toolTipTitle == title &&
+        d->toolTipSubTitle == subTitle) {
+        return;
+    }
+
+    d->toolTipIconName.clear();
+    d->serializedToolTipIcon = d->iconToVector(icon);
+    d->toolTipIcon = icon;
+
+    d->toolTipTitle = title;
+    if (d->systemTrayIcon) {
+        d->systemTrayIcon->setToolTip(title);
+    }
+
+    d->toolTipSubTitle = subTitle;
     emit d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KStatusNotifierItem::setToolTipIconByName(const QString &name)
 {
+    if (d->toolTipIconName == name) {
+        return;
+    }
+
     d->serializedToolTipIcon = KDbusImageVector();
     d->toolTipIconName = name;
     emit d->statusNotifierItemDBus->NewToolTip();
@@ -321,6 +378,10 @@ QString KStatusNotifierItem::toolTipIconName() const
 
 void KStatusNotifierItem::setToolTipIconByPixmap(const QIcon &icon)
 {
+    if (d->toolTipIcon.cacheKey() == icon.cacheKey()) {
+        return;
+    }
+
     d->toolTipIconName.clear();
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
@@ -334,6 +395,10 @@ QIcon KStatusNotifierItem::toolTipIconPixmap() const
 
 void KStatusNotifierItem::setToolTipTitle(const QString &title)
 {
+    if (d->toolTipTitle == title) {
+        return;
+    }
+
     d->toolTipTitle = title;
     emit d->statusNotifierItemDBus->NewToolTip();
     if (d->systemTrayIcon) {
@@ -348,6 +413,10 @@ QString KStatusNotifierItem::toolTipTitle() const
 
 void KStatusNotifierItem::setToolTipSubTitle(const QString &subTitle)
 {
+    if (d->toolTipSubTitle == subTitle) {
+        return;
+    }
+
     d->toolTipSubTitle = subTitle;
     emit d->statusNotifierItemDBus->NewToolTip();
 }
@@ -356,7 +425,6 @@ QString KStatusNotifierItem::toolTipSubTitle() const
 {
     return d->toolTipSubTitle;
 }
-
 
 void KStatusNotifierItem::setContextMenu(KMenu *menu)
 {
