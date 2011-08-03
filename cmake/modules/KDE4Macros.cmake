@@ -1122,7 +1122,6 @@ endmacro (KDE4_CREATE_HTML_HANDBOOK)
 # 'appsources' - the sources of the application
 # 'pngfiles' - specifies the list of icon files
 # example: KDE4_ADD_WIN32_APP_ICON(myapp_SRCS "pics/cr16-myapp.png;pics/cr32-myapp.png")
-
 macro (KDE4_ADD_WIN32_APP_ICON appsources)
     message(STATUS "KDE4_ADD_WIN32_APP_ICON() is deprecated, use KDE4_ADD_APP_ICON() instead")
     if (WIN32)
@@ -1131,12 +1130,8 @@ macro (KDE4_ADD_WIN32_APP_ICON appsources)
         else(NOT WINCE)
         find_program(PNG2ICO_EXECUTABLE NAMES png2ico PATHS ${HOST_BINDIR} NO_DEFAULT_PATH )
         endif(NOT WINCE)
-        find_program(WINDRES_EXECUTABLE NAMES windres)
-        if(MSVC)
-            set(WINDRES_EXECUTABLE TRUE)
-        endif(MSVC)
         string(REPLACE _SRCS "" appname ${appsources})
-        if (PNG2ICO_EXECUTABLE AND WINDRES_EXECUTABLE)
+        if (PNG2ICO_EXECUTABLE)
             set (_outfilename ${CMAKE_CURRENT_BINARY_DIR}/${appname})
 
             # png2ico is found by the above find_program
@@ -1145,14 +1140,8 @@ macro (KDE4_ADD_WIN32_APP_ICON appsources)
 
             # now make rc file for adding it to the sources
             file(WRITE ${_outfilename}.rc "IDI_ICON1        ICON        DISCARDABLE    \"${_outfilename}.ico\"\n")
-            if (MINGW)
-                exec_program(windres
-                    ARGS "-i ${_outfilename}.rc -o ${_outfilename}_res.o --include-dir=${CMAKE_CURRENT_SOURCE_DIR}")
-                list(APPEND ${appsources} ${CMAKE_CURRENT_BINARY_DIR}/${appname}_res.o)
-            else(MINGW)
                 list(APPEND ${appsources} ${CMAKE_CURRENT_BINARY_DIR}/${appname}.rc)
-            endif(MINGW)
-        endif(PNG2ICO_EXECUTABLE AND WINDRES_EXECUTABLE)
+        endif(PNG2ICO_EXECUTABLE)
     endif(WIN32)
 endmacro (KDE4_ADD_WIN32_APP_ICON)
 
@@ -1167,11 +1156,7 @@ macro (KDE4_ADD_APP_ICON appsources pattern)
         else(NOT WINCE)
         find_program(PNG2ICO_EXECUTABLE NAMES png2ico PATHS ${HOST_BINDIR} NO_DEFAULT_PATH )
         endif(NOT WINCE)
-        find_program(WINDRES_EXECUTABLE NAMES windres)
-        if(MSVC)
-            set(WINDRES_EXECUTABLE TRUE)
-        endif(MSVC)
-        if (PNG2ICO_EXECUTABLE AND WINDRES_EXECUTABLE)
+        if (PNG2ICO_EXECUTABLE)
             string(REPLACE "*" "(.*)" pattern_rx "${pattern}")
             file(GLOB files  "${pattern}")
             foreach (it ${files})
@@ -1198,22 +1183,13 @@ macro (KDE4_ADD_APP_ICON appsources pattern)
                                    DEPENDS ${PNG2ICO_EXECUTABLE} ${_icons}
                                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                                   )
-                if (MINGW)
-                    add_custom_command(OUTPUT ${_outfilename}_res.o
-                                       COMMAND ${WINDRES_EXECUTABLE} ARGS -i ${_outfilename}.rc -o ${_outfilename}_res.o --include-dir=${CMAKE_CURRENT_SOURCE_DIR}
-                                       DEPENDS ${WINDRES_EXECUTABLE} ${_outfilename}.rc
-                                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                                      )
-                    list(APPEND ${appsources} ${_outfilename}_res.o)
-                else(MINGW)
                     list(APPEND ${appsources} ${_outfilename}.rc)
-                endif(MINGW)
             else(_icons)
                 message(STATUS "Unable to find a related icon that matches pattern ${pattern} for variable ${appsources} - application will not have an application icon!")
             endif(_icons)
-        else(PNG2ICO_EXECUTABLE AND WINDRES_EXECUTABLE)
-            message(STATUS "Unable to find the png2ico or windres utilities - application will not have an application icon!")
-        endif(PNG2ICO_EXECUTABLE AND WINDRES_EXECUTABLE)
+        else(PNG2ICO_EXECUTABLE)
+            message(STATUS "Unable to find the png2ico utility - application will not have an application icon!")
+        endif(PNG2ICO_EXECUTABLE)
     endif(WIN32)
     if (Q_WS_MAC)
         # first convert image to a tiff using the Mac OS X "sips" utility,
