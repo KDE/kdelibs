@@ -855,10 +855,11 @@ void KDialog::setDetailsWidgetVisible( bool visible )
     if ( d->mDetailsWidget )
       d->mDetailsWidget->hide();
 
-    if ( layout() )
+    if ( layout() ) {
       layout()->activate();
+      adjustSize();
+    }
 
-    adjustSize();
   }
 
   d->mSettingDetails = false;
