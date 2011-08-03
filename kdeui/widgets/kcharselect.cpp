@@ -46,7 +46,7 @@ K_GLOBAL_STATIC(KCharSelectData, s_data)
 class KCharSelectTablePrivate
 {
 public:
-    KCharSelectTablePrivate(KCharSelectTable *q): q(q), model()
+    KCharSelectTablePrivate(KCharSelectTable *q): q(q), model(0)
         {}
 
     KCharSelectTable *q;
