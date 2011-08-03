@@ -83,6 +83,9 @@ QString detectLanguage(const QString &sentence)
     return max.key();
 }
 
+// SLOW!!!
+// TODO: cache this value! And then use some dbus signal to notify all apps when
+// changing the default language changes.
 QString defaultLanguageName()
 {
   Loader *loader = Loader::openLoader();
