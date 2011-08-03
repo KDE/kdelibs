@@ -203,4 +203,5 @@ KTextEditor::CodeCompletionModelControllerInterface3::MatchReaction CodeCompleti
 }
 //END V3
 
+
 }

@@ -337,7 +337,9 @@ public:
 };
 //END V3
 
+
 }
+
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface, "org.kde.KTextEditor.CodeCompletionModelControllerInterface")
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface2, "org.kde.KTextEditor.CodeCompletionModelControllerInterface2")
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionModelControllerInterface3, "org.kde.KTextEditor.CodeCompletionModelControllerInterface3")
