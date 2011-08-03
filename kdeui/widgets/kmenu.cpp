@@ -21,6 +21,7 @@
 #include "kmenu.h"
 #include "khbox.h"
 
+#include <QtCore/QMetaMethod>
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
@@ -447,9 +448,14 @@ void KMenu::mouseReleaseEvent(QMouseEvent* e)
 
     if ( e->button() == Qt::MidButton) {
       if(activeAction() ) {
-        QMetaObject::invokeMethod(activeAction(), "triggered", Qt::DirectConnection,
-               Q_ARG(Qt::MouseButtons, e->button()),
+        const QMetaObject *metaObject = activeAction()->metaObject();
+        const int index = metaObject->indexOfMethod("triggered(Qt::MouseButtons,Qt::KeyboardModifiers)");
+        if (index != -1) {
+          const QMetaMethod method = metaObject->method(index);
+          method.invoke(activeAction(), Qt::DirectConnection,
+              Q_ARG(Qt::MouseButtons, e->button()),
               Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
+        }
       }
       return;
     }
