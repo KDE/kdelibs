@@ -152,7 +152,7 @@ kde_findEntity (register const char *str, register unsigned int len)
   static const struct entity wordlist_Entity[] =
     {
 #line 116 "kentities.gperf"
-      {"and", 0x22a5},
+      {"and", 0x2227},
 #line 264 "kentities.gperf"
       {"rho", 0x03c1},
 #line 142 "kentities.gperf"
@@ -234,7 +234,7 @@ kde_findEntity (register const char *str, register unsigned int len)
 #line 254 "kentities.gperf"
       {"radic", 0x221a},
 #line 231 "kentities.gperf"
-      {"or", 0x22a6},
+      {"or", 0x2228},
 #line 218 "kentities.gperf"
       {"not", 0x00ac},
 #line 152 "kentities.gperf"
