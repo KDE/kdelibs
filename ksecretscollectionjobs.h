@@ -58,6 +58,7 @@ class CollectionJob : public KCompositeJob {
     Q_DISABLE_COPY(CollectionJob)
 public:
     explicit CollectionJob( Collection *collection, QObject* parent = 0 );
+    virtual ~CollectionJob();
 
     // TODO: rename this to CollectionJobError
     enum CollectionError {
@@ -113,6 +114,7 @@ class DeleteCollectionJob : public CollectionJob {
     Q_DISABLE_COPY(DeleteCollectionJob)
 public:
     explicit DeleteCollectionJob( Collection* collection, QObject* parent =0 );
+    virtual ~DeleteCollectionJob();
     
     virtual void start();
 
@@ -129,6 +131,7 @@ class FindCollectionJob : public CollectionJob {
     Q_DISABLE_COPY(FindCollectionJob)
 public:
     explicit FindCollectionJob( Collection *collection, QObject *parent =0 );
+    virtual ~FindCollectionJob();
     
     virtual void start();
 private:
@@ -141,6 +144,7 @@ class RenameCollectionJob : public CollectionJob {
     Q_DISABLE_COPY(RenameCollectionJob)
 public:
     RenameCollectionJob( Collection *coll, const QString& newName, QObject *parent =0 );
+    virtual ~RenameCollectionJob();
     
     virtual void start();
 
@@ -158,6 +162,7 @@ private:
 class SearchItemsJob : public CollectionJob {
 public:
     explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
+    virtual ~SearchItemsJob();
     
     QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     virtual void start();
@@ -175,6 +180,7 @@ class SearchSecretsJob : public CollectionJob {
     Q_DISABLE_COPY(SearchSecretsJob)
 public:
     explicit SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent =0 );
+    virtual ~SearchSecretsJob();
     
     virtual void start();
     QList< Secret >  secrets() const;
@@ -191,6 +197,7 @@ private:
 class CreateItemJob : public CollectionJob {
 public:
     explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
+    virtual ~CreateItemJob();
     
     virtual void start();
     SecretItem * item() const;
@@ -205,6 +212,7 @@ private:
 class ReadItemsJob : public CollectionJob {
 public:
     explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
+    virtual ~ReadItemsJob();
 
     virtual void start();
     QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
@@ -217,6 +225,7 @@ private:
 class ReadCollectionPropertyJob : public CollectionJob {
     explicit ReadCollectionPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
     explicit ReadCollectionPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent =0 );
+    virtual ~ReadCollectionPropertyJob();
     friend class Collection; // only Collection class can instantiated us
 public:
     
@@ -233,6 +242,7 @@ private:
 class WriteCollectionPropertyJob : public CollectionJob {
 public:
     explicit WriteCollectionPropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
+    virtual ~WriteCollectionPropertyJob();
     
     virtual void start();
     virtual void onFindCollectionFinished();

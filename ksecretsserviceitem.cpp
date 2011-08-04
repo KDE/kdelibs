@@ -33,11 +33,6 @@ SecretItem::SecretItem() :
 {
 }
 
-SecretItem::SecretItem( const QSharedDataPointer< SecretItemPrivate > & thatPrivate ) :
-    d( thatPrivate )
-{
-}
-
 SecretItem::SecretItem( SecretItemPrivate* sip ) :
     d( sip )
 {

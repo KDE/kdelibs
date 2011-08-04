@@ -51,7 +51,6 @@ class SecretItem : public QSharedData {
     SecretItem();
 public:
     SecretItem( SecretItemPrivate * );
-    SecretItem( const QSharedDataPointer< SecretItemPrivate > & );
     virtual ~SecretItem();
     
     /**

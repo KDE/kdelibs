@@ -52,6 +52,10 @@ CollectionJob::CollectionJob(Collection *collection, QObject* parent) :
     d->collection = collection;
 }
 
+CollectionJob::~CollectionJob()
+{
+}
+
 Collection *CollectionJob::collection() const 
 { 
     return d->collection; 
@@ -119,6 +123,10 @@ FindCollectionJob::FindCollectionJob(   Collection *collection,
 {
     d->collectionName = collection->d->collectioName;
     d->findCollectionOptions = collection->d->findOptions;
+}
+
+FindCollectionJob::~FindCollectionJob()
+{
 }
 
 void FindCollectionJob::start() 
@@ -246,6 +254,10 @@ DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* paren
 {
 }
     
+DeleteCollectionJob::~DeleteCollectionJob()
+{
+}
+
 void DeleteCollectionJob::start() 
 {
     // ensure we have the connection to the daemon and we have a valid collection
@@ -306,6 +318,10 @@ RenameCollectionJob::RenameCollectionJob( Collection *coll, const QString &newNa
     d->newName = newName;
 }
 
+RenameCollectionJob::~RenameCollectionJob()
+{
+}
+
 void RenameCollectionJob::start()
 {
     startFindCollection(); // this will trigger onFindCollectionFinished if collection exists
@@ -346,6 +362,10 @@ SearchItemsJob::SearchItemsJob( Collection *collection,
     d( new SearchItemsJobPrivate( collection->d.data(), this ) )
 {
     d->attributes = attributes;
+}
+
+SearchItemsJob::~SearchItemsJob()
+{
 }
 
 void SearchItemsJob::start()
@@ -403,6 +423,10 @@ void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
 SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
     CollectionJob( collection, parent ),
     d( new SearchSecretsJobPrivate( collection->d.data(), attributes ) )
+{
+}
+
+SearchSecretsJob::~SearchSecretsJob()
 {
 }
 
@@ -509,6 +533,10 @@ CreateItemJob::CreateItemJob( Collection *collection,
     d->replace = replace;
 }
 
+CreateItemJob::~CreateItemJob()
+{
+}
+
 SecretItem * CreateItemJob::item() const 
 {
     return d->item;
@@ -610,6 +638,10 @@ ReadItemsJob::ReadItemsJob( Collection *collection,
 {
 }
 
+ReadItemsJob::~ReadItemsJob()
+{
+}
+
 void ReadItemsJob::start()
 {
     // this is a property read - Qt seems to read properties synchrounously
@@ -647,6 +679,10 @@ ReadCollectionPropertyJob::ReadCollectionPropertyJob( Collection *coll, const ch
     propertyReadMember(0)
 {
     d->propertyName = propName;
+}
+
+ReadCollectionPropertyJob::~ReadCollectionPropertyJob()
+{
 }
 
 ReadCollectionPropertyJob::ReadCollectionPropertyJob( Collection *coll, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent ) :
@@ -696,6 +732,10 @@ WriteCollectionPropertyJob::WriteCollectionPropertyJob( Collection *coll, const 
 {
     d->propertyName = propName;
     d->value = value;
+}
+
+WriteCollectionPropertyJob::~WriteCollectionPropertyJob()
+{
 }
 
 void WriteCollectionPropertyJob::start()

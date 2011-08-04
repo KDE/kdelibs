@@ -41,6 +41,10 @@ Collection::Collection():
     // nothing to do
 }
 
+Collection::~Collection()
+{
+}
+
 Collection * KSecretsService::Collection::findCollection(const QString& collectionName, 
                                                          KSecretsService::Collection::FindCollectionOptions options /* = CreateCollection */,
                                                          const WId &promptParentWindowId /* =0 */ )

@@ -37,6 +37,10 @@ SecretItemJob::SecretItemJob(SecretItem* item):
 {
 }
 
+SecretItemJob::~SecretItemJob()
+{
+}
+
 void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg)
 {
     KJob::setError( err );
@@ -54,6 +58,9 @@ GetSecretItemSecretJob::GetSecretItemSecretJob( KSecretsService::SecretItem* ite
     d->secretItemPrivate = item->d.data();
 }
 
+GetSecretItemSecretJob::~GetSecretItemSecretJob()
+{
+}
 
 void GetSecretItemSecretJob::start()
 {
@@ -102,6 +109,10 @@ SetSecretItemSecretJob::SetSecretItemSecretJob( SecretItem* item, const Secret &
     d->secretPrivate = s.d.data();
 }
 
+SetSecretItemSecretJob::~SetSecretItemSecretJob()
+{
+}
+
 void SetSecretItemSecretJob::start()
 {
     d->start();
@@ -147,6 +158,10 @@ SecretItemDeleteJob::SecretItemDeleteJob( SecretItem * item, const WId &promptPa
 {
     d->secretItemPrivate = item->d.data();
     d->promptWinId = promptParentWindowId;
+}
+
+SecretItemDeleteJob::~SecretItemDeleteJob()
+{
 }
 
 void SecretItemDeleteJob::start()
@@ -228,6 +243,10 @@ ReadItemPropertyJob::ReadItemPropertyJob( SecretItem *item, void (SecretItem::*p
 {
 }
 
+ReadItemPropertyJob::~ReadItemPropertyJob()
+{
+}
+
 void ReadItemPropertyJob::start()
 {
     if ( propertyReadMember ) {
@@ -263,6 +282,10 @@ WriteItemPropertyJob::WriteItemPropertyJob( SecretItem *item, const char *propNa
 {
     d->propertyName = propName;
     d->value = value;
+}
+
+WriteItemPropertyJob::~WriteItemPropertyJob()
+{
 }
 
 void WriteItemPropertyJob::start()

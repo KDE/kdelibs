@@ -54,6 +54,7 @@ public:
     };
     
     explicit SecretItemJob( SecretItem * item );
+    virtual ~SecretItemJob();
     
 protected:
     void finished( ItemJobError, const QString& msg ="");
@@ -67,6 +68,7 @@ class GetSecretItemSecretJob : public SecretItemJob {
     Q_DISABLE_COPY(GetSecretItemSecretJob)
 public:
     explicit GetSecretItemSecretJob( SecretItem* );
+    virtual ~GetSecretItemSecretJob();
     virtual void start();
     Secret secret() const;
     
@@ -80,6 +82,7 @@ class SetSecretItemSecretJob : public SecretItemJob {
     Q_DISABLE_COPY(SetSecretItemSecretJob)
 public:
     SetSecretItemSecretJob( SecretItem*, const Secret& );
+    virtual ~SetSecretItemSecretJob();
     
     virtual void start();
     
@@ -93,6 +96,7 @@ class SecretItemDeleteJob : public SecretItemJob {
     Q_DISABLE_COPY(SecretItemDeleteJob)
 public:
     SecretItemDeleteJob( SecretItem*, const WId &promptParentWindowId );
+    virtual ~SecretItemDeleteJob();
     
     virtual void start();
     
@@ -107,6 +111,7 @@ class ReadItemPropertyJob : public SecretItemJob {
 public:
     ReadItemPropertyJob( SecretItem *, const char *propName);
     ReadItemPropertyJob( SecretItem *, void (SecretItem::*propReadMember)( ReadItemPropertyJob * ) );
+    virtual ~ReadItemPropertyJob();
     
     virtual void start();
     const QVariant& propertyValue() const;
@@ -122,6 +127,7 @@ class WriteItemPropertyJob : public SecretItemJob {
     Q_DISABLE_COPY(WriteItemPropertyJob)
 public:
     explicit WriteItemPropertyJob(SecretItem* item, const char *propName, const QVariant &value);
+    virtual ~WriteItemPropertyJob();
     
     virtual void start();
     
