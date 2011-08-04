@@ -51,7 +51,7 @@ void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg
 
 
 
-GetSecretItemSecretJob::GetSecretItemSecretJob( KSecretsService::SecretItem* item ) :
+GetSecretItemSecretJob::GetSecretItemSecretJob( SecretItem* item ) :
     SecretItemJob( item ),
     d( new GetSecretItemSecretJobPrivate( this ) )
 {

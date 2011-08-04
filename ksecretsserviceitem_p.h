@@ -27,6 +27,8 @@
 
 class OrgFreedesktopSecretItemInterface;
 
+namespace KSecretsService {
+
 class SecretItemPrivate : public QSharedData {
 public:
     SecretItemPrivate();
@@ -37,5 +39,7 @@ public:
     
     OrgFreedesktopSecretItemInterface   *itemIf;
 };
+
+} // namespace
 
 #endif // KSECRETSSERVICEITEM_P_H

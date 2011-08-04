@@ -29,12 +29,9 @@
 
 namespace KSecretsService {
 class SecretItem;
-}
 
 class OrgFreedesktopSecretPromptInterface;
 class SecretPrivate;
-
-using namespace KSecretsService;
 
 class CollectionJobPrivate {
 public:
@@ -204,5 +201,7 @@ public:
     const char *propertyName;
     QVariant value;
 };
+
+} // namespace
 
 #endif // KSECRETSCOLLECTIONJOBS_P_H

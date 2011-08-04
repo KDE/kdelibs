@@ -27,6 +27,9 @@
 #include <kcompositejob.h>
 #include <qsharedpointer.h>
 
+
+namespace KSecretsService {
+
 class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
 class CollectionJobPrivate;
@@ -37,9 +40,6 @@ class SearchSecretsJobPrivate;
 class ReadItemsJobPrivate;
 class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
-
-namespace KSecretsService {
-
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -104,8 +104,8 @@ protected:
     virtual void onFindCollectionFinished();
 
 protected:
-    friend class ::FindCollectionJobPrivate;
-    friend class ::DeleteCollectionJobPrivate;
+    friend class FindCollectionJobPrivate;
+    friend class DeleteCollectionJobPrivate;
     CollectionJobPrivate *d;
 };
 
@@ -135,7 +135,7 @@ public:
     
     virtual void start();
 private:
-    friend class ::FindCollectionJobPrivate;
+    friend class FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
@@ -155,7 +155,7 @@ protected Q_SLOTS:
     void renameIsDone( CollectionJob::CollectionError, const QString& );
     
 private:
-    friend class ::RenameCollectionJobPrivate;
+    friend class RenameCollectionJobPrivate;
     QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
@@ -171,7 +171,7 @@ protected:
     virtual void onFindCollectionFinished();
 
 private:
-    friend class ::SearchItemsJobPrivate;
+    friend class SearchItemsJobPrivate;
     QSharedPointer<SearchItemsJobPrivate> d;
 };
 
@@ -190,7 +190,7 @@ protected Q_SLOTS:
     void searchIsDone( CollectionJob::CollectionError, const QString& );
     
 private:
-    friend class ::SearchSecretsJobPrivate;
+    friend class SearchSecretsJobPrivate;
     QSharedPointer<SearchSecretsJobPrivate> d;
 };
 
@@ -205,7 +205,7 @@ public:
     virtual void onFindCollectionFinished();
     
 private:
-    friend class ::CreateItemJobPrivate;
+    friend class CreateItemJobPrivate;
     QSharedPointer< CreateItemJobPrivate > d;
 };
 
@@ -218,7 +218,7 @@ public:
     QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     
 private:
-    friend class ::ReadItemsJobPrivate;
+    friend class ReadItemsJobPrivate;
     QSharedPointer< ReadItemsJobPrivate > d;
 };
 
@@ -234,7 +234,7 @@ public:
     const QVariant& propertyValue() const;
     
 private:
-    friend class ::ReadCollectionPropertyJobPrivate;
+    friend class ReadCollectionPropertyJobPrivate;
     QSharedPointer< ReadCollectionPropertyJobPrivate > d;
     void (Collection::*propertyReadMember)( ReadCollectionPropertyJob* );
 };
@@ -248,7 +248,7 @@ public:
     virtual void onFindCollectionFinished();
     
 private:
-    friend class ::WriteCollectionPropertyJobPrivate;
+    friend class WriteCollectionPropertyJobPrivate;
     QSharedPointer< WriteCollectionPropertyJobPrivate > d;
 };
 

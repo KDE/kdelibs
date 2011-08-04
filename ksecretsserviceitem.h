@@ -27,8 +27,6 @@
 #include <QSharedData>
 #include <kjob.h>
 
-class SecretItemPrivate;
-class CreateItemJobPrivate;
 
 namespace KSecretsService {
 
@@ -39,6 +37,8 @@ class SetSecretItemSecretJob;
 class SecretItemDeleteJob;
 class ReadItemPropertyJob;
 class WriteItemPropertyJob;
+class SecretItemPrivate;
+class CreateItemJobPrivate;
    
 /**
  * KSecretsService aims to let application store sensitive pieces of information as SecretItem(s).
@@ -54,8 +54,9 @@ public:
     virtual ~SecretItem();
     
     /**
+     * @return SecretItemJob wich will attempt to delete this item upon it's start() method call
      */
-    SecretItemDeleteJob * deleteItem( const WId &promptParentWindowId );
+    SecretItemDeleteJob * deleteItem( const WId &promptParentWindowId =0 );
 
     /**
      * Read the data held by the SecretItem
@@ -109,7 +110,7 @@ private:
     friend class SecretItemDeleteJob;
     friend class ReadItemPropertyJob;
     friend class WriteItemPropertyJob;
-    friend class ::CreateItemJobPrivate;
+    friend class CreateItemJobPrivate;
     
     QSharedDataPointer< SecretItemPrivate > d;
 };

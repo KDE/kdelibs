@@ -27,15 +27,14 @@
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
 
+namespace KSecretsService {
+
+class SecretItem;
 class GetSecretItemSecretJobPrivate;
 class SetSecretItemSecretJobPrivate;
 class SecretItemDeleteJobPrivate;
 class ReadItemPropertyJobPrivate;
 class WriteItemPropertyJobPrivate;
-
-namespace KSecretsService {
-
-class SecretItem;
 
 class SecretItemJob : public KCompositeJob {
     Q_OBJECT
@@ -73,7 +72,7 @@ public:
     Secret secret() const;
     
 private:
-    friend class ::GetSecretItemSecretJobPrivate;
+    friend class GetSecretItemSecretJobPrivate;
     QSharedPointer< GetSecretItemSecretJobPrivate > d;
 };
 
@@ -87,7 +86,7 @@ public:
     virtual void start();
     
 private:
-    friend class ::SetSecretItemSecretJobPrivate;
+    friend class SetSecretItemSecretJobPrivate;
     QSharedPointer< SetSecretItemSecretJobPrivate > d;
 };
 
@@ -101,7 +100,7 @@ public:
     virtual void start();
     
 private:
-    friend class ::SecretItemDeleteJobPrivate;
+    friend class SecretItemDeleteJobPrivate;
     QSharedPointer< SecretItemDeleteJobPrivate > d;
 };
 
@@ -117,7 +116,7 @@ public:
     const QVariant& propertyValue() const;
     
 private:
-    friend class ::ReadItemPropertyJobPrivate;
+    friend class ReadItemPropertyJobPrivate;
     QSharedPointer<ReadItemPropertyJobPrivate> d;
     void (SecretItem::*propertyReadMember)( ReadItemPropertyJob * );
 };
@@ -132,7 +131,7 @@ public:
     virtual void start();
     
 private:
-    friend class ::WriteItemPropertyJobPrivate;
+    friend class WriteItemPropertyJobPrivate;
     QSharedPointer<WriteItemPropertyJobPrivate> d;
 };
 

@@ -26,12 +26,11 @@
 #include <qdbusconnection.h>
 #include <qwindowdefs.h>
 
-namespace KSecretsService {
-    class GetSecretItemSecretJob;
-};
-using namespace KSecretsService;
-
 class QDBusPendingCallWatcher;
+
+namespace KSecretsService {
+
+class GetSecretItemSecretJob;
 class SecretItemPrivate;
 
 class GetSecretItemSecretJobPrivate  : public QObject {
@@ -114,5 +113,6 @@ public:
     QVariant value;
 };
 
+} // namespace
 
 #endif // KSECRETSSERVICEITEMJOBS_P_H

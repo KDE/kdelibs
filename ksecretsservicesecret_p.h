@@ -27,6 +27,8 @@
 #include <QtDBus/QDBusObjectPath>
 #include <QSharedData>
 
+namespace KSecretsService {
+
 class SecretPrivate : public QSharedData {
 public:
     SecretPrivate();
@@ -48,5 +50,6 @@ public:
     QVariant value;
 };
 
+} // namespace
 
 #endif // KSECRETSSECRET_P_H
