@@ -153,6 +153,7 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
             }
             if (hasErr || (end == len)) {
                 // remove the key we already inserted
+                kDebug(7113) << "error in quoted text for key" << values.last();
                 values.removeLast();
                 break;
              }
@@ -180,8 +181,9 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
             end++;
         }
 
-        // if we did not reach the end or end with ',', quit loop
+        // garbage, here should be end or field delimiter (comma)
         if (end < len && b[end] != ',') {
+            kDebug(7113) << "unexpected character" << b[end] << "found in WWW-authentication header where token boundary (,) was expected";
             break;
         }
     }
@@ -276,8 +278,8 @@ QList< QByteArray > KAbstractHttpAuthentication::splitOffers(const QList< QByteA
 {
     // first detect if one entry may contain multiple offers
     QList<QByteArray> alloffers;
-    for(int i=0, count=offers.count(); i < count; ++i) {
-        QByteArray scheme, cont, offer = offers.at(i);
+    foreach(QByteArray offer, offers) {
+        QByteArray scheme, cont;
         parseChallenge(offer, &scheme, &cont);
 
         while (!cont.isEmpty()) {
