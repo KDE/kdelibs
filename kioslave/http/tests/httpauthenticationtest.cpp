@@ -39,7 +39,6 @@
              parseAuthHeader(QByteArray(input), &chosenHeader, &chosenScheme, &parsingResult); \
              QCOMPARE(QByteArray(scheme), chosenScheme); \
              QByteArray r(result); if (!r.isEmpty()) expectedResult = r.split(','); \
-             qDebug() << QByteArray(input) << ":  GOT" << parsingResult << ", EXPECTED" << expectedResult; \
              QCOMPARE(parsingResult, expectedResult); } \
         while(0)
 

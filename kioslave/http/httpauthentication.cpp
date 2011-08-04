@@ -98,7 +98,7 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
     while (end < len) {
         start = end;
         // parse key, skip empty fields
-        while (start < len && (isWhiteSpace(b[start]) || b[start] == ',')) {
+        while (start < len && isWhiteSpace(b[start])) {
             start++;
         }
         end = start;
