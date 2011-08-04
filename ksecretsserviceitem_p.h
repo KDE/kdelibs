@@ -23,18 +23,19 @@
 
 #include "ksecretsserviceitem.h"
 #include <QDBusObjectPath>
+#include <QSharedData>
 
 class OrgFreedesktopSecretItemInterface;
 
-class SecretItemPrivate {
+class SecretItemPrivate : public QSharedData {
 public:
     SecretItemPrivate();
     SecretItemPrivate( const QDBusObjectPath &dbusPath );
+    SecretItemPrivate( const SecretItemPrivate& that );
 
     bool isValid() const;
     
     OrgFreedesktopSecretItemInterface   *itemIf;
 };
-
 
 #endif // KSECRETSSERVICEITEM_P_H

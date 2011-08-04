@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QSharedPointer>
 #include <kjob.h>
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
@@ -43,6 +44,22 @@ class ReadItemsJob;
 class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
 
+/**
+ * This is the main KSecretsService entry class, used by the applications that need to store secrets, 
+ * like passwords or other sensitive data, in a secured and encrypted storage.
+ * 
+ * All the methods of this class are performing asynchronously. That is, calling them immediatley return 
+ * a KJob descendant class. The actual action will be asynchronously done by this job only when it's start()
+ * or exec() method is called. Note that exec() method usage is discouraged though.
+ * 
+ * The client application is responsible for KJob start() or exec() method calling. Upon job finish, the
+ * client application should check KJob error() status to know if the requested operation was successufully done.
+ * 
+ * The KJob descendant classes returned by the methods also provide custom members, depending on the operation
+ * they are intented to execute. Upon successuful execution, these members hold the corresponding return values.
+ * 
+ * @see KJob
+ */
 class Collection : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(Collection)
@@ -58,7 +75,7 @@ public:
     
     enum Status {
         Invalid         =0,     /// the collection objet is freshly initialized and none of it's methods have been called
-        PendingFind     =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
+        Pending         =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
         FoundExisting   =2,     /// this object is connected to an existing backend connection
         NewlyCreated    =3,     /// this object is connected to a newly created connection
         NotFound        =4,     /// the collection was not found
@@ -69,14 +86,17 @@ public:
      * This will try to find a collection given its name. If not found, it'll create it depending on the
      * options given. Please note that for the sake of asynchronous behaviour, this actual collection finding
      * or creation will be postponed until you'll call one of the methods of the returned object.
-     * @param promptParentWindowId identifies the applications window to be used as a parent for prompt windows
      * @param collectionName collection name to be found
      * @param options @see FindCollectionOptions
-     * maps to readAlias dbus method
+     * @param promptParentWindowId identifies the applications window to be used as a parent for prompt windows
+     * @return Collection instance to be used by the client application to further manipulated it's secrets
+     * @note Please note that the collection returned by this method is not yet connected to the secret storing
+     * infrastructure. As such, a NotFound status would not be immediatley known. Application should be prepared
+     * to get such an error upon the execution of the first KJob returned by one of the other methods of this class.
      */
-    static Collection * findCollection( const WId &promptParentWindowId,
-                                        const QString &collectionName, 
-                                        FindCollectionOptions options = CreateCollection );
+    static Collection * findCollection( const QString &collectionName, 
+                                        FindCollectionOptions options = CreateCollection,
+                                        const WId &promptParentWindowId =0 );
 
     /**
      * This will get the actual findStatus of this collection
@@ -92,19 +112,22 @@ public:
      * is no longer valid and calling other methods on it would lead to undefined
      * behaviour
      * 
-     * @return true if the collection hase been deleted
+     * @return KJob. Check it's error() member to confirm that the collection hase been deleted
      */
     KJob * deleteCollection();
     
     /**
      * Change the name of this collection
      * @param newName is the new collection's name
+     * @return KJob. Check it's error() member to confirm that the rename was effectively done.
      */
     KJob * renameCollection( const QString& newName );
     
     
     /**
      * Search for the items matching the specified attributes
+     * @param attributes hold the searched items attributes
+     * @return SearchItemsJob which is a KJob inheritor
      */
     SearchItemsJob * searchItems( const StringStringMap &attributes );
     
@@ -119,6 +142,7 @@ public:
      * @param attributes holds an map of property names / property values
      * @param secret the secret the newly created item should hold
      * @param replace true if the and eventually existing secret is to be replaced by the on specified here
+     * @return CreateItemJob instance used to start the actual item creation operation in the storage infrastructure
      *
      * @see SecretItem
      */
@@ -126,6 +150,7 @@ public:
 
     /** 
      * Retrieve items stored inside this collection
+     * @return ReadItemJob instance that will hold the returned items upon successuful execution
      */
     ReadItemsJob * items() const;
 
@@ -155,17 +180,27 @@ public:
 
     /**
      * Change this collection's label
+     * @return WriteCollectionPropertyJob instance. Check it's error() status after executing it to confirm collection label change.
      */
     WriteCollectionPropertyJob* setLabel( const QString &label );
     
     /**
-     * @return true if the collection was actually found or created into the KSecretsService infrastructure
+     * @return ReadCollectionPropertyJob instance. It's propertyValue() holds the status (true or false) upon job execution finish.
      */
     ReadCollectionPropertyJob* isValid();
     
 Q_SIGNALS:
+    /**
+     * TODO: not yet implemented
+     */
     void itemCreated( const SecretItem& ); 
+    /**
+     * TODO: not yet implemented
+     */
     void itemDeleted( const QString& itemLabel );
+    /**
+     * TODO: not yet implemented
+     */
     void itemChanged( const SecretItem& );
 
     

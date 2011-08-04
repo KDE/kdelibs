@@ -31,6 +31,7 @@
 
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QSharedDataPointer>
 #include <kdebug.h>
 #include <prompt_interface.h>
 #include <kapplication.h>
@@ -352,11 +353,11 @@ void SearchItemsJob::start()
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-QList< SecretItem > SearchItemsJob::items() const
+QList< QExplicitlySharedDataPointer< SecretItem > > SearchItemsJob::items() const
 {
-    QList< SecretItem > items;
-    foreach( SecretItemPrivate ip, d->items ) {
-        items.append( SecretItem( new SecretItemPrivate( ip ) ) );
+    QList< QExplicitlySharedDataPointer< SecretItem > > items;
+    foreach( QSharedDataPointer< SecretItemPrivate > ip, d->items ) {
+        items.append( QExplicitlySharedDataPointer< SecretItem>( new SecretItem(  ip ) ) );
     }
     return items;
 }
@@ -387,7 +388,7 @@ void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
     if ( !reply.isError() ) {
         QList< QDBusObjectPath > itemList = reply.argumentAt<0>();
         foreach( QDBusObjectPath itemPath, itemList ) {
-            items.append( SecretItemPrivate( itemPath ) );
+            items.append( QSharedDataPointer<SecretItemPrivate>( new SecretItemPrivate( itemPath ) ) );
         }
         searchItemJob->finishedOk();
     }
@@ -408,7 +409,7 @@ SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringM
 QList< Secret > SearchSecretsJob::secrets() const
 {
     QList< Secret > result;
-    foreach( QSharedPointer< SecretPrivate > sp, d->secretsList ) {
+    foreach( QSharedDataPointer< SecretPrivate > sp, d->secretsList ) {
         result.append( Secret( sp ) );
     }
     return result;
@@ -475,7 +476,7 @@ void SearchSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher* watcher)
         foreach (SecretStruct secret, getReply.value()) {
             SecretPrivate *sp =0;
             if ( SecretPrivate::fromSecretStrut( secret, sp ) ) {
-                secretsList.append( QSharedPointer<SecretPrivate>( sp ) );
+                secretsList.append( QSharedDataPointer<SecretPrivate>( sp ) );
             }
             else {
                 kDebug() << "ERROR decrypting the secret";
@@ -577,7 +578,7 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
             }
         }
         else {
-            QSharedPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
+            QSharedDataPointer< SecretItemPrivate > itemPrivate( new SecretItemPrivate( itemPath ) );
             if ( itemPrivate->isValid() ) {
                 item = new SecretItem( itemPrivate );
                 createItemJob->finishedOk();
@@ -617,11 +618,11 @@ void ReadItemsJob::start()
     emitResult();
 }
 
-QList< SecretItem > ReadItemsJob::items() const 
+QList< QExplicitlySharedDataPointer< SecretItem > > ReadItemsJob::items() const 
 {
-    QList< SecretItem > result;
-    foreach( SecretItemPrivate ip, d->readItems() ) {
-        result.append( SecretItem( new SecretItemPrivate( ip ) ) );
+    QList< QExplicitlySharedDataPointer< SecretItem > > result;
+    foreach( QSharedDataPointer< SecretItemPrivate > ip, d->readItems() ) {
+        result.append( QExplicitlySharedDataPointer< SecretItem>( new SecretItem( ip ) ) );
     }
     return result;
 }
@@ -631,11 +632,11 @@ ReadItemsJobPrivate::ReadItemsJobPrivate( CollectionPrivate *cp ) :
 {
 }
 
-QList< SecretItemPrivate > ReadItemsJobPrivate::readItems() const 
+QList< QSharedDataPointer< SecretItemPrivate > > ReadItemsJobPrivate::readItems() const 
 {
-    QList< SecretItemPrivate > result;
+    QList< QSharedDataPointer< SecretItemPrivate > > result;
     foreach( QDBusObjectPath path, collectionPrivate->collectionInterface()->items() ) {
-        result.append( SecretItemPrivate( path ) );
+        result.append( QSharedDataPointer<SecretItemPrivate>( new SecretItemPrivate( path ) ) );
     }
     return result;
 }

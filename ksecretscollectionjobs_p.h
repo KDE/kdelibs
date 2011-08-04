@@ -120,10 +120,10 @@ protected Q_SLOTS:
     void searchFinished(QDBusPendingCallWatcher*);
     
 public:
-    CollectionPrivate           *collectionPrivate;
-    SearchItemsJob              *searchItemJob;
-    QStringStringMap            attributes;
-    QList< SecretItemPrivate >  items;
+    CollectionPrivate                   *collectionPrivate;
+    SearchItemsJob                      *searchItemJob;
+    QStringStringMap                    attributes;
+    QList< QSharedDataPointer< SecretItemPrivate > >    items;
 };
 
 class CreateItemJobPrivate : public QObject {
@@ -143,7 +143,7 @@ public:
     CreateItemJob                       *createItemJob;
     QString                             label;
     QMap< QString, QString >            attributes;
-    QSharedPointer< SecretPrivate >     secretPrivate;
+    QSharedDataPointer< SecretPrivate > secretPrivate;
     bool                                replace;
     SecretItem                          *item;
 };
@@ -166,7 +166,7 @@ Q_SIGNALS:
 public:
     CollectionPrivate   *collectionPrivate;
     QStringStringMap    attributes;
-    QList< QSharedPointer<SecretPrivate> > secretsList;
+    QList< QSharedDataPointer<SecretPrivate> > secretsList;
 };
 
 class ReadItemsJobPrivate : public QObject {
@@ -175,7 +175,7 @@ class ReadItemsJobPrivate : public QObject {
 public:
     explicit ReadItemsJobPrivate( CollectionPrivate* );
 
-    QList< SecretItemPrivate > readItems() const;
+    QList< QSharedDataPointer< SecretItemPrivate > > readItems() const;
     
 public:
     CollectionPrivate   *collectionPrivate;

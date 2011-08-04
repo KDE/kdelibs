@@ -69,7 +69,7 @@ public:
     SetSecretItemSecretJob *job;
     Secret secret;
     SecretItemPrivate *secretItemPrivate;
-    SecretPrivate *secretPrivate;
+    const SecretPrivate *secretPrivate;
 };
 
 class SecretItemDeleteJobPrivate : public QObject {

@@ -25,8 +25,9 @@
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
 
 #include <QtDBus/QDBusObjectPath>
+#include <QSharedData>
 
-class SecretPrivate {
+class SecretPrivate : public QSharedData {
 public:
     SecretPrivate();
     SecretPrivate( const SecretPrivate& that );

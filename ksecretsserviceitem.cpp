@@ -33,7 +33,7 @@ SecretItem::SecretItem() :
 {
 }
 
-SecretItem::SecretItem( const QSharedPointer< SecretItemPrivate > & thatPrivate ) :
+SecretItem::SecretItem( const QSharedDataPointer< SecretItemPrivate > & thatPrivate ) :
     d( thatPrivate )
 {
 }
@@ -43,6 +43,9 @@ SecretItem::SecretItem( SecretItemPrivate* sip ) :
 {
 }
 
+SecretItem::~SecretItem()
+{
+}
 
 SecretItemDeleteJob * SecretItem::deleteItem( const WId &promptParentWindowId )
 {
@@ -106,6 +109,12 @@ SecretItemPrivate::SecretItemPrivate( const QDBusObjectPath &dbusPath ) :
     itemIf(0)
 {
     itemIf = DBusSession::createItem( dbusPath );
+}
+
+SecretItemPrivate::SecretItemPrivate( const SecretItemPrivate &that ) :
+    QSharedData( that ),
+    itemIf( that.itemIf )
+{
 }
 
 bool SecretItemPrivate::isValid() const

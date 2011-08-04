@@ -41,9 +41,9 @@ Collection::Collection():
     // nothing to do
 }
 
-Collection * KSecretsService::Collection::findCollection(const WId &promptParentWindowId,
-                                                         const QString& collectionName, 
-                                                         KSecretsService::Collection::FindCollectionOptions options)
+Collection * KSecretsService::Collection::findCollection(const QString& collectionName, 
+                                                         KSecretsService::Collection::FindCollectionOptions options /* = CreateCollection */,
+                                                         const WId &promptParentWindowId /* =0 */ )
 {
     // this will simply return the C++ collection objet, without trying to connect to the daemon
     // this will be handled later on, when first calls to other methods will happen
@@ -132,7 +132,7 @@ void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
 {
     collectioName = collName;
     findOptions = opts;
-    collectionStatus = Collection::PendingFind;
+    collectionStatus = Collection::Pending;
     promptParentWindowId = promptParentId;
 }
 

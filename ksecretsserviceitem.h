@@ -24,9 +24,11 @@
 #include "ksecretsservicesecret.h"
 #include "ksecretsserviceitemjobs.h"
 
+#include <QSharedData>
 #include <kjob.h>
 
 class SecretItemPrivate;
+class CreateItemJobPrivate;
 
 namespace KSecretsService {
 
@@ -45,12 +47,12 @@ class WriteItemPropertyJob;
  * The attributes list always contain at least one item, named "Label". It's content is up to the client application.
  * The "Label" attribute can also be read by calling the @ref attribute method and set by @ref setLabel method.
  */
-class SecretItem {
-protected:
+class SecretItem : public QSharedData {
     SecretItem();
 public:
-    SecretItem( const QSharedPointer< SecretItemPrivate > & );
     SecretItem( SecretItemPrivate * );
+    SecretItem( const QSharedDataPointer< SecretItemPrivate > & );
+    virtual ~SecretItem();
     
     /**
      */
@@ -108,8 +110,9 @@ private:
     friend class SecretItemDeleteJob;
     friend class ReadItemPropertyJob;
     friend class WriteItemPropertyJob;
+    friend class ::CreateItemJobPrivate;
     
-    QSharedPointer< SecretItemPrivate > d;
+    QSharedDataPointer< SecretItemPrivate > d;
 };
 
 

@@ -39,7 +39,7 @@ Secret::Secret( const Secret& that ) :
 {
 }
 
-Secret::Secret( const QSharedPointer<SecretPrivate> &sp) :
+Secret::Secret( const QSharedDataPointer<SecretPrivate> &sp) :
     d( sp )
 {
 }

@@ -63,11 +63,11 @@ void KSecretServiceTest::initTestCase()
 
 void KSecretServiceTest::testCreateAndDelete()
 {
-    Collection *createdColl = Collection::findCollection( 0, "test collection" );
+    Collection *createdColl = Collection::findCollection( "test collection" );
     ReadCollectionPropertyJob *isValidJob = createdColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     
-    Collection *existingColl = Collection::findCollection( 0, "test collection", Collection::OpenOnly );
+    Collection *existingColl = Collection::findCollection( "test collection", Collection::OpenOnly );
     isValidJob = existingColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     
@@ -78,7 +78,7 @@ void KSecretServiceTest::testCreateAndDelete()
 
 void KSecretServiceTest::testRenameCollection()
 {
-    Collection *coll = Collection::findCollection( 0, "test name1" );
+    Collection *coll = Collection::findCollection( "test name1" );
     KJob *renameJob = coll->renameCollection( "test name2" );
     renameJob->exec();
     QVERIFY2( (renameJob->error() == 0), qPrintable( renameJob->errorText() ) );
@@ -94,7 +94,7 @@ void KSecretServiceTest::testRenameCollection()
 
 void KSecretServiceTest::testCreateItem()
 {
-    Collection *coll = Collection::findCollection( 0, "test collection" );
+    Collection *coll = Collection::findCollection( "test collection" );
     QStringStringMap attributes;
     attributes.insert( "test-attribute", "test-attribute-value" );
     Secret newSecret;
@@ -119,8 +119,8 @@ void KSecretServiceTest::testCreateItem()
     KSecretsService::SearchItemsJob *searchItemsJob = coll->searchItems( attributes );
     QVERIFY2( searchItemsJob->exec(), qPrintable( searchItemsJob->errorText() ) );
     
-    foreach ( SecretItem item, searchItemsJob->items() ) {
-        KSecretsService::GetSecretItemSecretJob *getSecretJob = item.getSecret();
+    foreach ( QExplicitlySharedDataPointer< SecretItem > item, searchItemsJob->items() ) {
+        KSecretsService::GetSecretItemSecretJob *getSecretJob = item->getSecret();
         QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );
         if ( getSecretJob->secret() == newSecret ) {
             found = true;
@@ -133,8 +133,8 @@ void KSecretServiceTest::testCreateItem()
     KSecretsService::ReadItemsJob *readItemsJob = coll->items();
     QVERIFY2( readItemsJob->exec(), qPrintable( readItemsJob->errorText() ) );
     
-    foreach ( SecretItem item, readItemsJob->items() ) {
-        KSecretsService::GetSecretItemSecretJob *getSecretJob = item.getSecret();
+    foreach ( QExplicitlySharedDataPointer< SecretItem > item, readItemsJob->items() ) {
+        KSecretsService::GetSecretItemSecretJob *getSecretJob = item->getSecret();
         QVERIFY2( getSecretJob->exec(), qPrintable( getSecretJob->errorText() ) );
         if ( getSecretJob->secret() == newSecret ) {
             found = true;
@@ -153,7 +153,7 @@ void KSecretServiceTest::testCreateItem()
 
 void KSecretServiceTest::testItems()
 {
-    Collection *coll = Collection::findCollection( 0, "test collection" );
+    Collection *coll = Collection::findCollection( "test collection" );
     QStringStringMap attributes;
     attributes.insert( "test-attribute", "test-attribute-value" );
     Secret newSecret;

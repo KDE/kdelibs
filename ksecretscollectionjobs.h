@@ -159,7 +159,7 @@ class SearchItemsJob : public CollectionJob {
 public:
     explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     
-    QList< SecretItem > items() const;
+    QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     virtual void start();
 
 protected:
@@ -207,7 +207,7 @@ public:
     explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
 
     virtual void start();
-    QList< SecretItem > items() const;
+    QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     
 private:
     friend class ::ReadItemsJobPrivate;

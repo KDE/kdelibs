@@ -23,7 +23,7 @@
 
 #include <QObject>
 #include <QVariant>
-#include <QSharedPointer>
+#include <QSharedDataPointer>
 
 class SecretPrivate;
 
@@ -32,7 +32,7 @@ namespace KSecretsService {
 struct Secret {
     Secret();
     Secret( const Secret & that );
-    explicit Secret( const QSharedPointer< ::SecretPrivate > & sp );
+    explicit Secret( const QSharedDataPointer< ::SecretPrivate > & sp );
     explicit Secret( ::SecretPrivate* sp );
     virtual ~Secret();
     
@@ -47,7 +47,7 @@ private:
     friend class CreateItemJob;
     friend class SetSecretItemSecretJob;
     
-    QSharedPointer< ::SecretPrivate > d;
+    QSharedDataPointer< ::SecretPrivate > d;
 };
 
 };
