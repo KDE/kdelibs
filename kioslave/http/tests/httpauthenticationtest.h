@@ -24,6 +24,9 @@ class HTTPAuthenticationTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void testHeaderParsing();
+    void testHeaderParsing_data();
     void testAuthenticationSelection();
+    void testAuthenticationSelection_data();
     void testAuthentication();
+    void testAuthentication_data();
 };
