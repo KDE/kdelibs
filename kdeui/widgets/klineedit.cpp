@@ -803,18 +803,21 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                                     (e->modifiers() == Qt::NoButton ||
                                      e->modifiers() == Qt::KeypadModifier)));
 
+            if (stopEvent) {
+                emit QLineEdit::returnPressed();
+                e->accept();
+            }
+
+            emit returnPressed( displayText() );
+
             if (trap) {
                 d->completionBox->hide();
                 deselect();
                 setCursorPosition(text().length());
             }
 
-            emit returnPressed( displayText() );
-
             // Eat the event if the user asked for it, or if a completionbox was visible
             if (stopEvent) {
-                emit QLineEdit::returnPressed();
-                e->accept();
                 return;
             }
         }
