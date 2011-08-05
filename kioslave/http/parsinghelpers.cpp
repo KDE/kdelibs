@@ -431,7 +431,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
 
         QString val;
         if (key.endsWith(QLatin1Char('*'))) {
-            val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials).toLower();
+            val = extractUntil(disposition, QLatin1Char(';'), pos, valueSpecials);
         } else {
             val = extractMaybeQuotedUntil(disposition, pos);
         }
