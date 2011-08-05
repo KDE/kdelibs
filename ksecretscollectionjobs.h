@@ -74,7 +74,7 @@ public:
     };
 
     /**
-     * Get a pointer to the collection wich started this job
+     * Get a pointer to the collection which started this job
      */
     Collection *collection() const;
     

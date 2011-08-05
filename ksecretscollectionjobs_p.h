@@ -179,6 +179,8 @@ public:
 };
 
 class ReadCollectionPropertyJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(ReadCollectionPropertyJobPrivate)
 public:
     explicit ReadCollectionPropertyJobPrivate( CollectionPrivate* cp, ReadCollectionPropertyJob* );
     
@@ -191,6 +193,8 @@ public:
 };
 
 class WriteCollectionPropertyJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(WriteCollectionPropertyJobPrivate)
 public:
     explicit WriteCollectionPropertyJobPrivate( CollectionPrivate *cp, WriteCollectionPropertyJob* );
     

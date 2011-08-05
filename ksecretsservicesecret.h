@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSECRET_H
-#define KSECRETSSECRET_H
+#ifndef KSECRETSSERVICESECRET_H
+#define KSECRETSSERVICESECRET_H
 
 #include <QObject>
 #include <QVariant>
@@ -53,4 +53,4 @@ private:
 
 };
 
-#endif // KSECRETSSECRET_H
+#endif // KSECRETSSERVICESECRET_H

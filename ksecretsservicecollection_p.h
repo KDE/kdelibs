@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSCOLLECTION_P_H
-#define KSECRETSCOLLECTION_P_H
+#ifndef KSECRETSSERVICECOLLECTION_P_H
+#define KSECRETSSERVICECOLLECTION_P_H
 
 #include "ksecretsservicecollection.h"
 #include "dbusbackend.h"
@@ -56,4 +56,4 @@ private:
 
 };
 
-#endif // KSECRETSCOLLECTION_P_H
+#endif // KSECRETSSERVICECOLLECTION_P_H

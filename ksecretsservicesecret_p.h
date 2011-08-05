@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSECRET_P_H
-#define KSECRETSSECRET_P_H
+#ifndef KSECRETSSERVICESECRET_P_H
+#define KSECRETSSERVICESECRET_P_H
 
 #include "ksecretsservicesecret.h"
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
@@ -52,4 +52,4 @@ public:
 
 } // namespace
 
-#endif // KSECRETSSECRET_P_H
+#endif // KSECRETSSERVICESECRET_P_H

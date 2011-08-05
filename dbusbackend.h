@@ -68,7 +68,7 @@ class DBusSession {
 public:
 
     /**
-     * This @return a job allowing connection to the KSecretsService deamon via dbus
+     * This @return a job allowing connection to the KSecretsService daemon via dbus
      */
     static OpenSessionJob * openSession();
     
