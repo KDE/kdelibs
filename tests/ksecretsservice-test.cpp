@@ -49,7 +49,7 @@ KSecretServiceTest::KSecretServiceTest(QObject* parent): QObject(parent)
 void KSecretServiceTest::initTestCase()
 {
     // launch the daemon if it's not yet started
-/*    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
     {
         QString error;
         // FIXME: find out why this is not working
@@ -58,7 +58,7 @@ void KSecretServiceTest::initTestCase()
         
         QVERIFY2( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )),
                  "Secret Service was started but the service is not registered on the DBus");
-    }*/
+    }
 }
 
 void KSecretServiceTest::testCreateAndDelete()

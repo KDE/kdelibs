@@ -20,4 +20,4 @@ TARGET_LINK_LIBRARIES (ksecretsservice_client_test
     ${QT_QTTEST_LIBRARIES}
 )
 
-ADD_TEST( KSecrestServiceTest ksecretsservice_client_test )
+ADD_TEST( KSecretsServiceClientAPITest ksecretsservice_client_test )
