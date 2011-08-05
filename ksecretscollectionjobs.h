@@ -106,7 +106,7 @@ protected:
 protected:
     friend class FindCollectionJobPrivate;
     friend class DeleteCollectionJobPrivate;
-    CollectionJobPrivate *d;
+    QSharedPointer< CollectionJobPrivate > d;
 };
 
 class DeleteCollectionJob : public CollectionJob {
