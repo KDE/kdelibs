@@ -1272,7 +1272,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 #ifdef Q_WS_MAC
 static QString getBundle( const QString& path, bool ignore )
 {
-    kDebug(180) << "getBundle(" << path << ", " << ignore << ") called";
+    //kDebug(180) << "getBundle(" << path << ", " << ignore << ") called";
     QFileInfo info;
     QString bundle = path;
     bundle += QLatin1String(".app/Contents/MacOS/") + bundle.section(QLatin1Char('/'), -1);
@@ -1286,7 +1286,7 @@ static QString getBundle( const QString& path, bool ignore )
         }
         if ( ignore || (_stat.st_mode & S_IXUSR) ) {
             if ( ((_stat.st_mode & S_IFMT) == S_IFREG) || ((_stat.st_mode & S_IFMT) == S_IFLNK) ) {
-                kDebug(180) << "getBundle(): returning " << bundle;
+                //kDebug(180) << "getBundle(): returning " << bundle;
                 return bundle;
             }
         }
