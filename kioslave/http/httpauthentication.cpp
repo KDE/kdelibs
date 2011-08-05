@@ -76,15 +76,16 @@ static bool containsScheme(const char input[], int start, int end)
 
 // keys on even indexes, values on odd indexes. Reduces code expansion for the templated
 // alternatives.
-static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme, QByteArray* nextAuth = 0)
+// If "ba" starts with empty content it will be removed from ba to simplify later calls
+static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByteArray* nextAuth = 0)
 {
     QList<QByteArray> values;
     const char *b = ba.constData();
-    const int len = ba.count();
+    int len = ba.count();
     int start = 0, end = 0, pos = 0;
 
     // parse scheme
-    while (start < len && isWhiteSpace(b[start])) {
+    while (start < len && isWhiteSpaceOrComma(b[start])) {
         start++;
     }
     end = start;
@@ -92,8 +93,16 @@ static QList<QByteArray> parseChallenge(const QByteArray &ba, QByteArray *scheme
         end++;
     }
 
+    // drop empty stuff from the given string, it would have to be skipped over and over again
+    if (start != 0) {
+        ba = ba.mid(start);
+        end -= start;
+        len -= start;
+        start = 0;
+        b = ba.constData();
+    }
     Q_ASSERT(scheme);
-    *scheme = QByteArray(b + start, end - start);
+    *scheme = ba.left(end);
 
     while (end < len) {
         start = end;
@@ -280,11 +289,12 @@ QList< QByteArray > KAbstractHttpAuthentication::splitOffers(const QList< QByteA
     QList<QByteArray> alloffers;
     foreach(QByteArray offer, offers) {
         QByteArray scheme, cont;
+
         parseChallenge(offer, &scheme, &cont);
 
         while (!cont.isEmpty()) {
             offer.chop(cont.length());
-            alloffers << offer.trimmed();
+            alloffers << offer;
             offer = cont;
             cont.clear();
             parseChallenge(offer, &scheme, &cont);
