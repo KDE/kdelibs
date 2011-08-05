@@ -27,6 +27,7 @@ class HeaderDispositionTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void runAllTests();
+    void runAllTests_data();
 };
 
 #endif //HTTPHEADERDISPOSITIONTEST_H
