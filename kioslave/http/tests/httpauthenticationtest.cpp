@@ -83,7 +83,7 @@ void HTTPAuthenticationTest::testHeaderParsing_data()
     QTest::newRow("greenbytes-simplebasicnewparam1") << QByteArray("Basic realm=\"foo\", bar=\"xyz\"") << QByteArray("Basic") << QByteArray("realm,foo,bar,xyz");
     QTest::newRow("greenbytes-simplebasicnewparam2") << QByteArray("Basic bar=\"xyz\", realm=\"foo\"") << QByteArray("Basic") << QByteArray("bar,xyz,realm,foo");
     // a Basic challenge following an empty one
-//     QTest::newRow("greenbytes-multibasicempty") << QByteArray(",Basic realm=\"foo\"") << QByteArray("Basic") << QByteArray("realm,foo");
+    QTest::newRow("greenbytes-multibasicempty") << QByteArray(",Basic realm=\"foo\"") << QByteArray("Basic") << QByteArray("realm,foo");
     QTest::newRow("greenbytes-multibasicunknown") << QByteArray("Basic realm=\"basic\", Newauth realm=\"newauth\"") << QByteArray("Basic") << QByteArray("realm,basic");
     QTest::newRow("greenbytes-multibasicunknown2") << QByteArray("Newauth realm=\"newauth\", Basic realm=\"basic\"") << QByteArray("Basic") << QByteArray("realm,basic");
     QTest::newRow("greenbytes-unknown") << QByteArray("Newauth realm=\"newauth\"") << QByteArray() << QByteArray();
