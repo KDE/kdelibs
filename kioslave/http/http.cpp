@@ -2592,15 +2592,15 @@ bool HTTPProtocol::parseHeaderFromCache()
 
     Q_FOREACH (const QString &str, m_responseHeaders) {
         QString header = str.trimmed().toLower();
-        if (header.startsWith(QLatin1String("content-type: "))) {
+        if (header.startsWith(QLatin1String("content-type:"))) {
             int pos = header.indexOf(QLatin1String("charset="));
             if (pos != -1) {
                 QString charset = header.mid(pos+8);
                 m_request.cacheTag.charset = charset;
                 setMetaData(QLatin1String("charset"), charset);
             }
-        } else if (header.startsWith(QLatin1String("content-language: "))) {
-            QString language = header.mid(18);
+        } else if (header.startsWith(QLatin1String("content-language:"))) {
+            QString language = header.mid(17).trimmed();
             setMetaData(QLatin1String("content-language"), language);
         } else if (header.startsWith(QLatin1String("content-disposition:"))) {
             parseContentDisposition(header.mid(20));
