@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "ksecretscollectionjobs.h"
-#include "ksecretscollectionjobs_p.h"
+#include "ksecretsservicecollectionjobs.h"
+#include "ksecretsservicecollectionjobs_p.h"
 #include "ksecretsservicecollection_p.h"
 #include "ksecretsserviceitem_p.h"
 #include "service_interface.h"
@@ -761,5 +761,5 @@ void WriteCollectionPropertyJobPrivate::startWritingProperty()
 }
 
 
-#include "ksecretscollectionjobs.moc"
-#include "ksecretscollectionjobs_p.moc"
+#include "ksecretsservicecollectionjobs.moc"
+#include "ksecretsservicecollectionjobs_p.moc"

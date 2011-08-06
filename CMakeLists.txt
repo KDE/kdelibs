@@ -14,10 +14,9 @@ set (client_lib_SRCS
     ksecretsserviceitemjobs.cpp
     ksecretsservicesecret.cpp
     ksecretsservicecollection.cpp
-    ksecretscollectionjobs.cpp
+    ksecretsservicecollectionjobs.cpp
     dbusbackend.cpp
     promptjob.cpp
-    ../daemon/frontend/secret/adaptors/dbustypes.cpp
 )
 
 
@@ -42,6 +41,7 @@ INSTALL(FILES
 
 INSTALL(FILES
     ksecretsservicecollection.h
+    ksecretsservicecollectionjobs.h
     ksecretsserviceitem.h
     ksecretsservicesecret.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel 

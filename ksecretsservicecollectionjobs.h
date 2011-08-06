@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSCOLLECTIONJOBS_H
-#define KSECRETSCOLLECTIONJOBS_H
+#ifndef KSECRETSSERVICECOLLECTIONJOBS_H
+#define KSECRETSSERVICECOLLECTIONJOBS_H
 
 #include "ksecretsservicecollection.h"
 #include "ksecretsserviceitem.h"
@@ -255,4 +255,4 @@ private:
     
 }
 
-#endif // KSECRETSCOLLECTIONJOBS_H
+#endif // KSECRETSSERVICECOLLECTIONJOBS_H

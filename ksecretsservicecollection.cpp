@@ -21,7 +21,8 @@
 #include "ksecretsservicecollection.h"
 #include "ksecretsservicecollection_p.h"
 #include "dbusbackend.h"
-#include "ksecretscollectionjobs.h"
+#include "ksecretsservicecollectionjobs.h"
+#include "ksecretsservicecollectionjobs_p.h"
 #include "collection_interface.h"
 
 #include <QDateTime>
@@ -30,7 +31,6 @@
 #include <QTimer>
 #include <kjob.h>
 #include <kdebug.h>
-#include "ksecretscollectionjobs_p.h"
 
 namespace KSecretsService {
 

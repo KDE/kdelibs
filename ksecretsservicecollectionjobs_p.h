@@ -18,10 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSCOLLECTIONJOBS_P_H
-#define KSECRETSCOLLECTIONJOBS_P_H
+#ifndef KSECRETSSERVICECOLLECTIONJOBS_P_H
+#define KSECRETSSERVICECOLLECTIONJOBS_P_H
 
-#include "ksecretscollectionjobs.h"
+#include "ksecretsservicecollectionjobs.h"
 #include "../daemon/frontend/secret/adaptors/secretstruct.h"
 
 #include <QObject>
@@ -208,4 +208,4 @@ public:
 
 } // namespace
 
-#endif // KSECRETSCOLLECTIONJOBS_P_H
+#endif // KSECRETSSERVICECOLLECTIONJOBS_P_H

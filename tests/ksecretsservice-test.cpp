@@ -20,7 +20,7 @@
 
 #include "ksecretsservice-test.h"
 #include "../ksecretsservicecollection.h"
-#include "../ksecretscollectionjobs.h"
+#include "../ksecretsservicecollectionjobs.h"
 #include "../ksecretsservicesecret.h"
 #include "../ksecretsserviceitem.h"
 

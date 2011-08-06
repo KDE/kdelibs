@@ -22,7 +22,7 @@
 #define KSECRETSSERVICECOLLECTION_H
 
 #include "ksecretsservicesecret.h"
-#include "ksecretscollectionjobs.h"
+#include "ksecretsservicecollectionjobs.h"
 
 #include <QObject>
 #include <QMap>
