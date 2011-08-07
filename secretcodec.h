@@ -21,8 +21,17 @@
 #define SECRETCODEC_H
 
 #include <QtCrypto/QtCrypto>
+#include <kdemacros.h> // KDE_EXPORT and KDE_IMPORT
 
-class SecretCodec {
+#ifdef MAKE_KSECRETSSERVICELIB_LIB
+    /* when building this library */
+#define KSECRETSSERVICELIB_EXPORT KDE_EXPORT
+#else // MAKE_KSECRETSSERVICELIB_LIB
+    /* when using this library */
+#define KSECRETSSERVICELIB_EXPORT KDE_IMPORT
+#endif // MAKE_KSECRETSSERVICELIB_LIB
+
+class KSECRETSSERVICELIB_EXPORT SecretCodec {
 public:
     SecretCodec();
     ~SecretCodec();

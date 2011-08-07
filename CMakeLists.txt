@@ -7,15 +7,16 @@ INCLUDE_DIRECTORIES (
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-ADD_SUBDIRECTORY (tests)
-
 SET (ksecretservice_lib_SRCS
-    jobqueue.cpp
-    queuedjob.cpp
-    secrettool.cpp
     secretcodec.cpp
 )
 
-KDE4_ADD_LIBRARY (ksecretsservicelib STATIC ${ksecretservice_lib_SRCS})
-TARGET_LINK_LIBRARIES (ksecretsservicelib ${QT_QTCORE_LIBRARY})
+KDE4_ADD_LIBRARY (ksecretsservicelib SHARED ${ksecretservice_lib_SRCS})
 
+TARGET_LINK_LIBRARIES (ksecretsservicelib 
+    ${QT_QTCORE_LIBRARY} 
+    ${KDE4_KDECORE_LIBS} 
+    ${QCA2_LIBRARIES}
+)
+
+INSTALL(TARGETS ksecretsservicelib EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
