@@ -47,7 +47,7 @@ struct KSECRETSSERVICECLIENT_EXPORT Secret {
     bool operator == ( const Secret& that ) const;
     
 private:
-    friend class CreateItemJob;
+    friend class CreateCollectionItemJob;
     friend class SetSecretItemSecretJob;
     
     QSharedDataPointer< SecretPrivate > d;

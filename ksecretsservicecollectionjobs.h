@@ -35,10 +35,10 @@ class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
 class CollectionJobPrivate;
 class RenameCollectionJobPrivate;
-class SearchItemsJobPrivate;
-class CreateItemJobPrivate;
-class SearchSecretsJobPrivate;
-class ReadItemsJobPrivate;
+class SearchCollectionItemsJobPrivate;
+class CreateCollectionItemJobPrivate;
+class SearchCollectionSecretsJobPrivate;
+class ReadCollectionItemsJobPrivate;
 class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
     
@@ -160,10 +160,10 @@ private:
     QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SearchItemsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT SearchCollectionItemsJob : public CollectionJob {
 public:
-    explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
-    virtual ~SearchItemsJob();
+    explicit SearchCollectionItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
+    virtual ~SearchCollectionItemsJob();
     
     QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     virtual void start();
@@ -172,16 +172,16 @@ protected:
     virtual void onFindCollectionFinished();
 
 private:
-    friend class SearchItemsJobPrivate;
-    QSharedPointer<SearchItemsJobPrivate> d;
+    friend class SearchCollectionItemsJobPrivate;
+    QSharedPointer<SearchCollectionItemsJobPrivate> d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SearchSecretsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT SearchCollectionSecretsJob : public CollectionJob {
     Q_OBJECT
-    Q_DISABLE_COPY(SearchSecretsJob)
+    Q_DISABLE_COPY(SearchCollectionSecretsJob)
 public:
-    explicit SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent =0 );
-    virtual ~SearchSecretsJob();
+    explicit SearchCollectionSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent =0 );
+    virtual ~SearchCollectionSecretsJob();
     
     virtual void start();
     QList< Secret >  secrets() const;
@@ -191,14 +191,14 @@ protected Q_SLOTS:
     void searchIsDone( CollectionJob::CollectionError, const QString& );
     
 private:
-    friend class SearchSecretsJobPrivate;
-    QSharedPointer<SearchSecretsJobPrivate> d;
+    friend class SearchCollectionSecretsJobPrivate;
+    QSharedPointer<SearchCollectionSecretsJobPrivate> d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT CreateItemJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT CreateCollectionItemJob : public CollectionJob {
 public:
-    explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
-    virtual ~CreateItemJob();
+    explicit CreateCollectionItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
+    virtual ~CreateCollectionItemJob();
     
     virtual void start();
     SecretItem * item() const;
@@ -206,21 +206,21 @@ public:
     virtual void onFindCollectionFinished();
     
 private:
-    friend class CreateItemJobPrivate;
-    QSharedPointer< CreateItemJobPrivate > d;
+    friend class CreateCollectionItemJobPrivate;
+    QSharedPointer< CreateCollectionItemJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ReadItemsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT ReadCollectionItemsJob : public CollectionJob {
 public:
-    explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
-    virtual ~ReadItemsJob();
+    explicit ReadCollectionItemsJob( Collection* collection,  QObject *parent =0 );
+    virtual ~ReadCollectionItemsJob();
 
     virtual void start();
     QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
     
 private:
-    friend class ReadItemsJobPrivate;
-    QSharedPointer< ReadItemsJobPrivate > d;
+    friend class ReadCollectionItemsJobPrivate;
+    QSharedPointer< ReadCollectionItemsJobPrivate > d;
 };
 
 class KSECRETSSERVICECLIENT_EXPORT ReadCollectionPropertyJob : public CollectionJob {

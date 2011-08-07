@@ -72,24 +72,24 @@ KJob* Collection::renameCollection(const QString& newName)
     return new RenameCollectionJob( this, newName, this );
 }
 
-SearchItemsJob* Collection::searchItems(const QStringStringMap& attributes)
+SearchCollectionItemsJob* Collection::searchItems(const QStringStringMap& attributes)
 {
-    return new SearchItemsJob( this, attributes, this );
+    return new SearchCollectionItemsJob( this, attributes, this );
 }
 
-SearchSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
+SearchCollectionSecretsJob* Collection::searchSecrets(const QStringStringMap& attributes)
 {
-    return new SearchSecretsJob( this, attributes, this );
+    return new SearchCollectionSecretsJob( this, attributes, this );
 }
 
-CreateItemJob* Collection::createItem(const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace /* =false */)
+CreateCollectionItemJob* Collection::createItem(const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace /* =false */)
 {
-    return new CreateItemJob( this, label, attributes, secret, replace );
+    return new CreateCollectionItemJob( this, label, attributes, secret, replace );
 }
 
-ReadItemsJob* Collection::items() const
+ReadCollectionItemsJob* Collection::items() const
 {
-    return new ReadItemsJob( const_cast< Collection* >(this) );
+    return new ReadCollectionItemsJob( const_cast< Collection* >(this) );
 }
 
 ReadCollectionPropertyJob* Collection::isLocked() const

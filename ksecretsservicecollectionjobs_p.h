@@ -102,11 +102,11 @@ public:
     QString             newName;
 };
 
-class SearchItemsJobPrivate : public QObject {
+class SearchCollectionItemsJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(SearchItemsJobPrivate)
+    Q_DISABLE_COPY(SearchCollectionItemsJobPrivate)
 public:
-    explicit SearchItemsJobPrivate( CollectionPrivate*, SearchItemsJob* );
+    explicit SearchCollectionItemsJobPrivate( CollectionPrivate*, SearchCollectionItemsJob* );
     
     void startSearchItems();
     
@@ -118,16 +118,16 @@ protected Q_SLOTS:
     
 public:
     CollectionPrivate                   *collectionPrivate;
-    SearchItemsJob                      *searchItemJob;
+    SearchCollectionItemsJob            *searchItemJob;
     QStringStringMap                    attributes;
     QList< QSharedDataPointer< SecretItemPrivate > >    items;
 };
 
-class CreateItemJobPrivate : public QObject {
+class CreateCollectionItemJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(CreateItemJobPrivate)
+    Q_DISABLE_COPY(CreateCollectionItemJobPrivate)
 public:
-    explicit CreateItemJobPrivate( CollectionPrivate*, QObject *parent =0 );
+    explicit CreateCollectionItemJobPrivate( CollectionPrivate*, QObject *parent =0 );
 
     void startCreateItem();
     
@@ -137,7 +137,7 @@ protected Q_SLOTS:
     
 public:
     CollectionPrivate                   *collectionPrivate;
-    CreateItemJob                       *createItemJob;
+    CreateCollectionItemJob                       *createItemJob;
     QString                             label;
     QMap< QString, QString >            attributes;
     QSharedDataPointer< SecretPrivate > secretPrivate;
@@ -145,11 +145,11 @@ public:
     SecretItem                          *item;
 };
 
-class SearchSecretsJobPrivate : public QObject {
+class SearchCollectionSecretsJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(SearchSecretsJobPrivate)
+    Q_DISABLE_COPY(SearchCollectionSecretsJobPrivate)
 public:
-    explicit SearchSecretsJobPrivate( CollectionPrivate*, const QStringStringMap &attrs, QObject *parent =0);
+    explicit SearchCollectionSecretsJobPrivate( CollectionPrivate*, const QStringStringMap &attrs, QObject *parent =0);
     
     void startSearchSecrets();
     
@@ -166,11 +166,11 @@ public:
     QList< QSharedDataPointer<SecretPrivate> > secretsList;
 };
 
-class ReadItemsJobPrivate : public QObject {
+class ReadCollectionItemsJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(ReadItemsJobPrivate)
+    Q_DISABLE_COPY(ReadCollectionItemsJobPrivate)
 public:
-    explicit ReadItemsJobPrivate( CollectionPrivate* );
+    explicit ReadCollectionItemsJobPrivate( CollectionPrivate* );
 
     QList< QSharedDataPointer< SecretItemPrivate > > readItems() const;
     

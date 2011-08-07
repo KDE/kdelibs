@@ -355,25 +355,25 @@ void RenameCollectionJobPrivate::startRename()
     }
 }
 
-SearchItemsJob::SearchItemsJob( Collection *collection, 
+SearchCollectionItemsJob::SearchCollectionItemsJob( Collection *collection, 
                                 const QStringStringMap &attributes,
                                 QObject *parent ) :
     CollectionJob( collection, parent ),
-    d( new SearchItemsJobPrivate( collection->d.data(), this ) )
+    d( new SearchCollectionItemsJobPrivate( collection->d.data(), this ) )
 {
     d->attributes = attributes;
 }
 
-SearchItemsJob::~SearchItemsJob()
+SearchCollectionItemsJob::~SearchCollectionItemsJob()
 {
 }
 
-void SearchItemsJob::start()
+void SearchCollectionItemsJob::start()
 {
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-QList< QExplicitlySharedDataPointer< SecretItem > > SearchItemsJob::items() const
+QList< QExplicitlySharedDataPointer< SecretItem > > SearchCollectionItemsJob::items() const
 {
     QList< QExplicitlySharedDataPointer< SecretItem > > items;
     foreach( QSharedDataPointer< SecretItemPrivate > ip, d->items ) {
@@ -382,26 +382,26 @@ QList< QExplicitlySharedDataPointer< SecretItem > > SearchItemsJob::items() cons
     return items;
 }
 
-void SearchItemsJob::onFindCollectionFinished()
+void SearchCollectionItemsJob::onFindCollectionFinished()
 {
     d->startSearchItems();
 }
 
-SearchItemsJobPrivate::SearchItemsJobPrivate( CollectionPrivate* cp, SearchItemsJob *job ) :
+SearchCollectionItemsJobPrivate::SearchCollectionItemsJobPrivate( CollectionPrivate* cp, SearchCollectionItemsJob *job ) :
     QObject( job ),
     collectionPrivate( cp ),
     searchItemJob( job )
 {
 }
 
-void SearchItemsJobPrivate::startSearchItems()
+void SearchCollectionItemsJobPrivate::startSearchItems()
 {
     QDBusPendingReply< QList< QDBusObjectPath > > reply = collectionPrivate->collectionInterface()->SearchItems( attributes );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
     connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchFinished(QDBusPendingCallWatcher*) ) );
 }
 
-void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
+void SearchCollectionItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
 {
     Q_ASSERT(watcher != 0);
     QDBusPendingReply< QList< QDBusObjectPath > > reply = *watcher;
@@ -420,17 +420,17 @@ void SearchItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
 }
 
 
-SearchSecretsJob::SearchSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
+SearchCollectionSecretsJob::SearchCollectionSecretsJob( Collection* collection, const QStringStringMap &attributes, QObject* parent ) : 
     CollectionJob( collection, parent ),
-    d( new SearchSecretsJobPrivate( collection->d.data(), attributes ) )
+    d( new SearchCollectionSecretsJobPrivate( collection->d.data(), attributes ) )
 {
 }
 
-SearchSecretsJob::~SearchSecretsJob()
+SearchCollectionSecretsJob::~SearchCollectionSecretsJob()
 {
 }
 
-QList< Secret > SearchSecretsJob::secrets() const
+QList< Secret > SearchCollectionSecretsJob::secrets() const
 {
     QList< Secret > result;
     foreach( QSharedDataPointer< SecretPrivate > sp, d->secretsList ) {
@@ -439,37 +439,37 @@ QList< Secret > SearchSecretsJob::secrets() const
     return result;
 }
 
-void SearchSecretsJob::start()
+void SearchCollectionSecretsJob::start()
 {
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-void SearchSecretsJob::onFindCollectionFinished()
+void SearchCollectionSecretsJob::onFindCollectionFinished()
 {
     connect( d.data(), SIGNAL(searchIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(searchIsDone( CollectionJob::CollectionError, const QString&)) );
     d->startSearchSecrets();
 }
 
-void SearchSecretsJob::searchIsDone( CollectionJob::CollectionError err, const QString& msg)
+void SearchCollectionSecretsJob::searchIsDone( CollectionJob::CollectionError err, const QString& msg)
 {
     finishedWithError( err, msg );
 }
 
-SearchSecretsJobPrivate::SearchSecretsJobPrivate( CollectionPrivate *cp, const QStringStringMap &attrs, QObject *parent ) :
+SearchCollectionSecretsJobPrivate::SearchCollectionSecretsJobPrivate( CollectionPrivate *cp, const QStringStringMap &attrs, QObject *parent ) :
     QObject( parent ),
     collectionPrivate( cp ),
     attributes( attrs )
 {
 }
 
-void SearchSecretsJobPrivate::startSearchSecrets()
+void SearchCollectionSecretsJobPrivate::startSearchSecrets()
 {
     QDBusPendingReply<QList<QDBusObjectPath> > searchReply = collectionPrivate->collectionInterface()->SearchItems( attributes );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( searchReply, this );
     connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchSecretsReply(QDBusPendingCallWatcher*)));
 }
 
-void SearchSecretsJobPrivate::searchSecretsReply( QDBusPendingCallWatcher *watcher )
+void SearchCollectionSecretsJobPrivate::searchSecretsReply( QDBusPendingCallWatcher *watcher )
 {
     Q_ASSERT( watcher );
     QDBusPendingReply<QList<QDBusObjectPath> > searchReply = *watcher;
@@ -492,7 +492,7 @@ void SearchSecretsJobPrivate::searchSecretsReply( QDBusPendingCallWatcher *watch
     watcher->deleteLater();
 }
 
-void SearchSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher* watcher)
+void SearchCollectionSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher* watcher)
 {
     Q_ASSERT(watcher != 0);
     QDBusPendingReply<ObjectPathSecretMap> getReply = *watcher;
@@ -517,14 +517,14 @@ void SearchSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher* watcher)
 }
 
 
-CreateItemJob::CreateItemJob( Collection *collection,
+CreateCollectionItemJob::CreateCollectionItemJob( Collection *collection,
                               const QString& label,
                               const QMap< QString, QString >& attributes, 
                               const Secret& secret,
                               bool replace
                             ) :
             CollectionJob( collection, collection ),
-            d( new CreateItemJobPrivate( collection->d.data(), collection ) )
+            d( new CreateCollectionItemJobPrivate( collection->d.data(), collection ) )
 {
     d->createItemJob = this;
     d->label = label;
@@ -533,16 +533,16 @@ CreateItemJob::CreateItemJob( Collection *collection,
     d->replace = replace;
 }
 
-CreateItemJob::~CreateItemJob()
+CreateCollectionItemJob::~CreateCollectionItemJob()
 {
 }
 
-SecretItem * CreateItemJob::item() const 
+SecretItem * CreateCollectionItemJob::item() const 
 {
     return d->item;
 }
 
-void CreateItemJob::start()
+void CreateCollectionItemJob::start()
 {
     if ( d->label.length() == 0) {
         finishedWithError( CollectionJob::MissingParameterError, i18n("Please specify an item properly") );
@@ -551,24 +551,24 @@ void CreateItemJob::start()
         startFindCollection();
 }
 
-void CreateItemJob::onFindCollectionFinished()
+void CreateCollectionItemJob::onFindCollectionFinished()
 {
     connect( d.data(), SIGNAL(createIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(createIsDone( CollectionJob::CollectionError, const QString& )) );
     d->startCreateItem();
 }
 
-// void CreateItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
+// void CreateCollectionItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
 // {
 //     finishedWithError( err, msg );
 // }
 
-CreateItemJobPrivate::CreateItemJobPrivate( CollectionPrivate *cp, QObject *parent ) :
+CreateCollectionItemJobPrivate::CreateCollectionItemJobPrivate( CollectionPrivate *cp, QObject *parent ) :
         QObject( parent ),
         collectionPrivate( cp )
 {
 }
 
-void CreateItemJobPrivate::startCreateItem()
+void CreateCollectionItemJobPrivate::startCreateItem()
 {
     QVariantMap varMap;
     varMap["Label"] = label;
@@ -588,7 +588,7 @@ void CreateItemJobPrivate::startCreateItem()
     }
 }
 
-void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
+void CreateCollectionItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
 {
     QDBusPendingReply<QDBusObjectPath, QDBusObjectPath> createReply = *watcher;
     if ( !createReply.isError() ) {
@@ -625,24 +625,24 @@ void CreateItemJobPrivate::createItemReply(QDBusPendingCallWatcher* watcher)
     watcher->deleteLater();
 }
 
-void CreateItemJobPrivate::createPromptFinished(KJob*)
+void CreateCollectionItemJobPrivate::createPromptFinished(KJob*)
 {
     // TODO: implement this
 }
 
 
-ReadItemsJob::ReadItemsJob( Collection *collection,
+ReadCollectionItemsJob::ReadCollectionItemsJob( Collection *collection,
                                         QObject *parent ) :
     CollectionJob( collection, parent ),
-    d( new ReadItemsJobPrivate( collection->d.data() ) )
+    d( new ReadCollectionItemsJobPrivate( collection->d.data() ) )
 {
 }
 
-ReadItemsJob::~ReadItemsJob()
+ReadCollectionItemsJob::~ReadCollectionItemsJob()
 {
 }
 
-void ReadItemsJob::start()
+void ReadCollectionItemsJob::start()
 {
     // this is a property read - Qt seems to read properties synchrounously
     setError( 0 );
@@ -650,7 +650,7 @@ void ReadItemsJob::start()
     emitResult();
 }
 
-QList< QExplicitlySharedDataPointer< SecretItem > > ReadItemsJob::items() const 
+QList< QExplicitlySharedDataPointer< SecretItem > > ReadCollectionItemsJob::items() const 
 {
     QList< QExplicitlySharedDataPointer< SecretItem > > result;
     foreach( QSharedDataPointer< SecretItemPrivate > ip, d->readItems() ) {
@@ -659,12 +659,12 @@ QList< QExplicitlySharedDataPointer< SecretItem > > ReadItemsJob::items() const
     return result;
 }
 
-ReadItemsJobPrivate::ReadItemsJobPrivate( CollectionPrivate *cp ) :
+ReadCollectionItemsJobPrivate::ReadCollectionItemsJobPrivate( CollectionPrivate *cp ) :
     collectionPrivate( cp )
 {
 }
 
-QList< QSharedDataPointer< SecretItemPrivate > > ReadItemsJobPrivate::readItems() const 
+QList< QSharedDataPointer< SecretItemPrivate > > ReadCollectionItemsJobPrivate::readItems() const 
 {
     QList< QSharedDataPointer< SecretItemPrivate > > result;
     foreach( QDBusObjectPath path, collectionPrivate->collectionInterface()->items() ) {

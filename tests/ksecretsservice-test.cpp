@@ -99,11 +99,11 @@ void KSecretServiceTest::testCreateItem()
     attributes.insert( "test-attribute", "test-attribute-value" );
     Secret newSecret;
     newSecret.setValue( QVariant("test-secret"), "stringVariant" );
-    KSecretsService::CreateItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
+    KSecretsService::CreateCollectionItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
     
     // first method, try to directly read the SecretStruct
-    KSecretsService::SearchSecretsJob *searchJob = coll->searchSecrets( attributes );
+    KSecretsService::SearchCollectionSecretsJob *searchJob = coll->searchSecrets( attributes );
     QVERIFY2( searchJob->exec(), qPrintable( searchJob->errorText() ) );
 
     bool found = false;
@@ -116,7 +116,7 @@ void KSecretServiceTest::testCreateItem()
     QVERIFY2( found, "The new secret was not found in the collection (via searchSecrets()) !");
     
     // second method, try to read the SecretItem
-    KSecretsService::SearchItemsJob *searchItemsJob = coll->searchItems( attributes );
+    KSecretsService::SearchCollectionItemsJob *searchItemsJob = coll->searchItems( attributes );
     QVERIFY2( searchItemsJob->exec(), qPrintable( searchItemsJob->errorText() ) );
     
     foreach ( QExplicitlySharedDataPointer< SecretItem > item, searchItemsJob->items() ) {
@@ -130,7 +130,7 @@ void KSecretServiceTest::testCreateItem()
     QVERIFY2( found, "The new secret was not found in the collection (via searchItems()) !");
     
     // third method, use the items() method
-    KSecretsService::ReadItemsJob *readItemsJob = coll->items();
+    KSecretsService::ReadCollectionItemsJob *readItemsJob = coll->items();
     QVERIFY2( readItemsJob->exec(), qPrintable( readItemsJob->errorText() ) );
     
     foreach ( QExplicitlySharedDataPointer< SecretItem > item, readItemsJob->items() ) {
@@ -158,7 +158,7 @@ void KSecretServiceTest::testItems()
     attributes.insert( "test-attribute", "test-attribute-value" );
     Secret newSecret;
     newSecret.setValue( QVariant("test-secret"), "stringVariant" );
-    KSecretsService::CreateItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
+    KSecretsService::CreateCollectionItemJob *createItemJob = coll->createItem( "test label", attributes, newSecret );
     QVERIFY2( createItemJob->exec(), qPrintable( createItemJob->errorText() ) );
 
     SecretItem * createdItem = createItemJob->item();

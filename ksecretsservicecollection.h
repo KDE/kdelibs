@@ -38,10 +38,10 @@ namespace KSecretsService {
 
 class SecretItem;
 class CollectionPrivate;
-class CreateItemJob;
-class SearchSecretsJob;
-class SearchItemsJob;
-class ReadItemsJob;
+class CreateCollectionItemJob;
+class SearchCollectionSecretsJob;
+class SearchCollectionItemsJob;
+class ReadCollectionItemsJob;
 class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
 
@@ -135,14 +135,14 @@ public:
     /**
      * Search for the items matching the specified attributes
      * @param attributes hold the searched items attributes
-     * @return SearchItemsJob which is a KJob inheritor
+     * @return SearchCollectionItemsJob which is a KJob inheritor
      */
-    SearchItemsJob * searchItems( const StringStringMap &attributes );
+    SearchCollectionItemsJob * searchItems( const StringStringMap &attributes );
     
     /**
      * Use this method to get several secrets without getting through getting items
      */
-    SearchSecretsJob * searchSecrets( const StringStringMap &attributes );
+    SearchCollectionSecretsJob * searchSecrets( const StringStringMap &attributes );
     
     /**
      * Create a new item inside the current collection
@@ -150,17 +150,17 @@ public:
      * @param attributes holds an map of property names / property values
      * @param secret the secret the newly created item should hold
      * @param replace true if the and eventually existing secret is to be replaced by the on specified here
-     * @return CreateItemJob instance used to start the actual item creation operation in the storage infrastructure
+     * @return CreateCollectionItemJob instance used to start the actual item creation operation in the storage infrastructure
      *
      * @see SecretItem
      */
-    CreateItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, bool replace =false );
+    CreateCollectionItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, bool replace =false );
 
     /** 
      * Retrieve items stored inside this collection
      * @return ReadItemJob instance that will hold the returned items upon successuful execution
      */
-    ReadItemsJob * items() const;
+    ReadCollectionItemsJob * items() const;
 
     /**
      * Retrieve the lock status of this collection
@@ -222,10 +222,10 @@ private:
     friend class FindCollectionJob;
     friend class DeleteCollectionJob;
     friend class RenameCollectionJob;
-    friend class CreateItemJob;
-    friend class SearchSecretsJob;
-    friend class SearchItemsJob;
-    friend class ReadItemsJob;
+    friend class CreateCollectionItemJob;
+    friend class SearchCollectionSecretsJob;
+    friend class SearchCollectionItemsJob;
+    friend class ReadCollectionItemsJob;
     friend class ReadCollectionPropertyJob;
     friend class WriteCollectionPropertyJob;
     
