@@ -461,6 +461,9 @@ int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "questionYesNo" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
     dialog->setButtonGuiItem( KDialog::No, buttonNo );
@@ -522,6 +525,9 @@ int KMessageBox::questionYesNoCancelWId(WId parent_id,
     dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
     dialog->setObjectName( "questionYesNoCancel" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
     dialog->setButtonGuiItem( KDialog::No, buttonNo );
@@ -610,6 +616,9 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "warningYesNoList" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
     dialog->setButtonGuiItem( KDialog::No, buttonNo );
@@ -690,6 +699,9 @@ int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "warningYesNo" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonContinue );
     dialog->setButtonGuiItem( KDialog::No, buttonCancel );
@@ -777,6 +789,9 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
     dialog->setObjectName( "warningYesNoCancel" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
     dialog->setButtonGuiItem( KDialog::No, buttonNo );
@@ -834,6 +849,9 @@ void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStrin
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
     dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "error" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
@@ -864,6 +882,9 @@ void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
     dialog->setButtons( KDialog::Ok | KDialog::Details );
     dialog->setObjectName( "error" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
@@ -908,6 +929,9 @@ void KMessageBox::sorryWId(WId parent_id, const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
     dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "sorry" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
@@ -937,6 +961,9 @@ void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
     dialog->setButtons( KDialog::Ok | KDialog::Details );
     dialog->setObjectName( "sorry" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
@@ -981,6 +1008,9 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
     dialog->setCaption( caption.isEmpty() ? i18n("Information") : caption );
     dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "information" );
+    if ( parent_id ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok);
@@ -1046,6 +1076,9 @@ void KMessageBox::about(QWidget *parent, const QString &text,
     dialog->setCaption( caption );
     dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "about" );
+    if ( parent ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
     dialog->setModal( true );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
