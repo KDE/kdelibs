@@ -27,7 +27,7 @@ kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Prompt.xml prompt_
 kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Service.xml service_interface )
 kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Session.xml session_interface )
 
-kde4_add_library(ksecretsserviceclient ${client_lib_SRCS})
+kde4_add_library(ksecretsserviceclient SHARED ${client_lib_SRCS})
 
 TARGET_LINK_LIBRARIES (ksecretsserviceclient 
     ksecretsservicelib
@@ -35,14 +35,18 @@ TARGET_LINK_LIBRARIES (ksecretsserviceclient
     ${QCA2_LIBRARIES}
 )
 
+INSTALL(TARGETS ksecretsserviceclient EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
 INSTALL(FILES 
     ${ksecretsserviceclient_xml} 
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 INSTALL(FILES
+    ksecretsserviceclientmacros.h
     ksecretsservicecollection.h
     ksecretsservicecollectionjobs.h
     ksecretsserviceitem.h
+    ksecretsserviceitemjobs.h
     ksecretsservicesecret.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel 
 )

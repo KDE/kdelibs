@@ -67,7 +67,7 @@ void KSecretServiceTest::testCreateAndDelete()
     ReadCollectionPropertyJob *isValidJob = createdColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     
-    Collection *existingColl = Collection::findCollection( "test collection", Collection::OpenOnly );
+    Collection *existingColl = Collection::findCollection( "test collection" );
     isValidJob = existingColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     

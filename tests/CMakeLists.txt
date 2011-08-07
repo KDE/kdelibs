@@ -15,7 +15,7 @@ set( ksecretsservice_client_test_SRC
 
 KDE4_ADD_EXECUTABLE( ksecretsservice_client_test ${ksecretsservice_client_test_SRC} )
 
-TARGET_LINK_LIBRARIES (ksecretsservice_client_test
+TARGET_LINK_LIBRARIES( ksecretsservice_client_test
     ksecretsserviceclient
     ${QT_QTTEST_LIBRARIES}
 )

@@ -21,6 +21,7 @@
 #ifndef KSECRETSSERVICEITEM_H
 #define KSECRETSSERVICEITEM_H
 
+#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicesecret.h"
 #include "ksecretsserviceitemjobs.h"
 
@@ -47,7 +48,7 @@ class CreateItemJobPrivate;
  * The attributes list always contain at least one item, named "Label". It's content is up to the client application.
  * The "Label" attribute can also be read by calling the @ref attribute method and set by @ref setLabel method.
  */
-class SecretItem : public QSharedData {
+class KSECRETSSERVICECLIENT_EXPORT SecretItem : public QSharedData {
     SecretItem();
 public:
     SecretItem( SecretItemPrivate * );

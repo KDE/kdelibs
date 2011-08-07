@@ -70,7 +70,8 @@ SecretPrivate::SecretPrivate()
 {
 }
 
-SecretPrivate::SecretPrivate( const SecretPrivate &that )
+SecretPrivate::SecretPrivate( const SecretPrivate &that ) :
+    QSharedData( that )
 {
     contentType = that.contentType;
     value = that.value;

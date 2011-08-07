@@ -35,7 +35,7 @@ public:
     explicit CollectionPrivate( Collection * );
     ~CollectionPrivate();
 
-    void setPendingFindCollection(const WId &promptParentId, const QString &collName, Collection::FindCollectionOptions options);
+    void setPendingFindCollection(const WId &promptParentId, const QString &collName, const QVariantMap& collProps, Collection::FindCollectionOptions options);
     bool isValid();
     bool isNewlyCreated() const;
     void setDBusPath(const QDBusObjectPath &collPath);
@@ -45,7 +45,8 @@ public:
 public:
     Collection                              *collection;
     WId                                     promptParentWindowId;
-    QString                                 collectioName;
+    QString                                 collectionName;
+    QVariantMap                             collectionProperties;
     Collection::FindCollectionOptions       findOptions;
     Collection::Status                      collectionStatus;
     

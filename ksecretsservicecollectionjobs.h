@@ -21,6 +21,7 @@
 #ifndef KSECRETSSERVICECOLLECTIONJOBS_H
 #define KSECRETSSERVICECOLLECTIONJOBS_H
 
+#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicecollection.h"
 #include "ksecretsserviceitem.h"
 
@@ -109,7 +110,7 @@ protected:
     QSharedPointer< CollectionJobPrivate > d;
 };
 
-class DeleteCollectionJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT DeleteCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(DeleteCollectionJob)
 public:
@@ -126,7 +127,7 @@ private:
     QSharedPointer< DeleteCollectionJobPrivate > d;
 };
 
-class FindCollectionJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT FindCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(FindCollectionJob)
 public:
@@ -139,7 +140,7 @@ private:
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
-class RenameCollectionJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT RenameCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(RenameCollectionJob)
 public:
@@ -159,7 +160,7 @@ private:
     QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
-class SearchItemsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT SearchItemsJob : public CollectionJob {
 public:
     explicit SearchItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     virtual ~SearchItemsJob();
@@ -175,7 +176,7 @@ private:
     QSharedPointer<SearchItemsJobPrivate> d;
 };
 
-class SearchSecretsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT SearchSecretsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchSecretsJob)
 public:
@@ -194,7 +195,7 @@ private:
     QSharedPointer<SearchSecretsJobPrivate> d;
 };
 
-class CreateItemJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT CreateItemJob : public CollectionJob {
 public:
     explicit CreateItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     virtual ~CreateItemJob();
@@ -209,7 +210,7 @@ private:
     QSharedPointer< CreateItemJobPrivate > d;
 };
 
-class ReadItemsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT ReadItemsJob : public CollectionJob {
 public:
     explicit ReadItemsJob( Collection* collection,  QObject *parent =0 );
     virtual ~ReadItemsJob();
@@ -222,7 +223,7 @@ private:
     QSharedPointer< ReadItemsJobPrivate > d;
 };
 
-class ReadCollectionPropertyJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT ReadCollectionPropertyJob : public CollectionJob {
     explicit ReadCollectionPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
     explicit ReadCollectionPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent =0 );
     virtual ~ReadCollectionPropertyJob();
@@ -239,7 +240,7 @@ private:
     void (Collection::*propertyReadMember)( ReadCollectionPropertyJob* );
 };
 
-class WriteCollectionPropertyJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT WriteCollectionPropertyJob : public CollectionJob {
 public:
     explicit WriteCollectionPropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
     virtual ~WriteCollectionPropertyJob();

@@ -121,7 +121,7 @@ FindCollectionJob::FindCollectionJob(   Collection *collection,
             CollectionJob( collection, parent ),
             d( new FindCollectionJobPrivate( this, collection->d.data() ) )
 {
-    d->collectionName = collection->d->collectioName;
+    d->collectionName = collection->d->collectionName;
     d->findCollectionOptions = collection->d->findOptions;
 }
 
@@ -222,7 +222,7 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
     if ( !theJob->error() ) {
         if ( collectionPrivate->findOptions == Collection::CreateCollection ) {
             OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
-            QVariantMap creationProperties;
+            QVariantMap creationProperties = collectionPrivate->collectionProperties;
             creationProperties.insert("org.freedesktop.Secret.Collection.Label", collectionName);
             QDBusPendingReply< QDBusObjectPath, QDBusObjectPath > createReply = openSessionJob->serviceInterface()->CreateCollection(
                 creationProperties, collectionName );

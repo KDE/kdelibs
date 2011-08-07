@@ -18,41 +18,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KSECRETSSERVICESECRET_H
-#define KSECRETSSERVICESECRET_H
+#ifndef KSECRETSSERVICECLIENTMACROS_H
+#define KSECRETSSERVICECLIENTMACROS_H
 
-#include "ksecretsserviceclientmacros.h"
+#include <kdemacros.h>
 
-#include <QObject>
-#include <QVariant>
-#include <QSharedDataPointer>
+/**
+ * @def KDESECRETSSERVICECLIENT_EXPORT
+ * @ingroup KDEMacros
+ * 
+ * This macro marks the attached symbol as shared, so it can be used
+ * from the outside of its library
+ */
+#ifdef MAKE_KSECRETSSERVICECLIENT_LIB
+    /* when building KSecretsService Client API */
+#define KSECRETSSERVICECLIENT_EXPORT KDE_EXPORT
+#else // MAKE_KSECRETSSERVICECLIENT_LIB
+    /* when using the KSecretsService Client API */
+#define KSECRETSSERVICECLIENT_EXPORT KDE_IMPORT
+#endif // MAKE_KSECRETSSERVICECLIENT_LIB
 
 
-namespace KSecretsService {
+#endif // KSECRETSSERVICECLIENTMACROS_H
 
-class SecretPrivate;
-
-struct KSECRETSSERVICECLIENT_EXPORT Secret {
-    Secret();
-    Secret( const Secret & that );
-    explicit Secret( const QSharedDataPointer< SecretPrivate > & sp );
-    explicit Secret( SecretPrivate* sp );
-    virtual ~Secret();
-    
-    QVariant value() const;
-    
-    void setValue( const QVariant &value, const QString &contentType );
-    void setValue( const QVariant &value );
-    
-    bool operator == ( const Secret& that ) const;
-    
-private:
-    friend class CreateItemJob;
-    friend class SetSecretItemSecretJob;
-    
-    QSharedDataPointer< SecretPrivate > d;
-};
-
-};
-
-#endif // KSECRETSSERVICESECRET_H

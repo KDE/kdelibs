@@ -21,6 +21,7 @@
 #ifndef KSECRETSSERVICECOLLECTION_H
 #define KSECRETSSERVICECOLLECTION_H
 
+#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicesecret.h"
 #include "ksecretsservicecollectionjobs.h"
 
@@ -60,7 +61,7 @@ class WriteCollectionPropertyJob;
  * 
  * @see KJob
  */
-class Collection : public QObject {
+class KSECRETSSERVICECLIENT_EXPORT Collection : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(Collection)
 public:
@@ -88,16 +89,23 @@ public:
      * or creation will be postponed until you'll call one of the methods of the returned object.
      * @param collectionName collection name to be found
      * @param options @see FindCollectionOptions
+     * @param collectionProperties specify collection properties and it's semantics depends on the options parameter
+     *      if options == CreateCollection, then the newly created collection will receive these properties
+     *      if options == OpenOnly, then the properties are used to match the existing collection si be careful
+     *                              not to specify a property not given when creation a collection or you'll not be
+     *                              able to find it with this method
      * @param promptParentWindowId identifies the applications window to be used as a parent for prompt windows
      * @return Collection instance to be used by the client application to further manipulated it's secrets
      * @note Please note that the collection returned by this method is not yet connected to the secret storing
      * infrastructure. As such, a NotFound status would not be immediatley known. Application should be prepared
      * to get such an error upon the execution of the first KJob returned by one of the other methods of this class.
      */
-    static Collection * findCollection( const QString &collectionName, 
+    static Collection * findCollection( const QString &collectionName,
                                         FindCollectionOptions options = CreateCollection,
+                                        const QVariantMap collectionProperties = QVariantMap(),
                                         const WId &promptParentWindowId =0 );
 
+    
     /**
      * This will get the actual findStatus of this collection
      * @return Status
