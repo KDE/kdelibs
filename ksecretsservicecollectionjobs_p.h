@@ -85,6 +85,21 @@ public:
     CollectionPrivate                                    *collectionPrivate;
 };
 
+class ListCollectionsJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(ListCollectionsJobPrivate)
+public:
+    ListCollectionsJobPrivate( ListCollectionsJob*, CollectionPrivate* );
+    
+    void startListingCollections();
+    
+public:
+    ListCollectionsJob  *listCollectionsJob;
+    CollectionPrivate   *collectionPrivate;
+    QStringList         collections;
+    
+};
+
 class RenameCollectionJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(RenameCollectionJobPrivate)

@@ -232,7 +232,7 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
         else 
             if ( collectionPrivate->findOptions == Collection::OpenOnly ) {
                 QList< QDBusObjectPath > collPaths = DBusSession::serviceIf()->collections();
-                foreach ( QDBusObjectPath collPath, collPaths ) {
+                foreach ( const QDBusObjectPath &collPath, collPaths ) {
                     OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( collPath );
                     coll->deleteLater();
                     if ( coll->label() == collectionName ) {
@@ -246,6 +246,44 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
                 Q_ASSERT(0);
             }
     }
+}
+
+
+ListCollectionsJob::ListCollectionsJob( Collection * coll ) :
+    CollectionJob( coll, coll ),
+    d( new ListCollectionsJobPrivate( this, coll->d.data() ) )
+{
+}
+
+ListCollectionsJob::~ListCollectionsJob()
+{
+}
+
+void ListCollectionsJob::start()
+{
+    d->startListingCollections();
+}
+
+const QStringList &ListCollectionsJob::collections() const 
+{
+    return d->collections;
+}
+
+ListCollectionsJobPrivate::ListCollectionsJobPrivate( ListCollectionsJob *job, CollectionPrivate *cp ) :
+    listCollectionsJob(job),
+    collectionPrivate(cp)
+{
+}
+
+void ListCollectionsJobPrivate::startListingCollections()
+{
+    QList<QDBusObjectPath> collPaths = DBusSession::serviceIf()->collections();
+    foreach( const QDBusObjectPath &path, collPaths ) {
+        OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( path );
+        collections.append( coll->label() );
+        coll->deleteLater();
+    }
+    listCollectionsJob->finishedOk();
 }
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :

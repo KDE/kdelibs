@@ -31,9 +31,10 @@
 
 namespace KSecretsService {
 
+class CollectionJobPrivate;
 class DeleteCollectionJobPrivate;
 class FindCollectionJobPrivate;
-class CollectionJobPrivate;
+class ListCollectionsJobPrivate;
 class RenameCollectionJobPrivate;
 class SearchCollectionItemsJobPrivate;
 class CreateCollectionItemJobPrivate;
@@ -138,6 +139,22 @@ public:
 private:
     friend class FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;
+};
+
+class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(ListCollectionsJob)
+public:
+    explicit ListCollectionsJob( Collection *collection );
+    virtual ~ListCollectionsJob();
+    
+    virtual void start();
+    
+    const QStringList &collections() const;
+    
+private:
+    friend class ListCollectionsJobPrivate;
+    QSharedPointer< ListCollectionsJobPrivate > d;
 };
 
 class KSECRETSSERVICECLIENT_EXPORT RenameCollectionJob : public CollectionJob {

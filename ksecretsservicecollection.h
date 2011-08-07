@@ -44,6 +44,7 @@ class SearchCollectionItemsJob;
 class ReadCollectionItemsJob;
 class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
+class ListCollectionsJob;
 
 /**
  * This is the main KSecretsService entry class, used by the applications that need to store secrets, 
@@ -105,6 +106,10 @@ public:
                                         const QVariantMap collectionProperties = QVariantMap(),
                                         const WId &promptParentWindowId =0 );
 
+    /**
+     * Use this method to find out the names of all known secret service collections on the running system
+     */
+    static ListCollectionsJob * listCollections();
     
     /**
      * This will get the actual findStatus of this collection
@@ -220,6 +225,7 @@ protected:
 private:
     friend class CollectionJob; // to give access to Private class
     friend class FindCollectionJob;
+    friend class ListCollectionsJob;
     friend class DeleteCollectionJob;
     friend class RenameCollectionJob;
     friend class CreateCollectionItemJob;
