@@ -190,6 +190,7 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
     if (!lookupThread.wait(timeout)) {
         kDebug() << "Name look up for" << hostName << "failed";
         lookupThread.terminate();
+        lookupThread.wait();
         return QHostInfo();
     }
 
