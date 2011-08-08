@@ -34,8 +34,6 @@ class QAbstractScrollArea;
 class QModelIndex;
 class QStringList;
 
-class KConfigGroup;
-
 class KViewStateSaverPrivate;
 
 /**
@@ -199,16 +197,6 @@ public:
     Sets the QItemSelectionModel whose state is persisted.
   */
   void setSelectionModel( QItemSelectionModel *selectionModel );
-
-  /**
-    Saves the state to the @p configGroup
-  */
-  void saveState(KConfigGroup &configGroup);
-
-  /**
-    Restores the state from the @p configGroup
-  */
-  void restoreState(const KConfigGroup &configGroup);
 
   /**
    * Returns a QStringList describing the selection in the selectionModel.

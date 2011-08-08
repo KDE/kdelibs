@@ -26,14 +26,6 @@
 #include <QTimer>
 #include <QTreeView>
 
-#include "kconfiggroup.h"
-
-static const char * selectionKey = "Selection";
-static const char * expansionKey = "Expansion";
-static const char * currentKey = "Current";
-static const char * scrollStateHorizontalKey = "HorizontalScroll";
-static const char * scrollStateVerticalKey = "VerticalScroll";
-
 class KViewStateSaverPrivate
 {
 public:
@@ -188,25 +180,6 @@ void KViewStateSaverPrivate::processPendingChanges()
   q->restoreScrollState(m_verticalScrollBarValue, m_horizontalScrollBarValue);
 }
 
-void KViewStateSaver::restoreState(const KConfigGroup& configGroup)
-{
-  Q_D(KViewStateSaver);
-
-  // Delete myself if not finished after ten seconds.
-  QTimer::singleShot(10000, this, SLOT(deleteLater()));
-
-
-  d->m_pendingCurrent = configGroup.readEntry( currentKey, QString() );
-  d->m_pendingSelections = configGroup.readEntry( selectionKey, QStringList() ).toSet();
-  d->m_pendingExpansions = configGroup.readEntry( expansionKey, QStringList() ).toSet();
-  d->m_horizontalScrollBarValue = configGroup.readEntry( scrollStateHorizontalKey, -1 );
-  d->m_verticalScrollBarValue = configGroup.readEntry( scrollStateVerticalKey, -1 );
-
-  d->processPendingChanges();
-  if (d->hasPendingChanges())
-    d->listenToPendingChanges();
-}
-
 QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) const
 {
   Q_Q(const KViewStateSaver);
@@ -223,31 +196,6 @@ QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) c
     }
   }
   return expansion;
-}
-
-void KViewStateSaver::saveState(KConfigGroup& configGroup)
-{
-  Q_D(KViewStateSaver);
-
-  if ( d->m_selectionModel )
-  {
-    configGroup.writeEntry( selectionKey, selectionKeys() );
-    configGroup.writeEntry( currentKey, currentIndexKey() );
-  }
-
-  if ( d->m_treeView )
-  {
-    QStringList expansion = expansionKeys();
-
-    configGroup.writeEntry( expansionKey, expansion );
-  }
-
-  if ( d->m_scrollArea )
-  {
-    QPair<int, int> _scrollState = scrollState();
-    configGroup.writeEntry( scrollStateVerticalKey, _scrollState.first );
-    configGroup.writeEntry( scrollStateHorizontalKey, _scrollState.second );
-  }
 }
 
 void KViewStateSaverPrivate::restoreCurrentItem()

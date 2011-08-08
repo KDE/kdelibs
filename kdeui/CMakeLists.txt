@@ -131,6 +131,7 @@ set(kdeui_LIB_SRCS
  icons/kicontheme.cpp
  icons/kiconcache.cpp
  itemviews/klistwidget.cpp
+ itemviews/kconfigviewstatesaver.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
  itemviews/kviewstatesaver.cpp
@@ -540,6 +541,7 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
+ itemviews/kconfigviewstatesaver.h
  itemviews/klistwidget.h
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
