@@ -25,8 +25,8 @@
 
 class KViewStateMaintainerBasePrivate
 {
-  KViewStateMaintainerBasePrivate(KConfigGroup configGroup, KViewStateMaintainerBase *qq)
-    : q_ptr(qq), m_configGroup(configGroup)
+  KViewStateMaintainerBasePrivate(KViewStateMaintainerBase *qq)
+    : q_ptr(qq)
   {
 
   }
@@ -39,8 +39,6 @@ class KViewStateMaintainerBasePrivate
 
   QWeakPointer<QAbstractItemView> m_view;
   QWeakPointer<QItemSelectionModel> m_selectionModel;
-
-  const KConfigGroup m_configGroup;
 };
 
 void KViewStateMaintainerBasePrivate::_k_modelAboutToBeReset()
@@ -55,8 +53,8 @@ void KViewStateMaintainerBasePrivate::_k_modelReset()
   q->restoreState();
 }
 
-KViewStateMaintainerBase::KViewStateMaintainerBase(KConfigGroup configPtr, QObject* parent)
-  : QObject(parent), d_ptr(new KViewStateMaintainerBasePrivate(configPtr, this))
+KViewStateMaintainerBase::KViewStateMaintainerBase(QObject* parent)
+  : QObject(parent), d_ptr(new KViewStateMaintainerBasePrivate(this))
 {
 
 }
@@ -64,12 +62,6 @@ KViewStateMaintainerBase::KViewStateMaintainerBase(KConfigGroup configPtr, QObje
 KViewStateMaintainerBase::~KViewStateMaintainerBase()
 {
   delete d_ptr;
-}
-
-KConfigGroup KViewStateMaintainerBase::configGroup() const
-{
-  Q_D(const KViewStateMaintainerBase);
-  return d->m_configGroup;
 }
 
 QItemSelectionModel* KViewStateMaintainerBase::selectionModel() const

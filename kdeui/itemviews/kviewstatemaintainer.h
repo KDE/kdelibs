@@ -36,7 +36,7 @@ class KDEUI_EXPORT KViewStateMaintainerBase : public QObject
 {
   Q_OBJECT
 public:
-  KViewStateMaintainerBase(KConfigGroup configGroup, QObject* parent = 0);
+  KViewStateMaintainerBase(QObject* parent = 0);
   ~KViewStateMaintainerBase();
 
   void setSelectionModel(QItemSelectionModel *selectionModel);
@@ -47,9 +47,6 @@ public:
 
   virtual void saveState() = 0;
   virtual void restoreState() = 0;
-
-protected:
-  KConfigGroup configGroup() const;
 
 private:
   Q_DECLARE_PRIVATE(KViewStateMaintainerBase)
@@ -78,7 +75,7 @@ class KViewStateMaintainer : public KViewStateMaintainerBase
   typedef StateSaver StateRestorer;
 public:
   KViewStateMaintainer(KConfigGroup configGroup, QObject* parent = 0)
-    : KViewStateMaintainerBase(configGroup, parent)
+    : KViewStateMaintainerBase(parent), m_configGroup(configGroup)
   {
 
   }
@@ -88,9 +85,8 @@ public:
     StateSaver saver;
     saver.setView(view());
     saver.setSelectionModel(selectionModel());
-    KConfigGroup cfg = configGroup();
-    saver.saveState(cfg);
-    cfg.sync();
+    saver.saveState(m_configGroup);
+    m_configGroup.sync();
   }
 
   /* reimp */ void restoreState()
@@ -98,9 +94,10 @@ public:
     StateRestorer *restorer = new StateRestorer;
     restorer->setView(view());
     restorer->setSelectionModel(selectionModel());
-    restorer->restoreState(configGroup());
+    restorer->restoreState(m_configGroup);
   }
-
+private:
+  const KConfigGroup m_configGroup;
 };
 
 #endif
