@@ -25,7 +25,7 @@
 
 class KDescendantsProxyModelPrivate;
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 /**
 @brief Proxy Model for restructuring a Tree into a list.
@@ -67,7 +67,7 @@ view->setModel(descProxy);
 @since 4.6
 @author Stephen Kelly <steveire@gmail.com>
 */
-class KDEUI_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
+class ITEMMODELS_EXPORT KDescendantsProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 

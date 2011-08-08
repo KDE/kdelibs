@@ -24,11 +24,11 @@
 
 #include <QtGui/QAbstractProxyModel>
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 class KIdentityProxyModelPrivate;
 
-class KDEUI_EXPORT KIdentityProxyModel : public QAbstractProxyModel
+class ITEMMODELS_EXPORT KIdentityProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
 public:

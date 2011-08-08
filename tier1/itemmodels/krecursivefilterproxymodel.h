@@ -23,7 +23,7 @@
 
 #include <QtGui/QSortFilterProxyModel>
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 class KRecursiveFilterProxyModelPrivate;
 
@@ -84,7 +84,7 @@ class KRecursiveFilterProxyModelPrivate;
   @since 4.5
 
 */
-class KDEUI_EXPORT KRecursiveFilterProxyModel : public QSortFilterProxyModel
+class ITEMMODELS_EXPORT KRecursiveFilterProxyModel : public QSortFilterProxyModel
 {
   Q_OBJECT
 public:

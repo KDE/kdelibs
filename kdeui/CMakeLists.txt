@@ -9,6 +9,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${CMAKE_SOURCE_DIR}/kdecore/sonnet
+ ${CMAKE_BINARY_DIR}/tier1/itemmodels
+ ${CMAKE_SOURCE_DIR}/tier1/itemmodels
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
@@ -128,12 +130,6 @@ set(kdeui_LIB_SRCS
  icons/kiconloader.cpp
  icons/kicontheme.cpp
  icons/kiconcache.cpp
- itemviews/kbreadcrumbselectionmodel.cpp
- itemviews/kcheckableproxymodel.cpp
- itemviews/klinkitemselectionmodel.cpp
- itemviews/kidentityproxymodel.cpp
- itemviews/krecursivefilterproxymodel.cpp
- itemviews/kdescendantsproxymodel.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -144,12 +140,10 @@ set(kdeui_LIB_SRCS
  itemviews/kcategorizedsortfilterproxymodel.cpp
  itemviews/kcategorizedview.cpp
  itemviews/kcategorydrawer.cpp
- itemviews/kmodelindexproxymapper.cpp
  itemviews/kwidgetitemdelegate.cpp
  itemviews/kwidgetitemdelegatepool.cpp
  # This requires patches which are not yet in Qt. Disabled for now.
 #  itemviews/kreparentingproxymodel.cpp
- itemviews/kselectionproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
@@ -412,7 +406,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui itemmodels ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY})
 
 if(NOT WINCE)
@@ -546,13 +540,7 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
- itemviews/kbreadcrumbselectionmodel.h
- itemviews/kcheckableproxymodel.h
- itemviews/klinkitemselectionmodel.h
- itemviews/krecursivefilterproxymodel.h
- itemviews/kdescendantsproxymodel.h
  itemviews/klistwidget.h
- itemviews/kidentityproxymodel.h
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
  itemviews/klistwidgetsearchline.h
@@ -562,10 +550,8 @@ install( FILES
  itemviews/kcategorizedsortfilterproxymodel.h
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h
- itemviews/kmodelindexproxymapper.h
  itemviews/kwidgetitemdelegate.h
 #  itemviews/kreparentingproxymodel.h
- itemviews/kselectionproxymodel.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h

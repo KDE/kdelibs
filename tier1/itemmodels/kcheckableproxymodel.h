@@ -24,7 +24,7 @@
 
 #include "kidentityproxymodel.h"
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 #include <QItemSelection>
 
@@ -65,7 +65,7 @@ class KCheckableProxyModelPrivate;
  * @since 4.6
  * @author Stephen Kelly <steveire@gmail.com>
  */
-class KDEUI_EXPORT KCheckableProxyModel : public KIdentityProxyModel
+class ITEMMODELS_EXPORT KCheckableProxyModel : public KIdentityProxyModel
 {
   Q_OBJECT
 public:

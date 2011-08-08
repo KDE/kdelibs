@@ -1002,6 +1002,7 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
 
 endmacro (KDE4_ADD_EXECUTABLE)
 
+include(GenerateExportHeader)
 
 macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 

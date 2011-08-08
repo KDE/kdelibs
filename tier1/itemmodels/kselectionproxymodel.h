@@ -22,7 +22,7 @@
 
 #include <QtGui/QAbstractProxyModel>
 
-#include <kdeui_export.h>
+#include <itemmodels_export.h>
 
 class QItemSelectionModel;
 
@@ -83,7 +83,7 @@ class KSelectionProxyModelPrivate;
   @author Stephen Kelly <steveire@gmail.com>
 
 */
-class KDEUI_EXPORT KSelectionProxyModel : public QAbstractProxyModel
+class ITEMMODELS_EXPORT KSelectionProxyModel : public QAbstractProxyModel
 {
     Q_OBJECT
 public:

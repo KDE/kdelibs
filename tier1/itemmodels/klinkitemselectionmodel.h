@@ -25,7 +25,7 @@
 #include <QtGui/QItemSelectionModel>
 #include <QtGui/QAbstractProxyModel>
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 class KLinkItemSelectionModelPrivate;
 
@@ -92,7 +92,7 @@ class KLinkItemSelectionModelPrivate;
   @author Stephen Kelly <steveire@gmail.com>
 
 */
-class KDEUI_EXPORT KLinkItemSelectionModel : public QItemSelectionModel
+class ITEMMODELS_EXPORT KLinkItemSelectionModel : public QItemSelectionModel
 {
     Q_OBJECT
 public:

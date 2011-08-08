@@ -21,19 +21,6 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
-SET(proxyModelTestSources
-  kselectionproxymodeltestsuite.cpp
-)
-
-add_subdirectory(proxymodeltestsuite)
-
-MACRO(KDEUI_PROXYMODEL_TESTS)
-       FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} TESTNAME kdeui-${_testname} ${_testname}.cpp ${proxyModelTestSources} )
-               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN32_LIBRARIES} proxymodeltestsuite )
-       ENDFOREACH(_testname)
-ENDMACRO(KDEUI_PROXYMODEL_TESTS)
-
 
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
@@ -71,12 +58,6 @@ KDEUI_UNIT_TESTS(
   ktimecomboboxtest
   kdatecomboboxtest
   kdatetimeedittest
-)
-
-KDEUI_PROXYMODEL_TESTS(
-  kdescendantsproxymodeltest
-  kselectionproxymodeltest
-  testmodelqueuedconnections
 )
 
 KDEUI_EXECUTABLE_TESTS(
@@ -178,7 +159,3 @@ SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp ../colors/kcolors
 kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
 kde4_add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
 target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES})
-
-
-add_subdirectory(proxymodeltestapp)
-

@@ -25,7 +25,7 @@
 #include <QtGui/QItemSelectionModel>
 #include <QtCore/QAbstractItemModel>
 
-#include "kdeui_export.h"
+#include "itemmodels_export.h"
 
 class KBreadcrumbSelectionModelPrivate;
 
@@ -106,7 +106,7 @@ class KBreadcrumbSelectionModelPrivate;
   @since 4.5
 
 */
-class KDEUI_EXPORT KBreadcrumbSelectionModel : public QItemSelectionModel
+class ITEMMODELS_EXPORT KBreadcrumbSelectionModel : public QItemSelectionModel
 {
   Q_OBJECT
 public:
