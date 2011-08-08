@@ -121,7 +121,7 @@ class SearchCollectionItemsJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(SearchCollectionItemsJobPrivate)
 public:
-    explicit SearchCollectionItemsJobPrivate( CollectionPrivate*, SearchCollectionItemsJob* );
+    SearchCollectionItemsJobPrivate( CollectionPrivate*, SearchCollectionItemsJob* );
     
     void startSearchItems();
     
@@ -197,7 +197,7 @@ class ReadCollectionPropertyJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(ReadCollectionPropertyJobPrivate)
 public:
-    explicit ReadCollectionPropertyJobPrivate( CollectionPrivate* cp, ReadCollectionPropertyJob* );
+    ReadCollectionPropertyJobPrivate( CollectionPrivate* cp, ReadCollectionPropertyJob* );
     
     void startReadingProperty();
     
@@ -211,7 +211,7 @@ class WriteCollectionPropertyJobPrivate : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(WriteCollectionPropertyJobPrivate)
 public:
-    explicit WriteCollectionPropertyJobPrivate( CollectionPrivate *cp, WriteCollectionPropertyJob* );
+    WriteCollectionPropertyJobPrivate( CollectionPrivate *cp, WriteCollectionPropertyJob* );
     
     void startWritingProperty();
     
@@ -219,6 +219,23 @@ public:
     WriteCollectionPropertyJob *writePropertyJob;
     const char *propertyName;
     QVariant value;
+};
+
+class ChangeCollectionPasswordJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(ChangeCollectionPasswordJobPrivate)
+public:
+    explicit ChangeCollectionPasswordJobPrivate( CollectionPrivate *cp, ChangeCollectionPasswordJob* );
+    
+    void startChangingPassword();
+
+protected Q_SLOTS:
+    void changePasswordStarted( QDBusPendingCallWatcher* );
+    void promptFinished( KJob* );
+    
+public:
+    CollectionPrivate            *collectionPrivate;
+    ChangeCollectionPasswordJob  *theJob;
 };
 
 } // namespace

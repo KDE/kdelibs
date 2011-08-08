@@ -45,6 +45,7 @@ class ReadCollectionItemsJob;
 class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
 class ListCollectionsJob;
+class ChangeCollectionPasswordJob;
 
 /**
  * This is the main KSecretsService entry class, used by the applications that need to store secrets, 
@@ -202,6 +203,12 @@ public:
      */
     ReadCollectionPropertyJob* isValid();
     
+    /**
+     * Request current collection's password change. A dialog box will pop-up during the returned job execution
+     * @return change password job
+     */
+    ChangeCollectionPasswordJob* changePassword();
+    
 Q_SIGNALS:
     /**
      * TODO: not yet implemented
@@ -234,6 +241,7 @@ private:
     friend class ReadCollectionItemsJob;
     friend class ReadCollectionPropertyJob;
     friend class WriteCollectionPropertyJob;
+    friend class ChangeCollectionPasswordJob;
     
     void readIsValid( ReadCollectionPropertyJob* );
     

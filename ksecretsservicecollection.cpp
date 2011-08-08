@@ -117,7 +117,10 @@ WriteCollectionPropertyJob* Collection::setLabel(const QString& label)
     return new WriteCollectionPropertyJob( this, "Label", QVariant( label ) );
 }
 
-
+ChangeCollectionPasswordJob* Collection::changePassword()
+{
+    return new ChangeCollectionPasswordJob( this );
+}
 
 CollectionPrivate::CollectionPrivate( Collection *coll ) :
         collection( coll ),

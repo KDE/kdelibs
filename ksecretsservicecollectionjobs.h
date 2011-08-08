@@ -42,6 +42,7 @@ class SearchCollectionSecretsJobPrivate;
 class ReadCollectionItemsJobPrivate;
 class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
+class ChangeCollectionPasswordJobPrivate;
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -55,7 +56,7 @@ typedef QMap< QString, QString > QStringStringMap;
  * 
  * @note this class is for internal use only and should not be used by client applications
  */
-class CollectionJob : public KCompositeJob {
+class KSECRETSSERVICECLIENT_EXPORT CollectionJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(CollectionJob)
 public:
@@ -178,6 +179,8 @@ private:
 };
 
 class KSECRETSSERVICECLIENT_EXPORT SearchCollectionItemsJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(SearchCollectionItemsJob)
 public:
     explicit SearchCollectionItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     virtual ~SearchCollectionItemsJob();
@@ -213,6 +216,8 @@ private:
 };
 
 class KSECRETSSERVICECLIENT_EXPORT CreateCollectionItemJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(CreateCollectionItemJob)
 public:
     explicit CreateCollectionItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
     virtual ~CreateCollectionItemJob();
@@ -228,6 +233,8 @@ private:
 };
 
 class KSECRETSSERVICECLIENT_EXPORT ReadCollectionItemsJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(ReadCollectionItemsJob)
 public:
     explicit ReadCollectionItemsJob( Collection* collection,  QObject *parent =0 );
     virtual ~ReadCollectionItemsJob();
@@ -241,8 +248,11 @@ private:
 };
 
 class KSECRETSSERVICECLIENT_EXPORT ReadCollectionPropertyJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(ReadCollectionPropertyJob)
+    
     explicit ReadCollectionPropertyJob( Collection *collection, const char *propName, QObject *parent =0 );
-    explicit ReadCollectionPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent =0 );
+    ReadCollectionPropertyJob( Collection *collection, void (Collection::*propReadMember)( ReadCollectionPropertyJob* ), QObject *parent =0 );
     virtual ~ReadCollectionPropertyJob();
     friend class Collection; // only Collection class can instantiated us
 public:
@@ -258,6 +268,8 @@ private:
 };
 
 class KSECRETSSERVICECLIENT_EXPORT WriteCollectionPropertyJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(WriteCollectionPropertyJob)
 public:
     explicit WriteCollectionPropertyJob( Collection *collection, const char *propName, const QVariant& value, QObject *parent =0 );
     virtual ~WriteCollectionPropertyJob();
@@ -270,7 +282,20 @@ private:
     QSharedPointer< WriteCollectionPropertyJobPrivate > d;
 };
 
+class KSECRETSSERVICECLIENT_EXPORT ChangeCollectionPasswordJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(ChangeCollectionPasswordJob)
+public:
+    explicit ChangeCollectionPasswordJob( Collection *collection );
     
+    virtual void start();
+    virtual void onFindCollectionFinished();
+    
+private:
+    friend class ChangeCollectionPasswordJobPrivate;
+    QSharedPointer< ChangeCollectionPasswordJobPrivate > d;
+};
+
 }
 
 #endif // KSECRETSSERVICECOLLECTIONJOBS_H

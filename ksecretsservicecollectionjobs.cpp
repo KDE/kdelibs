@@ -163,7 +163,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
         
         if ( collPath.path().compare("/") == 0 ) {
             // we need prompting
-            Q_ASSERT( promptPath.path().compare("/") ); // we should have a prompt path here
+            Q_ASSERT( promptPath.path().compare("/") ); // we should have a prompt path here other thant "/"
             PromptJob *promptJob = new PromptJob( promptPath, collectionPrivate->promptParentId(), this );
             if ( findJob->addSubjob( promptJob ) ) {
                 connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(createPromptFinished(KJob*)) );
@@ -798,6 +798,75 @@ void WriteCollectionPropertyJobPrivate::startWritingProperty()
     writePropertyJob->finishedOk();
 }
 
+ChangeCollectionPasswordJob::ChangeCollectionPasswordJob(Collection* collection): 
+    CollectionJob( collection ),
+    d( new ChangeCollectionPasswordJobPrivate( collection->d.data(), this ) )
+{
+}
+
+void ChangeCollectionPasswordJob::start()
+{
+    startFindCollection();
+}
+
+void ChangeCollectionPasswordJob::onFindCollectionFinished()
+{
+    d->startChangingPassword();
+}
+
+ChangeCollectionPasswordJobPrivate::ChangeCollectionPasswordJobPrivate( CollectionPrivate *cp, ChangeCollectionPasswordJob *job ) :
+    collectionPrivate( cp ),
+    theJob( job )
+{
+}
+
+void ChangeCollectionPasswordJobPrivate::startChangingPassword()
+{
+    QDBusPendingReply< QDBusObjectPath > reply = collectionPrivate->collectionInterface()->ChangePassword();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(changePasswordStarted(QDBusPendingCallWatcher*)) );
+}
+
+void ChangeCollectionPasswordJobPrivate::changePasswordStarted( QDBusPendingCallWatcher *watcher )
+{
+    Q_ASSERT(watcher != 0);
+    QDBusPendingReply< QDBusObjectPath > reply = *watcher;
+    if ( !reply.isError() ) {
+        QDBusObjectPath promptPath = reply.argumentAt<0>();
+        PromptJob *promptJob = new PromptJob( promptPath, collectionPrivate->promptParentId(), this );
+        if ( theJob->addSubjob( promptJob ) ) {
+            connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(promptFinished(KJob*)) );
+            promptJob->start();
+        }
+        else {
+            promptJob->deleteLater();
+            kDebug() << "cannot add prompt subjob!";
+            theJob->finishedWithError( CollectionJob::InternalError, i18n("Cannot add prompt job") );
+        }
+    }
+    else {
+        kDebug() << "ERROR when starting password change " << reply.error().message();
+        theJob->finishedWithError( CollectionJob::InternalError, reply.error().message() );
+    }
+    watcher->deleteLater();
+}
+
+void ChangeCollectionPasswordJobPrivate::promptFinished( KJob* pj )
+{
+    PromptJob *promptJob = dynamic_cast< PromptJob* >( pj );
+    if ( promptJob->error() == 0 ) {
+        if ( !promptJob->isDismissed() ) {
+            theJob->finishedOk();
+        }
+        else {
+            theJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, i18n("The operation was cancelled by the user") );
+        }
+    }
+    else {
+        theJob->finishedWithError( CollectionJob::InternalError, i18n("Error encountered when trying to prompt the user") );
+    }
+    pj->deleteLater();
+}
 
 #include "ksecretsservicecollectionjobs.moc"
 #include "ksecretsservicecollectionjobs_p.moc"

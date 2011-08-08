@@ -71,6 +71,9 @@ void KSecretServiceTest::testCreateAndDelete()
     isValidJob = existingColl->isValid();
     QVERIFY2( isValidJob->exec(), qPrintable( isValidJob->errorText() ) );
     
+    ChangeCollectionPasswordJob *passwordJob = isValidJob->collection()->changePassword();
+    QVERIFY2( passwordJob->exec(), qPrintable( passwordJob->errorText() ) );
+    
     KJob* deleteJob = existingColl->deleteCollection();
     deleteJob->exec();
     QVERIFY2( (deleteJob->error() == 0), qPrintable( deleteJob->errorText() ) );
