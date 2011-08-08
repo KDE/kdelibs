@@ -22,8 +22,6 @@
 
 #include "kbreadcrumbselectionmodel.h"
 
-#include "kdebug.h"
-
 class KBreadcrumbSelectionModelPrivate
 {
   Q_DECLARE_PUBLIC(KBreadcrumbSelectionModel)

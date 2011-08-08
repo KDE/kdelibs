@@ -23,10 +23,9 @@
 
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QWeakPointer>
+#include <QtCore/QDebug>
 #include <QtGui/QAbstractProxyModel>
 #include <QtGui/QItemSelectionModel>
-
-#include "kdebug.h"
 
 class KModelIndexProxyMapperPrivate
 {
@@ -42,7 +41,7 @@ class KModelIndexProxyMapperPrivate
   bool assertSelectionValid(const QItemSelection &selection) const {
     foreach(const QItemSelectionRange &range, selection) {
       if (!range.isValid()) {
-        kDebug() << selection << m_leftModel << m_rightModel << m_proxyChainDown << m_proxyChainUp;
+        qDebug() << selection << m_leftModel << m_rightModel << m_proxyChainDown << m_proxyChainUp;
       }
       Q_ASSERT(range.isValid());
     }
@@ -218,7 +217,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionLeftToRight(const QItemSelect
     return QItemSelection();
 
   if (selection.first().model() != d->m_leftModel.data())
-    kDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
+    qDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
   Q_ASSERT(selection.first().model() == d->m_leftModel.data());
 
   QItemSelection seekSelection = selection;
@@ -265,7 +264,7 @@ QItemSelection KModelIndexProxyMapper::mapSelectionRightToLeft(const QItemSelect
     return QItemSelection();
 
   if (selection.first().model() != d->m_rightModel.data())
-    kDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
+    qDebug() << "FAIL" << selection.first().model() << d->m_leftModel.data() << d->m_rightModel.data();
   Q_ASSERT(selection.first().model() == d->m_rightModel.data());
 
   QItemSelection seekSelection = selection;

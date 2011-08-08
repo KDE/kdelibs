@@ -24,10 +24,9 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
+#include <QtCore/QDebug>
 
-#include "kdebug.h"
-
-#define KDO(object) kDebug() << #object << object
+#define KDO(object) qDebug() << #object << object
 
 #include "kbihash_p.h"
 

@@ -24,9 +24,8 @@
 
 #include "kmodelindexproxymapper.h"
 
-#include "kdebug.h"
-
 #include <QItemSelection>
+#include <QDebug>
 
 class KLinkItemSelectionModelPrivate
 {
@@ -48,7 +47,7 @@ public:
     bool assertSelectionValid(const QItemSelection &selection) const {
       foreach(const QItemSelectionRange &range, selection) {
         if (!range.isValid()) {
-          kDebug() << selection;
+          qDebug() << selection;
         }
         Q_ASSERT(range.isValid());
       }

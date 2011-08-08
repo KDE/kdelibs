@@ -28,13 +28,13 @@
 #include "kbihash_p.h"
 #include "kvoidpointerfactory_p.h"
 
-#include "kdebug.h"
+#include <QDebug>
 
 typedef KBiHash<QPersistentModelIndex, QModelIndex> SourceProxyIndexMapping;
 typedef KBiHash<void*, QModelIndex> ParentMapping;
 typedef KHash2Map<QPersistentModelIndex, int> SourceIndexProxyRowMapping;
 
-#define KDO(object) kDebug() << #object << object
+#define KDO(object) qDebug() << #object << object
 #define SON(object) object->setObjectName(#object)
 
 /**
@@ -1728,8 +1728,9 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
             Q_ASSERT(idx.isValid());
             const bool b = m_rootIndexList.removeOne(idx);
             Q_UNUSED(b)
-            if (!b)
-              kDebug() << idx;
+            if (!b) {
+              qDebug() << idx;
+            }
             Q_ASSERT(b);
         }
 

@@ -19,8 +19,6 @@
 
 #include "krecursivefilterproxymodel.h"
 
-#include <kdebug.h>
-
 // Maintainability note:
 // This class invokes some Q_PRIVATE_SLOTs in QSortFilterProxyModel which are
 // private API and could be renamed or removed at any time.

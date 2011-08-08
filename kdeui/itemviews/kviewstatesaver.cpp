@@ -26,8 +26,6 @@
 #include <QTimer>
 #include <QTreeView>
 
-#include "kdebug.h"
-
 #include "kconfiggroup.h"
 
 static const char * selectionKey = "Selection";
