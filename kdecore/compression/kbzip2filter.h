@@ -36,9 +36,9 @@ public:
     KBzip2Filter();
     virtual ~KBzip2Filter();
 
-    virtual void init( int );
+    virtual bool init(int);
     virtual int mode() const;
-    virtual void terminate();
+    virtual bool terminate();
     virtual void reset();
     virtual bool readHeader() { return true; } // bzip2 handles it by itself ! Cool !
     virtual bool writeHeader( const QByteArray & ) { return true; }

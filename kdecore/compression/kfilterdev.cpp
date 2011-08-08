@@ -112,7 +112,9 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     }
     d->bNeedHeader = !d->bSkipHeaders;
     d->filter->setFilterFlags(d->bSkipHeaders ? KFilterBase::NoHeaders : KFilterBase::WithHeaders);
-    d->filter->init( mode );
+    if (!d->filter->init(mode)) {
+        return false;
+    }
     d->bOpenedUnderlyingDevice = !d->filter->device()->isOpen();
     bool ret = d->bOpenedUnderlyingDevice ? d->filter->device()->open( mode ) : true;
     d->result = KFilterBase::Ok;
@@ -133,7 +135,9 @@ void KFilterDev::close()
         write( 0L, 0 ); // finish writing
     //kDebug(7005) << "Calling terminate().";
 
-    d->filter->terminate();
+    if (!d->filter->terminate()) {
+        qWarning() << "KFilterDev::close: terminate returned an error";
+    }
     if ( d->bOpenedUnderlyingDevice )
         d->filter->device()->close();
     setOpenMode( QIODevice::NotOpen );

@@ -146,8 +146,9 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     return 0;
 }
 
-void KFilterBase::terminate()
+bool KFilterBase::terminate()
 {
+    return true;
 }
 
 void KFilterBase::reset()

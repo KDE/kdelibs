@@ -60,7 +60,7 @@ KXzFilter::~KXzFilter()
     delete d;
 }
 
-void KXzFilter::init( int mode )
+bool KXzFilter::init( int mode )
 {
     if (d->isInitialized) {
         terminate();
@@ -75,14 +75,23 @@ void KXzFilter::init( int mode )
 	 * more than enough to be sufficient for level 9 which requires 65 MiB.
 	 */
         result = lzma_auto_decoder(&d->zStream, 100<<20, 0);
-    	//kDebug(7131) << "lzma_auto_decoder returned " << result;
+        if (result != LZMA_OK) {
+            qWarning() << "lzma_auto_decoder returned" << result;
+            return false;
+        }
     } else if ( mode == QIODevice::WriteOnly ) {
         result = lzma_easy_encoder(&d->zStream, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC32);
-    	//kDebug(7131) << "lzma_easy_encoder returned " << result;
-    } else
+        if (result != LZMA_OK) {
+            qWarning() << "lzma_easy_encoder returned" << result;
+            return false;
+        }
+    } else {
         qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        return false;
+    }
     d->mode = mode;
     d->isInitialized = true;
+    return true;
 }
 
 int KXzFilter::mode() const
@@ -90,16 +99,17 @@ int KXzFilter::mode() const
     return d->mode;
 }
 
-void KXzFilter::terminate()
+bool KXzFilter::terminate()
 {
     if (d->mode == QIODevice::ReadOnly || d->mode == QIODevice::WriteOnly) {
         lzma_end(&d->zStream);
     } else {
         qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        return false;
     }
     d->isInitialized = false;
+    return true;
 }
-
 
 void KXzFilter::reset()
 {
@@ -134,9 +144,8 @@ int KXzFilter::outBufferAvailable() const
 KXzFilter::Result KXzFilter::uncompress()
 {
     //kDebug(7131) << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out =" << outBufferAvailable();
-    lzma_ret result = lzma_code(&d->zStream, LZMA_RUN);
-    if ( result != LZMA_OK )
-    {
+    const lzma_ret result = lzma_code(&d->zStream, LZMA_RUN);
+    if (result != LZMA_OK) {
         qDebug() << "lzma_code returned " << result;
         qDebug() << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
     }

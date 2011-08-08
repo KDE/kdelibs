@@ -66,12 +66,12 @@ KGzipFilter::~KGzipFilter()
     delete d;
 }
 
-void KGzipFilter::init(int mode)
+bool KGzipFilter::init(int mode)
 {
-    init(mode, filterFlags() == WithHeaders ? GZipHeader : RawDeflate);
+    return init(mode, filterFlags() == WithHeaders ? GZipHeader : RawDeflate);
 }
 
-void KGzipFilter::init(int mode, Flag flag)
+bool KGzipFilter::init(int mode, Flag flag)
 {
     if (d->isInitialized) {
         terminate();
@@ -88,23 +88,25 @@ void KGzipFilter::init(int mode, Flag flag)
         const int result = inflateInit2(&d->zStream, windowBits);
         if ( result != Z_OK ) {
             qDebug() << "inflateInit2 returned " << result;
-            // TODO return false
+            return false;
         }
     } else if ( mode == QIODevice::WriteOnly )
     {
         int result = deflateInit2(&d->zStream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
         if ( result != Z_OK ) {
             qDebug() << "deflateInit returned " << result;
-            // TODO return false
+            return false;
         }
     } else {
         qWarning() << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        return false;
     }
     d->mode = mode;
     d->compressed = true;
     d->headerWritten = false;
     d->footerWritten = false;
     d->isInitialized = true;
+    return true;
 }
 
 int KGzipFilter::mode() const
@@ -112,24 +114,25 @@ int KGzipFilter::mode() const
     return d->mode;
 }
 
-void KGzipFilter::terminate()
+bool KGzipFilter::terminate()
 {
     if ( d->mode == QIODevice::ReadOnly )
     {
         int result = inflateEnd(&d->zStream);
         if ( result != Z_OK ) {
             qDebug() << "inflateEnd returned " << result;
-            // TODO return false
+            return false;
         }
     } else if ( d->mode == QIODevice::WriteOnly )
     {
         int result = deflateEnd(&d->zStream);
         if ( result != Z_OK ) {
             qDebug() << "deflateEnd returned " << result;
-            // TODO return false
+            return false;
         }
     }
     d->isInitialized = false;
+    return true;
 }
 
 

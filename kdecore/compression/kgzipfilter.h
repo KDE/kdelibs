@@ -36,7 +36,7 @@ public:
     virtual ~KGzipFilter();
 
 
-    virtual void init(int mode);
+    virtual bool init(int mode);
 
     // The top of zlib.h explains it: there are three cases.
     // - Raw deflate, no header (e.g. inside a ZIP file)
@@ -50,9 +50,9 @@ public:
         ZlibHeader = 1, // zlib headers (HTTP deflate)
         GZipHeader = 2
     };
-    void init(int mode, Flag flag); // for direct users of KGzipFilter
+    bool init(int mode, Flag flag); // for direct users of KGzipFilter
     virtual int mode() const;
-    virtual void terminate();
+    virtual bool terminate();
     virtual void reset();
     virtual bool readHeader(); // this is about the GZIP header
     virtual bool writeHeader( const QByteArray & fileName );

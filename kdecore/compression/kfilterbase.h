@@ -54,11 +54,11 @@ public:
      */
     QIODevice * device();
     /** \internal */
-    virtual void init( int mode ) = 0;   // KDE5 TODO: return a bool
+    virtual bool init( int mode ) = 0;
     /** \internal */
     virtual int mode() const = 0;
     /** \internal */
-    virtual void terminate();
+    virtual bool terminate();
     /** \internal */
     virtual void reset();
     /** \internal */

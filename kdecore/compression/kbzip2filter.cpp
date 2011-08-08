@@ -72,7 +72,7 @@ KBzip2Filter::~KBzip2Filter()
     delete d;
 }
 
-void KBzip2Filter::init( int mode )
+bool KBzip2Filter::init( int mode )
 {
     if (d->isInitialized) {
         terminate();
@@ -82,19 +82,24 @@ void KBzip2Filter::init( int mode )
     d->zStream.avail_in = 0;
     if ( mode == QIODevice::ReadOnly )
     {
-        (void)bzDecompressInit(&d->zStream, 0, 0);
-        //qDebug() << "bzDecompressInit returned " << result;
-        // TODO: test result and return false on error
+        const int result = bzDecompressInit(&d->zStream, 0, 0);
+        if (result != BZ_OK) {
+            qDebug() << "bzDecompressInit returned " << result;
+            return false;
+        }
     } else if ( mode == QIODevice::WriteOnly ) {
-        (void)bzCompressInit(&d->zStream, 5, 0, 0);
-        //qDebug() << "bzDecompressInit returned " << result;
-        // TODO: test result and return false on error
+        const int result = bzCompressInit(&d->zStream, 5, 0, 0);
+        if (result != BZ_OK) {
+            qDebug() << "bzDecompressInit returned " << result;
+            return false;
+        }
     } else {
         qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
-        // TODO return false
+        return false;
     }
     d->mode = mode;
     d->isInitialized = true;
+    return true;
 }
 
 int KBzip2Filter::mode() const
@@ -102,21 +107,26 @@ int KBzip2Filter::mode() const
     return d->mode;
 }
 
-void KBzip2Filter::terminate()
+bool KBzip2Filter::terminate()
 {
     if (d->mode == QIODevice::ReadOnly) {
-        int result = bzDecompressEnd(&d->zStream);
-        // TODO: test result and return false on error
-        //qDebug() << "bzDecompressEnd returned " << result;
+        const int result = bzDecompressEnd(&d->zStream);
+        if (result != BZ_OK) {
+            qDebug() << "bzDecompressEnd returned " << result;
+            return false;
+        }
     } else if (d->mode == QIODevice::WriteOnly) {
-        int result = bzCompressEnd(&d->zStream);
-        // TODO: test result and return false on error
-        //qDebug() << "bzCompressEnd returned " << result;
+        const int result = bzCompressEnd(&d->zStream);
+        if (result != BZ_OK) {
+            qDebug() << "bzCompressEnd returned " << result;
+            return false;
+        }
     } else {
         qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
-        // TODO return false
+        return false;
     }
     d->isInitialized = false;
+    return true;
 }
 
 
