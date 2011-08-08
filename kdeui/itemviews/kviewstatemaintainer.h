@@ -24,37 +24,13 @@
 
 #include "kdeui_export.h"
 
+#include "kviewstatemaintainerbase.h"
+
 #include <QtGui/QItemSelectionModel>
 #include <QtGui/QAbstractItemView>
 
 #include "kconfiggroup.h"
 #include "ksharedconfig.h"
-
-class KViewStateMaintainerBasePrivate;
-
-class KDEUI_EXPORT KViewStateMaintainerBase : public QObject
-{
-  Q_OBJECT
-public:
-  KViewStateMaintainerBase(QObject* parent = 0);
-  ~KViewStateMaintainerBase();
-
-  void setSelectionModel(QItemSelectionModel *selectionModel);
-  QItemSelectionModel *selectionModel() const;
-
-  void setView(QAbstractItemView *view);
-  QAbstractItemView *view() const;
-
-  virtual void saveState() = 0;
-  virtual void restoreState() = 0;
-
-private:
-  Q_DECLARE_PRIVATE(KViewStateMaintainerBase)
-  KViewStateMaintainerBasePrivate * const d_ptr;
-
-  Q_PRIVATE_SLOT( d_func(), void _k_modelAboutToBeReset() )
-  Q_PRIVATE_SLOT( d_func(), void _k_modelReset() )
-};
 
 /**
  * @brief Encapsulates the maintenance of state between resets of QAbstractItemModel

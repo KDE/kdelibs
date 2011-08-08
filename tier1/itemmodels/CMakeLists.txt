@@ -15,6 +15,7 @@ set(itemmodels_SRCS
   krecursivefilterproxymodel.cpp
   kselectionproxymodel.cpp
   kviewstateserializer.cpp
+  kviewstatemaintainerbase.cpp
 )
 
 kde4_add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
@@ -39,6 +40,7 @@ install( FILES
   kdescendantsproxymodel.h
   kidentityproxymodel.h
   kviewstateserializer.h
+  kviewstatemaintainerbase.h
   kmodelindexproxymapper.h
   kselectionproxymodel.h
   ${CMAKE_BINARY_DIR}/itemmodels_export.h
