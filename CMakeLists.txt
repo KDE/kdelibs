@@ -12,6 +12,7 @@ SET (ksecretservice_lib_SRCS
 )
 
 KDE4_ADD_LIBRARY (ksecretsservicelib SHARED ${ksecretservice_lib_SRCS})
+SET_TARGET_PROPERTIES ( ksecretsservicelib PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 
 TARGET_LINK_LIBRARIES (ksecretsservicelib 
     ${QT_QTCORE_LIBRARY} 
