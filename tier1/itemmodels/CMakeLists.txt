@@ -43,7 +43,7 @@ install( FILES
   kviewstatemaintainerbase.h
   kmodelindexproxymapper.h
   kselectionproxymodel.h
-  ${CMAKE_BINARY_DIR}/itemmodels_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
