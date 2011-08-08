@@ -19,17 +19,17 @@
     02110-1301, USA.
 */
 
-#include "kviewstatesaver.h"
+#include "kviewstateserializer.h"
 
 #include <QtGui/QAbstractScrollArea>
 #include <QScrollBar>
 #include <QTimer>
 #include <QTreeView>
 
-class KViewStateSaverPrivate
+class KViewStateSerializerPrivate
 {
 public:
-  KViewStateSaverPrivate(KViewStateSaver *qq)
+  KViewStateSerializerPrivate(KViewStateSerializer *qq)
     : q_ptr(qq),
       m_treeView(0),
       m_view(0),
@@ -41,8 +41,8 @@ public:
 
   }
 
-  Q_DECLARE_PUBLIC(KViewStateSaver)
-  KViewStateSaver * const q_ptr;
+  Q_DECLARE_PUBLIC(KViewStateSerializer)
+  KViewStateSerializer * const q_ptr;
 
   QStringList getExpandedItems(const QModelIndex &index) const;
 
@@ -81,7 +81,7 @@ public:
 
   void rowsInserted( const QModelIndex &/*index*/, int /*start*/, int /*end*/ )
   {
-    Q_Q(KViewStateSaver);
+    Q_Q(KViewStateSerializer);
     processPendingChanges();
 
     if ( !hasPendingChanges() )
@@ -104,21 +104,21 @@ public:
   QString m_pendingCurrent;
 };
 
-KViewStateSaver::KViewStateSaver(QObject* parent)
-  : QObject(0), d_ptr( new KViewStateSaverPrivate(this) )
+KViewStateSerializer::KViewStateSerializer(QObject* parent)
+  : QObject(0), d_ptr( new KViewStateSerializerPrivate(this) )
 {
   Q_UNUSED(parent);
   qRegisterMetaType<QModelIndex>( "QModelIndex" );
 }
 
-KViewStateSaver::~KViewStateSaver()
+KViewStateSerializer::~KViewStateSerializer()
 {
   delete d_ptr;
 }
 
-void KViewStateSaver::setView(QAbstractItemView* view)
+void KViewStateSerializer::setView(QAbstractItemView* view)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
   d->m_scrollArea = view;
   if (view) {
     d->m_selectionModel = view->selectionModel();
@@ -130,27 +130,27 @@ void KViewStateSaver::setView(QAbstractItemView* view)
   d->m_view = view;
 }
 
-QAbstractItemView* KViewStateSaver::view() const
+QAbstractItemView* KViewStateSerializer::view() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   return d->m_view;
 }
 
-QItemSelectionModel* KViewStateSaver::selectionModel() const
+QItemSelectionModel* KViewStateSerializer::selectionModel() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   return d->m_selectionModel;
 }
 
-void KViewStateSaver::setSelectionModel(QItemSelectionModel* selectionModel)
+void KViewStateSerializer::setSelectionModel(QItemSelectionModel* selectionModel)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
   d->m_selectionModel = selectionModel;
 }
 
-void KViewStateSaverPrivate::listenToPendingChanges()
+void KViewStateSerializerPrivate::listenToPendingChanges()
 {
-  Q_Q(KViewStateSaver);
+  Q_Q(KViewStateSerializer);
   // watch the model for stuff coming in delayed
   if ( hasPendingChanges() )
   {
@@ -170,9 +170,9 @@ void KViewStateSaverPrivate::listenToPendingChanges()
   }
 }
 
-void KViewStateSaverPrivate::processPendingChanges()
+void KViewStateSerializerPrivate::processPendingChanges()
 {
-  Q_Q(KViewStateSaver);
+  Q_Q(KViewStateSerializer);
 
   q->restoreCurrentItem(m_pendingCurrent);
   q->restoreSelection(m_pendingSelections.toList());
@@ -180,9 +180,9 @@ void KViewStateSaverPrivate::processPendingChanges()
   q->restoreScrollState(m_verticalScrollBarValue, m_horizontalScrollBarValue);
 }
 
-QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) const
+QStringList KViewStateSerializerPrivate::getExpandedItems(const QModelIndex &index) const
 {
-  Q_Q(const KViewStateSaver);
+  Q_Q(const KViewStateSerializer);
 
   QStringList expansion;
   for ( int i = 0; i < m_treeView->model()->rowCount( index ); ++i ) {
@@ -198,9 +198,9 @@ QStringList KViewStateSaverPrivate::getExpandedItems(const QModelIndex &index) c
   return expansion;
 }
 
-void KViewStateSaverPrivate::restoreCurrentItem()
+void KViewStateSerializerPrivate::restoreCurrentItem()
 {
-  Q_Q(KViewStateSaver);
+  Q_Q(KViewStateSerializer);
 
   QModelIndex currentIndex = q->indexFromConfigString(m_selectionModel->model(), m_pendingCurrent);
   if ( currentIndex.isValid() )
@@ -213,9 +213,9 @@ void KViewStateSaverPrivate::restoreCurrentItem()
   }
 }
 
-void KViewStateSaver::restoreCurrentItem(const QString& indexString)
+void KViewStateSerializer::restoreCurrentItem(const QString& indexString)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
   if (!d->m_selectionModel || !d->m_selectionModel->model())
       return;
 
@@ -230,9 +230,9 @@ void KViewStateSaver::restoreCurrentItem(const QString& indexString)
     d->listenToPendingChanges();
 }
 
-void KViewStateSaverPrivate::restoreExpanded()
+void KViewStateSerializerPrivate::restoreExpanded()
 {
-  Q_Q(KViewStateSaver);
+  Q_Q(KViewStateSerializer);
 
   QSet<QString>::iterator it = m_pendingExpansions.begin();
   for ( ; it != m_pendingExpansions.end(); )
@@ -248,9 +248,9 @@ void KViewStateSaverPrivate::restoreExpanded()
   }
 }
 
-void KViewStateSaver::restoreExpanded(const QStringList& indexStrings)
+void KViewStateSerializer::restoreExpanded(const QStringList& indexStrings)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
   if (!d->m_treeView || !d->m_treeView->model())
       return;
 
@@ -263,9 +263,9 @@ void KViewStateSaver::restoreExpanded(const QStringList& indexStrings)
     d->listenToPendingChanges();
 }
 
-void KViewStateSaver::restoreScrollState(int verticalScoll, int horizontalScroll)
+void KViewStateSerializer::restoreScrollState(int verticalScoll, int horizontalScroll)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
 
   if ( !d->m_scrollArea )
     return;
@@ -276,9 +276,9 @@ void KViewStateSaver::restoreScrollState(int verticalScoll, int horizontalScroll
   QTimer::singleShot( 0, this, SLOT( restoreScrollBarState() ) );
 }
 
-void KViewStateSaverPrivate::restoreSelection()
+void KViewStateSerializerPrivate::restoreSelection()
 {
-  Q_Q(KViewStateSaver);
+  Q_Q(KViewStateSerializer);
 
   QSet<QString>::iterator it = m_pendingSelections.begin();
   for ( ; it != m_pendingSelections.end(); )
@@ -294,9 +294,9 @@ void KViewStateSaverPrivate::restoreSelection()
   }
 }
 
-void KViewStateSaver::restoreSelection(const QStringList& indexStrings)
+void KViewStateSerializer::restoreSelection(const QStringList& indexStrings)
 {
-  Q_D(KViewStateSaver);
+  Q_D(KViewStateSerializer);
 
   if (!d->m_selectionModel || !d->m_selectionModel->model())
       return;
@@ -310,26 +310,26 @@ void KViewStateSaver::restoreSelection(const QStringList& indexStrings)
     d->listenToPendingChanges();
 }
 
-QString KViewStateSaver::currentIndexKey() const
+QString KViewStateSerializer::currentIndexKey() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   if (!d->m_selectionModel)
       return QString();
   return indexToConfigString(d->m_selectionModel->currentIndex());
 }
 
-QStringList KViewStateSaver::expansionKeys() const
+QStringList KViewStateSerializer::expansionKeys() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   if (!d->m_treeView || !d->m_treeView->model())
       return QStringList();
 
   return d->getExpandedItems(QModelIndex());
 }
 
-QStringList KViewStateSaver::selectionKeys() const
+QStringList KViewStateSerializer::selectionKeys() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   if (!d->m_selectionModel)
       return QStringList();
 
@@ -341,11 +341,22 @@ QStringList KViewStateSaver::selectionKeys() const
   return selection;
 }
 
-QPair<int, int> KViewStateSaver::scrollState() const
+QPair<int, int> KViewStateSerializer::scrollState() const
 {
-  Q_D(const KViewStateSaver);
+  Q_D(const KViewStateSerializer);
   return qMakePair(d->m_scrollArea->verticalScrollBar()->value(), d->m_scrollArea->horizontalScrollBar()->value());
 }
 
-#include "kviewstatesaver.moc"
+void KViewStateSerializer::restoreState()
+{
+  Q_D(KViewStateSerializer);
+  // Delete myself if not finished after ten seconds.
+  QTimer::singleShot(10000, this, SLOT(deleteLater()));
+
+  d->processPendingChanges();
+  if (d->hasPendingChanges())
+    d->listenToPendingChanges();
+}
+
+#include "kviewstateserializer.moc"
 
