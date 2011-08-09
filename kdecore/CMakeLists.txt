@@ -156,7 +156,6 @@ if (UNIX)
    )
    if (NOT KDECORE_NO_KDE3SUPPORT)
       set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-         network/k3httpproxysocketdevice.cpp
          network/k3socks.cpp
          network/k3sockssocketdevice.cpp
       )
@@ -586,7 +585,6 @@ if (NOT KDECORE_NO_KDE3SUPPORT)
    install(FILES
       network/k3bufferedsocket.h
       network/k3clientsocketbase.h
-      network/k3httpproxysocketdevice.h
       network/k3resolver.h
       network/k3reverseresolver.h
       network/k3serversocket.h
