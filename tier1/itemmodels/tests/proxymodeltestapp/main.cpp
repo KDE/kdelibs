@@ -19,17 +19,11 @@
 
 #include "mainwindow.h"
 
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
 
 int main( int argc, char **argv )
 {
-  const QByteArray& ba = QByteArray( "proxymodel_testapp" );
-  const KLocalizedString name = ki18n( "Proxy models test app" );
-  KAboutData aboutData( ba, ba, name, ba, name );
-  KCmdLineArgs::init( argc, argv, &aboutData );
-  KApplication app;
+  QApplication app(argc, argv);
   MainWindow* mw = new MainWindow();
   mw->show();
   app.exec();

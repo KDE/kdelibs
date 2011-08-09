@@ -22,7 +22,7 @@
 #ifndef TESTAPPLICATION_H
 #define TESTAPPLICATION_H
 
-#include <kxmlguiwindow.h>
+#include <QMainWindow>
 
 class DynamicTreeModel;
 
@@ -32,7 +32,7 @@ class DynamicTreeModel;
  * @internal
  * Test Application for proxy models.
  */
-class MainWindow : public KXmlGuiWindow
+class MainWindow : public QMainWindow
 {
   Q_OBJECT
 public:
