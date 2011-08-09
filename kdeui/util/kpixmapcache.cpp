@@ -41,7 +41,7 @@
 #include <klockfile.h>
 #include <ksavefile.h>
 #ifndef _WIN32_WCE
-#include <ksvgrenderer.h>
+#include <QtSvg/QSvgRenderer>
 #endif
 #include <kdefakes.h>
 
