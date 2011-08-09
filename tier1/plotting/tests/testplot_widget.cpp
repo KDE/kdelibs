@@ -19,14 +19,14 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QPen>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 
 #include "kplotwidget.h"
 #include "kplotobject.h"
 #include "kplotaxis.h"
 #include "testplot_widget.h"
 
-TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
+TestPlot::TestPlot( QWidget *p ) : QMainWindow( p ), po1(0), po2(0) {
 	QWidget *w = new QWidget(this);
 	vlay = new QVBoxLayout(w);
 

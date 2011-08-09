@@ -18,14 +18,14 @@
 #ifndef TESTPLOT_WIDGET_H
 #define TESTPLOT_WIDGET_H
 
-#include <kmainwindow.h>
+#include <QtGui/QMainWindow>
 
 class QComboBox;
 class QVBoxLayout;
 class KPlotWidget;
 class KPlotObject;
 
-class TestPlot : public KMainWindow {
+class TestPlot : public QMainWindow {
  Q_OBJECT
 
  public:

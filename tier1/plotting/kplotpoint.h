@@ -21,7 +21,7 @@
 #ifndef KPLOTPOINT_H
 #define KPLOTPOINT_H
 
-#include <kdeui_export.h>
+#include <kplotting_export.h>
 
 #include <QtCore/QString>
 
@@ -37,7 +37,7 @@ class QPointF;
  * bar-widths are omitted, then the widths will be set automatically, 
  * based on the halfway-mark between adjacent points.
  */
-class KDEUI_EXPORT KPlotPoint {
+class KPLOTTING_EXPORT KPlotPoint {
 public:
     /**
      * Default constructor.

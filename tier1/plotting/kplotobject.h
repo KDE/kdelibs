@@ -21,7 +21,7 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-#include <kdeui_export.h>
+#include <kplotting_export.h>
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
@@ -50,7 +50,7 @@ class KPlotPoint;
  * @author Jason Harris
  * @version 1.1
  */
-class KDEUI_EXPORT KPlotObject{
+class KPLOTTING_EXPORT KPlotObject{
 public:
     /**
      * The type classification of the KPlotObject.

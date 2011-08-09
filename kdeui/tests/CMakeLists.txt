@@ -147,12 +147,6 @@ target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
 endif (Q_WS_X11)
 
-## kplottest
-
-set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
-kde4_add_executable(kplottest TEST ${kplottest_SRCS})
-target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
-
 ## kcolorutilsdemo
 
 SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp ../colors/kcolorspaces.cpp)

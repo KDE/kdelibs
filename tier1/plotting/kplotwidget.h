@@ -21,7 +21,7 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
-#include <kdeui_export.h>
+#include <kplotting_export.h>
 
 #include <QtGui/QFrame>
 #include <QtCore/QList>
@@ -77,7 +77,7 @@ kpw->addPlotObject( kpo );
  *@author Jason Harris
  *@version 1.1
  */
-class KDEUI_EXPORT KPlotWidget : public QFrame {
+class KPLOTTING_EXPORT KPlotWidget : public QFrame {
     Q_OBJECT
     Q_PROPERTY(int leftPadding READ leftPadding)
     Q_PROPERTY(int rightPadding READ rightPadding)

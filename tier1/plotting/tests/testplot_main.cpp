@@ -16,27 +16,13 @@
  ***************************************************************************/
 
 #include "testplot_widget.h"
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <klocale.h>
+#include <QApplication>
 
 int main( int argc, char *argv[] )
 {
-	KAboutData aboutData( "testplot", 0, ki18n("Test KPlotWidget"), "0.1",
-				ki18n("KPlotWidget test program"),
-				KAboutData::License_GPL,
-				ki18n("(c) 2006, Jason Harris"),
-				ki18n("Performs various tests of KPlotWidget"),
-				"http://edu.kde.org/");
-	aboutData.addAuthor(ki18n("Jason Harris"), ki18n("no task"),
-				"kstars@30doradus.org", "http://edu.kde.org/");
-
-	KCmdLineArgs::init( argc, argv, &aboutData );
-
-	KApplication a;
+	QApplication a(argc, argv);
 	TestPlot *tp = new TestPlot(0);
 	tp->show();
-	QObject::connect(kapp, SIGNAL(lastWindowClosed()), kapp, SLOT(quit()));
+	QObject::connect(qApp, SIGNAL(lastWindowClosed()), qApp, SLOT(quit()));
 	return a.exec();
 }

@@ -22,8 +22,7 @@
 
 #include <QtAlgorithms>
 #include <QPainter>
-
-#include <kdebug.h>
+#include <QDebug>
 
 #include "kplotpoint.h"
 #include "kplotwidget.h"
@@ -217,7 +216,7 @@ void KPlotObject::addPoint( double x, double y, const QString &label, double bar
 
 void KPlotObject::removePoint( int index ) {
     if ( ( index < 0 ) || ( index >= d->pList.count() ) ) {
-        kWarning() << "KPlotObject::removePoint(): index " << index << " out of range!";
+        //qWarning() << "KPlotObject::removePoint(): index " << index << " out of range!";
         return;
     }
 

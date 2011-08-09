@@ -22,8 +22,8 @@
 
 #include <QtAlgorithms>
 #include <QPainter>
+#include <QDebug>
 
-#include <kdebug.h>
 
 class KPlotPoint::Private
 {

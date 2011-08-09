@@ -22,7 +22,6 @@
 #include "kplotwidget.moc"
 
 #include <math.h>
-#include <kdebug.h>
 
 #include <QtGui/QActionEvent>
 #include <QHash>
@@ -147,11 +146,11 @@ void KPlotWidget::Private::calcDataRectLimits( double x1, double x2, double y1, 
     else { YA1=y1; YA2=y2; }
 
     if ( XA2 == XA1 ) {
-        kWarning() << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0";
+        //qWarning() << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0";
         XA2 = XA1 + 1.0;
     }
     if ( YA2 == YA1 ) {
-        kWarning() << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0";
+        //qWarning() << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0";
         YA2 = YA1 + 1.0;
     }
     dataRect = QRectF( XA1, YA1, XA2 - XA1, YA2 - YA1 );
@@ -174,11 +173,11 @@ void KPlotWidget::setSecondaryLimits( double x1, double x2, double y1, double y2
     else { YA1=y1; YA2=y2; }
 
     if ( XA2 == XA1 ) {
-        kWarning() << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0";
+        //qWarning() << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0";
         XA2 = XA1 + 1.0;
     }
     if ( YA2 == YA1 ) {
-        kWarning() << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0";
+        //qWarning() << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0";
         YA2 = YA1 + 1.0;
     }
     d->secondDataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );

@@ -21,7 +21,7 @@
 #ifndef KPLOTAXIS_H
 #define KPLOTAXIS_H
 
-#include <kdeui_export.h>
+#include <kplotting_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QList>
@@ -34,7 +34,7 @@
  * @author Andreas Nicolai
  * @version 1.0
  */
-class KDEUI_EXPORT KPlotAxis {
+class KPLOTTING_EXPORT KPlotAxis {
 public:
 
     /**
