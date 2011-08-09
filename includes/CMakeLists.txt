@@ -377,7 +377,6 @@ install( FILES
   KStringListValidator
   KStyle
   KStyleFactory
-  KSvgRenderer
   KSycoca
   KSycocaEntry
   KSystemEventFilter
@@ -736,9 +735,6 @@ install( FILES
   KNetwork/KActiveSocketBase
   KNetwork/KBufferedSocket
   KNetwork/KClientSocketBase
-  KNetwork/KDatagramPacket
-  KNetwork/KDatagramSocket
-  KNetwork/KHttpProxySocketDevice
   KNetwork/KInetSocketAddress
   KNetwork/KIpAddress
   KNetwork/KPassiveSocketBase
