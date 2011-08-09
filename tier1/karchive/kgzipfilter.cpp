@@ -87,18 +87,18 @@ bool KGzipFilter::init(int mode, Flag flag)
                                : MAX_WBITS /*zlib header*/;
         const int result = inflateInit2(&d->zStream, windowBits);
         if ( result != Z_OK ) {
-            qDebug() << "inflateInit2 returned " << result;
+            //qDebug() << "inflateInit2 returned " << result;
             return false;
         }
     } else if ( mode == QIODevice::WriteOnly )
     {
         int result = deflateInit2(&d->zStream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
         if ( result != Z_OK ) {
-            qDebug() << "deflateInit returned " << result;
+            //qDebug() << "deflateInit returned " << result;
             return false;
         }
     } else {
-        qWarning() << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        //qWarning() << "KGzipFilter: Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
         return false;
     }
     d->mode = mode;
@@ -120,14 +120,14 @@ bool KGzipFilter::terminate()
     {
         int result = inflateEnd(&d->zStream);
         if ( result != Z_OK ) {
-            qDebug() << "inflateEnd returned " << result;
+            //qDebug() << "inflateEnd returned " << result;
             return false;
         }
     } else if ( d->mode == QIODevice::WriteOnly )
     {
         int result = deflateEnd(&d->zStream);
         if ( result != Z_OK ) {
-            qDebug() << "deflateEnd returned " << result;
+            //qDebug() << "deflateEnd returned " << result;
             return false;
         }
     }
@@ -142,13 +142,13 @@ void KGzipFilter::reset()
     {
         int result = inflateReset(&d->zStream);
         if ( result != Z_OK ) {
-            qDebug() << "inflateReset returned " << result;
+            //qDebug() << "inflateReset returned " << result;
             // TODO return false
         }
     } else if ( d->mode == QIODevice::WriteOnly ) {
         int result = deflateReset(&d->zStream);
         if ( result != Z_OK ) {
-            qDebug() << "deflateReset returned " << result;
+            //qDebug() << "deflateReset returned " << result;
             // TODO return false
         }
         d->headerWritten = false;
@@ -324,10 +324,10 @@ KGzipFilter::Result KGzipFilter::uncompress()
 {
 #ifndef NDEBUG
     if (d->mode == 0) {
-        qWarning() << "mode==0; KGzipFilter::init was not called!";
+        //qWarning() << "mode==0; KGzipFilter::init was not called!";
         return KFilterBase::Error;
     } else if (d->mode == QIODevice::WriteOnly) {
-        qWarning() << "uncompress called but the filter was opened for writing!";
+        //qWarning() << "uncompress called but the filter was opened for writing!";
         return KFilterBase::Error;
     }
     Q_ASSERT ( d->mode == QIODevice::ReadOnly );
@@ -345,8 +345,9 @@ KGzipFilter::Result KGzipFilter::uncompress()
         qDebug() << " now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
         qDebug() << "     next_in=" << d->zStream.next_in;
 #else
-        if ( result != Z_OK && result != Z_STREAM_END )
-            qDebug() << "Warning: inflate() returned " << result;
+        if ( result != Z_OK && result != Z_STREAM_END ) {
+            //qDebug() << "Warning: inflate() returned " << result;
+        }
 #endif
         return ( result == Z_OK ? KFilterBase::Ok : ( result == Z_STREAM_END ? KFilterBase::End : KFilterBase::Error ) );
     } else
@@ -365,7 +366,7 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
 #endif
     const int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
     if ( result != Z_OK && result != Z_STREAM_END ) {
-        qDebug() << "  deflate returned " << result;
+        //qDebug() << "  deflate returned " << result;
     }
     if ( d->headerWritten )
     {

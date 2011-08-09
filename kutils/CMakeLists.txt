@@ -11,7 +11,7 @@ set(kemoticons_LIB_SRCS
 )
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
-target_link_libraries(kemoticons ${KDE4_KIO_LIBS})
+target_link_libraries(kemoticons ${KDE4_KIO_LIBS} karchive)
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

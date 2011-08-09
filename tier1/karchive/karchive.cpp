@@ -24,12 +24,12 @@
 
 #include <config.h>
 
-#include <kdebug.h>
 #include <ksavefile.h>
 #include <kde_file.h>
 
 #include <QStack>
 #include <QtCore/QMap>
+#include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 
@@ -134,10 +134,10 @@ bool KArchive::createDevice( QIODevice::OpenMode mode )
     case QIODevice::WriteOnly:
         if ( !d->fileName.isEmpty() ) {
             // The use of KSaveFile can't be done in the ctor (no mode known yet)
-            //kDebug() << "Writing to a file using KSaveFile";
+            //qDebug() << "Writing to a file using KSaveFile";
             d->saveFile = new KSaveFile( d->fileName );
             if ( !d->saveFile->open() ) {
-                kWarning() << "KSaveFile creation for " << d->fileName << " failed, " << d->saveFile->errorString();
+                //qWarning() << "KSaveFile creation for " << d->fileName << " failed, " << d->saveFile->errorString();
                 delete d->saveFile;
                 d->saveFile = 0;
                 return false;
@@ -155,7 +155,7 @@ bool KArchive::createDevice( QIODevice::OpenMode mode )
         }
         break; // continued below
     default:
-        kWarning() << "Unsupported mode " << d->mode;
+        //qWarning() << "Unsupported mode " << d->mode;
         return false;
     }
     return true;
@@ -207,14 +207,14 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     QFileInfo fileInfo( fileName );
     if ( !fileInfo.isFile() && !fileInfo.isSymLink() )
     {
-        kWarning() << fileName << "doesn't exist or is not a regular file.";
+        //qWarning() << fileName << "doesn't exist or is not a regular file.";
         return false;
     }
 
     KDE_struct_stat fi;
     if (KDE::lstat(fileName,&fi) == -1) {
-        kWarning() << "stat'ing" << fileName
-        	<< "failed:" << strerror(errno);
+        /*qWarning() << "stat'ing" << fileName
+        	<< "failed:" << strerror(errno);*/
         return false;
     }
 
@@ -255,14 +255,14 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     QFile file( fileName );
     if ( !file.open( QIODevice::ReadOnly ) )
     {
-        kWarning() << "couldn't open file " << fileName;
+        //qWarning() << "couldn't open file " << fileName;
         return false;
     }
 
     if ( !prepareWriting( destName, fileInfo.owner(), fileInfo.group(), size,
     		fi.st_mode, fi.st_atime, fi.st_mtime, fi.st_ctime ) )
     {
-        kWarning() << " prepareWriting" << destName << "failed";
+        //qWarning() << " prepareWriting" << destName << "failed";
         return false;
     }
 
@@ -275,7 +275,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     {
         if ( !writeData( array.data(), n ) )
         {
-            kWarning() << "writeData failed";
+            //qWarning() << "writeData failed";
             return false;
         }
         total += n;
@@ -284,7 +284,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
     if ( !finishWriting( size ) )
     {
-        kWarning() << "finishWriting failed";
+        //qWarning() << "finishWriting failed";
         return false;
     }
     return true;
@@ -302,7 +302,7 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
         if ( *it != QLatin1String(".") && *it != QLatin1String("..") )
         {
             QString fileName = path + QLatin1Char('/') + *it;
-//            kDebug() << "storing " << fileName;
+//            qDebug() << "storing " << fileName;
             QString dest = destName.isEmpty() ? *it : (destName + QLatin1Char('/') + *it);
             QFileInfo fileInfo( fileName );
 
@@ -322,7 +322,7 @@ bool KArchive::writeFile( const QString& name, const QString& user,
 {
     if ( !prepareWriting( name, user, group, size, perm, atime, mtime, ctime ) )
     {
-        kWarning() << "prepareWriting failed";
+        //qWarning() << "prepareWriting failed";
         return false;
     }
 
@@ -330,13 +330,13 @@ bool KArchive::writeFile( const QString& name, const QString& user,
     // Note: if data is 0L, don't call write, it would terminate the KFilterDev
     if ( data && size && !writeData( data, size ) )
     {
-        kWarning() << "writeData failed";
+        //qWarning() << "writeData failed";
         return false;
     }
 
     if ( !finishWriting( size ) )
     {
-        kWarning() << "finishWriting failed";
+        //qWarning() << "finishWriting failed";
         return false;
     }
     return true;
@@ -392,7 +392,7 @@ KArchiveDirectory * KArchive::rootDir()
 {
     if ( !d->rootDir )
     {
-        //kDebug() << "Making root dir ";
+        //qDebug() << "Making root dir ";
         struct passwd* pw =  getpwuid( getuid() );
         struct group* grp = getgrgid( getgid() );
         QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
@@ -405,10 +405,10 @@ KArchiveDirectory * KArchive::rootDir()
 
 KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 {
-    //kDebug() << path;
+    //qDebug() << path;
     if ( path.isEmpty() || path == QLatin1String("/") || path == QLatin1String(".") ) // root dir => found
     {
-        //kDebug() << "returning rootdir";
+        //qDebug() << "returning rootdir";
         return rootDir();
     }
     // Important note : for tar files containing absolute paths
@@ -422,10 +422,11 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     if ( ent )
     {
         if ( ent->isDirectory() )
-            //kDebug() << "found it";
+            //qDebug() << "found it";
             return (KArchiveDirectory *) ent;
-        else
-            kWarning() << "Found" << path << "but it's not a directory";
+        else {
+            //qWarning() << "Found" << path << "but it's not a directory";
+        }
     }
 
     // Otherwise go up and try again
@@ -444,7 +445,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
         parent = findOrCreate( left ); // recursive call... until we find an existing dir.
     }
 
-    //kDebug() << "found parent " << parent->name() << " adding " << dirname << " to ensure " << path;
+    //qDebug() << "found parent " << parent->name() << " adding " << dirname << " to ensure " << path;
     // Found -> add the missing piece
     KArchiveDirectory * e = new KArchiveDirectory( this, dirname, d->rootDir->permissions(),
                                                    d->rootDir->date(), d->rootDir->user(),
@@ -636,7 +637,7 @@ QByteArray KArchiveFile::data() const
 {
   bool ok = archive()->device()->seek( d->pos );
   if (!ok) {
-      kWarning() << "Failed to sync to" << d->pos << "to read" << name();
+      //qWarning() << "Failed to sync to" << d->pos << "to read" << name();
   }
 
   // Read content
@@ -743,7 +744,7 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
     const QString left = name.left(pos);
     const QString right = name.mid(pos + 1);
 
-    //kDebug() << "left=" << left << "right=" << right;
+    //qDebug() << "left=" << left << "right=" << right;
 
     const KArchiveEntry* e = d->entries.value( left );
     if ( !e || !e->isDirectory() )
@@ -760,8 +761,8 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
     return;
 
   if( d->entries.value( entry->name() ) ) {
-      kWarning() << "directory " << name()
-                  << "has entry" << entry->name() << "already";
+      /*qWarning() << "directory " << name()
+                  << "has entry" << entry->name() << "already";*/
   }
   d->entries.insert( entry->name(), entry );
 }
@@ -800,7 +801,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
           const QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
 #ifdef Q_OS_UNIX
           if (!::symlink(curEntry->symLinkTarget().toLocal8Bit(), linkName.toLocal8Bit())) {
-              kDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
+              //qDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
           }
 #else
           // TODO - how to create symlinks on other platforms?

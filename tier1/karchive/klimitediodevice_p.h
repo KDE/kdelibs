@@ -19,7 +19,7 @@
 #ifndef klimitediodevice_p_h
 #define klimitediodevice_p_h
 
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #include <QtCore/QIODevice>
 /**
  * A readonly device that reads from an underlying device

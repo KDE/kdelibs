@@ -1,5 +1,9 @@
 
-include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/httpfilter )
+include_directories( ${CMAKE_SOURCE_DIR}/khtml
+                     ${CMAKE_SOURCE_DIR}/kio/httpfilter
+                     ${CMAKE_SOURCE_DIR}/tier1/karchive
+                     ${CMAKE_BINARY_DIR}/tier1/karchive
+)
 include_directories(${ZLIB_INCLUDE_DIR})
 
 ########### next target ###############
@@ -9,7 +13,7 @@ set(kmultipart_PART_SRCS kmultipart.cpp ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpf
 
 kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
 
-target_link_libraries(kmultipart  ${KDE4_KPARTS_LIBS} ${ZLIB_LIBRARY})
+target_link_libraries(kmultipart  ${KDE4_KPARTS_LIBS} ${ZLIB_LIBRARY} karchive)
 
 install(TARGETS kmultipart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

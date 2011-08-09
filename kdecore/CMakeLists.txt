@@ -30,11 +30,6 @@ include(date/ConfigureChecks.cmake)
 configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
-# Configure checks for compression/
-include(compression/ConfigureChecks.cmake)
-configure_file(compression/config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/compression/config-compression.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/compression )
-
 # This file handles all the logic for compiling KAuth's backends
 include(auth/ConfigureChecks.cmake)
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
@@ -77,20 +72,6 @@ endif(WIN32)
 if(KDE4_BUILD_TESTS)
    add_definitions(-DCOMPILING_TESTS)
 endif(KDE4_BUILD_TESTS)
-
-# compile bzip2 support if available
-if(BZIP2_FOUND)
-   include_directories(${BZIP2_INCLUDE_DIR})
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} compression/kbzip2filter.cpp )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${BZIP2_LIBRARIES})
-endif(BZIP2_FOUND)
-
-# compile lzma support if available
-if(LIBLZMA_FOUND)
-   include_directories(${LIBLZMA_INCLUDE_DIRS})
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} compression/kxzfilter.cpp )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBLZMA_LIBRARIES})
-endif(LIBLZMA_FOUND)
 
 # compile Gettext support if available
 if(LIBINTL_FOUND)
@@ -187,9 +168,6 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   compression/kgzipfilter.cpp
-   compression/kfilterbase.cpp
-   compression/kfilterdev.cpp
    config/kconfig.cpp
    config/kconfigbase.cpp
    config/kconfiggroup.cpp
@@ -220,23 +198,18 @@ set(kdecore_LIB_SRCS
    date/ktimezone.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
-   io/kar.cpp
-   io/karchive.cpp
    io/kautosavefile.cpp
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kdirwatch.cpp
    io/kfilesystemtype_p.cpp
-   io/klimitediodevice.cpp
    io/kmessage.cpp
    io/kmountpoint.cpp
    io/kprocess.cpp
    io/ksavefile.cpp
-   io/ktar.cpp
    io/ktempdir.cpp
    io/ktemporaryfile.cpp
    io/kurl.cpp
-   io/kzip.cpp
    jobs/kcompositejob.cpp
    jobs/kjob.cpp
    jobs/kjobuidelegate.cpp
@@ -535,9 +508,6 @@ install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    kdecore_export.h
-   compression/kfilterbase.h
-   compression/karchive_export.h
-   compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h
    #config/kconfigbackend.h re-enable post-API review and implementation (4.2?)
@@ -552,8 +522,6 @@ install( FILES
    date/ksystemtimezone.h
    date/ktimezone.h
    date/ktzfiletimezone.h
-   io/kar.h
-   io/karchive.h
    io/kautosavefile.h
    io/kdebug.h
    io/kdirwatch.h
@@ -562,11 +530,9 @@ install( FILES
    io/klockfile.h
    io/kmountpoint.h
    io/ksavefile.h
-   io/ktar.h
    io/ktempdir.h
    io/ktemporaryfile.h
    io/kurl.h
-   io/kzip.h
    jobs/kcompositejob.h
    jobs/kjob.h
    jobs/kjobuidelegate.h

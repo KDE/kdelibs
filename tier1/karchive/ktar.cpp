@@ -23,9 +23,9 @@
 #include <time.h> // time()
 #include <assert.h>
 
+#include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <kdebug.h>
 #include <kmimetype.h>
 #include <ktemporaryfile.h>
 
@@ -102,7 +102,7 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
             mime = KMimeType::findByPath(fileName(), 0, true);
         }
 
-        //kDebug(7041) << mode << mime->name();
+        //qDebug() << mode << mime->name();
 
         if (mime->is(QString::fromLatin1("application/x-compressed-tar")) || mime->is(QString::fromLatin1(application_gzip))) {
             // gzipped tar file (with possibly invalid file name), ask for gzip filter
@@ -126,7 +126,7 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
             return false;
         if (!d->mimetype.isEmpty()) {
             // Create a compression filter on top of the KSaveFile device that KArchive created.
-            //kDebug(7041) << "creating KFilterDev for" << d->mimetype;
+            //qDebug() << "creating KFilterDev for" << d->mimetype;
             QIODevice *filterDev = KFilterDev::device(device(), d->mimetype);
             Q_ASSERT(filterDev);
             setDevice(filterDev);
@@ -148,7 +148,7 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
         d->tmpFile->setPrefix(QLatin1String("ktar-"));
         d->tmpFile->setSuffix(QLatin1String(".tar"));
         d->tmpFile->open();
-        //kDebug(7041) << "creating tempfile:" << d->tmpFile->fileName();
+        //qDebug() << "creating tempfile:" << d->tmpFile->fileName();
 
         setDevice(d->tmpFile);
         return true;
@@ -168,7 +168,7 @@ KTar::~KTar()
 void KTar::setOrigFileName( const QByteArray & fileName ) {
     if ( !isOpen() || !(mode() & QIODevice::WriteOnly) )
     {
-        kWarning(7041) << "KTar::setOrigFileName: File must be opened for writing first.\n";
+        //qWarning() << "KTar::setOrigFileName: File must be opened for writing first.\n";
         return;
     }
     d->origFileName = fileName;
@@ -199,9 +199,9 @@ qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
       if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() )
         && strncmp( buffer + 148 + 7 - s.length(), s.data(), s.length() )
         && strncmp( buffer + 148 + 8 - s.length(), s.data(), s.length() ) ) {
-        kWarning(7041) << "KTar: invalid TAR file. Header is:" << QByteArray( buffer+257, 5 )
+        /*qWarning() << "KTar: invalid TAR file. Header is:" << QByteArray( buffer+257, 5 )
                        << "instead of ustar. Reading from wrong pos in file?"
-                       << "checksum=" << QByteArray( buffer + 148 + 6 - s.length(), s.length() );
+                       << "checksum=" << QByteArray( buffer + 148 + 6 - s.length(), s.length() );*/
         return -1;
       }
     }/*end if*/
@@ -214,7 +214,7 @@ qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
 
 bool KTar::KTarPrivate::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
-  //kDebug() << "reading longlink from pos " << device()->pos();
+  //qDebug() << "reading longlink from pos " << device()->pos();
   QIODevice *dev = q->device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
@@ -280,7 +280,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     if ( ! tmpFile )
         return true;
 
-    //kDebug(7041) << "filling tmpFile of mimetype" << mimetype;
+    //qDebug() << "filling tmpFile of mimetype" << mimetype;
 
     bool forced = false;
     if ( QLatin1String(application_gzip) == mimetype || QLatin1String(application_bzip) == mimetype )
@@ -320,10 +320,10 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
         Q_ASSERT(file->isOpen());
         Q_ASSERT(file->openMode() & QIODevice::ReadOnly);
     } else {
-        kDebug(7041) << "no filterdevice found!";
+        //qDebug() << "no filterdevice found!";
     }
 
-    //kDebug( 7041 ) << "filling tmpFile finished.";
+    //qDebug() << "filling tmpFile finished.";
     return true;
 }
 
@@ -401,7 +401,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 isdir = false;
                 isDumpDir = true;
             }
-            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' );
+            //qDebug() << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' );
 
             if (isdir)
                 access |= S_IFDIR; // f*cking broken tar files
@@ -409,7 +409,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             KArchiveEntry* e;
             if ( isdir )
             {
-                //kDebug(7041) << "directory" << nm;
+                //qDebug() << "directory" << nm;
                 e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
             }
             else
@@ -417,12 +417,12 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 // read size
                 QByteArray sizeBuffer( buffer + 0x7c, 12 );
                 qint64 size = sizeBuffer.trimmed().toLongLong( 0, 8 /*octal*/ );
-                //kDebug(7041) << "sizeBuffer='" << sizeBuffer << "' -> size=" << size;
+                //qDebug() << "sizeBuffer='" << sizeBuffer << "' -> size=" << size;
 
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
                 {
-                    //kDebug(7041) << nm << "isDumpDir";
+                    //qDebug() << nm << "isDumpDir";
                     e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
                 else
@@ -431,11 +431,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
                     {
-                        kDebug(7041) << "Hard link, setting size to 0 instead of" << size;
+                        //qDebug() << "Hard link, setting size to 0 instead of" << size;
                         size = 0; // no contents
                     }
 
-                    //kDebug(7041) << "file" << nm << "size=" << size;
+                    //qDebug() << "file" << nm << "size=" << size;
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->pos(), size );
                 }
@@ -443,9 +443,10 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 // Skip contents + align bytes
                 qint64 rest = size % 0x200;
                 qint64 skip = size + (rest ? 0x200 - rest : 0);
-                //kDebug(7041) << "pos()=" << dev->pos() << "rest=" << rest << "skipping" << skip;
-                if (! dev->seek( dev->pos() + skip ) )
-                    kWarning(7041) << "skipping" << skip << "failed";
+                //qDebug() << "pos()=" << dev->pos() << "rest=" << rest << "skipping" << skip;
+                if (! dev->seek( dev->pos() + skip ) ) {
+                    //qWarning() << "skipping" << skip << "failed";
+                }
             }
 
             if ( pos == -1 )
@@ -487,7 +488,7 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
     if ( !tmpFile )
         return true;
 
-    //kDebug(7041) << "Write temporary file to compressed file" << fileName << mimetype;
+    //qDebug() << "Write temporary file to compressed file" << fileName << mimetype;
 
     bool forced = false;
     if (QLatin1String(application_gzip) == mimetype || QLatin1String(application_bzip) == mimetype ||
@@ -522,7 +523,7 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
         delete dev;
     }
 
-    //kDebug(7041) << "Write temporary file to compressed file done.";
+    //qDebug() << "Write temporary file to compressed file done.";
     return true;
 }
 
@@ -669,13 +670,13 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
                           time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpen() )
     {
-        kWarning(7041) << "You must open the tar file before writing to it\n";
+        //qWarning() << "You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & QIODevice::WriteOnly) )
     {
-        kWarning(7041) << "You must open the tar file for writing\n";
+        //qWarning() << "You must open the tar file for writing\n";
         return false;
     }
 
@@ -734,13 +735,13 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
                       time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpen() )
     {
-        kWarning(7041) << "You must open the tar file before writing to it\n";
+        //qWarning() << "You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & QIODevice::WriteOnly) )
     {
-        kWarning(7041) << "You must open the tar file for writing\n";
+        //qWarning() << "You must open the tar file for writing\n";
         return false;
     }
 
@@ -792,13 +793,13 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
                         mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpen() )
     {
-        kWarning(7041) << "You must open the tar file before writing to it\n";
+        //qWarning() << "You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & QIODevice::WriteOnly) )
     {
-        kWarning(7041) << "You must open the tar file for writing\n";
+        //qWarning() << "You must open the tar file for writing\n";
         return false;
     }
 

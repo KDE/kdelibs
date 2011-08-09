@@ -76,17 +76,17 @@ bool KXzFilter::init( int mode )
 	 */
         result = lzma_auto_decoder(&d->zStream, 100<<20, 0);
         if (result != LZMA_OK) {
-            qWarning() << "lzma_auto_decoder returned" << result;
+            //qWarning() << "lzma_auto_decoder returned" << result;
             return false;
         }
     } else if ( mode == QIODevice::WriteOnly ) {
         result = lzma_easy_encoder(&d->zStream, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC32);
         if (result != LZMA_OK) {
-            qWarning() << "lzma_easy_encoder returned" << result;
+            //qWarning() << "lzma_easy_encoder returned" << result;
             return false;
         }
     } else {
-        qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        //qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
         return false;
     }
     d->mode = mode;
@@ -104,7 +104,7 @@ bool KXzFilter::terminate()
     if (d->mode == QIODevice::ReadOnly || d->mode == QIODevice::WriteOnly) {
         lzma_end(&d->zStream);
     } else {
-        qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        //qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
         return false;
     }
     d->isInitialized = false;
@@ -113,7 +113,7 @@ bool KXzFilter::terminate()
 
 void KXzFilter::reset()
 {
-    //kDebug(7131) << "KXzFilter::reset";
+    //qDebug() << "KXzFilter::reset";
     // liblzma doesn't have a reset call...
     terminate();
     init( d->mode );
@@ -143,11 +143,11 @@ int KXzFilter::outBufferAvailable() const
 
 KXzFilter::Result KXzFilter::uncompress()
 {
-    //kDebug(7131) << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out =" << outBufferAvailable();
+    //qDebug() << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out =" << outBufferAvailable();
     const lzma_ret result = lzma_code(&d->zStream, LZMA_RUN);
     if (result != LZMA_OK) {
-        qDebug() << "lzma_code returned " << result;
-        qDebug() << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
+        //qDebug() << "lzma_code returned " << result;
+        //qDebug() << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
     }
 
     switch (result) {
@@ -162,7 +162,7 @@ KXzFilter::Result KXzFilter::uncompress()
 
 KXzFilter::Result KXzFilter::compress( bool finish )
 {
-    //kDebug(7131) << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
+    //qDebug() << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
     lzma_ret result = lzma_code(&d->zStream, finish ? LZMA_FINISH : LZMA_RUN );
 
     switch (result) {
@@ -170,11 +170,11 @@ KXzFilter::Result KXzFilter::compress( bool finish )
                 return KFilterBase::Ok;
                 break;
         case LZMA_STREAM_END:
-                qDebug() << "  lzma_code returned " << result;
+                //qDebug() << "  lzma_code returned " << result;
                 return KFilterBase::End;
 		break;
         default:
-                qDebug() << "  lzma_code returned " << result;
+                //qDebug() << "  lzma_code returned " << result;
                 return KFilterBase::Error;
                 break;
     }

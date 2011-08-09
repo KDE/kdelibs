@@ -25,17 +25,17 @@
 #include <ktar.h>
 #include <kzip.h>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <QtCore/QFileInfo>
-#include <kdebug.h>
 #include <kfilterdev.h>
 #include <ktempdir.h>
+
 #ifndef Q_OS_WIN
 #include <unistd.h> // symlink
 #include <errno.h>
 #endif
 
-QTEST_KDEMAIN_CORE( KArchiveTest )
+QTEST_MAIN( KArchiveTest )
 
 static const int SIZE1 = 100;
 
@@ -111,7 +111,7 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
 
     // TODO add date and time
 
-    //kDebug() << descr;
+    //qDebug() << descr;
     ret.append( descr );
 
     if (entry->isDirectory())
@@ -431,7 +431,7 @@ void KArchiveTest::testUncompress()
     QVERIFY(filterDev);
     QByteArray buffer;
     buffer.resize(8*1024);
-    kDebug() << "buffer.size()=" << buffer.size();
+    qDebug() << "buffer.size()=" << buffer.size();
     QVERIFY(filterDev->open(QIODevice::ReadOnly));
 
     qint64 totalSize = 0;
@@ -440,11 +440,11 @@ void KArchiveTest::testUncompress()
         len = filterDev->read(buffer.data(), buffer.size());
         QVERIFY(len >= 0);
         totalSize += len;
-        // kDebug() << "read len=" << len << " totalSize=" << totalSize;
+        // qDebug() << "read len=" << len << " totalSize=" << totalSize;
     }
     filterDev->close();
     delete filterDev;
-    // kDebug() << "totalSize=" << totalSize;
+    // qDebug() << "totalSize=" << totalSize;
     QVERIFY(totalSize > 26000); // 27648 here when using gunzip
 }
 

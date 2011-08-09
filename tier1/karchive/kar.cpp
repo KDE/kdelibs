@@ -21,9 +21,9 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 #include <time.h>
-#include <kdebug.h>
-#include <kmimetype.h>
+//#include <kmimetype.h>
 #include <QtCore/QRegExp>
 
 #include "kfilterdev.h"
@@ -87,7 +87,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         return true;
     if ( mode != QIODevice::ReadOnly && mode != QIODevice::ReadWrite )
     {
-        kWarning(7042) << "Unsupported mode " << mode;
+        //qWarning() << "Unsupported mode " << mode;
         return false;
     }
 
@@ -97,7 +97,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 
     QByteArray magic = dev->read( 7 );
     if ( magic != "!<arch>" ) {
-        kWarning(7042) << "Invalid main magic";
+        //qWarning() << "Invalid main magic";
         return false;
     }
 
@@ -112,14 +112,14 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         dev->seek( dev->pos() + (2 - (dev->pos() % 2)) % 2 ); // Ar headers are padded to byte boundary
 
         if ( dev->read(ar_header.data(), 60) != 60 ) { // Read ar header
-            kWarning(7042) << "Couldn't read header";
+            //qWarning() << "Couldn't read header";
             delete[] ar_longnames;
             //return false;
             return true; // Probably EOF / trailing junk
         }
 
         if (!ar_header.endsWith("`\n")) { // Check header magic // krazy:exclude=strings
-            kWarning(7042) << "Invalid magic";
+            //qWarning() << "Invalid magic";
             delete[] ar_longnames;
             return false;
         }
@@ -139,15 +139,15 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                 ar_longnames[size] = '\0';
                 dev->read(ar_longnames, size);
                 skip_entry = true;
-                kDebug(7042) << "Read in longnames entry";
+                //qDebug() << "Read in longnames entry";
             } else if (name.mid(1, 1) == " ") { // Symbol table entry
-                kDebug(7042) << "Skipped symbol entry";
+                //qDebug() << "Skipped symbol entry";
                 dev->seek( dev->pos() + size );
                 skip_entry = true;
             } else { // Longfilename
-                kDebug(7042) << "Longfilename #" << name.mid(1, 15).toInt();
+                //qDebug() << "Longfilename #" << name.mid(1, 15).toInt();
                 if (! ar_longnames) {
-                    kWarning(7042) << "Invalid longfilename reference";
+                    //qWarning() << "Invalid longfilename reference";
                     delete[] ar_longnames;
                     return false;
                 }
@@ -159,7 +159,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 
         name = name.trimmed(); // Process filename
         name.replace( '/', QByteArray() );
-        kDebug(7042) << "Filename: " << name << " Size: " << size;
+        //qDebug() << "Filename: " << name << " Size: " << size;
 
         KArchiveEntry* entry = new KArchiveFile(this, QString::fromLocal8Bit(name), mode, date,
                                                 /*uid*/ QString(), /*gid*/ QString(), /*symlink*/ QString(),

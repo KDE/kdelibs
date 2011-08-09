@@ -18,7 +18,7 @@
 
 #include "kfiltertest.h"
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 
 #include <config-compression.h>
 #include "kfilterdev.h"
@@ -27,7 +27,7 @@
 #include <limits.h>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #include <kgzipfilter.h>
 #include <krandom.h>
 #include <QtCore/QDir>
@@ -35,7 +35,7 @@
 #include <zlib.h>
 #include <httpfilter.h>
 
-QTEST_KDEMAIN_CORE(KFilterTest)
+QTEST_MAIN(KFilterTest)
 
 void KFilterTest::initTestCase()
 {
@@ -66,18 +66,18 @@ void KFilterTest::test_block_write(const QString & fileName, const QByteArray& d
 
 void KFilterTest::test_block_write()
 {
-    kDebug() << " -- test_block_write gzip -- ";
+    qDebug() << " -- test_block_write gzip -- ";
     test_block_write(pathgz, testData);
     QCOMPARE( QFileInfo( pathgz ).size(), 33LL ); // size of test.gz
 
 #if HAVE_BZIP2_SUPPORT
-    kDebug() << " -- test_block_write bzip2 -- ";
+    qDebug() << " -- test_block_write bzip2 -- ";
     test_block_write(pathbz2, testData);
     QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
 #endif
 
 #if HAVE_XZ_SUPPORT
-    kDebug() << " -- test_block_write xz -- ";
+    qDebug() << " -- test_block_write xz -- ";
     test_block_write(pathxz, testData);
     QCOMPARE( QFileInfo( pathxz ).size(), 64LL ); // size of test.lzma
 #endif
@@ -101,7 +101,7 @@ void KFilterTest::test_biggerWrites()
     while (compressedSize < 8200) {
         test_block_write(outFile, data);
         compressedSize = QFileInfo(outFile).size();
-        kDebug() << data.size() << "compressed into" << compressedSize;
+        qDebug() << data.size() << "compressed into" << compressedSize;
         // Test data is valid
         test_readall(outFile, QString::fromLatin1("application/x-gzip"), data);
 
@@ -124,14 +124,14 @@ void KFilterTest::test_block_read( const QString & fileName )
     {
         QVERIFY( n > 0 );
         read += QByteArray( array, n );
-        //kDebug() << "read returned " << n;
-        //kDebug() << "read='" << read << "'";
+        //qDebug() << "read returned " << n;
+        //qDebug() << "read='" << read << "'";
 
         // pos() has no real meaning on sequential devices
         // Ah, but kzip uses kfilterdev as a non-sequential device...
 
         QCOMPARE( (int)dev->pos(), (int)read.size() );
-        //kDebug() << "dev.at = " << dev->at();
+        //qDebug() << "dev.at = " << dev->at();
     }
     QCOMPARE( read, testData );
 
@@ -148,14 +148,14 @@ void KFilterTest::test_block_read( const QString & fileName )
 
 void KFilterTest::test_block_read()
 {
-    kDebug() << " -- test_block_read gzip -- ";
+    qDebug() << " -- test_block_read gzip -- ";
     test_block_read(pathgz);
 #if HAVE_BZIP2_SUPPORT
-    kDebug() << " -- test_block_read bzip2 -- ";
+    qDebug() << " -- test_block_read bzip2 -- ";
     test_block_read(pathbz2);
 #endif
 #if HAVE_XZ_SUPPORT
-    kDebug() << " -- test_block_read lzma -- ";
+    qDebug() << " -- test_block_read lzma -- ";
     test_block_read(pathxz);
 #endif
 }
@@ -179,14 +179,14 @@ void KFilterTest::test_getch( const QString & fileName )
 
 void KFilterTest::test_getch()
 {
-    kDebug() << " -- test_getch gzip -- ";
+    qDebug() << " -- test_getch gzip -- ";
     test_getch(pathgz);
 #if HAVE_BZIP2_SUPPORT
-    kDebug() << " -- test_getch bzip2 -- ";
+    qDebug() << " -- test_getch bzip2 -- ";
     test_getch(pathbz2);
 #endif
 #if HAVE_XZ_SUPPORT
-    kDebug() << " -- test_getch lzma -- ";
+    qDebug() << " -- test_getch lzma -- ";
     test_getch(pathxz);
 #endif
 }
@@ -208,14 +208,14 @@ void KFilterTest::test_textstream(  const QString & fileName )
 
 void KFilterTest::test_textstream()
 {
-    kDebug() << " -- test_textstream gzip -- ";
+    qDebug() << " -- test_textstream gzip -- ";
     test_textstream(pathgz);
 #if HAVE_BZIP2_SUPPORT
-    kDebug() << " -- test_textstream bzip2 -- ";
+    qDebug() << " -- test_textstream bzip2 -- ";
     test_textstream(pathbz2);
 #endif
 #if HAVE_XZ_SUPPORT
-    kDebug() << " -- test_textstream lzma -- ";
+    qDebug() << " -- test_textstream lzma -- ";
     test_textstream(pathxz);
 #endif
 }
@@ -235,24 +235,24 @@ void KFilterTest::test_readall(const QString & fileName, const QString& mimeType
 
 void KFilterTest::test_readall()
 {
-    kDebug() << " -- test_readall gzip -- ";
+    qDebug() << " -- test_readall gzip -- ";
     test_readall(pathgz, QString::fromLatin1("application/x-gzip"), testData);
 #if HAVE_BZIP2_SUPPORT
-    kDebug() << " -- test_readall bzip2 -- ";
+    qDebug() << " -- test_readall bzip2 -- ";
     test_readall(pathbz2, QString::fromLatin1("application/x-bzip"), testData);
 #endif
 #if HAVE_XZ_SUPPORT
-    kDebug() << " -- test_readall lzma -- ";
+    qDebug() << " -- test_readall lzma -- ";
     test_readall(pathxz, QString::fromLatin1("application/x-xz"), testData);
 #endif
-    kDebug() << " -- test_readall gzip-derived -- ";
+    qDebug() << " -- test_readall gzip-derived -- ";
     test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"), testData);
 }
 
 void KFilterTest::test_uncompressed()
 {
     // Can KFilterDev handle uncompressed data even when using gzip decompression?
-    kDebug() << " -- test_uncompressed -- ";
+    qDebug() << " -- test_uncompressed -- ";
     QBuffer buffer(&testData);
     buffer.open(QIODevice::ReadOnly);
     QIODevice *flt = KFilterDev::device(&buffer, QString::fromLatin1("application/x-gzip"), false);
@@ -414,7 +414,7 @@ void KFilterTest::test_httpFilterGzip()
         connect(&filter, SIGNAL(output(QByteArray)), this, SLOT(slotFilterOutput(QByteArray)));
         QSignalSpy spyError(&filter, SIGNAL(error(QString)));
         for (int i = 0; i < compressed.size(); ++i) {
-            //kDebug() << "sending byte number" << i << ":" << (uchar)compressed[i];
+            //qDebug() << "sending byte number" << i << ":" << (uchar)compressed[i];
             filter.slotInput(QByteArray(compressed.constData() + i, 1));
             QCOMPARE(spyError.count(), 0);
         }

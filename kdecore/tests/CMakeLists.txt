@@ -25,7 +25,6 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 ########### next target ###############
 
 KDECORE_UNIT_TESTS(
- karchivetest
  kdirwatch_unittest
  klocaletimeformattest
  klocalizedstringtest
@@ -89,8 +88,6 @@ endif(UNIX)
 KDECORE_EXECUTABLE_TESTS(
  kdirwatchtest
  krandomsequencetest
- ktartest
- kziptest
  kdebugtest
  kcmdlineargstest
  kmemtest
@@ -119,11 +116,6 @@ target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
 target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY})
 
-########### klimitediodevicetest ###############
-
-kde4_add_unit_test(klimitediodevicetest TESTNAME kdecore-klimitediodevicetest klimitediodevicetest.cpp ../io/klimitediodevice.cpp)
-target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
 ########### kmimetypetest ###############
 
 # compile kmimemagicrule.cpp into the test since it's not exported and we call match().
@@ -137,16 +129,6 @@ target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 set(kmimeglobsfileparsertest_SRCS kmimeglobsfileparsertest.cpp ../services/kmimeglobsfileparser.cpp)
 kde4_add_unit_test(kmimeglobsfileparsertest TESTNAME kdecore-kmimeglobsfileparsertest ${kmimeglobsfileparsertest_SRCS})
 target_link_libraries(kmimeglobsfileparsertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
-
-########### kfiltertest ###############
-
-# compile httpfilter.cpp into the test since it's not part of kdelibs
-# (only par of kio_http and kmultipart)
-set(kfiltertest_SRCS kfiltertest.cpp ../../kio/httpfilter/httpfilter.cc)
-include_directories( ${CMAKE_SOURCE_DIR}/kio/httpfilter )
-kde4_add_unit_test(kfiltertest TESTNAME kdecore-kfiltertest ${kfiltertest_SRCS})
-target_link_libraries(kfiltertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
-target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
 
 ########### module for klibloadertest ###############
 

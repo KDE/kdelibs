@@ -23,8 +23,13 @@ endif(GSSAPI_FOUND)
 configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
 
-include_directories( ${KDE4_KIO_INCLUDES} ${ZLIB_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/solid
-                     ${CMAKE_BINARY_DIR}/solid )
+include_directories( ${KDE4_KIO_INCLUDES}
+                     ${ZLIB_INCLUDE_DIR}
+                     ${CMAKE_SOURCE_DIR}/solid
+                     ${CMAKE_BINARY_DIR}/solid
+                     ${CMAKE_SOURCE_DIR}/tier1/karchive
+                     ${CMAKE_BINARY_DIR}/tier1/karchive
+)
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 
 add_subdirectory( kcookiejar )
@@ -39,7 +44,7 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY})
+target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY})
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -60,7 +65,7 @@ set(kio_http_PART_SRCS
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} )
+target_link_libraries(kio_http karchive ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} )
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)

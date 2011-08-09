@@ -19,7 +19,7 @@
 #include "ktar.h"
 #include <stdio.h>
 #include <kcomponentdata.h>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 
 void recursive_print( const KArchiveDirectory * dir, const QString & path )
 {

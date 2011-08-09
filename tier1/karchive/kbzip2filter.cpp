@@ -84,17 +84,17 @@ bool KBzip2Filter::init( int mode )
     {
         const int result = bzDecompressInit(&d->zStream, 0, 0);
         if (result != BZ_OK) {
-            qDebug() << "bzDecompressInit returned " << result;
+            //qDebug() << "bzDecompressInit returned " << result;
             return false;
         }
     } else if ( mode == QIODevice::WriteOnly ) {
         const int result = bzCompressInit(&d->zStream, 5, 0, 0);
         if (result != BZ_OK) {
-            qDebug() << "bzDecompressInit returned " << result;
+            //qDebug() << "bzDecompressInit returned " << result;
             return false;
         }
     } else {
-        qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        //qWarning() << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
         return false;
     }
     d->mode = mode;
@@ -112,17 +112,17 @@ bool KBzip2Filter::terminate()
     if (d->mode == QIODevice::ReadOnly) {
         const int result = bzDecompressEnd(&d->zStream);
         if (result != BZ_OK) {
-            qDebug() << "bzDecompressEnd returned " << result;
+            //qDebug() << "bzDecompressEnd returned " << result;
             return false;
         }
     } else if (d->mode == QIODevice::WriteOnly) {
         const int result = bzCompressEnd(&d->zStream);
         if (result != BZ_OK) {
-            qDebug() << "bzCompressEnd returned " << result;
+            //qDebug() << "bzCompressEnd returned " << result;
             return false;
         }
     } else {
-        qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
+        //qWarning() << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported";
         return false;
     }
     d->isInitialized = false;
@@ -165,8 +165,8 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
     int result = bzDecompress(&d->zStream);
     if ( result != BZ_OK )
     {
-        qDebug() << "bzDecompress returned" << result;
-        qDebug() << "KBzip2Filter::uncompress" << ( result == BZ_STREAM_END ? KFilterBase::End : KFilterBase::Error );
+        //qDebug() << "bzDecompress returned" << result;
+        //qDebug() << "KBzip2Filter::uncompress" << ( result == BZ_STREAM_END ? KFilterBase::End : KFilterBase::Error );
     }
 
     switch (result) {

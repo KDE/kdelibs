@@ -21,9 +21,9 @@
 
 #include "klimitediodevice_p.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
-QTEST_KDEMAIN_CORE(KLimitedIODeviceTest)
+QTEST_MAIN(KLimitedIODeviceTest)
 
 void KLimitedIODeviceTest::addChunk(const QByteArray &chunk)
 {
