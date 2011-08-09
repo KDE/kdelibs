@@ -308,11 +308,20 @@ void BrowserOpenOrSaveQuestion::setFeatures(Features features)
 
 void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFileName)
 {
-    if (!suggestedFileName.isEmpty()) {
-        d->fileNameLabel->setText(i18nc("@label File name", "Name: %1", suggestedFileName));
-        d->fileNameLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        d->fileNameLabel->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
-        d->fileNameLabel->show();
+    if (suggestedFileName.isEmpty()) {
+        return;
+    }
+
+    d->fileNameLabel->setText(i18nc("@label File name", "Name: %1", suggestedFileName));
+    d->fileNameLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    d->fileNameLabel->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
+    d->fileNameLabel->show();
+
+    // If the current mime-type is the default mime-type, then attempt to
+    // determine the "real" mimetype from the file name.
+    if (d->mimeType == KMimeType::defaultMimeType()) {
+        const KMimeType::Ptr mimePtr = KMimeType::findByUrl(suggestedFileName);
+        d->mimeType = mimePtr->name();
     }
 }
 
