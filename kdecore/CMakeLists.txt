@@ -296,7 +296,6 @@ if (NOT KDECORE_NO_KDE3SUPPORT)
       network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
       network/k3bufferedsocket.cpp
       network/k3clientsocketbase.cpp
-      network/k3datagramsocket.cpp
       network/k3resolver.cpp
       network/k3resolvermanager.cpp
       network/k3resolverworkerbase.cpp
@@ -587,7 +586,6 @@ if (NOT KDECORE_NO_KDE3SUPPORT)
    install(FILES
       network/k3bufferedsocket.h
       network/k3clientsocketbase.h
-      network/k3datagramsocket.h
       network/k3httpproxysocketdevice.h
       network/k3resolver.h
       network/k3reverseresolver.h
