@@ -19,10 +19,11 @@
 
 #include "kselectionproxymodeltestsuite.h"
 
+#include <QApplication>
 #include <QTimer>
 #include <QtTest>
 
-#include "../itemviews/kselectionproxymodel.h"
+#include "../kselectionproxymodel.h"
 
 #include "modelselector.h"
 

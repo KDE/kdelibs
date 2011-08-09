@@ -20,7 +20,6 @@
 #include <QObject>
 #include <QtTest>
 #include <QtCore>
-#include <qtest_kde.h>
 #include <qtestevent.h>
 
 #include <QEventLoop>
@@ -77,6 +76,6 @@ private:
 };
 
 
-QTEST_KDEMAIN(ModelQueuedConnectionsTest, GUI)
+QTEST_MAIN(ModelQueuedConnectionsTest)
 #include "testmodelqueuedconnections.moc"
 

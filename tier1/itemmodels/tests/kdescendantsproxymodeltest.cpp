@@ -23,7 +23,8 @@
 #include "proxymodeltestsuite/proxymodeltest.h"
 #include <kdescendantsproxymodel.h>
 
-#include "kdebug.h"
+#include <qapplication.h>
+#include <qdebug.h>
 
 class TestData : public ProxyModelTestData
 {
@@ -223,7 +224,7 @@ public:
 
   void setTestData(TestData *data)
   {
-    kDebug() << data;
+    qDebug() << data;
     connectTestSignals(data);
   }
 
