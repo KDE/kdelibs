@@ -93,7 +93,8 @@ public:
    AllowLink = 2,     ///< The message may contain links.
    Dangerous = 4,     ///< The action to be confirmed by the dialog is a potentially destructive one. The default button will be set to Cancel or No, depending on which is available.
    PlainCaption = 8,  ///< Do not use KApplication::makeStdCaption()
-   NoExec = 16        ///< Do not call exec() in createKMessageBox()
+   NoExec = 16,       ///< Do not call exec() in createKMessageBox()
+   WindowModal = 32   ///< The window is to be modal relative to its parent. By default, it is application modal.
  };
 
  Q_DECLARE_FLAGS(Options,Option)
@@ -101,9 +102,7 @@ public:
  /**
   * Display a simple "question" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
@@ -149,9 +148,7 @@ public:
  /**
   * Display a simple "question" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
@@ -203,9 +200,7 @@ public:
  /**
   * Display a "question" dialog with a listbox to show information to the user
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the list is
   *                empty, it doesn't show any listbox, working as questionYesNo.
@@ -259,9 +254,7 @@ public:
  /**
   * Display a "warning" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
@@ -309,9 +302,7 @@ public:
  /**
   * Display a "warning" dialog with a listbox to show information to the user
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the list is
   *                empty, it doesn't show any listbox, working as questionYesNo.
@@ -365,9 +356,7 @@ public:
  /**
   * Display a "warning" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
@@ -415,9 +404,7 @@ public:
  /**
   * Display a "warning" dialog with a listbox to show information to the user.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the
   *                list is empty, it doesn't show any listbox, working
@@ -471,9 +458,7 @@ public:
  /**
   * Display a Yes/No/Cancel "warning" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
@@ -530,9 +515,7 @@ public:
   * Display a Yes/No/Cancel "warning" dialog with a listbox to show information
   * to the user.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the
   *                list is empty, it doesn't show any listbox, working
@@ -592,9 +575,7 @@ public:
  /**
   * Display an "Error" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
@@ -629,9 +610,7 @@ public:
  /**
   * Display an "Error" dialog with a listbox.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the
   *                list is empty, it doesn't show any listbox, working
@@ -672,9 +651,7 @@ public:
  /**
   * Displays an "Error" dialog with a "Details >>" button.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
@@ -738,9 +715,7 @@ public:
  /**
   * Display an "Sorry" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
@@ -774,9 +749,7 @@ public:
  /**
   * Displays a "Sorry" dialog with a "Details >>" button.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
@@ -818,9 +791,7 @@ public:
  /**
   * Display an "Information" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Information").
@@ -860,9 +831,7 @@ public:
  /**
   * Display an "Information" dialog with a listbox.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an
-  *                application-global modal dialog box. If @p parent is a
-  *                widget, the message box becomes modal relative to parent.
+  * @param parent  Parent widget.
   * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the
   *                list is empty, it doesn't show any listbox, working
@@ -921,9 +890,7 @@ public:
   /**
    * Display an "About" dialog.
    *
-   * @param parent  If @p parent is 0, then the message box becomes an
-   *                application-global modal dialog box. If @p parent is a
-   *                widget, the message box becomes modal relative to parent.
+   * @param parent  Parent widget.
    * @param text    Message string.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About \<appname\>").
@@ -945,9 +912,7 @@ public:
     /**
      * Alternate method to show a messagebox:
      *
-     * @param parent  If @p parent is 0, then the message box becomes an
-     *                application-global modal dialog box. If @p parent is a
-     *                widget, the message box becomes modal relative to parent.
+     * @param parent Parent widget.
      * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
      * @param text Message string.
      * @param caption Message box title.
