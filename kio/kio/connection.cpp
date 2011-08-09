@@ -223,6 +223,7 @@ bool SocketConnectionBackend::listenForRemote()
         if (!localServer->listen(sockname, KLocalSocket::UnixSocket)) {
             errorString = localServer->errorString();
             delete localServer;
+            localServer = 0;
             return false;
         }
 
@@ -233,6 +234,7 @@ bool SocketConnectionBackend::listenForRemote()
         if (!tcpServer->isListening()) {
             errorString = tcpServer->errorString();
             delete tcpServer;
+            tcpServer = 0;
             return false;
         }
 
