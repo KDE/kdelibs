@@ -1063,10 +1063,7 @@ void KMessageBox::about(QWidget *parent, const QString &text,
     dialog->setCaption( caption );
     dialog->setButtons( KDialog::Ok );
     dialog->setObjectName( "about" );
-    if ( options & WindowModal ) {
-        dialog->setWindowModality( Qt::WindowModal );
-    }
-    dialog->setModal( true );
+    applyOptions( dialog, options );
     dialog->setDefaultButton( KDialog::Ok );
     dialog->setEscapeButton( KDialog::Ok );
     if (qApp->windowIcon().isNull()) {
