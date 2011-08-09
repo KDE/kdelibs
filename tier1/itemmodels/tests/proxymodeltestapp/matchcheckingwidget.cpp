@@ -29,7 +29,7 @@
 #include "dynamictreewidget.h"
 #include <kselectionproxymodel.h>
 
-#include "kdebug.h"
+#include <QDebug>
 
 MatchCheckingWidget::MatchCheckingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f)
@@ -68,7 +68,7 @@ void MatchCheckingWidget::matchChanged(const QString& matchData)
 {
   bool ok;
   int id = matchData.toInt(&ok);
-kDebug() << matchData << id <<  DynamicTreeModel::DynamicTreeModelId;
+qDebug() << matchData << id <<  DynamicTreeModel::DynamicTreeModelId;
   if (!ok)
     return;
 
@@ -77,7 +77,7 @@ kDebug() << matchData << id <<  DynamicTreeModel::DynamicTreeModelId;
   {
     m_dynamicTreeWidget->treeView()->selectionModel()->clearSelection();
     list = m_dynamicTreeWidget->model()->match(m_dynamicTreeWidget->model()->index(0, 0), DynamicTreeModel::DynamicTreeModelId, id);
-    kDebug() << list;
+    qDebug() << list;
     foreach (const QModelIndex &idx, list)
     {
       m_dynamicTreeWidget->treeView()->selectionModel()->select(idx, QItemSelectionModel::SelectCurrent);
@@ -86,7 +86,7 @@ kDebug() << matchData << id <<  DynamicTreeModel::DynamicTreeModelId;
   {
     m_selectionTreeView->selectionModel()->clearSelection();
     list = m_selectionTreeView->model()->match(m_selectionTreeView->model()->index(0, 0), DynamicTreeModel::DynamicTreeModelId, id);
-    kDebug() << list;
+    qDebug() << list;
     foreach (const QModelIndex &idx, list)
     {
       m_selectionTreeView->selectionModel()->select(idx, QItemSelectionModel::SelectCurrent);

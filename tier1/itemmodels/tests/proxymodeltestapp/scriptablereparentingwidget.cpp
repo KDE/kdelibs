@@ -24,7 +24,7 @@
 #include <QVBoxLayout>
 #include <QScriptEngine>
 
-#include "kdebug.h"
+#include <QDebug>
 #include <QLabel>
 #include <QSplitter>
 #include <QComboBox>
