@@ -18,21 +18,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _DBUS_CONNECTION_POOL_H_
-#define _DBUS_CONNECTION_POOL_H_
+#ifndef KDBUSCONNECTIONPOOL_H
+#define KDBUSCONNECTIONPOOL_H
+
+#include <kdbus_export.h>
 
 #include <QtDBus/QDBusConnection>
 
-namespace DBusConnectionPool
+namespace KDBusConnectionPool
 {
 /**
- * The DBusConnectionPool works around the problem
+ * The KDBusConnectionPool works around the problem
  * of QDBusConnection not being thread-safe. As soon as that
  * has been fixed (either directly in libdbus or with a work-
  * around in Qt) this method can be dropped in favor of
  * QDBusConnection::sessionBus().
  */
-QDBusConnection threadConnection();
+KDBUS_EXPORT QDBusConnection threadConnection();
 }
 
 #endif

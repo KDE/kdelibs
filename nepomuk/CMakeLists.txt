@@ -20,6 +20,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/query
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/tier1/libkdbus
+  ${CMAKE_BINARY_DIR}/tier1/libkdbus
   ${KDE4_KIO_INCLUDES}
   ${QT_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
@@ -31,7 +33,6 @@ set(nepomuk_core_SRCS
   core/resourcemanager.cpp
   core/resourcefiltermodel.cpp
   core/nepomukmainmodel.cpp
-  core/dbusconnectionpool.cpp
   core/resource.cpp
   core/thing.cpp
   core/file.cpp
@@ -128,6 +129,7 @@ target_link_libraries(nepomuk
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
+  kdbus
   kdecore
   kdeui
 )

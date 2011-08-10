@@ -29,7 +29,7 @@
 #include "nfo.h"
 #include "pimo.h"
 #include "nepomukmainmodel.h"
-#include "dbusconnectionpool.h"
+#include <kdbusconnectionpool.h>
 #include "class.h"
 
 #include <Soprano/Statement>

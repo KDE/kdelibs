@@ -34,7 +34,6 @@ set(nepomukquery_SRC
   result.cpp
   queryserviceclient.cpp
   dbusoperators.cpp
-  ../core/dbusconnectionpool.cpp
   queryserializer.cpp
   standardqueries.cpp
 )
@@ -60,6 +59,7 @@ set_target_properties(nepomukquery PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOV
 target_link_libraries(nepomukquery
   ${QT_QTCORE_LIBRARY}
   ${SOPRANO_LIBRARIES}
+  kdbus
   kdecore
   nepomuk
   )

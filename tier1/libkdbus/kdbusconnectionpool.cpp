@@ -19,22 +19,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dbusconnectionpool.h"
+#include "kdbusconnectionpool.h"
 #include <QThreadStorage>
 
 namespace {
 QAtomicInt s_connectionCounter;
 
-class DBusConnectionPoolPrivate
+class KDBusConnectionPoolPrivate
 {
 public:
-    DBusConnectionPoolPrivate()
+    KDBusConnectionPoolPrivate()
         : m_connection( QDBusConnection::connectToBus(
                             QDBusConnection::SessionBus,
                             QString::fromLatin1("NepomukQueryServiceConnection%1").arg(newNumber()) ) )
     {
     }
-    ~DBusConnectionPoolPrivate() {
+    ~KDBusConnectionPoolPrivate() {
         QDBusConnection::disconnectFromBus( m_connection.name() );
     }
 
@@ -48,12 +48,13 @@ private:
 };
 }
 
-QThreadStorage<DBusConnectionPoolPrivate *> s_perThreadConnection;
+QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
 
-QDBusConnection DBusConnectionPool::threadConnection()
+QDBusConnection KDBusConnectionPool::threadConnection()
 {
     if (!s_perThreadConnection.hasLocalData()) {
-        s_perThreadConnection.setLocalData(new DBusConnectionPoolPrivate);
+        s_perThreadConnection.setLocalData(new KDBusConnectionPoolPrivate);
     }
     return s_perThreadConnection.localData()->connection();
 }
+

@@ -25,7 +25,7 @@
 #include "query.h"
 #include "queryserviceinterface.h"
 #include "queryinterface.h"
-#include <dbusconnectionpool.h>
+#include <kdbusconnectionpool.h>
 
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -92,7 +92,7 @@ public:
     Private()
         : queryServiceInterface( 0 ),
           queryInterface( 0 ),
-          dbusConnection( DBusConnectionPool::threadConnection() ),
+          dbusConnection( KDBusConnectionPool::threadConnection() ),
           m_queryActive( false ),
           loop( 0 ) {
     }

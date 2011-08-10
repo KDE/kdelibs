@@ -6,6 +6,7 @@ include_directories(
 )
 
 set(libkdbus_SRCS
+    kdbusconnectionpool.cpp
     kdbusservice.cpp
 )
 
@@ -24,6 +25,7 @@ set_target_properties(kdbus PROPERTIES VERSION   ${KDE_NON_GENERIC_LIB_VERSION}
 install(TARGETS kdbus EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+    kdbusconnectionpool.h
     kdbusservice.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdbus_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
