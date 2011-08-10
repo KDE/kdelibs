@@ -1,5 +1,5 @@
 KDE Core:
-Sonnet Core 
+Sonnet Core -> Done (cullmann, moved to tier2/sonnet/core)
 Archive & Compression -> Done ([nef])
 KAuth
 Date/Time
@@ -33,6 +33,8 @@ Misc Widgets
 
 KIO:
 
+Sonnet:
+Done -> (cullmann, moved to tier2/sonnet, as plugins) 
 
 For more information:
 https://spreadsheets.google.com/spreadsheet/ccc?key=0AhQ1BhQL6D9wdGpvOHN0N0xRZVBGU1c3ZmdiaXZORUE&hl=en_US&authkey=CKTcjdgP#gid=2
