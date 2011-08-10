@@ -50,7 +50,7 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 
 # FIXME: temporary during frameworks split
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/karchive ${CMAKE_BINARY_DIR}/tier1/karchive )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkarchive ${CMAKE_BINARY_DIR}/tier1/libkarchive )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
