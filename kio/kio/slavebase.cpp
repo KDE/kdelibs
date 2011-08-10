@@ -306,14 +306,14 @@ void SlaveBase::dispatchLoop()
                 closeConnection();
                 connectSlave(d->poolSocket);
             } else {
-                return;
+                break;
             }
         }
 
         //I think we get here when we were killed in dispatch() and not in select()
         if (wasKilled()) {
             kDebug(7019) << "slave was killed, returning";
-            return;
+            break;
         }
 
         // execute deferred deletes
