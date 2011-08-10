@@ -441,6 +441,7 @@ add_subdirectory( ecma )
 include_directories( ${KDE4_PHONON_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor)
+include_directories( ${CMAKE_SOURCE_DIR}/tier2/sonnet ${CMAKE_SOURCE_DIR}/tier2/sonnet/core ${CMAKE_BINARY_DIR}/tier2/sonnet/core )
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/misc
@@ -536,7 +537,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_PHONON_LIBRARY} ${KDE4_KPARTS_LIBS} ktexteditor kjs karchive ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
+target_link_libraries(khtml ${KDE4_PHONON_LIBRARY} ${KDE4_KPARTS_LIBS} ktexteditor kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
 target_link_libraries(khtml LINK_INTERFACE_LIBRARIES ${KDE4_PHONON_LIBRARY} kparts kjs kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
