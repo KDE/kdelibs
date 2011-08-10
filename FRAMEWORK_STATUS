@@ -19,7 +19,7 @@ Locale
 
 KDE UI:
 WindowManagement
-Sonnet UI
+Sonnet UI -> tricky, as KTextEdit uses sonnet in kdeui and therefore you have circular dependency of sonnetui + kdeui
 KJobs Widgets
 Proxy Models -> Done (steveire)
 Item View Widgets
