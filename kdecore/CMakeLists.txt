@@ -53,8 +53,6 @@ if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
-
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
 # if it's used, *always* append to it
@@ -145,7 +143,6 @@ endif (UNIX)
 
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
-add_subdirectory( sonnet/tests )
 if ( NOT WINCE )
     add_subdirectory( network/kssld )
 endif ( NOT WINCE )
@@ -252,15 +249,6 @@ set(kdecore_LIB_SRCS
    services/yacc.c
    services/lex.c
    services/kplugininfo.cpp
-   sonnet/loader.cpp
-   sonnet/client.cpp
-   sonnet/spellerplugin.cpp
-   sonnet/speller.cpp
-   sonnet/filter.cpp
-   sonnet/settings.cpp
-   sonnet/backgroundchecker.cpp
-   sonnet/backgroundengine.cpp
-   sonnet/globals.cpp
 )
 
 if (NOT KDECORE_NO_KDE3SUPPORT)
@@ -627,13 +615,9 @@ install(FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
-         DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
-
 install( FILES
    config/kconfigbackend.desktop
    services/kplugininfo.desktop
-   sonnet/sonnetspeller.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
 

@@ -8,7 +8,7 @@ set(kspell_enchant_PART_SRCS enchantdict.cpp enchantclient.cpp )
 
 kde4_add_plugin(kspell_enchant ${kspell_enchant_PART_SRCS})
 
-target_link_libraries(kspell_enchant  ${KDE4_KDECORE_LIBS} ${ENCHANT_LIBRARIES} )
+target_link_libraries(kspell_enchant  ${KDE4_KDECORE_LIBS} sonnetcore ${ENCHANT_LIBRARIES} )
 
 install(TARGETS kspell_enchant  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

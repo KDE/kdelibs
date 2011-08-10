@@ -24,7 +24,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include "sonnetcore_export.h"
 
 class KConfig;
 
@@ -35,7 +35,7 @@ namespace Sonnet
      *
      * @short class used for actuall spell checking
      */
-    class KDECORE_EXPORT Speller
+    class SONNETCORE_EXPORT Speller
     {
     public:
         Speller(const QString &lang=QString());

@@ -1,6 +1,6 @@
 
 include_directories(
- ${CMAKE_SOURCE_DIR}/kdecore/sonnet ${KDE4_KDECORE_INCLUDES}
+ ${CMAKE_CURRENT_SOURCE_DIR}/../core ${KDE4_KDECORE_INCLUDES}
  )
 
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake

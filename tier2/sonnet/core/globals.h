@@ -21,7 +21,7 @@
 
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include "sonnetcore_export.h"
 
 namespace Sonnet {
 
@@ -32,7 +32,7 @@ namespace Sonnet {
      *
      * @since 4.2
      */
-    extern KDECORE_EXPORT QString detectLanguage(const QString &sentence);
+    extern SONNETCORE_EXPORT QString detectLanguage(const QString &sentence);
 
     /**
      * @return the default language which is stored in the sonnetrc config file.
@@ -43,7 +43,7 @@ namespace Sonnet {
      *
      * @since 4.2
      */
-    extern KDECORE_EXPORT QString defaultLanguageName();
+    extern SONNETCORE_EXPORT QString defaultLanguageName();
 }
 
 #endif

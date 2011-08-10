@@ -8,7 +8,7 @@ set(kspell_hunspell_PART_SRCS kspell_hunspellclient.cpp kspell_hunspelldict.cpp 
 
 kde4_add_plugin(kspell_hunspell ${kspell_hunspell_PART_SRCS})
 
-target_link_libraries(kspell_hunspell  ${KDE4_KDECORE_LIBS} ${HUNSPELL_LIBRARIES} )
+target_link_libraries(kspell_hunspell  ${KDE4_KDECORE_LIBS} sonnetcore ${HUNSPELL_LIBRARIES} )
 
 install(TARGETS kspell_hunspell  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

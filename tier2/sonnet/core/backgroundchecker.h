@@ -23,7 +23,7 @@
 
 #include "speller.h"
 
-#include <kdecore_export.h>
+#include "sonnetcore_export.h"
 
 #include <QtCore/QObject>
 
@@ -51,7 +51,7 @@ namespace Sonnet
      * @author Zack Rusin <zack@kde.org>
      * @short class used for spell checking in the background
      */
-    class KDECORE_EXPORT BackgroundChecker : public QObject
+    class SONNETCORE_EXPORT BackgroundChecker : public QObject
     {
         Q_OBJECT
     public:
