@@ -1,6 +1,6 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/..
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src
                      ${CMAKE_SOURCE_DIR}/kio/httpfilter
 )
 
@@ -34,7 +34,7 @@ KARCHIVE_EXECUTABLE_TESTS(
 
 ########### klimitediodevicetest ###############
 
-kde4_add_unit_test(klimitediodevicetest TESTNAME karchive-klimitediodevicetest klimitediodevicetest.cpp ../klimitediodevice.cpp)
+kde4_add_unit_test(klimitediodevicetest TESTNAME karchive-klimitediodevicetest klimitediodevicetest.cpp ../src/klimitediodevice.cpp)
 target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### kfiltertest ###############
