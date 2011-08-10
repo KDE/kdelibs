@@ -682,7 +682,7 @@ _kde4_set_lib_variables(PLASMA        plasma        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(SOLID         solid         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(THREADWEAVER  threadweaver  "${KDE4_TARGET_PREFIX}")
 
-set(KDE4_KDEUI_LIBRARY itemmodels ${KDE4_KDEUI_UNPORTED_LIBRARY} )
+set(KDE4_KDEUI_LIBRARY itemmodels sonnetcore ${KDE4_KDEUI_UNPORTED_LIBRARY} )
 set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
 
 if (UNIX)
