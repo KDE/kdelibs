@@ -358,6 +358,7 @@ if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
+generate_export_header(kdecore)
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
@@ -495,7 +496,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_IN
 install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
-   kdecore_export.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
    config/conversion_check.h
    config/kconfig.h
    #config/kconfigbackend.h re-enable post-API review and implementation (4.2?)

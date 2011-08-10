@@ -23,6 +23,7 @@
 #define _KDEBUG_H_
 
 #include <kdecore_export.h>
+#include <kdemacros.h>
 
 #include <QtCore/QDebug>
 #include <QtCore/QElapsedTimer>

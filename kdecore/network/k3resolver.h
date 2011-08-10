@@ -32,6 +32,8 @@
 #include <QtCore/QSharedDataPointer>
 #include "k3socketaddress.h"
 
+#include <kdemacros.h>
+
 
 ////////////////////////
 // Forward declarations

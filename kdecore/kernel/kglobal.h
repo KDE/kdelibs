@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <QtCore/QObject>
 
+#include <kdemacros.h>
+
 //
 // WARNING!!
 // This code uses undocumented Qt API
