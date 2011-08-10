@@ -62,7 +62,7 @@ namespace Sonnet
      * @author Zack Rusin <zack@kde.org>
      * @short used to split text into words
      */
-    class KDECORE_EXPORT Filter
+    class SONNETCORE_EXPORT Filter
     {
     public:
         static Filter *defaultFilter();
