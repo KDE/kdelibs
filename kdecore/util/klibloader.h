@@ -33,7 +33,7 @@
 #ifndef KDE_NO_DEPRECATED
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { KDE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
+    extern "C" { KDECORE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
 
 /**
  * \class KLibLoader klibloader.h <KLibLoader>

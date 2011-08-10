@@ -39,7 +39,7 @@
 
 K_PLUGIN_FACTORY(KSSLDFactory, registerPlugin<KSSLD>();)
 K_EXPORT_PLUGIN(KSSLDFactory("kssld"))
-//KDE_EXPORT void *__kde_do_unload; // TODO re-add support for this?
+//KDECORE_EXPORT void *__kde_do_unload; // TODO re-add support for this?
 
 
 class KSSLDPrivate

@@ -50,7 +50,7 @@ struct KDEPluginVerificationData
  * \see KDEPluginVerificationData
  */
 #define K_PLUGIN_VERIFICATION_DATA \
-Q_EXTERN_C KDE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
+Q_EXTERN_C KDECORE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
 { KDEPluginVerificationData::PluginVerificationDataVersion, KDE_VERSION, KDE_VERSION_STRING };
 
 /**
@@ -59,7 +59,7 @@ Q_EXTERN_C KDE_EXPORT const KDEPluginVerificationData kde_plugin_verification_da
  * You can later access the version number with KPluginLoader::pluginVersion()
  */
 #define K_EXPORT_PLUGIN_VERSION(version) \
-Q_EXTERN_C KDE_EXPORT const quint32 kde_plugin_version = version;
+Q_EXTERN_C KDECORE_EXPORT const quint32 kde_plugin_version = version;
 
 
 /**

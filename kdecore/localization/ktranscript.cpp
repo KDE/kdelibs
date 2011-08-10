@@ -439,7 +439,7 @@ TsConfig readConfig (const QString &fname)
 K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
-    KDE_EXPORT KTranscript *load_transcript ()
+    KDECORE_EXPORT KTranscript *load_transcript ()
     {
         return globalKTI;
     }
