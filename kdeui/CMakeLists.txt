@@ -8,6 +8,7 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
+ ${CMAKE_BINARY_DIR}/tier2/sonnet/core
  ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels
@@ -403,7 +404,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui itemmodels ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui itemmodels sonnetcore ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY})
 
 if(NOT WINCE)
