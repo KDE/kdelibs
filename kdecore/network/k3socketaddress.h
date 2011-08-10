@@ -59,7 +59,7 @@ class KUnixSocketAddress;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KIpAddress
+class KDECORE_DEPRECATED_EXPORT KIpAddress
 {
 public:
   /**
@@ -411,7 +411,7 @@ class KSocketAddressData;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
+class KDECORE_DEPRECATED_EXPORT KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
 {
 public:
   /**
@@ -640,7 +640,7 @@ public:				// static
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KInetSocketAddress: public KSocketAddress
+class KDECORE_DEPRECATED_EXPORT KInetSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:
@@ -830,7 +830,7 @@ private:
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KUnixSocketAddress: public KSocketAddress
+class KDECORE_DEPRECATED_EXPORT KUnixSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:

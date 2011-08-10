@@ -1164,7 +1164,7 @@ Q_DECLARE_METATYPE(KUrl::List)
  * @deprecated use KUrl(_url1).equals(KUrl(_url2)) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
+KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
 #endif
 
 /**
@@ -1180,7 +1180,7 @@ KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url
  * @deprecated use KUrl(_url1).equals(KUrl(_url2), options) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_EXPORT_DEPRECATED bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
+KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
 #endif
 
 KDECORE_EXPORT uint qHash(const KUrl& kurl);

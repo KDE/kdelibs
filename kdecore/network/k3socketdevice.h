@@ -48,7 +48,7 @@ class KSocketDevicePrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
+class KDECORE_DEPRECATED_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
 {
 public:
   /**

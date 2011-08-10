@@ -39,7 +39,7 @@ class KSocksSocketDevicePrivate;
  * @warning This code is untested!
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_EXPORT_DEPRECATED KSocksSocketDevice: public KSocketDevice
+class KDECORE_DEPRECATED_EXPORT KSocksSocketDevice: public KSocketDevice
 {
 public:
   /** 
