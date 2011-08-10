@@ -23,7 +23,7 @@
 #include <QTimer>
 #include <QtTest>
 
-#include "../kselectionproxymodel.h"
+#include <kselectionproxymodel.h>
 
 #include "modelselector.h"
 
