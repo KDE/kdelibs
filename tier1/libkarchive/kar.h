@@ -26,7 +26,7 @@
  * @short A class for reading ar archives.
  * @author Laurence Anderson <l.d.anderson@warwick.ac.uk>
  */
-class KDECORE_EXPORT KAr : public KArchive
+class KARCHIVE_EXPORT KAr : public KArchive
 {
 public:
     /**
