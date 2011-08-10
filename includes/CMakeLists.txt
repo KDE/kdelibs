@@ -197,7 +197,6 @@ install( FILES
   KFilterDev
   KFind
   KFindDialog
-  KFloatValidator
   KFontAction
   KFontChooser
   KFontComboBox
