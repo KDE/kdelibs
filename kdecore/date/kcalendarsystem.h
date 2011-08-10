@@ -80,7 +80,7 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    KDE_DEPRECATED static KCalendarSystem *create(const QString & calType = QLatin1String("gregorian"),
+    KDECORE_DEPRECATED static KCalendarSystem *create(const QString & calType = QLatin1String("gregorian"),
                                                   const KLocale * locale = 0);
 
     //KDE5 remove
@@ -98,7 +98,7 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    KDE_DEPRECATED static KCalendarSystem *create(const QString & calType, KSharedConfig::Ptr config,
+    KDECORE_DEPRECATED static KCalendarSystem *create(const QString & calType, KSharedConfig::Ptr config,
                                                   const KLocale * locale = 0);
 
     //KDE5 add default value to calendarSystem
@@ -137,7 +137,7 @@ public:
      *
      * @return list of names
      */
-    KDE_DEPRECATED static QStringList calendarSystems();
+    KDECORE_DEPRECATED static QStringList calendarSystems();
 
     /**
      * @since 4.6
@@ -160,7 +160,7 @@ public:
      *
      * @return label for calendar
      */
-    KDE_DEPRECATED static QString calendarLabel(const QString &calendarType);
+    KDECORE_DEPRECATED static QString calendarLabel(const QString &calendarType);
 
     /**
      * @since 4.6
@@ -187,7 +187,7 @@ public:
      * @param calendarType the calendar type to convert
      * @return calendar system for calendar type
      */
-    KDE_DEPRECATED static KLocale::CalendarSystem calendarSystemForCalendarType(const QString &calendarType);
+    KDECORE_DEPRECATED static KLocale::CalendarSystem calendarSystemForCalendarType(const QString &calendarType);
 
     //KDE5 Remove
     /**
@@ -242,7 +242,7 @@ public:
      *
      * @return type of calendar system
      */
-    KDE_DEPRECATED virtual QString calendarType() const = 0;
+    KDECORE_DEPRECATED virtual QString calendarType() const = 0;
 
     //KDE5 make virtual?
     /**
@@ -432,7 +432,7 @@ public:
      * @param d Day of month
      * @return true if the date is valid; otherwise returns false.
      */
-    KDE_DEPRECATED virtual bool setYMD(QDate &date, int y, int m, int d) const;
+    KDECORE_DEPRECATED virtual bool setYMD(QDate &date, int y, int m, int d) const;
 
     //KDE5 make virtual?
     /**
@@ -750,7 +750,7 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return ISO week number, -1 if input date invalid
      */
-    KDE_DEPRECATED virtual int weekNumber(const QDate &date, int *yearNum = 0) const;
+    KDECORE_DEPRECATED virtual int weekNumber(const QDate &date, int *yearNum = 0) const;
 
     //KDE5 Make virtual?
     /**
@@ -956,7 +956,7 @@ public:
      * @return year literal of the date, empty string if any error
      * @see year()
      */
-    KDE_DEPRECATED virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const;
 
     /**
      * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
@@ -968,7 +968,7 @@ public:
      * @return The month literal of the date, empty string if any error
      * @see month()
      */
-    KDE_DEPRECATED virtual QString monthString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED virtual QString monthString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     /**
      * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
@@ -980,7 +980,7 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see day()
      */
-    KDE_DEPRECATED virtual QString dayString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED virtual QString dayString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -994,7 +994,7 @@ public:
      * @param format format to return, either short or long
      * @return Year In Era literal of the date, empty string if any error
      */
-    KDE_DEPRECATED QString yearInEraString(const QDate &date, StringFormat format = ShortFormat) const;
+    KDECORE_DEPRECATED QString yearInEraString(const QDate &date, StringFormat format = ShortFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1009,7 +1009,7 @@ public:
      * @return The day of year literal of the date, empty string if any error
      * @see dayOfYear()
      */
-    KDE_DEPRECATED QString dayOfYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString dayOfYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1023,7 +1023,7 @@ public:
      * @return The day of week literal of the date, empty string if any error
      * @see dayOfWeek()
      */
-    KDE_DEPRECATED QString dayOfWeekString(const QDate &pDate) const;
+    KDECORE_DEPRECATED QString dayOfWeekString(const QDate &pDate) const;
 
     //KDE5 make virtual?
     /**
@@ -1038,7 +1038,7 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see weekNumber()
      */
-    KDE_DEPRECATED QString weekNumberString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString weekNumberString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1053,7 +1053,7 @@ public:
      * @return The months in year literal of the date, empty string if any error
      * @see monthsInYear()
      */
-    KDE_DEPRECATED QString monthsInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString monthsInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1068,7 +1068,7 @@ public:
      * @return The weeks in year literal of the date, empty string if any error
      * @see weeksInYear()
      */
-    KDE_DEPRECATED QString weeksInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString weeksInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1083,7 +1083,7 @@ public:
      * @return The days in year literal of the date, empty string if any error
      * @see daysInYear()
      */
-    KDE_DEPRECATED QString daysInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString daysInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1098,7 +1098,7 @@ public:
      * @return The days in month literal of the date, empty string if any error
      * @see daysInMonth()
      */
-    KDE_DEPRECATED QString daysInMonthString(const QDate &pDate, StringFormat format = LongFormat) const;
+    KDECORE_DEPRECATED QString daysInMonthString(const QDate &pDate, StringFormat format = LongFormat) const;
 
     //KDE5 make virtual?
     /**
@@ -1112,7 +1112,7 @@ public:
      * @return The days in week literal of the date, empty string if any error
      * @see daysInWeek()
      */
-    KDE_DEPRECATED QString daysInWeekString(const QDate &date) const;
+    KDECORE_DEPRECATED QString daysInWeekString(const QDate &date) const;
 
     //KDE5 make protected or remove?
     /**
@@ -1523,7 +1523,7 @@ public:
      *
      * @return day number (None = 0, Monday = 1, ..., Sunday = 7)
      */
-    KDE_DEPRECATED virtual int weekDayOfPray() const = 0;
+    KDECORE_DEPRECATED virtual int weekDayOfPray() const = 0;
 
     /**
      * Returns whether the calendar is lunar based.
@@ -1625,7 +1625,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    KDE_DEPRECATED void setMaxMonthsInYear(int maxMonths);
+    KDECORE_DEPRECATED void setMaxMonthsInYear(int maxMonths);
 
     /**
      * @deprecated for internal use only
@@ -1634,7 +1634,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    KDE_DEPRECATED void setMaxDaysInWeek(int maxDays);
+    KDECORE_DEPRECATED void setMaxDaysInWeek(int maxDays);
 
     /**
      * @deprecated for internal use only
@@ -1645,7 +1645,7 @@ protected:
      *
      * Only for internal calendar system use
      */
-    KDE_DEPRECATED void setHasYear0(bool hasYear0);
+    KDECORE_DEPRECATED void setHasYear0(bool hasYear0);
 
     /**
      * Constructor of abstract calendar class. This will be called by derived classes.

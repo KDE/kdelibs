@@ -204,7 +204,7 @@ public:
    * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED static int startServiceByName( const QString& _name, const QString &URL,
+  KDECORE_DEPRECATED static int startServiceByName( const QString& _name, const QString &URL,
                                                 QString *error=0, QString *serviceName=0, int *pid=0,
                                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 #endif
@@ -231,7 +231,7 @@ public:
    * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
+  KDECORE_DEPRECATED static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
                                                 QString *error=0, QString *serviceName=0, int *pid=0,
                                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 #endif

@@ -250,7 +250,7 @@ public:
    * way of finding related services.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
+  static KDECORE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
 #endif
 
   /**

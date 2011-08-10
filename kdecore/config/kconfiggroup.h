@@ -150,7 +150,7 @@ public:
      * Create another KConfigGroup from the parent of this group instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void changeGroup(const QString &group);
+    KDECORE_DEPRECATED void changeGroup(const QString &group);
 #endif
     /**
      * Overload for changeGroup(const QString&)
@@ -159,7 +159,7 @@ public:
      * Create another KConfigGroup from the parent of this group instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void changeGroup(const char *group);
+    KDECORE_DEPRECATED void changeGroup(const char *group);
 #endif
 
     /**

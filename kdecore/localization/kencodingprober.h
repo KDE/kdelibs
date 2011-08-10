@@ -130,7 +130,7 @@ public:
      * @deprecated Use encoding() instead, which returns a QByteArray.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED const char* encodingName() const;
+    KDECORE_DEPRECATED const char* encodingName() const;
 #endif
 
     /**

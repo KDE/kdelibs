@@ -251,7 +251,7 @@ public:
      * @deprecated, use addResourceType(type, 0, relativename, priority)
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool addResourceType( const char *type,
+    KDECORE_DEPRECATED bool addResourceType( const char *type,
                                          const QString& relativename, bool priority = true );
 #endif
 
@@ -650,7 +650,7 @@ public:
      * @see locateLocal()
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED QString kde_default(const char *type);
+    static KDECORE_DEPRECATED QString kde_default(const char *type);
 #endif
 
     /**

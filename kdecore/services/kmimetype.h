@@ -329,7 +329,7 @@ public:
      * Use is(), parentMimeTypes(), or allParentMimeTypes() instead of parentMimeType()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString parentMimeType() const;
+    KDECORE_DEPRECATED QString parentMimeType() const;
 #endif
 
     /**

@@ -177,7 +177,7 @@ public:
    * @deprecated use property(KUser::FullName) instead
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED QString fullName() const;
+  KDECORE_DEPRECATED QString fullName() const;
 #endif
 
   /**

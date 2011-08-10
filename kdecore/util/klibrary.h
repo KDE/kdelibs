@@ -56,7 +56,7 @@ public:
      * @return The factory of the library if there is any, otherwise 0
      * @deprecated use KPluginLoader::factory
      */
-    KDE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
+    KDECORE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
 
     /**
      * Looks up a symbol from the library. This is a very low level

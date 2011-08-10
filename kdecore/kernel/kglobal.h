@@ -567,7 +567,7 @@ namespace KGlobal
  */
 
 template<class T>
-inline KDE_DEPRECATED T kClamp( const T& x, const T& low, const T& high )
+inline KDECORE_DEPRECATED T kClamp( const T& x, const T& low, const T& high )
 {
     if ( x < low )       return low;
     else if ( high < x ) return high;

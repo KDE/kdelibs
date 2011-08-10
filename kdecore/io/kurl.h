@@ -891,7 +891,7 @@ public:
    * @deprecated Use equals() instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
+  KDECORE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 #endif
 
 
@@ -1009,7 +1009,7 @@ public:
    * Use KUrl(text) instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
+  static KDECORE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
 #endif
 
   /**
@@ -1050,7 +1050,7 @@ public:
    * everything is 7 bit (ascii) after being percent-encoded.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED QString encode_string(const QString &str) {
+  static KDECORE_DEPRECATED QString encode_string(const QString &str) {
     return QString::fromLatin1( QUrl::toPercentEncoding( str ).constData() ); //krazy:exclude=qclasses
   }
 #endif
@@ -1067,7 +1067,7 @@ public:
    *
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
+  static KDECORE_DEPRECATED QString encode_string_no_slash(const QString &str) {
       return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ).constData() ); //krazy:exclude=qclasses
   }
 #endif
@@ -1083,7 +1083,7 @@ public:
    *
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED QString decode_string(const QString &str) {
+  static KDECORE_DEPRECATED QString decode_string(const QString &str) {
       return QUrl::fromPercentEncoding( str.toLatin1() ); //krazy:exclude=qclasses
   }
 #endif

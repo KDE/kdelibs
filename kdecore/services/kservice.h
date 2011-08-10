@@ -104,7 +104,7 @@ public:
      * @deprecated use isApplication()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString type() const;
+    KDECORE_DEPRECATED QString type() const;
 #endif
 
     /**
@@ -171,7 +171,7 @@ public:
      *         or QString() if not set
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString desktopEntryPath() const;
+    KDECORE_DEPRECATED QString desktopEntryPath() const;
 #endif
 
     /**
@@ -296,7 +296,7 @@ public:
      * @deprecated, use hasMimeType(QString)
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+    KDECORE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
 #endif
 
     /**
@@ -566,7 +566,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template <class T>
-    static KDE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
+    static KDECORE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         return service->createInstance<T>(parent, args, error);
@@ -579,7 +579,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template <class T>
-    static KDE_DEPRECATED T *createInstance( const KService::Ptr &service,
+    static KDECORE_DEPRECATED T *createInstance( const KService::Ptr &service,
                               QObject *parent,
                               const QStringList &args,
                               int *error = 0 )
@@ -612,7 +612,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template <class T, class ServiceIterator>
-    static KDE_DEPRECATED T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
+    static KDECORE_DEPRECATED T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         for (; begin != end; ++begin) {
@@ -635,7 +635,7 @@ public:
 
 #ifndef KDE_NO_DEPRECATED
     template <class T, class ServiceIterator>
-    static KDE_DEPRECATED T *createInstance( ServiceIterator begin, ServiceIterator end,
+    static KDECORE_DEPRECATED T *createInstance( ServiceIterator begin, ServiceIterator end,
                               QObject *parent,
                               const QStringList &args,
                               int *error = 0 )

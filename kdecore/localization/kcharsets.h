@@ -145,7 +145,7 @@ public:
      * This function will be removed before KDE4 is released.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
+    KDECORE_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
 #endif
 
     /**

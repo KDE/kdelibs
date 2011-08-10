@@ -349,7 +349,7 @@ public:
      * @see forceGlobal
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setForceGlobal(bool force);
+    KDECORE_DEPRECATED void setForceGlobal(bool force);
 #endif
     /**
      * @deprecated
@@ -361,7 +361,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool forceGlobal() const;
+    KDECORE_DEPRECATED bool forceGlobal() const;
 #endif
     /// @}
 

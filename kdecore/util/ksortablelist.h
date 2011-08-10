@@ -121,7 +121,7 @@ public:
      * @deprecated use key()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED Key index() const { return this->first; }
+    KDECORE_DEPRECATED Key index() const { return this->first; }
 #endif
     /**
      * @return the first value.

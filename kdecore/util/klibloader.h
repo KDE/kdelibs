@@ -141,7 +141,7 @@ public:
      *
      * @deprecated use KPluginLoader instead
      */
-    static KDE_DEPRECATED KLibLoader* self();
+    static KDECORE_DEPRECATED KLibLoader* self();
 
     /**
      * Helper method which looks for a library in the standard paths
@@ -199,7 +199,7 @@ public:
      * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
-    static KDE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
+    static KDECORE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
@@ -245,7 +245,7 @@ public:
      * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
-    static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
+    static KDECORE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
@@ -257,7 +257,7 @@ public:
      *             KPluginLoader or KService::createInstance instead
      */
     template <typename T>
-    static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent,
+    static KDECORE_DEPRECATED T *createInstance( const QString &libname, QObject *parent,
                               const QStringList &args,
                               int *error = 0 )
     {

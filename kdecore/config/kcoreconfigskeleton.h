@@ -600,7 +600,7 @@ public:
     qint64 mMax;
   };
 #ifndef KDE_NO_DEPRECATED
-  typedef KDE_DEPRECATED ItemLongLong ItemInt64;
+  typedef KDECORE_DEPRECATED ItemLongLong ItemInt64;
 #endif
 
   /**
@@ -733,7 +733,7 @@ public:
     quint64 mMax;
   };
 #ifndef KDE_NO_DEPRECATED
-  typedef KDE_DEPRECATED ItemULongLong ItemUInt64;
+  typedef KDECORE_DEPRECATED ItemULongLong ItemUInt64;
 #endif
 
   /**
@@ -1176,7 +1176,7 @@ public:
    * Use addItemLongLong().
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
+  KDECORE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
                           qint64 defaultValue = 0,
                           const QString & key = QString());
 #endif
@@ -1201,7 +1201,7 @@ public:
    * Use addItemULongLong().
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
+  KDECORE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
                             const QString & key = QString());
 #endif

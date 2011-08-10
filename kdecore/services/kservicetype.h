@@ -73,7 +73,7 @@ public:
      * @return the path of the desktop file
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString desktopEntryPath() const;
+    KDECORE_DEPRECATED QString desktopEntryPath() const;
 #endif
 
     /**

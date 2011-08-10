@@ -221,16 +221,16 @@ KDECORE_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
 
 #if 1 || defined(KDE3_SUPPORT)
 #ifndef KDE_NO_DEPRECATED
-class KDE_DEPRECATED kndbgstream { };
+class KDECORE_DEPRECATED kndbgstream { };
 typedef QDebug kdbgstream;
 
-static inline KDE_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) { return kDebug(area); }
-static inline KDE_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
-static inline KDE_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
-static inline KDE_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
-inline KDE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
+static inline KDECORE_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) { return kDebug(area); }
+static inline KDECORE_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
+static inline KDECORE_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
+static inline KDECORE_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
+inline KDECORE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
-static inline KDE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
+static inline KDECORE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
 #endif
 #endif
 

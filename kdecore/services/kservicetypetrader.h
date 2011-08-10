@@ -200,7 +200,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template <class T>
-    static KDE_DEPRECATED T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
+    static KDECORE_DEPRECATED T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
             QObject *parent, const QStringList &args, int *error = 0)
     {
         const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);

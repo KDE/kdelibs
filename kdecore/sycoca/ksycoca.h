@@ -162,7 +162,7 @@ public:
     * @deprecated use the signal databaseChanged(QStringList) instead.
     */
 #ifndef KDE_NO_DEPRECATED
-   static KDE_DEPRECATED bool isChanged(const char *type);
+   static KDECORE_DEPRECATED bool isChanged(const char *type);
 #endif
 
    /**
@@ -173,7 +173,7 @@ public:
 
    /// @deprecated
 #ifndef KDE_NO_DEPRECATED
-   static KDE_DEPRECATED bool readError();
+   static KDECORE_DEPRECATED bool readError();
 #endif
 
 Q_SIGNALS:

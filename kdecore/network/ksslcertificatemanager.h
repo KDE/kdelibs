@@ -72,12 +72,12 @@ public:
 
     // do not use, it does nothing!
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setRootCertificates(const QList<QSslCertificate> &rootCertificates)
+    KDECORE_DEPRECATED void setRootCertificates(const QList<QSslCertificate> &rootCertificates)
         { Q_UNUSED(rootCertificates) }
 #endif
     // use caCertificates() instead
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QList<QSslCertificate> rootCertificates() const
+    KDECORE_DEPRECATED QList<QSslCertificate> rootCertificates() const
         { return caCertificates(); }
 #endif
 

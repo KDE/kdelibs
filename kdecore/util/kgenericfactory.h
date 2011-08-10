@@ -147,7 +147,7 @@ bool KGenericFactoryBase<T>::s_createComponentDataCalled = false;
  * \endcode
  */
 template <class Product, class ParentType = QObject>
-class KDE_DEPRECATED KGenericFactory : public KGenericFactoryBase<Product>
+class KDECORE_DEPRECATED KGenericFactory : public KGenericFactoryBase<Product>
 {
 public:
     explicit KGenericFactory( const char *componentName = 0, const char *catalogName = 0 )
