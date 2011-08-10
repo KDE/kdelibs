@@ -21,7 +21,7 @@
 #include "dictionarycombobox.h"
 
 #include <kdebug.h>
-#include <sonnet/speller.h>
+#include <speller.h>
 
 namespace Sonnet
 {
