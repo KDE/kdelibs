@@ -5,7 +5,7 @@ add_subdirectory( pics )
 add_subdirectory( tests )
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/tier1/libkplotting
+  ${CMAKE_SOURCE_DIR}/tier1/libkplotting/src
   ${CMAKE_BINARY_DIR}/tier1/libkplotting
   ${KDE4_KIO_INCLUDES}
  )
