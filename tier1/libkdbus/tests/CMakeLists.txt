@@ -13,6 +13,7 @@ ENDMACRO(KDBUS_UNIT_TESTS)
 ########### next target ###############
 
 KDBUS_UNIT_TESTS(
+ kdbusinterprocesslocktest
  kdbusservicetest
 )
 

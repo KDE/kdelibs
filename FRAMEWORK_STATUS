@@ -36,5 +36,8 @@ KIO:
 Sonnet:
 Done -> (cullmann, moved to tier2/sonnet, as plugins) 
 
+To be done later when porting to frameworks:
+Remove kinterprocesslock from the trash kioslave (KDBusInterProcessLock replaces it).
+
 For more information:
 https://spreadsheets.google.com/spreadsheet/ccc?key=0AhQ1BhQL6D9wdGpvOHN0N0xRZVBGU1c3ZmdiaXZORUE&hl=en_US&authkey=CKTcjdgP#gid=2
