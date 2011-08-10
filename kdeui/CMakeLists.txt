@@ -10,10 +10,10 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${CMAKE_BINARY_DIR}/tier2/sonnet/core
  ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
- ${CMAKE_BINARY_DIR}/tier1/itemmodels
- ${CMAKE_SOURCE_DIR}/tier1/itemmodels
- ${CMAKE_BINARY_DIR}/tier1/plotting
- ${CMAKE_SOURCE_DIR}/tier1/plotting
+ ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
+ ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
+ ${CMAKE_BINARY_DIR}/tier1/plotting/src
+ ${CMAKE_SOURCE_DIR}/tier1/plotting/src
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
