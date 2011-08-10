@@ -1,0 +1,38 @@
+KDE Core:
+Sonnet Core 
+Archive & Compression -> Done ([nef])
+KAuth
+Date/Time
+Translation
+Service Solution
+KDBus -> WIP (ervin)
+Standard Locations
+SSL
+Mime Types
+LibKCore
+KDebug
+Filesystem Handling
+Configuration
+Misc KDE Look/Feel/Consistency
+Misc Integration
+Locale
+
+KDE UI:
+WindowManagement
+Sonnet UI
+KJobs Widgets
+Proxy Models -> Done (steveire)
+Item View Widgets
+XML GUI
+Colors (part of kgui)
+Color Widgets -> WIP (ben2367)
+KConfig GUI
+Misc Dialog Stuff
+Plotting -> Done (ben2367)
+Misc Widgets
+
+KIO:
+
+
+For more information:
+https://spreadsheets.google.com/spreadsheet/ccc?key=0AhQ1BhQL6D9wdGpvOHN0N0xRZVBGU1c3ZmdiaXZORUE&hl=en_US&authkey=CKTcjdgP#gid=2
