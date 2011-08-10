@@ -27,8 +27,8 @@ include_directories( ${KDE4_KIO_INCLUDES}
                      ${ZLIB_INCLUDE_DIR}
                      ${CMAKE_SOURCE_DIR}/solid
                      ${CMAKE_BINARY_DIR}/solid
-                     ${CMAKE_SOURCE_DIR}/tier1/karchive
-                     ${CMAKE_BINARY_DIR}/tier1/karchive
+                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive
+                     ${CMAKE_BINARY_DIR}/tier1/libkarchive
 )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 
