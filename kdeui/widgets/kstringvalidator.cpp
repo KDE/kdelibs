@@ -111,47 +111,4 @@ QStringList KStringListValidator::stringList() const
   return d->mStringList;
 }
 
-//
-// KMimeTypeValidator
-//
-
-#define ALLOWED_CHARS "!#-'*+.0-9^-~+-"
-
-class KMimeTypeValidator::Private
-{
-};
-
-KMimeTypeValidator::KMimeTypeValidator( QObject* parent )
- : QValidator( parent ),
-   d( 0 )
-{
-}
-
-KMimeTypeValidator::~KMimeTypeValidator()
-{
-  delete d;
-}
-
-QValidator::State KMimeTypeValidator::validate( QString &input, int& ) const
-{
-  if ( input.isEmpty() )
-    return Intermediate;
-
-  QRegExp acceptable( "[" ALLOWED_CHARS "]+/[" ALLOWED_CHARS "]+", Qt::CaseInsensitive );
-  if ( acceptable.exactMatch( input ) )
-    return Acceptable;
-
-  QRegExp intermediate( "[" ALLOWED_CHARS "]*/?[" ALLOWED_CHARS "]*", Qt::CaseInsensitive );
-  if ( intermediate.exactMatch( input ) )
-    return Intermediate;
-
-  return Invalid;
-}
-
-void KMimeTypeValidator::fixup( QString &input ) const
-{
-  QRegExp invalidChars("[^/" ALLOWED_CHARS "]+");
-  input.remove( invalidChars );
-}
-
 #include "kstringvalidator.moc"
