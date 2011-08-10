@@ -8,7 +8,7 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
- ${CMAKE_SOURCE_DIR}/kdecore/sonnet
+ ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels
  ${CMAKE_BINARY_DIR}/tier1/plotting
