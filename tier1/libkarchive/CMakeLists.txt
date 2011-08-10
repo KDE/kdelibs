@@ -36,11 +36,7 @@ set(karchive_SRCS
   kzip.cpp
 )
 
-kde4_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
-
-generate_export_header(karchive
-  DEPRECATED_NAME KDE_DEPRECATED
-)
+kf5_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 
 target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${KDE4_KDECORE_LIBS})
 

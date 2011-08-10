@@ -18,11 +18,7 @@ set(itemmodels_SRCS
   kviewstatemaintainerbase.cpp
 )
 
-kde4_add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
-
-generate_export_header(itemmodels
-  DEPRECATED_NAME KDE_DEPRECATED
-)
+kf5_add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
 
 target_link_libraries(itemmodels ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 

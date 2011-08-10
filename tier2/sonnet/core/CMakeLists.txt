@@ -29,11 +29,7 @@ set(sonnetcore_SRCS
    globals.cpp
 )
 
-kde4_add_library(sonnetcore ${LIBRARY_TYPE} ${sonnetcore_SRCS})
-
-generate_export_header(sonnetcore
-  DEPRECATED_NAME KDE_DEPRECATED
-)
+kf5_add_library(sonnetcore ${LIBRARY_TYPE} ${sonnetcore_SRCS})
 
 target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS})
 

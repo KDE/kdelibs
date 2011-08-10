@@ -1053,6 +1053,11 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
 endmacro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
+macro(kf5_add_library _target_NAME _lib_TYPE)
+  kde4_add_library(${_target_NAME} ${_lib_TYPE} ${ARGN})
+  generate_export_header(${_target_NAME})
+endmacro()
+
 macro (KDE4_ADD_WIDGET_FILES _sources)
    foreach (_current_FILE ${ARGN})
 

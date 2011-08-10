@@ -12,11 +12,7 @@ set(kplotting_SRCS
  kplotwidget.cpp
 )
 
-kde4_add_library(kplotting ${LIBRARY_TYPE} ${kplotting_SRCS})
-
-generate_export_header(kplotting
-  DEPRECATED_NAME KDE_DEPRECATED
-)
+kf5_add_library(kplotting ${LIBRARY_TYPE} ${kplotting_SRCS})
 
 target_link_libraries(kplotting ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 

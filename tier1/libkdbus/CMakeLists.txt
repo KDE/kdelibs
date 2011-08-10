@@ -10,11 +10,7 @@ set(libkdbus_SRCS
     kdbusservice.cpp
 )
 
-kde4_add_library(kdbus ${LIBRARY_TYPE} ${libkdbus_SRCS})
-
-generate_export_header(kdbus
-  DEPRECATED_NAME KDE_DEPRECATED
-)
+kf5_add_library(kdbus ${LIBRARY_TYPE} ${libkdbus_SRCS})
 
 target_link_libraries(kdbus ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
