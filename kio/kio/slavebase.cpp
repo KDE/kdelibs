@@ -37,6 +37,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QList>
 #include <QtCore/QDateTime>
+#include <QtCore/QCoreApplication>
 
 #include <kcrash.h>
 #include <kconfig.h>
@@ -314,7 +315,13 @@ void SlaveBase::dispatchLoop()
             kDebug(7019) << "slave was killed, returning";
             return;
         }
+
+        // execute deferred deletes
+        QCoreApplication::sendPostedEvents(NULL, QEvent::DeferredDelete);
     }
+
+    // execute deferred deletes
+    QCoreApplication::sendPostedEvents(NULL, QEvent::DeferredDelete);
 }
 
 void SlaveBase::connectSlave(const QString &address)
