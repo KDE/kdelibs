@@ -28,7 +28,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
- ${CMAKE_CURRENT_SOURCE_DIR}/plotting
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
