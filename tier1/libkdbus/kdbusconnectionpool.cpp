@@ -34,19 +34,26 @@ public:
                             QString::fromLatin1("NepomukQueryServiceConnection%1").arg(newNumber()) ) )
     {
     }
-    ~KDBusConnectionPoolPrivate() {
+
+    ~KDBusConnectionPoolPrivate()
+    {
         QDBusConnection::disconnectFromBus( m_connection.name() );
     }
 
-    QDBusConnection connection() const { return m_connection; }
+    QDBusConnection connection() const
+    {
+        return m_connection;
+    }
 
 private:
-    static int newNumber() {
+    static int newNumber()
+    {
         return s_connectionCounter.fetchAndAddAcquire(1);
     }
+
     QDBusConnection m_connection;
 };
-}
+} // namespace
 
 QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
 
@@ -55,6 +62,7 @@ QDBusConnection KDBusConnectionPool::threadConnection()
     if (!s_perThreadConnection.hasLocalData()) {
         s_perThreadConnection.setLocalData(new KDBusConnectionPoolPrivate);
     }
+
     return s_perThreadConnection.localData()->connection();
 }
 
