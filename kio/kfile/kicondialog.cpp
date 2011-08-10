@@ -23,7 +23,7 @@
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
 #ifndef _WIN32_WCE
-#include <ksvgrenderer.h>
+#include <QtSvg/QSvgRenderer>
 #endif
 
 #include <QtGui/QApplication>
