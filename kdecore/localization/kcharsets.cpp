@@ -20,7 +20,6 @@
 */
 #include "kcharsets.h"
 
-#include "kfilterdev.h"
 #include "kentities.c"
 
 #include "kconfig.h"
