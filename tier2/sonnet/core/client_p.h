@@ -25,7 +25,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include <sonnetcore_export.h>
 /*
  * The fact that this class inherits from QObject makes me
  * hugely unhappy. The reason for as of this writing is that
@@ -40,7 +40,7 @@ namespace Sonnet
      * \internal
      * Client
      */
-    class KDECORE_EXPORT Client : public QObject
+    class SONNETCORE_EXPORT Client : public QObject
     {
         Q_OBJECT
     public:

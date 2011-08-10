@@ -21,7 +21,7 @@
 #ifndef SONNET_LOADER_P_H
 #define SONNET_LOADER_P_H
 
-#include <kdecore_export.h>
+#include <sonnetcore_export.h>
 #include <ksharedptr.h>
 
 #include <QtCore/QObject>
@@ -42,7 +42,7 @@ namespace Sonnet
      * Sonnet class, you can think of it as the kernel or manager
      * of the Sonnet architecture.
      */
-    class KDECORE_EXPORT Loader : public QObject
+    class SONNETCORE_EXPORT Loader : public QObject
     {
         Q_OBJECT
     public:

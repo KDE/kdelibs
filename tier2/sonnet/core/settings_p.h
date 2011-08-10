@@ -23,7 +23,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QString>
-#include <kdecore_export.h>
+#include <sonnetcore_export.h>
 
 class KConfig;
 
@@ -34,7 +34,7 @@ namespace Sonnet
     /**
      * Settings class
      */
-    class KDECORE_EXPORT Settings
+    class SONNETCORE_EXPORT Settings
     {
     public:
         ~Settings();

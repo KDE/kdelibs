@@ -24,7 +24,7 @@
 
 #include <QtCore/QTextBoundaryFinder>
 #include <QtCore/QString>
-#include <kdecore_export.h>
+#include <sonnetcore_export.h>
 
 namespace Sonnet
 {
@@ -37,7 +37,7 @@ namespace Sonnet
      * @author Zack Rusin <zack@kde.org>
      * @short struct represents word
      */
-    struct KDECORE_EXPORT Word
+    struct SONNETCORE_EXPORT Word
     {
         Word() : start( 0 ), end( true )
             {}
