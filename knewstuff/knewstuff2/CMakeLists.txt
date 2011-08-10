@@ -2,7 +2,11 @@ project(knewstuff2)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
-include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${KDE4_KIO_INCLUDES}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/..
+                    ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
+                    ${CMAKE_BINARY_DIR}/tier1/libkarchive
+)
 
 set(knewstuff2_core_SRCS
    core/ktranslatable.cpp

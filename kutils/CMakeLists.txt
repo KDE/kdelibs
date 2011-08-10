@@ -1,5 +1,10 @@
 project(kutils)
-include_directories( ${KDE4_KDEUI_INCLUDES} ${KDE4_KPARTS_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories( ${KDE4_KDEUI_INCLUDES}
+                     ${KDE4_KPARTS_INCLUDES}
+                     ${CMAKE_CURRENT_SOURCE_DIR}
+                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
+                     ${CMAKE_BINARY_DIR}/tier1/libkarchive
+)
 
 ########### kemoticons ################
 add_subdirectory(kemoticons)
