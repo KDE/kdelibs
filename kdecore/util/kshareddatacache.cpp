@@ -1098,6 +1098,12 @@ class KSharedDataCache::Private
 
         m_expectedType = shm->shmLock.type;
         m_lock = QSharedPointer<KSDCLock>(createLockFromId(m_expectedType, shm->shmLock));
+        bool isProcessSharingSupported = false;
+
+        if (!m_lock->initialize(isProcessSharingSupported)) {
+            kError(ksdcArea()) << "Unable to setup shared cache lock, although it worked when created.";
+            detachFromSharedMemory();
+        }
     }
 
     // Called whenever the cache is apparently corrupt (for instance, a timeout trying to
