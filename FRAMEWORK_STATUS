@@ -36,6 +36,16 @@ KIO:
 Sonnet:
 Done -> (cullmann, moved to tier2/sonnet, as plugins) 
 
+klauncher/ktoolinvocation:
+ - KLauncher does startup notification, .desktop, and showing
+  an error to the user if the application couldn't start.
+  This is all in a separate process only to benefit from kdeinit.
+ => remove klauncher, and use the KRun code (which uses QProcess and monitors)
+  * showing errors to the user => done by KRun (see KProcessRunner)
+  * startup notification       => done by KRun
+ A) if we keep kdeinit, we only need to keep kdeinitExec in klauncher
+ B) otherwise, we can make klauncher specific to kioslaves
+
 To be done later when porting to frameworks:
 Remove kinterprocesslock from the trash kioslave (KDBusInterProcessLock replaces it).
 

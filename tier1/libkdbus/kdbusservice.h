@@ -29,6 +29,15 @@
 
 class KDBusServicePrivate;
 
+/**
+ *
+ *
+ * Important: in order to avoid a race, the application should try to export its
+ * objects to DBus before instanciating KDBusService.
+ * Otherwise the application appears on the bus before its objects are accessible
+ * via DBus, which could be a problem for other apps or scripts which start the
+ * application in order to talk DBus to it immediately.
+ */
 class KDBUS_EXPORT KDBusService : public QObject
 {
     Q_OBJECT
