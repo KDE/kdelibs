@@ -238,6 +238,27 @@ public:
     ChangeCollectionPasswordJob  *theJob;
 };
 
+class CollectionLockJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(CollectionLockJobPrivate)
+public:
+    explicit CollectionLockJobPrivate( CollectionPrivate *cp, CollectionLockJob* );
+    
+    void startLockingCollection();
+    
+protected Q_SLOTS:
+    void slotLockFinished( QDBusPendingCallWatcher* );
+    void slotPromptFinished( KJob* );
+    
+private:
+    void checkResult( const QList< QDBusObjectPath > & ) const;
+    
+public:
+    CollectionPrivate *collectionPrivate;
+    CollectionLockJob *theJob;
+    WId                windowId;
+};
+
 } // namespace
 
 #endif // KSECRETSSERVICECOLLECTIONJOBS_P_H

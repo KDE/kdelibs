@@ -46,6 +46,7 @@ class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
 class ListCollectionsJob;
 class ChangeCollectionPasswordJob;
+class CollectionLockJob;
 
 /**
  * This is the main KSecretsService entry class, used by the applications that need to store secrets, 
@@ -209,6 +210,12 @@ public:
      */
     ChangeCollectionPasswordJob* changePassword();
     
+    /**
+     * Request collection lock. Locked collection's contents cannot be changed.
+     * @return CollectionLockJob
+     */
+    CollectionLockJob* lock( const WId =0 );
+    
 Q_SIGNALS:
     /**
      * TODO: not yet implemented
@@ -242,6 +249,7 @@ private:
     friend class ReadCollectionPropertyJob;
     friend class WriteCollectionPropertyJob;
     friend class ChangeCollectionPasswordJob;
+    friend class CollectionLockJob;
     
     void readIsValid( ReadCollectionPropertyJob* );
     

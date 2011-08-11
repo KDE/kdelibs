@@ -43,6 +43,7 @@ class ReadCollectionItemsJobPrivate;
 class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
 class ChangeCollectionPasswordJobPrivate;
+class CollectionLockJobPrivate;
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -295,6 +296,21 @@ private:
     friend class ChangeCollectionPasswordJobPrivate;
     QSharedPointer< ChangeCollectionPasswordJobPrivate > d;
 };
+
+class KSECRETSSERVICECLIENT_EXPORT CollectionLockJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(CollectionLockJob)
+public:
+    CollectionLockJob( Collection *collection, const WId winId );
+    
+    virtual void start();
+    virtual void onFindCollectionFinished();
+    
+private:
+    friend class CollectionLockJobPrivate;
+    QSharedPointer< CollectionLockJobPrivate > d;
+};
+
 
 }
 
