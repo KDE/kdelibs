@@ -18,7 +18,6 @@
 
 #include "ktar.h"
 #include <stdio.h>
-#include <kcomponentdata.h>
 #include <QtCore/QDebug>
 
 void recursive_print( const KArchiveDirectory * dir, const QString & path )
@@ -51,7 +50,7 @@ int main( int argc, char** argv )
                " ./ktartest /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n" );
         return 1;
     }
-    KComponentData componentData(QByteArray("ktartest"));
+    
     KTar tar( argv[1] );
 
     if ( !tar.open( QIODevice::ReadOnly ) )

@@ -18,7 +18,6 @@
 
 #include "kzip.h"
 #include <stdio.h>
-#include <kcomponentdata.h>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 
@@ -97,7 +96,6 @@ int main( int argc, char** argv )
  " ./kziptest transfer file.zip newfile.zip         complete transfer.\n" );
     return 1;
   }
-  KComponentData componentData(QByteArray("kziptest"));
   QString command = argv[1];
   if ( command == "list" )
   {
