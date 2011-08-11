@@ -5,8 +5,8 @@ add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
 
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/..
-  ${CMAKE_BINARY_DIR}/tier1/itemmodels
-  ${CMAKE_SOURCE_DIR}/tier1/itemmodels
+  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
+  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
 )
 
 set(nepomukutils_SRCS

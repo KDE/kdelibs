@@ -5,7 +5,7 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 include_directories(${KDE4_KIO_INCLUDES}
                     ${CMAKE_CURRENT_SOURCE_DIR}/..
                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-                    ${CMAKE_BINARY_DIR}/tier1/libkarchive
+                    ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
 )
 
 set(knewstuff2_core_SRCS

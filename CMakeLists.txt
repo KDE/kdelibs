@@ -271,7 +271,7 @@ include(ConfigureChecks.cmake)
 if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
   set(HAVE_NEPOMUK true)
   include(SopranoAddOntology)
-  # TO BE SPLITTED OUT add_subdirectory(nepomuk)
+  add_subdirectory(nepomuk)
 endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
 
 # now create config headers

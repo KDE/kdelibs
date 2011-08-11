@@ -10,7 +10,7 @@ macro_log_feature(LIBXML2_XMLLINT_EXECUTABLE "xmllint" "Required by the KDE help
 
 include_directories( ${KDE4_KIO_INCLUDES}
                      ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-                     ${CMAKE_BINARY_DIR}/tier1/libkarchive
+                     ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
 )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
 
