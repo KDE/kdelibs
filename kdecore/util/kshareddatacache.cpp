@@ -1120,7 +1120,7 @@ class KSharedDataCache::Private
 
     bool lock() const
     {
-        if (KDE_ISLIKELY(shm->shmLock.type == m_expectedType)) {
+        if (KDE_ISLIKELY(shm && shm->shmLock.type == m_expectedType)) {
             return m_lock->lock();
         }
 
