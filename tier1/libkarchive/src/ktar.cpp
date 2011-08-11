@@ -27,7 +27,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <kmimetype.h>
-#include <ktemporaryfile.h>
+#include <QtCore/QTemporaryFile>
 
 #include <kfilterdev.h>
 #include <kfilterbase.h>
@@ -56,7 +56,7 @@ public:
     KTar *q;
     QStringList dirList;
     qint64 tarEnd;
-    KTemporaryFile* tmpFile;
+    QTemporaryFile* tmpFile;
     QString mimetype;
     QByteArray origFileName;
 
@@ -144,9 +144,8 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
         // Which is in fact nearly as slow as a complete decompression for each file.
 
         Q_ASSERT(!d->tmpFile);
-        d->tmpFile = new KTemporaryFile();
-        d->tmpFile->setPrefix(QLatin1String("ktar-"));
-        d->tmpFile->setSuffix(QLatin1String(".tar"));
+        d->tmpFile = new QTemporaryFile();
+        d->tmpFile->setFileTemplate(QLatin1String("ktar-XXXXXX.tar"));
         d->tmpFile->open();
         //qDebug() << "creating tempfile:" << d->tmpFile->fileName();
 
