@@ -925,6 +925,25 @@ class KSharedDataCache::Private
         mapSharedMemory();
     }
 
+    // Put the cache in a condition to be able to call mapSharedMemory() by
+    // completely detaching from shared memory (such as to respond to an
+    // unrecoverable error).
+    // m_mapSize must already be set to the amount of memory mapped to shm.
+    void detachFromSharedMemory()
+    {
+        // The lock holds a reference into shared memory, so this must be
+        // cleared before shm is removed.
+        m_lock.clear();
+
+        if (shm && !::munmap(shm, m_mapSize)) {
+            kError(ksdcArea()) << "Unable to unmap shared memory segment"
+                << static_cast<void*>(shm);
+        }
+
+        shm = 0;
+        m_mapSize = 0;
+    }
+
     // This function does a lot of the important work, attempting to connect to shared
     // memory, a private anonymous mapping if that fails, and failing that, nothing (but
     // the cache remains "valid", we just don't actually do anything).
@@ -1053,9 +1072,8 @@ class KSharedDataCache::Private
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
                 kError(ksdcArea()) << "Unable to acquire shared lock, is the cache corrupt?";
 
-                ::munmap(shm, size);
                 file.remove(); // Unlink the cache in case it's corrupt.
-                shm = 0;
+                detachFromSharedMemory();
                 return; // Fallback to QCache (later)
             }
 
@@ -1064,9 +1082,9 @@ class KSharedDataCache::Private
                     kError(ksdcArea()) << "Unable to perform initial setup, this system probably "
                                    "does not really support process-shared pthreads or "
                                    "semaphores, even though it claims otherwise.";
-                    ::munmap(shm, size);
+
                     file.remove();
-                    shm = 0;
+                    detachFromSharedMemory();
                     return;
                 }
             }
@@ -1087,11 +1105,8 @@ class KSharedDataCache::Private
     void recoverCorruptedCache()
     {
         KSharedDataCache::deleteCache(m_cacheName);
-        if (shm) {
-            ::munmap(shm, m_mapSize);
-            shm = 0;
-            m_mapSize = 0;
-        }
+
+        detachFromSharedMemory();
 
         // Do this even if we weren't previously cached -- it might work now.
         mapSharedMemory();
@@ -1134,8 +1149,7 @@ class KSharedDataCache::Private
                 if (lockCount++ > 4) {
                     kError(ksdcArea()) << "There is a very serious problem with the KDE data cache"
                                 << d->m_cacheName << "giving up trying to access cache.";
-                    ::munmap(d->shm, d->m_mapSize);
-                    d->shm = 0;
+                    d->detachFromSharedMemory();
                     return false;
                 }
             }
