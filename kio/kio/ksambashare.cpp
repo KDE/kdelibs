@@ -175,6 +175,8 @@ QByteArray KSambaSharePrivate::getNetUserShareInfo()
     if (!stdErr.isEmpty()) {
         if (stdErr.contains("You do not have permission to create a usershare")) {
             skipUserShare = true;
+        } else if (stdErr.contains("usershares are currently disabled")) {
+            skipUserShare = true;
         } else {
             //TODO: parse and process other error messages.
             // create a parser for the error output and
