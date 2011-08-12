@@ -48,6 +48,8 @@ configure_file(util/config-util.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-util.
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
+include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -360,7 +362,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 generate_export_header(kdecore)
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS} inqt5)
 
 if(WINCE)
   target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)

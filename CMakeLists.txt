@@ -290,6 +290,7 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
+add_subdirectory( libinqt5 )
 add_subdirectory( tier1 )
 add_subdirectory( tier2 )
 add_subdirectory( kdeui )

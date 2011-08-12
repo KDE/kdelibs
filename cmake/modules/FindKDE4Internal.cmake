@@ -801,7 +801,6 @@ if (WIN32)
 
    set(PLUGIN_INSTALL_DIR       "lib${LIB_SUFFIX}/kde4"   ) #                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde4)
    set(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"   ) # "The subdirectory relative to the install prefix where imports will be installed
-   set(CONFIG_INSTALL_DIR       "share/config"            ) # The config file install dir
    set(DATA_INSTALL_DIR         "share/apps"              ) # The parent directory where applications can install their data
    set(HTML_INSTALL_DIR         "share/doc/HTML"          ) # The HTML install dir for documentation
    set(ICON_INSTALL_DIR         "share/icons"             ) # The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)
@@ -822,6 +821,7 @@ if (WIN32)
    set(XDG_MIME_INSTALL_DIR      "share/mime/packages"       ) # The install dir for the xdg mimetypes
 
    set(SYSCONF_INSTALL_DIR       "etc"                       ) # The sysconfig install dir (default /etc)
+   set(CONFIG_INSTALL_DIR        "etc/xdg"                   ) # The config file install dir
    set(MAN_INSTALL_DIR           "share/man"                 ) # The man install dir (default ${SHARE_INSTALL_PREFIX}/man/)
    set(INFO_INSTALL_DIR          "share/info"                ) # The info install dir (default ${SHARE_INSTALL_PREFIX}/info)")
    set(DBUS_INTERFACES_INSTALL_DIR "share/dbus-1/interfaces" ) # The dbus interfaces install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/interfaces)")
@@ -874,7 +874,6 @@ else (WIN32)
 
    _set_fancy(PLUGIN_INSTALL_DIR       "${LIB_INSTALL_DIR}/kde4"                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde4)")
    _set_fancy(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"                "The subdirectory relative to the install prefix where imports will be installed")
-   _set_fancy(CONFIG_INSTALL_DIR       "${SHARE_INSTALL_PREFIX}/config"         "The config file install dir")
    _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/apps"           "The parent directory where applications can install their data")
    _set_fancy(HTML_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/doc/HTML"       "The HTML install dir for documentation")
    _set_fancy(ICON_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/icons"          "The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)")
@@ -895,6 +894,7 @@ else (WIN32)
    _set_fancy(XDG_MIME_INSTALL_DIR     "${SHARE_INSTALL_PREFIX}/mime/packages"  "The install dir for the xdg mimetypes")
 
    _set_fancy(SYSCONF_INSTALL_DIR      "${CMAKE_INSTALL_PREFIX}/etc"            "The sysconfig install dir (default ${CMAKE_INSTALL_PREFIX}/etc)")
+   _set_fancy(CONFIG_INSTALL_DIR       "${SYSCONF_INSTALL_DIR}/xdg"             "The config file install dir")
    _set_fancy(MAN_INSTALL_DIR          "${SHARE_INSTALL_PREFIX}/man"            "The man install dir (default ${SHARE_INSTALL_PREFIX}/man/)")
    _set_fancy(INFO_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/info"           "The info install dir (default ${SHARE_INSTALL_PREFIX}/info)")
    _set_fancy(DBUS_INTERFACES_INSTALL_DIR      "${SHARE_INSTALL_PREFIX}/dbus-1/interfaces" "The dbus interfaces install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/interfaces)")
