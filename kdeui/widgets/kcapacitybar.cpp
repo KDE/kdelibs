@@ -92,6 +92,9 @@ void KCapacityBar::setText(const QString &text)
     if (updateGeom) {
         updateGeometry();
     }
+
+    setAccessibleName(text);
+
     update();
 }
 
