@@ -15,8 +15,8 @@ kf5_add_library(kdbus ${LIBRARY_TYPE} ${libkdbus_SRCS})
 
 target_link_libraries(kdbus ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
-set_target_properties(kdbus PROPERTIES VERSION   ${KDE_NON_GENERIC_LIB_VERSION}
-                                       SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+set_target_properties(kdbus PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
+                                       SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
 install(TARGETS kdbus EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

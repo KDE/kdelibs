@@ -33,8 +33,8 @@ kf5_add_library(sonnetcore ${LIBRARY_TYPE} ${sonnetcore_SRCS})
 
 target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS})
 
-set_target_properties(sonnetcore PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
-                                          SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+set_target_properties(sonnetcore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+                                          SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
 install(TARGETS sonnetcore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -31,8 +31,8 @@ kf5_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SR
 
 target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${KDE4_KDECORE_LIBS})
 
-set_target_properties(karchive PROPERTIES VERSION  ${KDE_NON_GENERIC_LIB_VERSION}
-                                          SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
+                                          SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
 install(TARGETS karchive EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

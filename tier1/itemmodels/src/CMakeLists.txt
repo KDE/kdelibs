@@ -15,8 +15,8 @@ kf5_add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
 
 target_link_libraries(itemmodels ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-set_target_properties(itemmodels PROPERTIES VERSION   ${KDE_NON_GENERIC_LIB_VERSION}
-                                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+set_target_properties(itemmodels PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
+                                            SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
 install(TARGETS itemmodels EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
