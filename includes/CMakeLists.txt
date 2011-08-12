@@ -1035,7 +1035,6 @@ install(FILES
   Plasma/ConfigLoader
   Plasma/Containment
   Plasma/ContainmentActions
-  Plasma/Context
   Plasma/Corona
   Plasma/Credentials
   Plasma/DataContainer
@@ -1058,7 +1057,6 @@ install(FILES
   Plasma/LineEdit
   Plasma/Meter
   Plasma/Package
-  Plasma/PackageMetadata
   Plasma/PackageStructure
   Plasma/PaintUtils
   Plasma/Plasma
@@ -1104,12 +1102,6 @@ if(QT_QTOPENGL_FOUND)
       Plasma/GLApplet
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 endif(QT_QTOPENGL_FOUND)
-
-if(NOT KDE_NO_DEPRECATED)
-install( FILES
-  Plasma/AnimationDriver
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
-endif(NOT KDE_NO_DEPRECATED)
 
 
 install(FILES
