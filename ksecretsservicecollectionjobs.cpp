@@ -249,10 +249,11 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
 }
 
 
-ListCollectionsJob::ListCollectionsJob( Collection * coll ) :
-    CollectionJob( coll, coll ),
-    d( new ListCollectionsJobPrivate( this, coll->d.data() ) )
+ListCollectionsJob::ListCollectionsJob() :
+    d( new ListCollectionsJobPrivate( this ) )
 {
+    connect( d.data(), SIGNAL(listingDone()), this, SLOT(slotListCollectionsDone()) );
+    connect( d.data(), SIGNAL(listingError()), this, SLOT(slotListCollectionsError()) );
 }
 
 ListCollectionsJob::~ListCollectionsJob()
@@ -264,14 +265,26 @@ void ListCollectionsJob::start()
     d->startListingCollections();
 }
 
+void ListCollectionsJob::slotListCollectionsDone()
+{
+    setError(0);
+    emitResult();
+}
+
+void ListCollectionsJob::slotListCollectionsError()
+{
+    setError(1);
+    setErrorText( i18n("Cannot list collections because a backend communication error") );
+    emitResult();
+}
+
 const QStringList &ListCollectionsJob::collections() const 
 {
     return d->collections;
 }
 
-ListCollectionsJobPrivate::ListCollectionsJobPrivate( ListCollectionsJob *job, CollectionPrivate *cp ) :
-    listCollectionsJob(job),
-    collectionPrivate(cp)
+ListCollectionsJobPrivate::ListCollectionsJobPrivate( ListCollectionsJob *job ) :
+    listCollectionsJob(job)
 {
 }
 
@@ -280,10 +293,16 @@ void ListCollectionsJobPrivate::startListingCollections()
     QList<QDBusObjectPath> collPaths = DBusSession::serviceIf()->collections();
     foreach( const QDBusObjectPath &path, collPaths ) {
         OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( path );
-        collections.append( coll->label() );
+        if (coll->isValid()) {
+            collections.append( coll->label() );
+        }
+        else {
+            kDebug() << "Cannot bind to collection " << path.path();
+            emit listingError();
+        }
         coll->deleteLater();
     }
-    listCollectionsJob->finishedOk();
+    emit listingDone();
 }
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :
@@ -411,7 +430,7 @@ void SearchCollectionItemsJob::start()
     startFindCollection(); // this will trigger onFindCollectionFinished
 }
 
-QList< QExplicitlySharedDataPointer< SecretItem > > SearchCollectionItemsJob::items() const
+SearchCollectionItemsJob::ItemList SearchCollectionItemsJob::items() const
 {
     QList< QExplicitlySharedDataPointer< SecretItem > > items;
     foreach( QSharedDataPointer< SecretItemPrivate > ip, d->items ) {

@@ -24,6 +24,8 @@
 
 using namespace KSecretsService;
 
+const char* Secret::CONTENT_TYPE_PASSWORD = "password";
+
 Secret::Secret() :
     d( new SecretPrivate() )
 {
@@ -39,16 +41,22 @@ Secret::Secret( const Secret& that ) :
 {
 }
 
-Secret::Secret( const QSharedDataPointer<SecretPrivate> &sp) :
-    d( sp )
-{
+Secret::~Secret() {
 }
 
-Secret::~Secret() {
+Secret& Secret::operator=(const Secret& that)
+{
+    d = that.d;
+    return *this;
 }
 
 QVariant Secret::value() const {
     return d->value;
+}
+
+QString Secret::contentType() const
+{
+    return d->contentType;
 }
 
 void Secret::setValue( const QVariant &value, const QString &contentType ) {

@@ -32,15 +32,20 @@ namespace KSecretsService {
 
 class SecretPrivate;
 
-struct KSECRETSSERVICECLIENT_EXPORT Secret {
+class KSECRETSSERVICECLIENT_EXPORT Secret {
+public:
     Secret();
     Secret( const Secret & that );
-    explicit Secret( const QSharedDataPointer< SecretPrivate > & sp );
     explicit Secret( SecretPrivate* sp );
     virtual ~Secret();
     
-    QVariant value() const;
+    Secret& operator = (const Secret& that);
     
+    QVariant value() const;
+    QString contentType() const;
+    
+    static const char* CONTENT_TYPE_PASSWORD;
+
     void setValue( const QVariant &value, const QString &contentType );
     void setValue( const QVariant &value );
     
@@ -49,7 +54,6 @@ struct KSECRETSSERVICECLIENT_EXPORT Secret {
 private:
     friend class CreateCollectionItemJob;
     friend class SetSecretItemSecretJob;
-    
     QSharedDataPointer< SecretPrivate > d;
 };
 

@@ -143,16 +143,20 @@ private:
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public CollectionJob {
+class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public KJob {
     Q_OBJECT
     Q_DISABLE_COPY(ListCollectionsJob)
 public:
-    explicit ListCollectionsJob( Collection *collection );
+    ListCollectionsJob();
     virtual ~ListCollectionsJob();
     
     virtual void start();
     
     const QStringList &collections() const;
+
+protected Q_SLOTS:
+    void slotListCollectionsDone();
+    void slotListCollectionsError();
     
 private:
     friend class ListCollectionsJobPrivate;
@@ -186,7 +190,9 @@ public:
     explicit SearchCollectionItemsJob( Collection* collection, const QStringStringMap &attributes, QObject *parent =0 );
     virtual ~SearchCollectionItemsJob();
     
-    QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
+    typedef QExplicitlySharedDataPointer< SecretItem > Item;
+    typedef QList< Item > ItemList;
+    ItemList items() const;
     virtual void start();
 
 protected:
@@ -241,7 +247,10 @@ public:
     virtual ~ReadCollectionItemsJob();
 
     virtual void start();
-    QList< QExplicitlySharedDataPointer< SecretItem > > items() const;
+    
+    typedef QExplicitlySharedDataPointer< SecretItem > Item;
+    typedef QList< Item > ItemList;
+    ItemList items() const;
     
 private:
     friend class ReadCollectionItemsJobPrivate;

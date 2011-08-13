@@ -57,6 +57,11 @@ Collection * KSecretsService::Collection::findCollection(const QString& collecti
     return collection;
 }
 
+ListCollectionsJob *Collection::listCollections()
+{
+    return new ListCollectionsJob();
+}
+
 Collection::Status Collection::status() const
 {
     return d->collectionStatus;
@@ -120,6 +125,11 @@ WriteCollectionPropertyJob* Collection::setLabel(const QString& label)
 ChangeCollectionPasswordJob* Collection::changePassword()
 {
     return new ChangeCollectionPasswordJob( this );
+}
+
+CollectionLockJob *Collection::lock( const WId wid /* =0 */ )
+{
+    return new CollectionLockJob( this, wid );
 }
 
 CollectionPrivate::CollectionPrivate( Collection *coll ) :

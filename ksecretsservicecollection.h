@@ -141,6 +141,9 @@ public:
     
     /**
      * Search for the items matching the specified attributes
+     * KSecretsService uses overall the following standard attributes:
+     * "Label" : item's or collection's label
+     *
      * @param attributes hold the searched items attributes
      * @return SearchCollectionItemsJob which is a KJob inheritor
      */
