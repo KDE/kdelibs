@@ -93,6 +93,9 @@ public:
     
     void startListingCollections();
 
+private Q_SLOTS:
+    void slotOpenSessionFinished(KJob*);
+    
 Q_SIGNALS:
     void listingDone();
     void listingError();

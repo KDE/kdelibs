@@ -260,6 +260,11 @@ ListCollectionsJob::~ListCollectionsJob()
 {
 }
 
+bool ListCollectionsJob::addSubjob(KJob* job)
+{
+    return KCompositeJob::addSubjob( job );
+}
+
 void ListCollectionsJob::start()
 {
     d->startListingCollections();
@@ -290,19 +295,39 @@ ListCollectionsJobPrivate::ListCollectionsJobPrivate( ListCollectionsJob *job ) 
 
 void ListCollectionsJobPrivate::startListingCollections()
 {
-    QList<QDBusObjectPath> collPaths = DBusSession::serviceIf()->collections();
-    foreach( const QDBusObjectPath &path, collPaths ) {
-        OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( path );
-        if (coll->isValid()) {
-            collections.append( coll->label() );
-        }
-        else {
-            kDebug() << "Cannot bind to collection " << path.path();
-            emit listingError();
-        }
-        coll->deleteLater();
+    OpenSessionJob *openSessionJob = DBusSession::openSession();
+    if (listCollectionsJob->addSubjob( openSessionJob )) {
+        connect( openSessionJob, SIGNAL(finished(KJob*)), this, SLOT(slotOpenSessionFinished(KJob*)) );
+        openSessionJob->start();
     }
-    emit listingDone();
+    else {
+        kDebug() << "Cannot add OpenSessionJob!";
+        emit listingError();
+    }
+}
+
+void ListCollectionsJobPrivate::slotOpenSessionFinished(KJob* job) {
+    OpenSessionJob *openSessionJob = qobject_cast< OpenSessionJob* >(job);
+    Q_ASSERT(openSessionJob != 0);
+    if (openSessionJob->error() == 0) {
+        QList<QDBusObjectPath> collPaths = DBusSession::serviceIf()->collections();
+        foreach( const QDBusObjectPath &path, collPaths ) {
+            OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( path );
+            if (coll->isValid()) {
+                collections.append( coll->label() );
+            }
+            else {
+                kDebug() << "Cannot bind to collection " << path.path();
+                emit listingError();
+            }
+            coll->deleteLater();
+        }
+        emit listingDone();
+    }
+    else {
+        kDebug() << "OpenSessionJob returned error " << openSessionJob->errorString();
+        emit listingError();
+    }
 }
 
 DeleteCollectionJob::DeleteCollectionJob( Collection* collection, QObject* parent ) :

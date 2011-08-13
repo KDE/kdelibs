@@ -143,7 +143,7 @@ private:
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public KJob {
+class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(ListCollectionsJob)
 public:
@@ -154,6 +154,11 @@ public:
     
     const QStringList &collections() const;
 
+    /**
+     * This override is intended to make it public and as such let subjob additions from other classes in this client implementation
+     */
+    virtual bool addSubjob( KJob* ); // override
+    
 protected Q_SLOTS:
     void slotListCollectionsDone();
     void slotListCollectionsError();

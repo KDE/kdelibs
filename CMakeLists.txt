@@ -1,5 +1,7 @@
 PROJECT( ksecretsserviceclient )
 
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=285)
+
 add_subdirectory(tests)
 
 include_directories (

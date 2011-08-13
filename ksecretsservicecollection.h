@@ -68,6 +68,7 @@ class KSECRETSSERVICECLIENT_EXPORT Collection : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(Collection)
 public:
+    virtual ~Collection();
 
     /**
      * Options used when findCollection method is called
@@ -237,7 +238,6 @@ Q_SIGNALS:
 protected:
     explicit Collection();
     explicit Collection( CollectionPrivate* );
-    ~Collection();
     
 private:
     friend class CollectionJob; // to give access to Private class

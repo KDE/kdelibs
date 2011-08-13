@@ -29,6 +29,7 @@
 #include <QtCrypto/QtCrypto>
 #include <kdebug.h>
 #include <klocalizedstring.h>
+#include <fcntl.h>
 
 
 #define SERVICE_NAME "org.freedesktop.secrets"
@@ -205,5 +206,6 @@ bool DBusSession::decrypt(const SecretStruct& secretStruct, QVariant& value)
 
 OrgFreedesktopSecretServiceInterface* DBusSession::serviceIf()
 {
+    Q_ASSERT(openSessionJob.serviceIf != 0);
     return openSessionJob.serviceIf;
 }
