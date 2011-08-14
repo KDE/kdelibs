@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <fcntl.h>
+#include <ktoolinvocation.h>
 
 
 #define SERVICE_NAME "org.freedesktop.secrets"
@@ -76,10 +77,31 @@ void OpenSessionJob::start()
         qDBusRegisterMetaType<ObjectPathSecretMap>();
         qDBusRegisterMetaType<StringVariantMap>();
         
+        // launch the daemon if it's not yet started
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
+        {
+            QString error;
+
+            int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
+            if (ret != 0) {
+                kDebug() << "KToolInvocation cannot start ksecretsserviced";
+                setError(1); // FIXME: use error codes here
+                emitResult();
+                return;
+            }
+
+            if( !QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )) ) {
+                kDebug() << "Secret Service was started but the " SERVICE_NAME " is not registered on the DBus!";
+                setError(1); // FIXME: use error codes here
+                emitResult();
+                return;
+            }
+        }
+
         serviceIf = new OrgFreedesktopSecretServiceInterface( SERVICE_NAME, 
                                                               "/org/freedesktop/secrets", 
                                                               QDBusConnection::sessionBus() );
-        
+
         if ( serviceIf->isValid() ) {
             QDBusConnectionInterface *serviceInfo = QDBusConnection::sessionBus().interface();
             QDBusReply< QString > ownerReply = serviceInfo->serviceOwner( SERVICE_NAME );
@@ -90,7 +112,7 @@ void OpenSessionJob::start()
             else {
                 kDebug() << "Cannot get SERVICE information";
             }
-            
+
 
             QCA::KeyGenerator keygen;
             dhDlgroup = new QCA::DLGroup(keygen.createDLGroup(QCA::IETF_1024));
