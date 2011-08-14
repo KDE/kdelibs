@@ -30,7 +30,7 @@ kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Service.xml servic
 kss_add_dbus_interface(client_lib_SRCS org.freedesktop.Secret.Session.xml session_interface )
 
 kde4_add_library(ksecretsserviceclient SHARED ${client_lib_SRCS})
-SET_TARGET_PROPERTIES ( ksecretsservicelib PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+SET_TARGET_PROPERTIES ( ksecretsserviceclient PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
 TARGET_LINK_LIBRARIES (ksecretsserviceclient 
     ksecretsservicelib
