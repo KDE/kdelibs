@@ -605,7 +605,7 @@ void KNewFileMenuPrivate::fillMenu()
                     QAction * act = new QAction(q);
                     m_newDirAction = act;
                     act->setIcon(KIcon(entry.icon));
-                    act->setText(entry.text);
+                    act->setText(i18nc("@item:inmenu Create New", "%1", entry.text));
                     act->setActionGroup(m_newMenuGroup);
                     menu->addAction(act);
 
@@ -653,7 +653,7 @@ void KNewFileMenuPrivate::fillMenu()
                     QAction * act = new QAction(q);
                     act->setData(i);
                     act->setIcon(KIcon(entry.icon));
-                    act->setText(entry.text);
+                    act->setText(i18nc("@item:inmenu Create New", "%1", entry.text));
                     act->setActionGroup(m_newMenuGroup);
 
                     //kDebug() << templatePath << entry.filePath;
