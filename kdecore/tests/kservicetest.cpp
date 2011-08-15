@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <locale.h>
+
 #include "kservicetest.h"
 #include "kservicetest.moc"
 #include <qtest_kde.h>
@@ -38,6 +40,16 @@
 
 void KServiceTest::initTestCase()
 {
+    // A non-C locale is necessary for some tests.
+    // This locale must have the follwing properties:
+    //   - some character other than dot as decimal separator
+    // If it cannot be set, locale-dependent tests are skipped.
+    setlocale(LC_ALL, "fr_FR.utf8");
+    m_hasNonCLocale = (setlocale(LC_ALL, NULL) == QByteArray("fr_FR.utf8"));
+    if (!m_hasNonCLocale) {
+        kDebug() << "Setting locale to fr_FR.utf8 failed";
+    }
+
     QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
@@ -303,6 +315,13 @@ void KServiceTest::testTraderConstraints()
     QCOMPARE(offers.count(), 1);
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
+    if (m_hasNonCLocale) {
+        // Test float parsing, must use dot as decimal separator independent of locale.
+        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "([X-KDE-Version] > 4.559) and ([X-KDE-Version] < 4.561)");
+        QCOMPARE(offers.count(), 1);
+        QVERIFY(offerListHasService( offers, "fakeservice.desktop"));
+    }
+
     // A test with an invalid query, to test for memleaks
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "A == B OR C == D AND OR Foo == 'Parse Error'");
     QVERIFY(offers.isEmpty());
@@ -501,6 +520,7 @@ void KServiceTest::createFakeService()
     group.writeEntry("Name", "FakePlugin");
     group.writeEntry("Type", "Service");
     group.writeEntry("X-KDE-Library", "fakeservice");
+    group.writeEntry("X-KDE-Version", "4.56");
     group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
     group.writeEntry("MimeType", "text/plain;");
 }

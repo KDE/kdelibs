@@ -9,6 +9,7 @@
 char* KTraderParse_putSymbol( char *_name );
 char *KTraderParse_putSymbolInBrackets( char *_name );
 char* KTraderParse_putString( char *_name );
+double KTraderParse_putSimplePositiveFloat( char *_name );
 int yywrap();
 int kiotraderlex(YYSTYPE * yylval, yyscan_t scanner);
 void KTraderParse_initFlex( const char *_code, yyscan_t _scanner );
@@ -55,7 +56,7 @@ DIGIT    [0-9]
 "-"{DIGIT}+  { yylval->vali = atoi( yytext ); return VAL_NUM; }
 {DIGIT}+  { yylval->vali = atoi( yytext ); return VAL_NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { yylval->vald = atof( yytext ); return VAL_FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { yylval->vald = KTraderParse_putSimplePositiveFloat( yytext ); return VAL_FLOAT; }
 
 \[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval->name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
 
@@ -123,6 +124,35 @@ char* KTraderParse_putString( char *_str )
   }
   *d = 0;
   return p;
+}
+
+/* Sufficient replacement for atof() to parse [0-9]*\.[0-9]+
+   because atof() consults locale for decimal separator,
+   while we need it always to be the dot. */
+double KTraderParse_putSimplePositiveFloat( char *_str )
+{
+  char *p;
+  int f, g, d;
+
+  f = 0;
+  p = _str;
+  while ( *p >= '0' && *p <= '9' )
+  {
+    f = f * 10 + ( *p - '0' );
+    p++;
+  }
+  if ( *p != '.' )
+    return (double) f;
+  p++;
+  g = 0;
+  d = 1;
+  while ( *p >= '0' && *p <= '9' )
+  {
+    g = g * 10 + ( *p - '0' );
+    d *= 10;
+    p++;
+  }
+  return ( (double) ( f * d + g ) ) / d;
 }
 
 void KTraderParse_initFlex( const char *_code, yyscan_t _scanner )
