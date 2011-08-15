@@ -39,6 +39,9 @@ KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
     connect(this, SIGNAL(clicked(bool)),
             this, SLOT(updateCursor()));
     m_pixmap = KIcon("dialog-ok").pixmap(16, 16);
+
+    setAccessibleName(i18n("Edit mode"));
+
     updateToolTip();
 }
 
