@@ -57,7 +57,19 @@
  *   }
  * \endcode
  * Don't forget to delete and reset m_findDia when closed.
- * (But do NOT delete your KFind object at that point, it's needed for "Find Next")
+ * (But do NOT delete your KFind object at that point, it's needed for "Find Next".)
+ *
+ * @note If using a non-modal find dialog, in the slot connected to the okClicked()
+ * signal you need to check if a regular expression has been entered and if so,
+ * whether it is valid. Otherwise, if it is invalid, the user will see an error
+ * message followed unexpectedly by a search taking place.
+ * \code
+ *   if ( (m_findDia->options() & KFind::RegularExpression)
+ *       && !QRegExp(m_findDia->pattern()).isValid() )
+ *   {
+ *       // Don't attempt to search
+ *   }
+ * \endcode
  *
  * To use your own extensions: see findExtension().
  *
