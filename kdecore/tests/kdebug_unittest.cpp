@@ -19,6 +19,7 @@
 */
 
 #include "kdebug_unittest.h"
+#include <qstandardpaths.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qtest_kde.h>
@@ -34,11 +35,19 @@ void KDebugTest::initTestCase()
     setenv("KDE_DEBUG_FILELINE", "", 1);
     setenv("KDE_DEBUG_TIMESTAMP", "", 1);
 
+    // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
+    qputenv("XDG_CONFIG_DIRS", QByteArray(KDESRCDIR) + "/..");
+
     QString kdebugrc = KStandardDirs::locateLocal("config", "kdebugrc");
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     QFile::remove("kdebug.dbg");
     QFile::remove("myarea.dbg");
+
+    // Check that we can find kdebugrc and kdebug.areas
+    QString filename(QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("kdebug.areas")));
+    QVERIFY2(QFile::exists(filename), filename.toLatin1() + " not found");
+    QVERIFY(QFile::exists(KDESRCDIR "/../kdebugrc"));
 
     // Now set up logging to file
     KConfig config("kdebugrc");
@@ -67,6 +76,8 @@ void KDebugTest::cleanupTestCase()
     // TODO QFile::remove("kdebug.dbg");
     QFile::remove("myarea.dbg");
 }
+
+
 
 static QList<QByteArray> readLines(const char* fileName = "kdebug.dbg")
 {
@@ -102,7 +113,7 @@ void KDebugTest::compareLines(const QList<QByteArray>& expectedLines, const char
             line.append("[...]\n");
         }
         //qDebug() << "line" << i << ":" << line << expectedLines[i];
-        QVERIFY(line.endsWith(expectedLines[i]));
+        QVERIFY2(line.endsWith(expectedLines[i]), "Got '" + line + "'\nexpected '" + expectedLines[i] + "'");
     }
 }
 

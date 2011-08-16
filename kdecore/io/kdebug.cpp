@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
                   2002 Holger Freyther (freyther@kde.org)
+                  2007-2011 David Faure (faure@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -59,7 +60,6 @@
 #endif
 
 #include "kglobal.h"
-#include "kstandarddirs.h"
 #include "kdatetime.h"
 #include "kcmdlineargs.h"
 
@@ -73,6 +73,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QChar>
 #include <QtCore/QCoreApplication>
+#include <qstandardpaths.h>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -271,8 +272,8 @@ struct KDebugPrivate
             m_nullOutputYesNoCache[i] = -1;
         }
 
-        QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
-        if (filename.isEmpty()) {
+        QString filename(QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("kdebug.areas")));
+        if (!QFile::exists(filename)) {
             return;
         }
         QFile file(filename);
