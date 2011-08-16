@@ -281,11 +281,9 @@ Part *Part::hitTest( QWidget *widget, const QPoint & )
 void Part::setWidget( QWidget *widget )
 {
     Q_D(Part);
-
-    assert ( !d->m_widget ); // otherwise we get two connects
     d->m_widget = widget;
     connect( d->m_widget, SIGNAL( destroyed() ),
-             this, SLOT( slotWidgetDestroyed() ) );
+             this, SLOT( slotWidgetDestroyed() ), Qt::UniqueConnection );
 }
 
 void Part::setSelectable( bool selectable )
