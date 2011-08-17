@@ -173,10 +173,8 @@ public:
 	bool changed() const;
 
 	/**
-	 * Access to the actual module. However, if the module is
-	 * running in root mode, see rootMode(), this function returns
-	 * a NULL pointer, since the module is in another process. It may also
-	 * return NULL if anything goes wrong.
+	 * Access to the actual module.
+	 * It may return NULL if anything goes wrong.
 	 *
 	 * @return the encapsulated module.
 	 */
