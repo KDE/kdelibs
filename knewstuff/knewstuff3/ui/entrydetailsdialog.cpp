@@ -47,7 +47,6 @@ void EntryDetails::init()
 
     updateButtons();
     connect(ui->installButton, SIGNAL(clicked()), this, SLOT(install()));
-    connect(ui->installButton, SIGNAL(triggered(QAction*)), this, SLOT(slotInstallActionTriggered(QAction*)));
     connect(ui->uninstallButton, SIGNAL(clicked()), this, SLOT(uninstall()));
     // updating is the same as installing
     connect(ui->updateButton, SIGNAL(clicked()), this, SLOT(install()));
@@ -234,11 +233,6 @@ void EntryDetails::updateButtons()
 void EntryDetails::install()
 {
     m_engine->install(m_entry);
-}
-
-void EntryDetails::slotInstallActionTriggered(QAction* action)
-{
-    m_engine->install(m_entry, action->data().toInt());
 }
 
 void EntryDetails::uninstall()
