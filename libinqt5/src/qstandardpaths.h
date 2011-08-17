@@ -57,7 +57,7 @@ class QStringList;
 class QUrl;
 class QObject;
 
-class INQT5_EXPORT QCoreDesktopServices
+class INQT5_EXPORT QStandardPaths
 {
 public:
     enum StandardLocation {

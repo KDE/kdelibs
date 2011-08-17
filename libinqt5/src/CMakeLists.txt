@@ -6,7 +6,7 @@ include_directories(
 )
 
 set(libinqt5_SRCS
-    qcoredesktopservices.cpp
+    qstandardpaths.cpp
 )
 
 kf5_add_library(inqt5 ${LIBRARY_TYPE} ${libinqt5_SRCS})
@@ -20,7 +20,7 @@ set_target_properties(inqt5 PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
 install(TARGETS inqt5 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 #install(FILES
-#    qcoredesktopservices.h
+#    qstandardpaths.h
 #    ${CMAKE_CURRENT_BINARY_DIR}/inqt5_export.h
 #    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 #)

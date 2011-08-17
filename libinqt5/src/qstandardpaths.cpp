@@ -39,73 +39,30 @@
 **
 ****************************************************************************/
 
-#include "qcoredesktopservices.h"
+#include "qstandardpaths.h"
 #include <QDebug>
 
 /*!
-    \class QDesktopServices
-    \brief The QDesktopServices class provides methods for accessing common desktop services.
-    \since 4.2
-    \ingroup desktop
+    \class QStandardPaths
+    \brief The QStandardPaths class provides methods for accessing standard paths.
+    \since 5.0
 
-    Many desktop environments provide services that can be used by applications to
-    perform common tasks, such as opening a web page, in a way that is both consistent
-    and takes into account the user's application preferences.
-
-    This class contains functions that provide simple interfaces to these services
-    that indicate whether they succeeded or failed.
-
-    The openUrl() function is used to open files located at arbitrary URLs in external
-    applications. For URLs that correspond to resources on the local filing system
-    (where the URL scheme is "file"), a suitable application will be used to open the
-    file; otherwise, a web browser will be used to fetch and display the file.
-
-    The user's desktop settings control whether certain executable file types are
-    opened for browsing, or if they are executed instead. Some desktop environments
-    are configured to prevent users from executing files obtained from non-local URLs,
-    or to ask the user's permission before doing so.
-
-    \section1 URL Handlers
-
-    The behavior of the openUrl() function can be customized for individual URL
-    schemes to allow applications to override the default handling behavior for
-    certain types of URLs.
-
-    The dispatch mechanism allows only one custom handler to be used for each URL
-    scheme; this is set using the setUrlHandler() function. Each handler is
-    implemented as a slot which accepts only a single QUrl argument.
-
-    The existing handlers for each scheme can be removed with the
-    unsetUrlHandler() function. This returns the handling behavior for the given
-    scheme to the default behavior.
-
-    This system makes it easy to implement a help system, for example. Help could be
-    provided in labels and text browsers using \gui{help://myapplication/mytopic}
-    URLs, and by registering a handler it becomes possible to display the help text
-    inside the application:
-
-    \snippet doc/src/snippets/code/src_gui_util_qdesktopservices.cpp 0
-
-    If inside the handler you decide that you can't open the requested
-    URL, you can just call QDesktopServices::openUrl() again with the
-    same argument, and it will try to open the URL using the
-    appropriate mechanism for the user's desktop environment.
-
-    \sa QSystemTrayIcon, QProcess
+    This class contains functions to query standard locations on the local
+    filesystem, for common tasks such as user-specific directories or system-wide
+    configuration directories.
 */
 
 /*!
-    \enum QDesktopServices::StandardLocation
-    \since 4.4
+    \enum QStandardPaths::StandardLocation
 
     This enum describes the different locations that can be queried by
-    QDesktopServices::storageLocation and QDesktopServices::displayName.
+    QStandardPaths::storageLocation and QStandardPaths::displayName.
 
     \value DesktopLocation Returns the user's desktop directory.
     \value DocumentsLocation Returns the user's document.
     \value FontsLocation Returns the user's fonts.
     \value ApplicationsLocation Returns the user's applications.
-    \value MusicLocation Returns the users music.
+    \value MusicLocation Returns the user's music.
     \value MoviesLocation Returns the user's movies.
     \value PicturesLocation Returns the user's pictures.
     \value TempLocation Returns the system's temporary directory.
@@ -123,8 +80,7 @@
 */
 
 /*!
-    \fn QString QDesktopServices::storageLocation(StandardLocation type)
-    \since 4.4
+    \fn QString QStandardPaths::storageLocation(StandardLocation type)
 
     Returns the default system directory where files of \a type belong, or an empty string
     if the location cannot be determined.
@@ -140,7 +96,7 @@
 */
 
 /*!
-    \fn QString QDesktopServices::displayName(StandardLocation type)
+    \fn QString QStandardPaths::displayName(StandardLocation type)
 
     Returns a localized display name for the given location \a type or
     an empty QString if no relevant location can be found.
@@ -155,7 +111,7 @@
 
 // TODO docu for the option enum
 
-QString QCoreDesktopServices::storageLocation(StandardLocation type)
+QString QStandardPaths::storageLocation(StandardLocation type)
 {
     if (type == ConfigLocation) {
         // TODO: this is a unix-only implementation
@@ -169,7 +125,7 @@ QString QCoreDesktopServices::storageLocation(StandardLocation type)
     }
 }
 
-QStringList QCoreDesktopServices::standardLocations(StandardLocation type)
+QStringList QStandardPaths::standardLocations(StandardLocation type)
 {
     QStringList dirs;
     if (type == ConfigLocation) {
@@ -185,15 +141,15 @@ QStringList QCoreDesktopServices::standardLocations(StandardLocation type)
     return dirs;
 }
 
-static bool existsAsSpecified(const QString& path, QCoreDesktopServices::LocateOptions options)
+static bool existsAsSpecified(const QString& path, QStandardPaths::LocateOptions options)
 {
-    if (options & QCoreDesktopServices::LocateDirectory)
+    if (options & QStandardPaths::LocateDirectory)
         return QDir(path).exists();
     return QFileInfo(path).isFile();
 }
 
 // TODO docu
-QString QCoreDesktopServices::locate(StandardLocation type, const QString& fileName, LocateOptions options)
+QString QStandardPaths::locate(StandardLocation type, const QString& fileName, LocateOptions options)
 {
     const QStringList dirs = standardLocations(type);
     Q_FOREACH(const QString& dir, dirs) {
