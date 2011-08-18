@@ -116,6 +116,7 @@ class Scriptface : public JSObject
     JSValue *msgkeyf (ExecState *exec);
     JSValue *msgstrff (ExecState *exec);
     JSValue *dbgputsf (ExecState *exec, JSValue *str);
+    JSValue *warnputsf (ExecState *exec, JSValue *str);
     JSValue *localeCountryf (ExecState *exec);
     JSValue *normKeyf (ExecState *exec, JSValue *phrase);
     JSValue *loadPropsf (ExecState *exec, const List &fnames);
@@ -143,6 +144,7 @@ class Scriptface : public JSObject
         Msgkey,
         Msgstrf,
         Dbgputs,
+        Warnputs,
         LocaleCountry,
         NormKey,
         LoadProps,
@@ -211,7 +213,7 @@ class Scriptface : public JSObject
 };
 
 // ----------------------------------------------------------------------
-// Custom debug output (kdebug not available)
+// Custom debug and warning output (kdebug not available)
 #define DBGP "KTranscript: "
 void dbgout (const char*str) {
     #ifndef NDEBUG
@@ -223,7 +225,7 @@ void dbgout (const char*str) {
 template <typename T1>
 void dbgout (const char* str, const T1 &a1) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromUtf8(str).arg(a1).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1);
     #endif
@@ -231,7 +233,7 @@ void dbgout (const char* str, const T1 &a1) {
 template <typename T1, typename T2>
 void dbgout (const char* str, const T1 &a1, const T2 &a2) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).arg(a2).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromUtf8(str).arg(a1).arg(a2).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1); Q_UNUSED(a2);
     #endif
@@ -239,10 +241,19 @@ void dbgout (const char* str, const T1 &a1, const T2 &a2) {
 template <typename T1, typename T2, typename T3>
 void dbgout (const char* str, const T1 &a1, const T2 &a2, const T3 &a3) {
     #ifndef NDEBUG
-    fprintf(stderr, DBGP"%s\n", QString::fromLatin1(str).arg(a1).arg(a2).arg(a3).toLocal8Bit().data());
+    fprintf(stderr, DBGP"%s\n", QString::fromUtf8(str).arg(a1).arg(a2).arg(a3).toLocal8Bit().data());
     #else
     Q_UNUSED(str); Q_UNUSED(a1); Q_UNUSED(a2); Q_UNUSED(a3);
     #endif
+}
+
+#define WARNP "KTranscript: "
+void warnout (const char*str) {
+    fprintf(stderr, WARNP"%s\n", str);
+}
+template <typename T1>
+void warnout (const char* str, const T1 &a1) {
+    fprintf(stderr, WARNP"%s\n", QString::fromUtf8(str).arg(a1).toLocal8Bit().data());
 }
 
 // ----------------------------------------------------------------------
@@ -704,6 +715,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgkey          Scriptface::Msgkey          DontDelete|ReadOnly|Function 0
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
     dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
+    warnputs        Scriptface::Warnputs        DontDelete|ReadOnly|Function 1
     localeCountry   Scriptface::LocaleCountry   DontDelete|ReadOnly|Function 0
     normKey         Scriptface::NormKey         DontDelete|ReadOnly|Function 1
     loadProps       Scriptface::LoadProps       DontDelete|ReadOnly|Function 0
@@ -801,6 +813,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->msgstrff(exec);
         case Scriptface::Dbgputs:
             return obj->dbgputsf(exec, CALLARG(0));
+        case Scriptface::Warnputs:
+            return obj->warnputsf(exec, CALLARG(0));
         case Scriptface::LocaleCountry:
             return obj->localeCountryf(exec);
         case Scriptface::NormKey:
@@ -1081,7 +1095,20 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
 
     QString qstr = str->getString().qstring();
 
-    dbgout("(JS) %1", qstr);
+    dbgout("[JS-debug] %1", qstr);
+
+    return jsUndefined();
+}
+
+JSValue *Scriptface::warnputsf (ExecState *exec, JSValue *str)
+{
+    if (!str->isString())
+        return throwError(exec, TypeError,
+                          SPREF"warnputs: expected string as first argument");
+
+    QString qstr = str->getString().qstring();
+
+    warnout("[JS-warning] %1", qstr);
 
     return jsUndefined();
 }
