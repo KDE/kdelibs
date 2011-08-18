@@ -13,6 +13,6 @@ MACRO(INQT5_UNIT_TESTS)
 ENDMACRO(INQT5_UNIT_TESTS)
 
 INQT5_UNIT_TESTS(
-  tst_qcoredesktopservices
+  tst_qstandardpaths
 )
 

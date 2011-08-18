@@ -41,12 +41,12 @@
 
 
 #include <QtTest/QtTest>
-#include <qcoredesktopservices.h>
+#include <qstandardpaths.h>
 #include <qdebug.h>
 #include <qdesktopservices.h>
 
-//TESTED_CLASS=QCoreDesktopServices
-//TESTED_FILES=qcoredesktopservices.cpp
+//TESTED_CLASS=QStandardPaths
+//TESTED_FILES=qstandardpaths.cpp
 
 class tst_qdesktopservices : public QObject {
   Q_OBJECT
@@ -68,8 +68,8 @@ void tst_qdesktopservices::testDefaultLocations()
     qputenv("XDG_CONFIG_HOME", QByteArray());
     qputenv("XDG_CONFIG_DIRS", QByteArray());
     const QString expectedConfHome = QDir::homePath() + QString::fromLatin1("/.config");
-    QCOMPARE(QCoreDesktopServices::storageLocation(QCoreDesktopServices::ConfigLocation), expectedConfHome);
-    const QStringList confDirs = QCoreDesktopServices::standardLocations(QCoreDesktopServices::ConfigLocation);
+    QCOMPARE(QStandardPaths::storageLocation(QStandardPaths::ConfigLocation), expectedConfHome);
+    const QStringList confDirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     QCOMPARE(confDirs.count(), 2);
     QVERIFY(confDirs.contains(expectedConfHome));
 #endif
@@ -79,16 +79,16 @@ void tst_qdesktopservices::testCustomLocations()
 {
 #ifndef Q_OS_WIN
     qputenv("XDG_CONFIG_HOME", QByteArray(KDESRCDIR));
-    QCOMPARE(QCoreDesktopServices::storageLocation(QCoreDesktopServices::ConfigLocation), QString::fromLatin1(KDESRCDIR));
-    const QString thisFileName = QString::fromLatin1("tst_qcoredesktopservices.cpp");
+    QCOMPARE(QStandardPaths::storageLocation(QStandardPaths::ConfigLocation), QString::fromLatin1(KDESRCDIR));
+    const QString thisFileName = QString::fromLatin1("tst_qstandardpaths.cpp");
     QVERIFY(QFile::exists(QString::fromLatin1(KDESRCDIR) + '/' + thisFileName));
-    const QString thisFile = QCoreDesktopServices::locate(QCoreDesktopServices::ConfigLocation, thisFileName);
+    const QString thisFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, thisFileName);
     QVERIFY(!thisFile.isEmpty());
     QVERIFY(thisFile.endsWith(thisFileName));
 
-    const QString thisDir = QCoreDesktopServices::locate(QCoreDesktopServices::ConfigLocation, QString::fromLatin1("../autotests"), QCoreDesktopServices::LocateDirectory);
+    const QString thisDir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../autotests"), QStandardPaths::LocateDirectory);
     QVERIFY(!thisDir.isEmpty());
-    const QString thisDirAsFile = QCoreDesktopServices::locate(QCoreDesktopServices::ConfigLocation, QString::fromLatin1("../tests")); // the default is LocateFile
+    const QString thisDirAsFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../tests")); // the default is LocateFile
     QVERIFY(thisDirAsFile.isEmpty()); // not a file
 #endif
 }
