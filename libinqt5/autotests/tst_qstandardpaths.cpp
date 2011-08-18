@@ -43,18 +43,18 @@
 #include <QtTest/QtTest>
 #include <qstandardpaths.h>
 #include <qdebug.h>
-#include <qdesktopservices.h>
+#include <qstandardpaths.h>
 
 //TESTED_CLASS=QStandardPaths
 //TESTED_FILES=qstandardpaths.cpp
 
-class tst_qdesktopservices : public QObject {
+class tst_qstandardpaths : public QObject {
   Q_OBJECT
 
 public:
-    tst_qdesktopservices() {
+    tst_qstandardpaths() {
     }
-    virtual ~tst_qdesktopservices() {
+    virtual ~tst_qstandardpaths() {
     }
 
 private slots:
@@ -62,7 +62,7 @@ private slots:
     void testCustomLocations();
 };
 
-void tst_qdesktopservices::testDefaultLocations()
+void tst_qstandardpaths::testDefaultLocations()
 {
 #ifndef Q_OS_WIN
     qputenv("XDG_CONFIG_HOME", QByteArray());
@@ -75,7 +75,7 @@ void tst_qdesktopservices::testDefaultLocations()
 #endif
 }
 
-void tst_qdesktopservices::testCustomLocations()
+void tst_qstandardpaths::testCustomLocations()
 {
 #ifndef Q_OS_WIN
     qputenv("XDG_CONFIG_HOME", QByteArray(KDESRCDIR));
@@ -93,5 +93,5 @@ void tst_qdesktopservices::testCustomLocations()
 #endif
 }
 
-QTEST_MAIN(tst_qdesktopservices)
-#include "tst_coredesktopservices.moc"
+QTEST_MAIN(tst_qstandardpaths)
+#include "tst_qstandardpaths.moc"
