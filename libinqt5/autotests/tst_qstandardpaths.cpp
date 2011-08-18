@@ -79,17 +79,27 @@ void tst_qstandardpaths::testCustomLocations()
 {
 #ifndef Q_OS_WIN
     qputenv("XDG_CONFIG_HOME", QByteArray(KDESRCDIR));
+
+    // test storageLocation()
     QCOMPARE(QStandardPaths::storageLocation(QStandardPaths::ConfigLocation), QString::fromLatin1(KDESRCDIR));
+
+    // test locate()
     const QString thisFileName = QString::fromLatin1("tst_qstandardpaths.cpp");
     QVERIFY(QFile::exists(QString::fromLatin1(KDESRCDIR) + '/' + thisFileName));
     const QString thisFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, thisFileName);
     QVERIFY(!thisFile.isEmpty());
     QVERIFY(thisFile.endsWith(thisFileName));
 
-    const QString thisDir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../autotests"), QStandardPaths::LocateDirectory);
-    QVERIFY(!thisDir.isEmpty());
+    const QString thisDir = QFile::decodeName(KDESRCDIR);
+    const QString dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../autotests"), QStandardPaths::LocateDirectory);
+    QVERIFY(!dir.isEmpty());
     const QString thisDirAsFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../tests")); // the default is LocateFile
     QVERIFY(thisDirAsFile.isEmpty()); // not a file
+
+    const QString globalDir = QDir(thisDir + "/..").canonicalPath();
+    qputenv("XDG_CONFIG_DIRS", QFile::encodeName(globalDir));
+    const QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
+    QCOMPARE(dirs, QStringList() << globalDir << thisDir);
 #endif
 }
 
