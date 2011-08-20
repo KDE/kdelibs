@@ -45,6 +45,7 @@ KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
     m_hoverArrow(false),
     m_pendingTextChange(false),
     m_replaceButton(false),
+    m_showMnemonic(false),
     m_wheelSteps(0),
     m_url(url),
     m_subDir(),
@@ -91,7 +92,7 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
                 this, SLOT(statFinished(KJob*)));
         emit startedTextResolving();
     } else {
-        setText(m_url.fileName());
+        setText(m_url.fileName().replace('&', "&&"));
     }
 }
 
@@ -139,6 +140,19 @@ QSize KUrlNavigatorButton::sizeHint() const
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
     const int width = QFontMetrics(adjustedFont).width(text()) + arrowWidth() + 4 * BorderWidth;
     return QSize(width, KUrlNavigatorButtonBase::sizeHint().height());
+}
+
+void KUrlNavigatorButton::setShowMnemonic(bool show)
+{
+    if (m_showMnemonic != show) {
+        m_showMnemonic = show;
+        update();
+    }
+}
+
+bool KUrlNavigatorButton::showMnemonic() const
+{
+    return m_showMnemonic;
 }
 
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
@@ -210,7 +224,6 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
     painter.setPen(fgColor);
     const bool clipped = isTextClipped();
-    const int align = clipped ? Qt::AlignVCenter : Qt::AlignCenter;
     const QRect textRect(textLeft, 0, textWidth, buttonHeight);
     if (clipped) {
         QColor bgColor = fgColor;
@@ -228,7 +241,14 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         pen.setBrush(QBrush(gradient));
         painter.setPen(pen);
     }
-    painter.drawText(textRect, align, text());
+
+    int textFlags = clipped ? Qt::AlignVCenter : Qt::AlignCenter;
+    if (m_showMnemonic) {
+        textFlags |= Qt::TextShowMnemonic;
+        painter.drawText(textRect, textFlags, text());
+    } else {
+        painter.drawText(textRect, textFlags, plainText());
+    }
 }
 
 void KUrlNavigatorButton::enterEvent(QEvent* event)
@@ -238,7 +258,7 @@ void KUrlNavigatorButton::enterEvent(QEvent* event)
     // if the text is clipped due to a small window width, the text should
     // be shown as tooltip
     if (isTextClipped()) {
-        setToolTip(text());
+        setToolTip(plainText());
     }
 }
 
@@ -250,6 +270,22 @@ void KUrlNavigatorButton::leaveEvent(QEvent* event)
     if (m_hoverArrow) {
         m_hoverArrow = false;
         update();
+    }
+}
+
+void KUrlNavigatorButton::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        emit clicked(m_url, Qt::LeftButton);
+        break;
+    case Qt::Key_Down:
+    case Qt::Key_Space:
+        startSubDirsJob();
+        break;
+    default:
+        KUrlNavigatorButtonBase::keyPressEvent(event);
     }
 }
 
@@ -529,6 +565,33 @@ void KUrlNavigatorButton::cancelSubDirsRequest()
         m_subDirsJob->kill();
         m_subDirsJob = 0;
     }
+}
+
+QString KUrlNavigatorButton::plainText() const
+{
+    // Replace all "&&" by '&' and remove all single
+    // '&' characters
+    const QString source = text();
+    const int sourceLength = source.length();
+
+    QString dest;
+    dest.reserve(sourceLength);
+
+    int sourceIndex = 0;
+    int destIndex = 0;
+    while (sourceIndex < sourceLength) {
+        if (source.at(sourceIndex) == QLatin1Char('&')) {
+            ++sourceIndex;
+            if (sourceIndex >= sourceLength) {
+                break;
+            }
+        }
+        dest[destIndex] = source.at(sourceIndex);
+        ++sourceIndex;
+        ++destIndex;
+    }
+
+    return dest;
 }
 
 int KUrlNavigatorButton::arrowWidth() const

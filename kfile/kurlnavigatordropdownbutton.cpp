@@ -69,6 +69,19 @@ void KUrlNavigatorDropDownButton::paintEvent(QPaintEvent* event)
     }
 }
 
+void KUrlNavigatorDropDownButton::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+    case Qt::Key_Down:
+        emit clicked();
+        break;
+    default:
+        KUrlNavigatorButtonBase::keyPressEvent(event);
+    }
+}
+
 } // namespace KDEPrivate
 
 #include "kurlnavigatordropdownbutton_p.moc"

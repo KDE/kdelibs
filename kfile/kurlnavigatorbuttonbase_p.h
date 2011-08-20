@@ -66,6 +66,9 @@ protected:
     void setDisplayHintEnabled(DisplayHint hint, bool enable);
     bool isDisplayHintEnabled(DisplayHint hint) const;
 
+    virtual void focusInEvent(QFocusEvent *event);
+    virtual void focusOutEvent(QFocusEvent *event);
+
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
 
