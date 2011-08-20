@@ -40,7 +40,7 @@ KUrlNavigatorButtonBase::KUrlNavigatorButtonBase(QWidget* parent) :
     m_active(true),
     m_displayHint(0)
 {
-    setFocusPolicy(Qt::NoFocus);
+    setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     setMinimumHeight(parent->minimumHeight());
 
@@ -78,6 +78,18 @@ void KUrlNavigatorButtonBase::setDisplayHintEnabled(DisplayHint hint,
 bool KUrlNavigatorButtonBase::isDisplayHintEnabled(DisplayHint hint) const
 {
     return (m_displayHint & hint) > 0;
+}
+
+void KUrlNavigatorButtonBase::focusInEvent(QFocusEvent *event)
+{
+    setDisplayHintEnabled(EnteredHint, true);
+    QPushButton::focusInEvent(event);
+}
+
+void KUrlNavigatorButtonBase::focusOutEvent(QFocusEvent *event)
+{
+    setDisplayHintEnabled(EnteredHint, false);
+    QPushButton::focusOutEvent(event);
 }
 
 void KUrlNavigatorButtonBase::enterEvent(QEvent* event)

@@ -231,6 +231,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // create drop down button for accessing all paths of the URL
     m_dropDownButton = new KUrlNavigatorDropDownButton(q);
+    m_dropDownButton->installEventFilter(q);
     connect(m_dropDownButton, SIGNAL(clicked()),
             q, SLOT(openPathSelectorMenu()));
 
@@ -253,6 +254,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     // create toggle button which allows to switch between
     // the breadcrumb and traditional view
     m_toggleEditableMode = new KUrlNavigatorToggleButton(q);
+    m_toggleEditableMode->installEventFilter(q);
     m_toggleEditableMode->setMinimumWidth(20);
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
@@ -547,6 +549,7 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
             KUrlNavigatorButton* button = 0;
             if (createButton) {
                 button = new KUrlNavigatorButton(buttonUrl(idx), q);
+                button->installEventFilter(q);
                 button->setForegroundRole(QPalette::WindowText);
                 connect(button, SIGNAL(urlsDropped(const KUrl&, QDropEvent*)),
                         q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
@@ -566,6 +569,9 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
             button->setActive(q->isActive());
 
             if (createButton) {
+                if (!isFirstButton) {
+                    setTabOrder(m_navButtons.last(), button);
+                }
                 m_navButtons.append(button);
             }
 
@@ -587,6 +593,9 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
         }
         m_navButtons.erase(itBegin, itEnd);
     }
+
+    setTabOrder(m_dropDownButton, m_navButtons.first());
+    setTabOrder(m_navButtons.last(), m_toggleEditableMode);
 
     updateButtonVisibility();
 }
@@ -1144,9 +1153,25 @@ void KUrlNavigator::wheelEvent(QWheelEvent* event)
 
 bool KUrlNavigator::eventFilter(QObject* watched, QEvent* event)
 {
-    if ((watched == d->m_pathBox) && (event->type() == QEvent::FocusIn)) {
-        requestActivation();
-        setFocus();
+    switch (event->type()) {
+    case QEvent::FocusIn:
+        if (watched == d->m_pathBox) {
+            requestActivation();
+            setFocus();
+        }
+        foreach (KUrlNavigatorButton* button, d->m_navButtons) {
+            button->setShowMnemonic(true);
+        }
+        break;
+
+    case QEvent::FocusOut:
+        foreach (KUrlNavigatorButton* button, d->m_navButtons) {
+            button->setShowMnemonic(false);
+        }
+        break;
+
+    default:
+        break;
     }
 
     return QWidget::eventFilter(watched, event);
