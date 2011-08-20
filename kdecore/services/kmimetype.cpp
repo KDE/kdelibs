@@ -218,7 +218,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     }
 
     if ( device && !device->isOpen() ) {
-        if ( !device->open(QIODevice::ReadOnly) ) {
+        if ( !device->open(QIODevice::ReadOnly|QIODevice::Unbuffered) ) {
             device = 0;
         }
     }
@@ -383,7 +383,7 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
             *accuracy = 100;
         return mimeFromMode;
     }
-    if (!device.open(QIODevice::ReadOnly)) {
+    if (!device.open(QIODevice::ReadOnly|QIODevice::Unbuffered)) {
         if (accuracy)
             *accuracy = 0;
         return KMimeType::defaultMimeTypePtr();
