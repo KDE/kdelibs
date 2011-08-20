@@ -246,8 +246,10 @@ bool KNTLM::getAuth (QByteArray &auth, const QByteArray &challenge,
     ((Auth *) rbuf.data())->flags = ch->flags;
     QByteArray targetInfo = getBuf (challenge, ch->targetInfo);
 
-    if ( ( (authflags & Force_V2) && ! (authflags & Force_V1)) ||
-            (!targetInfo.isEmpty() && (qFromLittleEndian (ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */) {
+
+    if (!(authflags & Force_V1) &&
+        ((authflags & Force_V2) ||
+        (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info))) /* may support NTLMv2 */) {
         bool ret = false;
 
         if (qFromLittleEndian (ch->flags) & Negotiate_NTLM) {
