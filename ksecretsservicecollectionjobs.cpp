@@ -349,7 +349,7 @@ void DeleteCollectionJob::start()
 
 void DeleteCollectionJob::onFindCollectionFinished() 
 {
-    connect( d.data(), SIGNAL( deleteIsDone( CollectionJob::CollectionError, const QString & ) ), this, SLOT( deleteIsDone( CollectionJob::CollectionError, const QString & ) ) );
+    connect( d.data(), SIGNAL(deleteIsDone(CollectionJob::CollectionError,QString)), this, SLOT(deleteIsDone(CollectionJob::CollectionError,QString)) );
     // now performe the real delete operation on the backend
     d->startDelete();
 }
@@ -370,7 +370,7 @@ void DeleteCollectionJobPrivate::startDelete()
 {
     QDBusPendingReply<QDBusObjectPath> deleteReply = cp->collectionInterface()->Delete();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( deleteReply, this );
-    connect( watcher, SIGNAL( finished(QDBusPendingCallWatcher*) ), this, SLOT( callFinished(QDBusPendingCallWatcher*) ) );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(callFinished(QDBusPendingCallWatcher*)) );
 }
 
 void DeleteCollectionJobPrivate::callFinished( QDBusPendingCallWatcher*  watcher ) 
@@ -411,7 +411,7 @@ void RenameCollectionJob::start()
 
 void RenameCollectionJob::onFindCollectionFinished()
 {
-    connect( d.data(), SIGNAL( renameIsDone( CollectionJob::CollectionError, const QString& ) ), this, SLOT( renameIsDone( CollectionJob::CollectionError, const QString& ) ) );
+    connect( d.data(), SIGNAL(renameIsDone(CollectionJob::CollectionError,QString)), this, SLOT(renameIsDone(CollectionJob::CollectionError,QString)) );
     d->startRename();
 }
 
@@ -480,7 +480,7 @@ void SearchCollectionItemsJobPrivate::startSearchItems()
 {
     QDBusPendingReply< QList< QDBusObjectPath > > reply = collectionPrivate->collectionInterface()->SearchItems( attributes );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
-    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchFinished(QDBusPendingCallWatcher*) ) );
+    connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(searchFinished(QDBusPendingCallWatcher*)) );
 }
 
 void SearchCollectionItemsJobPrivate::searchFinished(QDBusPendingCallWatcher* watcher)
@@ -528,7 +528,7 @@ void SearchCollectionSecretsJob::start()
 
 void SearchCollectionSecretsJob::onFindCollectionFinished()
 {
-    connect( d.data(), SIGNAL(searchIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(searchIsDone( CollectionJob::CollectionError, const QString&)) );
+    connect( d.data(), SIGNAL(searchIsDone(CollectionJob::CollectionError,QString)), this, SLOT(searchIsDone(CollectionJob::CollectionError,QString)) );
     d->startSearchSecrets();
 }
 
@@ -635,7 +635,7 @@ void CreateCollectionItemJob::start()
 
 void CreateCollectionItemJob::onFindCollectionFinished()
 {
-    connect( d.data(), SIGNAL(createIsDone( CollectionJob::CollectionError, const QString& )), this, SLOT(createIsDone( CollectionJob::CollectionError, const QString& )) );
+    connect( d.data(), SIGNAL(createIsDone(CollectionJob::CollectionError,QString)), this, SLOT(createIsDone(CollectionJob::CollectionError,QString)) );
     d->startCreateItem();
 }
 

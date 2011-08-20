@@ -38,7 +38,7 @@ void PromptJob::start()
 {
     promptIf = DBusSession::createPrompt( promptPath );
     if ( promptIf->isValid() ) {
-        connect( promptIf, SIGNAL(Completed(bool,const QDBusVariant&)), this, SLOT(promptCompleted(bool,const QDBusVariant&)) );
+        connect( promptIf, SIGNAL(Completed(bool,QDBusVariant)), this, SLOT(promptCompleted(bool,QDBusVariant)) );
         // TODO: place a timer here to avoid hanging up if the prompt never calls promptCompleted
         // NOTE: however, care should be taken to avoid problems when user is too slow interacting with the prompt.
         //       a sensible timeout value should be chosen

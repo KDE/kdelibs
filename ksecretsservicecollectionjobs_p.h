@@ -30,7 +30,6 @@
 namespace KSecretsService {
 class SecretItem;
 
-class OrgFreedesktopSecretPromptInterface;
 class SecretPrivate;
 
 class CollectionJobPrivate {
