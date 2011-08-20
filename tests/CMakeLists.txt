@@ -18,6 +18,8 @@ KDE4_ADD_EXECUTABLE( ksecretsservice_client_test ${ksecretsservice_client_test_S
 TARGET_LINK_LIBRARIES( ksecretsservice_client_test
     ksecretsserviceclient
     ${QT_QTTEST_LIBRARIES}
+    ${QT_QTCORE_LIBRARIES}
+    ${KDE4_KDECORE_LIBS}
 )
 
 ADD_TEST( KSecretsServiceClientAPITest ksecretsservice_client_test )
