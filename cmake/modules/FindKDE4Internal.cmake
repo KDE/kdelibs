@@ -801,7 +801,7 @@ if (WIN32)
 
    set(PLUGIN_INSTALL_DIR       "lib${LIB_SUFFIX}/kde4"   ) #                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde4)
    set(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"   ) # "The subdirectory relative to the install prefix where imports will be installed
-   set(DATA_INSTALL_DIR         "share/apps"              ) # The parent directory where applications can install their data
+   set(DATA_INSTALL_DIR         "share"                   ) # The parent directory where applications can install their data
    set(HTML_INSTALL_DIR         "share/doc/HTML"          ) # The HTML install dir for documentation
    set(ICON_INSTALL_DIR         "share/icons"             ) # The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)
    set(KCFG_INSTALL_DIR         "share/config.kcfg"       ) # The install dir for kconfig files
@@ -874,7 +874,7 @@ else (WIN32)
 
    _set_fancy(PLUGIN_INSTALL_DIR       "${LIB_INSTALL_DIR}/kde4"                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde4)")
    _set_fancy(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"                "The subdirectory relative to the install prefix where imports will be installed")
-   _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/apps"           "The parent directory where applications can install their data")
+   _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}"                "The parent directory where applications can install their data")
    _set_fancy(HTML_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/doc/HTML"       "The HTML install dir for documentation")
    _set_fancy(ICON_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/icons"          "The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)")
    _set_fancy(KCFG_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/config.kcfg"    "The install dir for kconfig files")

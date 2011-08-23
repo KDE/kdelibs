@@ -13,6 +13,8 @@ include_directories(
  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/kdeui
+ ${CMAKE_SOURCE_DIR}/libinqt5/src
+ ${CMAKE_BINARY_DIR}/libinqt5/src
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
@@ -402,7 +404,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui itemmodels sonnetcore ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY})
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} inqt5)
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})

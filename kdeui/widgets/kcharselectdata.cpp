@@ -27,7 +27,7 @@
 
 #include <string.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 
 /* constants for hangul (de)composition, see UAX #15 */
 #define SBase 0xAC00
@@ -65,7 +65,7 @@ bool KCharSelectData::openDataFile()
     if(!dataFile.isEmpty()) {
         return true;
     } else {
-        QFile file(KStandardDirs::locate("data", "kcharselect/kcharselect-data"));
+        QFile file(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kcharselect/kcharselect-data"));
         if (!file.open(QIODevice::ReadOnly)) {
             return false;
         }

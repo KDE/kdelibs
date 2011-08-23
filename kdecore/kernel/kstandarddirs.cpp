@@ -115,7 +115,7 @@ public:
  * 3) update the list in kde-config.cpp
 
 data
-share/apps
+share
 html
 share/doc/HTML
 icon
