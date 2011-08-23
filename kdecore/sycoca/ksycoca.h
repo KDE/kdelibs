@@ -202,10 +202,6 @@ protected:
     // @internal used by kbuildsycoca
     KSycocaFactoryList* factories();
 
-    // @internal was for kbuildsycoca
-#ifndef KDE_NO_DEPRECATED
-    QDataStream *m_str_deprecated; // KDE5: REMOVE
-#endif
     // @internal used by factories and kbuildsycoca
     QDataStream*& stream();
     friend class KSycocaFactory;
