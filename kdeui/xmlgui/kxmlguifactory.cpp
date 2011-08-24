@@ -363,8 +363,8 @@ void KXMLGUIFactoryPrivate::saveDefaultActionProperties(const QList<QAction *>& 
     // kxmlguiclient. We only want to execute the following code only once in
     // the lifetime of an action.
     foreach (QAction *action, actions) {
-        // Skip actions we have seen already.
-        if (action->property("_k_DefaultShortcut").isValid()) continue;
+        // Skip NULL actions or those we have seen already.
+        if (!action || action->property("_k_DefaultShortcut").isValid()) continue;
 
         if (KAction* kaction = qobject_cast<KAction*>(action)) {
             // Check if the default shortcut is set
@@ -709,9 +709,11 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QLi
                 kaction->setShortcut(KShortcut(), KAction::ActiveShortcut);
                 // We clear the default shortcut as well because the shortcut scheme will set its own defaults
                 kaction->setShortcut(KShortcut(), KAction::DefaultShortcut);
+                continue;
             }
-            else
+            if (action) {
                 action->setProperty("shortcut", KShortcut());
+            }
         }
     } else {
         // apply saved default shortcuts
@@ -726,7 +728,9 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QLi
                     continue;
                 }
             }
-            action->setProperty("shortcut", KShortcut());
+            if (action) {
+                action->setProperty("shortcut", KShortcut());
+            }
         }
     }
 
