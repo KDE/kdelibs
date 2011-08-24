@@ -121,8 +121,10 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
     
     if (m_entry.rating() > 0) {
         ui->ratingWidget->setVisible(true);
-        disconnect(ui->ratingWidget);
-        ui->ratingWidget->setRating((m_entry.rating()-20)/6);
+        disconnect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
+        // Most of the voting is 20 - 80, so rate 20 as 0 stars and 80 as 5 stars
+        int rating = qMax(0, qMin(10, (m_entry.rating()-20)/6));
+        ui->ratingWidget->setRating(rating);
         connect(ui->ratingWidget, SIGNAL(ratingChanged(uint)), this, SLOT(ratingChanged(uint)));
     } else {
         ui->ratingWidget->setVisible(false);
