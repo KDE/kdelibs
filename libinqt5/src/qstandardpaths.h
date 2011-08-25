@@ -70,7 +70,8 @@ public:
         PicturesLocation,
         TempLocation,
         HomeLocation,
-        DataLocation,
+        DataLocation, // application data
+        GenericDataLocation, // same for all applications
         CacheLocation,
         ConfigLocation
     };

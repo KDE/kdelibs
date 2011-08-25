@@ -115,11 +115,19 @@ QString QStandardPaths::storageLocation(StandardLocation type)
 {
     if (type == ConfigLocation) {
         // TODO: this is a unix-only implementation
-        // http://www.freedesktop.org/wiki/Software/xdg-user-dirs
+        // http://standards.freedesktop.org/basedir-spec/latest/
         QString xdgConfigHome = QFile::decodeName(qgetenv("XDG_CONFIG_HOME"));
         if (xdgConfigHome.isEmpty())
             xdgConfigHome = QDir::homePath() + QLatin1String("/.config");
         return xdgConfigHome;
+    } else if (type == GenericDataLocation) {
+        // Copied from qdesktopservices_x11.cpp, TODO-in-qt: integrate with that code.
+        QString xdgDataHome = QLatin1String(qgetenv("XDG_DATA_HOME"));
+        if (xdgDataHome.isEmpty())
+            xdgDataHome = QDir::homePath() + QLatin1String("/.local/share");
+        //xdgDataHome += QLatin1String("/data/"); // THIS MUST BE REMOVED FROM QT!
+        //                      Otherwise we can't access mime data for instance.
+        return xdgDataHome;
     } else {
         return QDesktopServices::storageLocation(QDesktopServices::StandardLocation(type));
     }
@@ -130,14 +138,25 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
     QStringList dirs;
     if (type == ConfigLocation) {
         // TODO: this is a unix-only implementation
+        // http://standards.freedesktop.org/basedir-spec/latest/
         QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_CONFIG_DIRS"));
         if (xdgConfigDirs.isEmpty()) {
             dirs.append(QString::fromLatin1("/etc/xdg"));
         } else {
             dirs = xdgConfigDirs.split(':');
         }
+    } else if (type == GenericDataLocation) {
+        // TODO: this is a unix-only implementation
+        // http://standards.freedesktop.org/basedir-spec/latest/
+        QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
+        if (xdgConfigDirs.isEmpty()) {
+            dirs.append(QString::fromLatin1("/usr/local/share/:/usr/share/"));
+        } else {
+            dirs = xdgConfigDirs.split(':');
+        }
     }
-    dirs.append(storageLocation(type));
+    const QString localDir = storageLocation(type);
+    dirs.append(localDir);
     return dirs;
 }
 

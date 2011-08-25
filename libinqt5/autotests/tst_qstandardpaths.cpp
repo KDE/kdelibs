@@ -60,6 +60,7 @@ public:
 private slots:
     void testDefaultLocations();
     void testCustomLocations();
+    void testGenericDataLocation();
 };
 
 void tst_qstandardpaths::testDefaultLocations()
@@ -103,5 +104,15 @@ void tst_qstandardpaths::testCustomLocations()
 #endif
 }
 
+void tst_qstandardpaths::testGenericDataLocation()
+{
+    const QStringList genericDataDirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    //qDebug() << genericDataDirs;
+    Q_FOREACH(const QString &dir, genericDataDirs) {
+        QVERIFY2(dir.endsWith(QLatin1String("/share")), qPrintable(dir));
+    }
+}
+
 QTEST_MAIN(tst_qstandardpaths)
+
 #include "tst_qstandardpaths.moc"
