@@ -138,20 +138,23 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( !configFilesRecursive.isEmpty() );
     QVERIFY( configFilesRecursive.count() > 5 ); // I have 15 here
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursive, "share/config/ui/ui_standards.rc" ) );
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/colors/Web.colors" ) ); // proves that recursive worked
 
     const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
                                                                                           KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
-    QVERIFY( configFilesRecursiveWithFilter.count() >= 5 ); // back to ~ 9
+    QVERIFY( configFilesRecursiveWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/ui/ui_standards.rc" ) );
     QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "share/config/colors/Web.colors" ) ); // didn't match the filter
 
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 5 ); // back to ~ 9
+    QVERIFY( configFilesWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/ui/ui_standards.rc" ) ); // not recursive
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
     QVERIFY(fileNames.contains("kdebugrc"));
