@@ -181,10 +181,10 @@ QString KPlotAxis::tickLabel( double val ) const {
 
 		int h = int(val);
 		int m = int( 60.*(val - h) );
-		return QString( "%1:%2" ).arg( h, 2, 10, QLatin1Char('0') ).arg( m, 2, 10, QLatin1Char('0') );
+		return QString::fromLatin1( "%1:%2" ).arg( h, 2, 10, QLatin1Char('0') ).arg( m, 2, 10, QLatin1Char('0') );
 	}
 
-	return QString( "%1" ).arg( val, d->m_labelFieldWidth, d->m_labelFmt, d->m_labelPrec );
+	return QString::fromLatin1( "%1" ).arg( val, d->m_labelFieldWidth, d->m_labelFmt, d->m_labelPrec );
 }
 
 QList< double > KPlotAxis::majorTickMarks() const
