@@ -56,7 +56,7 @@ public:
 
         if (options & KDBusService::Multiple) {
             const QString pid = QString::number(QCoreApplication::applicationPid());
-            return baseName + '-' + pid;
+            return baseName + QLatin1Char('-') + pid;
         } else {
             return baseName;
         }
@@ -80,7 +80,7 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
 
     if (bus) {
         d->serviceName = d->generateServiceName(options);
-        QString objectPath = '/' + d->serviceName;
+        QString objectPath = QLatin1Char('/') + d->serviceName;
         objectPath.replace(QLatin1Char('.'), QLatin1Char('/'));
 
         d->registered = bus->registerService(d->serviceName) == QDBusConnectionInterface::ServiceRegistered;
