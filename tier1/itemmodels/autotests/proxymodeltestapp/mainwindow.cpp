@@ -32,7 +32,7 @@
 #include "checkablewidget.h"
 #include "descendantpmwidget.h"
 #include "selectionpmwidget.h"
-#include "statesaverwidget.h"
+// #include "statesaverwidget.h"
 #include "proxymodeltestwidget.h"
 #include "proxyitemselectionwidget.h"
 #include "reparentingpmwidget.h"
@@ -59,7 +59,7 @@ MainWindow::MainWindow() : KXmlGuiWindow()
   tabWidget->addTab(new RecursiveFilterProxyWidget(), "Recursive Filter");
   tabWidget->addTab(new LessThanWidget(), "Less Than");
   tabWidget->addTab(new ProxyModelTestWidget(), "Proxy Model Test");
-  tabWidget->addTab(new StateSaverWidget(), "State Saver Test");
+//   tabWidget->addTab(new StateSaverWidget(), "State Saver Test");
 
   setCentralWidget( tabWidget );
 }
