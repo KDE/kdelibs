@@ -45,19 +45,26 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 void KStandarddirsTest::initTestCase()
 {
     m_kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+    // as set by qtest_kde.h
+    QCOMPARE(KGlobal::dirs()->localxdgconfdir(), QString(m_kdehome + "/xdg/config/"));
+}
+
+void KStandarddirsTest::testSaveLocation()
+{
+    const QString saveLocConfig = KGlobal::dirs()->saveLocation("config");
+    QCOMPARE_PATHS(saveLocConfig, m_kdehome + "/xdg/config/");
+    const QString saveLocXdgConfig = KGlobal::dirs()->saveLocation("xdgconf");
+    QCOMPARE_PATHS(saveLocConfig, saveLocXdgConfig); // same result
+
+    const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
+    QCOMPARE_PATHS( saveLoc, m_kdehome + "/share/apps/qttest/" );
 }
 
 void KStandarddirsTest::testLocateLocal()
 {
     const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
     // KStandardDirs resolves symlinks, so we must compare with canonicalPath()
-    QCOMPARE_PATHS( configLocal, m_kdehome + "/share/config/ksomethingrc" );
-}
-
-void KStandarddirsTest::testSaveLocation()
-{
-    const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
-    QCOMPARE_PATHS( saveLoc, m_kdehome + "/share/apps/qttest/" );
+    QCOMPARE_PATHS( configLocal, m_kdehome + "/xdg/config/ksomethingrc" );
 }
 
 void KStandarddirsTest::testAppData()
@@ -71,7 +78,7 @@ void KStandarddirsTest::testAppData()
 void KStandarddirsTest::testChangeSaveLocation()
 {
     KComponentData cData("changeSave");
-    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_kdehome + "/share/config/");
+    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_kdehome + "/xdg/config/");
     // Can we change the save location?
     const QString newSaveLoc = m_kdehome + "/newconfigdir/";
     //cData.dirs()->addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
@@ -127,10 +134,19 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( !cmakeModulesFiles.isEmpty() );
     QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
 
+    // Create a local config file, the file will be used as expected result
+    KConfig foorc("foorc");
+    KConfigGroup dummyGroup(&foorc, "Dummy");
+    dummyGroup.writeEntry("someEntry", true);
+    dummyGroup.sync();
+    const QString localConfigFile = KGlobal::dirs()->localxdgconfdir() + "foorc";
+    QVERIFY2(QFile::exists(localConfigFile), qPrintable(localConfigFile));
+
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );
     QVERIFY( !configFiles.isEmpty() );
     QVERIFY( configFiles.count() > 5 ); // I have 9 here
     QVERIFY( oneEndsWith( configFiles, "etc/xdg/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFiles, "kde-unit-test/xdg/config/foorc" ) );
     QVERIFY( !oneEndsWith( configFiles, "etc/xdg/colors/Web.colors" ) ); // recursive was false
 
     {

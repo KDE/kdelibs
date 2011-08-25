@@ -406,8 +406,11 @@ bool KStandardDirs::addResourceType( const char *type,
         return false;
 
     QString copy = relativename;
-    if (basetype)
-        copy = QLatin1Char('%') + QString::fromLatin1(basetype) + QLatin1Char('/') + relativename;
+    if (basetype) {
+        copy = QLatin1Char('%') + QString::fromLatin1(basetype) + QLatin1Char('/');
+        if (relativename != QLatin1String("/"))
+            copy += relativename;
+    }
 
     if (!copy.endsWith(QLatin1Char('/')))
         copy += QLatin1Char('/');
@@ -1872,14 +1875,15 @@ void KStandardDirs::addKDEDefaults()
 
     addResourceType("lib", 0, "lib" KDELIBSUFF "/");
 
-    // config resource: the KDE paths have less priority than the XDG paths
-    addResourceType("config", "xdgconf", "/");
-
     uint index = 0;
     while (types_indices[index] != -1) {
         addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);
         index+=2;
     }
+
+    // config resource: the XDG paths (xdg/config) have more priority than the KDE4 paths (share/config)
+    addResourceType("config", "xdgconf", "/", true);
+
     addResourceType("exe", "lib", "kde4/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
