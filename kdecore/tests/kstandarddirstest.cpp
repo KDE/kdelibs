@@ -130,31 +130,39 @@ void KStandarddirsTest::testFindAllResources()
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );
     QVERIFY( !configFiles.isEmpty() );
     QVERIFY( configFiles.count() > 5 ); // I have 9 here
-    QVERIFY( oneEndsWith( configFiles, "share/config/kdebugrc" ) );
-    QVERIFY( !oneEndsWith( configFiles, "share/config/colors/Web.colors" ) ); // recursive was false
+    QVERIFY( oneEndsWith( configFiles, "etc/xdg/kdebugrc" ) );
+    QVERIFY( !oneEndsWith( configFiles, "etc/xdg/colors/Web.colors" ) ); // recursive was false
 
+    {
     const QStringList configFilesRecursive = KGlobal::dirs()->findAllResources( "config", QString(),
                                                                                 KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursive.isEmpty() );
     QVERIFY( configFilesRecursive.count() > 5 ); // I have 15 here
-    QVERIFY( oneEndsWith( configFilesRecursive, "share/config/kdebugrc" ) );
-    QVERIFY( oneEndsWith( configFilesRecursive, "share/config/colors/Web.colors" ) ); // proves that recursive worked
+    QVERIFY( oneEndsWith( configFilesRecursive, "etc/xdg/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursive, "etc/xdg/colors/Web.colors" ) ); // proves that recursive worked
+    }
 
+    {
     const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
                                                                                           KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
-    QVERIFY( configFilesRecursiveWithFilter.count() >= 5 ); // back to ~ 9
-    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
-    QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "share/config/colors/Web.colors" ) ); // didn't match the filter
+    QVERIFY( configFilesRecursiveWithFilter.count() >= 4 ); // kdebugrc, ui/ui_standards.rc
+    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/ui/ui_standards.rc" ) );
+    QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/colors/Web.colors" ) ); // didn't match the filter
+    }
 
+    {
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 5 ); // back to ~ 9
-    QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
-    QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
+    QVERIFY( configFilesWithFilter.count() >= 3 );
+    QVERIFY( oneEndsWith( configFilesWithFilter, "etc/xdg/kdebugrc" ) );
+    QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/ui/ui_standards.rc" ) ); // recursive not set
+    QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
     QVERIFY(fileNames.contains("kdebugrc"));
+    }
 
 #if 0
     list = t.findAllResources("html", "en/*/index.html", false);
@@ -206,7 +214,7 @@ void KStandarddirsTest::testFindResourceDir()
 
     const QString configDir = KGlobal::dirs()->findResourceDir( "config", "kdebugrc" );
     QVERIFY( !configDir.isEmpty() );
-    QVERIFY( configDir.endsWith( QLatin1String( "/config/" ) ) );
+    QVERIFY( configDir.endsWith( QLatin1String( "/xdg/" ) ) );
 }
 
 void KStandarddirsTest::testFindExe()
