@@ -800,7 +800,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
       if (!curEntry->symLinkTarget().isEmpty()) {
           const QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
 #ifdef Q_OS_UNIX
-          if (!::symlink(curEntry->symLinkTarget().toLocal8Bit(), linkName.toLocal8Bit())) {
+          if (!::symlink(curEntry->symLinkTarget().toLocal8Bit().constData(), linkName.toLocal8Bit().constData())) {
               //qDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
           }
 #else

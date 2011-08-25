@@ -713,17 +713,17 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )
-        d->writeLonglink(buffer,encodedFileName,'L',uname,gname);
+        d->writeLonglink(buffer,encodedFileName,'L',uname.constData(),gname.constData());
 
     // Write (potentially truncated) name
-    strncpy( buffer, encodedFileName, 99 );
+    strncpy( buffer, encodedFileName.constData(), 99 );
     buffer[99] = 0;
     // zero out the rest (except for what gets filled anyways)
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, '0');
-    d->fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
+    d->fillBuffer(buffer, permstr.constData(), size, mtime, 0x30, uname.constData(), gname.constData());
 
     // Write header
     return device()->write( buffer, 0x200 ) == 0x200;
@@ -766,17 +766,17 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( dirName.length() > 99 )
-        d->writeLonglink(buffer,encodedDirname,'L',uname,gname);
+        d->writeLonglink(buffer,encodedDirname,'L',uname.constData(),gname.constData());
 
     // Write (potentially truncated) name
-    strncpy( buffer, encodedDirname, 99 );
+    strncpy( buffer, encodedDirname.constData(), 99 );
     buffer[99] = 0;
     // zero out the rest (except for what gets filled anyways)
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
+    d->fillBuffer( buffer, permstr.constData(), 0, mtime, 0x35, uname.constData(), gname.constData());
 
     // Write header
     device()->write( buffer, 0x200 );
@@ -818,22 +818,22 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     // If more than 100 chars, we need to use the LongLink trick
     if (target.length() > 99)
-        d->writeLonglink(buffer,encodedTarget,'K',uname,gname);
+        d->writeLonglink(buffer,encodedTarget,'K',uname.constData(),gname.constData());
     if ( fileName.length() > 99 )
-        d->writeLonglink(buffer,encodedFileName,'L',uname,gname);
+        d->writeLonglink(buffer,encodedFileName,'L',uname.constData(),gname.constData());
 
     // Write (potentially truncated) name
-    strncpy( buffer, encodedFileName, 99 );
+    strncpy( buffer, encodedFileName.constData(), 99 );
     buffer[99] = 0;
     // Write (potentially truncated) symlink target
-    strncpy(buffer+0x9d, encodedTarget, 99);
+    strncpy(buffer+0x9d, encodedTarget.constData(), 99);
     buffer[0x9d+99] = 0;
     // zero out the rest
     memset(buffer+0x9d+100, 0, 0x200 - 100 - 0x9d);
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
+    d->fillBuffer(buffer, permstr.constData(), 0, mtime, 0x32, uname.constData(), gname.constData());
 
     // Write header
     bool retval = device()->write( buffer, 0x200 ) == 0x200;

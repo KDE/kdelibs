@@ -903,7 +903,7 @@ bool KZip::closeArchive()
         buffer[ 45 ] = char(myhst >> 24);
 
         // file name
-        strncpy( buffer + 46, path, path.length() );
+        strncpy( buffer + 46, path.constData(), path.length() );
 	//qDebug() << "closearchive length to write: " << bufferSize;
 
 	// extra field
@@ -1099,7 +1099,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     buffer[ 29 ] = (uchar)(extra_field_len >> 8);
 
     // file name
-    strncpy( buffer + 30, encodedName, encodedName.length() );
+    strncpy( buffer + 30, encodedName.constData(), encodedName.length() );
 
     // extra field
     if ( d->m_extraField == ModificationTime )
@@ -1210,7 +1210,7 @@ bool KZip::doWriteSymLink(const QString &name, const QString &target,
   }
 
   QByteArray symlink_target = QFile::encodeName(target);
-  if (!writeData(symlink_target, symlink_target.length())) {
+  if (!writeData(symlink_target.constData(), symlink_target.length())) {
     //qWarning() << "writeData failed";
     setCompression(c);
     return false;
