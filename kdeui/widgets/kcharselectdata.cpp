@@ -268,7 +268,7 @@ QString KCharSelectData::name(const QChar& c)
                 max = mid - 1;
             else {
                 quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
-                s = QString(dataFile.constData() + offset);
+                s = QString(dataFile.constData() + offset + 1);
                 break;
             }
         }
@@ -531,6 +531,45 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
     return QStringList();
 }
 
+QChar::Category KCharSelectData::category(const QChar& c)
+{
+    if(!openDataFile()) {
+        return c.category();
+    }
+
+    ushort unicode = c.unicode();
+
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+4);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+8);
+
+    int min = 0;
+    int mid;
+    int max = ((offsetEnd - offsetBegin) / 6) - 1;
+    QString s;
+
+    while (max >= min) {
+        mid = (min + max) / 2;
+        const quint16 midUnicode = qFromLittleEndian<quint16>(data + offsetBegin + mid*6);
+        if (unicode > midUnicode)
+            min = mid + 1;
+        else if (unicode < midUnicode)
+            max = mid - 1;
+        else {
+            quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
+            return QChar::category(qFromLittleEndian<quint32>(data + offset));
+        }
+    }
+
+    return c.category();
+}
+
+bool KCharSelectData::isPrint(const QChar& c)
+{
+    QChar::Category cat = category(c);
+    return !(cat == QChar::Other_Control || cat == QChar::Other_NotAssigned);
+}
+
 bool KCharSelectData::isDisplayable(const QChar& c)
 {
     // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
@@ -538,8 +577,8 @@ bool KCharSelectData::isDisplayable(const QChar& c)
     //  to a crash caused by a Qt "noBlockInString" assertion.
     if(c == 0xFDD0 || c == 0xFDD1)
         return false;
-    
-    return c.isPrint() && !isIgnorable(c);
+
+    return !isIgnorable(c) && isPrint(c);
 }
 
 bool KCharSelectData::isIgnorable(const QChar& c)
@@ -768,7 +807,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
     for (int pos = 0; pos <= max; pos++) {
         const quint16 unicode = qFromLittleEndian<quint16>(udata + nameOffsetBegin + pos*6);
         quint32 offset = qFromLittleEndian<quint32>(udata + nameOffsetBegin + pos*6 + 2);
-        appendToIndex(&i, unicode, QString(data + offset));
+        appendToIndex(&i, unicode, QString(data + offset + 1));
     }
 
     // details

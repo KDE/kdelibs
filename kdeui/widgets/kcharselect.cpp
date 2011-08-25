@@ -273,7 +273,7 @@ void KCharSelectTablePrivate::_k_resizeCells()
 void KCharSelectTablePrivate::_k_doubleClicked(const QModelIndex & index)
 {
     QChar c = model->data(index, KCharSelectItemModel::CharacterRole).toChar();
-    if (c.isPrint()) {
+    if (s_data->isPrint(c)) {
         emit q->activated(c);
     }
 }
@@ -289,7 +289,7 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Enter: case Qt::Key_Return: {
             if (!currentIndex().isValid()) return;
             QChar c = d->model->data(currentIndex(), KCharSelectItemModel::CharacterRole).toChar();
-            if (c.isPrint()) {
+            if (s_data->isPrint(c)) {
                 emit activated(c);
             }
         }
@@ -665,7 +665,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QChar &c2, seeAlso) {
             html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
-            if (c2.isPrint()) {
+            if (s_data->isPrint(c2)) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
             }
             html += s_data->formatCode(c2.unicode()) + ' ' + Qt::escape(s_data->name(c2)) + "</a></li>";
@@ -732,7 +732,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     html += "<p><b>" + i18n("General Character Properties") + "</b><br>";
     html += i18n("Block: ") + s_data->block(c) + "<br>";
-    html += i18n("Unicode category: ") + s_data->categoryText(c.category()) + "</p>";
+    html += i18n("Unicode category: ") + s_data->categoryText(s_data->category(c)) + "</p>";
 
     QByteArray utf8 = QString(c).toUtf8();
 
@@ -765,7 +765,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
     foreach(const QString &c, chars2) {
         int unicode = c.toInt(0, 16);
         QString link = "<a href=\"" + c + "\">";
-        if (QChar(unicode).isPrint()) {
+        if (s_data->isPrint(QChar(unicode))) {
             link += "&#" + QString::number(unicode) + ";&nbsp;";
         }
         link += "U+" + c + ' ';
@@ -879,12 +879,12 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     } else if (role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);
     else if (role == Qt::DisplayRole) {
-        if (c.isPrint())
+        if (s_data->isPrint(c))
             return QVariant(c);
         return QVariant();
     } else if (role == Qt::BackgroundColorRole) {
         QFontMetrics fm = QFontMetrics(m_font);
-        if (fm.inFont(c) && c.isPrint())
+        if (fm.inFont(c) && s_data->isPrint(c))
             return QVariant(qApp->palette().color(QPalette::Base));
         else
             return QVariant(qApp->palette().color(QPalette::Button));
