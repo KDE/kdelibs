@@ -204,7 +204,7 @@ QModelIndexList ModelSpy::getDescendantIndexes(const QModelIndex &parent)
 QList< QPersistentModelIndex > ModelSpy::toPersistent(QModelIndexList list)
 {
   QList<QPersistentModelIndex > persistentList;
-  foreach(QModelIndex idx, list)
+  Q_FOREACH(QModelIndex idx, list)
   {
     persistentList << QPersistentModelIndex(idx);
   }
@@ -221,7 +221,7 @@ QModelIndexList ModelSpy::getUnchangedIndexes(const QModelIndex &parent, QList<Q
     QModelIndex idx = m_model->index( row, column, parent);
     Q_ASSERT(idx.isValid());
     bool found = false;
-    foreach(QItemSelectionRange range, ignoredRanges)
+    Q_FOREACH(QItemSelectionRange range, ignoredRanges)
     {
       if (range.topLeft().parent() == parent &&  range.topLeft().row() == idx.row())
       {
@@ -324,7 +324,7 @@ static const char * const signaltypes[] = {
 QDebug operator<<(QDebug d, ModelSpy* modelSpy)
 {
   d << "ModelSpy(";
-  foreach (const QVariantList &list, (QList<QVariantList>)(*modelSpy)) {
+  Q_FOREACH (const QVariantList &list, (QList<QVariantList>)(*modelSpy)) {
     d << "SIGNAL(";
     int sigType = list.first().toInt();
     d << signaltypes[sigType];

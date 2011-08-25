@@ -34,7 +34,7 @@ class MatchCheckingWidget : public QWidget
 public:
   MatchCheckingWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-private slots:
+private Q_SLOTS:
   void matchChanged(const QString &matchData);
 
 private:

@@ -35,7 +35,7 @@ class ModelCommanderWidget : public QWidget
 public:
   ModelCommanderWidget(DynamicTreeModel *dynamicTreeModel, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-private slots:
+private Q_SLOTS:
   void initTest(QTreeWidgetItem *item);
   void executeTest(QTreeWidgetItem *item);
   void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

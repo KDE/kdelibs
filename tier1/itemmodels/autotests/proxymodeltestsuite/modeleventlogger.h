@@ -45,7 +45,7 @@ public:
   QString getPath(const QList<int> &path) const
   {
     QString result( QLatin1String( "QList<int>()" ) );
-    foreach(const int part, path)
+    Q_FOREACH(const int part, path)
     {
       result.append( QLatin1String( " << " ) );
       result.append(QString::number(part));
@@ -121,7 +121,7 @@ public:
   void setChanges(const QList<PersistentChange*> &changes) { m_changedPaths = changes; }
   QVariantList changes() const {
     QVariantList list;
-    foreach (PersistentChange *change, m_changedPaths)
+    Q_FOREACH (PersistentChange *change, m_changedPaths)
     {
       list.append(QVariant::fromValue(static_cast<QObject*>(change)));
     }
@@ -156,7 +156,7 @@ public:
 private:
   void persistChildren(const QModelIndex &parent);
 
-private slots:
+private Q_SLOTS:
   void rowsInserted(const QModelIndex &parent, int start, int end);
   void rowsRemoved(const QModelIndex &parent, int start, int end);
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);

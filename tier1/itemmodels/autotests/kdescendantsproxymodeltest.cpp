@@ -36,7 +36,7 @@ public:
 
   }
 
-public slots:
+public Q_SLOTS:
   void testInsertWhenEmptyData()
   {
     QTest::addColumn<SignalList>("signalList");
@@ -234,7 +234,7 @@ protected:
     return new KDescendantsProxyModel(this);
   }
 
-private slots:
+private Q_SLOTS:
   void cleanupTestCase()
   {
     doCleanupTestCase();

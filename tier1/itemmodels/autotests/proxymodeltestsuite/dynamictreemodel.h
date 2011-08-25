@@ -68,7 +68,7 @@ public:
   QList<int> indexToPath(const QModelIndex &idx) const;
   ModelMoveCommand* getMoveCommand(const QList<int> &srcPath, int startRow, int endRow);
 
-protected slots:
+protected Q_SLOTS:
 
   /**
   Finds the parent id of the string with id @p searchId.
@@ -229,13 +229,13 @@ public:
 
   virtual void doCommand();
 
-signals:
+Q_SIGNALS:
   void beginInsertRows(const QModelIndex &parent, int start, int end);
   void endInsertRows();
   void beginRemoveRows(const QModelIndex &parent, int start, int end);
   void endRemoveRows();
 
-protected slots:
+protected Q_SLOTS:
   void queuedBeginInsertRows(const QModelIndex &parent, int start, int end);
   void queuedEndInsertRows();
   void queuedBeginRemoveRows(const QModelIndex &parent, int start, int end);

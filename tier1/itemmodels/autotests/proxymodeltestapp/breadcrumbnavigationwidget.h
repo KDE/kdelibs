@@ -36,7 +36,7 @@ class CurrentItemLabel : public QLabel
 public:
   CurrentItemLabel(QAbstractItemModel *model, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-private slots:
+private Q_SLOTS:
   void rowsInserted(const QModelIndex &parent, int start, int end);
   void rowsRemoved(const QModelIndex &parent, int start, int end);
   void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -72,7 +72,7 @@ public:
 
   virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-private slots:
+private Q_SLOTS:
   void modelReset();
   void updateNavigation();
   void navigationSelectionChanged( const QItemSelection &, const QItemSelection & );
@@ -101,7 +101,7 @@ public:
   virtual void select(const QModelIndex& index, SelectionFlags command);
   virtual void select(const QItemSelection& selection, SelectionFlags command);
 
-private slots:
+private Q_SLOTS:
   void navigationSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:

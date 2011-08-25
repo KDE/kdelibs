@@ -51,7 +51,7 @@ class ScriptableReparentingWidget : public QWidget
 public:
   ScriptableReparentingWidget(QAbstractItemModel *rootModel, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-private slots:
+private Q_SLOTS:
   void textChanged();
   void setExampleFunction(int index);
 

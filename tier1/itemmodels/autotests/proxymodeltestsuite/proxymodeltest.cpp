@@ -86,7 +86,7 @@ void ProxyModelTest::verifyExecutedTests()
     return;
   QSet<QString> unimplemented = m_modelCommanderTags.toSet().subtract(m_dataTags.toSet());
   QString unimplementedTestsString("(");
-  foreach(const QString &test, unimplemented)
+  Q_FOREACH(const QString &test, unimplemented)
     unimplementedTestsString.append(test + ",");
   unimplementedTestsString.append(")");
 
@@ -587,7 +587,7 @@ void ProxyModelTest::doTest()
   QVERIFY(m_modelSpy->isEmpty());
 
   // Persistent indexes should change by the amount described in change objects.
-  foreach (PersistentIndexChange change, m_modelSpy->getChangeList())
+  Q_FOREACH (PersistentIndexChange change, m_modelSpy->getChangeList())
   {
     for (int i = 0; i < change.indexes.size(); i++)
     {

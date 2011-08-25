@@ -42,7 +42,7 @@ public:
 protected:
   virtual void testData();
 
-private slots:
+private Q_SLOTS:
   void init()
   {
     ProxyModelTest::doInit();
@@ -68,7 +68,7 @@ void DescendantsProxyModelTest::testData()
   PersistentChangeList persistentList;
   IndexFinder indexFinder;
 
-  // This selection will not cause any signals to be emitted. Only inserting
+  // This selection will not cause any Q_SIGNALS to be emitted. Only inserting
   // child indexes into it will.
 
   signalList << getSignal(RowsAboutToBeInserted, indexFinder, 0, 0);
@@ -189,7 +189,7 @@ void DescendantsProxyModelTest::testData()
   // When this proxy recieves a rowsAboutToBeInserted signal, it can't know
   // how many rows need to be inserted (total descendants).
   // So, it first inserts only the rows signaled by the source model (and not
-  // the descendants). When the source model signals rowsInserted, we can
+  // the descendants). When the source model Q_SIGNALS rowsInserted, we can
   // examine the new rows for descendants. These need to be signalled separately
   // by this proxy
 
@@ -245,8 +245,8 @@ void DescendantsProxyModelTest::testData()
 
   // Although the source model emits only one range is changed, this proxy model puts children indexes
   // in the way, breaking the continuous range.
-  // Currently separate signals are emitted for each changed row.
-  // This should really emit one signal for each continuous range instead. That's a TODO.
+  // Currently separate Q_SIGNALS are emitted for each changed row.
+  // This should really Q_EMIT one signal for each continuous range instead. That's a TODO.
 
   topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );
   bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );

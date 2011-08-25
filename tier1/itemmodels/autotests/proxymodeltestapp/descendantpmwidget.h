@@ -42,7 +42,7 @@ public:
   DescendantProxyModelWidget(QWidget *parent = 0);
   virtual ~DescendantProxyModelWidget();
 
-protected slots:
+protected Q_SLOTS:
   void doMatch(const QString &matchData);
   void refreshMatch();
 

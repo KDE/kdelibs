@@ -68,7 +68,7 @@ public:
 
   void clearTestData();
 
-protected slots:
+protected Q_SLOTS:
   void rowsAboutToBeInserted(const QModelIndex &parent, int start, int end);
   void rowsInserted(const QModelIndex &parent, int start, int end);
   void rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end);

@@ -29,7 +29,7 @@
 class ModelQueuedConnectionsTest : public QObject
 {
   Q_OBJECT
-public slots:
+public Q_SLOTS:
   void rowsInserted(const QModelIndex &parent, int start, int end)
   {
     QModelIndex idx;
@@ -46,7 +46,7 @@ public slots:
 
   }
 
-private slots:
+private Q_SLOTS:
 
   void initTestCase()
   {

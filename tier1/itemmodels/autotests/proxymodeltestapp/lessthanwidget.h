@@ -38,7 +38,7 @@ public:
 
   void setSelectionModel(QItemSelectionModel *selectionModel);
 
-protected slots:
+protected Q_SLOTS:
   void recolor(const QModelIndex &parent = QModelIndex());
 
 private:

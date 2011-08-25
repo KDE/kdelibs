@@ -71,7 +71,7 @@ class RecursiveFilterProxyWidget : public QWidget
 public:
   RecursiveFilterProxyWidget(QWidget* parent = 0);
 
-protected slots:
+protected Q_SLOTS:
   void reset();
 
 private:

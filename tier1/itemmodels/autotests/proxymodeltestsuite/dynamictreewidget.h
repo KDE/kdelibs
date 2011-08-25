@@ -45,7 +45,7 @@ public:
   QTreeView *treeView() const { return m_treeView; }
   QPlainTextEdit *textEdit() const { return m_textEdit; }
 
-private slots:
+private Q_SLOTS:
   void currentChanged(int index);
   void setTreePredefine(int index);
   void setInsertSubTreePredefine(int index);

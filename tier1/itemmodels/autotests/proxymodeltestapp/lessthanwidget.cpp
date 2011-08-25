@@ -46,7 +46,7 @@ void ColoredTreeModel::recolor(const QModelIndex &parent)
   const QModelIndex topLeft = index(0, 0, parent);
   const int _rowCount = rowCount(parent);
   const QModelIndex bottomRight = index(_rowCount - 1, columnCount(parent) -1, parent );
-  emit dataChanged(topLeft, bottomRight);
+  Q_EMIT dataChanged(topLeft, bottomRight);
 
   static const int column = 0;
   QModelIndex idx;

@@ -150,7 +150,7 @@ protected:
   void doCleanupTestCase() { cleanupTestCase(); }
   void doCleanup() { cleanup(); }
 
-signals:
+Q_SIGNALS:
   void testInsertWhenEmptyData();
   void testInsertInRootData();
   void testInsertInTopLevelData();
@@ -168,13 +168,13 @@ signals:
   void testModifyInTopLevelData();
   void testModifyInSecondLevelData();
 
-protected slots:
+protected Q_SLOTS:
   void testMappings();
   void verifyModel(const QModelIndex &parent, int start, int end);
   void verifyModel(const QModelIndex &parent, int start, int end, const QModelIndex &destParent, int dest);
   void verifyModel(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
-private slots:
+private Q_SLOTS:
   void init();
   void cleanup();
   void cleanupTestCase();
@@ -651,7 +651,7 @@ PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
     QList<int> testObjects; \
     QStringList arguments; \
     bool ok; \
-    foreach(const QString &arg, app.arguments()) \
+    Q_FOREACH(const QString &arg, app.arguments()) \
     { \
       int testObject = arg.toInt(&ok); \
       if (arg == "-count") \

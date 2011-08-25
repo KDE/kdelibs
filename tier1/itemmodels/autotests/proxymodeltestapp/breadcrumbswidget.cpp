@@ -41,7 +41,7 @@ MultiSelectionModel::MultiSelectionModel(QAbstractItemModel* model, QList< QItem
 
 void MultiSelectionModel::select(const QModelIndex& index, QItemSelectionModel::SelectionFlags command)
 {
-  foreach(QItemSelectionModel *selectionModel, m_selectionModels)
+  Q_FOREACH(QItemSelectionModel *selectionModel, m_selectionModels)
     selectionModel->select(index, command);
   QItemSelectionModel::select(index, command);
 }
@@ -49,7 +49,7 @@ void MultiSelectionModel::select(const QModelIndex& index, QItemSelectionModel::
 
 void MultiSelectionModel::select(const QItemSelection& selection, QItemSelectionModel::SelectionFlags command)
 {
-  foreach(QItemSelectionModel *selectionModel, m_selectionModels)
+  Q_FOREACH(QItemSelectionModel *selectionModel, m_selectionModels)
     selectionModel->select(selection, command);
   QItemSelectionModel::select(selection, command);
 }

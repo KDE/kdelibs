@@ -58,7 +58,7 @@ protected:
     return m_proxyModel;
   }
 
-private slots:
+private Q_SLOTS:
   void cleanupTestCase()
   {
     doCleanupTestCase();

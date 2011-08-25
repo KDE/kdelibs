@@ -51,7 +51,7 @@ public:
 
   virtual KSelectionProxyModel::FilterBehavior filterBehaviour() = 0;
 
-public slots:
+public Q_SLOTS:
   void rowsInserted(const QModelIndex &parent, int start, int end);
 
   void testInsertWhenEmptyData()
@@ -119,7 +119,7 @@ public slots:
     dummyTestData();
   }
 
-protected slots:
+protected Q_SLOTS:
   void modelDestroyed() {
     m_model = 0;
     m_selectionModel = 0;

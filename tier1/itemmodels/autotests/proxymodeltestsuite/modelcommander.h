@@ -36,7 +36,7 @@ public:
 
   ModelChangeCommand* currentCommand();
 
-public slots:
+public Q_SLOTS:
   void init_testInsertWhenEmpty(const QString &dataTag);
   void init_testInsertInRoot(const QString &dataTag);
   void init_testInsertInTopLevel(const QString &dataTag);

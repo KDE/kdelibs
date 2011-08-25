@@ -381,7 +381,7 @@ void KReparentingProxyModelPrivate::verifyStructure(const QModelIndex &sourcePar
     }
   }
 
-  forever
+  Q_FOREVER
   {
 
     if (destinationParent == sourceParent)
@@ -532,7 +532,7 @@ QModelIndex KReparentingProxyModel::mapToSource(const QModelIndex& proxyIndex) c
   {
 //     qDebug() << "#############";
 
-    foreach( KReparentingProxyModelPrivate::PendingRemoval pendingRemoval, d->m_pendingRemovals)
+    Q_FOREACH( KReparentingProxyModelPrivate::PendingRemoval pendingRemoval, d->m_pendingRemovals)
     {
 //       qDebug() << "In" << pendingRemoval.index << pendingRemoval.sourceIndex << sourceParent;
       if (pendingRemoval.sourceIndex == sourceParent)
@@ -663,7 +663,7 @@ QModelIndex KReparentingProxyModel::parent(const QModelIndex& child) const
 int KReparentingProxyModelPrivate::pendingRemovalRowCount(const QModelIndex &sourceIndex) const
 {
 
-  foreach(const PendingRemoval &pendingRemoval, m_pendingRemovals)
+  Q_FOREACH(const PendingRemoval &pendingRemoval, m_pendingRemovals)
   {
 //     qDebug() << pendingRemoval.sourceIndex;
     if (pendingRemoval.sourceIndex == sourceIndex)
@@ -784,7 +784,7 @@ QHash<QModelIndex, QModelIndexList> KReparentingProxyModelPrivate::mergeDescenda
     }
   }
   int row = start;
-  foreach (const QModelIndex &idx, childIndexes)
+  Q_FOREACH (const QModelIndex &idx, childIndexes)
   {
     m_childIndexes[parent].insert(row++, QPersistentModelIndex(idx));
     mappings = mergeDescendants(mappings, idx, 0);
@@ -834,7 +834,7 @@ void KReparentingProxyModelPrivate::handleInsertion(const PendingInsertion &pend
     int proxyStart = 0;
 
     // A single insertion in the source model might be multiple insertions in the proxy model.
-    forever
+    Q_FOREVER
     {
       if (newItemList.isEmpty())
       {
@@ -873,7 +873,7 @@ void KReparentingProxyModelPrivate::handleInsertion(const PendingInsertion &pend
   }
 
 //   // The rest are not descendants of pendingInsertion.index in the proxy model, but are elsewhere.
-//   foreach(const QModelIndex &parent, newItemMappings.keys())
+//   Q_FOREACH(const QModelIndex &parent, newItemMappings.keys())
 //   {
 //
 //   }
@@ -1031,7 +1031,7 @@ void KReparentingProxyModelPrivate::sourceRowsAboutToBeRemoved(const QModelIndex
 
   Q_ASSERT(firstAffectedIndex.isValid() && lastAffectedIndex.isValid());
 
-  forever
+  Q_FOREVER
   {
     if (isDescendantInModel(proxyParent, lastAffectedIndex))
     {
@@ -1250,7 +1250,7 @@ QModelIndex KReparentingProxyModelPrivate::findLastInParent(QModelIndex parent, 
 //       removal.end = i;
 //       pendingRemovals.insert(proxyParent, removal);
 //
-//       emit q->rowsAboutToBeRemoved(proxyParent, start, i);
+//       Q_EMIT q->rowsAboutToBeRemoved(proxyParent, start, i);
 //       proxyParent = affectedIndex.parent();
 //
 //       end -= (i - start + 1);
@@ -1313,7 +1313,7 @@ void KReparentingProxyModelPrivate::sourceRowsRemoved(const QModelIndex &parent,
     m_pendingRemovalParents.remove(parent.internalId());
     it.remove();
 
-    emit q->endRemoveRows();
+    Q_EMIT q->endRemoveRows();
   }
 //   qDebug() << "Remove done ##########";
 
@@ -1362,7 +1362,7 @@ void KReparentingProxyModelPrivate::sourceRowsAboutToBeMoved(const QModelIndex &
   //       - D                    D                     B                              B
   //       E                      E                     - C                            - C
 
-  // So, I could iterate from start to end in proxySourceParent and if the depth goes less than parent, emit a block move, then start again.
+  // So, I could iterate from start to end in proxySourceParent and if the depth goes less than parent, Q_EMIT a block move, then start again.
 
 
   QHash<QModelIndex, QModelIndexList> newMappings = recreateMappings(parent, start, end);
@@ -1381,9 +1381,9 @@ void KReparentingProxyModelPrivate::sourceLayoutAboutToBeChanged()
   q->beginResetModel();
   return;
 
-  emit q->layoutAboutToBeChanged();
+  Q_EMIT q->layoutAboutToBeChanged();
 
-  foreach(QPersistentModelIndex proxyPersistentIndex, q->persistentIndexList())
+  Q_FOREACH(QPersistentModelIndex proxyPersistentIndex, q->persistentIndexList())
   {
     m_proxyIndexes << proxyPersistentIndex;
     m_layoutChangePersistentIndexes << QPersistentModelIndex(q->mapToSource(proxyPersistentIndex));
@@ -1405,7 +1405,7 @@ void KReparentingProxyModelPrivate::sourceLayoutChanged()
   m_layoutChangePersistentIndexes.clear();
   m_proxyIndexes.clear();
 
-  emit q->layoutChanged();
+  Q_EMIT q->layoutChanged();
 }
 
 void KReparentingProxyModelPrivate::sourceModelAboutToBeReset()
@@ -1452,7 +1452,7 @@ void KReparentingProxyModelPrivate::emitDataChangedSignals(const QModelIndex &st
   QModelIndex lastAffectedSibling = startIndex;
   QModelIndex proxySibling = getIndexBelow(startIndex, q);
 
-  forever
+  Q_FOREVER
   {
     if (proxySibling.parent() != proxyParent || numChanged >= maxChanged)
       break;
@@ -1463,7 +1463,7 @@ void KReparentingProxyModelPrivate::emitDataChangedSignals(const QModelIndex &st
     proxySibling = getIndexBelow(proxySibling);
   }
 
-  emit q->dataChanged(startIndex, lastAffectedSibling);
+  Q_EMIT q->dataChanged(startIndex, lastAffectedSibling);
   if (numChanged < maxChanged)
   {
     emitDataChangedSignals(proxySibling, maxChanged - numChanged);
@@ -1487,7 +1487,7 @@ void KReparentingProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft
   // Create mappings to the end because changing data can affect structure of siblings.
   verifyStructure(parent, start);
 
-  // mapFromSource and emit signals.
+  // mapFromSource and Q_EMIT signals.
 
   QModelIndex proxyStartIndex = q->mapFromSource(q->sourceModel()->index(start, column, parent));
 

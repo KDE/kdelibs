@@ -152,7 +152,7 @@ void DescendantProxyModelWidget::doMatch(const QString &matchData)
 
   QModelIndexList matches = m_descProxyModel->match(start, Qt::DisplayRole, matchData, hits, Qt::MatchContains);
 
-  foreach(const QModelIndex &matchingIndex, matches)
+  Q_FOREACH(const QModelIndex &matchingIndex, matches)
   {
     m_itemSelectionModel->select(matchingIndex, QItemSelectionModel::Select | QItemSelectionModel::Rows);
   }

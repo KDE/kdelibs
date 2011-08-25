@@ -49,7 +49,7 @@ public:
   StateSaverWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
   ~StateSaverWidget();
 
-private slots:
+private Q_SLOTS:
   void saveState();
   void restoreState();
 

@@ -138,7 +138,7 @@ QString ModelEvent::rowAncestors() const
 {
   QString result("QList<int>()");
 
-  foreach( const int row, m_rowAncestors)
+  Q_FOREACH( const int row, m_rowAncestors)
   {
     result.append(" << ");
     result.append(QString::number(row));
@@ -254,7 +254,7 @@ void ModelEventLogger::layoutAboutToBeChanged()
   m_oldPaths.clear();
   m_persistentIndexes.clear();
   const QModelIndexList list = static_cast<const ModelWrapper*>(m_model)->per();
-  foreach(const QPersistentModelIndex &idx, list)
+  Q_FOREACH(const QPersistentModelIndex &idx, list)
   {
     m_persistentIndexes.append(idx);
     m_oldPaths.append(IndexFinder::indexToIndexFinder(idx).rows());
