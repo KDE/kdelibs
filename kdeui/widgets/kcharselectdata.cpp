@@ -236,7 +236,8 @@ QString KCharSelectData::name(const QChar& c)
         VIndex = (SIndex % NCount) / TCount;
         TIndex = SIndex % TCount;
 
-        return QString("HANGUL SYLLABLE ") + JAMO_L_TABLE[LIndex] + JAMO_V_TABLE[VIndex] + JAMO_T_TABLE[TIndex];
+        return QLatin1String("HANGUL SYLLABLE ") + QLatin1String(JAMO_L_TABLE[LIndex])
+            + QLatin1String(JAMO_V_TABLE[VIndex]) + QLatin1String(JAMO_T_TABLE[TIndex]);
     } else if (unicode >= 0xD800 && unicode <= 0xDB7F)
         return i18n("<Non Private Use High Surrogate>");
     else if (unicode >= 0xDB80 && unicode <= 0xDBFF)
