@@ -80,6 +80,7 @@ automoc4_add_library(proxymodeltestsuite ${LIBRARY_TYPE}
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
 )
+generate_export_header(proxymodeltestsuite)
 
 target_link_libraries(proxymodeltestsuite
    ${QT_QTCORE_LIBRARY}

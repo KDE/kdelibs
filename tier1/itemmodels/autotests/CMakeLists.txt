@@ -8,6 +8,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/../src
    ${CMAKE_CURRENT_BINARY_DIR}/../src
    ${CMAKE_CURRENT_SOURCE_DIR}/proxymodeltestsuite
+   ${CMAKE_CURRENT_BINARY_DIR}/proxymodeltestsuite
 )
 
 MACRO(KDEUI_PROXYMODEL_TESTS)
