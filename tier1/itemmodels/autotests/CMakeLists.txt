@@ -25,5 +25,5 @@ KDEUI_PROXYMODEL_TESTS(
   testmodelqueuedconnections
 )
 
-#add_subdirectory(proxymodeltestapp)
+add_subdirectory(proxymodeltestapp)
 
