@@ -58,7 +58,7 @@ public:
 
     void _k_resizeCells();
     void _k_doubleClicked(const QModelIndex & index);
-    void _k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+    void _k_slotSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 };
 
 class KCharSelect::KCharSelectPrivate
@@ -196,7 +196,7 @@ void KCharSelectTable::setContents(QList<QChar> chars)
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(selectionModel, SIGNAL(currentChanged(const QModelIndex & , const QModelIndex &)), this, SLOT(_k_slotCurrentChanged(const QModelIndex &, const QModelIndex &)));
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(_k_slotSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect(d->model, SIGNAL(showCharRequested(QChar)), this, SIGNAL(showCharRequested(QChar)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
 }
@@ -211,11 +211,12 @@ void KCharSelectTable::scrollTo(const QModelIndex & index, ScrollHint hint)
     }
 }
 
-void KCharSelectTablePrivate::_k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous)
+void KCharSelectTablePrivate::_k_slotSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    Q_UNUSED(previous);
-    if (!model) return;
-    QVariant temp = model->data(current, KCharSelectItemModel::CharacterRole);
+    Q_UNUSED(deselected);
+    if (!model || selected.indexes().isEmpty())
+        return;
+    QVariant temp = model->data(selected.indexes().at(0), KCharSelectItemModel::CharacterRole);
     if (temp.type() != QVariant::Char)
         return;
     QChar c = temp.toChar();

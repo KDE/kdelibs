@@ -24,6 +24,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QCache>
+#include <QtCore/QMetaType>
 #include <QtCore/QTime>
 #include <QtCore/QTimer>
 #include <QtCore/QList>
