@@ -167,13 +167,13 @@ void KBreadcrumbSelectionModelPrivate::sourceSelectionChanged(const QItemSelecti
   QItemSelection selectedCrumbs = getBreadcrumbSelection(selected);
 
   QItemSelection removed = deselectedCrumbs;
-  foreach(const QItemSelectionRange &range, selectedCrumbs)
+  Q_FOREACH(const QItemSelectionRange &range, selectedCrumbs)
   {
     removed.removeAll(range);
   }
 
   QItemSelection added = selectedCrumbs;
-  foreach(const QItemSelectionRange &range, deselectedCrumbs)
+  Q_FOREACH(const QItemSelectionRange &range, deselectedCrumbs)
   {
     added.removeAll(range);
   }

@@ -103,7 +103,7 @@ bool KCheckableProxyModel::setData(const QModelIndex& index, const QVariant& val
     Qt::CheckState state = static_cast<Qt::CheckState>(value.toInt());
     const QModelIndex srcIndex = mapToSource(index);
     bool result = select(QItemSelection(srcIndex, srcIndex), state == Qt::Checked ? QItemSelectionModel::Select : QItemSelectionModel::Deselect);
-    emit dataChanged(index, index);
+    Q_EMIT dataChanged(index, index);
     return result;
   }
   return KIdentityProxyModel::setData(index, value, role);
@@ -118,9 +118,9 @@ void KCheckableProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 void KCheckableProxyModelPrivate::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
   Q_Q(KCheckableProxyModel);
-  foreach (const QItemSelectionRange &range, q->mapSelectionFromSource(selected))
+  Q_FOREACH (const QItemSelectionRange &range, q->mapSelectionFromSource(selected))
     q->dataChanged(range.topLeft(), range.bottomRight());
-  foreach (const QItemSelectionRange &range, q->mapSelectionFromSource(deselected))
+  Q_FOREACH (const QItemSelectionRange &range, q->mapSelectionFromSource(deselected))
     q->dataChanged(range.topLeft(), range.bottomRight());
 }
 

@@ -253,7 +253,7 @@ static int getRootListRow(const QList<ModelIndex> &list, const QModelIndex &inde
     // i.e., new items are inserted in the expected location.
 
     QList<QModelIndexList> rootAncestors;
-    foreach(const QModelIndex &root, list) {
+    Q_FOREACH(const QModelIndex &root, list) {
         QModelIndexList ancestors;
         ancestors << root;
         QModelIndex parent = root.parent();
@@ -595,7 +595,7 @@ void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &source
     const int sourceRangeSize = sourceLast.row() - sourceFirst.row();
 
     if (proxyRangeSize == sourceRangeSize) {
-        emit q->dataChanged(proxyFirst, proxyLast);
+        Q_EMIT q->dataChanged(proxyFirst, proxyLast);
         return;
     }
 
@@ -612,11 +612,11 @@ void KSelectionProxyModelPrivate::emitContinuousRanges(const QModelIndex &source
 //
 //     if (proxyRangeSize == sourceRangeSize)
 //     {
-//         emit q->dataChanged(proxyFirst, proxyLast.sibling(proxyFirst.row() + proxyRangeSize, proxyLast.column()));
+//         Q_EMIT q->dataChanged(proxyFirst, proxyLast.sibling(proxyFirst.row() + proxyRangeSize, proxyLast.column()));
 //         return;
 //     }
 
-    emit q->dataChanged(proxyFirst, proxyLast);
+    Q_EMIT q->dataChanged(proxyFirst, proxyLast);
 }
 
 void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -666,14 +666,14 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
             } else {
                 const QModelIndex _top = q->index(first, topLeft.column());
                 const QModelIndex _bottom = q->index(previous, bottomRight.column());
-                emit q->dataChanged(_top, _bottom);
+                Q_EMIT q->dataChanged(_top, _bottom);
                 previous = first = *it;
             }
         }
         if (first != previous) {
             const QModelIndex _top = q->index(first, topLeft.column());
             const QModelIndex _bottom = q->index(previous, bottomRight.column());
-            emit q->dataChanged(_top, _bottom);
+            Q_EMIT q->dataChanged(_top, _bottom);
         }
         return;
     }
@@ -684,14 +684,14 @@ void KSelectionProxyModelPrivate::sourceDataChanged(const QModelIndex &topLeft, 
         if (!proxyTopLeft.isValid())
             return;
         // SubTrees and SubTreesWithoutRoots
-        emit q->dataChanged(proxyTopLeft, proxyBottomRight);
+        Q_EMIT q->dataChanged(proxyTopLeft, proxyBottomRight);
         return;
     }
 
     if (m_startWithChildTrees && !m_omitChildren && !m_includeAllSelected && !m_omitDescendants) {
         // SubTreesWithoutRoots
         if (proxyTopLeft.isValid())
-            emit q->dataChanged(proxyTopLeft, proxyBottomRight);
+            Q_EMIT q->dataChanged(proxyTopLeft, proxyBottomRight);
         return;
     }
 }
@@ -708,10 +708,10 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
     if (m_rootIndexList.isEmpty())
         return;
 
-    emit q->layoutAboutToBeChanged();
+    Q_EMIT q->layoutAboutToBeChanged();
 
     QPersistentModelIndex srcPersistentIndex;
-    foreach(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
+    Q_FOREACH(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
         m_proxyIndexes << proxyPersistentIndex;
         Q_ASSERT(proxyPersistentIndex.isValid());
         srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
@@ -720,15 +720,15 @@ void KSelectionProxyModelPrivate::sourceLayoutAboutToBeChanged()
     }
 
     QItemSelection selection;
-    foreach (const QModelIndex &rootIndex, m_rootIndexList)
+    Q_FOREACH (const QModelIndex &rootIndex, m_rootIndexList)
     {
       // This will be optimized later.
-      emit q->rootIndexAboutToBeRemoved(rootIndex);
+      Q_EMIT q->rootIndexAboutToBeRemoved(rootIndex);
       selection.append(QItemSelectionRange(rootIndex, rootIndex));
     }
 
     selection = kNormalizeSelection(selection);
-    emit q->rootSelectionAboutToBeRemoved(selection);
+    Q_EMIT q->rootSelectionAboutToBeRemoved(selection);
 
     m_rootIndexList.clear();
 }
@@ -774,7 +774,7 @@ void KSelectionProxyModelPrivate::sourceLayoutChanged()
     m_layoutChangePersistentIndexes.clear();
     m_proxyIndexes.clear();
 
-    emit q->layoutChanged();
+    Q_EMIT q->layoutChanged();
 }
 
 void KSelectionProxyModelPrivate::resetInternalData()
@@ -802,12 +802,12 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
     Q_Q(KSelectionProxyModel);
 
     // We might be resetting as a result of the selection source model resetting.
-    // If so we don't want to emit
+    // If so we don't want to Q_EMIT
     // sourceModelAboutToBeReset
     // sourceModelAboutToBeReset
     // sourceModelReset
     // sourceModelReset
-    // So we ensure that we just emit one.
+    // So we ensure that we just Q_EMIT one.
     if (m_resetting) {
 
       // If both the source model and the selection source model are reset,
@@ -1017,7 +1017,7 @@ void KSelectionProxyModelPrivate::sourceRowsInserted(const QModelIndex &parent, 
     m_rowsInserted = false;
     endInsertRows(parent, start, end);
     q->endInsertRows();
-    foreach(const PendingSelectionChange &pendingChange, m_pendingSelectionChanges)
+    Q_FOREACH(const PendingSelectionChange &pendingChange, m_pendingSelectionChanges)
     {
       selectionChanged(pendingChange.selected, pendingChange.deselected);
     }
@@ -1606,7 +1606,7 @@ void KSelectionProxyModelPrivate::removeSelectionFromProxy(const QItemSelection 
 
     q->rootSelectionAboutToBeRemoved(selection);
 
-    foreach(const QItemSelectionRange range, selection)
+    Q_FOREACH(const QItemSelectionRange range, selection)
         removeRangeFromProxy(range);
 }
 
@@ -1824,7 +1824,7 @@ void KSelectionProxyModelPrivate::selectionChanged(const QItemSelection &_select
                     // range is not a descendant of the selection, but maybe the selection is a descendant of range.
                     // no need to check selected here. That's already in newRootRanges.
                     // existingRootRanges and newRootRanges do not overlap.
-                    foreach (const QItemSelectionRange &selectedRange, existingRootRanges) {
+                    Q_FOREACH (const QItemSelectionRange &selectedRange, existingRootRanges) {
                         const QModelIndex selectedRangeTopLeft = selectedRange.topLeft();
                         // existingSelection (and selectedRangeTopLeft) is D.
                         // D is a descendant of B, so when B was removed, D might have been exposed as a root.
@@ -1900,7 +1900,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
     if (selection.isEmpty())
         return;
 
-    foreach(const QModelIndex &newIndex, selection.indexes()) {
+    Q_FOREACH(const QModelIndex &newIndex, selection.indexes()) {
         Q_ASSERT(newIndex.model() == q->sourceModel());
         if (newIndex.column() > 0)
             continue;
@@ -1915,7 +1915,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
                 // We still need to make sure it's future children are inserted into the model.
                 m_rootIndexList.insert(rootListRow, newIndex);
                 if (!m_resetting || m_layoutChanging)
-                    emit q->rootIndexAdded(newIndex);
+                    Q_EMIT q->rootIndexAdded(newIndex);
                 continue;
             }
             if (!m_resetting)
@@ -1923,7 +1923,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
             Q_ASSERT(newIndex.isValid());
             m_rootIndexList.insert(rootListRow, newIndex);
             if (!m_resetting || m_layoutChanging)
-                emit q->rootIndexAdded(newIndex);
+                Q_EMIT q->rootIndexAdded(newIndex);
 
             int _start = 0;
             for (int i = 0; i < rootListRow; ++i)
@@ -1946,7 +1946,7 @@ void KSelectionProxyModelPrivate::insertSelectionIntoProxy(const QItemSelection 
             m_rootIndexList.insert(row, newIndex);
 
             if (!m_resetting || m_layoutChanging)
-                emit q->rootIndexAdded(newIndex);
+                Q_EMIT q->rootIndexAdded(newIndex);
             Q_ASSERT(m_rootIndexList.size() > row);
             updateInternalIndexes(QModelIndex(), row, 1);
             createParentMappings(newIndex.parent(), newIndex.row(), newIndex.row());
@@ -2073,7 +2073,7 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
                    this, SLOT(sourceModelDestroyed()));
     }
 
-    // Must be called before QAbstractProxyModel::setSourceModel because it emits some signals.
+    // Must be called before QAbstractProxyModel::setSourceModel because it Q_EMITs some Q_SIGNALS.
     d->resetInternalData();
     QAbstractProxyModel::setSourceModel(_sourceModel);
     if (_sourceModel) {
@@ -2244,7 +2244,7 @@ QMimeData* KSelectionProxyModel::mimeData(const QModelIndexList & indexes) const
     if (!sourceModel())
         return QAbstractProxyModel::mimeData(indexes);
     QModelIndexList sourceIndexes;
-    foreach(const QModelIndex& index, indexes)
+    Q_FOREACH(const QModelIndex& index, indexes)
         sourceIndexes << mapToSource(index);
     return sourceModel()->mimeData(sourceIndexes);
 }
@@ -2346,7 +2346,7 @@ QModelIndexList KSelectionProxyModel::match(const QModelIndex& start, int role, 
 
     QModelIndexList list;
     QModelIndex proxyIndex;
-    foreach(const QModelIndex &idx, sourceModel()->match(mapToSource(start), role, value, hits, flags)) {
+    Q_FOREACH(const QModelIndex &idx, sourceModel()->match(mapToSource(start), role, value, hits, flags)) {
         proxyIndex = mapFromSource(idx);
         if (proxyIndex.isValid())
             list << proxyIndex;
@@ -2361,7 +2361,7 @@ QItemSelection KSelectionProxyModel::mapSelectionFromSource(const QItemSelection
         // QAbstractProxyModel::mapSelectionFromSource puts invalid ranges in the result
         // without checking. We can't have that.
         QItemSelection proxySelection;
-        foreach(const QItemSelectionRange &range, selection)
+        Q_FOREACH(const QItemSelectionRange &range, selection)
         {
           QModelIndex proxyTopLeft = mapFromSource(range.topLeft());
           if (!proxyTopLeft.isValid())
@@ -2400,7 +2400,7 @@ QItemSelection KSelectionProxyModel::mapSelectionToSource(const QItemSelection& 
         // QAbstractProxyModel::mapSelectionFromSource puts invalid ranges in the result
         // without checking. We can't have that.
         QItemSelection sourceSelection;
-        foreach(const QItemSelectionRange &range, selection)
+        Q_FOREACH(const QItemSelectionRange &range, selection)
         {
           QModelIndex sourceTopLeft = mapToSource(range.topLeft());
           Q_ASSERT(sourceTopLeft.isValid());

@@ -23,7 +23,7 @@
 // This class invokes some Q_PRIVATE_SLOTs in QSortFilterProxyModel which are
 // private API and could be renamed or removed at any time.
 // If they are renamed, the invokations can be updated with an #if (QT_VERSION(...))
-// If they are removed, then layout{AboutToBe}Changed signals should be used when the source model
+// If they are removed, then layout{AboutToBe}Changed Q_SIGNALS should be used when the source model
 // gets new rows or has rowsremoved or moved. The Q_PRIVATE_SLOT invokation is an optimization
 // because layout{AboutToBe}Changed is expensive and causes the entire mapping of the tree in QSFPM
 // to be cleared, even if only a part of it is dirty.
@@ -43,7 +43,7 @@ public:
     qRegisterMetaType<QModelIndex>( "QModelIndex" );
   }
 
-  // Convenience methods for invoking the QSFPM slots. Those slots must be invoked with invokeMethod
+  // Convenience methods for invoking the QSFPM Q_SLOTS. Those slots must be invoked with invokeMethod
   // because they are Q_PRIVATE_SLOTs
   inline void invokeDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
   {
@@ -298,7 +298,7 @@ QModelIndexList KRecursiveFilterProxyModel::match( const QModelIndex& start, int
 
   QModelIndexList list;
   QModelIndex proxyIndex;
-  foreach ( const QModelIndex &idx, sourceModel()->match( mapToSource( start ), role, value, hits, flags ) ) {
+  Q_FOREACH ( const QModelIndex &idx, sourceModel()->match( mapToSource( start ), role, value, hits, flags ) ) {
     proxyIndex = mapFromSource( idx );
     if ( proxyIndex.isValid() )
       list << proxyIndex;
@@ -389,7 +389,7 @@ void KRecursiveFilterProxyModel::setSourceModel(QAbstractItemModel* model)
   // the source model (_q_sourceRowsAboutToBeInserted) does not get called directly.
   // Instead we connect the sourceModel signal to our own slot in *this (sourceRowsAboutToBeInserted)
   // Inside that method, the entire new subtree is queried (J, K *and* L) to see if there is a match,
-  // then the relevant slots in QSFPM are invoked.
+  // then the relevant Q_SLOTS in QSFPM are invoked.
   // In the example above, we need to tell the QSFPM that H should be queried again to see if
   // it matches the filter. It did not before, because L did not exist before. Now it does. That is
   // achieved by telling the QSFPM that the data changed for H, which causes it to requery this class

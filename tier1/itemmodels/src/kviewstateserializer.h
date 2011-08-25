@@ -121,7 +121,7 @@ class KViewStateSerializerPrivate;
       void selectItems(const QList<qint64> &items)
       {
         QStringList itemStrings;
-        foreach(qint64 item, items)
+        Q_FOREACH(qint64 item, items)
           itemStrings << QString::number(item);
         restoreSelection(itemStrings);
       }
@@ -129,7 +129,7 @@ class KViewStateSerializerPrivate;
       void expandItems(const QList<qint64> &items)
       {
         QStringList itemStrings;
-        foreach(qint64 item, items)
+        Q_FOREACH(qint64 item, items)
           itemStrings << QString::number(item);
         restoreSelection(itemStrings);
       }

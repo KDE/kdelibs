@@ -338,7 +338,7 @@ QMimeData* KIdentityProxyModel::mimeData(const QModelIndexList& indexes) const
         return QAbstractProxyModel::mimeData(indexes);
 
     QModelIndexList proxyIndexes;
-    foreach(const QModelIndex &index, indexes)
+    Q_FOREACH(const QModelIndex &index, indexes)
         proxyIndexes.append(mapToSource(index));
 
     return sourceModel()->mimeData(proxyIndexes);
@@ -625,8 +625,8 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
 
     const QModelIndex proxyParent1 = q->mapFromSource(parent1);
     const QModelIndex proxyParent2 = q->mapFromSource(parent2);
-    //emit q->childrenLayoutsAboutToBeChanged(proxyParent1, proxyParent2);
-    emit q->layoutAboutToBeChanged();
+    //Q_EMIT q->childrenLayoutsAboutToBeChanged(proxyParent1, proxyParent2);
+    Q_EMIT q->layoutAboutToBeChanged();
 
     if (q->persistentIndexList().isEmpty())
         return;
@@ -664,8 +664,8 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelInd
 
     const QModelIndex proxyParent1 = q->mapFromSource(parent1);
     const QModelIndex proxyParent2 = q->mapFromSource(parent2);
-//     emit q->childrenLayoutsChanged(proxyParent1, proxyParent2);
-    emit q->layoutChanged();
+//     Q_EMIT q->childrenLayoutsChanged(proxyParent1, proxyParent2);
+    Q_EMIT q->layoutChanged();
 }
 
 void KIdentityProxyModelPrivate::_k_sourceModelAboutToBeReset()

@@ -335,7 +335,7 @@ QStringList KViewStateSerializer::selectionKeys() const
 
   QModelIndexList selectedIndexes = d->m_selectionModel->selectedRows();
   QStringList selection;
-  foreach ( const QModelIndex &index, selectedIndexes )
+  Q_FOREACH ( const QModelIndex &index, selectedIndexes )
     selection << indexToConfigString( index );
 
   return selection;
