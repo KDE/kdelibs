@@ -41,7 +41,7 @@
 #include "matchcheckingwidget.h"
 #include "kidentityproxymodelwidget.h"
 
-MainWindow::MainWindow() : KXmlGuiWindow()
+MainWindow::MainWindow() : QMainWindow()
 {
 
   QTabWidget *tabWidget = new QTabWidget( this );
