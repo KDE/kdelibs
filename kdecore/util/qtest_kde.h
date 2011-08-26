@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ), 1); \
     setenv("KDE_SKIP_KDERC", "1", 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
-    QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/share/config/qttestrc"));  \
+    QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
     KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
     KComponentData cData(&aboutData); \
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ), 1); \
     setenv("KDE_SKIP_KDERC", "1", 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
-    QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/share/config/qttestrc"));  \
+    QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
     KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
