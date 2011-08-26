@@ -475,8 +475,8 @@ void KBuildSycoca::save(QDataStream* str)
    str->device()->seek(0);
 
    (*str) << (qint32) KSycoca::version();
-   KSycocaFactory * servicetypeFactory = 0;
-   KBuildMimeTypeFactory * mimeTypeFactory = 0;
+   //KSycocaFactory * servicetypeFactory = 0;
+   //KBuildMimeTypeFactory * mimeTypeFactory = 0;
    KBuildServiceFactory * serviceFactory = 0;
    for(KSycocaFactoryList::Iterator factory = factories()->begin();
        factory != factories()->end();
@@ -485,11 +485,11 @@ void KBuildSycoca::save(QDataStream* str)
       qint32 aId;
       qint32 aOffset;
       aId = (*factory)->factoryId();
-      if ( aId == KST_KServiceTypeFactory )
-         servicetypeFactory = *factory;
-      else if ( aId == KST_KMimeTypeFactory )
-         mimeTypeFactory = static_cast<KBuildMimeTypeFactory *>( *factory );
-      else if ( aId == KST_KServiceFactory )
+      //if ( aId == KST_KServiceTypeFactory )
+      //   servicetypeFactory = *factory;
+      //else if ( aId == KST_KMimeTypeFactory )
+      //   mimeTypeFactory = static_cast<KBuildMimeTypeFactory *>( *factory );
+      if ( aId == KST_KServiceFactory )
          serviceFactory = static_cast<KBuildServiceFactory *>( *factory );
       aOffset = (*factory)->offset(); // not set yet, so always 0
       (*str) << aId;
