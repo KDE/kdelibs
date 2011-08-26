@@ -802,12 +802,12 @@ void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
     Q_Q(KSelectionProxyModel);
 
     // We might be resetting as a result of the selection source model resetting.
-    // If so we don't want to Q_EMIT
+    // If so we don't want to emit
     // sourceModelAboutToBeReset
     // sourceModelAboutToBeReset
     // sourceModelReset
     // sourceModelReset
-    // So we ensure that we just Q_EMIT one.
+    // So we ensure that we just emit one.
     if (m_resetting) {
 
       // If both the source model and the selection source model are reset,
@@ -2073,7 +2073,7 @@ void KSelectionProxyModel::setSourceModel(QAbstractItemModel *_sourceModel)
                    this, SLOT(sourceModelDestroyed()));
     }
 
-    // Must be called before QAbstractProxyModel::setSourceModel because it Q_EMITs some Q_SIGNALS.
+    // Must be called before QAbstractProxyModel::setSourceModel because it emit some signals.
     d->resetInternalData();
     QAbstractProxyModel::setSourceModel(_sourceModel);
     if (_sourceModel) {
