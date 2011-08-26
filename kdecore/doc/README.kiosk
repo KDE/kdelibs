@@ -551,8 +551,8 @@ Most KDE applications make use of additional resource files that are typically
 located in directories under $KDEDIR/share. By default KDE allows users to
 override any of these resources by placing files in the same location 
 under $KDEHOME/share. For example, Konsole stores profiles under 
-$KDEDIR/share/apps/konsole and users can add additional profiles by 
-installing files in $KDEHOME/share/apps/konsole.
+$KDEDIR/share/konsole and users can add additional profiles by 
+installing files in $KDEHOME/share/konsole.
 
 KDE Resource Restrictions make it possible to restrict the lookup of files
 to directories outside of $KDEHOME only.
@@ -560,7 +560,7 @@ to directories outside of $KDEHOME only.
 The following resources are defined:
 
 autostart - share/autostart
-data - share/apps
+data - share
 html - share/doc/HTML
 icon - share/icon
 config - share/config
