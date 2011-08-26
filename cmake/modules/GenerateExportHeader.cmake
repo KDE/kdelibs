@@ -108,7 +108,7 @@ macro(_test_compiler_hidden_visibility)
   mark_as_advanced(USE_COMPILER_HIDDEN_VISIBILITY)
 endmacro()
 
-set(myDir ${CMAKE_CURRENT_LIST_DIR})
+get_filename_component(_GENERATE_EXPORT_HEADER_MODULE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
 
 macro(_DO_SET_MACRO_VALUES TARGET_LIBRARY)
   set(DEFINE_DEPRECATED)
@@ -194,7 +194,7 @@ macro(_DO_GENERATE_EXPORT_HEADER TARGET_LIBRARY)
     set(EXPORT_IMPORT_CONDITION ${TARGET_LIBRARY}_EXPORTS)
   endif()
 
-  configure_file(${myDir}/exportheader.cmake.in ${EXPORT_FILE_NAME} @ONLY)
+  configure_file(${_GENERATE_EXPORT_HEADER_MODULE_DIR}/exportheader.cmake.in ${EXPORT_FILE_NAME} @ONLY)
 endmacro()
 
 function(GENERATE_EXPORT_HEADER TARGET_LIBRARY)
