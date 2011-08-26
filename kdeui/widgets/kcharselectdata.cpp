@@ -558,7 +558,8 @@ QChar::Category KCharSelectData::category(const QChar& c)
             max = mid - 1;
         else {
             quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
-            return QChar::category(qFromLittleEndian<quint32>(data + offset));
+            const quint8 categoryCode = * (quint8 *)(data + offset);
+            return QChar::Category(categoryCode);
         }
     }
 
