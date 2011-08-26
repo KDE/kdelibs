@@ -1,9 +1,9 @@
 In KDE-3 a kiosk-framework has been introduced.
 
 One of the driving forces behind KDE is to put the user in control and
-give him or her a large amount of possibilities to adjust KDE to his or her 
+give him or her a large amount of possibilities to adjust KDE to his or her
 liking. However, in some situations it is required to reduce the possibilities
-of KDE, e.g. because the system is to be used for one or more specific 
+of KDE, e.g. because the system is to be used for one or more specific
 dedicated tasks only.
 
 The kiosk-framework provides an easy way to disable certain features within
@@ -14,16 +14,16 @@ simple application API that applications can query to get authorisation
 for certain operations.
 
 The KDE kiosk-framework should be used IN ADDITION to the standard UNIX
-security measures. 
+security measures.
 
 The configuration framework in KDE
 ==================================
 
 Since the very beginning KDE makes use of file-hierarchy to store resources
-for its applications. Resources range from icons, wallpapers, fonts to 
-sounds, menu-descriptions and configuration files. 
+for its applications. Resources range from icons, wallpapers, fonts to
+sounds, menu-descriptions and configuration files.
 
-In KDE1 there were two locations were resources could be located: The 
+In KDE1 there were two locations were resources could be located: The
 resources provided by the system were located under $KDEDIR and user-
 specific resources were located under $HOME/.kde.
 
@@ -31,14 +31,14 @@ In KDE2 resource management has been largely abstracted by the introduction
 of the KStandardDirs class and has become much more flexible. The user /
 administrator can now specify a variable number of locations where resources
 can be found. A list of locations can either be specified via $KDEDIRS
-(notice the extra 'S'), via /etc/kde4rc and even via the kdeglobals config 
+(notice the extra 'S'), via /etc/kde4rc and even via the kdeglobals config
 file. The location where user-specific resources can be found can be
 set with $KDEHOME (The default is $HOME/.kde). Changes made by the user
 are always written back to $KDEHOME.
 
 Both KDE1 and KDE2 feature so called "cascading configuration files": There
-can be multiple configuration files with the same name in the various 
-locations for (config) resources, when that is the case, the information of 
+can be multiple configuration files with the same name in the various
+locations for (config) resources, when that is the case, the information of
 all these configuration files is combined on a key by key basis. If the same
 key (within a certain group) is defined in more than one place, the value
 of the key for the config file that was read last will override any previously
@@ -49,14 +49,14 @@ read back.
 In KDE3 two important changes have been made:
 
 * Default values are no longer written.
-When a configuration file in a location other than $KDEHOME defines a value 
+When a configuration file in a location other than $KDEHOME defines a value
 for a key and the application subsequently writes out a new configuration file
 to $KDEHOME, that configuration file will only contain an entry for the key
 if its value differs from the value read from the other file.
 
-This counters the problem that changing default configuration files under 
+This counters the problem that changing default configuration files under
 $KDEDIR would not take effect for users, since these users would most likely
-have their own copy of these settings under $KDEHOME. KDE will make sure 
+have their own copy of these settings under $KDEHOME. KDE will make sure
 not to copy these settings so changes made under $KDEDIR will affect all users
 that haven't explicitly changed the affected settings to something else.
 
@@ -64,7 +64,7 @@ that haven't explicitly changed the affected settings to something else.
 Starting with KDE-3, configuration entries can be marked "immutable". When a
 configuration entry is immutable it means that configuration files that are
 read later will not be able to override its value. Immutable entries cannot
-be changed via KConfig and if the entry is present under $KDEHOME it will 
+be changed via KConfig and if the entry is present under $KDEHOME it will
 be ignored.
 
 Entries can be marked immutable on 4 different levels:
@@ -94,9 +94,9 @@ someOtherKey=11
 
 - On a directory basis. [Not yet implemented]
 
-- The filesystem can also be used to mark files immutable. If KDE does not 
+- The filesystem can also be used to mark files immutable. If KDE does not
 have write-access to the user's version of a configuration file, the file
-will be automatically considered immutable. 
+will be automatically considered immutable.
 
 To make the configuration file of Dolphin immutable one could for
 example use the commands below.
@@ -113,8 +113,8 @@ disable the warning for all applications):
 [KDE Action Restrictions]
 warn_unwritable_config=true
 
-Note that the above example is not fool-proof, the user can potentially still 
-rename either the root-owned dolphinrc file or any of the directories in 
+Note that the above example is not fool-proof, the user can potentially still
+rename either the root-owned dolphinrc file or any of the directories in
 the path to another name and create a new dolphinrc _with_ write-access.
 
 KDE Action Restrictions
@@ -127,14 +127,14 @@ makes it possible to disable functionality by restricting specific actions. By r
 "file_open" action for example, the corresponding entry in the menubar and the corresponding icon on
 the toolbar, if any, will disappear.
 
-To restrict access to function the kdeglobals file should contain the 
-group "[KDE Action Restrictions]", each action can then be restricted by 
-adding "<action>=false". E.g. to disable the action "shell_access" one 
+To restrict access to function the kdeglobals file should contain the
+group "[KDE Action Restrictions]", each action can then be restricted by
+adding "<action>=false". E.g. to disable the action "shell_access" one
 would add:
 [KDE Action Restrictions][$i]
 shell_access=false
 
-Actions that refer to menu and toolbar actions are prefixed with 'action/'. 
+Actions that refer to menu and toolbar actions are prefixed with 'action/'.
 The following standard actions are defined:
 
 action/file_new
@@ -220,7 +220,7 @@ action/properties
 action/openwith
 action/openintab
 action/kdesktop_rmb // RMB menu, see note below
-action/iconview_preview 
+action/iconview_preview
 action/sharefile // File sharing, see note below
 action/sendURL // Send Link Address
 action/sendPage // Send File
@@ -233,7 +233,7 @@ action/executeshellcommand // In Konqueror Tools menu, see also shell_access
 action/show_dot // Show Hidden Files, see note below
 
 
-Kicker related: 
+Kicker related:
 action/kicker_rmb // RMB menu
 action/menuedit
 
@@ -261,7 +261,7 @@ action/options_configure_notifications
 action/options_configure_keybinding
 action/options_configure
 
-action/send_signal 
+action/send_signal
 action/bookmarks
 action/add_bookmark
 action/edit_bookmarks
@@ -338,14 +338,14 @@ are prefixed by user/ and identified by the username. For example:
 
 user/root=false
 
-will disable all application entries that require root access. 
+will disable all application entries that require root access.
 
 
 Printing related action restrictions:
 
 print/system
-        - disables the option to select the printing system (backend). It is 
-          recommended to  disable this option once the correct printing 
+        - disables the option to select the printing system (backend). It is
+          recommended to  disable this option once the correct printing
           system has been configured.
 
 print/properties
@@ -358,7 +358,7 @@ print/copies
         - disables the panel that allows users to make more than one copy.
 
 print/selection
-        - disables the options that allows selecting a (pseudo) printer or 
+        - disables the options that allows selecting a (pseudo) printer or
           change any of the printer properties. Make sure that a proper
           default printer has been selected before disabling this option.
           Disabling this option also disables print/system, print/options
@@ -372,19 +372,19 @@ print/dialog
 
 Other defined actions:
 
-shell_access 
-        - defines whether a shell suitable for entering random commands 
+shell_access
+        - defines whether a shell suitable for entering random commands
           may be started. This also determines whether the "Run Command"
-          option (Alt-F2) can be used to run shell-commands and arbitrary  
+          option (Alt-F2) can be used to run shell-commands and arbitrary
           executables. Likewise, executables placed in the user's
           Autostart folder will no longer be executed. Applications can
           still be autostarted by placing .desktop files in the $KDEHOME/Autostart
           or $KDEDIR/share/autostart directory.
           See also run_desktop_files.
 
-custom_config 
+custom_config
         - defines whether the --config command line option should be honored.
-          The --config command line option can be used to circumvent 
+          The --config command line option can be used to circumvent
           locked-down configuration files.
 
 logout
@@ -401,7 +401,7 @@ movable_toolbars
           See also action/options_show_toolbar.
 
 editable_desktop_icons
-        - define whether icons on the desktop can be moved, renamed, 
+        - define whether icons on the desktop can be moved, renamed,
           deleted or added. You might want to set the path for
           the Desktop to some read-only directory as well.
           (Instead of $HOME/Desktop)
@@ -410,13 +410,13 @@ run_desktop_files
         - defines whether users may execute desktop files that are not
           part of the default desktop, KDE menu, registered services and
           autostarting services.
-          * The default desktop includes the files under 
+          * The default desktop includes the files under
             $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
-            $HOME/Desktop. 
+            $HOME/Desktop.
           * The KDE menu includes all files under $KDEDIR/share/applnk and
             $XDGDIR/applications
-          * Registered services includes all files under $KDEDIR/share/services. 
-          * Autostarting services include all files under $KDEDIR/share/autostart 
+          * Registered services includes all files under $KDEDIR/share/services.
+          * Autostarting services include all files under $KDEDIR/share/autostart
             but _NOT_ the files under $KDEHOME/Autostart
 
           You probably also want to activate the following resource
@@ -430,8 +430,8 @@ run_desktop_files
           in e.g. $KDEHOME/share/kdesktop/Desktop
 
 lineedit_text_completion
-        - defines whether input lines should have the potential to remember 
-          any previously entered data and make suggestions based on this 
+        - defines whether input lines should have the potential to remember
+          any previously entered data and make suggestions based on this
           when typing. When a single account is shared by multiple people you
           may wish to disable this out of privacy concerns.
 
@@ -468,7 +468,7 @@ continue to work with the immutable setting.
 The following applications currently detect when their configuration files have been
 marked immutable and adjust their user interface accordingly:
 
-* kicker - By marking the kickerrc config file as immutable, the panel will be 
+* kicker - By marking the kickerrc config file as immutable, the panel will be
 "locked down" and it will not be possible to make any changes to it.
 
 * kdesktop - By marking the kdesktoprc config file as immutable, the desktop
@@ -479,7 +479,7 @@ will be "locked down" and it will no longer be possible to select
 will not be shown
 
 Application .desktop files can have an additional field "X-KDE-AuthorizeAction".
-If this field is present the .desktop file is only considered if the action(s) 
+If this field is present the .desktop file is only considered if the action(s)
 mentioned in this field has been authorized. If multiple actions are listed
 they should be separated by commas (','). So if the .desktop file of an application
 lists one or more actions this way and the user has no authorization for one
@@ -490,15 +490,15 @@ IMPORTANT NOTE:
 Changing restrictions may influence the data that is cached in the ksycoca
 database. Since changes to .../share/config/kdeglobals do not trigger an
 automatic ksycoca update you need to force an update manually.
-To force an update of the ksycoca database touch the file 
+To force an update of the ksycoca database touch the file
 .../share/services/update_ksycoca. This will force a user's sycoca database
 to be rebuild the next time the user logs in.
 
 KDE URL Restrictions
 ====================
 
-It is also possible to restrict URL related actions. The restriction framework 
-can disable URL actions based on the action, the URL in question and in some cases 
+It is also possible to restrict URL related actions. The restriction framework
+can disable URL actions based on the action, the URL in question and in some cases
 the referring URL. URLs can be matched based on protocol, host and path.
 
 The syntax for adding URL action restrictions to kdeglobals is as follows:
@@ -523,24 +523,24 @@ list     - This controls which directories can be browsed with KDE's file-dialog
            then enables browsing the users home directory.
 
 open     - This controls which files can be opened by the user in applications. It also
-           affects where users can save files. To only allow a user to open the files 
+           affects where users can save files. To only allow a user to open the files
            in his own home directory one could use:
               rule_1=open,,,,file,,,false
               rule_2=open,,,,file,,$HOME,true
               rule_3=open,,,,file,,$TMP,true
-           Note that with the above, users would still be able to open files from 
+           Note that with the above, users would still be able to open files from
            the internet. Note that the user is also given access to $TMP in order to
-           ensure correct operation of KDE applications. $TMP is replaced with the 
+           ensure correct operation of KDE applications. $TMP is replaced with the
            temporary directory that KDE uses for this user.
 
 Some remarks:
 * empty entries match everything
 * host names may start with a wildcard, e.g. "*.acme.com"
-* a protocol also matches similar protocols that start with the same name, 
+* a protocol also matches similar protocols that start with the same name,
   e.g. "http" matches both http and https. You can use "http!" if you only want to
   match http (and not https)
 * specifying a path matches all URLs that start with the same path. For better results
-  you should not include a trailing slash. If you want to specify one specific path, you can 
+  you should not include a trailing slash. If you want to specify one specific path, you can
   add an exclamation mark. E.g. "/srv" matches both "/srv" and "/srv/www" but "/srv!" only
   matches "/srv" and not "/srv/www".
 
@@ -549,9 +549,9 @@ KDE Resource Restrictions
 ==========================
 Most KDE applications make use of additional resource files that are typically
 located in directories under $KDEDIR/share. By default KDE allows users to
-override any of these resources by placing files in the same location 
-under $KDEHOME/share. For example, Konsole stores profiles under 
-$KDEDIR/share/konsole and users can add additional profiles by 
+override any of these resources by placing files in the same location
+under $KDEHOME/share. For example, Konsole stores profiles under
+$KDEDIR/share/konsole and users can add additional profiles by
 installing files in $KDEHOME/share/konsole.
 
 KDE Resource Restrictions make it possible to restrict the lookup of files
@@ -586,7 +586,7 @@ data_<appname> - covers the sub section for <appname> in the data resource.
 
 To restrict resources the kdeglobals file should contain the
 group "[KDE Resource Restrictions]", each resource can then be restricted by
-adding "<resource>=false". E.g. to restrict the "wallpaper" resource to 
+adding "<resource>=false". E.g. to restrict the "wallpaper" resource to
 $KDEDIR/share/wallpapers one would add:
 [KDE Resource Restrictions][$i]
 wallpaper=false
@@ -620,7 +620,7 @@ Expansion of environment variables in KDE config files.
 =======================================================
 
 Since KDE-3.1, arbitrary entries in configuration files can contain environment
-variables. In order to use this the entry must be marked with [$e]. 
+variables. In order to use this the entry must be marked with [$e].
 
 Example:
 Name[$e]=$USER
@@ -643,10 +643,10 @@ Name[$ei]=${USER}
 Shell Commands in KDE config files.
 ===================================
 
-Since KDE-3.1 arbitrary entries in configuration files can contain shell 
+Since KDE-3.1 arbitrary entries in configuration files can contain shell
 commands. This way the value of a configuration entry can be determined
-dynamically at runtime. In order to use this the entry must be marked 
-with [$e]. 
+dynamically at runtime. In order to use this the entry must be marked
+with [$e].
 
 Example:
 Host[$e]=$(hostname)
@@ -682,7 +682,7 @@ his session is logged out.
 Users can be associated with Profile(s)
 =======================================
 
-A user can be associated with one or more profiles. A profile indicates a 
+A user can be associated with one or more profiles. A profile indicates a
 configuration set that applies to a group of users. Each profile has a name
 to identify it. If a user is associated with more than one profile then the
 order of the two profiles is important. Settings associated with one profile
@@ -781,7 +781,7 @@ The Profile determines the directory prefixes
 =============================================
 
 The global KDE configuration file (e.g. kdeglobals or /etc/kde4rc) can
-contain config-groups that are associated with a certain user profile. 
+contain config-groups that are associated with a certain user profile.
 Such a config-group is treated similar as the [Directories] config-group.
 
 The name of a such config-group is [Directories-<ProfileName>]
