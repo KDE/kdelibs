@@ -82,6 +82,7 @@ KDEUI_EXECUTABLE_TESTS(
   kdebugtest_gui
   kdialogbuttonboxtest
   kdialogtest
+  keditlistwidgettest
   kfontdialogtest
   kglobalsettingsclient # helper program for kglobalsettingstest
   khboxtest
