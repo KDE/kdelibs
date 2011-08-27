@@ -10,7 +10,7 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
 # Configure checks for kdirwatch
-macro_optional_find_package(FAM)
+find_package(FAM)
 macro_bool_to_01(FAM_FOUND HAVE_FAM)
 
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)

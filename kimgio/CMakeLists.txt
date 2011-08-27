@@ -1,9 +1,9 @@
 
 project(kimgio)
 
-macro_optional_find_package(Jasper)
+find_package(Jasper)
 
-macro_optional_find_package(OpenEXR)
+find_package(OpenEXR)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 

@@ -133,7 +133,7 @@ set(solid_LIB_SRCS
 )
 
 if(NOT APPLE)
-  macro_optional_find_package( HUpnp )
+  find_package( HUpnp )
 
   if ( HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
     include_directories( ${HUPNP_INCLUDE_DIR} )
@@ -170,7 +170,7 @@ if(NOT WIN32 AND NOT APPLE)
 
 #   )
 
-   macro_optional_find_package( UDev )
+   find_package( UDev )
    macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 

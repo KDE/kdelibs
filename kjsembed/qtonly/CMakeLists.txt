@@ -78,11 +78,10 @@ include(KDE4Defaults)
 # make some more macros available
 include (MacroLibrary)
 
-# macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
-# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-macro_optional_find_package(BZip2)
-macro_optional_find_package(OpenSSL)
-macro_optional_find_package(Libintl)
+# The checking for the software can be disabled via ccmake or -DCMAKE_DISABLE_FIND_PACKAGE_<name>=ON
+find_package(BZip2)
+find_package(OpenSSL)
+find_package(Libintl)
 
 
 add_definitions(${QT_DEFINITIONS})
@@ -101,7 +100,7 @@ set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
 
 
 # ACL stuff (used in kio/ and kioslaves/)
-macro_optional_find_package(ACL)
+find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 
 include(${CMAKE_SOURCE_DIR}/../../ConfigureChecks.cmake)
