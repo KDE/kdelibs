@@ -32,7 +32,7 @@ class TestPlot : public QMainWindow {
 	TestPlot( QWidget *parent=0 );
 	~TestPlot() {}
 
- public slots:
+ public Q_SLOTS:
 	void slotSelectPlot( int index );
 
  private:
