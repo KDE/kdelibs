@@ -52,12 +52,15 @@ endif()
 find_package(Grantlee ${GRANTLEE_FIND_ARG})
 
 if(NOT proxymodeltestsuite_standalone)
-  macro_log_feature(Grantlee_FOUND
-    "Grantlee"
-    "ModelEventLogger code generation (part of the ProxyModel test suite)"
-    "http://www.grantlee.org" FALSE
-    "0.1.0"
-    "Grantlee is used for generating compilable code by the ModelEventLogger. Without Grantlee, the logger will do nothing."
+  # TODO: Put this part in Grantlee
+  set_package_properties(Grantlee PROPERTIES
+    URL "http://www.grantlee.org"
+    DESCRIPTION "A String Template system for Qt"
+  )
+
+  set_package_properties(Grantlee PROPERTIES
+    TYPE OPTIONAL
+    PURPOSE "Grantlee is used for generating compilable code by the ModelEventLogger. Without Grantlee, the logger will do nothing."
   )
 endif()
 
