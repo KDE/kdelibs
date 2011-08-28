@@ -39,10 +39,10 @@ class KConfig;
  *
  * Applications should always refer to a file with a resource type.
  * The application should leave it up to e.g.
- * KStandardDirs::findResource("apps", "Home.desktop")
- * to return the desired path <tt>/opt/kde/share/applnk/Home.desktop</tt>
+ * KStandardDirs::findResource("xdgdata-apps", "Home.desktop")
+ * to return the desired path <tt>/opt/kde/share/applications/Home.desktop</tt>
  * or ::locate("data", "kgame/background.jpg") to return
- * <tt>/opt/kde/share/apps/kgame/background.jpg</tt>
+ * <tt>/opt/kde/share/kgame/background.jpg</tt>
  *
  * There are several toplevel prefixes under which files can be located.
  * One of them is the kdelibs install location, one is the application
@@ -616,17 +616,17 @@ public:
      * resource types. Below is a list of them so you get an idea
      * of what this is all about.
      *
-     * @li @c data - @c share/apps
+     * @li @c data - @c share
      * @li @c html - @c share/doc/HTML
      * @li @c icon - @c share/icon
      * @li @c config - @c share/config
      * @li @c pixmap - @c share/pixmaps
-     * @li @c apps - @c share/applnk
+     * @li @c apps - @c share/applnk (deprecated)
      * @li @c sound - @c share/sounds
      * @li @c locale - @c share/locale
      * @li @c services - @c share/kde4/services
      * @li @c servicetypes - @c share/kde4/servicetypes
-     * @li @c mime - @c share/mimelnk
+     * @li @c mime - @c share/mimelnk (deprecated)
      * @li @c cgi - @c cgi-bin
      * @li @c wallpaper - @c share/wallpapers
      * @li @c templates - @c share/templates
@@ -642,6 +642,7 @@ public:
      * @li @c xdgdata-dirs - @c desktop-directories
      * @li @c xdgdata-mime - @c mime
      * @li @c xdgconf-menu - @c menus
+     * @li @c xdgconf - @c config files
      *
      * @returns Static default for the specified resource.  You
      *          should probably be using locate() or locateLocal()

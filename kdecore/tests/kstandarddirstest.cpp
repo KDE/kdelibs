@@ -56,8 +56,8 @@ void KStandarddirsTest::testSaveLocation()
     const QString saveLocXdgConfig = KGlobal::dirs()->saveLocation("xdgconf");
     QCOMPARE_PATHS(saveLocConfig, saveLocXdgConfig); // same result
 
-    const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
-    QCOMPARE_PATHS( saveLoc, m_kdehome + "/share/apps/qttest/" );
+    const QString saveLocAppData = KGlobal::dirs()->saveLocation("appdata");
+    QCOMPARE_PATHS(saveLocAppData, m_kdehome + "/xdg/local/qttest/");
 }
 
 void KStandarddirsTest::testLocateLocal()
@@ -72,7 +72,7 @@ void KStandarddirsTest::testAppData()
     // In addition to testSaveLocation(), we want to also check other KComponentDatas
     KComponentData cData("foo");
     const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
-    QCOMPARE_PATHS( fooAppData, m_kdehome + "/share/apps/foo/" );
+    QCOMPARE_PATHS( fooAppData, m_kdehome + "/xdg/local/foo/" );
 }
 
 void KStandarddirsTest::testChangeSaveLocation()
@@ -88,7 +88,7 @@ void KStandarddirsTest::testChangeSaveLocation()
 
 static bool isKdelibsInstalled()
 {
-    // If there's only one dir, it's the local one (~/.kde-unit-test/share/apps/),
+    // If there's only one dir, it's the local one (~/.kde-unit-test/share/),
     // meaning that kdelibs wasn't installed (or we don't find where, the environment isn't right).
     return KGlobal::dirs()->resourceDirs( "data" ).count() > 1;
 }
@@ -112,7 +112,7 @@ void KStandarddirsTest::testFindResource()
 
     const QString data = KGlobal::dirs()->findResource( "data", "cmake/modules/FindSoprano.cmake" );
     QVERIFY( !data.isEmpty() );
-    QVERIFY( data.endsWith( QLatin1String("share/apps/cmake/modules/FindSoprano.cmake") ) );
+    QVERIFY( data.endsWith( QLatin1String("share/cmake/modules/FindSoprano.cmake") ) );
     QVERIFY( !QDir::isRelativePath(data) );
 }
 
@@ -173,7 +173,7 @@ void KStandarddirsTest::testFindAllResources()
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
     QVERIFY( configFilesWithFilter.count() >= 3 );
-    QVERIFY( oneEndsWith( configFilesWithFilter, "etc/xdg/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesWithFilter, "kdebugrc" ) ); // either global (etc/xdg/) or local (XDG_HOME)
     QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/ui/ui_standards.rc" ) ); // recursive not set
     QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
@@ -195,12 +195,14 @@ void KStandarddirsTest::testFindAllResources()
 
 void KStandarddirsTest::testFindAllResourcesNewDir()
 {
+    const QString dir = m_kdehome + "/xdg/local/cmake/modules";
+    const QString fileName = dir + "/unittest.testfile";
+    QFile::remove(fileName);
     const QStringList origFiles = KGlobal::dirs()->findAllResources("data", "cmake/modules/");
     const int origCount = origFiles.count();
 
-    const QString dir = m_kdehome + "/share/apps/cmake/modules";
     QDir().mkpath(dir);
-    QFile file(dir+"/unittest.testfile");
+    QFile file(fileName);
     QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Text));
     file.write("foo");
     file.close();
@@ -228,9 +230,9 @@ void KStandarddirsTest::testFindResourceDir()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QString configDir = KGlobal::dirs()->findResourceDir( "config", "kdebugrc" );
+    const QString configDir = KGlobal::dirs()->findResourceDir( "config", "foorc" );
     QVERIFY( !configDir.isEmpty() );
-    QVERIFY( configDir.endsWith( QLatin1String( "/xdg/" ) ) );
+    QVERIFY2(configDir.endsWith(QLatin1String("/xdg/config/")), qPrintable(configDir));
 }
 
 void KStandarddirsTest::testFindExe()
@@ -390,7 +392,7 @@ void KStandarddirsTest::testRestrictedResources()
     localFile.close();
     const QString localAppsDir = KStandardDirs::realPath(QFileInfo(localFile).absolutePath() + '/');
     QVERIFY(!localAppsDir.contains("foo.desktop"));
-    // Ensure we have a local share/apps/qttest dir
+    // Ensure we have a local share/qttest dir
     const QString localDataDir = KStandardDirs::locateLocal("data", "qttest/");
     QVERIFY(!localDataDir.isEmpty());
     QVERIFY(QFile::exists(localDataDir));

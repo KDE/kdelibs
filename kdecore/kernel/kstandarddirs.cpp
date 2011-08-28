@@ -115,7 +115,7 @@ public:
  * 3) update the list in kde-config.cpp
 
 data
-share
+.
 html
 share/doc/HTML
 icon
@@ -170,9 +170,11 @@ xdgconf-autostart
 autostart
 */
 
+// KDE5 TODO: remove cgi-bin and mimelnk stuff
+
 static const char types_string[] =
     "data\0"
-    "share/apps\0"
+    ".\0"
     "html\0"
     "share/doc/HTML\0"
     "icon\0"
@@ -219,7 +221,6 @@ static const char types_string[] =
     "desktop-directories\0"
     "xdgdata-mime\0"
     "xdgconf\0"
-    ".\0"
     "xdgconf-menu\0"
     "menus\0"
     "xdgconf-autostart\0"
@@ -227,13 +228,13 @@ static const char types_string[] =
     "\0";
 
 static const int types_indices[] = {
-       0,    5,   16,   21,   36,   41,   53,   60,
-      73,   80,   94,   99,  112,  118,  131,  138,
-     151,  160,  180,  193,  217,  222,  236,  240,
-     248,  258,  275,  285,  301,  305,  309,  316,
-     326,  336,  354,  359,  377,  387,  403,  416,
-     429,  442,  448,  463,  471,  484,  504,  217,
-     517,  525,  527,  540,  546,  564,   -1
+       0,    5,    7,   12,   27,   32,   44,   51,
+      64,   71,   85,   90,  103,  109,  122,  129,
+     142,  151,  171,  184,  208,  213,  227,  231,
+     239,  249,  266,  276,  292,  296,  300,  307,
+     317,  327,  345,  350,  368,  378,  394,  407,
+     420,  433,  439,  454,  462,  475,  495,  208,
+     508,    5,  516,  529,  535,  553,   -1
 };
 
 static void tokenize(QStringList& token, const QString& str,
@@ -1148,8 +1149,10 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 }
             }
 
+            // KDE5 TODO: We should use xdgdata_prefixes for every resource in share/*,
+            // i.e. everything except exe, lib, config and xdgconf...
             const QStringList *prefixList = 0;
-            if (strncmp(type, "xdgdata-", 8) == 0)
+            if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0)
                 prefixList = &(xdgdata_prefixes);
             else if (strncmp(type, "xdgconf", 7) == 0)
                 prefixList = &(xdgconf_prefixes);
@@ -1529,7 +1532,7 @@ QString KStandardDirs::saveLocation(const char *type,
             } else
 
                 // Check for existence of typed directory + suffix
-                if (strncmp(type, "xdgdata-", 8) == 0) {
+                if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0) {
                     path = realPath( localxdgdatadir() + path ) ;
                 } else if (strncmp(type, "xdgconf", 7) == 0) {
                     path = realPath( localxdgconfdir() + path );
