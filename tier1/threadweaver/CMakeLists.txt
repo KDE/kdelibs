@@ -1,6 +1,22 @@
+cmake_minimum_required(VERSION 2.8)
+
 project(threadweaver)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+find_package(extra-cmake-modules REQUIRED)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+
+include(ECMVersion)
+
+# -- Maintained by scripty
+ecm_version(5 0 0)
+# --
+
+include(ECMQtFramework)
+
+find_package(Qt4 REQUIRED QtCore QtTest)
+
+include(${QT_USE_FILE})
 
 add_subdirectory(Weaver)
 # disabled for default kdelibs build:

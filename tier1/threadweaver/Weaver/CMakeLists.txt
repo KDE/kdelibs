@@ -1,11 +1,3 @@
-include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-add_definitions(-DQT_NO_CAST_FROM_ASCII)
-
-if(WIN32)
-   include_directories(${KDEWIN_INCLUDES})
-endif(WIN32)
-
 
 ########### next target ###############
 
@@ -32,16 +24,15 @@ set(ThreadWeaver_LIB_SRCS
 )
 
 
-kde4_add_library(threadweaver ${LIBRARY_TYPE} ${ThreadWeaver_LIB_SRCS})
+add_library(threadweaver ${LIBRARY_TYPE} ${ThreadWeaver_LIB_SRCS})
 generate_export_header(threadweaver)
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
-target_link_libraries(threadweaver LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(threadweaver PROPERTIES
-    VERSION ${GENERIC_LIB_VERSION}
-    SOVERSION ${GENERIC_LIB_SOVERSION}
+    VERSION ${ECM_VERSION_STRING}
+    SOVERSION ${ECM_SOVERSION}
 )
-install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS threadweaver ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h

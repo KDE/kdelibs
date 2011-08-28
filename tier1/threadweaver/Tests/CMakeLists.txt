@@ -1,5 +1,4 @@
 
-include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(
      ${CMAKE_CURRENT_SOURCE_DIR}/../Weaver/
@@ -8,11 +7,14 @@ include_directories(
 
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 ########### next target ###############
 
 set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
 
-kde4_add_unit_test(ThreadWeaverJobTests ${JobTests_SRCS})
+add_executable(ThreadWeaverJobTests ${JobTests_SRCS})
+add_test(ThreadWeaverJobTests ThreadWeaverJobTests)
 
 target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} threadweaver)
 
@@ -20,8 +22,8 @@ target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} threadweaver)
 
 set(QueueTests_SRCS QueueTests.cpp AppendCharacterJob.cpp)
 
-
-kde4_add_unit_test(ThreadWeaverQueueTests ${QueueTests_SRCS})
+add_executable(ThreadWeaverQueueTests ${QueueTests_SRCS})
+add_test(ThreadWeaverQueueTests ThreadWeaverQueueTests)
 
 target_link_libraries(ThreadWeaverQueueTests ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} threadweaver)
 
@@ -29,8 +31,8 @@ target_link_libraries(ThreadWeaverQueueTests ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LI
 
 set(DeleteTest_SRCS DeleteTest.cpp AppendCharacterJob.cpp)
 
-
-kde4_add_unit_test(ThreadWeaverDeleteTest ${DeleteTest_SRCS})
+add_executable(ThreadWeaverDeleteTest ${DeleteTest_SRCS})
+add_test(ThreadWeaverDeleteTest ThreadWeaverDeleteTest)
 
 target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} threadweaver)
 
