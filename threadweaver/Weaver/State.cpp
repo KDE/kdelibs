@@ -32,7 +32,7 @@ $Id: State.cpp 20 2005-08-08 21:02:51Z mirko $
 
 using namespace ThreadWeaver;
 
-const QString StateNames[NoOfStates] = {
+const char* StateNames[NoOfStates] = {
     "InConstruction",
     "WorkingHard",
     "Suspending",
@@ -68,7 +68,7 @@ State::~State()
 
 QString State::stateName () const
 {
-    return StateNames[ stateId() ];
+    return QLatin1String(StateNames[ stateId() ]);
 }
 
 void State::activated()

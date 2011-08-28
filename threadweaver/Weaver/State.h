@@ -29,7 +29,7 @@
 #ifndef THREADWEAVER_STATE_H
 #define THREADWEAVER_STATE_H
 
-
+#include <QString>
 
 #include <threadweaver/threadweaver_export.h>
 
