@@ -78,11 +78,15 @@ void KConfigTest::initTestCase()
 {
   // Use a different directory for the config files created by this test,
   // so that cleanupTestCase doesn't delete kdebugrc
-  // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtest/"
-  KGlobal::dirs()->addResourceType("config", 0, "kconfigtest");
-
+  // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtestdir/"
+  KGlobal::dirs()->addResourceType("config", 0, "kconfigtestdir");
   // to make sure all files from a previous failed run are deleted
+  // Important: must be done before any other KStandardDirs call, otherwise its cache
+  // can get confused by the unmonitored deletion.
   cleanupTestCase();
+
+  const QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+  QCOMPARE(KGlobal::dirs()->saveLocation("config"), QString(kdehome + "/kconfigtestdir/"));
 
   KConfig sc( "kconfigtest" );
 
@@ -170,6 +174,9 @@ void KConfigTest::initTestCase()
 
   sc.sync();
 
+  QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kconfigtest"));
+  QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kdeglobals"));
+
   KConfig sc1("kdebugrc", KConfig::SimpleConfig);
   KConfigGroup sg0(&sc1, "0");
   sg0.writeEntry("AbortFatal", false);
@@ -201,9 +208,10 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-  const QString localConfig = KGlobal::dirs()->saveLocation("config");
-  KTempDir::removeDir(localConfig);
-  QVERIFY(!QFile::exists(localConfig));
+    const QString localConfig = KGlobal::dirs()->saveLocation("config");
+    //qDebug() << "Erasing" << localConfig;
+    KTempDir::removeDir(localConfig);
+    QVERIFY(!QFile::exists(localConfig));
 }
 
 
@@ -274,6 +282,10 @@ void KConfigTest::testRevertAllEntries()
 
 void KConfigTest::testSimple()
 {
+    // kdeglobals (which was created in initTestCase) must be found this way:
+    const QStringList kdeglobals = KGlobal::dirs()->findAllResources("config", QLatin1String("kdeglobals"));
+    QVERIFY(!kdeglobals.isEmpty());
+
   KConfig sc2( "kconfigtest" );
   QCOMPARE(sc2.name(), QString("kconfigtest"));
 
@@ -285,7 +297,7 @@ void KConfigTest::testSimple()
 
   KConfigGroup sc3( &sc2, "AAA");
 
-  QVERIFY( sc3.hasKey( "stringEntry1" ) );
+  QVERIFY( sc3.hasKey( "stringEntry1" ) ); // from kdeglobals
   QVERIFY( !sc3.isEntryImmutable("stringEntry1") );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
 
@@ -1524,28 +1536,28 @@ void KConfigTest::testAnonymousConfig()
 
 void KConfigTest::testNoKdeHome()
 {
-    const QString kdeHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
-    setenv("KDEHOME", QFile::encodeName( kdeHome ), 1);
-    KTempDir::removeDir(kdeHome);
-    QVERIFY(!QFile::exists(kdeHome));
+    const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome), 1);
+    KTempDir::removeDir(xdgConfigHome);
+    QVERIFY(!QFile::exists(xdgConfigHome));
 
     // Do what kde4-config does, and ensure kdehome doesn't get created (#233892)
     KComponentData componentData("KConfigTest");
-    QVERIFY(!QFile::exists(kdeHome));
+    QVERIFY(!QFile::exists(xdgConfigHome));
     componentData.dirs();
-    QVERIFY(!QFile::exists(kdeHome));
+    QVERIFY(!QFile::exists(xdgConfigHome));
     componentData.config();
-    QVERIFY(!QFile::exists(kdeHome));
+    QVERIFY(!QFile::exists(xdgConfigHome));
 
     // Now try to actually save something, see if it works.
     KConfigGroup group(componentData.config(), "Group");
     group.writeEntry("Key", "Value");
     group.sync();
-    QVERIFY(QFile::exists(kdeHome));
-    QVERIFY(QFile::exists(kdeHome + "/share/config/KConfigTestrc"));
+    QVERIFY(QFile::exists(xdgConfigHome));
+    QVERIFY(QFile::exists(xdgConfigHome + "/KConfigTestrc"));
 
     // Cleanup
-    KTempDir::removeDir(kdeHome);
+    KTempDir::removeDir(xdgConfigHome);
 }
 
 #include <QThreadPool>

@@ -1227,7 +1227,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
         // Insert result into the cache for next time.
         // Exception: data_subdir restrictions are per-subdir, so we can't store such results
         if (!dataRestrictionActive) {
-            //kDebug() << this << "Inserting" << type << candidates << "into dircache";
+            //qDebug() << this << "Inserting" << type << candidates << "into dircache";
             m_dircache.insert(type, candidates);
         }
     }
@@ -1527,7 +1527,7 @@ QString KStandardDirs::saveLocation(const char *type,
                 const int pos = path.indexOf(QLatin1Char('/'));
                 QString rel = path.mid(1, pos - 1);
                 QString rest = path.mid(pos + 1);
-                QString basepath = saveLocation(rel.toUtf8().constData());
+                QString basepath = saveLocation(rel.toUtf8().constData(), QString(), create);
                 path = basepath + rest;
             } else
 
