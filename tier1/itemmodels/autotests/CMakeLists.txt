@@ -11,15 +11,15 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/proxymodeltestsuite
 )
 
-MACRO(KDEUI_PROXYMODEL_TESTS)
+MACRO(ITEMMODELS_PROXYMODEL_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME itemmodels-${_testname} ${_testname}.cpp ${proxyModelTestSources} )
                target_link_libraries(${_testname} itemmodels ${QT_QTTEST_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN32_LIBRARIES} proxymodeltestsuite )
        ENDFOREACH(_testname)
-ENDMACRO(KDEUI_PROXYMODEL_TESTS)
+ENDMACRO()
 
 
-KDEUI_PROXYMODEL_TESTS(
+ITEMMODELS_PROXYMODEL_TESTS(
   kdescendantsproxymodeltest
   kselectionproxymodeltest
   testmodelqueuedconnections
