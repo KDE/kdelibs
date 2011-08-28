@@ -31,6 +31,7 @@ set(ThreadWeaver_LIB_SRCS
 
 
 kde4_add_library(threadweaver ${LIBRARY_TYPE} ${ThreadWeaver_LIB_SRCS})
+generate_export_header(threadweaver)
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
 target_link_libraries(threadweaver LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
 
@@ -53,5 +54,6 @@ install(FILES
     DependencyPolicy.h
     ResourceRestrictionPolicy.h
     QueuePolicy.h
+    ${CMAKE_CURRENT_BUILD_DIR}/threadweaver_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver COMPONENT Devel
 )

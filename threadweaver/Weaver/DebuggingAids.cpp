@@ -30,7 +30,7 @@
 
 #include <QtCore/QMutex>
 
-#include <threadweaver/threadweaver_export.h>
+#include <threadweaver_export.h>
 
 /** A global mutex for the ThreadWeaver objects.
     Generally, you should not use it in your own code. */
