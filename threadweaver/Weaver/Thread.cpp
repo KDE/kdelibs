@@ -75,7 +75,7 @@ ThreadWeaver::ThreadRunHelper::ThreadRunHelper()
 void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
 {
     Q_ASSERT ( thread() == th );
-    emit ( started ( th) );
+    Q_EMIT ( started ( th) );
 
     while (true)
     {
@@ -91,9 +91,9 @@ void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
             break;
         } else {
             m_job = job;
-            emit ( jobStarted ( th,  m_job ) );
+            Q_EMIT ( jobStarted ( th,  m_job ) );
             m_job->execute (th);
-            emit ( jobDone ( m_job ) );
+            Q_EMIT ( jobDone ( m_job ) );
         }
     }
 }

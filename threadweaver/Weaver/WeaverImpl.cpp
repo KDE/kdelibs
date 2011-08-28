@@ -103,7 +103,7 @@ WeaverImpl::~WeaverImpl()
                         "retrying.\n", th->id() );
 	    }
 	}
-        emit ( threadExited ( th ) );
+        Q_EMIT ( threadExited ( th ) );
         delete th;
     }
 
@@ -126,12 +126,12 @@ void WeaverImpl::setState ( StateId id )
                 m_state->stateName().toAscii().constData() );
         if ( id == Suspended )
 	{
-            emit ( suspended() );
+            Q_EMIT ( suspended() );
 	}
 
         m_state->activated();
 
-        emit ( stateChanged ( m_state ) );
+        Q_EMIT ( stateChanged ( m_state ) );
     }
 }
 
@@ -316,7 +316,7 @@ void WeaverImpl::adjustActiveThreadCount( int diff )
     if ( m_assignments.isEmpty() && m_active == 0)
     {
         P_ASSERT ( diff < 0 ); // cannot reach Zero otherwise
-        emit ( finished() );
+        Q_EMIT ( finished() );
     }
 }
 
@@ -360,7 +360,7 @@ void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
 {   // th is the thread that calls this method:
     Q_UNUSED ( th );
     debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
-    emit asyncThreadSuspended ( th );
+    Q_EMIT asyncThreadSuspended ( th );
     QMutexLocker l( m_jobAvailableMutex );
     m_jobAvailable.wait( m_jobAvailableMutex );
     debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());

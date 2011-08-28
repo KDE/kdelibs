@@ -203,7 +203,7 @@ void JobCollection::execute ( Thread *t )
 
     // this is async,
     // JobTests::JobSignalsAreEmittedAsynchronouslyTest() proves it
-    emit (started (this));
+    Q_EMIT (started (this));
 
     if ( d->elements->isEmpty() )
     {   // we are just a regular, empty job (sob...):
@@ -288,7 +288,7 @@ void JobCollection::jobRunnerDone()
 		{
 			if (! success())
 			{
-				emit failed(this);
+				Q_EMIT failed(this);
 			}
 
 			finalCleanup();
@@ -297,7 +297,7 @@ void JobCollection::jobRunnerDone()
 	}
 
 	if (emitDone)
-		emit done(this);
+		Q_EMIT done(this);
 }
 void JobCollection::internalJobDone ( Job* job )
 {
@@ -349,7 +349,7 @@ void JobCollection::dequeueElements()
 		}
 	}
 	if (emitDone)
-		emit done(this);
+		Q_EMIT done(this);
 }
 
 #include "JobCollection.moc"

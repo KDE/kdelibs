@@ -101,7 +101,7 @@ void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
     job->d->thread = th;
     job->d->mutex->unlock();
 
-    emit ( started ( job ) );
+    Q_EMIT ( started ( job ) );
 
     job->run();
 
@@ -113,10 +113,10 @@ void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
 
     if ( ! job->success() )
     {
-        emit ( failed( job ) );
+        Q_EMIT ( failed( job ) );
     }
 
-    emit ( done( job ) );
+    Q_EMIT ( done( job ) );
 }
 
 void Job::execute(Thread *th)
