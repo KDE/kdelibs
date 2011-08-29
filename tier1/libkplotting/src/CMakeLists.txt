@@ -7,15 +7,16 @@ set(kplotting_SRCS
  kplotwidget.cpp
 )
 
-kf5_add_library(kplotting ${LIBRARY_TYPE} ${kplotting_SRCS})
+add_library(kplotting ${LIBRARY_TYPE} ${kplotting_SRCS})
+generate_export_header(kplotting)
 
 target_link_libraries(kplotting ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-set_target_properties(kplotting PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
-                                            SOVERSION ${GENERIC_LIB_SOVERSION}
+set_target_properties(kplotting PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                            SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kplotting EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kplotting ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   kplotaxis.h
