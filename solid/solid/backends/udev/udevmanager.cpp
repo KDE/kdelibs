@@ -141,7 +141,7 @@ QStringList UDevManager::allDevices()
 {
     QStringList res;
     const UdevQt::DeviceList deviceList = d->m_client->allDevices();
-    foreach (const UdevQt::Device &device, deviceList) {
+    Q_FOREACH (const UdevQt::Device &device, deviceList) {
         if (d->isOfInterest(device)) {
             res << udiPrefix() + device.sysfsPath();
         }
@@ -156,7 +156,7 @@ QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
     QStringList result;
 
     if (!parentUdi.isEmpty()) {
-        foreach (const QString &udi, allDev) {
+        Q_FOREACH (const QString &udi, allDev) {
             UDevDevice device(d->m_client->deviceBySysfsPath(udi.right(udi.size() - udiPrefix().size())));
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi) {
                 result << udi;
@@ -165,7 +165,7 @@ QStringList UDevManager::devicesFromQuery(const QString &parentUdi,
 
         return result;
     } else if (type != Solid::DeviceInterface::Unknown) {
-        foreach (const QString &udi, allDev) {
+        Q_FOREACH (const QString &udi, allDev) {
             UDevDevice device(d->m_client->deviceBySysfsPath(udi.right(udi.size() - udiPrefix().size())));
             if (device.queryDeviceInterface(type)) {
                 result << udi;
@@ -198,13 +198,13 @@ QObject *UDevManager::createDevice(const QString &udi_)
 void UDevManager::slotDeviceAdded(const UdevQt::Device &device)
 {
     if (d->isOfInterest(device)) {
-        emit deviceAdded(udiPrefix() + device.sysfsPath());
+        Q_EMIT deviceAdded(udiPrefix() + device.sysfsPath());
     }
 }
 
 void UDevManager::slotDeviceRemoved(const UdevQt::Device &device)
 {
     if (d->isOfInterest(device)) {
-        emit deviceRemoved(udiPrefix() + device.sysfsPath());
+        Q_EMIT deviceRemoved(udiPrefix() + device.sysfsPath());
     }
 }

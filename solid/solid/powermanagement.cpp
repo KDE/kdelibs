@@ -184,7 +184,7 @@ void Solid::PowerManagementPrivate::slotCanHibernateChanged(bool newState)
 void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
 {
     powerSaveStatus = newState;
-    emit appShouldConserveResourcesChanged(powerSaveStatus);
+    Q_EMIT appShouldConserveResourcesChanged(powerSaveStatus);
 }
 
 void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &serviceName)

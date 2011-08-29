@@ -56,7 +56,7 @@ Solid::Processor::InstructionSets FakeProcessor::instructionSets() const
 
     QStringList extension_list = str.split(',');
 
-    foreach (const QString &extension_str, extension_list) {
+    Q_FOREACH (const QString &extension_str, extension_list) {
         if (extension_str == "mmx") {
             result |= Solid::Processor::IntelMmx;
         }

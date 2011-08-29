@@ -101,7 +101,7 @@ QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
 
     if (!parentUdi.isEmpty())
     {
-        foreach (const QString & udi, allDev)
+        Q_FOREACH (const QString & udi, allDev)
         {
             UPowerDevice device(udi);
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
@@ -112,7 +112,7 @@ QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     }
     else if (type != Solid::DeviceInterface::Unknown)
     {
-        foreach (const QString & udi, allDev)
+        Q_FOREACH (const QString & udi, allDev)
         {
             UPowerDevice device(udi);
             if (device.queryDeviceInterface(type))
@@ -137,7 +137,7 @@ QStringList UPowerManager::allDevices()
     QStringList retList;
     retList << udiPrefix();
 
-    foreach (const QDBusObjectPath &path, reply.value()) {
+    Q_FOREACH (const QDBusObjectPath &path, reply.value()) {
         retList << path.path();
     }
 
@@ -156,12 +156,12 @@ QString UPowerManager::udiPrefix() const
 
 void UPowerManager::slotDeviceAdded(const QString &opath)
 {
-    emit deviceAdded(opath);
+    Q_EMIT deviceAdded(opath);
 }
 
 void UPowerManager::slotDeviceRemoved(const QString &opath)
 {
-    emit deviceRemoved(opath);
+    Q_EMIT deviceRemoved(opath);
 }
 
 #include "backends/upower/upowermanager.moc"

@@ -91,13 +91,13 @@ void UDisksOpticalDrive::slotDBusError(const QDBusError &error)
 void UDisksOpticalDrive::slotEjectRequested()
 {
     m_ejectInProgress = true;
-    emit ejectRequested(m_device->udi());
+    Q_EMIT ejectRequested(m_device->udi());
 }
 
 void UDisksOpticalDrive::slotEjectDone(int error, const QString &errorString)
 {
     m_ejectInProgress = false;
-    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    Q_EMIT ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 void UDisksOpticalDrive::initReadWriteSpeeds() const
@@ -119,7 +119,7 @@ void UDisksOpticalDrive::initReadWriteSpeeds() const
         m_writeSpeed = write_speed;
 
         QStringList list = QString::fromLatin1(write_speeds).split(',', QString::SkipEmptyParts);
-        foreach (const QString & speed, list)
+        Q_FOREACH (const QString & speed, list)
             m_writeSpeeds.append(speed.toInt());
 
         free(write_speeds);
@@ -180,7 +180,7 @@ Solid::OpticalDrive::MediumTypes UDisksOpticalDrive::supportedMedia() const
     //map[Solid::OpticalDrive::Mr] ="optical_mrw";
     //map[Solid::OpticalDrive::Mrw] ="optical_mrw_w";
 
-    foreach ( const Solid::OpticalDrive::MediumType & type, map.keys() )
+    Q_FOREACH ( const Solid::OpticalDrive::MediumType & type, map.keys() )
     {
         if ( mediaTypes.contains( map[type] ) )
         {

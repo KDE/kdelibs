@@ -95,7 +95,7 @@ QStringList FakeManager::allDevices()
 {
     QStringList deviceUdiList;
 
-    foreach (FakeDevice *device, d->loadedDevices)
+    Q_FOREACH (FakeDevice *device, d->loadedDevices)
     {
         deviceUdiList.append(device->udi());
     }
@@ -165,7 +165,7 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
 {
     QStringList result;
     FakeDevice *device;
-    foreach (device, d->loadedDevices)
+    Q_FOREACH (device, d->loadedDevices)
     {
         if (device->property(key).toString() == value)
         {
@@ -180,7 +180,7 @@ QStringList FakeManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Typ
 {
     QStringList result;
     FakeDevice *device;
-    foreach (device, d->loadedDevices)
+    Q_FOREACH (device, d->loadedDevices)
     {
         if (device->queryDeviceInterface(type))
         {
@@ -197,7 +197,7 @@ void FakeManager::plug(const QString &udi)
     {
         QMap<QString, QVariant> properties = d->hiddenDevices.take(udi);
         d->loadedDevices[udi] = new FakeDevice(udi, properties);
-        emit deviceAdded(udi);
+        Q_EMIT deviceAdded(udi);
     }
 }
 
@@ -207,7 +207,7 @@ void FakeManager::unplug(const QString &udi)
     {
         FakeDevice *dev = d->loadedDevices.take(udi);
         d->hiddenDevices[udi] = dev->allProperties();
-        emit deviceRemoved(udi);
+        Q_EMIT deviceRemoved(udi);
         delete dev;
     }
 }
@@ -242,7 +242,7 @@ void FakeManager::parseMachineFile()
             if(tempDevice) {
                 Q_ASSERT(!d->loadedDevices.contains(tempDevice->udi()));
                 d->loadedDevices.insert(tempDevice->udi(), tempDevice);
-                emit deviceAdded(tempDevice->udi());
+                Q_EMIT deviceAdded(tempDevice->udi());
             }
         }
 

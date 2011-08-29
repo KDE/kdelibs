@@ -155,7 +155,7 @@ QStringList HalManager::devicesFromQuery(const QString &parentUdi,
             const QStringList matches = result;
             result.clear();
 
-            foreach (const QString &match, matches) {
+            Q_FOREACH (const QString &match, matches) {
                 HalDevice device(match);
 
                 if (device.queryDeviceInterface(type)) {
@@ -200,7 +200,7 @@ QStringList HalManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;
 
-    foreach (const QString &cap, cap_list)
+    Q_FOREACH (const QString &cap, cap_list)
     {
         QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
 
@@ -213,7 +213,7 @@ QStringList HalManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         {
             QStringList foundDevices ( reply );
             QStringList filtered;
-            foreach ( const QString &udi, foundDevices )
+            Q_FOREACH ( const QString &udi, foundDevices )
             {
                 QDBusInterface device( "org.freedesktop.Hal", udi, "org.freedesktop.Hal.Device", QDBusConnection::systemBus() );
                 QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
@@ -242,13 +242,13 @@ QStringList HalManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
 void HalManager::slotDeviceAdded(const QString &udi)
 {
     d->devicesCache.append(udi);
-    emit deviceAdded(udi);
+    Q_EMIT deviceAdded(udi);
 }
 
 void HalManager::slotDeviceRemoved(const QString &udi)
 {
     d->devicesCache.removeAll(udi);
-    emit deviceRemoved(udi);
+    Q_EMIT deviceRemoved(udi);
 }
 
 #include "backends/hal/halmanager.moc"

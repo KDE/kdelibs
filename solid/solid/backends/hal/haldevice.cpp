@@ -426,7 +426,7 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
 
     QStringList cap_list = DeviceInterface::toStringList(type);
 
-    foreach (const QString &cap, cap_list) {
+    Q_FOREACH (const QString &cap, cap_list) {
         QDBusReply<bool> reply = d->device.call("QueryCapability", cap);
 
         if (!reply.isValid()) {
@@ -527,7 +527,7 @@ void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
 {
     QMap<QString,int> result;
 
-    foreach (const ChangeDescription &change, changes) {
+    Q_FOREACH (const ChangeDescription &change, changes) {
         QString key = change.key;
         bool added = change.added;
         bool removed = change.removed;
@@ -552,12 +552,12 @@ void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
     }
 
     //qDebug() << this << "unsyncing the cache";
-    emit propertyChanged(result);
+    Q_EMIT propertyChanged(result);
 }
 
 void HalDevice::slotCondition(const QString &condition, const QString &reason)
 {
-    emit conditionRaised(condition, reason);
+    Q_EMIT conditionRaised(condition, reason);
 }
 
 QString HalDevice::storageDescription() const

@@ -126,13 +126,13 @@ void FakeBattery::setChargeState(Solid::Battery::ChargeState newState)
     }
 
     fakeDevice()->setProperty("chargeState", name);
-    emit chargeStateChanged(newState, fakeDevice()->udi());
+    Q_EMIT chargeStateChanged(newState, fakeDevice()->udi());
 }
 
 void FakeBattery::setChargeLevel(int newLevel)
 {
     fakeDevice()->setProperty("currentLevel", newLevel);
-    emit chargePercentChanged(chargePercent(), fakeDevice()->udi());
+    Q_EMIT chargePercentChanged(chargePercent(), fakeDevice()->udi());
 }
 
 #include "backends/fakehw/fakebattery.moc"

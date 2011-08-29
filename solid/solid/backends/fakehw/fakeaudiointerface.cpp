@@ -60,7 +60,7 @@ QVariant FakeAudioInterface::driverHandle() const
     if (driver() == Solid::AudioInterface::Alsa) {
         const QStringList x = fakeDevice()->property("driverHandle").toString().split(',');
         QList<QVariant> ret;
-        foreach (const QString &num, x) {
+        Q_FOREACH (const QString &num, x) {
             ret << num.toInt();
         }
         return ret;
@@ -79,7 +79,7 @@ Solid::AudioInterface::AudioInterfaceTypes FakeAudioInterface::deviceType() cons
 
     QStringList type_list = fakeDevice()->property("type").toString().split(',');
 
-    foreach (const QString &type_str, type_list)
+    Q_FOREACH (const QString &type_str, type_list)
     {
         if (type_str == "control")
         {

@@ -70,7 +70,7 @@ namespace UPnP
 
             int numberOfConnections;
 
-        private slots:
+        private Q_SLOTS:
             void setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);
 
             void deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID);

@@ -80,7 +80,7 @@ KUPnPManager::KUPnPManager(QObject* parent)
         // keep last:
         << new DeviceFactory();
 
-    foreach( AbstractDeviceFactory* factory, mDeviceFactories )
+    Q_FOREACH( AbstractDeviceFactory* factory, mDeviceFactories )
         factory->addSupportedInterfaces( mSupportedInterfaces );
 }
 
@@ -146,7 +146,7 @@ QObject* KUPnPManager::createDevice(const QString& udi)
         {
             Cagibi::Device device = reply;
 qDebug() << "device of type: "<<device.type();
-            foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+            Q_FOREACH( AbstractDeviceFactory* factory, mDeviceFactories ) {
                 result = factory->tryCreateDevice( device );
                 if( result != 0 )
                     break;
@@ -178,9 +178,9 @@ QStringList KUPnPManager::findDeviceByParent(const QString& parentUdi,
         {
             DeviceTypeMap deviceTypeMap = reply;
 
-            foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+            Q_FOREACH( AbstractDeviceFactory* factory, mDeviceFactories ) {
                 const QStringList typeNames = factory->typeNames( type );
-                foreach( const QString& typeName, typeNames ) {
+                Q_FOREACH( const QString& typeName, typeNames ) {
                     DeviceTypeMap::Iterator it = deviceTypeMap.begin();
                     while( it != deviceTypeMap.end() ) {
                         if( it.value() == typeName ) {
@@ -204,9 +204,9 @@ QStringList KUPnPManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Ty
 {
     QStringList result;
 
-    foreach( AbstractDeviceFactory* factory, mDeviceFactories ) {
+    Q_FOREACH( AbstractDeviceFactory* factory, mDeviceFactories ) {
         const QStringList typeNames = factory->typeNames( type );
-        foreach( const QString& typeName, typeNames ) {
+        Q_FOREACH( const QString& typeName, typeNames ) {
             QDBusReply<DeviceTypeMap> reply =
                 mDBusCagibiProxy->asyncCall("devicesByType",typeName);
 
@@ -235,7 +235,7 @@ void KUPnPManager::onDevicesAdded( const DeviceTypeMap& deviceTypeMap )
     DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
     DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
     for( ; it != end; ++it )
-        emit deviceAdded( udiFromUdn(it.key()) );
+        Q_EMIT deviceAdded( udiFromUdn(it.key()) );
 }
 
 void KUPnPManager::onDevicesRemoved( const DeviceTypeMap& deviceTypeMap )
@@ -243,7 +243,7 @@ void KUPnPManager::onDevicesRemoved( const DeviceTypeMap& deviceTypeMap )
     DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
     DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
     for( ; it != end; ++it )
-        emit deviceRemoved( udiFromUdn(it.key()) );
+        Q_EMIT deviceRemoved( udiFromUdn(it.key()) );
 }
 
 

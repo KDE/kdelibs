@@ -48,7 +48,7 @@ Solid::OpticalDisc::ContentTypes FakeOpticalDisc::availableContent() const
 
     QStringList content_typelist = fakeDevice()->property("availableContent").toString().split(',');
 
-    foreach (const Solid::OpticalDisc::ContentType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDisc::ContentType type, map.keys())
     {
         if (content_typelist.indexOf(map[type]) != -1)
         {

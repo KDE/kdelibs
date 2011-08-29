@@ -132,7 +132,7 @@ void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("volume.is_mounted"))
     {
-        emit accessibilityChanged(isAccessible(), m_device->udi());
+        Q_EMIT accessibilityChanged(isAccessible(), m_device->udi());
     }
 }
 
@@ -144,18 +144,18 @@ void Solid::Backends::Wmi::StorageAccess::slotProcessFinished(int exitCode, QPro
         m_setupInProgress = false;
 
         if (exitCode==0) {
-            emit setupDone(Solid::NoError, QVariant(), m_device->udi());
+            Q_EMIT setupDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
-            emit setupDone(Solid::UnauthorizedOperation,
+            Q_EMIT setupDone(Solid::UnauthorizedOperation,
                            m_process->readAllStandardError(),
                            m_device->udi());
         }
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         if (exitCode==0) {
-            emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
+            Q_EMIT teardownDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
-            emit teardownDone(Solid::UnauthorizedOperation,
+            Q_EMIT teardownDone(Solid::UnauthorizedOperation,
                               m_process->readAllStandardError(),
                               m_device->udi());
         }

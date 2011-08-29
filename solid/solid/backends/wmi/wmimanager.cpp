@@ -92,7 +92,7 @@ QStringList WmiManager::allDevices()
     QStringList deviceUdiList;
 
     QStringList aList = findDeviceByDeviceInterface(Solid::DeviceInterface::OpticalDrive);
-    foreach(const QString &udi, aList)
+    Q_FOREACH(const QString &udi, aList)
     {
         if (!deviceUdiList.contains(udi))
             deviceUdiList << udi;
@@ -214,12 +214,12 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
 
 void WmiManager::slotDeviceAdded(const QString &udi)
 {
-    emit deviceAdded(udi);
+    Q_EMIT deviceAdded(udi);
 }
 
 void WmiManager::slotDeviceRemoved(const QString &udi)
 {
-    emit deviceRemoved(udi);
+    Q_EMIT deviceRemoved(udi);
 }
 
 #include "backends/wmi/wmimanager.moc"

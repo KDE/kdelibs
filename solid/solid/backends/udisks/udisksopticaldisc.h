@@ -49,7 +49,7 @@ public:
     virtual Solid::OpticalDisc::DiscType discType() const;
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
 
-private slots:
+private Q_SLOTS:
     void slotChanged();
 
 private:

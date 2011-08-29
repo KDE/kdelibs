@@ -45,7 +45,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     map[Solid::OpticalDisc::SuperVideoCd] = "volume.disc.is_svcd";
     map[Solid::OpticalDisc::VideoDvd] ="volume.disc.is_videodvd";
 
-    foreach (const Solid::OpticalDisc::ContentType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDisc::ContentType type, map.keys())
     {
         if (m_device->property(map[type]).toBool())
         {

@@ -90,7 +90,7 @@ class Client : public QObject
         Device deviceBySysfsPath(const QString &sysfsPath);
         Device deviceBySubsystemAndName(const QString &subsystem, const QString &name);
 
-    signals:
+    Q_SIGNALS:
         void deviceAdded(const UdevQt::Device &dev);
         void deviceRemoved(const UdevQt::Device &dev);
         void deviceChanged(const UdevQt::Device &dev);

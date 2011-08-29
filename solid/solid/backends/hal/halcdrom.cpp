@@ -68,7 +68,7 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
     map[Solid::OpticalDrive::HdDvdr] ="storage.cdrom.hddvdr";
     map[Solid::OpticalDrive::HdDvdrw] ="storage.cdrom.hddvdrw";
 
-    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDrive::MediumType type, map.keys())
     {
         if (m_device->prop(map[type]).toBool())
         {
@@ -94,7 +94,7 @@ QList<int> Cdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = m_device->prop("storage.cdrom.write_speeds").toStringList();
 
-    foreach (const QString &speed_str, speed_strlist)
+    Q_FOREACH (const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }
@@ -106,7 +106,7 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
 {
     if (name == "EjectPressed")
     {
-        emit ejectPressed(m_device->udi());
+        Q_EMIT ejectPressed(m_device->udi());
     }
 }
 
@@ -128,7 +128,7 @@ bool Cdrom::eject()
 void Cdrom::slotEjectRequested()
 {
     m_ejectInProgress = true;
-    emit ejectRequested(m_device->udi());
+    Q_EMIT ejectRequested(m_device->udi());
 }
 
 bool Cdrom::callHalDriveEject()
@@ -212,7 +212,7 @@ void Solid::Backends::Hal::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
 void Cdrom::slotEjectDone(int error, const QString &errorString)
 {
     m_ejectInProgress = false;
-    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    Q_EMIT ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 #include "backends/hal/halcdrom.moc"

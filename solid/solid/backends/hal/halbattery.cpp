@@ -111,18 +111,18 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("battery.charge_level.percentage"))
     {
-        emit chargePercentChanged(chargePercent(), m_device->udi());
+        Q_EMIT chargePercentChanged(chargePercent(), m_device->udi());
     }
 
     if (changes.contains("battery.rechargeable.is_charging")
            || changes.contains("battery.rechargeable.is_discharging"))
     {
-        emit chargeStateChanged(chargeState(), m_device->udi());
+        Q_EMIT chargeStateChanged(chargeState(), m_device->udi());
     }
 
     if ( changes.contains( "battery.present" ) )
     {
-        emit plugStateChanged(isPlugged(), m_device->udi());
+        Q_EMIT plugStateChanged(isPlugged(), m_device->udi());
     }
 
 }

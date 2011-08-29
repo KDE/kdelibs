@@ -54,7 +54,7 @@ QStringList FstabManager::allDevices()
     QStringList result;
 
     result << udiPrefix();
-    foreach (const QString &device, m_deviceList) {
+    Q_FOREACH (const QString &device, m_deviceList) {
         result << udiPrefix() + "/" + device;
     }
 
@@ -99,16 +99,16 @@ void FstabManager::onFstabChanged()
     QStringList deviceList = FstabHandling::deviceList();
     if (deviceList.count() > m_deviceList.count()) {
         //new device
-        foreach (const QString &device, deviceList) {
+        Q_FOREACH (const QString &device, deviceList) {
             if (!m_deviceList.contains(device)) {
-                emit deviceAdded(udiPrefix() + "/" + device);
+                Q_EMIT deviceAdded(udiPrefix() + "/" + device);
             }
         }
     } else {
         //device has been removed
-        foreach (const QString &device, m_deviceList) {
+        Q_FOREACH (const QString &device, m_deviceList) {
             if (!deviceList.contains(device)) {
-                emit deviceRemoved(udiPrefix() + "/" + device);
+                Q_EMIT deviceRemoved(udiPrefix() + "/" + device);
             }
         }
     }

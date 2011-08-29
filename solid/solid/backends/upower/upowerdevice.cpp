@@ -215,5 +215,5 @@ void UPowerDevice::slotChanged()
 {
     // given we cannot know which property/ies changed, clear the cache
     m_cache.clear();
-    emit changed();
+    Q_EMIT changed();
 }

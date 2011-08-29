@@ -92,7 +92,7 @@ void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HClie
         Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->info().inputArguments();
         bool enabled = inArgs["NewEnabledForInternet"].value().toBool();
 
-        emit enabledForInternet(enabled);
+        Q_EMIT enabledForInternet(enabled);
     } else {
         qDebug() << "setEnabledForInternetAction invocation failed";
     }
@@ -100,7 +100,7 @@ void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HClie
 
 Herqq::Upnp::HClientDevice* UPnPInternetGateway::getDevice(const QString typePreffix, Herqq::Upnp::HClientDevices& devices) const
 {
-    foreach(Herqq::Upnp::HClientDevice* device, devices) {
+    Q_FOREACH(Herqq::Upnp::HClientDevice* device, devices) {
         QString deviceType = device->info().deviceType().toString(Herqq::Upnp::HResourceType::TypeSuffix |
                                                                         Herqq::Upnp::HResourceType::Version);
         if (deviceType.startsWith(typePreffix)) {
@@ -202,7 +202,7 @@ void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HClientAc
             protocol = Solid::InternetGateway::UDP;
         }
 
-        emit portMappingDeleted(newRemoteHost, newExternalPort, protocol);
+        Q_EMIT portMappingDeleted(newRemoteHost, newExternalPort, protocol);
     } else {
         qDebug() << "deletePortMapping Action invocation failed";
     }
@@ -303,7 +303,7 @@ void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HClientActio
         int newInternalPort = inArgs["NewInternalPort"].value().toInt();
         QString newInternalClient = inArgs["NewInternalClient"].value().toString();
 
-        emit portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
+        Q_EMIT portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
     } else {
         qDebug() << "addPortMapping Action invocation failed" << invocationID.returnValue();
     }
@@ -390,7 +390,7 @@ void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::H
     }
 
     if (activeConnections.count() == numberOfConnections) {
-        emit currentConnectionsDataIsReady(activeConnections);
+        Q_EMIT currentConnectionsDataIsReady(activeConnections);
     }
 }
 

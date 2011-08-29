@@ -46,7 +46,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     map[Solid::OpticalDisc::VideoDvd] ="volume.disc.is_videodvd";
     map[Solid::OpticalDisc::VideoBluRay] ="volume.disc.is_blurayvideo";
 
-    foreach (const Solid::OpticalDisc::ContentType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDisc::ContentType type, map.keys())
     {
         if (m_device->prop(map[type]).toBool())
         {

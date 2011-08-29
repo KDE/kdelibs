@@ -122,17 +122,17 @@ void Battery::slotChanged()
 
     if (old_chargePercent != m_chargePercent)
     {
-        emit chargePercentChanged(m_chargePercent, m_device->udi());
+        Q_EMIT chargePercentChanged(m_chargePercent, m_device->udi());
     }
 
     if (old_chargeState != m_chargeState)
     {
-        emit chargeStateChanged(m_chargeState, m_device->udi());
+        Q_EMIT chargeStateChanged(m_chargeState, m_device->udi());
     }
 
     if (old_isPlugged != m_isPlugged)
     {
-        emit plugStateChanged(m_isPlugged, m_device->udi());
+        Q_EMIT plugStateChanged(m_isPlugged, m_device->udi());
     }
 }
 

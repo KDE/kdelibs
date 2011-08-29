@@ -40,13 +40,13 @@ bool FakeAcAdapter::isPlugged() const
 void FakeAcAdapter::plug()
 {
     fakeDevice()->setProperty("isPlugged", true);
-    emit plugStateChanged(true, fakeDevice()->udi());
+    Q_EMIT plugStateChanged(true, fakeDevice()->udi());
 }
 
 void FakeAcAdapter::unplug()
 {
     fakeDevice()->setProperty("isPlugged", false);
-    emit plugStateChanged(false, fakeDevice()->udi());
+    Q_EMIT plugStateChanged(false, fakeDevice()->udi());
 }
 
 #include "backends/fakehw/fakeacadapter.moc"

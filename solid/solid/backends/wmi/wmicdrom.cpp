@@ -59,7 +59,7 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
     map[Solid::OpticalDrive::HdDvdr] ="storage.cdrom.hddvdr";
     map[Solid::OpticalDrive::HdDvdrw] ="storage.cdrom.hddvdrw";
 
-    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDrive::MediumType type, map.keys())
     {
         if (m_device->property(map[type]).toBool())
         {
@@ -85,7 +85,7 @@ QList<int> Cdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = m_device->property("storage.cdrom.write_speeds").toStringList();
 
-    foreach (const QString &speed_str, speed_strlist)
+    Q_FOREACH (const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }
@@ -97,7 +97,7 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
 {
     if (name == "EjectPressed")
     {
-        emit ejectPressed(m_device->udi());
+        Q_EMIT ejectPressed(m_device->udi());
     }
 }
 
@@ -156,9 +156,9 @@ void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
         m_ejectInProgress = false;
 
         if (exitCode==0) {
-            emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
+            Q_EMIT ejectDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
-            emit ejectDone(Solid::UnauthorizedOperation,
+            Q_EMIT ejectDone(Solid::UnauthorizedOperation,
                            m_process->readAllStandardError(),
                            m_device->udi());
         }

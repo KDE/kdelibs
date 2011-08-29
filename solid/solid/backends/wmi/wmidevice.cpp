@@ -248,7 +248,7 @@ public:
         QStringList result;
 
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
-        foreach(WmiQuery::Item *item, list) {
+        Q_FOREACH(WmiQuery::Item *item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item->getProperty(propertyName);
 
@@ -272,7 +272,7 @@ WmiDevice::WmiDevice(const QString &udi)
     : Device(), d(new WmiDevicePrivate(udi))
 {
     d->discoverType();
-    foreach (const QString &_interface, d->interfaceList)
+    Q_FOREACH (const QString &_interface, d->interfaceList)
     {
         Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(_interface);
         createDeviceInterface(type);
@@ -565,7 +565,7 @@ void WmiDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
 {
     QMap<QString,int> result;
 
-    foreach (const ChangeDescription &change, changes)
+    Q_FOREACH (const ChangeDescription &change, changes)
     {
         QString key = change.key;
         bool added = change.added;
@@ -585,12 +585,12 @@ void WmiDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
         result[key] = type;
     }
 
-    emit propertyChanged(result);
+    Q_EMIT propertyChanged(result);
 }
 
 void WmiDevice::slotCondition(const QString &condition, const QString &reason)
 {
-    emit conditionRaised(condition, reason);
+    Q_EMIT conditionRaised(condition, reason);
 }
 
 #include "backends/wmi/wmidevice.moc"

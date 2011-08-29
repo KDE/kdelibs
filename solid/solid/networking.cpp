@@ -95,24 +95,24 @@ void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
       case Solid::Networking::Disconnecting:
       case Solid::Networking::Connecting:
         if ( disconnectPolicy == Solid::Networking::Managed ) {
-          emit globalNetworkManager->shouldDisconnect();
+          Q_EMIT globalNetworkManager->shouldDisconnect();
         } else if ( disconnectPolicy == Solid::Networking::OnNextStatusChange ) {
           setDisconnectPolicy( Solid::Networking::Manual );
-          emit globalNetworkManager->shouldDisconnect();
+          Q_EMIT globalNetworkManager->shouldDisconnect();
         }
         break;
       case Solid::Networking::Connected:
         if ( disconnectPolicy == Solid::Networking::Managed ) {
-          emit globalNetworkManager->shouldConnect();
+          Q_EMIT globalNetworkManager->shouldConnect();
         } else if ( disconnectPolicy == Solid::Networking::OnNextStatusChange ) {
           setConnectPolicy( Solid::Networking::Manual );
-          emit globalNetworkManager->shouldConnect();
+          Q_EMIT globalNetworkManager->shouldConnect();
         }
         break;
 //      default:
 //        kDebug( 921 ) <<  "Unrecognised status code!";
     }
-    emit globalNetworkManager->statusChanged( netStatus );
+    Q_EMIT globalNetworkManager->statusChanged( netStatus );
 }
 
 void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const QString & oldOwner, const QString & newOwner )
@@ -122,12 +122,12 @@ void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const 
     if ( newOwner.isEmpty() ) {
         // kded quit on us
         netStatus = Solid::Networking::Unknown;
-        emit globalNetworkManager->statusChanged( netStatus );
+        Q_EMIT globalNetworkManager->statusChanged( netStatus );
 
     } else {
         // kded was replaced or started
         initialize();
-        emit globalNetworkManager->statusChanged( netStatus );
+        Q_EMIT globalNetworkManager->statusChanged( netStatus );
         serviceStatusChanged( netStatus );
     }
 }

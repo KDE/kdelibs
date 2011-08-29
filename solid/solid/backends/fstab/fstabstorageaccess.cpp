@@ -100,7 +100,7 @@ bool FstabStorageAccess::setup()
 
 void FstabStorageAccess::slotSetupRequested()
 {
-    emit setupRequested(m_fstabDevice->udi());
+    Q_EMIT setupRequested(m_fstabDevice->udi());
 }
 
 bool FstabStorageAccess::teardown()
@@ -117,7 +117,7 @@ bool FstabStorageAccess::teardown()
 
 void FstabStorageAccess::slotTeardownRequested()
 {
-    emit teardownRequested(m_fstabDevice->udi());
+    Q_EMIT teardownRequested(m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::slotSetupFinished(int exitCode, QProcess::ExitStatus /*exitStatus*/)
@@ -132,7 +132,7 @@ void FstabStorageAccess::slotSetupFinished(int exitCode, QProcess::ExitStatus /*
 
 void FstabStorageAccess::slotSetupDone(int error, const QString &errorString)
 {
-    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
+    Q_EMIT setupDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus /*exitStatus*/)
@@ -147,7 +147,7 @@ void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus
 
 void FstabStorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
-    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
+    Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::onMtabChanged()
@@ -156,12 +156,12 @@ void FstabStorageAccess::onMtabChanged()
     if (currentMountPoints.count() > m_currentMountPoints.count()) {
         // device mounted
         if (currentMountPoints.contains(m_fstabDevice->device()) && !m_currentMountPoints.contains(m_fstabDevice->device())) {
-            emit accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
+            Q_EMIT accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
         }
     } else {
         // device umounted
         if (!currentMountPoints.contains(m_fstabDevice->device()) && m_currentMountPoints.contains(m_fstabDevice->device())) {
-            emit accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
+            Q_EMIT accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
         }
     }
 

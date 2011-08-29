@@ -59,7 +59,7 @@ Solid::OpticalDrive::MediumTypes FakeCdrom::supportedMedia() const
 
     QStringList supported_medialist = fakeDevice()->property("supportedMedia").toString().simplified().split(',');
 
-    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
+    Q_FOREACH (const Solid::OpticalDrive::MediumType type, map.keys())
     {
         if (supported_medialist.indexOf(map[type]) != -1)
         {
@@ -85,7 +85,7 @@ QList<int> FakeCdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = fakeDevice()->property("writeSpeeds").toString().simplified().split(',');
 
-    foreach (const QString &speed_str, speed_strlist)
+    Q_FOREACH (const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }
