@@ -1,11 +1,22 @@
-project(libkdbus)
+cmake_minimum_required(VERSION 2.8)
 
-add_definitions(-DQT_NO_CAST_FROM_ASCII)
+project(kdbus)
 
-include_directories(
-    ${QT_INCLUDES}
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
+find_package(extra-cmake-modules REQUIRED)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+
+include(ECMVersion)
+
+# -- Maintained by scripty
+ecm_version(5 0 0)
+# --
+
+include(ECMQtFramework)
+
+find_package(Qt4 REQUIRED QtCore QtDBus)
+
+include(${QT_USE_FILE})
 
 set(libkdbus_SRCS
     kdbusconnectionpool.cpp
@@ -13,15 +24,16 @@ set(libkdbus_SRCS
     kdbusservice.cpp
 )
 
-kf5_add_library(kdbus ${LIBRARY_TYPE} ${libkdbus_SRCS})
+add_library(kdbus ${LIBRARY_TYPE} ${libkdbus_SRCS})
+generate_export_header(kdbus)
 
 target_link_libraries(kdbus ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
-set_target_properties(kdbus PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
-                                       SOVERSION ${GENERIC_LIB_SOVERSION}
+set_target_properties(kdbus PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                       SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kdbus EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdbus ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     kdbusconnectionpool.h
