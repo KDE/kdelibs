@@ -149,7 +149,12 @@ if(NOT APPLE)
   else ()
     set(HUPNP_FOUND false)
   endif ()
-  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+  set_package_properties(HUPnP PROPERTIES
+    URL "http://www.herqq.org"
+    DESCRIPTION "UPnP support for Solid"
+    TYPE OPTIONAL
+    PURPOSE "Allows Solid to provide information about UPnP devices on the network"
+  )
 endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
@@ -171,7 +176,12 @@ if(NOT WIN32 AND NOT APPLE)
 #   )
 
    find_package( UDev )
-   macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
+   set_package_properties(UDev PROPERTIES
+      URL "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
+      DESCRIPTION "UDev support for Solid"
+      TYPE OPTIONAL
+      PURPOSE "Allows Solid to use UDev to provide information about devices on Linux"
+   )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 
 
@@ -401,13 +411,12 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 find_package(Flex)
-macro_log_feature(FLEX_FOUND
-   "Flex"
-   "Allows the Solid predicate parser to be updated"
-   "http://flex.sourceforge.net"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
+set_package_properties(Flex PROPERTIES
+    URL "http://flex.sourceforge.net"
+    DESCRIPTION "Allows the Solid predicate parser to be updated"
+    TYPE OPTIONAL
+    PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+  )
 
 find_program(BISON_EXECUTABLE bison)
 macro_log_feature(BISON_EXECUTABLE
