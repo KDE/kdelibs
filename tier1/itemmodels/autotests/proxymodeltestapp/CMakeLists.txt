@@ -9,6 +9,9 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../tests
 )
 
+find_package(Qt4 REQUIRED QtScript)
+include(${QT_USE_FILE})
+
 set(proxymodeltestapp_SRCS
     main.cpp
     mainwindow.cpp
@@ -31,10 +34,10 @@ set(proxymodeltestapp_SRCS
     matchcheckingwidget.cpp
 )
 
-kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
+add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS})
 
 target_link_libraries(proxymodeltestapp
-   ${KDE4_KDEUI_LIBS}
+   itemmodels
    proxymodeltestsuite
    ${QT_QTSCRIPT_LIBRARY}
 )

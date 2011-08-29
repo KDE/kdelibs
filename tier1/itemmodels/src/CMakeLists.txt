@@ -1,4 +1,3 @@
-add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(itemmodels_SRCS
   kbreadcrumbselectionmodel.cpp
@@ -13,17 +12,18 @@ set(itemmodels_SRCS
   kviewstatemaintainerbase.cpp
 )
 
-kf5_add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
+add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
+generate_export_header(itemmodels)
 
 target_link_libraries(itemmodels ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-set_target_properties(itemmodels PROPERTIES VERSION   ${GENERIC_LIB_VERSION}
-                                            SOVERSION ${GENERIC_LIB_SOVERSION}
+set_target_properties(itemmodels PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                            SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS itemmodels EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS itemmodels ${ECM_TARGET_DEFAULT_ARGS})
 
-install( FILES
+install(FILES
   kbreadcrumbselectionmodel.h
   kcheckableproxymodel.h
   klinkitemselectionmodel.h
@@ -37,4 +37,3 @@ install( FILES
   ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-

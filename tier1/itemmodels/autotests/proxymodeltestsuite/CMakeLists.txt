@@ -13,7 +13,6 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
 include_directories(
-  ${QT_INCLUDES}
   ${proxymodeltestsuite_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../../src
   ${CMAKE_CURRENT_BINARY_DIR}/../../src
@@ -79,7 +78,7 @@ if (proxymodeltestsuite_standalone)
 endif()
 
 
-automoc4_add_library(proxymodeltestsuite ${LIBRARY_TYPE}
+add_library(proxymodeltestsuite ${LIBRARY_TYPE}
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
 )
@@ -91,9 +90,6 @@ target_link_libraries(proxymodeltestsuite
    ${QT_QTTEST_LIBRARY}
    ${Grantlee_CORE_LIBRARIES}
 )
-set_target_properties(proxymodeltestsuite PROPERTIES
-    LINK_INTERFACE_LIBRARIES "" 
-    DEFINE_SYMBOL MAKE_PROXYMODELTESTSUITE_LIB)
 
 if(proxymodeltestsuite_standalone)
 
