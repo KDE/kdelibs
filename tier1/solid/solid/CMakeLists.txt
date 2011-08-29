@@ -6,8 +6,6 @@ if(WIN32)
    include_directories( ${KDEWIN_INCLUDES} )
 endif(WIN32)
 
-configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
-
 include (CheckCXXSourceCompiles)
 
 check_cxx_source_compiles("	#ifdef __SUNPRO_CC
@@ -43,8 +41,6 @@ file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/udev
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
 )
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
 
 set(solid_LIB_SRCS
    solidnamespace.cpp
@@ -359,6 +355,7 @@ if(APPLE)
 endif(APPLE)
 
 kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
+generate_export_header(solid)
 
 if ( HUPNP_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
@@ -392,9 +389,6 @@ kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
 
 target_link_libraries(solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
 
-if(WIN32)
-   set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
-endif(WIN32)
 ########### install files ###############
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h
