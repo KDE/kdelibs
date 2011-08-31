@@ -51,8 +51,8 @@ else(NOT KUNITCONVERSION_NO_KIO)
 endif(NOT KUNITCONVERSION_NO_KIO)
 
 if(NOT KUNITCONVERSION_NO_SOLID)
-    include_directories(${CMAKE_BINARY_DIR}/solid/)
-    include_directories(${CMAKE_SOURCE_DIR}/solid/)
+    include_directories(${CMAKE_BINARY_DIR}/tier1/solid/)
+    include_directories(${CMAKE_SOURCE_DIR}/tier1/solid/)
     set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
 endif(NOT KUNITCONVERSION_NO_SOLID)
 
