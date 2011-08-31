@@ -25,8 +25,8 @@ configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h
 
 include_directories( ${KDE4_KIO_INCLUDES}
                      ${ZLIB_INCLUDE_DIR}
-                     ${CMAKE_SOURCE_DIR}/solid
-                     ${CMAKE_BINARY_DIR}/solid
+                     ${CMAKE_SOURCE_DIR}/tier1/solid
+                     ${CMAKE_BINARY_DIR}/tier1/solid
                      ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
                      ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
 )
