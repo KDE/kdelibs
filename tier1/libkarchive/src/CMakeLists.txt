@@ -2,6 +2,7 @@
 include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})

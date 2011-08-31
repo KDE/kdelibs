@@ -1,3 +1,5 @@
+add_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 set(kplotting_SRCS
  kplotaxis.cpp
  kplotpoint.cpp

@@ -47,7 +47,7 @@ public:
     virtual QStringList languages() const;
 
     virtual QString name() const {
-        return "ASpell";
+        return QString::fromLatin1("ASpell");
     }
 private:
     AspellConfig *m_config;

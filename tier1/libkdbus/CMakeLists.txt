@@ -1,5 +1,7 @@
 project(libkdbus)
 
+add_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 include_directories(
     ${QT_INCLUDES}
     ${CMAKE_CURRENT_BINARY_DIR}

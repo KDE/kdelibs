@@ -1,5 +1,7 @@
 include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+add_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 if(WIN32)
    include_directories(${KDEWIN_INCLUDES})
 endif(WIN32)

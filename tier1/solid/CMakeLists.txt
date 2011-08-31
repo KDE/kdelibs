@@ -8,5 +8,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}
 # Solid::Backends::Hal::AcAdapter and Solid::Ifaces::AcAdapter
 kde4_no_enable_final(solid)
 
+# TODO add_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 add_subdirectory( solid )
 add_subdirectory( tests )
