@@ -2,8 +2,8 @@ project(kfile)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
-  ${CMAKE_SOURCE_DIR}/solid
-  ${CMAKE_BINARY_DIR}/solid
+  ${CMAKE_SOURCE_DIR}/tier1/solid
+  ${CMAKE_BINARY_DIR}/tier1/solid
 )
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
