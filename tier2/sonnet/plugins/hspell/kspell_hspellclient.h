@@ -51,7 +51,7 @@ public:
     virtual QStringList languages() const;
 
     virtual QString name() const {
-        return "HSpell";
+        return QString::fromLatin1("HSpell");
     }
 private:
 
