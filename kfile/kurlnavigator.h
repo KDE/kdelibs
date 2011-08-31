@@ -419,20 +419,6 @@ Q_SIGNALS:
      */
     void tabRequested(const KUrl& url);
 
-#if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    /**
-     * Is emitted if the URLs \a urls have been dropped
-     * to the destination \a destination.
-     * @deprecated Use
-     * KUrlNavigator::urlsDropped(const KUrl& destination, QDropEvent* event)
-     * instead.
-     */
-    // KDE5: remove, as the signal has been replaced by
-    // urlsDropped(const KUrl& destination, QDropEvent* event)
-    KDE_DEPRECATED void urlsDropped(const KUrl::List& urls,
-                                    const KUrl& destination);
-#endif
-
 protected:
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     /**

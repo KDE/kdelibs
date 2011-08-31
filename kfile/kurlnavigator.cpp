@@ -402,12 +402,6 @@ void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event
     const KUrl::List urls = KUrl::List::fromMimeData(event->mimeData());
     if (!urls.isEmpty()) {
         emit q->urlsDropped(destination, event);
-
-#ifndef KDE_NO_DEPRECATED
-        // KDE5: remove, as the signal has been replaced by
-        // urlsDropped(const KUrl& destination, QDropEvent* event)
-        emit q->urlsDropped(urls, destination);
-#endif
     }
 }
 
