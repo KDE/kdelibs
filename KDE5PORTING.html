@@ -77,6 +77,24 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 <h3><a name="kdecore">Changes in kdecore</a></h3>
 
 <ul>
+<li>KStandardDirs: KDE applications can keep using it, but independent frameworks should use QStandardPaths instead.
+The porting depends on the resource type:
+<pre>
+    KStandardDirs "data" -> QStandardPaths::GenericDataLocation
+    KStandardDirs "appdata" -> QStandardPaths::DataLocation
+</pre>
+If the resource is available in QStandardPaths, then the porting is simple:
+<pre>
+    KStandardDirs::locate("data", "kmyapp/my-data") -> QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
+    saveLocation -> storageLocation (note that you might have to mkdir it if it doesn't exist)
+</pre>
+Otherwise, you need to use GenericDataLocation and add the subdirectory name manually.
+<pre>
+    dirs()->resourceDirs("xdgdata-apps") -> QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applications", QStandardPaths::LocateDirectory)
+    dirs()->findAllResources("xdgdata-mime", file) -> QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
+
+</pre>
+</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

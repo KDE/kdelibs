@@ -89,6 +89,7 @@ public:
     Q_DECLARE_FLAGS(LocateOptions, LocateOption)
     
     static QString locate(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
+    static QStringList locateAll(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
 };
 
 #endif // QT_NO_DESKTOPSERVICES

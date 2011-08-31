@@ -82,8 +82,8 @@
 /*!
     \fn QString QStandardPaths::storageLocation(StandardLocation type)
 
-    Returns the default system directory where files of \a type belong, or an empty string
-    if the location cannot be determined.
+    Returns the directory where files of \a type should be written to,
+    or an empty string if the location cannot be determined.
 
     \note The storage location returned can be a directory that does not exist; i.e., it
     may need to be created by the system or the user.
@@ -133,6 +133,12 @@ QString QStandardPaths::storageLocation(StandardLocation type)
     }
 }
 
+/*!
+   Returns all the directories where files of \a type belong.
+
+   Much like the PATH variable, it returns the directories in order of priority,
+   starting with the user-specific storageLocation() for the \a type.
+ */
 QStringList QStandardPaths::standardLocations(StandardLocation type)
 {
     QStringList dirs;
@@ -156,7 +162,7 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
         }
     }
     const QString localDir = storageLocation(type);
-    dirs.append(localDir);
+    dirs.prepend(localDir);
     return dirs;
 }
 
@@ -179,6 +185,21 @@ QString QStandardPaths::locate(StandardLocation type, const QString& fileName, L
     }
     return QString();
 }
+
+// TODO docu
+QStringList QStandardPaths::locateAll(StandardLocation type, const QString& fileName, LocateOptions options)
+{
+    const QStringList dirs = standardLocations(type);
+    QStringList result;
+    Q_FOREACH(const QString& dir, dirs) {
+        const QString path = dir + '/' + fileName;
+        //qDebug() << "Looking at" << path;
+        if (existsAsSpecified(path, options))
+            result.append(path);
+    }
+    return result;
+}
+
 
 //// END HACKS
 

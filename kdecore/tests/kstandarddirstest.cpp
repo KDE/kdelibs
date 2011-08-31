@@ -219,9 +219,10 @@ void KStandarddirsTest::testFindDirs()
         QSKIP( "kdelibs not installed", SkipAll );
 
     const QString t = KStandardDirs::locateLocal("data", "kconf_update/" );
+    QCOMPARE(t, QString(m_kdehome + "/xdg/local/kconf_update/"));
     const QStringList dirs = KGlobal::dirs()->findDirs( "data", "kconf_update" );
     QVERIFY( !dirs.isEmpty() );
-    QVERIFY( dirs.count() >= 2 ); // at least local and global
+    QVERIFY2(dirs.count() >= 2, qPrintable(dirs.join(","))); // at least local and global
     //qDebug() << dirs;
 }
 

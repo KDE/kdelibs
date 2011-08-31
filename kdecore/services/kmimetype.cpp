@@ -28,7 +28,7 @@
 #include <klocale.h>
 #include <kprotocolinfo.h>
 #include <kprotocolinfofactory.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kurl.h>
 
 #include <QtCore/QFile>
@@ -597,11 +597,11 @@ void KMimeTypePrivate::ensureXmlDataLoaded() const
     m_xmlDataLoaded = true;
 
     const QString file = m_strName + QLatin1String(".xml");
-    const QStringList mimeFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", file);
+    const QStringList mimeFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QString::fromLatin1("mime/") + file);
     if (mimeFiles.isEmpty()) {
         kWarning() << "No file found for" << file << ", even though the file appeared in a directory listing.";
         kWarning() << "Either it was just removed, or the directory doesn't have executable permission...";
-        kWarning() << KGlobal::dirs()->resourceDirs("xdgdata-mime");
+        kWarning() << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime"), QStandardPaths::LocateDirectory);
         return;
     }
 
