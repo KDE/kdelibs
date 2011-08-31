@@ -38,6 +38,8 @@
 
 #include <QtCore/Q_PID>
 
+QTEST_KDEMAIN_CORE(KServiceTest)
+
 void KServiceTest::initTestCase()
 {
     // A non-C locale is necessary for some tests.
@@ -78,14 +80,50 @@ void KServiceTest::initTestCase()
     const QString fakePart = KStandardDirs::locateLocal("services", "fakepart.desktop");
     if (!QFile::exists(fakePart)) {
         mustUpdateKSycoca = true;
-	KDesktopFile file(fakePart);
-	KConfigGroup group = file.desktopGroup();
-	group.writeEntry("Name", "FakePart");
-	group.writeEntry("Type", "Service");
-	group.writeEntry("X-KDE-Library", "fakepart");
-	group.writeEntry("X-KDE-Protocols", "http,ftp");
-	group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart,Browser/View,KParts/ReadWritePart");
-	group.writeEntry("MimeType", "text/plain;");
+        KDesktopFile file(fakePart);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePart");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "fakepart");
+        group.writeEntry("X-KDE-Protocols", "http,ftp");
+        group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart,Browser/View,KParts/ReadWritePart");
+        group.writeEntry("MimeType", "text/plain;");
+    }
+
+    const QString fakePart2 = KStandardDirs::locateLocal("services", "fakepart2.desktop");
+    if (!QFile::exists(fakePart2)) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(fakePart2);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePart2");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "fakepart2");
+        group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart");
+        group.writeEntry("MimeType", "text/plain;");
+    }
+
+    const QString preferredPart = KStandardDirs::locateLocal("services", "preferredpart.desktop");
+    if (!QFile::exists(preferredPart)) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(preferredPart);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "PreferredPart");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "preferredpart");
+        group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart");
+        group.writeEntry("MimeType", "text/plain;");
+    }
+
+    const QString otherPart = KStandardDirs::locateLocal("services", "otherpart.desktop");
+    if (!QFile::exists(otherPart)) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(otherPart);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "OtherPart");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "otherpart");
+        group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart");
+        group.writeEntry("MimeType", "text/plain;");
     }
 
     // faketextplugin: a ktexteditor plugin
@@ -95,26 +133,36 @@ void KServiceTest::initTestCase()
     const QString fakeTextplugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
     if (!QFile::exists(fakeTextplugin)) {
         mustUpdateKSycoca = true;
-	KDesktopFile file(fakeTextplugin);
-	KConfigGroup group = file.desktopGroup();
-	group.writeEntry("Name", "FakeTextPlugin");
-	group.writeEntry("Type", "Service");
-	group.writeEntry("X-KDE-Library", "faketextplugin");
-	group.writeEntry("X-KDE-ServiceTypes", "KTextEditor/Plugin");
-	group.writeEntry("MimeType", "text/plain;");
+        KDesktopFile file(fakeTextplugin);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakeTextPlugin");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "faketextplugin");
+        group.writeEntry("X-KDE-ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("MimeType", "text/plain;");
     }
 
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
-        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
-        kDebug() << "waiting for signal";
-        QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
-        kDebug() << "got signal";
+        runKBuildSycoca(true);
     }
 
 }
 
-QTEST_KDEMAIN_CORE( KServiceTest )
+void KServiceTest::runKBuildSycoca(bool noincremental)
+{
+    QProcess proc;
+    const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    QVERIFY(!kbuildsycoca.isEmpty());
+    QStringList args;
+    if (noincremental)
+        args << "--noincremental";
+    proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+    proc.start(kbuildsycoca, args);
+    kDebug() << "waiting for signal";
+    QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
+    kDebug() << "got signal";
+}
 
 void KServiceTest::testByName()
 {
@@ -125,8 +173,9 @@ void KServiceTest::testByName()
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
 
-    KService::Ptr khtml = KService::serviceByDesktopPath("khtml.desktop");
-    QCOMPARE( khtml->name(), QString::fromLatin1("KHTML"));
+    KService::Ptr myService = KService::serviceByDesktopPath("fakepart.desktop");
+    QVERIFY(myService);
+    QCOMPARE( myService->name(), QString::fromLatin1("FakePart"));
 }
 
 void KServiceTest::testProperty()
@@ -141,9 +190,10 @@ void KServiceTest::testProperty()
     QVERIFY(!kdedkcookiejar->property("Name").toString().isEmpty());
     QVERIFY(!kdedkcookiejar->property("Name[fr]", QVariant::String).isValid());
 
-    KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
-    QVERIFY(kjavaappletviewer);
-    QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
+    // TODO: for this we must install a servicetype desktop file...
+    //KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
+    //QVERIFY(kjavaappletviewer);
+    //QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
 
     // Test property("X-KDE-Protocols"), which triggers the KServiceReadProperty code.
     KService::Ptr fakePart = KService::serviceByDesktopPath("fakepart.desktop");
@@ -275,13 +325,10 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 
     m_firstOffer = offers[0]->entryPath();
 
-    // Only test for parts provided by kdelibs, or better, by this unittest:
     QVERIFY( offerListHasService( offers, "fakepart.desktop" ) );
-
-    QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) );
-    QVERIFY( offerListHasService( offers, "khtml.desktop" ) );
-    QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
-    QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
+    QVERIFY( offerListHasService( offers, "fakepart2.desktop" ) );
+    QVERIFY( offerListHasService( offers, "otherpart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "preferredpart.desktop" ) );
 
     // Check ordering according to InitialPreference
     int lastPreference = -1;
@@ -359,15 +406,12 @@ void KServiceTest::testWriteServiceTypeProfile()
 {
     const QString serviceType = "KParts/ReadOnlyPart";
     KService::List services, disabledServices;
-    services.append(KService::serviceByDesktopPath("khtmlimage.desktop"));
+    services.append(KService::serviceByDesktopPath("preferredpart.desktop"));
     services.append(KService::serviceByDesktopPath("fakepart.desktop"));
-    disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
+    disabledServices.append(KService::serviceByDesktopPath("fakepart2.desktop"));
 
-    KService::List::ConstIterator servit = services.constBegin();
-    for( ; servit != services.constEnd(); ++servit) {
-        QVERIFY(!servit->isNull());
-    }
-
+    Q_FOREACH(KService::Ptr serv, services) { QVERIFY(!serv.isNull()); }
+    Q_FOREACH(KService::Ptr serv, disabledServices) { QVERIFY(!serv.isNull()); }
 
     KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
 
@@ -382,11 +426,11 @@ void KServiceTest::testWriteServiceTypeProfile()
     //foreach( KService::Ptr service, offers )
     //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->entryPath() ) );
 
-    QVERIFY( offers.count() >= 3 ); // at least 3, even
-    QCOMPARE( offers[0]->entryPath(), QString("khtmlimage.desktop") );
+    QVERIFY( offers.count() >= 2 );
+    QCOMPARE( offers[0]->entryPath(), QString("preferredpart.desktop") );
     QCOMPARE( offers[1]->entryPath(), QString("fakepart.desktop") );
-    QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) ); // should still be somewhere in there
-    QVERIFY( !offerListHasService( offers, "khtml.desktop" ) ); // it got disabled above
+    QVERIFY( offerListHasService( offers, "otherpart.desktop" ) ); // should still be somewhere in there
+    QVERIFY( !offerListHasService( offers, "fakepart2.desktop" ) ); // it got disabled above
 }
 
 void KServiceTest::testDefaultOffers()
@@ -395,7 +439,8 @@ void KServiceTest::testDefaultOffers()
     const QString serviceType = "KParts/ReadOnlyPart";
     KService::List offers = KServiceTypeTrader::self()->defaultOffers( serviceType );
     QVERIFY( offers.count() > 0 ); // not empty
-    QVERIFY( offerListHasService( offers, "khtml.desktop" ) ); // it's here even though it's disabled in the profile
+    QVERIFY( offerListHasService( offers, "fakepart2.desktop" ) ); // it's here even though it's disabled in the profile
+    QVERIFY( offerListHasService( offers, "otherpart.desktop" ) );
     if ( m_firstOffer.isEmpty() )
         QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
     QCOMPARE( offers[0]->entryPath(), m_firstOffer );
@@ -408,7 +453,7 @@ void KServiceTest::testDeleteServiceTypeProfile()
 
     KService::List offers = KServiceTypeTrader::self()->query( serviceType );
     QVERIFY( offers.count() > 0 ); // not empty
-    QVERIFY( offerListHasService( offers, "khtml.desktop" ) ); // it's back
+    QVERIFY( offerListHasService( offers, "fakepart2.desktop" ) ); // it's back
 
     if ( m_firstOffer.isEmpty() )
         QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
@@ -484,9 +529,7 @@ void KServiceTest::testKSycocaUpdate()
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
     QVERIFY(spy.isValid());
     QFile::remove(servPath);
-    kDebug() << QThread::currentThread() << "executing kbuildsycoca";
-    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
-    kDebug() << QThread::currentThread() << "done";
+    runKBuildSycoca();
     while (spy.isEmpty())
         QTest::qWait(50);
     QVERIFY(!spy.isEmpty());
@@ -502,8 +545,7 @@ void KServiceTest::testKSycocaUpdate()
     createFakeService();
     QVERIFY(QFile::exists(servPath));
     kDebug() << QThread::currentThread() << "executing kbuildsycoca (2)";
-    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
-    kDebug() << QThread::currentThread() << "done (2)";
+    runKBuildSycoca();
     while (spy.isEmpty())
         QTest::qWait(50);
     kDebug() << QThread::currentThread() << "got signal ok (2)";
