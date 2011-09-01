@@ -51,6 +51,8 @@ protected:
         QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
         foreach (const Solid::Device &solidDevice, driveList) {
             const Solid::StorageDrive* solidDrive = solidDevice.as<Solid::StorageDrive>();
+            Q_ASSERT(solidDrive);
+            Q_UNUSED(solidDrive);
         }
     }
 };
@@ -81,6 +83,8 @@ void SolidMtTest::testWorkerThread()
     const QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
     foreach (const Solid::Device &solidDevice, driveList) {
         const Solid::GenericInterface* solidDrive = solidDevice.as<Solid::GenericInterface>();
+        Q_ASSERT(solidDrive);
+        Q_UNUSED(solidDrive);
     }
 
     delete wt;
