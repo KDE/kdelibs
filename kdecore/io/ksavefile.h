@@ -105,9 +105,8 @@ public:
      * Creates a new KSaveFile and sets the target file to @p filename.
      *
      * @param filename the path of the file
-     * @param componentData unused
      */
-    explicit KSaveFile(const QString &filename, const KComponentData &componentData = KGlobal::mainComponent()); // KDE5 TODO: remove KComponentData
+    explicit KSaveFile(const QString &filename);
 
     /**
      * Destructor.

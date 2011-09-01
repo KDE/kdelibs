@@ -426,7 +426,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     }
 
     if (createNew) {
-        KSaveFile file( filePath(), data );
+        KSaveFile file(filePath());
         if (!file.open()) {
             return false;
         }

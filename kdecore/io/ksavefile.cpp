@@ -63,7 +63,7 @@ KSaveFile::KSaveFile()
 }
 
 class KComponentData;
-KSaveFile::KSaveFile(const QString &filename, const KComponentData & /*TODO REMOVE*/)
+KSaveFile::KSaveFile(const QString &filename)
  : d(new Private())
 {
     KSaveFile::setFileName(filename);
