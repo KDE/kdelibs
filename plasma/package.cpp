@@ -128,7 +128,7 @@ Package::Package()
 
 Package::Package(const QString &packageRoot, const QString &package,
                  PackageStructure::Ptr structure)
-    : d(new PackagePrivate(structure, packageRoot + '/' + package))
+    : d(new PackagePrivate(structure, packageRoot, package))
 {
 }
 
@@ -757,7 +757,26 @@ PackagePrivate::PackagePrivate(const PackageStructure::Ptr st, const QString &p)
           service(0)
 {
     if (structure) {
-        structure->setPath(p);
+        if (p.isEmpty()) {
+            structure->setPath(structure->defaultPackageRoot());
+        } else {
+            structure->setPath(p);
+        }
+    }
+
+    valid = structure && !structure->path().isEmpty();
+}
+
+PackagePrivate::PackagePrivate(const PackageStructure::Ptr st, const QString &packageRoot, const QString &path)
+        : structure(st),
+          service(0)
+{
+    if (structure) {
+        if (packageRoot.isEmpty()) {
+            structure->setPath(structure->defaultPackageRoot()%"/"%path);
+        } else {
+            structure->setPath(packageRoot%"/"%path);
+        }
     }
 
     valid = structure && !structure->path().isEmpty();

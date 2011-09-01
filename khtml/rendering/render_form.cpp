@@ -967,11 +967,6 @@ void LineEditWidget::clearHistoryActivated()
 
 void LineEditWidget::paintEvent( QPaintEvent *pe )
 {
-    if (!hasFrame()) {
-        QPainter p(this);
-        p.fillRect(pe->rect(), palette().brush(QPalette::Base));
-        p.end();
-    }
     KLineEdit::paintEvent( pe );
 }
 
@@ -1050,7 +1045,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
 
     widget()->setAlignment(textAlignment());
     bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
-    static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
+    widget()->setClearButtonShown( showClearButton );
     if (showClearButton) {
         QObjectList children = widget()->children();
         foreach (QObject* object, children) {

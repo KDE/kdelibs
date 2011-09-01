@@ -90,10 +90,11 @@ void KServiceTypeProfiles::ensureParsed()
         for ( int i = 0; i < count; ++i ) {
             const QString num = QString::fromLatin1("Entry") + QString::number(i);
             const QString serviceId = config.readEntry( num + QLatin1String("_Service"), QString() );
-            Q_ASSERT(!serviceId.isEmpty());
-            const int pref = config.readEntry( num + QLatin1String("_Preference"), 0 );
-            //kDebug(7014) << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
-            p->addService( serviceId, pref );
+            if (!serviceId.isEmpty()) {
+                const int pref = config.readEntry( num + QLatin1String("_Preference"), 0 );
+                //kDebug(7014) << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
+                p->addService( serviceId, pref );
+            }
         }
     }
 }

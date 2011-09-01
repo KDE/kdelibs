@@ -199,7 +199,7 @@ QString HalDevice::icon() const
             return "computer";
         }
 
-    } else if (category=="storage") {
+    } else if (category=="storage" || category=="storage.cdrom") {
 
         if (prop("storage.drive_type").toString()=="floppy") {
             return "media-floppy";
@@ -222,7 +222,7 @@ QString HalDevice::icon() const
 
         return "drive-harddisk";
 
-    } else if (category=="volume") {
+    } else if (category=="volume" || category=="volume.disc") {
 
         QStringList capabilities = prop("info.capabilities").toStringList();
 
@@ -350,9 +350,9 @@ QString HalDevice::description() const
 {
     QString category = prop("info.category").toString();
 
-    if (category=="storage") {
+    if (category=="storage" || category=="storage.cdrom") {
         return storageDescription();
-    } else if (category=="volume") {
+    } else if (category=="volume" || category=="volume.disc") {
         return volumeDescription();
     } else if (category=="net.80211") {
         return QObject::tr("WLAN Interface");

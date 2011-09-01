@@ -78,6 +78,7 @@ public:
         : staleTime(30), // 30 seconds
           isLocked(false),
           linkCountSupport(true),
+          mustCloseFd(false),
           m_pid(-1),
           m_componentData(c)
     {
@@ -102,6 +103,7 @@ public:
     int staleTime;
     bool isLocked;
     bool linkCountSupport;
+    bool mustCloseFd;
     QTime staleTimer;
     KDE_struct_stat statBuf;
     int m_pid;
@@ -285,7 +287,10 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(KDE_struct_stat &st_buf)
     if (!m_file.open(fd, QIODevice::WriteOnly)) {
         return LockError;
     }
+    mustCloseFd = true;
     writeIntoLockFile(m_file, m_componentData);
+
+    // stat to get the modification time
     const int result = KDE_lstat(QFile::encodeName(m_fileName), &st_buf);
     if (result != 0)
         return KLockFile::LockError;
@@ -476,6 +481,10 @@ void KLockFile::unlock()
   if (d->isLocked)
   {
      ::unlink(QFile::encodeName(d->m_fileName));
+      if (d->mustCloseFd) {
+         close(d->m_file.handle());
+         d->mustCloseFd = false;
+     }
      d->m_file.close();
      d->m_pid = -1;
      d->isLocked = false;
