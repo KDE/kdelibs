@@ -67,6 +67,19 @@ void KStandarddirsTest::testLocateLocal()
     QCOMPARE_PATHS( configLocal, m_kdehome + "/xdg/config/ksomethingrc" );
 }
 
+void KStandarddirsTest::testResourceDirs()
+{
+    const QStringList configDirs = KGlobal::dirs()->resourceDirs("config");
+    Q_FOREACH(const QString& dir, configDirs) {
+        QVERIFY2(dir.endsWith("xdg/") || dir.endsWith(".kde-unit-test/xdg/config/"), qPrintable(dir));
+    }
+
+    const QStringList dataDirs = KGlobal::dirs()->resourceDirs("data");
+    Q_FOREACH(const QString& dir, dataDirs) {
+        QVERIFY2(dir.endsWith("share/") || dir.endsWith(".kde-unit-test/xdg/local/"), qPrintable(dir));
+    }
+}
+
 void KStandarddirsTest::testAppData()
 {
     // In addition to testSaveLocation(), we want to also check other KComponentDatas

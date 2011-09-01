@@ -1835,6 +1835,7 @@ void KStandardDirs::addKDEDefaults()
         kdedirDataDirs.append(dir + QLatin1String("share/"));
     }
 
+    xdgdirList.clear();
     xdgdirs = readEnvPath("XDG_DATA_DIRS");
     if (!xdgdirs.isEmpty()) {
         tokenize(xdgdirList, xdgdirs, QString(QLatin1Char(KPATH_SEPARATOR)));
