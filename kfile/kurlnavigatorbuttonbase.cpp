@@ -40,7 +40,7 @@ KUrlNavigatorButtonBase::KUrlNavigatorButtonBase(QWidget* parent) :
     m_active(true),
     m_displayHint(0)
 {
-    setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy(Qt::TabFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     setMinimumHeight(parent->minimumHeight());
 

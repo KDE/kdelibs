@@ -138,7 +138,7 @@ QSize KUrlNavigatorButton::sizeHint() const
     adjustedFont.setBold(m_subDir.isEmpty());
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
-    const int width = QFontMetrics(adjustedFont).width(text()) + arrowWidth() + 4 * BorderWidth;
+    const int width = QFontMetrics(adjustedFont).width(plainText()) + arrowWidth() + 4 * BorderWidth;
     return QSize(width, KUrlNavigatorButtonBase::sizeHint().height());
 }
 
@@ -623,7 +623,7 @@ bool KUrlNavigatorButton::isTextClipped() const
 
     QFont adjustedFont(font());
     adjustedFont.setBold(m_subDir.isEmpty());
-    return QFontMetrics(adjustedFont).width(text()) >= availableWidth;
+    return QFontMetrics(adjustedFont).width(plainText()) >= availableWidth;
 }
 
 void KUrlNavigatorButton::updateMinimumWidth()
