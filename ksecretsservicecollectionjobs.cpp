@@ -220,6 +220,20 @@ void FindCollectionJobPrivate::startCreateOrOpenCollection()
 void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
 {
     if ( !theJob->error() ) {
+        
+        QList< QDBusObjectPath > collPaths = DBusSession::serviceIf()->collections();
+        foreach ( const QDBusObjectPath &collPath, collPaths ) {
+            OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollectionIf( collPath );
+            coll->deleteLater();
+            if ( coll->label() == collectionName ) {
+                findJob->d->collectionPrivate->setDBusPath( collPath );
+                findJob->finishedOk();
+                return; // sometimes middle method returns are awfully handy :-)
+            }
+        }
+
+        // we get here because collection doesn't exist
+        
         if ( collectionPrivate->findOptions == Collection::CreateCollection ) {
             OpenSessionJob *openSessionJob = dynamic_cast< OpenSessionJob * >( theJob );
             QVariantMap creationProperties = collectionPrivate->collectionProperties;
@@ -229,22 +243,9 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
             QDBusPendingCallWatcher *createReplyWatch = new QDBusPendingCallWatcher( createReply, this );
             connect( createReplyWatch, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(createFinished(QDBusPendingCallWatcher*)) );
         }
-        else 
-            if ( collectionPrivate->findOptions == Collection::OpenOnly ) {
-                QList< QDBusObjectPath > collPaths = DBusSession::serviceIf()->collections();
-                foreach ( const QDBusObjectPath &collPath, collPaths ) {
-                    OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( collPath );
-                    coll->deleteLater();
-                    if ( coll->label() == collectionName ) {
-                        findJob->d->collectionPrivate->setDBusPath( collPath );
-                        findJob->finishedOk();
-                        break;
-                    }
-                }
-            }
-            else {
-                Q_ASSERT(0);
-            }
+        else {
+            findJob->finishedWithError( CollectionJob::CollectionNotFound, i18n("Cannot find a collection named '%1'", collectionName) );
+        }
     }
 }
 
@@ -312,7 +313,7 @@ void ListCollectionsJobPrivate::slotOpenSessionFinished(KJob* job) {
     if (openSessionJob->error() == 0) {
         QList<QDBusObjectPath> collPaths = DBusSession::serviceIf()->collections();
         foreach( const QDBusObjectPath &path, collPaths ) {
-            OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollection( path );
+            OrgFreedesktopSecretCollectionInterface *coll = DBusSession::createCollectionIf( path );
             if (coll->isValid()) {
                 collections.append( coll->label() );
             }

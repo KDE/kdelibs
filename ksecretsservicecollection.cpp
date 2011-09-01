@@ -167,7 +167,7 @@ bool CollectionPrivate::isValid()
 
 void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
 {
-    collectionIf = DBusSession::createCollection( path );
+    collectionIf = DBusSession::createCollectionIf( path );
     if ( collectionIf->isValid() ) {
         collectionStatus = (findOptions & Collection::CreateCollection) ? Collection::NewlyCreated : Collection::FoundExisting;
         kDebug() << "SUCCESS opening collection " << path.path();

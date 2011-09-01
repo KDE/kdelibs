@@ -189,7 +189,7 @@ OrgFreedesktopSecretPromptInterface* DBusSession::createPrompt(const QDBusObject
     return new OrgFreedesktopSecretPromptInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
 }
 
-OrgFreedesktopSecretCollectionInterface* DBusSession::createCollection(const QDBusObjectPath& path)
+OrgFreedesktopSecretCollectionInterface* DBusSession::createCollectionIf(const QDBusObjectPath& path)
 {
     return new OrgFreedesktopSecretCollectionInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
 }
