@@ -156,7 +156,8 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
         // http://standards.freedesktop.org/basedir-spec/latest/
         QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
         if (xdgConfigDirs.isEmpty()) {
-            dirs.append(QString::fromLatin1("/usr/local/share/:/usr/share/"));
+            dirs.append(QString::fromLatin1("/usr/local/share"));
+            dirs.append(QString::fromLatin1("/usr/share"));
         } else {
             dirs = xdgConfigDirs.split(':');
         }

@@ -60,7 +60,6 @@ public:
 private slots:
     void testDefaultLocations();
     void testCustomLocations();
-    void testGenericDataLocation();
     void testLocateAll();
 
 private:
@@ -88,6 +87,15 @@ void tst_qstandardpaths::testDefaultLocations()
     const QStringList confDirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     QCOMPARE(confDirs.count(), 2);
     QVERIFY(confDirs.contains(expectedConfHome));
+
+    qputenv("XDG_DATA_HOME", QByteArray());
+    qputenv("XDG_DATA_DIRS", QByteArray());
+    const QStringList genericDataDirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    QCOMPARE(genericDataDirs.count(), 3);
+    const QString expectedDataHome = QDir::homePath() + QString::fromLatin1("/.local/share");
+    QCOMPARE(genericDataDirs.at(0), expectedDataHome);
+    QCOMPARE(genericDataDirs.at(1), QString::fromLatin1("/usr/local/share"));
+    QCOMPARE(genericDataDirs.at(2), QString::fromLatin1("/usr/share"));
 #endif
 }
 
@@ -114,15 +122,6 @@ void tst_qstandardpaths::testCustomLocations()
     const QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     QCOMPARE(dirs, QStringList() << m_thisDir << m_globalDir);
 #endif
-}
-
-void tst_qstandardpaths::testGenericDataLocation()
-{
-    const QStringList genericDataDirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
-    //qDebug() << genericDataDirs;
-    Q_FOREACH(const QString &dir, genericDataDirs) {
-        QVERIFY2(dir.endsWith(QLatin1String("/share")), qPrintable(dir));
-    }
 }
 
 // We really need QTemporaryDir for this test...
