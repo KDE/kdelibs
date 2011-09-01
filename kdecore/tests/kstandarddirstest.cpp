@@ -71,7 +71,9 @@ void KStandarddirsTest::testResourceDirs()
 {
     const QStringList configDirs = KGlobal::dirs()->resourceDirs("config");
     Q_FOREACH(const QString& dir, configDirs) {
-        QVERIFY2(dir.endsWith("xdg/") || dir.endsWith(".kde-unit-test/xdg/config/"), qPrintable(dir));
+        QVERIFY2(dir.endsWith("xdg/")
+                 || dir.endsWith("share/config/") // KDE4 compat path
+                 || dir.endsWith(".kde-unit-test/xdg/config/"), qPrintable(dir));
     }
 
     const QStringList dataDirs = KGlobal::dirs()->resourceDirs("data");
