@@ -799,13 +799,16 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
       const KArchiveEntry* curEntry = curDir->entry(*it);
       if (!curEntry->symLinkTarget().isEmpty()) {
           const QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
-#ifdef Q_OS_UNIX
-          if (!::symlink(curEntry->symLinkTarget().toLocal8Bit().constData(), linkName.toLocal8Bit().constData())) {
+          // To create a valid link on Windows, linkName must have a .lnk file extension.
+#ifdef Q_OS_WIN
+          if (!linkName.endsWith(".lnk")) {
+              linkName += ".lnk";
+          }
+#endif
+          QFile symLinkTarget(curEntry->symLinkTarget());
+          if (!symLinkTarget.link(linkName)) {
               //qDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
           }
-#else
-          // TODO - how to create symlinks on other platforms?
-#endif
       } else {
           if ( curEntry->isFile() ) {
               const KArchiveFile* curFile = dynamic_cast<const KArchiveFile*>( curEntry );
