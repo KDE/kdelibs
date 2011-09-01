@@ -18,7 +18,6 @@
  */
 
 #include "kmimetyperepository_p.h"
-#include <kstandarddirs.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include "kmimetype.h"
@@ -26,6 +25,7 @@
 #include <kmessage.h>
 #include <klocale.h>
 #include "kfoldermimetype.h"
+#include <qstandardpaths.h>
 #include <QFile>
 #include <QProcess>
 
@@ -64,7 +64,7 @@ KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMi
 
     const QString filename = name + QLatin1String(".xml");
 
-    if (KStandardDirs::locate("xdgdata-mime", filename).isEmpty()) {
+    if (QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("mime/") + filename).isEmpty()) {
         return KMimeType::Ptr(); // Not found
     }
 
@@ -76,9 +76,9 @@ KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMi
 
 bool KMimeTypeRepository::checkMimeTypes()
 {
-    // check if there are mimetypes
-    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("globs"));
-    return !globFiles.isEmpty();
+    // check if there are mimetypes. There should be at least one globs file.
+    const QString aGlobFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("mime/globs"));
+    return !aGlobFile.isEmpty();
 }
 
 QString KMimeTypeRepository::resolveAlias(const QString& mime)
@@ -289,7 +289,7 @@ QStringList KMimeTypeRepository::parents(const QString& mime)
         m_parentsMapLoaded = true;
         Q_ASSERT(m_parents.isEmpty());
 
-        const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("subclasses"));
+        const QStringList subclassFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/subclasses"));
         //kDebug() << subclassFiles;
         Q_FOREACH(const QString& fileName, subclassFiles) {
 
