@@ -56,6 +56,6 @@ install(FILES
     DependencyPolicy.h
     ResourceRestrictionPolicy.h
     QueuePolicy.h
-    ${CMAKE_CURRENT_BUILD_DIR}/threadweaver_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/threadweaver_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver COMPONENT Devel
 )
