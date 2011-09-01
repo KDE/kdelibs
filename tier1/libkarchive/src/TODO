@@ -1,0 +1,45 @@
+1) A new class, with most of the current KFilterDev code, but an improved API:
+
+class KCompressionDevice : public QIODevice
+{
+public:
+    enum CompressionType { GZip, BZip2, Xz, None }; // or is that called Lzma?
+
+    KCompressionDevice(QIODevice* inputDevice, CompressionType type);
+
+    KCompressionDevice(const QString& fileName, CompressionType type);
+
+    // from KFilterDev:
+    // open, close, seek, atEnd, setOrigFileName, setSkipHeaders
+    // readData, writeData
+};
+
+No use of KMimeType or mimetype strings in that code, the enum is used instead.
+The case for "None" is new, but has to be added so that deviceForFile (below) can work
+as before.
+
+2) For compatibility and for a slightly higher-level class which can auto-detect mimetypes,
+we keep KFilterDev:
+
+class KFilterDev : public KCompressionDevice
+{
+public:
+    // @since 5.0
+    KFilterDev(const QString& fileName);
+
+    // @since 5.0
+    // PENDING: remove? add it for easy porting but deprecate?
+    KFilterDev(QIODevice* inputDevice, const QString& mimetype = QString(), bool forceCompression = false);
+
+    // @since 5.0
+    // PENDING: remove? add it for easy porting but deprecate?
+    KFilterDev(const QString& fileName, const QString& mimetype = QString(), bool forceCompression = false);
+
+    // @deprecated Use the constructor instead (if mimetype is empty), or KCompressionDevice (if the mimetype is known).
+    static KCompressionDevice* deviceForFile(const QString & fileName,
+                                             const QString & mimetype = QString(),
+                                             bool forceCompression = false);
+
+    // @deprecated Use the constructor instead (if mimetype is empty), or KCompressionDevice (if the mimetype is known).
+    static KCompressionDevice* device(QIODevice* inputDevice, const QString & mimetype, bool autoDeleteInputDevice = true);
+};
