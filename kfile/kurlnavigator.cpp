@@ -509,7 +509,6 @@ void KUrlNavigator::Private::updateContent()
         m_pathBox->hide();
 
         m_protocols->hide();
-        m_dropDownButton->setVisible(!m_showFullPath);
 
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
