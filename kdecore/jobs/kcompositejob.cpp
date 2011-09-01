@@ -76,8 +76,7 @@ bool KCompositeJob::removeSubjob( KJob *job )
     return true;
 }
 
-// KDE5: Make this method const
-bool KCompositeJob::hasSubjobs()
+bool KCompositeJob::hasSubjobs() const
 {
     return !d_func()->subjobs.isEmpty();
 }

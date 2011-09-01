@@ -71,7 +71,7 @@ protected:
      *
      * @return true if we still have subjobs running, false otherwise
      */
-    bool hasSubjobs();
+    bool hasSubjobs() const;
 
     /**
      * Retrieves the list of the subjobs.

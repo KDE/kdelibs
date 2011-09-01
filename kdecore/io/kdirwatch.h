@@ -225,7 +225,7 @@ class KDECORE_EXPORT KDirWatch : public QObject
     * Returns the preferred internal method to
     * watch for changes.
     */
-   Method internalMethod(); // TODO KDE5: make const
+   Method internalMethod() const;
 
    /**
     * The KDirWatch instance usually globally used in an application.

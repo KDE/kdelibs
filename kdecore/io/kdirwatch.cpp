@@ -1888,7 +1888,7 @@ void KDirWatch::setDeleted( const QString & _file )
   emit deleted( _file );
 }
 
-KDirWatch::Method KDirWatch::internalMethod()
+KDirWatch::Method KDirWatch::internalMethod() const
 {
   return d->m_preferredMethod;
 }
