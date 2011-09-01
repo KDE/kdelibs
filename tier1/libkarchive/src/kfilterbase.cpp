@@ -35,31 +35,36 @@ class KFilterBase::Private
 {
 public:
     Private()
-        : m_flags(WithHeaders) {}
+        : m_flags(WithHeaders)
+        ,  m_dev( 0L )
+        , m_bAutoDel( false )
+    {}
     FilterFlags m_flags;
+    QIODevice * m_dev;
+    bool m_bAutoDel;
 };
 
 KFilterBase::KFilterBase()
-    : m_dev( 0L ), m_bAutoDel( false ), d(new Private)
+    : d(new Private)
 {
 }
 
 KFilterBase::~KFilterBase()
 {
-    if ( m_bAutoDel )
-        delete m_dev;
+    if ( d->m_bAutoDel )
+        delete d->m_dev;
     delete d;
 }
 
 void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
 {
-    m_dev = dev;
-    m_bAutoDel = autodelete;
+    d->m_dev = dev;
+    d->m_bAutoDel = autodelete;
 }
 
 QIODevice * KFilterBase::device()
 {
-    return m_dev;
+    return d->m_dev;
 }
 
 bool KFilterBase::inBufferEmpty() const

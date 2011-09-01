@@ -116,9 +116,6 @@ public:
      */
     static KFilterBase * findFilterByMimeType( const QString & mimeType );
 
-protected: // TODO KDE5: move to d pointer
-    QIODevice * m_dev;
-    bool m_bAutoDel;
 protected:
     /** Virtual hook, used to add new "virtual" functions while maintaining
         binary compatibility. Unused in this class.
