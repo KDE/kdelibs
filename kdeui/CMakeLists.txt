@@ -33,6 +33,9 @@ include_directories(
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 
+# TODO: correctly detect if KSecretsService sources are present
+set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ksecretsserviceclient)
+
 if(NOT KDEUI_NO_ATTICA)
    include_directories( ${LIBATTICA_INCLUDE_DIR} )
    set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${LIBATTICA_LIBRARIES} )

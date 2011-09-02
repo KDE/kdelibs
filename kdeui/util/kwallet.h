@@ -28,6 +28,23 @@
 
 #include <kdeui_export.h>
 
+/**
+ * NOTE: KSecretsService folder semantics
+ * The KWallet API uses folders for organising items. KSecretsService does not
+ * have this notion. But it uses attributes that can be applied arbitrarily on
+ * all the items. The KWallet code that maps to KSecretsService applies an special
+ * attribute KSS_ATTR_ENTRYFOLDER to all items with the currentFolder() value.
+ * The KWallet folder API's calls will always succeed and they'll only change the
+ * current folder value. The folderList() call will scan all the collection
+ * items and collect the KSS_ATTR_ENTRYFOLDER attributes into a list.
+ */
+
+/**
+ * NOTE: KWalet API distinguish KSecretsService collection items by attaching
+ * them some specific attributes, defined below
+ */
+#define KSS_ATTR_ENTRYFOLDER "kwallet.folderName"
+#define KSS_ATTR_WALLETTYPE "kwallet.type"
 
 class QDBusError;
 
