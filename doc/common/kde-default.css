@@ -231,7 +231,7 @@ p, h1, h2, h3, h4, h5, h6, td, th {
   color: rgb(0,0,0); /* should be inherit */
 }
 
-.guilabel, .interface, .guibutton { 
+.guilabel, .interface, .guibutton, .guiicon { 
   background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
