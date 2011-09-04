@@ -87,6 +87,7 @@ If the resource is available in QStandardPaths, then the porting is simple:
 <pre>
     KStandardDirs::locate("data", "kmyapp/my-data") -> QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     saveLocation -> storageLocation (note that you might have to mkdir it if it doesn't exist)
+    locateLocal(type, file) -> storageLocation(type) + '/' + file
 </pre>
 Otherwise, you need to use GenericDataLocation and add the subdirectory name manually.
 <pre>
