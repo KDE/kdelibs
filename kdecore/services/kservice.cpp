@@ -38,7 +38,8 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
-#include <kstandarddirs.h>
+
+#include <qstandardpaths.h>
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
@@ -790,7 +791,7 @@ QString KService::locateLocal() const
         (QDir::isRelativePath(entryPath()) && d->categories.isEmpty()))
         return KDesktopFile::locateLocal(entryPath());
 
-    return KStandardDirs::locateLocal("xdgdata-apps", d->menuId);
+    return QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + d->menuId;
 }
 
 QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
@@ -815,7 +816,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
         if (s)
             continue;
 
-        if (!KStandardDirs::locate("xdgdata-apps", result).isEmpty())
+        if (!QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("applications/") + result).isEmpty())
             continue;
 
         break;
@@ -823,7 +824,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
     if (menuId)
         *menuId = result;
 
-    return KStandardDirs::locateLocal("xdgdata-apps", result);
+    return QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + result;
 }
 
 bool KService::isApplication() const
