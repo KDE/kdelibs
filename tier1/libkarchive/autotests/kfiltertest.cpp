@@ -43,6 +43,7 @@ void KFilterTest::initTestCase()
     pathgz = currentdir + "/test.gz";
     pathbz2 = currentdir + "/test.bz2";
     pathxz = currentdir + "/test.xz";
+    pathnone = currentdir + "/test.txt";
 
     // warning, update the COMPAREs in test_block_write() if changing the test data...
     testData = "hello world\n";
@@ -81,6 +82,10 @@ void KFilterTest::test_block_write()
     test_block_write(pathxz, testData);
     QCOMPARE( QFileInfo( pathxz ).size(), 64LL ); // size of test.lzma
 #endif
+
+    qDebug() << " -- test_block_write none -- ";
+    test_block_write(pathnone, testData);
+    QCOMPARE( QFileInfo( pathnone ).size(), 12LL ); // size of test.txt
 }
 
 void KFilterTest::test_biggerWrites()
@@ -158,6 +163,8 @@ void KFilterTest::test_block_read()
     qDebug() << " -- test_block_read lzma -- ";
     test_block_read(pathxz);
 #endif
+    qDebug() << " -- test_block_read none -- ";
+    test_block_read(pathnone);
 }
 
 void KFilterTest::test_getch( const QString & fileName )
@@ -189,6 +196,8 @@ void KFilterTest::test_getch()
     qDebug() << " -- test_getch lzma -- ";
     test_getch(pathxz);
 #endif
+    qDebug() << " -- test_getch none -- ";
+    test_getch(pathnone);
 }
 
 void KFilterTest::test_textstream(  const QString & fileName )
@@ -218,6 +227,8 @@ void KFilterTest::test_textstream()
     qDebug() << " -- test_textstream lzma -- ";
     test_textstream(pathxz);
 #endif
+    qDebug() << " -- test_textstream none -- ";
+    test_textstream(pathnone);
 }
 
 void KFilterTest::test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData)
@@ -247,6 +258,9 @@ void KFilterTest::test_readall()
 #endif
     qDebug() << " -- test_readall gzip-derived -- ";
     test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"), testData);
+
+    qDebug() << " -- test_readall none -- ";
+    test_readall(pathnone, QString::fromLatin1("text/plain"), testData);
 }
 
 void KFilterTest::test_uncompressed()

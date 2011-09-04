@@ -19,7 +19,7 @@
 #define __kfilterdev_h
 
 #include <karchive_export.h>
-#include <QtCore/QIODevice>
+#include <kcompressiondevice.h>
 #include <QtCore/QString>
 
 class QFile;
@@ -33,55 +33,13 @@ class KFilterBase;
  *
  * @author David Faure <faure@kde.org>
  */
-class KARCHIVE_EXPORT KFilterDev : public QIODevice
+class KARCHIVE_EXPORT KFilterDev : public KCompressionDevice
 {
 public:
-    /**
-     * Destructs the KFilterDev.
-     * Calls close() if the filter device is still open.
-     */
-    virtual ~KFilterDev();
 
-    /**
-     * Open for reading or writing.
-     * If the KFilterBase's device is not opened, it will be opened.
-     */
-    virtual bool open( QIODevice::OpenMode mode );
-    /**
-     * Close after reading or writing.
-     * If the KFilterBase's device was opened by open(), it will be closed.
-     */
-    virtual void close();
-
-    /**
-     * For writing gzip compressed files only:
-     * set the name of the original file, to be used in the gzip header.
-     * @param fileName the name of the original file
-     */
-    void setOrigFileName( const QByteArray & fileName );
-
-    /**
-     * Call this let this device skip the gzip headers when reading/writing.
-     * This way KFilterDev (with gzip filter) can be used as a direct wrapper
-     * around zlib - this is used by KZip.
-     */
-    void setSkipHeaders();
-
-    /**
-     * That one can be quite slow, when going back. Use with care.
-     */
-    virtual bool seek( qint64 );
-
-    virtual bool atEnd() const;
-
-    /// Reimplemented to return true. KFilterDev is a sequential QIODevice.
-    /// Well, not really, since it supports seeking and KZip uses that.
-    //virtual bool isSequential() const { return true; }
-
-public:
-
-
-    // KDE4 TODO: turn those static methods into constructors
+    // Returns the compression type for the given mimetype, if possible. Otherwise returns None.
+    // This handles simple cases like application/x-gzip, but also application/x-compressed-tar, and inheritance.
+    static CompressionType compressionTypeForMimeType(const QString& mimetype);
 
     /**
      * Creates an i/o device that is able to read from @p fileName,
@@ -105,12 +63,12 @@ public:
      *                    If false, it will always return a QIODevice. If no
      *                    filter is available it will return a simple QFile.
      *                    This can be useful if the file is usable without a filter.
-     * @return if a filter has been found, the QIODevice for the filter. If the
+     * @return if a filter has been found, the KCompressionDevice for the filter. If the
      *         filter does not exist, the return value depends on @p forceFilter.
-     *         The returned QIODevice has to be deleted after using.
+     *         The returned KCompressionDevice has to be deleted after using.
      */
-    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString(),
-                                      bool forceFilter = false );
+    static KCompressionDevice* deviceForFile( const QString & fileName, const QString & mimetype = QString(),
+                                              bool forceFilter = false );
 
     /**
      * Creates an i/o device that is able to read from the QIODevice @p inDevice,
@@ -128,25 +86,9 @@ public:
      * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
      * @param mimetype the mime type for the filter
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
-     * @return a KFilterDev that filters the original stream. Must be deleted after using
+     * @return a KCompressionDevice that filters the original stream. Must be deleted after using
      */
-    static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
-
-protected:
-    virtual qint64 readData( char *data, qint64 maxlen );
-    virtual qint64 writeData( const char *data, qint64 len );
-
-private:
-    /**
-     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.).
-     * @param filter the KFilterBase to use
-     * @param autoDeleteFilterBase when true this object will become the
-     * owner of @p filter.
-     */
-    explicit KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
-private:
-    class Private;
-    Private* const d;
+    static KCompressionDevice* device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
 };
 
 

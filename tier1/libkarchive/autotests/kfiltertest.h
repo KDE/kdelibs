@@ -54,6 +54,7 @@ private:
     QString pathgz;
     QString pathbz2;
     QString pathxz;
+    QString pathnone;
     QByteArray testData;
     QByteArray m_filterOutput;
 };

@@ -20,10 +20,12 @@ endif(LIBLZMA_FOUND)
 set(karchive_SRCS
   karchive.cpp
   kar.cpp
+  kcompressiondevice.cpp
   kfilterbase.cpp
   kfilterdev.cpp
   kgzipfilter.cpp
   klimitediodevice.cpp
+  knonefilter.cpp
   ktar.cpp
   kzip.cpp
 )
@@ -41,6 +43,7 @@ install(TARGETS karchive ${INSTALL_TARGETS_DEFAULT_ARGS})
 install( FILES
   karchive.h
   kar.h
+  kcompressiondevice.h
   kfilterbase.h
   kfilterdev.h
   ktar.h
