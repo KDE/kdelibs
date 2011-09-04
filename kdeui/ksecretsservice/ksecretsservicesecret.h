@@ -21,8 +21,7 @@
 #ifndef KSECRETSSERVICESECRET_H
 #define KSECRETSSERVICESECRET_H
 
-#include "ksecretsserviceclientmacros.h"
-
+#include <kdeui_export.h>
 #include <QObject>
 #include <QVariant>
 #include <QSharedDataPointer>
@@ -32,7 +31,7 @@ namespace KSecretsService {
 
 class SecretPrivate;
 
-class KSECRETSSERVICECLIENT_EXPORT Secret {
+class KDEUI_EXPORT Secret {
 public:
     Secret();
     Secret( const Secret & that );

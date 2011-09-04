@@ -22,7 +22,7 @@
 #define KSECRETSSERVICESECRET_P_H
 
 #include "ksecretsservicesecret.h"
-#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "ksecretsservicedbustypes.h"
 
 #include <QtDBus/QDBusObjectPath>
 #include <QSharedData>

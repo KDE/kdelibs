@@ -21,6 +21,8 @@
  */
 
 #include "kwallet.h"
+#include "../ksecretsservice/ksecretsservicecollection.h"
+#include "../ksecretsservice/ksecretsserviceitem.h"
 #include <ksharedconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>
@@ -36,8 +38,6 @@
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
 #include <kwindowsystem.h>
-#include <ksecretsservice/ksecretsservicecollection.h>
-#include <ksecretsservice/ksecretsserviceitem.h>
 
 #include "kwallet_interface.h"
 

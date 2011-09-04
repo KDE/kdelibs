@@ -21,10 +21,10 @@
 #ifndef KSECRETSSERVICECOLLECTION_H
 #define KSECRETSSERVICECOLLECTION_H
 
-#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicesecret.h"
 #include "ksecretsservicecollectionjobs.h"
 
+#include <kdeui_export.h>
 #include <QObject>
 #include <QMap>
 #include <QSharedPointer>
@@ -64,7 +64,7 @@ class CollectionLockJob;
  * 
  * @see KJob
  */
-class KSECRETSSERVICECLIENT_EXPORT Collection : public QObject {
+class KDEUI_EXPORT Collection : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(Collection)
 public:

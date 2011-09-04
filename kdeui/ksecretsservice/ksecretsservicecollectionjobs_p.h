@@ -22,7 +22,7 @@
 #define KSECRETSSERVICECOLLECTIONJOBS_P_H
 
 #include "ksecretsservicecollectionjobs.h"
-#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "ksecretsservicedbustypes.h"
 
 #include <QObject>
 #include <QDBusPendingReply>

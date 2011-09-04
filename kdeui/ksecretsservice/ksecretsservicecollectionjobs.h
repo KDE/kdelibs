@@ -21,10 +21,10 @@
 #ifndef KSECRETSSERVICECOLLECTIONJOBS_H
 #define KSECRETSSERVICECOLLECTIONJOBS_H
 
-#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicecollection.h"
 #include "ksecretsserviceitem.h"
 
+#include <kdeui_export.h>
 #include <kcompositejob.h>
 #include <qsharedpointer.h>
 
@@ -57,7 +57,7 @@ typedef QMap< QString, QString > QStringStringMap;
  * 
  * @note this class is for internal use only and should not be used by client applications
  */
-class KSECRETSSERVICECLIENT_EXPORT CollectionJob : public KCompositeJob {
+class KDEUI_EXPORT CollectionJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(CollectionJob)
 public:
@@ -113,7 +113,7 @@ protected:
     QSharedPointer< CollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT DeleteCollectionJob : public CollectionJob {
+class KDEUI_EXPORT DeleteCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(DeleteCollectionJob)
 public:
@@ -130,7 +130,7 @@ private:
     QSharedPointer< DeleteCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT FindCollectionJob : public CollectionJob {
+class KDEUI_EXPORT FindCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(FindCollectionJob)
 public:
@@ -143,7 +143,7 @@ private:
     QSharedPointer< FindCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ListCollectionsJob : public KCompositeJob {
+class KDEUI_EXPORT ListCollectionsJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(ListCollectionsJob)
 public:
@@ -168,7 +168,7 @@ private:
     QSharedPointer< ListCollectionsJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT RenameCollectionJob : public CollectionJob {
+class KDEUI_EXPORT RenameCollectionJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(RenameCollectionJob)
 public:
@@ -188,7 +188,7 @@ private:
     QSharedPointer< RenameCollectionJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SearchCollectionItemsJob : public CollectionJob {
+class KDEUI_EXPORT SearchCollectionItemsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchCollectionItemsJob)
 public:
@@ -208,7 +208,7 @@ private:
     QSharedPointer<SearchCollectionItemsJobPrivate> d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SearchCollectionSecretsJob : public CollectionJob {
+class KDEUI_EXPORT SearchCollectionSecretsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(SearchCollectionSecretsJob)
 public:
@@ -227,7 +227,7 @@ private:
     QSharedPointer<SearchCollectionSecretsJobPrivate> d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT CreateCollectionItemJob : public CollectionJob {
+class KDEUI_EXPORT CreateCollectionItemJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(CreateCollectionItemJob)
 public:
@@ -244,7 +244,7 @@ private:
     QSharedPointer< CreateCollectionItemJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ReadCollectionItemsJob : public CollectionJob {
+class KDEUI_EXPORT ReadCollectionItemsJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(ReadCollectionItemsJob)
 public:
@@ -262,7 +262,7 @@ private:
     QSharedPointer< ReadCollectionItemsJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ReadCollectionPropertyJob : public CollectionJob {
+class KDEUI_EXPORT ReadCollectionPropertyJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(ReadCollectionPropertyJob)
     
@@ -282,7 +282,7 @@ private:
     void (Collection::*propertyReadMember)( ReadCollectionPropertyJob* );
 };
 
-class KSECRETSSERVICECLIENT_EXPORT WriteCollectionPropertyJob : public CollectionJob {
+class KDEUI_EXPORT WriteCollectionPropertyJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(WriteCollectionPropertyJob)
 public:
@@ -297,7 +297,7 @@ private:
     QSharedPointer< WriteCollectionPropertyJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ChangeCollectionPasswordJob : public CollectionJob {
+class KDEUI_EXPORT ChangeCollectionPasswordJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(ChangeCollectionPasswordJob)
 public:
@@ -311,7 +311,7 @@ private:
     QSharedPointer< ChangeCollectionPasswordJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT CollectionLockJob : public CollectionJob {
+class KDEUI_EXPORT CollectionLockJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(CollectionLockJob)
 public:

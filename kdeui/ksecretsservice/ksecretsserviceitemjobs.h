@@ -21,9 +21,9 @@
 #ifndef KSECRETSSERVICEITEMJOBS_H
 #define KSECRETSSERVICEITEMJOBS_H
 
-#include "ksecretsserviceclientmacros.h"
 #include "ksecretsservicesecret.h"
 
+#include <kdeui_export.h>
 #include <QSharedPointer>
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
@@ -63,7 +63,7 @@ public:
     SecretItem  *secretItem;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT GetSecretItemSecretJob : public SecretItemJob {
+class KDEUI_EXPORT GetSecretItemSecretJob : public SecretItemJob {
     Q_OBJECT
     Q_DISABLE_COPY(GetSecretItemSecretJob)
 public:
@@ -77,7 +77,7 @@ private:
     QSharedPointer< GetSecretItemSecretJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SetSecretItemSecretJob : public SecretItemJob {
+class KDEUI_EXPORT SetSecretItemSecretJob : public SecretItemJob {
     Q_OBJECT
     Q_DISABLE_COPY(SetSecretItemSecretJob)
 public:
@@ -91,7 +91,7 @@ private:
     QSharedPointer< SetSecretItemSecretJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT SecretItemDeleteJob : public SecretItemJob {
+class KDEUI_EXPORT SecretItemDeleteJob : public SecretItemJob {
     Q_OBJECT
     Q_DISABLE_COPY(SecretItemDeleteJob)
 public:
@@ -105,7 +105,7 @@ private:
     QSharedPointer< SecretItemDeleteJobPrivate > d;
 };
 
-class KSECRETSSERVICECLIENT_EXPORT ReadItemPropertyJob : public SecretItemJob {
+class KDEUI_EXPORT ReadItemPropertyJob : public SecretItemJob {
     Q_OBJECT
     Q_DISABLE_COPY(ReadItemPropertyJob)
 public:
@@ -122,7 +122,7 @@ private:
     void (SecretItem::*propertyReadMember)( ReadItemPropertyJob * );
 };
 
-class KSECRETSSERVICECLIENT_EXPORT WriteItemPropertyJob : public SecretItemJob {
+class KDEUI_EXPORT WriteItemPropertyJob : public SecretItemJob {
     Q_OBJECT
     Q_DISABLE_COPY(WriteItemPropertyJob)
 public:

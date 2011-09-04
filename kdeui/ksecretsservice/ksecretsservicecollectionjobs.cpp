@@ -25,7 +25,7 @@
 #include "service_interface.h"
 #include "collection_interface.h"
 #include "item_interface.h"
-#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "ksecretsservicedbustypes.h"
 #include "ksecretsservicesecret_p.h"
 #include "promptjob.h"
 

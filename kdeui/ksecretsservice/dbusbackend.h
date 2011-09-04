@@ -21,8 +21,8 @@
 #ifndef DBUSBACKEND_H
 #define DBUSBACKEND_H
 
-#include "../daemon/frontend/secret/adaptors/secretstruct.h"
-#include "../lib/secretcodec.h"
+#include "ksecretsservicedbustypes.h"
+#include "secretcodec.h"
 
 #include <kjob.h>
 #include <QDBusObjectPath>

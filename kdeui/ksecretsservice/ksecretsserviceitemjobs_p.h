@@ -22,7 +22,7 @@
 #define KSECRETSSERVICEITEMJOBS_P_H
 
 #include "ksecretsserviceitemjobs.h"
-#include "../daemon/frontend/secret/adaptors/secretstruct.h"
+#include "ksecretsservicedbustypes.h"
 #include <qdbusconnection.h>
 #include <qwindowdefs.h>
 
