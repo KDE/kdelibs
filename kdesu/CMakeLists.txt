@@ -39,7 +39,7 @@ set_target_properties(kdesu PROPERTIES
    SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS kdesu EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kdesu ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### next target ###############

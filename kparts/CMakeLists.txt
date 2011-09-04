@@ -46,7 +46,7 @@ set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                      )
 
 
-install(TARGETS kparts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kparts ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

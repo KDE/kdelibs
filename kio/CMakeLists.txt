@@ -350,7 +350,7 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 
 
 ########### install files ###############
-install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kio ${INSTALL_TARGETS_DEFAULT_ARGS})
 if(NOT KIO_NO_NEPOMUK)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif(NOT KIO_NO_NEPOMUK)

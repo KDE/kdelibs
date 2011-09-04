@@ -21,7 +21,7 @@ set_target_properties(kmediaplayer PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
-install(TARGETS kmediaplayer EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kmediaplayer ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### install files ###############

@@ -19,7 +19,7 @@ set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                      )
 
 
-install(TARGETS krosscore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS krosscore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kross_export.h

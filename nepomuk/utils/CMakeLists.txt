@@ -50,7 +50,7 @@ set_target_properties(nepomukutils PROPERTIES
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS nepomukutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS nepomukutils ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   utils.h

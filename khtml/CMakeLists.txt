@@ -657,7 +657,7 @@ create_js_binding(html/HTMLVideoElement.idl)
 #create_js_binding(svg/SVGPathSegMovetoAbs.idl)
 #create_js_binding(svg/SVGPathSegMovetoRel.idl)
 
-install(TARGETS khtml EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### khtmlpart ###############
 

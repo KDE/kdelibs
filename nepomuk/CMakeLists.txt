@@ -145,7 +145,7 @@ set_target_properties(nepomuk PROPERTIES
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS nepomuk EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS nepomuk ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   nepomuk_export.h

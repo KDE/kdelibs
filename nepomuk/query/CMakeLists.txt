@@ -64,7 +64,7 @@ target_link_libraries(nepomukquery
   nepomuk
   )
 
-install(TARGETS nepomukquery EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS nepomukquery ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
   term.h
   negationterm.h

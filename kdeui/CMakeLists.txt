@@ -447,7 +447,7 @@ set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                        )
 
-install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdeui ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
 if (Q_WS_MAC)

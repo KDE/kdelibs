@@ -36,7 +36,7 @@ set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS karchive EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS karchive ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   karchive.h
