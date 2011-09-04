@@ -51,8 +51,12 @@ body {
   padding-left: 1em;
 }
 
-.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
+.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .glossdiv, .gloss-article, .section {
   padding-left: 1em;
+}
+
+.gloss-article, .glossdiv {
+  padding-right: 1em;
 }
 
 .toc .chapter {
@@ -227,7 +231,7 @@ p, h1, h2, h3, h4, h5, h6, td, th {
   color: rgb(0,0,0); /* should be inherit */
 }
 
-.guilabel, .interface, .guibutton { 
+.guilabel, .interface, .guibutton, .guiicon { 
   background-color: rgb(220,220,220);
   color: rgb(0,0,0); /* should be inherit */
 }
