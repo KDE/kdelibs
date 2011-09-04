@@ -22,7 +22,7 @@
 #define DBUSBACKEND_H
 
 #include "ksecretsservicedbustypes.h"
-#include "secretcodec.h"
+#include "ksecretsservicecodec.h"
 
 #include <kjob.h>
 #include <QDBusObjectPath>
@@ -35,6 +35,8 @@ class OrgFreedesktopSecretPromptInterface;
 class OrgFreedesktopSecretItemInterface;
 class QDBusPendingCallWatcher;
 
+namespace KSecretsService {
+    
 class OpenSessionJob : public KJob {
     Q_OBJECT
 public:
@@ -89,5 +91,7 @@ private:
     static const QString        encryptionAlgorithm;
     static OpenSessionJob       openSessionJob;
 };
+
+} // namespace
 
 #endif // DBUSBACKEND_H

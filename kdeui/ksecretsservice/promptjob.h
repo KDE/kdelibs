@@ -27,6 +27,8 @@
 
 class OrgFreedesktopSecretPromptInterface;
 
+namespace KSecretsService {
+    
 class PromptJob : public KJob {
     Q_OBJECT
     Q_DISABLE_COPY(PromptJob)
@@ -49,6 +51,7 @@ private:
     QDBusVariant    opResult;
 };
 
+} // namespace
 
 #endif // PROMPTJOB_H
 

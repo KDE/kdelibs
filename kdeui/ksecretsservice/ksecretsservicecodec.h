@@ -17,12 +17,14 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef SECRETCODEC_H
-#define SECRETCODEC_H
+#ifndef KSECRETSSERVICECODEC_H
+#define KSECRETSSERVICECODEC_H
 
 #include <QtCrypto/QtCrypto>
 #include <kdeui_export.h>
 
+namespace KSecretsService {
+    
 class KDEUI_EXPORT SecretCodec {
 public:
     SecretCodec();
@@ -48,4 +50,6 @@ private:
     Mode                m_mode;
 };
 
-#endif // SECRETCODEC_H
+}; // namespace
+
+#endif // KSECRETSSERVICECODEC_H

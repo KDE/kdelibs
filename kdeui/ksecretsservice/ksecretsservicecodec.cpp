@@ -19,10 +19,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "secretcodec.h"
+#include "ksecretsservicecodec.h"
 
 #include <qca_tools.h>
 #include <kdebug.h>
+
+using namespace KSecretsService;
 
 const char* SecretCodec::AlgorithmPlain = "plain";
 

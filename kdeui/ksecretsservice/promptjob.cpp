@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
+using namespace KSecretsService;
 
 PromptJob::PromptJob( const QDBusObjectPath &path, const WId &parentId, QObject *parent ) : 
             KJob( parent ),

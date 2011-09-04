@@ -176,7 +176,7 @@ set(kdeui_LIB_SRCS
  ksecretsservice/ksecretsservicecollectionjobs.cpp
  ksecretsservice/dbusbackend.cpp
  ksecretsservice/promptjob.cpp
- ksecretsservice/secretcodec.cpp
+ ksecretsservice/ksecretsservicecodec.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
@@ -614,6 +614,7 @@ install( FILES
  ksecretsservice/ksecretsserviceitemjobs.h
  ksecretsservice/ksecretsservicesecret.h
  ksecretsservice/ksecretsservicedbustypes.h
+ ksecretsservice/ksecretsservicecodec.h
  notifications/kstatusnotifieritem.h
  notifications/ksystemtrayicon.h
  notifications/knotification.h

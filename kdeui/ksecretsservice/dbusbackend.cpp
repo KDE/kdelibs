@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <ktoolinvocation.h>
 
+using namespace KSecretsService;
 
 #define SERVICE_NAME "org.freedesktop.secrets"
 
