@@ -21,7 +21,7 @@
 #include <kglobal.h>
 #include <kdeversion.h>
 #include <kmimetype.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include "kmimetyperepository_p.h"
 #include <kdebug.h>
 #include <QtCore/QTextStream>
@@ -33,7 +33,7 @@ KMimeGlobsFileParser::KMimeGlobsFileParser()
 
 KMimeGlobsFileParser::AllGlobs KMimeGlobsFileParser::parseGlobs()
 {
-    const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QString::fromLatin1("globs"));
+    const QStringList globFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/globs"));
     //kDebug() << globFiles;
     return parseGlobs(globFiles);
 }

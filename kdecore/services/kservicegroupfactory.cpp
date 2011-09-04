@@ -26,8 +26,6 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceGroupFactory>, kServiceGroupFactoryInstance)
 

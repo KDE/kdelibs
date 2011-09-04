@@ -20,7 +20,6 @@
 #include "kfoldermimetype.h"
 #include "kmimetype_p.h"
 #include <kdesktopfile.h>
-#include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kde_file.h>
 #include <QtCore/QFile>
@@ -87,9 +86,7 @@ QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
   u.addPath(QString::fromLatin1(".directory"));
 
   QString icon;
-  // using KStandardDirs as this one checks for path being
-  // a file instead of a directory
-  if ( KStandardDirs::exists( u.toLocalFile() ) )
+  if (QFileInfo(u.toLocalFile()).isFile()) // exists -and- is a file
   {
     KDesktopFile cfg( u.toLocalFile() );
     KConfigGroup group = cfg.desktopGroup();

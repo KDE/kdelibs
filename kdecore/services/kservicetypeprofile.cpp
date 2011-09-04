@@ -26,7 +26,6 @@
 #include "kservicefactory.h"
 
 #include <kconfig.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 

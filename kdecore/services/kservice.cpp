@@ -37,7 +37,6 @@
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
-#include <kglobal.h>
 #include <kconfiggroup.h>
 #include <kstandarddirs.h>
 

@@ -24,8 +24,6 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 extern int servicesDebugArea();
 

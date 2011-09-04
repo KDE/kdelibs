@@ -22,8 +22,6 @@
 #include "kservicegroupfactory.h"
 #include "kservice.h"
 #include <ksycoca.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <ksortablelist.h>
