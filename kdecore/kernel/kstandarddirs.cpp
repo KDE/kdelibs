@@ -1348,6 +1348,7 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
 #endif
 }
 
+// KDE5 TODO: remove IgnoreExecBit almost unused
 QString KStandardDirs::findExe( const QString& appname,
                                 const QString& pstr,
                                 SearchOptions options )
@@ -1420,6 +1421,7 @@ QString KStandardDirs::findExe( const QString& appname,
     return QString();
 }
 
+// TODO: very rarely used. Only known example is kdevelop looking for all qmakes/cmakes in the path.
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
                                const QString& pstr, SearchOptions options )
 {
