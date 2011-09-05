@@ -42,7 +42,7 @@
 #ifndef QCOREDESKTOPSERVICES_H
 #define QCOREDESKTOPSERVICES_H
 
-#include <QtCore/qstring.h>
+#include <QtCore/qstringlist.h>
 #include "inqt5_export.h"
 
 QT_BEGIN_HEADER
@@ -87,9 +87,12 @@ public:
         LocateDirectory = 0x1
     };
     Q_DECLARE_FLAGS(LocateOptions, LocateOption)
-    
+
     static QString locate(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
     static QStringList locateAll(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
+
+    static QString findExecutable(const QString &executableName, const QStringList &paths = QStringList());
+
 };
 
 #endif // QT_NO_DESKTOPSERVICES

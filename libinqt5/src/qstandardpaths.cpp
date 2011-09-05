@@ -133,6 +133,102 @@ QString QStandardPaths::storageLocation(StandardLocation type)
     }
 }
 
+#ifdef Q_OS_WIN
+static QStringList executableExtensions()
+{
+    QStringList ret = QString::fromLocal8Bit(qgetenv("PATHEXT")).split(QLatin1Char(';'));
+    if (!ret.contains(QLatin1String(".exe"), Qt::CaseInsensitive)) {
+        // If %PATHEXT% does not contain .exe, it is either empty, malformed, or distorted in ways that we cannot support, anyway.
+        ret.clear();
+        ret << QLatin1String(".exe")
+            << QLatin1String(".com")
+            << QLatin1String(".bat")
+            << QLatin1String(".cmd");
+    }
+    return ret;
+}
+#endif
+
+static QString checkExecutable(const QString &path)
+{
+    const QFileInfo info(path);
+    if (info.isBundle())
+        return info.bundleName();
+    if (info.isFile() && info.isExecutable())
+        return QDir::cleanPath(path);
+    return QString();
+}
+
+static QString findExecutableInPath(const QString &executableName, const QStringList &paths)
+{
+    if (QFileInfo(executableName).isAbsolute()) {
+        return checkExecutable(executableName);
+    }
+
+    QDir currentDir = QDir::current();
+    QString absPath;
+    for (QStringList::const_iterator p = paths.constBegin(); p != paths.constEnd(); ++p) {
+        const QString candidate = currentDir.absoluteFilePath(*p + QLatin1Char('/') + executableName);
+        const QString result = checkExecutable(candidate);
+        if (!result.isEmpty()) {
+            absPath = result;
+            break;
+        }
+    }
+    return absPath;
+}
+
+/*!
+  Finds the executable named \a executableName in the system path.
+
+  On most operating systems the system path is determined by the PATH environment variable.
+
+  The directories where to search for the executable can be set in the \a paths argument instead.
+  To search in both your own paths and the system paths, call findExecutable twice, once with
+  \a paths and once without, in whichever order you prefer.
+
+  Symlinks are not resolved, in order to preserve behavior for the case of executables
+  whose behavior depends on the name they are invoked with.
+
+  \note On Windows, the usual executable extensions (from the PATHEXT environment variable)
+  are automatically appended, so that for instance findExecutable("foo") will find foo.exe
+  or foo.bat if present.
+
+  \return the absolute file path to the executable, or an empty string if not found.
+ */
+QString QStandardPaths::findExecutable(const QString &executableName, const QStringList &paths)
+{
+    QString absPath;
+
+    QStringList searchPaths = paths;
+    if (paths.isEmpty()) {
+        QByteArray pEnv = qgetenv("PATH");
+    #if defined(Q_OS_WIN) || defined(Q_OS_SYMBIAN)
+        const QLatin1Char pathSep(';');
+    #else
+        const QLatin1Char pathSep(':');
+    #endif
+        searchPaths = QString::fromLocal8Bit(pEnv.constData()).split(pathSep, QString::SkipEmptyParts);
+    }
+
+#ifdef Q_OS_WIN
+    static QStringList executable_extensions = executableExtensions();
+    const QString suffix = QFileInfo(executableName).suffix();
+    if (!executable_extensions.contains(suffix, Qt::CaseInsensitive)) {
+        foreach (const QString& extension, executable_extensions) {
+            absPath = findExecutableInPath(executableName + extension, searchPaths);
+            if (!absPath.isEmpty()) {
+                break;
+            }
+        }
+    }
+#else
+    absPath = findExecutableInPath(executableName, searchPaths);
+#endif
+
+    return absPath;
+}
+
 /*!
    Returns all the directories where files of \a type belong.
 
