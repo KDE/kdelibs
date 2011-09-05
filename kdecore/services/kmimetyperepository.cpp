@@ -331,7 +331,7 @@ QStringList KMimeTypeRepository::parents(const QString& mime)
 }
 
 #include <arpa/inet.h> // for ntohs
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <QFile>
 
 // Sort them in descending order of priority
@@ -342,7 +342,8 @@ static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule
 // Caller must hold m_mutex
 void KMimeTypeRepository::parseMagic()
 {
-    const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("magic"));
+    const QStringList magicFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/magic"));
+
     //kDebug() << magicFiles;
     QListIterator<QString> magicIter( magicFiles );
     magicIter.toBack();
@@ -544,7 +545,7 @@ const KMimeTypeRepository::AliasesMap& KMimeTypeRepository::aliases()
     if (!m_aliasFilesParsed) {
         m_aliasFilesParsed = true;
 
-        const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("aliases"));
+        const QStringList aliasFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/aliases"));
         Q_FOREACH(const QString& fileName, aliasFiles) {
             QFile qfile(fileName);
             //kDebug(7021) << "Now parsing" << fileName;
@@ -661,7 +662,8 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
         } else {
             const QString defaultMimeType = KMimeType::defaultMimeType();
             errorMissingMimeTypes(QStringList(defaultMimeType));
-            const QString pathDefaultMimeType = KGlobal::dirs()->locateLocal("xdgdata-mime", defaultMimeType+QLatin1String(".xml"));
+            const QString pathDefaultMimeType = QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) +
+                                                    QLatin1String("/mime/") + defaultMimeType + QLatin1String(".xml");
             m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, QLatin1String("mime"));
         }
     }
@@ -736,7 +738,7 @@ static int mimeDataBaseVersion()
     // Execute "update-mime-database -v" to determine version number.
     // NOTE: On *nix, the code below is known to cause freezes/hangs in apps
     // that block signals. See https://bugs.kde.org/show_bug.cgi?id=260719.
-    const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
+    const QString umd = QStandardPaths::findExecutable(QString::fromLatin1("update-mime-database"));
     if (umd.isEmpty()) {
         kWarning(servicesDebugArea()) << "update-mime-database not found!";
         return -1;
