@@ -636,14 +636,8 @@ void CreateCollectionItemJob::start()
 
 void CreateCollectionItemJob::onFindCollectionFinished()
 {
-    connect( d.data(), SIGNAL(createIsDone(CollectionJob::CollectionError,QString)), this, SLOT(createIsDone(CollectionJob::CollectionError,QString)) );
     d->startCreateItem();
 }
-
-// void CreateCollectionItemJob::createIsDone( CollectionJob::CollectionError err, const QString& msg )
-// {
-//     finishedWithError( err, msg );
-// }
 
 CreateCollectionItemJobPrivate::CreateCollectionItemJobPrivate( CollectionPrivate *cp, QObject *parent ) :
         QObject( parent ),
