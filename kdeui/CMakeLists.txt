@@ -395,7 +395,6 @@ kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 set(kwallet_xml util/org.kde.KWallet.xml)
 install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-
 set_source_files_properties( 
     ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Collection.xml
     ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Item.xml
@@ -409,7 +408,6 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservic
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Prompt.xml prompt_interface)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Service.xml service_interface)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Session.xml session_interface)
-
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
