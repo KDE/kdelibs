@@ -50,4 +50,7 @@ To be done later when porting to frameworks:
 Remove kinterprocesslock from the trash kioslave (KDBusInterProcessLock replaces it).
 
 For more information:
-https://spreadsheets.google.com/spreadsheet/ccc?key=0AhQ1BhQL6D9wdGpvOHN0N0xRZVBGU1c3ZmdiaXZORUE&hl=en_US&authkey=CKTcjdgP#gid=2
+ http://permalink.gmane.org/gmane.comp.kde.devel.core/70395
+ http://files.kde.org/sprints/platform11/kde-frameworks-dependencies-plan.pdf
+ https://spreadsheets.google.com/spreadsheet/ccc?key=0AhQ1BhQL6D9wdGpvOHN0N0xRZVBGU1c3ZmdiaXZORUE&hl=en_US&authkey=CKTcjdgP#gid=2
+
