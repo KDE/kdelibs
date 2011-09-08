@@ -37,13 +37,10 @@ static bool readCache( const QString &filename,
         return false;
 
     kDebug( 7119 ) << "create filter";
-    QIODevice *fd = ::getBZip2device(cache);
-    if ( !fd )
-        return false;
+    KFilterDev fd(cache);
 
-    if (!fd->open(QIODevice::ReadOnly))
+    if (!fd.open(QIODevice::ReadOnly))
     {
-       delete fd;
        QFile::remove(cache);
        return false;
     }
@@ -54,16 +51,15 @@ static bool readCache( const QString &filename,
     int n;
     QByteArray text;
     // Also end loop in case of error, when -1 is returned
-    while ( ( n = fd->read(buffer, 31900) ) > 0)
+    while ( ( n = fd.read(buffer, 31900) ) > 0)
     {
         buffer[n] = 0;
         text += buffer;
     }
     kDebug( 7119 ) << "read " << text.length();
-    fd->close();
+    fd.close();
 
     output = QString::fromUtf8( text );
-    delete fd;
 
     if (n == -1)
         return false;

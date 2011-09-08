@@ -10,6 +10,5 @@ class KComponentData;
 
 void fillInstance(KComponentData &ins, const QString &srcdir = QString() );
 bool saveToCache( const QString &contents, const QString &filename );
-QIODevice *getBZip2device(const QString &fileName );
 
 #endif

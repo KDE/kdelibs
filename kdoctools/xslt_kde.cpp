@@ -40,25 +40,16 @@ void fillInstance(KComponentData &ins, const QString &srcdir)
     xmlInitializeCatalog();
 }
 
-QIODevice *getBZip2device(const QString &fileName )
-{
-    return KFilterDev::deviceForFile(fileName);
-}
-
 bool saveToCache( const QString &contents, const QString &filename )
 {
-    QIODevice *fd = ::getBZip2device(filename);
-    if ( !fd )
-        return false;
+    KFilterDev fd(filename);
 
-    if (!fd->open(QIODevice::WriteOnly))
+    if (!fd.open(QIODevice::WriteOnly))
     {
-       delete fd;
        return false;
     }
 
-    fd->write( contents.toUtf8() );
-    fd->close();
-    delete fd;
+    fd.write( contents.toUtf8() );
+    fd.close();
     return true;
 }

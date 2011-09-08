@@ -16,7 +16,6 @@ void fillInstance(KComponentData &ins, const QString &srcdir = QString() );
 bool saveToCache( const QString &contents, const QString &filename );
 QByteArray fromUnicode( const QString &data );
 void replaceCharsetHeader( QString &output );
-QIODevice *getBZip2device(const QString &fileName );
 
 extern bool warnings_exist;
 extern QString *SRCDIR;
