@@ -23,6 +23,8 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QString>
 
+class KFilterBase;
+
 /**
  * A class for reading and writing compressed data onto a device
  * (e.g. file, but other usages are possible, like a buffer or a socket).
@@ -95,6 +97,14 @@ public:
     /// Reimplemented to return true. KCompressionDevice is a sequential QIODevice.
     /// Well, not really, since it supports seeking and KZip uses that.
     //virtual bool isSequential() const { return true; }
+
+    /**
+     * Call this to create the appropriate filter for the CompressionType
+     * named @p type.
+     * @param type the type of the compression filter
+     * @return the filter for the @p type, or 0 if not found
+     */
+    static KFilterBase* filterForCompressionType(CompressionType type);
 
 protected:
     virtual qint64 readData( char *data, qint64 maxlen );

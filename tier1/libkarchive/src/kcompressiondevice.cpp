@@ -57,7 +57,7 @@ public:
     KCompressionDevice::CompressionType type;
 };
 
-static KFilterBase* createFilterBaseFromCompressionType(KCompressionDevice::CompressionType type)
+KFilterBase* KCompressionDevice::filterForCompressionType(KCompressionDevice::CompressionType type)
 {
     switch (type) {
     case KCompressionDevice::GZip:
@@ -88,7 +88,7 @@ KCompressionDevice::KCompressionDevice(QIODevice* inputDevice, bool autoDeleteIn
     : d(new Private)
 {
     assert(inputDevice);
-    d->filter = createFilterBaseFromCompressionType(type);
+    d->filter = filterForCompressionType(type);
     if ( d->filter ) {
         d->type = type;
         d->filter->setDevice(inputDevice, autoDeleteInputDevice);
@@ -99,7 +99,7 @@ KCompressionDevice::KCompressionDevice(const QString& fileName, CompressionType 
     : d(new Private)
 {
     QFile * f = new QFile( fileName );
-    d->filter = createFilterBaseFromCompressionType(type);
+    d->filter = filterForCompressionType(type);
     if ( d->filter )
     {
         d->type = type;
