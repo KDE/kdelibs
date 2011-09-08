@@ -36,6 +36,12 @@ class KFilterBase;
 class KARCHIVE_EXPORT KFilterDev : public KCompressionDevice
 {
 public:
+    /**
+     * @since 5.0
+     * Constructs a KFilterDev for a given FileName.
+     * @param fileName the name of the file to filter.
+     */
+    KFilterDev(const QString& fileName);
 
     // Returns the compression type for the given mimetype, if possible. Otherwise returns None.
     // This handles simple cases like application/x-gzip, but also application/x-compressed-tar, and inheritance.

@@ -97,6 +97,10 @@ static KCompressionDevice::CompressionType findCompressionTypeByMimeType( const 
     return KCompressionDevice::None;
 }
 
+KFilterDev::KFilterDev(const QString& fileName)
+    :KCompressionDevice(fileName, findCompressionByFileName(fileName))
+{
+}
 
 KCompressionDevice::CompressionType KFilterDev::compressionTypeForMimeType(const QString& mimetype)
 {
