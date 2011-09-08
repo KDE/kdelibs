@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-class KGzipFilter;
+class KFilterBase;
 #include <QBuffer>
 
 #include <QObject>
@@ -94,7 +94,7 @@ private:
     bool m_deflateMode;
     bool m_firstData;
     bool m_finished;
-    KGzipFilter* m_gzipFilter;
+    KFilterBase* m_gzipFilter;
 };
 
 class HTTPFilterDeflate : public HTTPFilterGZip

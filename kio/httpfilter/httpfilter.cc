@@ -19,7 +19,8 @@
 */
 
 #include "httpfilter.h"
-#include <kgzipfilter.h>
+#include <kcompressiondevice.h>
+#include <kfilterbase.h>
 #include <kdebug.h>
 
 #include <klocale.h>
@@ -103,7 +104,7 @@ HTTPFilterGZip::HTTPFilterGZip(bool deflate)
     // We can't use KFilterDev because it assumes it can read as much data as necessary
     // from the underlying device. It's a pull strategy, while we have to do
     // a push strategy.
-    m_gzipFilter = new KGzipFilter;
+    m_gzipFilter = KCompressionDevice::filterForCompressionType(KCompressionDevice::GZip);
 }
 
 HTTPFilterGZip::~HTTPFilterGZip()
@@ -145,9 +146,15 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
             }
             //if (!zlibHeader)
             //    kDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
-            m_gzipFilter->init(QIODevice::ReadOnly, zlibHeader ? KGzipFilter::ZlibHeader : KGzipFilter::RawDeflate);
+            if (zlibHeader) {
+                m_gzipFilter->setFilterFlags(KFilterBase::ZlibHeaders);
+            } else {
+                m_gzipFilter->setFilterFlags(KFilterBase::NoHeaders);
+            }
+            m_gzipFilter->init(QIODevice::ReadOnly);
         } else {
-            m_gzipFilter->init(QIODevice::ReadOnly, KGzipFilter::GZipHeader);
+            m_gzipFilter->setFilterFlags(KFilterBase::WithHeaders);
+            m_gzipFilter->init(QIODevice::ReadOnly);
         }
         m_firstData = false;
     }

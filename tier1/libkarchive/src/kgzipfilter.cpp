@@ -68,7 +68,18 @@ KGzipFilter::~KGzipFilter()
 
 bool KGzipFilter::init(int mode)
 {
-    return init(mode, filterFlags() == WithHeaders ? GZipHeader : RawDeflate);
+    switch (filterFlags()) {
+    case NoHeaders:
+        return init(mode, RawDeflate);
+        break;
+    case WithHeaders:
+        return init(mode, GZipHeader);
+        break;
+    case ZlibHeaders:
+        return init(mode, ZlibHeader);
+        break;
+    }
+    return false;
 }
 
 bool KGzipFilter::init(int mode, Flag flag)

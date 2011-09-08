@@ -28,7 +28,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QDebug>
-#include <kgzipfilter.h>
 #include <krandom.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -325,8 +324,9 @@ void KFilterTest::test_deflateWithZlibHeader()
     const QByteArray read = flt->readAll();
 #else
     // Copied from HTTPFilter (which isn't linked into any kdelibs library)
-    KGzipFilter* mFilterDevice = new KGzipFilter;
-    mFilterDevice->init(QIODevice::ReadOnly, KGzipFilter::ZlibHeader);
+    KFilterBase* mFilterDevice = KCompressionDevice::filterForCompressionType(KCompressionDevice::GZip);
+    mFilterDevice->setFilterFlags(KFilterBase::ZlibHeaders);
+    mFilterDevice->init(QIODevice::ReadOnly);
 
     mFilterDevice->setInBuffer(deflatedData.constData(), deflatedData.size());
     char buf[8192];

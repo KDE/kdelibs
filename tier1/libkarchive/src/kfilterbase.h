@@ -91,7 +91,8 @@ public:
      */
     enum FilterFlags {
         NoHeaders = 0,
-        WithHeaders = 1
+        WithHeaders = 1,
+        ZlibHeaders = 2 // only use for gzip compression
     };
     /**
      * \internal
