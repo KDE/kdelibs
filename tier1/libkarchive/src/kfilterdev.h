@@ -48,6 +48,14 @@ public:
     static CompressionType compressionTypeForMimeType(const QString& mimetype);
 
     /**
+     * @deprecated Use the constructor instead (if mimetype is empty), or KCompressionDevice (if
+     * the mimetype is known).
+     *
+     * Use:
+     * KFilterDev dev(fileName)
+     * instead of:
+     * QIODevice * dev = KFilterDev::deviceForFile( fileName );
+     *
      * Creates an i/o device that is able to read from @p fileName,
      * whether it's compressed or not. Available compression filters
      * (gzip/bzip2 etc.) will automatically be used.
@@ -73,10 +81,19 @@ public:
      *         filter does not exist, the return value depends on @p forceFilter.
      *         The returned KCompressionDevice has to be deleted after using.
      */
-    static KCompressionDevice* deviceForFile( const QString & fileName, const QString & mimetype = QString(),
-                                              bool forceFilter = false );
+    KARCHIVE_DEPRECATED static KCompressionDevice* deviceForFile( const QString & fileName,
+                                                                  const QString & mimetype = QString(),
+                                                                  bool forceFilter = false );
 
     /**
+     * @deprecated Use KCompressionDevicea
+     *
+     * Use:
+     * KCompressionDevice::CompressionType type = KFilterDev::compressionTypeForMimeType(mimeType);
+     * KCompressionDevice flt(&file, false, type);
+     * instead of:
+     * QIODevice *flt = KFilterDev::device(&file, mimeType, false);
+     *
      * Creates an i/o device that is able to read from the QIODevice @p inDevice,
      * whether the data is compressed or not. Available compression filters
      * (gzip/bzip2 etc.) will automatically be used.
@@ -94,7 +111,8 @@ public:
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
      * @return a KCompressionDevice that filters the original stream. Must be deleted after using
      */
-    static KCompressionDevice* device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
+    KARCHIVE_DEPRECATED static KCompressionDevice* device( QIODevice* inDevice, const QString & mimetype,
+                                                           bool autoDeleteInDevice = true );
 };
 
 

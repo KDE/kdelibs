@@ -127,9 +127,9 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
         if (!d->mimetype.isEmpty()) {
             // Create a compression filter on top of the KSaveFile device that KArchive created.
             //qDebug() << "creating KFilterDev for" << d->mimetype;
-            QIODevice *filterDev = KFilterDev::device(device(), d->mimetype);
-            Q_ASSERT(filterDev);
-            setDevice(filterDev);
+            KCompressionDevice::CompressionType type = KFilterDev::compressionTypeForMimeType(d->mimetype);
+            KCompressionDevice* compressionDevice = new KCompressionDevice(device(), true, type);
+            setDevice(compressionDevice);
         }
         return true;
     } else {
@@ -281,46 +281,35 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
 
     //qDebug() << "filling tmpFile of mimetype" << mimetype;
 
-    bool forced = false;
-    if ( QLatin1String(application_gzip) == mimetype || QLatin1String(application_bzip) == mimetype )
-        forced = true;
+    KCompressionDevice::CompressionType compressionType = KFilterDev::compressionTypeForMimeType(mimetype);
+    KCompressionDevice filterDev(fileName, compressionType);
 
-    QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
-
-    if( filterDev ) {
-        QFile* file = tmpFile;
-        Q_ASSERT(file->isOpen());
-        Q_ASSERT(file->openMode() & QIODevice::WriteOnly);
-        file->seek(0);
-        QByteArray buffer;
-        buffer.resize(8*1024);
-        if ( ! filterDev->open( QIODevice::ReadOnly ) )
-        {
-            delete filterDev;
+    QFile* file = tmpFile;
+    Q_ASSERT(file->isOpen());
+    Q_ASSERT(file->openMode() & QIODevice::WriteOnly);
+    file->seek(0);
+    QByteArray buffer;
+    buffer.resize(8*1024);
+    if ( ! filterDev.open( QIODevice::ReadOnly ) )
+    {
+        return false;
+    }
+    qint64 len = -1;
+    while ( !filterDev.atEnd() && len != 0 ) {
+        len = filterDev.read(buffer.data(),buffer.size());
+        if ( len < 0 ) { // corrupted archive
             return false;
         }
-        qint64 len = -1;
-        while ( !filterDev->atEnd() && len != 0 ) {
-            len = filterDev->read(buffer.data(),buffer.size());
-            if ( len < 0 ) { // corrupted archive
-                delete filterDev;
-                return false;
-            }
-            if ( file->write(buffer.data(), len) != len ) { // disk full
-                delete filterDev;
-                return false;
-            }
+        if ( file->write(buffer.data(), len) != len ) { // disk full
+            return false;
         }
-        filterDev->close();
-        delete filterDev;
-
-        file->flush();
-        file->seek(0);
-        Q_ASSERT(file->isOpen());
-        Q_ASSERT(file->openMode() & QIODevice::ReadOnly);
-    } else {
-        //qDebug() << "no filterdevice found!";
     }
+    filterDev.close();
+
+    file->flush();
+    file->seek(0);
+    Q_ASSERT(file->isOpen());
+    Q_ASSERT(file->openMode() & QIODevice::ReadOnly);
 
     //qDebug() << "filling tmpFile finished.";
     return true;
@@ -498,29 +487,25 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
     // (KArchive uses KSaveFile by default, but the temp-uncompressed-file trick
     // circumvents that).
 
-    QIODevice *dev = KFilterDev::deviceForFile( fileName, mimetype, forced );
-    if( dev ) {
-        QFile* file = tmpFile;
-        if ( !dev->open(QIODevice::WriteOnly) )
-        {
-            file->close();
-            delete dev;
-            return false;
-        }
-        if ( forced )
-            static_cast<KFilterDev *>(dev)->setOrigFileName( origFileName );
-        file->seek(0);
-        QByteArray buffer;
-        buffer.resize(8*1024);
-        qint64 len;
-        while ( !file->atEnd()) {
-            len = file->read(buffer.data(), buffer.size());
-            dev->write(buffer.data(),len); // TODO error checking
-        }
+    KFilterDev dev(fileName);
+    QFile* file = tmpFile;
+    if ( !dev.open(QIODevice::WriteOnly) )
+    {
         file->close();
-        dev->close();
-        delete dev;
+        return false;
     }
+    if ( forced )
+        dev.setOrigFileName( origFileName );
+    file->seek(0);
+    QByteArray buffer;
+    buffer.resize(8*1024);
+    qint64 len;
+    while ( !file->atEnd()) {
+        len = file->read(buffer.data(), buffer.size());
+        dev.write(buffer.data(),len); // TODO error checking
+    }
+    file->close();
+    dev.close();
 
     //qDebug() << "Write temporary file to compressed file done.";
     return true;

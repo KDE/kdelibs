@@ -427,23 +427,21 @@ void KArchiveTest::testUncompress()
 
     // testCreateTar must have been run first.
     QVERIFY(QFile::exists(fileName));
-    QIODevice *filterDev = KFilterDev::deviceForFile(fileName, mimeType, true);
-    QVERIFY(filterDev);
+    KFilterDev filterDev(fileName);
     QByteArray buffer;
     buffer.resize(8*1024);
     qDebug() << "buffer.size()=" << buffer.size();
-    QVERIFY(filterDev->open(QIODevice::ReadOnly));
+    QVERIFY(filterDev.open(QIODevice::ReadOnly));
 
     qint64 totalSize = 0;
     qint64 len = -1;
-    while (!filterDev->atEnd() && len != 0) {
-        len = filterDev->read(buffer.data(), buffer.size());
+    while (!filterDev.atEnd() && len != 0) {
+        len = filterDev.read(buffer.data(), buffer.size());
         QVERIFY(len >= 0);
         totalSize += len;
         // qDebug() << "read len=" << len << " totalSize=" << totalSize;
     }
-    filterDev->close();
-    delete filterDev;
+    filterDev.close();
     // qDebug() << "totalSize=" << totalSize;
     QVERIFY(totalSize > 26000); // 27648 here when using gunzip
 }
