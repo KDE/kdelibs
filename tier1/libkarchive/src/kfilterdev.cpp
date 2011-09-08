@@ -116,6 +116,7 @@ KCompressionDevice* KFilterDev::deviceForFile( const QString & fileName, const Q
     KCompressionDevice* device = new KCompressionDevice(fileName, type);
     if (device->compressionType() == KCompressionDevice::None
      && forceFilter) {
+        delete device;
         return 0;
     } else {
         return device;
