@@ -39,6 +39,7 @@ QTEST_MAIN(KFilterTest)
 
 void KFilterTest::initTestCase()
 {
+    qRegisterMetaType<KCompressionDevice::CompressionType>();
     const QString currentdir = QDir::currentPath();
     pathgz = currentdir + "/test.gz";
     pathbz2 = currentdir + "/test.bz2";
@@ -281,34 +282,32 @@ void KFilterTest::test_uncompressed()
 void KFilterTest::test_findFilterByMimeType_data()
 {
     QTest::addColumn<QString>("mimeType");
-    QTest::addColumn<bool>("valid");
+    QTest::addColumn<KCompressionDevice::CompressionType>("type");
 
     // direct mimetype name
-    QTest::newRow("application/x-gzip") << QString::fromLatin1("application/x-gzip") << true;
+    QTest::newRow("application/x-gzip") << QString::fromLatin1("application/x-gzip") << KCompressionDevice::GZip;
 #if HAVE_BZIP2_SUPPORT
-    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << true;
-    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << true;
+    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << KCompressionDevice::BZip2;
+    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << KCompressionDevice::BZip2;
 #else
-    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << false;
-    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << false;
+    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << KCompressionDevice::None;
+    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << KCompressionDevice::None;
 #endif
     // indirect compressed mimetypes
-    QTest::newRow("application/x-gzdvi") << QString::fromLatin1("application/x-gzdvi") << true;
+    QTest::newRow("application/x-gzdvi") << QString::fromLatin1("application/x-gzdvi") << KCompressionDevice::GZip;
 
     // non-compressed mimetypes
-    QTest::newRow("text/plain") << QString::fromLatin1("text/plain") << false;
-    QTest::newRow("application/x-tar") << QString::fromLatin1("application/x-tar") << false;
+    QTest::newRow("text/plain") << QString::fromLatin1("text/plain") << KCompressionDevice::None;
+    QTest::newRow("application/x-tar") << QString::fromLatin1("application/x-tar") << KCompressionDevice::None;
 }
 
 void KFilterTest::test_findFilterByMimeType()
 {
     QFETCH(QString, mimeType);
-    QFETCH(bool, valid);
+    QFETCH(KCompressionDevice::CompressionType, type);
 
-    KFilterBase *filter = KFilterBase::findFilterByMimeType(mimeType);
-    QCOMPARE(filter != 0, valid);
-
-    delete filter;
+    KCompressionDevice::CompressionType compressionType = KFilterDev::compressionTypeForMimeType(mimeType);
+    QCOMPARE(compressionType, type);
 }
 
 static void getCompressedData(QByteArray& data, QByteArray& compressedData)

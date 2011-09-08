@@ -100,22 +100,6 @@ public:
     void setFilterFlags(FilterFlags flags);
     FilterFlags filterFlags() const;
 
-    /**
-     * Call this to create the appropriate filter for the file
-     * named @p fileName.
-     * @param fileName the name of the file to filter
-     * @return the filter for the @p fileName, or 0 if not found
-     */
-    static KFilterBase * findFilterByFileName( const QString & fileName );
-
-    /**
-     * Call this to create the appropriate filter for the mimetype
-     * @p mimeType. For instance application/x-gzip.
-     * @param mimeType the mime type of the file to filter
-     * @return the filter for the @p mimeType, or 0 if not found
-     */
-    static KFilterBase * findFilterByMimeType( const QString & mimeType );
-
 protected:
     /** Virtual hook, used to add new "virtual" functions while maintaining
         binary compatibility. Unused in this class.

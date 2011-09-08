@@ -115,5 +115,8 @@ private:
     Private* const d;
 };
 
+#include <QtCore/QMetaType>
+
+Q_DECLARE_METATYPE(KCompressionDevice::CompressionType);
 
 #endif
