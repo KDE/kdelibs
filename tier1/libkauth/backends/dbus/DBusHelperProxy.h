@@ -62,16 +62,16 @@ public:
     virtual void sendProgressStep(int step);
     virtual void sendProgressStep(const QVariantMap &data);
 
-public slots:
+public Q_SLOTS:
     void stopAction(const QString &action);
     void performActions(QByteArray blob, const QByteArray &callerID);
     QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
     uint authorizeAction(const QString &action, const QByteArray &callerID);
 
-signals:
+Q_SIGNALS:
     void remoteSignal(int type, const QString &action, const QByteArray &blob); // This signal is sent from the helper to the app
 
-private slots:
+private Q_SLOTS:
     void remoteSignalReceived(int type, const QString &action, QByteArray blob);
 };
 

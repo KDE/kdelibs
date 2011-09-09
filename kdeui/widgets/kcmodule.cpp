@@ -36,8 +36,8 @@
 #include <kglobal.h>
 #include <kcomponentdata.h>
 #include <klocale.h>
-#include "auth/kauthaction.h"
-#include "auth/kauthactionwatcher.h"
+#include "kauthaction.h"
+#include "kauthactionwatcher.h"
 
 class KCModulePrivate
 {

@@ -62,7 +62,7 @@ QList<Action> parse(QSettings &ini)
     descriptionExp.setCaseSensitivity(Qt::CaseInsensitive);
     nameExp.setCaseSensitivity(Qt::CaseInsensitive);
 
-    foreach(const QString &name, ini.childGroups()) {
+    Q_FOREACH(const QString &name, ini.childGroups()) {
         Action action;
 
         if (name == QLatin1String("Domain")) {
@@ -77,7 +77,7 @@ QList<Action> parse(QSettings &ini)
         action.name = name;
         ini.beginGroup(name);
 
-        foreach(const QString &key, ini.childKeys()) {
+        Q_FOREACH(const QString &key, ini.childKeys()) {
             if (descriptionExp.exactMatch(key)) {
                 QString lang = descriptionExp.capturedTexts().at(1);
 

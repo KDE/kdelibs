@@ -27,8 +27,7 @@
 
 #include <QPluginLoader>
 #include <QDir>
-
-#include <kdebug.h>
+#include <QDebug>
 
 namespace KAuth
 {
@@ -56,7 +55,7 @@ QList< QObject* > BackendsManager::retrieveInstancesIn(const QString& path)
 
     QList< QObject* > retlist;
 
-    foreach(const QFileInfo &fi, entryList) {
+    Q_FOREACH(const QFileInfo &fi, entryList) {
         QString filePath = fi.filePath(); // file name with path
         QString fileName = fi.fileName(); // just file name
 
@@ -80,7 +79,7 @@ void BackendsManager::init()
     // Backend plugin
     const QList< QObject* > backends = retrieveInstancesIn(QFile::decodeName(KAUTH_BACKEND_PLUGIN_DIR));
 
-    foreach (QObject *instance, backends) {
+    Q_FOREACH (QObject *instance, backends) {
         auth = qobject_cast< KAuth::AuthBackend* >(instance);
         if (auth) {
             break;
@@ -90,7 +89,7 @@ void BackendsManager::init()
     // Helper plugin
     const QList< QObject* > helpers = retrieveInstancesIn(QFile::decodeName(KAUTH_HELPER_PLUGIN_DIR));
 
-    foreach (QObject *instance, helpers) {
+    Q_FOREACH (QObject *instance, helpers) {
         helper = qobject_cast< KAuth::HelperProxy* >(instance);
         if (helper) {
             break;
@@ -102,7 +101,7 @@ void BackendsManager::init()
         auth = new FakeBackend;
 #ifndef KAUTH_COMPILING_FAKE_BACKEND
         // Spit a fat warning
-        kWarning() << "WARNING: KAuth was compiled with a working backend, but was unable to load it! Check your installation!";
+        qWarning() << "WARNING: KAuth was compiled with a working backend, but was unable to load it! Check your installation!";
 #endif
     }
 
@@ -111,7 +110,7 @@ void BackendsManager::init()
         helper = new FakeHelperProxy;
 #ifndef KAUTH_COMPILING_FAKE_BACKEND
         // Spit a fat warning
-        kWarning() << "WARNING: KAuth was compiled with a working helper backend, but was unable to load it! "
+        qWarning() << "WARNING: KAuth was compiled with a working helper backend, but was unable to load it! "
                       "Check your installation!";
 #endif
     }

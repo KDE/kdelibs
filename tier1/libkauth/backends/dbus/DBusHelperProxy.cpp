@@ -28,8 +28,6 @@
 #include <QDebug>
 #include <QTimer>
 
-#include <klocalizedstring.h>
-
 #include <syslog.h>
 
 #include "BackendsManager.h"
@@ -97,8 +95,8 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
         ActionReply errorReply = ActionReply::DBusErrorReply;
-        errorReply.setErrorDescription(i18n("DBus Backend error: connection to helper failed. %1",
-                                            QDBusConnection::systemBus().lastError().message()));
+        errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
+				       + QDBusConnection::systemBus().lastError().message());
         return errorReply;
     }
 
@@ -121,9 +119,8 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     if (reply.type() == QDBusMessage::ErrorMessage) {
         ActionReply r = ActionReply::DBusErrorReply;
-        r.setErrorDescription(i18n("DBus Backend error: could not contact the helper. "
-                                   "Connection error: %1. Message error: %2", QDBusConnection::systemBus().lastError().message(),
-                                   reply.errorMessage()));
+        r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
+                                 "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + reply.errorMessage());
         qDebug() << reply.errorMessage();
 
         // The remote signal will never arrive: so let's erase the action from the list ourselves
@@ -134,8 +131,8 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     if (reply.arguments().size() != 1) {
         ActionReply errorReply = ActionReply::DBusErrorReply;
-        errorReply.setErrorDescription(i18n("DBus Backend error: received corrupt data from helper %1 %2",
-                                            reply.arguments().size(), QDBusConnection::systemBus().lastError().message()));
+        errorReply.setErrorDescription(tr("DBus Backend error: received corrupt data from helper ") + QString::number(reply.arguments().size())
+				       + QLatin1String(" ") + QDBusConnection::systemBus().lastError().message());
 
         // The remote signal may never arrive: so let's erase the action from the list ourselves
         m_actionsInProgress.removeOne(action);
@@ -208,12 +205,12 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     QDataStream stream(&blob, QIODevice::ReadOnly);
 
     if (type == ActionStarted) {
-        emit actionStarted(action);
+        Q_EMIT actionStarted(action);
     } else if (type == ActionPerformed) {
         ActionReply reply = ActionReply::deserialize(blob);
 
         m_actionsInProgress.removeOne(action);
-        emit actionPerformed(action, reply);
+        Q_EMIT actionPerformed(action, reply);
     } else if (type == DebugMessage) {
         int level;
         QString message;
@@ -225,21 +222,19 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         int step;
         stream >> step;
 
-        emit progressStep(action, step);
+        Q_EMIT progressStep(action, step);
     } else if (type == ProgressStepData) {
         QVariantMap data;
         stream >> data;
 
-        emit progressStep(action, data);
+        Q_EMIT progressStep(action, data);
     }
 }
 
 void DBusHelperProxy::stopAction(const QString &action)
 {
     Q_UNUSED(action)
-#ifdef __GNUC__
-#warning FIXME: The stop request should be action-specific rather than global
-#endif
+//#warning FIXME: The stop request should be action-specific rather than global
     m_stopRequest = true;
 }
 
@@ -286,7 +281,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
     s >> args;
 
     m_currentAction = action;
-    emit remoteSignal(ActionStarted, action, QByteArray());
+    Q_EMIT remoteSignal(ActionStarted, action, QByteArray());
     QEventLoop e;
     e.processEvents(QEventLoop::AllEvents);
 
@@ -303,7 +298,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
         slotname.replace(QLatin1Char('.'), QLatin1Char('_'));
 
-        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection,
+        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii().data(), Qt::DirectConnection,
                                                  Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
 
         if (!success) {
@@ -316,7 +311,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
     timer->start();
 
-    emit remoteSignal(ActionPerformed, action, retVal.serialized());
+    Q_EMIT remoteSignal(ActionPerformed, action, retVal.serialized());
     e.processEvents(QEventLoop::AllEvents);
     m_currentAction.clear();
     m_stopRequest = false;
@@ -358,7 +353,7 @@ void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
 
     stream << level << QString::fromLocal8Bit(msg);
 
-    emit remoteSignal(DebugMessage, m_currentAction, blob);
+    Q_EMIT remoteSignal(DebugMessage, m_currentAction, blob);
 }
 
 void DBusHelperProxy::sendProgressStep(int step)
@@ -368,7 +363,7 @@ void DBusHelperProxy::sendProgressStep(int step)
 
     stream << step;
 
-    emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
+    Q_EMIT remoteSignal(ProgressStepIndicator, m_currentAction, blob);
 }
 
 void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
@@ -378,7 +373,7 @@ void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
 
     stream << data;
 
-    emit remoteSignal(ProgressStepData, m_currentAction, blob);
+    Q_EMIT remoteSignal(ProgressStepData, m_currentAction, blob);
 }
 
 void debugMessageReceived(int t, const QString &message)

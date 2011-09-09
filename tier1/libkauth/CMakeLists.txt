@@ -1,0 +1,104 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(kauth)
+
+find_package(extra-cmake-modules REQUIRED)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+
+include(ECMVersion)
+
+# -- Maintained by scripty
+ecm_version(5 0 0)
+# --
+
+include(ECMQtFramework)
+
+find_package(Qt4 REQUIRED QtCore QtGui QtDBus)
+
+include(${QT_USE_FILE})
+
+# This file handles all the logic for compiling KAuth's backends
+include(ConfigureChecks.cmake)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+# Configure a small file to tell BackendsManager what to use
+configure_file(BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
+
+set(libkauth_SRCS
+    kauthaction.cpp
+    kauthactionreply.cpp
+    kauthactionwatcher.cpp
+    AuthBackend.cpp
+    BackendsManager.cpp
+    HelperProxy.cpp
+    kauthhelpersupport.cpp
+    backends/fake/FakeBackend.cpp
+    backends/fakehelper/FakeHelperProxy.cpp
+)
+
+add_library(kauth ${LIBRARY_TYPE} ${libkauth_SRCS})
+generate_export_header(kauth)
+
+target_link_libraries(kauth ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
+set_target_properties(kauth PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                       SOVERSION ${ECM_SOVERSION}
+)
+
+# KAuth policy generator executable
+
+# Compile only if fake backend has not been selected
+
+if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+    # KAUTH_POLICY_GEN_SRCS has been generated from ConfigureChecks.cmake
+    add_executable(kauth-policy-gen ${KAUTH_POLICY_GEN_SRCS})
+
+    # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
+    target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
+
+    install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+
+if ( NOT WINCE )
+    # KAuth backend plugin
+
+    if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+        set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS})
+	# KAuth::AuthBackend is not exported
+        add_library(kauth_backend_plugin MODULE ${KAUTH_BACKEND_SRCS} AuthBackend.cpp)
+        target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
+        set_target_properties(kauth_backend_plugin PROPERTIES PREFIX "")
+        install(TARGETS kauth_backend_plugin
+                LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+                ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+                RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+        )
+    endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+
+    # KAuth helper plugin
+
+    if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+        # KAuth::HelperProxy is not exported
+        add_library(kauth_helper_plugin MODULE ${KAUTH_HELPER_BACKEND_SRCS} HelperProxy.cpp)
+        target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
+        set_target_properties(kauth_helper_plugin PROPERTIES PREFIX "")
+        install(TARGETS kauth_helper_plugin
+                LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+                ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+                RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+        )
+    endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+endif ( NOT WINCE )
+
+install(TARGETS kauth ${ECM_TARGET_DEFAULT_ARGS})
+
+install(FILES
+    kauthaction.h
+    kauthactionreply.h
+    kauthactionwatcher.h
+    kauthhelpersupport.h
+    kauth.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kauth_export.h
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)

@@ -25,7 +25,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
 
-#include <kdecore_export.h>
+#include <kauth_export.h>
 
 #include "kauthactionreply.h"
 
@@ -66,7 +66,7 @@ class ActionWatcher;
  *
  * @since 4.4
  */
-class KDECORE_EXPORT Action
+class KAUTH_EXPORT Action
 {
     class Private;
     Private * const d;

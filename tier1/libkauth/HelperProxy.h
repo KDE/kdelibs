@@ -53,7 +53,7 @@ public:
     virtual void sendProgressStep(int step) = 0;
     virtual void sendProgressStep(const QVariantMap &step) = 0;
 
-signals:
+Q_SIGNALS:
     void actionStarted(const QString &action);
     void actionPerformed(const QString &action, ActionReply reply);
     void progressStep(const QString &action, int progress);

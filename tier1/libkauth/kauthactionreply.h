@@ -26,7 +26,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QDataStream>
 
-#include <kdecore_export.h>
+#include <kauth_export.h>
 /**
  @namespace KAuth
 
@@ -367,7 +367,7 @@ namespace KAuth
 *
 * @since 4.4
 */
-class KDECORE_EXPORT ActionReply
+class KAUTH_EXPORT ActionReply
 {
     class Private;
     Private * const d;

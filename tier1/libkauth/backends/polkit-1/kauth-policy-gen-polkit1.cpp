@@ -18,7 +18,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#include <auth/policy-gen/policy-gen.h>
+#include <policy-gen/policy-gen.h>
 
 #include <cstdio>
 #include <QDebug>
@@ -65,7 +65,7 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
         out << "<icon_name>" << domain[QLatin1String("icon")] << "</icon_name>\n";
     }
 
-    foreach (const Action &action, actions) {
+    Q_FOREACH (const Action &action, actions) {
         out << dent << "<action id=\"" << action.name << "\" >\n";
 
         // Not a typo, messages and descriptions are actually inverted

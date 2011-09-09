@@ -39,7 +39,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 
-#include "auth/kauthaction.h"
+#include "kauthaction.h"
 
 #include "kcolorscheme.h"
 

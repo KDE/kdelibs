@@ -12,6 +12,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
+ ${CMAKE_BINARY_DIR}/tier1/libkauth/
+ ${CMAKE_SOURCE_DIR}/tier1/libkauth/
  ${CMAKE_SOURCE_DIR}/kdeui
  ${CMAKE_SOURCE_DIR}/libinqt5/src
  ${CMAKE_BINARY_DIR}/libinqt5/src
@@ -403,7 +405,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui itemmodels sonnetcore ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} inqt5)
 
 if(NOT WINCE)

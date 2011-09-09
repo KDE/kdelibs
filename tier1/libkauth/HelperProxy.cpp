@@ -18,31 +18,13 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#ifndef BACKENDS_MANAGER_H
-#define BACKENDS_MANAGER_H
-
-#include "AuthBackend.h"
 #include "HelperProxy.h"
-#include <kdecore_export.h>
 
 namespace KAuth
 {
 
-class KDECORE_EXPORT BackendsManager
-{
-    static AuthBackend *auth;
-    static HelperProxy *helper;
+HelperProxy::~HelperProxy() {}
 
-    BackendsManager();
-public:
-    static AuthBackend *authBackend();
-    static HelperProxy *helperProxy();
+} // namespace KAuth
 
-private:
-    static void init();
-    static QList<QObject*> retrieveInstancesIn(const QString &path);
-};
-
-} // namespace Auth
-
-#endif
+#include "HelperProxy.moc"

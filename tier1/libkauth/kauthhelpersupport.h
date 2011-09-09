@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 
-#include <kdecore_export.h>
+#include <kauth_export.h>
 
 #define KDE4_AUTH_HELPER_MAIN(ID, HelperClass) \
     int main(int argc, char **argv) { return KAuth::HelperSupport::helperMain(argc, argv, ID, new HelperClass()); }
@@ -32,10 +32,10 @@ namespace KAuth
 {
 
 /**
- * @brief Support class with some KDECORE_EXPORT methods useful to the helper's code
+ * @brief Support class with some KAUTH_EXPORT methods useful to the helper's code
  *
  * This class provides the API to write the helper tool that executes your actions.
- * You don't create instances of HelperSupport. Instead, you use its KDECORE_EXPORT methods.
+ * You don't create instances of HelperSupport. Instead, you use its KAUTH_EXPORT methods.
  *
  * This them you can notify the application of progress in your action's execution
  * and you can check if the application asked you to terminate it.
@@ -56,7 +56,7 @@ namespace HelperSupport
  *
  * @param step The progress indicator
  */
-KDECORE_EXPORT void progressStep(int step);
+KAUTH_EXPORT void progressStep(int step);
 
 /**
 * @brief Send a progressStep signal to the caller application
@@ -69,7 +69,7 @@ KDECORE_EXPORT void progressStep(int step);
 *
 * @param data The progress data
 */
-KDECORE_EXPORT void progressStep(const QVariantMap &data);
+KAUTH_EXPORT void progressStep(const QVariantMap &data);
 
 /**
  * @brief Check if the caller asked the helper to stop the execution
@@ -82,7 +82,7 @@ KDECORE_EXPORT void progressStep(const QVariantMap &data);
  *
  * @return true if the helper has been asked to stop, false otherwise
  */
-KDECORE_EXPORT bool isStopped();
+KAUTH_EXPORT bool isStopped();
 
 
 /**
@@ -98,7 +98,7 @@ KDECORE_EXPORT bool isStopped();
  * @param responder The responder object for the helper. The macro passes a default-constructed,
  *                  heap-allocated object of the class specified as the last macro parameter
  */
-KDECORE_EXPORT int helperMain(int argc, char **argv, const char *id, QObject *responder);
+KAUTH_EXPORT int helperMain(int argc, char **argv, const char *id, QObject *responder);
 } // namespace HelperSupport
 
 } // namespace Auth

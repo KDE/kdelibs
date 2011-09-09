@@ -16,11 +16,11 @@ if(NOT KAUTH_BACKEND)
     elseif (UNIX)
         find_package(PolkitQt-1 0.99.0)
 
-        if (POLKITQT-1_FOUND)
+        if (PolkitQt-1_FOUND)
             set (KAUTH_BACKEND "PolkitQt-1")
-            macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
+            macro_log_feature(PolkitQt-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
                               FALSE "" "STRONGLY RECOMMENDED")
-        else (POLKITQT-1_FOUND)
+        else (PolkitQt-1_FOUND)
             find_package(PolkitQt)
 
             if (POLKITQT_FOUND)
@@ -29,13 +29,13 @@ if(NOT KAUTH_BACKEND)
                                   FALSE "" "STRONGLY RECOMMENDED")
             else (POLKITQT_FOUND)
                 # Nothing was found: notify and log the missing features
-                macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
+                macro_log_feature(PolkitQt-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
                                   FALSE "" "STRONGLY RECOMMENDED: Either this or PolkitQt is required to make KAuth work, and hence enable certain workspace functionalities")
                 macro_log_feature(POLKITQT_FOUND "PolkitQt" "Support for executing priviledged actions in a controlled way (KAuth)" "http://api.kde.org/polkit-qt"
                                   FALSE "" "STRONGLY RECOMMENDED: Either this or PolkitQt-1 is required to make KAuth work, and hence enable certain workspace functionalities")
                 set (KAUTH_BACKEND "Fake")
             endif (POLKITQT_FOUND)
-        endif (POLKITQT-1_FOUND)
+        endif (PolkitQt-1_FOUND)
     else(UNIX)
         set (KAUTH_BACKEND "Fake")
     endif(APPLE)
@@ -97,7 +97,7 @@ if(KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
     message(STATUS "Building Apple KAuth backend")
 
     set(KAUTH_BACKEND_SRCS
-        auth/backends/mac/AuthServicesBackend.cpp
+        backends/mac/AuthServicesBackend.cpp
     )
 
     set(KAUTH_BACKEND_LIBS ${SECURITY_LIBRARY} ${QT_QTCORE_LIBRARY})
@@ -109,7 +109,7 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
     include_directories(${POLKITQT_INCLUDE_DIR})
 
     set(KAUTH_BACKEND_SRCS
-       auth/backends/policykit/PolicyKitBackend.cpp
+       backends/policykit/PolicyKitBackend.cpp
     )
 
     set(KAUTH_BACKEND_LIBS ${POLKITQT_CORE_LIBRARY} ${QT_QTCORE_LIBRARY})
@@ -124,10 +124,10 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
     include_directories(${POLKITQT-1_INCLUDE_DIR})
 
     set(KAUTH_BACKEND_SRCS
-        auth/backends/polkit-1/Polkit1Backend.cpp
+        backends/polkit-1/Polkit1Backend.cpp
     )
 
-    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTGUI_LIBRARY} kdecore)
+    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTGUI_LIBRARY})
 
     if (Q_WS_X11)
         # QtGui as well
@@ -151,19 +151,19 @@ endif()
 
 # KAuth policy generator executable source probing
 set(KAUTH_POLICY_GEN_SRCS
-    auth/policy-gen/policy-gen.cpp )
+    policy-gen/policy-gen.cpp )
 set(KAUTH_POLICY_GEN_LIBRARIES ${QT_QTCORE_LIBRARY})
 
 if(KDE4_AUTH_BACKEND_NAME STREQUAL "OSX")
    set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
-       auth/backends/mac/kauth-policy-gen-mac.cpp)
+       backends/mac/kauth-policy-gen-mac.cpp)
    set(KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES} ${CORE_FOUNDATION_LIBRARY} ${SECURITY_LIBRARY})
 elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
    set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
-       auth/backends/policykit/kauth-policy-gen-polkit.cpp )
+       backends/policykit/kauth-policy-gen-polkit.cpp )
 elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
   set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
-      auth/backends/polkit-1/kauth-policy-gen-polkit1.cpp )
+      backends/polkit-1/kauth-policy-gen-polkit1.cpp )
 endif()
 
 ########################
@@ -194,23 +194,23 @@ if(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
     set (KAUTH_COMPILING_DBUS_HELPER_BACKEND TRUE)
 
     qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
-                        auth/backends/dbus/org.kde.auth.xml
-                        auth/backends/dbus/DBusHelperProxy.h
+                        backends/dbus/org.kde.auth.xml
+                        backends/dbus/DBusHelperProxy.h
                         KAuth::DBusHelperProxy)
 
     set(KAUTH_HELPER_BACKEND_SRCS
-        auth/backends/dbus/DBusHelperProxy.cpp
+        backends/dbus/DBusHelperProxy.cpp
         ${kauth_dbus_adaptor_SRCS}
     )
 
-    set(KAUTH_HELPER_BACKEND_LIBS kdecore)
+    set(KAUTH_HELPER_BACKEND_LIBS ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kauth)
 
     # Install some files as well
-    install( FILES auth/backends/dbus/org.kde.auth.conf
+    install( FILES backends/dbus/org.kde.auth.conf
              DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d )
 
-    install( FILES auth/backends/dbus/dbus_policy.stub
-                   auth/backends/dbus/dbus_service.stub
+    install( FILES backends/dbus/dbus_policy.stub
+                   backends/dbus/dbus_service.stub
              DESTINATION ${DATA_INSTALL_DIR}/kauth COMPONENT Devel)
 elseif(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "FAKE")
     set (KAUTH_COMPILING_FAKE_HELPER_BACKEND TRUE)

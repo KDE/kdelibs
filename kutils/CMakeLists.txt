@@ -4,6 +4,8 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
                      ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+                     ${CMAKE_SOURCE_DIR}/tier1/libkauth/
+                     ${CMAKE_BINARY_DIR}/tier1/libkauth/
 )
 
 ########### kemoticons ################
@@ -103,7 +105,7 @@ set(kcmutils_LIB_SRCS
 
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS})
+target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth)
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

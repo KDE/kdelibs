@@ -20,6 +20,7 @@
 
 #include "kauthaction.h"
 
+#include <QtGlobal>
 #include <QRegExp>
 #include <QWidget>
 
@@ -254,7 +255,7 @@ bool Action::executeActions(const QList< Action >& actions, QList< Action >* den
 {
     QList<QPair<QString, QVariantMap> > list;
 
-    foreach(const Action &a, actions) {
+    Q_FOREACH(const Action &a, actions) {
         // Save us an additional step
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
             if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {

@@ -23,6 +23,7 @@
 
 #include <QtCore/qplugin.h>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
 #include <QtCore/QTimer>
 
 #include <QtGui/QApplication>
@@ -30,8 +31,6 @@
 
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
-
-#include <kdebug.h>
 
 #include <PolkitQt1/Authority>
 #include <PolkitQt1/Subject>
@@ -85,10 +84,9 @@ Polkit1Backend::~Polkit1Backend()
 
 void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
 {
-    kDebug();
     // If a parent was not specified, skip this
     if (!parent) {
-        kDebug() << "Parent widget does not exist, skipping";
+        qDebug() << "Parent widget does not exist, skipping";
         return;
     }
 
@@ -96,7 +94,7 @@ void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
     if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.Polkit1AuthAgent"))) {
         // Check if we actually are entitled to use GUI capabilities
         if (qApp == 0 || QApplication::type() == QApplication::Tty) {
-            kDebug() << "Not streaming parent as we are on a TTY application";
+            qDebug() << "Not streaming parent as we are on a TTY application";
         }
 
         // Retrieve the dialog root window Id
@@ -114,17 +112,17 @@ void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
         call.waitForFinished();
 
         if (call.isError()) {
-            kWarning() << "ERROR while streaming the parent!!" << call.error();
+            qWarning() << "ERROR while streaming the parent!!" << call.error();
         }
     } else {
-        kDebug() << "KDE polkit agent appears too old or not registered on the bus";
+        qDebug() << "KDE polkit agent appears too old or not registered on the bus";
     }
 }
 
 void Polkit1Backend::updateCachedActions(const PolkitQt1::ActionDescription::List& actions)
 {
     m_knownActions.clear();
-    foreach (const PolkitQt1::ActionDescription& action, actions) {
+    Q_FOREACH (const PolkitQt1::ActionDescription& action, actions) {
         m_knownActions << action.actionId();
     }
     m_flyingActions = false;
@@ -195,10 +193,10 @@ bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray caller
 
 void Polkit1Backend::checkForResultChanged()
 {
-    foreach(const QString &action, m_cachedResults.keys()) {
+    Q_FOREACH(const QString &action, m_cachedResults.keys()) {
         if (m_cachedResults[action] != actionStatus(action)) {
             m_cachedResults[action] = actionStatus(action);
-            emit actionStatusChanged(action, m_cachedResults[action]);
+            Q_EMIT actionStatusChanged(action, m_cachedResults[action]);
         }
     }
 

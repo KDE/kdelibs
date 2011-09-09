@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include <kauth_export.h>
 
 #include "kauthactionreply.h"
 #include "kauthaction.h"
@@ -47,7 +47,7 @@ namespace KAuth
  *
  * @since 4.4
  */
-class KDECORE_EXPORT ActionWatcher : public QObject
+class KAUTH_EXPORT ActionWatcher : public QObject
 {
     Q_OBJECT
 

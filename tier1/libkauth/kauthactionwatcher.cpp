@@ -81,35 +81,35 @@ QString ActionWatcher::action() const
 void ActionWatcher::Private::actionStartedSlot(const QString &taction)
 {
     if (taction == action) {
-        emit q->actionStarted();
+        Q_EMIT q->actionStarted();
     }
 }
 
 void ActionWatcher::Private::actionPerformedSlot(const QString &taction, const ActionReply &reply)
 {
     if (taction == action) {
-        emit q->actionPerformed(reply);
+        Q_EMIT q->actionPerformed(reply);
     }
 }
 
 void ActionWatcher::Private::progressStepSlot(const QString &taction, int i)
 {
     if (taction == action) {
-        emit q->progressStep(i);
+        Q_EMIT q->progressStep(i);
     }
 }
 
 void ActionWatcher::Private::progressStepSlot(const QString &taction, const QVariantMap &data)
 {
     if (taction == action) {
-        emit q->progressStep(data);
+        Q_EMIT q->progressStep(data);
     }
 }
 
 void ActionWatcher::Private::statusChangedSlot(const QString &taction, Action::AuthStatus status)
 {
     if (taction == action) {
-        emit q->statusChanged(status);
+        Q_EMIT q->statusChanged(status);
     }
 }
 

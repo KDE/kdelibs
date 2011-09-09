@@ -30,13 +30,6 @@ include(date/ConfigureChecks.cmake)
 configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
-# This file handles all the logic for compiling KAuth's backends
-include(auth/ConfigureChecks.cmake)
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/auth/ )
-
-# Configure a small file to tell BackendsManager what to use
-configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
-
 # Configure checks for localization
 configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
 
@@ -220,15 +213,6 @@ set(kdecore_LIB_SRCS
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
-   auth/kauthaction.cpp
-   auth/kauthactionreply.cpp
-   auth/kauthactionwatcher.cpp
-   auth/AuthBackend.cpp
-   auth/BackendsManager.cpp
-   auth/HelperProxy.cpp
-   auth/kauthhelpersupport.cpp
-   auth/backends/fake/FakeBackend.cpp
-   auth/backends/fakehelper/FakeHelperProxy.cpp
    services/kfoldermimetype.cpp
    services/kmimetypefactory.cpp
    services/kmimemagicrule.cpp
@@ -402,53 +386,6 @@ install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 
-# KAuth policy generator executable
-
-# Compile only if fake backend has not been selected
-
-if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-    # KAUTH_POLICY_GEN_SRCS has been generated from auth/ConfigureChecks.cmake
-    kde4_add_executable(kauth-policy-gen NOGUI ${KAUTH_POLICY_GEN_SRCS})
-
-    # KAUTH_POLICY_GEN_LIBRARIES has been generated from auth/ConfigureChecks.cmake
-    target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
-
-    install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
-endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-
-if ( NOT WINCE )
-    ########### next target ###############
-
-    # KAuth backend plugin
-
-    if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-        set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS} auth/AuthBackend.cpp)
-        kde4_add_plugin(kauth_backend_plugin ${KAUTH_BACKEND_SRCS})
-        target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
-        install(TARGETS kauth_backend_plugin
-                LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-                ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-                RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-        )
-    endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-
-    ########### next target ###############
-
-    # KAuth helper plugin
-
-    if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
-        kde4_add_plugin(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_SRCS} auth/HelperProxy.cpp)
-        target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
-        install(TARGETS kauth_helper_plugin
-                LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-                ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-                RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-        )
-    endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
-endif ( NOT WINCE )
-
-########### next target ###############
-
 configure_file(localization/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
 
 kde4_add_executable(kde4-config NOGUI kde-config.cpp )
@@ -559,11 +496,6 @@ install(FILES
    network/klocalsocket.h
    network/ksocketfactory.h
    network/ktcpsocket.h
-   auth/kauthaction.h
-   auth/kauthactionreply.h
-   auth/kauthactionwatcher.h
-   auth/kauthhelpersupport.h
-   auth/kauth.h
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h
