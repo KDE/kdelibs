@@ -105,11 +105,6 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
       emit emptyAreaContextMenu( mapToGlobal( event->pos() ) );
     }
     return;
-  } else if (QTabBar::isMovable() && event->button() == Qt::MidButton) {
-    // compatibility feature for old middle mouse tab moving
-    event->accept();
-    QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
-    QCoreApplication::sendEvent(this, &fakedMouseEvent);
   }
 
   QTabBar::mousePressEvent( event );
@@ -163,8 +158,12 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
     }
   } else if ( event->button() == Qt::NoButton && event->buttons() == Qt::MidButton && isMovable() ) {
     // compatibility feature for old middle mouse tab moving
-    d->mMiddleMouseTabMoveInProgress = true;
     event->accept();
+    if( d->mMiddleMouseTabMoveInProgress == false ) {
+      QMouseEvent fakedMouseEvent(QEvent::MouseButtonPress, event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+      QCoreApplication::sendEvent(this, &fakedMouseEvent);
+    }
+    d->mMiddleMouseTabMoveInProgress = true;
     QMouseEvent fakedMouseEvent(event->type(), event->pos(), event->button(), Qt::LeftButton, event->modifiers());
     QCoreApplication::sendEvent(this, &fakedMouseEvent);
     return;
@@ -222,7 +221,11 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
           QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
           QCoreApplication::sendEvent(this, &fakedMouseEvent);
         }
-        emit mouseMiddleClick( tab );
+        if ( tabsClosable() ) {
+          emit tabCloseRequested( tab );
+        } else {
+          emit mouseMiddleClick( tab );
+        }
         return;
       }
     } else {
