@@ -87,7 +87,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use QTabWidget::isMovable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    bool isTabReorderingEnabled() const;
+    KDE_DEPRECATED bool isTabReorderingEnabled() const;
 #endif
 
     /**
