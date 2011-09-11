@@ -38,6 +38,7 @@ class KDECORE_EXPORT KLockFile : public KShared
 public:
    typedef KSharedPtr<KLockFile> Ptr;
 
+   // KDE5 TODO: remove KComponentData and use a QString instead, by default QString(), becomes qcoreapp appname internally.
    explicit KLockFile(const QString &file, const KComponentData &componentName = KGlobal::mainComponent());
 
    /**
