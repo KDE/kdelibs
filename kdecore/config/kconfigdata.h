@@ -262,7 +262,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             k.bDefault = (options&EntryDefault);
             k.bRaw = (options&EntryRawKey);
 
-            //qDebug() << "changing [" << group << "," << key << "] =" << e.mValue;
+            //qDebug() << "changing [" << group << "," << key << "] =" << value;
             e.mValue = value;
             e.bDirty = e.bDirty || (options&EntryDirty);
             e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
