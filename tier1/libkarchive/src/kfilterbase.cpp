@@ -18,18 +18,8 @@
 */
 
 #include "kfilterbase.h"
-#include <config-compression.h>
 
-#include <QDebug>
 #include <QtCore/QIODevice>
-#include <kmimetype.h>
-#include "kgzipfilter.h"
-#if HAVE_BZIP2_SUPPORT
-#include "kbzip2filter.h"
-#endif
-#if HAVE_XZ_SUPPORT
-#include "kxzfilter.h"
-#endif
 
 class KFilterBase::Private
 {
