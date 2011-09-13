@@ -2,15 +2,18 @@ KDE Core:
 Sonnet Core -> Done (cullmann, moved to tier2/sonnet/core)
 Archive & Compression -> Done ([nef])
 KAuth -> Done (bambee)
-Date/Time
-Translation
-Service Solution
+Date/Time (TODO: John Layt)
+Translation (TODO: John Layt)
+Service Solution (TODO: dfaure)
 KDBus -> WIP (ervin)
-Standard Locations
-SSL
-Mime Types
-LibKCore
-KDebug
+Standard Locations (into qt, almost done, https://qt.gitorious.org/qt/qtbase/merge_requests/50, dfaure)
+SSL (TODO)
+Mime Types (into qt? TODO: dfaure)
+LibKCore (contains KJob, KCmdLineArgs, KRandom, KUrl for now, KSharedDataCache, KAboutData,
+           text stuff (KCharMacroExpander, KCharsets [for now], KEncodingDetector/Prober, KMacroExpanderBase, KStringHandler
+                       KMD5 [for now; QCryptographicHash doesn't work on QIODevices])
+           filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now)
+KDebug (seems small to be on its own.... pending: kconfig)
 Filesystem Handling
 Configuration
 Misc KDE Look/Feel/Consistency
