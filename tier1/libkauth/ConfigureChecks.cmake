@@ -248,12 +248,48 @@ endif()
 
 # Set directories for plugins
 if(NOT WIN32)
-_set_fancy(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper" "Where KAuth's helper plugin will be installed")
-_set_fancy(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend" "Where KAuth's backend plugin will be installed")
-#set(KAUTH_OTHER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/plugins")
+
+  # ###
+  # WARNING Copied from KDE4Internal. Decide whether this should be fixed in
+  # CMake or in ECM:
+  # ###
+
+  # This macro implements some very special logic how to deal with the cache.
+  # By default the various install locations inherit their value from their "parent" variable
+  # so if you set CMAKE_INSTALL_PREFIX, then EXEC_INSTALL_PREFIX, PLUGIN_INSTALL_DIR will
+  # calculate their value by appending subdirs to CMAKE_INSTALL_PREFIX .
+  # This would work completely without using the cache.
+  # But if somebody wants e.g. a different EXEC_INSTALL_PREFIX this value has to go into
+  # the cache, otherwise it will be forgotten on the next cmake run.
+  # Once a variable is in the cache, it doesn't depend on its "parent" variables
+  # anymore and you can only change it by editing it directly.
+  # this macro helps in this regard, because as long as you don't set one of the
+  # variables explicitely to some location, it will always calculate its value from its
+  # parents. So modifying CMAKE_INSTALL_PREFIX later on will have the desired effect.
+  # But once you decide to set e.g. EXEC_INSTALL_PREFIX to some special location
+  # this will go into the cache and it will no longer depend on CMAKE_INSTALL_PREFIX.
+  #
+  # additionally if installing to the same location as kdelibs, the other install
+  # directories are reused from the installed kdelibs
+  macro(_SET_FANCY _var _value _comment)
+    set(predefinedvalue "${_value}")
+    if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "${KDE4_INSTALL_DIR}" AND DEFINED KDE4_${_var})
+        set(predefinedvalue "${KDE4_${_var}}")
+    endif ("${CMAKE_INSTALL_PREFIX}" STREQUAL "${KDE4_INSTALL_DIR}" AND DEFINED KDE4_${_var})
+
+    if (NOT DEFINED ${_var})
+        set(${_var} ${predefinedvalue})
+    else (NOT DEFINED ${_var})
+        set(${_var} "${${_var}}" CACHE PATH "${_comment}")
+    endif (NOT DEFINED ${_var})
+  endmacro(_SET_FANCY)
+
+  _set_fancy(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper" "Where KAuth's helper plugin will be installed")
+  _set_fancy(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend" "Where KAuth's backend plugin will be installed")
+  #set(KAUTH_OTHER_PLUGIN_DIR "${QT_PLUGINS_DIR}/kauth/plugins")
 else(NOT WIN32)
-set(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper")
-set(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend")
+  set(KAUTH_HELPER_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/helper")
+  set(KAUTH_BACKEND_PLUGIN_DIR "${PLUGIN_INSTALL_DIR}/plugins/kauth/backend")
 endif(NOT WIN32)
 
 ## End
