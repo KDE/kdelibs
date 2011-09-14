@@ -10,3 +10,6 @@ add_subdirectory(libkplotting)
 add_subdirectory(solid)
 add_subdirectory(threadweaver)
 
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
