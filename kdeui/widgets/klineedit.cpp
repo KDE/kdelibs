@@ -1146,7 +1146,7 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     if ( d->clickInClear ) {
         if ( d->clearButton == childAt(e->pos()) || d->clearButton->underMouse() ) {
-            QString newText;
+            QString newText = QString::fromLatin1("");
             if ( e->button() == Qt::MidButton ) {
                 newText = QApplication::clipboard()->text( QClipboard::Selection );
                 setText( newText );
@@ -1165,12 +1165,12 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 
     QLineEdit::mouseReleaseEvent( e );
 
-   if (QApplication::clipboard()->supportsSelection() ) {
-       if ( e->button() == Qt::LeftButton ) {
+    if (QApplication::clipboard()->supportsSelection() ) {
+        if ( e->button() == Qt::LeftButton ) {
             // Fix copying of squeezed text if needed
             copySqueezedText( false );
-       }
-   }
+        }
+    }
 }
 
 void KLineEdit::tripleClickTimeout()
