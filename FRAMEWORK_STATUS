@@ -12,7 +12,7 @@ Mime Types (into qt? TODO: dfaure)
 LibKCore (contains KJob, KCmdLineArgs, KRandom, KUrl for now, KSharedDataCache, KAboutData,
            text stuff (KCharMacroExpander, KCharsets [for now], KEncodingDetector/Prober, KMacroExpanderBase, KStringHandler
                        KMD5 [for now; QCryptographicHash doesn't work on QIODevices])
-           filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now)
+           filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now) -> WIP (bambee)
 KDebug (seems small to be on its own.... pending: kconfig)
 Filesystem Handling
 Configuration
