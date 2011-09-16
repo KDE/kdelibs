@@ -24,9 +24,10 @@
 
 #include "kaboutdata.h"
 
-#include "kstandarddirs.h"
 #include "klocalizedstring.h"
+#include "kglobal.h"
 
+#include "qstandardpaths.h"
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
 #include <QtCore/QSharedData>
@@ -235,31 +236,31 @@ QString KAboutLicense::text() const
         break;
     case KAboutData::License_GPL_V2:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/GPL_V2"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/GPL_V2"));
         break;
     case KAboutData::License_LGPL_V2:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/LGPL_V2"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/LGPL_V2"));
         break;
     case KAboutData::License_BSD:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/BSD"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/BSD"));
         break;
     case KAboutData::License_Artistic:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/ARTISTIC"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/ARTISTIC"));
         break;
     case KAboutData::License_QPL_V1_0:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/QPL_V1.0"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/QPL_V1.0"));
         break;
     case KAboutData::License_GPL_V3:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/GPL_V3"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/GPL_V3"));
         break;
     case KAboutData::License_LGPL_V3:
         knownLicense = true;
-        pathToFile = KStandardDirs::locate("data", QString::fromLatin1("LICENSES/LGPL_V3"));
+        pathToFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("LICENSES/LGPL_V3"));
         break;
     case KAboutData::License_Custom:
         if (!d->_licenseText.isEmpty()) {

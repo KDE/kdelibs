@@ -31,7 +31,7 @@
 
 #include <kde_file.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 
 // Only used by the backup file feature:
 #include <kconfig.h>
@@ -79,7 +79,7 @@ KSaveFile::~KSaveFile()
 
 bool KSaveFile::open(OpenMode flags)
 {
-    if ( d->realFileName.isNull() ) {
+    if ( d->realFileName.isEmpty() ) {
         d->error=QFile::OpenError;
         d->errorString=i18n("No target filename has been given.");
         return false;
@@ -96,7 +96,10 @@ bool KSaveFile::open(OpenMode flags)
     // we only check here if the directory can be written to
     // the actual filename isn't written to, but replaced later
     // with the contents of our tempfile
-    if (!KStandardDirs::checkAccess(d->realFileName, W_OK)) {
+    const QFileInfo fileInfo(d->realFileName);
+    QDir parentDir = fileInfo.dir();
+
+    if (!QFileInfo(parentDir.absolutePath()).isWritable()) {
         d->error=QFile::PermissionsError;
         d->errorString=i18n("Insufficient permissions in target directory.");
         return false;
@@ -153,10 +156,11 @@ void KSaveFile::setFileName(const QString &filename)
         d->realFileName = QDir::current().absoluteFilePath( filename );
     }
 
-    // follow symbolic link, if any
-    d->realFileName = KStandardDirs::realFilePath( d->realFileName );
+    const QFileInfo fileInfo(d->realFileName);
+    QDir parentDir = fileInfo.dir();
 
-    return;
+    // follow symbolic link, if any
+    d->realFileName = parentDir.canonicalPath() + QLatin1Char('/') + fileInfo.fileName();
 }
 
 QFile::FileError KSaveFile::error() const
@@ -309,9 +313,9 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
         fileInfo.setFile(backupDir + QLatin1Char('/') + fileInfo.fileName());
     }
 
-    QString cipath = KStandardDirs::findExe(QString::fromLatin1("ci"));
-    QString copath = KStandardDirs::findExe(QString::fromLatin1("co"));
-    QString rcspath = KStandardDirs::findExe(QString::fromLatin1("rcs"));
+    const QString cipath = QStandardPaths::findExecutable(QString::fromLatin1("ci"));
+    const QString copath = QStandardPaths::findExecutable(QString::fromLatin1("co"));
+    const QString rcspath = QStandardPaths::findExecutable(QString::fromLatin1("rcs"));
     if ( cipath.isEmpty() || copath.isEmpty() || rcspath.isEmpty() )
         return false;
 
