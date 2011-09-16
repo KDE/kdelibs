@@ -237,8 +237,11 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   const QString key = adjustProtocol(protocol) + QL1S("Proxy");
   QString socksProxy = config()->group("Proxy Settings").readEntry(QL1S("socksProxy"), QString());
 
-  if (!socksProxy.isEmpty() && !socksProxy.startsWith(QL1S("socks://"), Qt::CaseInsensitive))
-    socksProxy.prepend(QL1S("socks://"));
+  // Make sure the scheme of SOCKS proxy is always set to "socks://".
+  if (!socksProxy.isEmpty()) {
+      const int index = socksProxy.indexOf(QL1S("://"));
+      socksProxy = QL1S("socks://") + (index == -1 ? socksProxy : socksProxy.mid(index+3));
+  }
 
   return config()->group("Proxy Settings").readEntry(key, socksProxy);
 }
@@ -473,7 +476,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
 
     Q_FOREACH(const QString& proxy, proxies)
     {
-      kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
+      // kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
       if (proxy == QL1S("DIRECT") || proxy.isEmpty())
       {
         continue;
@@ -491,7 +494,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
         else
         {
           d->protocol = d->url.protocol();
-          kDebug () << "slaveProtocol: " << d->protocol;
+          // kDebug () << "slaveProtocol: " << d->protocol;
         }
         proxyList << proxy;
       }
