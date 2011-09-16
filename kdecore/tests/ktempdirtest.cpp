@@ -16,14 +16,39 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktempdirtest.h"
-
 #include "qtest_kde.h"
+#include <ktempdir.h>
 
 #include <QtCore/QDir>
+#include <QtCore/QObject>
+#include <QtCore/QDebug>
 
-#include "ktempdir.h"
-#include "ktempdirtest.moc"
+class KTempDirTest : public QObject
+{
+    Q_OBJECT
+private Q_SLOTS:
+    void testDefaultCtor();
+    void testNoDelete();
+    void testAutoDelete();
+    void testCreateSubDir();
+};
+
+void KTempDirTest::testDefaultCtor()
+{
+    QString name;
+    {
+	KTempDir dir;
+	QVERIFY(dir.status() == 0);
+	QVERIFY(dir.exists());
+        name = dir.name();
+        qDebug() << name;
+	QVERIFY(QDir(name).exists());
+    }
+    QVERIFY(!QDir(name).exists());
+#ifdef Q_OS_UNIX
+    QVERIFY2(name.startsWith(QLatin1String("/tmp/")), qPrintable(name));
+#endif
+}
 
 void KTempDirTest::testNoDelete()
 {
@@ -72,3 +97,5 @@ void KTempDirTest::testCreateSubDir()
 }
 
 QTEST_KDEMAIN_CORE(KTempDirTest)
+
+#include "ktempdirtest.moc"
