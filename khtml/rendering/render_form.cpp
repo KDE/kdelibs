@@ -1159,7 +1159,7 @@ void RenderLineEdit::slotTextChanged(const QString &string)
     if (m_blockElementUpdates) return;
 
     // don't use setValue here!
-    element()->m_value = string;
+    element()->m_value = string.isNull() ? DOMString("") : string;
     element()->m_unsubmittedFormChange = true;
 }
 
