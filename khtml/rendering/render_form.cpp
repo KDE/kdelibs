@@ -1044,20 +1044,21 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     RenderFormElement::setStyle( _style );
 
     widget()->setAlignment(textAlignment());
+
     bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
-    widget()->setClearButtonShown( showClearButton );
-    if (showClearButton) {
+
+    if (!showClearButton && widget()->isClearButtonShown()) {
+        widget()->setClearButtonShown(false);
+    }
+    else if (showClearButton && !widget()->isClearButtonShown()) {
+        widget()->setClearButtonShown(true);
         QObjectList children = widget()->children();
         foreach (QObject* object, children) {
             QWidget *w = qobject_cast<QWidget*>(object);
-            if (w && !w->isWindow()) {
+            if (w && !w->isWindow() && (w->objectName() == "KLineEditButton")) {
                 // this duplicates KHTMLView's handleWidget but this widget
                 // is created on demand, so it might not be here at ChildPolished time
-                w->setObjectName("KHTMLLineEditButton");
                 w->installEventFilter(view());
-                w->setAttribute(Qt::WA_NoSystemBackground);
-                w->setAttribute(Qt::WA_WState_InPaintEvent);
-                w->setAttribute(Qt::WA_OpaquePaintEvent);
             }
         }
     }

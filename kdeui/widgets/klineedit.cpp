@@ -291,6 +291,7 @@ void KLineEdit::setClearButtonShown(bool show)
         }
 
         d->clearButton = new KLineEditButton(this);
+        d->clearButton->setObjectName("KLineEditButton");
         d->clearButton->setCursor( Qt::ArrowCursor );
         d->clearButton->setToolTip( i18nc( "@action:button Clear current text in the line edit", "Clear text" ) );
 
