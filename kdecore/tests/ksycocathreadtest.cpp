@@ -35,7 +35,7 @@
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
-#include <QtCore/Q_PID>
+#include <qstandardpaths.h>
 
 // Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
@@ -192,7 +192,7 @@ private:
 static void runKBuildSycoca()
 {
     QProcess proc;
-    const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output

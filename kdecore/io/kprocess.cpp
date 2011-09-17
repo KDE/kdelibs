@@ -21,7 +21,7 @@
 
 #include "kprocess_p.h"
 
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kshell.h>
 #ifdef Q_OS_WIN
 # include <kshell_p.h>
@@ -270,7 +270,7 @@ void KProcess::setShellCommand(const QString &cmd)
     d->args = KShell::splitArgs(
             cmd, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::NoError && !d->args.isEmpty()) {
-        d->prog = KStandardDirs::findExe(d->args[0]);
+        d->prog = QStandardPaths::findExecutable(d->args[0]);
         if (!d->prog.isEmpty()) {
             d->args.removeFirst();
 #ifdef Q_OS_WIN
@@ -291,13 +291,13 @@ void KProcess::setShellCommand(const QString &cmd)
     d->prog = QFile::symLinkTarget(QString::fromLatin1("/bin/sh"));
     if (d->prog.isEmpty()) {
         // Try some known POSIX shells.
-        d->prog = KStandardDirs::findExe(QString::fromLatin1("ksh"));
+        d->prog = QStandardPaths::findExecutable(QString::fromLatin1("ksh"));
         if (d->prog.isEmpty()) {
-            d->prog = KStandardDirs::findExe(QString::fromLatin1("ash"));
+            d->prog = QStandardPaths::findExecutable(QString::fromLatin1("ash"));
             if (d->prog.isEmpty()) {
-                d->prog = KStandardDirs::findExe(QString::fromLatin1("bash"));
+                d->prog = QStandardPaths::findExecutable(QString::fromLatin1("bash"));
                 if (d->prog.isEmpty()) {
-                    d->prog = KStandardDirs::findExe(QString::fromLatin1("zsh"));
+                    d->prog = QStandardPaths::findExecutable(QString::fromLatin1("zsh"));
                     if (d->prog.isEmpty())
                         // We're pretty much screwed, to be honest ...
                         d->prog = QString::fromLatin1("/bin/sh");

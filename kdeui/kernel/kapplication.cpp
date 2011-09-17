@@ -46,7 +46,6 @@
 #include "kicon.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
-#include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"
@@ -104,6 +103,7 @@
 #include <signal.h>
 #endif
 
+#include <qstandardpaths.h>
 #include <QtGui/QActionEvent>
 #include <kcomponentdata.h>
 
@@ -721,7 +721,7 @@ static void checkRestartVersion( QSessionManager& sm )
         return; // we run in our native session, no need to wrap
 #define NUM_TO_STRING2( num ) #num
 #define NUM_TO_STRING( num ) NUM_TO_STRING2( num )
-    QString wrapper = KStandardDirs::findExe( "kde" NUM_TO_STRING( KDE_VERSION_MAJOR ) ); // "kde4", etc.
+    QString wrapper = QStandardPaths::findExecutable( "kde" NUM_TO_STRING( KDE_VERSION_MAJOR ) ); // "kde4", etc.
 #undef NUM_TO_STRING
 #undef NUM_TO_STRING2
     if( !wrapper.isEmpty()) {
@@ -799,7 +799,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( d->pSessionConfig ) {
         d->pSessionConfig->sync();
         QStringList discard;
-        discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", d->sessionConfigName());
+        discard  << QLatin1String("rm") << QStandardPaths::storageLocation(QStandardPaths::ConfigLocation) + '/' + d->sessionConfigName();
         sm.setDiscardCommand( discard );
     } else {
     sm.setDiscardCommand( QStringList( QLatin1String("") ) );
@@ -1072,7 +1072,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
       if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
         {
           // Last chance: use temp dir
-          aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
+          aAutosaveDir.setPath( QDir::tempPath() );
         }
     }
 

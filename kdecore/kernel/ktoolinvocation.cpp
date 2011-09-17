@@ -21,9 +21,8 @@
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
 #include "kdebug.h"
-#include "kglobal.h"
-#include "kstandarddirs.h"
-#include "kcomponentdata.h"
+//#include "kglobal.h"
+//#include "kcomponentdata.h"
 #include "kurl.h"
 #include "kmessage.h"
 #include "kservice.h"
@@ -34,6 +33,7 @@
 #include <QMutexLocker>
 #include <QCoreApplication>
 #include <QThread>
+#include <qstandardpaths.h>
 
 #include <errno.h>
 
@@ -369,15 +369,15 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
 
 void KToolInvocation::startKdeinit()
 {
-  KComponentData inst( "startkdeinitlock" );
-  KLockFile lock( KStandardDirs::locateLocal("tmp", QString::fromLatin1("startkdeinitlock"), inst ));
+    //KComponentData inst( "startkdeinitlock" );
+  KLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
   if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
      lock.lock();
      if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher")))
          return; // whoever held the lock has already started it
   }
   // Try to launch kdeinit.
-  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit4"));
+  QString srv = QStandardPaths::findExecutable(QLatin1String("kdeinit4"));
   if (srv.isEmpty())
      return;
 //   this is disabled because we are in kdecore

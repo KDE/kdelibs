@@ -36,7 +36,7 @@
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
-#include <QtCore/Q_PID>
+#include <qstandardpaths.h>
 
 QTEST_KDEMAIN_CORE(KServiceTest)
 
@@ -152,7 +152,7 @@ void KServiceTest::initTestCase()
 void KServiceTest::runKBuildSycoca(bool noincremental)
 {
     QProcess proc;
-    const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
     if (noincremental)

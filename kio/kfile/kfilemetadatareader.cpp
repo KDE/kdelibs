@@ -100,7 +100,7 @@ KFileMetaDataReader::KFileMetaDataReader(const QList<KUrl>& urls, QObject* paren
     QObject(parent),
     d(new Private(this))
 {
-    const QString fileMetaDataReaderExe = KStandardDirs::findExe(QLatin1String("kfilemetadatareader"));
+    const QString fileMetaDataReaderExe = QStandardPaths::findExecutable(QLatin1String("kfilemetadatareader"));
     (*d->m_process) << fileMetaDataReaderExe;
 
     foreach (const KUrl& url, urls) {

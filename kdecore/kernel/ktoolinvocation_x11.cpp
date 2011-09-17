@@ -37,10 +37,10 @@
 #include "kshell.h"
 #include "kmacroexpander.h"
 #include "klocale.h"
-#include "kstandarddirs.h"
 #include "kmessage.h"
 #include "kservice.h"
 
+#include <qstandardpaths.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QProcess>
 #include <QtCore/QHash>
@@ -306,7 +306,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
     QString exe; // the binary we are going to launch.
 
-    const QString xdg_open = KStandardDirs::findExe(QString::fromLatin1("xdg-open"));
+    const QString xdg_open = QStandardPaths::findExecutable(QString::fromLatin1("xdg-open"));
     if (qgetenv("KDE_FULL_SESSION").isEmpty()) {
         exe = xdg_open;
     }

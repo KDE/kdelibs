@@ -32,6 +32,7 @@
 #include "kdebug.h"
 #include "kstandarddirs.h"
 
+#include <qstandardpaths.h>
 #include <QtCore/QDataStream>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
@@ -435,7 +436,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
             // and since kdeinit4 only returns after kbuildsycoca4 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
-            if (QProcess::execute(KStandardDirs::findExe(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
+            if (QProcess::execute(QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
                 qWarning("ERROR: Running KSycoca failed.");
         }
 
@@ -565,7 +566,7 @@ void KSycoca::flagError()
     d->readError = true;
     if (s_autoRebuild) {
         // Rebuild the damned thing.
-        if (QProcess::execute(KStandardDirs::findExe(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
+        if (QProcess::execute(QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
             qWarning("ERROR: Running %s failed", KBUILDSYCOCA_EXENAME);
         // Old comment, maybe not true anymore:
         // Do not wait until the DBUS signal from kbuildsycoca here.

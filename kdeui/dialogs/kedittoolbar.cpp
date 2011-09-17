@@ -33,8 +33,8 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QCheckBox>
 #include <QMimeData>
+#include <qstandardpaths.h>
 
-#include <kstandarddirs.h>
 #include <klistwidgetsearchline.h>
 #include <klocale.h>
 #include <kicon.h>
@@ -631,7 +631,7 @@ void KEditToolBarPrivate::_k_slotDefault()
         int slash = m_file.lastIndexOf('/')+1;
         if (slash)
             m_file = m_file.mid(slash);
-        QString xml_file = KStandardDirs::locateLocal("data", KGlobal::mainComponent().componentName() + '/' + m_file);
+        const QString xml_file = QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) + '/' + KGlobal::mainComponent().componentName() + '/' + m_file;
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )
@@ -943,7 +943,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
   // "change icon" button
   m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);
   m_changeIcon->setIcon(KIcon("preferences-desktop-icons"));
-  QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
+  QString kdialogExe = QStandardPaths::findExecutable(QLatin1String("kdialog"));
   m_hasKDialog = !kdialogExe.isEmpty();
   m_changeIcon->setEnabled(m_hasKDialog && m_activeList->currentItem());
 
@@ -1515,7 +1515,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   Q_ASSERT( m_currentXmlData->type() != XmlData::Merged );
 
   m_kdialogProcess = new KProcess;
-  QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
+  QString kdialogExe = QStandardPaths::findExecutable(QLatin1String("kdialog"));
   (*m_kdialogProcess) << kdialogExe;
   (*m_kdialogProcess) << "--caption";
   (*m_kdialogProcess) << i18n( "Change Icon" );

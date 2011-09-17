@@ -530,7 +530,7 @@ bool KBugReport::sendBugReport()
   QString command;
   command = KStandardDirs::locate("exe", "ksendbugmail");
   if (command.isEmpty())
-      command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
+      command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") ); // ### typically installed into libexec
 
   QProcess proc;
   QStringList args;

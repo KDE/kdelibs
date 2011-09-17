@@ -205,7 +205,7 @@ void KCrash::setDrKonqiEnabled(bool enabled)
 {
     s_launchDrKonqi = enabled;
     if (s_launchDrKonqi && !s_drkonqiPath) {
-        s_drkonqiPath = qstrdup(QFile::encodeName(KStandardDirs::findExe("drkonqi")).constData());
+        s_drkonqiPath = qstrdup(QFile::encodeName(KStandardDirs::findExe("drkonqi")).constData()); // ### typically installed into libexec
         if (!s_drkonqiPath) {
             kError() << "Could not find drkonqi";
             s_launchDrKonqi = false;

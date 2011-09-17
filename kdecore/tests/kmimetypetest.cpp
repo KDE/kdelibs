@@ -34,6 +34,7 @@
 #include <kdebug.h>
 
 #include <qtest_kde.h>
+#include <qstandardpaths.h>
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
@@ -136,7 +137,7 @@ void KMimeTypeTest::cleanupTestCase()
     QFile::remove(fakePlugin);
     //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     KProcess proc;
-    proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    proc << QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
     proc.execute();
 }
@@ -240,7 +241,7 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
         QTest::newRow("png image") << fh << "image/png";
     }
 
-    QString exePath = KStandardDirs::findExe( "kioexec" );
+    QString exePath = KStandardDirs::findExe( "kioexec" ); // typically installed in libexec
     if ( exePath.isEmpty() )
         kWarning() << "kioexec not found";
     else {

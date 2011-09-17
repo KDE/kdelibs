@@ -39,6 +39,7 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
+#include <qstandardpaths.h>
 #include <qbytearray.h>
 #include <qfile.h>
 #include <qdir.h>
@@ -294,7 +295,7 @@ QStringList KConfig::groupList() const
     QSet<QString> groups;
 
     for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
-        const KEntryKey& key = entryMapIt.key();	
+        const KEntryKey& key = entryMapIt.key();
         const QByteArray group = key.mGroup;
         if (key.mKey.isNull() && !group.isEmpty() && group != "<default>" && group != "$Version") {
             const QString groupname = QString::fromUtf8(group);
@@ -311,7 +312,7 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
     QSet<QString> groups;
 
     for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt) {
-        const KEntryKey& key = entryMapIt.key();	
+        const KEntryKey& key = entryMapIt.key();
         if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
             const QString groupname = QString::fromUtf8(key.mGroup.mid(theGroup.length()));
             groups << groupname.left(groupname.indexOf(QLatin1Char('\x1d')));
@@ -812,7 +813,7 @@ bool KConfig::isConfigWritable(bool warnUser)
 
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
         errorMsg += i18n("Please contact your system administrator.");
-        QString cmdToExec = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
+        QString cmdToExec = QStandardPaths::findExecutable(QString::fromLatin1("kdialog"));
         if (!cmdToExec.isEmpty() && componentData().isValid())
         {
             QProcess::execute(cmdToExec, QStringList()

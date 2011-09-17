@@ -24,7 +24,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QTextStream>
 
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcmdlineargs.h>
@@ -294,7 +294,7 @@ void KSaveFileTest::test_numberedBackupFile()
 
 void KSaveFileTest::test_rcsBackupFile()
 {
-    QString cipath = KStandardDirs::findExe("ci");
+    QString cipath = QStandardPaths::findExecutable("ci");
     if (cipath.isEmpty())
         QSKIP("ci not available", SkipAll);
 

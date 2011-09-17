@@ -18,7 +18,7 @@
 #include "kbuildsycocaprogressdialog.h"
 #include <ksycoca.h>
 #include <kprocess.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <klocale.h>
 #include <QtDBus/QtDBus>
 
@@ -52,7 +52,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
       // kded not running, e.g. when using keditfiletype out of a KDE session
       QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), &dlg, SLOT(_k_slotFinished()));
       KProcess* proc = new KProcess(&dlg);
-      (*proc) << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+      (*proc) << QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
       proc->start();
   }
   dlg.exec();

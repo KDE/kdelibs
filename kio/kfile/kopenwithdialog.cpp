@@ -31,6 +31,7 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOptionButton>
+#include <qstandardpaths.h>
 
 #include <kauthorized.h>
 #include <khistorycombobox.h>
@@ -39,7 +40,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <krun.h>
-#include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
@@ -847,7 +847,7 @@ bool KOpenWithDialogPrivate::checkAccept()
         fullExec = m_pService->exec();
     } else {
         // Ensure that the typed binary name actually exists (#81190)
-        if (KStandardDirs::findExe(binaryName).isEmpty()) {
+        if (QStandardPaths::findExecutable(binaryName).isEmpty()) {
             KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", binaryName));
             return false;
         }

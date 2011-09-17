@@ -21,9 +21,10 @@
 #include "kfileshare_p.h"
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/Q_PID>
+#include <QProcess>
 #include <klocale.h>
-#include <kstandarddirs.h>
+#include <kglobal.h>
+#include <qstandardpaths.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <stdio.h>
@@ -48,13 +49,11 @@ static QString findExe( const char* exeName )
 {
    // Normally fileshareset and filesharelist are installed in kde4/libexec;
    // allow distributions to move it somewhere else in the PATH or in /usr/sbin.
-   QString path = QString::fromLocal8Bit(qgetenv("PATH"));
-#ifndef Q_WS_WIN
-   path += QLatin1String(":/usr/sbin");
-#endif
-   QString exe = KStandardDirs::findExe( exeName, path );
+   QString exe = QStandardPaths::findExecutable(exeName);
    if (exe.isEmpty())
-       kError() << exeName << "not found in" << path;
+       exe = QStandardPaths::findExecutable(exeName, QStringList() << "/usr/sbin");
+   if (exe.isEmpty())
+       kError() << exeName << "not found in PATH nor in /usr/sbin";
    return exe;
 }
 
