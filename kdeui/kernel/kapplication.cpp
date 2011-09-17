@@ -46,6 +46,7 @@
 #include "kicon.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
+#include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"
