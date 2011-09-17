@@ -182,8 +182,8 @@ WmiQuery::WmiQuery()
               CoUninitialize();
             m_failed = true;
         }
-        else
-            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+//        else
+//            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
     }
 
     if( !m_failed )
