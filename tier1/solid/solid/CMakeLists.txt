@@ -412,15 +412,13 @@ set_package_properties(Flex PROPERTIES
     PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
   )
 
-find_program(BISON_EXECUTABLE bison)
-macro_log_feature(BISON_EXECUTABLE
-   "Bison"
-   "Allows the Solid predicate parser to be updated"
-   "http://www.gnu.org/software/bison"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
-mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
+find_package(BISON)
+set_package_properties(BISON PROPERTIES
+    URL "http://www.gnu.org/software/bison"
+    DESCRIPTION "Allows the Solid predicate parser to be updated"
+    TYPE OPTIONAL
+    PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+  )
 
 if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
 
