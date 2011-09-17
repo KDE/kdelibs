@@ -331,7 +331,10 @@ RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
 
 short RenderButton::baselinePosition( bool f ) const
 {
-    return RenderWidget::baselinePosition( f ) - 2;
+    int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()+1)/2;
+    ret += marginTop() + RenderWidget::paddingTop();
+    ret += ((fontMetrics( f ).ascent())/2)-1;
+    return ret;
 }
 
 void RenderButton::layout()
