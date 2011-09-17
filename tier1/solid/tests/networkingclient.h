@@ -21,8 +21,8 @@
 #ifndef KTESTNETWORKSTATUS_H
 #define KTESTNETWORKSTATUS_H
 
-#include <kapplication.h>
-#include <kmainwindow.h>
+#include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
 //#include <networkstatuscommon.h>
 
 #include "ui_networkingclientview.h"
@@ -34,7 +34,7 @@
  * @author Will Stephenson <wstephenson@kde.org>
  * @version 0.1
  */
-class TestClient : public KMainWindow
+class TestClient : public QMainWindow
 {
 Q_OBJECT
 public:

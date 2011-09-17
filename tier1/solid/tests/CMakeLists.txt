@@ -71,22 +71,18 @@ target_link_libraries(solidmttest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT
 
 ########### networkingclient ###############
 
-include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
-    ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
+include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 set(networkingclient_SRCS networkingclient.cpp)
 
-kde4_add_ui_files(networkingclient_SRCS networkingclientview.ui)
+set(CMAKE_AUTOMOC ON)
+
+qt4_wrap_ui(networkingclient_SRCS networkingclientview.ui)
 
 qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../solid/org.kde.Solid.Networking.Client.xml clientinterface)
 
+add_executable(networkingclient ${networkingclient_SRCS})
 
-kde4_add_executable(networkingclient TEST ${networkingclient_SRCS})
-
-if(WIN32)
-    set_target_properties( networkingclient PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
-endif(WIN32)
-
-target_link_libraries(networkingclient solid_static ${KDE4_KDEUI_LIBS})
+target_link_libraries(networkingclient solid_static)
 ########### install files ###############
 

@@ -21,13 +21,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
-#include <kdeversion.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kiconloader.h>
+#include <qdebug.h>
 
 #include <solid/networking.h>
 
@@ -57,7 +51,7 @@ QString toString( Solid::Networking::Status st )
 }
 
 TestClient::TestClient()
-    : KMainWindow( 0 ),
+    : QMainWindow( 0 ),
       m_status( AppDisconnected ), m_view( new QWidget( this ) )
 {
     ui.setupUi( m_view );
@@ -67,9 +61,9 @@ TestClient::TestClient()
     networkStatusChanged( Solid::Networking::status() );
     appDisconnected();
 
-    kDebug() << "About to connect";
+    qDebug() << "About to connect";
     connect( Solid::Networking::notifier(), SIGNAL( statusChanged( Solid::Networking::Status ) ), SLOT( networkStatusChanged( Solid::Networking::Status ) ) );
-    kDebug() << "Connected.";
+    qDebug() << "Connected.";
     connect( Solid::Networking::notifier(), SIGNAL( shouldConnect() ), this, SLOT( doConnect() ) );
     connect( Solid::Networking::notifier(), SIGNAL( shouldDisconnect() ), this, SLOT( doDisconnect() ) );
 
@@ -82,8 +76,8 @@ TestClient::~TestClient()
 
 void TestClient::networkStatusChanged( Solid::Networking::Status status )
 {
-    kDebug() ;
-    kDebug() << "Networking is now: " << toString( status ) << " (" << status << ")";
+    qDebug() << Q_FUNC_INFO;
+    qDebug() << "Networking is now: " << toString( status ) << " (" << status << ")";
     ui.netStatusLabel->setText( toString( status ) );
     QPalette palette;
     palette.setColor( ui.netStatusLabel->backgroundRole(), toQColor( m_status ) );
@@ -108,7 +102,7 @@ void TestClient::doDisconnect()
 
 void TestClient::connectButtonClicked()
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   if ( m_status == AppDisconnected ) {
     switch ( Solid::Networking::status() )
     {
@@ -128,14 +122,14 @@ void TestClient::connectButtonClicked()
 
 void TestClient::appWaiting()
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   //m_status = AppWaitingForConnect;
   ui.appStatusLabel->setText( "Waiting" );
 }
 
 void TestClient::appIsConnected()
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   ui.connectButton->setEnabled( true );
   ui.connectButton->setText( "Disconnect" );
   ui.appStatusLabel->setText( "Connected" );
@@ -144,21 +138,21 @@ void TestClient::appIsConnected()
 
 void TestClient::appEstablishing()
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   ui.netStatusLabel->setText( "Establishing" );
   ui.connectButton->setEnabled( false );
 }
 
 void TestClient::appDisestablishing( )
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   ui.connectButton->setEnabled( false );
   ui.appStatusLabel->setText( "Disconnected" );
 }
 
 void TestClient::appDisconnected( )
 {
-  kDebug() ;
+  qDebug() << Q_FUNC_INFO;
   ui.connectButton->setEnabled( true );
   ui.connectButton->setText( "Start Connect" );
   ui.appStatusLabel->setText( "Disconnected" );
@@ -181,24 +175,13 @@ QColor TestClient::toQColor( TestClient::AppStatus st )
     }
     return col;
 }
+
 //main
-static const char description[] =
-    I18N_NOOP("Test Client for Network Status kded module");
-
-static const char version[] = "v0.1";
-
 int main(int argc, char **argv)
 {
-  KAboutData about("KNetworkStatusTestClient", 0, ki18n("knetworkstatustestclient"), version, ki18n(description), KAboutData::License_GPL, ki18n("(C) 2007 Will Stephenson"), KLocalizedString(), 0, "wstephenson@kde.org");
-  about.addAuthor( ki18n("Will Stephenson"), KLocalizedString(), "wstephenson@kde.org" );
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication app(argc, argv);
 
-  KCmdLineOptions options;
-  KCmdLineArgs::addCmdLineOptions(options);
-  KApplication app;
-
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-  if (args->count() == 0)
+  if (app.arguments().count() == 0)
   {
     TestClient *widget = new TestClient;
     widget->show();
@@ -206,13 +189,13 @@ int main(int argc, char **argv)
   else
   {
     int i = 0;
-    for (; i < args->count(); i++)
+    for (; i < app.arguments().count(); i++)
     {
       TestClient *widget = new TestClient;
       widget->show();
     }
   }
-  args->clear();
+  app.arguments().clear();
 
   return app.exec();
 }
