@@ -36,12 +36,12 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
+#include <QCoreApplication>
 #include <QTextStream>
+#include <QTemporaryFile>
 
 #include "krandom.h"
 #include "kglobal.h"
-#include "kcomponentdata.h"
-#include "ktemporaryfile.h"
 #include "kde_file.h"
 #include "kfilesystemtype_p.h"
 
@@ -74,13 +74,13 @@
 class KLockFile::Private
 {
 public:
-    Private(const KComponentData &c)
+    Private(const QString& componentName)
         : staleTime(30), // 30 seconds
           isLocked(false),
           linkCountSupport(true),
           mustCloseFd(false),
           m_pid(-1),
-          m_componentData(c)
+          m_componentName(componentName)
     {
     }
 
@@ -94,7 +94,7 @@ public:
     KLockFile::LockResult deleteStaleLock();
     KLockFile::LockResult deleteStaleLockWithLink();
 
-    void writeIntoLockFile(QFile& file, const KComponentData& componentData);
+    void writeIntoLockFile(QFile& file);
     void readLockFile();
     bool isNfs() const;
 
@@ -108,13 +108,13 @@ public:
     KDE_struct_stat statBuf;
     int m_pid;
     QString m_hostname;
-    QString m_componentName;
-    KComponentData m_componentData;
+    QString m_componentName; // as set for this instance
+    QString m_componentNameFromFile; // as read from the lock file
 };
 
 
-KLockFile::KLockFile(const QString &file, const KComponentData &componentData)
-    : d(new Private(componentData))
+KLockFile::KLockFile(const QString &file, const QString &componentName)
+    : d(new Private(componentName))
 {
   d->m_fileName = file;
 }
@@ -165,7 +165,7 @@ static bool testLinkCountSupport(const QByteArray &fileName)
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }
 
-void KLockFile::Private::writeIntoLockFile(QFile& file, const KComponentData& componentData)
+void KLockFile::Private::writeIntoLockFile(QFile& file)
 {
   file.setPermissions(QFile::ReadUser|QFile::WriteUser|QFile::ReadGroup|QFile::ReadOther);
 
@@ -174,7 +174,8 @@ void KLockFile::Private::writeIntoLockFile(QFile& file, const KComponentData& co
   gethostname(hostname, 255);
   hostname[255] = 0;
   m_hostname = QString::fromLocal8Bit(hostname);
-  m_componentName = componentData.componentName();
+  if (m_componentName.isEmpty())
+      m_componentName = QCoreApplication::applicationName();
 
   QTextStream stream(&file);
   m_pid = getpid();
@@ -189,7 +190,7 @@ void KLockFile::Private::readLockFile()
 {
     m_pid = -1;
     m_hostname.clear();
-    m_componentName.clear();
+    m_componentNameFromFile.clear();
 
     QFile file(m_fileName);
     if (file.open(QIODevice::ReadOnly))
@@ -198,7 +199,7 @@ void KLockFile::Private::readLockFile()
         if (!ts.atEnd())
             m_pid = ts.readLine().toInt();
         if (!ts.atEnd())
-            m_componentName = ts.readLine();
+            m_componentNameFromFile = ts.readLine();
         if (!ts.atEnd())
             m_hostname = ts.readLine();
     }
@@ -212,12 +213,12 @@ KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_b
      return KLockFile::LockFail;
   }
 
-  KTemporaryFile uniqueFile(m_componentData);
+  QTemporaryFile uniqueFile;
   uniqueFile.setFileTemplate(m_fileName);
   if (!uniqueFile.open())
      return KLockFile::LockError;
 
-  writeIntoLockFile(uniqueFile, m_componentData);
+  writeIntoLockFile(uniqueFile);
 
   QByteArray uniqueName = QFile::encodeName( uniqueFile.fileName() );
 
@@ -288,7 +289,7 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(KDE_struct_stat &st_buf)
         return LockError;
     }
     mustCloseFd = true;
-    writeIntoLockFile(m_file, m_componentData);
+    writeIntoLockFile(m_file);
 
     // stat to get the modification time
     const int result = KDE_lstat(QFile::encodeName(m_fileName), &st_buf);
@@ -316,7 +317,7 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
     // the old stale one, let's be very careful
 
     // Create temp file
-    KTemporaryFile *ktmpFile = new KTemporaryFile(m_componentData);
+    QTemporaryFile *ktmpFile = new QTemporaryFile;
     ktmpFile->setFileTemplate(m_fileName);
     if (!ktmpFile->open()) {
         delete ktmpFile;
@@ -497,6 +498,6 @@ bool KLockFile::getLockInfo(int &pid, QString &hostname, QString &appname)
      return false;
   pid = d->m_pid;
   hostname = d->m_hostname;
-  appname = d->m_componentName;
+  appname = d->m_componentNameFromFile;
   return true;
 }

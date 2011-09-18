@@ -28,7 +28,7 @@ class QString;
 
 /**
  * \class KLockFile klockfile.h <KLockFile>
- * 
+ *
  * The KLockFile class provides NFS safe lockfiles.
  *
  * @author Waldo Bastian <bastian@kde.org>
@@ -38,8 +38,7 @@ class KDECORE_EXPORT KLockFile : public KShared
 public:
    typedef KSharedPtr<KLockFile> Ptr;
 
-   // KDE5 TODO: remove KComponentData and use a QString instead, by default QString(), becomes qcoreapp appname internally.
-   explicit KLockFile(const QString &file, const KComponentData &componentName = KGlobal::mainComponent());
+   explicit KLockFile(const QString &file, const QString &componentName = QString());
 
    /**
     * Destroys the object, releasing the lock if held
