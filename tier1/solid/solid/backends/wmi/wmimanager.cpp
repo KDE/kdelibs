@@ -109,7 +109,7 @@ bool WmiManager::deviceExists(const QString &udi)
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
-    qDebug() << parentUdi << type;
+//    qDebug() << parentUdi << type;
     if (!parentUdi.isEmpty())
     {
         QStringList result = findDeviceStringMatch("info.parent", parentUdi);
@@ -151,13 +151,13 @@ QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString 
     qDebug() << "has to be implemented" << key << value;
     QStringList result;
 
-    qDebug() << result;
+//    qDebug() << result;
     return result;
 }
 
 QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
-    qDebug() << type;
+//    qDebug() << type;
     QStringList result;
     WmiQuery::ItemList list;
 
@@ -208,7 +208,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         break;
     }
 
-    qDebug() << result;
+//    qDebug() << result;
     return result;
 }
 
