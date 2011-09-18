@@ -2145,7 +2145,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             // e.g. "*.cpp"
             if (filter.indexOf ('/') < 0)
             {
-                extension = getExtensionFromPatternList (filter.split(' ', QString::SkipEmptyParts)/*QStringList::split (" ", filter)*/).toLower();
+                extension = getExtensionFromPatternList (filter.split(' ', QString::SkipEmptyParts));
 //                 kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
 //                                     << extension << "\'" << endl;
             }
@@ -2155,7 +2155,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
                 KMimeType::Ptr mime = KMimeType::mimeType (filter);
                 if (mime)
                 {
-                        extension = mime->mainExtension().toLower();
+                        extension = mime->mainExtension();
 //                         kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
 //                                             << extension << "\'" << endl;
                 }
