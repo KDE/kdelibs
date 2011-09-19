@@ -654,7 +654,9 @@ public:
    * It's usually the same, except that FTP, when handled by a proxy,
    * needs an HTTP ioslave.
    *
-   * When a proxy is to be used, proxy contains the URL for the proxy.
+   * If a proxy server is to be used, then @ref proxy will contain the URL of
+   * the proxy server.
+   *
    * @param url the url to check
    * @param proxy the URL of the proxy to use
    * @return the slave protocol (e.g. 'http'), can be null if unknown
@@ -663,6 +665,10 @@ public:
 
   /**
    * Overloaded function that returns a list of all available proxy servers.
+   *
+   * If a proxy server is to be used, then @ref proxy will contain a list of
+   * proxy server URLs. Note that this list can contain a special entry called
+   * "DIRECT" to indicate direct connection.
    *
    * @since 4.7
    */
