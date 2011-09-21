@@ -35,7 +35,7 @@ class FileUndoManagerAdaptor;
 
 struct BasicOperation
 {
-    typedef QStack<BasicOperation> Stack;
+    typedef QList<BasicOperation> Stack;
 
     BasicOperation()
     { m_valid = false; }
@@ -55,7 +55,7 @@ struct BasicOperation
 class UndoCommand
 {
 public:
-    typedef QStack<UndoCommand> Stack;
+    typedef QList<UndoCommand> Stack;
 
     UndoCommand()
     {
