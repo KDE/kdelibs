@@ -328,8 +328,15 @@ bool Wallet::isEnabled() {
 
 bool Wallet::isOpen(const QString& name) {
     if (walletLauncher->m_useKSecretsService) {
-        kDebug(285) << "Wallet::isOpen NOOP";
-        return true;
+        Collection *coll = Collection::findCollection( name, Collection::OpenOnly );
+        ReadCollectionPropertyJob *readLocked = coll->isLocked();
+        if ( readLocked->exec() ) {
+            return readLocked->propertyValue().toBool();
+        }
+        else {
+            kDebug() << "ReadLocked job failed";
+            return false;
+        }
     }
     else {
         QDBusReply<bool> r = walletLauncher->getInterface().isOpen(name);
@@ -365,7 +372,7 @@ int Wallet::closeWallet(const QString& name, bool force) {
 
 int Wallet::deleteWallet(const QString& name) {
     if (walletLauncher->m_useKSecretsService) {
-        Collection *coll = Collection::findCollection(name);
+        Collection *coll = Collection::findCollection(name, Collection::OpenOnly);
         KJob *deleteJob = coll->deleteCollection();
         if (!deleteJob->exec()) {
             kDebug(285) << "Cannot execute delete job " << deleteJob->errorString();
@@ -483,9 +490,7 @@ bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
 
 QStringList Wallet::users(const QString& name) {
     if (walletLauncher->m_useKSecretsService) {
-        // TODO: implement this
-        // NOTE: is this method used at all? what application uses it?
-        Q_ASSERT(0);
+        kDebug() << "KSecretsService does not handle users list";
         return QStringList();
     }
     else {

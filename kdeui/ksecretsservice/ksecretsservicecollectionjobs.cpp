@@ -141,6 +141,18 @@ void FindCollectionJob::start()
     }
 }
 
+void FindCollectionJob::foundCollection()
+{
+    CollectionUnlockJob *unlockJob = new CollectionUnlockJob( collection(), 0 ); // FIXME: put a real window id here
+    if ( addSubjob( unlockJob ) ) {
+        unlockJob->start();
+    }
+    else {
+        kDebug() << "Cannot add unlock subjob";
+        finishedWithError(InternalError, i18n("Cannot start collection unlocking") );
+    }
+}
+
 FindCollectionJobPrivate::FindCollectionJobPrivate(FindCollectionJob *fcj, CollectionPrivate *cp ) :
         findJob( fcj), collectionPrivate( cp )
 {
@@ -227,7 +239,7 @@ void FindCollectionJobPrivate::openSessionFinished(KJob* theJob)
             coll->deleteLater();
             if ( coll->label() == collectionName ) {
                 findJob->d->collectionPrivate->setDBusPath( collPath );
-                findJob->finishedOk();
+                findJob->foundCollection();
                 return; // sometimes middle method returns are awfully handy :-)
             }
         }
@@ -744,8 +756,10 @@ ReadCollectionItemsJobPrivate::ReadCollectionItemsJobPrivate( CollectionPrivate 
 QList< QSharedDataPointer< SecretItemPrivate > > ReadCollectionItemsJobPrivate::readItems() const 
 {
     QList< QSharedDataPointer< SecretItemPrivate > > result;
-    foreach( QDBusObjectPath path, collectionPrivate->collectionInterface()->items() ) {
-        result.append( QSharedDataPointer<SecretItemPrivate>( new SecretItemPrivate( path ) ) );
+    if ( collectionPrivate->collectionInterface() ) {
+        foreach( QDBusObjectPath path, collectionPrivate->collectionInterface()->items() ) {
+            result.append( QSharedDataPointer<SecretItemPrivate>( new SecretItemPrivate( path ) ) );
+        }
     }
     return result;
 }
@@ -1003,6 +1017,103 @@ void CollectionLockJobPrivate::checkResult( const QList< QDBusObjectPath > & obj
         theJob->finishedWithError( CollectionJob::InternalError, i18n("Unlock operation returned unexpected result") );
     }
 }
+
+CollectionUnlockJob::CollectionUnlockJob( Collection* collection, const WId winId  ) : 
+    CollectionJob( collection ),
+    d( new CollectionUnlockJobPrivate( collection->d.data(), this ) )
+{
+    d->windowId = winId;
+}
+
+void CollectionUnlockJob::start()
+{
+    startFindCollection();
+}
+
+void CollectionUnlockJob::onFindCollectionFinished()
+{
+    d->startUnlockingCollection();
+}
+
+CollectionUnlockJobPrivate::CollectionUnlockJobPrivate( CollectionPrivate *cp, CollectionUnlockJob *job ) :
+    collectionPrivate( cp ),
+    theJob( job )
+{
+}
+
+void CollectionUnlockJobPrivate::startUnlockingCollection()
+{
+    QList< QDBusObjectPath > unlockList;
+    unlockList.append( QDBusObjectPath( collectionPrivate->collectionInterface()->path() ) );
+    QDBusPendingReply<QList<QDBusObjectPath> , QDBusObjectPath> reply = DBusSession::serviceIf()->Unlock(unlockList);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(slotUnlockFinished(QDBusPendingCallWatcher*)) );
+}
+
+void CollectionUnlockJobPrivate::slotUnlockFinished( QDBusPendingCallWatcher *watcher ) 
+{
+    Q_ASSERT(watcher);
+    QDBusPendingReply<QList<QDBusObjectPath> , QDBusObjectPath> reply = *watcher;
+    if ( !reply.isError() ) {
+        QDBusObjectPath promptPath = reply.argumentAt<1>();
+        if ( promptPath.path().compare("/") ) {
+            PromptJob *promptJob = new PromptJob( promptPath, windowId, this ); 
+            connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(slotPromptFinished(KJob*)) );
+            if ( theJob->addSubjob( promptJob ) ) {
+                promptJob->start();
+            }
+            else {
+                promptJob->deleteLater();
+                kDebug() << "cannot add prompt subjob";
+                theJob->finishedWithError( CollectionJob::InternalError, i18n("Cannot add prompt job") );
+            }
+        }
+        else {
+            QList< QDBusObjectPath > objList = reply.argumentAt<0>();
+            checkResult( objList );
+        }
+    }
+    else {
+        kDebug() << "ERROR when trying to lock collection " << reply.error().message();
+        theJob->finishedWithError( CollectionJob::InternalError, reply.error().message() );
+    }
+    watcher->deleteLater();
+}
+
+void CollectionUnlockJobPrivate::slotPromptFinished( KJob* j )
+{
+    PromptJob *promptJob = qobject_cast< PromptJob* >(j);
+    if ( promptJob->error() == 0 ) {
+        if ( !promptJob->isDismissed() ) {
+            QDBusVariant res = promptJob->result();
+            if (res.variant().canConvert< QList< QDBusObjectPath> >()) {
+                QList< QDBusObjectPath > objList = res.variant().value< QList< QDBusObjectPath > >();
+                checkResult( objList );
+            }
+            else {
+                theJob->finishedWithError( CollectionJob::InternalError, i18n("Unlock operation returned unexpected result") );
+            }
+        }
+        else {
+            theJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, i18n("The operation was cancelled by the user") );
+        }
+    }
+    else {
+        theJob->finishedWithError( CollectionJob::InternalError, i18n("Error encountered when trying to prompt the user") );
+    }
+}
+
+void CollectionUnlockJobPrivate::checkResult( const QList< QDBusObjectPath > & objList ) const
+{
+    if ( objList.count() == 1 && objList.first().path() == collectionPrivate->collectionInterface()->path() ) {
+        theJob->finishedOk();
+    }
+    else {
+        kDebug() << "objList.count() = " << objList.count();
+        theJob->finishedWithError( CollectionJob::InternalError, i18n("Unlock operation returned unexpected result") );
+    }
+}
+
 
 #include "ksecretsservicecollectionjobs.moc"
 #include "ksecretsservicecollectionjobs_p.moc"

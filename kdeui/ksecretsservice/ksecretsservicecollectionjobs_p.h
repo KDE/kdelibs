@@ -263,6 +263,27 @@ public:
     WId                windowId;
 };
 
+class CollectionUnlockJobPrivate : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(CollectionUnlockJobPrivate)
+public:
+    explicit CollectionUnlockJobPrivate( CollectionPrivate *cp, CollectionUnlockJob* );
+    
+    void startUnlockingCollection();
+    
+protected Q_SLOTS:
+    void slotUnlockFinished( QDBusPendingCallWatcher* );
+    void slotPromptFinished( KJob* );
+    
+private:
+    void checkResult( const QList< QDBusObjectPath > & ) const;
+    
+public:
+    CollectionPrivate   *collectionPrivate;
+    CollectionUnlockJob *theJob;
+    WId                 windowId;
+};
+
 } // namespace
 
 #endif // KSECRETSSERVICECOLLECTIONJOBS_P_H

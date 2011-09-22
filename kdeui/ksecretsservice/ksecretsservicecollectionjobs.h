@@ -44,6 +44,7 @@ class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
 class ChangeCollectionPasswordJobPrivate;
 class CollectionLockJobPrivate;
+class CollectionUnlockJobPrivate;
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -138,6 +139,7 @@ public:
     virtual ~FindCollectionJob();
     
     virtual void start();
+    virtual void foundCollection();
 private:
     friend class FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;
@@ -325,6 +327,19 @@ private:
     QSharedPointer< CollectionLockJobPrivate > d;
 };
 
+class KDEUI_EXPORT CollectionUnlockJob : public CollectionJob {
+    Q_OBJECT
+    Q_DISABLE_COPY(CollectionUnlockJob)
+public:
+    CollectionUnlockJob( Collection* collection, const WId winId );
+    
+    virtual void start();
+    virtual void onFindCollectionFinished();
+    
+private:
+    friend class CollectionUnlockJobPrivate;
+    QSharedPointer< CollectionUnlockJobPrivate > d;
+};
 
 }
 

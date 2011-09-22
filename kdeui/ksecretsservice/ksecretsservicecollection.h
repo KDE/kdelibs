@@ -253,6 +253,7 @@ private:
     friend class WriteCollectionPropertyJob;
     friend class ChangeCollectionPasswordJob;
     friend class CollectionLockJob;
+    friend class CollectionUnlockJob;
     
     void readIsValid( ReadCollectionPropertyJob* );
     

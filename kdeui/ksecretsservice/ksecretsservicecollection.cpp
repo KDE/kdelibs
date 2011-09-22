@@ -189,7 +189,12 @@ OrgFreedesktopSecretCollectionInterface *CollectionPrivate::collectionInterface(
         // well, some attribute read method is now happening and we should now really open or find the collection
         // the only problem is that we'll be forced to call findJob->exec() to do this and it's evil :-)
         FindCollectionJob *findJob = new FindCollectionJob( collection, 0 );
-        findJob->exec();
+        if ( !findJob->exec() ) {
+            kDebug() << "FindCollectionJob failed!";
+        }
+        if ( collectionIf == 0 ) {
+           kDebug() << "WARNING: returning NULL collectionInterface";
+        }
     }
     return collectionIf;
 }
