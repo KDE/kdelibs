@@ -252,9 +252,9 @@ public:
    * helper kded module, proxyscout, is used to determine the proxy information.
    * Otherwise, @ref proxyFor is used to find the proxy to use for the given url.
    *
-   * If this function returns an empty string, then the request to use a proxy
-   * server should be denied. For a direct connection, this function will return
-   * "DIRECT".
+   * If this function returns an empty string, then the request to a proxy server
+   * must be denied. For a direct connection, without the use of a proxy, this
+   * function will return "DIRECT".
    *
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address if one is available, otherwise a QString().
@@ -268,8 +268,8 @@ public:
    * helper kded module, proxyscout, is used to determine the proxy information.
    * Otherwise, @ref proxyFor is used to find the proxy to use for the given url.
    *
-   * If this function returns empty list, then the request to use a proxy server
-   * should be denied. For a direct connection, this function will return a single
+   * If this function returns empty list, then the request is to a proxy server
+   * must be denied. For a direct connection, this function will return a single
    * entry of "DIRECT".
    *
    * @since 4.7
