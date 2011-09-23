@@ -440,11 +440,8 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 {
     QStringList proxyList;
     const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
-    if (!proxyList.isEmpty())
-    {
+    if (!proxyList.isEmpty()) {
       proxy = proxyList.first();
-      if (proxy == QL1S("DIRECT"))
-          proxy.clear();
     }
     return protocol;
 }
@@ -452,8 +449,9 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
 {
   // Do not perform a proxy lookup for any url classified as a ":local" url or
-  // one that does not have a host name, e.g. data protocol.
-  if (KProtocolInfo::protocolClass(url.protocol()) == QL1S(":local") || !url.hasHost())
+  // one that does not have a host name.
+  if (KProtocolInfo::protocolClass(url.protocol()).compare(QL1S(":local"), Qt::CaseInsensitive) == 0 ||
+      !url.hasHost())
   {
       return url.protocol();
   }
@@ -474,44 +472,39 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
   if (useProxy() && !shouldIgnoreProxyFor(url))
   {
     const QStringList proxies = proxiesForUrl(url);
-    const int count = proxyList.count();
+    proxyList.clear();
 
-    if (count > 0 && !(count == 1 && proxyList.first() == QL1S("DIRECT")))
+    Q_FOREACH(const QString& proxy, proxies)
     {
-      Q_FOREACH(const QString& proxy, proxies)
+      // kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
+      if (proxy == QL1S("DIRECT") || proxy.isEmpty())
       {
-        // kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
-        if (proxy == QL1S("DIRECT"))
-        {
-          proxyList << proxy;
-        }
+        continue;
+      }
+
+      d->url = proxy;
+      if (d->url.isValid() && !d->url.protocol().isEmpty())
+      {
+        // The idea behind slave protocols is not applicable to http
+        // and webdav protocols as well as protocols unknown to KDE.
+        const QString protocol = url.protocol();
+        if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
+            !KProtocolInfo::isKnownProtocol(protocol))
+          d->protocol = protocol;
         else
         {
-          d->url = proxy;
-          if (!d->url.isEmpty() && d->url.isValid() && !d->url.protocol().isEmpty())
-          {
-            // The idea behind slave protocols is not applicable to http
-            // and webdav protocols as well as protocols unknown to KDE.
-            const QString protocol = url.protocol();
-            if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
-                !KProtocolInfo::isKnownProtocol(protocol))
-              d->protocol = protocol;
-            else
-            {
-              d->protocol = d->url.protocol();
-              // kDebug () << "slaveProtocol: " << d->protocol;
-            }
-            proxyList << proxy;
-          }
+          d->protocol = d->url.protocol();
+          // kDebug () << "slaveProtocol: " << d->protocol;
         }
+        proxyList << proxy;
       }
+    }
 
-      if (!proxyList.isEmpty())
-      {
-        d->url = url;
-        d->proxyList = proxyList;
-        return d->protocol;
-      }
+    if (!proxyList.isEmpty())
+    {
+      d->url = url;
+      d->proxyList = proxyList;
+      return d->protocol;
     }
   }
 
