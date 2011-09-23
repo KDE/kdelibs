@@ -953,6 +953,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
     }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
+    jobPriv->m_proxyList.clear();
     jobPriv->m_protocol = KProtocolManager::slaveProtocol(job->url(), jobPriv->m_proxyList);
 
     if (mayReturnContent(jobCommand(job), jobPriv->m_protocol)) {
