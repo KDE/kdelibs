@@ -161,8 +161,10 @@ public:
     // Miscellaneous
     QString id;
     DAVRequest davData;
-    KUrl proxyUrl;
     KUrl redirectUrl;
+    KUrl proxyUrl;
+    QStringList proxyUrls;
+
     bool isPersistentProxyConnection;
     bool allowTransferCompression;
     bool disablePassDialog;
