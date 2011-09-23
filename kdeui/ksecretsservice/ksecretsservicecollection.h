@@ -216,10 +216,11 @@ public:
     
     /**
      * Request collection lock. Locked collection's contents cannot be changed.
+     * @note Accessing the other methods will trigger collection unlocking and as such the user may be prompted for the password
      * @return CollectionLockJob
      */
     CollectionLockJob* lock( const WId =0 );
-    
+   
 Q_SIGNALS:
     /**
      * TODO: not yet implemented

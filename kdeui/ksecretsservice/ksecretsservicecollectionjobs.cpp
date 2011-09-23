@@ -95,7 +95,7 @@ void CollectionJob::startFindCollection()
     }
     else {
         // collection was already found or created, just trigger this 
-        onFindCollectionFinished();
+        unlockCollection();
     }
 }
 
@@ -103,10 +103,29 @@ void CollectionJob::slotResult(KJob* job)
 {
     KCompositeJob::slotResult(job);
     if ( job->error() == 0 ) {
-        FindCollectionJob *findJob = dynamic_cast< FindCollectionJob* >( job );
+        FindCollectionJob *findJob = qobject_cast< FindCollectionJob* >( job );
         if ( findJob != 0 ) {
-            onFindCollectionFinished();
+            unlockCollection();
         }
+        else {
+            CollectionUnlockJob *unlockJob = qobject_cast< CollectionUnlockJob* >( job );
+            if ( unlockJob != 0 ) {
+                onFindCollectionFinished();
+            }
+        }
+    }
+}
+
+void CollectionJob::unlockCollection()
+{
+    CollectionUnlockJob *unlockJob = new CollectionUnlockJob( collection(), 0 ); // FIXME: put a real window id here
+    if ( addSubjob( unlockJob ) ) {
+        unlockJob->start();
+        // virtual method slotResult will be called upon job finish
+    }
+    else {
+        kDebug() << "Cannot add unlock subjob";
+        finishedWithError(InternalError, i18n("Cannot start collection unlocking") );
     }
 }
 
@@ -143,14 +162,7 @@ void FindCollectionJob::start()
 
 void FindCollectionJob::foundCollection()
 {
-    CollectionUnlockJob *unlockJob = new CollectionUnlockJob( collection(), 0 ); // FIXME: put a real window id here
-    if ( addSubjob( unlockJob ) ) {
-        unlockJob->start();
-    }
-    else {
-        kDebug() << "Cannot add unlock subjob";
-        finishedWithError(InternalError, i18n("Cannot start collection unlocking") );
-    }
+    finishedOk();
 }
 
 FindCollectionJobPrivate::FindCollectionJobPrivate(FindCollectionJob *fcj, CollectionPrivate *cp ) :
@@ -1028,6 +1040,13 @@ CollectionUnlockJob::CollectionUnlockJob( Collection* collection, const WId winI
 void CollectionUnlockJob::start()
 {
     startFindCollection();
+}
+
+void CollectionUnlockJob::unlockCollection()
+{
+    // do not call parent implementation to avoid weird situations as we're already
+    // un unlocking job. Call onFindCollectionFinished instead.
+    onFindCollectionFinished();
 }
 
 void CollectionUnlockJob::onFindCollectionFinished()

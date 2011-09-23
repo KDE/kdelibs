@@ -106,6 +106,7 @@ protected:
      */
     virtual void startFindCollection();
     virtual void slotResult( KJob* job ); /// override  of the KCompositeJob::slotResult 
+    virtual void unlockCollection();
     virtual void onFindCollectionFinished();
 
 protected:
@@ -334,6 +335,7 @@ public:
     CollectionUnlockJob( Collection* collection, const WId winId );
     
     virtual void start();
+    virtual void unlockCollection();
     virtual void onFindCollectionFinished();
     
 private:
