@@ -36,6 +36,7 @@ private Q_SLOTS:
     void testMimeTypeOnDemand();
     void testCmp();
     void testRename();
+    void testDotDirectory();
 
     void testDecodeFileName_data();
     void testDecodeFileName();

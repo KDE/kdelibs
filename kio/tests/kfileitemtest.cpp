@@ -266,6 +266,19 @@ void KFileItemTest::testRename()
     QCOMPARE(fileItem.entry().stringValue(KIO::UDSEntry::UDS_NAME), newName); // #195385
 }
 
+void KFileItemTest::testDotDirectory()
+{
+    KTempDir tempDir;
+    QFile file(tempDir.name() + ".directory");
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write("[Desktop Entry]\nIcon=foo\nComment=com\n");
+    file.close();
+    KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+    QVERIFY(fileItem.isLocalFile());
+    QCOMPARE(fileItem.mimeComment(), QString::fromLatin1("com"));
+    QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
+}
+
 void KFileItemTest::testDecodeFileName_data()
 {
     QTest::addColumn<QString>("filename");
