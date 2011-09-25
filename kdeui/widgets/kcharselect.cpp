@@ -861,7 +861,8 @@ void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
 QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
 {
     int pos = m_columns * (index.row()) + index.column();
-    if (pos >= m_chars.size() || index.row() < 0 || index.column() < 0) {
+    if (!index.isValid() || pos < 0 || pos >= m_chars.size()
+            || index.row() < 0 || index.column() < 0) {
         if (role == Qt::BackgroundColorRole) {
             return QVariant(qApp->palette().color(QPalette::Button));
         }
@@ -869,9 +870,7 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     }
 
     QChar c = m_chars[pos];
-    if (!index.isValid())
-        return QVariant();
-    else if (role == Qt::ToolTipRole) {
+    if (role == Qt::ToolTipRole) {
         QString result = s_data->display(c, m_font) + "<br />" + Qt::escape(s_data->name(c)) + "<br />" +
                          i18n("Unicode code point:") + ' ' + s_data->formatCode(c.unicode()) + "<br />" +
                          i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
