@@ -2357,7 +2357,11 @@ bool HTTPProtocol::sendQuery()
     // purposes as well as performance improvements while giving end
     // users the ability to disable this feature for proxy servers that
     // don't support it, e.g. junkbuster proxy server.
-    header += QLatin1String("Connection: ");
+    if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
+        header += QLatin1String("Proxy-Connection: ");
+    } else {
+        header += QLatin1String("Connection: ");
+    }
     if (m_request.isKeepAlive) {
         header += QLatin1String("Keep-Alive\r\n");
     } else {
@@ -3163,7 +3167,6 @@ endParsing:
             }
         }
 
-        // TODO: remove ? no such header exists
         tIt = tokenizer.iterator("proxy-connection");
         if (tIt.hasNext() && isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
             QByteArray pc = tIt.next().toLower();
@@ -3225,12 +3228,13 @@ endParsing:
             tIt = tokenizer.iterator("connection");
             while (tIt.hasNext()) {
                 QByteArray connection = tIt.next().toLower();
-                if (connection.startsWith("close")) { // krazy:exclude=strings
-                    m_request.isKeepAlive = false;
-                } else if (connection.startsWith("keep-alive")) { // krazy:exclude=strings
-                    m_request.isKeepAlive = true;
+                if (!(isHttpProxy(m_request.proxyUrl) && !isAutoSsl())) {
+                    if (connection.startsWith("close")) { // krazy:exclude=strings
+                        m_request.isKeepAlive = false;
+                    } else if (connection.startsWith("keep-alive")) { // krazy:exclude=strings
+                        m_request.isKeepAlive = true;
+                    }
                 }
-
                 if (connection.startsWith("upgrade")) { // krazy:exclude=strings
                     if (m_request.responseCode == 101) {
                         // Ok, an upgrade was accepted, now we must do it
