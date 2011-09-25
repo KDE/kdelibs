@@ -217,12 +217,12 @@ public:
         KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
         return cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT);
     }
-    
+
     static QString getOpenFileName(const KUrl& startDir, const QString& filter,
                                    QWidget *parent, const QString& caption,
                                    QString *selectedFilter);
     static KUrl getOpenUrl(const KUrl& startDir, const QString& filter,
-                           QWidget *parent, const QString& caption, 
+                           QWidget *parent, const QString& caption,
                            QString *selectedFilter);
     static QStringList getOpenFileNames(const KUrl& startDir, const QString& filter,
                                         QWidget *parent, const QString& caption,
@@ -231,10 +231,10 @@ public:
                                   QWidget *parent, const QString& caption,
                                   QString *selectedFilter);
     static QString getSaveFileName(const KUrl& dir, const QString& filter,
-                                   QWidget *parent, const QString& caption, 
+                                   QWidget *parent, const QString& caption,
                                    KFileDialog::Options options, QString *selectedFilter);
     static KUrl getSaveUrl(const KUrl& dir, const QString& filter,
-                           QWidget *parent, const QString& caption, 
+                           QWidget *parent, const QString& caption,
                            KFileDialog::Options options, QString *selectedFilter);
 
     ~KFileDialogPrivate()
@@ -470,7 +470,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
 
 QString KFileDialogPrivate::getOpenFileName(const KUrl& startDir,
                                             const QString& filter,
-                                            QWidget *parent, 
+                                            QWidget *parent,
                                             const QString& caption,
                                             QString *selectedFilter)
 {
@@ -555,7 +555,7 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
     return KFileDialogPrivate::getOpenUrl(startDir, filter, parent, caption, 0);
 }
 KUrl KFileDialogPrivate::getOpenUrl(const KUrl& startDir, const QString& filter,
-                                    QWidget *parent, const QString& caption, 
+                                    QWidget *parent, const QString& caption,
                                     QString *selectedFilter)
 {
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
@@ -715,7 +715,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
 }
 
 QString KFileDialogPrivate::getSaveFileName(const KUrl& dir, const QString& filter,
-                                            QWidget *parent, const QString& caption, 
+                                            QWidget *parent, const QString& caption,
                                             KFileDialog::Options options, QString *selectedFilter)
 {
     if (KFileDialogPrivate::isNative()) {
@@ -816,7 +816,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     return KFileDialogPrivate::getSaveUrl(dir, filter, parent, caption, options, 0);
 }
 KUrl KFileDialogPrivate::getSaveUrl(const KUrl& dir, const QString& filter,
-                                    QWidget *parent, const QString& caption, 
+                                    QWidget *parent, const QString& caption,
                                     KFileDialog::Options options, QString *selectedFilter)
 {
     if (KFileDialogPrivate::isNative() && (!dir.isValid() || dir.isLocalFile())) {
