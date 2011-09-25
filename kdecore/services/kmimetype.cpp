@@ -437,7 +437,7 @@ QVariant KMimeTypePrivate::property( const QString& _name ) const
     if ( _name == QLatin1String("Patterns") )
         return QVariant( m_lstPatterns );
     if ( _name == QLatin1String("Icon") )
-        return QVariant( iconName(KUrl()) );
+        return QVariant(iconName());
 
     return KServiceTypePrivate::property( _name );
 }
@@ -462,7 +462,7 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
         return QString();
     }
     static const QString& unknown = KGlobal::staticQString("unknown");
-    const QString mimeTypeIcon = mt->iconName( _url );
+    const QString mimeTypeIcon = mt->iconName();
     QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
@@ -496,10 +496,10 @@ QString KMimeType::favIconForUrl( const KUrl& url )
     return result;              // default is QString()
 }
 
-QString KMimeType::comment( const KUrl &url) const
+QString KMimeType::comment() const
 {
     Q_D(const KMimeType);
-    return d->comment(url);
+    return d->comment();
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -575,10 +575,10 @@ QString KMimeType::defaultMimeType()
     return s_strDefaultMimeType;
 }
 
-QString KMimeType::iconName( const KUrl& url) const
+QString KMimeType::iconName() const
 {
     Q_D(const KMimeType);
-    return d->iconName(url);
+    return d->iconName();
 }
 
 QStringList KMimeType::patterns() const

@@ -84,7 +84,6 @@ KMimeTypeFactory::MimeTypeEntry * KMimeTypeFactory::createEntry(int offset) cons
 
       // Old, now unused
      case KST_KMimeType:
-     case KST_KFolderMimeType:
          return 0;
 
      default:

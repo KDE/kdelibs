@@ -53,7 +53,6 @@ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
 
 static QStringList mime2KdeFilter( const QStringList &mimeTypes, QString *allExtensions = 0 )
 {
-  const KUrl emptyUrl;
   QStringList kdeFilter;
   QStringList allExt;
   foreach( const QString& mimeType, mimeTypes ) {
@@ -62,7 +61,7 @@ static QStringList mime2KdeFilter( const QStringList &mimeTypes, QString *allExt
       allExt += mime->patterns();
       kdeFilter.append(mime->patterns().join(QLatin1String(" ")) +
                        QLatin1Char('|') +
-                       mime->comment(emptyUrl));
+                       mime->comment());
     }
   }
   if (allExtensions) {

@@ -56,12 +56,9 @@ public:
      * Return the filename of the icon associated with the mimetype.
      * Use KIconLoader::loadMimeTypeIcon to load the icon.
      *
-     * @param url argument only used for directories, where the icon
-     * can be specified in the .directory file.
-     *
      * @return The name of the icon associated with this MIME type.
      */
-    QString iconName( const KUrl &url = KUrl()) const;
+    QString iconName() const;
 
     /**
      * Return the filename of the icon associated with the mimetype, for a given url.
@@ -88,12 +85,10 @@ public:
 
     /**
      * Returns the descriptive comment associated with the MIME type.
-     * The url argument is unused, but provided so that KMimeType derived classes
-     * can use it.
      *
      * @return The descriptive comment associated with the MIME type, if any.
      */
-    QString comment( const KUrl& url = KUrl() ) const;
+    QString comment() const;
 
     /**
      * Retrieve the list of patterns associated with the MIME Type.

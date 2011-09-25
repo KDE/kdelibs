@@ -55,7 +55,7 @@ public:
 
     virtual QStringList propertyNames() const;
 
-    virtual QString comment(const KUrl & = KUrl()) const
+    virtual QString comment() const
     {
         return m_strComment;
     }

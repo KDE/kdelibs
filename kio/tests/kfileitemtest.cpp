@@ -273,10 +273,18 @@ void KFileItemTest::testDotDirectory()
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.write("[Desktop Entry]\nIcon=foo\nComment=com\n");
     file.close();
-    KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
-    QVERIFY(fileItem.isLocalFile());
-    QCOMPARE(fileItem.mimeComment(), QString::fromLatin1("com"));
-    QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
+    {
+        KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+        QVERIFY(fileItem.isLocalFile());
+        QCOMPARE(fileItem.mimeComment(), QString::fromLatin1("com"));
+        QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
+    }
+    // Test for calling iconName first, to trigger mimetype resolution
+    {
+        KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+        QVERIFY(fileItem.isLocalFile());
+        QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
+    }
 }
 
 void KFileItemTest::testDecodeFileName_data()

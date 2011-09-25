@@ -729,7 +729,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     mode_t mode = item.mode();
     bool hasDirs = item.isDir() && !item.isLink();
     bool hasRoot = url.path() == QLatin1String("/");
-    QString iconStr = KMimeType::iconNameForUrl(url, mode);
+    QString iconStr = item.iconName();
     QString directory = properties->kurl().directory();
     QString protocol = properties->kurl().protocol();
     d->bKDesktopMode = protocol == QLatin1String("desktop") ||
@@ -877,11 +877,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         iconButton->setFixedSize(bsize, bsize);
         iconButton->setIconSize(48);
         iconButton->setStrictIconSize(false);
-        QString iconStr = KMimeType::findByUrl(url, mode)->iconName(url);
         if (bDesktopFile && isLocal) {
-            KDesktopFile config( url.path() );
-            KConfigGroup group = config.desktopGroup();
-            iconStr = group.readEntry( "Icon" );
+            const KDesktopFile config(url.toLocalFile());
             if ( config.hasDeviceType() )
                 iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Device );
             else

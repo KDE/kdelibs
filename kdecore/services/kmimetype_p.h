@@ -39,14 +39,13 @@ public:
 
   virtual QStringList propertyNames() const;
 
-    virtual QString comment(const KUrl & = KUrl()) const
+    QString comment() const
     {
         ensureXmlDataLoaded();
         return m_strComment;
     }
 
-    // virtual because reimplemented in KFolderMimeType
-    virtual QString iconName(const KUrl &) const
+    QString iconName() const
     {
         ensureXmlDataLoaded();
         if (!m_iconName.isEmpty())

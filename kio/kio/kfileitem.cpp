@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1999-2006 David Faure <faure@kde.org>
+   Copyright (C) 1999-2011 David Faure <faure@kde.org>
    2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -34,6 +34,7 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QDir>
+#include <QtCore/QDirIterator>
 #include <QtCore/QFile>
 #include <QtCore/QMap>
 #include <QtGui/QApplication>
@@ -715,6 +716,26 @@ bool KFileItem::isMimeTypeKnown() const
     return d->m_bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
 }
 
+static bool isDirectoryMounted(const KUrl& url)
+{
+    // Stating .directory files can cause long freezes when e.g. /home
+    // uses autofs for every user's home directory, i.e. opening /home
+    // in a file dialog will mount every single home directory.
+    // These non-mounted directories can be identified by having 0 size.
+    // There are also other directories with 0 size, such as /proc, that may
+    // be mounted, but those are unlikely to contain .directory (and checking
+    // this would require checking with KMountPoint).
+
+    // TODO: maybe this could be checked with KFileSystemType instead?
+    KDE_struct_stat buff;
+    if (KDE_stat(QFile::encodeName(url.toLocalFile()), &buff) == 0
+        && S_ISDIR(buff.st_mode) && buff.st_size == 0) {
+        return false;
+    }
+    return true;
+}
+
+// KDE5 TODO: merge with comment()? Need to see what lxr says about the usage of both.
 QString KFileItem::mimeComment() const
 {
     const QString displayType = d->m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_TYPE );
@@ -736,7 +757,18 @@ QString KFileItem::mimeComment() const
             return comment;
     }
 
-    QString comment = mType->comment( url );
+    // Support for .directory file in directories
+    if (isLocalUrl && isDir() && isDirectoryMounted(url)) {
+        KUrl u(url);
+        u.addPath(QString::fromLatin1(".directory"));
+        const KDesktopFile cfg(u.toLocalFile());
+        const QString comment = cfg.readComment();
+        if (!comment.isEmpty())
+            return comment;
+    }
+
+    const QString comment = mType->comment();
+
     //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name();
     if (!comment.isEmpty())
         return comment;
@@ -744,19 +776,57 @@ QString KFileItem::mimeComment() const
         return mType->name();
 }
 
+static QString iconFromDirectoryFile(const QString& path)
+{
+    KUrl u(path);
+    u.addPath(QString::fromLatin1(".directory"));
+    const QString filePath = u.toLocalFile();
+    if (!QFileInfo(filePath).isFile()) // exists -and- is a file
+        return QString();
+
+    KDesktopFile cfg(filePath);
+    QString icon = cfg.readIcon();
+
+    const KConfigGroup group = cfg.desktopGroup();
+    const QString emptyIcon = group.readEntry( "EmptyIcon" );
+    if (!emptyIcon.isEmpty()) {
+        bool isDirEmpty = true;
+        QDirIterator dirIt(path, QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot);
+        while (dirIt.hasNext()) {
+            dirIt.next();
+            if (dirIt.fileName() != QLatin1String(".directory")) {
+                isDirEmpty = false;
+                break;
+            }
+        }
+        if (isDirEmpty) {
+            icon = emptyIcon;
+        }
+    }
+
+    if (icon.startsWith(QLatin1String("./"))) {
+        // path is relative with respect to the location
+        // of the .directory file (#73463)
+        KUrl iconUrl(path);
+        iconUrl.addPath(icon.mid(2));
+        return iconUrl.toLocalFile();
+    }
+    return icon;
+}
+
 static QString iconFromDesktopFile(const QString& path)
 {
-    KDesktopFile cfg( path );
+    KDesktopFile cfg(path);
     const QString icon = cfg.readIcon();
-    if ( cfg.hasLinkType() ) {
+    if (cfg.hasLinkType()) {
         const KConfigGroup group = cfg.desktopGroup();
-        const QString type = cfg.readPath();
         const QString emptyIcon = group.readEntry( "EmptyIcon" );
+        const QString type = cfg.readPath();
         if ( !emptyIcon.isEmpty() ) {
             const QString u = cfg.readUrl();
             const KUrl url( u );
             if ( url.protocol() == "trash" ) {
-                // We need to find if the trash is empty, preferably  without using a KIO job.
+                // We need to find if the trash is empty, preferably without using a KIO job.
                 // So instead kio_trash leaves an entry in its config file for us.
                 KConfig trashConfig( "trashrc", KConfig::SimpleConfig );
                 if ( trashConfig.group("Status").readEntry( "Empty", true ) ) {
@@ -783,8 +853,14 @@ QString KFileItem::iconName() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    KMimeType::Ptr mime = mimeTypePtr();
-    if (isLocalUrl && mime->is("application/x-desktop")) {
+    KMimeType::Ptr mime;
+    // Use guessed mimetype if the main one hasn't been determined for sure
+    if (!d->m_bMimeTypeKnown && !d->m_guessedMimeType.isEmpty())
+        mime = KMimeType::mimeType(d->m_guessedMimeType);
+    else
+        mime = mimeTypePtr();
+
+    if (isLocalUrl && mime->is("application/x-desktop"), false) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -792,12 +868,16 @@ QString KFileItem::iconName() const
         }
     }
 
-    // KDE5: handle .directory files here too, and get rid of
-    // KFolderMimeType and the url argument in KMimeType::iconName().
+    if (isLocalUrl && isDir() && isDirectoryMounted(url)) {
+        d->m_iconName = iconFromDirectoryFile(url.toLocalFile());
+        if (!d->m_iconName.isEmpty()) {
+            d->m_useIconNameCache = d->m_bMimeTypeKnown;
+            return d->m_iconName;
+        }
+    }
 
-    d->m_iconName = mime->iconName(url);
+    d->m_iconName = mime->iconName();
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
-    //kDebug() << "finding icon for" << url << ":" << d->m_iconName;
     return d->m_iconName;
 }
 
@@ -890,11 +970,11 @@ QString KFileItem::comment() const
 // ## where is this used?
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
-    const QString iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
-    if ( !iconName.isEmpty() )
-        return DesktopIcon(iconName, _size, _state);
+    const QString udsIconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
+    if ( !udsIconName.isEmpty() )
+        return DesktopIcon(udsIconName, _size, _state);
 
-    if (!d->m_pMimeType) {
+    if (!d->m_useIconNameCache && !d->m_pMimeType) {
         // No mimetype determined yet, go for a fast default icon
         if (S_ISDIR(d->m_fileMode)) {
             static const QString * defaultFolderIcon = 0;
@@ -919,6 +999,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     else
         mime = d->m_pMimeType;
 
+    QString icon = iconName();
+
     // Support for gzipped files: extract mimetype of contained file
     // See also the relevant code in overlays, which adds the zip overlay.
     if ( mime->name() == "application/x-gzip" && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
@@ -926,16 +1008,14 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
         KUrl sf;
         sf.setPath( d->m_url.path().left( d->m_url.path().length() - 3 ) );
         //kDebug() << "subFileName=" << subFileName;
-        mime = KMimeType::findByUrl( sf, 0, d->m_bIsLocalUrl );
+        mime = KMimeType::findByUrl(sf, 0, d->m_bIsLocalUrl);
+        icon = mime->iconName();
     }
 
-    bool isLocalUrl;
-    KUrl url = mostLocalUrl(isLocalUrl);
-
-    QPixmap p = KIconLoader::global()->loadMimeTypeIcon( mime->iconName( url ), KIconLoader::Desktop, _size, _state );
-    //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name();
+    QPixmap p = KIconLoader::global()->loadMimeTypeIcon(icon, KIconLoader::Desktop, _size, _state);
+    //kDebug() << "finding pixmap for" << url << "mime=" << mime->name() << "icon=" << icon;
     if (p.isNull())
-        kWarning() << "Pixmap not found for mimetype " << d->m_pMimeType->name();
+        kWarning() << "Pixmap not found for mimetype" << mime->name() << "icon" << icon;
 
     return p;
 }
