@@ -745,6 +745,11 @@ ReadCollectionItemsJob::~ReadCollectionItemsJob()
 
 void ReadCollectionItemsJob::start()
 {
+    startFindCollection();
+}
+
+void ReadCollectionItemsJob::onFindCollectionFinished()
+{
     // this is a property read - Qt seems to read properties synchrounously
     setError( 0 );
     setErrorText( "" );

@@ -238,9 +238,8 @@ public:
     virtual ~CreateCollectionItemJob();
     
     virtual void start();
-    SecretItem * item() const;
-    
     virtual void onFindCollectionFinished();
+    SecretItem * item() const;
     
 private:
     friend class CreateCollectionItemJobPrivate;
@@ -255,6 +254,7 @@ public:
     virtual ~ReadCollectionItemsJob();
 
     virtual void start();
+    virtual void onFindCollectionFinished();
     
     typedef QExplicitlySharedDataPointer< SecretItem > Item;
     typedef QList< Item > ItemList;

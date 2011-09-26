@@ -331,7 +331,7 @@ bool Wallet::isOpen(const QString& name) {
         Collection *coll = Collection::findCollection( name, Collection::OpenOnly );
         ReadCollectionPropertyJob *readLocked = coll->isLocked();
         if ( readLocked->exec() ) {
-            return readLocked->propertyValue().toBool();
+            return !readLocked->propertyValue().toBool();
         }
         else {
             kDebug() << "ReadLocked job failed";
