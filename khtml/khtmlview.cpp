@@ -1363,7 +1363,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         if (kw && kw->m_kwp->isRedirected())
             setCursor = false;
         else if (QLineEdit* le = qobject_cast<QLineEdit*>(rw->widget())) {
-            QList<QWidget*> wl = qFindChildren<QWidget *>( le, "KHTMLLineEditButton" );
+            QList<QWidget*> wl = qFindChildren<QWidget *>( le, "KLineEditButton" );
             // force arrow cursor above lineedit clear button
             foreach (QWidget*w, wl) {
                 if (w->underMouse()) {
@@ -1942,7 +1942,10 @@ static void handleWidget(QWidget* w, KHTMLView* view, bool recurse=true)
 	w->setAttribute( Qt::WA_NoSystemBackground );
 
     w->setAttribute(Qt::WA_WState_InPaintEvent);
-    w->setAttribute(Qt::WA_OpaquePaintEvent);
+
+    if (!(w->objectName() == "KLineEditButton"))
+        w->setAttribute(Qt::WA_OpaquePaintEvent);
+
     w->installEventFilter(view);
 
     if (!recurse)

@@ -85,6 +85,11 @@ namespace Nepomuk {
              */
             QModelIndex index( int row, int column, const QModelIndex& parent = QModelIndex() ) const;
 
+            /**
+             * Removes those resources from the model.
+             */
+            bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
+
         public Q_SLOTS:
             /**
              * Set the resources to be provided by the model to \p resources.

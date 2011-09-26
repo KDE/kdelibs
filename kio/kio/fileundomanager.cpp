@@ -284,7 +284,7 @@ QString FileUndoManager::undoText() const
     if (d->m_commands.isEmpty())
         return i18n("Und&o");
 
-    FileUndoManager::CommandType t = d->m_commands.top().m_type;
+    FileUndoManager::CommandType t = d->m_commands.last().m_type;
     switch(t) {
     case FileUndoManager::Copy:
         return i18n("Und&o: Copy");
@@ -314,7 +314,7 @@ quint64 FileUndoManager::currentCommandSerialNumber() const
 {
     if(!d->m_commands.isEmpty())
     {
-        const UndoCommand& cmd = d->m_commands.top();
+        const UndoCommand& cmd = d->m_commands.last();
         assert(cmd.m_valid);
         return cmd.m_serialNumber;
     } else
@@ -324,7 +324,7 @@ quint64 FileUndoManager::currentCommandSerialNumber() const
 void FileUndoManager::undo()
 {
     // Make a copy of the command to undo before broadcastPop() pops it.
-    UndoCommand cmd = d->m_commands.top();
+    UndoCommand cmd = d->m_commands.last();
     assert(cmd.m_valid);
     d->m_current = cmd;
 
@@ -333,7 +333,7 @@ void FileUndoManager::undo()
 
     // Let's first ask for confirmation if we need to delete any file (#99898)
     KUrl::List fileCleanupStack;
-    QStack<BasicOperation>::Iterator it = opStack.begin();
+    BasicOperation::Stack::Iterator it = opStack.begin();
     for (; it != opStack.end() ; ++it) {
         BasicOperation::Type type = (*it).m_type;
         if (type == BasicOperation::File && d->m_current.m_type == FileUndoManager::Copy) {
@@ -428,7 +428,7 @@ void FileUndoManagerPrivate::slotResult(KJob *job)
     }
     else if (m_undoState == STATINGFILE)
     {
-        BasicOperation op = m_current.m_opStack.top();
+        BasicOperation op = m_current.m_opStack.last();
         //kDebug(1203) << "stat result for " << op.m_dst;
         KIO::StatJob* statJob = static_cast<KIO::StatJob*>(job);
         time_t mtime = statJob->statResult().numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
@@ -495,7 +495,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
 {
     if (!m_current.m_opStack.isEmpty())
     {
-        BasicOperation op = m_current.m_opStack.top();
+        BasicOperation op = m_current.m_opStack.last();
         BasicOperation::Type type = op.m_type;
 
         assert(op.m_valid);
@@ -540,7 +540,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
             m_undoJob->emitMoving(op.m_dst, op.m_src);
         }
 
-        m_current.m_opStack.pop();
+        m_current.m_opStack.removeLast();
         // The above KIO jobs are lowlevel, they don't trigger KDirNotify notification
         // So we need to do it ourselves (but schedule it to the end of the undo, to compress them)
         KUrl url(op.m_dst);
@@ -619,14 +619,14 @@ void FileUndoManagerPrivate::slotPush(QByteArray data)
 
 void FileUndoManagerPrivate::pushCommand(const UndoCommand& cmd)
 {
-    m_commands.push(cmd);
+    m_commands.append(cmd);
     emit q->undoAvailable(true);
     emit q->undoTextChanged(q->undoText());
 }
 
 void FileUndoManagerPrivate::slotPop()
 {
-    m_commands.pop();
+    m_commands.removeLast();
     emit q->undoAvailable(q->undoAvailable());
     emit q->undoTextChanged(q->undoText());
 }

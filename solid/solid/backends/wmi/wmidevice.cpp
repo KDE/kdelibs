@@ -248,9 +248,9 @@ public:
         QStringList result;
 
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
-        foreach(WmiQuery::Item *item, list) {
+        foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
-            QString property = item->getProperty(propertyName);
+            QString property = item.getProperty(propertyName);
 
             result << generateUDI(getUDIKey(type),propertyName.toLower(),property.toLower());
         }
@@ -443,7 +443,7 @@ QVariant WmiDevice::property(const QString &key) const
     if (list.size() == 0)
         return QString();
 
-    QString result = list[0]->getProperty( key );
+    QString result = list[0].getProperty( key );
     return result;
 }
 
@@ -467,7 +467,8 @@ bool WmiDevice::propertyExists(const QString &key) const
     WmiQuery::ItemList list = d->sendQuery();
     if (list.size() == 0)
         return false;
-    return list[0]->getProperty( key ).isEmpty() ? false: true;
+    const bool isEmpty = list[0].getProperty( key ).isEmpty() ? false: true;
+    return isEmpty;
 }
 
 bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const

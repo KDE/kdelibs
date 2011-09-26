@@ -86,7 +86,9 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      *
      * @deprecated Use QTabWidget::isMovable() instead.
      */
-    bool isTabReorderingEnabled() const;
+#ifndef KDE_NO_DEPRECATED
+    KDE_DEPRECATED bool isTabReorderingEnabled() const;
+#endif
 
     /**
      * Returns true if the close button is shown on tabs

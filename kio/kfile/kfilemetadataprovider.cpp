@@ -46,6 +46,14 @@
 #include <QEvent>
 #include <QLabel>
 
+// Required includes for subDirectoriesCount():
+#ifdef Q_WS_WIN
+    #include <QDir>
+#else
+    #include <dirent.h>
+    #include <QFile>
+#endif
+
 namespace {
     static QString plainText(const QString& richText)
     {
@@ -130,6 +138,11 @@ public:
 #endif
     QWidget* createValueWidget(const QString& value, QWidget* parent);
 
+    /*
+     * @return The number of subdirectories for the directory \a path.
+     */
+    static int subDirectoriesCount(const QString &path);
+
     bool m_readOnly;
     bool m_nepomukActivated;
     QList<KFileItem> m_fileItems;
@@ -202,7 +215,17 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
         // not work, the modification date needs also to be adjusted...
         const KFileItem& item = m_fileItems.first();
 
-        m_data.insert(KUrl("kfileitem#size"), KIO::convertSize(item.size()));
+        if (item.isDir()) {
+            const int count = subDirectoriesCount(item.url().pathOrUrl());
+            if (count == -1) {
+                m_data.insert(KUrl("kfileitem#size"), QString("Unknown"));
+            } else {
+                const QString itemCountString = i18ncp("@item:intable", "%1 item", "%1 items", count);
+                m_data.insert(KUrl("kfileitem#size"), itemCountString);
+            }
+        } else {
+            m_data.insert(KUrl("kfileitem#size"), KIO::convertSize(item.size()));
+        }
         m_data.insert(KUrl("kfileitem#type"), item.mimeComment());
         m_data.insert(KUrl("kfileitem#modified"), KGlobal::locale()->formatDateTime(item.time(KFileItem::ModificationTime), KLocale::FancyLongDate));
         m_data.insert(KUrl("kfileitem#owner"), item.user());
@@ -498,5 +521,38 @@ QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
     return widget;
 }
 #endif
+
+int KFileMetaDataProvider::Private::subDirectoriesCount(const QString& path)
+{
+#ifdef Q_WS_WIN
+    QDir dir(path);
+    return dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
+#else
+    // Taken from kdelibs/kio/kio/kdirmodel.cpp
+    // Copyright (C) 2006 David Faure <faure@kde.org>
+
+    int count = -1;
+    DIR* dir = ::opendir(QFile::encodeName(path));
+    if (dir) {
+        count = 0;
+        struct dirent *dirEntry = 0;
+        while ((dirEntry = ::readdir(dir))) { // krazy:exclude=syscalls
+            if (dirEntry->d_name[0] == '.') {
+                if (dirEntry->d_name[1] == '\0') {
+                    // Skip "."
+                    continue;
+                }
+                if (dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0') {
+                    // Skip ".."
+                    continue;
+                }
+            }
+            ++count;
+        }
+        ::closedir(dir);
+    }
+    return count;
+#endif
+}
 
 #include "kfilemetadataprovider_p.moc"

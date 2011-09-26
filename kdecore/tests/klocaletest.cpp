@@ -71,6 +71,17 @@ KLocaleTest::formatNumbers()
     locale.d->setNumericDigitGrouping(QList<int>() << 3 << -1);
     QCOMPARE(locale.formatNumber(123456789, 0), QString("123456,789"));
     QCOMPARE(locale.formatNumber(123456789.01), QString("123456,789.01"));
+
+    //Test it formats correctly with an empty and space separator.
+    locale.d->setNumericDigitGrouping(QList<int>() << 3);
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("123,456,789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("123,456,789.01"));
+    locale.setThousandsSeparator(QString());
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("123456789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("123456789.01"));
+    locale.setThousandsSeparator(" ");
+    QCOMPARE(locale.formatNumber(123456789, 0), QString("123 456 789"));
+    QCOMPARE(locale.formatNumber(123456789.01), QString("123 456 789.01"));
 }
 
 void
@@ -109,6 +120,17 @@ KLocaleTest::formatNumberStrings()
     locale.d->setNumericDigitGrouping(QList<int>() << 3 << -1);
     QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123456,789"));
     QCOMPARE(locale.formatNumber("123456789.01"),       QString("123456,789.01"));
+
+    //Test it formats correctly with an empty and space separator.
+    locale.d->setNumericDigitGrouping(QList<int>() << 3);
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123,456,789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("123,456,789.01"));
+    locale.setThousandsSeparator(QString());
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123456789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("123456789.01"));
+    locale.setThousandsSeparator(" ");
+    QCOMPARE(locale.formatNumber("123456789", true, 0), QString("123 456 789"));
+    QCOMPARE(locale.formatNumber("123456789.01"),       QString("123 456 789.01"));
 }
 
 void
@@ -163,9 +185,34 @@ KLocaleTest::readNumber()
     QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 0.0);
     QVERIFY(!ok);
 
+    //Test it parses correctly with an empty separator.
+    locale.d->setNumericDigitGrouping(QList<int>() << 3);
+    locale.setThousandsSeparator(QString());
+    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
+    QVERIFY(!ok);
+
+    //Test it parses correctly with an space separator.
+    locale.d->setNumericDigitGrouping(QList<int>() << 3);
+    locale.setThousandsSeparator(" ");
+    QCOMPARE(locale.readNumber(QString("123 456 789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123 456 789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
+    QVERIFY(!ok);
+
     // Test signs
     locale.setPositiveSign("@");
     locale.setNegativeSign("&");
+    locale.setThousandsSeparator(",");
     locale.d->setNumericDigitGrouping(QList<int>() << 3);
 
     QCOMPARE(locale.readNumber(QString("@123,456,789.12"), &ok), 123456789.12);

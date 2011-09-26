@@ -46,9 +46,30 @@ K_PLUGIN_FACTORY(ProxyScoutFactory,
     )
 K_EXPORT_PLUGIN(ProxyScoutFactory("KProxyScoutd"))
 
-
 namespace KPAC
 {
+    enum ProxyType {
+        Unknown = -1,
+        Proxy,
+        Socks,
+        Direct
+    };
+
+    static ProxyType proxyTypeFor(const QString& mode)
+    {
+        if (mode.compare(QLatin1String("PROXY"), Qt::CaseInsensitive) == 0)
+            return Proxy;
+
+        if (mode.compare(QLatin1String("DIRECT"), Qt::CaseInsensitive) == 0)
+            return Direct;
+
+        if (mode.compare(QLatin1String("SOCKS"), Qt::CaseInsensitive) == 0 ||
+            mode.compare(QLatin1String("SOCKS5"), Qt::CaseInsensitive) == 0)
+            return Socks;
+
+        return Unknown;
+    }
+
     ProxyScout::QueuedRequest::QueuedRequest( const QDBusMessage &reply, const KUrl& u, bool sendall )
         : transaction( reply ), url( u ), sendAll(sendall)
     {
@@ -262,42 +283,41 @@ namespace KPAC
             QStringList proxyList;
             const QString result = m_script->evaluate(url).trimmed();
             const QStringList proxies = result.split(QLatin1Char(';'), QString::SkipEmptyParts);
+            const int size = proxies.count();
 
-            Q_FOREACH(const QString& proxy, proxies) {
+            for (int i = 0; i < size; ++i) {
                 QString mode, address;
-                const int keyIndex = proxy.indexOf(QLatin1Char(' '));
-                if (keyIndex == -1) {
+                const QString proxy = proxies.at(i).trimmed();
+                const int index = proxy.indexOf(QLatin1Char(' '));
+                if (index == -1) { // Only "DIRECT" should match this!
+                    mode = proxy;
                     address = proxy;
                 } else {
-                    mode = proxy.left(keyIndex);
-                    address = proxy.mid(keyIndex+1).trimmed();
+                    mode = proxy.left(index);
+                    address = proxy.mid(index + 1).trimmed();
                 }
 
-                const bool isProxy = (mode.compare(QLatin1String("PROXY"), Qt::CaseInsensitive) == 0);
-                const bool isSocks = (mode.compare(QLatin1String("SOCKS"), Qt::CaseInsensitive) == 0 ||
-                                      mode.compare(QLatin1String("SOCKS5"), Qt::CaseInsensitive) == 0);
-
-                if (!isProxy && !isSocks) {
+                const ProxyType type = proxyTypeFor(mode);
+                if (type == Unknown) {
                     continue;
                 }
 
-                KUrl proxyURL(address);
-                const int len = proxyURL.protocol().length();
-
-                // If the URL is invalid or the URL is valid but in opaque
-                // format, which indicates a port number being present, simply
-                // calling setProtocol() on it trashes the whole URL.
-                if (!proxyURL.isValid() || address.indexOf(QLatin1String(":/"), len) != len) {
-                    const QString protocol = QLatin1String((isProxy ? "http://": "socks://"));
-                    proxyURL = address.prepend(protocol);
-                    if (!proxyURL.isValid()) {
-                        continue;
+                if (type == Proxy || type == Socks) {
+                    const int index = address.indexOf(QLatin1Char(':'));
+                    if (index == -1 || !KProtocolInfo::isKnownProtocol(address.left(index))) {
+                        const QString protocol ((type == Proxy ? QLatin1String("https://") : QLatin1String("socks://")));
+                        const KUrl url (protocol + address);
+                        if (url.isValid()) {
+                            address = url.url();
+                        } else {
+                            continue;
+                        }
                     }
                 }
 
-                if ( !m_blackList.contains( address ) ) {
+                if (type == Direct || !m_blackList.contains(address)) {
                     proxyList << address;
-                } else if ( std::time( 0 ) - m_blackList[ address ] > 1800 ) { // 30 minutes
+                } else if (std::time(0) - m_blackList[address] > 1800) { // 30 minutes
                     // black listing expired
                     m_blackList.remove( address );
                     proxyList << address;

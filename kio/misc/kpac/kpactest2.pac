@@ -1,8 +1,9 @@
 /*
-   This is a script to test the Microsoft IPv6 extension to PAC only. If you wanted
-   to test the original PAC specification, use 'kpactest.pac'.
+   A script to test Microsoft's IPv6 extension to the PAC specification. If
+   you want to test the original PAC specification, use 'kpactest.pac'.
    
-   To use it,set this script as proxy config file and run:
+   To use this script, select "Use automatic proxy configuration URL:" in the
+   KDE proxy configuration dialog and run:
 
    qdbus org.kde,kded /modules/proxyscout proxyForUrl http://blah (URL doesn't matter)
 
@@ -35,10 +36,10 @@ function FindProxyForURLEx( url, host )
     // on failure check if localhost resolves to 127.0.0.1 as it should
     if ( isInNetEx( "localhost", "1.2.3.4/8" ) )
         result += "/isInNetEx1=failed";
-    // isinnetEx2
+    // isInNetEx2
     if ( isInNetEx( "1.2.3.4", "1.2.3.5/32" ) )
         result += "/isInNetEx2=failed";
-    // isinnet3
+    // isInNetEx3
     if ( !isInNetEx( "1.2.3.4", "1.2.3.5/24" ) )
         result += "/isInNetEx3=failed";
 
