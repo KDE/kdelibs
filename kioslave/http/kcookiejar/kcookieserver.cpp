@@ -357,12 +357,10 @@ QStringList
 KCookieServer::findDomains()
 {
    QStringList result;
-   QStringListIterator it (mCookieJar->getDomainList());
-   while (it.hasNext())
+   Q_FOREACH(const QString& domain, mCookieJar->getDomainList())
    {
        // Ignore domains that have policy set for but contain
        // no cookies whatsoever...
-       const QString domain = it.next();
        const KHttpCookieList* list =  mCookieJar->getCookieList(domain, "");
        if ( list && !list->isEmpty() )
           result << domain;
