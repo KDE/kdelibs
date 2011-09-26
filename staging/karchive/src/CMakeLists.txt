@@ -39,6 +39,7 @@ set(karchive_SRCS
   knonefilter.cpp
   ktar.cpp
   kzip.cpp
+  k7zip.cpp
 )
 
 add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
@@ -61,6 +62,7 @@ install( FILES
   kfilterdev.h
   ktar.h
   kzip.h
+  k7zip.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/karchive_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
