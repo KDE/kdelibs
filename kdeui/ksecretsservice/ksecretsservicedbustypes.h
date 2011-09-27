@@ -28,11 +28,8 @@
 #include <QtCore/QString>
 #include <QtCore/QSharedData>
 
-/**
- * Register the types needed for the fd.o Secrets D-Bus interface.
- */
-void registerDBusTypes();
-
+namespace KSecretsService {
+    
 /**
  * This is the basic Secret structure exchanged via the dbus API
  * See the spec for more details
@@ -48,10 +45,6 @@ typedef QMap<QString, QString> StringStringMap;
 typedef QMap<QDBusObjectPath, SecretStruct> ObjectPathSecretMap;
 typedef QMap<QString, QVariant> StringVariantMap;
 
-Q_DECLARE_METATYPE( StringStringMap );
-Q_DECLARE_METATYPE( ObjectPathSecretMap );
-Q_DECLARE_METATYPE( StringVariantMap );
-Q_DECLARE_METATYPE( SecretStruct )
 
 inline QDBusArgument &operator<<(QDBusArgument &argument, const SecretStruct &secret)
 {
@@ -68,6 +61,13 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, SecretStru
     argument.endStructure();
     return argument;
 }
+
+} // namespace
+
+Q_DECLARE_METATYPE( KSecretsService::StringStringMap );
+Q_DECLARE_METATYPE( KSecretsService::ObjectPathSecretMap );
+Q_DECLARE_METATYPE( KSecretsService::StringVariantMap );
+Q_DECLARE_METATYPE( KSecretsService::SecretStruct )
 
 #endif // KSECRETSSERVICEDBUSTYPES_H
 

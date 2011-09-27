@@ -23,6 +23,7 @@
 
 #include "ksecretsservicesecret.h"
 #include "ksecretsservicecollectionjobs.h"
+#include "ksecretsservicedbustypes.h"
 
 #include <kdeui_export.h>
 #include <QObject>
@@ -31,8 +32,6 @@
 #include <kjob.h>
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
-
-typedef QMap< QString, QString > StringStringMap;
 
 namespace KSecretsService {
 

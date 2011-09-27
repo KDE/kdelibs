@@ -46,8 +46,6 @@ using namespace KSecretsService;
 
 
 
-typedef QMap<QString, QString> StringStringMap;
-Q_DECLARE_METATYPE(StringStringMap)
 typedef QMap<QString, StringStringMap> StringToStringStringMapMap;
 Q_DECLARE_METATYPE(StringToStringStringMapMap)
 typedef QMap<QString, QByteArray> StringByteArrayMap;
