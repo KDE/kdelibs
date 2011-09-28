@@ -55,12 +55,21 @@ public:
     
     explicit SecretItemJob( SecretItem * item );
     virtual ~SecretItemJob();
+
+    SecretItem* secretItem() const;
+    /**
+     * Chaining asynchronous jobs may need you to pass data items around
+     * This member let you attache arbitrary data to this job
+     */
+    void setCustomData( const QVariant& data );
+    const QVariant& customData() const;
     
 protected:
     void finished( ItemJobError, const QString& msg ="");
     
-public:
-    SecretItem  *secretItem;
+private:
+    SecretItem  *_item;
+    QVariant    _customData;
 };
 
 class KDEUI_EXPORT GetSecretItemSecretJob : public SecretItemJob {

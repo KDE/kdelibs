@@ -33,12 +33,27 @@ using namespace KSecretsService;
 
 
 SecretItemJob::SecretItemJob(SecretItem* item): 
-    secretItem( item )
+    _item( item )
 {
 }
 
 SecretItemJob::~SecretItemJob()
 {
+}
+
+SecretItem* SecretItemJob::secretItem() const
+{
+    return _item;
+}
+
+void SecretItemJob::setCustomData(const QVariant& data)
+{
+    _customData = data;
+}
+
+const QVariant& SecretItemJob::customData() const
+{
+    return _customData;
 }
 
 void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg)
@@ -250,7 +265,7 @@ ReadItemPropertyJob::~ReadItemPropertyJob()
 void ReadItemPropertyJob::start()
 {
     if ( propertyReadMember ) {
-        (secretItem->*propertyReadMember)( this );
+        (secretItem()->*propertyReadMember)( this );
         finished( NoError );
     }
     else {
