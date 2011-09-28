@@ -31,6 +31,7 @@
 
 #include <kprotocolinfo.h>
 #include <kdebug.h>
+#include <kprocess.h>
 #include <kservicegroup.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
@@ -40,10 +41,21 @@
 
 QTEST_KDEMAIN_CORE(KServiceTest)
 
+static void eraseProfiles()
+{
+    QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
+    if ( !profilerc.isEmpty() )
+        QFile::remove( profilerc );
+
+    profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
+    if ( !profilerc.isEmpty() )
+        QFile::remove( profilerc );
+}
+
 void KServiceTest::initTestCase()
 {
     // A non-C locale is necessary for some tests.
-    // This locale must have the follwing properties:
+    // This locale must have the following properties:
     //   - some character other than dot as decimal separator
     // If it cannot be set, locale-dependent tests are skipped.
     setlocale(LC_ALL, "fr_FR.utf8");
@@ -52,16 +64,8 @@ void KServiceTest::initTestCase()
         kDebug() << "Setting locale to fr_FR.utf8 failed";
     }
 
-    QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
-    if ( !profilerc.isEmpty() )
-        QFile::remove( profilerc );
-
-    profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
-    if ( !profilerc.isEmpty() )
-        QFile::remove( profilerc );
-
     m_hasKde4Konsole = false;
-
+    eraseProfiles();
 
     // Create some fake services for the tests below, and ensure they are in ksycoca.
 
@@ -146,7 +150,6 @@ void KServiceTest::initTestCase()
         // Update ksycoca in ~/.kde-unit-test after creating the above
         runKBuildSycoca(true);
     }
-
 }
 
 void KServiceTest::runKBuildSycoca(bool noincremental)
@@ -162,6 +165,22 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
     kDebug() << "waiting for signal";
     QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
     kDebug() << "got signal";
+}
+
+void KServiceTest::cleanupTestCase()
+{
+    // If I want the konqueror unit tests to work, then I better not have a non-working part
+    // as the preferred part for text/plain...
+    QStringList services; services << "fakeservice.desktop" << "fakepart.desktop" << "faketextplugin.desktop";
+    Q_FOREACH(const QString& service, services) {
+        const QString fakeService = KStandardDirs::locateLocal("services", service);
+        QFile::remove(fakeService);
+    }
+    //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    KProcess proc;
+    proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
+    proc.execute();
 }
 
 void KServiceTest::testByName()
