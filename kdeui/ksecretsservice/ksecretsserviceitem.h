@@ -49,8 +49,9 @@ class CreateItemJobPrivate;
  * The "Label" attribute can also be read by calling the @ref attribute method and set by @ref setLabel method.
  */
 class KDEUI_EXPORT SecretItem : public QSharedData {
-    SecretItem();
 public:
+    SecretItem();
+    SecretItem( const SecretItem& );
     SecretItem( SecretItemPrivate * );
     virtual ~SecretItem();
     
@@ -116,8 +117,8 @@ private:
     QSharedDataPointer< SecretItemPrivate > d;
 };
 
-
-
 };
+
+Q_DECLARE_METATYPE( KSecretsService::SecretItem )
 
 #endif // KSECRETSSERVICEITEM_H

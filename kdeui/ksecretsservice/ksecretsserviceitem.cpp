@@ -33,6 +33,11 @@ SecretItem::SecretItem() :
 {
 }
 
+SecretItem::SecretItem(const SecretItem& that) :
+    d( that.d )
+{
+}
+
 SecretItem::SecretItem( SecretItemPrivate* sip ) :
     d( sip )
 {

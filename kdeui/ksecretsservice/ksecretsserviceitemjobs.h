@@ -37,7 +37,7 @@ class SecretItemDeleteJobPrivate;
 class ReadItemPropertyJobPrivate;
 class WriteItemPropertyJobPrivate;
 
-class SecretItemJob : public KCompositeJob {
+class KDEUI_EXPORT SecretItemJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(SecretItemJob)
 public:
@@ -59,7 +59,7 @@ public:
     SecretItem* secretItem() const;
     /**
      * Chaining asynchronous jobs may need you to pass data items around
-     * This member let you attache arbitrary data to this job
+     * This member let you attach arbitrary data to this job
      */
     void setCustomData( const QVariant& data );
     const QVariant& customData() const;
