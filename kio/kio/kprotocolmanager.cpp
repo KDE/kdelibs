@@ -672,19 +672,8 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
     if (sysInfoFound)
     {
-      // Platform (e.g. X11)
-#if defined(Q_WS_X11)
-        agentStr.replace(QL1S("%platform%"), QL1S("X11"), Qt::CaseInsensitive);
-#elif defined(Q_WS_MAC)
-        agentStr.replace(QL1S("%platform%"), QL1S("Macintosh"), Qt::CaseInsensitive);
-#elif defined(Q_WS_WIN)
-        agentStr.replace(QL1S("%platform%"), QL1S("Windows"), Qt::CaseInsensitive);
-#elif defined (Q_WS_S60)
-        agentStr.replace(QL1S("%platform%"), QL1S("Symbian"), Qt::CaseInsensitive);
-#endif
-
-      // Platform can no longer be turned off.
-      agentStr.remove(QL1S("%platform%"), Qt::CaseInsensitive);
+      // Platform (e.g. X11). It is no longer configurable from UI.
+      agentStr.replace(QL1S("%platform%"), platform(), Qt::CaseInsensitive);
 
       // Operating system (e.g. Linux)
       if (modifiers.contains('o'))
