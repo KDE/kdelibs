@@ -146,6 +146,9 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
 
 void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
 {
+    if (!model) {
+        return;
+    }
     for (int i = 0; i < model->rowCount(parent); ++i) {
         for (int j = 0; j < model->columnCount(parent); ++j) {
             const QModelIndex index = model->index(i, j, parent);
