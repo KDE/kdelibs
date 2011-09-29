@@ -163,7 +163,7 @@ public:
       , crcDefined(false)
     {}
 
-    QString name;
+    QString path;
     bool attribDefined;
     quint32 attributes;
     bool hasStream;
@@ -213,7 +213,10 @@ public:
       : q(parent),
         packPos(0),
         numPackStreams(0),
-        end(0)
+        buffer(0),
+        pos(0),
+        end(0),
+        headerSize(0)
     {
     }
 
@@ -237,26 +240,28 @@ public:
 
     QVector<bool> isAnti;
 
+    const char* buffer;
+    quint64 pos;
     quint64 end;
+    quint64 headerSize;
 
-    int readByte(const char* buffer, int& pos);
-    quint32 readUInt32(const char* buffer, int& pos);
-    quint64 readUInt64(const char* buffer, int& pos);
-    quint64 readNumber(const char*, int& pos);
-    QString readString(const char*, int& pos);
-    void readHashDigests(int numItems, QVector<bool> &digestsDefined, QVector<quint32> &digests,
-                         const char* buffer, int& pos);
-    void readBoolVector(int numItems, QVector<bool> &v, const char* buffer, int& pos);
-    void readBoolVector2(int numItems, QVector<bool> &v, const char* buffer, int& pos);
-    void skipData(int size, const char* buffer, int& pos);
-    bool findAttribute(int attribute, const char* buffer, int& pos);
-    bool readUInt64DefVector(int numFiles, QVector<quint64>& values, const char* buffer, int& pos);
-    Folder* folderItem(const char* buffer, int& pos);
-    bool readMainStreamsInfo(const char* buffer, int& pos);
-    bool readPackInfo(const char* buffer, int& pos);
-    bool readUnpackInfo(const char* buffer, int& pos);
-    bool readSubStreamsInfo(const char* buffer, int& pos);
-    QByteArray readAndDecodePackedStreams(const char* buffer, int& pos, int& headerSize, bool readMainStreamInfo = true);
+    int readByte();
+    quint32 readUInt32();
+    quint64 readUInt64();
+    quint64 readNumber();
+    QString readString();
+    void readHashDigests(int numItems, QVector<bool> &digestsDefined, QVector<quint32> &digests);
+    void readBoolVector(int numItems, QVector<bool> &v);
+    void readBoolVector2(int numItems, QVector<bool> &v);
+    void skipData(int size);
+    bool findAttribute(int attribute);
+    bool readUInt64DefVector(int numFiles, QVector<quint64>& values);
+    Folder* folderItem();
+    bool readMainStreamsInfo();
+    bool readPackInfo();
+    bool readUnpackInfo();
+    bool readSubStreamsInfo();
+    QByteArray readAndDecodePackedStreams(bool readMainStreamInfo = true);
 };
 
 K7Zip::K7Zip( const QString& fileName )
@@ -278,14 +283,17 @@ K7Zip::~K7Zip()
     delete d;
 }
 
-int K7Zip::K7ZipPrivate::readByte(const char* buffer, int& pos)
+int K7Zip::K7ZipPrivate::readByte()
 {
+    if (!buffer || pos+1 > end) {
+        return -1;
+    }
     return buffer[pos++];
 }
 
-quint32 K7Zip::K7ZipPrivate::readUInt32(const char* buffer, int& pos)
+quint32 K7Zip::K7ZipPrivate::readUInt32()
 {
-    if ((quint64)(pos + 4) > end) {
+    if (!buffer || (quint64)(pos + 4) > end) {
         qDebug() << "error size";
         return 0;
     }
@@ -295,9 +303,9 @@ quint32 K7Zip::K7ZipPrivate::readUInt32(const char* buffer, int& pos)
     return res;
 }
 
-quint64 K7Zip::K7ZipPrivate::readUInt64(const char* buffer, int& pos)
+quint64 K7Zip::K7ZipPrivate::readUInt64()
 {
-    if ((quint64)(pos + 8) > end) {
+    if (!buffer || (quint64)(pos + 8) > end) {
         qDebug() << "error size";
         return 0;
     }
@@ -307,8 +315,12 @@ quint64 K7Zip::K7ZipPrivate::readUInt64(const char* buffer, int& pos)
     return res;
 }
 
-quint64 K7Zip::K7ZipPrivate::readNumber(const char* buffer, int& pos)
+quint64 K7Zip::K7ZipPrivate::readNumber()
 {
+    if (!buffer) {
+        return 0;
+    }
+
     unsigned char firstByte = buffer[pos++];
     unsigned char mask = 0x80;
     quint64 value = 0;
@@ -324,8 +336,12 @@ quint64 K7Zip::K7ZipPrivate::readNumber(const char* buffer, int& pos)
     return value;
 }
 
-QString K7Zip::K7ZipPrivate::readString(const char* buffer, int& pos)
+QString K7Zip::K7ZipPrivate::readString()
 {
+    if (!buffer) {
+        return QString();
+    }
+
     const char *buf = buffer + pos;
     size_t rem = (end - pos) / 2 * 2;
     {
@@ -357,35 +373,45 @@ QString K7Zip::K7ZipPrivate::readString(const char* buffer, int& pos)
     return p;
 }
 
-void K7Zip::K7ZipPrivate::skipData(int size, const char* /*buffer*/, int& pos)
+void K7Zip::K7ZipPrivate::skipData(int size)
 {
-    // TODO : test the pos 
+    if (!buffer || pos + size > end) {
+        return;
+    }
     pos += size;
 }
 
-bool K7Zip::K7ZipPrivate::findAttribute(int attribute, const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::findAttribute(int attribute)
 {
+    if (!buffer) {
+        return false;
+    }
+
     for (;;)
     {
-        int type = readByte(buffer, pos);
+        int type = readByte();
         if (type == attribute) {
             return true;
         }
         if (type == kEnd) {
         return false;
         }
-        skipData(readNumber(buffer, pos), buffer, pos);
+        skipData(readNumber());
     }
 }
 
 
-void K7Zip::K7ZipPrivate::readBoolVector(int numItems, QVector<bool> &v, const char* buffer, int& pos)
+void K7Zip::K7ZipPrivate::readBoolVector(int numItems, QVector<bool> &v)
 {
+    if (!buffer) {
+        return;
+    }
+
     unsigned char b = 0;
     unsigned char mask = 0;
     for (int i = 0; i < numItems; i++) {
         if (mask == 0) {
-            b = readByte(buffer, pos);
+            b = readByte();
             mask = 0x80;
         }
         v.append((b & mask) != 0);
@@ -393,11 +419,15 @@ void K7Zip::K7ZipPrivate::readBoolVector(int numItems, QVector<bool> &v, const c
     }
 }
 
-void K7Zip::K7ZipPrivate::readBoolVector2(int numItems, QVector<bool> &v, const char* buffer, int& pos)
+void K7Zip::K7ZipPrivate::readBoolVector2(int numItems, QVector<bool> &v)
 {
-    int allAreDefined = readByte(buffer, pos);
+    if (!buffer) {
+        return;
+    }
+
+    int allAreDefined = readByte();
     if (allAreDefined == 0) {
-        readBoolVector(numItems, v, buffer, pos);
+        readBoolVector(numItems, v);
         return;
     }
 
@@ -408,10 +438,13 @@ void K7Zip::K7ZipPrivate::readBoolVector2(int numItems, QVector<bool> &v, const 
 
 void K7Zip::K7ZipPrivate::readHashDigests(int numItems,
                                           QVector<bool> &digestsDefined,
-                                          QVector<quint32> &digests,
-                                          const char* buffer, int& pos)
+                                          QVector<quint32> &digests)
 {
-    readBoolVector2(numItems, digestsDefined, buffer, pos);
+    if (!buffer) {
+        return;
+    }
+
+    readBoolVector2(numItems, digestsDefined);
     for (int i = 0; i < numItems; i++)
     {
         quint32 crc = 0;
@@ -423,10 +456,14 @@ void K7Zip::K7ZipPrivate::readHashDigests(int numItems,
     }
 }
 
-Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
+Folder* K7Zip::K7ZipPrivate::folderItem()
 {
+    if (!buffer) {
+        return false;
+    }
+
     Folder* folder = new Folder;
-    int numCoders = readNumber(buffer, pos);
+    int numCoders = readNumber();
 
     quint64 numInStreamsTotal = 0;
     quint64 numOutStreamsTotal = 0;
@@ -441,7 +478,7 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
         //      7:  There are more alternative methods. (Not used
         //      anymore, must be 0).
         //    }
-        unsigned char coderInfo = readByte(buffer, pos);
+        unsigned char coderInfo = readByte();
         int codecIdSize = (coderInfo & 0xF);
         if (codecIdSize > 8) {
             qDebug() << "unsupported codec id size";
@@ -450,7 +487,7 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
         }
         unsigned char codecID[codecIdSize];
         for (int i=0; i < codecIdSize; ++i) {
-            codecID[i] = readByte(buffer, pos);
+            codecID[i] = readByte();
         }
 
         int id = 0;
@@ -461,8 +498,8 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
 
         //if (Is Complex Coder)
         if ((coderInfo & 0x10) != 0) {
-            info->numInStreams = readNumber(buffer, pos);
-            info->numOutStreams = readNumber(buffer, pos);
+            info->numInStreams = readNumber();
+            info->numOutStreams = readNumber();
         } else {
             info->numInStreams = 1;
             info->numOutStreams = 1;
@@ -470,9 +507,9 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
 
         //if (There Are Attributes)
         if ((coderInfo & 0x20) != 0) {
-            int propertiesSize = readNumber(buffer, pos);
+            int propertiesSize = readNumber();
             for (int i=0; i < propertiesSize; ++i) {
-                info->properties.append(readByte(buffer, pos));
+                info->properties.append(readByte());
             }
         }
 
@@ -489,14 +526,14 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
 
     int numBindPairs = numOutStreamsTotal - 1;
     for (int i = 0; i < numBindPairs; i++) {
-        folder->inIndexes.append(readNumber(buffer, pos));
-        folder->outIndexes.append(readNumber(buffer, pos));
+        folder->inIndexes.append(readNumber());
+        folder->outIndexes.append(readNumber());
     }
 
     int numPackedStreams = numInStreamsTotal - numBindPairs;
     if (numPackedStreams > 1) {
         for (int i = 0; i < numPackedStreams; ++i) {
-            folder->packedStreams.append(readNumber(buffer, pos));
+            folder->packedStreams.append(readNumber());
         }
     } else {
         if (numPackedStreams == 1) {
@@ -522,14 +559,18 @@ Folder* K7Zip::K7ZipPrivate::folderItem(const char* buffer, int& pos)
     return folder;
 }
 
-bool K7Zip::K7ZipPrivate::readUInt64DefVector(int numFiles, QVector<quint64>& values, const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::readUInt64DefVector(int numFiles, QVector<quint64>& values)
 {
-    QVector<bool> defined;
-    readBoolVector2(numFiles, defined, buffer, pos);
+    if (!buffer) {
+        return false;
+    }
 
-    int external = readByte(buffer, pos);
+    QVector<bool> defined;
+    readBoolVector2(numFiles, defined);
+
+    int external = readByte();
     if (external != 0) {
-        int dataIndex = readNumber(buffer, pos);
+        int dataIndex = readNumber();
         if (dataIndex < 0 /*|| dataIndex >= dataVector->Size()*/) {
             qDebug() << "wrong data index";
             return false;
@@ -542,41 +583,45 @@ bool K7Zip::K7ZipPrivate::readUInt64DefVector(int numFiles, QVector<quint64>& va
     {
         quint64 t = 0;
         if (defined[i]) {
-            t = readUInt64(buffer, pos);
+            t = readUInt64();
         }
         values.append(t);
     }
     return true;
 }
 
-bool K7Zip::K7ZipPrivate::readPackInfo(const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::readPackInfo()
 {
-    packPos = readNumber(buffer, pos);
-    numPackStreams = readNumber(buffer, pos);
+    if (!buffer) {
+        return false;
+    }
+
+    packPos = readNumber();
+    numPackStreams = readNumber();
     packSizes.clear();
 
-    if (!findAttribute(kSize, buffer, pos)) {
+    if (!findAttribute(kSize)) {
         qDebug() << "kSize not found";
         return false;
     }
 
     for (quint64 i = 0; i < numPackStreams; ++i) {
-        packSizes.append(readNumber(buffer, pos));
+        packSizes.append(readNumber());
     }
 
     int type;
     QVector<bool> packCRCsDefined;
     QVector<quint32> packCRCs;
     for (;;) {
-        type = readByte(buffer, pos);
+        type = readByte();
         if (type == kEnd) {
             break;
         }
         if (type == kCRC) {
-            readHashDigests(numPackStreams, packCRCsDefined, packCRCs, buffer, pos);
+            readHashDigests(numPackStreams, packCRCsDefined, packCRCs);
             continue;
         }
-        skipData(readNumber(buffer, pos), buffer, pos);
+        skipData(readNumber());
     }
 
     if (packCRCs.isEmpty()) {
@@ -588,27 +633,31 @@ bool K7Zip::K7ZipPrivate::readPackInfo(const char* buffer, int& pos)
     return true;
 }
 
-bool K7Zip::K7ZipPrivate::readUnpackInfo(const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::readUnpackInfo()
 {
-    if (!findAttribute(kFolder, buffer, pos)) {
+    if (!buffer) {
+        return false;
+    }
+
+    if (!findAttribute(kFolder)) {
         qDebug() << "kFolder not found";
         return false;
     }
 
-    int numFolders = readNumber(buffer, pos);
+    int numFolders = readNumber();
     folders.clear();
-    int external = readByte(buffer, pos);
+    int external = readByte();
     switch (external) {
     case 0:
     {
         for (int i = 0; i < numFolders; ++i) {
-            folders.append(folderItem(buffer, pos));
+            folders.append(folderItem());
         }
         break;
     }
     case 1:
     {
-        int dataIndex = readNumber(buffer, pos);
+        int dataIndex = readNumber();
         if (dataIndex < 0 /*|| dataIndex >= dataVector->Size()*/) {
             qDebug() << "wrong data index";
         }
@@ -621,7 +670,7 @@ bool K7Zip::K7ZipPrivate::readUnpackInfo(const char* buffer, int& pos)
     }
 
 
-    if(!findAttribute(kCodersUnpackSize, buffer, pos)) {
+    if(!findAttribute(kCodersUnpackSize)) {
         qDebug() << "kCodersUnpackSize not found";
         return false;
     }
@@ -633,19 +682,19 @@ bool K7Zip::K7ZipPrivate::readUnpackInfo(const char* buffer, int& pos)
             numOutStreams += folder->folderInfos[i]->numOutStreams;
         }
         for (int j = 0; j < numOutStreams; ++j) {
-            folder->unpackSizes.append(readNumber(buffer, pos));
+            folder->unpackSizes.append(readNumber());
         }
     }
 
     for (;;) {
-        int type = readByte(buffer, pos);
+        int type = readByte();
         if (type == kEnd) {
             break;
         }
         if (type == kCRC) {
             QVector<bool> crcsDefined;
             QVector<quint32> crcs;
-            readHashDigests(numFolders, crcsDefined, crcs, buffer, pos);
+            readHashDigests(numFolders, crcsDefined, crcs);
             for (int i = 0; i < numFolders; i++)
             {
                 Folder* folder = folders[i];
@@ -654,20 +703,24 @@ bool K7Zip::K7ZipPrivate::readUnpackInfo(const char* buffer, int& pos)
             }
             continue;
         }
-        skipData(readNumber(buffer, pos), buffer, pos);
+        skipData(readNumber());
     }
     return true;
 }
 
-bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::readSubStreamsInfo()
 {
+    if (!buffer) {
+        return false;
+    }
+
     QVector<quint64> numUnpackStreamsInFolders;
     int type;
     for (;;) {
-        type = readByte(buffer, pos);
+        type = readByte();
         if (type == kNumUnpackStream) {
             for (int i = 0; i < folders.size(); i++) {
-                numUnpackStreamsInFolders.append(readNumber(buffer, pos));
+                numUnpackStreamsInFolders.append(readNumber());
             }
             continue;
         }
@@ -675,7 +728,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
             break;
         if (type == kEnd)
             break;
-        skipData(readNumber(buffer, pos), buffer, pos);
+        skipData(readNumber());
     }
 
     if (numUnpackStreamsInFolders.isEmpty()) {
@@ -693,7 +746,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
         for (quint64 j = 1; j < numSubstreams; j++) {
             if (type == kSize)
             {
-                int size = readNumber(buffer, pos);
+                int size = readNumber();
                 unpackSizes.append(size);
                 sum += size;
             }
@@ -715,7 +768,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
     }
 
     if (type == kSize)
-        type = readByte(buffer, pos);
+        type = readByte();
 
     int numDigests = 0;
     int numDigestsTotal = 0;
@@ -732,7 +785,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
         if (type == kCRC) {
             QVector<bool> digestsDefined2;
             QVector<quint32> digests2;
-            readHashDigests(numDigests, digestsDefined2, digests2, buffer, pos);
+            readHashDigests(numDigests, digestsDefined2, digests2);
             int digestIndex = 0;
             for (int i = 0; i < folders.size(); i++)
             {
@@ -758,10 +811,10 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo(const char* buffer, int& pos)
 
             break;
         } else {
-            skipData(readNumber(buffer, pos), buffer, pos);
+            skipData(readNumber());
         }
 
-        type = readByte(buffer, pos);
+        type = readByte();
     }
     return true;
 }
@@ -821,11 +874,15 @@ static time_t toTimeT(const long long liTime)
     return  t.toTime_t();
 }
 
-bool K7Zip::K7ZipPrivate::readMainStreamsInfo(const char* buffer, int& pos)
+bool K7Zip::K7ZipPrivate::readMainStreamsInfo()
 {
+    if (!buffer) {
+        return false;
+    }
+
     quint32 type;
     for (;;) {
-        type = readByte(buffer, pos);
+        type = readByte();
         if (type > ((quint32)1 << 30)) {
             qDebug() << "type error";
             return false;
@@ -836,7 +893,7 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo(const char* buffer, int& pos)
             return true;
         case kPackInfo:
         {
-            if (!readPackInfo(buffer, pos)) {
+            if (!readPackInfo()) {
                 qDebug() << "error during read pack information";
                 return false;
             }
@@ -844,7 +901,7 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo(const char* buffer, int& pos)
         }
         case kUnpackInfo:
         {
-            if (!readUnpackInfo(buffer, pos)) {
+            if (!readUnpackInfo()) {
                 qDebug() << "error during read pack information";
                 return false;
             }
@@ -852,7 +909,7 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo(const char* buffer, int& pos)
         }
         case kSubStreamsInfo:
         {
-            if (!readSubStreamsInfo(buffer, pos)) {
+            if (!readSubStreamsInfo()) {
                 qDebug() << "error during read substreams information";
                 return false;
             }
@@ -868,10 +925,14 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo(const char* buffer, int& pos)
     return false;
 }
 
-QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(const char* buffer, int& pos, int& headerSize, bool readMainStreamInfo)
+QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamInfo)
 {
+    if (!buffer) {
+        return QByteArray();
+    }
+
     if (readMainStreamInfo)
-        readMainStreamsInfo(buffer, pos);
+        readMainStreamsInfo();
 
     QByteArray inflatedData;
 
@@ -901,8 +962,6 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(const char* buffer, i
             qDebug() << "unsupported";
             return inflatedData;
         }
-
-        qDebug() << "unpackSize" << unpackSize;
 
         char encodedBuffer[packSizes[packIndex]];
 
@@ -941,7 +1000,7 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(const char* buffer, i
         filter->init(QIODevice::ReadOnly);
         QByteArray deflatedData(encodedBuffer, packSizes[packIndex]);
 
-        const unsigned char lzmaHeader[13] = {0x5d, 0x00, 0x00, 0x80, 0x00, 0xe5, 0x75, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        const unsigned char lzmaHeader[13] = {0x5d, 0x00, 0x00, 0x80, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
         for (int i = 12; i >= 0; --i) {
             deflatedData.prepend(lzmaHeader[i]);
@@ -1029,10 +1088,10 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     int major = header[6];
     int minor = header[7];
 
-    if (major > 0 || minor > 2) {
+    /*if (major > 0 || minor > 2) {
         qDebug() << "wrong archive version";
         return false;
-    }
+    }*/
 
     // get Start Header CRC
     quint32 startHeaderCRC = GetUi32(header, 8);
@@ -1065,63 +1124,62 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     inBuffer.resize(nextHeaderSize);
 
     n = dev->read(inBuffer.data(), inBuffer.size());
-    char* buffer = inBuffer.data();
     if ( n != (qint64)nextHeaderSize ) {
         qDebug() << "Failed read next header size, should read " << nextHeaderSize << ", read " << n;
         return false;
     }
+    d->buffer = inBuffer.data();
     d->end = nextHeaderSize;
 
-    int headerSize = 32 + nextHeaderSize;
+    d->headerSize = 32 + nextHeaderSize;
     //int physSize = 32 + nextHeaderSize + nextHeaderOffset;
 
-    crc = crc32(0, (Bytef*)(buffer), (quint32)nextHeaderSize);
+    crc = crc32(0, (Bytef*)(d->buffer), (quint32)nextHeaderSize);
 
     if (crc != nextHeaderCRC) {
         qDebug() << "bad next header crc";
         return false;
     }
 
-    int cur = 0;
-    int type = d->readByte(buffer, cur);
+    int type = d->readByte();
     if (type != kHeader) {
         if (type != kEncodedHeader) {
             qDebug() << "error in header";
             return false;
         }
-        QByteArray decodedData = d->readAndDecodePackedStreams(buffer, cur, headerSize);
+        QByteArray decodedData = d->readAndDecodePackedStreams();
 
         QByteArray newHeader;
-        newHeader.resize(headerSize);
+        newHeader.resize(d->headerSize);
 
-        dev->seek(cur);
+        dev->seek(d->pos);
         quint64 n = dev->read(newHeader.data(), newHeader.size());
-        if ( n != (qint64) headerSize) {
+        if ( n != (qint64) d->headerSize) {
             qDebug() << "Failed read new header size, should read " << newHeader.size() << ", read " << n;
             return false;
         }
-        cur = 0;
-        d->end = headerSize;
+        d->pos = 0;
+        d->end = d->headerSize;
 
-        int external = d->readByte(buffer, cur);
+        int external = d->readByte();
         if (external != 0) {
-            int dataIndex = (int)d->readNumber(buffer, cur);
+            int dataIndex = (int)d->readNumber();
             if (dataIndex < 0 /*|| dataIndex >= dataVector->Size()*/) {
                 qDebug() << "dataIndex error";
             }
-            buffer = decodedData.data();
-            cur = 0;
+            d->buffer = decodedData.data();
+            d->pos = 0;
             d->end = decodedData.size();
         }
 
-        type = d->readByte(buffer, cur);
+        type = d->readByte();
         if (type != kHeader) {
             qDebug() << "error type should be kHeader";
             return false;
         }
     }
     // read header
-    type = d->readByte(buffer, cur);
+    type = d->readByte();
 
     if (type == kArchiveProperties) {
         // TODO : implement this part
@@ -1136,11 +1194,11 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     }
 
     if (type == kMainStreamsInfo) {
-        if (!d->readMainStreamsInfo(buffer, cur)) {
+        if (!d->readMainStreamsInfo()) {
             qDebug() << "error during read main streams information";
             return false;
         }
-        type = d->readByte(buffer, cur);
+        type = d->readByte();
     } else {
         for (int i = 0; i < d->folders.size(); ++i)
         {
@@ -1171,7 +1229,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     }
 
     //read files info
-    int numFiles = d->readNumber(buffer, cur);
+    int numFiles = d->readNumber();
     for (int i=0; i < numFiles; ++i) {
         d->fileInfos.append(new FileInfo);
     }
@@ -1183,13 +1241,13 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
 
     for (;;)
     {
-        quint64 type = d->readByte(buffer, cur);
+        quint64 type = d->readByte();
         if (type == kEnd)
             break;
 
-        quint64 size = d->readNumber(buffer, cur);
+        quint64 size = d->readNumber();
 
-        size_t ppp = cur;
+        size_t ppp = d->pos;
 
         bool addPropIdToList = true;
         bool isKnownType = true;
@@ -1201,7 +1259,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
             {
             case kEmptyStream:
             {
-                d->readBoolVector(numFiles, emptyStreamVector, buffer, cur);
+                d->readBoolVector(numFiles, emptyStreamVector);
                 for (int i = 0; i < emptyStreamVector.size(); ++i) {
                     if (emptyStreamVector[i]) {
                         numEmptyStreams++;
@@ -1211,35 +1269,35 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
                 break;
             }
             case kEmptyFile:
-                d->readBoolVector(numEmptyStreams, emptyFileVector, buffer, cur);
+                d->readBoolVector(numEmptyStreams, emptyFileVector);
                 break;
             case kAnti:
-                d->readBoolVector(numEmptyStreams, antiFileVector, buffer, cur);
+                d->readBoolVector(numEmptyStreams, antiFileVector);
                 break;
             case kCTime:
-                if(!d->readUInt64DefVector(numFiles, d->cTimes, buffer, cur)) {
+                if(!d->readUInt64DefVector(numFiles, d->cTimes)) {
                     qDebug() << "error read CTime";
                     return false;
                 }
                 break;
             case kATime:
-                if(!d->readUInt64DefVector(numFiles, d->aTimes, buffer, cur)) {
+                if(!d->readUInt64DefVector(numFiles, d->aTimes)) {
                     qDebug() << "error read ATime";
                     return false;
                 }
                 break;
             case kMTime:
-                if(!d->readUInt64DefVector(numFiles, d->mTimes, buffer, cur)) {
+                if(!d->readUInt64DefVector(numFiles, d->mTimes)) {
                     qDebug() << "error read MTime";
                     return false;
                 }
                 break;
             case kName:
             {
-                int external = d->readByte(buffer, cur);
+                int external = d->readByte();
                 if (external != 0) {
-                    int dataIndex = d->readNumber(buffer, cur);
-                    if (dataIndex < 0) {
+                    int dataIndex = d->readNumber();
+                    if (dataIndex < 0 /*|| dataIndex >= dataVector->Size()*/) {
                        qDebug() << "wrong data index";
                     }
 
@@ -1248,18 +1306,18 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
 
                 QString name;
                 for (int i = 0; i < numFiles; i++) {
-                    name = d->readString(buffer, cur);
-                    d->fileInfos[i]->name = name;
+                    name = d->readString();
+                    d->fileInfos[i]->path = name;
                 }
                 break;
             }
             case kAttributes:
             {
                 QVector<bool> attributesAreDefined;
-                d->readBoolVector2(numFiles, attributesAreDefined, buffer, cur);
-                int external = d->readByte(buffer, cur);
+                d->readBoolVector2(numFiles, attributesAreDefined);
+                int external = d->readByte();
                 if (external != 0) {
-                    int dataIndex = d->readNumber(buffer, cur);
+                    int dataIndex = d->readNumber();
                     if (dataIndex < 0) {
                         qDebug() << "wrong data index";
                     }
@@ -1272,13 +1330,13 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
                     FileInfo* fileInfo = d->fileInfos[i];
                     fileInfo->attribDefined = attributesAreDefined[i];
                     if (fileInfo->attribDefined) {
-                        fileInfo->attributes = d->readUInt32(buffer, cur);
+                        fileInfo->attributes = d->readUInt32();
                     }
                 }
                 break;
             }
             case kStartPos:
-                if(!d->readUInt64DefVector(numFiles, d->startPositions, buffer, cur)) {
+                if(!d->readUInt64DefVector(numFiles, d->startPositions)) {
                     qDebug() << "error read MTime";
                     return false;
                 }
@@ -1286,7 +1344,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
             case kDummy:
             {
                 for (quint64 i = 0; i < size; i++) {
-                    if (d->readByte(buffer, cur) != 0) {
+                    if (d->readByte() != 0) {
                         qDebug() << "invalid";
                         return false;
                     }
@@ -1304,12 +1362,12 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
                 d->fileInfoPopIDs.append(type);
             }
         } else {
-            d->skipData(d->readNumber(buffer, cur), buffer, cur);
+            d->skipData(d->readNumber());
         }
 
         bool checkRecordsSize = (major > 0 ||
                                  minor > 2);
-        if (checkRecordsSize && cur - ppp != size) {
+        if (checkRecordsSize && d->pos - ppp != size) {
             qDebug() << "error read size failed";
             return false;
         }
@@ -1409,136 +1467,49 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
 
         KArchiveEntry* e;
+        QString entryName;
+        int index = fileInfo->path.lastIndexOf(QLatin1Char('/'));
+        if ( index == -1 ) {
+            entryName = fileInfo->path;
+        } else {
+            entryName = fileInfo->path.mid( index + 1 );
+        }
+        Q_ASSERT( !entryName.isEmpty() );
+
         if (fileInfo->isDir) {
-            QString path = QDir::cleanPath( fileInfo->name );
+            QString path = QDir::cleanPath( fileInfo->path );
             const KArchiveEntry* ent = rootDir()->entry( path );
             if ( ent && ent->isDirectory() ) {
                 e = 0;
             } else {
-                e = new KArchiveDirectory( this, fileInfo->name.mid(fileInfo->name.lastIndexOf(QLatin1String("/")) + 1 ), access, toTimeT(d->mTimes[i]), rootDir()->user(), rootDir()->group(), QString()/*symlink*/ );
+                e = new KArchiveDirectory( this, entryName, access, toTimeT(d->mTimes[i]), rootDir()->user(), rootDir()->group(), QString()/*symlink*/ );
             }
         } else {
-            e = new KArchiveFile( this, fileInfo->name.mid(fileInfo->name.lastIndexOf(QLatin1String("/")) + 1), access, toTimeT(d->mTimes[i]), rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size );
+            e = new KArchiveFile( this, entryName, access, toTimeT(d->mTimes[i]), rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size );
         }
 
         if (e) {
-            int spos = fileInfo->name.lastIndexOf(QLatin1String("/"));
-            if (spos == -1) {
+            if (index == -1) {
                 rootDir()->addEntry( e );
             } else {
-                QString path = QDir::cleanPath( fileInfo->name.left( spos ) );
+                QString path = QDir::cleanPath( fileInfo->path.left( index ) );
                 KArchiveDirectory * d = findOrCreate( path );
                 d->addEntry( e );
             }
         }
     }
 
-    // TODO : move this code in method and share this with readAndDecodePackedStreams
-
-    QByteArray inflatedData;
-    int packIndex = 0;
-    for (int i = 0; i < d->folders.size(); i++)
-    {
-        const Folder* folder = d->folders[i];
-        quint64 unpackSize64 = 0;
-        // GetUnpackSize
-        if (!folder->unpackSizes.isEmpty()) {
-            for (int j = folder->unpackSizes.size() - 1; j >= 0; j--) {
-                bool found = false;
-                for (int k = 0; k < folder->outIndexes.size(); ++k) {
-                    if (folder->outIndexes[j] == folder->unpackSizes[j]) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    unpackSize64 = folder->unpackSizes[j];
-                    break;
-                }
-            }
-        }
-        size_t unpackSize = (size_t)unpackSize64;
-        if (unpackSize != unpackSize64) {
-            qDebug() << "unsupported";
-            return false;
-        }
-
-        char encodedBuffer[d->packSizes[packIndex]];
-
-        QString method;
-        for (int w = 0; w < d->folders.size(); ++w) {
-            for (int g = 0; g < d->folders[w]->folderInfos.size(); ++g) {
-                Folder::FolderInfo* info = d->folders[w]->folderInfos[g];
-                switch (info->methodID) {
-                case k_LZMA:
-                   method = QLatin1String("LZMA:16");
-                   break;
-                case k_AES:
-                   break;
-                }
-            }
-        }
-
-        qint64 packPosition = packIndex == 0 ? d->packPos + 32 /*header size*/ : d->packPos + d->packSizes[packIndex-1];
-
-        QIODevice* dev = device();
-        dev->seek(packPosition);
-        quint64 n = dev->read(encodedBuffer, d->packSizes[packIndex]);
-        if ( n != d->packSizes[packIndex] ) {
-            qDebug() << "Failed read next header size, should read " << d->packSizes[packIndex] << ", read " << n;
-            return false;
-        }
-
-        // Create Filter
-        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
-        if (!filter) {
-            qDebug() << "filter not found";
-            return false;
-        }
-
-        filter->init(QIODevice::ReadOnly);
-        QByteArray deflatedData(encodedBuffer, d->packSizes[packIndex]);
-
-        const unsigned char lzmaHeader[13] = {0x5d, 0x00, 0x00, 0x80, 0x00, 0xe5, 0x75, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-        for (int i = 12; i >= 0; --i) {
-            deflatedData.prepend(lzmaHeader[i]);
-        }
-
-        filter->setInBuffer(deflatedData.data(), deflatedData.size());
-
-        QByteArray outBuffer;
-        // reserve memory
-        outBuffer.resize(unpackSize);
-
-        KFilterBase::Result result = KFilterBase::Ok;
-        while (result != KFilterBase::End && result != KFilterBase::Error && !filter->inBufferEmpty()) {
-            filter->setOutBuffer(outBuffer.data(), outBuffer.size());
-            result = filter->uncompress();
-            if (result == KFilterBase::Error) {
-                qDebug() << " decode error";
-                return false;
-            }
-            int uncompressedBytes = outBuffer.size() - filter->outBufferAvailable();
-
-            // append the uncompressed data to inflate buffer
-            inflatedData.append(outBuffer.data(), uncompressedBytes);
-
-            if (result == KFilterBase::End) {
-                break; // Finished.
-            }
-        }
-
-        filter->terminate();
-        delete filter;
-
-        QBuffer* out = new QBuffer();
-        QByteArray* array = new QByteArray();
-        array->append(inflatedData);
-        out->setBuffer(array);
-        out->open(QIODevice::ReadOnly);
-        setDevice(out);
+    QByteArray decodedData = d->readAndDecodePackedStreams(false);
+    if (decodedData.isEmpty()) {
+        return false;
     }
+
+    QBuffer* out = new QBuffer();
+    QByteArray* array = new QByteArray();
+    array->append(decodedData);
+    out->setBuffer(array);
+    out->open(QIODevice::ReadOnly);
+    setDevice(out);
 
     return true;
 }
