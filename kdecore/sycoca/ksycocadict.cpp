@@ -225,19 +225,21 @@ KSycocaDict::clear()
 
 uint KSycocaDict::Private::hashKey( const QString &key) const
 {
-   int l = key.length();
-   register uint h = 0;
+   int len = key.length();
+   uint h = 0;
 
    for(int i = 0; i < hashList.count(); i++)
    {
       int pos = hashList[i];
-      if (pos < 0) {
-         pos = -pos-1;
-         if (pos < l)
-            h = ((h * 13) + (key[l-pos].cell() % 29)) & 0x3ffffff;
+      if (pos == 0) {
+	continue;
+      } else if (pos < 0) {
+         pos = -pos;
+         if (pos < len)
+            h = ((h * 13) + (key[len-pos].cell() % 29)) & 0x3ffffff;
       } else {
          pos = pos-1;
-         if (pos < l)
+         if (pos < len)
             h = ((h * 13) + (key[pos].cell() % 29)) & 0x3ffffff;
       }
    }
@@ -258,7 +260,7 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
 //  the 2nd character from the right, then the 1st from the left, then the 3rd from the left.
 
 // Calculate the diversity of the strings at position 'pos'
-// NOTE: this code is slow, it takes 30% of the _overall_ `kbuildsycoca4 --noincremental` running time
+// NOTE: this code is slow, it takes 12% of the _overall_ `kbuildsycoca4 --noincremental` running time
 static int
 calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
 {
@@ -270,13 +272,13 @@ calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
     //int numItem = 0;
 
     if (inPos < 0) {
-        pos = -inPos-1;
-        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+        pos = -inPos;
+        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
         {
             string_entry* entry = *it;
-            register int l = entry->length;
-            if (pos < l && pos != 0) {
-                register uint hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3ffffff;
+            int len = entry->length;
+            if (pos < len) {
+                uint hash = ((entry->hash * 13) + (entry->key[len-pos].cell() % 29)) & 0x3ffffff;
                 matrix.setBit( hash % sz, true );
             }
             //if (++numItem == s_maxItems)
@@ -284,25 +286,18 @@ calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
         }
     } else {
         pos = inPos-1;
-        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+        for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
         {
             string_entry* entry = *it;
             if (pos < entry->length) {
-                register uint hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3ffffff;
+                uint hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3ffffff;
                 matrix.setBit( hash % sz, true );
             }
             //if (++numItem == s_maxItems)
             //    break;
         }
     }
-    int diversity = 0;
-    for (uint i=0;i< sz;++i)
-        if (matrix.testBit(i))
-            ++diversity;
-
-    //kDebug() << "inPos=" << inPos << "pos=" << pos << "diversity=" << diversity;
-
-    return diversity;
+    return matrix.count(true);
 }
 
 //
