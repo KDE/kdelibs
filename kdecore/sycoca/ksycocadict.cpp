@@ -231,10 +231,8 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
    for(int i = 0; i < hashList.count(); i++)
    {
       int pos = hashList[i];
-      if (pos == 0) {
-	continue;
-      } else if (pos < 0) {
-         pos = -pos;
+      if (pos < 0) {
+         pos = -pos-1;
          if (pos < len)
             h = ((h * 13) + (key[len-pos].cell() % 29)) & 0x3ffffff;
       } else {
@@ -272,12 +270,12 @@ calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
     //int numItem = 0;
 
     if (inPos < 0) {
-        pos = -inPos;
+        pos = -inPos-1;
         for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
         {
             string_entry* entry = *it;
             int len = entry->length;
-            if (pos < len) {
+            if (pos < len && pos != 0) {
                 uint hash = ((entry->hash * 13) + (entry->key[len-pos].cell() % 29)) & 0x3ffffff;
                 matrix.setBit( hash % sz, true );
             }
