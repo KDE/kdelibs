@@ -102,6 +102,14 @@ QList<Action> parse(QSettings &ini)
                 }
                 action.policy = policy;
 
+            } else if (key.toLower() == QLatin1String("policyinactive")) {
+                QString policyInactive = ini.value(key).toString();
+                if (!policyExp.exactMatch(policyInactive)) {
+                    qCritical("Wrong policy: %s", policyInactive.toAscii().data());
+                    exit(1);
+                }
+                action.policyInactive = policyInactive;
+
             } else if (key.toLower() == QLatin1String("persistence")) {
                 QString persistence = ini.value(key).toString();
                 if (persistence != QLatin1String("session") && persistence != QLatin1String("always")) {

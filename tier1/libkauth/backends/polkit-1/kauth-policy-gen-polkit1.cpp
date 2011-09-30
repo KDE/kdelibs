@@ -33,8 +33,8 @@ const char header[] = ""
 
 const char policy_tag[] = ""
                           "      <defaults>\n"
-                          "         <allow_inactive>no</allow_inactive>\n"
-                          "         <allow_active>%1</allow_active>\n"
+                          "         <allow_inactive>%1</allow_inactive>\n"
+                          "         <allow_active>%2</allow_active>\n"
                           "      </defaults>\n";
 
 const char dent[] = "   ";
@@ -103,12 +103,17 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
         }
 
         QString policy = action.policy;
+        QString policyInactive = action.policyInactive.isEmpty() ? QLatin1String("no") : action.policyInactive;
         if (!action.persistence.isEmpty() && policy != QLatin1String("yes") && policy !=
                 QLatin1String("no")) {
             policy += QLatin1String("_keep");
         }
+        if (!action.persistence.isEmpty() && policyInactive != QLatin1String("yes") && policyInactive !=
+                QLatin1String("no")) {
+            policyInactive += QLatin1String("_keep");
+        }
 
-        out << QString(QLatin1String(policy_tag)).arg(policy);
+        out << QString(QLatin1String(policy_tag)).arg(policyInactive).arg(policy);
 
         out << dent << "</action>\n";
     }
