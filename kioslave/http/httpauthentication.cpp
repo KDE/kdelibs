@@ -315,6 +315,7 @@ void KAbstractHttpAuthentication::reset()
     m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
+    m_keepPassword = false;
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
@@ -352,6 +353,7 @@ void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
     a->verifyPath = supportsPathMatching();
     a->realmValue = realm();
     a->digestInfo = QLatin1String(authDataToCache());
+    a->keepPassword = m_keepPassword;
 }
 
 
