@@ -3075,10 +3075,13 @@ endParsing:
                         if (auth->realm().isEmpty() && !auth->supportsPathMatching())
                             setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
                     }
+
+                    kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
+
                     if (authinfo.keepPassword) {
                         cacheAuthentication(authinfo);
+                        kDebug(7113) << "Cached authentication for" << m_request.url;
                     }
-                    kDebug(7113) << "Caching authentication for" << m_request.url;
                 }
                 // Update our server connection state which includes www and proxy username and password.
                 m_server.updateCredentials(m_request);
@@ -3494,6 +3497,7 @@ endParsing:
 
                     if (generateAuthorization) {
                         (*auth)->generateResponse(username, password);
+                        (*auth)->setCachePasswordEnabled(authinfo.keepPassword);
 
                         kDebug(7113) << "Auth State: isError=" << (*auth)->isError()
                                      << "needCredentials=" << (*auth)->needCredentials()
@@ -5310,10 +5314,12 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         if (!dataEntered) {
             kDebug(7103) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
+            return;
         }
     }
     authenticator->setUser(info.username);
     authenticator->setPassword(info.password);
+    authenticator->setOption(QLatin1String("keepalive"), info.keepPassword);
 
     if (m_socketProxyAuth) {
         *m_socketProxyAuth = *authenticator;
@@ -5340,6 +5346,7 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
         a.realmValue = m_socketProxyAuth->realm();
         a.username = m_socketProxyAuth->user();
         a.password = m_socketProxyAuth->password();
+        a.keepPassword = m_socketProxyAuth->option(QLatin1String("keepalive")).toBool();
         cacheAuthentication(a);
     }
     delete m_socketProxyAuth;
