@@ -651,9 +651,11 @@ QStringList Wallet::folderList() {
 QStringList Wallet::entryList() {
     if (walletLauncher->m_useKSecretsService) {
         QStringList result;
-        ReadCollectionItemsJob *readItemsJob = d->secretsCollection->items();
+        StringStringMap attrs;
+        attrs[KSS_ATTR_ENTRYFOLDER] = d->folder;
+        SearchCollectionItemsJob *readItemsJob = d->secretsCollection->searchItems( attrs );
         if ( readItemsJob->exec() ) {
-            foreach( ReadCollectionItemsJob::Item item, readItemsJob->items() ) {
+            foreach( SearchCollectionItemsJob::Item item, readItemsJob->items() ) {
                 ReadItemPropertyJob *readLabelJob = item->label();
                 if ( readLabelJob->exec() ) {
                     result.append( readLabelJob->propertyValue().toString() );

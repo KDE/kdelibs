@@ -31,6 +31,7 @@
 #include <klocalizedstring.h>
 #include <fcntl.h>
 #include <ktoolinvocation.h>
+#include <QDBusMetaType>
 
 using namespace KSecretsService;
 
@@ -77,6 +78,7 @@ void OpenSessionJob::start()
         qDBusRegisterMetaType<StringStringMap>();
         qDBusRegisterMetaType<ObjectPathSecretMap>();
         qDBusRegisterMetaType<StringVariantMap>();
+        qDBusRegisterMetaType< QList<QDBusObjectPath> >();
         
         // launch the daemon if it's not yet started
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
