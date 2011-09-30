@@ -210,7 +210,7 @@ bool KSaveFile::finalize()
             extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
         if (extraSync) {
             if (flush()) {
-                forever {
+                Q_FOREVER {
                     if (!FDATASYNC(handle()))
                         break;
                     if (errno != EINTR) {
@@ -378,7 +378,7 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
     d.setSorting( QDir::Name );
 
     uint maxBackupFound = 0;
-    foreach ( const QFileInfo &fi, d.entryInfoList() ) {
+    Q_FOREACH ( const QFileInfo &fi, d.entryInfoList() ) {
         if ( fi.fileName().endsWith( backupExtension ) ) {
             // sTemp holds the file name, without the ending backupExtension
             QString sTemp = fi.fileName();

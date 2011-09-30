@@ -193,7 +193,7 @@ KUrl::List::List(const QList<KUrl> &list)
 
 KUrl::List::List(const QList<QUrl> &list)
 {
-    foreach(const QUrl& url, list) {
+    Q_FOREACH(const QUrl& url, list) {
         append(KUrl(url));
     }
 }
@@ -345,7 +345,7 @@ KUrl::List KUrl::List::fromMimeData(const QMimeData *mimeData,
         const QByteArray metaDataPayload = mimeData->data(QLatin1String("application/x-kio-metadata"));
         if ( !metaDataPayload.isEmpty() )
         {
-            QString str = QString::fromUtf8( metaDataPayload );
+            QString str = QString::fromUtf8( metaDataPayload.data() );
             Q_ASSERT(str.endsWith(QLatin1String("$@@$")));
             str.truncate( str.length() - 4 );
             const QStringList lst = str.split(QLatin1String("$@@$"));
@@ -379,7 +379,7 @@ KUrl::List::operator QVariant() const
 KUrl::List::operator QList<QUrl>() const
 {
     QList<QUrl> list;
-    foreach(const KUrl& url, *this) {
+    Q_FOREACH(const KUrl& url, *this) {
         list << url;
     }
     return list;
@@ -479,7 +479,7 @@ KUrl::KUrl( const QByteArray& str )
       setPath( QString::fromUtf8( str ) );
 #else
     if ( str[0] == '/' || str[0] == '~' )
-      setPath( QString::fromUtf8( str ) );
+      setPath( QString::fromUtf8( str.data() ) );
 #endif
     else
       _setEncodedUrl( str );
@@ -825,7 +825,7 @@ QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPath
         encodedPath = trailingSlash(trailing, QString::fromLatin1(QUrl::encodedPath()));
     }
 #else
-    encodedPath = trailingSlash(trailing, QString::fromLatin1(QUrl::encodedPath()));
+    encodedPath = trailingSlash(trailing, QString::fromLatin1(QUrl::encodedPath().data()));
 #endif
 
     if ((options & AvoidEmptyPath) && encodedPath.isEmpty()) {
@@ -833,7 +833,7 @@ QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPath
     }
 
     if (hasQuery()) {
-        return encodedPath + QLatin1Char('?') + QString::fromLatin1(encodedQuery());
+        return encodedPath + QLatin1Char('?') + QString::fromLatin1(encodedQuery().data());
     } else {
         return encodedPath;
     }
@@ -888,9 +888,7 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         urlWithoutHost.setHost(QString());
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
-#ifdef __GNUC__
-#warning FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.
-#endif
+#pragma message("FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.")
 #ifndef Q_WS_WIN
     if (isLocalFile()) {
         return trailingSlash(trailing, QUrl::path());
@@ -946,7 +944,7 @@ void KUrl::setFileEncoding(const QString &encoding)
          ++it;
   }
   if (!encoding.isEmpty())
-      args.append(QLatin1String("charset=") + QString::fromLatin1(QUrl::toPercentEncoding(encoding)));
+     args.append(QLatin1String("charset=") + QString::fromLatin1(QUrl::toPercentEncoding(encoding).data()));
 
   if (args.isEmpty())
      _setQuery(QString());
@@ -1043,7 +1041,7 @@ QString KUrl::url( AdjustPathOption trailing ) const
       // Let's hope this is fast, or not called often...
       QUrl newUrl( *this );
       newUrl.setPath( path() + QLatin1Char('/') );
-      return QString::fromLatin1(newUrl.toEncoded());
+      return QString::fromLatin1(newUrl.toEncoded().data());
   }
   else if ( trailing == RemoveTrailingSlash) {
       const QString cleanedPath = trailingSlash(trailing, path());
@@ -1051,12 +1049,12 @@ QString KUrl::url( AdjustPathOption trailing ) const
           if (path() != QLatin1String("/")) {
               QUrl fixedUrl = *this;
               fixedUrl.setPath(cleanedPath);
-              return QLatin1String(fixedUrl.toEncoded(None));
+              return QLatin1String(fixedUrl.toEncoded(None).data());
           }
-          return QLatin1String(toEncoded(None));
+          return QLatin1String(toEncoded(None).data());
       }
   }
-  return QString::fromLatin1(toEncoded(trailing == RemoveTrailingSlash ? StripTrailingSlash : None));
+  return QString::fromLatin1(toEncoded(trailing == RemoveTrailingSlash ? StripTrailingSlash : None).data());
 }
 
 static QString toPrettyPercentEncoding(const QString &input, bool forFragment)
@@ -1104,7 +1102,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   QString tmp = userName();
   if (!tmp.isEmpty()) {
-    result += QString::fromLatin1(QUrl::toPercentEncoding(tmp));
+    result += QString::fromLatin1(QUrl::toPercentEncoding(tmp).data());
     result += QLatin1Char('@');
   }
 
@@ -1135,7 +1133,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   if (hasQuery()) {
     result += QLatin1Char('?');
-    result += QString::fromLatin1(encodedQuery());
+    result += QString::fromLatin1(encodedQuery().data());
   }
 
   if (hasFragment()) {
@@ -1589,14 +1587,14 @@ QString KUrl::query() const
   if (!hasQuery()) {
     return QString();
   }
-  return QString(QLatin1Char('?')) + QString::fromLatin1(encodedQuery());
+  return QString(QLatin1Char('?')) + QString::fromLatin1(encodedQuery().data());
 }
 
 void KUrl::_setEncodedUrl(const QByteArray& url)
 {
   setEncodedUrl(url, QUrl::TolerantMode);
   if (!isValid()) // see unit tests referring to N183630/task 183874
-    setUrl(QString::fromUtf8(url), QUrl::TolerantMode);
+    setUrl(QString::fromUtf8(url.data()), QUrl::TolerantMode);
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -1804,7 +1802,7 @@ QMap< QString, QString > KUrl::queryItems( int options ) const {
 
 QMap< QString, QString > KUrl::queryItems( const QueryItemsOptions &options ) const
 {
-  const QString strQueryEncoded = QString::fromLatin1(encodedQuery());
+  const QString strQueryEncoded = QString::fromLatin1(encodedQuery().data());
   if ( strQueryEncoded.isEmpty() )
     return QMap<QString,QString>();
 
@@ -1837,7 +1835,7 @@ QMap< QString, QString > KUrl::queryItems( const QueryItemsOptions &options ) co
 
 QString KUrl::queryItem( const QString& _item ) const
 {
-  const QString strQueryEncoded = QString::fromLatin1(encodedQuery());
+  const QString strQueryEncoded = QString::fromLatin1(encodedQuery().data());
   const QString item = _item + QLatin1Char('=');
   if ( strQueryEncoded.length() <= 1 )
     return QString();
@@ -1865,9 +1863,9 @@ QString KUrl::queryItem( const QString& _item ) const
 void KUrl::addQueryItem( const QString& _item, const QString& _value )
 {
   QString item = _item + QLatin1Char('=');
-  QString value = QString::fromLatin1(QUrl::toPercentEncoding(_value));
+  QString value = QString::fromLatin1(QUrl::toPercentEncoding(_value).data());
 
-  QString strQueryEncoded = QString::fromLatin1(encodedQuery());
+  QString strQueryEncoded = QString::fromLatin1(encodedQuery().data());
   if (!strQueryEncoded.isEmpty())
      strQueryEncoded += QLatin1Char('&');
   strQueryEncoded += item + value;
@@ -1900,7 +1898,7 @@ QString KUrl::ref() const
   if ( fragment().isNull() )
     return QString();
   else
-    return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ) );
+    return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ).data() );
 }
 
 bool KUrl::isParentOf( const KUrl& u ) const

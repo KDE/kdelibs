@@ -145,7 +145,7 @@ KCmdLineOptions &KCmdLineOptions::add (const QByteArray &name,
 {
     d->names.append(name);
     d->descriptions.append(description);
-    d->defaults.append(QString::fromUtf8(defaultValue));
+    d->defaults.append(QString::fromUtf8(defaultValue.data()));
     return *this;
 }
 
@@ -430,7 +430,7 @@ void
 KCmdLineArgs::initIgnore(int _argc, char **_argv, const QByteArray &_appname )
 {
    init(_argc, _argv,
-        new KAboutData(_appname, 0, ki18n(_appname), "unknown", ki18n("KDE Application")));
+        new KAboutData(_appname, 0, ki18n(_appname.data()), "unknown", ki18n("KDE Application")));
    s->ignoreUnknown = true;
 }
 
@@ -475,7 +475,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
 
 QString KCmdLineArgs::cwd()
 {
-   return QString::fromLocal8Bit(s->mCwd);
+   return QString::fromLocal8Bit(s->mCwd.data());
 }
 
 QString KCmdLineArgs::appName()
@@ -795,7 +795,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (s->ignoreUnknown)
          return;
       KCmdLineArgs::enable_i18n();
-      KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
+      KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt.data())));
    }
 
    if ((result & 4) != 0)
@@ -811,7 +811,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (s->ignoreUnknown)
             return;
          KCmdLineArgs::enable_i18n();
-         KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
+         KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt.data())));
       }
       if (argument.isEmpty())
       {
@@ -819,7 +819,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (i >= s->all_argc)
          {
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError( i18nc("@info:shell %1 is cmdoption name","'%1' missing.",  QString::fromLocal8Bit(opt_name)));
+            KCmdLineArgs::usageError( i18nc("@info:shell %1 is cmdoption name","'%1' missing.",  QString::fromLocal8Bit(opt_name.data())));
          }
          argument = s->all_argv[i];
       }
@@ -840,7 +840,7 @@ KCmdLineArgsStatic::parseAllArgs()
    KCmdLineArgs *appOptions = s->argsList->last();
    if (appOptions->d->id.isEmpty())
    {
-     foreach(const QByteArray& name, appOptions->d->options.d->names)
+     Q_FOREACH(const QByteArray& name, appOptions->d->options.d->names)
      {
        everythingAfterArgIsArgs = everythingAfterArgIsArgs || name.startsWith("!+");
        allowArgs = allowArgs || name.startsWith('+') || everythingAfterArgIsArgs;
@@ -934,7 +934,7 @@ KCmdLineArgsStatic::parseAllArgs()
            if (option.startsWith("no")) // krazy:exclude=strings
            {
               bool noHasParameter=false;
-              foreach(const QByteArray& name, appOptions->d->options.d->names)
+              Q_FOREACH(const QByteArray& name, appOptions->d->options.d->names)
               {
                  if (name.contains(option + QByteArray(" ")) && name.contains('<'))
                  {
@@ -1047,7 +1047,7 @@ KCmdLineArgs::qtArgv()
    int i = 0;
    for(; i < count; i++)
    {
-      s_qt_argv[i+1] = qstrdup(args->d->parsedArgList->at(i));
+      s_qt_argv[i+1] = qstrdup(args->d->parsedArgList->at(i).data());
    }
    s_qt_argv[i+1] = 0;
 
@@ -1128,9 +1128,9 @@ KCmdLineArgs::usage(const QByteArray &id)
      {
        QByteArray opt_name = option.d->names[i];
        if (opt_name.startsWith('+'))
-           usage += QString::fromLatin1(opt_name.mid(1)) + QLatin1Char(' ');
+         usage += QString::fromLatin1(opt_name.mid(1).data()) + QLatin1Char(' ');
        else if ( opt_name.startsWith("!+") )
-          usage += QString::fromLatin1(opt_name.mid(2)) + QLatin1Char(' ');
+         usage += QString::fromLatin1(opt_name.mid(2).data()) + QLatin1Char(' ');
      }
    }
 
@@ -1146,7 +1146,7 @@ KCmdLineArgs::usage(const QByteArray &id)
    {
       if (!(*args)->d->name.isEmpty() && !(*args)->d->id.isEmpty())
       {
-          QString option = QString::fromLatin1("--help-%1").arg(QString::fromLatin1((*args)->d->id));
+         QString option = QString::fromLatin1("--help-%1").arg(QString::fromLatin1((*args)->d->id.data()));
          QString desc = i18n("Show %1 specific options", (*args)->d->name.toString());
 
          s->printQ(optionFormatString.arg(option, -25).arg(desc));
@@ -1246,7 +1246,7 @@ KCmdLineArgs::usage(const QByteArray &id)
             name = name.mid(1);
             if (name.startsWith('[') && name.endsWith(']'))
                 name = name.mid(1, name.length()-2);
-            s->printQ(optionFormatString.arg(QString::fromLocal8Bit(name), -25).arg(description));
+            s->printQ(optionFormatString.arg(QString::fromLocal8Bit(name.data()), -25).arg(description));
          }
          else
          {
@@ -1269,11 +1269,11 @@ KCmdLineArgs::usage(const QByteArray &id)
                opt = opt + name;
                if (option.d->defaults[i].isEmpty())
                {
-                   s->printQ(optionFormatString.arg(QString::fromLatin1(opt), -25).arg(description));
+                   s->printQ(optionFormatString.arg(QString::fromLatin1(opt.data()), -25).arg(description));
                }
                else
                {
-                   s->printQ(optionFormatStringDef.arg(QString::fromLatin1(opt), -25)
+                   s->printQ(optionFormatStringDef.arg(QString::fromLatin1(opt.data()), -25)
                             .arg(description, option.d->defaults[i]));
                }
                opt.clear();
@@ -1434,7 +1434,7 @@ KCmdLineArgs::getOption(const QByteArray &_opt) const
       value = d->parsedOptionList->value(opt);
    }
    if (!value.isEmpty())
-       return QString::fromLocal8Bit(value);
+      return QString::fromLocal8Bit(value.data());
 
    // Look up the default.
    QByteArray opt_name;
@@ -1467,7 +1467,7 @@ KCmdLineArgs::getOptionList(const QByteArray &opt) const
       QByteArray value = d->parsedOptionList->take(opt);
       if (value.isEmpty())
          break;
-      result.prepend(QString::fromLocal8Bit(value));
+      result.prepend(QString::fromLocal8Bit(value.data()));
    }
 
    // Reinsert items in dictionary
@@ -1551,7 +1551,7 @@ KCmdLineArgs::arg(int n) const
       exit(255);
    }
 
-   return QString::fromLocal8Bit(d->parsedArgList->at(n));
+   return QString::fromLocal8Bit(d->parsedArgList->at(n).data());
 }
 
 KUrl
@@ -1562,7 +1562,7 @@ KCmdLineArgs::url(int n) const
 
 KUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
 {
-    const QString urlArg = QString::fromUtf8(_urlArg);
+    const QString urlArg = QString::fromUtf8(_urlArg.data());
     QFileInfo fileInfo(urlArg);
     if (!fileInfo.isRelative()) { // i.e. starts with '/', on unix
         KUrl result;

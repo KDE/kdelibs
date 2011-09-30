@@ -516,7 +516,7 @@ QChar KCharsets::fromEntity(const QString &str)
     }
 
     const QByteArray raw ( str.toLatin1() );
-    const entity *e = kde_findEntity( raw, raw.length() );
+    const entity *e = kde_findEntity( raw.data(), raw.length() );
 
     if(!e)
     {
@@ -623,7 +623,7 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
 {
     const char* lang = kcharsets_array_search( language_for_encoding_string,
                                                language_for_encoding_indices,
-                                               encoding.toUtf8() );
+                                               encoding.toUtf8().data() );
     if ( lang )
         return i18nc( "@item %1 character set, %2 encoding", "%1 ( %2 )",
                       i18nc( "@item Text character set", lang ), encoding );
@@ -773,7 +773,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognize it.
-    QByteArray cname = kcharsets_array_search( builtin_string, builtin_indices, name);
+    QByteArray cname = kcharsets_array_search( builtin_string, builtin_indices, name.data());
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
@@ -786,7 +786,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
     // this also failed, the last resort is now to take some compatibility charmap
     // ### TODO: while emergency conversions might be useful at read, it is not sure if they should be done if the application plans to write.
-    cname = kcharsets_array_search( conversion_hints_string, conversion_hints_indices, name );
+    cname = kcharsets_array_search( conversion_hints_string, conversion_hints_indices, name.data() );
 
     if (!cname.isEmpty()) {
         codec = QTextCodec::codecForName(cname);

@@ -128,7 +128,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 	        << endl;
 
    mode_t umsk = KGlobal::umask();
-   if(chmod(nme, mode&(~umsk)) < 0) {
+   if(chmod(nme.data(), mode&(~umsk)) < 0) {
        kWarning(180) << "KTempDir: Unable to change permissions on" << d->tmpName
                      << ":" << ::strerror(errno);
        d->error = errno;
@@ -141,7 +141,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    d->exists = true;
 
    // Set uid/gid (necessary for SUID programs)
-   if(chown(nme, getuid(), getgid()) < 0) {
+   if(chown(nme.data(), getuid(), getgid()) < 0) {
        // Just warn, but don't failover yet
        kWarning(180) << "KTempDir: Unable to change owner on" << d->tmpName
                      << ":" << ::strerror(errno);
@@ -245,13 +245,13 @@ static bool rmtree(const QByteArray& name)
             return false;
         }
         //kDebug(180) << "RMDIR dir " << name;
-        return ! ::rmdir( name );
+        return ! ::rmdir( name.data() );
     }
     else
     {
         // This is a non-directory file, so remove it
         //kDebug(180) << "KTempDir: unlinking file" << name;
-        return ! ::unlink( name );
+        return ! ::unlink( name.data() );
     }
 }
 #endif

@@ -114,7 +114,7 @@ bool KJob::kill( KillVerbosity verbosity )
         else
         {
             // If we are displaying a progress dialog, remove it first.
-            emit finished(this);
+            Q_EMIT finished(this);
 
             if ( isAutoDelete() )
                 deleteLater();
@@ -136,7 +136,7 @@ bool KJob::suspend()
         if ( doSuspend() )
         {
             d->suspended = true;
-            emit suspended(this);
+            Q_EMIT suspended(this);
 
             return true;
         }
@@ -153,7 +153,7 @@ bool KJob::resume()
         if ( doResume() )
         {
             d->suspended = false;
-            emit resumed(this);
+            Q_EMIT resumed(this);
 
             return true;
         }
@@ -262,9 +262,9 @@ void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 
     if ( should_emit )
     {
-        emit processedAmount(this, unit, amount);
+        Q_EMIT processedAmount(this, unit, amount);
         if (unit==d->progressUnit) {
-            emit processedSize(this, amount);
+            Q_EMIT processedSize(this, amount);
             emitPercent(d->processedAmount[unit], d->totalAmount[unit]);
         }
     }
@@ -279,9 +279,9 @@ void KJob::setTotalAmount(Unit unit, qulonglong amount)
 
     if ( should_emit )
     {
-        emit totalAmount(this, unit, amount);
+        Q_EMIT totalAmount(this, unit, amount);
         if (unit==d->progressUnit) {
-            emit totalSize(this, amount);
+            Q_EMIT totalSize(this, amount);
             emitPercent(d->processedAmount[unit], d->totalAmount[unit]);
         }
     }
@@ -293,7 +293,7 @@ void KJob::setPercent( unsigned long percentage )
     if ( d->percentage!=percentage )
     {
         d->percentage = percentage;
-        emit percent( this, percentage );
+        Q_EMIT percent( this, percentage );
     }
 }
 
@@ -307,9 +307,9 @@ void KJob::emitResult()
     }
 
     // If we are displaying a progress dialog, remove it first.
-    emit finished( this );
+    Q_EMIT finished( this );
 
-    emit result( this );
+    Q_EMIT result( this );
 
     if ( isAutoDelete() )
         deleteLater();
@@ -323,7 +323,7 @@ void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
         unsigned long oldPercentage = d->percentage;
         d->percentage = (unsigned long)(( (float)(processedAmount) / (float)(totalAmount) ) * 100.0);
         if ( d->percentage != oldPercentage ) {
-            emit percent( this, d->percentage );
+            Q_EMIT percent( this, d->percentage );
         }
     }
 }
@@ -336,7 +336,7 @@ void KJob::emitSpeed(unsigned long value)
         connect(d->speedTimer, SIGNAL(timeout()), SLOT(_k_speedTimeout()));
     }
 
-    emit speed(this, value);
+    Q_EMIT speed(this, value);
     d->speedTimer->start(5000);   // 5 seconds interval should be enough
 }
 
@@ -345,7 +345,7 @@ void KJobPrivate::_k_speedTimeout()
     Q_Q(KJob);
     // send 0 and stop the timer
     // timer will be restarted only when we receive another speed event
-    emit q->speed(q, 0);
+    Q_EMIT q->speed(q, 0);
     speedTimer->stop();
 }
 

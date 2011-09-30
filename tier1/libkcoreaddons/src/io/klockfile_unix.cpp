@@ -158,9 +158,9 @@ static bool testLinkCountSupport(const QByteArray &fileName)
    KDE_struct_stat st_buf;
    int result = -1;
    // Check if hardlinks raise the link count at all?
-   if(!::link( fileName, QByteArray(fileName+".test") )) {
-     result = KDE_lstat( fileName, &st_buf );
-     ::unlink( QByteArray(fileName+".test") );
+   if(!::link( fileName.data(), QByteArray(fileName+".test").data() )) {
+     result = KDE_lstat( fileName.data(), &st_buf );
+     ::unlink( QByteArray(fileName+".test").data() );
    }
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }
@@ -208,7 +208,7 @@ void KLockFile::Private::readLockFile()
 KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_buf)
 {
   const QByteArray lockFileName = QFile::encodeName( m_fileName );
-  int result = KDE_lstat( lockFileName, &st_buf );
+  int result = KDE_lstat( lockFileName.data(), &st_buf );
   if (result == 0) {
      return KLockFile::LockFail;
   }
@@ -223,7 +223,7 @@ KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_b
   QByteArray uniqueName = QFile::encodeName( uniqueFile.fileName() );
 
   // Create lock file
-  result = ::link( uniqueName, lockFileName );
+  result = ::link( uniqueName.data(), lockFileName.data() );
   if (result != 0)
      return KLockFile::LockError;
 
@@ -231,11 +231,11 @@ KLockFile::LockResult KLockFile::Private::lockFileWithLink(KDE_struct_stat &st_b
      return KLockFile::LockOK;
 
   KDE_struct_stat st_buf2;
-  result = KDE_lstat( uniqueName, &st_buf2 );
+  result = KDE_lstat( uniqueName.data(), &st_buf2 );
   if (result != 0)
      return KLockFile::LockError;
 
-  result = KDE_lstat( lockFileName, &st_buf );
+  result = KDE_lstat( lockFileName.data(), &st_buf );
   if (result != 0)
      return KLockFile::LockError;
 
@@ -292,7 +292,7 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(KDE_struct_stat &st_buf)
     writeIntoLockFile(m_file);
 
     // stat to get the modification time
-    const int result = KDE_lstat(QFile::encodeName(m_fileName), &st_buf);
+    const int result = KDE_lstat(QFile::encodeName(m_fileName).data(), &st_buf);
     if (result != 0)
         return KLockFile::LockError;
     return KLockFile::LockOK;
@@ -329,7 +329,7 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
     delete ktmpFile;
 
    // link to lock file
-   if (::link(lckFile, tmpFile) != 0)
+   if (::link(lckFile.data(), tmpFile.data()) != 0)
       return KLockFile::LockFail; // Try again later
 
    // check if link count increased with exactly one
@@ -338,14 +338,14 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
    KDE_struct_stat st_buf2;
    memcpy(&st_buf1, &statBuf, sizeof(KDE_struct_stat));
    st_buf1.st_nlink++;
-   if ((KDE_lstat(tmpFile, &st_buf2) == 0) && st_buf1 == st_buf2)
+   if ((KDE_lstat(tmpFile.data(), &st_buf2) == 0) && st_buf1 == st_buf2)
    {
-      if ((KDE_lstat(lckFile, &st_buf2) == 0) && st_buf1 == st_buf2)
+      if ((KDE_lstat(lckFile.data(), &st_buf2) == 0) && st_buf1 == st_buf2)
       {
          // - - if yes, delete lock file, delete temp file, retry lock
          qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
-         ::unlink(lckFile);
-         ::unlink(tmpFile);
+         ::unlink(lckFile.data());
+         ::unlink(tmpFile.data());
          return KLockFile::LockOK;
       }
    }
@@ -360,8 +360,8 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
    {
       // Without support for link counts we will have a little race condition
       qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
-      ::unlink(tmpFile);
-      if (::unlink(lckFile) < 0) {
+      ::unlink(tmpFile.data());
+      if (::unlink(lckFile.data()) < 0) {
           qWarning("WARNING: Problem deleting stale lockfile %s: %s", lckFile.data(),
                   strerror(errno));
           return KLockFile::LockFail;
@@ -371,7 +371,7 @@ KLockFile::LockResult KLockFile::Private::deleteStaleLockWithLink()
 
    // Failed to delete stale lock file
    qWarning("WARNING: Problem deleting stale lockfile %s", lckFile.data());
-   ::unlink(tmpFile);
+   ::unlink(tmpFile.data());
    return KLockFile::LockFail;
 }
 
@@ -481,7 +481,7 @@ void KLockFile::unlock()
 {
   if (d->isLocked)
   {
-     ::unlink(QFile::encodeName(d->m_fileName));
+      ::unlink(QFile::encodeName(d->m_fileName).data());
       if (d->mustCloseFd) {
          close(d->m_file.handle());
          d->mustCloseFd = false;

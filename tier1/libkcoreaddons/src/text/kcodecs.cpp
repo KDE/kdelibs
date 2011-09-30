@@ -727,7 +727,7 @@ QString KCodecs::decodeRFC2047String(const QString &msg)
         decodedText = codec->toUnicode(tmpOut);
         decodedText = decodedText.replace(QLatin1Char('_'), QLatin1Char(' '));
     } else {
-        decodedText = QString::fromLocal8Bit(tmpOut.replace('_', ' '));
+        decodedText = QString::fromLocal8Bit(tmpOut.replace('_', ' ').data());
     }
 
     return decodedText + notEncodedText;
@@ -868,7 +868,7 @@ bool KMD5::verify( const KMD5::Digest& digest)
 bool KMD5::verify( const QByteArray& hexdigest)
 {
     finalize();
-    return (0 == strcmp(hexDigest().data(), hexdigest));
+    return (0 == strcmp(hexDigest().data(), hexdigest.data()));
 }
 
 const KMD5::Digest& KMD5::rawDigest()

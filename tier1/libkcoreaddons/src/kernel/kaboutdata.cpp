@@ -74,8 +74,8 @@ KAboutPerson::KAboutPerson( const KLocalizedString &_name,
 {
    d->_name = _name;
    d->_task = _task;
-   d->_emailAddress = QString::fromUtf8(_emailAddress);
-   d->_webAddress = QString::fromUtf8(_webAddress);
+   d->_emailAddress = QString::fromUtf8(_emailAddress.data());
+   d->_webAddress = QString::fromUtf8(_webAddress.data());
 }
 
 KAboutPerson::KAboutPerson( const KLocalizedString &_name,
@@ -87,9 +87,9 @@ KAboutPerson::KAboutPerson( const KLocalizedString &_name,
 {
    d->_name = _name;
    d->_task = _task;
-   d->_emailAddress = QString::fromUtf8(_emailAddress);
-   d->_webAddress = QString::fromUtf8(_webAddress);
-   d->_ocsUsername = QString::fromUtf8( _ocsUsername );
+   d->_emailAddress = QString::fromUtf8(_emailAddress.data());
+   d->_webAddress = QString::fromUtf8(_webAddress.data());
+   d->_ocsUsername = QString::fromUtf8( _ocsUsername.data() );
 }
 
 KAboutPerson::KAboutPerson( const QString &_name, const QString &_email )
@@ -453,7 +453,7 @@ KAboutData::KAboutData( const QByteArray &_appName,
     d->_licenseList.append(KAboutLicense(licenseType,this));
     d->_copyrightStatement = _copyrightStatement;
     d->_otherText = text;
-    d->_homepageAddress = QString::fromLatin1(homePageAddress);
+    d->_homepageAddress = QString::fromLatin1(homePageAddress.data());
     d->_bugEmailAddress = bugsEmailAddress;
 
     if (d->_homepageAddress.contains(QLatin1String("http://"))) {
@@ -654,7 +654,7 @@ KAboutData &KAboutData::setOtherText( const KLocalizedString &_otherText )
 
 KAboutData &KAboutData::setHomepage( const QByteArray &_homepage )
 {
-  d->_homepageAddress = QString::fromLatin1(_homepage);
+  d->_homepageAddress = QString::fromLatin1(_homepage.data());
   return *this;
 }
 
@@ -666,19 +666,19 @@ KAboutData &KAboutData::setBugAddress( const QByteArray &_bugAddress )
 
 KAboutData &KAboutData::setOrganizationDomain( const QByteArray &domain )
 {
-  d->organizationDomain = QString::fromLatin1(domain);
+  d->organizationDomain = QString::fromLatin1(domain.data());
   return *this;
 }
 
 KAboutData &KAboutData::setProductName( const QByteArray &_productName )
 {
-  d->productName = QString::fromUtf8(_productName);
+  d->productName = QString::fromUtf8(_productName.data());
   return *this;
 }
 
 QString KAboutData::appName() const
 {
-  return QString::fromUtf8(d->_appName);
+  return QString::fromUtf8(d->_appName.data());
 }
 
 QString KAboutData::productName() const
@@ -739,13 +739,13 @@ KAboutData &KAboutData::setProgramLogo(const QVariant& image)
 QString KAboutData::ocsProviderUrl() const
 {
     if( !d->_ocsProviderUrl.isEmpty() )
-        return QString::fromUtf8( d->_ocsProviderUrl );
+      return QString::fromUtf8( d->_ocsProviderUrl.data() );
     return QString();
 }
 
 QString KAboutData::version() const
 {
-   return QString::fromUtf8(d->_version);
+    return QString::fromUtf8(d->_version.data());
 }
 
 /// @internal
@@ -766,9 +766,9 @@ QString KAboutData::shortDescription() const
 QString KAboutData::catalogName() const
 {
    if (!d->_catalogName.isEmpty())
-     return QString::fromUtf8(d->_catalogName);
+     return QString::fromUtf8(d->_catalogName.data());
    // Fallback to appname for catalog name if empty.
-   return QString::fromUtf8(d->_appName);
+   return QString::fromUtf8(d->_appName.data());
 }
 
 QString KAboutData::homepage() const
@@ -778,7 +778,7 @@ QString KAboutData::homepage() const
 
 QString KAboutData::bugAddress() const
 {
-   return QString::fromUtf8(d->_bugEmailAddress);
+   return QString::fromUtf8(d->_bugEmailAddress.data());
 }
 
 QString KAboutData::organizationDomain() const

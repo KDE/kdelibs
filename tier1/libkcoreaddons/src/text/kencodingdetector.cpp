@@ -729,7 +729,7 @@ bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource 
         if(enc=="visual")
             enc="iso8859-8";
         bool b;
-        codec = KGlobal::charsets()->codecForName(QLatin1String(enc), b);
+        codec = KGlobal::charsets()->codecForName(QLatin1String(enc.data()), b);
         if (!b)
             return false;
     }
@@ -991,7 +991,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 int length;
                 int pos = findXMLEncoding(str, length);
                 // also handles the case when specified encoding aint correct
-                if (pos!=-1 && setEncoding(str.mid(pos, length), EncodingFromXMLHeader))
+                if (pos!=-1 && setEncoding(str.mid(pos, length).data(), EncodingFromXMLHeader))
                 {
                     return true;
                 }
@@ -1064,7 +1064,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
     #ifdef DECODE_DEBUG
                 kDebug( 6005 ) << "KEncodingDetector: found charset in <meta>: " << str.mid(pos,endpos-pos).data();
     #endif
-                if (setEncoding(str.mid(pos,endpos-pos), EncodingFromMetaTag))
+                if (setEncoding(str.mid(pos,endpos-pos).data(), EncodingFromMetaTag))
                     return true;
             }
             else if (tmp[0]=='b'&&tmp[1]=='o'&&tmp[2]=='d'&&tmp[3]=='y')
@@ -1085,31 +1085,31 @@ bool KEncodingDetector::analyze(const char *data, int len)
     switch ( d->m_autoDetectLanguage)
     {
         case KEncodingDetector::Arabic:
-            return setEncoding(automaticDetectionForArabic( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForArabic( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::Baltic:
-            return setEncoding(automaticDetectionForBaltic( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForBaltic( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::CentralEuropean:
-            return setEncoding(automaticDetectionForCentralEuropean( (const unsigned char*) data, len ), AutoDetectedEncoding);
-            break;
+            return setEncoding(automaticDetectionForCentralEuropean( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
+//            break;
         case KEncodingDetector::Cyrillic:
-            return setEncoding(automaticDetectionForCyrillic( (const unsigned char*) data, len), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForCyrillic( (const unsigned char*) data, len).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::Greek:
-            return setEncoding(automaticDetectionForGreek( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForGreek( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::Hebrew:
-            return setEncoding(automaticDetectionForHebrew( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForHebrew( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::Japanese:
-            return setEncoding(automaticDetectionForJapanese( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForJapanese( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::Turkish:
-            return setEncoding(automaticDetectionForTurkish( (const unsigned char*) data, len ), AutoDetectedEncoding);
+            return setEncoding(automaticDetectionForTurkish( (const unsigned char*) data, len ).data(), AutoDetectedEncoding);
 //             break;
         case KEncodingDetector::WesternEuropean:
-            if (setEncoding(automaticDetectionForWesternEuropean( (const unsigned char*) data, len ), AutoDetectedEncoding))
+            if (setEncoding(automaticDetectionForWesternEuropean( (const unsigned char*) data, len ).data(), AutoDetectedEncoding))
                 return true;
             else if (d->m_defaultCodec->mibEnum()==MibLatin1) //detection for khtml
             {
