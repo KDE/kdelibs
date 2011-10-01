@@ -22,6 +22,8 @@
 #include <kprocess.h>
 #include <kstandarddirs.h>
 
+#include <qstandardpaths.h>
+
 class KFileMetaDataReader::Private
 {
 public:
