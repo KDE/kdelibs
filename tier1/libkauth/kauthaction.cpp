@@ -306,7 +306,7 @@ ActionReply Action::execute(const QString &helperID) const
 {
     // Is the action valid?
     if (!isValid()) {
-        return Invalid;
+        return ActionReply::InvalidActionReply;
     }
 
     // What to do?
@@ -345,13 +345,13 @@ ActionReply Action::execute(const QString &helperID) const
         }
     } else {
         // What?
-        return Invalid;
+        return ActionReply::InvalidActionReply;
     }
 
     if (d->async) {
         if (hasHelper()) {
             // It makes no sense
-            return Invalid;
+            return ActionReply::InvalidActionReply;
         }
 
         return executeActions(QList<Action>() << *this, NULL, helperID) ?
