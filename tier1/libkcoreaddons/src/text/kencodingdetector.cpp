@@ -36,12 +36,12 @@
 
 #include "guess_ja_p.h"
 
+#include <QDebug>
 #include <QRegExp>
 #include <QTextCodec>
 
 #include <kglobal.h>
 #include <kcharsets.h>
-#include <kdebug.h>
 #include <klocale.h>
 
 #include <ctype.h>
@@ -193,7 +193,7 @@ static QByteArray automaticDetectionForCentralEuropean(const unsigned char* ptr,
 static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int size)
 {
 #ifdef DECODE_DEBUG
-        kWarning() << "KEncodingDetector: Cyr heuristics";
+        qWarning() << "KEncodingDetector: Cyr heuristics";
 #endif
 
 //     if (ptr[0]==0xef && ptr[1]==0xbb && ptr[2]==0xbf)
@@ -300,7 +300,7 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
     if (3*utf8_mark>cp1251_small_range+koi_small_range+ibm866_small_range)
     {
 #ifdef DECODE_DEBUG
-        kWarning() << "Cyr Enc Detection: UTF8";
+        qWarning() << "Cyr Enc Detection: UTF8";
 #endif
         return "UTF-8";
     }
@@ -364,7 +364,7 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
     else if (cp1251_s_capital || koi_s_capital)
         koi_score+=9;
 #ifdef DECODE_DEBUG
-    kWarning()<<"koi_score " << koi_score << " cp1251_score " << cp1251_score;
+    qWarning()<<"koi_score " << koi_score << " cp1251_score " << cp1251_score;
 #endif
     if (abs(koi_score-cp1251_score)<10)
     {
@@ -609,7 +609,7 @@ static const unsigned char highest5Bits = 0xF8;
                 continue;
             }
 #ifdef DECODE_DEBUG
-            kWarning() << "EncDetector: Broken UTF8";
+            qWarning() << "EncDetector: Broken UTF8";
 #endif
             return true;
         }
@@ -639,7 +639,7 @@ static const unsigned char highest5Bits = 0xF8;
             continue;
         }
 #ifdef DECODE_DEBUG
-        kWarning() << "EncDetector:_Broken UTF8";
+        qWarning() << "EncDetector:_Broken UTF8";
 #endif
         return true;
     }
@@ -764,7 +764,7 @@ bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource 
     delete d->m_decoder;
     d->m_decoder = d->m_codec->makeDecoder();
 #ifdef DECODE_DEBUG
-    kDebug(6005) << "KEncodingDetector::encoding used is" << d->m_codec->name();
+    qDebug() << "KEncodingDetector::encoding used is" << d->m_codec->name();
 #endif
     return true;
 }
@@ -796,12 +796,12 @@ QString KEncodingDetector::decode(const QByteArray &data)
 QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
 {
 #ifdef DECODE_DEBUG
-        kWarning() << "KEncodingDetector: decoding "<<len<<" bytes";
+        qWarning() << "KEncodingDetector: decoding "<<len<<" bytes";
 #endif
     if (d->m_writtingHappened)
     {
 #ifdef DECODE_DEBUG
-        kWarning() << "KEncodingDetector: d->m_writtingHappened "<< d->m_codec->name();
+        qWarning() << "KEncodingDetector: d->m_writtingHappened "<< d->m_codec->name();
 #endif
         processNull(const_cast<char *>(data),len);
         return d->m_decoder->toUnicode(data, len);
@@ -815,7 +815,7 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
             if (analyze(data,len) && (d->m_seenBody || d->isExplicitlySpecifiedEncoding()))
             {
 #ifdef DECODE_DEBUG
-                kWarning() << "KEncodingDetector: m_writtingHappened first time "<< d->m_codec->name();
+                qWarning() << "KEncodingDetector: m_writtingHappened first time "<< d->m_codec->name();
 #endif
                 processNull(const_cast<char *>(data),len);
                 d->m_writtingHappened=true;
@@ -824,7 +824,7 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
             else
             {
 #ifdef DECODE_DEBUG
-                kWarning() << "KEncodingDetector: begin deffer";
+                qWarning() << "KEncodingDetector: begin deffer";
 #endif
                 d->m_bufferForDefferedEncDetection=data;
             }
@@ -843,7 +843,7 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
                 QString result(d->m_decoder->toUnicode(d->m_bufferForDefferedEncDetection));
                 d->m_bufferForDefferedEncDetection.clear();
 #ifdef DECODE_DEBUG
-                kWarning() << "KEncodingDetector: m_writtingHappened in the middle " << d->m_codec->name();
+                qWarning() << "KEncodingDetector: m_writtingHappened in the middle " << d->m_codec->name();
 #endif
                 return result;
             }
@@ -867,7 +867,7 @@ QString KEncodingDetector::flush()
     QString result(d->m_decoder->toUnicode(d->m_bufferForDefferedEncDetection));
     d->m_bufferForDefferedEncDetection.clear();
 #ifdef DECODE_DEBUG
-    kWarning() << "KEncodingDetector:flush() "<< d->m_bufferForDefferedEncDetection.length()<<" bytes "<< d->m_codec->name();
+    qWarning() << "KEncodingDetector:flush() "<< d->m_bufferForDefferedEncDetection.length()<<" bytes "<< d->m_codec->name();
 #endif
     return result;
 }
@@ -927,7 +927,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
             delete d->m_decoder;
             d->m_decoder = d->m_codec->makeDecoder();
 #ifdef DECODE_DEBUG
-            kWarning() << "Detection by BOM";
+            qWarning() << "Detection by BOM";
 #endif
             if (is16Bit(d->m_codec) && c2==0x00)
             {
@@ -943,7 +943,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
     if (d->m_source==UserChosenEncoding)
     {
 #ifdef DECODE_DEBUG
-        kWarning() << "KEncodingDetector: UserChosenEncoding exit ";
+        qWarning() << "KEncodingDetector: UserChosenEncoding exit ";
 #endif
 
         if (errorsIfUtf8(data, len))
@@ -1062,7 +1062,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                                     && str[endpos] != ';' && str[endpos] != '>') )
                     ++endpos;
     #ifdef DECODE_DEBUG
-                kDebug( 6005 ) << "KEncodingDetector: found charset in <meta>: " << str.mid(pos,endpos-pos).data();
+                qDebug() << "KEncodingDetector: found charset in <meta>: " << str.mid(pos,endpos-pos).data();
     #endif
                 if (setEncoding(str.mid(pos,endpos-pos).data(), EncodingFromMetaTag))
                     return true;
@@ -1079,7 +1079,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
         return false;
 
 #ifdef DECODE_DEBUG
-    kDebug( 6005 ) << "KEncodingDetector: using heuristics (" << strlen(data) << ")";
+    qDebug() << "KEncodingDetector: using heuristics (" << strlen(data) << ")";
 #endif
 
     switch ( d->m_autoDetectLanguage)

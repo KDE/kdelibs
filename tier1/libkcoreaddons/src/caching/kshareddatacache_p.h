@@ -22,17 +22,13 @@
 
 #include <config-util.h> // HAVE_SYS_MMAN_H
 
+#include <QtCore/QDebug>
 #include <QtCore/QSharedPointer>
 
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
-
-#include <kdebug.h>
-
-// Our debug area, disabled by default
-int ksdcArea();
 
 // Mac OS X, for all its POSIX compliance, does not support timeouts on its
 // mutexes, which is kind of a disaster for cross-process support. However
@@ -396,7 +392,7 @@ static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
 #endif
 
     default:
-        kError(ksdcArea()) << "Creating shell of a lock!";
+        qCritical() << "Creating shell of a lock!";
         return new KSDCLock;
     }
 }
@@ -410,7 +406,7 @@ static bool ensureFileAllocated(int fd, size_t fileSize)
     }
 
     if (result < 0) {
-        kError(ksdcArea()) << "The operating system is unable to promise"
+        qCritical() << "The operating system is unable to promise"
                            << fileSize
                            << "bytes for mapped cache, "
                               "abandoning the cache for crash-safety.";
@@ -423,7 +419,7 @@ static bool ensureFileAllocated(int fd, size_t fileSize)
 #ifdef __GNUC__
 #warning "This system does not seem to support posix_fallocate, which is needed to ensure KSharedDataCache's underlying files are fully committed to disk to avoid crashes with low disk space."
 #endif
-    kWarning(ksdcArea()) << "This system misses support for posix_fallocate()"
+    qWarning() << "This system misses support for posix_fallocate()"
                             " -- ensure this partition has room for at least"
                          << fileSize << "bytes.";
 

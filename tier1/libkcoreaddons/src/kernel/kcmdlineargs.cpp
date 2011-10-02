@@ -17,7 +17,6 @@
 */
 
 #include "kcmdlineargs.h"
-#include <kdebug.h>
 
 #include <config.h>
 
@@ -35,6 +34,7 @@
 #endif
 
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
@@ -599,7 +599,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
        }
      }
      if (!found) {
-         kWarning() << "Argument definitions for" << id << "not found!";
+         qWarning() << "Argument definitions for" << id << "not found!";
          // The next ds >> id will do nonsensical things...
      }
    }

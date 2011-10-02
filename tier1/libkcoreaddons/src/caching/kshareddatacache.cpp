@@ -23,12 +23,12 @@
 #include "kshareddatacache.h"
 #include "kshareddatacache_p.h" // Various auxiliary support code
 
-#include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <krandom.h>
 
 #include <QtCore/QDateTime>
+#include <QtCore/QDebug>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QByteArray>
 #include <QtCore/QFile>
@@ -40,12 +40,6 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <stdlib.h>
-
-int ksdcArea()
-{
-    static int s_ksdcArea = KDebug::registerArea("KSharedDataCache", false);
-    return s_ksdcArea;
-}
 
 //-----------------------------------------------------------------------------
 // MurmurHashAligned, by Austin Appleby
@@ -382,19 +376,19 @@ struct SharedMemory
     bool performInitialSetup(uint _cacheSize, uint _pageSize)
     {
         if (_cacheSize < MINIMUM_CACHE_SIZE) {
-            kError(ksdcArea()) << "Internal error: Attempted to create a cache sized < "
+            qCritical() << "Internal error: Attempted to create a cache sized < "
                         << MINIMUM_CACHE_SIZE;
             return false;
         }
 
         if (_pageSize == 0) {
-            kError(ksdcArea()) << "Internal error: Attempted to create a cache with 0-sized pages.";
+            qCritical() << "Internal error: Attempted to create a cache with 0-sized pages.";
             return false;
         }
 
         shmLock.type = findBestSharedLock();
         if (static_cast<int>(shmLock.type) == 0) {
-            kError(ksdcArea()) << "Unable to find an appropriate lock to guard the shared cache. "
+            qCritical() << "Unable to find an appropriate lock to guard the shared cache. "
                         << "This *should* be essentially impossible. :(";
             return false;
         }
@@ -403,12 +397,12 @@ struct SharedMemory
         QSharedPointer<KSDCLock> tempLock(createLockFromId(shmLock.type, shmLock));
 
         if (!tempLock->initialize(isProcessShared)) {
-            kError(ksdcArea()) << "Unable to initialize the lock for the cache!";
+            qCritical() << "Unable to initialize the lock for the cache!";
             return false;
         }
 
         if (!isProcessShared) {
-            kWarning(ksdcArea()) << "Cache initialized, but does not support being"
+            qWarning() << "Cache initialized, but does not support being"
                           << "shared across processes.";
         }
 
@@ -612,7 +606,7 @@ struct SharedMemory
             return; // That was easy
         }
 
-        kDebug(ksdcArea()) << "Defragmenting the shared cache";
+        qDebug() << "Defragmenting the shared cache";
 
         // Just do a linear scan, and anytime there is free space, swap it
         // with the pages to its right. In order to meet the precondition
@@ -733,13 +727,13 @@ struct SharedMemory
     uint removeUsedPages(uint numberNeeded)
     {
         if (numberNeeded == 0) {
-            kError(ksdcArea()) << "Internal error: Asked to remove exactly 0 pages for some reason.";
+            qCritical() << "Internal error: Asked to remove exactly 0 pages for some reason.";
             return pageTableSize();
         }
 
         if (numberNeeded > pageTableSize()) {
-            kError(ksdcArea()) << "Internal error: Requested more space than exists in the cache.";
-            kError(ksdcArea()) << numberNeeded << "requested, " << pageTableSize() << "is the total possible.";
+            qCritical() << "Internal error: Requested more space than exists in the cache.";
+            qCritical() << numberNeeded << "requested, " << pageTableSize() << "is the total possible.";
             return pageTableSize();
         }
 
@@ -749,7 +743,7 @@ struct SharedMemory
         // eviction order set for the cache until there is enough room
         // available to hold the number of pages we need.
 
-        kDebug(ksdcArea()) << "Removing old entries to free up" << numberNeeded << "pages,"
+        qDebug() << "Removing old entries to free up" << numberNeeded << "pages,"
                     << cacheAvail << "are already theoretically available.";
 
         if (cacheAvail > 3 * numberNeeded) {
@@ -760,7 +754,7 @@ struct SharedMemory
                 return result;
             }
             else {
-                kError(ksdcArea()) << "Just defragmented a locked cache, but still there"
+                qCritical() << "Just defragmented a locked cache, but still there"
                             << "isn't enough room for the current request.";
             }
         }
@@ -771,7 +765,7 @@ struct SharedMemory
         QSharedPointer<IndexTableEntry> tablePtr(new IndexTableEntry[indexTableSize()], deleteTable);
 
         if (!tablePtr) {
-            kError(ksdcArea()) << "Unable to allocate temporary memory for sorting the cache!";
+            qCritical() << "Unable to allocate temporary memory for sorting the cache!";
             clearInternalTables();
             return pageTableSize();
         }
@@ -829,12 +823,12 @@ struct SharedMemory
             // pagesRemoved < numberNeeded or in other words we can't fulfill
             // the request even if we defragment. This is really a logic error.
             if (curIndex < 0) {
-                kError(ksdcArea()) << "Unable to remove enough used pages to allocate"
+                qCritical() << "Unable to remove enough used pages to allocate"
                               << numberNeeded << "pages. In theory the cache is empty, weird.";
                 return pageTableSize();
             }
 
-            kDebug(ksdcArea()) << "Removing entry of" << indexTable()[curIndex].totalItemSize
+            qDebug() << "Removing entry of" << indexTable()[curIndex].totalItemSize
                         << "size";
             removeEntry(curIndex);
         }
@@ -936,7 +930,7 @@ class KSharedDataCache::Private
         m_lock.clear();
 
         if (shm && !::munmap(shm, m_mapSize)) {
-            kError(ksdcArea()) << "Unable to unmap shared memory segment"
+            qCritical() << "Unable to unmap shared memory segment"
                 << static_cast<void*>(shm);
         }
 
@@ -973,7 +967,7 @@ class KSharedDataCache::Private
         void *mapAddress = MAP_FAILED;
 
         if (size < cacheSize) {
-            kError(ksdcArea()) << "Asked for a cache size less than requested size somehow -- Logic Error :(";
+            qCritical() << "Asked for a cache size less than requested size somehow -- Logic Error :(";
             return;
         }
 
@@ -1001,7 +995,7 @@ class KSharedDataCache::Private
                 if (mapped->version != SharedMemory::PIXMAP_CACHE_VERSION &&
                     mapped->version > 0)
                 {
-                    kWarning(ksdcArea()) << "Deleting wrong version of cache" << cacheName;
+                    qWarning() << "Deleting wrong version of cache" << cacheName;
 
                     // CAUTION: Potentially recursive since the recovery
                     // involves calling this function again.
@@ -1039,7 +1033,7 @@ class KSharedDataCache::Private
         // shared memory. If we don't get shared memory the disk info is ignored,
         // if we do get shared memory we never look at disk again.
         if (mapAddress == MAP_FAILED) {
-            kWarning(ksdcArea()) << "Failed to establish shared memory mapping, will fallback"
+            qWarning() << "Failed to establish shared memory mapping, will fallback"
                           << "to private memory -- memory usage will increase";
 
             mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -1048,7 +1042,7 @@ class KSharedDataCache::Private
         // Well now we're really hosed. We can still work, but we can't even cache
         // data.
         if (mapAddress == MAP_FAILED) {
-            kError(ksdcArea()) << "Unable to allocate shared memory segment for shared data cache"
+            qCritical() << "Unable to allocate shared memory segment for shared data cache"
                         << cacheName << "of size" << cacheSize;
             return;
         }
@@ -1070,7 +1064,7 @@ class KSharedDataCache::Private
         while (shm->ready != 2) {
             if (usecSleepTime >= (1 << 21)) {
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
-                kError(ksdcArea()) << "Unable to acquire shared lock, is the cache corrupt?";
+                qCritical() << "Unable to acquire shared lock, is the cache corrupt?";
 
                 file.remove(); // Unlink the cache in case it's corrupt.
                 detachFromSharedMemory();
@@ -1079,7 +1073,7 @@ class KSharedDataCache::Private
 
             if (shm->ready.testAndSetAcquire(0, 1)) {
                 if (!shm->performInitialSetup(cacheSize, pageSize)) {
-                    kError(ksdcArea()) << "Unable to perform initial setup, this system probably "
+                    qCritical() << "Unable to perform initial setup, this system probably "
                                    "does not really support process-shared pthreads or "
                                    "semaphores, even though it claims otherwise.";
 
@@ -1101,7 +1095,7 @@ class KSharedDataCache::Private
         bool isProcessSharingSupported = false;
 
         if (!m_lock->initialize(isProcessSharingSupported)) {
-            kError(ksdcArea()) << "Unable to setup shared cache lock, although it worked when created.";
+            qCritical() << "Unable to setup shared cache lock, although it worked when created.";
             detachFromSharedMemory();
         }
     }
@@ -1147,13 +1141,13 @@ class KSharedDataCache::Private
                 d->recoverCorruptedCache();
 
                 if (!d->shm) {
-                    kWarning(ksdcArea()) << "Lost the connection to shared memory for cache"
+                    qWarning() << "Lost the connection to shared memory for cache"
                                   << d->m_cacheName;
                     return false;
                 }
 
                 if (lockCount++ > 4) {
-                    kError(ksdcArea()) << "There is a very serious problem with the KDE data cache"
+                    qCritical() << "There is a very serious problem with the KDE data cache"
                                 << d->m_cacheName << "giving up trying to access cache.";
                     d->detachFromSharedMemory();
                     return false;
@@ -1176,7 +1170,7 @@ class KSharedDataCache::Private
                 // A while loop? Indeed, think what happens if this happens
                 // twice -- hard to debug race conditions.
                 while (testSize > d->m_mapSize) {
-                    kDebug(ksdcArea()) << "Someone enlarged the cache on us,"
+                    qDebug() << "Someone enlarged the cache on us,"
                                 << "attempting to match new configuration.";
 
                     // Protect against two threads accessing this same KSDC
@@ -1200,7 +1194,7 @@ class KSharedDataCache::Private
 
                     QFile f(d->m_cacheName);
                     if (!f.open(QFile::ReadWrite)) {
-                        kError(ksdcArea()) << "Unable to re-open cache, unfortunately"
+                        qCritical() << "Unable to re-open cache, unfortunately"
                                     << "the connection had to be dropped for"
                                     << "crash safety -- things will be much"
                                     << "slower now.";
@@ -1210,7 +1204,7 @@ class KSharedDataCache::Private
                     void *newMap = ::mmap(0, testSize, PROT_READ | PROT_WRITE,
                                           MAP_SHARED, f.handle(), 0);
                     if (newMap == MAP_FAILED) {
-                        kError(ksdcArea()) << "Unopen to re-map the cache into memory"
+                        qCritical() << "Unopen to re-map the cache into memory"
                                     << "things will be much slower now";
                         return;
                     }
@@ -1260,7 +1254,7 @@ void SharedMemory::removeEntry(uint index)
     IndexTableEntry *entriesIndex = indexTable();
 
     if (entriesIndex[index].firstPage < 0) {
-        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
+        qDebug() << "Trying to remove an entry which is already invalid. This "
                     << "cache is likely corrupt.";
 
         clearInternalTables(); // The nuclear option...
@@ -1270,14 +1264,14 @@ void SharedMemory::removeEntry(uint index)
     // Update page table first
     pageID firstPage = entriesIndex[index].firstPage;
     if (firstPage < 0 || static_cast<quint32>(firstPage) >= pageTableSize()) {
-        kError(ksdcArea()) << "Removing" << index << "which is already marked as empty!";
+        qCritical() << "Removing" << index << "which is already marked as empty!";
 
         clearInternalTables();
         return;
     }
 
     if (index != static_cast<uint>(pageTableEntries[firstPage].index)) {
-        kError(ksdcArea()) << "Removing" << index << "will not work as it is assigned"
+        qCritical() << "Removing" << index << "will not work as it is assigned"
                     << "to page" << firstPage << "which is itself assigned to"
                     << "entry" << pageTableEntries[firstPage].index << "instead!";
 
@@ -1295,7 +1289,7 @@ void SharedMemory::removeEntry(uint index)
     }
 
     if ((cacheAvail - savedCacheSize) != entriesToRemove) {
-        kError(ksdcArea()) << "We somehow did not remove" << entriesToRemove
+        qCritical() << "We somehow did not remove" << entriesToRemove
                     << "when removing entry" << index << ", instead we removed"
                     << (cacheAvail - savedCacheSize);
     }
@@ -1393,7 +1387,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         if (cullCollisions && (::time(0) - indices[position].lastUsedTime) > 60) {
             indices[position].useCount >>= 1;
             if (indices[position].useCount == 0) {
-                kDebug(ksdcArea()) << "Overwriting existing old cached entry due to collision.";
+                qDebug() << "Overwriting existing old cached entry due to collision.";
                 d->shm->removeEntry(position); // Remove it first
 
                 break;
@@ -1406,7 +1400,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
     }
 
     if (indices[position].useCount > 0 && indices[position].firstPage >= 0) {
-        kDebug(ksdcArea()) << "Overwriting existing cached entry due to collision.";
+        qDebug() << "Overwriting existing cached entry due to collision.";
         d->shm->removeEntry(position); // Remove it first
     }
 
@@ -1419,7 +1413,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
     uint firstPage = (uint) -1;
 
     if (pagesNeeded >= d->shm->pageTableSize()) {
-        kWarning(ksdcArea()) << key << "is too large to be cached.";
+        qWarning() << key << "is too large to be cached.";
         return false;
     }
 
@@ -1450,7 +1444,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         if (firstPage >= d->shm->pageTableSize() ||
            d->shm->cacheAvail < pagesNeeded)
         {
-            kError(ksdcArea()) << "Unable to free up memory for" << key;
+            qCritical() << "Unable to free up memory for" << key;
             return false;
         }
     }
@@ -1547,7 +1541,7 @@ void KSharedDataCache::deleteCache(const QString &cacheName)
     // Note that it is important to simply unlink the file, and not truncate it
     // smaller first to avoid SIGBUS errors and similar with shared memory
     // attached to the underlying inode.
-    kDebug(ksdcArea()) << "Removing cache at" << cachePath;
+    qDebug() << "Removing cache at" << cachePath;
     QFile::remove(cachePath);
 }
 

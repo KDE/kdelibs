@@ -27,7 +27,6 @@
 
 #include "kurl.h"
 
-#include <kdebug.h>
 #include <kglobal.h>
 #include <kshell.h>
 
@@ -37,6 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>
@@ -403,7 +403,7 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
-    kDebug(kurlDebugArea()) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    qDebug() << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
 #endif
     QString pathToSet;
     // when it starts with file:// it's a url and must be valid. we don't care if the
@@ -448,7 +448,7 @@ KUrl::KUrl( const char * str )
     ( IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(QLatin1Char(str[0])), QLatin1Char(str[0]), QLatin1Char(str[1]), QLatin1Char(':'), QLatin1Char('/')) )
 
 #if defined(DEBUG_KURL)
-  kDebug(kurlDebugArea()) << "KUrl::KUrl " << " " << str;
+  qDebug() << "KUrl::KUrl " << " " << str;
 #endif
   if ( str && str[0] && str[1] && str[2] ) {
     if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
@@ -471,7 +471,7 @@ KUrl::KUrl( const QByteArray& str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
-    kDebug(kurlDebugArea()) << "KUrl::KUrl " << " " << str.data();
+    qDebug() << "KUrl::KUrl " << " " << str.data();
 #endif
     if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
       setPath( QString::fromUtf8( str.mid( 1 ) ) );
@@ -490,7 +490,7 @@ KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(kurlDebugArea()) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    qDebug() << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
 
@@ -498,7 +498,7 @@ KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(kurlDebugArea()) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
+    qDebug() << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
 
@@ -506,7 +506,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(kurlDebugArea()) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    qDebug() << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
@@ -888,6 +888,7 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         urlWithoutHost.setHost(QString());
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
+
 #pragma message("FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.")
 #ifndef Q_WS_WIN
     if (isLocalFile()) {
@@ -1767,7 +1768,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(kurlDebugArea()) << "KUrl::setPath " << " " << _path.toAscii().data();
+    qDebug() << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );

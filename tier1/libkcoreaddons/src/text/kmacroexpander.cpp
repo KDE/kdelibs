@@ -21,7 +21,6 @@
 */
 
 #include "kmacroexpander_p.h"
-#include "kdebug.h"
 
 #include <QtCore/QHash>
 #include <QtCore/QStringList>

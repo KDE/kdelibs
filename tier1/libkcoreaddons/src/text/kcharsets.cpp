@@ -23,7 +23,6 @@
 #include "kentities.c"
 
 #include "kconfig.h"
-#include "kdebug.h"
 #include "kglobal.h"
 #include "klocale.h"
 

@@ -42,12 +42,12 @@
 #endif
 
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 
 #include "kglobal.h"
 #include "krandom.h"
 #include "kcomponentdata.h"
 #include <QCoreApplication>
-#include <kdebug.h>
 #include "kde_file.h"
 
 #ifdef Q_WS_WIN
@@ -91,8 +91,8 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    const QString realName = mkdtemp_QString(nme);
    if(realName.isEmpty())
    {
-       kWarning(180) << "KTempDir: Error trying to create " << nme
-		      << ": " << ::strerror(errno) << endl;
+       qWarning() << "KTempDir: Error trying to create " << nme
+		  << ": " << ::strerror(errno);
        d->error = errno;
        d->tmpName.clear();
        return false;
@@ -100,10 +100,9 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
    // got a return value != 0
    d->tmpName = realName + QLatin1Char('/');
-   kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
-	        << endl;
    mode_t umsk = KGlobal::umask();
    KDE::chmod(nme, mode&(~umsk));
+   qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
 
    // Success!
    d->exists = true;
@@ -114,8 +113,8 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    {
        // Recreate it for the warning, mkdtemps emptied it
        nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
-       kWarning(180) << "KTempDir: Error trying to create " << nme.data()
-		      << ": " << ::strerror(errno) << endl;
+       qWarning() << "KTempDir: Error trying to create " << nme.data()
+                  << ": " << ::strerror(errno);
        d->error = errno;
        d->tmpName.clear();
        return false;
@@ -124,13 +123,12 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    // got a return value != 0
    QByteArray realNameStr(realName);
    d->tmpName = QFile::decodeName(realNameStr)+QLatin1Char('/');
-   kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
-	        << endl;
+   qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
 
    mode_t umsk = KGlobal::umask();
    if(chmod(nme.data(), mode&(~umsk)) < 0) {
-       kWarning(180) << "KTempDir: Unable to change permissions on" << d->tmpName
-                     << ":" << ::strerror(errno);
+       qWarning() << "KTempDir: Unable to change permissions on" << d->tmpName
+                  << ":" << ::strerror(errno);
        d->error = errno;
        d->tmpName.clear();
        (void) ::rmdir(realName); // Cleanup created directory
@@ -143,8 +141,8 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    // Set uid/gid (necessary for SUID programs)
    if(chown(nme.data(), getuid(), getgid()) < 0) {
        // Just warn, but don't failover yet
-       kWarning(180) << "KTempDir: Unable to change owner on" << d->tmpName
-                     << ":" << ::strerror(errno);
+       qWarning() << "KTempDir: Unable to change owner on" << d->tmpName
+                  << ":" << ::strerror(errno);
    }
 
 #endif
@@ -228,7 +226,7 @@ static bool rmtree(const QByteArray& name)
              * - limited number of file descriptors for opendir/readdir/closedir
              */
             if ( ::closedir( dp ) ) {
-                kDebug(180) << "Error closing" << name;
+                qDebug() << "Error closing" << name;
                 return false;
             }
             // Recurse!
@@ -241,7 +239,7 @@ static bool rmtree(const QByteArray& name)
                 return false;
         }
         if ( ::closedir( dp ) ) {
-            kDebug(180) << "Error closing" << name;
+            qDebug() << "Error closing" << name;
             return false;
         }
         //kDebug(180) << "RMDIR dir " << name;
