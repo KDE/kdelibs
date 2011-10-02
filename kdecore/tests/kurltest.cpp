@@ -196,7 +196,9 @@ void KUrlTest::testIsLocalFile()
   QVERIFY( !local_file_2.isLocalFile() );
 
   KUrl local_file_3;
-  local_file_3.setHost(getenv("HOSTNAME"));
+  QString host = QString::fromLocal8Bit(qgetenv("HOSTNAME"));
+  host.truncate(host.indexOf('.'));
+  local_file_3.setHost(host);
   local_file_3.setPath("/my/file");
   //qDebug("URL=%s\n", qPrintable( local_file_3.url() ));
   QVERIFY( local_file_3.isLocalFile() );
