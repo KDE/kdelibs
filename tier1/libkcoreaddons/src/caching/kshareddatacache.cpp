@@ -23,8 +23,9 @@
 #include "kshareddatacache.h"
 #include "kshareddatacache_p.h" // Various auxiliary support code
 
+#include "qstandardpaths.h"
+
 #include <kglobal.h>
-#include <kstandarddirs.h>
 #include <krandom.h>
 
 #include <QtCore/QDateTime>
@@ -953,7 +954,7 @@ class KSharedDataCache::Private
         cacheSize = qMax(pageSize * 256, cacheSize);
 
         // The m_cacheName is used to find the file to store the cache in.
-        QString cacheName = KGlobal::dirs()->locateLocal("cache", m_cacheName + QLatin1String(".kcache"));
+        QString cacheName = QStandardPaths::locate(QStandardPaths::CacheLocation, m_cacheName + QLatin1String(".kcache"));
         QFile file(cacheName);
 
         // The basic idea is to open the file that we want to map into shared
@@ -1536,7 +1537,7 @@ bool KSharedDataCache::contains(const QString &key) const
 
 void KSharedDataCache::deleteCache(const QString &cacheName)
 {
-    QString cachePath = KGlobal::dirs()->locateLocal("cache", cacheName + QLatin1String(".kcache"));
+    QString cachePath = QStandardPaths::locate(QStandardPaths::CacheLocation, cacheName + QLatin1String(".kcache"));
 
     // Note that it is important to simply unlink the file, and not truncate it
     // smaller first to avoid SIGBUS errors and similar with shared memory
