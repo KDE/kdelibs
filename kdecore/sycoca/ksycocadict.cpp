@@ -231,14 +231,16 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
    for(int i = 0; i < hashList.count(); i++)
    {
       int pos = hashList[i];
-      if (pos < 0) {
-         pos = -pos-1;
-         if (pos < len)
-            h = ((h * 13) + (key[len-pos].cell() % 29)) & 0x3ffffff;
+      if (pos == 0) {
+          continue;
+      } else if (pos < 0) {
+          pos = -pos;
+          if (pos < len)
+              h = ((h * 13) + (key[len-pos].cell() % 29)) & 0x3ffffff;
       } else {
-         pos = pos-1;
-         if (pos < len)
-            h = ((h * 13) + (key[pos].cell() % 29)) & 0x3ffffff;
+          pos = pos-1;
+          if (pos < len)
+              h = ((h * 13) + (key[pos].cell() % 29)) & 0x3ffffff;
       }
    }
    return h;
@@ -270,12 +272,12 @@ calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
     //int numItem = 0;
 
     if (inPos < 0) {
-        pos = -inPos-1;
+        pos = -inPos;
         for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
         {
             string_entry* entry = *it;
             int len = entry->length;
-            if (pos < len && pos != 0) {
+            if (pos < len) {
                 uint hash = ((entry->hash * 13) + (entry->key[len-pos].cell() % 29)) & 0x3ffffff;
                 matrix.setBit( hash % sz, true );
             }
@@ -305,17 +307,17 @@ addDiversity(KSycocaDictStringList *stringlist, int pos)
 {
    if (pos == 0) return;
    if (pos < 0) {
-      pos = -pos-1;
-      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+      pos = -pos;
+      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
       {
          string_entry* entry = *it;
-         register int l = entry->length;
-         if (pos < l)
-            entry->hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3fffffff;
+         int len = entry->length;
+         if (pos < len)
+            entry->hash = ((entry->hash * 13) + (entry->key[len-pos].cell() % 29)) & 0x3fffffff;
       }
    } else {
       pos = pos - 1;
-      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(); it != stringlist->constEnd(); ++it)
+      for(KSycocaDictStringList::const_iterator it = stringlist->constBegin(), end = stringlist->constEnd(); it != end; ++it)
       {
          string_entry* entry = *it;
          if (pos < entry->length)
