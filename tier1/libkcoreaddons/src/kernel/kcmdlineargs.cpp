@@ -248,8 +248,15 @@ class KCmdLineArgsStatic {
      * @param id The name of the options to be removed.
      */
     static void removeArgs(const QByteArray &id);
-};
 
+    /**
+     * @internal
+     *
+     * Convert &, ", ', <, > characters into XML entities
+     * &amp;, &lt;, &gt;, &apos;, &quot;, respectively.
+     */
+    static QString escape(const QString &text);
+};
 K_GLOBAL_STATIC(KCmdLineArgsStatic, s)
 
 KCmdLineArgsStatic::KCmdLineArgsStatic () {
@@ -648,6 +655,31 @@ void KCmdLineArgsStatic::removeArgs(const QByteArray &id)
    }
 }
 
+#pragma message("KDE5 TODO: Remove this method once it is in Qt5 and import it to libinqt5")
+QString KCmdLineArgsStatic::escape(const QString &text)
+{ 
+    int tlen = text.length();
+    QString ntext;
+    ntext.reserve(tlen);
+    for (int i = 0; i < tlen; ++i) {
+        QChar c = text[i];
+        if (c == QLatin1Char('&')) {
+            ntext += QLatin1String("&amp;");
+        } else if (c == QLatin1Char('<')) {
+            ntext += QLatin1String("&lt;");
+        } else if (c == QLatin1Char('>')) {
+            ntext += QLatin1String("&gt;");
+        } else if (c == QLatin1Char('\'')) {
+            ntext += QLatin1String("&apos;"); // not handled by Qt::escape
+        } else if (c == QLatin1Char('"')) {
+            ntext += QLatin1String("&quot;");
+        } else {
+            ntext += c;
+        }
+    }
+    return ntext;
+}
+
 int
 KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QByteArray &opt,
                                QByteArray &opt_name, QString &def, bool &enabled)
@@ -959,7 +991,7 @@ KCmdLineArgsStatic::parseAllArgs()
             if (s->ignoreUnknown)
                continue;
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", KuitSemantics::escape(s->decodeInput(s->all_argv[i]))));
+            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", s->escape(s->decodeInput(s->all_argv[i]))));
          }
          else
          {
@@ -1134,7 +1166,7 @@ KCmdLineArgs::usage(const QByteArray &id)
      }
    }
 
-   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->appName), KuitSemantics::escape(usage)));
+   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->appName), s->escape(usage)));
    s->printQ(QLatin1Char('\n')+s->about->shortDescription()+QLatin1Char('\n'));
 
    s->printQ(i18n("\nGeneric options:\n"));
