@@ -7,7 +7,11 @@ include_directories(
 
 set(libinqt5_SRCS
     qstandardpaths.cpp
+    qstandardpaths_unix.cpp
 )
+
+# TODO windows: qstandardpaths_win.cpp
+# TODO mac: qstandardpaths_mac.cpp
 
 kf5_add_library(inqt5 ${LIBRARY_TYPE} ${libinqt5_SRCS})
 

@@ -40,7 +40,16 @@
 ****************************************************************************/
 
 #include "qstandardpaths.h"
-#include <QDebug>
+
+#include <qdir.h>
+#include <qfileinfo.h>
+#include <qhash.h>
+#include <qobject.h>
+#include <qcoreapplication.h>
+
+#ifndef QT_NO_STANDARDPATHS
+
+QT_BEGIN_NAMESPACE
 
 /*!
     \class QStandardPaths
@@ -55,35 +64,41 @@
 /*!
     \enum QStandardPaths::StandardLocation
 
-    This enum describes the different locations that can be queried by
-    QStandardPaths::storageLocation and QStandardPaths::displayName.
+    This enum describes the different locations that can be queried using
+    methods such as QStandardPaths::storageLocation, QStandardPaths::standardLocations,
+    and QStandardPaths::displayName.
 
     \value DesktopLocation Returns the user's desktop directory.
     \value DocumentsLocation Returns the user's document.
     \value FontsLocation Returns the user's fonts.
     \value ApplicationsLocation Returns the user's applications.
-    \value MusicLocation Returns the user's music.
+    \value MusicLocation Returns the users music.
     \value MoviesLocation Returns the user's movies.
     \value PicturesLocation Returns the user's pictures.
     \value TempLocation Returns the system's temporary directory.
     \value HomeLocation Returns the user's home directory.
     \value DataLocation Returns a directory location where persistent
-           application data can be stored. QCoreApplication::applicationName
-           and QCoreApplication::organizationName should work on all
-           platforms.
+           application data can be stored. QCoreApplication::organizationName
+           and QCoreApplication::applicationName are appended to the directory location
+           returned for GenericDataLocation.
     \value CacheLocation Returns a directory location where user-specific
            non-essential (cached) data should be written.
+    \value GenericDataLocation Returns a directory location where persistent
+           data shared across applications can be stored.
+    \value RuntimeLocation Returns a directory location where runtime communication
+           files should be written. For instance unix local sockets.
     \value ConfigLocation Returns a directory location where user-specific
            configuration files should be written.
 
-    \sa storageLocation() displayName()
+
+    \sa storageLocation() standardLocations() displayName() locate() locateAll()
 */
 
 /*!
     \fn QString QStandardPaths::storageLocation(StandardLocation type)
 
-    Returns the directory where files of \a type should be written to,
-    or an empty string if the location cannot be determined.
+    Returns the directory where files of \a type should be written to, or an empty string
+    if the location cannot be determined.
 
     \note The storage location returned can be a directory that does not exist; i.e., it
     may need to be created by the system or the user.
@@ -95,42 +110,70 @@
     that if executable is in ROM the folder from C drive is returned.
 */
 
-/*!
-    \fn QString QStandardPaths::displayName(StandardLocation type)
 
-    Returns a localized display name for the given location \a type or
-    an empty QString if no relevant location can be found.
+/*!
+   \fn QStringList QStandardPaths::standardLocations(StandardLocation type)
+
+   Returns all the directories where files of \a type belong.
+
+   Much like the PATH variable, it returns the directories in order of priority,
+   starting with the user-specific storageLocation() for the \a type.
+ */
+
+/*!
+    \enum QStandardPaths::LocateOption
+
+    This enum describes the different flags that can be used for
+    controlling the behavior of QStandardPaths::locate and
+    QStandardPaths::locateAll.
+
+    \value LocateFile return only files
+    \value LocateDirectory return only directories
 */
 
-//// HACKS
-//// This is the fake implementation for kdelibs-frameworks, temporarily.
-//// The goal is to have the API available, but the real implementation will go into Qt5.
-#include <QDir>
-#include <QFile>
-#include <QDesktopServices>
-
-// TODO docu for the option enum
-
-QString QStandardPaths::storageLocation(StandardLocation type)
+static bool existsAsSpecified(const QString &path, QStandardPaths::LocateOptions options)
 {
-    if (type == ConfigLocation) {
-        // TODO: this is a unix-only implementation
-        // http://standards.freedesktop.org/basedir-spec/latest/
-        QString xdgConfigHome = QFile::decodeName(qgetenv("XDG_CONFIG_HOME"));
-        if (xdgConfigHome.isEmpty())
-            xdgConfigHome = QDir::homePath() + QLatin1String("/.config");
-        return xdgConfigHome;
-    } else if (type == GenericDataLocation) {
-        // Copied from qdesktopservices_x11.cpp, TODO-in-qt: integrate with that code.
-        QString xdgDataHome = QLatin1String(qgetenv("XDG_DATA_HOME"));
-        if (xdgDataHome.isEmpty())
-            xdgDataHome = QDir::homePath() + QLatin1String("/.local/share");
-        //xdgDataHome += QLatin1String("/data/"); // THIS MUST BE REMOVED FROM QT!
-        //                      Otherwise we can't access mime data for instance.
-        return xdgDataHome;
-    } else {
-        return QDesktopServices::storageLocation(QDesktopServices::StandardLocation(type));
+    if (options & QStandardPaths::LocateDirectory)
+        return QDir(path).exists();
+    return QFileInfo(path).isFile();
+}
+
+/*!
+   Tries to find a file or directory called \a fileName in the standard locations
+   for \a type.
+
+   The full path to the first file or directory (depending on \a options) found is returned.
+   If no such file or directory can be found, an empty string is returned.
+ */
+QString QStandardPaths::locate(StandardLocation type, const QString &fileName, LocateOptions options)
+{
+    const QStringList &dirs = standardLocations(type);
+    for (QStringList::const_iterator dir = dirs.constBegin(); dir != dirs.constEnd(); ++dir) {
+        const QString path = *dir + QLatin1Char('/') + fileName;
+        if (existsAsSpecified(path, options))
+            return path;
     }
+    return QString();
+}
+
+/*!
+   Tries to find all files or directories called \a fileName in the standard locations
+   for \a type.
+
+   The \a options flag allows to specify whether to look for files or directories.
+
+   Returns the list of all the files that were found.
+ */
+QStringList QStandardPaths::locateAll(StandardLocation type, const QString &fileName, LocateOptions options)
+{
+    const QStringList &dirs = standardLocations(type);
+    QStringList result;
+    for (QStringList::const_iterator dir = dirs.constBegin(); dir != dirs.constEnd(); ++dir) {
+        const QString path = *dir + QLatin1Char('/') + fileName;
+        if (existsAsSpecified(path, options))
+            result.append(path);
+    }
+    return result;
 }
 
 #ifdef Q_OS_WIN
@@ -159,33 +202,15 @@ static QString checkExecutable(const QString &path)
     return QString();
 }
 
-static QString findExecutableInPath(const QString &executableName, const QStringList &paths)
-{
-    if (QFileInfo(executableName).isAbsolute()) {
-        return checkExecutable(executableName);
-    }
-
-    QDir currentDir = QDir::current();
-    QString absPath;
-    for (QStringList::const_iterator p = paths.constBegin(); p != paths.constEnd(); ++p) {
-        const QString candidate = currentDir.absoluteFilePath(*p + QLatin1Char('/') + executableName);
-        const QString result = checkExecutable(candidate);
-        if (!result.isEmpty()) {
-            absPath = result;
-            break;
-        }
-    }
-    return absPath;
-}
-
 /*!
-  Finds the executable named \a executableName in the system path.
+  Finds the executable named \a executableName in the paths specified by \a paths,
+  or the system paths if \a paths is empty.
 
   On most operating systems the system path is determined by the PATH environment variable.
 
-  The directories where to search for the executable can be set in the \a paths argument instead.
+  The directories where to search for the executable can be set in the \a paths argument.
   To search in both your own paths and the system paths, call findExecutable twice, once with
-  \a paths and once without, in whichever order you prefer.
+  \a paths set and once with \a paths empty.
 
   Symlinks are not resolved, in order to preserve behavior for the case of executables
   whose behavior depends on the name they are invoked with.
@@ -194,114 +219,57 @@ static QString findExecutableInPath(const QString &executableName, const QString
   are automatically appended, so that for instance findExecutable("foo") will find foo.exe
   or foo.bat if present.
 
-  \return the absolute file path to the executable, or an empty string if not found.
+  Returns the absolute file path to the executable, or an empty string if not found.
  */
 QString QStandardPaths::findExecutable(const QString &executableName, const QStringList &paths)
 {
-    QString absPath;
-
     QStringList searchPaths = paths;
     if (paths.isEmpty()) {
         QByteArray pEnv = qgetenv("PATH");
-    #if defined(Q_OS_WIN) || defined(Q_OS_SYMBIAN)
+#if defined(Q_OS_WIN) || defined(Q_OS_SYMBIAN)
         const QLatin1Char pathSep(';');
-    #else
+#else
         const QLatin1Char pathSep(':');
-    #endif
+#endif
         searchPaths = QString::fromLocal8Bit(pEnv.constData()).split(pathSep, QString::SkipEmptyParts);
     }
 
+    if (QFileInfo(executableName).isAbsolute())
+        return checkExecutable(executableName);
+
+    QDir currentDir = QDir::current();
+    QString absPath;
 #ifdef Q_OS_WIN
     static QStringList executable_extensions = executableExtensions();
-    const QString suffix = QFileInfo(executableName).suffix();
-    if (!executable_extensions.contains(suffix, Qt::CaseInsensitive)) {
-        foreach (const QString& extension, executable_extensions) {
-            absPath = findExecutableInPath(executableName + extension, searchPaths);
-            if (!absPath.isEmpty()) {
-                break;
-            }
-        }
-    }
-#else
-    absPath = findExecutableInPath(executableName, searchPaths);
 #endif
 
+    for (QStringList::const_iterator p = searchPaths.constBegin(); p != searchPaths.constEnd(); ++p) {
+        const QString candidate = currentDir.absoluteFilePath(*p + QLatin1Char('/') + executableName);
+#ifdef Q_OS_WIN
+        const QString extension = QLatin1Char('.') + QFileInfo(executableName).suffix();
+        if (!executable_extensions.contains(extension, Qt::CaseInsensitive)) {
+            foreach (const QString &extension, executable_extensions) {
+                absPath = checkExecutable(candidate + extension.toLower());
+                if (!absPath.isEmpty())
+                    break;
+            }
+        }
+#endif
+        absPath = checkExecutable(candidate);
+        if (!absPath.isEmpty()) {
+            break;
+        }
+    }
     return absPath;
 }
 
 /*!
-   Returns all the directories where files of \a type belong.
+    \fn QString QStandardPaths::displayName(StandardLocation type)
 
-   Much like the PATH variable, it returns the directories in order of priority,
-   starting with the user-specific storageLocation() for the \a type.
- */
-QStringList QStandardPaths::standardLocations(StandardLocation type)
-{
-    QStringList dirs;
-    if (type == ConfigLocation) {
-        // TODO: this is a unix-only implementation
-        // http://standards.freedesktop.org/basedir-spec/latest/
-        QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_CONFIG_DIRS"));
-        if (xdgConfigDirs.isEmpty()) {
-            dirs.append(QString::fromLatin1("/etc/xdg"));
-        } else {
-            dirs = xdgConfigDirs.split(':');
-        }
-    } else if (type == GenericDataLocation) {
-        // TODO: this is a unix-only implementation
-        // http://standards.freedesktop.org/basedir-spec/latest/
-        QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
-        if (xdgConfigDirs.isEmpty()) {
-            dirs.append(QString::fromLatin1("/usr/local/share"));
-            dirs.append(QString::fromLatin1("/usr/share"));
-        } else {
-            dirs = xdgConfigDirs.split(':');
-        }
-    }
-    const QString localDir = storageLocation(type);
-    dirs.prepend(localDir);
-    return dirs;
-}
-
-static bool existsAsSpecified(const QString& path, QStandardPaths::LocateOptions options)
-{
-    if (options & QStandardPaths::LocateDirectory)
-        return QDir(path).exists();
-    return QFileInfo(path).isFile();
-}
-
-// TODO docu
-QString QStandardPaths::locate(StandardLocation type, const QString& fileName, LocateOptions options)
-{
-    const QStringList dirs = standardLocations(type);
-    Q_FOREACH(const QString& dir, dirs) {
-        const QString path = dir + '/' + fileName;
-        //qDebug() << "Looking at" << path;
-        if (existsAsSpecified(path, options))
-            return path;
-    }
-    return QString();
-}
-
-// TODO docu
-QStringList QStandardPaths::locateAll(StandardLocation type, const QString& fileName, LocateOptions options)
-{
-    const QStringList dirs = standardLocations(type);
-    QStringList result;
-    Q_FOREACH(const QString& dir, dirs) {
-        const QString path = dir + '/' + fileName;
-        //qDebug() << "Looking at" << path;
-        if (existsAsSpecified(path, options))
-            result.append(path);
-    }
-    return result;
-}
-
-
-//// END HACKS
-
+    Returns a localized display name for the given location \a type or
+    an empty QString if no relevant location can be found.
+*/
 
 QT_END_NAMESPACE
 
-
-
+#endif // QT_NO_STANDARDPATHS

@@ -39,8 +39,8 @@
 **
 ****************************************************************************/
 
-#ifndef QCOREDESKTOPSERVICES_H
-#define QCOREDESKTOPSERVICES_H
+#ifndef QSTANDARDPATHS_H
+#define QSTANDARDPATHS_H
 
 #include <QtCore/qstringlist.h>
 #include "inqt5_export.h"
@@ -51,15 +51,14 @@ QT_BEGIN_NAMESPACE
 
 QT_MODULE(Core)
 
-#ifndef QT_NO_DESKTOPSERVICES
+#ifndef QT_NO_STANDARDPATHS
 
 class QStringList;
-class QUrl;
-class QObject;
 
 class INQT5_EXPORT QStandardPaths
 {
 public:
+    // Do not re-order, must match QDesktopServices
     enum StandardLocation {
         DesktopLocation,
         DocumentsLocation,
@@ -70,36 +69,38 @@ public:
         PicturesLocation,
         TempLocation,
         HomeLocation,
-        DataLocation, // application data
-        GenericDataLocation, // same for all applications
+        DataLocation,
         CacheLocation,
+        GenericDataLocation,
+        RuntimeLocation,
         ConfigLocation
     };
-
-    // TODO: add ExecutableLocation ($PATH)?
 
     static QString storageLocation(StandardLocation type);
     static QStringList standardLocations(StandardLocation type);
 
-    enum LocateOption
-    {
+    enum LocateOption {
         LocateFile = 0x0,
         LocateDirectory = 0x1
     };
     Q_DECLARE_FLAGS(LocateOptions, LocateOption)
 
-    static QString locate(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
-    static QStringList locateAll(StandardLocation type, const QString& fileName, LocateOptions options = LocateFile);
+    static QString locate(StandardLocation type, const QString &fileName, LocateOptions options = LocateFile);
+    static QStringList locateAll(StandardLocation type, const QString &fileName, LocateOptions options = LocateFile);
+    static QString displayName(StandardLocation type);
 
     static QString findExecutable(const QString &executableName, const QStringList &paths = QStringList());
 
+private:
+    // prevent construction
+    QStandardPaths();
+    ~QStandardPaths();
 };
 
-#endif // QT_NO_DESKTOPSERVICES
+#endif // QT_NO_STANDARDPATHS
 
 QT_END_NAMESPACE
 
 QT_END_HEADER
 
-#endif // QCOREDESKTOPSERVICES_H
-
+#endif // QSTANDARDPATHS_H
