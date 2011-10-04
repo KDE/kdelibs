@@ -103,7 +103,9 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( QString("badList"), list);
   sc.sync();
 
+#if QT_VERSION < 0x040800
   QTest::ignoreMessage(QtWarningMsg, "QColor::setNamedColor: Unknown color name '1'");
+#endif
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 2 element list
