@@ -31,65 +31,26 @@ class KTemporaryFilePrivate;
 /**
  * \class KTemporaryFile ktemporaryfile.h <KTemporaryFile>
  *
- * @brief A QTemporaryFile that will save in the KDE temp directory.
+ * @deprecated use QTemporaryFile
  *
- * This class derives from QTemporaryFile and makes sure that your temporary
- * files go in the temporary directory defined by KDE. (This is retrieved by
- * using KStandardDirs to locate the "tmp" resource.) In general, whenever you
- * would use a QTemporaryFile() use a KTemporaryFile() instead.
+ * By default the filename will start with your application's name,
+ * followed by six random characters. You can call QTemporaryFile::setFileTemplate()
+ * to change that.
  *
- * By default the filename will start with your application's instance name,
- * followed by six random characters and an extension of ".tmp". You can use
- * setPrefix() and setSuffix() to change the beginning and ending of the random
- * name, as well as change the directory if you wish (read the descriptions of
- * these functions for more information). For complex specifications, you may
- * be better off calling QTemporaryFile::setFileTemplate() directly.
+ * Porting to QTemporaryFile is simple: in apps, you can probably juse use the default constructor.
  *
- * For example, let's make a new temporary file:
+ * In parts and plugins, you were probably passing a component data to KTemporaryFile, so instead use:
+ * QTemporaryFile(QDir::tempPath() + QLatin1Char('/') + componentData.name() + QLatin1String("XXXXXX"))
  *
- * @code
- * KTemporaryFile temp;
- * @endcode
+ * For setPrefix, change the QDir::tempPath() from the above line.
+ * For setSuffix, append it after the XXXXXX.
  *
- * This temporary file will currently be stored in the default KDE temporary
- * directory and have an extension of ".tmp". Now, let's change the directory:
- *
- * @code
- * temp.setPrefix("/var/lib/foodata/");
- * @endcode
- *
- * Now the temporary file will be stored in "/var/lib/foodata" instead of the
- * default KDE temporary directory, with an extension of ".tmp". It's important
- * to remember the leading and trailing slashes to properly define the path!
- * Next, let's change the suffix to a particular extension:
- *
- * @code
- * temp.setSuffix(".pdf");
- * @endcode
- *
- * Now the temporary file will be stored in "/var/lib/foodata" and have an
- * extension of ".pdf" instead of ".tmp".
- *
- * Once you are done determining the name of the file, call open() to
- * create the file.
- *
- * @code
- * if ( !temp.open() ) {
- *     // handle error...
- * }
- * @endcode
- *
- * If open() is unable to create the file it will return false. If the call to
- * open() returns true you are ready to use your temporary file. If you don't
- * want the file removed automatically when the KTemporaryFile object is
- * destroyed, you need to call setAutoRemove(false), but make sure you have a
- * good reason for leaving your temp files around.
+ * In the simplest case where the application was only calling setSuffix(".txt"), this becomes
+ * QTemporaryFile(QDir::tempPath() + QLatin1String("/myapp_XXXXXX.txt"))
  *
  * @see QTemporaryFile
- *
- * @author Jaison Lee <lee.jaison@gmail.com>
  */
-class KDECORE_EXPORT KTemporaryFile : public QTemporaryFile
+class KDECORE_DEPRECATED_EXPORT KTemporaryFile : public QTemporaryFile
 {
 public:
     /**
@@ -98,8 +59,8 @@ public:
      * default KDE temporary directory, plus your application's instance name.
      * The default suffix is ".tmp".
      *
-     * \param componentData The KComponentData to use for the name of the file and to look up the
-     * directory.
+     * \param componentData The KComponentData to use for the name of the file and
+     * to look up the directory.
      */
     explicit KTemporaryFile(const KComponentData &componentData = KGlobal::mainComponent());
 

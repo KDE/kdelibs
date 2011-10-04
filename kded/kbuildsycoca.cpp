@@ -34,7 +34,6 @@
 #include "kbuildservicegroupfactory.h"
 #include "kbuildprotocolinfofactory.h"
 #include "kctimefactory.h"
-#include <ktemporaryfile.h>
 #include <QtCore/QDataStream>
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>

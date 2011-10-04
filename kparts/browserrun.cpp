@@ -29,7 +29,7 @@
 #include <kshell.h>
 #include <kstringhandler.h>
 #include <kmimetypetrader.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kstandarddirs.h>
@@ -293,8 +293,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
-                KTemporaryFile tempFile;
-                tempFile.setSuffix(extension);
+                QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + d->m_part->componentData().componentName() + QLatin1String("XXXXXX") + extension);
                 tempFile.setAutoRemove(false);
                 tempFile.open();
                 KUrl destURL;

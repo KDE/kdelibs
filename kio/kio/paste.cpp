@@ -34,11 +34,11 @@
 #include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
-#include <ktemporaryfile.h>
 
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 #include <QMimeData>
+#include <qtemporaryfile.h>
 
 static bool decodeIsCutSelection(const QMimeData *mimeData)
 {
@@ -151,7 +151,7 @@ static KIO::CopyJob* pasteDataAsyncTo( const KUrl& newUrl, const QByteArray& _da
     // if the user does "Undo" then we won't ask for confirmation, and we'll
     // move back to a tempfile, instead of just deleting.
     // A KIO::storedPut would be better but FileUndoManager would need to support it first.
-    KTemporaryFile tempFile;
+    QTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
     tempFile.open();
     tempFile.write(_data.data(), _data.size());

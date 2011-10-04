@@ -24,7 +24,7 @@
 #include <kfileitem.h>
 
 #include <ktempdir.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kuser.h>
 
 QTEST_KDEMAIN( KFileItemTest, NoGUI )
@@ -117,7 +117,7 @@ void KFileItemTest::testDetach()
 
 void KFileItemTest::testBasic()
 {
-    KTemporaryFile file;
+    QTemporaryFile file;
     QVERIFY(file.open());
     QFile fileObj(file.fileName());
     QVERIFY(fileObj.open(QIODevice::WriteOnly));
@@ -171,7 +171,7 @@ void KFileItemTest::testHiddenFile()
 
 void KFileItemTest::testMimeTypeOnDemand()
 {
-    KTemporaryFile file;
+    QTemporaryFile file;
     QVERIFY(file.open());
 
     {
@@ -201,7 +201,7 @@ void KFileItemTest::testMimeTypeOnDemand()
     }
 
     {
-        KTemporaryFile file;
+        QTemporaryFile file;
         QVERIFY(file.open());
         // Check whether mime-magic is used.
         // No known extension, so it should be used by determineMimeType.
@@ -217,8 +217,7 @@ void KFileItemTest::testMimeTypeOnDemand()
     }
 
     {
-        KTemporaryFile file;
-        file.setSuffix(".txt");
+        QTemporaryFile file(QDir::tempPath() + QLatin1String("/kfileitemtest_XXXXXX.txt"));
         QVERIFY(file.open());
         // Check whether mime-magic is used.
         // Known extension, so it should NOT be used.
@@ -241,7 +240,7 @@ void KFileItemTest::testMimeTypeOnDemand()
 
 void KFileItemTest::testCmp()
 {
-    KTemporaryFile file;
+    QTemporaryFile file;
     QVERIFY(file.open());
 
     KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);

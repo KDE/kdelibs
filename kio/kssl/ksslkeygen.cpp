@@ -29,8 +29,9 @@
 #include <kopenssl.h>
 #include <kprogressdialog.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
 #include <kwallet.h>
+
+#include <qtemporaryfile.h>
 
 #include <assert.h>
 
@@ -206,11 +207,9 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 
 	KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
 
-	QString path = KGlobal::dirs()->saveLocation("kssl");
-	KTemporaryFile csrFile;
+	const QString path = KGlobal::dirs()->saveLocation("kssl");
+	QTemporaryFile csrFile(path + "csr_XXXXXX.der");
 	csrFile.setAutoRemove(false);
-	csrFile.setPrefix(path + "csr_");
-	csrFile.setSuffix(".der");
 
 	if (!csrFile.open()) {
 		kossl->X509_REQ_free(req);
@@ -218,10 +217,8 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 		return -5;
 	}
 
-	KTemporaryFile p8File;
+	QTemporaryFile p8File(path + "pkey_XXXXXX.p8");
 	p8File.setAutoRemove(false);
-	p8File.setPrefix(path + "pkey_");
-	p8File.setSuffix(".p8");
 
 	if (!p8File.open()) {
 		kossl->X509_REQ_free(req);

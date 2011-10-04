@@ -23,12 +23,12 @@
 // Qt
 #include <QFile>
 #include <QSharedPointer>
+#include <qtemporaryfile.h>
 
 // KDE
 #include <kdebug.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
 
 #include <qtest_kde.h>
 
@@ -52,10 +52,9 @@ static QString readFile(const QString &path)
     return QString::fromUtf8(file.readAll());
 }
 
-static KTemporaryFile* writeUpdFile(const QString &content)
+static QTemporaryFile* writeUpdFile(const QString &content)
 {
-    KTemporaryFile* file = new KTemporaryFile();
-    file->setSuffix(".upd");
+    QTemporaryFile* file = new QTemporaryFile(QDir::tempPath() + QLatin1String("/test_kconf_update_XXXXXX.upd"));
     bool ok = file->open();
     Q_ASSERT(ok);
     file->write(content.toUtf8());
@@ -238,7 +237,7 @@ void TestKConfUpdate::test()
     QFile::remove(newConfPath);
 
     writeFile(oldConfPath, oldConfContent);
-    QSharedPointer<KTemporaryFile> updFile(writeUpdFile(updContent));
+    QSharedPointer<QTemporaryFile> updFile(writeUpdFile(updContent));
     runKConfUpdate(updFile->fileName());
 
     QString updateInfo = QString("%1:%2")
@@ -504,7 +503,7 @@ void TestKConfUpdate::testScript()
     // Prepend the Id= field to the upd content
     updContent = QString("Id=%1\n").arg(QTest::currentDataTag()) + updContent;
 
-    QSharedPointer<KTemporaryFile> updFile(writeUpdFile(updContent));
+    QSharedPointer<QTemporaryFile> updFile(writeUpdFile(updContent));
 
     QString scriptPath = KStandardDirs::locateLocal("data", "kconf_update/test.sh");
     writeFile(scriptPath, updScript);

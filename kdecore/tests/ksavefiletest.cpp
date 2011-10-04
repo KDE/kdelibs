@@ -25,11 +25,12 @@
 #include <QtCore/QTextStream>
 
 #include <qstandardpaths.h>
+#include <qtemporaryfile.h>
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <ktemporaryfile.h>
 #include <ksavefile.h>
 
 #include <qtest_kde.h>
@@ -46,8 +47,7 @@ void KSaveFileTest::test_ksavefile()
         //This will be the file we eventually write to. Yes, I know you
         //should never remove the temporaryfile and then expect the filename
         //to continue to be unique, but this is a test for crying out loud. :)
-        KTemporaryFile file;
-        file.setPrefix("ksavefiletest");
+        QTemporaryFile file(QDir::tempPath() + QLatin1String("/ksavefiletest_XXXXXX"));
         QVERIFY( file.open() );
         targetFile = file.fileName();
     }
@@ -182,7 +182,7 @@ void KSaveFileTest::test_ksavefile()
 
 void KSaveFileTest::test_simpleBackupFile()
 {
-    KTemporaryFile file;
+    QTemporaryFile file;
     QVERIFY( file.open() );
 
     QVERIFY( KSaveFile::simpleBackupFile(file.fileName()));
@@ -199,7 +199,7 @@ void KSaveFileTest::test_numberedBackupFile()
 {
     // Test absolute pathname file
     {
-        KTemporaryFile file;
+        QTemporaryFile file;
         QVERIFY( file.open() );
 
         for ( int i=1; i<15; i++ ) {
@@ -220,7 +220,7 @@ void KSaveFileTest::test_numberedBackupFile()
 
     // Test current directory
     {
-        KTemporaryFile file;
+        QTemporaryFile file;
         QVERIFY( file.open() );
 
         QFileInfo fi ( file.fileName() );
@@ -244,7 +244,7 @@ void KSaveFileTest::test_numberedBackupFile()
 
     // Test absolute pathname file w/new directory
     {
-        KTemporaryFile file;
+        QTemporaryFile file;
         QVERIFY( file.open() );
 
         QFileInfo fi ( file.fileName() );
@@ -268,7 +268,7 @@ void KSaveFileTest::test_numberedBackupFile()
 
     // Test current directory w/new directory
     {
-        KTemporaryFile file;
+        QTemporaryFile file;
         QVERIFY(file.open());
 
         QFileInfo fi ( file.fileName() );
@@ -299,7 +299,7 @@ void KSaveFileTest::test_rcsBackupFile()
         QSKIP("ci not available", SkipAll);
 
     {
-        KTemporaryFile f;
+        QTemporaryFile f;
         QVERIFY(f.open());
 
         QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
@@ -311,7 +311,7 @@ void KSaveFileTest::test_rcsBackupFile()
     }
 
     {
-        KTemporaryFile f;
+        QTemporaryFile f;
         QVERIFY(f.open());
 
         QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
@@ -331,7 +331,7 @@ void KSaveFileTest::test_rcsBackupFile()
     }
 
     {
-        KTemporaryFile f;
+        QTemporaryFile f;
         QVERIFY(f.open());
 
         QFileInfo fi ( f.fileName() );
@@ -346,7 +346,7 @@ void KSaveFileTest::test_rcsBackupFile()
     }
 
     {
-        KTemporaryFile f;
+        QTemporaryFile f;
         QVERIFY(f.open());
 
         QFileInfo fi ( f.fileName() );
@@ -360,7 +360,7 @@ void KSaveFileTest::test_rcsBackupFile()
     }
 
     {
-        KTemporaryFile f;
+        QTemporaryFile f;
         QVERIFY(f.open());
 
         QFileInfo fi ( f.fileName() );

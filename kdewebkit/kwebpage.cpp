@@ -42,7 +42,6 @@
 #include <kdebug.h>
 #include <kmimetypetrader.h>
 #include <klocalizedstring.h>
-#include <ktemporaryfile.h>
 #include <kio/accessmanager.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -55,6 +54,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtWebKit/QWebFrame>
 #include <QtNetwork/QNetworkReply>
+#include <qtemporaryfile.h>
 
 
 #define QL1S(x)  QLatin1String(x)
@@ -210,7 +210,7 @@ static void setActionShortcut(QAction* action, const KShortcut& shortcut)
 
 KWebPage::KWebPage(QObject *parent, Integration flags)
          :QWebPage(parent), d(new KWebPagePrivate)
-{ 
+{
     // KDE KParts integration for <embed> tag...
     if (!flags || (flags & KPartsIntegration))
         setPluginFactory(new KWebPluginFactory(this));
@@ -505,8 +505,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 d->mimeType = mimeType;
                 d->window = topLevelWindow;
                 QFileInfo finfo (suggestedFileName.isEmpty() ? replyUrl.fileName() : suggestedFileName);
-                KTemporaryFile tempFile;
-                tempFile.setSuffix(QL1C('.') + finfo.suffix());
+                QTemporaryFile tempFile(QDir::tempPath() + QLatin1String("/kwebpage_XXXXXX.") + finfo.suffix());
                 tempFile.setAutoRemove(false);
                 tempFile.open();
                 KUrl destUrl;

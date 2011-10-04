@@ -37,10 +37,10 @@
 #include <QtGui/QImage>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
+#include <qtemporaryfile.h>
 
 #include <kfileitem.h>
 #include <kde_file.h>
-#include <ktemporaryfile.h>
 #include <kservicetypetrader.h>
 #include <kcodecs.h>
 #include <kglobal.h>
@@ -571,7 +571,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     else
     {
         state = PreviewJobPrivate::STATE_GETORIG;
-        KTemporaryFile localFile;
+        QTemporaryFile localFile;
         localFile.setAutoRemove(false);
         localFile.open();
         KUrl localURL;
@@ -670,9 +670,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
             signature.append(" (v"+thumbnailerVersion+')');
         }
         thumb.setText("Software", signature);
-        KTemporaryFile temp;
-        temp.setPrefix(thumbPath + "kde-tmp-");
-        temp.setSuffix(".png");
+        QTemporaryFile temp(thumbPath + "kde-tmp-XXXXXX.png");
         temp.setAutoRemove(false);
         if (temp.open()) //Only try to write out the thumbnail if we
         {                //actually created the temp file.

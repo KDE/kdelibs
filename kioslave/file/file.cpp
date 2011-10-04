@@ -67,6 +67,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QRegExp>
 #include <QtCore/QFile>
+#include <qtemporaryfile.h>
 #ifdef Q_WS_WIN
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -77,7 +78,6 @@
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <ktemporaryfile.h>
 #include <klocale.h>
 #include <limits.h>
 #include <kshell.h>
@@ -933,7 +933,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 #else
 
 
-    KTemporaryFile tmpFile;
+    QTemporaryFile tmpFile;
     tmpFile.setAutoRemove(false);
     tmpFile.open();
     QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
@@ -1051,7 +1051,7 @@ void FileProtocol::unmount( const QString& _point )
 #ifndef _WIN32_WCE
     QByteArray buffer;
 
-    KTemporaryFile tmpFile;
+    QTemporaryFile tmpFile;
     tmpFile.setAutoRemove(false);
     tmpFile.open();
     QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
@@ -1121,7 +1121,7 @@ void FileProtocol::unmount( const QString& _point )
 			/*
 			 *  this is not an error, so skip "testLogFile()"
 			 *  to avoid wrong/confusing error popup. The
-			 *  temporary file is removed by KTemporaryFile's
+			 *  temporary file is removed by QTemporaryFile's
 			 *  destructor, so don't do that manually.
 			 */
 			finished();

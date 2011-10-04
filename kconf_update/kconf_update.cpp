@@ -28,6 +28,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QTextCodec>
+#include <qtemporaryfile.h>
 #ifdef _WIN32_WCE
 #include <QtCore/QDir>
 #endif
@@ -41,7 +42,6 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <ktemporaryfile.h>
 #include <kurl.h>
 
 #include "kconfigutils.h"
@@ -790,11 +790,11 @@ void KonfUpdate::gotScript(const QString &_script)
         cmd += m_arguments;
     }
 
-    KTemporaryFile scriptIn;
+    QTemporaryFile scriptIn;
     scriptIn.open();
-    KTemporaryFile scriptOut;
+    QTemporaryFile scriptOut;
     scriptOut.open();
-    KTemporaryFile scriptErr;
+    QTemporaryFile scriptErr;
     scriptErr.open();
 
     int result;

@@ -110,7 +110,7 @@ public:
      *
      * If the url is always remote, then you could also just write the more usual way:
      * \code
-     * KTemporaryFile tmpFile;
+     * QTemporaryFile tmpFile;
      * if (tmpFile.open()) {
      *     KIO::Job* getJob = KIO::file_copy(url, KUrl(tmpFile.fileName()), -1, KIO::Overwrite | KIO::HideProgressInfo);
      *     getJob->ui()->setWindow(window);

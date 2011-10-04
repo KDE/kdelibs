@@ -22,7 +22,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kautosavefile.h>
 
 #include <qtest_kde.h>
@@ -38,8 +38,7 @@ void KAutoSaveFileTest::cleanupTestCase()
 
 void KAutoSaveFileTest::test_readWrite()
 {
-    KTemporaryFile file;
-    file.setPrefix("test1");
+    QTemporaryFile file;
 
     QVERIFY( file.open() );
 

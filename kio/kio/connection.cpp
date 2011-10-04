@@ -27,13 +27,14 @@
 #include <QQueue>
 #include <QPointer>
 #include <QTime>
+#include <qtemporaryfile.h>
+#include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
 #include <kurl.h>
 
 using namespace KIO;
@@ -204,22 +205,19 @@ bool SocketConnectionBackend::listenForRemote()
     Q_ASSERT(!localServer);     // !tcpServer as well
 
     if (mode == LocalSocketMode) {
-        QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
-        KTemporaryFile *socketfile = new KTemporaryFile();
-        socketfile->setPrefix(prefix);
-        socketfile->setSuffix(QLatin1String(".slave-socket"));
-        if (!socketfile->open())
+        const QString prefix = QStandardPaths::storageLocation(QStandardPaths::RuntimeLocation);
+        QTemporaryFile socketfile(prefix + QLatin1Char('/') + KGlobal::mainComponent().componentName() + QLatin1String("XXXXXX.slave-socket"));
+        if (!socketfile.open())
         {
             errorString = i18n("Unable to create io-slave: %1", strerror(errno));
-            delete socketfile;
             return false;
         }
 
-        QString sockname = socketfile->fileName();
+        QString sockname = socketfile.fileName();
         KUrl addressUrl(sockname);
         addressUrl.setProtocol("local");
         address = addressUrl.url();
-        delete socketfile; // can't bind if there is such a file
+        socketfile.remove(); // can't bind if there is such a file
 
         localServer = new KLocalSocketServer(this);
         if (!localServer->listen(sockname, KLocalSocket::UnixSocket)) {

@@ -130,12 +130,12 @@ void KXmlGui_UnitTest::testVersionHandlerSameVersion()
 {
     // This emulates the case where the user has modified stuff locally
     // and the application hasn't changed since, so the version number is unchanged.
-    KTemporaryFile userFile;
+    QTemporaryFile userFile;
     QVERIFY(userFile.open());
     createXmlFile(userFile, 2, AddActionProperties | AddModifiedToolBars);
     const QString firstFile = userFile.fileName();
 
-    KTemporaryFile appFile;
+    QTemporaryFile appFile;
     QVERIFY(appFile.open());
     createXmlFile(appFile, 2, AddToolBars);
     const QString secondFile = appFile.fileName();
@@ -175,7 +175,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionNothingKept()
     createXmlFile(fileV2, 2, NoFlags);
     fileToVersionMap.insert(fileV2.fileName(), 2);
 
-    KTemporaryFile fileV5;
+    QTemporaryFile fileV5;
     QVERIFY(fileV5.open());
     createXmlFile(fileV5, 5, NoFlags);
     fileToVersionMap.insert(fileV5.fileName(), 5);
@@ -183,7 +183,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionNothingKept()
     // The highest version is neither the first nor last one in the list,
     // to make sure the code really selects the highest version, not just by chance :)
     // (This is why we add the v1 version at the end of the list)
-    KTemporaryFile fileV1;
+    QTemporaryFile fileV1;
     QVERIFY(fileV1.open());
     createXmlFile(fileV1, 1, NoFlags);
     fileToVersionMap.insert(fileV1.fileName(), 1);
@@ -221,7 +221,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     fileToVersionMap.insert(fileV2.fileName(), 2);
 
     // more-global file
-    KTemporaryFile fileV5;
+    QTemporaryFile fileV5;
     QVERIFY(fileV5.open());
     createXmlFile(fileV5, 5, AddToolBars | AddModifiedMenus, "kpartgui");
     fileToVersionMap.insert(fileV5.fileName(), 5);
@@ -229,7 +229,7 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     // The highest version is neither the first nor last one in the list,
     // to make sure the code really selects the highest version, not just by chance :)
     // (This is why we add the v1 version at the end of the list)
-    KTemporaryFile fileV1;
+    QTemporaryFile fileV1;
     QVERIFY(fileV1.open());
     createXmlFile(fileV1, 1, AddToolBars);
     fileToVersionMap.insert(fileV1.fileName(), 1);
@@ -872,13 +872,13 @@ void KXmlGui_UnitTest::testMenusNoXmlFile()
 
 void KXmlGui_UnitTest::testXMLFileReplacement() {
     // to differentiate "original" and replacement xml file, one is created with "modified" toolbars
-    KTemporaryFile fileOrig;
+    QTemporaryFile fileOrig;
     QVERIFY(fileOrig.open());
     createXmlFile(fileOrig, 2, AddToolBars);
     const QString filenameOrig = fileOrig.fileName();
     fileOrig.close();
 
-    KTemporaryFile fileReplace;
+    QTemporaryFile fileReplace;
     QVERIFY(fileReplace.open());
     createXmlFile(fileReplace, 2, AddModifiedToolBars);
     const QString filenameReplace = fileReplace.fileName();

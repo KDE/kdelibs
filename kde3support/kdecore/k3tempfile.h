@@ -48,7 +48,7 @@ class KSaveFile;
  *
  * See also KStandardDirs
  *
- * @deprecated Use KTemporaryFile instead.
+ * @deprecated Use QTemporaryFile instead.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */

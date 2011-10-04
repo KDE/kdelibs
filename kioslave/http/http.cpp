@@ -77,7 +77,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kde_file.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 
 #include "httpauthentication.h"
 
@@ -277,7 +277,7 @@ static QIODevice* createPostBufferDeviceFor (KIO::filesize_t size)
 {
     QIODevice* device;
     if (size > static_cast<KIO::filesize_t>(s_MaxInMemPostBufSize))
-      device = new KTemporaryFile;
+      device = new QTemporaryFile;
     else
       device = new QBuffer;
 

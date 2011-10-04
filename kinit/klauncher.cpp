@@ -48,7 +48,6 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
 #include <kdesktopfile.h>
 #include <kurl.h>
 

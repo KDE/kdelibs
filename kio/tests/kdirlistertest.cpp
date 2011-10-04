@@ -18,7 +18,7 @@
 */
 
 #include "kdirlistertest.h"
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include "kdirlistertest.moc"
 #include <kdirlister.h>
 #include <qtest_kde.h>
@@ -254,7 +254,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     const int origItemCount = m_items.count();
     QCOMPARE(fileCount(), origItemCount);
     const QString path = m_tempDir.name();
-    KTemporaryFile tempFile;
+    QTemporaryFile tempFile;
     QVERIFY(tempFile.open());
     const QString symPath = tempFile.fileName() + "_link";
     tempFile.close();

@@ -29,7 +29,7 @@
 #include <QtGui/QApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtGui/QPainter>
+#include <qtemporaryfile.h>
 #include <QtCore/QPoint>
 
 #include <kdirnotify.h>
@@ -40,7 +40,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
 #include <kxmlguifactory.h>
 
 #include <stdio.h>
@@ -608,8 +607,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     QString extension;
     if (!ext.isEmpty() && m_url.query().isNull()) // not if the URL has a query, e.g. cgi.pl?something
         extension = '.'+ext; // keep the '.'
-    KTemporaryFile tempFile;
-    tempFile.setSuffix(extension);
+    QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + q->componentData().componentName() + QLatin1String("XXXXXX") + extension);
     tempFile.setAutoRemove(false);
     tempFile.open();
     m_file = tempFile.fileName();
@@ -928,7 +926,7 @@ void ReadWritePartPrivate::prepareSaving()
         // We haven't saved yet, or we did but locally - provide a temp file
         if ( m_file.isEmpty() || !m_bTemp )
         {
-            KTemporaryFile tempFile;
+            QTemporaryFile tempFile;
             tempFile.setAutoRemove(false);
             tempFile.open();
             m_file = tempFile.fileName();
@@ -962,7 +960,7 @@ bool ReadWritePart::saveToUrl()
             d->m_uploadJob->kill();
             d->m_uploadJob = 0;
         }
-        KTemporaryFile *tempFile = new KTemporaryFile();
+        QTemporaryFile *tempFile = new QTemporaryFile();
         tempFile->open();
         QString uploadFile = tempFile->fileName();
         delete tempFile;

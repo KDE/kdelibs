@@ -24,7 +24,7 @@
 #include <kmimetypetrader.h>
 #include <kdebug.h>
 #include <kservicefactory.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <qtest_kde.h>
 #include "kmimeassociations.h"
 #include <ksycoca.h>
@@ -194,7 +194,7 @@ private Q_SLOTS:
         KOfferHash offerHash;
         KMimeAssociations parser(offerHash);
 
-        KTemporaryFile tempFile;
+        QTemporaryFile tempFile;
         QVERIFY(tempFile.open());
         tempFile.write(m_mimeAppsFileContents);
         const QString fileName = tempFile.fileName();
@@ -236,7 +236,7 @@ private Q_SLOTS:
         KMimeAssociations parser(offerHash);
 
         // Write global file
-        KTemporaryFile tempFileGlobal;
+        QTemporaryFile tempFileGlobal;
         QVERIFY(tempFileGlobal.open());
         QByteArray globalAppsFileContents = "[Added Associations]\n"
                                             "image/jpeg=firefox.desktop;\n" // removed by local config
@@ -247,7 +247,7 @@ private Q_SLOTS:
         tempFileGlobal.close();
 
         // We didn't keep it, so we need to write the local file again
-        KTemporaryFile tempFile;
+        QTemporaryFile tempFile;
         QVERIFY(tempFile.open());
         tempFile.write(m_mimeAppsFileContents);
         const QString fileName = tempFile.fileName();

@@ -58,7 +58,6 @@ extern "C" {
 #include "filejob.h"
 
 #include <kdirnotify.h>
-#include <ktemporaryfile.h>
 
 using namespace KIO;
 

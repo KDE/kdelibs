@@ -40,7 +40,7 @@
 #include <kde_file.h>
 #include <klocale.h>
 #include <QtCore/QDate>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 
 #include <sys/types.h>
 
@@ -1038,7 +1038,7 @@ KSSLCertificate *KSSLCertificate::replicate() {
 }
 
 
-QString KSSLCertificate::toString() 
+QString KSSLCertificate::toString()
 {
     return toDer().toBase64();
 }
@@ -1213,9 +1213,9 @@ QByteArray KSSLCertificate::toNetscape() {
 #ifdef KSSL_HAVE_SSL
     NETSCAPE_X509 nx;
     ASN1_OCTET_STRING hdr;
-    KTemporaryFile ktf;
+    QTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
+    FILE *ktf_fs = fopen(QFile::encodeName(ktf.fileName()), "r+");
 
     hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
     hdr.length = strlen(NETSCAPE_CERT_HDR);
@@ -1242,9 +1242,9 @@ return qba;
 QString KSSLCertificate::toText() {
     QString text;
 #ifdef KSSL_HAVE_SSL
-    KTemporaryFile ktf;
+    QTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
+    FILE *ktf_fs = fopen(QFile::encodeName(ktf.fileName()), "r+");
 
     d->kossl->X509_print(ktf_fs, getCert());
     fclose(ktf_fs);

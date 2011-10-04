@@ -29,7 +29,7 @@
 
 #include <ksslall.h>
 #include <kdebug.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kcodecs.h>
 
 #include <assert.h>
@@ -62,7 +62,7 @@ KSSLPKCS7::~KSSLPKCS7() {
 
 KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
 #ifdef KSSL_HAVE_SSL
-    KTemporaryFile ktf;
+    QTemporaryFile ktf;
     ktf.open();
 
     if (base64.isEmpty()) return NULL;

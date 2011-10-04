@@ -20,11 +20,11 @@
 #include "resourcemanager.h"
 
 #include <kdebug.h>
-#include <ktemporaryfile.h>
 #include <qtest_kde.h>
 
 #include <Soprano/Soprano>
 
+#include <qtemporaryfile.h>
 #include <QtCore/QTextStream>
 
 using namespace Soprano;
@@ -319,7 +319,7 @@ void ResourceTest::testResourceManager()
 void ResourceTest::testLocalFileUrls()
 {
     // create a testfile
-    KTemporaryFile tmpFile1;
+    QTemporaryFile tmpFile1;
     QVERIFY( tmpFile1.open() );
 
     QUrl tmpFile1ResUri;
@@ -368,7 +368,7 @@ void ResourceTest::testLocalFileUrls()
         QCOMPARE( tmpFile1ResUri, fileRes2.resourceUri() );
 
         // create a second test file
-        KTemporaryFile tmpFile2;
+        QTemporaryFile tmpFile2;
         QVERIFY( tmpFile2.open() );
 
         // make sure the file:/ URL is reused as resource URI
@@ -379,7 +379,7 @@ void ResourceTest::testLocalFileUrls()
         QCOMPARE( KUrl(fileRes3.resourceUri()), KUrl(tmpFile2.fileName()) );
 
         // create a third test file
-        KTemporaryFile tmpFile3;
+        QTemporaryFile tmpFile3;
         QVERIFY( tmpFile3.open() );
 
         // add a random bit of information about it
@@ -405,7 +405,7 @@ void ResourceTest::testKickOffListRemoval()
 {
     Soprano::Model * model = ResourceManager::instance()->mainModel();
     {
-        KTemporaryFile tmpFile1;
+        QTemporaryFile tmpFile1;
         QVERIFY( tmpFile1.open() );
 
         Resource fileRes( KUrl(tmpFile1.fileName()) );
@@ -435,7 +435,7 @@ void ResourceTest::testKickOffListRemoval()
 
     }
     {
-        KTemporaryFile tmpFile;
+        QTemporaryFile tmpFile;
         QVERIFY( tmpFile.open() );
 
         Resource fileRes( KUrl(tmpFile.fileName()) );
@@ -448,7 +448,7 @@ void ResourceTest::testKickOffListRemoval()
         QVERIFY( fileRes.resourceUri().scheme() == QLatin1String("nepomuk") );
 
         // Add a different nie:url
-        KTemporaryFile tmpFile2;
+        QTemporaryFile tmpFile2;
         QVERIFY( tmpFile2.open() );
         fileRes.setProperty( Nepomuk::Vocabulary::NIE::url(), KUrl(tmpFile2.fileName()) );
 
@@ -460,17 +460,17 @@ void ResourceTest::testKickOffListRemoval()
         // only tmpFile2 -> fileRes
 
         Resource fileRes2( KUrl(tmpFile.fileName()) );
-        
+
         QVERIFY( fileRes.resourceUri() != fileRes2.resourceUri() );
 
         Resource fileRes3( KUrl(tmpFile2.fileName()) );
         QVERIFY( fileRes3.resourceUri() == fileRes.resourceUri() );
-        
+
         Resource r1( "res1" );
         r1.setProperty( QUrl("http://test/prop1"), 42 );
-        
+
         r1.setProperty( Soprano::Vocabulary::NAO::identifier(), "foo" );
-        
+
         Resource r2( "res1" );
         r2.setProperty( QUrl("http://test/prop1"), 46 );
 

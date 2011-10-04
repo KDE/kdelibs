@@ -30,7 +30,7 @@
 #include <kxmlguifactory.h>
 #include <kxmlguiwindow.h>
 #include <QApplication>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 
 class TestXmlGuiWindow : public KXmlGuiWindow
 {
@@ -93,7 +93,7 @@ public:
     }
 
 private:
-    KTemporaryFile m_userFile;
+    QTemporaryFile m_userFile;
     QString m_fileName;
 };
 

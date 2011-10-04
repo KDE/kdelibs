@@ -39,7 +39,7 @@
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
 #include <kmimetyperepository_p.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kdesktopfile.h>
 
 void KMimeTypeTest::initTestCase()
@@ -296,7 +296,7 @@ void KMimeTypeTest::testFindByPathWithContent()
 
     // Test a real PDF file.
     // If we find x-matlab because it starts with '%' then we are not ordering by priority.
-    KTemporaryFile tempFile;
+    QTemporaryFile tempFile;
     QVERIFY(tempFile.open());
     QString tempFileName = tempFile.fileName();
     tempFile.write("%PDF-");
@@ -311,8 +311,7 @@ void KMimeTypeTest::testFindByPathWithContent()
 
     // Test the case where the extension doesn't match the contents: extension wins
     {
-        KTemporaryFile txtTempFile;
-        txtTempFile.setSuffix(".txt");
+        QTemporaryFile txtTempFile(QDir::tempPath() + QLatin1String("/kmimetypetest_XXXXXX.txt"));
         QVERIFY(txtTempFile.open());
         txtTempFile.write("%PDF-");
         QString txtTempFileName = txtTempFile.fileName();
@@ -329,8 +328,7 @@ void KMimeTypeTest::testFindByPathWithContent()
     // Now the case where extension differs from contents, but contents has >80 magic rule
     // XDG spec says: contents wins. But we can't sniff all files...
     {
-        KTemporaryFile txtTempFile;
-        txtTempFile.setSuffix(".txt");
+        QTemporaryFile txtTempFile(QDir::tempPath() + QLatin1String("/kmimetypetest_XXXXXX.txt"));
         QVERIFY(txtTempFile.open());
         txtTempFile.write("<smil");
         QString txtTempFileName = txtTempFile.fileName();

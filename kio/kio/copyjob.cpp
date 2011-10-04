@@ -38,13 +38,13 @@
 #include "jobuidelegate.h"
 
 #include <kdirnotify.h>
-#include <ktemporaryfile.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
 #include <assert.h>
 
+#include <qtemporaryfile.h>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <sys/stat.h> // mode_t
@@ -1803,8 +1803,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             const QString _src( m_currentSrcURL.toLocalFile() );
             const QString _dest( dest.toLocalFile() );
             const QString _tmpPrefix = m_currentSrcURL.directory(KUrl::ObeyTrailingSlash|KUrl::AppendTrailingSlash);
-            KTemporaryFile tmpFile;
-            tmpFile.setPrefix(_tmpPrefix);
+            QTemporaryFile tmpFile(_tmpPrefix + "kio_XXXXXX");
             const bool openOk = tmpFile.open();
             if (!openOk) {
                 kWarning(7007) << "Couldn't open temp file in" << _tmpPrefix;
@@ -1812,7 +1811,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 const QString _tmp( tmpFile.fileName() );
                 tmpFile.close();
                 tmpFile.remove();
-                kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
+                kDebug(7007) << "QTemporaryFile using" << _tmp << "as intermediary";
                 if (KDE::rename( _src, _tmp ) == 0) {
                     //kDebug(7007) << "Renaming" << _src << "to" << _tmp << "succeeded";
                     if (!QFile::exists( _dest ) && KDE::rename(_tmp, _dest) == 0) {

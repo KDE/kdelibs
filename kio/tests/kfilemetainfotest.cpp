@@ -21,7 +21,6 @@
 
 #include <kdirlister.h>
 #include <kfilemetainfo.h>
-#include <ktemporaryfile.h>
 #include <qtest_kde.h>
 
 #include "kiotesthelper.h"

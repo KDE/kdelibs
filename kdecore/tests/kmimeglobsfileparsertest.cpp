@@ -19,7 +19,7 @@
  */
 
 #include <kdebug.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <qtest_kde.h>
 #include "kmimeglobsfileparser_p.h"
 #include <kmimetyperepository_p.h>
@@ -88,7 +88,7 @@ private Q_SLOTS:
         const QString ext1 = "*.kmimefileparserunittest";
         const QString ext2 = "*.kmimefileparserunittest2";
 
-        KTemporaryFile globTempFile;
+        QTemporaryFile globTempFile;
         QVERIFY(globTempFile.open());
         const QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
         globTempFile.write(testFile);
@@ -112,7 +112,7 @@ private Q_SLOTS:
 
         // "local" file
         // It defines *.ext1 and *.ext2
-        KTemporaryFile globTempFile1;
+        QTemporaryFile globTempFile1;
         QVERIFY(globTempFile1.open());
         // Defining ext2 twice is a bonus in this test: it tests the case where
         // people install freedesktop.org.xml and kde.xml into the same prefix;
@@ -123,7 +123,7 @@ private Q_SLOTS:
         globTempFile1.close();
         // "global" file
         // It defines *.ext1 and *.globalext
-        KTemporaryFile globTempFile2;
+        QTemporaryFile globTempFile2;
         QVERIFY(globTempFile2.open());
         const QByteArray testFile2 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.globalext";
         globTempFile2.write(testFile2);
@@ -148,7 +148,7 @@ private Q_SLOTS:
 
         // "local" file
         // It defines *.o1 and *.o2
-        KTemporaryFile globTempFile1;
+        QTemporaryFile globTempFile1;
         QVERIFY(globTempFile1.open());
         const QByteArray testFile1 = "# Test data\ntext/plain:__NOGLOBS__\ntext/plain:*.o1\ntext/plain:*.o2\ntext/plain:*.o2";
         globTempFile1.write(testFile1);
@@ -158,7 +158,7 @@ private Q_SLOTS:
         // "global" file
         // It defines *.o1 and *.exttoberemoved - this will all be overwritten by the local file
         // so it won't appear.
-        KTemporaryFile globTempFile2;
+        QTemporaryFile globTempFile2;
         QVERIFY(globTempFile2.open());
         const QByteArray testFile2 = "# Test data\ntext/plain:*.o1\ntext/plain:*.exttoberemoved";
         globTempFile2.write(testFile2);

@@ -17,7 +17,7 @@
  */
 #include "kdesktopfiletest.h"
 #include <kconfiggroup.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kstandarddirs.h>
 #include "kdesktopfiletest.moc"
 
@@ -45,8 +45,7 @@ void KDesktopFileTest::testRead()
 
 void KDesktopFileTest::testSuccessfulTryExec()
 {
-    KTemporaryFile file;
-    file.setPrefix("test1");
+    QTemporaryFile file;
     QVERIFY( file.open() );
     const QString fileName = file.fileName();
     QTextStream ts( &file );
@@ -62,8 +61,7 @@ void KDesktopFileTest::testSuccessfulTryExec()
 
 void KDesktopFileTest::testUnsuccessfulTryExec()
 {
-    KTemporaryFile file;
-    file.setPrefix("test1");
+    QTemporaryFile file;
     QVERIFY( file.open() );
     const QString fileName = file.fileName();
     QTextStream ts( &file );
@@ -79,8 +77,7 @@ void KDesktopFileTest::testUnsuccessfulTryExec()
 
 void KDesktopFileTest::testActionGroup()
 {
-    KTemporaryFile file;
-    file.setPrefix("test1");
+    QTemporaryFile file;
     QVERIFY( file.open() );
     const QString fileName = file.fileName();
     QTextStream ts( &file );
