@@ -205,6 +205,11 @@ void KWebWallet::KWebWalletPrivate::fillDataFromCache(KWebWallet::WebFormList &f
 
 void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
 {
+    // Make sure the specified keys exists before acting on it. See BR# 270209.
+    if (!pendingSaveRequests.contains(key)) {
+        return;
+    }
+
     bool success = false;
     const QUrl url = pendingSaveRequests.value(key).first().url;
 
