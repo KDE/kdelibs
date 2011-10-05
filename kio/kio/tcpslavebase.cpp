@@ -309,7 +309,22 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                                  const QString &host,
                                  quint16 port)
 {
+    QString errorString;
+    const int errCode = connectToHost(host, port, &errorString);
+    if (errCode == 0)
+        return true;
+
+    error(errCode, errorString);
+    return false;
+}
+
+int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* errorString)
+{
     d->clearSslMetaData(); //We have separate connection and SSL setup phases
+
+    if (errorString) {
+        errorString->clear();  // clear prior error messages.
+    }
 
     d->socket.setVerificationPeerName(host); // Used for ssl certificate verification (SNI)
 
@@ -333,8 +348,9 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                                     "WarnOnLeaveSSLMode");
 
             if (result == KMessageBox::Cancel) {
-                error(ERR_USER_CANCELED, host);
-                return false;
+                if (errorString)
+                    *errorString = host;
+                return ERR_USER_CANCELED;
             }
         }
     }
@@ -353,15 +369,13 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                      << ", Connection succeeded:" << connectOk;
 
         if (d->socket.state() != KTcpSocket::ConnectedState) {
+            if (errorString)
+                *errorString = host + QLatin1String(": ") + d->socket.errorString();
             if (d->socket.error() == KTcpSocket::HostNotFoundError) {
-                error(ERR_UNKNOWN_HOST,
-                      host + QLatin1String(": ") + d->socket.errorString());
-            } else {
-                error(ERR_COULD_NOT_CONNECT,
-                      host + QLatin1String(": ") + d->socket.errorString());
+                return ERR_UNKNOWN_HOST;
             }
-            return false;
-         }
+            return ERR_COULD_NOT_CONNECT;
+        }
 
         //### check for proxyAuthenticationRequiredError
 
@@ -377,12 +391,12 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                 //### SSL 2.0 is (close to) dead and it's a good thing, too.
             }
             if (res & ResultFailed) {
-                error(ERR_COULD_NOT_CONNECT,
-                      i18nc("%1 is a host name", "%1: SSL negotiation failed", host));
-                return false;
+                if (errorString)
+                    *errorString = i18nc("%1 is a host name", "%1: SSL negotiation failed", host);
+                return ERR_COULD_NOT_CONNECT;
             }
         }
-        return true;
+        return 0;
     }
     Q_ASSERT(false);
 }

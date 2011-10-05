@@ -66,24 +66,23 @@ target_link_libraries(nepomukquery
 
 install(TARGETS nepomukquery EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
-  term.h
-  negationterm.h
-  orterm.h
   andterm.h
   comparisonterm.h
-  simpleterm.h
-  groupterm.h
-  resourceterm.h
-  literalterm.h
-  resourcetypeterm.h
-  optionalterm.h
-  query.h
   filequery.h
-  result.h
-  queryserviceclient.h
-  queryparser.h
-  standardqueries.h
+  groupterm.h
+  literalterm.h
+  negationterm.h
   nepomukquery_export.h
+  optionalterm.h
+  orterm.h
+  query.h
+  queryparser.h
+  queryserviceclient.h
+  resourceterm.h
+  resourcetypeterm.h
+  result.h
+  simpleterm.h
   standardqueries.h
+  term.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )

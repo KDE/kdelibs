@@ -86,6 +86,27 @@
 //string parsing helpers and HeaderTokenizer implementation
 #include "parsinghelpers.cpp"
 
+// KDE5 TODO (QT5) : use QString::htmlEscape or whatever https://qt.gitorious.org/qt/qtbase/merge_requests/56
+// ends up with.
+static QString htmlEscape(const QString &plain)
+{
+    QString rich;
+    rich.reserve(int(plain.length() * 1.1));
+        for (int i = 0; i < plain.length(); ++i) {
+        if (plain.at(i) == QLatin1Char('<'))
+            rich += QLatin1String("&lt;");
+        else if (plain.at(i) == QLatin1Char('>'))
+            rich += QLatin1String("&gt;");
+        else if (plain.at(i) == QLatin1Char('&'))
+            rich += QLatin1String("&amp;");
+        else if (plain.at(i) == QLatin1Char('"'))
+            rich += QLatin1String("&quot;");
+        else
+            rich += plain.at(i);
+    }
+    rich.squeeze();
+    return rich;
+}
 
 // see filenameFromUrl(): a sha1 hash is 160 bits
 static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
@@ -384,6 +405,7 @@ void HTTPProtocol::reparseConfiguration()
     m_proxyAuth = 0;
     m_wwwAuth = 0;
     m_request.proxyUrl.clear(); //TODO revisit
+    m_request.proxyUrls.clear();
 }
 
 void HTTPProtocol::resetConnectionSettings()
@@ -416,57 +438,10 @@ void HTTPProtocol::resetResponseParsing()
 
 void HTTPProtocol::resetSessionSettings()
 {
-  // Do not reset the URL on redirection if the proxy
-  // URL, username or password has not changed!
-  KUrl proxy ( config()->readEntry("UseProxy") );
-  QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
-
-#if 0
-  if ( m_proxyAuth.realm.isEmpty() || !proxy.isValid() ||
-       m_request.proxyUrl.host() != proxy.host() ||
-       m_request.proxyUrl.port() != proxy.port() ||
-       (!proxy.user().isEmpty() && proxy.user() != m_request.proxyUrl.user()) ||
-       (!proxy.pass().isEmpty() && proxy.pass() != m_request.proxyUrl.pass()) )
-  {
-    m_request.proxyUrl = proxy;
-
-    kDebug(7113) << "Using proxy:" << m_request.useProxy()
-                 << "URL:" << m_request.proxyUrl.url()
-                 << "Realm:" << m_proxyAuth.realm;
-  }
-#endif
-    m_request.proxyUrl = proxy;
-    kDebug(7113) << "Using proxy:" << isValidProxy(m_request.proxyUrl)
-                 << "URL:" << m_request.proxyUrl.url();
-                 //<< "Realm:" << m_proxyAuth.realm;
-
-  if (isValidProxy(m_request.proxyUrl)) {
-      if (m_request.proxyUrl.protocol() == QLatin1String("socks")) {
-          // Let Qt do SOCKS because it's already implemented there...
-          proxyType = QNetworkProxy::Socks5Proxy;
-      } else if (isAutoSsl()) {
-          // and for HTTPS we use HTTP CONNECT on the proxy server, also implemented in Qt.
-          // This is the usual way to handle SSL proxying.
-          proxyType = QNetworkProxy::HttpProxy;
-      }
-      m_request.proxyUrl = proxy;
-  } else {
-      m_request.proxyUrl = KUrl();
-  }
-
-  QNetworkProxy appProxy(proxyType, m_request.proxyUrl.host(), m_request.proxyUrl.port(),
-                         m_request.proxyUrl.user(), m_request.proxyUrl.pass());
-  QNetworkProxy::setApplicationProxy(appProxy);
-
-  if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
-      m_request.isKeepAlive = config()->readEntry("PersistentProxyConnection", false);
-      kDebug(7113) << "Enable Persistent Proxy Connection:" << m_request.isKeepAlive;
-  } else {
-      // Follow HTTP/1.1 spec and enable keep-alive by default
-      // unless the remote side tells us otherwise or we determine
-      // the persistent link has been terminated by the remote end.
-      m_request.isKeepAlive = true;
-  }
+  // Follow HTTP/1.1 spec and enable keep-alive by default
+  // unless the remote side tells us otherwise or we determine
+  // the persistent link has been terminated by the remote end.
+  m_request.isKeepAlive = true;
   m_request.keepAliveTimeout = 0;
 
   m_request.redirectUrl = KUrl();
@@ -589,7 +564,9 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
   m_request.url.setUser(user);
   m_request.url.setPass(pass);
 
-  //TODO need to do anything about proxying?
+  // On new connection always clear previous proxy information...
+  m_request.proxyUrl.clear();
+  m_request.proxyUrls.clear();
 
   kDebug(7113) << "Hostname is now:" << m_request.url.host()
                << "(" << m_request.encoded_hostname << ")";
@@ -2097,58 +2074,121 @@ static bool isCompatibleNextUrl(const KUrl &previous, const KUrl &now)
 
 bool HTTPProtocol::httpShouldCloseConnection()
 {
-  kDebug(7113) << "Keep Alive:" << m_request.isKeepAlive;
+    kDebug(7113);
 
-  if (!isConnected()) {
-      return false;
-  }
+    if (!isConnected()) {
+        return false;
+    }
 
-  if (m_request.method != HTTP_GET && m_request.method != HTTP_POST) {
-      return true;
-  }
+    if (m_request.method != HTTP_GET && m_request.method != HTTP_POST) {
+        return true;
+    }
 
-  // TODO compare current proxy state against proxy needs of next request,
-  // *when* we actually have variable proxy settings!
+    if (!m_request.proxyUrls.isEmpty() && !isAutoSsl()) {
+        Q_FOREACH(const QString& url, m_request.proxyUrls) {
+            if (url != QLatin1String("DIRECT")) {
+                if (isCompatibleNextUrl(m_server.proxyUrl, KUrl(url))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-  if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl())  {
-      return !isCompatibleNextUrl(m_server.proxyUrl, m_request.proxyUrl);
-  }
-  return !isCompatibleNextUrl(m_server.url, m_request.url);
+    return !isCompatibleNextUrl(m_server.url, m_request.url);
 }
 
 bool HTTPProtocol::httpOpenConnection()
 {
-  kDebug(7113);
-  m_server.clear();
+    kDebug(7113);
+    m_server.clear();
 
-  // Only save proxy auth information after proxy authentication has
-  // actually taken place, which will set up exactly this connection.
-  disconnect(socket(), SIGNAL(connected()),
-             this, SLOT(saveProxyAuthenticationForSocket()));
+    // Only save proxy auth information after proxy authentication has
+    // actually taken place, which will set up exactly this connection.
+    disconnect(socket(), SIGNAL(connected()),
+              this, SLOT(saveProxyAuthenticationForSocket()));
 
-  clearUnreadBuffer();
+    clearUnreadBuffer();
 
-  bool connectOk = false;
-  if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
-      connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
-  } else {
-      connectOk = connectToHost(toQString(m_protocol), m_request.url.host(), m_request.url.port(defaultPort()));
-  }
+    int connectError = 0;
+    QString errorString;
 
-  if (!connectOk) {
-      return false;
-  }
+    // Get proxy information...
+    if (m_request.proxyUrls.isEmpty()) {
+        m_request.proxyUrls = config()->readEntry("ProxyUrls", QStringList());
+        kDebug(7113) << "Proxy URLs:" << m_request.proxyUrls;
+    }
 
-  // Disable Nagle's algorithm, i.e turn on TCP_NODELAY.
-  KTcpSocket *sock = qobject_cast<KTcpSocket *>(socket());
-  if (sock) {
-      // kDebug(7113) << "TCP_NODELAY:" << sock->socketOption(QAbstractSocket::LowDelayOption);
-      sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-  }
+    if (m_request.proxyUrls.isEmpty()) {
+        connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
+    } else {
+        KUrl::List badProxyUrls;
+        Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
+            const KUrl url (proxyUrl);
+            const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
+            QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
+            if (url.protocol() == QLatin1String("socks")) {
+                proxyType = QNetworkProxy::Socks5Proxy;
+            } else if (!isDirectConnect && isAutoSsl()) {
+                proxyType = QNetworkProxy::HttpProxy;
+            }
 
-  m_server.initFrom(m_request);
-  connected();
-  return true;
+            kDebug(7113) << "Connecting to proxy: address=" << proxyUrl << "type=" << proxyType;
+
+            if (proxyType == QNetworkProxy::NoProxy) {
+                // Only way proxy url and request url are the same is when the
+                // proxy URL list contains a "DIRECT" entry. See resetSessionSettings().
+                if (isDirectConnect) {
+                    connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
+                    kDebug(7113) << "Connected DIRECT: host=" << m_request.url.host() << "post=" << m_request.url.port(defaultPort());
+                } else {
+                    connectError = connectToHost(url.host(), url.port(), &errorString);
+                    if (connectError == 0) {
+                        m_request.proxyUrl = url;
+                        kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
+                    } else {
+                        kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
+                        badProxyUrls << url;
+                    }
+                }
+                if (connectError == 0) {
+                    break;
+                }
+            } else {
+                QNetworkProxy proxy (proxyType, url.host(), url.port(), url.user(), url.pass());
+                QNetworkProxy::setApplicationProxy(proxy);
+                connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
+                if (connectError == 0) {
+                    kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
+                    break;
+                } else {
+                    kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
+                    badProxyUrls << url;
+                    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
+                }
+            }
+        }
+
+        if (!badProxyUrls.isEmpty()) {
+            //TODO: Notify the client of BAD proxy addresses (needed for PAC setups).
+        }
+    }
+
+    if (connectError != 0) {
+        error (connectError, errorString);
+        return false;
+    }
+
+    // Disable Nagle's algorithm, i.e turn on TCP_NODELAY.
+    KTcpSocket *sock = qobject_cast<KTcpSocket*>(socket());
+    if (sock) {
+        // kDebug(7113) << "TCP_NODELAY:" << sock->socketOption(QAbstractSocket::LowDelayOption);
+        sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    }
+
+    m_server.initFrom(m_request);
+    connected();
+    return true;
 }
 
 bool HTTPProtocol::satisfyRequestFromCache(bool *cacheHasPage)
@@ -2240,8 +2280,28 @@ bool HTTPProtocol::sendQuery()
   // Cannot have an https request without autoSsl!  This can
   // only happen if  the current installation does not support SSL...
   if (isEncryptedHttpVariety(m_protocol) && !isAutoSsl()) {
-      error(ERR_UNSUPPORTED_PROTOCOL, toQString(m_protocol));
+    error(ERR_UNSUPPORTED_PROTOCOL, toQString(m_protocol));
     return false;
+  }
+
+  // Check the reusability of the current connection.
+  if (httpShouldCloseConnection()) {
+    httpCloseConnection();
+  }
+
+  // Create a new connection to the remote machine if we do
+  // not already have one...
+  // NB: the !m_socketProxyAuth condition is a workaround for a proxied Qt socket sometimes
+  // looking disconnected after receiving the initial 407 response.
+  // I guess the Qt socket fails to hide the effect of  proxy-connection: close after receiving
+  // the 407 header.
+  if ((!isConnected() && !m_socketProxyAuth))
+  {
+    if (!httpOpenConnection())
+    {
+       kDebug(7113) << "Couldn't connect, oopsie!";
+       return false;
+    }
   }
 
   m_request.cacheTag.ioMode = NoCache;
@@ -2363,7 +2423,7 @@ bool HTTPProtocol::sendQuery()
         header += QLatin1String("Connection: ");
     }
     if (m_request.isKeepAlive) {
-        header += QLatin1String("Keep-Alive\r\n");
+        header += QLatin1String("keep-alive\r\n");
     } else {
         header += QLatin1String("close\r\n");
     }
@@ -2511,30 +2571,11 @@ bool HTTPProtocol::sendQuery()
   if (!hasBodyData && !hasDavData)
     header += QLatin1String("\r\n");
 
-  // Check the reusability of the current connection.
-  if (httpShouldCloseConnection()) {
-    httpCloseConnection();
-  }
 
   // Now that we have our formatted header, let's send it!
-  // Create a new connection to the remote machine if we do
-  // not already have one...
-  // NB: the !m_socketProxyAuth condition is a workaround for a proxied Qt socket sometimes
-  // looking disconnected after receiving the initial 407 response.
-  // I guess the Qt socket fails to hide the effect of  proxy-connection: close after receiving
-  // the 407 header.
-  if ((!isConnected() && !m_socketProxyAuth))
-  {
-    if (!httpOpenConnection())
-    {
-       kDebug(7113) << "Couldn't connect, oopsie!";
-       return false;
-    }
-  }
 
   // Clear out per-connection settings...
   resetConnectionSettings();
-
 
   // Send the data to the remote machine...
   ssize_t written = write(header.toLatin1(), header.length());
@@ -3034,10 +3075,13 @@ endParsing:
                         if (auth->realm().isEmpty() && !auth->supportsPathMatching())
                             setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
                     }
+
+                    kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
+
                     if (authinfo.keepPassword) {
                         cacheAuthentication(authinfo);
+                        kDebug(7113) << "Cached authentication for" << m_request.url;
                     }
-                    kDebug(7113) << "Caching authentication for" << m_request.url;
                 }
                 // Update our server connection state which includes www and proxy username and password.
                 m_server.updateCredentials(m_request);
@@ -3070,6 +3114,9 @@ endParsing:
         while (tIt.hasNext()) {
             if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
                 m_request.keepAliveTimeout = tIt.current().mid(qstrlen("timeout=")).trimmed().toInt();
+                if (httpRev == HTTP_10) {
+                    m_request.isKeepAlive = true;
+                }
             }
         }
 
@@ -3431,7 +3478,7 @@ endParsing:
                                 authinfo.url = reqUrl;
                                 authinfo.keepPassword = true;
                                 authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
-                                                        authinfo.realmValue, authinfo.url.host());
+                                                        htmlEscape(authinfo.realmValue), authinfo.url.host());
 
                                 if (!openPasswordDialog(authinfo, errorMsg)) {
                                     if (sendErrorPageNotification()) {
@@ -3450,6 +3497,7 @@ endParsing:
 
                     if (generateAuthorization) {
                         (*auth)->generateResponse(username, password);
+                        (*auth)->setCachePasswordEnabled(authinfo.keepPassword);
 
                         kDebug(7113) << "Auth State: isError=" << (*auth)->isError()
                                      << "needCredentials=" << (*auth)->needCredentials()
@@ -4030,7 +4078,6 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection()
 {
   kDebug(7113);
-  m_request.isKeepAlive = false;
   m_server.clear();
   disconnectFromHost();
   clearUnreadBuffer();
@@ -5262,15 +5309,17 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
                            "to access any sites.");
         info.keepPassword = true;
         info.commentLabel = i18n("Proxy:");
-        info.comment = i18n("<b>%1</b> at <b>%2</b>", info.realmValue, m_request.proxyUrl.host());
+        info.comment = i18n("<b>%1</b> at <b>%2</b>", htmlEscape(info.realmValue), m_request.proxyUrl.host());
         const bool dataEntered = openPasswordDialog(info, i18n("Proxy Authentication Failed."));
         if (!dataEntered) {
             kDebug(7103) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
+            return;
         }
     }
     authenticator->setUser(info.username);
     authenticator->setPassword(info.password);
+    authenticator->setOption(QLatin1String("keepalive"), info.keepPassword);
 
     if (m_socketProxyAuth) {
         *m_socketProxyAuth = *authenticator;
@@ -5297,6 +5346,7 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
         a.realmValue = m_socketProxyAuth->realm();
         a.username = m_socketProxyAuth->user();
         a.password = m_socketProxyAuth->password();
+        a.keepPassword = m_socketProxyAuth->option(QLatin1String("keepalive")).toBool();
         cacheAuthentication(a);
     }
     delete m_socketProxyAuth;

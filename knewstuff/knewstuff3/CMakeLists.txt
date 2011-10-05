@@ -68,6 +68,3 @@ install(FILES
   knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
 )
-
-install(FILES uploaddialog.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel)
-

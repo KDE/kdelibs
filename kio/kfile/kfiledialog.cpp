@@ -149,7 +149,7 @@ static const char s_defaultFileModuleName[] = "kfilemodule";
 static KAbstractFileModule* fileModule()
 {
     if(!s_module) {
-        QString moduleName = KConfigGroup(KGlobal::config(), ConfigGroup).readEntry("file module", s_defaultFileModuleName);
+        QString moduleName = KConfig("kdeglobals").group(ConfigGroup).readEntry("file module", s_defaultFileModuleName);
         if(!(s_module = loadFileModule(moduleName))) {
             kDebug() << "Failed to load configured file module" << moduleName;
             if(moduleName != s_defaultFileModuleName) {

@@ -96,6 +96,16 @@ StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent)
 
 StatusBarExtension::~StatusBarExtension()
 {
+  KStatusBar * sb = statusBar();
+  for ( int i = d->m_statusBarItems.count () - 1; i >= 0 ; --i ) {
+    if ( d->m_statusBarItems[i].widget() ) {
+      if ( sb ) {
+        d->m_statusBarItems[i].ensureItemHidden( sb );
+      }
+      d->m_statusBarItems[i].widget()->deleteLater();
+    }
+  }
+
   delete d;
 }
 
