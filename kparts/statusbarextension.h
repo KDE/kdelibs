@@ -75,6 +75,10 @@ namespace KParts
        * the part is unactivated. This simply controls where temporary messages
        * hide the @p widget, and whether it's added to the left or to the right side.
        *
+       * @Note that the widget does not technically become a child of the
+       *       StatusBarExtension in a QObject sense. However, it @em will be deleted
+       *       when the StatusBarExtension is deleted.
+       *
        * IMPORTANT: do NOT add any items immediately after constructing the extension.
        * Give the application time to set the statusbar in the extension if necessary.
        */
