@@ -880,7 +880,7 @@ public:
 };
 
 KDebug::Block::Block(const char* label, int area)
-    : m_label(0), m_area(area), d(0)
+    : m_area(area), d(0)
 {
     if (hasNullOutputQtDebugMsg(area)) {
         d = 0; // remember, for the dtor
