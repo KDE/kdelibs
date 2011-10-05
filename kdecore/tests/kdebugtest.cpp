@@ -92,6 +92,13 @@ public:
         deprecatedMethod();
     }
 
+    void testCharStarBlock()
+    {
+        KDebug::Block myBlock(qPrintable(QString::fromLatin1("Block"))); // the char* goes out of scope
+        func_void();
+        deprecatedMethod();
+    }
+
     void deprecatedMethod()
     {
         KWARNING_DEPRECATED
@@ -297,6 +304,7 @@ void testKDebug()
 
     TestClass1 c1;
     c1.testBlock();
+    c1.testCharStarBlock();
 }
 
 // Concurrency testing, based on code from bug 133026
