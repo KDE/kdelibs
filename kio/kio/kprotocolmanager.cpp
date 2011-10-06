@@ -142,10 +142,10 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const KUrl& url)
   bool isMatch = false;
   const KProtocolManager::ProxyType type = KProtocolManager::proxyType();
   const bool useRevProxy = ((type == KProtocolManager::ManualProxy) && KProtocolManager::useReverseProxy());
-  const bool hasNoProxyList = (type == KProtocolManager::ManualProxy || type == KProtocolManager::EnvVarProxy);
+  const bool useNoProxyList = (type == KProtocolManager::ManualProxy || type == KProtocolManager::EnvVarProxy);
 
   // No proxy only applies to ManualProxy and EnvVarProxy types...
-  if (hasNoProxyList && !noProxyFor.isEmpty()) {
+  if (useNoProxyList && noProxyFor.isEmpty()) {
       QStringList noProxyForList (KProtocolManager::noProxyFor().split(QL1C(',')));
       QMutableStringListIterator it (noProxyForList);
       while (it.hasNext()) {
