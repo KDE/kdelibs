@@ -2014,7 +2014,6 @@ bool RenderTableSection::canClear(RenderObject * /*child*/, PageBreakLevel level
 
 void RenderTableSection::addSpaceAt(int pos, int dy)
 {
-    const int nEffCols = table()->numEffCols();
     const int totalRows = numRows();
     for ( int r = 0; r < totalRows; r++ ) {
         if (rowPos[r] > pos) {
