@@ -2849,12 +2849,11 @@ JSValue *ExternalFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const 
   if (!part)
     return jsUndefined();
 
-  KHTMLView *widget = part->view();
-
   switch (id) {
   case External::AddFavorite:
   {
 #ifndef KONQ_EMBEDDED
+  KHTMLView *widget = part->view();
     if (!widget->dialogsAllowed())
       return jsUndefined();
     part->xmlDocImpl()->updateRendering();
