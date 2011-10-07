@@ -182,11 +182,17 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const KUrl& url)
     }
   }
 
-  if (!noProxySubnets.isEmpty()) {
-    QHostAddress address (url.host());
+  const QString host (url.host());
+
+  if (!noProxySubnets.isEmpty() && host.isEmpty()) {
+    QHostAddress address (host);
+    // If request url is not IP address, attempt a name lookup
+    // TODO: make this configurable ??
     if (address.isNull()) {
-      QHostInfo info = KIO::HostInfo::lookupHost(url.host(), 2000);
-      address = info.addresses().first();
+      QHostInfo info = KIO::HostInfo::lookupHost(host, 2000);
+      const QList<QHostAddress> addresses = info.addresses();
+      if (!addresses.isEmpty())
+        address = addresses.first();
     }
 
     if (!address.isNull()) {
