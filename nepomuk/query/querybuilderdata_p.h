@@ -249,7 +249,7 @@ namespace Nepomuk {
                         const QStringList& terms = it.value();
                         // bif:search_excerpt wants a vector of all search terms
                         excerptParts
-                                << QString::fromLatin1("bif:search_excerpt(bif:vector(bif:charset_recode('%1', '_WIDE_', 'UTF-8')), %2)")
+                            << QString::fromLatin1("bif:search_excerpt(bif:vector('%1'), %2)")
                             .arg( terms.join(QLatin1String("','")),
                                   varName );
                     }
