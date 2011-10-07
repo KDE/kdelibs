@@ -1329,20 +1329,18 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
 
-  proceedUntilResponseHeader();
+  if (!(proceedUntilResponseHeader() && readBody(false))) {
+      return;
+  }
 
-  kDebug(7113) << "error =" << m_isError;
-  if (m_isError)
-    return;
+  httpClose(m_request.isKeepAlive);
 
-  kDebug(7113) << "responseCode =" << m_request.responseCode;
-
-  httpClose(false); // Always close connection.
+  kDebug(7113) << "responseCode=" << m_request.responseCode;
 
   if ( (m_request.responseCode >= 200) && (m_request.responseCode < 300) )
     finished();
   else
-    httpPutError();
+    sendHttpPutError();
 }
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
@@ -1765,24 +1763,15 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   return errorString;
 }
 
-void HTTPProtocol::httpPutError()
+void HTTPProtocol::sendHttpPutError()
 {
-  QString action, errorString;
-
-  switch ( m_request.method ) {
-    case HTTP_PUT:
-      action = i18nc("request type", "upload %1", m_request.url.prettyUrl());
-      break;
-    default:
-      // this should not happen, this function is for http errors only
-      // ### WTF, what about HTTP_GET?
-      Q_ASSERT(0);
+  // Only applies to HTTP PUT!
+  if (m_request.method != HTTP_PUT) {
+      return;
   }
 
-  // default error message if the following code fails
-  errorString = i18nc("%1: response code, %2: request type",
-                      "An unexpected error (%1) occurred while attempting to %2.",
-                       m_request.responseCode, action);
+  QString errorString;
+  const QString action (i18nc("request type", "upload %1", m_request.url.prettyUrl()));
 
   switch ( m_request.responseCode )
   {
@@ -1819,10 +1808,13 @@ void HTTPProtocol::httpPutError()
                          "to record the state of the resource after the execution "
                          "of this method.");
       break;
+    default:
+      // default error message if the following code fails
+      errorString = i18nc("%1: response code, %2: request type",
+                          "An unexpected error (%1) occurred while attempting to %2.",
+                          m_request.responseCode, action);
+      break;
   }
-
-  // if ( kError != ERR_SLAVE_DEFINED )
-  //errorString += " (" + url + ')';
 
   error( ERR_SLAVE_DEFINED, errorString );
 }

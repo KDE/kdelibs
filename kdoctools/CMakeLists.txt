@@ -145,7 +145,6 @@ endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 ########### install files ###############
 
 install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 

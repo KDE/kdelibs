@@ -291,7 +291,7 @@ public:
   /**
    * Generate error message based on response code
    */
-  void httpPutError();
+  void sendHttpPutError();
   /**
    * Call SlaveBase::errorPage() and remember that we've called it
    */
