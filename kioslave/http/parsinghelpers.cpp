@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <ctype.h>
+
 #include <QDir>
 #include <QMap>
 #include <QTextCodec>
@@ -62,6 +64,27 @@ static bool nextLine(const char input[], int *pos, int end)
 
     *pos = idx;
     return idx < end && rCount < 2 && nCount < 2;
+}
+
+// QByteArray::fromPercentEncoding() does not notify us about encoding errors so we need
+// to check here if this is valid at all.
+static bool isValidPercentEncoding(const QByteArray &data)
+{
+    int i = 0;
+    const int last = data.length() - 1;
+    const char *d = data.constData();
+
+    while ( (i = data.indexOf('%', i)) != -1) {
+        if ( i >= last - 2 )
+            return false;
+        if ( ! isxdigit(d[i + 1]) )
+            return false;
+        if ( ! isxdigit(d[i + 2]) )
+            return false;
+        i++;
+    }
+
+    return true;
 }
 
 QByteArray TokenIterator::next()
@@ -526,7 +549,12 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
 
         const QString charset = val.left(spos);
         const QString lang = val.mid(spos + 1, npos - spos - 1);
-        const QByteArray rawval = QByteArray::fromPercentEncoding(val.mid(npos + 1).toAscii());
+        const QByteArray encodedVal = val.mid(npos + 1).toAscii();
+
+        if ( ! isValidPercentEncoding(encodedVal) )
+            continue;
+
+        const QByteArray rawval = QByteArray::fromPercentEncoding(encodedVal);
 
         if (charset.isEmpty() || (charset == QLatin1String("us-ascii"))) {
             bool valid = true;
