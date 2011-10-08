@@ -184,7 +184,7 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const KUrl& url)
 
   const QString host (url.host());
 
-  if (!noProxySubnets.isEmpty() && host.isEmpty()) {
+  if (!noProxySubnets.isEmpty() && !host.isEmpty()) {
     QHostAddress address (host);
     // If request url is not IP address, attempt a name lookup
     // TODO: make this configurable ??
