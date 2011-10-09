@@ -420,12 +420,21 @@ static QStringList getSystemProxyFor( const KUrl& url )
   QString proxyVar (KProtocolManager::proxyFor(url.protocol()));
   // Check for SOCKS proxy, if not proxy is found for given url.
   if (!proxyVar.isEmpty()) {
-      QString proxy (QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed());
-      if (proxy.isEmpty()) {
-         proxyVar = KProtocolManager::proxyFor(QL1S("socks"));
-         proxy = QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed();
-      }
+    const QString proxy (QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed());
+    if (!proxy.isEmpty()) {
       proxies << proxy;
+    }
+  }
+  // Add the socks proxy as an alternate proxy if it exists,
+  proxyVar = KProtocolManager::proxyFor(QL1S("socks"));
+  if (!proxyVar.isEmpty()) {
+    QString proxy = QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed();
+    // Make sure the scheme of SOCKS proxy is always set to "socks://".
+    const int index = proxy.indexOf(QL1S("://"));
+    proxy = QL1S("socks://") + (index == -1 ? proxy : proxy.mid(index+3));
+    if (!proxy.isEmpty()) {
+      proxies << proxy;
+    }
   }
 #endif
   return proxies;
@@ -446,11 +455,10 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
         const QString protocol = adjustProtocol(u.protocol());
         u.setProtocol(protocol);
 
-        if (KProtocolInfo::protocolClass(protocol) != QL1S(":local"))
-        {
+        if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
           QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
-                                                          QL1S("/modules/proxyscout"),
-                                                          QL1S("org.kde.KPAC.ProxyScout"))
+                                                         QL1S("/modules/proxyscout"),
+                                                         QL1S("org.kde.KPAC.ProxyScout"))
                                           .call(QL1S("proxiesForUrl"), u.url());
           proxyList = reply;
         }
@@ -462,16 +470,16 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
       case ManualProxy:
       {
         QString proxy (proxyFor(url.protocol()));
-        // Check for SOCKS proxy, if not proxy is found for given url.
-        if (proxy.isEmpty()) {
-          proxy = proxyFor(QL1S("socks"));
+        if (!proxy.isEmpty())
+          proxyList << proxy;
+        // Add the socks proxy as an alternate proxy if it exists,
+        proxy = proxyFor(QL1S("socks"));
+        if (!proxy.isEmpty()) {
           // Make sure the scheme of SOCKS proxy is always set to "socks://".
-          if (!proxy.isEmpty()) {
-            const int index = proxy.indexOf(QL1S("://"));
-            proxy = QL1S("socks://") + (index == -1 ? proxy : proxy.mid(index+3));
-          }
+          const int index = proxy.indexOf(QL1S("://"));
+          proxy = QL1S("socks://") + (index == -1 ? proxy : proxy.mid(index+3));
+          proxyList << proxy;
         }
-        proxyList << proxy;
       }
       break;
       case NoProxy:
