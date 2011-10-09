@@ -108,7 +108,7 @@ SecretItemPrivate::SecretItemPrivate() :
 SecretItemPrivate::SecretItemPrivate( const QDBusObjectPath &dbusPath ) :
     itemIf(0)
 {
-    itemIf = DBusSession::createItem( dbusPath );
+    itemIf = DBusSession::createItemIf( dbusPath );
 }
 
 SecretItemPrivate::SecretItemPrivate( const SecretItemPrivate &that ) :

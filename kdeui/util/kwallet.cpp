@@ -22,7 +22,9 @@
 
 #include "kwallet.h"
 #include "../ksecretsservice/ksecretsservicecollection.h"
+#include "../ksecretsservicecollectionjobs.h"
 #include "../ksecretsservice/ksecretsserviceitem.h"
+#include "../ksecretsservice/ksecretsserviceitemjobs.h"
 #include <ksharedconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>

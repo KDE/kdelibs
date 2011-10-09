@@ -74,9 +74,9 @@ public:
      */
     static OpenSessionJob * openSession();
     
-    static OrgFreedesktopSecretPromptInterface * createPrompt( const QDBusObjectPath &path );
+    static OrgFreedesktopSecretPromptInterface * createPromptIf( const QDBusObjectPath &path );
     static OrgFreedesktopSecretCollectionInterface * createCollectionIf( const QDBusObjectPath &path );
-    static OrgFreedesktopSecretItemInterface * createItem( const QDBusObjectPath &path );
+    static OrgFreedesktopSecretItemInterface * createItemIf( const QDBusObjectPath &path );
     static OrgFreedesktopSecretServiceInterface * serviceIf();
     static QDBusObjectPath sessionPath();
     static bool encrypt( const QVariant& value, SecretStruct& secretStruct );

@@ -194,7 +194,7 @@ OrgFreedesktopSecretSessionInterface* OpenSessionJob::sessionInterface() const
     return sessionIf;
 }
 
-OrgFreedesktopSecretPromptInterface* DBusSession::createPrompt(const QDBusObjectPath& path)
+OrgFreedesktopSecretPromptInterface* DBusSession::createPromptIf(const QDBusObjectPath& path)
 {
     return new OrgFreedesktopSecretPromptInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
 }
@@ -204,7 +204,7 @@ OrgFreedesktopSecretCollectionInterface* DBusSession::createCollectionIf(const Q
     return new OrgFreedesktopSecretCollectionInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
 }
 
-OrgFreedesktopSecretItemInterface* DBusSession::createItem(const QDBusObjectPath& path)
+OrgFreedesktopSecretItemInterface* DBusSession::createItemIf(const QDBusObjectPath& path)
 {
     return new OrgFreedesktopSecretItemInterface( SERVICE_NAME, path.path(), QDBusConnection::sessionBus() );
 }
