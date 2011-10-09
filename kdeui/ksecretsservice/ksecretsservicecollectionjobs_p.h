@@ -156,7 +156,7 @@ protected Q_SLOTS:
     
 public:
     CollectionPrivate                   *collectionPrivate;
-    CreateCollectionItemJob                       *createItemJob;
+    CreateCollectionItemJob             *createItemJob;
     QString                             label;
     QMap< QString, QString >            attributes;
     QSharedDataPointer< SecretPrivate > secretPrivate;

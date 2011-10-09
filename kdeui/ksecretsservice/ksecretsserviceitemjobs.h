@@ -127,7 +127,7 @@ public:
     
 private:
     friend class ReadItemPropertyJobPrivate;
-    QSharedPointer<ReadItemPropertyJobPrivate> d;
+    QSharedDataPointer<ReadItemPropertyJobPrivate> d;
     void (SecretItem::*propertyReadMember)( ReadItemPropertyJob * );
 };
 
@@ -142,7 +142,7 @@ public:
     
 private:
     friend class WriteItemPropertyJobPrivate;
-    QSharedPointer<WriteItemPropertyJobPrivate> d;
+    QSharedDataPointer<WriteItemPropertyJobPrivate> d;
 };
 
 

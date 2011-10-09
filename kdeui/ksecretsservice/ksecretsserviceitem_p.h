@@ -36,8 +36,10 @@ public:
     SecretItemPrivate( const SecretItemPrivate& that );
 
     bool isValid() const;
+    OrgFreedesktopSecretItemInterface* itemIf() const { return _itemIf; }
     
-    OrgFreedesktopSecretItemInterface   *itemIf;
+private:
+    OrgFreedesktopSecretItemInterface   *_itemIf;
 };
 
 } // namespace

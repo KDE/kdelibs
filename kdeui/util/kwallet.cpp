@@ -162,7 +162,7 @@ public:
         return rc;
     }
     
-    SecretItem *findItem( const QString& key ) const;
+    QExplicitlySharedDataPointer<SecretItem> findItem( const QString& key ) const;
     template <typename T> int readEntry( const QString& key, T& value ) const;
     bool readSecret( const QString& key, Secret& value ) const;
     
@@ -823,9 +823,9 @@ const QString& Wallet::currentFolder() const {
     return d->folder;
 }
 
-SecretItem *Wallet::WalletPrivate::findItem( const QString& key ) const
+QExplicitlySharedDataPointer<SecretItem> Wallet::WalletPrivate::findItem( const QString& key ) const
 {
-    SecretItem *result =0;
+    QExplicitlySharedDataPointer<SecretItem> result;
     StringStringMap attrs;
     attrs[KSS_ATTR_ENTRYFOLDER] = folder;
     attrs["Label"] = key;
@@ -833,7 +833,7 @@ SecretItem *Wallet::WalletPrivate::findItem( const QString& key ) const
     if (searchJob->exec()) {
         SearchCollectionItemsJob::ItemList itemList = searchJob->items();
         if ( !itemList.isEmpty() ) {
-            result = itemList.first().data();
+            result = itemList.first();
         }
         else {
             kDebug(285) << "entry named " << key << " not found in folder " << folder;
@@ -850,16 +850,18 @@ template <typename T>
 int Wallet::WalletPrivate::readEntry(const QString& key, T& value) const
 {
     int rc = -1;
-    SecretItem *item = findItem(key);
-    GetSecretItemSecretJob *readJob = item->getSecret();
-    if ( readJob->exec() ) {
-        Secret theSecret = readJob->secret();
-        kDebug(285) << "Secret contentType is " << theSecret.contentType();
-        value = theSecret.value().value<T>();
-        rc = 0;
-    }
-    else {
-        kDebug(285) << "Cannot exec GetSecretItemSecretJob : " << readJob->errorString();
+    QExplicitlySharedDataPointer<SecretItem> item = findItem(key);
+    if ( item ) {
+        GetSecretItemSecretJob *readJob = item->getSecret();
+        if ( readJob->exec() ) {
+            Secret theSecret = readJob->secret();
+            kDebug(285) << "Secret contentType is " << theSecret.contentType();
+            value = theSecret.value().value<T>();
+            rc = 0;
+        }
+        else {
+            kDebug(285) << "Cannot exec GetSecretItemSecretJob : " << readJob->errorString();
+        }
     }
     return rc;
 }
@@ -867,14 +869,16 @@ int Wallet::WalletPrivate::readEntry(const QString& key, T& value) const
 bool Wallet::WalletPrivate::readSecret(const QString& key, Secret& value) const
 {
     bool result = false;
-    SecretItem *item = findItem(key);
-    GetSecretItemSecretJob *readJob = item->getSecret();
-    if ( readJob->exec() ) {
-        value = readJob->secret();
-        result = true;
-    }
-    else {
-        kDebug(285) << "Cannot exec GetSecretItemSecretJob : " << readJob->errorString();
+    QExplicitlySharedDataPointer<SecretItem> item = findItem(key);
+    if ( item ) {
+        GetSecretItemSecretJob *readJob = item->getSecret();
+        if ( readJob->exec() ) {
+            value = readJob->secret();
+            result = true;
+        }
+        else {
+            kDebug(285) << "Cannot exec GetSecretItemSecretJob : " << readJob->errorString();
+        }
     }
     return result;
 }
@@ -950,7 +954,7 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
     int rc = -1;
 
     if (walletLauncher->m_useKSecretsService) {
-        SecretItem *item = d->findItem(oldName);
+        QExplicitlySharedDataPointer<SecretItem> item = d->findItem(oldName);
         if (item) {
             WriteItemPropertyJob *writeJob = item->setLabel(newName);
             if (!writeJob->exec()) {
@@ -1205,8 +1209,8 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 
 bool Wallet::hasEntry(const QString& key) {
     if (walletLauncher->m_useKSecretsService) {
-        SecretItem *item = d->findItem( key );
-        return item != 0;
+        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
+        return item;
     }
     else {
         if (d->handle == -1) {
@@ -1229,7 +1233,7 @@ int Wallet::removeEntry(const QString& key) {
     int rc = -1;
 
     if (walletLauncher->m_useKSecretsService) {
-        SecretItem *item = d->findItem( key );
+        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
         if ( item ) {
             SecretItemDeleteJob *deleteJob = item->deleteItem();
             if ( !deleteJob->exec() ) {
@@ -1257,7 +1261,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
     int rc = 0;
 
     if (walletLauncher->m_useKSecretsService) {
-        SecretItem *item = d->findItem( key );
+        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
         if ( item ) {
             ReadItemPropertyJob *readAttrsJob = item->attributes();
             if ( readAttrsJob->exec() ) {
@@ -1267,9 +1271,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
                     bool ok = false;
                     rc = entryType.toInt( &ok );
                     if ( !ok ) {
-                        rc = -1;
-                    }
-                    else {
+                        rc = 0;
                         kDebug(285) << KSS_ATTR_WALLETTYPE << " attribute holds non int value " << attrs[KSS_ATTR_WALLETTYPE];
                     }
                 }
@@ -1278,7 +1280,6 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
                 kDebug(285) << "Cannot execute GetSecretItemSecretJob " << readAttrsJob->errorString();
             }
         }
-        return Unknown;
     }
     else {
         if (d->handle == -1) {
@@ -1289,9 +1290,8 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
         if (r.isValid()) {
             rc = r;
         }
-
-        return static_cast<EntryType>(rc);
     }
+    return static_cast<EntryType>(rc);
 }
 
 

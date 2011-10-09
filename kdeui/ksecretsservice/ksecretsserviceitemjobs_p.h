@@ -50,7 +50,7 @@ Q_SIGNALS:
 public:
     GetSecretItemSecretJob *job;
     SecretStruct secret;
-    SecretItemPrivate *secretItemPrivate;
+    QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
 };
 
 class SetSecretItemSecretJobPrivate : public QObject {
@@ -67,8 +67,8 @@ private Q_SLOTS:
 public:
     SetSecretItemSecretJob *job;
     Secret secret;
-    SecretItemPrivate *secretItemPrivate;
-    const SecretPrivate *secretPrivate;
+    QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
+    QSharedDataPointer< SecretPrivate> secretPrivate;
 };
 
 class SecretItemDeleteJobPrivate : public QObject {
@@ -85,29 +85,29 @@ private Q_SLOTS:
     
 public:
     SecretItemDeleteJob *job;
-    SecretItemPrivate   *secretItemPrivate;
+    QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
     WId                 promptWinId;
 };
 
-class ReadItemPropertyJobPrivate : public QObject {
+class ReadItemPropertyJobPrivate : public QSharedData {
 public:
-    explicit ReadItemPropertyJobPrivate( SecretItemPrivate*, ReadItemPropertyJob* );
+    explicit ReadItemPropertyJobPrivate( QSharedDataPointer< SecretItemPrivate> , ReadItemPropertyJob* );
     
     void startReadingProperty();
     
-    SecretItemPrivate *itemPrivate;
+    QSharedDataPointer< SecretItemPrivate > itemPrivate;
     ReadItemPropertyJob *readPropertyJob;
     const char *propertyName;
     QVariant value;
 };
 
-class WriteItemPropertyJobPrivate : public QObject {
+class WriteItemPropertyJobPrivate : public QSharedData {
 public:
-    explicit WriteItemPropertyJobPrivate( SecretItemPrivate*, WriteItemPropertyJob* );
+    explicit WriteItemPropertyJobPrivate( QSharedDataPointer< SecretItemPrivate>, WriteItemPropertyJob* );
     
     void startWritingProperty();
     
-    SecretItemPrivate *itemPrivate;
+    QSharedDataPointer< SecretItemPrivate > itemPrivate;
     WriteItemPropertyJob *writePropertyJob;
     const char *propertyName;
     QVariant value;
