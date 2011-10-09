@@ -1110,8 +1110,16 @@ void CollectionUnlockJobPrivate::slotPromptFinished( KJob* j )
     if ( promptJob->error() == 0 ) {
         if ( !promptJob->isDismissed() ) {
             QDBusVariant res = promptJob->result();
-            if (res.variant().canConvert< QList< QDBusObjectPath> >()) {
-                QList< QDBusObjectPath > objList = res.variant().value< QList< QDBusObjectPath > >();
+            /**
+             * NOTE: thanks to randomguy3 for helping me figuring out that QtDbus
+             * puts here a QDBusArgument because it won't know how to demarshall
+             * directly the QList<QDBusObjectPath>.
+             * http://randomguy3.wordpress.com/2010/09/07/the-magic-of-qtdbus-and-the-propertychanged-signal/
+             */
+            if ( res.variant().canConvert< QDBusArgument >() ) {
+                QDBusArgument arg = res.variant().value< QDBusArgument >();
+                QList< QDBusObjectPath > objList;
+                arg >> objList;
                 checkResult( objList );
             }
             else {

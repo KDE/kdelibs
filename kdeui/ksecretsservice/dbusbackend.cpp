@@ -72,13 +72,20 @@ void OpenSessionJob::start()
     }
     else {
         qRegisterMetaType<SecretStruct>();
-        qRegisterMetaType<StringStringMap>();
-        
         qDBusRegisterMetaType<SecretStruct>();
+        
+        qRegisterMetaType<StringStringMap>();
         qDBusRegisterMetaType<StringStringMap>();
+        
+        qRegisterMetaType<ObjectPathSecretMap>();
         qDBusRegisterMetaType<ObjectPathSecretMap>();
+        
+        qRegisterMetaType<StringVariantMap>();
         qDBusRegisterMetaType<StringVariantMap>();
-        qDBusRegisterMetaType< QList<QDBusObjectPath> >();
+
+        // NOTE: this is already registered by Qt in qtextratypes.h
+        // qRegisterMetaType< QList<QDBusObjectPath> >();
+        // qDBusRegisterMetaType< QList<QDBusObjectPath> >();
         
         // launch the daemon if it's not yet started
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
