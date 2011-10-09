@@ -444,18 +444,19 @@ void KDateComboBox::keyPressEvent(QKeyEvent *keyEvent)
     switch (keyEvent->key()) {
     case Qt::Key_Down:
         temp = d->m_date.addDays(-1).date();
-        return;
+        break;
     case Qt::Key_Up:
         temp = d->m_date.addDays(1).date();
-        return;
+        break;
     case Qt::Key_PageDown:
         temp = d->m_date.addMonths(-1).date();
-        return;
+        break;
     case Qt::Key_PageUp:
         temp = d->m_date.addMonths(1).date();
-        return;
+        break;
     default:
         KComboBox::keyPressEvent(keyEvent);
+	return;
     }
     if (temp.isValid() && temp >= d->m_minDate && temp <= d->m_maxDate) {
         d->enterDate(temp);
