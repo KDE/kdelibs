@@ -70,7 +70,6 @@ GetSecretItemSecretJob::GetSecretItemSecretJob( SecretItem* item ) :
     SecretItemJob( item ),
     d( new GetSecretItemSecretJobPrivate( this ) )
 {
-    d->secretItemPrivate = item->d;
 }
 
 GetSecretItemSecretJob::~GetSecretItemSecretJob()
@@ -84,12 +83,17 @@ void GetSecretItemSecretJob::start()
 
 Secret GetSecretItemSecretJob::secret() const
 {
-    return Secret( new SecretPrivate( d->secret ) );
+    SecretPrivate *pr = 0;
+    if ( SecretPrivate::fromSecretStrut( d->secret, pr ) ) {
+        kDebug() << "WARNING: decrypting secret FAILED";
+    }
+    return Secret( pr );
 }
 
 
 GetSecretItemSecretJobPrivate::GetSecretItemSecretJobPrivate(GetSecretItemSecretJob * j) :
-    job( j )
+    job( j ),
+    secretItemPrivate( j->secretItem()->d )
 {
 }
 

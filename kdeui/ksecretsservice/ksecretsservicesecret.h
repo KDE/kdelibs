@@ -37,6 +37,8 @@ public:
     Secret( const Secret & that );
     explicit Secret( SecretPrivate* sp );
     virtual ~Secret();
+
+    operator bool() const;
     
     Secret& operator = (const Secret& that);
     

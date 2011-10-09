@@ -44,6 +44,11 @@ Secret::Secret( const Secret& that ) :
 Secret::~Secret() {
 }
 
+Secret::operator bool() const 
+{
+    return d;
+}
+
 Secret& Secret::operator=(const Secret& that)
 {
     d = that.d;

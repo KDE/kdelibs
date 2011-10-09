@@ -108,6 +108,7 @@ public:
 private:
     friend class SecretItemPrivate;
     friend class GetSecretItemSecretJob;
+    friend class GetSecretItemSecretJobPrivate;
     friend class SetSecretItemSecretJob;
     friend class SecretItemDeleteJob;
     friend class ReadItemPropertyJob;

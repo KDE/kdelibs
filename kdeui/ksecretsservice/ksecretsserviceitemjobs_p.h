@@ -50,7 +50,7 @@ Q_SIGNALS:
 public:
     GetSecretItemSecretJob *job;
     SecretStruct secret;
-    QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
+    const QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
 };
 
 class SetSecretItemSecretJobPrivate : public QObject {
