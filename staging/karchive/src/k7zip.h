@@ -71,6 +71,9 @@ protected:
     /// Reimplemented from KArchive
     virtual bool doFinishWriting( qint64 size );
 
+    /// Reimplemented from KArchive
+    virtual bool writeData( const char* data, qint64 size );
+
     /**
      * Opens the archive for reading.
      * Parses the directory listing of the archive
@@ -79,8 +82,6 @@ protected:
      */
     virtual bool openArchive( QIODevice::OpenMode mode );
     virtual bool closeArchive();
-
-private:
 
 protected:
     virtual void virtual_hook( int id, void* data );
