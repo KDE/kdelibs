@@ -294,12 +294,13 @@ public:
     void writeAlignedBoolHeader(const QVector<bool> &v, int numDefined, int type, unsigned itemSize);
     void writeUInt64DefVector(const QVector<quint64> &v, const QVector<bool> defined, int type);
     void writeFolder(const Folder *folder);
-    void writePackInfo(quint64 dataOffset);
-    void writeUnpackInfo();
+    void writePackInfo(quint64 dataOffset, QVector<quint64> &packedSizes, QVector<bool> &packedCRCsDefined, QVector<quint32> &packedCRCs);
+    void writeUnpackInfo(QVector<Folder*> &folderItems);
     void writeSubStreamsInfo(const QVector<quint64> &unpackSizes, const QVector<bool> &digestsDefined, const QVector<quint32> &digests);
     void writeHeader(quint64 &headerOffset);
     void writeSignature();
     void writeStartHeader(const quint64 nextHeaderSize, const quint32 nextHeaderCRC, const quint64 nextHeaderOffset);
+    QByteArray encodeStream(QVector<quint64> &packSizes, QVector<Folder*> &folds);
 };
 
 K7Zip::K7Zip( const QString& fileName )
@@ -1281,19 +1282,20 @@ void K7Zip::K7ZipPrivate::writeHashDigests(
     }
 }
 
-void K7Zip::K7ZipPrivate::writePackInfo(quint64 dataOffset)
+void K7Zip::K7ZipPrivate::writePackInfo(quint64 dataOffset, QVector<quint64> &packedSizes, QVector<bool> &packedCRCsDefined, QVector<quint32> &packedCRCs)
 {
-    if (packSizes.isEmpty())
+    if (packedSizes.isEmpty())
         return;
     writeByte(kPackInfo);
     writeNumber(dataOffset);
-    writeNumber(packSizes.size());
+    writeNumber(packedSizes.size());
     writeByte(kSize);
-    for (int i = 0; i < packSizes.size(); i++) {
-        writeNumber(packSizes[i]);
+
+    for (int i = 0; i < packedSizes.size(); i++) {
+        writeNumber(packedSizes[i]);
     }
 
-    writeHashDigests(packCRCsDefined, packCRCs);
+    writeHashDigests(packedCRCsDefined, packedCRCs);
 
     writeByte(kEnd);
 }
@@ -1357,26 +1359,26 @@ void K7Zip::K7ZipPrivate::writeFolder(const Folder *folder)
     }
 }
 
-void K7Zip::K7ZipPrivate::writeUnpackInfo()
+void K7Zip::K7ZipPrivate::writeUnpackInfo(QVector<Folder*> &folderItems)
 {
-    if (folders.isEmpty())
+    if (folderItems.isEmpty())
         return;
 
     writeByte(kUnpackInfo);
 
     writeByte(kFolder);
-    writeNumber(folders.size());
+    writeNumber(folderItems.size());
     {
         writeByte(0);
-        for (int i = 0; i < folders.size(); i++) {
-            writeFolder(folders[i]);
+        for (int i = 0; i < folderItems.size(); i++) {
+            writeFolder(folderItems[i]);
         }
     }
 
     writeByte(kCodersUnpackSize);
     int i;
-    for (i = 0; i < folders.size(); i++) {
-        const Folder *folder = folders[i];
+    for (i = 0; i < folderItems.size(); i++) {
+        const Folder *folder = folderItems[i];
         for (int j = 0; j < folder->unpackSizes.size(); j++) {
             writeNumber(folder->unpackSizes[j]);
         }
@@ -1384,8 +1386,8 @@ void K7Zip::K7ZipPrivate::writeUnpackInfo()
 
     QVector<bool> unpackCRCsDefined;
     QVector<quint32> unpackCRCs;
-    for (i = 0; i < folders.size(); i++) {
-        const Folder *folder = folders[i];
+    for (i = 0; i < folderItems.size(); i++) {
+        const Folder *folder = folderItems[i];
         unpackCRCsDefined.append(folder->unpackCRCDefined);
         unpackCRCs.append(folder->unpackCRC);
     }
@@ -1448,6 +1450,55 @@ void K7Zip::K7ZipPrivate::writeSubStreamsInfo(
     writeByte(kEnd);
 }
 
+QByteArray K7Zip::K7ZipPrivate::encodeStream(QVector<quint64> &packSizes, QVector<Folder*> &folds)
+{
+    Folder *folder = new Folder;
+    folder->unpackCRCDefined = true;
+    folder->unpackCRC = crc32(0, (Bytef*)(header.data()), header.size());
+    folder->unpackSizes.append(header.size());
+
+    Folder::FolderInfo *info = new Folder::FolderInfo();
+    info->numInStreams = 1;
+    info->numOutStreams = 1;
+    info->methodID = k_LZMA2;
+
+    quint32 dictSize = header.size();
+    const quint32 kMinReduceSize = (1 << 16);
+    if (dictSize < kMinReduceSize) {
+        dictSize = kMinReduceSize;
+    }
+
+    int dict;
+    for (dict = 0; dict < 40; dict++) {
+        if (dictSize <= LZMA2_DIC_SIZE_FROM_PROP(dict)) {
+            break;
+        }
+    }
+
+    info->properties.append(dict);
+    folder->folderInfos.append(info);
+
+    folds.append(folder);
+
+    //compress data
+    QBuffer* out = new QBuffer();
+    out->open(QBuffer::ReadWrite);
+    KCompressionDevice compression(out, true, KCompressionDevice::Xz);
+    compression.open(QIODevice::WriteOnly);
+    compression.write(header.data(), header.size());
+    compression.close();
+
+    QByteArray encodedData = out->data();
+
+    // remove xz header + lzma2 header
+    encodedData.remove(0, 6+18);
+    // remove xz + lzma2 footer
+    encodedData.remove(encodedData.size() - 29, 29);
+
+    packSizes.append(encodedData.size());
+    return encodedData;
+}
+
 
 void K7Zip::K7ZipPrivate::writeHeader(quint64 &headerOffset)
 {
@@ -1465,9 +1516,9 @@ void K7Zip::K7ZipPrivate::writeHeader(quint64 &headerOffset)
     if (folders.size() > 0)
     {
         writeByte(kMainStreamsInfo);
-        writePackInfo(0);
+        writePackInfo(0, packSizes, packCRCsDefined, packCRCs);
 
-        writeUnpackInfo();
+        writeUnpackInfo(folders);
 
         QVector<quint64> unpackFileSizes;
         QVector<bool> digestsDefined;
@@ -2183,14 +2234,36 @@ bool K7Zip::closeArchive()
     quint64 headerOffset;
     d->writeHeader(headerOffset);
 
+    // Encode Header
+    d->writeHeader(headerOffset);
+
+    QVector<quint64> packSizes;
+    QVector<Folder*> folders;
+    QByteArray encodedStream = d->encodeStream(packSizes, folders);
+
+    if (folders.isEmpty()) {
+        return false;
+    }
+
+    d->writeByte(kEncodedHeader);
+    QVector<bool> emptyDefined;
+    QVector<quint32> emptyCrcs;
+    d->writePackInfo(headerOffset, packSizes, emptyDefined , emptyCrcs);
+    d->writeUnpackInfo(folders);
+    d->writeByte(kEnd);
+    for (int i = 0; i < packSizes.size(); i++) {
+        headerOffset += packSizes[i];
+    }
+
+
     quint64 nextHeaderSize = d->header.size();
     quint32 nextHeaderCRC = crc32(0, (Bytef*)(d->header.data()), d->header.size());
     quint64 nextHeaderOffset = headerOffset;
 
-
     d->writeSignature();
     d->writeStartHeader(nextHeaderSize, nextHeaderCRC, nextHeaderOffset);
     device()->write(encodedData.data(), encodedData.size());
+    device()->write(encodedStream.data(), encodedStream.size());
     device()->write(d->header.data(), d->header.size());
 
     return true;
