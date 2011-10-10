@@ -299,7 +299,7 @@ QSize KMultiTabBarTab::computeSizeHint(bool withText) const
 
 	// Always include text height in computation, to avoid resizing the minor direction
 	// when expanding text..
-	QSize textSize = fontMetrics().size(Qt::TextShowMnemonic, text());
+	QSize textSize = fontMetrics().size(0, text());
 	size.setHeight(qMax(size.height(), textSize.height()));
 
 	// Pick margins for major/minor direction, depending on orientation
