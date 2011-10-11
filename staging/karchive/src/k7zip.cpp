@@ -153,6 +153,40 @@ static const quint64 k_Bzip2NSIS = 0x040902;
 static const quint64 k_AES = 0x06F10701;
 
 
+/**
+ * A K7ZipFileEntry represents an file in a 7zip archive.
+ */
+class KARCHIVE_EXPORT K7ZipFileEntry : public KArchiveFile
+{
+public:
+    K7ZipFileEntry( K7Zip* zip, const QString& name, int access, int date,
+                   const QString& user, const QString& group, const QString& symlink,
+                   qint64 pos, qint64 size, const QByteArray& data);
+
+    /**
+     * @return the content of this file.
+     * Call data() with care (only once per file), this data isn't cached.
+     */
+    virtual QByteArray data() const;
+
+private:
+    QByteArray m_data;
+};
+
+
+K7ZipFileEntry::K7ZipFileEntry(K7Zip* zip, const QString& name, int access, int date,
+                               const QString& user, const QString& group, const QString& symlink,
+                               qint64 pos, qint64 size, const QByteArray& data)
+    : KArchiveFile(zip, name, access, date, user, group, symlink, pos, size)
+    , m_data(data)
+{
+}
+
+QByteArray K7ZipFileEntry::data() const
+{
+    return m_data.mid(position(), size());
+}
+
 class FileInfo
 {
 public:
@@ -2037,6 +2071,8 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
     }
 
+    d->outData = d->readAndDecodePackedStreams(false);
+
     int oldPos = 0;
     for (int i = 0; i < numFiles; i++)
     {
@@ -2141,7 +2177,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
                 e = new KArchiveDirectory( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/ );
             }
         } else {
-            e = new KArchiveFile( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size );
+            e = new K7ZipFileEntry( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size, d->outData );
         }
 
         if (e) {
@@ -2154,18 +2190,6 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
             }
         }
     }
-
-    QByteArray decodedData = d->readAndDecodePackedStreams(false);
-    if (decodedData.isEmpty()) {
-        return false;
-    }
-
-    QBuffer* out = new QBuffer();
-    QByteArray* array = new QByteArray();
-    array->append(decodedData);
-    out->setBuffer(array);
-    out->open(QIODevice::ReadOnly);
-    setDevice(out);
 
     return true;
 }
