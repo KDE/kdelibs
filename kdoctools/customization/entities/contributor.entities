@@ -178,6 +178,8 @@
 <!ENTITY Duncan.Haldane.mail '<email>duncan_haldane@users.sourceforge.net</email>'>
 <!ENTITY J.Hall '<personname><firstname>J</firstname><surname>Hall</surname></personname>'>
 <!ENTITY J.Hall.mail '<email>jhall@kde.org</email>'>
+<!ENTITY Erlend.Hamberg '<personname><firstname>Erlend</firstname><surname>Hamberg</surname></personname>'>
+<!ENTITY Erlend.Hamberg.mail '<email>ehamberg@gmail.com</email>'>
 <!ENTITY Steffen.Hansen '<personname><firstname>Steffen</firstname><surname>Hansen</surname></personname>'>
 <!ENTITY Steffen.Hansen.mail '<email>steffen@klaralvdalens-datakonsult.se</email>'>
 <!ENTITY Brad.Hards '<personname><firstname>Brad</firstname><surname>Hards</surname></personname>'>
@@ -202,6 +204,8 @@
 <!ENTITY Hauke.Hildebrandt.mail '<email>hauke.hildebrandt@iup.uni-heidelberg.de</email>'>
 <!ENTITY Jens.Hoefkens '<personname><firstname>Jens</firstname><surname>Hoefkens</surname></personname>'>
 <!ENTITY Jens.Hoefkens.mail '<email>jens@hoefkens.com</email>'>
+<!ENTITY TC.Hollingsworth '<personname><firstname>T.C.</firstname><surname>Hollingsworth</surname></personname>'>
+<!ENTITY TC.Hollingsworth.mail '<email>tchollingsworth@gmail.com</email>'>
 <!ENTITY Mark.Holloman '<personname><firstname>Mark</firstname><surname>Holloman</surname></personname>'>
 <!ENTITY Mark.Holloman.mail '<email>mhh@mindspring.com</email>'>
 <!ENTITY Greg.M.Holmes '<personname><firstname>Greg</firstname><othername>M.</othername><surname>Holmes</surname></personname>'>
