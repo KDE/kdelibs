@@ -985,7 +985,12 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
     int rc = -1;
 
     if (walletLauncher->m_useKSecretsService) {
-        rc = d->readEntry< QMap<QString,QString> >(key, value);
+        QByteArray ba;
+        rc = d->readEntry< QByteArray >(key, ba);
+        if ( rc == 0 && !ba.isEmpty()){
+            QDataStream ds( &ba, QIODevice::ReadOnly );
+            ds >> value;
+        }
     }
     else {
         registerTypes();

@@ -79,7 +79,13 @@ public:
     static OrgFreedesktopSecretItemInterface * createItemIf( const QDBusObjectPath &path );
     static OrgFreedesktopSecretServiceInterface * serviceIf();
     static QDBusObjectPath sessionPath();
+    /**
+     * @return true if the variant was successfully encrypted
+     */
     static bool encrypt( const QVariant& value, SecretStruct& secretStruct );
+    /**
+     * @return true if the secret struct was successfully decrypted
+     */
     static bool decrypt( const SecretStruct &secretStruct, QVariant& value );
     
 private:

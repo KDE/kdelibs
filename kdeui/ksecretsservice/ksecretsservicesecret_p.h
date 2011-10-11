@@ -38,11 +38,20 @@ public:
 
     
     /**
-     * This will obtain a properly encrpyted SecretStruct ready to be transmitted over the dbus 
+     * This will obtain a properly encrypted SecretStruct ready to be transmitted over the dbus 
      * to the daemon
+     *
+     * @return true if the secretStruct was correctly initialized
      */
     bool toSecretStruct( SecretStruct &secretStruct ) const;
-    static bool fromSecretStrut( const SecretStruct &secretStruct, SecretPrivate*& );
+
+    /**
+     * This method attempts to decrypt the secretStruct given and to allocate and initialize 
+     * SecretPrivate instance with it.
+     *
+     * @return true if the secret struct was successfully decrypted into the SecretPrivate object
+     */
+    static bool fromSecretStruct( const SecretStruct &secretStruct, SecretPrivate*& );
     
     bool operator == ( const SecretPrivate &that ) const;
 

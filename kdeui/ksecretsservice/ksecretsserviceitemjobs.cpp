@@ -84,7 +84,7 @@ void GetSecretItemSecretJob::start()
 Secret GetSecretItemSecretJob::secret() const
 {
     SecretPrivate *pr = 0;
-    if ( SecretPrivate::fromSecretStrut( d->secret, pr ) ) {
+    if ( !SecretPrivate::fromSecretStruct( d->secret, pr ) ) {
         kDebug() << "WARNING: decrypting secret FAILED";
     }
     return Secret( pr );
@@ -110,6 +110,7 @@ void GetSecretItemSecretJobPrivate::getSecretReply( QDBusPendingCallWatcher *wat
     QDBusPendingReply<SecretStruct> reply = *watcher;
     if ( !reply.isError() ) {
         secret = reply.argumentAt<0>();
+        kDebug() << "Received Secret size: " << secret.m_value.size();
         job->finished( SecretItemJob::NoError );
     }
     else {

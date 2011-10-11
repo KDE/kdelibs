@@ -606,7 +606,7 @@ void SearchCollectionSecretsJobPrivate::getSecretsReply(QDBusPendingCallWatcher*
     if ( !getReply.isError() ) {
         foreach (SecretStruct secret, getReply.value()) {
             SecretPrivate *sp =0;
-            if ( SecretPrivate::fromSecretStrut( secret, sp ) ) {
+            if ( SecretPrivate::fromSecretStruct( secret, sp ) ) {
                 secretsList.append( QSharedDataPointer<SecretPrivate>( sp ) );
             }
             else {

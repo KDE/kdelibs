@@ -107,7 +107,7 @@ bool SecretPrivate::toSecretStruct( SecretStruct &secretStruct ) const
     return DBusSession::encrypt( value, secretStruct );
 }
 
-bool SecretPrivate::fromSecretStrut( const SecretStruct &secretStruct, SecretPrivate*& sp)
+bool SecretPrivate::fromSecretStruct( const SecretStruct &secretStruct, SecretPrivate*& sp)
 {
     bool result = false;
     sp = 0;
