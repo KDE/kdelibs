@@ -1667,7 +1667,6 @@ void K7Zip::K7ZipPrivate::writeHeader(quint64 &headerOffset)
     writeUInt64DefVector(mTimes, mTimesDefined, kMTime);
 
     writeUInt64DefVector(startPositions, startPositionsDefined, kStartPos);
-
     {
         /* ---------- Write Attrib ---------- */
         QVector<bool> boolVector;
@@ -2202,7 +2201,7 @@ bool K7Zip::closeArchive()
         return false;
     }
 
-    if (mode() & QIODevice::ReadOnly)
+    if ((mode() == QIODevice::ReadOnly))
     {
         return true;
     }
@@ -2222,14 +2221,28 @@ bool K7Zip::closeArchive()
     // remove xz + lzma2 footer
     encodedData.remove(encodedData.size() - 29, 29);
 
+    d->packSizes.clear();
     d->packSizes.append(encodedData.size());
 
-    Folder *folder = new Folder();
+    Folder *folder;
+    if (d->folders.isEmpty()) {
+        folder = new Folder();
+    } else {
+        folder = d->folders.first();
+    }
+
     folder->unpackCRCDefined = true;
     folder->unpackCRC = crc32(0, (Bytef*)(d->outData.data()), d->outData.size());
+    folder->unpackSizes.clear();
     folder->unpackSizes.append(d->outData.size());
 
-    Folder::FolderInfo *info = new Folder::FolderInfo();
+    Folder::FolderInfo *info;
+    if (folder->folderInfos.isEmpty()) {
+        info = new Folder::FolderInfo();
+    } else {
+        info = folder->folderInfos.first();
+    }
+
     info->numInStreams = 1;
     info->numOutStreams = 1;
     info->methodID = k_LZMA2;
@@ -2250,9 +2263,14 @@ bool K7Zip::closeArchive()
     }
     info->properties.append(dict);
 
-    folder->folderInfos.append(info);
-    d->folders.append(folder);
+    if (folder->folderInfos.isEmpty()) {
+        folder->folderInfos.append(info);
+    }
+    if (d->folders.isEmpty()) {
+        d->folders.append(folder);
+    }
 
+    d->numUnpackStreamsInFolders.clear();
     d->numUnpackStreamsInFolders.append(d->fileInfos.size());
 
     quint64 headerOffset;
@@ -2284,6 +2302,7 @@ bool K7Zip::closeArchive()
     quint32 nextHeaderCRC = crc32(0, (Bytef*)(d->header.data()), d->header.size());
     quint64 nextHeaderOffset = headerOffset;
 
+    device()->seek(0);
     d->writeSignature();
     d->writeStartHeader(nextHeaderSize, nextHeaderCRC, nextHeaderOffset);
     device()->write(encodedData.data(), encodedData.size());
