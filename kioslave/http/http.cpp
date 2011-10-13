@@ -1809,7 +1809,7 @@ void HTTPProtocol::sendHttpPutError()
                          "of this method.");
       break;
     default:
-      // default error message if the following code fails
+      // default error message
       errorString = i18nc("%1: response code, %2: request type",
                           "An unexpected error (%1) occurred while attempting to %2.",
                           m_request.responseCode, action);
@@ -3104,11 +3104,16 @@ endParsing:
 
         tIt = tokenizer.iterator("keep-alive");
         while (tIt.hasNext()) {
-            if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
-                m_request.keepAliveTimeout = tIt.current().mid(qstrlen("timeout=")).trimmed().toInt();
+            QByteArray ka = tIt.next().trimmed().toLower();
+            if (ka.startsWith("timeout=")) { // krazy:exclude=strings
+                int ka_timeout = ka.mid(qstrlen("timeout=")).trimmed().toInt();
+                if (ka_timeout > 0)
+                    m_request.keepAliveTimeout = ka_timeout;
                 if (httpRev == HTTP_10) {
                     m_request.isKeepAlive = true;
                 }
+
+                break; // we want to fetch ka timeout only
             }
         }
 
@@ -3635,7 +3640,7 @@ endParsing:
             prevLinePos = nextLinePos;
         }
 
-        // IMPORTNAT: Do not remove this line because forwardHttpResponseHeader
+        // IMPORTANT: Do not remove this line because forwardHttpResponseHeader
         // is called below. This line is here to ensure the response headers are
         // available to the client before it receives mimetype information.
         // The support for putting ioslaves on hold in the KIO-QNAM integration
