@@ -273,26 +273,38 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        kDebug() << " PLUGIN: " << (*it)->desktopEntryName() << "mimeype" << (*it)->serviceTypes();
-        QStringList p = (*it)->property("Protocol").toStringList();
+        kDebug() << " PLUGIN: " << (*it)->desktopEntryName() << "mimetype" << (*it)->serviceTypes();
+        QStringList p = (*it)->property("X-KDE-Protocol").toStringList();
         if (!p.isEmpty()) {
-            kDebug() << " AAAAAAAAAAAAAAAAAAAAAA" << (*it)->desktopEntryName() << " supports " << p;
             foreach (const QString &protocol, p) {
                 QStringList mtypes = (*it)->serviceTypes();
-                //foreach (const QString &m, mtypes) {
-                    m_remoteProtocolPlugins[protocol] = mtypes;
-                    kDebug() << "CCC " << " protocol" << protocol <<  " supports " << mtypes;
-                //}
+                // Filter out non-mimetype servicetypes
+                foreach (const QString &_mtype, mtypes) {
+                    if (!((*it)->hasMimeType(_mtype))) {
+                        kDebug() << "REMOVING : " << _mtype;
+                        mtypes.removeAll(_mtype);
+                    }
+                }
+                // Not sure "ThumbCreator" does in here, but we don't want it.
+                // Add already existing protocols, so more than one plugin can
+                // support a given scheme + mimetype
+                if (m_remoteProtocolPlugins.contains(protocol)) {
+                    const QStringList _ms = m_remoteProtocolPlugins.value(protocol);
+                    foreach (const QString &_m, _ms) {
+                        if (!mtypes.contains(_m)) {
+                            mtypes.append(_m);
+                        }
+
+                    }
+                }
+                kDebug() << " ***    ThumbCreator supports: " << mtypes << " via " << protocol;
+                m_remoteProtocolPlugins.insert(protocol, mtypes);
             }
-            kDebug() << "XXXXXXXXXXXXX" << m_remoteProtocolPlugins;
-        } else {
-            //kDebug() << " BAUUMMMMMMMERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR";
         }
         if (enabledPlugins.contains((*it)->desktopEntryName())) {
             const QStringList mimeTypes = (*it)->serviceTypes();
             for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
                 mimeMap.insert(*mt, *it);
-            //kDebug() << " ... enabled!";
         }
     }
 
@@ -601,21 +613,21 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     {
         bool supportsProtocol = false;
         // heuristics for remote URL support
-        if (m_remoteProtocolPlugins.keys().contains(localUrl.scheme())) {
+        if (m_remoteProtocolPlugins.contains(localUrl.scheme())) {
             // There's a plugin supporting this protocol,
             // let's see if it supports our mimetype
-            if (m_remoteProtocolPlugins[localUrl.scheme()].contains(item.mimetype())) {
+            if (m_remoteProtocolPlugins.value(localUrl.scheme()).contains(item.mimetype())) {
                 // We can handle this
                 kDebug() << "++++++++++++++++++++++++++++++++ we can handle " << item.mimetype() << " behind " << localUrl.scheme();
                 supportsProtocol = true;
+            } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
+                // Assume KIO understand any URL, ThumbCreator slaves who have
+                // X-KDE-Protocol=KIO, will get feed the remote URL directly.
+                supportsProtocol = true;
             }
         }
-        
-
-        
         if (supportsProtocol) {
-            //QString localUrl = "http://www.google.com";
-            createThumbnail( localUrl.toString());
+            createThumbnail(localUrl.toString());
             return;
         }
         kDebug() << "Remote thing" << localUrl;
