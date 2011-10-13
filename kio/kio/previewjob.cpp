@@ -73,6 +73,8 @@ public:
 
     KFileItemList initialItems;
     QStringList enabledPlugins;
+    // Some plugins support remote URLs, <protocol, mimetypes>
+    QHash<QString, QStringList> m_remoteProtocolPlugins;
     // Our todo list :)
     // We remove the first item at every step, so use QLinkedList
     QLinkedList<PreviewItem> items;
@@ -271,12 +273,30 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
+        kDebug() << " PLUGIN: " << (*it)->desktopEntryName() << "mimeype" << (*it)->serviceTypes();
+        QStringList p = (*it)->property("Protocol").toStringList();
+        if (!p.isEmpty()) {
+            kDebug() << " AAAAAAAAAAAAAAAAAAAAAA" << (*it)->desktopEntryName() << " supports " << p;
+            foreach (const QString &protocol, p) {
+                QStringList mtypes = (*it)->serviceTypes();
+                //foreach (const QString &m, mtypes) {
+                    m_remoteProtocolPlugins[protocol] = mtypes;
+                    kDebug() << "CCC " << " protocol" << protocol <<  " supports " << mtypes;
+                //}
+            }
+            kDebug() << "XXXXXXXXXXXXX" << m_remoteProtocolPlugins;
+        } else {
+            //kDebug() << " BAUUMMMMMMMERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR";
+        }
         if (enabledPlugins.contains((*it)->desktopEntryName())) {
             const QStringList mimeTypes = (*it)->serviceTypes();
             for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
                 mimeMap.insert(*mt, *it);
+            //kDebug() << " ... enabled!";
         }
     }
+
+    kDebug() << "Mimemapkeys: " << mimeMap.keys();
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
@@ -435,6 +455,7 @@ void PreviewJob::slotResult( KJob *job )
             if (job->error()) // that's no good news...
             {
                 // Drop this one and move on to the next one
+                kDebug() << "KJob failed: " << job->errorString();
                 d->determineNextFile();
                 return;
             }
@@ -444,6 +465,8 @@ void PreviewJob::slotResult( KJob *job )
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
             const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
+
+            kDebug() << " most local URL: " << itemUrl;
             if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.protocol()) == QLatin1String(":local"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
@@ -470,11 +493,12 @@ void PreviewJob::slotResult( KJob *job )
             }
 
             bool pluginHandlesSequences = d->currentItem.plugin->property("HandleSequences", QVariant::Bool).toBool();
-
+            kDebug() << "PREVIEWJOB: here"; 
             if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || (d->sequenceIndex && pluginHandlesSequences) )
             {
                 // This preview will not be cached, no need to look for a saved thumbnail
                 // Just create it, and be done
+                kDebug() << "PREVIEWJOB: createThumbnail";
                 d->getOrCreateThumbnail();
                 return;
             }
@@ -482,6 +506,7 @@ void PreviewJob::slotResult( KJob *job )
             if ( d->statResultThumbnail() )
                 return;
 
+            kDebug() << "PREVIEWJOB: createThumbnail last";
             d->getOrCreateThumbnail();
             return;
         }
@@ -565,11 +590,36 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     Q_Q(PreviewJob);
     // We still need to load the orig file ! (This is getting tedious) :)
     const KFileItem& item = currentItem.item;
+    KUrl u = item.url();
+    const QString mimeType = item.mimetype();
     const QString localPath = item.localPath();
-    if ( !localPath.isEmpty() )
+    const QUrl localUrl = QUrl(item.url());
+    kDebug() << "localPath: " << item.mimetype() << localPath << localUrl;
+    if ( !localPath.isEmpty())
         createThumbnail( localPath );
     else
     {
+        bool supportsProtocol = false;
+        // heuristics for remote URL support
+        if (m_remoteProtocolPlugins.keys().contains(localUrl.scheme())) {
+            // There's a plugin supporting this protocol,
+            // let's see if it supports our mimetype
+            if (m_remoteProtocolPlugins[localUrl.scheme()].contains(item.mimetype())) {
+                // We can handle this
+                kDebug() << "++++++++++++++++++++++++++++++++ we can handle " << item.mimetype() << " behind " << localUrl.scheme();
+                supportsProtocol = true;
+            }
+        }
+        
+
+        
+        if (supportsProtocol) {
+            //QString localUrl = "http://www.google.com";
+            createThumbnail( localUrl.toString());
+            return;
+        }
+        kDebug() << "Remote thing" << localUrl;
+        return;
         state = PreviewJobPrivate::STATE_GETORIG;
         KTemporaryFile localFile;
         localFile.setAutoRemove(false);
