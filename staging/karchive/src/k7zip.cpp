@@ -25,6 +25,7 @@
 
 #include "kcompressiondevice.h"
 #include <kfilterbase.h>
+#include "klimitediodevice_p.h"
 
 
 #include <time.h> // time()
@@ -169,8 +170,21 @@ public:
      */
     virtual QByteArray data() const;
 
+    /**
+     * This method returns QIODevice (internal class: KLimitedIODevice)
+     * on top of the underlying QIODevice. This is obviously for reading only.
+     *
+     * WARNING: Note that the ownership of the device is being transferred to the caller,
+     * who will have to delete it.
+     *
+     * The returned device auto-opens (in readonly mode), no need to open it.
+     * @return the QIODevice of the file
+     */
+    virtual QIODevice *createDevice() const;
+
 private:
-    QByteArray m_data;
+    const QByteArray m_data;
+    QBuffer* m_buffer;
 };
 
 
@@ -180,11 +194,19 @@ K7ZipFileEntry::K7ZipFileEntry(K7Zip* zip, const QString& name, int access, int 
     : KArchiveFile(zip, name, access, date, user, group, symlink, pos, size)
     , m_data(data)
 {
+    m_buffer = new QBuffer;
+    m_buffer->setData(m_data);
+    m_buffer->open(QIODevice::ReadOnly);
 }
 
 QByteArray K7ZipFileEntry::data() const
 {
     return m_data.mid(position(), size());
+}
+
+QIODevice *K7ZipFileEntry::createDevice() const
+{
+    return new KLimitedIODevice( m_buffer, position(), size() );
 }
 
 class FileInfo
@@ -256,7 +278,8 @@ public:
         pos(0),
         end(0),
         headerSize(0),
-        countSize(0)
+        countSize(0),
+        m_currentFile(0)
     {
     }
 
@@ -297,6 +320,35 @@ public:
     //Write
     QByteArray header;
     QByteArray outData; // Store data in this buffer before compress and write in archive.
+    K7ZipFileEntry* m_currentFile;
+
+    void clear() {
+        packCRCsDefined.clear();
+        packCRCs.clear();
+        numUnpackStreamsInFolders.clear();
+        folders.clear();
+        fileInfos.clear();
+        cTimesDefined.clear();
+        cTimes.clear();
+        aTimesDefined.clear();
+        aTimes.clear();
+        mTimesDefined.clear();
+        mTimes.clear();
+        startPositionsDefined.clear();
+        startPositions.clear();
+        fileInfoPopIDs.clear();
+        packSizes.clear();
+        unpackSizes.clear();
+        digestsDefined.clear();
+        digests.clear();
+        isAnti.clear();
+
+        buffer = 0;
+        pos = 0;
+        end = 0;
+        headerSize = 0;
+        countSize = 0;
+    }
 
     // Read
     int readByte();
@@ -319,6 +371,7 @@ public:
     QByteArray readAndDecodePackedStreams(bool readMainStreamInfo = true);
 
     //Write
+    void createItemsFromEntities(const KArchiveDirectory*, const QString&);
     void writeByte(unsigned char b);
     void writeNumber(quint64 value);
     void writeBoolVector(const QVector<bool> &boolVector);
@@ -1178,6 +1231,51 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
 }
 
 ///////////////// Write ////////////////////
+
+static int sizeItems = 0;
+void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir, const QString & path)
+{
+    QStringList l = dir->entries();
+    l.sort();
+    QStringList::ConstIterator it = l.constBegin();
+    for ( ; it != l.constEnd(); ++it ) {
+        const KArchiveEntry* entry = dir->entry( (*it) );
+
+        FileInfo *fileInfo = new FileInfo;
+        fileInfo->attribDefined = true;
+
+        fileInfo->path = path + entry->name();
+        mTimesDefined.append(true);
+        mTimes.append(rtlSecondsSince1970ToSpecTime(entry->date()));
+
+
+        if (!entry->symLinkTarget().isEmpty()) {
+            fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
+            fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
+
+            fileInfos.append(fileInfo);
+        }
+        if (entry->isDirectory()) {
+            fileInfo->attributes = FILE_ATTRIBUTE_DIRECTORY;
+            fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
+            fileInfo->isDir = true;
+            fileInfos.append(fileInfo);
+            createItemsFromEntities( (KArchiveDirectory *)entry, path+(*it)+QLatin1Char('/') );
+
+        }
+        if (entry->isFile()) {
+            fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
+            fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
+            fileInfo->size = static_cast<const KArchiveFile*>(entry)->size();
+            sizeItems += fileInfo->size;
+            if (fileInfo->size > 0) {
+                fileInfo->hasStream = true;
+            }
+            unpackSizes.append(fileInfo->size);
+            fileInfos.append(fileInfo);
+        }
+    }
+}
 
 void K7Zip::K7ZipPrivate::writeByte(unsigned char b)
 {
@@ -2145,9 +2243,10 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
             }
         }
 
-        qint64 pos = i == 0 ? 0 : pos + oldPos;
+        qint64 pos = 0;
         if (!fileInfo->isDir) {
-            oldPos = fileInfo->size;
+            pos = oldPos;
+            oldPos += fileInfo->size;
         }
 
         KArchiveEntry* e;
@@ -2206,42 +2305,16 @@ bool K7Zip::closeArchive()
         return true;
     }
 
-    //compress data
-    QBuffer* out = new QBuffer();
-    out->open(QBuffer::ReadWrite);
-    KCompressionDevice compression(out, true, KCompressionDevice::Xz);
-    compression.open(QIODevice::WriteOnly);
-    compression.write(d->outData.data(), d->outData.size());
-    compression.close();
+    d->clear();
 
-    QByteArray encodedData = out->data();
-
-    // remove xz header + lzma2 header
-    encodedData.remove(0, 6+18);
-    // remove xz + lzma2 footer
-    encodedData.remove(encodedData.size() - 29, 29);
-
-    d->packSizes.clear();
-    d->packSizes.append(encodedData.size());
-
-    Folder *folder;
-    if (d->folders.isEmpty()) {
-        folder = new Folder();
-    } else {
-        folder = d->folders.first();
-    }
+    Folder *folder = new Folder();
 
     folder->unpackCRCDefined = true;
     folder->unpackCRC = crc32(0, (Bytef*)(d->outData.data()), d->outData.size());
     folder->unpackSizes.clear();
     folder->unpackSizes.append(d->outData.size());
 
-    Folder::FolderInfo *info;
-    if (folder->folderInfos.isEmpty()) {
-        info = new Folder::FolderInfo();
-    } else {
-        info = folder->folderInfos.first();
-    }
+    Folder::FolderInfo *info = new Folder::FolderInfo();
 
     info->numInStreams = 1;
     info->numOutStreams = 1;
@@ -2263,15 +2336,30 @@ bool K7Zip::closeArchive()
     }
     info->properties.append(dict);
 
-    if (folder->folderInfos.isEmpty()) {
-        folder->folderInfos.append(info);
-    }
-    if (d->folders.isEmpty()) {
-        d->folders.append(folder);
-    }
+    folder->folderInfos.append(info);
+    d->folders.append(folder);
 
-    d->numUnpackStreamsInFolders.clear();
-    d->numUnpackStreamsInFolders.append(d->fileInfos.size());
+    const KArchiveDirectory* dir = directory();
+    d->createItemsFromEntities(dir, QString());
+
+    //compress data
+    QBuffer* out = new QBuffer();
+    out->open(QBuffer::ReadWrite);
+    KCompressionDevice compression(out, true, KCompressionDevice::Xz);
+    compression.open(QIODevice::WriteOnly);
+    compression.write(d->outData.data(), d->outData.size());
+    compression.close();
+
+    QByteArray encodedData = out->data();
+
+    // remove xz header + lzma2 header
+    encodedData.remove(0, 6+18);
+    // remove xz + lzma2 footer
+    encodedData.remove(encodedData.size() - 29, 29);
+
+    d->packSizes.append(encodedData.size());
+
+    d->numUnpackStreamsInFolders.append(d->unpackSizes.size());
 
     quint64 headerOffset;
     d->writeHeader(headerOffset);
@@ -2313,23 +2401,33 @@ bool K7Zip::closeArchive()
 }
 
 bool K7Zip::doFinishWriting( qint64 /*size*/ ) {
+
+    d->m_currentFile = 0L;
+
     return true;
 }
 
 bool K7Zip::writeData(const char * data, qint64 size)
 {
-    FileInfo *info = d->fileInfos.last();
-    info->size = size;
-    info->hasStream = true;
-    d->outData.append(data, size);
-    d->unpackSizes.append(size);
+    if (!d->m_currentFile) {
+        return false;
+    }
+
+    if (d->m_currentFile->position() == d->outData.size()) {
+        d->outData.append(data, size);
+    } else {
+        d->outData.remove(d->m_currentFile->position(), d->m_currentFile->size());
+        d->outData.insert(d->m_currentFile->position(), data, size);
+    }
+
+    d->m_currentFile->setSize(size);
 
     return true;
 }
 
-bool K7Zip::doPrepareWriting(const QString &name, const QString &/*user*/,
-                          const QString &/*group*/, qint64 /*size*/, mode_t perm,
-                          time_t atime, time_t mtime, time_t ctime)
+bool K7Zip::doPrepareWriting(const QString &name, const QString &user,
+                          const QString &group, qint64 /*size*/, mode_t perm,
+                          time_t /*atime*/, time_t mtime, time_t /*ctime*/)
 {
     if ( !isOpen() )
     {
@@ -2343,30 +2441,34 @@ bool K7Zip::doPrepareWriting(const QString &name, const QString &/*user*/,
         return false;
     }
 
+    // Find or create parent dir
+    KArchiveDirectory* parentDir = rootDir();
+    //QString fileName( name );
     // In some files we can find dir/./file => call cleanPath
     QString fileName ( QDir::cleanPath( name ) );
+    int i = name.lastIndexOf(QLatin1Char('/'));
+    if (i != -1) {
+        QString dir = name.left( i );
+        fileName = name.mid( i + 1 );
+        parentDir = findOrCreate( dir );
+    }
 
-    FileInfo *fileInfo = new FileInfo;
-    fileInfo->path = fileName;
-    fileInfo->attribDefined = true;
-    fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
-    fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((perm & 0xFFFF) << 16);
-
-    d->cTimesDefined.append(true);
-    d->mTimesDefined.append(true);
-    d->aTimesDefined.append(true);
-    d->cTimes.append(rtlSecondsSince1970ToSpecTime(ctime));
-    d->mTimes.append(rtlSecondsSince1970ToSpecTime(mtime));
-    d->aTimes.append(rtlSecondsSince1970ToSpecTime(atime));
-
-    d->fileInfos.append(fileInfo);
+    // test if the entry already exist
+    const KArchiveEntry* entry = parentDir->entry(fileName);
+    if (!entry) {
+        K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, QString()/*symlink*/, d->outData.size(), 0 /*unknown yet*/, d->outData );
+        parentDir->addEntry( e );
+        d->m_currentFile = e;
+    } else {
+        //d->m_currentFile = static_cast<K7ZipFileEntry*>(entry);
+    }
 
     return true;
 }
 
-bool K7Zip::doWriteDir(const QString &name, const QString &/*user*/,
-                      const QString &/*group*/, mode_t perm,
-                      time_t atime, time_t mtime, time_t ctime)
+bool K7Zip::doWriteDir(const QString &name, const QString &user,
+                      const QString &group, mode_t perm,
+                      time_t /*atime*/, time_t mtime, time_t /*ctime*/)
 {
     if ( !isOpen() )
     {
@@ -2387,23 +2489,23 @@ bool K7Zip::doWriteDir(const QString &name, const QString &/*user*/,
     if ( dirName.endsWith( QLatin1Char( '/' ) ) )
         dirName.remove(dirName.size() - 1, 1);
 
-    FileInfo *fileInfo = new FileInfo;
-    fileInfo->path = dirName;
-    fileInfo->attributes = FILE_ATTRIBUTE_DIRECTORY;
-    fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((perm & 0xFFFF) << 16);
+    KArchiveDirectory* parentDir = rootDir();
+    int i = dirName.lastIndexOf(QLatin1Char('/'));
+    if (i != -1) {
+        QString dir = name.left( i );
+        dirName = name.mid( i + 1 );
+        parentDir = findOrCreate( dir );
+    }
 
-    d->cTimes.append(rtlSecondsSince1970ToSpecTime(ctime));
-    d->mTimes.append(rtlSecondsSince1970ToSpecTime(mtime));
-    d->aTimes.append(rtlSecondsSince1970ToSpecTime(atime));
-
-    d->fileInfos.append(fileInfo);
+    KArchiveDirectory* e = new KArchiveDirectory( this, dirName, perm, mtime, user, group, QString()/*symlink*/ );
+    parentDir->addEntry( e );
 
     return true;
 }
 
 bool K7Zip::doWriteSymLink(const QString &name, const QString &target,
-                        const QString &/*user*/, const QString &/*group*/,
-                        mode_t perm, time_t atime, time_t mtime, time_t ctime)
+                        const QString &user, const QString &group,
+                        mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/)
 {
     if ( !isOpen() )
     {
@@ -2417,20 +2519,20 @@ bool K7Zip::doWriteSymLink(const QString &name, const QString &target,
         return false;
     }
 
+    // Find or create parent dir
+    KArchiveDirectory* parentDir = rootDir();
     // In some files we can find dir/./file => call cleanPath
     QString fileName ( QDir::cleanPath( name ) );
-    QByteArray encodedTarget = QFile::encodeName(target);
+    int i = name.lastIndexOf(QLatin1Char('/'));
+    if (i != -1) {
+        QString dir = name.left( i );
+        fileName = name.mid( i + 1 );
+        parentDir = findOrCreate( dir );
+    }
 
-    FileInfo *fileInfo = new FileInfo;
-    fileInfo->path = fileName;
-    fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
-    fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((perm & 0xFFFF) << 16);
+    K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, target, d->outData.size(), 0 /*unknown yet*/, d->outData );
 
-    d->cTimes.append(rtlSecondsSince1970ToSpecTime(ctime));
-    d->mTimes.append(rtlSecondsSince1970ToSpecTime(mtime));
-    d->aTimes.append(rtlSecondsSince1970ToSpecTime(atime));
-
-    d->fileInfos.append(fileInfo);
+    parentDir->addEntry( e );
 
     return true;
 }
