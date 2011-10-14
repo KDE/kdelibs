@@ -25,6 +25,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <qstandardpaths.h>
 
 #include "kconfig_p.h"
 #include "kdebug.h"
@@ -283,29 +284,7 @@ bool KDesktopFile::tryExec() const
   QString te = d->desktopGroup.readEntry("TryExec", QString());
 
   if (!te.isEmpty()) {
-    if (!QDir::isRelativePath(te)) {
-      if (KDE::access(te, X_OK))
-        return false;
-    } else {
-      // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-      // Environment PATH may contain filenames in 8bit locale specified
-      // encoding (Like a filenames).
-      const QStringList dirs = QFile::decodeName(qgetenv("PATH"))
-        .split(QLatin1Char(KPATH_SEPARATOR), QString::SkipEmptyParts);
-      QStringList::ConstIterator it(dirs.begin());
-      bool match = false;
-      for (; it != dirs.end(); ++it) {
-        QString fName = *it + QLatin1Char('/') + te;
-        if (KDE::access(fName, X_OK) == 0)
-        {
-          match = true;
-          break;
-        }
-      }
-      // didn't match at all
-      if (!match)
-        return false;
-    }
+    return !QStandardPaths::findExecutable(te).isEmpty();
   }
   const QStringList list = d->desktopGroup.readEntry("X-KDE-AuthorizeAction", QStringList());
   if (!list.isEmpty())
