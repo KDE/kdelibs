@@ -17,6 +17,7 @@
 */
 
 #include "kstandarddirstest.h"
+#include "qstandardpaths.h"
 
 #include "qtest_kde.h"
 #include "kstandarddirstest.moc"
@@ -358,7 +359,7 @@ void KStandarddirsTest::testAddResourceType()
     const QStringList ontologyDirs = KGlobal::dirs()->resourceDirs("xdgdata-ontology");
     QCOMPARE(ontologyDirs.first(), KStandardDirs::realPath(QString(qgetenv("XDG_DATA_HOME")) + "/ontology/"));
     if (QFile::exists("/usr/share/ontology") &&
-        KGlobal::dirs()->kfsstnd_xdg_data_prefixes().contains("/usr/share")) {
+        QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).contains("/usr/share")) {
         QVERIFY(ontologyDirs.contains("/usr/share/ontology/"));
     }
 }
@@ -385,7 +386,7 @@ void KStandarddirsTest::testSetXdgDataDirs()
         kDebug() << "XDG_DATA_DIRS=" << qgetenv("XDG_DATA_DIRS");
         kDebug() << "installprefix=" << KStandardDirs::installPath("kdedir");
         kDebug() << "installdir=" << KStandardDirs::installPath("xdgdata-apps");
-        kDebug() << "KStandardDirs::kfsstnd_xdg_data_prefixes=" << KGlobal::dirs()->kfsstnd_xdg_data_prefixes();
+        kDebug() << "GenericDataLocation=" << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
     }
     QVERIFY(dirs.contains(kdeDataApps, PATH_SENSITIVITY));
 

@@ -94,10 +94,6 @@ public:
     */
    QDataStream *findFactory(KSycocaFactoryId id);
    /**
-    * @internal - returns kfsstnd stored inside database
-    */
-   QString kfsstnd_prefixes();
-   /**
     * @internal - returns absolute file path of the database
     *
     * for global database type the database is searched under
@@ -219,6 +215,10 @@ private:
      * @internal only used by kded and kbuildsycoca.
      */
     static void clearCaches();
+    /**
+     * @internal - returns kfsstnd stored inside database
+     */
+    QString kfsstnd_prefixes();
     friend class KBuildSycoca;
     friend class Kded;
 

@@ -58,6 +58,7 @@ public:
 
     // Use our friendly-access-to-KSycoca to make this public
     static void clearCaches() { KSycoca::clearCaches(); }
+    QString kfsstnd_prefixes() { return KSycoca::kfsstnd_prefixes(); }
 
 private:
    /**

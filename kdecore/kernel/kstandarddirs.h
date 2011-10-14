@@ -660,16 +660,6 @@ public:
     QString kfsstnd_prefixes();
 
     /**
-     * @internal (for use by sycoca only)
-     */
-    QString kfsstnd_xdg_conf_prefixes();
-
-    /**
-     * @internal (for use by sycoca only)
-     */
-    QString kfsstnd_xdg_data_prefixes();
-
-    /**
      * Returns the toplevel directory in which KStandardDirs
      * will store things. Most likely <tt>$HOME/.kde</tt>.
      * Don't use this function if you can use locateLocal()

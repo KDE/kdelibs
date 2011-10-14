@@ -701,8 +701,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
                                                                     KStandardDirs::Recursive );
      quint32 ksycoca_update_sig = KSycoca::self()->updateSignature();
+     // KDE5 TODO also save and compare the XDG conf and data dirs!
      QString current_prefixes = KGlobal::dirs()->kfsstnd_prefixes();
-     QString ksycoca_prefixes = KSycoca::self()->kfsstnd_prefixes();
+     QString ksycoca_prefixes = static_cast<KBuildSycoca*>(KSycoca::self())->kfsstnd_prefixes();
 
      if ((current_update_sig != ksycoca_update_sig) ||
          (current_language != ksycoca_language) ||

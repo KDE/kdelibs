@@ -376,17 +376,7 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
-    return d->m_prefixes.join(QString(QLatin1Char(KPATH_SEPARATOR)));
-}
-
-QString KStandardDirs::kfsstnd_xdg_conf_prefixes()
-{
-    return d->xdgconf_prefixes.join(QString(QLatin1Char(KPATH_SEPARATOR)));
-}
-
-QString KStandardDirs::kfsstnd_xdg_data_prefixes()
-{
-    return d->xdgdata_prefixes.join(QString(QLatin1Char(KPATH_SEPARATOR)));
+    return d->m_prefixes.join(QString(QLatin1Char(':')));
 }
 
 #ifndef KDE_NO_DEPRECATED
