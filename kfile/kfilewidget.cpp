@@ -2319,7 +2319,7 @@ void KFileWidgetPrivate::updateFilter()
                     filterWidget->setCurrentFilter(mime->name());
             }
         } else {
-            QString filename = urlStr.mid( urlStr.lastIndexOf( KDIR_SEPARATOR ) + 1 ); // only filename
+            QString filename = urlStr.mid( urlStr.lastIndexOf( '/' ) + 1 ); // only filename
             foreach( const QString& filter, filterWidget->filters()) {
                 QString f = filter.left( filter.indexOf( '|' )); // '*.foo|Foo type' -> '*.foo'
                 if( KMimeType::matchFileName( filename, f )) {
