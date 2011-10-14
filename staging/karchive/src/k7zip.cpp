@@ -1916,22 +1916,10 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
         QByteArray decodedData = d->readAndDecodePackedStreams();
 
-        QByteArray newHeader;
-        newHeader.resize(d->headerSize);
-
-        dev->seek(d->pos);
-        quint64 n = dev->read(newHeader.data(), newHeader.size());
-        if ( n != (qint64) d->headerSize) {
-            qDebug() << "Failed read new header size, should read " << newHeader.size() << ", read " << n;
-            return false;
-        }
-        d->pos = 0;
-        d->end = d->headerSize;
-
         int external = d->readByte();
         if (external != 0) {
             int dataIndex = (int)d->readNumber();
-            if (dataIndex < 0 /*|| dataIndex >= dataVector->Size()*/) {
+            if (dataIndex < 0) {
                 qDebug() << "dataIndex error";
             }
             d->buffer = decodedData.data();
@@ -2365,8 +2353,6 @@ bool K7Zip::closeArchive()
     d->writeHeader(headerOffset);
 
     // Encode Header
-    d->writeHeader(headerOffset);
-
     QVector<quint64> packSizes;
     QVector<Folder*> folders;
     QByteArray encodedStream = d->encodeStream(packSizes, folders);
@@ -2374,6 +2360,8 @@ bool K7Zip::closeArchive()
     if (folders.isEmpty()) {
         return false;
     }
+
+    d->header.clear();
 
     d->writeByte(kEncodedHeader);
     QVector<bool> emptyDefined;
@@ -2384,7 +2372,6 @@ bool K7Zip::closeArchive()
     for (int i = 0; i < packSizes.size(); i++) {
         headerOffset += packSizes[i];
     }
-
 
     quint64 nextHeaderSize = d->header.size();
     quint32 nextHeaderCRC = crc32(0, (Bytef*)(d->header.data()), d->header.size());
