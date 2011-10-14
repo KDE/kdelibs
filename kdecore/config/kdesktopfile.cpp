@@ -295,7 +295,7 @@ bool KDesktopFile::tryExec() const
       QStringList::ConstIterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
-        QString fName = *it + QLatin1Char(KDIR_SEPARATOR) + te;
+        QString fName = *it + QLatin1Char('/') + te;
         if (KDE::access(fName, X_OK) == 0)
         {
           match = true;

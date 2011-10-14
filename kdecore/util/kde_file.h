@@ -217,13 +217,11 @@ namespace KDE
 
 #if defined _WIN32 || defined _WIN64
 #define KPATH_SEPARATOR ';'
-#define KDIR_SEPARATOR '\\' /* faster than QDir::separator() */
 #else
 #ifndef O_BINARY
 #define O_BINARY 0 /* for open() */
 #endif
 #define KPATH_SEPARATOR ':'
-#define KDIR_SEPARATOR '/' /* faster than QDir::separator() */
 #endif
 
 #endif /* _KDE_FILE_H_ */
