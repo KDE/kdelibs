@@ -848,6 +848,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
         entry.insert( KIO::UDSEntry::UDS_GROUP, getGroupName( buff.st_gid ) );
         entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, buff.st_atime );
     }
+    if (details > 2) {
+        entry.insert( KIO::UDSEntry::UDS_DEVICE_ID, buff.st_dev );
+        entry.insert( KIO::UDSEntry::UDS_INODE, buff.st_ino );
+    }
 
     // Note: buff.st_ctime isn't the creation time !
     // We made that mistake for KDE 2.0, but it's in fact the
