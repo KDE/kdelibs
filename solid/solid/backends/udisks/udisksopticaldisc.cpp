@@ -235,7 +235,8 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
     if (m_needsReprobe) {
         m_cachedContent = Solid::OpticalDisc::NoContent;
-        bool hasData = m_device->prop("OpticalDiscNumTracks").toInt() > 0;
+        bool hasData = m_device->prop("OpticalDiscNumTracks").toInt() > 0 &&
+                        m_device->prop("OpticalDiscNumTracks").toInt() > m_device->prop("OpticalDiscNumAudioTracks").toInt();
         bool hasAudio = m_device->prop("OpticalDiscNumAudioTracks").toInt() > 0;
 
         if ( hasData )

@@ -718,7 +718,7 @@ bool UDisksDevice::isDeviceBlacklisted() const
     return prop("DevicePresentationHide").toBool() || prop("DevicePresentationNopolicy").toBool() ||
             prop("DeviceMountPaths").toStringList().contains("/boot") ||
             prop("IdLabel").toString() == "System Reserved" ||
-            ( prop("IdUsage").toString().isEmpty() && !prop("OpticalDiscIsBlank").toBool());
+            ( prop("IdUsage").toString().isEmpty() && !(prop("OpticalDiscIsBlank").toBool() || (prop("OpticalDiscNumAudioTracks").toInt() > 0) ));
 }
 
 QString UDisksDevice::errorToString(const QString & error) const
