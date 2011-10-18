@@ -156,7 +156,8 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
                 return m_udi.endsWith(":media");
             } else {
                 return prop("DeviceIsPartition").toBool()
-                        || prop("IdUsage").toString()=="filesystem";
+                        || prop("IdUsage").toString()=="filesystem"
+                        || prop("IdUsage").toString()=="crypto";
             }
 
         case Solid::DeviceInterface::StorageAccess:
@@ -715,7 +716,7 @@ void UDisksDevice::slotChanged()
 
 bool UDisksDevice::isDeviceBlacklisted() const
 {
-    return prop("DevicePresentationHide").toBool() || prop("DevicePresentationNopolicy").toBool() ||
+    return prop("DevicePresentationHide").toBool() ||
             prop("DeviceMountPaths").toStringList().contains("/boot") ||
             prop("IdLabel").toString() == "System Reserved" ||
             ( prop("IdUsage").toString().isEmpty() && !(prop("OpticalDiscIsBlank").toBool() || (prop("OpticalDiscNumAudioTracks").toInt() > 0) ));

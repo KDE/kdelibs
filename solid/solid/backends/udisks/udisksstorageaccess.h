@@ -82,7 +82,7 @@ private:
 
     bool requestPassphrase();
     void callCryptoSetup( const QString & passphrase );
-    bool callCryptoTeardown();
+    bool callCryptoTeardown( bool actOnParent=false );
 
     QString generateReturnObjectPath();
 
