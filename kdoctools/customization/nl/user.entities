@@ -42,6 +42,7 @@
 <!ENTITY Freek.de.Kruijf      '<othercredit role="translator"><firstname>Freek</firstname><surname>de Kruijf</surname><affiliation><address><email>freekdekruijf@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Hannie.Lafeber-Dumoleyn      '<othercredit role="translator"><firstname>Hannie</firstname><surname>Lafeber-Dumoleyn</surname><affiliation><address><email>hannie@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Ruben.Van.Laerhoven      '<othercredit role="translator"><firstname>Ruben</firstname><surname>Van Laerhoven</surname><affiliation><address><email>rubentje1991@gmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Thom.Castermans      '<othercredit role="translator"><firstname>Thom</firstname><surname>Castermans</surname><affiliation><address><email>thomcastermans@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -82,6 +83,7 @@
 <!ENTITY vertaling.freek        "<para>Dit document is vertaald in het Nederlands door &Freek.de.Kruijf;.</para>">
 <!ENTITY vertaling.hannie       "<para>Dit document is vertaald in het Nederlands door &Hannie.Lafeber-Dumoleyn;.</para>">
 <!ENTITY vertaling.ruben        "<para>Dit document is vertaald in het Nederlands door &Ruben.Van.Laerhoven;.</para>">
+<!ENTITY vertaling.thom         "<para>Dit document is vertaald in het Nederlands door &Thom.Castermans;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
@@ -123,6 +125,7 @@
 <!ENTITY nagelezen.freek      "<para>De vertaling werd nagelezen door &Freek.de.Kruijf;.</para>">
 <!ENTITY nagelezen.hannie     "<para>De vertaling werd nagelezen door &Hannie.Lafeber-Dumoleyn;.</para>">
 <!ENTITY nagelezen.ruben      "<para>De vertaling werd nagelezen door &Ruben.Van.Laerhoven;.</para>">
+<!ENTITY nagelezen.thom       "<para>De vertaling werd nagelezen door &Thom.Castermans;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">

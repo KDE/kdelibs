@@ -49,6 +49,7 @@ namespace KIO
         KIO::filesize_t m_totalSubdirs;
         KFileItemList m_lstItems;
         int m_currentItem;
+        QHash<long, QSet<long> > m_visitedInodes; // device -> set of inodes
 
         void startNextJob( const KUrl & url );
         void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
@@ -138,6 +139,7 @@ void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
     Q_Q(DirectorySizeJob);
     //kDebug(7007) << url;
     KIO::ListJob * listJob = KIO::listRecursive( url, KIO::HideProgressInfo );
+    listJob->addMetaData("details", "3");
     q->connect( listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                 SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
     q->addSubjob( listJob );
@@ -150,6 +152,16 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
     for (; it != end; ++it) {
 
         const KIO::UDSEntry& entry = *it;
+        const long device = entry.numberValue(KIO::UDSEntry::UDS_DEVICE_ID, 0);
+        if (device) {
+            // Hard-link detection (#67939)
+            const long inode = entry.numberValue(KIO::UDSEntry::UDS_INODE, 0);
+            QSet<long> & visitedInodes = m_visitedInodes[device]; // find or insert
+            if (visitedInodes.contains(inode)) {
+	        continue;
+	    }
+	    visitedInodes.insert(inode);
+        }
         const KIO::filesize_t size = entry.numberValue(KIO::UDSEntry::UDS_SIZE, 0);
         const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if (name == ".") {

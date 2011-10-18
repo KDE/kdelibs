@@ -305,7 +305,7 @@ namespace KPAC
                 if (type == Proxy || type == Socks) {
                     const int index = address.indexOf(QLatin1Char(':'));
                     if (index == -1 || !KProtocolInfo::isKnownProtocol(address.left(index))) {
-                        const QString protocol ((type == Proxy ? QLatin1String("https://") : QLatin1String("socks://")));
+                        const QString protocol ((type == Proxy ? QLatin1String("http://") : QLatin1String("socks://")));
                         const KUrl url (protocol + address);
                         if (url.isValid()) {
                             address = url.url();

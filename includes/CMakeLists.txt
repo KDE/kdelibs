@@ -103,6 +103,7 @@ install( FILES
   KCharMacroExpander
   KCharSelect
   KCharsets
+  KCheckableProxyModel
   KCmdLineArgs
   KCmdLineOptions
   KCodecs
@@ -430,6 +431,7 @@ install( FILES
   KUser
   KUserGroup
   KVBox
+  KViewStateMaintainer
   KWindowInfo
   KWindowSystem
   KWordMacroExpander

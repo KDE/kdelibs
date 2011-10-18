@@ -974,10 +974,6 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
     if (!url_dir.isValid())
         return false;
 
-    // url handler doesn't support listing
-    if (!KProtocolManager::supportsListing(url_dir))
-        return false;
-
     // non local urls
     if (!isLocalProtocol(url.protocol())) {
         // url does not specify host
@@ -992,6 +988,10 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
         if (isAutoCompletion() && !url_auto_completion)
             return false;
     }
+
+    // url handler doesn't support listing
+    if (!KProtocolManager::supportsListing(url_dir))
+        return false;
 
     url_dir.setFileName(QString()); // not really nesseccary, but clear the filename anyway...
 

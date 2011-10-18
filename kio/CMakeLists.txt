@@ -42,7 +42,6 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}      # for including kio/kio_export.h
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
-   ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${KDE4_KDEUI_INCLUDES}
    ${KDE4_KDECORE_INCLUDES}/

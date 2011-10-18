@@ -113,7 +113,9 @@ KFilePlacesSharedBookmarks::KFilePlacesSharedBookmarks(KBookmarkManager * mgr)
 {
     m_placesBookmarkManager = mgr;
     
-    const QString file = KStandardDirs().localxdgdatadir() + "/user-places.xbel";
+    // we check later if the directory exists 
+    KStandardDirs::makeDir(KStandardDirs().localxdgdatadir());
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     m_sharedBookmarkManager = KBookmarkManager::managerForExternalFile(file); 
     
     connect(m_sharedBookmarkManager, SIGNAL(changed(const QString&, const QString&)),
