@@ -294,7 +294,8 @@ bool UDisksStorageAccess::unmount()
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusError(const QDBusError &)),
+                              s_unmountTimeout);
 }
 
 QString UDisksStorageAccess::generateReturnObjectPath()

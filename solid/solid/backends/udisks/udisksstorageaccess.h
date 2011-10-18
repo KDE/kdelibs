@@ -92,6 +92,8 @@ private:
     bool m_teardownInProgress;
     bool m_passphraseRequested;
     QString m_lastReturnObject;
+
+    static const int s_unmountTimeout = 0x7fffffff;
 };
 }
 }
