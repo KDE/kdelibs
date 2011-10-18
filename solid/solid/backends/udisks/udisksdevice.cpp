@@ -340,7 +340,17 @@ QString UDisksDevice::storageDescription() const
         if (model.isEmpty())
             vendormodel_str = vendor_str;
         else
-            vendormodel_str = QObject::tr("%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor_str).arg(model);
+        {
+            if (model.startsWith(vendor_str))
+            {
+                // e.g. vendor is "Nokia" and model is "Nokia N950" we do not want "Nokia Nokia N950" as description
+                vendormodel_str = model;
+            }
+            else
+            {
+                vendormodel_str = QObject::tr("%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor_str).arg(model);
+            }
+        }
     }
 
     if (vendormodel_str.isEmpty())
