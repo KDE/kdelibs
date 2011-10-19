@@ -20,20 +20,8 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/khtml/css
 )
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}/../misc
-  ${CMAKE_CURRENT_BINARY_DIR}/../dom
-  ${CMAKE_CURRENT_BINARY_DIR}/../xml
-  ${CMAKE_CURRENT_BINARY_DIR}/../html
-  ${CMAKE_CURRENT_BINARY_DIR}/../rendering
   ${CMAKE_CURRENT_BINARY_DIR}/../ecma
-  ${CMAKE_CURRENT_BINARY_DIR}/../imload
-  ${CMAKE_CURRENT_BINARY_DIR}/../imload/decoders
   ${CMAKE_CURRENT_BINARY_DIR}/../java
-  ${CMAKE_CURRENT_BINARY_DIR}/../svg
-  ${CMAKE_CURRENT_BINARY_DIR}/../svg/graphics
-  ${CMAKE_CURRENT_BINARY_DIR}/../platform/graphics
-  ${CMAKE_CURRENT_BINARY_DIR}/../platform/text
-  ${CMAKE_CURRENT_BINARY_DIR}/../compat
   ${CMAKE_CURRENT_BINARY_DIR}/../css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
