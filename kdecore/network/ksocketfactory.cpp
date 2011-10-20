@@ -136,16 +136,16 @@ QUdpSocket *KSocketFactory::datagramSocket(const QString &protocol, const QStrin
 #ifndef QT_NO_NETWORKPROXY
 QNetworkProxy KSocketFactory::proxyForConnection(const QString &, const QString &)
 {
-    return QNetworkProxy::NoProxy;
+    return QNetworkProxy::DefaultProxy;
 }
 
 QNetworkProxy KSocketFactory::proxyForListening(const QString &)
 {
-    return QNetworkProxy::NoProxy;
+    return QNetworkProxy::DefaultProxy;
 }
 
 QNetworkProxy KSocketFactory::proxyForDatagram(const QString &, const QString &)
 {
-    return QNetworkProxy::NoProxy;
+    return QNetworkProxy::DefaultProxy;
 }
 #endif
