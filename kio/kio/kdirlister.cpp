@@ -558,6 +558,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
 
     DirItem *item = itemsInUse.value(urlStr);
     Q_ASSERT(item);
+    bool insertIntoCache = false;
 
     if ( dirData.listersCurrentlyHolding.isEmpty() && dirData.listersCurrentlyListing.isEmpty() ) {
         // item not in use anymore -> move into cache if complete
@@ -584,10 +585,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
             emit lister->clear( url );
         }
 
-        if ( item->complete ) {
-            kDebug(7004) << lister << " item moved into cache: " << url;
-            itemsCached.insert( urlStr, item );
-
+        insertIntoCache = item->complete;
+        if (insertIntoCache) {
             // TODO(afiestas): remove use of KMountPoint+manually_mounted and port to Solid:
             // 1) find Volume for the local path "item->url.toLocalFile()" (which could be anywhere
             // under the mount point) -- probably needs a new operator in libsolid query parser
@@ -632,6 +631,12 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
 
     if ( item && lister->d->autoUpdate )
         item->decAutoUpdate();
+
+    // Inserting into QCache must be done last, since it might delete the item
+    if (item && insertIntoCache) {
+        kDebug(7004) << lister << "item moved into cache:" << url;
+        itemsCached.insert(urlStr, item);
+    }
 }
 
 void KDirListerCache::updateDirectory( const KUrl& _dir )
