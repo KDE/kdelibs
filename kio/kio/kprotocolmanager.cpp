@@ -585,7 +585,6 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
               KUrl u (proxy);
               if (!u.isEmpty() && u.isValid() && !u.protocol().isEmpty()) {
                   proxyList << proxy;
-                  // kDebug () << "Slave protocol:" << d->protocol;
               }
           }
       }
@@ -597,9 +596,12 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
       && !protocol.startsWith(QL1S("http"))
       && !protocol.startsWith(QL1S("webdav"))
       && KProtocolInfo::isKnownProtocol(protocol)) {
-      KUrl u (proxyList.first());
-      if (u.isValid()) {
-          protocol = u.protocol();
+      Q_FOREACH(const QString& proxy, proxyList) {
+          KUrl u (proxy);
+          if (u.isValid() && KProtocolInfo::isKnownProtocol(u.protocol())) {
+              protocol = u.protocol();
+              break;
+          }
       }
   }
 

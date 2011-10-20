@@ -121,6 +121,8 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     layout->addRow( i18n("&Location:"), m_urlEdit );
     m_urlEdit->setWhatsThis( whatsThisText );
     layout->labelForField(m_urlEdit)->setWhatsThis( whatsThisText );
+    // Room for at least 40 chars (average char width is half of height)
+    m_urlEdit->setMinimumWidth( m_urlEdit->fontMetrics().height() * (40 / 2) );
 
     whatsThisText = i18n("<qt>This is the icon that will appear in the Places panel.<br /><br />"
                          "Click on the button to select a different icon.</qt>");

@@ -113,11 +113,12 @@ protected:
     bool connectToHost(const QString &protocol, const QString& host, quint16 port);
 
     /**
-     * Same as above function except
+     * Connects to the specified host and port.
      *
-     * @param host hostname
+     * @param host host name
      * @param port port number
-     * @param errorString if not NULL, the error string will be set.
+     * @param errorString if not NULL, this string will contain error information
+     *                    on why the connection request failed.
      *
      * @return  on success, 0 is returned. on failure, a KIO::Error code is returned.
      *          @ref errorString, if not NULL, will contain the appropriate error message

@@ -5,8 +5,6 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/..
   ${CMAKE_CURRENT_BINARY_DIR}/../proxymodeltestsuite
   ${CMAKE_CURRENT_SOURCE_DIR}/..
-  ${CMAKE_CURRENT_BINARY_DIR}/../tests
-  ${CMAKE_CURRENT_SOURCE_DIR}/../tests
 )
 
 find_package(Qt4 REQUIRED QtScript)
