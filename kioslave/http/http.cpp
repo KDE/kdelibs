@@ -108,6 +108,12 @@ static QString htmlEscape(const QString &plain)
     return rich;
 }
 
+static bool supportedProxyScheme(const QString& scheme)
+{
+    return (scheme.startsWith(QLatin1String("http"), Qt::CaseInsensitive)
+            || scheme == QLatin1String("socks"));
+}
+
 // see filenameFromUrl(): a sha1 hash is 160 bits
 static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
 static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
@@ -2117,6 +2123,14 @@ bool HTTPProtocol::httpOpenConnection()
         KUrl::List badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
             const KUrl url (proxyUrl);
+            const QString scheme (url.protocol());
+
+            if (!supportedProxyScheme(scheme)) {
+                connectError = ERR_COULD_NOT_CONNECT;
+                errorString = url.url();
+                continue;
+            }
+
             const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
             QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
             if (url.protocol() == QLatin1String("socks")) {
