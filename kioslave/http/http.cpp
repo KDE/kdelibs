@@ -108,6 +108,12 @@ static QString htmlEscape(const QString &plain)
     return rich;
 }
 
+static bool supportedProxyScheme(const QString& scheme)
+{
+    return (scheme.startsWith(QLatin1String("http"), Qt::CaseInsensitive)
+            || scheme == QLatin1String("socks"));
+}
+
 // see filenameFromUrl(): a sha1 hash is 160 bits
 static const int s_hashedUrlBits = 160;   // this number should always be divisible by eight
 static const int s_hashedUrlNibbles = s_hashedUrlBits / 4;
@@ -1809,7 +1815,7 @@ void HTTPProtocol::sendHttpPutError()
                          "of this method.");
       break;
     default:
-      // default error message if the following code fails
+      // default error message
       errorString = i18nc("%1: response code, %2: request type",
                           "An unexpected error (%1) occurred while attempting to %2.",
                           m_request.responseCode, action);
@@ -2117,6 +2123,14 @@ bool HTTPProtocol::httpOpenConnection()
         KUrl::List badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
             const KUrl url (proxyUrl);
+            const QString scheme (url.protocol());
+
+            if (!supportedProxyScheme(scheme)) {
+                connectError = ERR_COULD_NOT_CONNECT;
+                errorString = url.url();
+                continue;
+            }
+
             const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
             QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
             if (url.protocol() == QLatin1String("socks")) {
@@ -3104,11 +3118,16 @@ endParsing:
 
         tIt = tokenizer.iterator("keep-alive");
         while (tIt.hasNext()) {
-            if (tIt.next().startsWith("timeout=")) { // krazy:exclude=strings
-                m_request.keepAliveTimeout = tIt.current().mid(qstrlen("timeout=")).trimmed().toInt();
+            QByteArray ka = tIt.next().trimmed().toLower();
+            if (ka.startsWith("timeout=")) { // krazy:exclude=strings
+                int ka_timeout = ka.mid(qstrlen("timeout=")).trimmed().toInt();
+                if (ka_timeout > 0)
+                    m_request.keepAliveTimeout = ka_timeout;
                 if (httpRev == HTTP_10) {
                     m_request.isKeepAlive = true;
                 }
+
+                break; // we want to fetch ka timeout only
             }
         }
 
@@ -3635,7 +3654,7 @@ endParsing:
             prevLinePos = nextLinePos;
         }
 
-        // IMPORTNAT: Do not remove this line because forwardHttpResponseHeader
+        // IMPORTANT: Do not remove this line because forwardHttpResponseHeader
         // is called below. This line is here to ensure the response headers are
         // available to the client before it receives mimetype information.
         // The support for putting ioslaves on hold in the KIO-QNAM integration

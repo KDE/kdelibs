@@ -161,8 +161,12 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
     {
         QString clearTextPath =  m_device->prop("LuksHolder").value<QDBusObjectPath>().path();
         if (isLuksDevice() && clearTextPath != "/") // unlocked device, lock it
+        {
             callCryptoTeardown();
-
+        }
+        else if (m_device->prop("DeviceIsLuksCleartext").toBool()) {
+            callCryptoTeardown(true); // Lock crypted parent
+        }
         else
         {
             m_teardownInProgress = false;
@@ -294,7 +298,8 @@ bool UDisksStorageAccess::unmount()
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusError(const QDBusError &)),
+                              s_unmountTimeout);
 }
 
 QString UDisksStorageAccess::generateReturnObjectPath()
@@ -358,10 +363,12 @@ void UDisksStorageAccess::callCryptoSetup( const QString & passphrase )
                        SLOT(slotDBusError(const QDBusError &)));
 }
 
-bool UDisksStorageAccess::callCryptoTeardown()
+bool UDisksStorageAccess::callCryptoTeardown(bool actOnParent)
 {
     QDBusConnection c = QDBusConnection::systemBus();
-    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, m_device->udi(), UD_DBUS_INTERFACE_DISKS_DEVICE, "LuksLock");
+    QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE,
+                        actOnParent?(m_device->prop("LuksCleartextSlave").value<QDBusObjectPath>().path()):m_device->udi(),
+                        UD_DBUS_INTERFACE_DISKS_DEVICE, "LuksLock");
     msg << QStringList();   // options, unused now
 
     return c.callWithCallback(msg, this,

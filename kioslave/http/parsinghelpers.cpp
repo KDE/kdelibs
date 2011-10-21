@@ -140,7 +140,7 @@ HeaderTokenizer::HeaderTokenizer(char *buffer)
         {"dav", true}, //RFC 2518
         {"etag", false},
         {"expires", false},
-        {"keep-alive", false}, //RFC 2068
+        {"keep-alive", true}, //RFC 2068
         {"last-modified", false},
         {"link", false}, //RFC 2068, multi-valued with ";" separator
         {"location", false},
