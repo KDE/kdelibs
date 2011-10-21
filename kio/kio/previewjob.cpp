@@ -273,7 +273,6 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        kDebug() << " PLUGIN: " << (*it)->desktopEntryName() << "mimetype" << (*it)->serviceTypes();
         QStringList p = (*it)->property("X-KDE-Protocol").toStringList();
         if (!p.isEmpty()) {
             foreach (const QString &protocol, p) {
@@ -281,7 +280,6 @@ void PreviewJobPrivate::startPreview()
                 // Filter out non-mimetype servicetypes
                 foreach (const QString &_mtype, mtypes) {
                     if (!((*it)->hasMimeType(_mtype))) {
-                        kDebug() << "REMOVING : " << _mtype;
                         mtypes.removeAll(_mtype);
                     }
                 }
@@ -297,7 +295,6 @@ void PreviewJobPrivate::startPreview()
 
                     }
                 }
-                kDebug() << " ***    ThumbCreator supports: " << mtypes << " via " << protocol;
                 m_remoteProtocolPlugins.insert(protocol, mtypes);
             }
         }
@@ -307,8 +304,6 @@ void PreviewJobPrivate::startPreview()
                 mimeMap.insert(*mt, *it);
         }
     }
-
-    kDebug() << "Mimemapkeys: " << mimeMap.keys();
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
@@ -478,7 +473,6 @@ void PreviewJob::slotResult( KJob *job )
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
             const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
 
-            kDebug() << " most local URL: " << itemUrl;
             if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.protocol()) == QLatin1String(":local"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
@@ -505,12 +499,10 @@ void PreviewJob::slotResult( KJob *job )
             }
 
             bool pluginHandlesSequences = d->currentItem.plugin->property("HandleSequences", QVariant::Bool).toBool();
-            kDebug() << "PREVIEWJOB: here"; 
             if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || (d->sequenceIndex && pluginHandlesSequences) )
             {
                 // This preview will not be cached, no need to look for a saved thumbnail
                 // Just create it, and be done
-                kDebug() << "PREVIEWJOB: createThumbnail";
                 d->getOrCreateThumbnail();
                 return;
             }
@@ -518,7 +510,6 @@ void PreviewJob::slotResult( KJob *job )
             if ( d->statResultThumbnail() )
                 return;
 
-            kDebug() << "PREVIEWJOB: createThumbnail last";
             d->getOrCreateThumbnail();
             return;
         }
@@ -606,8 +597,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     const QString mimeType = item.mimetype();
     const QString localPath = item.localPath();
     const QUrl localUrl = QUrl(item.url());
-    kDebug() << "localPath: " << item.mimetype() << localPath << localUrl;
-    if ( !localPath.isEmpty())
+    if (!localPath.isEmpty())
         createThumbnail( localPath );
     else
     {
@@ -617,8 +607,6 @@ void PreviewJobPrivate::getOrCreateThumbnail()
             // There's a plugin supporting this protocol,
             // let's see if it supports our mimetype
             if (m_remoteProtocolPlugins.value(localUrl.scheme()).contains(item.mimetype())) {
-                // We can handle this
-                kDebug() << "++++++++++++++++++++++++++++++++ we can handle " << item.mimetype() << " behind " << localUrl.scheme();
                 supportsProtocol = true;
             } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
                 // Assume KIO understand any URL, ThumbCreator slaves who have
@@ -630,8 +618,9 @@ void PreviewJobPrivate::getOrCreateThumbnail()
             createThumbnail(localUrl.toString());
             return;
         }
-        kDebug() << "Remote thing" << localUrl;
-        return;
+
+        // No plugin support access to this remote content, copy the file
+        // to the local machine, then create the thumbnail
         state = PreviewJobPrivate::STATE_GETORIG;
         KTemporaryFile localFile;
         localFile.setAutoRemove(false);
