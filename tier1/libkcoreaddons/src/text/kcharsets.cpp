@@ -22,9 +22,8 @@
 
 #include "kentities.c"
 
-#include "kconfig.h"
 #include "kglobal.h"
-#include "klocale.h"
+#include "qlocalizedstring_porting.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
@@ -444,6 +443,8 @@ static const int conversion_hints_indices[] = {
       63,   50,   76,   50,   -1
 };
 
+static KCharsets *charsets_manager = NULL;
+
 // search an array of items index/data, find first matching index
 // and return data, or return 0
 static inline
@@ -721,11 +722,12 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     QTextCodec* codec = 0;
 
     if (n.isEmpty()) {
-        // No name, assume locale (KDE's, not Qt's)
+#pragma message("KDE5 TODO: Any better ideas ?")
+        // No name, assume system locale
         const QByteArray locale = "->locale<-";
         if ( d->codecForNameDict.contains( locale ) )
             return d->codecForNameDict.value( locale );
-        codec = KGlobal::locale()->codecForEncoding();
+        codec = QTextCodec::codecForLocale();
         d->codecForNameDict.insert("->locale<-", codec);
         return codec;
     }
@@ -797,4 +799,11 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
     // we could not assign a codec, therefore return NULL
     return 0;
+}
+
+KCharsets *KCharsets::charsets()
+{
+    if (charsets_manager == NULL)
+        charsets_manager = new KCharsets;
+    return charsets_manager;
 }

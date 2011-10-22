@@ -20,7 +20,7 @@
 #define KCHARSETS_H
 
 #include <kdemacros.h>
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QList>
 
 class KCharsets;
@@ -31,10 +31,6 @@ class QString;
 class QStringList;
 class QTextCodec;
 
-namespace KGlobal
-{
-    KDECORE_EXPORT KCharsets *charsets();
-}
 
 /**
  * Charset font and encoder/decoder handling.
@@ -43,9 +39,8 @@ namespace KGlobal
  * QTextCodec::codecForName matches only closely-related encoded names
  * but not alternate names, e.g. found in the reality of the Internet.
  */
-class KDECORE_EXPORT KCharsets
+class KCOREADDONS_EXPORT KCharsets
 {
-    friend KCharsets *KGlobal::charsets();
 
 protected:
     /** Protected constructor. If you need the kcharsets object, use
@@ -81,6 +76,12 @@ public:
      *         it returns a default (ISO 8859-1) codec
      */
     QTextCodec *codecForName(const QString &n, bool &ok) const;
+
+    /**
+     * The global charset manager.
+     * @return the global charset manager
+     */
+    static KCharsets *charsets();
 
     /**
      * @brief Converts an entity to a character.
@@ -145,7 +146,7 @@ public:
      * This function will be removed before KDE4 is released.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
+    KCOREADDONS_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
 #endif
 
     /**
