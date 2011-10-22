@@ -26,11 +26,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QProcess>
 
-#include <kconfig.h>
-#include <kconfiggroup.h>
-#include <ksharedptr.h>
-#include <ksharedconfig.h>
-#include <kglobal.h>
 #include <qstandardpaths.h>
 
 #include "kbackup.h"
@@ -43,7 +38,8 @@ bool backupFile( const QString& qFilename, const QString& backupDir )
     // get backup type from config, by default use "simple"
     // get extension from config, by default use "~"
     // get max number of backups from config, by default set to 10
-
+#pragma message("KDE5 TODO: Remove KConfig correctly")
+#if 0
     KConfigGroup g(KGlobal::config(), "Backups"); // look in the Backups section
     QString type = g.readEntry( "Type", "simple" );
     QString extension = g.readEntry( "Extension", "~" );
@@ -56,6 +52,8 @@ bool backupFile( const QString& qFilename, const QString& backupDir )
     } else {
         return( simpleBackupFile( qFilename, backupDir, extension ) );
     }
+#endif
+    return( simpleBackupFile( qFilename, backupDir, QLatin1String("~") ) );
 }
 
 bool simpleBackupFile( const QString& qFilename,
