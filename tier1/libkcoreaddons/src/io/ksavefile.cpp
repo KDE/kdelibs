@@ -40,6 +40,18 @@
 #include <stdlib.h>
 #include <errno.h>
 
+static int s_umask;
+
+// Read umask before any threads are created to avoid race conditions
+static int kStoreUmask()
+{
+    mode_t tmp = 0;
+    s_umask = umask(tmp);
+    return umask(s_umask);
+}
+
+Q_CONSTRUCTOR_FUNCTION(kStoreUmask)
+
 class KSaveFile::Private
 {
 public:
@@ -129,8 +141,7 @@ bool KSaveFile::open(OpenMode flags)
         tempFile.setPermissions(fi.permissions());
     }
     else {
-        mode_t umsk = KGlobal::umask();
-        fchmod(tempFile.handle(), 0666&(~umsk));
+        fchmod(tempFile.handle(), 0666&(~s_umask));
     }
 
     //Open oursleves with the temporary file

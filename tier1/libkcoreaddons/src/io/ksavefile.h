@@ -22,11 +22,10 @@
 #ifndef KSAVEFILE_H
 #define KSAVEFILE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QString>
-#include <kglobal.h>
 
 /**
  * \class KSaveFile ksavefile.h <KSaveFile>
@@ -93,7 +92,7 @@
  * @author Jaison Lee <lee.jaison@gmail.com>
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KSaveFile : public QFile
+class KCOREADDONS_EXPORT KSaveFile : public QFile
 {
 public:
     /**
