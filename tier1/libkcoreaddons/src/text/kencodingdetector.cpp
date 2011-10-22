@@ -40,9 +40,8 @@
 #include <QRegExp>
 #include <QTextCodec>
 
-#include <kglobal.h>
-#include <kcharsets.h>
-#include <klocale.h>
+#include "kcharsets.h"
+#include "qlocalizedstring_porting.h"
 
 #include <ctype.h>
 
@@ -729,7 +728,7 @@ bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource 
         if(enc=="visual")
             enc="iso8859-8";
         bool b;
-        codec = KGlobal::charsets()->codecForName(QLatin1String(enc.data()), b);
+        codec = KCharsets::charsets()->codecForName(QLatin1String(enc.data()), b);
         if (!b)
             return false;
     }
