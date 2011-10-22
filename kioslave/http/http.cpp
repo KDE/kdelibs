@@ -619,14 +619,9 @@ void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ 
       return;
   }
 
-  if (m_request.responseCode == 204 &&
-      (m_request.method == HTTP_GET || m_request.method == HTTP_POST)) {
-      infoMessage(QLatin1String(""));
-      error(ERR_NO_CONTENT, QString());
-      return;
+  if (!sendHttpError()) {
+      finished();
   }
-
-  finished();
 }
 
 bool HTTPProtocol::proceedUntilResponseHeader()
@@ -1301,59 +1296,49 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
   if (!maybeSetRequestUrl(url))
     return;
+
   resetSessionSettings();
 
   // Webdav hosts are capable of observing overwrite == false
-  if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) { // krazy:exclude=strings
-    // check to make sure this host supports WebDAV
-    if ( !davHostOk() )
-      return;
+  if (m_protocol.startsWith("webdav")) { // krazy:exclude=strings
+    if (!(flags & KIO::Overwrite)) {
+      // check to make sure this host supports WebDAV
+      if (!davHostOk())
+        return;
 
-    QByteArray request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-    "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
-      "<D:creationdate/>"
-      "<D:getcontentlength/>"
-      "<D:displayname/>"
-      "<D:resourcetype/>"
-      "</D:prop></D:propfind>";
+      const QByteArray request ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+                                "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
+                                "<D:creationdate/>"
+                                "<D:getcontentlength/>"
+                                "<D:displayname/>"
+                                "<D:resourcetype/>"
+                                "</D:prop></D:propfind>");
 
-    davSetRequest( request );
+      davSetRequest( request );
 
-    // WebDAV Stat or List...
-    m_request.method = DAV_PROPFIND;
-    m_request.url.setQuery(QString());
-    m_request.cacheTag.policy = CC_Reload;
-    m_request.davData.depth = 0;
+      // WebDAV Stat or List...
+      m_request.method = DAV_PROPFIND;
+      m_request.url.setQuery(QString());
+      m_request.cacheTag.policy = CC_Reload;
+      m_request.davData.depth = 0;
 
-    proceedUntilResponseContent(true);
+      proceedUntilResponseContent(true);
 
-    if (m_request.responseCode == 207) {
-      error(ERR_FILE_ALREADY_EXIST, QString());
-      return;
+      if (m_request.responseCode == 207) {
+        error(ERR_FILE_ALREADY_EXIST, QString());
+        return;
+      }
+
+      // force re-authentication...
+      delete m_wwwAuth;
+      m_wwwAuth = 0;
     }
-
-    m_isError = false;
-    // force re-authentication...
-    delete m_wwwAuth;
-    m_wwwAuth = 0;
   }
 
   m_request.method = HTTP_PUT;
-  m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
 
-  if (!(proceedUntilResponseHeader() && readBody(false))) {
-      return;
-  }
-
-  httpClose(m_request.isKeepAlive);
-
-  kDebug(7113) << "responseCode=" << m_request.responseCode;
-
-  if ( (m_request.responseCode >= 200) && (m_request.responseCode < 300) )
-    finished();
-  else
-    sendHttpPutError();
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
@@ -1438,42 +1423,43 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   if (!maybeSetRequestUrl(url))
     return;
+
   resetSessionSettings();
 
   m_request.method = HTTP_DELETE;
-  m_request.url.setQuery(QString());;
   m_request.cacheTag.policy = CC_Reload;
 
-  proceedUntilResponseHeader();
-
-  // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
-  // with webdav://host/directory, instead requiring webdav://host/directory/
-  // (strangely enough it accepts Destination: without a trailing slash)
-  // See BR# 209508 and BR#187970.
-  if (m_request.responseCode == 301) {
-    m_request.url = m_request.redirectUrl;
-    m_request.method = HTTP_DELETE;
-    m_request.url.setQuery(QString());;
-    m_request.cacheTag.policy = CC_Reload;
-    // force re-authentication...
-    delete m_wwwAuth;
-    m_wwwAuth = 0;
+  if (m_protocol.startsWith("webdav")) {
+    m_request.url.setQuery(QString());
     proceedUntilResponseHeader();
-  }
 
-  // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
-  // on successful completion
-  if ( m_protocol.startsWith( "webdav" ) ) { // krazy:exclude=strings
+    // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
+    // with webdav://host/directory, instead requiring webdav://host/directory/
+    // (strangely enough it accepts Destination: without a trailing slash)
+    // See BR# 209508 and BR#187970.
+    if (m_request.responseCode == 301) {
+      m_request.url = m_request.redirectUrl;
+      m_request.method = HTTP_DELETE;
+      m_request.cacheTag.policy = CC_Reload;
+      m_request.url.setQuery(QString());
+
+      // force re-authentication...
+      delete m_wwwAuth;
+      m_wwwAuth = 0;
+      proceedUntilResponseHeader();
+    }
+
+    // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
+    // on successful completion
     if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
       davFinished();
     else
       davError();
-  } else {
-    if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
-      finished();
-    else
-      error( ERR_SLAVE_DEFINED, i18n( "The resource cannot be deleted." ) );
+
+    return;
   }
+
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::post( const KUrl& url, qint64 size )
@@ -1765,6 +1751,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
                          "to record the state of the resource after the execution "
                          "of this method.");
       break;
+    default:
+      break;
   }
 
   // if ( kError != ERR_SLAVE_DEFINED )
@@ -1776,60 +1764,141 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   return errorString;
 }
 
-void HTTPProtocol::sendHttpPutError()
+// HTTP generic error
+static int httpGenericError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
 {
-  // Only applies to HTTP PUT!
-  if (m_request.method != HTTP_PUT) {
-      return;
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  errorString->clear();
+
+  if (request.responseCode == 204) {
+      errorCode = ERR_NO_CONTENT;
   }
 
-  QString errorString;
-  const QString action (i18nc("request type", "upload %1", m_request.url.prettyUrl()));
+  return errorCode;
+}
 
-  switch ( m_request.responseCode )
-  {
+// HTTP DELETE specific errors
+static int httpDelError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
+{
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  const int responseCode = request.responseCode;
+  errorString->clear();
+
+  switch (responseCode) {
+  case 204:
+      errorCode = ERR_NO_CONTENT;
+      break;
+  default:
+      break;
+  }
+
+  if (!errorCode
+      && (responseCode < 200 || responseCode > 400)
+      && responseCode != 404) {
+    errorCode = ERR_SLAVE_DEFINED;
+    *errorString = i18n( "The resource cannot be deleted." );
+  }
+
+  return errorCode;
+}
+
+// HTTP PUT specific errors
+static int httpPutError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
+{
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  const int responseCode = request.responseCode;
+  const QString action (i18nc("request type", "upload %1", request.url.prettyUrl()));
+
+  switch (responseCode) {
     case 403:
     case 405:
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       // 405 Method Not Allowed
       // ERR_ACCESS_DENIED
-      errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
+      *errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 409:
       // 409 Conflict
       // ERR_ACCESS_DENIED
-      errorString = i18n("A resource cannot be created at the destination "
+      *errorString = i18n("A resource cannot be created at the destination "
                   "until one or more intermediate collections (folders) "
                   "have been created.");
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 423:
       // 423 Locked
       // ERR_ACCESS_DENIED
-      errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
+      *errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 502:
       // 502 Bad Gateway
       // ERR_WRITE_ACCESS_DENIED;
-      errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
-                           "to accept the file or folder.",  action );
+      *errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
+                          "to accept the file or folder.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 507:
       // 507 Insufficient Storage
       // ERR_DISK_FULL
-      errorString = i18n("The destination resource does not have sufficient space "
-                         "to record the state of the resource after the execution "
-                         "of this method.");
+      *errorString = i18n("The destination resource does not have sufficient space "
+                        "to record the state of the resource after the execution "
+                        "of this method.");
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     default:
-      // default error message
-      errorString = i18nc("%1: response code, %2: request type",
-                          "An unexpected error (%1) occurred while attempting to %2.",
-                          m_request.responseCode, action);
       break;
   }
 
-  error( ERR_SLAVE_DEFINED, errorString );
+  if (!errorCode
+      && (responseCode < 200 || responseCode > 400)
+      && responseCode != 404) {
+    errorCode = ERR_SLAVE_DEFINED;
+    *errorString = i18nc("%1: response code, %2: request type",
+                         "An unexpected error (%1) occurred while attempting to %2.",
+                         responseCode, action);
+  }
+
+  return errorCode;
+}
+
+bool HTTPProtocol::sendHttpError()
+{
+  QString errorString;
+  int errorCode = 0;
+
+  switch (m_request.method) {
+  case HTTP_GET:
+  case HTTP_POST:
+      errorCode = httpGenericError(m_request, &errorString);
+      break;
+  case HTTP_PUT:
+      errorCode = httpPutError(m_request, &errorString);
+      break;
+  case HTTP_DELETE:
+      errorCode = httpDelError(m_request, &errorString);
+      break;
+  default:
+      break;
+  }
+
+  // Force any message previously shown by the client to be cleared.
+  infoMessage(QLatin1String(""));
+
+  if (errorCode) {
+    error( errorCode, errorString );
+    return true;
+  }
+
+  return false;
 }
 
 bool HTTPProtocol::sendErrorPageNotification()
@@ -3001,13 +3070,13 @@ try_again:
         }
         // 302 Found (temporary location)
         // 303 See Other
-        if (m_request.method == HTTP_POST) {
-            // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
-            // However, because almost all client implementations treat a 301/302
-            // response as a 303 response in violation of the spec, many servers
-            // have simply adapted to this way of doing things! Thus, we are
-            // forced to do the same thing. Otherwise, we won't be able to retrieve
-            // these pages correctly.
+        // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
+        // However, because almost all client implementations treat a 301/302
+        // response as a 303 response in violation of the spec, many servers
+        // have simply adapted to this way of doing things! Thus, we are
+        // forced to do the same thing. Otherwise, we loose compatability and
+        // might not be able to correctly retrieve sites that redirect.
+        if (m_request.method != HTTP_HEAD) {
             m_request.method = HTTP_GET; // Force a GET
         }
     } else if (m_request.responseCode == 204) {
@@ -4119,11 +4188,12 @@ void HTTPProtocol::mimetype( const KUrl& url )
   m_request.method = HTTP_HEAD;
   m_request.cacheTag.policy= CC_Cache;
 
-  proceedUntilResponseHeader();
-  httpClose(m_request.isKeepAlive);
-  finished();
+  if (proceedUntilResponseHeader()) {
+    httpClose(m_request.isKeepAlive);
+    finished();
+  }
 
-  kDebug(7113) << "http: mimetype =" << m_mimeType;
+  kDebug(7113) << m_mimeType;
 }
 
 void HTTPProtocol::special( const QByteArray &data )

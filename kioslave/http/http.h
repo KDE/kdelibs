@@ -289,9 +289,10 @@ public:
   bool maybeSetRequestUrl(const KUrl &);
 
   /**
-   * Generate error message based on response code
+   * Generate and send error message based on response code.
    */
-  void sendHttpPutError();
+  bool sendHttpError();
+
   /**
    * Call SlaveBase::errorPage() and remember that we've called it
    */
