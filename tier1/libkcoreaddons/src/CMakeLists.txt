@@ -31,6 +31,7 @@ set(libkcoreaddons_SRCS
     io/kdirwatch.cpp
     io/kfilesystemtype_p.cpp
     io/ksavefile.cpp
+    io/kbackup.cpp
     io/ktempdir.cpp
     io/kurl.cpp
     jobs/kcompositejob.cpp
@@ -111,6 +112,7 @@ install(FILES
     io/kdirwatch.h
     io/klockfile.h
     io/ksavefile.h
+    io/kbackup.h
     io/ktempdir.h
     io/kurl.h
     jobs/kcompositejob.h
