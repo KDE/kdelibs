@@ -18,7 +18,7 @@
 #ifndef K_RANDOM_SEQUENCE_H
 #define K_RANDOM_SEQUENCE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QList>
 
 /**
@@ -37,7 +37,7 @@
  *
  * @author Sean Harmer <sh@astro.keele.ac.uk>
  */
-class KDECORE_EXPORT KRandomSequence
+class KCOREADDONS_EXPORT KRandomSequence
 {
 public:
   /**
