@@ -22,6 +22,7 @@
 */
 
 #include "ksavefile.h"
+#include "qlocalizedstring_porting.h"
 
 #include <config.h>
 
@@ -29,7 +30,6 @@
 #include <QTemporaryFile>
 
 #include <kde_file.h>
-#include <klocale.h>
 
 #include <stdlib.h>
 #include <errno.h>
