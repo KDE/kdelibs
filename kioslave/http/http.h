@@ -561,8 +561,8 @@ protected:
   // For proxy auth when it's handled by the Qt/KDE socket classes
   QAuthenticator *m_socketProxyAuth;
 
-  // Indicates whether there was some connection error.
-  bool m_isError;
+  // Indicates whether there was some error.
+  int m_iError;
   // Whether we are loading an error page (we should close the connection afterwards)
   bool m_isLoadingErrorPage;
 

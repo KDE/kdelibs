@@ -387,7 +387,7 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_wwwAuth(0)
     , m_proxyAuth(0)
     , m_socketProxyAuth(0)
-    , m_isError(false)
+    , m_iError(0)
     , m_isLoadingErrorPage(false)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
@@ -417,7 +417,7 @@ void HTTPProtocol::reparseConfiguration()
 void HTTPProtocol::resetConnectionSettings()
 {
   m_isEOF = false;
-  m_isError = false;
+  m_iError = 0;
   m_isLoadingErrorPage = false;
 }
 
@@ -604,15 +604,18 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
 void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ )
 {
   kDebug (7113);
-  if (!(proceedUntilResponseHeader() && readBody(dataInternal))) {
-      return;
+
+  const bool status = (proceedUntilResponseHeader() && readBody(dataInternal));
+
+  // If not an error condition or internal request, close
+  // the connection based on the keep alive settings...
+  if (!m_iError && !dataInternal) {
+      httpClose(m_request.isKeepAlive);
   }
 
-  httpClose(m_request.isKeepAlive);
-
-  // if data is required internally, don't finish,
+  // if data is required internally or we got error, don't finish,
   // it is processed before we finish()
-  if (dataInternal) {
+  if (dataInternal || !status) {
       return;
   }
 
@@ -655,7 +658,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
       // no success, close the cache file so the cache state is reset - that way most other code
       // doesn't have to deal with the cache being in various states.
       cacheFileClose();
-      if (m_isError || m_isLoadingErrorPage) {
+      if (m_iError || m_isLoadingErrorPage) {
           // Unrecoverable error, abort everything.
           // Also, if we've just loaded an error page there is nothing more to do.
           // In that case we abort to avoid loops; some webservers manage to send 401 and
@@ -889,7 +892,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 
   m_request.cacheTag.policy = CC_Reload;
 
   m_iPostDataSize = (size > -1 ? static_cast<KIO::filesize_t>(size) : NO_SIZE);
-  proceedUntilResponseContent( false );
+  proceedUntilResponseContent();
 }
 
 int HTTPProtocol::codeFromResponse( const QString& response )
@@ -1290,7 +1293,6 @@ void HTTPProtocol::get( const KUrl& url )
     m_request.cacheTag.policy = DEFAULT_CACHE_CONTROL;
 
   proceedUntilResponseContent();
-  httpClose(m_request.isKeepAlive);
 }
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
@@ -1657,7 +1659,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
       // there was an error retrieving the XML document.
       // ironic, eh?
-      if ( !readBody( true ) && m_isError )
+      if ( !readBody( true ) && m_iError )
         return QString();
 
       QStringList errors;
@@ -2081,10 +2083,6 @@ bool HTTPProtocol::httpShouldCloseConnection()
 
     if (!isConnected()) {
         return false;
-    }
-
-    if (m_request.method != HTTP_GET && m_request.method != HTTP_POST) {
-        return true;
     }
 
     if (!m_request.proxyUrls.isEmpty() && !isAutoSsl()) {
@@ -3020,7 +3018,7 @@ try_again:
 
         // The original handling here was wrong, this is not an error: eg. in the
         // example of a 204 No Content response to a PUT completing.
-        // m_isError = true;
+        // m_iError = true;
         // return false;
     } else if (m_request.responseCode == 206) {
         if (m_request.offset) {
@@ -4591,7 +4589,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
       chain.slotInput(m_receiveBuf);
 
-      if (m_isError)
+      if (m_iError)
          return false;
 
       sz += bytesReceived;
@@ -4655,7 +4653,12 @@ void HTTPProtocol::slotFilterError(const QString &text)
 
 void HTTPProtocol::error( int _err, const QString &_text )
 {
-  httpClose(false);
+  // Close the connection only on connection errors. Otherwise, honor the
+  // keep alive flag.
+  if (_err == ERR_CONNECTION_BROKEN)
+      httpClose(false);
+  else
+      httpClose(m_request.isKeepAlive);
 
   if (!m_request.id.isEmpty())
   {
@@ -4667,7 +4670,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   clearPostDataBuffer();
 
   SlaveBase::error( _err, _text );
-  m_isError = true;
+  m_iError = _err;
 }
 
 
@@ -5063,7 +5066,7 @@ void HTTPProtocol::cacheFileClose()
     if (file->openMode() & QIODevice::WriteOnly) {
         Q_ASSERT(tempFile);
 
-        if (m_request.cacheTag.bytesCached && !m_isError) {
+        if (m_request.cacheTag.bytesCached && !m_iError) {
             QByteArray header = m_request.cacheTag.serialize();
             tempFile->seek(0);
             tempFile->write(header);
