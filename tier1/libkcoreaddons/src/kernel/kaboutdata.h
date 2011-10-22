@@ -24,11 +24,12 @@
 #ifndef KABOUTDATA_H
 #define KABOUTDATA_H
 
-#include <kdecore_export.h>
-#include <klocale.h>
+#include <kcoreaddons_export.h>
 // Qt
 #include <QtCore/QString>
 #include <QtCore/QSharedDataPointer>
+
+#include "qlocalizedstring_porting.h"
 
 template <class T> class QList;
 class QVariant;
@@ -59,13 +60,13 @@ class KAboutData;
  * @endcode
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce KLocalizedStrings, which can delay the translation
+ * calls are used to produce QLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  *
  * @bc KDE4
  */
-class KDECORE_EXPORT KAboutPerson
+class KCOREADDONS_EXPORT KAboutPerson
 {
     friend class KAboutData;
 public:
@@ -80,8 +81,8 @@ public:
      *
      * @param webAddress Home page of the person.
      */
-    explicit KAboutPerson( const KLocalizedString &name,
-                           const KLocalizedString &task = KLocalizedString(),
+    explicit KAboutPerson( const QLocalizedString &name,
+                           const QLocalizedString &task = QLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -98,8 +99,8 @@ public:
      *
      * @param ocsUsername Open Collaboration Services username of the person.
      */
-    explicit KAboutPerson( const KLocalizedString &name,
-                           const KLocalizedString &task,
+    explicit KAboutPerson( const QLocalizedString &name,
+                           const QLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge into main ctor
@@ -181,7 +182,7 @@ class KAboutLicense;
  * They are also used for the icon and the name of the program's windows.
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce KLocalizedStrings, which can delay the translation
+ * calls are used to produce QLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  *
@@ -189,7 +190,7 @@ class KAboutLicense;
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  */
-class KDECORE_EXPORT KAboutData
+class KCOREADDONS_EXPORT KAboutData
 {
   public:
   /**
@@ -265,12 +266,12 @@ class KDECORE_EXPORT KAboutData
      */
     KAboutData( const QByteArray &appName,
                 const QByteArray &catalogName,
-                const KLocalizedString &programName,
+                const QLocalizedString &programName,
                 const QByteArray &version,
-                const KLocalizedString &shortDescription = KLocalizedString(),
+                const QLocalizedString &shortDescription = QLocalizedString(),
                 enum LicenseKey licenseType = License_Unknown,
-                const KLocalizedString &copyrightStatement = KLocalizedString(),
-                const KLocalizedString &otherText = KLocalizedString(),
+                const QLocalizedString &copyrightStatement = QLocalizedString(),
+                const QLocalizedString &otherText = QLocalizedString(),
                 const QByteArray &homePageAddress = QByteArray(),
                 const QByteArray &bugsEmailAddress = "submit@bugs.kde.org"
               );
@@ -311,8 +312,8 @@ class KDECORE_EXPORT KAboutData
      *        correct, "some.domain" is not. Can be left empty.
      *
      */
-    KAboutData &addAuthor( const KLocalizedString &name,
-                           const KLocalizedString &task = KLocalizedString(),
+    KAboutData &addAuthor( const QLocalizedString &name,
+                           const QLocalizedString &task = QLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -341,8 +342,8 @@ class KDECORE_EXPORT KAboutData
      *        The provider can be optionally specified with @see setOcsProvider.
      *
      */
-    KAboutData &addAuthor( const KLocalizedString &name,
-                           const KLocalizedString &task,
+    KAboutData &addAuthor( const QLocalizedString &name,
+                           const QLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge with addAuthor
@@ -369,8 +370,8 @@ class KDECORE_EXPORT KAboutData
      *        is correct, "some.domain" is not. Can be left empty.
      *
      */
-    KAboutData &addCredit( const KLocalizedString &name,
-                           const KLocalizedString &task = KLocalizedString(),
+    KAboutData &addCredit( const QLocalizedString &name,
+                           const QLocalizedString &task = QLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -399,8 +400,8 @@ class KDECORE_EXPORT KAboutData
      *        The provider can be optionally specified with @see setOcsProvider.
      *
      */
-    KAboutData &addCredit( const KLocalizedString &name,
-                           const KLocalizedString &task,
+    KAboutData &addCredit( const QLocalizedString &name,
+                           const QLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge with addCredit
@@ -427,8 +428,8 @@ class KDECORE_EXPORT KAboutData
      * @param emailAddress the email address(es) of the translator(s)
      * @see KAboutTranslator
      */
-    KAboutData &setTranslator( const KLocalizedString& name,
-                               const KLocalizedString& emailAddress );
+    KAboutData &setTranslator( const QLocalizedString& name,
+                               const QLocalizedString& emailAddress );
 
     /**
      * Defines a license text, which is marked for translation.
@@ -440,7 +441,7 @@ class KDECORE_EXPORT KAboutData
      *
      * @param license The license text.
      */
-    KAboutData &setLicenseText( const KLocalizedString &license );
+    KAboutData &setLicenseText( const QLocalizedString &license );
 
     /**
      * Adds a license text, which is marked for translation.
@@ -457,7 +458,7 @@ class KDECORE_EXPORT KAboutData
      * @see setLicenseText, addLicense, addLicenseTextFile
      * @since 4.1
      */
-    KAboutData &addLicenseText( const KLocalizedString &license );
+    KAboutData &addLicenseText( const QLocalizedString &license );
 
     /**
      * Defines a license text by pointing to a file where it resides.
@@ -494,7 +495,7 @@ class KDECORE_EXPORT KAboutData
      *        marked for translation.
      *        Example: ki18n("Advanced Text Editor").
      */
-    KAboutData &setProgramName( const KLocalizedString &programName );
+    KAboutData &setProgramName( const QLocalizedString &programName );
 
     /**
      * Defines the program icon.
@@ -550,7 +551,7 @@ class KDECORE_EXPORT KAboutData
      *        be marked for translation. Example: ki18n("An advanced text
      *        editor with syntax highlighting support.").
      */
-    KAboutData &setShortDescription( const KLocalizedString &shortDescription );
+    KAboutData &setShortDescription( const QLocalizedString &shortDescription );
 
     /**
      * Defines the translation catalog that the program uses.
@@ -586,7 +587,7 @@ class KDECORE_EXPORT KAboutData
      *        this: ki18n("Copyright (C) 1999-2000 Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      */
-    KAboutData &setCopyrightStatement( const KLocalizedString &copyrightStatement );
+    KAboutData &setCopyrightStatement( const QLocalizedString &copyrightStatement );
 
     /**
      * Defines the additional text to show in the about dialog.
@@ -595,7 +596,7 @@ class KDECORE_EXPORT KAboutData
      *        information. The text can contain newlines. This string
      *        should be marked for translation.
      */
-    KAboutData &setOtherText( const KLocalizedString &otherText );
+    KAboutData &setOtherText( const QLocalizedString &otherText );
 
     /**
      * Defines the program homepage.
@@ -855,12 +856,12 @@ class KDECORE_EXPORT KAboutData
      * @param plainText The plain text.
      * @param richText The rich text.
      *
-     * Setting both to parameters to KLocalizedString() will cause no message to be
+     * Setting both to parameters to QLocalizedString() will cause no message to be
      * displayed at all.  Call unsetCustomAuthorText() to revert to the default
      * message.
      */
-    KAboutData &setCustomAuthorText(const KLocalizedString &plainText,
-                                    const KLocalizedString &richText);
+    KAboutData &setCustomAuthorText(const QLocalizedString &plainText,
+                                    const QLocalizedString &richText);
 
     /**
      * Clears any custom text displayed around the list of authors and falls
@@ -887,11 +888,11 @@ class KDECORE_EXPORT KAboutData
  * (e.g. in .desktop files), try using KAboutLicense::byKeyword().
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce KLocalizedStrings, which can delay the translation
+ * calls are used to produce QLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  */
-class KDECORE_EXPORT KAboutLicense
+class KCOREADDONS_EXPORT KAboutLicense
 {
     friend class KAboutData;
 public:
@@ -970,7 +971,7 @@ private:
     /**
      * @internal Used by KAboutData to construct license by given text
      */
-    explicit KAboutLicense( const KLocalizedString &licenseText, const KAboutData *aboutData );
+    explicit KAboutLicense( const QLocalizedString &licenseText, const KAboutData *aboutData );
 
     class Private;
     QSharedDataPointer<Private> d;

@@ -24,9 +24,6 @@
 
 #include "kaboutdata.h"
 
-#include "klocalizedstring.h"
-#include "kglobal.h"
-
 #include "qstandardpaths.h"
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
@@ -57,8 +54,8 @@
 class KAboutPerson::Private
 {
 public:
-   KLocalizedString _name;
-   KLocalizedString _task;
+   QLocalizedString _name;
+   QLocalizedString _task;
    QString _emailAddress;
    QString _webAddress;
    QString _ocsUsername;
@@ -66,8 +63,8 @@ public:
    QString _nameNoop;
 };
 
-KAboutPerson::KAboutPerson( const KLocalizedString &_name,
-                            const KLocalizedString &_task,
+KAboutPerson::KAboutPerson( const QLocalizedString &_name,
+                            const QLocalizedString &_task,
                             const QByteArray &_emailAddress,
                             const QByteArray &_webAddress )
   : d(new Private)
@@ -78,8 +75,8 @@ KAboutPerson::KAboutPerson( const KLocalizedString &_name,
    d->_webAddress = QString::fromUtf8(_webAddress.data());
 }
 
-KAboutPerson::KAboutPerson( const KLocalizedString &_name,
-                            const KLocalizedString &_task,
+KAboutPerson::KAboutPerson( const QLocalizedString &_name,
+                            const QLocalizedString &_task,
                             const QByteArray &_emailAddress,
                             const QByteArray &_webAddress,
                             const QByteArray &_ocsUsername )
@@ -152,11 +149,11 @@ class KAboutLicense::Private : public QSharedData
 public:
     Private( enum KAboutData::LicenseKey licenseType, const KAboutData *aboutData );
     Private( const QString &pathToFile, const KAboutData *aboutData );
-    Private( const KLocalizedString &licenseText, const KAboutData *aboutData );
+    Private( const QLocalizedString &licenseText, const KAboutData *aboutData );
     Private( const Private& other);
 public:
     enum KAboutData::LicenseKey  _licenseKey;
-    KLocalizedString             _licenseText;
+    QLocalizedString             _licenseText;
     QString                      _pathToLicenseTextFile;
     // needed for access to the possibly changing copyrightStatement()
     const KAboutData *           _aboutData;
@@ -177,7 +174,7 @@ KAboutLicense::Private::Private( const QString &pathToFile, const KAboutData *ab
 {
 }
 
-KAboutLicense::Private::Private( const KLocalizedString &licenseText, const KAboutData *aboutData )
+KAboutLicense::Private::Private( const QLocalizedString &licenseText, const KAboutData *aboutData )
   : QSharedData(),
     _licenseKey( KAboutData::License_Custom ),
     _licenseText( licenseText ),
@@ -204,7 +201,7 @@ KAboutLicense::KAboutLicense( const QString &pathToFile, const KAboutData *about
 {
 }
 
-KAboutLicense::KAboutLicense( const KLocalizedString &licenseText, const KAboutData *aboutData )
+KAboutLicense::KAboutLicense( const QLocalizedString &licenseText, const KAboutData *aboutData )
   : d(new Private(licenseText,aboutData))
 {
 }
@@ -397,21 +394,21 @@ public:
         : customAuthorTextEnabled(false)
         {}
     QByteArray _appName;
-    KLocalizedString _programName;
-    KLocalizedString _shortDescription;
+    QLocalizedString _programName;
+    QLocalizedString _shortDescription;
     QByteArray _catalogName;
-    KLocalizedString _copyrightStatement;
-    KLocalizedString _otherText;
+    QLocalizedString _copyrightStatement;
+    QLocalizedString _otherText;
     QString _homepageAddress;
     QList<KAboutPerson> _authorList;
     QList<KAboutPerson> _creditList;
     QList<KAboutLicense> _licenseList;
-    KLocalizedString translatorName;
-    KLocalizedString translatorEmail;
+    QLocalizedString translatorName;
+    QLocalizedString translatorEmail;
     QString productName;
     QString programIconName;
     QVariant programLogo;
-    KLocalizedString customAuthorPlainText, customAuthorRichText;
+    QLocalizedString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
 
     QString organizationDomain;
@@ -427,12 +424,12 @@ public:
 
 KAboutData::KAboutData( const QByteArray &_appName,
                         const QByteArray &_catalogName,
-                        const KLocalizedString &_programName,
+                        const QLocalizedString &_programName,
                         const QByteArray &_version,
-                        const KLocalizedString &_shortDescription,
+                        const QLocalizedString &_shortDescription,
                         enum LicenseKey licenseType,
-                        const KLocalizedString &_copyrightStatement,
-                        const KLocalizedString &text,
+                        const QLocalizedString &_copyrightStatement,
+                        const QLocalizedString &text,
                         const QByteArray &homePageAddress,
                         const QByteArray &bugsEmailAddress
                       )
@@ -503,8 +500,8 @@ KAboutData &KAboutData::operator=(const KAboutData& other)
     return *this;
 }
 
-KAboutData &KAboutData::addAuthor( const KLocalizedString &name,
-                                   const KLocalizedString &task,
+KAboutData &KAboutData::addAuthor( const QLocalizedString &name,
+                                   const QLocalizedString &task,
                                    const QByteArray &emailAddress,
                                    const QByteArray &webAddress )
 {
@@ -512,8 +509,8 @@ KAboutData &KAboutData::addAuthor( const KLocalizedString &name,
   return *this;
 }
 
-KAboutData &KAboutData::addAuthor( const KLocalizedString &name,
-                                   const KLocalizedString &task,
+KAboutData &KAboutData::addAuthor( const QLocalizedString &name,
+                                   const QLocalizedString &task,
                                    const QByteArray &emailAddress,
                                    const QByteArray &webAddress,
                                    const QByteArray &ocsUsername )
@@ -522,8 +519,8 @@ KAboutData &KAboutData::addAuthor( const KLocalizedString &name,
   return *this;
 }
 
-KAboutData &KAboutData::addCredit( const KLocalizedString &name,
-                                   const KLocalizedString &task,
+KAboutData &KAboutData::addCredit( const QLocalizedString &name,
+                                   const QLocalizedString &task,
                                    const QByteArray &emailAddress,
                                    const QByteArray &webAddress )
 {
@@ -531,8 +528,8 @@ KAboutData &KAboutData::addCredit( const KLocalizedString &name,
   return *this;
 }
 
-KAboutData &KAboutData::addCredit( const KLocalizedString &name,
-                                   const KLocalizedString &task,
+KAboutData &KAboutData::addCredit( const QLocalizedString &name,
+                                   const QLocalizedString &task,
                                    const QByteArray &emailAddress,
                                    const QByteArray &webAddress,
                                    const QByteArray &ocsUsername )
@@ -541,21 +538,21 @@ KAboutData &KAboutData::addCredit( const KLocalizedString &name,
   return *this;
 }
 
-KAboutData &KAboutData::setTranslator( const KLocalizedString& name,
-                                       const KLocalizedString& emailAddress )
+KAboutData &KAboutData::setTranslator( const QLocalizedString& name,
+                                       const QLocalizedString& emailAddress )
 {
   d->translatorName = name;
   d->translatorEmail = emailAddress;
   return *this;
 }
 
-KAboutData &KAboutData::setLicenseText( const KLocalizedString &licenseText )
+KAboutData &KAboutData::setLicenseText( const QLocalizedString &licenseText )
 {
     d->_licenseList[0] = KAboutLicense(licenseText,this);
     return *this;
 }
 
-KAboutData &KAboutData::addLicenseText( const KLocalizedString &licenseText )
+KAboutData &KAboutData::addLicenseText( const QLocalizedString &licenseText )
 {
     // if the default license is unknown, overwrite instead of append
     KAboutLicense &firstLicense = d->_licenseList[0];
@@ -591,7 +588,7 @@ KAboutData &KAboutData::setAppName( const QByteArray &_appName )
   return *this;
 }
 
-KAboutData &KAboutData::setProgramName( const KLocalizedString &_programName )
+KAboutData &KAboutData::setProgramName( const QLocalizedString &_programName )
 {
   d->_programName = _programName;
   translateInternalProgramName();
@@ -610,7 +607,7 @@ KAboutData &KAboutData::setVersion( const QByteArray &_version )
   return *this;
 }
 
-KAboutData &KAboutData::setShortDescription( const KLocalizedString &_shortDescription )
+KAboutData &KAboutData::setShortDescription( const QLocalizedString &_shortDescription )
 {
   d->_shortDescription = _shortDescription;
   return *this;
@@ -640,13 +637,13 @@ KAboutData &KAboutData::addLicense( LicenseKey licenseKey)
     return *this;
 }
 
-KAboutData &KAboutData::setCopyrightStatement( const KLocalizedString &_copyrightStatement )
+KAboutData &KAboutData::setCopyrightStatement( const QLocalizedString &_copyrightStatement )
 {
   d->_copyrightStatement = _copyrightStatement;
   return *this;
 }
 
-KAboutData &KAboutData::setOtherText( const KLocalizedString &_otherText )
+KAboutData &KAboutData::setOtherText( const QLocalizedString &_otherText )
 {
   d->_otherText = _otherText;
   return *this;
@@ -710,8 +707,11 @@ const char* KAboutData::internalProgramName() const
 void KAboutData::translateInternalProgramName() const
 {
   d->_translatedProgramName.clear();
+#pragma message("KDE5 FIXME: This code must be replaced by something with QLocalizedString")
+#if 0
   if( KGlobal::locale())
       d->_translatedProgramName = programName().toUtf8();
+#endif
 }
 
 QString KAboutData::programIconName() const
@@ -812,7 +812,8 @@ QList<KAboutPerson> KAboutData::credits() const
 QList<KAboutPerson> KAboutData::translators() const
 {
     QList<KAboutPerson> personList;
-
+#pragma message("KDE5 TODO: What about this code ?")
+#if 0
     KLocale *tmpLocale = NULL;
     if (KGlobal::locale()) {
         // There could be many catalogs loaded into the global locale,
@@ -822,13 +823,13 @@ QList<KAboutPerson> KAboutData::translators() const
         tmpLocale = new KLocale(*KGlobal::locale());
         tmpLocale->setActiveCatalog(catalogName());
     }
-
+#endif
     QString translatorName;
     if (!d->translatorName.isEmpty()) {
         translatorName = d->translatorName.toString();
     }
     else {
-        translatorName = ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(tmpLocale);
+        translatorName = ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
 
     QString translatorEmail;
@@ -836,11 +837,11 @@ QList<KAboutPerson> KAboutData::translators() const
         translatorEmail = d->translatorEmail.toString();
     }
     else {
-        translatorEmail = ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(tmpLocale);
+        translatorEmail = ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
-
+#if 0
     delete tmpLocale;
-
+#endif
     if ( translatorName.isEmpty() || translatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
 
@@ -928,8 +929,8 @@ bool KAboutData::customAuthorTextEnabled() const
   return d->customAuthorTextEnabled;
 }
 
-KAboutData &KAboutData::setCustomAuthorText( const KLocalizedString &plainText,
-                                             const KLocalizedString &richText )
+KAboutData &KAboutData::setCustomAuthorText( const QLocalizedString &plainText,
+                                             const QLocalizedString &richText )
 {
   d->customAuthorPlainText = plainText;
   d->customAuthorRichText = richText;
@@ -941,8 +942,8 @@ KAboutData &KAboutData::setCustomAuthorText( const KLocalizedString &plainText,
 
 KAboutData &KAboutData::unsetCustomAuthorText()
 {
-  d->customAuthorPlainText = KLocalizedString();
-  d->customAuthorRichText = KLocalizedString();
+  d->customAuthorPlainText = QLocalizedString();
+  d->customAuthorRichText = QLocalizedString();
 
   d->customAuthorTextEnabled = false;
 
