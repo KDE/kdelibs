@@ -363,7 +363,6 @@ void PreviewJobPrivate::startPreview()
         }
         else
         {
-            kDebug() << "Whoops.";
             emit q->failed( *kit );
         }
     }
@@ -591,30 +590,25 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     const KFileItem& item = currentItem.item;
     const QString localPath = item.localPath();
     if (!localPath.isEmpty()) {  
-        kDebug() << "It's a local thing." << localPath;
         createThumbnail( localPath );
     } else {
         const KUrl fileUrl = item.url();
-        kDebug() << " --- File URL: " << fileUrl.url();
-        bool supportsProtocol = false;
         // heuristics for remote URL support
-        kDebug() << "CONTAINS" << fileUrl.scheme() << m_remoteProtocolPlugins;
+        bool supportsProtocol = false;
         const QStringList &_plugins = m_remoteProtocolPlugins.value(fileUrl.scheme());
         if (_plugins.contains(item.mimetype())) {
             // There's a plugin supporting this protocol and mimetype
             supportsProtocol = true;
         } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
-            // Assume KIO understand any URL, ThumbCreator slaves who have
+            // Assume KIO understands any URL, ThumbCreator slaves who have
             // X-KDE-Protocol=KIO, will get feed the remote URL directly.
             supportsProtocol = true;
         }
-        kDebug() << "does it???." << supportsProtocol;
+
         if (supportsProtocol) {
-            kDebug() << "fileUrl: " << fileUrl.url();
             createThumbnail(fileUrl.url());
             return;
         }
-        kDebug() << "going regular..." << fileUrl.url();
         // No plugin support access to this remote content, copy the file
         // to the local machine, then create the thumbnail
         state = PreviewJobPrivate::STATE_GETORIG;
