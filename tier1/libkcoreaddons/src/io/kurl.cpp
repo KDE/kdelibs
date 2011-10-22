@@ -28,7 +28,6 @@
 #include "kurl.h"
 
 #include <kglobal.h>
-#include <kshell.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -61,10 +60,10 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 
   if (decodeDots)
   {
-     static const QString &encodedDot = KGlobal::staticQString("%2e");
+     static const QLatin1String encodedDot("%2e");
      if (path.indexOf(encodedDot, 0, Qt::CaseInsensitive) != -1)
      {
-        static const QString &encodedDOT = KGlobal::staticQString("%2E"); // Uppercase!
+        static const QLatin1String encodedDOT("%2E"); // Uppercase!
         path.replace(encodedDot, QString(QLatin1Char('.')));
         path.replace(encodedDOT, QString(QLatin1Char('.')));
         len = path.length();
@@ -1772,9 +1771,12 @@ void KUrl::setPath( const QString& _path )
 #endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );
+#pragma message("KDE5 TODO: Remove tildeExpand feature for local paths")
+#if 0
     QString path = KShell::tildeExpand( _path );
     if (path.isEmpty())
-        path = _path;
+#endif
+        QString path = _path;
 #ifdef Q_WS_WIN
     const int len = path.length();
     if( len == 2 && IS_LETTER(path[0]) && path[1] == QLatin1Char(':') )

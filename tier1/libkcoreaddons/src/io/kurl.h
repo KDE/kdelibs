@@ -22,7 +22,7 @@
 #ifndef kurl_h
 #define kurl_h
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 #include <QtCore/QVariant>
 #include <QtCore/QUrl>
@@ -108,7 +108,7 @@ class KUrlPrivate;
  * context.
  *
  */
-class KDECORE_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
+class KCOREADDONS_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;
@@ -143,7 +143,7 @@ public:
    * @see KUrl
    * @see QList
    */
-  class KDECORE_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
+  class KCOREADDONS_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
   {
   public:
     /**
@@ -891,7 +891,7 @@ public:
    * @deprecated Use equals() instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
+  KCOREADDONS_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 #endif
 
 
@@ -1009,7 +1009,7 @@ public:
    * Use KUrl(text) instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
+  static KCOREADDONS_DEPRECATED KUrl fromPathOrUrl( const QString& text );
 #endif
 
   /**
@@ -1050,7 +1050,7 @@ public:
    * everything is 7 bit (ascii) after being percent-encoded.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED QString encode_string(const QString &str) {
+  static KCOREADDONS_DEPRECATED QString encode_string(const QString &str) {
     return QString::fromLatin1( QUrl::toPercentEncoding( str ).constData() ); //krazy:exclude=qclasses
   }
 #endif
@@ -1067,7 +1067,7 @@ public:
    *
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED QString encode_string_no_slash(const QString &str) {
+  static KCOREADDONS_DEPRECATED QString encode_string_no_slash(const QString &str) {
       return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ).constData() ); //krazy:exclude=qclasses
   }
 #endif
@@ -1083,7 +1083,7 @@ public:
    *
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED QString decode_string(const QString &str) {
+  static KCOREADDONS_DEPRECATED QString decode_string(const QString &str) {
       return QUrl::fromPercentEncoding( str.toLatin1() ); //krazy:exclude=qclasses
   }
 #endif
@@ -1164,7 +1164,7 @@ Q_DECLARE_METATYPE(KUrl::List)
  * @deprecated use KUrl(_url1).equals(KUrl(_url2)) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
+KCOREADDONS_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
 #endif
 
 /**
@@ -1180,9 +1180,9 @@ KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url
  * @deprecated use KUrl(_url1).equals(KUrl(_url2), options) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
+KCOREADDONS_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
 #endif
 
-KDECORE_EXPORT uint qHash(const KUrl& kurl);
+KCOREADDONS_EXPORT uint qHash(const KUrl& kurl);
 
 #endif
