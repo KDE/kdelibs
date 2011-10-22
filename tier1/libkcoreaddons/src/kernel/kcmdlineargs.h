@@ -19,10 +19,10 @@
 #ifndef KCMDLINEARGS_H
 #define KCMDLINEARGS_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QBool>
 
-#include <klocale.h>
+#include "qlocalizedstring_porting.h"
 
 template <class T> class QList;
 class QString;
@@ -45,7 +45,7 @@ class KCmdLineOptionsPrivate;
  *
  * @see KCmdLineArgs for additional usage information
  */
-class KDECORE_EXPORT KCmdLineOptions
+class KCOREADDONS_EXPORT KCmdLineOptions
 {
     friend class KCmdLineArgs;
     friend class KCmdLineArgsStatic;
@@ -119,7 +119,7 @@ class KDECORE_EXPORT KCmdLineOptions
      *                     on the command line; can be left off
      */
     KCmdLineOptions &add (const QByteArray &name,
-                          const KLocalizedString &description = KLocalizedString(),
+                          const QLocalizedString &description = QLocalizedString(),
                           const QByteArray &defaultValue = QByteArray());
 
     /**
@@ -278,7 +278,7 @@ class KAboutData;
  *  @author Waldo Bastian
  *  @version 0.0.4
  */
-class KDECORE_EXPORT KCmdLineArgs
+class KCOREADDONS_EXPORT KCmdLineArgs
 {
   friend class KApplication;
   friend class KCmdLineArgsList;
@@ -315,9 +315,9 @@ public:
    static void init(int argc, char **argv,
                     const QByteArray &appname,
                     const QByteArray &catalog,
-                    const KLocalizedString &programName,
+                    const QLocalizedString &programName,
                     const QByteArray &version,
-                    const KLocalizedString &description = KLocalizedString(),
+                    const QLocalizedString &description = QLocalizedString(),
                     StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
 
   /**
@@ -420,7 +420,7 @@ public:
    * @param afterId The options are inserted after this set of options, can be empty.
    */
   static void addCmdLineOptions(const KCmdLineOptions &options,
-                                const KLocalizedString &name = KLocalizedString(),
+                                const QLocalizedString &name = QLocalizedString(),
                                 const QByteArray &id = QByteArray(),
                                 const QByteArray &afterId = QByteArray());
 
@@ -652,7 +652,7 @@ protected:
    * @internal
    *  Constructor.
    */
-  KCmdLineArgs( const KCmdLineOptions &_options, const KLocalizedString &_name,
+  KCmdLineArgs( const KCmdLineOptions &_options, const QLocalizedString &_name,
                 const QByteArray &_id);
 
   /**

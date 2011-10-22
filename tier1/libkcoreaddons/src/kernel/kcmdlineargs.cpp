@@ -40,13 +40,9 @@
 #include <QtCore/QTextCodec>
 
 #include "kaboutdata.h"
-#include "klocale.h"
 #include "kdeversion.h"
-#include "kcomponentdata.h"
 #include "kglobal.h"
 #include "kurl.h"
-
-#include "kuitsemantics_p.h" // for escaping arguments in i18n
 
 // -----------------------------------------------------------------------------
 // Design notes:
@@ -54,13 +50,13 @@
 // These classes deal with a lot of text, some of which needs to be
 // marked for translation. Since at the time when these object and calls are
 // made the translation catalogs are usually still not initialized, the
-// translation has to be delayed. This is achieved by using KLocalizedString
-// for translatable strings. KLocalizedStrings are produced by ki18n* calls,
+// translation has to be delayed. This is achieved by using QLocalizedString
+// for translatable strings. QLocalizedStrings are produced by ki18n* calls,
 // instead of the more usuall i18n* calls which produce QString by trying to
 // translate immediately.
 //
 // All the non-translatable string arguments to methods are taken QByteArray,
-// all the translatable are KLocalizedString. The getter methods always return
+// all the translatable are QLocalizedString. The getter methods always return
 // proper QString: the non-translatable strings supplied by the code are
 // treated with QString::fromUtf8(), those coming from the outside with
 // QTextCodec::toUnicode(), and translatable strings are finalized to QStrings
@@ -113,7 +109,7 @@ public:
 class KCmdLineOptionsPrivate {
     public:
     QList<QByteArray> names;
-    QList<KLocalizedString> descriptions;
+    QList<QLocalizedString> descriptions;
     QStringList defaults;
 };
 
@@ -140,7 +136,7 @@ KCmdLineOptions& KCmdLineOptions::operator= (const KCmdLineOptions &options)
 }
 
 KCmdLineOptions &KCmdLineOptions::add (const QByteArray &name,
-                                       const KLocalizedString &description,
+                                       const QLocalizedString &description,
                                        const QByteArray &defaultValue)
 {
     d->names.append(name);
@@ -340,7 +336,7 @@ class KCmdLineArgsPrivate
 {
     friend class KCmdLineArgsStatic;
 public:
-    KCmdLineArgsPrivate(const KCmdLineOptions &_options, const KLocalizedString &_name, const QByteArray &_id)
+    KCmdLineArgsPrivate(const KCmdLineOptions &_options, const QLocalizedString &_name, const QByteArray &_id)
         : options(_options)
         , name(_name)
         , id(_id)
@@ -355,7 +351,7 @@ public:
         delete parsedArgList;
     }
     const KCmdLineOptions options;
-    const KLocalizedString name;
+    const QLocalizedString name;
     const QByteArray id;
     KCmdLineParsedOptions *parsedOptionList;
     KCmdLineParsedArgs *parsedArgList;
@@ -423,9 +419,9 @@ void
 KCmdLineArgs::init(int _argc, char **_argv,
                    const QByteArray &_appname,
                    const QByteArray &_catalog,
-                   const KLocalizedString &_programName,
+                   const QLocalizedString &_programName,
                    const QByteArray &_version,
-                   const KLocalizedString &_description,
+                   const QLocalizedString &_description,
                    StdCmdLineArgs stdargs)
 {
    init(_argc, _argv,
@@ -505,7 +501,7 @@ void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
 }
 
 void
-KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const KLocalizedString &name,
+KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const QLocalizedString &name,
          const QByteArray &id, const QByteArray &afterId)
 {
    if (!s->argsList)
@@ -1095,21 +1091,13 @@ KCmdLineArgs::aboutData()
 void
 KCmdLineArgs::enable_i18n()
 {
-    // called twice or too late
-    if (KGlobal::hasLocale())
-      return;
-
-    if (!KGlobal::hasMainComponent()) {
-        KComponentData mainComponentData(s->about);
-        mainComponentData.config();
-        // mainComponentData is now the main component and won't disappear until KGlobal deletes it
-    }
+#pragma message ("KDE5 NOTE: What about this method ?")
 }
 
 void
 KCmdLineArgs::usageError(const QString &error)
 {
-    Q_ASSERT(KGlobal::hasLocale());
+    //Q_ASSERT(KGlobal::hasLocale());
     QByteArray localError = s->encodeOutput(error);
     if (localError.endsWith('\n'))
         localError.chop(1);
@@ -1339,7 +1327,7 @@ KCmdLineArgs::usage(const QByteArray &id)
  *  The given arguments are assumed to be constants.
  */
 KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions &_options,
-                            const KLocalizedString &_name,
+                            const QLocalizedString &_name,
                             const QByteArray &_id)
   : d(new KCmdLineArgsPrivate(_options, _name, _id))
 {
