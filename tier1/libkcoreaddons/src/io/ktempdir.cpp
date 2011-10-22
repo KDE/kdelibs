@@ -44,9 +44,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 
-#include "kglobal.h"
 #include "krandom.h"
-#include "kcomponentdata.h"
 #include <QCoreApplication>
 #include "kde_file.h"
 
@@ -60,6 +58,18 @@ extern QString mkdtemp_QString (const QString &_template);
 #ifdef _WIN32_WCE
 #include <shellapi.h>
 #endif
+
+static int s_umask;
+
+// Read umask before any threads are created to avoid race conditions
+static int kStoreUmask()
+{
+    mode_t tmp = 0;
+    s_umask = umask(tmp);
+    return umask(s_umask);
+}
+
+Q_CONSTRUCTOR_FUNCTION(kStoreUmask)
 
 class KTempDir::Private
 {
@@ -100,9 +110,8 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
    // got a return value != 0
    d->tmpName = realName + QLatin1Char('/');
-   mode_t umsk = KGlobal::umask();
-   KDE::chmod(nme, mode&(~umsk));
    qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
+   KDE::chmod(nme, mode&(~s_umask));
 
    // Success!
    d->exists = true;
@@ -125,8 +134,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    d->tmpName = QFile::decodeName(realNameStr)+QLatin1Char('/');
    qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
 
-   mode_t umsk = KGlobal::umask();
-   if(chmod(nme.data(), mode&(~umsk)) < 0) {
+   if(chmod(nme.data(), mode&(~s_umask)) < 0) {
        qWarning() << "KTempDir: Unable to change permissions on" << d->tmpName
                   << ":" << ::strerror(errno);
        d->error = errno;

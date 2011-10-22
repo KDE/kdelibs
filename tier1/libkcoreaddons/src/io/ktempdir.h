@@ -20,7 +20,7 @@
 #ifndef KTEMPDIR_H
 #define KTEMPDIR_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QString>
 
 /**
@@ -49,7 +49,7 @@
  * @see KTemporaryFile
  * @author Joseph Wenninger <jowenn@kde.org>
  */
-class KDECORE_EXPORT KTempDir
+class KCOREADDONS_EXPORT KTempDir
 {
 public:
    /**
