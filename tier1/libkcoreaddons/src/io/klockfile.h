@@ -20,23 +20,23 @@
 #ifndef KLOCKFILE_H
 #define KLOCKFILE_H
 
-#include <kdecore_export.h>
-#include <ksharedptr.h>
+#include <kcoreaddons_export.h>
 #include <kglobal.h>
+#include <QtCore/QExplicitlySharedDataPointer>
 
 class QString;
 
 /**
  * \class KLockFile klockfile.h <KLockFile>
- *
+ * 
  * The KLockFile class provides NFS safe lockfiles.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KLockFile : public KShared
+class KCOREADDONS_EXPORT KLockFile : public QSharedData
 {
 public:
-   typedef KSharedPtr<KLockFile> Ptr;
+   typedef QExplicitlySharedDataPointer<KLockFile> Ptr;
 
    explicit KLockFile(const QString &file, const QString &componentName = QString());
 
