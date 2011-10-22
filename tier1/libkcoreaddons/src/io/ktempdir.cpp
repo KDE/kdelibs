@@ -46,7 +46,7 @@
 
 #include "krandom.h"
 #include <QCoreApplication>
-#include "kde_file.h"
+#include <QFileInfo>
 
 #ifdef Q_WS_WIN
 #include <QtCore/QVarLengthArray>
@@ -203,62 +203,15 @@ void KTempDir::unlink()
 
 #ifndef Q_WS_WIN
 // Auxiliary recursive function for removeDirs
-static bool rmtree(const QByteArray& name)
+static bool rmtree(const QString& name)
 {
-    //kDebug(180) << "Checking directory for remove" << name;
-    KDE_struct_stat st;
-    if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
-        return false;
-    if ( S_ISDIR( st.st_mode ) )
-    {
-        // This is a directory, so process it
-        //kDebug(180) << "File" << name << "is DIRECTORY!";
-        KDE_struct_dirent* ep;
-        DIR* dp = ::opendir( name.data() );
-        if ( !dp )
-            return false;
-        while ( ( ep = KDE_readdir( dp ) ) )
-        {
-            //kDebug(180) << "CHECKING" << name << "/" << ep->d_name;
-            if ( !qstrcmp( ep->d_name, "." ) || !qstrcmp( ep->d_name, ".." ) )
-                continue;
-            QByteArray newName( name );
-            newName += '/';
-            newName += ep->d_name;
-            /*
-             * Be defensive and close the directory.
-             *
-             * Potential problems:
-             * - opendir/readdir/closedir is not re-entrant
-             * - unlink and rmdir invalidates a opendir/readdir/closedir
-             * - limited number of file descriptors for opendir/readdir/closedir
-             */
-            if ( ::closedir( dp ) ) {
-                qDebug() << "Error closing" << name;
-                return false;
-            }
-            // Recurse!
-            //kDebug(180) << "RECURSE: " << newName;
-            if ( ! rmtree( newName ) )
-                return false;
-            // We have to re-open the directory before continuing
-            dp = ::opendir( name.data() );
-            if ( !dp )
+    if (QFileInfo(name).isDir()) {
+        Q_FOREACH(const QFileInfo & entry, QDir(name).entryInfoList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)) {
+            if( ! rmtree(entry.absoluteFilePath()))
                 return false;
         }
-        if ( ::closedir( dp ) ) {
-            qDebug() << "Error closing" << name;
-            return false;
-        }
-        //kDebug(180) << "RMDIR dir " << name;
-        return ! ::rmdir( name.data() );
     }
-    else
-    {
-        // This is a non-directory file, so remove it
-        //kDebug(180) << "KTempDir: unlinking file" << name;
-        return ! ::unlink( name.data() );
-    }
+    return remove(name.toLocal8Bit().data()) != -1;
 }
 #endif
 
@@ -289,8 +242,7 @@ bool KTempDir::removeDir( const QString& path )
     errno = SHFileOperationW( &fileOp );
     return (errno == 0);
 #else
-    const QByteArray cstr( QFile::encodeName( path ) );
-    return rmtree( cstr );
+    return rmtree( path );
 #endif
 }
 
