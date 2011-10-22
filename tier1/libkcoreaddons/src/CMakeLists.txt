@@ -81,12 +81,9 @@ set(libkcoreaddons_SRCS
 
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/kdecore/ # kdecore_export.h
-    ${CMAKE_SOURCE_DIR}/kdecore/util/ # kde_file.h
+    ${CMAKE_BINARY_DIR}/kdecore/ # kde_export.h (required by kde_file.h)
+    ${CMAKE_SOURCE_DIR}/kdecore/util/ # kde_file.h (need to be ported to qfile/qfileinfo/qdir)
     ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # K_GLOBAL_STATIC
-    ${CMAKE_SOURCE_DIR}/kdecore/localization/ # kentities.c
-    ${CMAKE_SOURCE_DIR}/kdecore/io/
-    ${CMAKE_SOURCE_DIR}/kdecore/config/
     ${CMAKE_SOURCE_DIR}/libinqt5/src/
     ${CMAKE_BINARY_DIR}/libinqt5/src/
     ${CMAKE_CURRENT_BINARY_DIR}/io/
@@ -100,7 +97,7 @@ include_directories(
 add_library(kcoreaddons ${LIBRARY_TYPE} ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)
 
-target_link_libraries(kcoreaddons ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} inqt5 kdecore)
+target_link_libraries(kcoreaddons ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} inqt5)
 set_target_properties(kcoreaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )
