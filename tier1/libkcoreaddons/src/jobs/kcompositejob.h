@@ -20,7 +20,7 @@
 #ifndef KCOMPOSITEJOB_H
 #define KCOMPOSITEJOB_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <kjob.h>
 
 #include <QtCore/QList>
@@ -30,7 +30,7 @@ class KCompositeJobPrivate;
  * The base class for all jobs able to be composed of one
  * or more subjobs.
  */
-class KDECORE_EXPORT KCompositeJob : public KJob
+class KCOREADDONS_EXPORT KCompositeJob : public KJob
 {
     Q_OBJECT
 
