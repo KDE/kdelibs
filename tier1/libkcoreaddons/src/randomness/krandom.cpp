@@ -27,7 +27,8 @@
 #include <time.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#include <kde_file.h>
+
+#include <QtCore/QFile>
 
 int KRandom::random()
 {
@@ -36,14 +37,14 @@ int KRandom::random()
    {
       unsigned int seed;
       init = true;
-      int fd = KDE_open("/dev/urandom", O_RDONLY);
-      if (fd < 0 || ::read(fd, &seed, sizeof(seed)) != sizeof(seed))
+      QFile urandom(QString::fromLatin1("/dev/urandom"));
+      bool opened = urandom.open(QIODevice::ReadOnly);
+      if (!opened || urandom.read((char *)&seed, sizeof(seed)) != sizeof(seed))
       {
             // No /dev/urandom... try something else.
             srand(getpid());
             seed = rand()+time(0);
       }
-      if (fd >= 0) close(fd);
       srand(seed);
    }
    return rand();
