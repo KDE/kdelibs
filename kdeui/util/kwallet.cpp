@@ -400,6 +400,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         Wallet *wallet = new Wallet(-1, name);
         // FIXME: should we specify CreateCollection or OpenOnly here?
         wallet->d->secretsCollection = Collection::findCollection(name, Collection::CreateCollection, QVariantMap(), w);
+        connect( wallet->d->secretsCollection, SIGNAL(statusChanged(int)), wallet, SLOT(slotCollectionStatusChanged(int)) );
         if ( ot == Synchronous ) {
            kDebug() << "WARNING openWallet OpenType=Synchronous requested";
            // TODO: not sure what to do with in this case; however, all other KSecretsService API methods are already
@@ -465,6 +466,24 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         }
 
         return wallet;
+    }
+}
+
+void Wallet::slotCollectionStatusChanged(int status)
+{
+    Collection::Status collStatus = (Collection::Status)status;
+    switch ( collStatus ) {
+        case Collection::FoundExisting:
+            // fall through
+        case Collection::NewlyCreated:
+            emitWalletOpened();
+            break;
+        case Collection::Deleted:
+            // nothing to do
+            break;
+        case Collection::NotFound:
+            emitWalletAsyncOpenError();
+            break;
     }
 }
 
@@ -611,7 +630,11 @@ void Wallet::slotWalletClosed(int handle) {
 QStringList Wallet::folderList() {
     if (walletLauncher->m_useKSecretsService) {
         QStringList result;
-        ReadCollectionItemsJob *searchJob = d->secretsCollection->items();
+        
+        StringStringMap attrs;
+        attrs[KSS_ATTR_ENTRYFOLDER] = ""; // search for items having this attribute no matter what value it has
+        SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
+        
         if (searchJob->exec()) {
             ReadCollectionItemsJob::ItemList itemList = searchJob->items();
             foreach( const ReadCollectionItemsJob::Item &item, itemList ) {

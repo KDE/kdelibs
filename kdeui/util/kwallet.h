@@ -519,6 +519,12 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  Emits wallet opening success.
 		 */
 		void emitWalletOpened();
+        
+        /**
+         * @internal
+         * Receives status changed notifications from KSecretsService infrastructure
+         */
+        void slotCollectionStatusChanged( int );
 
 	private:
 		class WalletPrivate;

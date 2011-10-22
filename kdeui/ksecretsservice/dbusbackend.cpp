@@ -143,7 +143,7 @@ void OpenSessionJob::start()
                     QDBusVariant(dhBytePub)
                 );
                 QDBusPendingCallWatcher *openSessionWatcher = new QDBusPendingCallWatcher( openSessionReply, this );
-                connect( openSessionWatcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(openSessionFinished(QDBusPendingCallWatcher*)) );
+                connect( openSessionWatcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(slotOpenSessionFinished(QDBusPendingCallWatcher*)) );
             }
         }
         else {
@@ -155,7 +155,7 @@ void OpenSessionJob::start()
     }
 }
 
-void OpenSessionJob::openSessionFinished(QDBusPendingCallWatcher* watcher)
+void OpenSessionJob::slotOpenSessionFinished(QDBusPendingCallWatcher* watcher)
 {
     Q_ASSERT( watcher->isFinished() );
     QDBusPendingReply< QDBusVariant, QDBusObjectPath > reply = *watcher;
@@ -175,6 +175,11 @@ void OpenSessionJob::openSessionFinished(QDBusPendingCallWatcher* watcher)
         QDBusObjectPath sessionPath = reply.argumentAt<1>();
         kDebug() << "SESSION path is " << sessionPath.path();
         sessionIf = new OrgFreedesktopSecretSessionInterface( SERVICE_NAME, sessionPath.path(), QDBusConnection::sessionBus() );
+        
+        connect( serviceIf, SIGNAL(CollectionChanged(const QDBusObjectPath &)), this, SLOT(slotCollectionChanged(const QDBusObjectPath&)) );
+        connect( serviceIf, SIGNAL(CollectionCreated(const QDBusObjectPath &)), this, SLOT(slotCollectionCreated(const QDBusObjectPath&)) );
+        connect( serviceIf, SIGNAL(CollectionDeleted(const QDBusObjectPath &)), this, SLOT(slotCollectionDeleted(const QDBusObjectPath&)) );
+        
         setError(0);
         setErrorText( i18n("OK") );
         emitResult();
@@ -193,6 +198,22 @@ OrgFreedesktopSecretSessionInterface* OpenSessionJob::sessionInterface() const
     Q_ASSERT( sessionIf != 0 ); // you should call openSession first and start the job it returns before calling this method
     return sessionIf;
 }
+
+void OpenSessionJob::slotCollectionChanged(const QDBusObjectPath& )
+{
+    // TODO: use this notification
+}
+
+void OpenSessionJob::slotCollectionCreated(const QDBusObjectPath& coll)
+{
+
+}
+
+void OpenSessionJob::slotCollectionDeleted(const QDBusObjectPath& )
+{
+
+}
+
 
 OrgFreedesktopSecretPromptInterface* DBusSession::createPromptIf(const QDBusObjectPath& path)
 {

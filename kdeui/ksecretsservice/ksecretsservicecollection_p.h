@@ -41,6 +41,7 @@ public:
     void setDBusPath(const QDBusObjectPath &collPath);
     const WId &promptParentId() const;
     OrgFreedesktopSecretCollectionInterface *collectionInterface();
+    void setStatus( Collection::Status );
 
 public:
     Collection                              *collection;

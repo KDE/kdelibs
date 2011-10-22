@@ -132,6 +132,11 @@ CollectionLockJob *Collection::lock( const WId wid /* =0 */ )
     return new CollectionLockJob( this, wid );
 }
 
+void Collection::emitStatusChanged()
+{
+    emit statusChanged( d->collectionStatus );
+}
+
 CollectionPrivate::CollectionPrivate( Collection *coll ) :
         collection( coll ),
         findOptions( Collection::OpenOnly ),
@@ -152,8 +157,14 @@ void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
     collectionName = collName;
     collectionProperties = collProps;
     findOptions = opts;
-    collectionStatus = Collection::Pending;
+    setStatus( Collection::Pending );
     promptParentWindowId = promptParentId;
+}
+
+void CollectionPrivate::setStatus( Collection::Status newStatus )
+{
+    collectionStatus = newStatus;
+    collection->emitStatusChanged();
 }
 
 bool CollectionPrivate::isValid()
@@ -169,11 +180,10 @@ void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
 {
     collectionIf = DBusSession::createCollectionIf( path );
     if ( collectionIf->isValid() ) {
-        collectionStatus = (findOptions & Collection::CreateCollection) ? Collection::NewlyCreated : Collection::FoundExisting;
         kDebug() << "SUCCESS opening collection " << path.path();
     }
     else {
-        collectionStatus = Collection::NotFound;
+        setStatus( Collection::NotFound );
         kDebug() << "ERROR opening collection " << path.path();
     }
 }

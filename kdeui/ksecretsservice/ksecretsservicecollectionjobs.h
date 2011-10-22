@@ -141,6 +141,7 @@ public:
     
     virtual void start();
     virtual void foundCollection();
+    virtual void createdCollection();
 private:
     friend class FindCollectionJobPrivate;
     QSharedPointer< FindCollectionJobPrivate > d;

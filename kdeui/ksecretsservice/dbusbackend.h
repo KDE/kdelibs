@@ -49,7 +49,10 @@ public:
     OrgFreedesktopSecretSessionInterface *sessionInterface() const;
     
 private Q_SLOTS:
-    void openSessionFinished(QDBusPendingCallWatcher*);
+    void slotOpenSessionFinished(QDBusPendingCallWatcher*);
+    void slotCollectionCreated( const QDBusObjectPath& );
+    void slotCollectionDeleted( const QDBusObjectPath& );
+    void slotCollectionChanged( const QDBusObjectPath& );
     
 private:
     friend class DBusSession;

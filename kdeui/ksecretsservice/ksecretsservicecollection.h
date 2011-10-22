@@ -77,6 +77,10 @@ public:
         CreateCollection =1     /// the collection will be created if not found
     };
     
+    /**
+     * @see status()
+     * @see statusChanged()
+     */
     enum Status {
         Invalid         =0,     /// the collection objet is freshly initialized and none of it's methods have been called
         Pending         =1,     /// one of the collection methods was called but this object is yet to be connected to the backed
@@ -145,6 +149,27 @@ public:
      * "Label" : item's or collection's label
      *
      * @param attributes hold the searched items attributes
+     * You may want to initialize the map followin one of the followin cases:
+     * @li put in empty strings such as
+     * @code
+     * StrinStringMap attrs;
+     * attrs["Key"] = "";
+     * @endcode
+     * This will match all attributes having the key "Key"
+     * @li use search string as values, 
+     * @code
+     * StrinStringMap attrs;
+     * attrs["Key"] = "string";
+     * @endcode
+     * This will try to exactly match "string" when finding items having "key" attributes
+     * @li use regular expressions
+     * @code
+     * StrinStringMap attrs;
+     * attrs["Key"] = "regexp:expr";
+     * @endcode
+     * This will find items having "Key" attribute, then will use the expr to do a QRegExp match
+     * against attribute values
+     * 
      * @return SearchCollectionItemsJob which is a KJob inheritor
      */
     SearchCollectionItemsJob * searchItems( const StringStringMap &attributes );
@@ -222,6 +247,12 @@ public:
    
 Q_SIGNALS:
     /**
+     * This signal is emmited with any collection status change.
+     * Please cast the given integer to the Status type
+     * @see Status
+     */
+    void statusChanged( int );
+    /**
      * TODO: not yet implemented
      */
     void itemCreated( const SecretItem& ); 
@@ -240,6 +271,7 @@ protected:
     explicit Collection( CollectionPrivate* );
     
 private:
+    friend class CollectionPrivate;
     friend class CollectionJob; // to give access to Private class
     friend class FindCollectionJob;
     friend class ListCollectionsJob;
@@ -256,6 +288,7 @@ private:
     friend class CollectionUnlockJob;
     
     void readIsValid( ReadCollectionPropertyJob* );
+    void emitStatusChanged();
     
     QSharedPointer< CollectionPrivate > d;
 };

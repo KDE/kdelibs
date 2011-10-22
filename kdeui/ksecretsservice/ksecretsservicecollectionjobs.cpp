@@ -162,6 +162,13 @@ void FindCollectionJob::start()
 
 void FindCollectionJob::foundCollection()
 {
+    d->collectionPrivate->setStatus( Collection::FoundExisting );
+    finishedOk();
+}
+
+void FindCollectionJob::createdCollection()
+{
+    d->collectionPrivate->setStatus( Collection::NewlyCreated );
     finishedOk();
 }
 
@@ -187,7 +194,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
         
         if ( collPath.path().compare("/") == 0 ) {
             // we need prompting
-            Q_ASSERT( promptPath.path().compare("/") ); // we should have a prompt path here other thant "/"
+            Q_ASSERT( promptPath.path().compare("/") ); // we should have a prompt path here other than "/"
             PromptJob *promptJob = new PromptJob( promptPath, collectionPrivate->promptParentId(), this );
             if ( findJob->addSubjob( promptJob ) ) {
                 connect( promptJob, SIGNAL(finished(KJob*)), this, SLOT(createPromptFinished(KJob*)) );
@@ -201,7 +208,7 @@ void FindCollectionJobPrivate::createFinished(QDBusPendingCallWatcher* watcher)
         }
         else {
             findJob->d->collectionPrivate->setDBusPath( collPath );
-            findJob->finishedOk();
+            findJob->createdCollection();
         }
     }
     watcher->deleteLater();
@@ -215,7 +222,7 @@ void FindCollectionJobPrivate::createPromptFinished( KJob* job )
             QDBusVariant promptResult = promptJob->result();
             QDBusObjectPath collPath = promptResult.variant().value< QDBusObjectPath >();
             findJob->d->collectionPrivate->setDBusPath( collPath );
-            findJob->finishedOk();
+            findJob->createdCollection();
         }
         else {
             findJob->finishedWithError( CollectionJob::OperationCancelledByTheUser, i18n("The operation was cancelled by the user") );
@@ -382,7 +389,7 @@ void DeleteCollectionJob::onFindCollectionFinished()
 void KSecretsService::DeleteCollectionJob::deleteIsDone(CollectionError err, const QString& errMsg )
 {
     finishedWithError( err, errMsg );
-    d->cp->collectionStatus = Collection::Deleted;
+    d->cp->setStatus( Collection::Deleted );
 }
 
 DeleteCollectionJobPrivate::DeleteCollectionJobPrivate( CollectionPrivate* collp, QObject* parent ) : 
