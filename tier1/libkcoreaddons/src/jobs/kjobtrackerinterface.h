@@ -20,7 +20,7 @@
 #ifndef KJOBTRACKERINTERFACE_H
 #define KJOBTRACKERINTERFACE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <kjob.h>
 
 #include <QtCore/QObject>
@@ -29,7 +29,7 @@
 /**
  * The interface to implement to track the progresses of a job.
  */
-class KDECORE_EXPORT KJobTrackerInterface : public QObject
+class KCOREADDONS_EXPORT KJobTrackerInterface : public QObject
 {
     Q_OBJECT
 
