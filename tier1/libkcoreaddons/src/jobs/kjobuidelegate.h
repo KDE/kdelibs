@@ -22,7 +22,7 @@
 #ifndef KJOBUIDELEGATE_H
 #define KJOBUIDELEGATE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QObject>
 
 class KJob;
@@ -36,7 +36,7 @@ class KJob;
  *
  * @see KJob
  */
-class KDECORE_EXPORT KJobUiDelegate : public QObject
+class KCOREADDONS_EXPORT KJobUiDelegate : public QObject
 {
     Q_OBJECT
 
