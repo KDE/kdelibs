@@ -457,7 +457,6 @@ void PreviewJob::slotResult( KJob *job )
             if (job->error()) // that's no good news...
             {
                 // Drop this one and move on to the next one
-                kDebug() << "KJob failed: " << job->errorString();
                 d->determineNextFile();
                 return;
             }
