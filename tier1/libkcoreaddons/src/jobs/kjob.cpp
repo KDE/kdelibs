@@ -24,7 +24,6 @@
 
 #include "kjobuidelegate.h"
 
-#include <kglobal.h>
 #include <QEventLoop>
 #include <QMap>
 #include <QMetaType>
@@ -51,7 +50,8 @@ KJob::KJob(QObject *parent)
 {
     d_ptr->q_ptr = this;
     // Don't exit while this job is running
-    KGlobal::ref();
+#pragma message ("KDE5 TODO: Revert ref-counting when it is in Qt5")
+    //KGlobal::ref();
 }
 
 KJob::KJob(KJobPrivate &dd, QObject *parent)
@@ -59,7 +59,7 @@ KJob::KJob(KJobPrivate &dd, QObject *parent)
 {
     d_ptr->q_ptr = this;
     // Don't exit while this job is running
-    KGlobal::ref();
+    //KGlobal::ref();
 }
 
 KJob::~KJob()
@@ -68,7 +68,7 @@ KJob::~KJob()
     delete d_ptr->uiDelegate;
     delete d_ptr;
 
-    KGlobal::deref();
+    //KGlobal::deref();
 }
 
 void KJob::setUiDelegate( KJobUiDelegate *delegate )

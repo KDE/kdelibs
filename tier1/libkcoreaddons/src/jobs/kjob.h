@@ -22,7 +22,7 @@
 #ifndef KJOB_H
 #define KJOB_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 
@@ -76,7 +76,7 @@ class KJobPrivate;
  * it has finished using deleteLater() so the job
  * instance disappears after the next event loop run.
  */
-class KDECORE_EXPORT KJob : public QObject
+class KCOREADDONS_EXPORT KJob : public QObject
 {
     Q_OBJECT
     Q_ENUMS( KillVerbosity Capability Unit )
