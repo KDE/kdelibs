@@ -45,6 +45,42 @@ namespace KMacroExpander {
 
 using namespace KMacroExpander;
 
+#pragma message("KDE5 TODO: Import these methods into Qt5")
+
+inline static bool isSpecial( QChar cUnicode )
+{
+    static const uchar iqm[] = {
+        0xff, 0xff, 0xff, 0xff, 0xdf, 0x07, 0x00, 0xd8,
+        0x00, 0x00, 0x00, 0x38, 0x01, 0x00, 0x00, 0x78
+    }; // 0-32 \'"$`<>|;&(){}*?#!~[]
+
+    uint c = cUnicode.unicode ();
+    return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
+}
+
+static QString quoteArg( const QString &arg )
+{
+    if (!arg.length())
+        return QString::fromLatin1("''");
+    for (int i = 0; i < arg.length(); i++)
+        if (isSpecial( arg.unicode()[i] )) {
+            QChar q( QLatin1Char('\'') );
+            return QString( arg ).replace( q, QLatin1String("'\\''") ).prepend( q ).append( q );
+        }
+    return arg;
+}
+
+static QString joinArgs( const QStringList &args )
+{
+    QString ret;
+    for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
+        if (!ret.isEmpty())
+            ret.append(QLatin1Char(' '));
+        ret.append(quoteArg(*it));
+    }
+    return ret;
+}
+
 bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
 {
     int len;
@@ -85,7 +121,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                     str.remove( pos, len );
                     continue;
                 } else {
-                    rsts = KShell::joinArgs( rst );
+                    rsts = joinArgs( rst );
                 }
             }
             rst.clear();
