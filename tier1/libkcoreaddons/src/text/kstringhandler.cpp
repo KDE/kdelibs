@@ -23,8 +23,6 @@
 
 #include <stdlib.h>		// random()
 
-#include <kglobal.h>
-
 #include <QtCore/QRegExp>            // for the word ranges
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
@@ -291,7 +289,7 @@ QString KStringHandler::from8Bit( const char *str )
   if (!str)
     return QString();
   if (!*str) {
-    static const QString &emptyString = KGlobal::staticQString("");
+    static const QLatin1String emptyString("");
     return emptyString;
   }
   return KStringHandler::isUtf8( str ) ?
