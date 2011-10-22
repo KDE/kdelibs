@@ -271,31 +271,26 @@ void PreviewJobPrivate::startPreview()
     // Load the list of plugins to determine which mimetypes are supported
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
-
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        QStringList p = (*it)->property("X-KDE-Protocol").toStringList();
-        if (!p.isEmpty()) {
-            foreach (const QString &protocol, p) {
+        const QStringList protocols = (*it)->property("X-KDE-Protocol").toStringList();
+        if (!protocols.isEmpty()) {
+            foreach (const QString &protocol, protocols) {
                 QStringList mtypes = (*it)->serviceTypes();
                 // Filter out non-mimetype servicetypes
+                // TODO KDE5: use KService::mimeTypes()
                 foreach (const QString &_mtype, mtypes) {
                     if (!((*it)->hasMimeType(_mtype))) {
                         mtypes.removeAll(_mtype);
                     }
                 }
-                // Not sure "ThumbCreator" does in here, but we don't want it.
                 // Add already existing protocols, so more than one plugin can
                 // support a given scheme + mimetype
-                if (m_remoteProtocolPlugins.contains(protocol)) {
-                    const QStringList _ms = m_remoteProtocolPlugins.value(protocol);
-                    foreach (const QString &_m, _ms) {
-                        if (!mtypes.contains(_m)) {
-                            mtypes.append(_m);
-                        }
-
+                QStringList &_ms = m_remoteProtocolPlugins[protocol];
+                foreach (const QString &_m, mtypes) {
+                    if (!_ms.contains(_m)) {
+                        _ms.append(_m);
                     }
                 }
-                m_remoteProtocolPlugins.insert(protocol, mtypes);
             }
         }
         if (enabledPlugins.contains((*it)->desktopEntryName())) {
@@ -368,6 +363,7 @@ void PreviewJobPrivate::startPreview()
         }
         else
         {
+            kDebug() << "Whoops.";
             emit q->failed( *kit );
         }
     }
@@ -593,32 +589,32 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     Q_Q(PreviewJob);
     // We still need to load the orig file ! (This is getting tedious) :)
     const KFileItem& item = currentItem.item;
-    KUrl u = item.url();
-    const QString mimeType = item.mimetype();
     const QString localPath = item.localPath();
-    const QUrl localUrl = QUrl(item.url());
-    if (!localPath.isEmpty())
+    if (!localPath.isEmpty()) {  
+        kDebug() << "It's a local thing." << localPath;
         createThumbnail( localPath );
-    else
-    {
+    } else {
+        const KUrl fileUrl = item.url();
+        kDebug() << " --- File URL: " << fileUrl.url();
         bool supportsProtocol = false;
         // heuristics for remote URL support
-        if (m_remoteProtocolPlugins.contains(localUrl.scheme())) {
-            // There's a plugin supporting this protocol,
-            // let's see if it supports our mimetype
-            if (m_remoteProtocolPlugins.value(localUrl.scheme()).contains(item.mimetype())) {
-                supportsProtocol = true;
-            } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
-                // Assume KIO understand any URL, ThumbCreator slaves who have
-                // X-KDE-Protocol=KIO, will get feed the remote URL directly.
-                supportsProtocol = true;
-            }
+        kDebug() << "CONTAINS" << fileUrl.scheme() << m_remoteProtocolPlugins;
+        const QStringList &_plugins = m_remoteProtocolPlugins.value(fileUrl.scheme());
+        if (_plugins.contains(item.mimetype())) {
+            // There's a plugin supporting this protocol and mimetype
+            supportsProtocol = true;
+        } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
+            // Assume KIO understand any URL, ThumbCreator slaves who have
+            // X-KDE-Protocol=KIO, will get feed the remote URL directly.
+            supportsProtocol = true;
         }
+        kDebug() << "does it???." << supportsProtocol;
         if (supportsProtocol) {
-            createThumbnail(localUrl.toString());
+            kDebug() << "fileUrl: " << fileUrl.url();
+            createThumbnail(fileUrl.url());
             return;
         }
-
+        kDebug() << "going regular..." << fileUrl.url();
         // No plugin support access to this remote content, copy the file
         // to the local machine, then create the thumbnail
         state = PreviewJobPrivate::STATE_GETORIG;
