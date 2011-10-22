@@ -58,14 +58,9 @@
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
 
-#include <ksharedconfig.h>
-#include <kdebug.h>
-#include <kconfig.h>
 #include <kglobal.h>
 
-#include <kconfig.h>
 #include <kde_file.h>
-#include <kconfiggroup.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -165,6 +160,8 @@ KDirWatchPrivate::KDirWatchPrivate()
   timer.setObjectName(QLatin1String("KDirWatchPrivate::timer"));
   connect (&timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
+#pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal") 
+#if 0
   KConfigGroup config(KGlobal::config(), "DirWatch");
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
@@ -174,6 +171,12 @@ KDirWatchPrivate::KDirWatchPrivate()
 
   // The nfs method defaults to the normal (local) method
   m_nfsPreferredMethod = methodFromString(config.readEntry("nfsPreferredMethod", "Fam"));
+#endif
+#pragma message("KDE5 FIXME: We use the default values until the todo above is fixed")
+  m_nfsPollInterval = 5000;
+  m_PollInterval = 500;
+  m_preferredMethod = methodFromString(QLatin1String("inotify"));
+  m_nfsPreferredMethod = methodFromString(QLatin1String("Fam"));
   
   QList<QByteArray> availableMethods;
 
@@ -1728,7 +1731,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
 // Class KDirWatch
 //
 
-#pragma message("KDE5: Import K_GLOBAL_STATIC or use Q_GLOBAL_STATIC")
+#pragma message("KDE5 TODO: Use Q_GLOBAL_STATIC, only the exists method is used")
 K_GLOBAL_STATIC(KDirWatch, s_pKDirWatchSelf)
 KDirWatch* KDirWatch::self()
 {

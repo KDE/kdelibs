@@ -22,7 +22,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 class KDirWatchPrivate;
 
@@ -61,7 +61,7 @@ class KDirWatchPrivate;
   * @see self()
   * @author Sven Radej (in 1998)
   */
-class KDECORE_EXPORT KDirWatch : public QObject
+class KCOREADDONS_EXPORT KDirWatch : public QObject
 {
   Q_OBJECT
 
