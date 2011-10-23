@@ -22,7 +22,6 @@
 
 #include <kcoreaddons_export.h>
 #include <kglobal.h>
-#include <QtCore/QExplicitlySharedDataPointer>
 
 class QString;
 
@@ -33,10 +32,9 @@ class QString;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KCOREADDONS_EXPORT KLockFile : public QSharedData
+class KCOREADDONS_EXPORT KLockFile
 {
 public:
-   typedef QExplicitlySharedDataPointer<KLockFile> Ptr;
 
    explicit KLockFile(const QString &file, const QString &componentName = QString());
 
