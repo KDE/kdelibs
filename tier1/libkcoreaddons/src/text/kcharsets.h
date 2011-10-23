@@ -42,13 +42,12 @@ class QTextCodec;
 class KCOREADDONS_EXPORT KCharsets
 {
 
-protected:
-    /** Protected constructor. If you need the kcharsets object, use
- KGlobal::charsets() instead.
-    */
-    KCharsets();
-
 public:
+
+    /**
+     * Constructor
+     */
+    KCharsets();
 
     /**
      * Destructor.
