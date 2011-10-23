@@ -1329,6 +1329,9 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
     }
 
     m_isError = false;
+    // force re-authentication...
+    delete m_wwwAuth;
+    m_wwwAuth = 0;
   }
 
   m_request.method = HTTP_PUT;
