@@ -443,7 +443,12 @@ static const int conversion_hints_indices[] = {
       63,   50,   76,   50,   -1
 };
 
-Q_GLOBAL_STATIC(KCharsets, globalCharsets)
+struct KCharsetsSingletonPrivate
+{
+     KCharsets instance;
+};
+
+Q_GLOBAL_STATIC(KCharsetsSingletonPrivate, globalCharsets)
 
 // search an array of items index/data, find first matching index
 // and return data, or return 0
@@ -803,5 +808,5 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
 KCharsets *KCharsets::charsets()
 {
-    return globalCharsets();
+    return &globalCharsets()->instance;
 }

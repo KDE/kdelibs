@@ -41,13 +41,13 @@ class QTextCodec;
  */
 class KCOREADDONS_EXPORT KCharsets
 {
+protected:
+    /** Protected constructor. If you need the kcharsets object, use
+        KCharsets::charsets() instead.
+    */
+    KCharsets();
 
 public:
-
-    /**
-     * Constructor
-     */
-    KCharsets();
 
     /**
      * Destructor.
@@ -164,6 +164,7 @@ public:
 
 private:
     KCharsetsPrivate* const d;
+    friend struct KCharsetsSingletonPrivate;
 
     /**
      * @brief Get the QTextCodec for the name or return NULL
