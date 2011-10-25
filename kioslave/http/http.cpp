@@ -665,6 +665,8 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
       if (!m_request.isKeepAlive) {
           httpCloseConnection();
+          m_request.isKeepAlive = true;
+          m_request.keepAliveTimeout = 0;
       }
   }
 
