@@ -954,8 +954,8 @@ bool KZip::closeArchive()
         buffer[ 26 ] = char(mysize >> 16);
         buffer[ 27 ] = char(mysize >> 24);
 
-        buffer[ 28 ] = char(it.current()->path().length()); // filename length
-        buffer[ 29 ] = char(it.current()->path().length() >> 8);
+        buffer[ 28 ] = char(path.length()); // filename length
+        buffer[ 29 ] = char(path.length() >> 8);
 
 	buffer[ 30 ] = char(extra_field_len);
 	buffer[ 31 ] = char(extra_field_len >> 8);
@@ -1051,6 +1051,20 @@ bool KZip::closeArchive()
     return true;
 }
 
+bool KZip::writeDir(const QString& name, const QString& user, const QString& group)
+{
+    // Zip files have no explicit directories, they are implicitly created during extraction time
+    // when file entries have paths in them.
+    // However, to support empty directories, we must create a dummy file entry which ends with '/'.
+    QString dirName = name;
+    if (!name.endsWith("/"))
+        dirName = dirName.append('/');
+
+    mode_t perm = 040755;
+    time_t the_time = time(0);
+    return writeFile(dirName, user, group, 0, perm, the_time, the_time, the_time, 0);
+}
+
 // Doesn't need to be reimplemented anymore. Remove for KDE-4.0
 bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
@@ -1114,7 +1128,7 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     }
 
     // delete entries in the filelist with the same filename as the one we want
-    // to save, so that we don´t have duplicate file entries when viewing the zip
+    // to save, so that we donï¿½t have duplicate file entries when viewing the zip
     // with konqi...
     // CAUTION: the old file itself is still in the zip and won't be removed !!!
     QPtrListIterator<KZipFileEntry> it( d->m_fileList );
@@ -1280,9 +1294,10 @@ bool KZip::doneWriting( uint size )
     if ( d->m_extraField == ModificationTime )
         extra_field_len = 17;	// value also used in doneWriting()
 
+    const QCString encodedName = QFile::encodeName(d->m_currentFile->path());
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
-		d->m_currentFile->path().length() - extra_field_len;
+        encodedName.length() - extra_field_len;
     d->m_currentFile->setCompressedSize(csize);
     //kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
     //kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
