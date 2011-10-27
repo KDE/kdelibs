@@ -33,15 +33,19 @@ class QWidget;
 /**
  * @short A password input dialog.
  *
- * This dialog asks the user to enter a password.
+ * This dialog asks the user to enter a new password.
  *
- * \section usage Usage Exemple
+ * The password has to be entered twice to check if the passwords
+ * match. A hint about the strength of the entered password is also
+ * shown.
+ *
+ * \section usage Usage Example
  * \subsection asynchronous Asynchronous
  *
  * \code
  *  KNewPasswordDialog *dlg = new KNewPasswordDialog( parent );
  *  dlg->setPrompt( i18n( "Enter a password" ) );
- *  connect( dlg, SIGNAL( newPassword( const QString& ) )  , this, SLOT( setPassword( const QString &) ) );
+ *  connect( dlg, SIGNAL( newPassword(QString) )  , this, SLOT( setPassword(QString) ) );
  *  connect( dlg, SIGNAL( rejected() )  , this, SLOT( slotCancel() ) );
  *  dlg->show();
  * \endcode
@@ -120,7 +124,7 @@ public:
      *
      * Default: 0
      *
-     * @param minLength: The new minimum password length
+     * @param minLength The new minimum password length
      */
     void setMinimumPasswordLength(int minLength);
 
@@ -132,7 +136,7 @@ public:
     /**
      * Maximum acceptable password length.
      *
-     * @param maxLength: The new maximum password length.
+     * @param maxLength The new maximum password length.
      */
     void setMaximumPasswordLength(int maxLength);
 
@@ -148,7 +152,7 @@ public:
      *
      * Default: 8 - the standard UNIX password length
      *
-     * @param reasonableLength: The new reasonable password length.
+     * @param reasonableLength The new reasonable password length.
      */
     void setReasonablePasswordLength(int reasonableLength);
 
@@ -164,7 +168,7 @@ public:
      * contain numbers, mixed case letters and punctuation.
      *
      * Default: 1 - warn if the password has no discernable strength whatsoever
-     * @param warningLevel: The level below which a warning should be given.
+     * @param warningLevel The level below which a warning should be given.
      */
     void setPasswordStrengthWarningLevel(int warningLevel);
 
