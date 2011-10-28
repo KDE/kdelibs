@@ -814,7 +814,14 @@ QString KFileItem::iconName() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    KMimeType::Ptr mime = mimeTypePtr();
+    KMimeType::Ptr mime;
+    // Use guessed mimetype for the icon
+    if (!d->m_guessedMimeType.isEmpty()) {
+        mime = KMimeType::mimeType( d->m_guessedMimeType );
+    } else {
+        mime = mimeTypePtr();
+    }
+
     if (isLocalUrl && !isSlow() && mime->is("application/x-desktop")) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
@@ -947,8 +954,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     }
 
     KMimeType::Ptr mime;
-    // Use guessed mimetype if the main one hasn't been determined for sure
-    if ( !d->m_bMimeTypeKnown && !d->m_guessedMimeType.isEmpty() )
+    // Use guessed mimetype for the icon
+    if (!d->m_guessedMimeType.isEmpty())
         mime = KMimeType::mimeType( d->m_guessedMimeType );
     else
         mime = d->m_pMimeType;
