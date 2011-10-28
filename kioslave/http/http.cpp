@@ -801,6 +801,8 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
   bool hasResponse = false;
 
+  // kDebug(7113) << endl << multiResponse.toString(2);
+
   for ( QDomNode n = multiResponse.documentElement().firstChild();
         !n.isNull(); n = n.nextSibling())
   {
@@ -839,6 +841,19 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       QDomNodeList propstats = thisResponse.elementsByTagName(QLatin1String("propstat"));
 
       davParsePropstats( propstats, entry );
+
+      // Since a lot of webdav servers seem not to send the content-type information
+      // for the requested directory listings, we attempt to guess the mime-type from
+      // the resource name so long as the resource is not a directory.
+      if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
+          entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
+        int accuracy = 0;
+        KMimeType::Ptr mime = KMimeType::findByUrl(thisURL.fileName(), 0, false, true, &accuracy);
+        if (mime && !mime->isDefault() && accuracy == 100) {
+          kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << thisURL.fileName();
+          entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());
+        }
+      }
 
       if ( stat )
       {
@@ -921,7 +936,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     if ( code != 200 )
     {
-      kDebug(7113) << "Warning: status code" << code << "(this may mean that some properties are unavailable";
+      kDebug(7113) << "Got status code" << code << "(this may mean that some properties are unavailable)";
       continue;
     }
 
