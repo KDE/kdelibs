@@ -100,6 +100,7 @@ public:
     void setChildCount(int count) { m_childCount = count; }
     bool isPopulated() const { return m_populated; }
     void setPopulated( bool populated ) { m_populated = populated; }
+    bool isSlow() const { return item().isSlow(); }
 
     // For removing all child urls from the global hash.
     void collectAllChildUrls(KUrl::List &urls) const {
@@ -708,7 +709,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             else {
                 KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(node);
                 int count = dirNode->childCount();
-                if (count == ChildCountUnknown && item.isReadable()) {
+                if (count == ChildCountUnknown && item.isReadable() && !dirNode->isSlow()) {
                     const QString path = item.localPath();
                     if (!path.isEmpty()) {
 //                        slow

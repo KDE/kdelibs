@@ -1,0 +1,55 @@
+diff --git a/kio/kio/kfileitemactionplugin.cpp b/kio/kio/kfileitemactionplugin.cpp
+index e9b074d..f5ae19d 100644
+--- a/kio/kio/kfileitemactionplugin.cpp
++++ b/kio/kio/kfileitemactionplugin.cpp
+@@ -19,6 +19,7 @@
+ */
+ 
+ #include "kfileitemactionplugin.h"
++#include <kdebug.h>
+ 
+ KFileItemActionPlugin::KFileItemActionPlugin(QObject *parent)
+     : QObject(parent)
+@@ -29,4 +30,19 @@ KFileItemActionPlugin::~KFileItemActionPlugin()
+ {
+ }
+ 
++QList<QAction*> KFileItemActionPlugin::actions(const KFileItemListProperties &fileItemInfos,
++                                               QWidget *parentWidget) const
++{
++    return const_cast<KFileItemActionPlugin*>(this)->actions(fileItemInfos, parentWidget);
++}
++
++QList<QAction*> KFileItemActionPlugin::actions(const KFileItemListProperties &fileItemInfos,
++                                               QWidget *parentWidget)
++{
++    Q_UNUSED(fileItemInfos);
++    Q_UNUSED(parentWidget);
++    kWarning() << "You must implement actions() in your plugin!";
++    return QList<QAction *>();
++}
++
+ #include "kfileitemactionplugin.moc"
+diff --git a/kio/kio/kfileitemactionplugin.h b/kio/kio/kfileitemactionplugin.h
+index 5145f5f..e44c3f2 100644
+--- a/kio/kio/kfileitemactionplugin.h
++++ b/kio/kio/kfileitemactionplugin.h
+@@ -87,6 +87,9 @@ public:
+ 
+     virtual ~KFileItemActionPlugin();
+ 
++    virtual QList<QAction*> actions(const KFileItemListProperties &fileItemInfos,
++                                    QWidget *parentWidget) const; // for compat only, please ignore
++
+     /**
+      * Implement the actions method in the plugin in order to create actions.
+      *
+@@ -98,7 +101,7 @@ public:
+      *         of the actions.
+      */
+     virtual QList<QAction*> actions(const KFileItemListProperties &fileItemInfos,
+-                                    QWidget *parentWidget) const = 0;
++                                    QWidget *parentWidget);
+ };
+ 
+ #endif

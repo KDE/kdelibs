@@ -55,6 +55,7 @@
 #include <knfsshare.h>
 #include <ksambashare.h>
 #endif
+#include <kfilesystemtype_p.h>
 
 class KFileItemPrivate : public QSharedData
 {
@@ -79,7 +80,8 @@ public:
           m_bMimeTypeKnown( false ),
           m_delayedMimeTypes( delayedMimeTypes ),
           m_useIconNameCache(false),
-          m_hidden( Auto )
+          m_hidden(Auto),
+          m_slow(SlowUnknown)
     {
         if (entry.count() != 0) {
             readUDSEntry( urlIsDirectory );
@@ -103,12 +105,14 @@ public:
      */
     void init();
 
+    QString localPath() const;
     KIO::filesize_t size() const;
     KDateTime time( KFileItem::FileTimes which ) const;
     void setTime(KFileItem::FileTimes which, long long time_t_val) const;
     bool cmp( const KFileItemPrivate & item ) const;
     QString user() const;
     QString group() const;
+    bool isSlow() const;
 
     /**
      * Extracts the data from the UDSEntry member and updates the KFileItem
@@ -186,6 +190,9 @@ public:
 
     // Auto: check leading dot.
     enum { Auto, Hidden, Shown } m_hidden:3;
+
+    // Slow? (nfs/smb/ssh)
+    mutable enum { SlowUnknown, Fast, Slow } m_slow:3;
 
     // For special case like link to dirs over FTP
     QString m_guessedMimeType;
@@ -561,14 +568,19 @@ QString KFileItem::linkDest() const
     return QString();
 }
 
-QString KFileItem::localPath() const
+QString KFileItemPrivate::localPath() const
 {
-  if ( d->m_bIsLocalUrl ) {
-    return d->m_url.toLocalFile();
+  if (m_bIsLocalUrl) {
+    return m_url.toLocalFile();
   }
 
   // Extract the local path from the KIO::UDSEntry
-  return d->m_entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
+  return m_entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
+}
+
+QString KFileItem::localPath() const
+{
+    return d->localPath();
 }
 
 KIO::filesize_t KFileItem::size() const
@@ -685,6 +697,25 @@ QString KFileItemPrivate::group() const
     return groupName;
 }
 
+bool KFileItemPrivate::isSlow() const
+{
+    if (m_slow == SlowUnknown) {
+        const QString path = localPath();
+        if (!path.isEmpty()) {
+            const KFileSystemType::Type fsType = KFileSystemType::fileSystemType(path);
+            m_slow = (fsType == KFileSystemType::Nfs || fsType == KFileSystemType::Smb) ? Slow : Fast;
+        } else {
+            m_slow = Slow;
+        }
+    }
+    return m_slow == Slow;
+}
+
+bool KFileItem::isSlow() const
+{
+    return d->isSlow();
+}
+
 QString KFileItem::mimetype() const
 {
     KFileItem * that = const_cast<KFileItem *>(this);
@@ -729,14 +760,14 @@ QString KFileItem::mimeComment() const
     KMimeType::Ptr mime = mimeTypePtr();
     // This cannot move to kio_file (with UDS_DISPLAY_TYPE) because it needs
     // the mimetype to be determined, which is done here, and possibly delayed...
-    if (isLocalUrl && mime->is("application/x-desktop")) {
+    if (isLocalUrl && !d->isSlow() && mime->is("application/x-desktop")) {
         KDesktopFile cfg( url.toLocalFile() );
         QString comment = cfg.desktopGroup().readEntry( "Comment" );
         if (!comment.isEmpty())
             return comment;
     }
 
-    QString comment = mType->comment( url );
+    QString comment = d->isSlow() ? mType->comment() : mType->comment(url);
     //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name();
     if (!comment.isEmpty())
         return comment;
@@ -784,7 +815,7 @@ QString KFileItem::iconName() const
     KUrl url = mostLocalUrl(isLocalUrl);
 
     KMimeType::Ptr mime = mimeTypePtr();
-    if (isLocalUrl && mime->is("application/x-desktop")) {
+    if (isLocalUrl && !isSlow() && mime->is("application/x-desktop")) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -795,7 +826,10 @@ QString KFileItem::iconName() const
     // KDE5: handle .directory files here too, and get rid of
     // KFolderMimeType and the url argument in KMimeType::iconName().
 
-    d->m_iconName = mime->iconName(url);
+    if (isSlow())
+        d->m_iconName = mime->iconName();
+    else
+        d->m_iconName = mime->iconName(url);
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
     //kDebug() << "finding icon for" << url << ":" << d->m_iconName;
     return d->m_iconName;
