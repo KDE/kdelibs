@@ -180,6 +180,8 @@ public:
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
     virtual bool supportsPathMatching() const { return true; }
+protected:
+    virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpBasicAuthentication(KConfigGroup *config = 0)
