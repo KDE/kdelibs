@@ -789,10 +789,13 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
      m_request.url.adjustPath(KUrl::AddTrailingSlash);
 
   proceedUntilResponseContent( true );
+  infoMessage(QLatin1String(""));
 
   // Has a redirection already been called? If so, we're done.
-  if (m_isRedirection) {
-    finished();
+  if (m_isRedirection || m_iError) {
+    if (m_isRedirection) {
+        davFinished();
+    }
     return;
   }
 
@@ -804,8 +807,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   // kDebug(7113) << endl << multiResponse.toString(2);
 
   for ( QDomNode n = multiResponse.documentElement().firstChild();
-        !n.isNull(); n = n.nextSibling())
-  {
+        !n.isNull(); n = n.nextSibling()) {
     QDomElement thisResponse = n.toElement();
     if (thisResponse.isNull())
       continue;
@@ -813,8 +815,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     hasResponse = true;
 
     QDomElement href = thisResponse.namedItem(QLatin1String("href")).toElement();
-    if ( !href.isNull() )
-    {
+    if ( !href.isNull() ) {
       entry.clear();
 
       QString urlStr = QUrl::fromPercentEncoding(href.text().toUtf8());
@@ -855,33 +856,26 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
         }
       }
 
-      if ( stat )
-      {
+      if ( stat ) {
         // return an item
         statEntry( entry );
-        finished();
+        davFinished();
         return;
       }
-      else
-      {
-        listEntry( entry, false );
-      }
-    }
-    else
-    {
+
+      listEntry( entry, false );
+    } else   {
       kDebug(7113) << "Error: no URL contained in response to PROPFIND on" << url;
     }
   }
 
-  if ( stat || !hasResponse )
-  {
+  if ( stat || !hasResponse ) {
     error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
+    return;
   }
-  else
-  {
-    listEntry( entry, true );
-    finished();
-  }
+
+  listEntry( entry, true );
+  davFinished();
 }
 
 void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
@@ -1338,6 +1332,11 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
       m_request.davData.depth = 0;
 
       proceedUntilResponseContent(true);
+
+      if (!m_request.isKeepAlive) {
+          httpCloseConnection(); // close connection if server requested it.
+          m_request.isKeepAlive = true; // reset the keep alive flag.
+      }
 
       if (m_request.responseCode == 207) {
         error(ERR_FILE_ALREADY_EXIST, QString());
@@ -4536,8 +4535,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
           } else {
               totalSize(0);
           }
-      } else {
-          infoMessage(i18n("Retrieving from %1...",  m_request.url.host()));
       }
 
       if (m_request.cacheTag.ioMode == ReadFromCache) {
