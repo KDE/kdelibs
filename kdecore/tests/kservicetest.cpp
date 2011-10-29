@@ -31,12 +31,12 @@
 
 #include <kprotocolinfo.h>
 #include <kdebug.h>
-#include <kprocess.h>
 #include <kservicegroup.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
+#include <qprocess.h>
 #include <qstandardpaths.h>
 
 QTEST_KDEMAIN_CORE(KServiceTest)
@@ -162,6 +162,7 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
         args << "--noincremental";
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
+    proc.waitForFinished();
     kDebug() << "waiting for signal";
     QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
     kDebug() << "got signal";
@@ -177,10 +178,10 @@ void KServiceTest::cleanupTestCase()
         QFile::remove(fakeService);
     }
     //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
-    KProcess proc;
-    proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
-    proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
-    proc.execute();
+    QProcess proc;
+    proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+    proc.start(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
+    proc.waitForFinished();
 }
 
 void KServiceTest::testByName()
