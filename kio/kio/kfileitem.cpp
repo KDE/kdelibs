@@ -798,7 +798,7 @@ QString KFileItem::mimeComment() const
             return comment;
     }
 
-    const QString comment = d->isSlow() ? mType->comment() : mType->comment(url);
+    const QString comment = mime->comment();
     //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name();
     if (!comment.isEmpty())
         return comment;
@@ -884,24 +884,14 @@ QString KFileItem::iconName() const
     KUrl url = mostLocalUrl(isLocalUrl);
 
     KMimeType::Ptr mime;
-<<<<<<< HEAD
     // Use guessed mimetype if the main one hasn't been determined for sure
-    if (!d->m_bMimeTypeKnown && !d->m_guessedMimeType.isEmpty())
+    if (!d->m_bMimeTypeKnown && !d->m_guessedMimeType.isEmpty()) {
         mime = KMimeType::mimeType(d->m_guessedMimeType);
-    else
-        mime = mimeTypePtr();
-
-    if (isLocalUrl && mime->is("application/x-desktop"), false) {
-=======
-    // Use guessed mimetype for the icon
-    if (!d->m_guessedMimeType.isEmpty()) {
-        mime = KMimeType::mimeType( d->m_guessedMimeType );
     } else {
         mime = mimeTypePtr();
     }
 
-    if (isLocalUrl && !isSlow() && mime->is("application/x-desktop")) {
->>>>>>> origin/KDE/4.7
+    if (isLocalUrl && mime->is("application/x-desktop"), false) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -917,14 +907,7 @@ QString KFileItem::iconName() const
         }
     }
 
-<<<<<<< HEAD
     d->m_iconName = mime->iconName();
-=======
-    if (isSlow())
-        d->m_iconName = mime->iconName();
-    else
-        d->m_iconName = mime->iconName(url);
->>>>>>> origin/KDE/4.7
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
     return d->m_iconName;
 }
