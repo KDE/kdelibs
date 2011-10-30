@@ -387,7 +387,7 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_wwwAuth(0)
     , m_proxyAuth(0)
     , m_socketProxyAuth(0)
-    , m_isError(false)
+    , m_iError(0)
     , m_isLoadingErrorPage(false)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
@@ -417,7 +417,7 @@ void HTTPProtocol::reparseConfiguration()
 void HTTPProtocol::resetConnectionSettings()
 {
   m_isEOF = false;
-  m_isError = false;
+  m_iError = 0;
   m_isLoadingErrorPage = false;
 }
 
@@ -604,26 +604,24 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
 void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ )
 {
   kDebug (7113);
-  if (!(proceedUntilResponseHeader() && readBody(dataInternal))) {
-      return;
+
+  const bool status = (proceedUntilResponseHeader() && readBody(dataInternal));
+
+  // If not an error condition or internal request, close
+  // the connection based on the keep alive settings...
+  if (!m_iError && !dataInternal) {
+      httpClose(m_request.isKeepAlive);
   }
 
-  httpClose(m_request.isKeepAlive);
-
-  // if data is required internally, don't finish,
+  // if data is required internally or we got error, don't finish,
   // it is processed before we finish()
-  if (dataInternal) {
+  if (dataInternal || !status) {
       return;
   }
 
-  if (m_request.responseCode == 204 &&
-      (m_request.method == HTTP_GET || m_request.method == HTTP_POST)) {
-      infoMessage(QLatin1String(""));
-      error(ERR_NO_CONTENT, QString());
-      return;
+  if (!sendHttpError()) {
+      finished();
   }
-
-  finished();
 }
 
 bool HTTPProtocol::proceedUntilResponseHeader()
@@ -655,7 +653,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
       // no success, close the cache file so the cache state is reset - that way most other code
       // doesn't have to deal with the cache being in various states.
       cacheFileClose();
-      if (m_isError || m_isLoadingErrorPage) {
+      if (m_iError || m_isLoadingErrorPage) {
           // Unrecoverable error, abort everything.
           // Also, if we've just loaded an error page there is nothing more to do.
           // In that case we abort to avoid loops; some webservers manage to send 401 and
@@ -665,6 +663,8 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
       if (!m_request.isKeepAlive) {
           httpCloseConnection();
+          m_request.isKeepAlive = true;
+          m_request.keepAliveTimeout = 0;
       }
   }
 
@@ -789,10 +789,13 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
      m_request.url.adjustPath(KUrl::AddTrailingSlash);
 
   proceedUntilResponseContent( true );
+  infoMessage(QLatin1String(""));
 
   // Has a redirection already been called? If so, we're done.
-  if (m_isRedirection) {
-    finished();
+  if (m_isRedirection || m_iError) {
+    if (m_isRedirection) {
+        davFinished();
+    }
     return;
   }
 
@@ -801,9 +804,10 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
   bool hasResponse = false;
 
+  // kDebug(7113) << endl << multiResponse.toString(2);
+
   for ( QDomNode n = multiResponse.documentElement().firstChild();
-        !n.isNull(); n = n.nextSibling())
-  {
+        !n.isNull(); n = n.nextSibling()) {
     QDomElement thisResponse = n.toElement();
     if (thisResponse.isNull())
       continue;
@@ -811,8 +815,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     hasResponse = true;
 
     QDomElement href = thisResponse.namedItem(QLatin1String("href")).toElement();
-    if ( !href.isNull() )
-    {
+    if ( !href.isNull() ) {
       entry.clear();
 
       QString urlStr = QUrl::fromPercentEncoding(href.text().toUtf8());
@@ -840,33 +843,39 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
       davParsePropstats( propstats, entry );
 
-      if ( stat )
-      {
+      // Since a lot of webdav servers seem not to send the content-type information
+      // for the requested directory listings, we attempt to guess the mime-type from
+      // the resource name so long as the resource is not a directory.
+      if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
+          entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
+        int accuracy = 0;
+        KMimeType::Ptr mime = KMimeType::findByUrl(thisURL.fileName(), 0, false, true, &accuracy);
+        if (mime && !mime->isDefault() && accuracy == 100) {
+          kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << thisURL.fileName();
+          entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());
+        }
+      }
+
+      if ( stat ) {
         // return an item
         statEntry( entry );
-        finished();
+        davFinished();
         return;
       }
-      else
-      {
-        listEntry( entry, false );
-      }
-    }
-    else
-    {
+
+      listEntry( entry, false );
+    } else   {
       kDebug(7113) << "Error: no URL contained in response to PROPFIND on" << url;
     }
   }
 
-  if ( stat || !hasResponse )
-  {
+  if ( stat || !hasResponse ) {
     error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
+    return;
   }
-  else
-  {
-    listEntry( entry, true );
-    finished();
-  }
+
+  listEntry( entry, true );
+  davFinished();
 }
 
 void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
@@ -887,7 +896,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 
   m_request.cacheTag.policy = CC_Reload;
 
   m_iPostDataSize = (size > -1 ? static_cast<KIO::filesize_t>(size) : NO_SIZE);
-  proceedUntilResponseContent( false );
+  proceedUntilResponseContent();
 }
 
 int HTTPProtocol::codeFromResponse( const QString& response )
@@ -921,7 +930,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     if ( code != 200 )
     {
-      kDebug(7113) << "Warning: status code" << code << "(this may mean that some properties are unavailable";
+      kDebug(7113) << "Got status code" << code << "(this may mean that some properties are unavailable)";
       continue;
     }
 
@@ -1288,7 +1297,6 @@ void HTTPProtocol::get( const KUrl& url )
     m_request.cacheTag.policy = DEFAULT_CACHE_CONTROL;
 
   proceedUntilResponseContent();
-  httpClose(m_request.isKeepAlive);
 }
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
@@ -1297,56 +1305,54 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
   if (!maybeSetRequestUrl(url))
     return;
+
   resetSessionSettings();
 
   // Webdav hosts are capable of observing overwrite == false
-  if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) { // krazy:exclude=strings
-    // check to make sure this host supports WebDAV
-    if ( !davHostOk() )
-      return;
+  if (m_protocol.startsWith("webdav")) { // krazy:exclude=strings
+    if (!(flags & KIO::Overwrite)) {
+      // check to make sure this host supports WebDAV
+      if (!davHostOk())
+        return;
 
-    QByteArray request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-    "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
-      "<D:creationdate/>"
-      "<D:getcontentlength/>"
-      "<D:displayname/>"
-      "<D:resourcetype/>"
-      "</D:prop></D:propfind>";
+      const QByteArray request ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+                                "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
+                                "<D:creationdate/>"
+                                "<D:getcontentlength/>"
+                                "<D:displayname/>"
+                                "<D:resourcetype/>"
+                                "</D:prop></D:propfind>");
 
-    davSetRequest( request );
+      davSetRequest( request );
 
-    // WebDAV Stat or List...
-    m_request.method = DAV_PROPFIND;
-    m_request.url.setQuery(QString());
-    m_request.cacheTag.policy = CC_Reload;
-    m_request.davData.depth = 0;
+      // WebDAV Stat or List...
+      m_request.method = DAV_PROPFIND;
+      m_request.url.setQuery(QString());
+      m_request.cacheTag.policy = CC_Reload;
+      m_request.davData.depth = 0;
 
-    proceedUntilResponseContent(true);
+      proceedUntilResponseContent(true);
 
-    if (m_request.responseCode == 207) {
-      error(ERR_FILE_ALREADY_EXIST, QString());
-      return;
+      if (!m_request.isKeepAlive) {
+          httpCloseConnection(); // close connection if server requested it.
+          m_request.isKeepAlive = true; // reset the keep alive flag.
+      }
+
+      if (m_request.responseCode == 207) {
+        error(ERR_FILE_ALREADY_EXIST, QString());
+        return;
+      }
+
+      // force re-authentication...
+      delete m_wwwAuth;
+      m_wwwAuth = 0;
     }
-
-    m_isError = false;
   }
 
   m_request.method = HTTP_PUT;
-  m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
 
-  if (!(proceedUntilResponseHeader() && readBody(false))) {
-      return;
-  }
-
-  httpClose(m_request.isKeepAlive);
-
-  kDebug(7113) << "responseCode=" << m_request.responseCode;
-
-  if ( (m_request.responseCode >= 200) && (m_request.responseCode < 300) )
-    finished();
-  else
-    sendHttpPutError();
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
@@ -1431,42 +1437,43 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   if (!maybeSetRequestUrl(url))
     return;
+
   resetSessionSettings();
 
   m_request.method = HTTP_DELETE;
-  m_request.url.setQuery(QString());;
   m_request.cacheTag.policy = CC_Reload;
 
-  proceedUntilResponseHeader();
-
-  // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
-  // with webdav://host/directory, instead requiring webdav://host/directory/
-  // (strangely enough it accepts Destination: without a trailing slash)
-  // See BR# 209508 and BR#187970.
-  if (m_request.responseCode == 301) {
-    m_request.url = m_request.redirectUrl;
-    m_request.method = HTTP_DELETE;
-    m_request.url.setQuery(QString());;
-    m_request.cacheTag.policy = CC_Reload;
-    // force re-authentication...
-    delete m_wwwAuth;
-    m_wwwAuth = 0;
+  if (m_protocol.startsWith("webdav")) {
+    m_request.url.setQuery(QString());
     proceedUntilResponseHeader();
-  }
 
-  // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
-  // on successful completion
-  if ( m_protocol.startsWith( "webdav" ) ) { // krazy:exclude=strings
+    // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
+    // with webdav://host/directory, instead requiring webdav://host/directory/
+    // (strangely enough it accepts Destination: without a trailing slash)
+    // See BR# 209508 and BR#187970.
+    if (m_request.responseCode == 301) {
+      m_request.url = m_request.redirectUrl;
+      m_request.method = HTTP_DELETE;
+      m_request.cacheTag.policy = CC_Reload;
+      m_request.url.setQuery(QString());
+
+      // force re-authentication...
+      delete m_wwwAuth;
+      m_wwwAuth = 0;
+      proceedUntilResponseHeader();
+    }
+
+    // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
+    // on successful completion
     if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
       davFinished();
     else
       davError();
-  } else {
-    if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
-      finished();
-    else
-      error( ERR_SLAVE_DEFINED, i18n( "The resource cannot be deleted." ) );
+
+    return;
   }
+
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::post( const KUrl& url, qint64 size )
@@ -1652,7 +1659,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
       // there was an error retrieving the XML document.
       // ironic, eh?
-      if ( !readBody( true ) && m_isError )
+      if ( !readBody( true ) && m_iError )
         return QString();
 
       QStringList errors;
@@ -1758,6 +1765,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
                          "to record the state of the resource after the execution "
                          "of this method.");
       break;
+    default:
+      break;
   }
 
   // if ( kError != ERR_SLAVE_DEFINED )
@@ -1769,60 +1778,141 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   return errorString;
 }
 
-void HTTPProtocol::sendHttpPutError()
+// HTTP generic error
+static int httpGenericError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
 {
-  // Only applies to HTTP PUT!
-  if (m_request.method != HTTP_PUT) {
-      return;
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  errorString->clear();
+
+  if (request.responseCode == 204) {
+      errorCode = ERR_NO_CONTENT;
   }
 
-  QString errorString;
-  const QString action (i18nc("request type", "upload %1", m_request.url.prettyUrl()));
+  return errorCode;
+}
 
-  switch ( m_request.responseCode )
-  {
+// HTTP DELETE specific errors
+static int httpDelError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
+{
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  const int responseCode = request.responseCode;
+  errorString->clear();
+
+  switch (responseCode) {
+  case 204:
+      errorCode = ERR_NO_CONTENT;
+      break;
+  default:
+      break;
+  }
+
+  if (!errorCode
+      && (responseCode < 200 || responseCode > 400)
+      && responseCode != 404) {
+    errorCode = ERR_SLAVE_DEFINED;
+    *errorString = i18n( "The resource cannot be deleted." );
+  }
+
+  return errorCode;
+}
+
+// HTTP PUT specific errors
+static int httpPutError(const HTTPProtocol::HTTPRequest& request, QString* errorString)
+{
+  Q_ASSERT(errorString);
+
+  int errorCode = 0;
+  const int responseCode = request.responseCode;
+  const QString action (i18nc("request type", "upload %1", request.url.prettyUrl()));
+
+  switch (responseCode) {
     case 403:
     case 405:
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       // 405 Method Not Allowed
       // ERR_ACCESS_DENIED
-      errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
+      *errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 409:
       // 409 Conflict
       // ERR_ACCESS_DENIED
-      errorString = i18n("A resource cannot be created at the destination "
+      *errorString = i18n("A resource cannot be created at the destination "
                   "until one or more intermediate collections (folders) "
                   "have been created.");
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 423:
       // 423 Locked
       // ERR_ACCESS_DENIED
-      errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
+      *errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 502:
       // 502 Bad Gateway
       // ERR_WRITE_ACCESS_DENIED;
-      errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
-                           "to accept the file or folder.",  action );
+      *errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
+                          "to accept the file or folder.",  action );
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     case 507:
       // 507 Insufficient Storage
       // ERR_DISK_FULL
-      errorString = i18n("The destination resource does not have sufficient space "
-                         "to record the state of the resource after the execution "
-                         "of this method.");
+      *errorString = i18n("The destination resource does not have sufficient space "
+                        "to record the state of the resource after the execution "
+                        "of this method.");
+      errorCode = ERR_SLAVE_DEFINED;
       break;
     default:
-      // default error message
-      errorString = i18nc("%1: response code, %2: request type",
-                          "An unexpected error (%1) occurred while attempting to %2.",
-                          m_request.responseCode, action);
       break;
   }
 
-  error( ERR_SLAVE_DEFINED, errorString );
+  if (!errorCode
+      && (responseCode < 200 || responseCode > 400)
+      && responseCode != 404) {
+    errorCode = ERR_SLAVE_DEFINED;
+    *errorString = i18nc("%1: response code, %2: request type",
+                         "An unexpected error (%1) occurred while attempting to %2.",
+                         responseCode, action);
+  }
+
+  return errorCode;
+}
+
+bool HTTPProtocol::sendHttpError()
+{
+  QString errorString;
+  int errorCode = 0;
+
+  switch (m_request.method) {
+  case HTTP_GET:
+  case HTTP_POST:
+      errorCode = httpGenericError(m_request, &errorString);
+      break;
+  case HTTP_PUT:
+      errorCode = httpPutError(m_request, &errorString);
+      break;
+  case HTTP_DELETE:
+      errorCode = httpDelError(m_request, &errorString);
+      break;
+  default:
+      break;
+  }
+
+  // Force any message previously shown by the client to be cleared.
+  infoMessage(QLatin1String(""));
+
+  if (errorCode) {
+    error( errorCode, errorString );
+    return true;
+  }
+
+  return false;
 }
 
 bool HTTPProtocol::sendErrorPageNotification()
@@ -2076,10 +2166,6 @@ bool HTTPProtocol::httpShouldCloseConnection()
 
     if (!isConnected()) {
         return false;
-    }
-
-    if (m_request.method != HTTP_GET && m_request.method != HTTP_POST) {
-        return true;
     }
 
     if (!m_request.proxyUrls.isEmpty() && !isAutoSsl()) {
@@ -2998,13 +3084,13 @@ try_again:
         }
         // 302 Found (temporary location)
         // 303 See Other
-        if (m_request.method == HTTP_POST) {
-            // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
-            // However, because almost all client implementations treat a 301/302
-            // response as a 303 response in violation of the spec, many servers
-            // have simply adapted to this way of doing things! Thus, we are
-            // forced to do the same thing. Otherwise, we won't be able to retrieve
-            // these pages correctly.
+        // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
+        // However, because almost all client implementations treat a 301/302
+        // response as a 303 response in violation of the spec, many servers
+        // have simply adapted to this way of doing things! Thus, we are
+        // forced to do the same thing. Otherwise, we loose compatability and
+        // might not be able to correctly retrieve sites that redirect.
+        if (m_request.method != HTTP_HEAD) {
             m_request.method = HTTP_GET; // Force a GET
         }
     } else if (m_request.responseCode == 204) {
@@ -3015,7 +3101,7 @@ try_again:
 
         // The original handling here was wrong, this is not an error: eg. in the
         // example of a 204 No Content response to a PUT completing.
-        // m_isError = true;
+        // m_iError = true;
         // return false;
     } else if (m_request.responseCode == 206) {
         if (m_request.offset) {
@@ -3040,58 +3126,59 @@ endParsing:
 
     // Skip the whole header parsing if we got no HTTP headers at all
     if (!noHeadersFound) {
-
         // Auth handling
-        {
-            const bool wasAuthError = isAuthenticationRequired(m_request.prevResponseCode);
-            const bool isAuthError = isAuthenticationRequired(m_request.responseCode);
-            const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
-            kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
-                         << "sameAuthError=" << sameAuthError;
-            // Not the same authorization error as before and no generic error?
-            // -> save the successful credentials.
-            if (wasAuthError && (m_request.responseCode < 400 || (isAuthError && !sameAuthError))) {
-                KIO::AuthInfo authinfo;
-                bool alreadyCached = false;
-                KAbstractHttpAuthentication *auth = 0;
-                switch (m_request.prevResponseCode) {
-                case 401:
-                    auth = m_wwwAuth;
-                    alreadyCached = config()->readEntry("cached-www-auth", false);
-                    break;
-                case 407:
-                    auth = m_proxyAuth;
-                    alreadyCached = config()->readEntry("cached-proxy-auth", false);
-                    break;
-                default:
-                    Q_ASSERT(false); // should never happen!
-                }
-
-                kDebug(7113) << "authentication object:" << auth;
-
-                // Prevent recaching of the same credentials over and over again.
-                if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
-                    auth->fillKioAuthInfo(&authinfo);
-                    if (auth == m_wwwAuth) {
-                        setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
-                        if (auth->realm().isEmpty() && !auth->supportsPathMatching())
-                            setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
-                    } else {
-                        setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
-                        if (auth->realm().isEmpty() && !auth->supportsPathMatching())
-                            setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
-                    }
-
-                    kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
-
-                    if (authinfo.keepPassword) {
-                        cacheAuthentication(authinfo);
-                        kDebug(7113) << "Cached authentication for" << m_request.url;
-                    }
-                }
-                // Update our server connection state which includes www and proxy username and password.
-                m_server.updateCredentials(m_request);
+        const bool wasAuthError = isAuthenticationRequired(m_request.prevResponseCode);
+        const bool isAuthError = isAuthenticationRequired(m_request.responseCode);
+        const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
+        kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
+                     << "sameAuthError=" << sameAuthError;
+        // Not the same authorization error as before and no generic error?
+        // -> save the successful credentials.
+        if (wasAuthError && (m_request.responseCode < 400 || (isAuthError && !sameAuthError))) {
+            KIO::AuthInfo authinfo;
+            bool alreadyCached = false;
+            KAbstractHttpAuthentication *auth = 0;
+            switch (m_request.prevResponseCode) {
+            case 401:
+                auth = m_wwwAuth;
+                alreadyCached = config()->readEntry("cached-www-auth", false);
+                break;
+            case 407:
+                auth = m_proxyAuth;
+                alreadyCached = config()->readEntry("cached-proxy-auth", false);
+                break;
+            default:
+                Q_ASSERT(false); // should never happen!
             }
+
+            kDebug(7113) << "authentication object:" << auth;
+
+            // Prevent recaching of the same credentials over and over again.
+            if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
+                auth->fillKioAuthInfo(&authinfo);
+                if (auth == m_wwwAuth) {
+                    setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
+                    if (!authinfo.realmValue.isEmpty())
+                        setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
+                    if (!authinfo.digestInfo.isEmpty())
+                        setMetaData(QLatin1String("{internal~currenthost}www-auth-challenge"), authinfo.digestInfo);
+                } else {
+                    setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
+                    if (!authinfo.realmValue.isEmpty())
+                        setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
+                    if (!authinfo.digestInfo.isEmpty())
+                        setMetaData(QLatin1String("{internal~allhosts}proxy-auth-challenge"), authinfo.digestInfo);
+                }
+
+                kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
+
+                if (authinfo.keepPassword) {
+                    cacheAuthentication(authinfo);
+                    kDebug(7113) << "Cached authentication for" << m_request.url;
+                }
+            }
+            // Update our server connection state which includes www and proxy username and password.
+            m_server.updateCredentials(m_request);
         }
 
         // done with the first line; now tokenize the other lines
@@ -4116,11 +4203,12 @@ void HTTPProtocol::mimetype( const KUrl& url )
   m_request.method = HTTP_HEAD;
   m_request.cacheTag.policy= CC_Cache;
 
-  proceedUntilResponseHeader();
-  httpClose(m_request.isKeepAlive);
-  finished();
+  if (proceedUntilResponseHeader()) {
+    httpClose(m_request.isKeepAlive);
+    finished();
+  }
 
-  kDebug(7113) << "http: mimetype =" << m_mimeType;
+  kDebug(7113) << m_mimeType;
 }
 
 void HTTPProtocol::special( const QByteArray &data )
@@ -4447,8 +4535,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
           } else {
               totalSize(0);
           }
-      } else {
-          infoMessage(i18n("Retrieving from %1...",  m_request.url.host()));
       }
 
       if (m_request.cacheTag.ioMode == ReadFromCache) {
@@ -4586,7 +4672,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
       chain.slotInput(m_receiveBuf);
 
-      if (m_isError)
+      if (m_iError)
          return false;
 
       sz += bytesReceived;
@@ -4650,7 +4736,12 @@ void HTTPProtocol::slotFilterError(const QString &text)
 
 void HTTPProtocol::error( int _err, const QString &_text )
 {
-  httpClose(false);
+  // Close the connection only on connection errors. Otherwise, honor the
+  // keep alive flag.
+  if (_err == ERR_CONNECTION_BROKEN)
+      httpClose(false);
+  else
+      httpClose(m_request.isKeepAlive);
 
   if (!m_request.id.isEmpty())
   {
@@ -4662,7 +4753,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   clearPostDataBuffer();
 
   SlaveBase::error( _err, _text );
-  m_isError = true;
+  m_iError = _err;
 }
 
 
@@ -5058,7 +5149,7 @@ void HTTPProtocol::cacheFileClose()
     if (file->openMode() & QIODevice::WriteOnly) {
         Q_ASSERT(tempFile);
 
-        if (m_request.cacheTag.bytesCached && !m_isError) {
+        if (m_request.cacheTag.bytesCached && !m_iError) {
             QByteArray header = m_request.cacheTag.serialize();
             tempFile->seek(0);
             tempFile->write(header);
@@ -5240,13 +5331,14 @@ QString HTTPProtocol::authenticationHeader()
         // If no relam metadata, then make sure path matching is turned on.
         authinfo.verifyPath = (authinfo.realmValue.isEmpty());
 
-        const bool useCachedAuth = (m_request.responseCode == 401 || !(config()->readEntry("no-preemptive-auth-reuse", false)));
+        const bool useCachedAuth = (m_request.responseCode == 401 || !config()->readEntry("no-preemptive-auth-reuse", false));
+
         if (useCachedAuth && checkCachedAuthentication(authinfo)) {
-            const QByteArray cachedChallenge = authinfo.digestInfo.toLatin1();
+            const QByteArray cachedChallenge = config()->readEntry("www-auth-challenge", QByteArray());
             if (!cachedChallenge.isEmpty()) {
                 m_wwwAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_wwwAuth) {
-                    kDebug(7113) << "Creating WWW authentcation object from cached info";
+                    kDebug(7113) << "creating www authentcation header from cached info";
                     m_wwwAuth->setChallenge(cachedChallenge, m_request.url, m_request.methodString());
                     m_wwwAuth->generateResponse(authinfo.username, authinfo.password);
                 }
@@ -5265,11 +5357,11 @@ QString HTTPProtocol::authenticationHeader()
         authinfo.verifyPath = (authinfo.realmValue.isEmpty());
 
         if (checkCachedAuthentication(authinfo)) {
-            const QByteArray cachedChallenge = authinfo.digestInfo.toLatin1();
+            const QByteArray cachedChallenge = config()->readEntry("proxy-auth-challenge", QByteArray());
             if (!cachedChallenge.isEmpty()) {
                 m_proxyAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_proxyAuth) {
-                    kDebug(7113) << "Creating Proxy authentcation object from cached info";
+                    kDebug(7113) << "creating proxy authentcation header from cached info";
                     m_proxyAuth->setChallenge(cachedChallenge, m_request.proxyUrl, m_request.methodString());
                     m_proxyAuth->generateResponse(authinfo.username, authinfo.password);
                 }

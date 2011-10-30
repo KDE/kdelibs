@@ -66,7 +66,6 @@ public:
 
         // need to check the mimetype as well since strigi is still not perfect
         m_fileTypes.append( qMakePair<QString, Query::Term>(i18nc("@option:check A filter on file type - audio files", "Audio"),
-                           Query::ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Audio()) ||
                            Query::ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), Query::LiteralTerm(QLatin1String("audio")))) );
         m_fileTypes.append( qMakePair<QString, Query::Term>(i18nc("@option:check A filter on file type - media video", "Video"),
                            Query::ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Video()) ||

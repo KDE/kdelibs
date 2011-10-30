@@ -13,7 +13,7 @@
 
 find_path( HUPNP_INCLUDE_DIR HUpnpCore/HUpnp )
 
-find_library( HUPNP_LIBS HUpnp )
+find_library( HUPNP_LIBS NAMES HUpnp HUpnp1 )
 
 if( HUPNP_INCLUDE_DIR AND EXISTS "${HUPNP_INCLUDE_DIR}/HUpnpCore/public/hupnpinfo.h" )
     file( STRINGS "${HUPNP_INCLUDE_DIR}/HUpnpCore/public/hupnpinfo.h" HUPNP_INFO_H REGEX "^#define HUPNP_CORE_.*_VERSION .*$" )

@@ -796,6 +796,11 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     if ( KDE_lstat( path.data(), &buff ) == 0 )  {
 
+        if (details > 2) {
+            entry.insert( KIO::UDSEntry::UDS_DEVICE_ID, buff.st_dev );
+            entry.insert( KIO::UDSEntry::UDS_INODE, buff.st_ino );
+        }
+
         if (S_ISLNK(buff.st_mode)) {
 
             char buffer2[ 1000 ];
@@ -847,10 +852,6 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
         entry.insert( KIO::UDSEntry::UDS_USER, getUserName( buff.st_uid ) );
         entry.insert( KIO::UDSEntry::UDS_GROUP, getGroupName( buff.st_gid ) );
         entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, buff.st_atime );
-    }
-    if (details > 2) {
-        entry.insert( KIO::UDSEntry::UDS_DEVICE_ID, buff.st_dev );
-        entry.insert( KIO::UDSEntry::UDS_INODE, buff.st_ino );
     }
 
     // Note: buff.st_ctime isn't the creation time !

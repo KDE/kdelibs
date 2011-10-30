@@ -42,7 +42,8 @@
 // See https://github.com/Arora/arora/blob/master/src/data/parseForms.js
 #define FORM_PARSING_JS "(function (){ \
     var forms = new Array; \
-    for (var i = 0; i < document.forms.length; ++i) { \
+    var numForms = document.forms.length; \
+    for (var i = 0; i < numForms; ++i) { \
         var form = document.forms[i]; \
         if (form.method.toLowerCase() != 'post') \
             continue; \
@@ -50,7 +51,8 @@
         formObject.name = form.name; \
         formObject.index = i; \
         var elements = new Array; \
-        for (var j = 0; j < form.elements.length; ++j) { \
+        var numElements = form.elements.length; \
+        for (var j = 0; j < numElements; ++j) { \
             var e = form.elements[j]; \
             var element = new Object; \
             element.name = e.name; \
