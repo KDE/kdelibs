@@ -1,9 +1,13 @@
 set(kcoreaddons_OPTIONAL_SRCS )
 set(kcoreaddons_OPTIONAL_LIBS )
 
+if (FAM_FOUND)
+   set(kcoreaddons_OPTIONAL_LIBS ${kcoreaddons_OPTIONAL_LIBS} ${FAM_LIBRARIES})
+endif (FAM_FOUND)
+
 if(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS caching/kshareddatacache.cpp)
-    set(kcoreaddons_OPTIONAL_LIBS ${CMAKE_THREAD_LIBS_INIT})
+    set(kcoreaddons_OPTIONAL_LIBS ${kcoreaddons_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 else(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         caching/kshareddatacache_win.cpp

@@ -625,7 +625,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
       addEntry(0, e->parentDirectory(), e, true);
     }
     else {
-      int res =FAMMonitorDirectory(&fc, QFile::encodeName(e->path),
+      int res =FAMMonitorDirectory(&fc, QFile::encodeName(e->path).data(),
 				   &(e->fr), e);
       if (res<0) {
 	e->m_mode = UnknownMode;
@@ -643,7 +643,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
       addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
     }
     else {
-      int res = FAMMonitorFile(&fc, QFile::encodeName(e->path),
+      int res = FAMMonitorFile(&fc, QFile::encodeName(e->path).data(),
 			       &(e->fr), e);
       if (res<0) {
 	e->m_mode = UnknownMode;
