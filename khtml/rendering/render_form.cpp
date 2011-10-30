@@ -137,9 +137,8 @@ using namespace DOM;
                 const QComboBox* cb = qobject_cast<const QComboBox*>(widget);
                 const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
 
-                QFontMetrics fm = cb->fontMetrics();
-
                 if (cb && cbOpt) {
+                    QFontMetrics fm = cb->fontMetrics();
                     // Compute content width; Qt uses the usual +4 magic number for icon/text margin
                     int maxW = 0;
                     for (int c = 0; c < cb->count(); ++c) {

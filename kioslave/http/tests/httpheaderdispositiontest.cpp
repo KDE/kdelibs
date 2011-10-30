@@ -317,6 +317,18 @@ void HeaderDispositionTest::runAllTests_data()
     QTest::newRow("duplicate_with_continuation") << "attachment; filename=\"bar\"; filename*0=\"foo.\"; filename*1=\"html\"" <<
                    QByteArray("type\tattachment");
 
+// percent encoding, invalid first character
+    QTest::newRow("percent-first-char-invalid") << "attachment; filename*=UTF-8''foo-%o5.html" <<
+                   QByteArray("type\tattachment");
+// percent encoding, invalid second character
+    QTest::newRow("percent-second-char-invalid") << "attachment; filename*=UTF-8''foo-%5o.html" <<
+                   QByteArray("type\tattachment");
+// percent encoding, both characters invalid
+    QTest::newRow("greenbytes-attwithfn2231nbadpct2") << "attachment; filename*=UTF-8''foo-%oo.html" <<
+                   QByteArray("type\tattachment");
+// percent encoding, invalid second character
+    QTest::newRow("percent-second-char-missing") << "attachment; filename*=UTF-8''foo-%f.html" <<
+                   QByteArray("type\tattachment");
 }
 
 #if 0

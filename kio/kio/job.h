@@ -330,6 +330,20 @@ namespace KIO {
                                        qint64 size = -1, JobFlags flags = DefaultFlags );
 
     /**
+     * HTTP DELETE.
+     *
+     * Though this function servers the same purpose as KIO::file_delete, unlike
+     * file_delete it accomodates HTTP sepecific actions such as redirections.
+     *
+     * @param src url resource to delete.
+     * @param flags Can be HideProgressInfo here
+     * @return the job handling the operation.
+     *
+     * @since 4.7.3
+     */
+    KIO_EXPORT TransferJob *http_delete( const KUrl& url, JobFlags flags = DefaultFlags );
+
+    /**
      * Get (a.k.a. read), into a single QByteArray.
      * @see StoredTransferJob
      *

@@ -19,6 +19,7 @@
 
 #include "kfilesystemtype_p.h"
 #include <QFile>
+#include <QDebug>
 //#include <errno.h>
 
 #ifndef Q_OS_WIN
@@ -26,12 +27,16 @@ inline KFileSystemType::Type kde_typeFromName(const char *name)
 {
     if (qstrncmp(name, "nfs", 3) == 0
         || qstrncmp(name, "autofs", 6) == 0
-        || qstrncmp(name, "cachefs", 7) == 0)
+        || qstrncmp(name, "cachefs", 7) == 0
+        || qstrncmp(name, "fuse.sshfs", 10) == 0)
         return KFileSystemType::Nfs;
     if (qstrncmp(name, "fat", 3) == 0
         || qstrncmp(name, "vfat", 4) == 0
         || qstrncmp(name, "msdos", 5) == 0)
         return KFileSystemType::Fat;
+    if (qstrncmp(name, "cifs", 4) == 0
+        || qstrncmp(name, "smbfs", 5) == 0)
+        return KFileSystemType::Smb;
     return KFileSystemType::Other;
 }
 
@@ -65,6 +70,13 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
 # ifndef MSDOS_SUPER_MAGIC
 #  define MSDOS_SUPER_MAGIC     0x00004d44
 # endif
+# ifndef SMB_SUPER_MAGIC
+#  define SMB_SUPER_MAGIC       0x0000517B
+#endif
+// I made this name up, from reverse-engineering a statfs result after mounting with `sshfs` (David).
+# ifndef SSHFS_SUPER_MAGIC
+#  define SSHFS_SUPER_MAGIC     0x65735546
+# endif
 
 KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
 {
@@ -77,7 +89,10 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
     case NFS_SUPER_MAGIC:
     case AUTOFS_SUPER_MAGIC:
     case AUTOFSNG_SUPER_MAGIC:
+    case SSHFS_SUPER_MAGIC:
         return KFileSystemType::Nfs;
+    case SMB_SUPER_MAGIC:
+        return KFileSystemType::Smb;
     case MSDOS_SUPER_MAGIC:
         return KFileSystemType::Fat;
     default:

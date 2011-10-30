@@ -156,7 +156,8 @@ bool UDisksDevice::queryDeviceInterface(const Solid::DeviceInterface::Type& type
                 return m_udi.endsWith(":media");
             } else {
                 return prop("DeviceIsPartition").toBool()
-                        || prop("IdUsage").toString()=="filesystem";
+                        || prop("IdUsage").toString()=="filesystem"
+                        || prop("IdUsage").toString()=="crypto";
             }
 
         case Solid::DeviceInterface::StorageAccess:
@@ -339,7 +340,17 @@ QString UDisksDevice::storageDescription() const
         if (model.isEmpty())
             vendormodel_str = vendor_str;
         else
-            vendormodel_str = QObject::tr("%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor_str).arg(model);
+        {
+            if (model.startsWith(vendor_str))
+            {
+                // e.g. vendor is "Nokia" and model is "Nokia N950" we do not want "Nokia Nokia N950" as description
+                vendormodel_str = model;
+            }
+            else
+            {
+                vendormodel_str = QObject::tr("%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor_str).arg(model);
+            }
+        }
     }
 
     if (vendormodel_str.isEmpty())
@@ -715,10 +726,10 @@ void UDisksDevice::slotChanged()
 
 bool UDisksDevice::isDeviceBlacklisted() const
 {
-    return prop("DevicePresentationHide").toBool() || prop("DevicePresentationNopolicy").toBool() ||
+    return prop("DevicePresentationHide").toBool() ||
             prop("DeviceMountPaths").toStringList().contains("/boot") ||
             prop("IdLabel").toString() == "System Reserved" ||
-            ( prop("IdUsage").toString().isEmpty() && !prop("OpticalDiscIsBlank").toBool());
+            ( prop("IdUsage").toString().isEmpty() && !(prop("OpticalDiscIsBlank").toBool() || (prop("OpticalDiscNumAudioTracks").toInt() > 0) ));
 }
 
 QString UDisksDevice::errorToString(const QString & error) const

@@ -50,6 +50,7 @@
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
+#include <QtNetwork/QAuthenticator>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -101,6 +102,17 @@ static char ftpModeFromPath(const QString& path, char defaultMode = '\0')
 
     return defaultMode;
 }
+
+static bool supportedProxyScheme(const QString& scheme)
+{
+    return (scheme == QLatin1String("ftp") || scheme == QLatin1String("socks"));
+}
+
+static bool isSocksProxy()
+{
+    return (QNetworkProxy::applicationProxy().type() == QNetworkProxy::Socks5Proxy);
+}
+
 
 // JPF: somebody should find a better solution for this or move this to KIO
 // JPF: anyhow, in KDE 3.2.0 I found diffent MAX_IPC_SIZE definitions!
@@ -191,6 +203,7 @@ Ftp::Ftp( const QByteArray &pool, const QByteArray &app )
 
   // init other members
   m_port = 0;
+  m_socketProxyAuth = 0;
 }
 
 
@@ -308,8 +321,9 @@ void Ftp::setHost( const QString& _host, quint16 _port, const QString& _user,
 {
   kDebug(7102) << _host << "port=" << _port << "user=" << _user;
 
-  m_proxyURL = metaData("UseProxy");
-  m_bUseProxy = (m_proxyURL.isValid() && m_proxyURL.protocol() == "ftp");
+  m_proxyURL.clear();
+  m_proxyUrls = config()->readEntry("ProxyUrls", QStringList());
+  kDebug(7102) << "proxy urls:" << m_proxyUrls;
 
   if ( m_host != _host || m_port != _port ||
        m_user != _user || m_pass != _pass )
@@ -335,8 +349,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
     return true;
   }
 
-  kDebug(7102) << "ftpOpenConnection " << m_host << ":" << m_port << " "
-               << m_user << " [password hidden]";
+  kDebug(7102) << "host=" << m_host << ", port=" << m_port << ", user=" << m_user << "password= [password hidden]";
 
   infoMessage( i18n("Opening connection to host %1", m_host) );
 
@@ -398,9 +411,45 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
  */
 bool Ftp::ftpOpenControlConnection()
 {
-  QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
-  int port = m_bUseProxy ? m_proxyURL.port() : m_port;
-  return ftpOpenControlConnection(host, port);
+  if (m_proxyUrls.isEmpty())
+      return ftpOpenControlConnection(m_host, m_port);
+
+  int errorCode = 0;
+  QString errorMessage;
+
+  Q_FOREACH (const QString& proxyUrl, m_proxyUrls) {
+    const KUrl url (proxyUrl);
+    const QString scheme (url.protocol());
+
+    if (!supportedProxyScheme(scheme)) {
+      // TODO: Need a new error code to indicate unsupported URL scheme.
+      errorCode = ERR_COULD_NOT_CONNECT;
+      errorMessage = url.url();
+      continue;
+    }
+
+    if (scheme == QLatin1String("socks")) {
+      kDebug(7102) << "Connecting to SOCKS proxy @" << url;
+      const int proxyPort = url.port();
+      QNetworkProxy proxy (QNetworkProxy::Socks5Proxy, url.host(), (proxyPort == -1 ? 0 : proxyPort));
+      QNetworkProxy::setApplicationProxy(proxy);
+      if (ftpOpenControlConnection(m_host, m_port)) {
+        return true;
+      }
+      QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
+    } else {
+      if (ftpOpenControlConnection(url.host(), url.port())) {
+        m_proxyURL = url;
+        return true;
+      }
+    }
+  }
+
+  if (errorCode) {
+    error(errorCode, errorMessage);
+  }
+
+  return false;
 }
 
 bool Ftp::ftpOpenControlConnection( const QString &host, int port )
@@ -412,7 +461,9 @@ bool Ftp::ftpOpenControlConnection( const QString &host, int port )
   // now connect to the server and read the login message ...
   if (port == 0)
     port = 21;                  // default FTP port
-  m_control = KSocketFactory::synchronousConnectToHost("ftp", host, port, connectTimeout() * 1000);
+  m_control = KSocketFactory::synchronousConnectToHost(QLatin1String("ftp"), host, port, connectTimeout() * 1000);
+  connect(m_control, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
+          this, SLOT(proxyAuthentication(QNetworkProxy,QAuthenticator*)));
   int iErrorCode = m_control->state() == QAbstractSocket::ConnectedState ? 0 : ERR_COULD_NOT_CONNECT;
 
   // on connect success try to read the server message...
@@ -554,7 +605,7 @@ bool Ftp::ftpLogin(bool* userChanged)
 
     tempbuf = "USER ";
     tempbuf += user.toLatin1();
-    if ( m_bUseProxy )
+    if ( m_proxyURL.isValid() )
     {
       tempbuf += '@';
       tempbuf += m_host.toLatin1();
@@ -814,8 +865,8 @@ int Ftp::ftpOpenPASVDataConnection()
   Q_ASSERT(m_data == NULL);       // ... but no data connection
 
   // Check that we can do PASV
-  QHostAddress addr = m_control->peerAddress();
-  if (addr.protocol() != QAbstractSocket::IPv4Protocol)
+  QHostAddress address = m_control->peerAddress();
+  if (address.protocol() != QAbstractSocket::IPv4Protocol)
     return ERR_INTERNAL;       // no PASV for non-PF_INET connections
 
  if (m_extControl & pasvUnknown)
@@ -856,9 +907,8 @@ int Ftp::ftpOpenPASVDataConnection()
 
   // now connect the data socket ...
   quint16 port = i[4] << 8 | i[5];
-  kDebug(7102) << "Connecting to " << addr.toString() << " port " << port;
-  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", addr.toString(), port,
-                                                    connectTimeout() * 1000);
+  const QString host = (isSocksProxy() ? m_host : address.toString());
+  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", host, port, connectTimeout() * 1000);
 
   return m_data->state() == QAbstractSocket::ConnectedState ? 0 : ERR_INTERNAL;
 }
@@ -893,8 +943,8 @@ int Ftp::ftpOpenEPSVDataConnection()
   if ( !start || sscanf(start, "|||%d|", &portnum) != 1)
     return ERR_INTERNAL;
 
-  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", address.toString(), portnum,
-                                                    connectTimeout() * 1000);
+  const QString host = (isSocksProxy() ? m_host : address.toString());
+  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", host, portnum, connectTimeout() * 1000);
   return m_data->isOpen() ? 0 : ERR_INTERNAL;
 }
 
@@ -2473,4 +2523,72 @@ Ftp::StatusCode Ftp::ftpSendMimeType(int& iError, const KUrl& url)
   }
 
   return statusSuccess;
+}
+
+void Ftp::proxyAuthentication(const QNetworkProxy& proxy, QAuthenticator* authenticator)
+{
+    Q_UNUSED(proxy);
+    kDebug(7102) << "Authenticator received -- realm:" << authenticator->realm() << "user:"
+                 << authenticator->user();
+
+    AuthInfo info;
+    info.url = m_proxyURL;
+    info.realmValue = authenticator->realm();
+    info.verifyPath = true;    //### whatever
+    info.username = authenticator->user();
+
+    const bool haveCachedCredentials = checkCachedAuthentication(info);
+
+    // if m_socketProxyAuth is a valid pointer then authentication has been attempted before,
+    // and it was not successful. see below and saveProxyAuthenticationForSocket().
+    if (!haveCachedCredentials || m_socketProxyAuth) {
+        // Save authentication info if the connection succeeds. We need to disconnect
+        // this after saving the auth data (or an error) so we won't save garbage afterwards!
+        connect(m_control, SIGNAL(connected()), this, SLOT(saveProxyAuthentication()));
+        //### fillPromptInfo(&info);
+        info.prompt = i18n("You need to supply a username and a password for "
+                           "the proxy server listed below before you are allowed "
+                           "to access any sites.");
+        info.keepPassword = true;
+        info.commentLabel = i18n("Proxy:");
+        info.comment = i18n("<b>%1</b> at <b>%2</b>", info.realmValue, m_proxyURL.host());
+        const bool dataEntered = openPasswordDialog(info, i18n("Proxy Authentication Failed."));
+        if (!dataEntered) {
+            kDebug(7102) << "looks like the user canceled proxy authentication.";
+            error(ERR_USER_CANCELED, m_proxyURL.host());
+            return;
+        }
+    }
+    authenticator->setUser(info.username);
+    authenticator->setPassword(info.password);
+    authenticator->setOption(QLatin1String("keepalive"), info.keepPassword);
+
+    if (m_socketProxyAuth) {
+        *m_socketProxyAuth = *authenticator;
+    } else {
+        m_socketProxyAuth = new QAuthenticator(*authenticator);
+    }
+
+    m_proxyURL.setUser(info.username);
+    m_proxyURL.setPassword(info.password);
+}
+
+void Ftp::saveProxyAuthentication()
+{
+    kDebug(7102);
+    disconnect(m_control, SIGNAL(connected()), this, SLOT(saveProxyAuthentication()));
+    Q_ASSERT(m_socketProxyAuth);
+    if (m_socketProxyAuth) {
+        kDebug(7102) << "-- realm:" << m_socketProxyAuth->realm() << "user:" << m_socketProxyAuth->user();
+        KIO::AuthInfo a;
+        a.verifyPath = true;
+        a.url = m_proxyURL;
+        a.realmValue = m_socketProxyAuth->realm();
+        a.username = m_socketProxyAuth->user();
+        a.password = m_socketProxyAuth->password();
+        a.keepPassword = m_socketProxyAuth->option(QLatin1String("keepalive")).toBool();
+        cacheAuthentication(a);
+    }
+    delete m_socketProxyAuth;
+    m_socketProxyAuth = 0;
 }

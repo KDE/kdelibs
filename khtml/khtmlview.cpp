@@ -3123,9 +3123,9 @@ void KHTMLView::print(bool quick)
 
         pageHeight -= headerHeight;
 
+#ifndef QT_NO_TRANSFORMATIONS
         bool scalePage = false;
         double scale = 0.0;
-#ifndef QT_NO_TRANSFORMATIONS
         if(root->docWidth() > printer.width()) {
             scalePage = true;
             scale = ((double) printer.width())/((double) root->docWidth());
