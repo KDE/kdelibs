@@ -1,3 +1,16 @@
+Welcome to KDE Core Frameworks!
+===============================
+
+For development discussions, please subscribe to kde-frameworks-devel@kde.org
+
+Dependencies:
+  * extra-cmake-modules
+  * cmake >= 2.8.6
+    (right now this means either the 2.8.6 release, or cmake git master with 'git revert 5e8e9ad68c')
+
+Status:
+=======
+
 KDE Core:
 Sonnet Core -> Done (cullmann, moved to tier2/sonnet/core)
 Archive & Compression -> Done ([nef])
@@ -5,14 +18,14 @@ KAuth -> Done (bambee)
 Date/Time (TODO: John Layt)
 Translation (TODO: John Layt)
 Service Solution (TODO: dfaure)
-KDBus -> WIP (ervin)
+KDBus -> Done (ervin)
 Standard Locations (into qt, almost done, https://qt.gitorious.org/qt/qtbase/merge_requests/50, dfaure)
 SSL (TODO)
-Mime Types (into qt? TODO: dfaure)
-LibKCore (contains KJob, KCmdLineArgs, KRandom, KUrl for now, KSharedDataCache, KAboutData,
+Mime Types (IN PROGRESS: dfaure is working on git@gitorious.org:qmime/qmime.git)
+LibKCoreAddons (contains KJob, KCmdLineArgs, KRandom, KUrl for now, KSharedDataCache, KAboutData,
            text stuff (KCharMacroExpander, KCharsets [for now], KEncodingDetector/Prober, KMacroExpanderBase, KStringHandler
                        KMD5 [for now; QCryptographicHash doesn't work on QIODevices])
-           filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now) -> WIP (bambee)
+           filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now) -> Done (bambee)
 KDebug (seems small to be on its own.... pending: kconfig)
 Filesystem Handling
 Configuration
