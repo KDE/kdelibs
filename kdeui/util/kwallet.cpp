@@ -39,15 +39,10 @@
 #include <kwindowsystem.h>
 
 #include "ksecretsservice/ksecretsservicecollection.h"
-#include "ksecretsservice/ksecretsservicecollectionjobs.h"
-#include "ksecretsservice/ksecretsserviceitem.h"
-#include "ksecretsservice/ksecretsserviceitemjobs.h"
 #include "kwallet_interface.h"
 
 using namespace KWallet;
 using namespace KSecretsService;
-
-
 
 typedef QMap<QString, StringStringMap> StringToStringStringMapMap;
 Q_DECLARE_METATYPE(StringToStringStringMapMap)
@@ -60,7 +55,7 @@ public:
     KWalletDLauncher();
     ~KWalletDLauncher();
     org::kde::KWallet &getInterface();
-    
+
     // this static variable is used below to switch between old KWallet
     // infrastructure and the new one which is built on top of the new
     // KSecretsService infrastructure. It's value can be changed via the 
