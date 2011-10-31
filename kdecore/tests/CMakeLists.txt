@@ -97,6 +97,7 @@ KDECORE_EXECUTABLE_TESTS(
  dbuscalltest
  kmdcodectest
  startserviceby
+ klockfile_testlock # helper for klockfiletest
 )
 
 ########### klocaletest ###############

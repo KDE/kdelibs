@@ -32,6 +32,7 @@ struct Action {
     QHash<QString, QString> messages;
 
     QString policy;
+    QString policyInactive;
     QString persistence;
 };
 

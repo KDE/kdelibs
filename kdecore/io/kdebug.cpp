@@ -872,12 +872,20 @@ int KDebug::registerArea(const QByteArray& areaName, bool enabled)
 
 #ifndef KDE_NO_DEBUG_OUTPUT
 
+class KDebug::Block::Private
+{
+public:
+    QByteArray m_label;
+};
+
 KDebug::Block::Block(const char* label, int area)
-    : m_label(label), m_area(area), d(0)
+    : m_label(0), m_area(area), d(0)
 {
     if (hasNullOutputQtDebugMsg(area)) {
-        m_label = 0; // remember, for the dtor
+        d = 0; // remember, for the dtor
     } else {
+        d = new Private;
+        d->m_label = label;
         m_startTime.start();
         kDebug(area) << "BEGIN:" << label;
 
@@ -892,7 +900,7 @@ KDebug::Block::Block(const char* label, int area)
 
 KDebug::Block::~Block()
 {
-    if (m_label) {
+    if (d) {
         const double duration = m_startTime.elapsed() / 1000.0;
         QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
         indentString.localData()->chop(2);
@@ -901,14 +909,15 @@ KDebug::Block::~Block()
         if (duration < 5.0) {
             kDebug(m_area)
                 << "END__:"
-                << m_label
+                << d->m_label.constData()
                 << qPrintable(QString::fromLatin1("[Took: %3s]").arg(QString::number(duration, 'g', 2)));
         } else {
             kDebug(m_area)
                 << "END__:"
-                << m_label
+                << d->m_label.constData()
                 << qPrintable(QString::fromLatin1("[DELAY Took (quite long) %3s]").arg(QString::number(duration, 'g', 2)));
         }
+        delete d;
     }
 }
 

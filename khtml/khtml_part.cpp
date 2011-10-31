@@ -6544,8 +6544,8 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
-  QMouseEvent *_mouse = event->qmouseEvent();
 #ifndef QT_NO_CLIPBOARD
+  QMouseEvent *_mouse = event->qmouseEvent();
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == Qt::MidButton) && (event->url().isNull())) {
     kDebug( 6050 ) << "MMB shouldOpen=" << d->m_bOpenMiddleClick;
 

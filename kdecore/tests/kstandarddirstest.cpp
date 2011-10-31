@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2006 David Faure <faure@kde.org>
+    Copyright (c) 2006, 2011 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -103,9 +103,9 @@ void KStandarddirsTest::testFindResource()
     QVERIFY( bin.endsWith( KIOSLAVE ) );
     QVERIFY( !QDir::isRelativePath(bin) );
 
-    const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
+    const QString data = KGlobal::dirs()->findResource( "data", "cmake/modules/FindSoprano.cmake" );
     QVERIFY( !data.isEmpty() );
-    QVERIFY( data.endsWith( QLatin1String("share/apps/katepart/syntax/sql.xml") ) );
+    QVERIFY( data.endsWith( QLatin1String("share/apps/cmake/modules/FindSoprano.cmake") ) );
     QVERIFY( !QDir::isRelativePath(data) );
 }
 
@@ -123,9 +123,9 @@ void KStandarddirsTest::testFindAllResources()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QStringList kateSyntaxFiles = KGlobal::dirs()->findAllResources( "data", "katepart/syntax/" );
-    QVERIFY( !kateSyntaxFiles.isEmpty() );
-    QVERIFY( kateSyntaxFiles.count() > 80 ); // I have 130 here, installed by kdelibs.
+    const QStringList cmakeModulesFiles = KGlobal::dirs()->findAllResources( "data", "cmake/modules/" );
+    QVERIFY( !cmakeModulesFiles.isEmpty() );
+    QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
 
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );
     QVERIFY( !configFiles.isEmpty() );
@@ -138,20 +138,23 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( !configFilesRecursive.isEmpty() );
     QVERIFY( configFilesRecursive.count() > 5 ); // I have 15 here
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursive, "share/config/ui/ui_standards.rc" ) );
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/colors/Web.colors" ) ); // proves that recursive worked
 
     const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
                                                                                           KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
-    QVERIFY( configFilesRecursiveWithFilter.count() >= 5 ); // back to ~ 9
+    QVERIFY( configFilesRecursiveWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/ui/ui_standards.rc" ) );
     QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "share/config/colors/Web.colors" ) ); // didn't match the filter
 
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 5 ); // back to ~ 9
+    QVERIFY( configFilesWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/ui/ui_standards.rc" ) ); // not recursive
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
     QVERIFY(fileNames.contains("kdebugrc"));
@@ -171,17 +174,17 @@ void KStandarddirsTest::testFindAllResources()
 
 void KStandarddirsTest::testFindAllResourcesNewDir()
 {
-    const QStringList origFiles = KGlobal::dirs()->findAllResources("data", "katepart/syntax/");
+    const QStringList origFiles = KGlobal::dirs()->findAllResources("data", "cmake/modules/");
     const int origCount = origFiles.count();
 
-    const QString dir = m_kdehome + "/share/apps/katepart/syntax";
+    const QString dir = m_kdehome + "/share/apps/cmake/modules";
     QDir().mkpath(dir);
     QFile file(dir+"/unittest.testfile");
     QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Text));
     file.write("foo");
     file.close();
 
-    const int newCount = KGlobal::dirs()->findAllResources("data", "katepart/syntax/").count();
+    const int newCount = KGlobal::dirs()->findAllResources("data", "cmake/modules/").count();
     QCOMPARE(newCount, origCount+1);
     file.remove();
     QDir().rmpath(dir);

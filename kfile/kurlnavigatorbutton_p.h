@@ -79,6 +79,9 @@ public:
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 
+    void setShowMnemonic(bool show);
+    bool showMnemonic() const;
+
 Q_SIGNALS:
     /**
      * Is emitted if URLs have been dropped
@@ -107,6 +110,7 @@ protected:
     virtual void paintEvent(QPaintEvent* event);
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
@@ -165,6 +169,11 @@ private:
      */
     void cancelSubDirsRequest();
 
+    /**
+     * @return Text without mnemonic characters.
+     */
+    QString plainText() const;
+
     int arrowWidth() const;
     bool isAboveArrow(int x) const;
     bool isTextClipped() const;
@@ -175,6 +184,7 @@ private:
     bool m_hoverArrow;
     bool m_pendingTextChange;
     bool m_replaceButton;
+    bool m_showMnemonic;
     int m_wheelSteps;
     KUrl m_url;
 

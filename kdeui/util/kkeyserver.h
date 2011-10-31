@@ -60,7 +60,7 @@ namespace KKeyServer {
 	* For example, if shift+5 produces '%' Qt wants ctrl+shift+5 recorded as ctrl+% and
 	* in that case this function would return false.
 	*
-	* @since 4.8
+	* @since 4.7.1
 	*/
 	KDEUI_EXPORT bool isShiftAsModifierAllowed( int keyQt );
 

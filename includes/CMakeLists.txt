@@ -103,6 +103,7 @@ install( FILES
   KCharMacroExpander
   KCharSelect
   KCharsets
+  KCheckableProxyModel
   KCmdLineArgs
   KCmdLineOptions
   KCodecs
@@ -433,6 +434,7 @@ install( FILES
   KUser
   KUserGroup
   KVBox
+  KViewStateMaintainer
   KWindowInfo
   KWindowSystem
   KWordMacroExpander
@@ -830,7 +832,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings COMPONENT Devel)
 
 install( FILES
   KTextEditor/Attribute
-  KTextEditor/ContainerInterface
   KTextEditor/CodeCompletionInterface
   KTextEditor/CodeCompletionModel
   KTextEditor/CodeCompletionModelControllerInterface
@@ -847,15 +848,15 @@ install( FILES
   KTextEditor/Factory
   KTextEditor/HighlightInterface
   KTextEditor/MarkInterface
+  KTextEditor/ModificationInterface
   KTextEditor/MovingCursor
   KTextEditor/MovingInterface
   KTextEditor/MovingRange
-  KTextEditor/ModificationInterface
+  KTextEditor/ParameterizedSessionConfigInterface
   KTextEditor/Plugin
   KTextEditor/Range
   KTextEditor/SearchInterface
   KTextEditor/SessionConfigInterface
-  KTextEditor/ParameterizedSessionConfigInterface
   KTextEditor/SmartCursor
   KTextEditor/SmartCursorNotifier
   KTextEditor/SmartCursorWatcher
@@ -896,8 +897,9 @@ install( FILES
   Solid/DeviceNotifier
   Solid/DvbInterface
   Solid/GenericInterface
-  Solid/Networking
   Solid/NetworkInterface
+  Solid/NetworkShare
+  Solid/Networking
   Solid/OpticalDisc
   Solid/OpticalDrive
   Solid/PortableMediaPlayer
@@ -907,7 +909,6 @@ install( FILES
   Solid/StorageAccess
   Solid/StorageDrive
   Solid/StorageVolume
-  Solid/NetworkShare
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid COMPONENT Devel)
 
 
@@ -952,17 +953,17 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml COMPONENT Devel)
 
 
 install(FILES
-  Nepomuk/Service
+  Nepomuk/File
+  Nepomuk/KRatingPainter
+  Nepomuk/KRatingWidget
+  Nepomuk/MassUpdateJob
   Nepomuk/Resource
   Nepomuk/ResourceManager
+  Nepomuk/Service
   Nepomuk/Tag
-  Nepomuk/Variant
-  Nepomuk/Thing
-  Nepomuk/File
-  Nepomuk/KRatingWidget
-  Nepomuk/KRatingPainter
   Nepomuk/TagWidget
-  Nepomuk/MassUpdateJob
+  Nepomuk/Thing
+  Nepomuk/Variant
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk COMPONENT Devel)
 
 
@@ -977,48 +978,48 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types COMPONENT Devel)
 install(FILES
   Nepomuk/Query/AndTerm
   Nepomuk/Query/ComparisonTerm
+  Nepomuk/Query/FileQuery
   Nepomuk/Query/GroupTerm
   Nepomuk/Query/LiteralTerm
   Nepomuk/Query/NegationTerm
+  Nepomuk/Query/OptionalTerm
   Nepomuk/Query/OrTerm
   Nepomuk/Query/Query
-  Nepomuk/Query/FileQuery
   Nepomuk/Query/QueryParser
   Nepomuk/Query/QueryServiceClient
   Nepomuk/Query/ResourceTerm
   Nepomuk/Query/ResourceTypeTerm
   Nepomuk/Query/Result
   Nepomuk/Query/SimpleTerm
-  Nepomuk/Query/Term
-  Nepomuk/Query/OptionalTerm
   Nepomuk/Query/StandardQuery
+  Nepomuk/Query/Term
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Query COMPONENT Devel)
 
 
 install(FILES
-  Nepomuk/Utils/FacetWidget
-  Nepomuk/Utils/SearchWidget
-  Nepomuk/Utils/ResourceModel
-  Nepomuk/Utils/SimpleResourceModel
-  Nepomuk/Utils/Facet
-  Nepomuk/Utils/SimpleFacet
   Nepomuk/Utils/DynamicResourceFacet
+  Nepomuk/Utils/Facet
+  Nepomuk/Utils/FacetWidget
   Nepomuk/Utils/ProxyFacet
+  Nepomuk/Utils/ResourceModel
+  Nepomuk/Utils/SearchWidget
+  Nepomuk/Utils/SimpleFacet
+  Nepomuk/Utils/SimpleResourceModel
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Utils COMPONENT Devel)
 
 
 install(FILES
-  Nepomuk/Vocabulary/NIE
-  Nepomuk/Vocabulary/NFO
   Nepomuk/Vocabulary/NCAL
   Nepomuk/Vocabulary/NCO
-  Nepomuk/Vocabulary/NMO
+  Nepomuk/Vocabulary/NDO
+  Nepomuk/Vocabulary/NEXIF
+  Nepomuk/Vocabulary/NFO
+  Nepomuk/Vocabulary/NIE
   Nepomuk/Vocabulary/NMM
+  Nepomuk/Vocabulary/NMO
+  Nepomuk/Vocabulary/NUAO
   Nepomuk/Vocabulary/PIMO
   Nepomuk/Vocabulary/TMO
-  Nepomuk/Vocabulary/NEXIF
-  Nepomuk/Vocabulary/NUAO
-  Nepomuk/Vocabulary/NDO
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Vocabulary COMPONENT Devel)
 
 
@@ -1035,6 +1036,7 @@ install(FILES
   Plasma/AuthorizationInterface
   Plasma/AuthorizationManager
   Plasma/AuthorizationRule
+  Plasma/BusyWidget
   Plasma/CheckBox
   Plasma/ClientPinRequest
   Plasma/ComboBox
@@ -1079,30 +1081,29 @@ install(FILES
   Plasma/ScriptEngine
   Plasma/ScrollBar
   Plasma/ScrollWidget
+  Plasma/Separator
   Plasma/Service
   Plasma/ServiceJob
-  Plasma/Separator
   Plasma/SignalPlotter
   Plasma/Slider
   Plasma/SpinBox
-  Plasma/BusyWidget
   Plasma/Svg
   Plasma/SvgWidget
   Plasma/TabBar
-  Plasma/TextEdit
   Plasma/TextBrowser
+  Plasma/TextEdit
+  Plasma/Theme
   Plasma/ToolButton
   Plasma/ToolTipContent
   Plasma/ToolTipManager
-  Plasma/Theme
   Plasma/TreeView
-  Plasma/View
   Plasma/Version
+  Plasma/VideoWidget
+  Plasma/View
   Plasma/Wallpaper
   Plasma/WallpaperScript
   Plasma/WebView
   Plasma/WindowEffects
-  Plasma/VideoWidget
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 
 if(QT_QTOPENGL_FOUND)
@@ -1120,7 +1121,7 @@ endif(NOT KDE_NO_DEPRECATED)
 
 install(FILES
   KUnitConversion/Converter
-  KUnitConversion/Value
   KUnitConversion/Unit
   KUnitConversion/UnitCategory
+  KUnitConversion/Value
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitConversion COMPONENT Devel)

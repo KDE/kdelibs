@@ -230,6 +230,7 @@
 5952        akonadiresource (kalarm)
 5953        akonadiresource (kalarmdir)
 5954        akonadiserializer (kalarm)
+5955        kdepimlibs (kalarmcal)
 5960        kandy
 5970        ktimetracker
 5975        ktnef

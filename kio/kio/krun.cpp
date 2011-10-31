@@ -135,7 +135,7 @@ bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool
     else if (isExecutableFile(u, _mimetype)) {
         if (u.isLocalFile() && runExecutables) {
             if (KAuthorized::authorize("shell_access")) {
-                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn)); // just execute the url as a command
+                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn, u.directory())); // just execute the url as a command
                 // ## TODO implement deleting the file if tempFile==true
             }
             else {

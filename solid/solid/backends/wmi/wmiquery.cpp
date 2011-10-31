@@ -78,7 +78,7 @@ using namespace Solid::Backends::Wmi;
  static WmiQuery instance;
 */
 
-QString WmiQuery::Item::getProperty(const QString &property )
+QString WmiQuery::Item::getProperty(const QString &property) const
 {
 //    qDebug() << "start property:" << property;
     QString prop = property;
@@ -102,6 +102,31 @@ QString WmiQuery::Item::getProperty(const QString &property )
     m_p->Release();
 //    qDebug() << "end result:" << result;
     return result;
+}
+
+WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p), m_int(new QAtomicInt)
+{
+    m_int->ref();
+}
+
+WmiQuery::Item::Item(const Item& other) : m_p(other.m_p), m_int(other.m_int)
+{
+    m_int->ref();
+}
+
+WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
+{
+    m_p = other.m_p;
+    m_int = other.m_int;
+    m_int->ref();
+    return *this;
+}
+
+WmiQuery::Item::~Item()
+{
+    if(!m_int->deref()) {
+        m_p->Release();
+    }
 }
 
 WmiQuery::WmiQuery()
@@ -158,8 +183,8 @@ WmiQuery::WmiQuery()
               CoUninitialize();
             m_failed = true;
         }
-        else
-            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+//        else
+//            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
     }
 
     if( !m_failed )
@@ -224,9 +249,11 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
             if( !uReturn )
                 break;
 
-         // TODO: any special thinks required to delete pclsObj ?
-            retList.append( new Item(pclsObj) );
+         // pclsObj will be released on destruction of Item
+            retList.append( Item( pclsObj ) );
         }
+        if( pEnumerator ) pEnumerator->Release();
+        else qDebug() << "failed to release enumerator!";
     }
     return retList;
 }

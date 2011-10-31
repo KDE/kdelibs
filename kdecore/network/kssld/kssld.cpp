@@ -170,8 +170,9 @@ static QString normalizeSubdomains(const QString &hostName, int *namePartsCount)
     QString ret;
     int partsCount = 0;
     bool wasPrevDot = true; // -> allow no dot at the beginning and count first name part
-    for (int i = 0; i < hostName.length(); i++) {
-        QChar c = hostName.at(i);
+    const int length = hostName.length();
+    for (int i = 0; i < length; i++) {
+        const QChar c = hostName.at(i);
         if (c == QLatin1Char('.')) {
             if (wasPrevDot || (i + 1 == hostName.length())) {
                 // consecutive dots or a dot at the end are forbidden
@@ -207,10 +208,10 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
 
     // Find a rule for the hostname, either...
     if (group.hasKey(needle)) {
-        // directly (site.tld, a.site.tld etc)
-        if (needlePartsCount >= 2) {
-            foundHostName = true;
-        }
+      // directly (host, site.tld, a.site.tld etc)
+      if (needlePartsCount >= 1) {
+        foundHostName = true;
+      }
     } else {
         // or with wildcards
         //   "tld" <- "*." and "site.tld" <- "*.tld" are not valid matches,

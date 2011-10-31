@@ -198,7 +198,8 @@ private:
     {
         if (interlaced)
         {
-            Q_ASSERT(pngReadStruct->row_info.pixel_depth <= depth * 8);
+            png_byte pngDepth = png_get_bit_depth(pngReadStruct, pngInfoStruct);
+            Q_ASSERT(pngDepth <= depth * 8);
             requestScanline(rowNum, scanlineBuf);
             png_progressive_combine_row(pngReadStruct, scanlineBuf, data);
             notifyScanline(pass + 1, scanlineBuf);

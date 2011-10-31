@@ -103,7 +103,7 @@ Q_SIGNALS:
     void showCharRequested(const QChar& c);
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous))
+    Q_PRIVATE_SLOT(d, void _k_slotSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected))
     Q_PRIVATE_SLOT(d, void _k_resizeCells())
     Q_PRIVATE_SLOT(d, void _k_doubleClicked(const QModelIndex & index))
 
@@ -199,7 +199,7 @@ public:
 
     void updateColumnCount(int maxWidth)
     {
-
+        emit layoutAboutToBeChanged();
         QFontMetrics fm(m_font);
         int maxChar = fm.maxWidth();
         if (maxChar < 2*fm.xHeight()) {
@@ -212,7 +212,7 @@ public:
         if (m_columns <= 0) {
             m_columns = 1;
         }
-        reset();
+        emit layoutChanged();
     }
 private:
     QList<QChar> m_chars;

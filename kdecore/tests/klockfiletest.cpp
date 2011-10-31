@@ -19,7 +19,11 @@
 #include "klockfiletest.h"
 #include "klockfiletest.moc"
 
+#include <kdebug.h>
 #include <unistd.h>
+
+// TODO test locking from two different threads
+//#include <qtconcurrentrun.h>
 
 namespace QTest {
 template<>
@@ -32,6 +36,26 @@ char* toString(const KLockFile::LockResult& result)
 }
 }
 
+// Here's how to test file locking on a FAT filesystem, on linux:
+// cd /tmp
+// dd if=/dev/zero of=fatfile count=180000
+// mkfs.vfat -F32 fatfile
+// mkdir -p fatsystem
+// sudo mount -o loop -o uid=$UID fatfile fatsystem
+// 
+// static const char *const lockName = "/tmp/fatsystem/klockfiletest.lock";
+//
+// =====================================================================
+// 
+// And here's how to test file locking over NFS, on linux:
+// In /etc/exports:    /tmp/nfs localhost(rw,sync,no_subtree_check)
+// sudo mount -t nfs localhost:/tmp/nfs /tmp/nfs-mount
+// 
+// static const char *const lockName = "/tmp/nfs-mount/klockfiletest.lock";
+//
+// =====================================================================
+// 
+
 static const char *const lockName = "klockfiletest.lock";
 
 void
@@ -41,19 +65,28 @@ Test_KLockFile::initTestCase()
 	lockFile = new KLockFile(QLatin1String(lockName));
 }
 
+static KLockFile::LockResult testLockFromProcess(const QString& lockName)
+{
+    const int ret = QProcess::execute("./klockfile_testlock", QStringList() << lockName);
+    return KLockFile::LockResult(ret);
+}
+
 void
 Test_KLockFile::testLock()
 {
 	QVERIFY(!lockFile->isLocked());
 	QCOMPARE(lockFile->lock(), KLockFile::LockOK);
 	QVERIFY(lockFile->isLocked());
-#ifdef Q_WS_WIN
+
+        // Try to lock it again, should fail
 	KLockFile *lockFile2 = new KLockFile(QLatin1String(lockName));
 	QVERIFY(!lockFile2->isLocked());
-	QCOMPARE(lockFile2->lock(), KLockFile::LockFail);
+	QCOMPARE(lockFile2->lock(KLockFile::NoBlockFlag), KLockFile::LockFail);
 	QVERIFY(!lockFile2->isLocked());
 	delete lockFile2;
-#endif    
+
+        // Also try from a different process.
+        QCOMPARE(testLockFromProcess(QLatin1String(lockName)), KLockFile::LockFail);
 }
 
 void
@@ -102,7 +135,7 @@ Test_KLockFile::testStaleNoBlockFlag()
 #else
     char hostname[256];
     ::gethostname(hostname, sizeof(hostname));
-    
+
     QFile f(lockName);
     f.open(QIODevice::WriteOnly);
     QTextStream stream(&f);
@@ -113,7 +146,8 @@ Test_KLockFile::testStaleNoBlockFlag()
     lockFile = new KLockFile(QLatin1String(lockName));
     QVERIFY(!lockFile->isLocked());
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag), KLockFile::LockStale);
-    QTest::ignoreMessage(QtWarningMsg, "WARNING: deleting stale lockfile klockfiletest.lock");
+    QByteArray expectedMsg = QByteArray("WARNING: deleting stale lockfile ") + lockName;
+    QTest::ignoreMessage(QtWarningMsg, expectedMsg);
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag|KLockFile::ForceFlag), KLockFile::LockOK);
 
     QVERIFY(lockFile->isLocked());

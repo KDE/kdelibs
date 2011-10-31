@@ -24,13 +24,13 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QCache>
+#include <QtCore/QMetaType>
 #include <QtCore/QTime>
 #include <QtCore/QTimer>
 #include <QtCore/QList>
 #include <QtCore/QPair>
 #include <QtCore/QThread>
 #include <QtCore/QFutureWatcher>
-#include <QtCore/QMetaType>
 #include <QtCore/QSemaphore>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QtConcurrentRun>
@@ -49,7 +49,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TTL 300
 
-Q_DECLARE_METATYPE(QHostInfo)
+static int dummyHostInfoMetaType = qRegisterMetaType<QHostInfo>("QHostInfo");
 
 namespace KIO
 {
@@ -309,9 +309,7 @@ HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)
       dnsCache(cacheSize),
       resolvConfMTime(0),
       ttl(TTL)
-{
-      qRegisterMetaType<QHostInfo>();
-}
+{}
 
 void HostInfoAgentPrivate::lookupHost(const QString& hostName,
     QObject* receiver, const char* member)

@@ -36,8 +36,19 @@
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <kprocess.h>
+#include <kstandarddirs.h>
 
 using namespace KNS3;
+
+static QString gpgExecutable()
+{
+  QString gpgExe = KStandardDirs::findExe( "gpg" );
+  if ( gpgExe.isEmpty() )
+    gpgExe = KStandardDirs::findExe( "gpg2" );
+  if ( gpgExe.isEmpty() )
+    return QLatin1String( "gpg" );
+  return gpgExe;
+}
 
 Security::Security()
 {
@@ -61,7 +72,7 @@ void Security::readKeys()
     m_runMode = List;
     m_keys.clear();
     m_process = new KProcess();
-    *m_process << "gpg"
+    *m_process << gpgExecutable()
     << "--no-secmem-warning"
     << "--no-tty"
     << "--with-colon"
@@ -87,7 +98,7 @@ void Security::readSecretKeys()
     }
     m_runMode = ListSecret;
     m_process = new KProcess();
-    *m_process << "gpg"
+    *m_process << gpgExecutable()
     << "--no-secmem-warning"
     << "--no-tty"
     << "--with-colon"
@@ -260,7 +271,7 @@ void Security::slotCheckValidity()
 
     //verify the signature
     m_process = new KProcess();
-    *m_process << "gpg"
+    *m_process << gpgExecutable()
     << "--no-secmem-warning"
     << "--status-fd=2"
     << "--command-fd=0"
@@ -342,7 +353,7 @@ void Security::slotSignFile()
 
     //verify the signature
     m_process = new KProcess();
-    *m_process << "gpg"
+    *m_process << gpgExecutable()
     << "--no-secmem-warning"
     << "--status-fd=2"
     << "--command-fd=0"

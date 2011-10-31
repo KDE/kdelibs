@@ -149,7 +149,7 @@ static const char s_defaultFileModuleName[] = "kfilemodule";
 static KAbstractFileModule* fileModule()
 {
     if(!s_module) {
-        QString moduleName = KConfigGroup(KGlobal::config(), ConfigGroup).readEntry("file module", s_defaultFileModuleName);
+        QString moduleName = KConfig("kdeglobals").group(ConfigGroup).readEntry("file module", s_defaultFileModuleName);
         if(!(s_module = loadFileModule(moduleName))) {
             kDebug() << "Failed to load configured file module" << moduleName;
             if(moduleName != s_defaultFileModuleName) {
@@ -1175,6 +1175,7 @@ public:
             return QFileDialog::getExistingDirectory(parent, caption, dir, options);
         }
 
+        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KUrl url(KFileDialog::getExistingDirectory(KUrl(dir), parent, caption));
 
         if(url.isLocalFile())
@@ -1193,6 +1194,7 @@ public:
             return QFileDialog::getOpenFileName(parent, caption, dir, filter, selectedFilter, options);
         }
 
+        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Opening);
@@ -1218,6 +1220,7 @@ public:
             return QFileDialog::getOpenFileNames(parent, caption, dir, filter, selectedFilter, options);
         }
 
+        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Opening);
@@ -1243,6 +1246,7 @@ public:
             return QFileDialog::getSaveFileName(parent, caption, dir, filter, selectedFilter, options);
         }
 
+        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Saving);

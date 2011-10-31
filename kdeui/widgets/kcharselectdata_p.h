@@ -60,6 +60,8 @@ public:
 
     QStringList unihanInfo(const QChar& c);
 
+    QChar::Category category(const QChar& c);
+    bool isPrint(const QChar& c);
     bool isDisplayable(const QChar& c);
     bool isIgnorable(const QChar& c);
     bool isCombining(const QChar& c);

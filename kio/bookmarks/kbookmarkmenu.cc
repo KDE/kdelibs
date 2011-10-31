@@ -725,6 +725,7 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
     m_pOwner(owner)
 {
   setIcon(KIcon(bookmark().icon()));
+  setIconText(text());
   setHelpText( bookmark().url().pathOrUrl() );
   const QString description = bk.description();
   if (!description.isEmpty())
@@ -750,6 +751,7 @@ KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, QObject *parent)
     KBookmarkActionInterface(bm)
 {
   setToolTip( bm.description() );
+  setIconText(text());
 }
 
 KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent)

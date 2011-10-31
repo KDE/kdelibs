@@ -517,11 +517,12 @@ static yyconst flex_int16_t yy_chk[207] =
 char* KTraderParse_putSymbol( char *_name );
 char *KTraderParse_putSymbolInBrackets( char *_name );
 char* KTraderParse_putString( char *_name );
+double KTraderParse_putSimplePositiveFloat( char *_name );
 int kiotraderwrap();
 int kiotraderlex(YYSTYPE * yylval, yyscan_t scanner);
 void KTraderParse_initFlex( const char *_code, yyscan_t _scanner );
 
-#line 525 "lex.c"
+#line 526 "lex.c"
 
 #define INITIAL 0
 
@@ -759,10 +760,10 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 26 "lex.l"
+#line 27 "lex.l"
 
 
-#line 766 "lex.c"
+#line 767 "lex.c"
 
     yylval = yylval_param;
 
@@ -845,162 +846,162 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 28 "lex.l"
+#line 29 "lex.l"
 { return EQ; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "lex.l"
+#line 30 "lex.l"
 { return EQI; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 30 "lex.l"
+#line 31 "lex.l"
 { return NEQ; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 31 "lex.l"
+#line 32 "lex.l"
 { return NEQI; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 32 "lex.l"
+#line 33 "lex.l"
 { return LE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 33 "lex.l"
+#line 34 "lex.l"
 { return GR; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "lex.l"
+#line 35 "lex.l"
 { return LEQ; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "lex.l"
+#line 36 "lex.l"
 { return GEQ; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 36 "lex.l"
+#line 37 "lex.l"
 { return MATCH_INSENSITIVE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 37 "lex.l"
+#line 38 "lex.l"
 { return NOT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 38 "lex.l"
+#line 39 "lex.l"
 { return AND; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 39 "lex.l"
+#line 40 "lex.l"
 { return OR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "lex.l"
+#line 41 "lex.l"
 { return TOKEN_IN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "lex.l"
+#line 42 "lex.l"
 { return TOKEN_IN_INSENSITIVE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 42 "lex.l"
+#line 43 "lex.l"
 { return TOKEN_IN_SUBSTRING; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 43 "lex.l"
+#line 44 "lex.l"
 { return TOKEN_IN_SUBSTRING_INSENSITIVE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 44 "lex.l"
+#line 45 "lex.l"
 { return EXIST; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 45 "lex.l"
+#line 46 "lex.l"
 { return MAX; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 46 "lex.l"
+#line 47 "lex.l"
 { return MIN; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 48 "lex.l"
+#line 49 "lex.l"
 { yylval->name = 0L; return (int)(*yytext); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 50 "lex.l"
+#line 51 "lex.l"
 { yylval->valb = 1; return VAL_BOOL; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 51 "lex.l"
+#line 52 "lex.l"
 { yylval->valb = 0; return VAL_BOOL; }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 53 "lex.l"
+#line 54 "lex.l"
 { yylval->name = KTraderParse_putString( yytext ); return VAL_STRING; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 55 "lex.l"
+#line 56 "lex.l"
 { yylval->vali = atoi( yytext ); return VAL_NUM; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 56 "lex.l"
+#line 57 "lex.l"
 { yylval->vali = atoi( yytext ); return VAL_NUM; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 58 "lex.l"
-{ yylval->vald = atof( yytext ); return VAL_FLOAT; }
+#line 59 "lex.l"
+{ yylval->vald = KTraderParse_putSimplePositiveFloat( yytext ); return VAL_FLOAT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 60 "lex.l"
+#line 61 "lex.l"
 { yylval->name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 62 "lex.l"
+#line 63 "lex.l"
 { yylval->name = KTraderParse_putSymbol( yytext ); return VAL_ID; }
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 64 "lex.l"
+#line 65 "lex.l"
 /* eat up whitespace */
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 66 "lex.l"
+#line 67 "lex.l"
 { printf( "Unrecognized character: %s\n", yytext ); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 68 "lex.l"
+#line 69 "lex.l"
 ECHO;
 	YY_BREAK
-#line 1004 "lex.c"
+#line 1005 "lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2164,7 +2165,7 @@ void kiotraderfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 68 "lex.l"
+#line 69 "lex.l"
 
 
 
@@ -2224,6 +2225,35 @@ char* KTraderParse_putString( char *_str )
   }
   *d = 0;
   return p;
+}
+
+/* Sufficient replacement for atof() to parse [0-9]*\.[0-9]+
+   because atof() consults locale for decimal separator,
+   while we need it always to be the dot. */
+double KTraderParse_putSimplePositiveFloat( char *_str )
+{
+  char *p;
+  int f, g, d;
+
+  f = 0;
+  p = _str;
+  while ( *p >= '0' && *p <= '9' )
+  {
+    f = f * 10 + ( *p - '0' );
+    p++;
+  }
+  if ( *p != '.' )
+    return (double) f;
+  p++;
+  g = 0;
+  d = 1;
+  while ( *p >= '0' && *p <= '9' )
+  {
+    g = g * 10 + ( *p - '0' );
+    d *= 10;
+    p++;
+  }
+  return ( (double) ( f * d + g ) ) / d;
 }
 
 void KTraderParse_initFlex( const char *_code, yyscan_t _scanner )

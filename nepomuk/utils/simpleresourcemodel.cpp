@@ -101,6 +101,24 @@ QModelIndex Nepomuk::Utils::SimpleResourceModel::index( int row, int column, con
 }
 
 
+bool Nepomuk::Utils::SimpleResourceModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+    if( count < 1 || row < 0 || (row + count) > d->resources.size() || parent.isValid() )
+        return false;
+
+    beginRemoveRows( parent, row, row + count -1 );
+
+    QList<Resource>::iterator begin, end;
+    begin = end = d->resources.begin();
+    begin += row;
+    end += row + count;
+    d->resources.erase( begin, end );
+
+    endRemoveRows();
+    return true;
+}
+
+
 void Nepomuk::Utils::SimpleResourceModel::setResources( const QList<Nepomuk::Resource>& resources )
 {
     d->resources = resources;

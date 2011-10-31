@@ -50,6 +50,7 @@ private Q_SLOTS:
 
     void testCreateZip();
     void testCreateZipError();
+    void testReadZipError();
     void testReadZip();
     void testZipFileData();
     void testZipCopyTo();

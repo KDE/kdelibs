@@ -107,6 +107,20 @@ void HTTPAuthenticationTest::testHeaderParsing_data()
     QTest::newRow("invalid-quote") << QByteArray("Basic realm=\"\\\"foo\\\\\\") << QByteArray("Basic") << QByteArray();
 }
 
+QByteArray joinQByteArray(const QList<QByteArray>& list)
+{
+    QByteArray data;
+    const int count = list.count();
+
+    for (int i = 0; i < count; ++i) {
+        if (i > 0)
+            data += ',';
+        data += list.at(i);
+    }
+
+    return data;
+}
+
 void HTTPAuthenticationTest::testHeaderParsing()
 {
     QFETCH(QByteArray, header);
@@ -117,37 +131,38 @@ void HTTPAuthenticationTest::testHeaderParsing()
     QList<QByteArray> parsingResult, expectedResult;
     parseAuthHeader(header, &chosenHeader, &chosenScheme, &parsingResult);
     QCOMPARE(chosenScheme, resultScheme);
-
-    if (!resultValues.isEmpty())
-        expectedResult = resultValues.split(',');
-    QCOMPARE(parsingResult, expectedResult);
+    QCOMPARE(joinQByteArray(parsingResult), resultValues);
 }
 
 void HTTPAuthenticationTest::testAuthenticationSelection_data()
 {
     QTest::addColumn<QByteArray>("input");
+    QTest::addColumn<QByteArray>("expectedScheme");
     QTest::addColumn<QByteArray>("expectedOffer");
 
 #ifdef HAVE_LIBGSSAPI
-    QTest::newRow("all-with-negotiate") << QByteArray("Negotiate , Digest , NTLM , Basic") << QByteArray("Negotiate");
+    QTest::newRow("all-with-negotiate") << QByteArray("Negotiate , Digest , NTLM , Basic") << QByteArray("Negotiate") << QByteArray("Negotiate");
 #endif
-    QTest::newRow("all-without-negotiate") << QByteArray("Digest , NTLM , Basic , NewAuth") << QByteArray("Digest");
-    QTest::newRow("ntlm-basic-unknown") << QByteArray("NTLM , Basic , NewAuth") << QByteArray("NTLM");
-    QTest::newRow("basic-unknown") << QByteArray("Basic , NewAuth") << QByteArray("Basic");
-    QTest::newRow("ntlm-basic+param-ntlm") << QByteArray("NTLM   , Basic realm=foo, bar = baz, NTLM") << QByteArray("NTLM");
+    QTest::newRow("all-without-negotiate") << QByteArray("Digest , NTLM , Basic , NewAuth") << QByteArray("Digest") << QByteArray("Digest");
+    QTest::newRow("ntlm-basic-unknown") << QByteArray("NTLM , Basic , NewAuth") << QByteArray("NTLM") << QByteArray("NTLM");
+    QTest::newRow("basic-unknown") << QByteArray("Basic , NewAuth") << QByteArray("Basic") << QByteArray("Basic");
+    QTest::newRow("ntlm-basic+param-ntlm") << QByteArray("NTLM   , Basic realm=foo, bar = baz, NTLM") << QByteArray("NTLM") << QByteArray("NTLM");
+    QTest::newRow("ntlm-with-type{2|3}") << QByteArray("NTLM VFlQRV8yX09SXzNfTUVTU0FHRQo=") << QByteArray("NTLM") << QByteArray("NTLM VFlQRV8yX09SXzNfTUVTU0FHRQo=");
 
     // Unknown schemes always return blank, i.e. auth request should be ignored
-    QTest::newRow("unknown-param") << QByteArray("Newauth realm=\"newauth\"") << QByteArray();
-    QTest::newRow("unknown-unknown") << QByteArray("NewAuth , NewAuth2") << QByteArray();
+    QTest::newRow("unknown-param") << QByteArray("Newauth realm=\"newauth\"") << QByteArray() << QByteArray();
+    QTest::newRow("unknown-unknown") << QByteArray("NewAuth , NewAuth2") << QByteArray() << QByteArray();
 }
 
 void HTTPAuthenticationTest::testAuthenticationSelection()
 {
     QFETCH(QByteArray, input);
+    QFETCH(QByteArray, expectedScheme);
     QFETCH(QByteArray, expectedOffer);
 
-    QByteArray offer;
-    parseAuthHeader(input, 0, &offer, 0);
+    QByteArray scheme, offer;
+    parseAuthHeader(input, &offer, &scheme, 0);
+    QCOMPARE(scheme, expectedScheme);
     QCOMPARE(offer, expectedOffer);
 }
 
@@ -161,18 +176,20 @@ void HTTPAuthenticationTest::testAuthentication_data()
     QTest::addColumn<QByteArray>("cnonce");
 
     // Test cases from  RFC 2617...
-    QTest::newRow("RfC2617-alladin") << QByteArray("Basic realm=\"WallyWorld\"") <<
-                            QByteArray("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==") <<
-                            QByteArray("Aladdin") <<
-                            QByteArray("open sesame") <<
-                            QByteArray() <<
-                            QByteArray();
-    QTest::newRow("RfC2617-mufasa") << QByteArray("Digest realm=\"testrealm@host.com\", qop=\"auth,auth-int\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"") <<
-                            QByteArray("Digest username=\"Mufasa\", realm=\"testrealm@host.com\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", uri=\"/dir/index.html\", algorithm=MD5, qop=auth, cnonce=\"0a4f113b\", nc=00000001, response=\"6629fae49393a05397450978507c4ef1\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"") <<
-                            QByteArray("Mufasa") <<
-                            QByteArray("Circle Of Life") <<
-                            QByteArray("http://www.nowhere.org/dir/index.html") <<
-                            QByteArray("0a4f113b");
+    QTest::newRow("rfc-2617-basic-example")
+        << QByteArray("Basic realm=\"WallyWorld\"")
+        << QByteArray("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+        << QByteArray("Aladdin")
+        << QByteArray("open sesame")
+        << QByteArray()
+        << QByteArray();
+    QTest::newRow("rfc-2617-digest-example")
+        << QByteArray("Digest realm=\"testrealm@host.com\", qop=\"auth,auth-int\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"")
+        << QByteArray("Digest username=\"Mufasa\", realm=\"testrealm@host.com\", nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\", uri=\"/dir/index.html\", algorithm=MD5, qop=auth, cnonce=\"0a4f113b\", nc=00000001, response=\"6629fae49393a05397450978507c4ef1\", opaque=\"5ccc069c403ebaf9f0171e9517f40e41\"")
+        << QByteArray("Mufasa")
+        << QByteArray("Circle Of Life")
+        << QByteArray("http://www.nowhere.org/dir/index.html")
+        << QByteArray("0a4f113b");
 }
 
 void HTTPAuthenticationTest::testAuthentication()

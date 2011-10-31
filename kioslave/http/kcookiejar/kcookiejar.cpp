@@ -1110,7 +1110,7 @@ KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
     if (_domain.isEmpty())
         stripDomain(_fqdn, domain);
     else
-        stripDomain (_domain, domain);
+        domain = _domain;
 
     return m_cookieDomains.value(domain);
 }
@@ -1194,9 +1194,9 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
 #ifndef NDEBUG
             if (ids.contains(windowId)) {
                 if (ids.count() > 1)
-                    kDebug() << "removing window id" << windowId << "from session cookie";
+                    kDebug(7104) << "removing window id" << windowId << "from session cookie";
                 else
-                    kDebug() << "deleting session cookie";
+                    kDebug(7104) << "deleting session cookie";
             }
 #endif
             if (!ids.removeAll(windowId) || !ids.isEmpty()) {

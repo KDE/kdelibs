@@ -1317,7 +1317,7 @@ QList<int> KLocalePrivate::digitGroupFormatToList(const QString &digitGroupForma
 // Inserts all required occurrences of the group separator into a number string.
 QString KLocalePrivate::formatDigitGroup(const QString &number, const QString &groupSeparator, const QString &decimalSeperator, QList<int> groupList) const
 {
-    if (groupList.isEmpty()) {
+    if (groupList.isEmpty() || groupSeparator.isEmpty()) {
         return number;
     }
 
@@ -1349,34 +1349,36 @@ QString KLocalePrivate::parseDigitGroup(const QString &number, const QString &gr
     QString num = number;
     bool valid = true;
 
-    if (!groupList.isEmpty()) {
-        int separatorSize = groupSeparator.length();
-        int groupCount = groupList.count();
-        int groupAt = 0;
-        int groupSize = groupList.at(groupAt);
-        int pos = number.indexOf(decimalSeparator);
-        if (pos == -1) {
-            pos = number.length();
-        }
-        pos = pos - groupSize - separatorSize;
+    if (!groupSeparator.isEmpty()) {
+        if (!groupList.isEmpty()) {
+            int separatorSize = groupSeparator.length();
+            int groupCount = groupList.count();
+            int groupAt = 0;
+            int groupSize = groupList.at(groupAt);
+            int pos = number.indexOf(decimalSeparator);
+            if (pos == -1) {
+                pos = number.length();
+            }
+            pos = pos - groupSize - separatorSize;
 
-        while (pos > 0 && valid && groupSize > 0) {
-            if (num.mid(pos, separatorSize) == groupSeparator) {
-                num.remove(pos, separatorSize);
-                if (groupAt + 1 < groupCount) {
-                    ++groupAt;
-                    groupSize = groupList.at(groupAt);
+            while (pos > 0 && valid && groupSize > 0) {
+                if (num.mid(pos, separatorSize) == groupSeparator) {
+                    num.remove(pos, separatorSize);
+                    if (groupAt + 1 < groupCount) {
+                        ++groupAt;
+                        groupSize = groupList.at(groupAt);
+                    }
+                    pos = pos - groupSize - separatorSize;
+                } else {
+                    valid = false;
                 }
-                pos = pos - groupSize - separatorSize;
-            } else {
-                valid = false;
             }
         }
-    }
 
-    if (num.contains(groupSeparator)) {
-        valid = false;
-        num = num.remove(groupSeparator);
+        if (num.contains(groupSeparator)) {
+            valid = false;
+            num = num.remove(groupSeparator);
+        }
     }
 
     if (ok) {

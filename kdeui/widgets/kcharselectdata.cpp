@@ -236,7 +236,8 @@ QString KCharSelectData::name(const QChar& c)
         VIndex = (SIndex % NCount) / TCount;
         TIndex = SIndex % TCount;
 
-        return QString("HANGUL SYLLABLE ") + JAMO_L_TABLE[LIndex] + JAMO_V_TABLE[VIndex] + JAMO_T_TABLE[TIndex];
+        return QLatin1String("HANGUL SYLLABLE ") + QLatin1String(JAMO_L_TABLE[LIndex])
+            + QLatin1String(JAMO_V_TABLE[VIndex]) + QLatin1String(JAMO_T_TABLE[TIndex]);
     } else if (unicode >= 0xD800 && unicode <= 0xDB7F)
         return i18n("<Non Private Use High Surrogate>");
     else if (unicode >= 0xDB80 && unicode <= 0xDBFF)
@@ -268,7 +269,7 @@ QString KCharSelectData::name(const QChar& c)
                 max = mid - 1;
             else {
                 quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
-                s = QString(dataFile.constData() + offset);
+                s = QString(dataFile.constData() + offset + 1);
                 break;
             }
         }
@@ -386,7 +387,7 @@ QStringList KCharSelectData::aliases(const QChar& c)
 
     const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
-        aliases.append(QString::fromUtf8(data + offset));
+        aliases.append(QString::fromLatin1(data + offset));
         offset += strlen(data + offset) + 1;
     }
     return aliases;
@@ -459,7 +460,7 @@ QStringList KCharSelectData::equivalents(const QChar& c)
 
     const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
-        equivalents.append(QString::fromUtf8(data + offset));
+        equivalents.append(QString::fromLatin1(data + offset));
         offset += strlen(data + offset) + 1;
     }
 
@@ -484,7 +485,7 @@ QStringList KCharSelectData::approximateEquivalents(const QChar& c)
 
     const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
-        approxEquivalents.append(QString::fromUtf8(data + offset));
+        approxEquivalents.append(QString::fromLatin1(data + offset));
         offset += strlen(data + offset) + 1;
     }
 
@@ -519,7 +520,7 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
             for(int i = 0; i < 7; i++) {
                 quint32 offset = qFromLittleEndian<quint32>(udata + offsetBegin + mid*30 + 2 + i*4);
                 if(offset != 0) {
-                    res.append(QString::fromUtf8(data + offset));
+                    res.append(QString::fromLatin1(data + offset));
                 } else {
                     res.append(QString());
                 }
@@ -531,6 +532,46 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
     return QStringList();
 }
 
+QChar::Category KCharSelectData::category(const QChar& c)
+{
+    if(!openDataFile()) {
+        return c.category();
+    }
+
+    ushort unicode = c.unicode();
+
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+4);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+8);
+
+    int min = 0;
+    int mid;
+    int max = ((offsetEnd - offsetBegin) / 6) - 1;
+    QString s;
+
+    while (max >= min) {
+        mid = (min + max) / 2;
+        const quint16 midUnicode = qFromLittleEndian<quint16>(data + offsetBegin + mid*6);
+        if (unicode > midUnicode)
+            min = mid + 1;
+        else if (unicode < midUnicode)
+            max = mid - 1;
+        else {
+            quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
+            const quint8 categoryCode = * (quint8 *)(data + offset);
+            return QChar::Category(categoryCode);
+        }
+    }
+
+    return c.category();
+}
+
+bool KCharSelectData::isPrint(const QChar& c)
+{
+    QChar::Category cat = category(c);
+    return !(cat == QChar::Other_Control || cat == QChar::Other_NotAssigned);
+}
+
 bool KCharSelectData::isDisplayable(const QChar& c)
 {
     // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
@@ -538,8 +579,8 @@ bool KCharSelectData::isDisplayable(const QChar& c)
     //  to a crash caused by a Qt "noBlockInString" assertion.
     if(c == 0xFDD0 || c == 0xFDD1)
         return false;
-    
-    return c.isPrint() && !isIgnorable(c);
+
+    return !isIgnorable(c) && isPrint(c);
 }
 
 bool KCharSelectData::isIgnorable(const QChar& c)
@@ -768,7 +809,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
     for (int pos = 0; pos <= max; pos++) {
         const quint16 unicode = qFromLittleEndian<quint16>(udata + nameOffsetBegin + pos*6);
         quint32 offset = qFromLittleEndian<quint32>(udata + nameOffsetBegin + pos*6 + 2);
-        appendToIndex(&i, unicode, QString(data + offset));
+        appendToIndex(&i, unicode, QString(data + offset + 1));
     }
 
     // details
@@ -785,7 +826,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
         quint32 aliasOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 2);
 
         for (int j = 0;  j < aliasCount;  j++) {
-            appendToIndex(&i, unicode, QString::fromUtf8(data + aliasOffset));
+            appendToIndex(&i, unicode, QString::fromLatin1(data + aliasOffset));
             aliasOffset += strlen(data + aliasOffset) + 1;
         }
 
@@ -794,7 +835,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
         quint32 notesOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 7);
 
         for (int j = 0;  j < notesCount;  j++) {
-            appendToIndex(&i, unicode, QString::fromUtf8(data + notesOffset));
+            appendToIndex(&i, unicode, QString::fromLatin1(data + notesOffset));
             notesOffset += strlen(data + notesOffset) + 1;
         }
 
@@ -803,7 +844,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
         quint32 apprOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 12);
 
         for (int j = 0;  j < apprCount;  j++) {
-            appendToIndex(&i, unicode, QString::fromUtf8(data + apprOffset));
+            appendToIndex(&i, unicode, QString::fromLatin1(data + apprOffset));
             apprOffset += strlen(data + apprOffset) + 1;
         }
 
@@ -812,7 +853,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
         quint32 equivOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 17);
 
         for (int j = 0;  j < equivCount;  j++) {
-            appendToIndex(&i, unicode, QString::fromUtf8(data + equivOffset));
+            appendToIndex(&i, unicode, QString::fromLatin1(data + equivOffset));
             equivOffset += strlen(data + equivOffset) + 1;
         }
 

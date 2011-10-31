@@ -28,8 +28,11 @@
 
 #include <kurl.h>
 #include <kio/slavebase.h>
+
 class QTcpServer;
 class QTcpSocket;
+class QNetworkProxy;
+class QAuthenticator;
 
 struct FtpEntry
 {
@@ -47,9 +50,9 @@ struct FtpEntry
 //===============================================================================
 // Ftp
 //===============================================================================
-class Ftp : public KIO::SlaveBase
+class Ftp : public QObject, public KIO::SlaveBase
 {
-  // Ftp()	{}
+  Q_OBJECT
 
 public:
   Ftp( const QByteArray &pool, const QByteArray &app );
@@ -227,19 +230,7 @@ private:
   /**
    * Helper for ftpOpenDataConnection
    */
-  int ftpOpenEPRTDataConnection();
-  /**
-   * Helper for ftpOpenDataConnection
-   */
   int ftpOpenPortDataConnection();
-
-  /**
-   * ftpAcceptConnect - wait for incoming connection
-   *
-   * return -2 on error or timeout
-   * otherwise returns socket descriptor
-   */
-  int ftpAcceptConnect();
 
   bool ftpChmod( const QString & path, int permissions );
 
@@ -342,6 +333,10 @@ private:
    */
   StatusCode ftpSendMimeType(int& iError, const KUrl& url);
 
+private Q_SLOTS:
+  void proxyAuthentication(const QNetworkProxy&, QAuthenticator*);
+  void saveProxyAuthentication();
+
 private: // data members
 
   QString m_host;
@@ -353,6 +348,7 @@ private: // data members
    */
   QString m_initialPath;
   KUrl m_proxyURL;
+  QStringList m_proxyUrls;
 
  /**
    * the current working directory - see ftpFolder
@@ -399,7 +395,6 @@ private: // data members
   bool m_bBusy;
 
   bool m_bPasv;
-  bool m_bUseProxy;
 
   KIO::filesize_t m_size;
   static KIO::filesize_t UnknownSize;
@@ -430,6 +425,11 @@ private: // data members
    * active mode server socket
    */
   QTcpServer *m_server;
+
+  /**
+   * proxy server authenticator
+   */
+  QAuthenticator* m_socketProxyAuth;
 };
 
 #endif // KDELIBS_FTP_H

@@ -138,6 +138,11 @@ public:
      */
     QString realm() const;
 
+    /**
+     * Sets the cache password flag to @p enable.
+     */
+    void setCachePasswordEnabled(bool enable) { m_keepPassword = enable; }
+
 #ifdef ENABLE_HTTP_AUTH_NONCE_SETTER
     // NOTE: FOR USE in unit testing ONLY.
     virtual void setDigestNonceValue(const QByteArray&) {}
@@ -160,6 +165,7 @@ protected:
     bool m_forceKeepAlive;
     bool m_forceDisconnect;
     bool m_finalAuthStage;
+    bool m_keepPassword;
     QByteArray m_headerFragment;
 
     QString m_username;
@@ -214,6 +220,8 @@ public:
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
+protected:
+    virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpNtlmAuthentication(KConfigGroup *config = 0)

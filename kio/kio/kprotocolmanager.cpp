@@ -21,13 +21,18 @@
 
 #include "kprotocolmanager.h"
 
+#include "hostinfo_p.h"
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtNetwork/QSslSocket>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
+#include <QtCore/QCache>
 
 #if !defined(QT_NO_NETWORKPROXY) && (defined (Q_OS_WIN32) || defined(Q_OS_MAC))
 #include <QtNetwork/QNetworkProxyFactory>
@@ -52,21 +57,81 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
+typedef QPair<QHostAddress, int> SubnetPair;
+
+/*
+    Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
+    nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
+    "localhost".
+*/
+static bool revmatch(const char *host, const char *nplist)
+{
+  if (host == 0)
+    return false;
+
+  const char *hptr = host + strlen( host ) - 1;
+  const char *nptr = nplist + strlen( nplist ) - 1;
+  const char *shptr = hptr;
+
+  while ( nptr >= nplist )
+  {
+    if ( *hptr != *nptr )
+    {
+      hptr = shptr;
+
+      // Try to find another domain or host in the list
+      while(--nptr>=nplist && *nptr!=',' && *nptr!=' ') ;
+
+      // Strip out multiple spaces and commas
+      while(--nptr>=nplist && (*nptr==',' || *nptr==' ')) ;
+    }
+    else
+    {
+      if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
+        return true;
+      if ( nptr[-1]=='/' && hptr == host ) // "bugs.kde.org" vs "http://bugs.kde.org", the config UI says URLs are ok
+        return true;
+      if ( hptr == host ) // e.g. revmatch("bugs.kde.org","mybugs.kde.org")
+        return false;
+
+      hptr--;
+      nptr--;
+    }
+  }
+
+  return false;
+}
+
+class KProxyData : public QObject
+{
+public:
+    KProxyData(const QString& slaveProtocol, const QStringList& proxyAddresses)
+      :protocol(slaveProtocol)
+      ,proxyList(proxyAddresses) {
+    }
+
+    void removeAddress(const QString& address) {
+        proxyList.removeAll(address);
+    }
+
+    QString protocol;
+    QStringList proxyList;
+};
 
 class KProtocolManagerPrivate
 {
 public:
    KProtocolManagerPrivate();
-
    ~KProtocolManagerPrivate();
+    bool shouldIgnoreProxyFor(const KUrl& url);
 
    KSharedConfig::Ptr config;
    KSharedConfig::Ptr http_config;
-   KUrl url;
-   QString protocol;
-   QStringList proxyList;
    QString modifiers;
    QString useragent;
+   QString noProxyFor;
+   QList<SubnetPair> noProxySubnets;
+   QCache<QString, KProxyData> cachedProxyData;
 
    QMap<QString /*mimetype*/, QString /*protocol*/> protocolForArchiveMimetypes;
 };
@@ -77,12 +142,89 @@ KProtocolManagerPrivate::KProtocolManagerPrivate()
 {
     // post routine since KConfig::sync() breaks if called too late
     qAddPostRoutine(kProtocolManagerPrivate.destroy);
+    cachedProxyData.setMaxCost(200); // double the max cost.
 }
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
     qRemovePostRoutine(kProtocolManagerPrivate.destroy);
 }
+
+/*
+ * Returns true if url is in the no proxy list.
+ */
+bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const KUrl& url)
+{
+  bool isMatch = false;
+  const KProtocolManager::ProxyType type = KProtocolManager::proxyType();
+  const bool useRevProxy = ((type == KProtocolManager::ManualProxy) && KProtocolManager::useReverseProxy());
+  const bool useNoProxyList = (type == KProtocolManager::ManualProxy || type == KProtocolManager::EnvVarProxy);
+
+  // No proxy only applies to ManualProxy and EnvVarProxy types...
+  if (useNoProxyList && noProxyFor.isEmpty()) {
+      QStringList noProxyForList (KProtocolManager::noProxyFor().split(QL1C(',')));
+      QMutableStringListIterator it (noProxyForList);
+      while (it.hasNext()) {
+          SubnetPair subnet = QHostAddress::parseSubnet(it.next());
+          if (!subnet.first.isNull()) {
+              noProxySubnets << subnet;
+              it.remove();
+          }
+      }
+      noProxyFor =  noProxyForList.join(QL1S(","));
+  }
+
+  if (!noProxyFor.isEmpty()) {
+    QString qhost = url.host().toLower();
+    QByteArray host = qhost.toLatin1();
+    const QString qno_proxy = noProxyFor.trimmed().toLower();
+    const QByteArray no_proxy = qno_proxy.toLatin1();
+    isMatch = revmatch(host, no_proxy);
+
+    // If no match is found and the request url has a port
+    // number, try the combination of "host:port". This allows
+    // users to enter host:port in the No-proxy-For list.
+    if (!isMatch && url.port() > 0) {
+      qhost += QL1C(':');
+      qhost += QString::number(url.port());
+      host = qhost.toLatin1();
+      isMatch = revmatch (host, no_proxy);
+    }
+
+    // If the hostname does not contain a dot, check if
+    // <local> is part of noProxy.
+    if (!isMatch && !host.isEmpty() && (strchr(host, '.') == NULL)) {
+      isMatch = revmatch("<local>", no_proxy);
+    }
+  }
+
+  const QString host (url.host());
+
+  if (!noProxySubnets.isEmpty() && !host.isEmpty()) {
+    QHostAddress address (host);
+    // If request url is not IP address, do a DNS lookup of the hostname.
+    // TODO: Perhaps we should make configurable ?
+    if (address.isNull()) {
+      kDebug() << "Performing DNS lookup for" << host;
+      QHostInfo info = KIO::HostInfo::lookupHost(host, 2000);
+      const QList<QHostAddress> addresses = info.addresses();
+      if (!addresses.isEmpty())
+        address = addresses.first();
+    }
+
+    if (!address.isNull()) {
+      Q_FOREACH(const SubnetPair& subnet, noProxySubnets) {
+        if (address.isInSubnet(subnet)) {
+          isMatch = true;
+          break;
+        }
+      }
+    }
+  }
+
+  return (useRevProxy != isMatch);
+}
+
 
 #define PRIVATE_DATA \
 KProtocolManagerPrivate *d = kProtocolManagerPrivate
@@ -96,14 +238,13 @@ void KProtocolManager::reparseConfiguration()
     if (d->config) {
         d->config->reparseConfiguration();
     }
-    d->protocol.clear();
-    d->proxyList.clear();
+    d->cachedProxyData.clear();
+    d->noProxyFor.clear();
     d->modifiers.clear();
     d->useragent.clear();
-    d->url.clear();
 
     // Force the slave config to re-read its config...
-    KIO::SlaveConfig::self()->reset ();
+    KIO::SlaveConfig::self()->reset();
 }
 
 KSharedConfig::Ptr KProtocolManager::config()
@@ -212,10 +353,8 @@ int KProtocolManager::maxCacheSize()
 
 QString KProtocolManager::noProxyFor()
 {
-  KProtocolManager::ProxyType type = proxyType();
-
   QString noProxy = config()->group("Proxy Settings").readEntry( "NoProxyFor" );
-  if (type == EnvVarProxy)
+  if (proxyType() == EnvVarProxy)
     noProxy = QString::fromLocal8Bit(qgetenv(noProxy.toLocal8Bit()));
 
   return noProxy;
@@ -235,12 +374,21 @@ static QString adjustProtocol(const QString& scheme)
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
   const QString key = adjustProtocol(protocol) + QL1S("Proxy");
-  QString socksProxy = config()->group("Proxy Settings").readEntry(QL1S("socksProxy"), QString());
+  QString proxyStr (config()->group("Proxy Settings").readEntry(key));
+  const int index = proxyStr.lastIndexOf(QL1C(' '));
 
-  if (!socksProxy.isEmpty() && !socksProxy.startsWith(QL1S("socks://"), Qt::CaseInsensitive))
-    socksProxy.prepend(QL1S("socks://"));
+  if (index > -1)  {
+      bool ok = false;
+      const QString portStr(proxyStr.right(proxyStr.length() - index - 1));
+      portStr.toInt(&ok);
+      if (ok) {
+          proxyStr = proxyStr.left(index) + QL1C(':') + portStr;
+      } else {
+          proxyStr.clear();
+      }
+  }
 
-  return config()->group("Proxy Settings").readEntry(key, socksProxy);
+  return proxyStr;
 }
 
 QString KProtocolManager::proxyForUrl( const KUrl &url )
@@ -284,8 +432,25 @@ static QStringList getSystemProxyFor( const KUrl& url )
   }
 #else
   // On Unix/Linux use system environment variables if any are set.
-  const QString proxyVar = KProtocolManager::proxyFor(url.protocol());
-  proxies <<  QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed();
+  QString proxyVar (KProtocolManager::proxyFor(url.protocol()));
+  // Check for SOCKS proxy, if not proxy is found for given url.
+  if (!proxyVar.isEmpty()) {
+    const QString proxy (QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed());
+    if (!proxy.isEmpty()) {
+      proxies << proxy;
+    }
+  }
+  // Add the socks proxy as an alternate proxy if it exists,
+  proxyVar = KProtocolManager::proxyFor(QL1S("socks"));
+  if (!proxyVar.isEmpty()) {
+    QString proxy = QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed();
+    // Make sure the scheme of SOCKS proxy is always set to "socks://".
+    const int index = proxy.indexOf(QL1S("://"));
+    proxy = QL1S("socks://") + (index == -1 ? proxy : proxy.mid(index+3));
+    if (!proxy.isEmpty()) {
+      proxies << proxy;
+    }
+  }
 #endif
   return proxies;
 }
@@ -293,36 +458,49 @@ static QStringList getSystemProxyFor( const KUrl& url )
 QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
 {
   QStringList proxyList;
-  const ProxyType pt = proxyType();
 
-  switch (pt)
-  {
-    case PACProxy:
-    case WPADProxy:
+  PRIVATE_DATA;
+  if (!d->shouldIgnoreProxyFor(url)) {
+    switch (proxyType())
     {
-      KUrl u (url);
-      const QString protocol = adjustProtocol(u.protocol());
-      u.setProtocol(protocol);
-
-      if (KProtocolInfo::protocolClass(protocol) != QL1S(":local"))
+      case PACProxy:
+      case WPADProxy:
       {
-        QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
-                                                        QL1S("/modules/proxyscout"),
-                                                        QL1S("org.kde.KPAC.ProxyScout"))
-                                        .call(QL1S("proxiesForUrl"), u.url());
-        proxyList = reply;
+        KUrl u (url);
+        const QString protocol = adjustProtocol(u.protocol());
+        u.setProtocol(protocol);
+
+        if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
+          QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
+                                                         QL1S("/modules/proxyscout"),
+                                                         QL1S("org.kde.KPAC.ProxyScout"))
+                                          .call(QL1S("proxiesForUrl"), u.url());
+          proxyList = reply;
+        }
+        break;
+      }
+      case EnvVarProxy:
+        proxyList = getSystemProxyFor( url );
+        break;
+      case ManualProxy:
+      {
+        QString proxy (proxyFor(url.protocol()));
+        if (!proxy.isEmpty())
+          proxyList << proxy;
+        // Add the socks proxy as an alternate proxy if it exists,
+        proxy = proxyFor(QL1S("socks"));
+        if (!proxy.isEmpty()) {
+          // Make sure the scheme of SOCKS proxy is always set to "socks://".
+          const int index = proxy.indexOf(QL1S("://"));
+          proxy = QL1S("socks://") + (index == -1 ? proxy : proxy.mid(index+3));
+          proxyList << proxy;
+        }
       }
       break;
+      case NoProxy:
+      default:
+        break;
     }
-    case EnvVarProxy:
-      proxyList = getSystemProxyFor( url );
-      break;
-    case ManualProxy:
-      proxyList << proxyFor( url.protocol() );
-      break;
-    case NoProxy:
-    default:
-      break;
   }
 
   if (proxyList.isEmpty()) {
@@ -335,102 +513,13 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
 void KProtocolManager::badProxy( const QString &proxy )
 {
   QDBusInterface( QL1S("org.kde.kded"), QL1S("/modules/proxyscout"))
-      .call(QL1S("blackListProxy"), proxy);
-}
+      .asyncCall(QL1S("blackListProxy"), proxy);
 
-/*
-    Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
-    nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
-    "localhost".
-*/
-static bool revmatch(const char *host, const char *nplist)
-{
-  if (host == 0)
-    return false;
-
-  const char *hptr = host + strlen( host ) - 1;
-  const char *nptr = nplist + strlen( nplist ) - 1;
-  const char *shptr = hptr;
-
-  while ( nptr >= nplist )
-  {
-    if ( *hptr != *nptr )
-    {
-      hptr = shptr;
-
-      // Try to find another domain or host in the list
-      while(--nptr>=nplist && *nptr!=',' && *nptr!=' ') ;
-
-      // Strip out multiple spaces and commas
-      while(--nptr>=nplist && (*nptr==',' || *nptr==' ')) ;
-    }
-    else
-    {
-      if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
-        return true;
-      if ( nptr[-1]=='/' && hptr == host ) // "bugs.kde.org" vs "http://bugs.kde.org", the config UI says URLs are ok
-        return true;
-      if ( hptr == host ) // e.g. revmatch("bugs.kde.org","mybugs.kde.org")
-        return false;
-
-      hptr--;
-      nptr--;
-    }
+  PRIVATE_DATA;
+  const QStringList keys (d->cachedProxyData.keys());
+  Q_FOREACH(const QString& key, keys) {
+      d->cachedProxyData[key]->removeAddress(proxy);
   }
-
-  return false;
-}
-
-/*
- * Returns true if url is in the no proxy list.
- */
-static bool shouldIgnoreProxyFor(const KUrl& url)
-{
-  bool isRevMatch = false;
-  const KProtocolManager::ProxyType type = KProtocolManager::proxyType();
-  const bool useRevProxy = ((type == KProtocolManager::ManualProxy) && KProtocolManager::useReverseProxy());
-
-  QString noProxy;
-  // Check no proxy information iff the proxy type is either
-  // manual or environment variable based...
-  if ( (type == KProtocolManager::ManualProxy) || (type == KProtocolManager::EnvVarProxy) )
-    noProxy = KProtocolManager::noProxyFor();
-
-  if (!noProxy.isEmpty())
-  {
-    QString qhost = url.host().toLower();
-    QByteArray host = qhost.toLatin1();
-    QString qno_proxy = noProxy.trimmed().toLower();
-    const QByteArray no_proxy = qno_proxy.toLatin1();
-    isRevMatch = revmatch(host, no_proxy);
-
-    // If no match is found and the request url has a port
-    // number, try the combination of "host:port". This allows
-    // users to enter host:port in the No-proxy-For list.
-    if (!isRevMatch && url.port() > 0)
-    {
-      qhost += QL1C(':');
-      qhost += QString::number(url.port());
-      host = qhost.toLatin1();
-      isRevMatch = revmatch (host, no_proxy);
-    }
-
-    // If the hostname does not contain a dot, check if
-    // <local> is part of noProxy.
-    if (!isRevMatch && !host.isEmpty() && (strchr(host, '.') == NULL))
-      isRevMatch = revmatch("<local>", no_proxy);
-  }
-
-  return (useRevProxy != isRevMatch);
-}
-
-// For proxy address comparisons, we only need to compare
-// protocol, host and port number. Nothing else.
-static bool compareProxyUrls(const KUrl& u1, const KUrl& u2)
-{
-  return ((u1.protocol() == u2.protocol()) &&
-          (u1.host() == u2.host()) &&
-          (u1.port() == u2.port()));
 }
 
 QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
@@ -443,73 +532,82 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
     return protocol;
 }
 
+// Generates proxy cache key from request given url.
+static void extractProxyCacheKeyFromUrl(const KUrl& u, QString* key)
+{
+    if (!key)
+        return;
+
+    *key = u.protocol();
+    *key += u.host();
+
+    if (u.port() > 0)
+        *key += QString::number(u.port());
+}
+
 QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
 {
-  // Do not perform a proxy lookup for any url classified as a ":local" url or
-  // one that does not have a host name.
-  if (KProtocolInfo::protocolClass(url.protocol()).compare(QL1S(":local"), Qt::CaseInsensitive) == 0 ||
-      !url.hasHost())
-  {
-      return url.protocol();
+  if (url.hasSubUrl()) { // We don't want the suburl's protocol
+      const KUrl::List list = KUrl::split(url);
+      return slaveProtocol(list.last(), proxyList);
   }
 
-  if (url.hasSubUrl()) // We don't want the suburl's protocol
-  {
-    const KUrl::List list = KUrl::split(url);
-    return slaveProtocol(list.last(), proxyList);
+  proxyList.clear();
+
+  // Do not perform a proxy lookup for any url classified as a ":local" url or
+  // one that does not have a host component or if proxy is disabled.
+  QString protocol (url.protocol());
+  if (!url.hasHost()
+      || KProtocolInfo::protocolClass(protocol) == QL1S(":local")
+      || KProtocolManager::proxyType() == KProtocolManager::NoProxy) {
+      return protocol;
   }
+
+  QString proxyCacheKey;
+  extractProxyCacheKeyFromUrl(url, &proxyCacheKey);
 
   PRIVATE_DATA;
-  if (compareProxyUrls(d->url, url))
-  {
-    proxyList = d->proxyList;
-    return d->protocol;
+  // Look for cached proxy information to avoid more work.
+  if (d->cachedProxyData.contains(proxyCacheKey)) {
+      KProxyData* data = d->cachedProxyData.object(proxyCacheKey);
+      proxyList = data->proxyList;
+      return data->protocol;
   }
 
-  if (useProxy() && !shouldIgnoreProxyFor(url))
-  {
-    const QStringList proxies = proxiesForUrl(url);
-    proxyList.clear();
+  const QStringList proxies = proxiesForUrl(url);
+  const int count = proxies.count();
 
-    Q_FOREACH(const QString& proxy, proxies)
-    {
-      kDebug() << "Proxy for" <<  url.host() << ":" << proxy;
-      if (proxy == QL1S("DIRECT") || proxy.isEmpty())
-      {
-        continue;
+  if (count > 0 && !(count == 1 && proxies.first() == QL1S("DIRECT"))) {
+      Q_FOREACH(const QString& proxy, proxies) {
+          if (proxy == QL1S("DIRECT")) {
+              proxyList << proxy;
+          } else {
+              KUrl u (proxy);
+              if (!u.isEmpty() && u.isValid() && !u.protocol().isEmpty()) {
+                  proxyList << proxy;
+              }
+          }
       }
-
-      d->url = proxy;
-      if (d->url.isValid() && !d->url.protocol().isEmpty())
-      {
-        // The idea behind slave protocols is not applicable to http
-        // and webdav protocols as well as protocols unknown to KDE.
-        const QString protocol = url.protocol();
-        if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("webdav")) ||
-            !KProtocolInfo::isKnownProtocol(protocol))
-          d->protocol = protocol;
-        else
-        {
-          d->protocol = d->url.protocol();
-          kDebug () << "slaveProtocol: " << d->protocol;
-        }
-        proxyList << proxy;
-      }
-    }
-
-    if (!proxyList.isEmpty())
-    {
-      d->url = url;
-      d->proxyList = proxyList;
-      return d->protocol;
-    }
   }
 
-  d->url = url;
-  d->protocol = url.protocol();
-  d->proxyList.clear();
-  proxyList.clear();
-  return d->protocol;
+  // The idea behind slave protocols is not applicable to http
+  // and webdav protocols as well as protocols unknown to KDE.
+  if (!proxyList.isEmpty()
+      && !protocol.startsWith(QL1S("http"))
+      && !protocol.startsWith(QL1S("webdav"))
+      && KProtocolInfo::isKnownProtocol(protocol)) {
+      Q_FOREACH(const QString& proxy, proxyList) {
+          KUrl u (proxy);
+          if (u.isValid() && KProtocolInfo::isKnownProtocol(u.protocol())) {
+              protocol = u.protocol();
+              break;
+          }
+      }
+  }
+
+  // cache the proxy information...
+  d->cachedProxyData.insert(proxyCacheKey, new KProxyData(protocol, proxyList));
+  return protocol;
 }
 
 /*================================= USER-AGENT SETTINGS =====================*/
@@ -672,19 +770,8 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
     if (sysInfoFound)
     {
-      // Platform (e.g. X11)
-#if defined(Q_WS_X11)
-        agentStr.replace(QL1S("%platform%"), QL1S("X11"), Qt::CaseInsensitive);
-#elif defined(Q_WS_MAC)
-        agentStr.replace(QL1S("%platform%"), QL1S("Macintosh"), Qt::CaseInsensitive);
-#elif defined(Q_WS_WIN)
-        agentStr.replace(QL1S("%platform%"), QL1S("Windows"), Qt::CaseInsensitive);
-#elif defined (Q_WS_S60)
-        agentStr.replace(QL1S("%platform%"), QL1S("Symbian"), Qt::CaseInsensitive);
-#endif
-
-      // Platform can no longer be turned off.
-      agentStr.remove(QL1S("%platform%"), Qt::CaseInsensitive);
+      // Platform (e.g. X11). It is no longer configurable from UI.
+      agentStr.replace(QL1S("%platform%"), platform(), Qt::CaseInsensitive);
 
       // Operating system (e.g. Linux)
       if (modifiers.contains('o'))

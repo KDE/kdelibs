@@ -1,4 +1,4 @@
-<!-- This file contains entities (only!) to make authoring/translating
+	<!-- This file contains entities (only!) to make authoring/translating
      a document easier.  They are necessarily language-specific.
      In the case of name clashes, entities in this file always lose.
      Keep the entities simple, but _always_ provide them with full markup.
@@ -56,8 +56,8 @@
 <!ENTITY traducteurClementContet      '<othercredit role="translator"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurClementContet       '<othercredit role="reviewer"> <firstname>Clément</firstname> <surname>Contet</surname> <affiliation><address><email>keelize@yahoo.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
-<!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>j.cornavin@sfr.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
-<!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>j.cornavin@sfr.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+<!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcorn@free.fr</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcorn@free.fr</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurBenoitCosandier      '<othercredit role="translator"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurBenoitCosandier       '<othercredit role="reviewer"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -148,6 +148,9 @@
 
 <!ENTITY traducteurYvesGuillou    '<othercredit role="translator"><firstname>Yves</firstname><surname>Guillou</surname><affiliation><address><email>yv_guil@club-internet.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurYvesGuillou     '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Guillou</surname><affiliation><address><email>yv_guil@club-internet.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
+<!ENTITY traducteurRobinGuitton    '<othercredit role="translator"><firstname>Robin</firstname><surname>Guitton</surname><affiliation><address><email>robin.guitton@sud-ouest.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurRobinGuitton     '<othercredit role="reviewer"><firstname>Robin</firstname><surname>Guitton</surname><affiliation><address><email>robin.guitton@sud-ouest.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurYohannHamon    '<othercredit role="translator"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurYohannHamon     '<othercredit role="reviewer"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -285,7 +288,7 @@
 <!ENTITY AlviseCavallari   'Alvise Cavallari <email>alvise.cavallari@kdemail.net</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
 <!ENTITY ClementContet     'Clément Contet <email>keelize@yahoo.fr</email>'>
-<!ENTITY JoelleCornavin    'Joëlle Cornavin <email>j.cornavin@sfr.fr</email>'>
+<!ENTITY JoelleCornavin    'Joëlle Cornavin <email>jcorn@free.fr</email>'>
 <!ENTITY BenoitCosandier   'Benoit Cosandier <email>cosandier.benoit@bluewin.ch</email>'>
 <!ENTITY ThibautCousin     'Thibaut Cousin <email>cousin@in2p3.fr</email>'>
 <!ENTITY GerardDelafond    'Gérard Delafond <email>gerard@delafond.org</email>'>
@@ -315,6 +318,7 @@
 <!ENTITY StephaneGuedon   'Stéphane Guedon <email>stephane@22decembre.fr.nf</email>'>
 <!ENTITY JoelGuelluy   'Joël Guelluy <email>jguelluy@chez.com</email>'>
 <!ENTITY YvesGuillou   'Yves Guillou <email>yv_guil@club-internet.fr</email>'>
+<!ENTITY RobinGuitton   'Robin Guitton <email>robin.guitton@sud-ouest.org</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
 <!ENTITY gregoireHubert  'Grégoire Hubert <email>greg@coolkeums.org</email>'>
 <!ENTITY YohannHamon  'Yohann Hamon <email>yohann_hamon@yahoo.fr</email>'>

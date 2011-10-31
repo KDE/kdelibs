@@ -197,15 +197,15 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
     if ( !m_mimeType.isEmpty() )
         mimeType = KMimeType::mimeType(m_mimeType, KMimeType::ResolveAliases);
 
-    if ( mimeType ) {
-        if (m_image && !m_image->suggestedTitle().isEmpty()) {
+    if ( mimeType && m_image ) {
+        if ( !m_image->suggestedTitle().isEmpty() ) {
             caption = i18n( "%1 (%2 - %3x%4 Pixels)", m_image->suggestedTitle(), mimeType->comment(), m_image->pixmap_size().width(), m_image->pixmap_size().height() );
         } else {
             caption = i18n( "%1 - %2x%3 Pixels" ,  mimeType->comment() ,
                   m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         }
     } else {
-        if (m_image && !m_image->suggestedTitle().isEmpty()) {
+        if ( !m_image->suggestedTitle().isEmpty() ) {
             caption = i18n( "%1 (%2x%3 Pixels)" , m_image->suggestedTitle(),  m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         } else {
             caption = i18n( "Image - %1x%2 Pixels" ,  m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );

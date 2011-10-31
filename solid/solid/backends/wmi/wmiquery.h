@@ -24,6 +24,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QVariant>
 #include <QtCore/QList>
+#include <QtCore/QAtomicInt>
+#include <QtCore/QSharedPointer>
 
 #include <solid/solid_export.h>
 
@@ -52,15 +54,21 @@ class WmiQuery
 public:
     class Item {
     public:
-        Item(IWbemClassObject *p) : m_p(p) {}
-        ~Item() {} // how to delete the pointer ?
-        QString getProperty(const QString &property );
+        Item(IWbemClassObject *p);
+        Item(const Item& other);
+        Item& operator=(const Item& other);
+        ~Item();
+
+        QString getProperty(const QString &property) const;
 
     private:
-        IWbemClassObject * m_p;
+        Item() {}
+        // QSharedPointer alone doesn't help because we need to call Release()
+        IWbemClassObject* m_p;
+        QSharedPointer<QAtomicInt> m_int;
     };
 
-    typedef QList<Item*> ItemList;
+    typedef QList<Item> ItemList;
 
     WmiQuery();
     ~WmiQuery();

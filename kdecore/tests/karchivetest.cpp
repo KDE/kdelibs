@@ -618,7 +618,36 @@ void KArchiveTest::testCreateZipError()
 
     writeTestFilesToArchive(&zip);
 
+    // try to add something as a file that is no file
+    QVERIFY( !zip.addLocalFile( QDir::currentPath(), "bogusdir" ) );
+
     QVERIFY(!zip.close());
+}
+
+void KArchiveTest::testReadZipError()
+{
+    QFile brokenZip( "broken.zip" );
+    QVERIFY( brokenZip.open( QIODevice::WriteOnly ) );
+
+    // incomplete magic
+    brokenZip.write( QByteArray( "PK\003" ) );
+
+    brokenZip.close();
+
+    KZip zip( "broken.zip" );
+
+    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+
+    QVERIFY( brokenZip.open( QIODevice::WriteOnly | QIODevice::Append ) );
+
+    // add rest of magic, but still incomplete header
+    brokenZip.write( QByteArray( "\004\000\000\000\000" ) );
+
+    brokenZip.close();
+
+    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+
+    QVERIFY( brokenZip.remove() );
 }
 
 void KArchiveTest::testReadZip()
