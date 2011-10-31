@@ -71,25 +71,24 @@ void OpenSessionJob::start()
         emitResult();
     }
     else {
-        qRegisterMetaType<SecretStruct>();
-        qDBusRegisterMetaType<SecretStruct>();
-        
-        qRegisterMetaType<StringStringMap>();
-        qDBusRegisterMetaType<StringStringMap>();
-        
-        qRegisterMetaType<ObjectPathSecretMap>();
-        qDBusRegisterMetaType<ObjectPathSecretMap>();
-        
-        qRegisterMetaType<StringVariantMap>();
-        qDBusRegisterMetaType<StringVariantMap>();
+        qRegisterMetaType<KSecretsService::SecretStruct>();
+        qDBusRegisterMetaType<KSecretsService::SecretStruct>();
+
+        qRegisterMetaType<KSecretsService::StringStringMap>();
+        qDBusRegisterMetaType<KSecretsService::StringStringMap>();
+
+        qRegisterMetaType<KSecretsService::ObjectPathSecretMap>();
+        qDBusRegisterMetaType<KSecretsService::ObjectPathSecretMap>();
+
+        qRegisterMetaType<KSecretsService::StringVariantMap>();
+        qDBusRegisterMetaType<KSecretsService::StringVariantMap>();
 
         // NOTE: this is already registered by Qt in qtextratypes.h
         // qRegisterMetaType< QList<QDBusObjectPath> >();
         // qDBusRegisterMetaType< QList<QDBusObjectPath> >();
-        
+
         // launch the daemon if it's not yet started
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME )))
-        {
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1( SERVICE_NAME ))) {
             QString error;
 
             int ret = KToolInvocation::startServiceByDesktopPath("ksecretsserviced.desktop", QStringList(), &error);
