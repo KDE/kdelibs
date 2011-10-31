@@ -43,7 +43,7 @@
 #include <QApplication>
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
-#include <QDesktopServices>
+#include <qstandardpaths.h>
 
 // next two needed so we can set their palettes
 #include <QtGui/QToolTip>
@@ -621,7 +621,7 @@ void KGlobalSettingsData::dropMouseSettingsCache()
 
 QString KGlobalSettings::desktopPath()
 {
-    QString path = QDesktopServices::writableLocation( QDesktopServices::DesktopLocation );
+    QString path = QStandardPaths::writableLocation( QStandardPaths::DesktopLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
@@ -641,7 +641,7 @@ QString KGlobalSettings::autostartPath()
 
 QString KGlobalSettings::documentPath()
 {
-    QString path = QDesktopServices::writableLocation( QDesktopServices::DocumentsLocation );
+    QString path = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
@@ -669,19 +669,19 @@ QString KGlobalSettings::downloadPath()
 
 QString KGlobalSettings::videosPath()
 {
-    QString path = QDesktopServices::writableLocation( QDesktopServices::MoviesLocation );
+    QString path = QStandardPaths::writableLocation( QStandardPaths::MoviesLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
 QString KGlobalSettings::picturesPath()
 {
-    QString path = QDesktopServices::writableLocation( QDesktopServices::PicturesLocation );
+    QString path = QStandardPaths::writableLocation( QStandardPaths::PicturesLocation );
     return path.isEmpty() ? QDir::homePath() :path;
 }
 
 QString KGlobalSettings::musicPath()
 {
-    QString path = QDesktopServices::writableLocation( QDesktopServices::MusicLocation );
+    QString path = QStandardPaths::writableLocation( QStandardPaths::MusicLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
