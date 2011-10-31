@@ -255,7 +255,7 @@ Q_SIGNALS:
     /**
      * TODO: not yet implemented
      */
-    void itemCreated( const SecretItem& ); 
+    void itemCreated( const KSecretsService::SecretItem& ); 
     /**
      * TODO: not yet implemented
      */
@@ -263,7 +263,7 @@ Q_SIGNALS:
     /**
      * TODO: not yet implemented
      */
-    void itemChanged( const SecretItem& );
+    void itemChanged( const KSecretsService::SecretItem& );
 
     
 protected:

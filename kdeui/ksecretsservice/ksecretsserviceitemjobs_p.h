@@ -45,7 +45,7 @@ private Q_SLOTS:
     void getSecretReply( QDBusPendingCallWatcher* watcher );
     
 Q_SIGNALS:
-    void getSecretFinished( SecretItemJob::ItemJobError, const QString& );
+    void getSecretFinished( KSecretsService::SecretItemJob::ItemJobError, const QString& );
 
 public:
     GetSecretItemSecretJob *job;
