@@ -791,7 +791,7 @@ QString KService::locateLocal() const
         (QDir::isRelativePath(entryPath()) && d->categories.isEmpty()))
         return KDesktopFile::locateLocal(entryPath());
 
-    return QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + d->menuId;
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + d->menuId;
 }
 
 QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
@@ -824,7 +824,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
     if (menuId)
         *menuId = result;
 
-    return QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + result;
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/applications/") + result;
 }
 
 bool KService::isApplication() const

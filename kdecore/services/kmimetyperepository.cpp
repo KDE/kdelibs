@@ -666,7 +666,7 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
         } else {
             const QString defaultMimeType = KMimeType::defaultMimeType();
             errorMissingMimeTypes(QStringList(defaultMimeType));
-            const QString pathDefaultMimeType = QStandardPaths::storageLocation(QStandardPaths::GenericDataLocation) +
+            const QString pathDefaultMimeType = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
                                                     QLatin1String("/mime/") + defaultMimeType + QLatin1String(".xml");
             m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, QLatin1String("mime"));
         }

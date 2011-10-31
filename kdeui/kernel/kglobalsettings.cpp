@@ -621,7 +621,7 @@ void KGlobalSettingsData::dropMouseSettingsCache()
 
 QString KGlobalSettings::desktopPath()
 {
-    QString path = QDesktopServices::storageLocation( QDesktopServices::DesktopLocation );
+    QString path = QDesktopServices::writableLocation( QDesktopServices::DesktopLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
@@ -641,7 +641,7 @@ QString KGlobalSettings::autostartPath()
 
 QString KGlobalSettings::documentPath()
 {
-    QString path = QDesktopServices::storageLocation( QDesktopServices::DocumentsLocation );
+    QString path = QDesktopServices::writableLocation( QDesktopServices::DocumentsLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
@@ -669,19 +669,19 @@ QString KGlobalSettings::downloadPath()
 
 QString KGlobalSettings::videosPath()
 {
-    QString path = QDesktopServices::storageLocation( QDesktopServices::MoviesLocation );
+    QString path = QDesktopServices::writableLocation( QDesktopServices::MoviesLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
 QString KGlobalSettings::picturesPath()
 {
-    QString path = QDesktopServices::storageLocation( QDesktopServices::PicturesLocation );
+    QString path = QDesktopServices::writableLocation( QDesktopServices::PicturesLocation );
     return path.isEmpty() ? QDir::homePath() :path;
 }
 
 QString KGlobalSettings::musicPath()
 {
-    QString path = QDesktopServices::storageLocation( QDesktopServices::MusicLocation );
+    QString path = QDesktopServices::writableLocation( QDesktopServices::MusicLocation );
     return path.isEmpty() ? QDir::homePath() : path;
 }
 

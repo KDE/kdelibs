@@ -205,7 +205,7 @@ bool SocketConnectionBackend::listenForRemote()
     Q_ASSERT(!localServer);     // !tcpServer as well
 
     if (mode == LocalSocketMode) {
-        const QString prefix = QStandardPaths::storageLocation(QStandardPaths::RuntimeLocation);
+        const QString prefix = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
         QTemporaryFile socketfile(prefix + QLatin1Char('/') + KGlobal::mainComponent().componentName() + QLatin1String("XXXXXX.slave-socket"));
         if (!socketfile.open())
         {

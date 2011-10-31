@@ -83,7 +83,7 @@ void tst_qstandardpaths::testDefaultLocations()
     qputenv("XDG_CONFIG_HOME", QByteArray());
     qputenv("XDG_CONFIG_DIRS", QByteArray());
     const QString expectedConfHome = QDir::homePath() + QString::fromLatin1("/.config");
-    QCOMPARE(QStandardPaths::storageLocation(QStandardPaths::ConfigLocation), expectedConfHome);
+    QCOMPARE(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation), expectedConfHome);
     const QStringList confDirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     QCOMPARE(confDirs.count(), 2);
     QVERIFY(confDirs.contains(expectedConfHome));
@@ -104,8 +104,8 @@ void tst_qstandardpaths::testCustomLocations()
 #ifndef Q_OS_WIN
     setCustomLocations();
 
-    // test storageLocation()
-    QCOMPARE(QStandardPaths::storageLocation(QStandardPaths::ConfigLocation), m_thisDir);
+    // test writableLocation()
+    QCOMPARE(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation), m_thisDir);
 
     // test locate()
     const QString thisFileName = QString::fromLatin1("tst_qstandardpaths.cpp");
