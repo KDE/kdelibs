@@ -41,13 +41,13 @@
 #include "ksecretsservice/ksecretsservicecollection.h"
 #include "kwallet_interface.h"
 
-using namespace KWallet;
-using namespace KSecretsService;
-
-typedef QMap<QString, StringStringMap> StringToStringStringMapMap;
+typedef QMap<QString, KSecretsService::StringStringMap> StringToStringStringMapMap;
 Q_DECLARE_METATYPE(StringToStringStringMapMap)
 typedef QMap<QString, QByteArray> StringByteArrayMap;
 Q_DECLARE_METATYPE(StringByteArrayMap)
+
+namespace KWallet
+{
 
 class KWalletDLauncher
 {
@@ -86,7 +86,7 @@ static void registerTypes()
 {
     static bool registered = false;
     if (!registered) {
-        qDBusRegisterMetaType<StringStringMap>();
+        qDBusRegisterMetaType<KSecretsService::StringStringMap>();
         qDBusRegisterMetaType<StringToStringStringMapMap>();
         qDBusRegisterMetaType<StringByteArrayMap>();
         registered = true;
@@ -143,13 +143,13 @@ public:
     template <typename T> 
     int writeEntry( const QString& key, const T &value, Wallet::EntryType entryType ) {
         int rc = -1;
-        Secret secret;
+        KSecretsService::Secret secret;
         secret.setValue( QVariant::fromValue<T>(value) );
 
-        StringStringMap attrs;
+        KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = folder;
         attrs[KSS_ATTR_WALLETTYPE] = QString("%1").arg((int)entryType);
-        CreateCollectionItemJob *createItemJob = secretsCollection->createItem( key, attrs, secret );
+        KSecretsService::CreateCollectionItemJob *createItemJob = secretsCollection->createItem( key, attrs, secret );
 
         if ( !createItemJob->exec() ) {
             kDebug(285) << "Cannot execute CreateCollectionItemJob : " << createItemJob->errorString();
@@ -158,20 +158,20 @@ public:
         return rc;
     }
     
-    QExplicitlySharedDataPointer<SecretItem> findItem( const QString& key ) const;
+    QExplicitlySharedDataPointer<KSecretsService::SecretItem> findItem( const QString& key ) const;
     template <typename T> int readEntry( const QString& key, T& value ) const;
-    bool readSecret( const QString& key, Secret& value ) const;
+    bool readSecret( const QString& key, KSecretsService::Secret& value ) const;
     
     template <typename V>
     int forEachItemThatMatches( const QString &key, V verb ) {
         int rc = -1;
-        StringStringMap attrs;
+        KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = folder;
-        SearchCollectionItemsJob *searchItemsJob = secretsCollection->searchItems(attrs);
+        KSecretsService::SearchCollectionItemsJob *searchItemsJob = secretsCollection->searchItems(attrs);
         if ( searchItemsJob->exec() ) {
             QRegExp re(key, Qt::CaseSensitive, QRegExp::Wildcard);
-            foreach( SearchCollectionItemsJob::Item item , searchItemsJob->items() ) {
-                ReadItemPropertyJob *readLabelJob = item->label();
+            foreach( KSecretsService::SearchCollectionItemsJob::Item item , searchItemsJob->items() ) {
+                KSecretsService::ReadItemPropertyJob *readLabelJob = item->label();
                 if ( readLabelJob->exec() ) {
                     QString label = readLabelJob->propertyValue().toString();
                     if ( re.exactMatch( label ) ) {
@@ -186,7 +186,7 @@ public:
             }
         }
         else {
-            kDebug(285) << "Cannot execute SearchCollectionItemsJob " << searchItemsJob->errorString();
+            kDebug(285) << "Cannot execute KSecretsService::SearchCollectionItemsJob " << searchItemsJob->errorString();
         }
         return rc;
     }
@@ -202,7 +202,7 @@ public:
     int transactionId;
     QPointer<QEventLoop> loop;
 
-    Collection *secretsCollection;
+    KSecretsService::Collection *secretsCollection;
 };
 
 static const char s_kwalletdServiceName[] = "org.kde.kwalletd";
@@ -262,7 +262,7 @@ Wallet::~Wallet() {
 QStringList Wallet::walletList() {
     QStringList result;
     if (walletLauncher->m_useKSecretsService) {
-        ListCollectionsJob *listJob = Collection::listCollections();
+        KSecretsService::ListCollectionsJob *listJob = KSecretsService::Collection::listCollections();
         if ( listJob->exec() ) {
             result = listJob->collections();
         }
@@ -291,8 +291,8 @@ void Wallet::changePassword(const QString& name, WId w) {
     // Make sure the password prompt window will be visible and activated
     KWindowSystem::allowExternalProcessWindowActivation();
     if (walletLauncher->m_useKSecretsService) {
-        Collection *coll = Collection::findCollection( name );
-        ChangeCollectionPasswordJob* changePwdJob = coll->changePassword();
+        KSecretsService::Collection *coll = KSecretsService::Collection::findCollection( name );
+        KSecretsService::ChangeCollectionPasswordJob* changePwdJob = coll->changePassword();
         if ( !changePwdJob->exec() ) {
             kDebug(285) << "Cannot execute change password job: " << changePwdJob->errorString();
         }
@@ -324,8 +324,8 @@ bool Wallet::isEnabled() {
 
 bool Wallet::isOpen(const QString& name) {
     if (walletLauncher->m_useKSecretsService) {
-        Collection *coll = Collection::findCollection( name, Collection::OpenOnly );
-        ReadCollectionPropertyJob *readLocked = coll->isLocked();
+        KSecretsService::Collection *coll = KSecretsService::Collection::findCollection( name, KSecretsService::Collection::OpenOnly );
+        KSecretsService::ReadCollectionPropertyJob *readLocked = coll->isLocked();
         if ( readLocked->exec() ) {
             return !readLocked->propertyValue().toBool();
         }
@@ -368,7 +368,7 @@ int Wallet::closeWallet(const QString& name, bool force) {
 
 int Wallet::deleteWallet(const QString& name) {
     if (walletLauncher->m_useKSecretsService) {
-        Collection *coll = Collection::findCollection(name, Collection::OpenOnly);
+        KSecretsService::Collection *coll = KSecretsService::Collection::findCollection(name, KSecretsService::Collection::OpenOnly);
         KJob *deleteJob = coll->deleteCollection();
         if (!deleteJob->exec()) {
             kDebug(285) << "Cannot execute delete job " << deleteJob->errorString();
@@ -395,7 +395,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     if (walletLauncher->m_useKSecretsService) {
         Wallet *wallet = new Wallet(-1, name);
         // FIXME: should we specify CreateCollection or OpenOnly here?
-        wallet->d->secretsCollection = Collection::findCollection(name, Collection::CreateCollection, QVariantMap(), w);
+        wallet->d->secretsCollection = KSecretsService::Collection::findCollection(name, KSecretsService::Collection::CreateCollection, QVariantMap(), w);
         connect( wallet->d->secretsCollection, SIGNAL(statusChanged(int)), wallet, SLOT(slotCollectionStatusChanged(int)) );
         if ( ot == Synchronous ) {
            kDebug() << "WARNING openWallet OpenType=Synchronous requested";
@@ -467,17 +467,19 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
 void Wallet::slotCollectionStatusChanged(int status)
 {
-    Collection::Status collStatus = (Collection::Status)status;
+    KSecretsService::Collection::Status collStatus = (KSecretsService::Collection::Status)status;
     switch ( collStatus ) {
-        case Collection::FoundExisting:
+        case KSecretsService::Collection::FoundExisting:
             // fall through
-        case Collection::NewlyCreated:
+        case KSecretsService::Collection::NewlyCreated:
             emitWalletOpened();
             break;
-        case Collection::Deleted:
+        case KSecretsService::Collection::Deleted:
+        case KSecretsService::Collection::Invalid:
+        case KSecretsService::Collection::Pending:
             // nothing to do
             break;
-        case Collection::NotFound:
+        case KSecretsService::Collection::NotFound:
             emitWalletAsyncOpenError();
             break;
     }
@@ -538,13 +540,13 @@ int Wallet::sync() {
 
 int Wallet::lockWallet() {
     if (walletLauncher->m_useKSecretsService) {
-        CollectionLockJob *lockJob = d->secretsCollection->lock();
+        KSecretsService::CollectionLockJob *lockJob = d->secretsCollection->lock();
         if (lockJob->exec()) {
             d->folder.clear();
             d->name.clear();
         }
         else {
-            kDebug(285) << "Cannot execute CollectionLockJob : " << lockJob->errorString();
+            kDebug(285) << "Cannot execute KSecretsService::CollectionLockJob : " << lockJob->errorString();
             return -1;
         }
         return lockJob->error();
@@ -589,7 +591,7 @@ void Wallet::requestChangePassword(WId w) {
         kDebug(285) << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
 
     if (walletLauncher->m_useKSecretsService) {
-        ChangeCollectionPasswordJob *changePwdJob = d->secretsCollection->changePassword();
+        KSecretsService::ChangeCollectionPasswordJob *changePwdJob = d->secretsCollection->changePassword();
         if (!changePwdJob->exec()) {
             kDebug(285) << "Cannot execute ChangeCollectionPasswordJob : " << changePwdJob->errorString();
         }
@@ -627,16 +629,16 @@ QStringList Wallet::folderList() {
     if (walletLauncher->m_useKSecretsService) {
         QStringList result;
         
-        StringStringMap attrs;
+        KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = ""; // search for items having this attribute no matter what value it has
-        SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
+        KSecretsService::SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
         
         if (searchJob->exec()) {
-            ReadCollectionItemsJob::ItemList itemList = searchJob->items();
-            foreach( const ReadCollectionItemsJob::Item &item, itemList ) {
-                ReadItemPropertyJob *readAttrsJob = item->attributes();
+            KSecretsService::ReadCollectionItemsJob::ItemList itemList = searchJob->items();
+            foreach( const KSecretsService::ReadCollectionItemsJob::Item &item, itemList ) {
+                KSecretsService::ReadItemPropertyJob *readAttrsJob = item->attributes();
                 if (readAttrsJob->exec()) {
-                    StringStringMap attrs = readAttrsJob->propertyValue().value<StringStringMap>();
+                    KSecretsService::StringStringMap attrs = readAttrsJob->propertyValue().value<KSecretsService::StringStringMap>();
                     const QString folder = attrs[KSS_ATTR_ENTRYFOLDER];
                     if (!folder.isEmpty() && !result.contains(folder)) {
                         result.append(folder);
@@ -672,12 +674,12 @@ QStringList Wallet::folderList() {
 QStringList Wallet::entryList() {
     if (walletLauncher->m_useKSecretsService) {
         QStringList result;
-        StringStringMap attrs;
+        KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = d->folder;
-        SearchCollectionItemsJob *readItemsJob = d->secretsCollection->searchItems( attrs );
+        KSecretsService::SearchCollectionItemsJob *readItemsJob = d->secretsCollection->searchItems( attrs );
         if ( readItemsJob->exec() ) {
-            foreach( SearchCollectionItemsJob::Item item, readItemsJob->items() ) {
-                ReadItemPropertyJob *readLabelJob = item->label();
+            foreach( KSecretsService::SearchCollectionItemsJob::Item item, readItemsJob->items() ) {
+                KSecretsService::ReadItemPropertyJob *readLabelJob = item->label();
                 if ( readLabelJob->exec() ) {
                     result.append( readLabelJob->propertyValue().toString() );
                 }
@@ -795,15 +797,15 @@ bool Wallet::removeFolder(const QString& f) {
     if (walletLauncher->m_useKSecretsService) {
         bool result = false;
         // search for all items having the folder f then delete them
-        StringStringMap attrs;
+        KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = f;
-        SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
+        KSecretsService::SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
         if (searchJob->exec()) {
-            SearchCollectionItemsJob::ItemList itemList = searchJob->items();
+            KSecretsService::SearchCollectionItemsJob::ItemList itemList = searchJob->items();
             if ( !itemList.isEmpty() ) {
                 result = true;
-                foreach( const SearchCollectionItemsJob::Item &item, itemList ) {
-                    SecretItemDeleteJob *deleteJob = item->deleteItem();
+                foreach( const KSecretsService::SearchCollectionItemsJob::Item &item, itemList ) {
+                    KSecretsService::SecretItemDeleteJob *deleteJob = item->deleteItem();
                     if (!deleteJob->exec()) {
                         kDebug(285) << "Cannot delete item : " << deleteJob->errorString();
                         result = false;
@@ -813,7 +815,7 @@ bool Wallet::removeFolder(const QString& f) {
             }
         }
         else {
-            kDebug(285) << "Cannot execute SearchCollectionItemsJob : " << searchJob->errorString();
+            kDebug(285) << "Cannot execute KSecretsService::SearchCollectionItemsJob : " << searchJob->errorString();
         }
         return result;
     }
@@ -842,15 +844,15 @@ const QString& Wallet::currentFolder() const {
     return d->folder;
 }
 
-QExplicitlySharedDataPointer<SecretItem> Wallet::WalletPrivate::findItem( const QString& key ) const
+QExplicitlySharedDataPointer<KSecretsService::SecretItem> Wallet::WalletPrivate::findItem( const QString& key ) const
 {
-    QExplicitlySharedDataPointer<SecretItem> result;
-    StringStringMap attrs;
+    QExplicitlySharedDataPointer<KSecretsService::SecretItem> result;
+    KSecretsService::StringStringMap attrs;
     attrs[KSS_ATTR_ENTRYFOLDER] = folder;
     attrs["Label"] = key;
-    SearchCollectionItemsJob *searchJob = secretsCollection->searchItems(attrs);
+    KSecretsService::SearchCollectionItemsJob *searchJob = secretsCollection->searchItems(attrs);
     if (searchJob->exec()) {
-        SearchCollectionItemsJob::ItemList itemList = searchJob->items();
+        KSecretsService::SearchCollectionItemsJob::ItemList itemList = searchJob->items();
         if ( !itemList.isEmpty() ) {
             result = itemList.first();
         }
@@ -859,7 +861,7 @@ QExplicitlySharedDataPointer<SecretItem> Wallet::WalletPrivate::findItem( const 
         }
     }
     else {
-        kDebug(285) << "Cannot exec SearchCollectionItemsJob : " << searchJob->errorString();
+        kDebug(285) << "Cannot exec KSecretsService::SearchCollectionItemsJob : " << searchJob->errorString();
     }
 
     return result;
@@ -869,11 +871,11 @@ template <typename T>
 int Wallet::WalletPrivate::readEntry(const QString& key, T& value) const
 {
     int rc = -1;
-    QExplicitlySharedDataPointer<SecretItem> item = findItem(key);
+    QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = findItem(key);
     if ( item ) {
-        GetSecretItemSecretJob *readJob = item->getSecret();
+        KSecretsService::GetSecretItemSecretJob *readJob = item->getSecret();
         if ( readJob->exec() ) {
-            Secret theSecret = readJob->secret();
+            KSecretsService::Secret theSecret = readJob->secret();
             kDebug(285) << "Secret contentType is " << theSecret.contentType();
             value = theSecret.value().value<T>();
             rc = 0;
@@ -885,12 +887,12 @@ int Wallet::WalletPrivate::readEntry(const QString& key, T& value) const
     return rc;
 }
 
-bool Wallet::WalletPrivate::readSecret(const QString& key, Secret& value) const
+bool Wallet::WalletPrivate::readSecret(const QString& key, KSecretsService::Secret& value) const
 {
     bool result = false;
-    QExplicitlySharedDataPointer<SecretItem> item = findItem(key);
+    QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = findItem(key);
     if ( item ) {
-        GetSecretItemSecretJob *readJob = item->getSecret();
+        KSecretsService::GetSecretItemSecretJob *readJob = item->getSecret();
         if ( readJob->exec() ) {
             value = readJob->secret();
             result = true;
@@ -925,9 +927,9 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
 
 struct Wallet::WalletPrivate::InsertIntoEntryList {
     InsertIntoEntryList( QMap< QString, QByteArray> &value ) : _value( value ) {}
-    bool operator() ( Wallet::WalletPrivate*, const QString& label, SecretItem* item ) {
+    bool operator() ( Wallet::WalletPrivate*, const QString& label, KSecretsService::SecretItem* item ) {
         bool result = false;
-        GetSecretItemSecretJob *readSecretJob = item->getSecret();
+        KSecretsService::GetSecretItemSecretJob *readSecretJob = item->getSecret();
         if ( readSecretJob->exec() ) {
             _value.insert( label, readSecretJob->secret().value().toByteArray() );
             result = true;
@@ -973,9 +975,9 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
     int rc = -1;
 
     if (walletLauncher->m_useKSecretsService) {
-        QExplicitlySharedDataPointer<SecretItem> item = d->findItem(oldName);
+        QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = d->findItem(oldName);
         if (item) {
-            WriteItemPropertyJob *writeJob = item->setLabel(newName);
+            KSecretsService::WriteItemPropertyJob *writeJob = item->setLabel(newName);
             if (!writeJob->exec()) {
                 kDebug(285) << "Cannot exec WriteItemPropertyJob : " << writeJob->errorString();
             }
@@ -1034,7 +1036,7 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 
 struct Wallet::WalletPrivate::InsertIntoMapList {
     InsertIntoMapList( QMap< QString, QMap< QString, QString > > &value ) : _value( value ) {}
-    bool operator() ( Wallet::WalletPrivate* d, const QString& label, SecretItem* ) {
+    bool operator() ( Wallet::WalletPrivate* d, const QString& label, KSecretsService::SecretItem* ) {
         bool result = false;
         QMap<QString, QString> map;
         if ( d->readEntry< QMap< QString, QString> >(label, map) ) {
@@ -1103,7 +1105,7 @@ int Wallet::readPassword(const QString& key, QString& value) {
 
 struct Wallet::WalletPrivate::InsertIntoPasswordList {
     InsertIntoPasswordList( QMap< QString, QString> &value ) : _value( value ) {}
-    bool operator() ( Wallet::WalletPrivate* d, const QString& label, SecretItem* ) {
+    bool operator() ( Wallet::WalletPrivate* d, const QString& label, KSecretsService::SecretItem* ) {
         bool result = false;
         QString pwd;
         if ( d->readEntry<QString>( label, pwd ) == 0 ) {
@@ -1233,7 +1235,7 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 
 bool Wallet::hasEntry(const QString& key) {
     if (walletLauncher->m_useKSecretsService) {
-        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
+        QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = d->findItem( key );
         return item;
     }
     else {
@@ -1257,9 +1259,9 @@ int Wallet::removeEntry(const QString& key) {
     int rc = -1;
 
     if (walletLauncher->m_useKSecretsService) {
-        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
+        QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = d->findItem( key );
         if ( item ) {
-            SecretItemDeleteJob *deleteJob = item->deleteItem();
+            KSecretsService::SecretItemDeleteJob *deleteJob = item->deleteItem();
             if ( !deleteJob->exec() ) {
                 kDebug(285) << "Cannot execute SecretItemDeleteJob " << deleteJob->errorString();
             }
@@ -1285,11 +1287,11 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
     int rc = 0;
 
     if (walletLauncher->m_useKSecretsService) {
-        QExplicitlySharedDataPointer<SecretItem> item = d->findItem( key );
+        QExplicitlySharedDataPointer<KSecretsService::SecretItem> item = d->findItem( key );
         if ( item ) {
-            ReadItemPropertyJob *readAttrsJob = item->attributes();
+            KSecretsService::ReadItemPropertyJob *readAttrsJob = item->attributes();
             if ( readAttrsJob->exec() ) {
-                StringStringMap attrs = readAttrsJob->propertyValue().value<StringStringMap>();
+                KSecretsService::StringStringMap attrs = readAttrsJob->propertyValue().value<KSecretsService::StringStringMap>();
                 if ( attrs.contains( KSS_ATTR_WALLETTYPE ) ) {
                     QString entryType = attrs[KSS_ATTR_WALLETTYPE];
                     bool ok = false;
@@ -1499,5 +1501,7 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
 
     return *m_wallet;
 }
+
+} // namespace KWallet
 
 #include "kwallet.moc"
