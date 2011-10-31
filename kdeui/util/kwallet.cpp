@@ -21,13 +21,7 @@
  */
 
 #include "kwallet.h"
-#include "../ksecretsservice/ksecretsservicecollection.h"
-#include "../ksecretsservicecollectionjobs.h"
-#include "../ksecretsservice/ksecretsserviceitem.h"
-#include "../ksecretsservice/ksecretsserviceitemjobs.h"
-#include <ksharedconfig.h>
-#include <kdebug.h>
-#include <kdeversion.h>
+
 #include <QtGui/QApplication>
 #include <QtCore/QPointer>
 #include <QtGui/QWidget>
@@ -35,12 +29,19 @@
 #include <ktoolinvocation.h>
 
 #include <assert.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
-#include <kaboutdata.h>
 #include <kconfiggroup.h>
+#include <kdebug.h>
+#include <kdeversion.h>
+#include <kglobal.h>
+#include <kaboutdata.h>
+#include <ksharedconfig.h>
 #include <kwindowsystem.h>
 
+#include "ksecretsservice/ksecretsservicecollection.h"
+#include "ksecretsservice/ksecretsservicecollectionjobs.h"
+#include "ksecretsservice/ksecretsserviceitem.h"
+#include "ksecretsservice/ksecretsserviceitemjobs.h"
 #include "kwallet_interface.h"
 
 using namespace KWallet;
