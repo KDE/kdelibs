@@ -578,7 +578,8 @@ bool KConfigIniBackend::lock(const KComponentData& componentData)
 void KConfigIniBackend::unlock()
 {
     lockFile->unlock();
-    lockFile.clear();
+    delete lockFile;
+    lockFile = NULL;
 }
 
 bool KConfigIniBackend::isLocked() const
