@@ -16,10 +16,6 @@ macro_bool_to_01(FAM_FOUND HAVE_FAM)
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
 
-# Generate io/config-kdirwatch.h
-include(io/ConfigureChecks.cmake)
-configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kdirwatch.h )
-
 # Configure checks for network/ but also for netsupp.*
 include(network/ConfigureChecks.cmake)
 configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
@@ -43,6 +39,10 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
 include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness )
+include_directories( ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src/ )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -92,9 +92,7 @@ if (WIN32)
       kernel/kstandarddirs_win.cpp
       localization/klocale_win.cpp
       network/klocalsocket_win.cpp
-      io/klockfile_win.cpp
       util/kde_file_win.cpp
-      util/kmacroexpander_win.cpp
       util/kshell_win.cpp
       date/ktimezone_win.cpp
    )
@@ -122,10 +120,8 @@ if (UNIX)
       localization/klocale_unix.cpp
       network/klocalsocket_unix.cpp
       network/netsupp.cpp
-      io/klockfile_unix.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
-      util/kmacroexpander_unix.cpp
       fakes.c
    )
    if (NOT KDECORE_NO_KDE3SUPPORT)
@@ -193,19 +189,10 @@ set(kdecore_LIB_SRCS
    io/kautosavefile.cpp
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
-   io/kdirwatch.cpp
-   io/kfilesystemtype_p.cpp
    io/kmessage.cpp
    io/kmountpoint.cpp
    io/kprocess.cpp
-   io/ksavefile.cpp
-   io/ktempdir.cpp
    io/ktemporaryfile.cpp
-   io/kurl.cpp
-   jobs/kcompositejob.cpp
-   jobs/kjob.cpp
-   jobs/kjobuidelegate.cpp
-   jobs/kjobtrackerinterface.cpp
    kernel/kauthorized.cpp
    kernel/kaboutdata.cpp
    kernel/kcmdlineargs.cpp
@@ -261,37 +248,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ktcpsocket.cpp
    localization/kcatalog.cpp
    localization/kcurrencycode.cpp
-   localization/kcharsets.cpp
-   localization/kencodingdetector.cpp
-   localization/guess_ja.cpp
-   localization/kencodingprober.cpp
-   localization/probers/CharDistribution.cpp
-   localization/probers/ChineseGroupProber.cpp
-   localization/probers/JapaneseGroupProber.cpp
-   localization/probers/JpCntx.cpp
-   localization/probers/LangBulgarianModel.cpp
-   localization/probers/LangCyrillicModel.cpp
-   localization/probers/LangGreekModel.cpp
-   localization/probers/LangHebrewModel.cpp
-   localization/probers/LangHungarianModel.cpp
-   localization/probers/LangThaiModel.cpp
-   localization/probers/UnicodeGroupProber.cpp
-   localization/probers/nsBig5Prober.cpp
-   localization/probers/nsCharSetProber.cpp
-   localization/probers/nsEUCJPProber.cpp
-   localization/probers/nsEUCKRProber.cpp
-   localization/probers/nsEUCTWProber.cpp
-   localization/probers/nsEscCharsetProber.cpp
-   localization/probers/nsEscSM.cpp
-   localization/probers/nsGB2312Prober.cpp
-   localization/probers/nsHebrewProber.cpp
-   localization/probers/nsLatin1Prober.cpp
-   localization/probers/nsMBCSGroupProber.cpp
-   localization/probers/nsMBCSSM.cpp
-   localization/probers/nsSBCSGroupProber.cpp
-   localization/probers/nsSBCharSetProber.cpp
-   localization/probers/nsSJISProber.cpp
-   localization/probers/nsUniversalDetector.cpp
    localization/klocale.cpp
    localization/klocale_kde.cpp
    localization/klocalizedstring.cpp
@@ -306,20 +262,15 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    sycoca/kprotocolinfofactory.cpp
    sycoca/kmemfile.cpp
    text/kascii.cpp
-   text/kcodecs.cpp
-   text/kstringhandler.cpp
    util/kallocator.cpp
    util/kautostart.cpp
    util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
    util/klibrary.cpp
-   util/kmacroexpander.cpp
    util/kpluginfactory.cpp
    util/kpluginloader.cpp
    util/kshell.cpp
-   util/krandom.cpp
-   util/krandomsequence.cpp
    util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
@@ -330,13 +281,6 @@ if(NOT KDE_NO_DEPRECATED)
     )
 endif(NOT KDE_NO_DEPRECATED)
 
-if(NOT WIN32)
-    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
-    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-else(NOT WIN32)
-    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
-    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)
-endif(NOT WIN32)
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
@@ -345,7 +289,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 generate_export_header(kdecore)
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS} inqt5)
+target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS} inqt5 kcoreaddons)
 
 if(WINCE)
   target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)
@@ -451,19 +395,10 @@ install( FILES
    date/ktzfiletimezone.h
    io/kautosavefile.h
    io/kdebug.h
-   io/kdirwatch.h
    io/kmessage.h
    io/kprocess.h
-   io/klockfile.h
    io/kmountpoint.h
-   io/ksavefile.h
-   io/ktempdir.h
    io/ktemporaryfile.h
-   io/kurl.h
-   jobs/kcompositejob.h
-   jobs/kjob.h
-   jobs/kjobuidelegate.h
-   jobs/kjobtrackerinterface.h
    kernel/kaboutdata.h
    kernel/kauthorized.h
    kernel/kcmdlineargs.h
@@ -507,10 +442,7 @@ install(FILES
    services/kservicetypetrader.h
    #services/kserviceoffer.h: do not install, internal API
    services/kplugininfo.h
-   localization/kcharsets.h
    localization/kcurrencycode.h
-   localization/kencodingdetector.h
-   localization/kencodingprober.h
    localization/klocale.h
    localization/klocalizedstring.h
    sycoca/kprotocolinfo.h
@@ -518,8 +450,6 @@ install(FILES
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
    text/kascii.h
-   text/kcodecs.h
-   text/kstringhandler.h
    util/kallocator.h
    util/kautostart.h
    util/kde_file.h
@@ -529,14 +459,10 @@ install(FILES
    util/klauncher_iface.h
    util/klibrary.h
    util/klibloader.h
-   util/kmacroexpander.h
    util/kexportplugin.h
    util/kpluginfactory.h
    util/kpluginloader.h
    util/kshell.h
-   util/krandom.h
-   util/krandomsequence.h
-   util/kshareddatacache.h
    util/ksharedptr.h
    util/ksortablelist.h
    util/ktypelist.h
