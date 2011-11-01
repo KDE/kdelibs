@@ -44,6 +44,7 @@
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
 #include <qstandardpaths.h>
+#include <qplatformdefs.h>
 
 // next two needed so we can set their palettes
 #include <QtGui/QToolTip>
@@ -409,6 +410,11 @@ static const KFontData DefaultFontData[KGlobalSettingsData::FontTypesCount] =
     { GeneralId, "fixed",       "Monaco",       10, -1, QFont::TypeWriter },
     { GeneralId, "toolBarFont", DefaultMacFont, 11, -1, QFont::SansSerif },
     { GeneralId, "menuFont",    DefaultMacFont, 13, -1, QFont::SansSerif },
+#elif defined(Q_WS_MAEMO_5) || defined(MEEGO_EDITION_HARMATTAN)
+    { GeneralId, "font",        DefaultFont, 16, -1, QFont::SansSerif },
+    { GeneralId, "fixed",       "Monospace", 16, -1, QFont::TypeWriter },
+    { GeneralId, "toolBarFont", DefaultFont, 16, -1, QFont::SansSerif },
+    { GeneralId, "menuFont",    DefaultFont, 16, -1, QFont::SansSerif },
 #else
     { GeneralId, "font",        DefaultFont, 9, -1, QFont::SansSerif },
     { GeneralId, "fixed",       "Monospace", 9, -1, QFont::TypeWriter },
@@ -1026,6 +1032,7 @@ QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConf
 
 void KGlobalSettings::Private::kdisplaySetPalette()
 {
+#if !defined(Q_WS_MAEMO_5) && !defined(Q_OS_WINCE) && !defined(MEEGO_EDITION_HARMATTAN)
     if (!kdeFullSession) {
         return;
     }
@@ -1035,11 +1042,13 @@ void KGlobalSettings::Private::kdisplaySetPalette()
     }
     emit q->kdisplayPaletteChanged();
     emit q->appearanceChanged();
+#endif    
 }
 
 
 void KGlobalSettings::Private::kdisplaySetFont()
 {
+#if !defined(Q_WS_MAEMO_5) && !defined(Q_OS_WINCE) && !defined(MEEGO_EDITION_HARMATTAN)
     if (!kdeFullSession) {
         return;
     }
@@ -1056,6 +1065,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
     }
     emit q->kdisplayFontChanged();
     emit q->appearanceChanged();
+#endif
 }
 
 
