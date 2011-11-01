@@ -75,7 +75,6 @@ class KGlobalPrivate
         inline KGlobalPrivate()
             : stringDict(0),
             locale(0),
-            charsets(0),
             localeIsFromFakeComponent(false)
         {
             // the umask is read here before any threads are created to avoid race conditions
@@ -88,8 +87,6 @@ class KGlobalPrivate
         {
             delete locale;
             locale = 0;
-            delete charsets;
-            charsets = 0;
             delete stringDict;
             stringDict = 0;
         }
@@ -98,7 +95,6 @@ class KGlobalPrivate
         KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
         KLocale *locale;
-        KCharsets *charsets;
         bool localeIsFromFakeComponent;
         QStringList catalogsToInsert;
 
@@ -208,16 +204,6 @@ bool KGlobal::hasLocale()
     }
     PRIVATE_DATA;
     return (d->locale != 0);
-}
-
-KCharsets *KGlobal::charsets()
-{
-    PRIVATE_DATA;
-    if (d->charsets == 0) {
-        d->charsets = new KCharsets;
-    }
-
-    return d->charsets;
 }
 
 mode_t KGlobal::umask()
