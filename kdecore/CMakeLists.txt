@@ -41,6 +41,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
 include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness )
 include_directories( ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src/ )
 
@@ -194,8 +195,6 @@ set(kdecore_LIB_SRCS
    io/kprocess.cpp
    io/ktemporaryfile.cpp
    kernel/kauthorized.cpp
-   kernel/kaboutdata.cpp
-   kernel/kcmdlineargs.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
@@ -399,9 +398,7 @@ install( FILES
    io/kprocess.h
    io/kmountpoint.h
    io/ktemporaryfile.h
-   kernel/kaboutdata.h
    kernel/kauthorized.h
-   kernel/kcmdlineargs.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
    kernel/kstandarddirs.h
