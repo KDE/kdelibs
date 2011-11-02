@@ -34,7 +34,6 @@
 #include <QSharedDataPointer>
 #include <kdebug.h>
 #include <prompt_interface.h>
-#include <kapplication.h>
 #include <QWidget>
 #include <klocalizedstring.h>
 
