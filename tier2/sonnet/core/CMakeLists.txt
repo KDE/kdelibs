@@ -10,6 +10,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/services
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/sycoca
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/io
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../tier1/libkcoreaddons/src/io
+  ${CMAKE_CURRENT_BINARY_DIR}/../../../tier1/libkcoreaddons/src
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore
   ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
   ${CMAKE_CURRENT_BINARY_DIR}
