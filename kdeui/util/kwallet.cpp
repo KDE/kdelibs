@@ -97,6 +97,11 @@ static void registerTypes()
     }
 }
 
+bool Wallet::isUsingKSecretsService()
+{
+    return walletLauncher->m_useKSecretsService;
+}
+
 const QString Wallet::LocalWallet() {
     // NOTE: This method stays unchanged for KSecretsService
     KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
@@ -194,6 +199,8 @@ public:
         }
         return rc;
     }
+
+    void createDefaultFolders();
     
     struct InsertIntoEntryList;
     struct InsertIntoMapList;
@@ -208,6 +215,20 @@ public:
 
     Collection *secretsCollection;
 };
+
+void Wallet::WalletPrivate::createDefaultFolders()
+{
+// NOTE: KWalletManager expects newly created wallets to have two default folders
+//     b->createFolder(KWallet::Wallet::PasswordFolder());
+//     b->createFolder(KWallet::Wallet::FormDataFolder());
+    QString strDummy("");
+    folder = PasswordFolder();
+    writeEntry( PasswordFolder(), strDummy, KWallet::Wallet::Unknown );
+    
+    folder = FormDataFolder();
+    writeEntry( FormDataFolder(), strDummy, KWallet::Wallet::Unknown );
+}
+
 
 static const char s_kwalletdServiceName[] = "org.kde.kwalletd";
 
@@ -473,9 +494,10 @@ void Wallet::slotCollectionStatusChanged(int status)
 {
     Collection::Status collStatus = (Collection::Status)status;
     switch ( collStatus ) {
-        case Collection::FoundExisting:
-            // fall through
         case Collection::NewlyCreated:
+            d->createDefaultFolders();
+            // fall through
+        case Collection::FoundExisting:
             emitWalletOpened();
             break;
         case Collection::Deleted:
@@ -739,7 +761,9 @@ bool Wallet::hasFolder(const QString& f) {
 
 bool Wallet::createFolder(const QString& f) {
     if (walletLauncher->m_useKSecretsService) {
-        kDebug(285) << "Wallet::createFolder NOOP";
+        QString strDummy("");
+        d->folder = f;
+        d->writeEntry( f, strDummy, KWallet::Wallet::Unknown );
         return true;
     }
     else {
