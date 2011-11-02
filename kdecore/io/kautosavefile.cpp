@@ -86,6 +86,7 @@ KAutoSaveFile::KAutoSaveFile(QObject *parent)
 KAutoSaveFile::~KAutoSaveFile()
 {
     releaseLock();
+    delete d->lock;
     delete d;
 }
 
@@ -108,7 +109,7 @@ void KAutoSaveFile::releaseLock()
         delete d->lock;
 	d->lock = NULL;
         if (!fileName().isEmpty()) {
-        remove();
+            remove();
         }
     }
 }

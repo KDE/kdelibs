@@ -47,7 +47,7 @@ QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 }
 
 KConfigIniBackend::KConfigIniBackend()
- : KConfigBackend()
+ : KConfigBackend(), lockFile(NULL)
 {
 }
 
