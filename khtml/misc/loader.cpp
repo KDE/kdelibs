@@ -215,7 +215,7 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
     // Link or @charset
     if(!charset.isEmpty())
     {
-	QTextCodec* c = KGlobal::charsets()->codecForName(charset);
+	QTextCodec* c = KCharsets::charsets()->codecForName(charset);
         if(c->mibEnum() == 11)  {
             // iso8859-8 (visually ordered)
             c = QTextCodec::codecForName("iso8859-8-i");
@@ -286,7 +286,7 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     m_charset = checkCharset( buffer.buffer() );
     QTextCodec* c = 0;
     if (!m_charset.isEmpty()) {
-        c = KGlobal::charsets()->codecForName(m_charset);
+        c = KCharsets::charsets()->codecForName(m_charset);
         if(c->mibEnum() == 11)  c = QTextCodec::codecForName("iso8859-8-i");
     }
     else {

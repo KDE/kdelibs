@@ -91,7 +91,7 @@ void KCodecAction::Private::init(bool showAutoOptions)
     defaultAction = q->addAction(i18nc("Encodings menu", "Default"));
 
     int i;
-    foreach(const QStringList &encodingsForScript, KGlobal::charsets()->encodingsByScript())
+    foreach(const QStringList &encodingsForScript, KCharsets::charsets()->encodingsByScript())
     {
         KSelectAction* tmp = new KSelectAction(encodingsForScript.at(0),q);
         if (showAutoOptions)
@@ -120,7 +120,7 @@ int KCodecAction::mibForName(const QString &codecName, bool *ok) const
 
     bool success = false;
     int mib = MIB_DEFAULT;
-    KCharsets *charsets = KGlobal::charsets();
+    KCharsets *charsets = KCharsets::charsets();
 
     if (codecName == d->defaultAction->text())
         success = true;
@@ -207,7 +207,7 @@ bool KCodecAction::setCurrentCodec( QTextCodec *codec )
             {
                 if (!j && !actions().at(i)->menu()->actions().at(j)->data().isNull())
                     continue;
-                if (codec==KGlobal::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text()))
+                if (codec==KCharsets::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text()))
                 {
                     d->currentSubAction=actions().at(i)->menu()->actions().at(j);
                     d->currentSubAction->trigger();
@@ -227,7 +227,7 @@ QString KCodecAction::currentCodecName() const
 
 bool KCodecAction::setCurrentCodec( const QString &codecName )
 {
-    return setCurrentCodec(KGlobal::charsets()->codecForName(codecName));
+    return setCurrentCodec(KCharsets::charsets()->codecForName(codecName));
 }
 
 int KCodecAction::currentCodecMib() const

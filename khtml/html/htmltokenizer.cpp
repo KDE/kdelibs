@@ -142,7 +142,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     buffer = 0;
     rawContent = 0;
     rawContentSize = rawContentMaxSize = rawContentResync = rawContentSinceLastEntity = 0;
-    charsets = KGlobal::charsets();
+    charsets = KCharsets::charsets();
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
     m_externalScriptsTimerId = 0;
@@ -162,7 +162,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
     buffer = 0;
     rawContent = 0;
     rawContentSize = rawContentMaxSize = rawContentResync = rawContentSinceLastEntity = 0;
-    charsets = KGlobal::charsets();
+    charsets = KCharsets::charsets();
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
     m_externalScriptsTimerId = 0;

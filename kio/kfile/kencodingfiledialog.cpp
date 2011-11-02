@@ -54,13 +54,13 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   if (sEncoding.isEmpty() || sEncoding == "System")
      sEncoding = systemEncoding;
 
-  const QStringList encodings (KGlobal::charsets()->availableEncodingNames());
+  const QStringList encodings (KCharsets::charsets()->availableEncodingNames());
   int insert = 0, system = 0;
   bool foundRequested=false;
   foreach (const QString& encoding, encodings)
   {
     bool found = false;
-    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encoding, found);
+    QTextCodec *codecForEnc = KCharsets::charsets()->codecForName(encoding, found);
 
     if (found)
     {

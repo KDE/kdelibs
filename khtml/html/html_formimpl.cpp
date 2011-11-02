@@ -293,7 +293,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 if(view && view->part())
                     enc = view->part()->encoding();
             }
-            if((codec = KGlobal::charsets()->codecForName(enc.toLatin1().constData())))
+            if((codec = KCharsets::charsets()->codecForName(enc.toLatin1().constData())))
                 break;
         }
     }
