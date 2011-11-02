@@ -21,6 +21,8 @@
 
 #include "ksavefiletest.h"
 
+#include "kbackup.h" // TODO split out into a separate test
+
 #include <QtCore/QDebug>
 #include <QtCore/QTextStream>
 
@@ -185,11 +187,11 @@ void KSaveFileTest::test_simpleBackupFile()
     QTemporaryFile file;
     QVERIFY( file.open() );
 
-    QVERIFY( KSaveFile::simpleBackupFile(file.fileName()));
+    QVERIFY( KBackup::simpleBackupFile(file.fileName()));
     QVERIFY( QFile::exists(file.fileName() + '~'));
     QFile::remove(file.fileName() + '~');
 
-    QVERIFY( KSaveFile::simpleBackupFile(file.fileName(), tmp) );
+    QVERIFY( KBackup::simpleBackupFile(file.fileName(), tmp) );
     QFileInfo fi ( file.fileName() );
     QVERIFY( QFile::exists(tmp + fi.fileName() + '~') );
     QFile::remove(tmp + fi.fileName() + '~');
@@ -203,7 +205,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( file.open() );
 
         for ( int i=1; i<15; i++ ) {
-            QVERIFY( KSaveFile::numberedBackupFile(file.fileName()) );
+            QVERIFY( KBackup::numberedBackupFile(file.fileName()) );
         }
 
         QString fileNameTemplate = file.fileName() + ".%1~";
@@ -227,7 +229,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( QDir::setCurrent(fi.absolutePath()) );
 
         for ( int i=1; i<15; i++ ) {
-            QVERIFY( KSaveFile::numberedBackupFile(fi.fileName()) );
+            QVERIFY( KBackup::numberedBackupFile(fi.fileName()) );
         }
 
         QString fileNameTemplate = fi.fileName() + ".%1~";
@@ -251,7 +253,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( QDir::setCurrent(fi.absolutePath()) );
 
         for ( int i=1; i<15; i++ ) {
-            QVERIFY( KSaveFile::numberedBackupFile(fi.fileName(), tmp) );
+            QVERIFY( KBackup::numberedBackupFile(fi.fileName(), tmp) );
         }
 
         QString fileNameTemplate = tmp + fi.fileName() + ".%1~";
@@ -275,7 +277,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( QDir::setCurrent(fi.absolutePath()) );
 
         for ( int i=1; i<15; i++ ) {
-            QVERIFY( KSaveFile::numberedBackupFile(fi.fileName(), tmp) );
+            QVERIFY( KBackup::numberedBackupFile(fi.fileName(), tmp) );
         }
 
         QString fileNameTemplate = tmp + fi.fileName() + ".%1~";
@@ -302,9 +304,9 @@ void KSaveFileTest::test_rcsBackupFile()
         QTemporaryFile f;
         QVERIFY(f.open());
 
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ));
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ));
 
         filesToRemove << f.fileName() + ",v";
@@ -314,19 +316,19 @@ void KSaveFileTest::test_rcsBackupFile()
         QTemporaryFile f;
         QVERIFY(f.open());
 
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ) );
 
         QTextStream out( &f );
         out << "Testing a change\n";
         out.flush();
 
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName() ) );
 
         out << "Testing another change\n";
         out.flush();
 
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName() ) );
         filesToRemove << f.fileName() + ",v";
     }
 
@@ -337,9 +339,9 @@ void KSaveFileTest::test_rcsBackupFile()
         QFileInfo fi ( f.fileName() );
         QVERIFY( QDir::setCurrent(fi.absolutePath()) );
 
-        QVERIFY( KSaveFile::rcsBackupFile( fi.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( fi.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ));
-        QVERIFY( KSaveFile::rcsBackupFile( fi.fileName() ) );
+        QVERIFY( KBackup::rcsBackupFile( fi.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ));
 
         filesToRemove << f.fileName() + ",v";
@@ -351,9 +353,9 @@ void KSaveFileTest::test_rcsBackupFile()
 
         QFileInfo fi ( f.fileName() );
 
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName(), tmp ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName(), tmp ) );
         QVERIFY( QFile::exists(tmp + fi.fileName() + ",v" ));
-        QVERIFY( KSaveFile::rcsBackupFile( f.fileName(), tmp ) );
+        QVERIFY( KBackup::rcsBackupFile( f.fileName(), tmp ) );
         QVERIFY( QFile::exists(tmp + fi.fileName() + ",v" ));
 
         filesToRemove << tmp + fi.fileName() + ",v";
@@ -366,9 +368,9 @@ void KSaveFileTest::test_rcsBackupFile()
         QFileInfo fi ( f.fileName() );
         QVERIFY( QDir::setCurrent(fi.absolutePath()) );
 
-        QVERIFY( KSaveFile::rcsBackupFile( fi.fileName(), tmp ) );
+        QVERIFY( KBackup::rcsBackupFile( fi.fileName(), tmp ) );
         QVERIFY( QFile::exists(tmp + fi.fileName() + ",v" ));
-        QVERIFY( KSaveFile::rcsBackupFile( fi.fileName(), tmp ) );
+        QVERIFY( KBackup::rcsBackupFile( fi.fileName(), tmp ) );
         QVERIFY( QFile::exists(tmp + fi.fileName() + ",v" ));
 
         filesToRemove << tmp + fi.fileName() + ",v";
